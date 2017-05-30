@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="node_modules/qunitjs/qunit/qunit.js"></script>
+    <script type="text/javascript" src="treenotation.js"></script>
+    <script type="text/javascript" src="tests.js"></script>
+    <script type="text/javascript">
+      QUnit.config.autostart = false
+      $(document).ready(function() {
+        QUnit.module("Tree")
+        Object.keys(testTree).forEach(key => {
+          QUnit.test(key, testTree[key])
+        })
+        QUnit.start()
+      })
+    </script>
+    <link rel="stylesheet" type="text/css" href="node_modules/qunitjs/qunit/qunit.css" />
+  </head>
+  <body>
+    <h1 id="qunit-header"></h1>
+    <h2 id="qunit-banner"></h2>
+    <h2 id="qunit-userAgent"></h2>
+    <ol id="qunit-tests">
+    </ol>
+  </body>
+</html>

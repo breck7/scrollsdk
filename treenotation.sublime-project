@@ -1,0 +1,16 @@
+{
+	"folders":
+	[
+		{
+			"path": ".",
+			"folder_exclude_patterns": ["node_modules", "ignore", "coverage"]
+		}
+	],
+	"build_systems":
+    [
+        {
+            "name": "test",
+            "shell_cmd": "npm test"
+        }
+    ]
+}

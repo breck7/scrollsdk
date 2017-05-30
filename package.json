@@ -1,0 +1,22 @@
+{
+  "name": "treenotation",
+  "version": "3.0.0",
+  "description": "Javascript Tree Notation implementation.",
+  "main": "treenotation.js",
+  "scripts": {
+    "test": "./tasks/unit.js",
+    "start": "./tasks/start.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/breck7/treenotation"
+  },
+  "keywords": "treenotation",
+  "devDependencies": {
+    "express": "*",
+    "tape": "^4.6.3",
+    "jquery": "*",
+    "qunitjs": "*"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,4 @@
+coverage/
+ignore/
+node_modules/
+*.sublime-workspace

@@ -33,6 +33,7 @@ interface TreeNode {
   length: number;
   nodeAt: (index: int) => TreeNode;
   findNodes: (name: pathName) => TreeNode[];
+  findTail: (path: name) => (string | Undefined);
   format: (str: formatString) => string;
   getColumn: (path: name) => (string|Undefined)[];
   getHeads: () => name[];

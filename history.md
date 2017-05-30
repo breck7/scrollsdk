@@ -1,3 +1,7 @@
+3.0.1 / 2017-5-30
+=================
+- Added findTail method
+
 3.0.0 / 2017-5-30
 =================
 - Breaking: merged all subclasses into one TreeNode class.

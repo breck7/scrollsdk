@@ -1005,6 +1005,7 @@ testTree.getTail = assert => {
 
   // Assert
   assert.strictEqual(tree.getNode("hello").getTail(), "world")
+  assert.strictEqual(tree.findTail("hello"), "world")
 
   // Act
   // Test get with ints

@@ -700,6 +700,11 @@ class TreeNode {
     return this._getNodeByPath(pathName)
   }
 
+  findTail(pathName) {
+    const node = this._getNodeByPath(pathName)
+    return node === undefined ? undefined : node.getTail()
+  }
+
   _getNodeByPath(pathName) {
     if (!this.isPathName(pathName)) {
       const index = this.indexOfLast(pathName)
@@ -1099,7 +1104,7 @@ class TreeNode {
   }
 
   static getVersion() {
-    return "3.0.0"
+    return "3.0.1"
   }
 }
 

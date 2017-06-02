@@ -639,16 +639,9 @@ class TreeNode {
     if (!(treeOrStr instanceof TreeNode)) treeOrStr = new TreeNode(treeOrStr)
     treeOrStr.getChildren().forEach(node => {
       const path = node.getHead()
-      const targetNode = this.getNode(path)
       const tail = node.getTail()
-      if (!targetNode) this.touchNode(path).setTail(tail).setChildren(node.getChildren())
-      else {
-        targetNode.setTail(tail)
-        if (node.length) {
-          if (targetNode.length) targetNode.extend(node.childrenToString())
-          else targetNode.setChildren(node.getChildren())
-        }
-      }
+      const targetNode = this.touchNode(path).setTail(tail)
+      if (node.length) targetNode.extend(node.childrenToString())
     })
     return this
   }
@@ -1140,7 +1133,7 @@ class TreeNode {
   }
 
   static getVersion() {
-    return "3.1.0"
+    return "3.1.1"
   }
 }
 

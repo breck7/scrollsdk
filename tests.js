@@ -793,6 +793,22 @@ color blue`
   assert.strictEqual(result.items.car, "red", "expected deep to work")
   assert.strictEqual(result.items.foo, "bar")
   assert.strictEqual(tree.getNode("items").length, 2)
+
+  // Arrange
+  const base = `>foo
+ class main`
+  const web = `>foo
+ >bar
+  >bam
+   class boom
+   ham
+    hoom
+    vroom`
+  // Act
+  const extended = new TreeNode(base).extend(web)
+
+  // Assert
+  assert.strictEqual(extended.getNode(">foo >bar >bam class").getTail(), "boom")
 }
 
 testTree.first = assert => {

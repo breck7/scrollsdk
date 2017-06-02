@@ -1,3 +1,7 @@
+3.1.1 / 2017-6-2
+================
+- Regression fix in extend method
+
 3.1.0 / 2017-6-1
 ================
 - Breaking: removed every() method

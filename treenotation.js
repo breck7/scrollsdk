@@ -382,17 +382,53 @@ class TreeNode {
     return result
   }
 
-  every(fn) {
-    const length = this.length
-    const nodes = this.getChildren()
+  getTopDownArray() {
+    const arr = []
+    this._getTopDownArray(arr)
+    return arr
+  }
 
-    for (let index = 0; index < length; index++) {
-      const node = nodes[index]
-      // Go top down (depth first)
-      if (node.every(fn) === false) return this
-      if (fn.call(this, node, index) === false) return this
-    }
-    return this
+  _getTopDownArray(arr) {
+    this.getChildren().forEach(child => {
+      arr.push(child)
+      child._getTopDownArray(arr)
+    })
+  }
+
+  getChildrenFirstArray() {
+    const arr = []
+    this._getChildrenFirstArray(arr)
+    return arr
+  }
+
+  _getChildrenFirstArray(arr) {
+    this.getChildren().forEach(child => {
+      child._getChildrenFirstArray(arr)
+      arr.push(child)
+    })
+  }
+
+  _getDepth() {
+    return this.getAncestorNodes().length
+  }
+
+  getParentFirstArray() {
+    const levels = this._getLevels()
+    const arr = []
+    levels.forEach(level => {
+      level.forEach(item => arr.push(item))
+    })
+    return arr
+  }
+
+  _getLevels() {
+    const levels = []
+    this.getTopDownArray().forEach(node => {
+      const level = node._getDepth()
+      if (!levels[level]) levels[level] = []
+      levels[level].push(node)
+    })
+    return levels
   }
 
   _getChildren() {
@@ -1104,7 +1140,7 @@ class TreeNode {
   }
 
   static getVersion() {
-    return "3.0.1"
+    return "3.0.2"
   }
 }
 

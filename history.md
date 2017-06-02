@@ -1,3 +1,8 @@
+3.1.0 / 2017-6-1
+================
+- Breaking: removed every() method
+- Added getTopDownArray (preorder), getChildrenFirstArray (postorder), getParentFirstArray(breadth first) methods
+
 3.0.1 / 2017-5-30
 =================
 - Added findTail method
@@ -20,6 +25,7 @@
 - Breaking: node setTree is now node setChildren
 - Breaking: append now takes only 2 params, line and tree.
 - Breaking: appendLine is now just append
+- Breaking: getAncestorTrees is now getAncestorNodes
 - Breaking: getText now getTailWithChildren
 - Breaking: removed getTrees method.
 - Breaking: removed tree clear method.

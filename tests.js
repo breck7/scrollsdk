@@ -348,6 +348,7 @@ domains
   const tree8 = new TreeNode(treeString)
 
   // Assert
+  assert.strictEqual(tree8.getTopDownArray().length, 20)
   assert.strictEqual(
     tree8.getNode("domains test.test.com pages home settings data title").getTail(),
     "Hello, World",
@@ -792,16 +793,6 @@ color blue`
   assert.strictEqual(result.items.car, "red", "expected deep to work")
   assert.strictEqual(result.items.foo, "bar")
   assert.strictEqual(tree.getNode("items").length, 2)
-}
-
-testTree.every = assert => {
-  // Arrange
-  const tree = new TreeNode(testStrings.fromXmlTree)
-  let count = 0
-  // Act
-  tree.every(node => count++)
-  // Assert
-  assert.strictEqual(count, 11)
 }
 
 testTree.first = assert => {
@@ -2313,6 +2304,56 @@ testTree.windowsReturnChars = assert => {
 
   // Assert
   assert.strictEqual(tree.length, 6)
+}
+
+testTree.traverse = assert => {
+  // Arrange
+  const traversal = new TreeNode(
+    `0
+ 01
+ 02
+  020
+  021
+1
+ 10
+ 11
+  110
+ 12
+2`
+  )
+
+  // Act
+  const preOrder = traversal.getTopDownArray().map(node => node.getLine()).join(" ")
+  const postOrder = traversal.getChildrenFirstArray().map(node => node.getLine()).join(" ")
+  const breadthfirst = traversal.getParentFirstArray().map(node => node.getLine()).join(" ")
+
+  // Assert
+  assert.strictEqual(preOrder, "0 01 02 020 021 1 10 11 110 12 2", "expected topDown visiting to work")
+  assert.strictEqual(postOrder, "01 020 021 02 0 10 110 11 12 1 2", "expected postOrder visiting to work")
+  assert.strictEqual(breadthfirst, "0 1 2 01 02 10 11 12 020 021 110", "expected breadthfirst visiting to work")
+
+  // Arrange
+  const wikipediaBinaryTree = new TreeNode(
+    `f
+ b
+  a
+  d
+   c
+   e
+ g
+  i
+   h`
+  )
+
+  // Act
+  const wikipreorder = wikipediaBinaryTree.getTopDownArray().map(node => node.getLine()).join("")
+  const wikibreadthfirst = wikipediaBinaryTree.getParentFirstArray().map(node => node.getLine()).join("")
+  const wikipostorder = wikipediaBinaryTree.getChildrenFirstArray().map(node => node.getLine()).join("")
+
+  // Assert
+  assert.strictEqual(wikipreorder, "fbadcegih")
+  assert.strictEqual(wikibreadthfirst, "fbgadiceh")
+  assert.strictEqual(wikipostorder, "acedbhigf")
 }
 
 testTree.treeNodes = assert => {

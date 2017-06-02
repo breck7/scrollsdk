@@ -1140,7 +1140,7 @@ class TreeNode {
   }
 
   static getVersion() {
-    return "3.0.2"
+    return "3.1.0"
   }
 }
 

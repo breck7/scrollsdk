@@ -1,3 +1,8 @@
+3.2.0 / 2017-6-5
+================
+- Breaking: removed moveTo method. Use the new copyTo method follow by destroy.
+- Breaking: destory no longer returns the detached node.
+
 3.1.1 / 2017-6-2
 ================
 - Regression fix in extend method

@@ -394,10 +394,6 @@ testTree.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
     getWordDelimiter() {
       return ":"
     }
-
-    _parseNode(node) {
-      return new TestTree(node.childrenToString(), node.getLine())
-    }
   }
 
   equal(new TestTree(test).nodeAt(0).length, 2)
@@ -1075,10 +1071,6 @@ testTree.multiply = equal => {
     getEdgeChar() {
       return "-"
     }
-
-    _parseNode(node) {
-      return new MathNode(node.childrenToString(), node.getLine())
-    }
   }
 
   // Arrange
@@ -1472,7 +1464,7 @@ testTree.loadFromStringExtraTrees = equal => {
   equal(d.length, 3)
 }
 
-testTree.moveNode = equal => {
+testTree.copyTo = equal => {
   // Arrange
   const value = new TreeNode(
     `chart
@@ -1491,19 +1483,21 @@ chart2
   const node0 = value.getChildren()[0]
 
   // Act
-  const node = value.getChildren()[1].moveTo(node0)
+  const node = value.getChildren()[1].copyTo(node0)
+  value.getChildren()[1].destroy()
 
   // Assert
   equal(value.toString(), expected)
 
   // Act
-  node.moveTo(node0, 0)
+  node.copyTo(node0, 0)
 
   // Assert
+  node.destroy()
   equal(value.toString(), expected2)
 }
 
-testTree.moveToReg = equal => {
+testTree.copyToRegression = equal => {
   // Arrange
   const tree = new TreeNode(
     `>something
@@ -1535,7 +1529,7 @@ testTree.moveToReg = equal => {
           toMove.push(propNode)
         })
         toMove.reverse()
-        toMove.forEach(prop => prop.moveTo(node, 0))
+        toMove.forEach(prop => prop.copyTo(node, 0))
       }
       node.delete("class")
       node.delete("css")
@@ -2094,10 +2088,6 @@ testTree.syntax = equal => {
 
     getEdgeChar() {
       return "="
-    }
-
-    _parseNode(node) {
-      return new TestLanguage(node.childrenToString(), node.getLine())
     }
   }
 

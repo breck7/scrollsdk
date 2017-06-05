@@ -56,7 +56,7 @@ interface TreeNode {
   toString: () => string;
   toXml: () => string;
 
-  append: (name: name, value?: content, tree?: TreeNode) => TreeNode;
+  append: (line: string, tree?: TreeNode) => TreeNode;
   concat: (b: TreeNode | string) => This;
   delete: (name: pathName) => This; // todo: rename delete child?
   extend: (tree: TreeNode | string) => This; // recursively extend the object
@@ -66,7 +66,7 @@ interface TreeNode {
   setLine: (line: string) => This;
   setFromText: (text: string) => This;
   insert: (line: string, tree?: TreeNode, index?: int) => TreeNode;
-  invert: () => This; // Flips names and values on all top level nodes. Does not recurse.
+  invert: () => This; // Flips heads and tails on all top level nodes. Does not recurse.
   prepend: (line: string, tree?: TreeNode) => TreeNode;
   pushTailAndTree: (tail?: string, tree?: TreeNode) => TreeNode; // Name will be set to this.length + 1. todo: remove?
   remap: (key: Object) => This; // Does not recurse.
@@ -76,7 +76,6 @@ interface TreeNode {
   setTailWithChildren: (text: string) => This;
   setHead: (name: string) => This;
   setTail: (value?: content) => This;
-  every: (fn: nodeIterator) => This;
   reload: (content: content) => This;
   reverse: () => This;
   shift: () => TreeNode;

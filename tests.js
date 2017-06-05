@@ -975,6 +975,7 @@ testTree.getLine = equal => {
   // Arrange
   const tree = new TreeNode("hello world")
   const node = tree.getNode("hello")
+  const mtime = node.getMTime()
 
   // Assert
   equal(node.getLine(), "hello world")
@@ -984,6 +985,7 @@ testTree.getLine = equal => {
 
   // Assert
   equal(tree.toString(), "hi earth")
+  equal(node.getMTime() > mtime, true)
 }
 
 testTree.getTail = equal => {
@@ -2398,10 +2400,12 @@ testTree.treeNodes = equal => {
   equal(a.toString(), "text hello world\n color blue")
 
   // Act
+  const mtime = node.getMTime()
   node.setHead("foo")
 
   // Assert
   equal(a.toString(), "foo hello world\n color blue")
+  equal(node.getMTime() > mtime, true)
 
   // Act
   node.setChildren("")

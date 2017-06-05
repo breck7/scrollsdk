@@ -1,3 +1,7 @@
+3.2.1 / 2017-6-5
+================
+- Added getMTime method
+
 3.2.0 / 2017-6-5
 ================
 - Breaking: removed moveTo method. Use the new copyTo method follow by destroy.

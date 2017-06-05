@@ -63,6 +63,7 @@ interface TreeNode {
   extend: (tree: TreeNode | string) => This; // recursively extend the object
   destroy: () => undefined;
   duplicate: () => TreeNode;
+  getMTime: () => number; // Only updates on changes to line.
   setLine: (line: string) => This;
   setFromText: (text: string) => This;
   insert: (line: string, tree?: TreeNode, index?: int) => TreeNode;

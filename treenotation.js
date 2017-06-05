@@ -4,7 +4,7 @@ class ImmutableTreeNode {
   constructor(tree, line, parent) {
     this._words = []
     this._uid = ImmutableTreeNode._makeUniqueId()
-    this._ctime = Date.now()
+    this._ctime = this._getNow()
     this._parent = parent
     this._loadChildren(tree)
     if (line !== undefined) this._loadLine(line)
@@ -12,6 +12,10 @@ class ImmutableTreeNode {
 
   _getUid() {
     return this._uid
+  }
+
+  _getNow() {
+    return typeof performance === "undefined" ? parseFloat(process.hrtime().join("")) : performance.now()
   }
 
   getParent() {
@@ -497,12 +501,6 @@ class ImmutableTreeNode {
     return " "
   }
 
-  _loadFromText(text) {
-    const tuple = this._textToTailAndTreeTuple(text)
-    this._loadLine(tuple[0])
-    return this._loadChildren(tuple[1])
-  }
-
   _textToTailAndTreeTuple(text) {
     const lines = text.split(this.getNodeDelimiterRegex())
     const firstLine = lines.shift()
@@ -743,13 +741,19 @@ class TreeNode extends ImmutableTreeNode {
     return this._loadChildren(tree)
   }
 
+  _updateMTime() {
+    this._mtime = this._getNow()
+  }
+
   setTail(tail) {
+    if (tail === this.getTail()) return this
     const newArray = this._getTailless()
     if (tail !== undefined) {
       tail = tail.toString()
       if (tail.match(this.getNodeDelimiter())) return this.setTailWithChildren(tail)
       newArray.push(tail)
     }
+    this._updateMTime()
     return this._loadWords(newArray)
   }
 
@@ -769,11 +773,15 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   setHead(head) {
+    if (head === this.getHead()) return this
     this.getWords()[0] = head
+    this._updateMTime()
     return this
   }
 
   setLine(line) {
+    if (line === this.getLine()) return this
+    this._updateMTime()
     return this._loadLine(line)
   }
 
@@ -786,7 +794,10 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   setFromText(text) {
-    return this._loadFromText(text)
+    if (this.toString() === text) return this
+    const tuple = this._textToTailAndTreeTuple(text)
+    this.setLine(tuple[0])
+    return this._loadChildren(tuple[1])
   }
 
   append(line, tree) {
@@ -811,6 +822,7 @@ class TreeNode extends ImmutableTreeNode {
     return 0
   }
 
+  // todo: deprecate?
   reload(content) {
     this._clearIndex()
     return this._loadChildren(content)
@@ -1165,7 +1177,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.2.0"
+    return "3.2.1"
   }
 }
 

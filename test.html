@@ -11,7 +11,9 @@
       $(document).ready(function() {
         QUnit.module("Tree")
         Object.keys(testTree).forEach(key => {
-          QUnit.test(key, testTree[key])
+          QUnit.test(key, assert => {
+            testTree[key]((expected, actual, message) => assert.strictEqual(expected, actual, message))
+          })
         })
         QUnit.start()
       })

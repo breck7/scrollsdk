@@ -10,7 +10,7 @@
     [
         {
             "name": "test",
-            "shell_cmd": "npm test"
+            "shell_cmd": "./tasks/unit.js"
         }
     ]
 }

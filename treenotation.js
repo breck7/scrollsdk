@@ -1174,4 +1174,6 @@ class TreeNode extends ImmutableTreeNode {
   }
 }
 
+TreeNode.ImmutableTreeNode = ImmutableTreeNode
+
 if (typeof exports !== "undefined") module.exports = TreeNode

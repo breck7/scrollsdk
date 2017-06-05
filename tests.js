@@ -2357,6 +2357,30 @@ testTree.getVersion = equal => {
   equal(!!TreeNode.getVersion(), true)
 }
 
+testTree.toOutline = equal => {
+  // AAA
+  equal(typeof new TreeNode(testStrings.every).toOutline(), "string")
+}
+
+testTree.fromJson = equal => {
+  // AAA
+  equal(
+    TreeNode.fromJson(JSON.stringify(testStrings.json2)).toString(),
+    new TreeNode(testStrings.json2tree).getNode("docs").childrenToString()
+  )
+}
+
+testTree.immutable = equal => {
+  // Arrange
+  const ImmutableTreeNode = TreeNode.ImmutableTreeNode
+  const immutableNode = new ImmutableTreeNode("hello world")
+  const mutableNode = new TreeNode("hello world")
+
+  // Assert
+  equal(typeof immutableNode.setTail, "undefined")
+  equal(typeof mutableNode.setTail, "function")
+}
+
 testTree.treeNodes = equal => {
   // Arrange
   const a = new TreeNode("text")

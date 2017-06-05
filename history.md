@@ -1,7 +1,9 @@
 3.2.0 / 2017-6-5
 ================
 - Breaking: removed moveTo method. Use the new copyTo method follow by destroy.
-- Breaking: destory no longer returns the detached node.
+- Breaking: destroy no longer returns the detached node.
+- Experimental: expose ImmutableTreeNode
+- Improvements to _parseNode(), increased test coverage, and reduced test code size
 
 3.1.1 / 2017-6-2
 ================

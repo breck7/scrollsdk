@@ -29,6 +29,7 @@ interface TreeNode {
   getTailWithChildren: () => string;
   isTerminal: () => Boolean;
   clone: () => TreeNode;
+  copyTo: (tree: TreeNode, index?: int) => TreeNode;
   getLines: () => string[];
   getNodes: () => TreeNode[];
   length: number;
@@ -60,9 +61,8 @@ interface TreeNode {
   concat: (b: TreeNode | string) => This;
   delete: (name: pathName) => This; // todo: rename delete child?
   extend: (tree: TreeNode | string) => This; // recursively extend the object
-  destroy: () => This;
+  destroy: () => undefined;
   duplicate: () => TreeNode;
-  moveTo: (tree: TreeNode, index?: int) => This;
   setLine: (line: string) => This;
   setFromText: (text: string) => This;
   insert: (line: string, tree?: TreeNode, index?: int) => TreeNode;

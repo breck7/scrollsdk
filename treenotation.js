@@ -1,29 +1,24 @@
 "use strict"
 
-class TreeNode {
+class ImmutableTreeNode {
   constructor(tree, line) {
     this._words = []
-    this._children = []
-    if (tree !== undefined) this._loadChildren(tree)
-    if (line !== undefined) this._setLine(line)
+    this._loadChildren(tree)
+    if (line !== undefined) this._loadLine(line)
+    this._uid = ImmutableTreeNode._makeUniqueId()
+    this._ctime = Date.now()
   }
 
-  isRoot() {
-    return !this.getParent()
-  }
-
-  _setParent(parent) {
-    this._parent = parent
-    return this
+  _getUid() {
+    return this._uid
   }
 
   getParent() {
     return this._parent
   }
 
-  setChildren(tree) {
-    this._children = []
-    return this._loadChildren(tree)
+  isRoot() {
+    return !this.getParent()
   }
 
   getRootNode() {
@@ -37,6 +32,18 @@ class TreeNode {
     const value =
       content + (this.length ? language.getNodeDelimiter() + this._childrenToString(indentCount + 1, language) : "")
     return value
+  }
+
+  getRest() {
+    return this.getWords().slice(1)
+  }
+
+  getWord(index) {
+    return this.getWords()[index]
+  }
+
+  _getTailless() {
+    return this.getWords().slice(0, this._getSize() - 1)
   }
 
   _toHtml(indentCount) {
@@ -57,89 +64,6 @@ class TreeNode {
       : ""
 
     return edgeHtml + lineHtml + treeHtml + "</span>"
-  }
-
-  setTail(tail) {
-    const newArray = this._getTailless()
-    if (tail !== undefined) {
-      tail = tail.toString()
-      if (tail.match(this.getNodeDelimiter())) return this.setTailWithChildren(tail)
-      newArray.push(tail)
-    }
-    return this._setWords(newArray)
-  }
-
-  setTailWithChildren(text) {
-    if (!text.includes(this.getNodeDelimiter())) return this.setTail(text)
-
-    const lines = text.split(this.getNodeDelimiterRegex())
-    const firstLine = lines.shift()
-    this.setTail(firstLine)
-
-    // tood: cleanup.
-    const remainingString = lines.join(this.getNodeDelimiter())
-    const tree = new TreeNode(remainingString)
-    if (!remainingString) tree.append("")
-    this.setChildren(tree)
-    return this
-  }
-
-  getRest() {
-    return this.getWords().slice(1)
-  }
-
-  getWord(index) {
-    return this.getWords()[index]
-  }
-
-  _getTailless() {
-    return this.getWords().slice(0, this._getSize() - 1)
-  }
-
-  setHead(head) {
-    this.getWords()[0] = head
-    return this
-  }
-
-  setLine(line) {
-    return this._setLine(line)
-  }
-
-  _setWords(arr) {
-    this._words = arr
-    return this
-  }
-
-  _setLine(line) {
-    return this._setWords(this.splitWords(line, this._getSize()))
-  }
-
-  duplicate() {
-    return this.getParent()._insertNode(this.clone(), this.getIndex() + 1)
-  }
-
-  destroy() {
-    this.getParent()._deleteNode(this)
-    this._setParent(undefined)
-    return this
-  }
-
-  moveTo(tree, index) {
-    return tree._insertNode(this.destroy(), index === undefined ? tree.length : index)
-  }
-
-  setFromText(text) {
-    const lines = text.split(this.getNodeDelimiterRegex())
-    const firstLine = lines.shift()
-    this._setLine(firstLine)
-    const tree = !lines.length
-      ? undefined
-      : lines
-          .map(line => (line.substr(0, 1) === this.getEdgeChar() ? line : this.getEdgeChar() + line))
-          .map(line => line.substr(1))
-          .join(this.getNodeDelimiter())
-
-    return this.setChildren(tree)
   }
 
   _getSize() {
@@ -202,7 +126,7 @@ class TreeNode {
     return this.getWords()
       .map((word, index) => {
         const specialClass = index === 0 ? " head" : index === lastIndex ? " tail" : ""
-        return `<span class="word${specialClass}">${TreeNode._stripHtml(word)}</span>`
+        return `<span class="word${specialClass}">${ImmutableTreeNode._stripHtml(word)}</span>`
       })
       .join(`<span class="wordDelimiter">${this.getWordDelimiter()}</span>`)
   }
@@ -229,146 +153,6 @@ class TreeNode {
     // Javascript object values can't be both a leaf and a tree.
     const tupleValue = hasChildrenNoTail ? this.toObject() : hasTailAndHasChildren ? this.getTailWithChildren() : tail
     return [this.getHead(), tupleValue]
-  }
-
-  _parseNode(node) {
-    return node
-  }
-
-  _insertNode(node, index = this.length) {
-    const parsedNode = this._parseNode(node)
-    parsedNode._setParent(this)
-    const adjustedIndex = index < 0 ? this.length + index : index
-
-    this.getChildren().splice(adjustedIndex, 0, parsedNode)
-
-    if (this._index) this._makeIndex(adjustedIndex)
-    return parsedNode
-  }
-
-  append(line, tree) {
-    return this._insertNode(new TreeNode(tree, line))
-  }
-
-  concat(tree) {
-    if (typeof tree === "string") tree = new TreeNode(tree)
-    return tree._getChildren().map(node => this._insertNode(node.clone()))
-  }
-
-  _deleteByIndexes(indexesToDelete) {
-    this._clearIndex()
-    // note: assumes indexesToDelete is in ascending order
-    indexesToDelete.reverse().forEach(index => this.getChildren().splice(index, 1))
-    return this
-  }
-
-  _deleteNode(node) {
-    const index = this._indexOfNode(node)
-    if (index > -1) return this._deleteByIndexes([index])
-    return 0
-  }
-
-  _loadChildren(content, circularCheckArray) {
-    if (!content) return this
-
-    // Load from string
-    if (typeof content === "string") return this._loadFromString(content)
-
-    // Load from TreeNode object
-    if (content instanceof TreeNode) {
-      const me = this
-      content._getChildren().forEach(node => {
-        me._insertNode(node.clone())
-      })
-      return this
-    }
-
-    // If we load from object, create an array of inserted objects to avoid circular loops
-    if (!circularCheckArray) circularCheckArray = [content]
-
-    return this._loadFromObject(content, circularCheckArray)
-  }
-
-  _loadFromObject(content, circularCheckArray) {
-    for (let head in content) {
-      if (!content.hasOwnProperty(head)) continue
-      this._appendFromJavascriptObjectPair(head, content[head], circularCheckArray)
-    }
-
-    return this
-  }
-
-  // todo: refactor the below.
-  _appendFromJavascriptObjectPair(head, tail, circularCheckArray) {
-    const type = typeof tail
-    if (tail === null) this.append(head + " " + null)
-    else if (tail === undefined) this.append(head)
-    else if (type === "string") this.append(head).setFromText(head + " " + tail)
-    else if (type !== "object") this.append(head + " " + tail)
-    else if (tail instanceof Date) this.append(head + " " + tail.getTime().toString())
-    else if (tail instanceof TreeNode) this.append(head, tail.clone())
-    else if (type === "function") this.append(head + " " + tail.toString())
-    else if (circularCheckArray.indexOf(tail) === -1) {
-      circularCheckArray.push(tail)
-      if (tail instanceof Array) {
-        if (tail.length === 0) return this.append(head)
-      } else if (Object.keys(tail).length === 0) return this.append(head)
-
-      this.append(head, new TreeNode()._loadChildren(tail, circularCheckArray))
-    }
-  }
-
-  _loadFromString(string) {
-    if (!string) return this
-    const lines = string.split(this.getNodeDelimiterRegex())
-    const line = lines.shift()
-    this.append(line)
-    let currentLevel = 0
-    let currentTree = this
-    lines.forEach(line => {
-      const level = this._getLevel(line)
-      if (level > currentLevel) {
-        const lastNode = currentTree.getChildren()[currentTree.length - 1]
-        currentLevel++ // only move one level at a time
-        currentTree = lastNode
-        currentTree.append(line.substr(currentLevel))
-      } else if (level === currentLevel) currentTree.append(line.substr(currentLevel))
-      else {
-        // pop things off stack
-        while (level < currentLevel) {
-          currentTree = currentTree.getParent()
-          currentLevel--
-        }
-        currentTree.append(line.substr(currentLevel))
-      }
-    })
-
-    return this
-  }
-
-  _clearIndex() {
-    delete this._index
-  }
-
-  reload(content) {
-    this._children = []
-    this._clearIndex()
-    return this._loadChildren(content)
-  }
-
-  reverse() {
-    this._clearIndex()
-    this.getChildren().reverse()
-    return this
-  }
-
-  shift() {
-    if (!this.length) return null
-    return this.getChildren().shift()._setParent(new this.constructor())
-  }
-
-  clone() {
-    return new this.constructor(this.childrenToString(), this.getLine())
   }
 
   _indexOfNode(needleNode) {
@@ -464,105 +248,6 @@ class TreeNode {
     return tree.nodeAt(indexOrArray.slice(1))
   }
 
-  sort(fn) {
-    this.getChildren().sort(fn)
-    this._clearIndex()
-    return this
-  }
-
-  _getIndex() {
-    // StringMap<int> {head: index}
-    // When there are multiple tails with the same head, _index stores the last tail.
-    return this._index || this._makeIndex()
-  }
-
-  getTails() {
-    return this.getChildren().map(node => node.getTail())
-  }
-
-  indexOfLast(head) {
-    const result = this._getIndex()[head]
-    return result === undefined ? -1 : result
-  }
-
-  has(head) {
-    return this._getIndex()[head] !== undefined
-  }
-
-  _getHeadByIndex(index) {
-    // Passing -1 gets the last item, et cetera
-    const length = this.length
-
-    if (index < 0) index = length + index
-    if (index >= length) return undefined
-    return this.getChildren()[index].getHead()
-  }
-
-  invert() {
-    this.getChildren().forEach(node => node.getWords().reverse())
-    return this
-  }
-
-  _rename(oldHead, newHead) {
-    const index = this.indexOf(oldHead)
-
-    if (index === -1) return this
-    this.getChildren()[index].setHead(newHead)
-    this._makeIndex()
-    return this
-  }
-
-  remap(map) {
-    this.getChildren().forEach(node => {
-      const head = node.getHead()
-      if (map[head] !== undefined) node.setHead(map[head])
-    })
-    return this
-  }
-
-  rename(oldHead, newHead) {
-    this._rename(oldHead, newHead)
-    return this
-  }
-
-  renameAll(oldName, newName) {
-    this.findNodes(oldName).forEach(node => node.setHead(newName))
-    return this
-  }
-
-  indexOf(head) {
-    if (!this.has(head)) return -1
-
-    const length = this.length
-    const nodes = this.getChildren()
-
-    for (let index = 0; index < length; index++) {
-      if (nodes[index].getHead() === head) return index
-    }
-    return -1
-  }
-
-  toObject() {
-    return this._toObject()
-  }
-
-  getHeads() {
-    return this._getChildren().map(node => node.getHead())
-  }
-
-  _makeIndex(startAt = 0) {
-    if (!this._index || !startAt) this._index = {}
-    const nodes = this.getChildren()
-    const newIndex = this._index
-    const length = nodes.length
-
-    for (let index = startAt; index < length; index++) {
-      newIndex[nodes[index].getHead()] = index
-    }
-
-    return newIndex
-  }
-
   _toObject() {
     const obj = {}
     this._getChildren().forEach(node => {
@@ -600,107 +285,6 @@ class TreeNode {
 
   toJson() {
     return JSON.stringify(this.toObject(), null, " ")
-  }
-
-  _childrenToXml(indentCount) {
-    return this.getChildren().map(node => node._toXml(indentCount)).join("")
-  }
-
-  _getLevel(str) {
-    let level = 0
-    const edgeChar = this.getEdgeChar()
-    while (str[level] === edgeChar) {
-      level++
-    }
-    return level
-  }
-
-  _deleteByHead(head) {
-    if (!this.has(head)) return this
-    const allNodes = this._getChildren()
-    const indexesToDelete = []
-    allNodes.forEach((node, index) => {
-      if (node.getHead() === head) indexesToDelete.push(index)
-    })
-    return this._deleteByIndexes(indexesToDelete)
-  }
-
-  delete(head) {
-    if (!this.isPathName(head)) return this._deleteByHead(head)
-
-    const parts = head.split(this.getWordDelimiter())
-    const nextHead = parts.pop()
-    const targetNode = this.getNode(parts.join(this.getWordDelimiter()))
-
-    return targetNode ? targetNode._deleteByHead(nextHead) : 0
-  }
-
-  extend(treeOrStr) {
-    if (!(treeOrStr instanceof TreeNode)) treeOrStr = new TreeNode(treeOrStr)
-    treeOrStr.getChildren().forEach(node => {
-      const path = node.getHead()
-      const tail = node.getTail()
-      const targetNode = this.touchNode(path).setTail(tail)
-      if (node.length) targetNode.extend(node.childrenToString())
-    })
-    return this
-  }
-
-  insert(line, tree, index) {
-    return this._insertNode(new TreeNode(tree, line), index)
-  }
-
-  prepend(line, tree) {
-    return this.insert(line, tree, 0)
-  }
-
-  pushTailAndTree(tail, tree) {
-    let index = this.length
-
-    while (this.has(index.toString())) {
-      index++
-    }
-    const line = index.toString() + (tail === undefined ? "" : this.getWordDelimiter() + tail)
-    return this.append(line, tree)
-  }
-
-  _touchNode(headPathArray) {
-    let contextNode = this
-    headPathArray.forEach(head => {
-      contextNode = contextNode.getNode(head) || contextNode.append(head)
-    })
-    return contextNode
-  }
-
-  _touchNodeByString(str) {
-    str = str.replace(this.getNodeDelimiterRegex(), "") // todo: do we want to do this sanitization?
-    return this._touchNode(str.split(this.getWordDelimiter()))
-  }
-
-  touchNode(str) {
-    return this._touchNodeByString(str)
-  }
-
-  sortBy(nameOrNames) {
-    nameOrNames = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
-
-    const namesLength = nameOrNames.length
-    this.sort((nodeA, nodeB) => {
-      if (!nodeB.length && !nodeA.length) return 0
-      else if (!nodeA.length) return -1
-      else if (!nodeB.length) return 1
-
-      for (let nameIndex = 0; nameIndex < namesLength; nameIndex++) {
-        const head = nameOrNames[nameIndex]
-        const av = nodeA.getNode(head).getTail()
-        const bv = nodeB.getNode(head).getTail()
-
-        if (av > bv) return 1
-        else if (av < bv) return -1
-      }
-      return 0
-    })
-    return this
   }
 
   findNodes(pathName) {
@@ -903,11 +487,229 @@ class TreeNode {
     return " "
   }
 
-  splitWords(str, maxParts) {
-    return this._split(str, this.getWordDelimiter(), maxParts)
+  _loadFromText(text) {
+    const tuple = this._textToTailAndTreeTuple(text)
+    this._loadLine(tuple[0])
+    return this._loadChildren(tuple[1])
   }
 
-  _split(str, char, maxParts) {
+  _textToTailAndTreeTuple(text) {
+    const lines = text.split(this.getNodeDelimiterRegex())
+    const firstLine = lines.shift()
+    const tree = !lines.length
+      ? undefined
+      : lines
+          .map(line => (line.substr(0, 1) === this.getEdgeChar() ? line : this.getEdgeChar() + line))
+          .map(line => line.substr(1))
+          .join(this.getNodeDelimiter())
+    return [firstLine, tree]
+  }
+
+  _loadWords(arr) {
+    this._words = arr
+    return this
+  }
+
+  _loadLine(line) {
+    return this._loadWords(this._splitWords(line, this._getSize()))
+  }
+
+  _splitWords(str, maxParts) {
+    return ImmutableTreeNode._split(str, this.getWordDelimiter(), maxParts)
+  }
+
+  _loadChildren(content, circularCheckArray) {
+    this._children = []
+    if (!content) return this
+
+    // Load from string
+    if (typeof content === "string") return this._loadFromString(content)
+
+    // Load from TreeNode object
+    if (content instanceof ImmutableTreeNode) {
+      const me = this
+      content._getChildren().forEach(node => {
+        me._insertNode(node.clone())
+      })
+      return this
+    }
+
+    // If we load from object, create an array of inserted objects to avoid circular loops
+    if (!circularCheckArray) circularCheckArray = [content]
+
+    return this._loadFromObject(content, circularCheckArray)
+  }
+
+  _loadFromObject(content, circularCheckArray) {
+    for (let head in content) {
+      if (!content.hasOwnProperty(head)) continue
+      this._appendFromJavascriptObjectTuple(head, content[head], circularCheckArray)
+    }
+
+    return this
+  }
+
+  _insertNode(node, index = this.length) {
+    const parsedNode = this._parseNode(node)
+    parsedNode._setParent(this)
+    const adjustedIndex = index < 0 ? this.length + index : index
+
+    this.getChildren().splice(adjustedIndex, 0, parsedNode)
+
+    if (this._index) this._makeIndex(adjustedIndex)
+    return parsedNode
+  }
+
+  _loadNode(line, tree) {
+    return this._insertNode(new TreeNode(tree, line))
+  }
+
+  // todo: refactor the below.
+  _appendFromJavascriptObjectTuple(head, tail, circularCheckArray) {
+    const type = typeof tail
+    let line
+    let tree
+    if (tail === null) line = head + " " + null
+    else if (tail === undefined) line = head
+    else if (type === "string") {
+      const tuple = this._textToTailAndTreeTuple(tail)
+      line = head + " " + tuple[0]
+      tree = tuple[1]
+    } else if (type !== "object") line = head + " " + tail
+    else if (tail instanceof Date) line = head + " " + tail.getTime().toString()
+    else if (tail instanceof ImmutableTreeNode) {
+      line = head
+      tree = tail.clone()
+    } else if (type === "function") line = head + " " + tail.toString()
+    else if (circularCheckArray.indexOf(tail) === -1) {
+      circularCheckArray.push(tail)
+      line = head
+      const length = tail instanceof Array ? tail.length : Object.keys(tail).length
+      if (length) tree = new TreeNode()._loadChildren(tail, circularCheckArray)
+    } else {
+      // iirc this is return early from circular
+      return
+    }
+    this._loadNode(line, tree)
+  }
+
+  _loadFromString(string) {
+    if (!string) return this
+    const lines = string.split(this.getNodeDelimiterRegex())
+    const line = lines.shift()
+    this._loadNode(line)
+    let currentLevel = 0
+    let currentTree = this
+    lines.forEach(line => {
+      const level = this._getLevel(line)
+      if (level > currentLevel) {
+        const lastNode = currentTree.getChildren()[currentTree.length - 1]
+        currentLevel++ // only move one level at a time
+        currentTree = lastNode
+        currentTree._loadNode(line.substr(currentLevel))
+      } else if (level === currentLevel) currentTree._loadNode(line.substr(currentLevel))
+      else {
+        // pop things off stack
+        while (level < currentLevel) {
+          currentTree = currentTree.getParent()
+          currentLevel--
+        }
+        currentTree._loadNode(line.substr(currentLevel))
+      }
+    })
+
+    return this
+  }
+
+  _getIndex() {
+    // StringMap<int> {head: index}
+    // When there are multiple tails with the same head, _index stores the last tail.
+    return this._index || this._makeIndex()
+  }
+
+  getTails() {
+    return this.getChildren().map(node => node.getTail())
+  }
+
+  indexOfLast(head) {
+    const result = this._getIndex()[head]
+    return result === undefined ? -1 : result
+  }
+
+  indexOf(head) {
+    if (!this.has(head)) return -1
+
+    const length = this.length
+    const nodes = this.getChildren()
+
+    for (let index = 0; index < length; index++) {
+      if (nodes[index].getHead() === head) return index
+    }
+    return -1
+  }
+
+  toObject() {
+    return this._toObject()
+  }
+
+  getHeads() {
+    return this._getChildren().map(node => node.getHead())
+  }
+
+  _makeIndex(startAt = 0) {
+    if (!this._index || !startAt) this._index = {}
+    const nodes = this.getChildren()
+    const newIndex = this._index
+    const length = nodes.length
+
+    for (let index = startAt; index < length; index++) {
+      newIndex[nodes[index].getHead()] = index
+    }
+
+    return newIndex
+  }
+
+  _childrenToXml(indentCount) {
+    return this.getChildren().map(node => node._toXml(indentCount)).join("")
+  }
+
+  _getLevel(str) {
+    let level = 0
+    const edgeChar = this.getEdgeChar()
+    while (str[level] === edgeChar) {
+      level++
+    }
+    return level
+  }
+
+  clone() {
+    return new this.constructor(this.childrenToString(), this.getLine())
+  }
+
+  has(head) {
+    return this._getIndex()[head] !== undefined
+  }
+
+  _getHeadByIndex(index) {
+    // Passing -1 gets the last item, et cetera
+    const length = this.length
+
+    if (index < 0) index = length + index
+    if (index >= length) return undefined
+    return this.getChildren()[index].getHead()
+  }
+
+  _parseNode(node) {
+    return node
+  }
+
+  static _makeUniqueId() {
+    if (this._uniqueId === undefined) this._uniqueId = 0
+    this._uniqueId++
+    return this._uniqueId
+  }
+
+  static _split(str, char, maxParts) {
     const parts = str.split(char)
     if (parts.length <= maxParts) return parts
     const newArr = []
@@ -916,6 +718,245 @@ class TreeNode {
     }
     newArr.push(parts.join(char))
     return newArr
+  }
+
+  static _stripHtml(text) {
+    return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
+  }
+}
+
+class TreeNode extends ImmutableTreeNode {
+  getMTime() {
+    return this._mtime || this._ctime
+  }
+
+  _clearIndex() {
+    delete this._index
+  }
+
+  _setParent(parent) {
+    this._parent = parent
+    return this
+  }
+
+  setChildren(tree) {
+    return this._loadChildren(tree)
+  }
+
+  setTail(tail) {
+    const newArray = this._getTailless()
+    if (tail !== undefined) {
+      tail = tail.toString()
+      if (tail.match(this.getNodeDelimiter())) return this.setTailWithChildren(tail)
+      newArray.push(tail)
+    }
+    return this._loadWords(newArray)
+  }
+
+  setTailWithChildren(text) {
+    if (!text.includes(this.getNodeDelimiter())) return this.setTail(text)
+
+    const lines = text.split(this.getNodeDelimiterRegex())
+    const firstLine = lines.shift()
+    this.setTail(firstLine)
+
+    // tood: cleanup.
+    const remainingString = lines.join(this.getNodeDelimiter())
+    const tree = new TreeNode(remainingString)
+    if (!remainingString) tree.append("")
+    this.setChildren(tree)
+    return this
+  }
+
+  setHead(head) {
+    this.getWords()[0] = head
+    return this
+  }
+
+  setLine(line) {
+    return this._loadLine(line)
+  }
+
+  duplicate() {
+    return this.getParent()._insertNode(this.clone(), this.getIndex() + 1)
+  }
+
+  destroy() {
+    this.getParent()._deleteNode(this)
+    this._setParent(undefined)
+    return this
+  }
+
+  moveTo(tree, index) {
+    return tree._insertNode(this.destroy(), index === undefined ? tree.length : index)
+  }
+
+  setFromText(text) {
+    return this._loadFromText(text)
+  }
+
+  append(line, tree) {
+    return this._insertNode(new TreeNode(tree, line))
+  }
+
+  concat(tree) {
+    if (typeof tree === "string") tree = new TreeNode(tree)
+    return tree._getChildren().map(node => this._insertNode(node.clone()))
+  }
+
+  _deleteByIndexes(indexesToDelete) {
+    this._clearIndex()
+    // note: assumes indexesToDelete is in ascending order
+    indexesToDelete.reverse().forEach(index => this.getChildren().splice(index, 1))
+    return this
+  }
+
+  _deleteNode(node) {
+    const index = this._indexOfNode(node)
+    if (index > -1) return this._deleteByIndexes([index])
+    return 0
+  }
+
+  reload(content) {
+    this._clearIndex()
+    return this._loadChildren(content)
+  }
+
+  reverse() {
+    this._clearIndex()
+    this.getChildren().reverse()
+    return this
+  }
+
+  shift() {
+    if (!this.length) return null
+    return this.getChildren().shift()._setParent(new this.constructor())
+  }
+
+  sort(fn) {
+    this.getChildren().sort(fn)
+    this._clearIndex()
+    return this
+  }
+
+  invert() {
+    this.getChildren().forEach(node => node.getWords().reverse())
+    return this
+  }
+
+  _rename(oldHead, newHead) {
+    const index = this.indexOf(oldHead)
+
+    if (index === -1) return this
+    this.getChildren()[index].setHead(newHead)
+    this._makeIndex()
+    return this
+  }
+
+  remap(map) {
+    this.getChildren().forEach(node => {
+      const head = node.getHead()
+      if (map[head] !== undefined) node.setHead(map[head])
+    })
+    return this
+  }
+
+  rename(oldHead, newHead) {
+    this._rename(oldHead, newHead)
+    return this
+  }
+
+  renameAll(oldName, newName) {
+    this.findNodes(oldName).forEach(node => node.setHead(newName))
+    return this
+  }
+
+  _deleteByHead(head) {
+    if (!this.has(head)) return this
+    const allNodes = this._getChildren()
+    const indexesToDelete = []
+    allNodes.forEach((node, index) => {
+      if (node.getHead() === head) indexesToDelete.push(index)
+    })
+    return this._deleteByIndexes(indexesToDelete)
+  }
+
+  delete(head) {
+    if (!this.isPathName(head)) return this._deleteByHead(head)
+
+    const parts = head.split(this.getWordDelimiter())
+    const nextHead = parts.pop()
+    const targetNode = this.getNode(parts.join(this.getWordDelimiter()))
+
+    return targetNode ? targetNode._deleteByHead(nextHead) : 0
+  }
+
+  extend(treeOrStr) {
+    if (!(treeOrStr instanceof TreeNode)) treeOrStr = new TreeNode(treeOrStr)
+    treeOrStr.getChildren().forEach(node => {
+      const path = node.getHead()
+      const tail = node.getTail()
+      const targetNode = this.touchNode(path).setTail(tail)
+      if (node.length) targetNode.extend(node.childrenToString())
+    })
+    return this
+  }
+
+  insert(line, tree, index) {
+    return this._insertNode(new TreeNode(tree, line), index)
+  }
+
+  prepend(line, tree) {
+    return this.insert(line, tree, 0)
+  }
+
+  pushTailAndTree(tail, tree) {
+    let index = this.length
+
+    while (this.has(index.toString())) {
+      index++
+    }
+    const line = index.toString() + (tail === undefined ? "" : this.getWordDelimiter() + tail)
+    return this.append(line, tree)
+  }
+
+  _touchNode(headPathArray) {
+    let contextNode = this
+    headPathArray.forEach(head => {
+      contextNode = contextNode.getNode(head) || contextNode.append(head)
+    })
+    return contextNode
+  }
+
+  _touchNodeByString(str) {
+    str = str.replace(this.getNodeDelimiterRegex(), "") // todo: do we want to do this sanitization?
+    return this._touchNode(str.split(this.getWordDelimiter()))
+  }
+
+  touchNode(str) {
+    return this._touchNodeByString(str)
+  }
+
+  sortBy(nameOrNames) {
+    nameOrNames = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
+
+    const namesLength = nameOrNames.length
+    this.sort((nodeA, nodeB) => {
+      if (!nodeB.length && !nodeA.length) return 0
+      else if (!nodeA.length) return -1
+      else if (!nodeB.length) return 1
+
+      for (let nameIndex = 0; nameIndex < namesLength; nameIndex++) {
+        const head = nameOrNames[nameIndex]
+        const av = nodeA.getNode(head).getTail()
+        const bv = nodeB.getNode(head).getTail()
+
+        if (av > bv) return 1
+        else if (av < bv) return -1
+      }
+      return 0
+    })
+    return this
   }
 
   static fromCsv(str, hasHeaders) {
@@ -1126,10 +1167,6 @@ class TreeNode {
       }
     }
     return headerRow
-  }
-
-  static _stripHtml(text) {
-    return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
   }
 
   static getVersion() {

@@ -822,12 +822,6 @@ class TreeNode extends ImmutableTreeNode {
     return 0
   }
 
-  // todo: deprecate?
-  reload(content) {
-    this._clearIndex()
-    return this._loadChildren(content)
-  }
-
   reverse() {
     this._clearIndex()
     this.getChildren().reverse()
@@ -1174,7 +1168,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.3.0"
+    return "3.4.0"
   }
 }
 

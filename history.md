@@ -1,3 +1,7 @@
+3.4.0 / 2017-6-6
+================
+- Breaking: removed reload method
+
 3.3.0 / 2017-6-5
 ================
 - Breaking: in the toHtml() method, the child nodes div now has class nodeChildren instead of nodeTree

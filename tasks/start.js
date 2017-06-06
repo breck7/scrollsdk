@@ -19,5 +19,5 @@ app.use(express.static("."))
 
 const port = 8888
 app.listen(port, () => {
-	console.log(`Listening on port ${port}`)
+	console.log(`Running. cmd+dblclick: http://localhost:${port}/test.html`)
 })

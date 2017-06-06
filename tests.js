@@ -1662,25 +1662,6 @@ testTree.pushTailAndChildren = equal => {
   equal(a.getNode("1") instanceof TreeNode, true, "1 is instance of TreeNode")
 }
 
-testTree.reload = equal => {
-  // Arrange
-  const a = new TreeNode("john\n age 5\nsusy\n age 6")
-
-  // Act
-  equal(!!a.reload(), true)
-
-  // Assert
-  equal(a.length, 0, "empty reload cleared object")
-
-  // Act
-  a.reload("john 1")
-  a.reload("john 2")
-
-  // Assert
-  equal(a.length, 1)
-  equal(a.getNode("john").getTail(), "2")
-}
-
 testTree.remap = equal => {
   // Arrange
   const test = `mark

@@ -77,7 +77,6 @@ interface TreeNode {
   setTailWithChildren: (text: string) => This;
   setHead: (name: string) => This;
   setTail: (value?: content) => This;
-  reload: (content: content) => This;
   reverse: () => This;
   shift: () => TreeNode;
   sort: (sortFn: sortFn) => This;

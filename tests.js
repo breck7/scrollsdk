@@ -1644,19 +1644,19 @@ testTree.prepend = equal => {
   equal(result instanceof TreeNode, true)
 }
 
-testTree.pushTailAndTree = equal => {
+testTree.pushTailAndChildren = equal => {
   // Arrange
   const a = new TreeNode()
 
   // Act
-  const result = a.pushTailAndTree("hello world")
+  const result = a.pushTailAndChildren("hello world")
 
   // Assert
   equal(a.getNode("0").getTail(), "hello world")
   equal(result instanceof TreeNode, true)
 
   // Act
-  a.pushTailAndTree(undefined, new TreeNode())
+  a.pushTailAndChildren(undefined, new TreeNode())
 
   // Assert
   equal(a.getNode("1") instanceof TreeNode, true, "1 is instance of TreeNode")

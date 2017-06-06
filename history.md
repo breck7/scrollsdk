@@ -1,3 +1,8 @@
+3.3.0 / 2017-6-5
+================
+- Breaking: in the toHtml() method, the child nodes div now has class nodeChildren instead of nodeTree
+- Breaking: pushTailAndTree is now pushTailAndChildren
+
 3.2.1 / 2017-6-5
 ================
 - Added getMTime method

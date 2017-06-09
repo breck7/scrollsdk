@@ -1,3 +1,7 @@
+3.5.0 / 2017-6-9
+================
+- Breaking: changed parseNode method to just return the new node class.
+
 3.4.0 / 2017-6-6
 ================
 - Breaking: removed reload method

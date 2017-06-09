@@ -558,7 +558,8 @@ class ImmutableTreeNode {
   }
 
   _loadLineAndChildren(line, children, index = this.length) {
-    const parsedNode = this.parseNode(children, line)
+    const nodeClass = this.parseNode(children, line)
+    const parsedNode = new nodeClass(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
     this.getChildren().splice(adjustedIndex, 0, parsedNode)
@@ -703,7 +704,7 @@ class ImmutableTreeNode {
   }
 
   parseNode(children, line) {
-    return new this.constructor(children, line, this)
+    return this.constructor
   }
 
   static _makeUniqueId() {
@@ -1168,7 +1169,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.4.0"
+    return "3.5.0"
   }
 }
 

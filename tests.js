@@ -1631,6 +1631,27 @@ testTree.order = equal => {
   equal(types, "john susy bob", "order is preserved")
 }
 
+testTree.parseNode = equal => {
+  // Arrange
+  class NodeDialect extends TreeNode {
+    parseNode(children, line) {
+      if (line.startsWith("tree")) return TreeNode
+      return NodeDialect
+    }
+  }
+
+  // Act
+  const node = new NodeDialect(
+    `foo bar
+ foo bar
+  tree bar`
+  )
+
+  // Assert
+  equal(node.getNode("foo foo tree") instanceof TreeNode, true)
+  equal(node.getNode("foo foo") instanceof NodeDialect, true)
+}
+
 testTree.prepend = equal => {
   // Arrange
   const a = new TreeNode("hello world")

@@ -31,11 +31,11 @@ A new minimal notation is presented for encoding tree data structures. Tree Nota
 
 \section{Introduction}
 
-Many widely used applications read and write documents in a domain specific language (DSL) based on XML \cite{Bray}, JSON \cite{Crockford} or Racket. This paper and accompanying source code (github.com/breck7/treenotation) introduce a new whitespace-based notation that can serve as an alternative base notation for DSL's. These DSL's, called ETN's ("Extends Tree Notation"), are easy to create and can be very powerful. This paper describes Tree Notation (TN), three of its advantages when used as a base document notation, some disadvantages, and then introduces a new theorem arising from this notation and makes some falsifiable predictions.
+Many widely used applications read and write documents in a domain specific language (DSL) based on XML \cite{Bray}, JSON \cite{Crockford} or Racket. This paper and accompanying source code (github.com/breck7/treenotation) introduce a new whitespace-based notation that can serve as an alternative base notation for DSL's. These DSL's, called ETN's ("Extends Tree Notation"), are easy to create and can be very powerful. This paper describes Tree Notation (TN), three benefits, three downsides, and then introduces a new theorem arising from this notation and makes some falsifiable predictions.
 
 \section{Tree Notation}
 
-TN encodes one data structure, a \textbf{TreeNode}, with two members: an array of strings called \textbf{words} and optionally an array of child TreeNodes called \textbf{children}.
+TN encodes one data structure, a \textbf{TreeNode}, with two members: an array of strings called \textbf{words} and an optional array of child TreeNodes called \textbf{children}.
 
 TN defines three special characters, which in the canonical notation are node delimiter ("\textbackslash n"), node edge (" "), and word delimiter(" ").
 
@@ -61,8 +61,6 @@ stats
 \end{lstlisting}
 
 \section{Practical Advantages}
-
-TN has a few useful properties that other notations lack.
 
 \subsection{Easy composition}
 
@@ -97,7 +95,7 @@ In TN, there is one and only one way to serialize an object. Diffs contain only 
 
 \subsection{Zero parse errors}
 
-Parse errors do not exist in TN. Every document is a valid TN document. Errors can only occur at the ETN level (i.e. a mistyped property name). Typos made at the spot of a TN token affect only the local nodes.
+Parse errors do not exist in TN. Every document is a valid TN document. Errors can only occur at the ETN level (i.e. a mistyped property name). Typos made at the spot of a TN syntax character affect only the related node(s).
 
 With other base notations, to get from a blank document to a certain valid document in keystroke increments requires stops at invalid documents. With TN all intermediate steps are valid.
 
@@ -107,8 +105,6 @@ A developer working on an editor that allows a user to edit the document source 
 
 \section{Drawbacks}
 
-While this paper's primary purpose is to introduce TN and highlight some benefits, it is relevant to also address a few obvious drawbacks of the language.
-
 \subsection{Lack of Tooling and Support}
 
 XML, JSON, and increasingly Racket are now ubiquitous, with JSON alone having over 250 widely used and well tested implementations in over 50 programming languages \cite{JSON}. TN is new, and library and application support, compared to other popular base notations, rounds to zero.
@@ -117,15 +113,15 @@ Despite the lack of widespread support at present, because of the ease of implem
 
 \subsection{Lack of Primitive Data Types}
 
-Some popular notations, including JSON, specify notations for common primitive types like booleans and numbers. Encoded documents can then be parsed directly to the matching data structures in memory. TN is relatively minimal and delegates the encoding and decoding of additional types to ETN's. Thus parsing a TN document into the desired in-memory structures oftens requires the specification of an ETN.
+Some notations, such as JSON, specify notations for common primitive types like booleans and numbers. Encoded documents can then be parsed directly to the matching in-memory structures. TN is relatively minimal and delegates the encoding and decoding of additional types to ETN's. Thus parsing a TN document into the desired in-memory structures often requires the specification of an ETN.
 
-This may not be a significant disadvantage, however. As noted by others \cite{Ooms}, rarely are the primitive data structures in a base level notation like JSON enough to fully parse a structure, and in practice a higher level specification and additional parse step is required.
+However, in practice rarely are the primitive data structures in a base level notation like JSON enough to fully parse a structure, and usually an additional parse step is used  \cite{Ooms}.
 
 \subsection{Cosmetic Differences}
 
-Some developers dislike indentation-based notations. In addition, without an ETN, a complex node in TN may be verbose, extending over multiple lines, with one node per line, whereas other base notations may benefit from a denser display of information out-of-the-gate, with multiple nodes per line.
+Some developers dislike whitespace notations. In addition, without an ETN, a complex node in TN may be verbose, extending over multiple lines, with one node per line, whereas other base notations may benefit from a denser display of information out-of-the-gate, with multiple nodes per line.
 
-\section{The Tree Theorem}
+\section{The Tree Theorem (TTT)}
 
 Working with TN leads to some observations about the general nature of data. To the LISP programmer, all data structures are recursive lists (or perhaps "recursive cons"). With the introduction of TN, this general notion can be stated in a specific way: \textbf{All data structures are trees}.
 
@@ -144,7 +140,7 @@ No structure can be found that cannot be directly encoded by an ETN. Therefore, 
 
 \subsection{Predictions from the Tree Theorem}
 
-The Tree Theorem leads to many predictions. Two of them are listed below.
+TTT leads to many predictions. Two of them are listed below.
 
 Prediction 1: A corresponding ETN may be found for every programming language.
 
@@ -157,15 +153,15 @@ o
   n:pageViews 42
 \end{lstlisting}
 
-This ETN is one of the many languages in the Tree Family of Programming Languages. ETN's are not limited to declarative data notations. There exists ETN's for C, Java, Go, Swift, Rust, et cetera, awaiting discovery.
+This ETN is one of the many languages in the Tree Family of Programming Languages. ETN's are not limited to declarative data notations. There exists ETN's for C, Clojure, Ruby, et cetera, awaiting discovery.
 
 Prediction 2: The simplest 2D text encoding for neural networks will be an ETN.
 
-All trained neural networks are trees and therefore have an ETN. After such an encoding, these trees, high in node count, might be reduced into increasingly higher level ETN's.
+By TTT,  all trained neural networks are trees and therefore have ETN's. High level ETN's will be found to reduce these large trees into understandable notations.
 
 \section{Discovery Process and Future Research}
 
-TN was discovered by a process of iteration, where the goal was to find a useful language without violating certain natural Cartesian geometrical constraints. Perhaps an analogous process could be used for finding notations in higher dimensions.
+TN was discovered by an iterative process, where the goal was to find a useful language without violating certain natural Cartesian geometrical constraints. Perhaps an analogous process could be used for finding notations in higher dimensions.
 
 \begin{figure}[ht!]
 \centering
@@ -175,11 +171,11 @@ TN was discovered by a process of iteration, where the goal was to find a useful
 
 \section{Conclusion}
 
-TN can serve as an alternative to JSON or XML or Racket as a base level notation for a DSL. TN supports clean multi-lingual composition, aligns well with version control paradigms, and has an unbreakable base grammar that allows for robust runtime editing.
+TN is a useful base level notation for DSL's. TN supports clean multi-lingual composition, aligns well with version control paradigms, and has an unbreakable base grammar that allows for robust runtime editing.
 
 With more tooling support and the discovery of more ETN's, TN will improve developer productivity and enable faster and easier creation and maintenance of software.
 
-The Tree Theorem also makes certain predictions about future discoveries, and provides a basis on which to make many more predictions.
+TTT also makes certain predictions about future discoveries, and provides a basis on which to make many more predictions.
 
 \begin{thebibliography}{4}
 

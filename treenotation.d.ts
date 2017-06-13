@@ -12,11 +12,13 @@ declare type nodeIterator = (node: TreeNode, index: int) => boolean;
 declare type sortResultInt = int; // -1 0 1
 declare type JavascriptCode = string;
 declare type sortFn = (nodeA: TreeNode, nodeB: TreeNode) => sortResultInt;
+declare type point = {x: int, y: int}; // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
 interface TreeNode {
   (tree?: content, line?: string): This;
 
   getIndex: () => int;
+  getPoint: () => point;
   getPathVector: () => pathVector;
   getLine: () => nodeString;
   getAncestorNodes: () => TreeNode[];

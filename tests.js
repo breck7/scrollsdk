@@ -1665,6 +1665,26 @@ testTree.prepend = equal => {
   equal(result instanceof TreeNode, true)
 }
 
+testTree.getPoint = equal => {
+  // Arrange/Act
+  const a = new TreeNode(
+    `hello
+ world
+ohayo
+ good
+  morning
+  sunshine`
+  )
+  const coordinates = a.getPoint()
+  const coordinates2 = a.getNode("ohayo good sunshine").getPoint()
+
+  // Assert
+  equal(coordinates.x, 0)
+  equal(coordinates.y, 0)
+  equal(coordinates2.x, 3)
+  equal(coordinates2.y, 6)
+}
+
 testTree.pushTailAndChildren = equal => {
   // Arrange
   const a = new TreeNode()

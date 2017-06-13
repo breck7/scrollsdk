@@ -22,6 +22,17 @@ class ImmutableTreeNode {
     return this._parent
   }
 
+  getPoint() {
+    return {
+      x: this._getXCoordinate(),
+      y: this._getYCoordinate()
+    }
+  }
+
+  _getYCoordinate() {
+    return this.isRoot() ? 0 : this._getNodesAbove().length + 1
+  }
+
   isRoot() {
     return !this.getParent()
   }
@@ -97,6 +108,14 @@ class ImmutableTreeNode {
     const parent = this.getParent()
     if (parent.isRoot()) return [parent]
     else return parent.getAncestorNodes().concat([parent])
+  }
+
+  _getNodesAbove() {
+    if (this.isRoot()) return []
+    const parent = this.getParent()
+    const nodesImmediatelyAbove = parent.getChildren().slice(0, this.getIndex() + 1)
+    if (parent.isRoot()) return nodesImmediatelyAbove
+    else return parent._getNodesAbove().concat(nodesImmediatelyAbove)
   }
 
   getLine(language = this) {
@@ -197,7 +216,7 @@ class ImmutableTreeNode {
     })
   }
 
-  _getDepth() {
+  _getXCoordinate() {
     return this.getAncestorNodes().length
   }
 
@@ -213,7 +232,7 @@ class ImmutableTreeNode {
   _getLevels() {
     const levels = []
     this.getTopDownArray().forEach(node => {
-      const level = node._getDepth()
+      const level = node._getXCoordinate()
       if (!levels[level]) levels[level] = []
       levels[level].push(node)
     })
@@ -1169,7 +1188,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.5.0"
+    return "3.5.1"
   }
 }
 

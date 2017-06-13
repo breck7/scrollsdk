@@ -2,3 +2,6 @@ coverage/
 ignore/
 node_modules/
 *.sublime-workspace
+paper/treenotation.aux
+paper/treenotation.log
+paper/treenotation.synctex.gz

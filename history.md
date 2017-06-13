@@ -1,3 +1,7 @@
+3.5.1 / 2017-6-13
+=================
+- Added getPoint method
+
 3.5.0 / 2017-6-9
 ================
 - Breaking: changed parseNode method to just return the new node class.

@@ -29,6 +29,8 @@ interface TreeNode {
   getPathName: () => pathName;
   getTopDownArray: () => TreeNode[]; // returns all nodes as array in preorder order
   getTailWithChildren: () => string;
+  getNext: () => TreeNode; // wrapsaround
+  getPrevious: () => TreeNode; // wrapsaround
   isTerminal: () => Boolean;
   clone: () => TreeNode;
   copyTo: (tree: TreeNode, index?: int) => TreeNode;

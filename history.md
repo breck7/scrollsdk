@@ -1,3 +1,7 @@
+3.5.2 / 2017-6-14
+=================
+- Added getNext and getPrevious methods
+
 3.5.1 / 2017-6-13
 =================
 - Added getPoint method

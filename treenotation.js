@@ -354,6 +354,24 @@ class ImmutableTreeNode {
     return currentNode ? currentNode._getNodeByPath(parts.join(this.getWordDelimiter())) : undefined
   }
 
+  getNext() {
+    if (this.isRoot()) return this
+    const index = this.getIndex()
+    const parent = this.getParent()
+    const length = parent.length
+    const next = index + 1
+    return next === length ? parent.getChildren()[0] : parent.getChildren()[next]
+  }
+
+  getPrevious() {
+    if (this.isRoot()) return this
+    const index = this.getIndex()
+    const parent = this.getParent()
+    const length = parent.length
+    const prev = index - 1
+    return prev === -1 ? parent.getChildren()[length - 1] : parent.getChildren()[prev]
+  }
+
   _getUnionNames() {
     if (!this.length) return []
 
@@ -1188,7 +1206,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.5.1"
+    return "3.5.2"
   }
 }
 

@@ -1823,6 +1823,29 @@ testTree.reorder = equal => {
   equal(a.getHeads().join(" "), "yo hello hola hi", "order correct")
 }
 
+testTree.next = equal => {
+  // Arrange
+  const a = new TreeNode(
+    `john
+ age 5
+susy
+ age 6
+ score 100
+bob
+ age 10`
+  )
+  const b = a.getNode("john")
+  const c = a.getNode("susy age")
+
+  // Assert
+  equal(a.getNext().toString(), a.toString())
+  equal(a.getPrevious().toString(), a.toString())
+  equal(b.getPrevious().getHead(), "bob")
+  equal(b.getNext().getHead(), "susy")
+  equal(c.getNext().getHead(), "score")
+  equal(c.getPrevious().getHead(), "score")
+}
+
 testTree.reverse = equal => {
   // Arrange
   const tree = new TreeNode("hi mom\nhey sis\nhey dad")

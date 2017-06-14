@@ -1,4 +1,10 @@
-3.5.2 / 2017-6-14
+3.5.3 / 2017-6-14
+=================
+- Added getChildrenByNodeType method
+- Expose a simple ExecutableTreeNode class
+- Fixed bug when initiating from an ETN
+
+3.5.2 / 2017-6-13
 =================
 - Added getNext and getPrevious methods
 

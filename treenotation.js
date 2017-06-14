@@ -620,7 +620,7 @@ class ImmutableTreeNode {
     else if (tail instanceof Date) line = head + " " + tail.getTime().toString()
     else if (tail instanceof ImmutableTreeNode) {
       line = head
-      children = tail.clone()
+      children = new ImmutableTreeNode(tail.childrenToString(), tail.getLine())
     } else if (type === "function") line = head + " " + tail.toString()
     else if (circularCheckArray.indexOf(tail) === -1) {
       circularCheckArray.push(tail)
@@ -670,6 +670,10 @@ class ImmutableTreeNode {
 
   getTails() {
     return this.getChildren().map(node => node.getTail())
+  }
+
+  getChildrenByNodeType(type) {
+    return this.getChildren().filter(child => child instanceof type)
   }
 
   indexOfLast(head) {
@@ -1206,10 +1210,17 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.5.2"
+    return "3.5.3"
+  }
+}
+
+class ExecutableTreeNode extends TreeNode {
+  execute(context) {
+    return this.getChildrenByNodeType(ExecutableTreeNode).map(child => child.execute(context)).join("\n")
   }
 }
 
 TreeNode.ImmutableTreeNode = ImmutableTreeNode
+TreeNode.ExecutableTreeNode = ExecutableTreeNode
 
 if (typeof exports !== "undefined") module.exports = TreeNode

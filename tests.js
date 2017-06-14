@@ -1166,6 +1166,37 @@ testTree.getIndex = equal => {
   equal(child1.getIndex(), 1, "Has correct index")
 }
 
+testTree.simpleETN = equal => {
+  // Arrange
+  class AdditionNode extends TreeNode.ExecutableTreeNode {
+    execute() {
+      const words = this.getTail().split(" ")
+      return words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
+    }
+  }
+  class MathETN extends TreeNode.ExecutableTreeNode {
+    parseNode(children, line) {
+      if (line.startsWith("+")) return AdditionNode
+      return MathETN
+    }
+  }
+  const source = `+ 2 7
++ 3 1
++ 15 1.0 200 100`
+  const program = new MathETN(source)
+
+  // Act
+  const result = program.execute()
+
+  // Assert
+  equal(
+    result,
+    `9
+4
+316`
+  )
+}
+
 testTree.getPathName = equal => {
   // Arrange
   const tree = new TreeNode(testStrings.every)

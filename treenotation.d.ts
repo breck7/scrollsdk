@@ -21,6 +21,7 @@ interface TreeNode {
   getPoint: () => point;
   getPathVector: () => pathVector;
   getLine: () => nodeString;
+  getChildrenByNodeType: () => TreeNode[];
   getAncestorNodes: () => TreeNode[];
   getParent: () => TreeNode | undefined;
   getRootNode: () => This | TreeNode;

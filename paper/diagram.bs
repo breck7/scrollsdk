@@ -26,11 +26,12 @@ layout custom
   gridPosition 25,29,3,3
   content &gt;
 >text
- gridPosition 15,28,10,8
+ gridPosition 15,28,11,8
  content getLocation
    1145 duke
    98103 ibiza
   print getLocation 1145
+ style font-family: monospace; font-size: 15px;
 >text
  gridPosition 15,14,10,9
  content getLocation (key: int) {
@@ -117,3 +118,10 @@ layout custom
  content 
   ./program.source
   "duke"
+>text
+ gridPosition 13,27,5,5
+ content   0,0 --&gt; x
+      |
+     V
+    -y
+ style color: red;

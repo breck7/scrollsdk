@@ -1,3 +1,7 @@
+3.7.2 / 2017-6-15
+=================
+- setChildren regression fix
+
 3.7.1 / 2017-6-15
 =================
 - ETN parsing regression fix

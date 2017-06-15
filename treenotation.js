@@ -574,10 +574,8 @@ class ImmutableNode extends (typeof exports !== "undefined" ? AbstractNodeJsNode
   }
 
   _setChildren(content, circularCheckArray) {
-    if (!content) {
-      delete this._children
-      return this
-    }
+    delete this._children
+    if (!content) return this
 
     // Load from string
     if (typeof content === "string") return this._parseString(content)
@@ -1221,7 +1219,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.7.1"
+    return "3.7.2"
   }
 }
 

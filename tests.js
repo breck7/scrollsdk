@@ -2480,6 +2480,7 @@ testTree.treeNodes = equal => {
 
   // Act
   node.setChildren("color blue")
+  node.setChildren("color blue")
 
   // Assert
   equal(node.isTerminal(), false)

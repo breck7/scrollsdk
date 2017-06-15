@@ -1,3 +1,7 @@
+3.7.4 / 2017-6-15
+=================
+- setTailWithChildren Regression fix.
+
 3.7.3 / 2017-6-15
 =================
 - Fix for closure compiler

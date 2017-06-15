@@ -2264,6 +2264,20 @@ testTree.toSsv = equal => {
   equal(!!b.toSsv(), true)
 }
 
+testTree.setTailWithChildrenRegression = equal => {
+  // Arrange
+  const tree = new TreeNotation("hello world")
+  const hello = tree.getNode("hello")
+  // Act
+  hello.setTailWithChildren(
+    `brave
+ new world`
+  )
+  hello.setTailWithChildren(`earth`)
+  // Assert
+  equal(tree.toString(), "hello earth")
+}
+
 testTree.toString = equal => {
   // Arrange
   const tree = new TreeNotation("hello world")

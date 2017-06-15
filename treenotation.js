@@ -575,8 +575,12 @@ class ImmutableNode extends EnvironmentNodeType {
     return ImmutableNode._split(str, this.getWordDelimiter(), maxParts)
   }
 
-  _setChildren(content, circularCheckArray) {
+  _clearChildren() {
     delete this._children
+  }
+
+  _setChildren(content, circularCheckArray) {
+    this._clearChildren()
     if (!content) return this
 
     // Load from string
@@ -811,7 +815,10 @@ class TreeNotation extends ImmutableNode {
   }
 
   setTailWithChildren(text) {
-    if (!text.includes(this.getNodeDelimiter())) return this.setTail(text)
+    if (!text.includes(this.getNodeDelimiter())) {
+      this._clearChildren()
+      return this.setTail(text)
+    }
 
     const lines = text.split(this.getNodeDelimiterRegex())
     const firstLine = lines.shift()
@@ -1221,7 +1228,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.7.3"
+    return "3.7.4"
   }
 }
 

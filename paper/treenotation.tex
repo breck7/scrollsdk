@@ -12,7 +12,7 @@
 \title{Tree Notation: an antifragile document notation}
 
 \author{Breck~Yunits% <-this % stops a space
-\thanks{Breck Yunits is a software engineer in Seattle (breck7@gmail.com).}% <-this % stops a space
+\thanks{Breck Yunits is a software engineer from Brockton, MA (breck7@gmail.com).}% <-this % stops a space
 }
 
 \markboth{June~2017}%
@@ -23,21 +23,29 @@
 
 \begin{abstract}
 %\boldmath
-A new minimal notation is presented for encoding tree data structures. Tree Notation may be useful as a base notation for domain specific languages. A new conjecture on data structures is introduced and predictions are made.
+I get lucky and discover a new family of programming languages that align source code with abstract syntax trees. These new languages may lead to order-of-magnitude gains in developer productivity. I make some predictions and introduce a new conjecture on data structures. I end with a joke.
 
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
 
-\section{Introduction}
+\begin{figure}[ht!]
+\centering
+\includegraphics[width=90mm]{treenotation.png}
+\caption{This diagram is the output of an ETN program.}
+\end{figure}
 
-Many widely used applications read and write documents in a domain specific language (DSL) based on XML \cite{Bray}, JSON \cite{Crockford} or Racket \cite{Racket}. This paper and accompanying source code (github.com/breck7/treenotation) introduce a new whitespace-based notation that can serve as an alternative base notation for DSLs. These DSLs, called ETNs ("Extends Tree Notation"), are easy to create and can be powerful. This paper describes Tree Notation (TN), three benefits and three downsides. It then introduces a new conjecture arising from TN and makes some falsifiable predictions.
+\section{The Problem}
 
-\section{Tree Notation}
+Programming is hard and complicated. Our current programming languages contribute a lot to this complexity. The standard approach to compiling code is to first transform that code into an Abstract Syntax Tree (AST). ASTs have enabled great gains in developer productivity. But programmers lose efficiencies and insight due to discrepancies between source code and ASTs.
 
-TN encodes one data structure, a \textbf{TreeNode}, with two members: an array of strings called \textbf{words} and an optional array of child TreeNodes called \textbf{children}.
+\section{The Solution: Tree Notation}
 
-TN defines two special characters, which in the canonical notation are node delimiter ("\textbackslash n") and node edge (" "). Node edge is a space, not tab. Many ETNs also use a space as a word delimiter.
+In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), I introduce Tree Notation (TN), a new whitespace-based notation. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called ETNs ("Extends Tree Notation"), are easy to create and can be simple or Turing Complete.
+
+TN encodes one data structure, a \textbf{TreeNode}, with two members: a string called \textbf{line} and an optional array of child TreeNodes called \textbf{children}.
+
+TN defines two special characters, which in the canonical notation are node delimiter ("\textbackslash n") and node edge (" "). Node edge is a space, not a tab. Many ETNs also use a space as a word delimiter.
 
 A comparison quickly illustrates nearly the entirety of the notation:
 
@@ -45,7 +53,7 @@ JSON:
 
 \begin{lstlisting}
 {
- "title" : "About Ada",
+ "title" : "Ada at BCHS",
  "stats": {
   "visits": 802
  }
@@ -55,53 +63,55 @@ JSON:
 Tree Notation:
 
 \begin{lstlisting}
-title About Ada
+title Ada at BCHS
 stats
  visits 802
 \end{lstlisting}
 
-\section{Practical Advantages}
+\section{Useful Properties}
+
+\subsection{Simplicity}
+
+As shown in Fig 1, TN simply maps source code to an XY plane. Also, an ETN program uses far fewer source nodes than an equivalent program written in an Antique Language (AL).
+
+\subsection{Zero parse errors}
+
+Parse errors do not exist in TN. Every document is a valid TN document. Errors only exist at the ETN level (e.g., a mistyped word).
+
+With most ALs, to get from a blank document to a certain valid document in keystroke increments requires stops at invalid documents. With TN all intermediate steps are valid.
+
+A user can edit the nodes of a document at runtime with no risk of breaking the TN parsing of the entire document. If a node contains an ETN error, the ETN node interpreter can handle the error itself and even autocorrect itself.
+
+A developer working on an editor that allows a user to edit source code does not have to worry about handling both errors at the DSL level and errors at the base notation level. TN eliminates the latter class of errors.
+
+\subsection{Semantic diffs}
+
+ALs can encode the same object to different documents by varying whitespace. Arbitrary whitespace is sometimes desirable. But programs often generate large diffs--and sometimes merge conflicts--for small or non-existent semantic changes.
+
+In TN, editors have only one way to serialize a TN structure. Diffs contain only semantic meaning.
 
 \subsection{Easy composition}
 
-When a document is composed of blocks written in multiple languages, those blocks may require verbose encoding to accommodate the underlying base notation.
+Base notations such as XML\cite{Bray}, JSON\cite{Crockford}, and Racket\cite{Racket} can encode multi-lingual documents. But to do that, those notations often complect those blocks.
 
-In the multi-lingual example below, a JSON-backed IPython notebook encodes Python to JSON. The resulting document is more complex:
+In the example below, the program IPython encodes Python to JSON. The resulting document contains additional nodes:
 
 \begin{lstlisting}
 {
  "source": [
   "import matplotlib.pyplot as plt\n",
-  "print(\"ok\")"
+  "print(\"pdm\")"
   ]
 }
 \end{lstlisting}
 
-With TN, the Python block is indented and requires no additional transformation:
+With TN, the Python block is indented and requires no complecting:
 
 \begin{lstlisting}
 source
  import matplotlib.pyplot as plt
- print("ok")
+ print("pdm")
 \end{lstlisting}
-
-In this example, the ETN would define a "source" node which interprets its child nodes as a single string.
-
-\subsection{Semantic diffs}
-
-JSON, XML, and Racket serializers can encode the same object to different documents by varying whitespace. Arbitrary whitespace is sometimes desirable. But a serializer's whitespace whims often cause large diffs--and sometimes merge conflicts--for small or non-existent semantic changes.
-
-In TN, editors have only one way to serialize an object. Diffs contain only semantic meaning.
-
-\subsection{Zero parse errors}
-
-Parse errors do not exist in TN. Every document is a valid TN document. Errors can only occur at the ETN level (e.g., a mistyped property name). Typos made at the location of a TN syntax character affect only the related node(s).
-
-With other base notations, to get from a blank document to a certain valid document in keystroke increments requires stops at invalid documents. With TN all intermediate steps are valid.
-
-A user can edit the nodes of a document at runtime with no risk of breaking the parsing of the entire document. If a node contains an ETN error, that node can handle the error itself and even autocorrect itself.
-
-A developer working on an editor that allows a user to edit the document source does not have to worry about handling both errors at the DSL level and errors at the base notation level. TN eliminates the latter class of errors.
 
 \section{Drawbacks}
 
@@ -109,23 +119,21 @@ A developer working on an editor that allows a user to edit the document source 
 
 TN is new, and library and application support, compared to other popular base notations, rounds to zero.
 
-\subsection{Lack of Primitive Data Types}
+\subsection{Lack of Primitive Data Types in TN}
 
-Some notations specify notations for common primitive types like booleans and numbers. Encoded documents can then be parsed directly to the matching in-memory structures. TN is relatively minimal and delegates the encoding and decoding of additional types to ETNs. Thus, parsing a TN document into the desired in-memory structures often requires the specification of an ETN.
+Some ALs have notations for common primitive types like floats and parse documents directly to efficient in-memory structures. "TN" is minimal so for best results, don't forget about "E" (to get "ETN").
 
-In practice, however, rarely are the primitive data structures in a base level notation enough to fully parse a structure, and often an additional parse step is already used \cite{Ooms}.
+The need for ETNs is a minor concern, as the GER demonstrates how useful ETNs can be built with just a few lines of code. And creating a TN library in other ALs is straightforward, and not comparable to the complexity of implementing a JSON library \cite{Ooms}, for example.
 
 \subsection{Aesthetic Differences}
 
-Some developers dislike whitespace notations. In addition, without an ETN, a complex node in TN may be verbose, extending over multiple lines, with one node per line, whereas other base notations may benefit from a denser display of information out of the gate, with multiple nodes per line.
+Without an ETN, TN can be verbose. A complex node in TN extends over multiple lines. ALs have a denser display of information out of the gate, with multiple nodes per line.
 
-\section{The Tree Conjecture (TTC)}
+Other concerns have been raised. Some developers dislike space-indented notations, some wrongly prefer tabs, and some just have no taste.
 
-Working with TN leads to some observations about the general nature of data. To the LISP programmer, all data structures are recursive lists (or perhaps "recursive cons"). With the introduction of TN, this general notion can be stated in a specific way: \textbf{All data structures are trees}.
+\section{Predictions}
 
-\subsection{Steps to Disprove TTC}
-
-To disprove TTC find a structure that can't serialize to TN.
+\textbf{Prediction 1: no structure will be found that cannot serialize to TN.} Some LISP programmers believe all data structures are recursive lists (or perhaps "recursive cons"). After seeing TN, I believe in The Tree Conjecture (TTC): \textbf{All structures are trees}.
 
 For example, a hash table could serialize to HashTableETN:
 
@@ -134,48 +142,33 @@ c 106
 b 226
 \end{lstlisting}
 
-To the ETN Interpreter, this serialization represents a hash table, while at the same time to the TN interpreter it is a tree. Therefore, hash tables are a type of tree. TTC stands.
+Therefore, hash tables are a type of tree. TTC stands.
 
-In a scan of over 300 programming languages and notations, no structure has been found that can't serialize to an ETN. Therefore, it is conjectured that all data structures are trees.
-
-\subsection{Predictions from the Tree Conjecture}
-
-TTC leads to many predictions. Two of them are listed below.
-
-Prediction 1: Useful new ETNs may be found for every programming language.
-
-Below is an example instance encoded in JTree, a JSON ETN.
+\textbf{Prediction 2: Useful new ETNs may be found for every AL.} Below is some example code in a simple ETN, JsonETN.
 
 \begin{lstlisting}
 o
- s:name Home
- o:street
-  n:number 1145
+ s website Sci-Hub
+ n number 902
 \end{lstlisting}
 
-This ETN is one of the many languages in the vast TN universe. Some simple ETNs have been around for decades \cite{Roughan}. ETNs are not limited to declarative data notations. There exists ETNs for C, Clojure, Ruby, et cetera, awaiting discovery. As soon as a new ETN is designed or found, any general ETN editor can then edit documents in that new ETN.
+ETNs will be found for great ALs including C, RISC-V, ES6, and Arc. Some ETNs have already been found \cite{Roughan}, but haven't been recognized as ETNs. The immediate benefit of discovering an ETN for an AL is that programs can then be written in an ETN editor and compiled to that AL.
 
-Prediction 2: The simplest 2D text encoding for neural networks will be an ETN.
+\textbf{Prediction 3: Tree Oriented Programming (TOP) will replace Object Oriented Programming as the dominant architectural philosophy.} This will not surprise programmers who have experienced TOP (such as React developers).
 
-By TTC,  all trained neural networks are trees and therefore have ETNs. High level ETNs will be found to reduce these large trees into understandable notations.
+\textbf{Prediction 4: The simplest 2D text encodings for neural networks will be ETNs.} High level ETNs will be found to transform massive GPU trained routines into understandable trees.
 
-\section{Discovery Process and Future Research}
+\section{Discovery Process and a call for Explorers}
 
-TN was discovered by an iterative process, where the goal was to find a useful language without violating certain natural Cartesian geometrical constraints. TN maps data structures to an XY plane. Perhaps an analogous process could be used for finding notations in higher dimensions.
+TN was discovered by an iterative process, where the goal was to find a useful notation that aligns with certain geometric patterns. Perhaps an analogous process could be used for finding notations in higher dimensions.
+
+The discovery of TN and ETNs will lead to new applications in visual programming, AI, VR/AR/Mobile programming, and more. I encourage you, the reader, to join in the exploration of this brave new world of programming languages!
 
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=90mm]{tree.jpg}
 \caption{Rearranging these fridge magnets is equivalent to editing a TN document. The fridge magnet set that includes parentheses is a poor seller.}
 \end{figure}
-
-\section{Conclusion}
-
-TN is a useful base level notation for DSLs. TN supports clean multi-lingual composition, aligns well with version control paradigms, and has an unbreakable base grammar that allows for robust runtime editing.
-
-With more tooling support and the discovery of more ETNs, TN will improve developer productivity and enable faster and easier creation and maintenance of software.
-
-TTC also makes certain predictions about future discoveries, and provides a basis on which to make further predictions.
 
 \begin{thebibliography}{4}
 

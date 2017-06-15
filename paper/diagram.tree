@@ -1,0 +1,119 @@
+>h2 Problem
+ gridPosition 14,8,26,3
+ content The Problem
+ style text-align: center;
+>h2 Solution
+ gridPosition 14,22,26,4
+ content The Solution: Tree Notation &amp; ETNs
+ style text-align: center;
+layout custom
+>h3
+ gridPosition 27,11,13,10
+ content Transforms to a Tree
+>h3
+ gridPosition 27,25,13,10
+ content Is a Tree
+>h3
+ gridPosition 41,18,9,11
+ content Get Same Result
+ >text
+  gridPosition 25,15,3,3
+  content &gt;
+ >text
+  gridPosition 39,22,3,3
+  content &gt;
+ >text
+  gridPosition 25,29,3,3
+  content &gt;
+>text
+ gridPosition 15,28,10,8
+ content getLocation
+   1145 duke
+   98103 ibiza
+  print getLocation 1145
+>text
+ gridPosition 15,14,10,9
+ content getLocation (key: int) {
+   if (key === 1145)
+   return "duke"
+   if (key === 98103)
+   return "ibiza"
+  }
+  print(getLocation(1145));
+>pre
+ gridPosition 28,28,3,9
+ content ├oº
+  │├oºº
+  │└oºº
+  └oººº
+>text
+ gridPosition 31,27,9,9
+ style font-size: 12px;
+ content mapToXY(SourceCode)
+  =
+  mapToXY(TreeForm)
+  
+  
+  so SourceCode = Tree
+  
+  Also, a ~10x size reduction
+>text
+ gridPosition 31,13,8,9
+ style font-size: 12px;
+ content mapToXY(SourceCode)
+  !=
+  mapToXY(TreeForm)
+  
+  
+  so SourceCode != Tree
+  
+>pre
+ gridPosition 28,14,3,9
+ style font-size: 3px;
+ content ├oº
+  │├oº
+  ││├oº
+  ││├oº
+  ││├oº
+  ││└oº
+  │└oº
+  │ ├oº
+  │ │├oº
+  │ ││├oº
+  │ ││├oº
+  │ ││├oº
+  │ ││└oº
+  │ │└oº
+  │ │ └oº
+  │ │  ├oº
+  │ │  └oº
+  │ └oº
+  │  ├oº
+  │  │├oº
+  │  │├oº
+  │  │├oº
+  │  │└oº
+  │  ├oº
+  │  │└oº
+  │  │ ├oº
+  │  │ └oº
+  │  └oº
+  └oº
+   ├oº
+   │└oº
+   │ ├oº
+   │ ├oº
+   │ └oº
+   ├oº
+   └oº
+>h3
+ gridPosition 14,11,12,11
+ content Antique Source Code
+>h3
+ gridPosition 14,25,12,10
+ content ETN Source Code
+>text
+ gridPosition 41,21,8,9
+ content 
+  ./program.source
+  "duke"

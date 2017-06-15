@@ -1,3 +1,11 @@
+3.7.0 / 2017-6-15
+=================
+- Breaking: expose TreeNotation now and not TreeNode
+- Breaking: TreeNode.ExecutableTreeNode is now TreeNotation.ExecutableETN
+- Breaking: TreeNotation.ImmutableTreeNode is now TreeNotation.ImmutableNode
+- Fixed regression introduced in 3.6 in ETN parsing in parseString method
+- Updated readme with an ETN example
+
 3.6.0 / 2017-6-15
 =================
 - Breaking: parseNode is now parseNodeType and only takes a line param.

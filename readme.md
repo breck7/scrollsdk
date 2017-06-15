@@ -1,7 +1,7 @@
 Tree Notation
 =============
 
-Tree Notation is a minimal notation for encoding tree data structures. This library is designed to serve as a base for building higher level domain specific languages.
+Tree Notation is a minimal notation for encoding tree data structures. This library is designed to serve as a base for building higher level domain specific languages, called ETNs.
 
 Tree Notation Example
 ---------------------
@@ -23,6 +23,8 @@ Benefits of Tree Notation
 - Easily create documents composed of blocks written in different languages
 - No ignored whitespace ensures all diffs are meaningful and reduces merge conflicts
 - No parse errors make it easier to build robust editors
+- Quickly create fast, powerful, high level languages called ETNs
+- Visualize and edit your ETN code in 2 and 3 dimensions using an ETN editor
 
 Installing
 ----------
@@ -34,9 +36,9 @@ Node.js:
 Using this Library
 ------------------
 
-    var TreeNode = require("treenotation")
-    // Creating a node
-    var person = new TreeNode(`name John`)
+    var TreeNotation = require("treenotation")
+    // Creating a document
+    var person = new TreeNotation(`name John`)
     // Accessing the head part of a node
     console.log(person.getNode(`name`).getHead())
     // Setting the tail part of a node
@@ -84,10 +86,32 @@ Tree supports recursion. Here's an example of web page stats:
 
 Using this library with the above stats example:
 
-    var stats = new TreeNode(exampleStringFromAbove)
+    var stats = new TreeNotation(exampleStringFromAbove)
     // Get a nested property using an xpath like query
     var views = stats.getNode("contact referers home").getTail()
     console.log(views) // 110
+
+ETN Example
+-----------
+
+      class AdditionNode extends TreeNotation.ExecutableETN {
+        execute() {
+          const words = this.getTail().split(" ")
+          return words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
+        }
+      }
+      class MathETN extends TreeNotation.ExecutableETN {
+        parseNodeType(line) {
+          if (line.startsWith("+")) return AdditionNode
+          return MathETN
+        }
+      }
+      const source = `+ 2 7
+    + 3 1
+    + 15 1.0 200 100`
+      const program = new MathETN(source)
+      console.log(program.execute())
+
 
 Copyright & License
 -------------------

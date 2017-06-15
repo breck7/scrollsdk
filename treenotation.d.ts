@@ -1,4 +1,4 @@
-declare type content = string | TreeNode | Object | any;
+declare type content = string | TreeNotation | Object | any;
 declare type int = number;
 declare type nodeString = string; // A string that does not contain the nodeDelimiter ("\n")
 declare type pathName = string; // user emailAddress
@@ -8,38 +8,38 @@ declare type Undefined = any;
 declare type This = any;
 declare type formatString = string; // "Hello {name}! You are {age} years old."
 declare type Json = string; // JSON string
-declare type nodeIterator = (node: TreeNode, index: int) => boolean;
+declare type nodeIterator = (node: TreeNotation, index: int) => boolean;
 declare type sortResultInt = int; // -1 0 1
 declare type JavascriptCode = string;
-declare type sortFn = (nodeA: TreeNode, nodeB: TreeNode) => sortResultInt;
+declare type sortFn = (nodeA: TreeNotation, nodeB: TreeNotation) => sortResultInt;
 declare type point = {x: int, y: int}; // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
-interface TreeNode {
+interface TreeNotation {
   (tree?: content, line?: string): This;
 
   getIndex: () => int;
   getPoint: () => point;
   getPathVector: () => pathVector;
   getLine: () => nodeString;
-  getChildrenByNodeType: () => TreeNode[];
-  getAncestorNodes: () => TreeNode[];
-  getParent: () => TreeNode | undefined;
-  getRootNode: () => This | TreeNode;
+  getChildrenByNodeType: () => TreeNotation[];
+  getAncestorNodes: () => TreeNotation[];
+  getParent: () => TreeNotation | undefined;
+  getRootNode: () => This | TreeNotation;
   getHead: () => name;
   getTail: () => (string | Undefined);
   getPathName: () => pathName;
-  getTopDownArray: () => TreeNode[]; // returns all nodes as array in preorder order
+  getTopDownArray: () => TreeNotation[]; // returns all nodes as array in preorder order
   getTailWithChildren: () => string;
-  getNext: () => TreeNode; // wrapsaround
-  getPrevious: () => TreeNode; // wrapsaround
+  getNext: () => TreeNotation; // wrapsaround
+  getPrevious: () => TreeNotation; // wrapsaround
   isTerminal: () => Boolean;
-  clone: () => TreeNode;
-  copyTo: (tree: TreeNode, index?: int) => TreeNode;
+  clone: () => TreeNotation;
+  copyTo: (tree: TreeNotation, index?: int) => TreeNotation;
   getLines: () => string[];
-  getNodes: () => TreeNode[];
+  getNodes: () => TreeNotation[];
   length: number;
-  nodeAt: (index: int) => TreeNode;
-  findNodes: (name: pathName) => TreeNode[];
+  nodeAt: (index: int) => TreeNotation;
+  findNodes: (name: pathName) => TreeNotation[];
   findTail: (path: name) => (string | Undefined);
   format: (str: formatString) => string;
   getColumn: (path: name) => (string|Undefined)[];
@@ -62,19 +62,19 @@ interface TreeNode {
   toString: () => string;
   toXml: () => string;
 
-  append: (line: string, tree?: TreeNode) => TreeNode;
-  concat: (b: TreeNode | string) => This;
+  append: (line: string, tree?: TreeNotation) => TreeNotation;
+  concat: (b: TreeNotation | string) => This;
   delete: (name: pathName) => This; // todo: rename delete child?
-  extend: (tree: TreeNode | string) => This; // recursively extend the object
+  extend: (tree: TreeNotation | string) => This; // recursively extend the object
   destroy: () => undefined;
-  duplicate: () => TreeNode;
+  duplicate: () => TreeNotation;
   getMTime: () => number | undefined; // Only updates on changes to line. Returns undefined if no modifications yet.
   setLine: (line: string) => This;
   setFromText: (text: string) => This;
-  insert: (line: string, tree?: TreeNode, index?: int) => TreeNode;
+  insert: (line: string, tree?: TreeNotation, index?: int) => TreeNotation;
   invert: () => This; // Flips heads and tails on all top level nodes. Does not recurse.
-  prepend: (line: string, tree?: TreeNode) => TreeNode;
-  pushTailAndTree: (tail?: string, tree?: TreeNode) => TreeNode; // Name will be set to this.length + 1. todo: remove?
+  prepend: (line: string, tree?: TreeNotation) => TreeNotation;
+  pushTailAndTree: (tail?: string, tree?: TreeNotation) => TreeNotation; // Name will be set to this.length + 1. todo: remove?
   remap: (key: Object) => This; // Does not recurse.
   rename: (oldName: name, newName: name) => This;
   renameAll: (oldName: name, newName: name) => This;
@@ -83,16 +83,16 @@ interface TreeNode {
   setHead: (name: string) => This;
   setTail: (value?: content) => This;
   reverse: () => This;
-  shift: () => TreeNode;
+  shift: () => TreeNotation;
   sort: (sortFn: sortFn) => This;
 }
 
-interface StaticTreeNode {
+interface StaticTreeNotation {
   getVersion: () => string;
-  fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeNode;
-  fromJson: (str: Json) => TreeNode;
-  fromCsv: (str: string, hasHeaders?: boolean) => TreeNode;
-  fromSsv: (str: string, hasHeaders?: boolean) => TreeNode;
-  fromTsv: (str: string, hasHeaders?: boolean) => TreeNode;
-  fromXml: (str: string) => TreeNode;
+  fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeNotation;
+  fromJson: (str: Json) => TreeNotation;
+  fromCsv: (str: string, hasHeaders?: boolean) => TreeNotation;
+  fromSsv: (str: string, hasHeaders?: boolean) => TreeNotation;
+  fromTsv: (str: string, hasHeaders?: boolean) => TreeNotation;
+  fromXml: (str: string) => TreeNotation;
 }

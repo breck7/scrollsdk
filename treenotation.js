@@ -1,18 +1,18 @@
 "use strict"
 
-class AbstractBaseNodeClass {
+class AbstractNodeJsNode {
   _getNow() {
     return parseFloat(process.hrtime().join(""))
   }
 }
 
-class AbstractBaseBrowserClass {
+class AbstractBrowserNode {
   _getNow() {
     return performance.now()
   }
 }
 
-class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNodeClass : AbstractBaseBrowserClass) {
+class ImmutableNode extends (typeof exports !== "undefined" ? AbstractNodeJsNode : AbstractBrowserNode) {
   constructor(children, line, parent) {
     super()
     this._parent = parent
@@ -21,7 +21,7 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
   }
 
   _getUid() {
-    if (!this._uid) this._uid = ImmutableTreeNode._makeUniqueId()
+    if (!this._uid) this._uid = ImmutableNode._makeUniqueId()
     return this._uid
   }
 
@@ -158,7 +158,7 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
     return this.getWords()
       .map((word, index) => {
         const specialClass = index === 0 ? " head" : index === lastIndex ? " tail" : ""
-        return `<span class="word${specialClass}">${ImmutableTreeNode._stripHtml(word)}</span>`
+        return `<span class="word${specialClass}">${ImmutableNode._stripHtml(word)}</span>`
       })
       .join(`<span class="wordDelimiter">${this.getWordDelimiter()}</span>`)
   }
@@ -570,7 +570,7 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
   }
 
   _splitWords(str, maxParts) {
-    return ImmutableTreeNode._split(str, this.getWordDelimiter(), maxParts)
+    return ImmutableNode._split(str, this.getWordDelimiter(), maxParts)
   }
 
   _setChildren(content, circularCheckArray) {
@@ -580,10 +580,10 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
     }
 
     // Load from string
-    if (typeof content === "string") return this._loadFromString(content)
+    if (typeof content === "string") return this._parseString(content)
 
-    // Load from TreeNode object
-    if (content instanceof ImmutableTreeNode) {
+    // Load from TreeNotation object
+    if (content instanceof ImmutableNode) {
       const me = this
       content._getChildren().forEach(node => {
         me._loadLineAndChildren(node.getLine(), node.childrenToString())
@@ -619,15 +619,15 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
       children = tuple[1]
     } else if (type !== "object") line = head + " " + tail
     else if (tail instanceof Date) line = head + " " + tail.getTime().toString()
-    else if (tail instanceof ImmutableTreeNode) {
+    else if (tail instanceof ImmutableNode) {
       line = head
-      children = new ImmutableTreeNode(tail.childrenToString(), tail.getLine())
+      children = new ImmutableNode(tail.childrenToString(), tail.getLine())
     } else if (type === "function") line = head + " " + tail.toString()
     else if (circularCheckArray.indexOf(tail) === -1) {
       circularCheckArray.push(tail)
       line = head
       const length = tail instanceof Array ? tail.length : Object.keys(tail).length
-      if (length) children = new TreeNode()._setChildren(tail, circularCheckArray)
+      if (length) children = new TreeNotation()._setChildren(tail, circularCheckArray)
     } else {
       // iirc this is return early from circular
       return
@@ -646,7 +646,7 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
     return parsedNode
   }
 
-  _loadFromString(str) {
+  _parseString(str) {
     if (!str) return this
     const lines = str.split(this.getNodeDelimiterRegex())
     const parentStack = []
@@ -664,8 +664,8 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
           currentIndentCount--
         }
       }
-      const nodeClass = this.parseNodeType(line)
       const parent = parentStack[parentStack.length - 1]
+      const nodeClass = parent.parseNodeType(line)
       lastNode = new nodeClass(undefined, line.substr(currentIndentCount), parent)
       parent._getChildren().push(lastNode)
     })
@@ -780,7 +780,7 @@ class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNo
   }
 }
 
-class TreeNode extends ImmutableTreeNode {
+class TreeNotation extends ImmutableNode {
   getMTime() {
     return this._mtime
   }
@@ -818,7 +818,7 @@ class TreeNode extends ImmutableTreeNode {
 
     // tood: cleanup.
     const remainingString = lines.join(this.getNodeDelimiter())
-    const children = new TreeNode(remainingString)
+    const children = new TreeNotation(remainingString)
     if (!remainingString) children.append("")
     this.setChildren(children)
     return this
@@ -857,7 +857,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   concat(node) {
-    if (typeof node === "string") node = new TreeNode(node)
+    if (typeof node === "string") node = new TreeNotation(node)
     return node._getChildren().map(node => this._loadLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
@@ -945,7 +945,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   extend(nodeOrStr) {
-    if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
+    if (!(nodeOrStr instanceof TreeNotation)) nodeOrStr = new TreeNotation(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {
       const path = node.getHead()
       const tail = node.getTail()
@@ -1017,7 +1017,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static fromJson(str) {
-    return new TreeNode(JSON.parse(str))
+    return new TreeNotation(JSON.parse(str))
   }
 
   static fromSsv(str, hasHeaders) {
@@ -1101,12 +1101,12 @@ class TreeNode extends ImmutableTreeNode {
   // Given an array return a tree
   static _rowsToTreeNode(rows, delimiter, hasHeaders) {
     const numberOfColumns = rows[0].length
-    const treeNode = new TreeNode()
+    const treeNode = new TreeNotation()
     const names = this._getHeader(rows, hasHeaders)
 
     const rowCount = rows.length
     for (let rowIndex = hasHeaders ? 1 : 0; rowIndex < rowCount; rowIndex++) {
-      const rowTree = new TreeNode()
+      const rowTree = new TreeNotation()
       let row = rows[rowIndex]
       // If the row contains too many columns, shift the extra columns onto the last one.
       // This allows you to not have to escape delimiter characters in the final column.
@@ -1165,8 +1165,8 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static _treeNodeFromXml(xml) {
-    const result = new TreeNode()
-    const children = new TreeNode()
+    const result = new TreeNotation()
+    const children = new TreeNotation()
 
     // Set attributes
     if (xml.attributes) {
@@ -1220,17 +1220,17 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.6.0"
+    return "3.7.0"
   }
 }
 
-class ExecutableTreeNode extends TreeNode {
+class ExecutableETN extends TreeNotation {
   execute(context) {
-    return this.getChildrenByNodeType(ExecutableTreeNode).map(child => child.execute(context)).join("\n")
+    return this.getChildrenByNodeType(ExecutableETN).map(child => child.execute(context)).join("\n")
   }
 }
 
-TreeNode.ImmutableTreeNode = ImmutableTreeNode
-TreeNode.ExecutableTreeNode = ExecutableTreeNode
+TreeNotation.ImmutableNode = ImmutableNode
+TreeNotation.ExecutableETN = ExecutableETN
 
-if (typeof exports !== "undefined") module.exports = TreeNode
+if (typeof exports !== "undefined") module.exports = TreeNotation

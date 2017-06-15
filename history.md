@@ -1,3 +1,7 @@
+3.7.3 / 2017-6-15
+=================
+- Fix for closure compiler
+
 3.7.2 / 2017-6-15
 =================
 - setChildren regression fix

@@ -12,7 +12,9 @@ class AbstractBrowserNode {
   }
 }
 
-class ImmutableNode extends (typeof exports !== "undefined" ? AbstractNodeJsNode : AbstractBrowserNode) {
+const EnvironmentNodeType = typeof exports !== "undefined" ? AbstractNodeJsNode : AbstractBrowserNode
+
+class ImmutableNode extends EnvironmentNodeType {
   constructor(children, line, parent) {
     super()
     this._parent = parent
@@ -1219,7 +1221,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.7.2"
+    return "3.7.3"
   }
 }
 

@@ -2474,6 +2474,28 @@ testTree.immutable = equal => {
   equal(typeof mutableNode.setTail, "function")
 }
 
+testTree.toOutline = equal => {
+  // Arrange
+  const treeNode = new TreeNotation(
+    `hello
+ world`
+  )
+
+  // Act/assert
+  equal(
+    treeNode.toOutline(),
+    `└hello
+ └world
+`
+  )
+  equal(
+    treeNode.toOutline(node => "o"),
+    `└o
+ └o
+`
+  )
+}
+
 testTree.treeNodes = equal => {
   // Arrange
   const a = new TreeNotation("text")

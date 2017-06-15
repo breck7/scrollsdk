@@ -11,6 +11,7 @@ declare type Json = string; // JSON string
 declare type nodeIterator = (node: TreeNotation, index: int) => boolean;
 declare type sortResultInt = int; // -1 0 1
 declare type JavascriptCode = string;
+declare type nodeMapFn = (node: TreeNotation) => string;
 declare type sortFn = (nodeA: TreeNotation, nodeB: TreeNotation) => sortResultInt;
 declare type point = {x: int, y: int}; // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
@@ -58,7 +59,7 @@ interface TreeNotation {
   toJavascript: () => JavascriptCode;
   toSsv: () => string;
   toTsv: () => string;
-  toOutline: () => string; // todo: move this to base class
+  toOutline: (mapFn?: nodeMapFn) => string;
   toString: () => string;
   toXml: () => string;
 

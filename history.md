@@ -1,3 +1,7 @@
+3.8.0 / 2017-6-15
+=================
+- toOutline now takes an optional mapping fn
+
 3.7.4 / 2017-6-15
 =================
 - setTailWithChildren Regression fix.

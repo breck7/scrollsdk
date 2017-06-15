@@ -467,40 +467,28 @@ class ImmutableNode extends EnvironmentNodeType {
     return this.toDelimited(" ")
   }
 
-  toOutline() {
-    return this._toOutline(false)
-  }
-
-  toOutlineWithValues() {
-    return this._toOutline(true)
+  toOutline(nodeFn) {
+    return this._toOutline(nodeFn)
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  _toOutline(showValues, pretty) {
-    let paddingSpace = pretty ? " " : ""
-    let paddingDash = pretty ? "-" : ""
-
-    const growBranch = (key, outlineTreeNode, last, lastStates, showValues, callback) => {
+  _toOutline(nodeFn = node => node.getLine()) {
+    const growBranch = (outlineTreeNode, last, lastStates, nodeFn, callback) => {
       let lastStatesCopy = lastStates.slice(0)
       const node = outlineTreeNode.node
-      const tail = outlineTreeNode.tail
 
       if (lastStatesCopy.push([outlineTreeNode, last]) && lastStates.length > 0) {
         let line = ""
         // based on the "was last element" states of whatever we're nested within,
         // we need to append either blankness or a branch to our line
         lastStates.forEach((lastState, idx) => {
-          if (idx > 0) line += (lastState[1] ? " " : "│") + paddingSpace
+          if (idx > 0) line += lastState[1] ? " " : "│"
         })
 
         // the prefix varies based on whether the key contains something to show and
         // whether we're dealing with the last element in this collection
         // the extra "-" just makes things stand out more.
-        line += (last ? "└" : "├") + (key ? paddingDash : "") + key
-
-        // append values
-        if (showValues && tail !== undefined) line += " " + tail
-
+        line += (last ? "└" : "├") + nodeFn(node)
         callback(line)
       }
 
@@ -511,12 +499,12 @@ class ImmutableNode extends EnvironmentNodeType {
       node._getChildren().forEach(node => {
         let lastKey = ++index === length
 
-        growBranch(node.getHead(), { tail: node.getTail(), node: node }, lastKey, lastStatesCopy, showValues, callback)
+        growBranch({ node: node }, lastKey, lastStatesCopy, nodeFn, callback)
       })
     }
 
     let output = ""
-    growBranch(".", { node: this }, false, [], showValues, line => (output += line + "\n"))
+    growBranch({ node: this }, false, [], nodeFn, line => (output += line + "\n"))
     return output
   }
 
@@ -1228,7 +1216,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.7.4"
+    return "3.8.0"
   }
 }
 

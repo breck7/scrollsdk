@@ -664,9 +664,10 @@ class ImmutableNode extends (typeof exports !== "undefined" ? AbstractNodeJsNode
           currentIndentCount--
         }
       }
+      const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const nodeClass = parent.parseNodeType(line)
-      lastNode = new nodeClass(undefined, line.substr(currentIndentCount), parent)
+      const nodeClass = parent.parseNodeType(lineContent)
+      lastNode = new nodeClass(undefined, lineContent, parent)
       parent._getChildren().push(lastNode)
     })
     return this
@@ -1220,7 +1221,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.7.0"
+    return "3.7.1"
   }
 }
 

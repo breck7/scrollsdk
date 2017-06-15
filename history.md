@@ -1,3 +1,7 @@
+3.7.1 / 2017-6-15
+=================
+- ETN parsing regression fix
+
 3.7.0 / 2017-6-15
 =================
 - Breaking: expose TreeNotation now and not TreeNode

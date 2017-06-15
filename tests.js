@@ -1667,7 +1667,8 @@ testTree.parseNode = equal => {
   class LeafNode extends TreeNotation {}
   class SubNode extends TreeNotation {
     parseNodeType(line) {
-      return LeafNode
+      if (line.startsWith("leaf")) return LeafNode
+      return SubNode
     }
   }
   class NodeETN extends TreeNotation {

@@ -975,7 +975,7 @@ testTree.getLine = equal => {
   // Arrange
   const tree = new TreeNode("hello world")
   const node = tree.getNode("hello")
-  const mtime = node.getMTime()
+  const mtime = node.getMTime() || 0
 
   // Assert
   equal(node.getLine(), "hello world")

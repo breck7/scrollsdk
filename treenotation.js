@@ -892,7 +892,7 @@ class TreeNode extends ImmutableTreeNode {
 
     if (index === -1) return this
     this.getChildren()[index].setHead(newHead)
-    this._makeIndex()
+    this._clearIndex()
     return this
   }
 

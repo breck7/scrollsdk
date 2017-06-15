@@ -1,21 +1,28 @@
 "use strict"
 
-class ImmutableTreeNode {
+class AbstractBaseNodeClass {
+  _getNow() {
+    return parseFloat(process.hrtime().join(""))
+  }
+}
+
+class AbstractBaseBrowserClass {
+  _getNow() {
+    return performance.now()
+  }
+}
+
+class ImmutableTreeNode extends (typeof exports !== "undefined" ? AbstractBaseNodeClass : AbstractBaseBrowserClass) {
   constructor(children, line, parent) {
-    this._words = []
-    this._uid = ImmutableTreeNode._makeUniqueId()
-    this._ctime = this._getNow()
+    super()
     this._parent = parent
-    this._loadChildren(children)
-    if (line !== undefined) this._loadLine(line)
+    this._setChildren(children)
+    this._setLine(line)
   }
 
   _getUid() {
+    if (!this._uid) this._uid = ImmutableTreeNode._makeUniqueId()
     return this._uid
-  }
-
-  _getNow() {
-    return typeof performance === "undefined" ? parseFloat(process.hrtime().join("")) : performance.now()
   }
 
   getParent() {
@@ -87,6 +94,7 @@ class ImmutableTreeNode {
   }
 
   getWords() {
+    if (!this._words) this._words = this._splitWords(this._getLine(), this._getSize())
     return this._words
   }
 
@@ -240,6 +248,7 @@ class ImmutableTreeNode {
   }
 
   _getChildren() {
+    if (!this._children) this._children = []
     return this._children
   }
 
@@ -550,22 +559,25 @@ class ImmutableTreeNode {
     return [firstLine, children]
   }
 
-  _loadWords(arr) {
-    this._words = arr
-    return this
+  _getLine() {
+    return this._line
   }
 
-  _loadLine(line) {
-    return this._loadWords(this._splitWords(line, this._getSize()))
+  _setLine(line = "") {
+    this._line = line
+    if (this._words) delete this._words
+    return this
   }
 
   _splitWords(str, maxParts) {
     return ImmutableTreeNode._split(str, this.getWordDelimiter(), maxParts)
   }
 
-  _loadChildren(content, circularCheckArray) {
-    this._children = []
-    if (!content) return this
+  _setChildren(content, circularCheckArray) {
+    if (!content) {
+      delete this._children
+      return this
+    }
 
     // Load from string
     if (typeof content === "string") return this._loadFromString(content)
@@ -594,17 +606,6 @@ class ImmutableTreeNode {
     return this
   }
 
-  _loadLineAndChildren(line, children, index = this.length) {
-    const nodeClass = this.parseNode(children, line)
-    const parsedNode = new nodeClass(children, line, this)
-    const adjustedIndex = index < 0 ? this.length + index : index
-
-    this.getChildren().splice(adjustedIndex, 0, parsedNode)
-
-    if (this._index) this._makeIndex(adjustedIndex)
-    return parsedNode
-  }
-
   // todo: refactor the below.
   _appendFromJavascriptObjectTuple(head, tail, circularCheckArray) {
     const type = typeof tail
@@ -626,7 +627,7 @@ class ImmutableTreeNode {
       circularCheckArray.push(tail)
       line = head
       const length = tail instanceof Array ? tail.length : Object.keys(tail).length
-      if (length) children = new TreeNode()._loadChildren(tail, circularCheckArray)
+      if (length) children = new TreeNode()._setChildren(tail, circularCheckArray)
     } else {
       // iirc this is return early from circular
       return
@@ -634,31 +635,40 @@ class ImmutableTreeNode {
     this._loadLineAndChildren(line, children)
   }
 
-  _loadFromString(string) {
-    if (!string) return this
-    const lines = string.split(this.getNodeDelimiterRegex())
-    const line = lines.shift()
-    this._loadLineAndChildren(line)
-    let currentLevel = 0
-    let currentNode = this
-    lines.forEach(line => {
-      const level = this._getLevel(line)
-      if (level > currentLevel) {
-        const lastNode = currentNode.getChildren()[currentNode.length - 1]
-        currentLevel++ // only move one level at a time
-        currentNode = lastNode
-        currentNode._loadLineAndChildren(line.substr(currentLevel))
-      } else if (level === currentLevel) currentNode._loadLineAndChildren(line.substr(currentLevel))
-      else {
-        // pop things off stack
-        while (level < currentLevel) {
-          currentNode = currentNode.getParent()
-          currentLevel--
-        }
-        currentNode._loadLineAndChildren(line.substr(currentLevel))
-      }
-    })
+  _loadLineAndChildren(line, children, index = this.length) {
+    const nodeClass = this.parseNodeType(line)
+    const parsedNode = new nodeClass(children, line, this)
+    const adjustedIndex = index < 0 ? this.length + index : index
 
+    this.getChildren().splice(adjustedIndex, 0, parsedNode)
+
+    if (this._index) this._makeIndex(adjustedIndex)
+    return parsedNode
+  }
+
+  _loadFromString(str) {
+    if (!str) return this
+    const lines = str.split(this.getNodeDelimiterRegex())
+    const parentStack = []
+    let currentIndentCount = -1
+    let lastNode = this
+    lines.forEach(line => {
+      const indentCount = this._getIndentCount(line)
+      if (indentCount > currentIndentCount) {
+        currentIndentCount++
+        parentStack.push(lastNode)
+      } else if (indentCount < currentIndentCount) {
+        // pop things off stack
+        while (indentCount < currentIndentCount) {
+          parentStack.pop()
+          currentIndentCount--
+        }
+      }
+      const nodeClass = this.parseNodeType(line)
+      const parent = parentStack[parentStack.length - 1]
+      lastNode = new nodeClass(undefined, line.substr(currentIndentCount), parent)
+      parent._getChildren().push(lastNode)
+    })
     return this
   }
 
@@ -718,7 +728,7 @@ class ImmutableTreeNode {
     return this.getChildren().map(node => node._toXml(indentCount)).join("")
   }
 
-  _getLevel(str) {
+  _getIndentCount(str) {
     let level = 0
     const edgeChar = this.getEdgeChar()
     while (str[level] === edgeChar) {
@@ -744,7 +754,7 @@ class ImmutableTreeNode {
     return this.getChildren()[index].getHead()
   }
 
-  parseNode(children, line) {
+  parseNodeType(line) {
     return this.constructor
   }
 
@@ -772,7 +782,7 @@ class ImmutableTreeNode {
 
 class TreeNode extends ImmutableTreeNode {
   getMTime() {
-    return this._mtime || this._ctime
+    return this._mtime
   }
 
   _clearIndex() {
@@ -780,7 +790,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   setChildren(children) {
-    return this._loadChildren(children)
+    return this._setChildren(children)
   }
 
   _updateMTime() {
@@ -796,7 +806,7 @@ class TreeNode extends ImmutableTreeNode {
       newArray.push(tail)
     }
     this._updateMTime()
-    return this._loadWords(newArray)
+    return this._setLine(newArray.join(this.getWordDelimiter()))
   }
 
   setTailWithChildren(text) {
@@ -824,7 +834,7 @@ class TreeNode extends ImmutableTreeNode {
   setLine(line) {
     if (line === this.getLine()) return this
     this._updateMTime()
-    return this._loadLine(line)
+    return this._setLine(line)
   }
 
   duplicate() {
@@ -839,7 +849,7 @@ class TreeNode extends ImmutableTreeNode {
     if (this.toString() === text) return this
     const tuple = this._textToTailAndChildrenTuple(text)
     this.setLine(tuple[0])
-    return this._loadChildren(tuple[1])
+    return this._setChildren(tuple[1])
   }
 
   append(line, children) {
@@ -1210,7 +1220,7 @@ class TreeNode extends ImmutableTreeNode {
   }
 
   static getVersion() {
-    return "3.5.3"
+    return "3.6.0"
   }
 }
 

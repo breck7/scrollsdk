@@ -1175,7 +1175,7 @@ testTree.simpleETN = equal => {
     }
   }
   class MathETN extends TreeNode.ExecutableTreeNode {
-    parseNode(children, line) {
+    parseNodeType(line) {
       if (line.startsWith("+")) return AdditionNode
       return MathETN
     }
@@ -1665,7 +1665,7 @@ testTree.order = equal => {
 testTree.parseNode = equal => {
   // Arrange
   class NodeDialect extends TreeNode {
-    parseNode(children, line) {
+    parseNodeType(line) {
       if (line.startsWith("tree")) return TreeNode
       return NodeDialect
     }

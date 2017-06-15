@@ -5248,8 +5248,15 @@
 <script type="text/javascript">
 const data = $("#test").html()
 const map = {}
-for (let index = 0; index < 500; index++) {
+const startTime = Date.now()
+const lineLength = data.split("\n").length
+const trials = 200
+const runTest = () => {
+
+	for (let index = 0; index < trials; index++) {
 	map[index] = new TreeNode(data)
 }
-console.log("done")
+console.log(`parsed ${lineLength * trials} lines of TN code in ${Date.now() - startTime}ms`)
+}
+runTest()
 </script>

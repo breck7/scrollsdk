@@ -1,3 +1,9 @@
+3.6.0 / 2017-6-15
+=================
+- Breaking: parseNode is now parseNodeType and only takes a line param.
+- Breaking: getMTime() now returns undefined if the node hasn't been modified.
+- Added more laziness to get a ~2.5x improvement in parse time. Parses about ~1M loc of basic TN a sec on test machine
+
 3.5.3 / 2017-6-14
 =================
 - Added getChildrenByNodeType method

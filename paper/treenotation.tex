@@ -11,7 +11,7 @@
 
 \title{Tree Notation: an antifragile document notation}
 
-\author{Breck~Yunits and a,b,b,c,c,d,d,j,m,m,n,n,p,t,t,x% <-this % stops a space
+\author{Breck~Yunits and a,b,b,c,c,d,d,j,m,m,n,n,p,r,t,t,x% <-this % stops a space
 \thanks{Breck Yunits is a software engineer from Brockton, MA (breck7@gmail.com).}% <-this % stops a space
 }
 
@@ -23,7 +23,11 @@
 
 \begin{abstract}
 %\boldmath
-We discover a new family of programming languages that align source code with abstract syntax trees. With further discoveries from the community, these new languages may lead to order-of-magnitude gains in developer productivity. We make some predictions and introduce a new conjecture on data structures. We end with a joke.
+This paper is written for experienced programmers and computer scientists. The goal of this paper is to share what may be a new useful discovery. We hope by freely sharing this discovery, we might inspire a new generation of programmers to create new tools and languages, so that you, the reader/programmer, may eventually experience order-of-magnitude gains in programming productivity.
+
+We include a Visual Abstract for those who just want the main idea.
+
+Then we start by describing the problem and introducing the solution: a new family of programming languages that align source code with abstract syntax trees. Then we make some predictions. Finally, we end with a joke. If the paper is wrong, maybe you'll at least like the joke.
 
 \end{abstract}
 
@@ -32,12 +36,12 @@ We discover a new family of programming languages that align source code with ab
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=90mm]{treenotation.png}
-\caption{This diagram is the output of an ETN program.}
+\caption{This Visual Abstract explains the core idea of the paper. This diagram is the output of an ETN program.}
 \end{figure}
 
 \section{The Problem}
 
-Programming is hard and complicated. Our current programming languages contribute a lot to this complexity. The standard approach to compiling code is to first transform that code into an Abstract Syntax Tree (AST). ASTs have enabled great gains in developer productivity. But programmers lose efficiencies and insight due to discrepancies between source code and ASTs.
+Programming is complicated. Our current programming languages add to this complexity. The standard approach to compiling code is to first transform that code into an Abstract Syntax Tree (AST). ASTs have enabled great gains in developer productivity. But programmers lose efficiencies and insight due to discrepancies between source code and ASTs.
 
 \section{The Solution: Tree Notation}
 
@@ -154,15 +158,15 @@ o
 
 ETNs will be found for great ALs including C, RISC-V, ES6, and Arc. Some ETNs have already been found \cite{Roughan}, but haven't been recognized as ETNs. The immediate benefit of discovering an ETN for an AL is that programs can then be written in an ETN editor and compiled to that AL.
 
-\textbf{Prediction 3: Tree Oriented Programming (TOP) will replace Object Oriented Programming as the dominant architectural philosophy.} This will not surprise programmers who have experienced TOP (such as React developers).
+\textbf{Prediction 3: Tree Oriented Programming (TOP) will supersede Object Oriented Programming.} A new style of programming, TOP, will arise. TOP programmers will frequently reference a tree view of their program.
 
 \textbf{Prediction 4: The simplest 2D text encodings for neural networks will be ETNs.} High level ETNs will be found to transform massive GPU trained routines into understandable trees.
 
-\section{Discovery Process and a call for Explorers}
+\section{Discovery Process and Next Steps}
 
-TN was discovered by an iterative process, where the goal was to find a useful notation that aligns with certain geometric patterns. Perhaps an analogous process could be used for finding notations in higher dimensions.
+TN was discovered by an iterative process, where the goal was to find a useful notation that aligns with certain geometric patterns. Perhaps someone will use an analogous process to discover notations in higher dimensions.
 
-We predict the community will soon discover new ways to utilize TN and ETNs in visual programming, AI, VR/AR/Mobile programming, and more. We encourage you, dear reader, to join in the exploration of this brave new world of programming languages!
+We now turn our attention to building new ETNs and tools for data science, visual programming, AI, and more. We hope these new tools will help you, dear reader, achieve new levels of productivity. We also encourage you to build and share your own ETNs and applications!
 
 \begin{figure}[ht!]
 \centering

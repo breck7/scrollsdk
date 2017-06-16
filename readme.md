@@ -65,6 +65,11 @@ Using this Library
 Creating an ETN
 ---------------
 
+Creating your own ETN with this library is simple. First, create a class for each node type in your new language. You can do that incrementally. Second, create a root node class. I've found a helpful convention is to suffix your root node with ETN. Then, add a parseNodeType method to your root node and/or intermediate and child nodes. ETNs use a top down parsing strategy. If your are making a simple declarative ETN, you might add some getters to parse the words in your nodes into the correct in-memory types. If you want to make an executable ETN, define an execute method or just extend the TreeNotation.ExecutableETN class.
+
+Feel free to reach out if you have any questions. Happy ETNing!
+
+
       class AdditionNode extends TreeNotation.ExecutableETN {
         execute() {
           const words = this.getTail().split(" ")

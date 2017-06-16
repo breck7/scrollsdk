@@ -5,39 +5,37 @@ Tree Notation is a minimal notation for encoding tree data structures. You can r
 
 This library is designed to serve as a base for building higher level domain specific languages, called ETNs. Unlike antique languages, ETNs don't require a transformation to a discordant Abstract Syntax Tree. As a result, you can easily build efficient static code tools and new types of editing experiences.
 
-ETNs allow you to do something that was previously not possible: create visual programming environments where a user can seamlessly transition between editing programs visually and editing the text source code.
+ETNs allow you to do things that were previously not possible. For example, using TN and ETNs, you can create visual programming environments where a user can seamlessly transition between editing a program visually and editing its text source code.
 
 
-A Simple Tree Notation Example
-------------------------------
+Tree Notation Basics
+--------------------
 
-An object like this:
+A JSON object like:
 
-    JSON: {"title" : "About Ada", "stats" : { "pageViews" : 42}}
-    XML: <page><title>About Ada</title><stats><pageViews>42</pageViews></stats></page>
+    {
+     "title" : "Jack and Ada at BCHS",
+     "visitors": {
+      "mozilla": 802
+     }
+    }
 
 Can be written in Tree Notation like this:
 
-    title About Ada
-    stats
-     pageViews 42
+    title Jack and Ada at BCHS
+    visitors
+     mozilla 802
 
-Benefits of ETNs
-----------------
+Benefits of TN & ETNs
+---------------------
 
-- ETNs can be simple declarative formats or full Turing Complete languages
+- ETNs can be simple declarative formats or powerful Turing Complete languages
 - Your source code maps to the XY plane and is in tree form already -- no need for an AST step
 - You can write programs that produce the same results using an order-of-magnitude fewer nodes
-- You can use an increasing number of ETN editors, visualizers, and static analysis tools
-- No parse errors make it easier to build robust editing environments
-- Your source documents can easily be composed of blocks written in different languages
+- If you find an ETN for an AL, you can use ETN tools, visualizers, and static analysis tools and compile to that language
+- No parse errors in TN make it easier to build robust editing environments
+- Your TN source documents can easily be composed of blocks written in different languages
 - No ignored whitespace ensures all diffs are semantic only and eliminates a whole class of unnecessary merge conflicts
-
-TN Libraries in Other Languages
--------------------------------
-
-Building a TN implementation in a language other than Javascript should be straightforward. You can use this repo
-as a reference. If you do build a library for another language, let me know and I'll add a link.
 
 
 Using this Libary
@@ -47,25 +45,29 @@ Node.js:
 
     npm install treenotation
 
-Using this Library
-------------------
-
-    var TreeNotation = require("treenotation")
-    // Creating a document
-    var person = new TreeNotation(`name John`)
-    // Accessing the head part of a node
-    console.log(person.getNode(`name`).getHead())
-    // Setting the tail part of a node
-    person.append(`age 29`)
-    console.log(person.getNode(`age`).getTail())
-    // Printing the node
-    console.log(person.toString())
+    const TreeNotation = require("treenotation")
+    const program = new TreeNotation(`message hello World`)
+    console.log(program.getNode(`message`).getTail())
 
 
 Creating an ETN
 ---------------
 
-Creating your own ETN with this library is simple. First, create a class for each node type in your new language. You can do that incrementally. Second, create a root node class. I've found a helpful convention is to suffix your root node with ETN. Then, add a parseNodeType method to your root node and/or intermediate and child nodes. ETNs use a top down parsing strategy. If your are making a simple declarative ETN, you might add some getters to parse the words in your nodes into the correct in-memory types. If you want to make an executable ETN, define an execute method or just extend the TreeNotation.ExecutableETN class.
+Creating your own ETN with this library is somewhat more advanced, but much simpler than other tools.
+
+1. Create a class for each node type in your new language. You can do this incrementally.
+
+2. Create a root node class. I've found a helpful convention is to suffix your root node with ETN.
+
+3. Add a parseNodeType method to your root node and/or intermediate and child nodes. ETNs use a top down parsing strategy.
+
+4a. If you are making a simple declarative ETN, you might add some getters to parse the words in your nodes into the correct in-memory types.
+
+OR
+
+4b. If you are making an executable ETN, define an execute method or just extend the TreeNotation.ExecutableETN class.
+
+5. Start writing code in your new programming language!
 
 Feel free to reach out if you have any questions. Happy ETNing!
 
@@ -98,6 +100,11 @@ By Version 5, things should settle down.
 
 If you want to be an early adopter, it's not too bad. The library is relatively small, simple and stable, has decent code coverage(Istanbul numbers as of 6/15/2017: 94.86% Statements 1533/1616 76.57% Branches 268/350 93.25% Functions 152/163 96.32% Lines 1439/1494), and I do mention all breaking changes in History.md and follow Semantic Versioning.
 
+TN Libraries in Other Languages
+-------------------------------
+
+Building a TN implementation in a language other than Javascript should be straightforward. You can use this repo
+as a reference. If you do build a library for another language, let me know and I'll add a link.
 
 Copyright & License
 -------------------

@@ -1,10 +1,15 @@
 Tree Notation
 =============
 
-Tree Notation is a minimal notation for encoding tree data structures. This library is designed to serve as a base for building higher level domain specific languages, called ETNs.
+Tree Notation is a minimal notation for encoding tree data structures. You can read the paper introducing Tree Notation here (https://github.com/breck7/treenotation/blob/master/paper/treenotation.pdf).
 
-Tree Notation Example
----------------------
+This library is designed to serve as a base for building higher level domain specific languages, called ETNs. Unlike antique languages, ETNs don't require a transformation to a discordant Abstract Syntax Tree. As a result, you can easily build efficient static code tools and new types of editing experiences.
+
+ETNs allow you to do something that was previously not possible: create visual programming environments where a user can seamlessly transition between editing programs visually and editing the text source code.
+
+
+A Simple Tree Notation Example
+------------------------------
 
 An object like this:
 
@@ -17,17 +22,26 @@ Can be written in Tree Notation like this:
     stats
      pageViews 42
 
-Benefits of Tree Notation
--------------------------
+Benefits of ETNs
+----------------
 
-- Easily create documents composed of blocks written in different languages
-- No ignored whitespace ensures all diffs are meaningful and reduces merge conflicts
-- No parse errors make it easier to build robust editors
-- Quickly create fast, powerful, high level languages called ETNs
-- Visualize and edit your ETN code in 2 and 3 dimensions using an ETN editor
+- ETNs can be simple declarative formats or full Turing Complete languages
+- Your source code maps to the XY plane and is in tree form already -- no need for an AST step
+- You can write programs that produce the same results using an order-of-magnitude fewer nodes
+- You can use an increasing number of ETN editors, visualizers, and static analysis tools
+- No parse errors make it easier to build robust editing environments
+- Your source documents can easily be composed of blocks written in different languages
+- No ignored whitespace ensures all diffs are semantic only and eliminates a whole class of unnecessary merge conflicts
 
-Installing
-----------
+TN Libraries in Other Languages
+-------------------------------
+
+Building a TN implementation in a language other than Javascript should be straightforward. You can use this repo
+as a reference. If you do build a library for another language, let me know and I'll add a link.
+
+
+Using this Libary
+-----------------
 
 Node.js:
 
@@ -48,51 +62,8 @@ Using this Library
     console.log(person.toString())
 
 
-More Tree Notation Examples
----------------------------
-
-Here's how you could encode a tax return in Tree Notation:
-
-    socialSecurityNumber 555-55-5555
-    name John Smith
-    taxYear 2012
-    income 10,000
-    dependents 1
-    exemptions 2
-    address 123 Main Street
-    city San Francisco
-    state California
-
-Tree supports recursion. Here's an example of web page stats:
-
-    homepage
-     pageviews 2312
-     uniques 231
-     referers
-      about 23
-      contact 41
-    about
-     pageviews 314
-     uniques 201
-     referers
-      home 100
-      contact 21
-    contact
-     pageviews 214
-     uniques 124
-     referers
-      home 110
-      about 10
-
-Using this library with the above stats example:
-
-    var stats = new TreeNotation(exampleStringFromAbove)
-    // Get a nested property using an xpath like query
-    var views = stats.getNode("contact referers home").getTail()
-    console.log(views) // 110
-
-ETN Example
------------
+Creating an ETN
+---------------
 
       class AdditionNode extends TreeNotation.ExecutableETN {
         execute() {
@@ -111,6 +82,16 @@ ETN Example
     + 15 1.0 200 100`
       const program = new MathETN(source)
       console.log(program.execute())
+
+
+Development Status
+------------------
+
+As you can see by the History.md, Tree Notation is undergoing rapid iteration and breaking changes are frequent.
+
+By Version 5, things should settle down.
+
+If you want to be an early adopter, it's not too bad. The library is relatively small, simple and stable, has decent code coverage(Istanbul numbers as of 6/15/2017: 94.86% Statements 1533/1616 76.57% Branches 268/350 93.25% Functions 152/163 96.32% Lines 1439/1494), and I do mention all breaking changes in History.md and follow Semantic Versioning.
 
 
 Copyright & License

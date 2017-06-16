@@ -11,7 +11,7 @@
 
 \title{Tree Notation: an antifragile document notation}
 
-\author{Breck~Yunits% <-this % stops a space
+\author{Breck~Yunits and a,b,b,c,c,d,d,j,m,m,n,n,p,t,t,x% <-this % stops a space
 \thanks{Breck Yunits is a software engineer from Brockton, MA (breck7@gmail.com).}% <-this % stops a space
 }
 
@@ -23,7 +23,7 @@
 
 \begin{abstract}
 %\boldmath
-I get lucky and discover a new family of programming languages that align source code with abstract syntax trees. These new languages may lead to order-of-magnitude gains in developer productivity. I make some predictions and introduce a new conjecture on data structures. I end with a joke.
+We discover a new family of programming languages that align source code with abstract syntax trees. With further discoveries from the community, these new languages may lead to order-of-magnitude gains in developer productivity. We make some predictions and introduce a new conjecture on data structures. We end with a joke.
 
 \end{abstract}
 
@@ -41,7 +41,7 @@ Programming is hard and complicated. Our current programming languages contribut
 
 \section{The Solution: Tree Notation}
 
-In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), I introduce Tree Notation (TN), a new whitespace-based notation. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called ETNs ("Extends Tree Notation"), are easy to create and can be simple or Turing Complete.
+In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), we introduce Tree Notation (TN), a new whitespace-based notation. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called ETNs ("Extends Tree Notation"), are easy to create and can be simple or Turing Complete.
 
 TN encodes one data structure, a \textbf{TreeNode}, with two members: a string called \textbf{line} and an optional array of child TreeNodes called \textbf{children}.
 
@@ -133,7 +133,7 @@ Other concerns have been raised. Some developers dislike space-indented notation
 
 \section{Predictions}
 
-\textbf{Prediction 1: no structure will be found that cannot serialize to TN.} Some LISP programmers believe all data structures are recursive lists (or perhaps "recursive cons"). After seeing TN, I believe in The Tree Conjecture (TTC): \textbf{All structures are trees}.
+\textbf{Prediction 1: no structure will be found that cannot serialize to TN.} Some LISP programmers believe all data structures are recursive lists (or perhaps "recursive cons"). After seeing TN, we believe in The Tree Conjecture (TTC): \textbf{All structures are trees}.
 
 For example, a hash table could serialize to HashTableETN:
 
@@ -162,7 +162,7 @@ ETNs will be found for great ALs including C, RISC-V, ES6, and Arc. Some ETNs ha
 
 TN was discovered by an iterative process, where the goal was to find a useful notation that aligns with certain geometric patterns. Perhaps an analogous process could be used for finding notations in higher dimensions.
 
-The discovery of TN and ETNs will lead to new applications in visual programming, AI, VR/AR/Mobile programming, and more. I encourage you, the reader, to join in the exploration of this brave new world of programming languages!
+We predict the community will soon discover new ways to utilize TN and ETNs in visual programming, AI, VR/AR/Mobile programming, and more. We encourage you, dear reader, to join in the exploration of this brave new world of programming languages!
 
 \begin{figure}[ht!]
 \centering

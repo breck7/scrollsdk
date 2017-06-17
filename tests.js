@@ -1265,6 +1265,24 @@ Mammal
   equal(tree.getNode("Animal").getGraph("extends").length, 2)
 }
 
+testTree.getGraphConventional = equal => {
+  // Arrange
+  const tree = new TreeNotation(
+    `Thing
+ color
+Animal Thing
+ dna
+Monkey Mammal
+ oohoohahah
+Mammal Animal
+ milk`
+  )
+  // Act/Assert
+  equal(tree.getNode("Monkey").getGraph().length, 4)
+  equal(tree.getNode("Thing").getGraph().length, 1)
+  equal(tree.getNode("Animal").getGraph().length, 2)
+}
+
 testTree.htmlDsl = equal => {
   // Arrange
   const html = new TreeNotation("h1 hello world\nh1 hello world")

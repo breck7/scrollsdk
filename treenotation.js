@@ -407,7 +407,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getGraph(key) {
-    const name = this.findTail(key)
+    const name = key ? this.findTail(key) : this.getWord(1)
     if (!name) return []
     const parentNode = this.getParent().getNode(name)
     const graph = parentNode._getGraph(key)
@@ -1235,7 +1235,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.9.1"
+    return "3.9.2"
   }
 }
 

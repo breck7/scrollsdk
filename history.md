@@ -1,3 +1,7 @@
+3.9.2 / 2017-6-17
+=================
+- getGraph method now also takes 0 params, in which case it uses word1.
+
 3.9.1 / 2017-6-17
 =================
 - Added getGraph method

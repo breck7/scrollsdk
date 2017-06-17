@@ -65,23 +65,43 @@ Creating your own ETN with this library is somewhat more advanced, but much simp
 
 OR
 
-4b. If you are making an executable ETN, define an execute method or just extend the TreeNotation.ExecutableETN class.
+4b. If you are making an executable ETN, add execute methods.
+
+OR
+
+4c. If you are making a compiling ETN, add some "to" methods.
 
 5. Start writing code in your new programming language!
 
 Feel free to reach out if you have any questions. Happy ETNing!
 
+      class MathETN extends TreeNotation {
+        // Look! You created a top down parser!
+        parseNodeType(line) {
+          if (line.startsWith("+")) return AdditionNode
+          return MathETN
+        }
 
-      class AdditionNode extends TreeNotation.ExecutableETN {
+        // Look! You created a compiler!
+        toJavascript() {
+          this.getChildren().map(child => child.toJavascript())
+        }
+      }
+
+      class AdditionNode extends TreeNotation {
+        // Look! You created an interpreter!
         execute() {
           const words = this.getTail().split(" ")
           return words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
         }
-      }
-      class MathETN extends TreeNotation.ExecutableETN {
-        parseNodeType(line) {
-          if (line.startsWith("+")) return AdditionNode
-          return MathETN
+
+        // Look! You created a declarative file format!
+        getNumbers() {
+          return this.getTail().split(" ").map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
+        }
+
+        toJavascript() {
+          return this.getNumbers().join(" + ")
         }
       }
       const source = `+ 2 7
@@ -89,6 +109,9 @@ Feel free to reach out if you have any questions. Happy ETNing!
     + 15 1.0 200 100`
       const program = new MathETN(source)
       console.log(program.execute())
+
+
+In 30 lines of code, we created a simple programming language, wrote a program in that language, wrote a parser, interpreter, and compiler, and ran that program! Not bad.
 
 
 Development Status

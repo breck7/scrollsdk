@@ -1,3 +1,8 @@
+3.9.0 / 2017-6-16
+=================
+- Breaking: Removed TreeNode.ExecutableTreeNode. TreeNotation now has execute method by default.
+- Breaking: getWord now ignores getSize. In fact, we'll probably ditch getSize.
+
 3.8.0 / 2017-6-15
 =================
 - toOutline now takes an optional mapping fn

@@ -1168,13 +1168,13 @@ testTree.getIndex = equal => {
 
 testTree.simpleETN = equal => {
   // Arrange
-  class AdditionNode extends TreeNotation.ExecutableETN {
+  class AdditionNode extends TreeNotation {
     execute() {
       const words = this.getTail().split(" ")
       return words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
     }
   }
-  class MathETN extends TreeNotation.ExecutableETN {
+  class MathETN extends TreeNotation {
     parseNodeType(line) {
       if (line.startsWith("+")) return AdditionNode
       return MathETN

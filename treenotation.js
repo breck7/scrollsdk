@@ -22,6 +22,10 @@ class ImmutableNode extends EnvironmentNodeType {
     this._setLine(line)
   }
 
+  execute(context) {
+    return this.getChildren().map(child => child.execute(context)).join("\n")
+  }
+
   _getUid() {
     if (!this._uid) this._uid = ImmutableNode._makeUniqueId()
     return this._uid
@@ -64,7 +68,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getWord(index) {
-    return this.getWords()[index]
+    return this._getLine().split(this.getWordDelimiter())[index]
   }
 
   _getTailless() {
@@ -1220,13 +1224,6 @@ class TreeNotation extends ImmutableNode {
   }
 }
 
-class ExecutableETN extends TreeNotation {
-  execute(context) {
-    return this.getChildrenByNodeType(ExecutableETN).map(child => child.execute(context)).join("\n")
-  }
-}
-
 TreeNotation.ImmutableNode = ImmutableNode
-TreeNotation.ExecutableETN = ExecutableETN
 
 if (typeof exports !== "undefined") module.exports = TreeNotation

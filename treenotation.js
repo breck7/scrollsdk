@@ -400,6 +400,21 @@ class ImmutableNode extends EnvironmentNodeType {
     return Object.keys(obj)
   }
 
+  getGraph(key) {
+    const graph = this._getGraph(key)
+    graph.push(this)
+    return graph
+  }
+
+  _getGraph(key) {
+    const name = this.findTail(key)
+    if (!name) return []
+    const parentNode = this.getParent().getNode(name)
+    const graph = parentNode._getGraph(key)
+    graph.push(parentNode)
+    return graph
+  }
+
   pathVectorToPathName(pathVector) {
     const path = pathVector.slice() // copy array
     const names = []
@@ -1220,7 +1235,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.9.0"
+    return "3.9.1"
   }
 }
 

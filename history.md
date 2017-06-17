@@ -1,3 +1,7 @@
+3.9.1 / 2017-6-17
+=================
+- Added getGraph method
+
 3.9.0 / 2017-6-16
 =================
 - Breaking: Removed TreeNode.ExecutableTreeNode. TreeNotation now has execute method by default.

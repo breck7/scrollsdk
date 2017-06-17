@@ -30,6 +30,7 @@ interface TreeNotation {
   getTail: () => (string | Undefined);
   getPathName: () => pathName;
   getTopDownArray: () => TreeNotation[]; // returns all nodes as array in preorder order
+  getGraph: (headKey: name) => TreeNotation[];
   getTailWithChildren: () => string;
   getNext: () => TreeNotation; // wrapsaround
   getPrevious: () => TreeNotation; // wrapsaround

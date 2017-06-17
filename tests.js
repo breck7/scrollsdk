@@ -1244,6 +1244,27 @@ testTree.has = equal => {
   equal(tree.has("nested"), true)
 }
 
+testTree.getGraph = equal => {
+  // Arrange
+  const tree = new TreeNotation(
+    `Thing
+ color
+Animal
+ dna
+ extends Thing
+Monkey
+ extends Mammal
+ oohoohahah
+Mammal
+ extends Animal
+ milk`
+  )
+  // Act/Assert
+  equal(tree.getNode("Monkey").getGraph("extends").length, 4)
+  equal(tree.getNode("Thing").getGraph("extends").length, 1)
+  equal(tree.getNode("Animal").getGraph("extends").length, 2)
+}
+
 testTree.htmlDsl = equal => {
   // Arrange
   const html = new TreeNotation("h1 hello world\nh1 hello world")

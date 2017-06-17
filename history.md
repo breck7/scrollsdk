@@ -1,3 +1,8 @@
+3.10.0 / 2017-6-17
+==================
+- Breaking: getAncestorNodes is now getStack
+- Added getStackString method
+
 3.9.2 / 2017-6-17
 =================
 - getGraph method now also takes 0 params, in which case it uses word1.

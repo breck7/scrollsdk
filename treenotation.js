@@ -117,11 +117,17 @@ class ImmutableNode extends EnvironmentNodeType {
     return (tail ? tail : "") + (this.length ? this.getNodeDelimiter() + this._childrenToString() : "")
   }
 
-  getAncestorNodes() {
+  getStack() {
     if (this.isRoot()) return []
     const parent = this.getParent()
-    if (parent.isRoot()) return [parent]
-    else return parent.getAncestorNodes().concat([parent])
+    if (parent.isRoot()) return [this]
+    else return parent.getStack().concat([this])
+  }
+
+  getStackString() {
+    return this.getStack()
+      .map((node, index) => this.getEdgeChar().repeat(index) + node.getLine())
+      .join(this.getNodeDelimiter())
   }
 
   _getNodesAbove() {
@@ -231,7 +237,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getXCoordinate() {
-    return this.getAncestorNodes().length
+    return this.getStack().length
   }
 
   getParentFirstArray() {
@@ -1235,7 +1241,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.9.2"
+    return "3.10.0"
   }
 }
 

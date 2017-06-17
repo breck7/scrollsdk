@@ -1208,8 +1208,8 @@ testTree.getPathName = equal => {
   equal(child.getPathName(), "domains test.test.com pages home settings data")
   equal(child.getParent(), parent)
   equal(child.getRootNode(), tree)
-  equal(child.getAncestorNodes().length, 6)
-  equal(simple.getNode("foo").getAncestorNodes().length, 1)
+  equal(child.getStack().length, 6)
+  equal(simple.getNode("foo").getStack().length, 1)
 }
 
 testTree.getPathVector = equal => {
@@ -1242,6 +1242,22 @@ testTree.has = equal => {
   equal(tree.has("world"), false)
   equal(tree.has("foo"), true)
   equal(tree.has("nested"), true)
+}
+
+testTree.getStackString = equal => {
+  const tree = new TreeNotation(
+    `Thing
+ color
+  blue
+  green`
+  )
+  // Act/assert
+  equal(
+    tree.getNode("Thing color green").getStackString(),
+    `Thing
+ color
+  green`
+  )
 }
 
 testTree.getGraph = equal => {

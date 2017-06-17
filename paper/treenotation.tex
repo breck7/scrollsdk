@@ -27,7 +27,7 @@ This paper is written for experienced programmers and computer scientists. The g
 
 We include a Visual Abstract for those who just want the main idea.
 
-Then we start by describing the problem and introducing the solution: a new family of programming languages that align source code with abstract syntax trees. Then we make some predictions. Finally, we end with a joke. If the paper is wrong, maybe you'll at least like the joke.
+Then we start by describing the problem and introducing the solution: a new family of programming languages that geometrically align source code with abstract syntax trees. Then we make some predictions. Finally, we end with a joke. If the paper is wrong, maybe you'll at least like the joke.
 
 \end{abstract}
 
@@ -139,14 +139,14 @@ Other concerns have been raised. Some developers dislike space-indented notation
 
 \textbf{Prediction 1: no structure will be found that cannot serialize to TN.} Some LISP programmers believe all data structures are recursive lists (or perhaps "recursive cons"). After seeing TN, we believe in The Tree Conjecture (TTC): \textbf{All structures are trees}.
 
-For example, a hash table could serialize to HashTableETN:
+For example, a map could serialize to MapETN:
 
 \begin{lstlisting}
-c 106
-b 226
+ty aaaabbccccdddefggggjjjjjklllmmmmnopprsssz
+106 3cf5d9a07b7a51e1324e4accd1cd6faf71ce7c48
 \end{lstlisting}
 
-Therefore, hash tables are a type of tree. TTC stands.
+Therefore, maps are a type of tree. TTC stands.
 
 \textbf{Prediction 2: Useful new ETNs may be found for every AL.} Below is some example code in a simple ETN, JsonETN.
 
@@ -164,7 +164,7 @@ ETNs will be found for great ALs including C, RISC-V, ES6, and Arc. Some ETNs ha
 
 \section{Discovery Process and Next Steps}
 
-TN was discovered by an iterative process, where the goal was to find a useful notation that aligns with certain geometric patterns. Perhaps someone will use an analogous process to discover notations in higher dimensions.
+We conducted an intermittent search over many years to find the smallest useful notation (SUN), hoping the SUN might let us do more with less. We stumbled upon TN and its natural geometric design. Perhaps there are other geometric SUNs?
 
 We now turn our attention to building new ETNs and tools for data science, visual programming, ML, parallel computing and more. We hope these new tools will help you, dear reader, build faster. We also encourage you to build and share your own ETNs and applications!
 

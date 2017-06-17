@@ -23,7 +23,8 @@ interface TreeNotation {
   getPathVector: () => pathVector;
   getLine: () => nodeString;
   getChildrenByNodeType: () => TreeNotation[];
-  getAncestorNodes: () => TreeNotation[];
+  getStack: () => TreeNotation[];
+  getStackString: () => string;
   getParent: () => TreeNotation | undefined;
   getRootNode: () => This | TreeNotation;
   getHead: () => name;

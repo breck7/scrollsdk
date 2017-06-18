@@ -57,9 +57,8 @@ class ImmutableNode extends EnvironmentNodeType {
 
   toString(indentCount = 0, language = this) {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
-    const content = language.getEdgeChar().repeat(indentCount) + this.getLine(language)
-    const value =
-      content + (this.length ? language.getNodeDelimiter() + this._childrenToString(indentCount + 1, language) : "")
+    const content = language.getXI().repeat(indentCount) + this.getLine(language)
+    const value = content + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
     return value
   }
 
@@ -68,40 +67,32 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getWord(index) {
-    return this._getLine().split(this.getWordDelimiter())[index]
-  }
-
-  _getTailless() {
-    return this.getWords().slice(0, this._getSize() - 1)
+    return this._getLine().split(this.getWI())[index]
   }
 
   _toHtml(indentCount) {
     const path = this.getPathVector().join(" ")
     const classes = {
-      node: "node",
-      edge: "nodeEdge",
-      delimiter: "nodeDelimiter",
-      children: "nodeChildren"
+      nodeLine: "nodeLine",
+      xi: "xIncrement",
+      yi: "yIncrement",
+      nodeChildren: "nodeChildren"
     }
-    const edge = this.getEdgeChar().repeat(indentCount)
+    const edge = this.getXI().repeat(indentCount)
     // Set up the head part of the node
-    const edgeHtml = `<span class="${classes.node}" data-pathVector="${path}"><span class="${classes.edge}">${edge}</span>`
+    const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
     const lineHtml = this._getLineHtml()
     const childrenHtml = this.length
-      ? `<span class="${classes.delimiter}">${this.getNodeDelimiter()}</span>` +
-          `<span class="${classes.chilren}">${this._childrenToHtml(indentCount + 1)}</span>`
+      ? `<span class="${classes.yi}">${this.getYI()}</span>` +
+          `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
       : ""
 
-    return edgeHtml + lineHtml + childrenHtml + "</span>"
+    return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
 
-  _getSize() {
-    return 2
-  }
-
-  getWords() {
-    if (!this._words) this._words = this._splitWords(this._getLine(), this._getSize())
-    return this._words
+  getWords(startFrom = 0) {
+    if (!this._words) this._words = this._getLine().split(this.getWI())
+    return startFrom ? this._words.slice(startFrom) : this._words
   }
 
   getHead() {
@@ -109,12 +100,13 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getTail() {
-    return this.getWords()[this._getSize() - 1]
+    const words = this.getWords(1)
+    return words.length ? words.join(this.getWI()) : undefined
   }
 
   getTailWithChildren() {
     const tail = this.getTail()
-    return (tail ? tail : "") + (this.length ? this.getNodeDelimiter() + this._childrenToString() : "")
+    return (tail ? tail : "") + (this.length ? this.getYI() + this._childrenToString() : "")
   }
 
   getStack() {
@@ -125,9 +117,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getStackString() {
-    return this.getStack()
-      .map((node, index) => this.getEdgeChar().repeat(index) + node.getLine())
-      .join(this.getNodeDelimiter())
+    return this.getStack().map((node, index) => this.getXI().repeat(index) + node.getLine()).join(this.getYI())
   }
 
   _getNodesAbove() {
@@ -139,7 +129,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getLine(language = this) {
-    return this.getWords().join(language.getWordDelimiter())
+    return this.getWords().join(language.getWI())
   }
 
   // todo: return array? getPathArray?
@@ -147,7 +137,7 @@ class ImmutableNode extends EnvironmentNodeType {
     if (this.isRoot()) return ""
     else if (this.getParent().isRoot()) return this.getHead()
 
-    return this.getParent().getPathName() + this.getEdgeChar() + this.getHead()
+    return this.getParent().getPathName() + this.getXI() + this.getHead()
   }
 
   getPathVector() {
@@ -166,13 +156,9 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getLineHtml() {
-    const lastIndex = this._getSize() - 1
     return this.getWords()
-      .map((word, index) => {
-        const specialClass = index === 0 ? " head" : index === lastIndex ? " tail" : ""
-        return `<span class="word${specialClass}">${ImmutableNode._stripHtml(word)}</span>`
-      })
-      .join(`<span class="wordDelimiter">${this.getWordDelimiter()}</span>`)
+      .map((word, index) => `<span class="word${index ? "" : " head"}">${ImmutableNode._stripHtml(word)}</span>`)
+      .join(`<span class="wordDelimiter">${this.getWI()}</span>`)
   }
 
   _getXmlContent(indentCount) {
@@ -313,11 +299,11 @@ class ImmutableNode extends EnvironmentNodeType {
   _childrenToHtml(indentCount) {
     return this.getChildren()
       .map(node => node._toHtml(indentCount))
-      .join(`<span class="nodeDelimiter">${this.getNodeDelimiter()}</span>`)
+      .join(`<span class="yIncrement">${this.getYI()}</span>`)
   }
 
   _childrenToString(indentCount, language = this) {
-    return this.getChildren().map(node => node.toString(indentCount, language)).join(language.getNodeDelimiter())
+    return this.getChildren().map(node => node.toString(indentCount, language)).join(language.getYI())
   }
 
   childrenToString() {
@@ -364,15 +350,16 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getNodeByPath(pathName) {
-    if (!this.isPathName(pathName)) {
+    const xi = this.getXI()
+    if (!pathName.includes(xi)) {
       const index = this.indexOfLast(pathName)
       return index === -1 ? undefined : this._nodeAt(index)
     }
 
-    const parts = pathName.split(this.getWordDelimiter())
+    const parts = pathName.split(xi)
     const current = parts.shift()
     const currentNode = this.getChildren()[this._getIndex()[current]]
-    return currentNode ? currentNode._getNodeByPath(parts.join(this.getWordDelimiter())) : undefined
+    return currentNode ? currentNode._getNodeByPath(parts.join(xi)) : undefined
   }
 
   getNext() {
@@ -484,10 +471,6 @@ class ImmutableNode extends EnvironmentNodeType {
     return this._toDelimited(" ", header, cellFn)
   }
 
-  isPathName(str) {
-    return str !== undefined && str.includes(this.getEdgeChar())
-  }
-
   toSsv() {
     return this.toDelimited(" ")
   }
@@ -546,31 +529,31 @@ class ImmutableNode extends EnvironmentNodeType {
     return this.toDelimited("\t")
   }
 
-  getNodeDelimiter() {
+  getYI() {
     return "\n"
   }
 
-  getWordDelimiter() {
+  getWI() {
     return " "
   }
 
-  getNodeDelimiterRegex() {
-    return new RegExp(this.getNodeDelimiter(), "g")
+  getYIRegex() {
+    return new RegExp(this.getYI(), "g")
   }
 
-  getEdgeChar() {
+  getXI() {
     return " "
   }
 
   _textToTailAndChildrenTuple(text) {
-    const lines = text.split(this.getNodeDelimiterRegex())
+    const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
     const children = !lines.length
       ? undefined
       : lines
-          .map(line => (line.substr(0, 1) === this.getEdgeChar() ? line : this.getEdgeChar() + line))
+          .map(line => (line.substr(0, 1) === this.getXI() ? line : this.getXI() + line))
           .map(line => line.substr(1))
-          .join(this.getNodeDelimiter())
+          .join(this.getYI())
     return [firstLine, children]
   }
 
@@ -582,10 +565,6 @@ class ImmutableNode extends EnvironmentNodeType {
     this._line = line
     if (this._words) delete this._words
     return this
-  }
-
-  _splitWords(str, maxParts) {
-    return ImmutableNode._split(str, this.getWordDelimiter(), maxParts)
   }
 
   _clearChildren() {
@@ -665,7 +644,7 @@ class ImmutableNode extends EnvironmentNodeType {
 
   _parseString(str) {
     if (!str) return this
-    const lines = str.split(this.getNodeDelimiterRegex())
+    const lines = str.split(this.getYIRegex())
     const parentStack = []
     let currentIndentCount = -1
     let lastNode = this
@@ -748,7 +727,7 @@ class ImmutableNode extends EnvironmentNodeType {
 
   _getIndentCount(str) {
     let level = 0
-    const edgeChar = this.getEdgeChar()
+    const edgeChar = this.getXI()
     while (str[level] === edgeChar) {
       level++
     }
@@ -782,17 +761,6 @@ class ImmutableNode extends EnvironmentNodeType {
     return this._uniqueId
   }
 
-  static _split(str, char, maxParts) {
-    const parts = str.split(char)
-    if (parts.length <= maxParts) return parts
-    const newArr = []
-    for (let index = 0; index < maxParts - 1; index++) {
-      newArr.push(parts.shift())
-    }
-    newArr.push(parts.join(char))
-    return newArr
-  }
-
   static _stripHtml(text) {
     return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
   }
@@ -817,28 +785,28 @@ class TreeNotation extends ImmutableNode {
 
   setTail(tail) {
     if (tail === this.getTail()) return this
-    const newArray = this._getTailless()
+    const newArray = [this.getHead()]
     if (tail !== undefined) {
       tail = tail.toString()
-      if (tail.match(this.getNodeDelimiter())) return this.setTailWithChildren(tail)
+      if (tail.match(this.getYI())) return this.setTailWithChildren(tail)
       newArray.push(tail)
     }
     this._updateMTime()
-    return this._setLine(newArray.join(this.getWordDelimiter()))
+    return this._setLine(newArray.join(this.getWI()))
   }
 
   setTailWithChildren(text) {
-    if (!text.includes(this.getNodeDelimiter())) {
+    if (!text.includes(this.getYI())) {
       this._clearChildren()
       return this.setTail(text)
     }
 
-    const lines = text.split(this.getNodeDelimiterRegex())
+    const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
     this.setTail(firstLine)
 
     // tood: cleanup.
-    const remainingString = lines.join(this.getNodeDelimiter())
+    const remainingString = lines.join(this.getYI())
     const children = new TreeNotation(remainingString)
     if (!remainingString) children.append("")
     this.setChildren(children)
@@ -955,12 +923,13 @@ class TreeNotation extends ImmutableNode {
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(head) {
-    if (!this.isPathName(head)) return this._deleteByHead(head)
+  delete(head = "") {
+    const xi = this.getXI()
+    if (!head.includes(xi)) return this._deleteByHead(head)
 
-    const parts = head.split(this.getWordDelimiter())
+    const parts = head.split(xi)
     const nextHead = parts.pop()
-    const targetNode = this.getNode(parts.join(this.getWordDelimiter()))
+    const targetNode = this.getNode(parts.join(xi))
 
     return targetNode ? targetNode._deleteByHead(nextHead) : 0
   }
@@ -990,7 +959,7 @@ class TreeNotation extends ImmutableNode {
     while (this.has(index.toString())) {
       index++
     }
-    const line = index.toString() + (tail === undefined ? "" : this.getWordDelimiter() + tail)
+    const line = index.toString() + (tail === undefined ? "" : this.getWI() + tail)
     return this.append(line, children)
   }
 
@@ -1003,8 +972,8 @@ class TreeNotation extends ImmutableNode {
   }
 
   _touchNodeByString(str) {
-    str = str.replace(this.getNodeDelimiterRegex(), "") // todo: do we want to do this sanitization?
-    return this._touchNode(str.split(this.getWordDelimiter()))
+    str = str.replace(this.getYIRegex(), "") // todo: do we want to do this sanitization?
+    return this._touchNode(str.split(this.getWI()))
   }
 
   touchNode(str) {
@@ -1241,7 +1210,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "3.10.0"
+    return "4.0.0"
   }
 }
 

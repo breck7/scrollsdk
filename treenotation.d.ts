@@ -1,9 +1,9 @@
 declare type content = string | TreeNotation | Object | any;
 declare type int = number;
-declare type nodeString = string; // A string that does not contain the nodeDelimiter ("\n")
+declare type nodeString = string; // A string that does not contain YI ("\n")
 declare type pathName = string; // user emailAddress
 declare type pathVector = int[]; // example: [0,1,1]
-declare type name = string; // string that cannot contain the nodeDelimiter, nodeEdgeChar or nodeAssignmentChar
+declare type name = string; // string that cannot contain the YI, XI or WI
 declare type Undefined = any;
 declare type This = any;
 declare type formatString = string; // "Hello {name}! You are {age} years old."
@@ -28,7 +28,8 @@ interface TreeNotation {
   getParent: () => TreeNotation | undefined;
   getRootNode: () => This | TreeNotation;
   getHead: () => name;
-  getTail: () => (string | Undefined);
+  getWords: (startingFrom?: int) => name[];
+  getTail: () => (string | Undefined); // Always refers to part of the line after the head, given that WI is space.
   getPathName: () => pathName;
   getTopDownArray: () => TreeNotation[]; // returns all nodes as array in preorder order
   getGraph: (headKey?: name) => TreeNotation[]; // if no param, uses getWord(1)

@@ -391,7 +391,7 @@ testTree.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
  :`
   // Act/Assert
   class TestTree extends TreeNotation {
-    getWordDelimiter() {
+    getWI() {
       return ":"
     }
   }
@@ -1062,15 +1062,15 @@ testTree.getTails = equal => {
 
 testTree.multiply = equal => {
   class MathNode extends TreeNotation {
-    getWordDelimiter() {
+    getWI() {
       return " "
     }
 
-    getNodeDelimiter() {
+    getYI() {
       return "o"
     }
 
-    getEdgeChar() {
+    getXI() {
       return "-"
     }
   }
@@ -2219,18 +2219,18 @@ testTree.syntax = equal => {
  num 12
 `
   const a = new TreeNotation(test)
-  const test2 = `person;=name=Breck;=country=USA;=books;==one=SICP;==two=Pragmatic;=num=12;=multiline=this is a string;==over=multiple lines.;==== and this one has extra indents;=num=12;`
+  const test2 = `person;=name=Breck;=country=USA;=books;==one=SICP;==two=Pragmatic;=num=12;=multiline=this=is=a=string;==over=multiple=lines.;=====and=this=one=has=extra=indents;=num=12;`
 
   class TestLanguage extends TreeNotation {
-    getWordDelimiter() {
+    getWI() {
       return "="
     }
 
-    getNodeDelimiter() {
+    getYI() {
       return ";"
     }
 
-    getEdgeChar() {
+    getXI() {
       return "="
     }
   }

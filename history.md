@@ -1,3 +1,10 @@
+4.0.0 / 2017-6-18
+==================
+- Breaking: removed _getSize if any ETNs were using that
+- Breaking: changes some output classes in toHtml() method
+- getWords() now takes an optional starting WI location
+- Final version of paper, mistakes and all.
+
 3.10.0 / 2017-6-17
 ==================
 - Breaking: getAncestorNodes is now getStack

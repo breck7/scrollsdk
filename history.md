@@ -1,5 +1,9 @@
+4.0.1 / 2017-6-20
+=================
+- Added HTML, CSS and Unit Testing ETNs (I named them Bray, Hakon, and Wall).
+
 4.0.0 / 2017-6-18
-==================
+=================
 - Breaking: removed _getSize if any ETNs were using that
 - Breaking: changes some output classes in toHtml() method
 - getWords() now takes an optional starting WI location

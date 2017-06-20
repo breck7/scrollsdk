@@ -50,6 +50,17 @@ Node.js:
     console.log(program.getNode(`message`).getTail())
 
 
+Example ETNs
+------------
+
+This library includes 3 simple, but very useful, demo ETNs, located in the etns/ subfolder:
+
+- Bray => An HTML ETN
+- Hakon => A CSS ETN
+- Wall => A Unit Testing ETN
+
+They demonstrate how easy it is to create an ETN.
+
 Creating an ETN
 ---------------
 

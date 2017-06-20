@@ -9,8 +9,12 @@
 	"build_systems":
     [
         {
-            "name": "test",
+            "name": "testCore",
             "shell_cmd": "./tasks/unit.js"
+        },
+        {
+            "name": "testFile",
+            "shell_cmd": "${file}"
         }
     ]
 }

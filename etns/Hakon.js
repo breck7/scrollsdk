@@ -1,6 +1,4 @@
-"use strict"
-
-if (typeof exports !== "undefined") var TreeNotation = require("../treenotation.js")
+const TreeNotation = require("../treenotation.js")
 
 // tood: create a real ETN.
 
@@ -55,4 +53,4 @@ class Hakon extends TreeNotation {
   }
 }
 
-if (typeof exports !== "undefined") module.exports = Hakon
+module.exports = Hakon

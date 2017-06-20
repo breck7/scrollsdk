@@ -42,7 +42,7 @@ Programming is complicated. Our current high-level antique languages (HALs) add 
 
 \section{The Solution: Tree Notation}
 
-In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), we introduce TN, a new whitespace-based notation. A node in TN maps to an XY point on a 2D plane. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called ETNs ("Extends Tree Notation"), are easy to create and can be simple or Turing Complete.
+In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), we introduce TN, a new 2D notation. A node in TN maps to an XY point on a 2D plane. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called ETNs ("Extends Tree Notation"), are easy to create and can be simple or Turing Complete.
 
 TN encodes one data structure, a \textbf{TreeNode}, with two members: a string called \textbf{line} and an optional array of child TreeNodes called \textbf{children}.
 
@@ -73,7 +73,7 @@ visitors
 
 \subsection{Simplicity}
 
-As shown in Fig 1, TN simply maps source code to an XY plane which makes reading code locally and globally easy, and ETN programs use far fewer source nodes than equivalent HAL programs. See more and do much more with much less.
+As shown in Fig 1, TN simply maps source code to an XY plane which makes reading code locally and globally easy, and ETN programs use far fewer source nodes than equivalent HAL programs. TN lets programmers do more with less.
 
 \subsection{Zero parse errors}
 
@@ -85,15 +85,13 @@ A user can edit the nodes of a document at runtime with no risk of breaking the 
 
 \subsection{Semantic diffs}
 
-HALs ignore whitespace and so permit programmers and programs to encode the same object to different documents. Sometimes this helps but more often this causes merge conflicts for small or non-existent semantic changes.
+HALs ignore whitespace and so permit programmers and programs to encode the same object to different documents. This often causes merge conflicts for non-semantic changes.
 
-TN does not ignore whitespace and diffs contain only semantic meaning. One right way to encode a tree.
+TN does not ignore whitespace and diffs contain only semantic meaning. Just one right way to encode a tree.
 
 \subsection{Easy composition}
 
-Base notations such as XML\cite{Bray}, JSON\cite{Crockford}, and Racket\cite{Racket} can encode multi-lingual documents. But to do that, those notations often complect those blocks.
-
-In the example below, the program IPython encodes Python to JSON. The resulting document contains additional nodes:
+Base notations such as XML\cite{Bray}, JSON\cite{Crockford}, and Racket\cite{Racket} can encode multi-lingual documents by complecting language blocks. For example, the JSON program below requires extra nodes to encode Python:
 
 \begin{lstlisting}
 {
@@ -104,7 +102,7 @@ In the example below, the program IPython encodes Python to JSON. The resulting 
 }
 \end{lstlisting}
 
-With TN, the Python block is indented and requires no complecting:
+With TN, the Python code requires no complecting:
 
 \begin{lstlisting}
 source
@@ -114,48 +112,46 @@ source
 
 \section{Drawbacks}
 
-\subsection{Lack of Tooling and Support}
+TN is new and tooling support rounds to zero.
 
-TN is new, and library and application support, compared to other popular base notations, rounds to zero.
+TN lacks primitive types. Many HALs have notations for common types like floats, and parse directly to efficient in-memory structures. ETNs make TN useful. The GER demonstrates how useful ETNs can be built with just a few lines of code, which is far less code than one needs to implement even a simple HAL such as JSON \cite{Ooms}.
 
-\subsection{Lack of Primitive Types in TN}
+TN is verbose without an ETN. A complex node in TN takes multiple lines. Base HALs allow multiple nodes per line.
 
-Some HALs have notations for common primitive types like floats, and parse documents directly to efficient in-memory structures. "TN" is minimal so for best results, don't forget about "E" (to get "ETN").
-
-The need for ETNs is a minor concern, as the GER demonstrates how useful ETNs can be built with just a few lines of code. And creating a TN library in other HALs is straightforward, and not comparable to the complexity of implementing a JSON library \cite{Ooms}, for example.
-
-\subsection{Aesthetic Differences}
-
-Without an ETN, TN can be verbose. A complex node in TN extends over multiple lines. HALs have a denser display of information out of the gate, with multiple nodes per line.
-
-Other concerns have been raised. Some developers dislike space-indented notations, some wrongly prefer tabs, and some just have no taste.
+Some developers dislike space-indented notations, some wrongly prefer tabs, and some just have no taste.
 
 \section{Predictions}
 
-\textbf{Prediction 1: no structure will be found that cannot serialize to TN.} Some LISP programmers believe all data structures are recursive lists (or perhaps "recursive cons"). After seeing TN, we believe in The Tree Conjecture (TTC): \textbf{All structures are trees}.
+\textbf{Prediction 1: no structure will be found that cannot serialize to TN.} Some LISP programmers believe all structures are recursive lists (or perhaps "recursive cons"). We believe in The Tree Conjecture (TTC): \textbf{All structures are trees}.
 
 For example, a map could serialize to MapETN:
 
 \begin{lstlisting}
 ty aaaabbcccdddefggghjjjjjklllmmmnopprrsssvz
-106 3cf5d9a07b7a51e1324e4accd1cd6faf71ce7c48
+0106 9de7a5727e35ebfccc5937459f62042bc15d8a35
 \end{lstlisting}
 
 Therefore, maps are a type of tree. TTC stands.
 
-\textbf{Prediction 2: Useful new ETNs may be found for every AL.} Below is some example code in a simple ETN, JsonETN.
+\textbf{Prediction 2: ETNs will be found for every popular AL.} Below is some code in a simple ETN, JsonETN:
 
 \begin{lstlisting}
 o
- s foundOn Sci-Hub
+ s dsl yrt
  n ma 902
 \end{lstlisting}
 
-ETNs will be found for great ALs including C, RISC-V, ES6, and Arc. Some ETNs have already been found \cite{Roughan}, but haven't been recognized as ETNs. The immediate benefit of discovering an ETN for an AL is that programs can then be written in an ETN editor and compiled to that AL.
+ETNs will be found for great ALs including C, RISC-V, ES6, and Arc. Some ETNs have already been found \cite{Roughan}, but their common TN DNA has gone unseen. The immediate benefit of discovering an ETN for an AL is that programs can then be written in an ETN editor and compiled to that AL.
 
-\textbf{Prediction 3: Tree Oriented Programming (TOP) will supersede Object Oriented Programming.} A new style of programming, TOP, will arise. TOP programmers will frequently reference a tree view of their program.
+\textbf{Prediction 3: Tree Oriented Programming (TOP) will supersede Object Oriented Programming.} A new style of programming, TOP, will arise. TOP programmers will frequently reference 2D views of their program.
 
-\textbf{Prediction 4: The simplest 2D text encodings for neural networks will be ETNs.} High level ETNs will be found to transform massive GPU trained routines into understandable trees.
+\textbf{Prediction 4: The simplest 2D text encodings for neural networks will be ETNs.} High level ETNs will be found to translate machine written programs into understandable trees.
+
+\section{Literature Review}
+
+Turing Machines with 2D Tapes have been studied and are known to be Turing Complete\cite{Toida}. A few esoteric 2D programming languages are available online\cite{Ender}. At time of publication, 312 programming languages and notations were searched. Over 100,000 pages of research was read. TN was not found.
+
+The closest someone came to discovering TN, and ETNs, was perhaps Mark B. Wells, who wrote a brillant paper at Los Alamos, back in 1972 which predicted the discovery and utility of TN and ETNs. Alas, his paper went almost entirely ignored \cite{Wells}. This exemplifies why they call it REsearch.
 
 \section{Steal this idea}
 
@@ -167,6 +163,9 @@ We now turn our attention to building new ETNs and tools for data science, visua
 \end{figure}
 
 \begin{thebibliography}{4}
+
+\bibitem{Wells}
+Wells, Mark B. "A REVIEW OF TWO-DIMENSIONAL PROGRAMMING LANGUAGES*". 1972. http://sci-hub.cc/10.1145/942576.807009 (visited in 2017).
 
 \bibitem{Bray}
 Bray, Tim, et al. "Extensible markup language (XML)." World Wide Web Consortium Recommendation REC-xml-19980210. http://www. w3. org/TR/1998/REC-xml-19980210 16 (1998): 16.
@@ -182,6 +181,14 @@ Ooms, Jeroen. "The jsonlite package: A practical and consistent mapping between 
 
 \bibitem{Roughan}
 Roughan, Matthew, and Jonathan Tuke. "Unravelling graph-exchange file formats." arXiv preprint arXiv:1503.02781 (2015).
+
+\bibitem{Toida}
+Toida, Shunichi. "Types of Turing Machines." http://www.cs.odu.edu/~toida/nerzic/390teched/tm/othertms.html (visited in 2017).
+
+\bibitem{Ender}
+Ender, Martin. "A two-dimensional, hexagonal programming language." https://github.com/m-ender/hexagony (visited in 2017).
+
+
 
 \end{thebibliography}
 

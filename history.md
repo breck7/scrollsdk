@@ -1,3 +1,7 @@
+4.0.2 / 2017-6-20
+=================
+- Fix so Hakon works in browser
+
 4.0.1 / 2017-6-20
 =================
 - Added HTML, CSS and Unit Testing ETNs (I named them Bray, Hakon, and Wall).

@@ -1,17 +1,19 @@
-const TreeNotation = require("../treenotation.js")
+"use strict"
+
+if (typeof exports !== "undefined") var TreeNotation = require("../treenotation.js")
 
 // tood: create a real ETN.
 
-class PropertyNode extends TreeNotation {
+class HakonPropertyNode extends TreeNotation {
   toCss(spaces) {
     return `${spaces}${this.getHead()}: ${this.getTail()};`
   }
 }
 
-class SelectorNode extends TreeNotation {
+class HakonSelectorNode extends TreeNotation {
   parseNodeType(line) {
-    if (line.includes(" ")) return PropertyNode
-    return SelectorNode
+    if (line.includes(" ")) return HakonPropertyNode
+    return HakonSelectorNode
   }
 
   getSelector() {
@@ -29,7 +31,7 @@ class SelectorNode extends TreeNotation {
   }
 
   toCss() {
-    const propertyNodes = this.getChildrenByNodeType(PropertyNode)
+    const propertyNodes = this.getChildrenByNodeType(HakonPropertyNode)
     if (!propertyNodes.length) return ""
     const spaces = "  "
     return `${this.getSelector()} {
@@ -41,7 +43,7 @@ ${propertyNodes.map(child => child.toCss(spaces)).join("\n")}
 class Hakon extends TreeNotation {
   parseNodeType(line) {
     if (!line) return TreeNotation
-    return SelectorNode
+    return HakonSelectorNode
   }
 
   getSelector() {
@@ -49,8 +51,8 @@ class Hakon extends TreeNotation {
   }
 
   toCss() {
-    return this.getTopDownArray().filter(node => node instanceof SelectorNode).map(child => child.toCss()).join("")
+    return this.getTopDownArray().filter(node => node instanceof HakonSelectorNode).map(child => child.toCss()).join("")
   }
 }
 
-module.exports = Hakon
+if (typeof exports !== "undefined") module.exports = Hakon

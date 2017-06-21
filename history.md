@@ -1,3 +1,7 @@
+4.1.0 / 2017-6-20
+=================
+- Breaking: removed toJavascript method on base class.
+
 4.0.3 / 2017-6-20
 =================
 - Reverted last.

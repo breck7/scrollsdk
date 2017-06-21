@@ -2273,17 +2273,6 @@ testTree.toFixedWidthTable = equal => {
   equal(b.toFixedWidthTable(1), "n\nj\nf", "Expected max width to be enforced")
 }
 
-testTree.toJavascript = equal => {
-  // Arrange
-  const multiline = new TreeNotation("name John\nname John")
-  // Assert
-  equal(
-    multiline.toJavascript(),
-    `new TreeNotation(\`name John
-name John\`)`
-  )
-}
-
 testTree.toObject = equal => {
   // Arrange
   const a = new TreeNotation("hello world")

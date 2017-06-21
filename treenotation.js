@@ -292,10 +292,6 @@ class ImmutableNode extends EnvironmentNodeType {
     return this._childrenToHtml(0)
   }
 
-  toJavascript() {
-    return `new ${this.constructor.name}(\`${this.toString().replace(/\`/g, "\\`")}\`)`
-  }
-
   _childrenToHtml(indentCount) {
     return this.getChildren()
       .map(node => node._toHtml(indentCount))
@@ -1210,7 +1206,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "4.0.3"
+    return "4.1.0"
   }
 }
 

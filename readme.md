@@ -144,7 +144,9 @@ as a reference. If you do build a library for another language, let me know and 
 One More Thing
 --------------
 
-https://boardscript.com
+The world's first ETN editor, Ohayo.
+
+https://ohayo.computer
 
 Copyright & License
 -------------------

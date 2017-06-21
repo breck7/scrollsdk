@@ -9,7 +9,7 @@
 
 \begin{document}
 
-\title{Tree Notation: an antifragile document notation}
+\title{Tree Notation: an antifragile program notation}
 
 \author{Breck~Yunits and a,a,b,b,c,c,d,d,j,j,m,m,m,n,n,p,r,s,t,t,x% <-this % stops a space
 \thanks{Breck Yunits is a software engineer from Brockton, MA (breck7@gmail.com).}% <-this % stops a space
@@ -77,21 +77,21 @@ As shown in Fig 1, TN simply maps source code to an XY plane which makes reading
 
 \subsection{Zero parse errors}
 
-Parse errors do not exist in TN. Every document is a valid TN document. ETNs implement microparsers that parallelize easily and can creatively handle errors.
+Parse errors do not exist in TN. Every text string is a valid TN program. ETNs implement microparsers that parallelize easily and can creatively handle errors.
 
-With most HALs, to get from a blank document to a certain valid document in keystroke increments requires stops at invalid documents. With TN all intermediate steps are valid.
+With most HALs, to get from a blank program to a certain valid program in keystroke increments requires stops at invalid programs. With TN all intermediate steps are valid TN programs.
 
-A user can edit the nodes of a document at runtime with no risk of breaking the TN parsing of the entire document. "Errors", still can exist at the ETN level, but ETN microparsers can handle errors independently and even correct errors automatically. ETNs slapchop development and debug time.
+A user can edit the nodes of a program at runtime with no risk of breaking the TN parsing of the entire program. "Errors", still can exist at the ETN level, but ETN microparsers can handle errors independently and even correct errors automatically. ETNs slapchop development and debug time.
 
 \subsection{Semantic diffs}
 
-HALs ignore whitespace and so permit programmers and programs to encode the same object to different documents. This often causes merge conflicts for non-semantic changes.
+HALs ignore whitespace and so permit programmers and programs to encode the same object to different programs. This often causes merge conflicts for non-semantic changes.
 
-TN does not ignore whitespace and diffs contain only semantic meaning. Just one right way to encode a tree.
+TN does not ignore whitespace and diffs contain only semantic meaning. Just one right way to encode a program.
 
 \subsection{Easy composition}
 
-Base notations such as XML\cite{Bray}, JSON\cite{Crockford}, and Racket\cite{Racket} can encode multi-lingual documents by complecting language blocks. For example, the JSON program below requires extra nodes to encode Python:
+Base notations such as XML\cite{Bray}, JSON\cite{Crockford}, and Racket\cite{Racket} can encode multi-lingual programs by complecting language blocks. For example, the JSON program below requires extra nodes to encode Python:
 
 \begin{lstlisting}
 {
@@ -153,7 +153,7 @@ Turing Machines with 2D Tapes have been studied and are known to be Turing Compl
 
 Relevant math surely exists under the categories including graph, group, set, braid and knot, topology and geometry.
 
-The closest someone came to discovering TN, and ETNs, was perhaps Mark B. Wells, who wrote a brillant paper at Los Alamos, back in 1972 which predicted the discovery and utility of something like TN. Alas, his paper went almost entirely ignored \cite{Wells}. This exemplifies why they call it REsearch.
+The closest someone came to discovering TN, and ETNs, was perhaps Mark B. Wells, who wrote a brillant paper at Los Alamos, back in 1972 which predicted the discovery and utility of something like ETNs. Alas, his paper went almost entirely ignored \cite{Wells}. This exemplifies why they call it REsearch.
 
 \section{Steal this idea}
 
@@ -161,7 +161,7 @@ We now turn our attention to building new ETNs and tools for data science, visua
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=90mm]{tree.jpg}
-\caption{Rearranging these fridge magnets is equivalent to editing a TN document. The fridge magnet set that includes parentheses is a poor seller.}
+\caption{Rearranging these fridge magnets is equivalent to editing a TN program. The fridge magnet set that includes parentheses is a poor seller.}
 \end{figure}
 
 \begin{thebibliography}{4}

@@ -43,7 +43,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getYCoordinate() {
-    return this.isRoot() ? 0 : this._getNodesAbove().length + 1
+    return this.isRoot() ? 0 : this.getRootNode().getTopDownArray().indexOf(this) + 1 // todo: may be slow for big trees.
   }
 
   isRoot() {
@@ -118,14 +118,6 @@ class ImmutableNode extends EnvironmentNodeType {
 
   getStackString() {
     return this.getStack().map((node, index) => this.getXI().repeat(index) + node.getLine()).join(this.getYI())
-  }
-
-  _getNodesAbove() {
-    if (this.isRoot()) return []
-    const parent = this.getParent()
-    const nodesImmediatelyAbove = parent.getChildren().slice(0, this.getIndex() + 1)
-    if (parent.isRoot()) return nodesImmediatelyAbove
-    else return parent._getNodesAbove().concat(nodesImmediatelyAbove)
   }
 
   getLine(language = this) {
@@ -1206,7 +1198,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "4.1.0"
+    return "4.1.1"
   }
 }
 

@@ -1,3 +1,7 @@
+4.1.1 / 2017-6-26
+=================
+- Bug fix in getPoint method
+
 4.1.0 / 2017-6-20
 =================
 - Breaking: removed toJavascript method on base class.

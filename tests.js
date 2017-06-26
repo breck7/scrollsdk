@@ -1780,6 +1780,20 @@ ohayo
   equal(coordinates.y, 0)
   equal(coordinates2.x, 3)
   equal(coordinates2.y, 6)
+
+  // Arrange
+  const reg = new TreeNotation(
+    `a
+ b
+  c
+d
+ e`
+  )
+
+  // Act/Assert
+  const result = reg.getTopDownArray().map(node => node.getPoint().y).join(" ")
+  equal(result, "1 2 3 4 5")
+  equal(reg.getNode("a").getPoint().y, 1)
 }
 
 testTree.pushTailAndChildren = equal => {

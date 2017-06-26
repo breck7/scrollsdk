@@ -1,6 +1,6 @@
 {
   "name": "treenotation",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "description": "Javascript Tree Notation implementation.",
   "main": "treenotation.js",
   "scripts": {

@@ -83,6 +83,7 @@ interface TreeNotation {
   sortBy: (nameOrNames: name | name[]) => This;
   setTailWithChildren: (text: string) => This;
   setHead: (name: string) => This;
+  setWord: (index: int, value: string) => This;
   setTail: (value?: content) => This;
   reverse: () => This;
   shift: () => TreeNotation;

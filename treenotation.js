@@ -771,6 +771,14 @@ class TreeNotation extends ImmutableNode {
     this._mtime = this._getNow()
   }
 
+  setWord(index, word) {
+    const wi = this.getWI()
+    const words = this._getLine().split(wi)
+    words[index] = word
+    this._setLine(words.join(wi))
+    return this
+  }
+
   setTail(tail) {
     if (tail === this.getTail()) return this
     const newArray = [this.getHead()]
@@ -1198,7 +1206,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "4.1.1"
+    return "4.1.2"
   }
 }
 

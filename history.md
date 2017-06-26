@@ -1,3 +1,7 @@
+4.1.2 / 2017-6-26
+=================
+- Added setWord method
+
 4.1.1 / 2017-6-26
 =================
 - Bug fix in getPoint method

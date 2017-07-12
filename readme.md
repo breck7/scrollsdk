@@ -146,7 +146,7 @@ One More Thing
 
 The world's first ETN editor, Ohayo.
 
-https://ohayo.computer
+http://ohayo.computer
 
 Copyright & License
 -------------------

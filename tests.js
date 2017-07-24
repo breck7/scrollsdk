@@ -1197,7 +1197,7 @@ testTree.simpleETN = equal => {
   )
 }
 
-testTree.getPathName = equal => {
+testTree.getBasePath = equal => {
   // Arrange
   const tree = new TreeNotation(testStrings.every)
   const parent = tree.getNode("domains test.test.com pages home settings")
@@ -1205,7 +1205,7 @@ testTree.getPathName = equal => {
   const simple = new TreeNotation("foo bar")
 
   // Assert
-  equal(child.getPathName(), "domains test.test.com pages home settings data")
+  equal(child.getBasePath(), "domains test.test.com pages home settings data")
   equal(child.getParent(), parent)
   equal(child.getRootNode(), tree)
   equal(child.getStack().length, 6)

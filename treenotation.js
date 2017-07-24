@@ -125,11 +125,11 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   // todo: return array? getPathArray?
-  getPathName() {
+  getBasePath() {
     if (this.isRoot()) return ""
     else if (this.getParent().isRoot()) return this.getBase()
 
-    return this.getParent().getPathName() + this.getXI() + this.getBase()
+    return this.getParent().getBasePath() + this.getXI() + this.getBase()
   }
 
   getPathVector() {
@@ -1208,7 +1208,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.0.0"
+    return "5.0.1"
   }
 }
 

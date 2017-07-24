@@ -1,3 +1,7 @@
+5.0.1 / 2017-7-24
+=================
+- Bug fix: getBasePath works
+
 5.0.0 / 2017-7-24
 =================
 - Breaking: getWI is now getZI for consistency with X,Y,Z convention.

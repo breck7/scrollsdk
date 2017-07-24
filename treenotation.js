@@ -67,7 +67,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getWord(index) {
-    return this._getLine().split(this.getWI())[index]
+    return this._getLine().split(this.getZI())[index]
   }
 
   _toHtml(indentCount) {
@@ -79,34 +79,34 @@ class ImmutableNode extends EnvironmentNodeType {
       nodeChildren: "nodeChildren"
     }
     const edge = this.getXI().repeat(indentCount)
-    // Set up the head part of the node
+    // Set up the base part of the node
     const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
     const lineHtml = this._getLineHtml()
     const childrenHtml = this.length
       ? `<span class="${classes.yi}">${this.getYI()}</span>` +
-          `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
+        `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
       : ""
 
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
 
   getWords(startFrom = 0) {
-    if (!this._words) this._words = this._getLine().split(this.getWI())
+    if (!this._words) this._words = this._getLine().split(this.getZI())
     return startFrom ? this._words.slice(startFrom) : this._words
   }
 
-  getHead() {
+  getBase() {
     return this.getWords()[0]
   }
 
-  getTail() {
+  getBeam() {
     const words = this.getWords(1)
-    return words.length ? words.join(this.getWI()) : undefined
+    return words.length ? words.join(this.getZI()) : undefined
   }
 
-  getTailWithChildren() {
-    const tail = this.getTail()
-    return (tail ? tail : "") + (this.length ? this.getYI() + this._childrenToString() : "")
+  getBeamWithChildren() {
+    const beam = this.getBeam()
+    return (beam ? beam : "") + (this.length ? this.getYI() + this._childrenToString() : "")
   }
 
   getStack() {
@@ -121,15 +121,15 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getLine(language = this) {
-    return this.getWords().join(language.getWI())
+    return this.getWords().join(language.getZI())
   }
 
   // todo: return array? getPathArray?
   getPathName() {
     if (this.isRoot()) return ""
-    else if (this.getParent().isRoot()) return this.getHead()
+    else if (this.getParent().isRoot()) return this.getBase()
 
-    return this.getParent().getPathName() + this.getXI() + this.getHead()
+    return this.getParent().getPathName() + this.getXI() + this.getBase()
   }
 
   getPathVector() {
@@ -149,32 +149,34 @@ class ImmutableNode extends EnvironmentNodeType {
 
   _getLineHtml() {
     return this.getWords()
-      .map((word, index) => `<span class="word${index ? "" : " head"}">${ImmutableNode._stripHtml(word)}</span>`)
-      .join(`<span class="wordDelimiter">${this.getWI()}</span>`)
+      .map((word, index) => `<span class="word${index ? "" : " base"}">${ImmutableNode._stripHtml(word)}</span>`)
+      .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
   _getXmlContent(indentCount) {
-    if (this.getTail() !== undefined) return this.getTailWithChildren()
+    if (this.getBeam() !== undefined) return this.getBeamWithChildren()
     return this.length
-      ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}`
+      ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(
+          indentCount
+        )}`
       : ""
   }
 
   _toXml(indentCount) {
     const indent = " ".repeat(indentCount)
-    const tag = this.getHead()
+    const tag = this.getBase()
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
 
   _toObjectTuple() {
-    const tail = this.getTail()
+    const beam = this.getBeam()
     const length = this.length
-    const hasChildrenNoTail = tail === undefined && length
-    const hasTailAndHasChildren = tail !== undefined && length
-    // If the node has a tail and a subtree return it as a string, as
+    const hasChildrenNoBeam = beam === undefined && length
+    const hasBeamAndHasChildren = beam !== undefined && length
+    // If the node has a beam and a subtree return it as a string, as
     // Javascript object values can't be both a leaf and a tree.
-    const tupleValue = hasChildrenNoTail ? this.toObject() : hasTailAndHasChildren ? this.getTailWithChildren() : tail
-    return [this.getHead(), tupleValue]
+    const tupleValue = hasChildrenNoBeam ? this.toObject() : hasBeamAndHasChildren ? this.getBeamWithChildren() : beam
+    return [this.getBase(), tupleValue]
   }
 
   _indexOfNode(needleNode) {
@@ -306,9 +308,9 @@ class ImmutableNode extends EnvironmentNodeType {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(pathName) {
+  findNodes(basePath) {
     return this._getChildren().filter(node => {
-      if (node.getHead() === pathName) return true
+      if (node.getBase() === basePath) return true
       return false
     })
   }
@@ -317,34 +319,34 @@ class ImmutableNode extends EnvironmentNodeType {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const node = that.getNode(path)
-      return node ? node.getTail() : ""
+      return node ? node.getBeam() : ""
     })
   }
 
   getColumn(path) {
     return this._getChildren().map(node => {
       const cell = node.getNode(path)
-      return cell === undefined ? undefined : cell.getTail()
+      return cell === undefined ? undefined : cell.getBeam()
     })
   }
 
-  getNode(pathName) {
-    return this._getNodeByPath(pathName)
+  getNode(basePath) {
+    return this._getNodeByPath(basePath)
   }
 
-  findTail(pathName) {
-    const node = this._getNodeByPath(pathName)
-    return node === undefined ? undefined : node.getTail()
+  findBeam(basePath) {
+    const node = this._getNodeByPath(basePath)
+    return node === undefined ? undefined : node.getBeam()
   }
 
-  _getNodeByPath(pathName) {
+  _getNodeByPath(basePath) {
     const xi = this.getXI()
-    if (!pathName.includes(xi)) {
-      const index = this.indexOfLast(pathName)
+    if (!basePath.includes(xi)) {
+      const index = this.indexOfLast(basePath)
       return index === -1 ? undefined : this._nodeAt(index)
     }
 
-    const parts = pathName.split(xi)
+    const parts = basePath.split(xi)
     const current = parts.shift()
     const currentNode = this.getChildren()[this._getIndex()[current]]
     return currentNode ? currentNode._getNodeByPath(parts.join(xi)) : undefined
@@ -375,7 +377,7 @@ class ImmutableNode extends EnvironmentNodeType {
     this._getChildren().forEach(node => {
       if (!node.length) return undefined
       node._getChildren().forEach(node => {
-        obj[node.getHead()] = 1
+        obj[node.getBase()] = 1
       })
     })
     return Object.keys(obj)
@@ -388,7 +390,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getGraph(key) {
-    const name = key ? this.findTail(key) : this.getWord(1)
+    const name = key ? this.findBeam(key) : this.getWord(1)
     if (!name) return []
     const parentNode = this.getParent().getNode(name)
     const graph = parentNode._getGraph(key)
@@ -396,13 +398,13 @@ class ImmutableNode extends EnvironmentNodeType {
     return graph
   }
 
-  pathVectorToPathName(pathVector) {
+  pathVectorToBasePath(pathVector) {
     const path = pathVector.slice() // copy array
     const names = []
     let node = this
     while (path.length) {
       if (!node) return names
-      names.push(node.nodeAt(path[0]).getHead())
+      names.push(node.nodeAt(path[0]).getBase())
       node = node.nodeAt(path.shift())
     }
     return names
@@ -425,8 +427,8 @@ class ImmutableNode extends EnvironmentNodeType {
       return header
         .map((columnName, index) => {
           const childNode = node.getNode(columnName)
-          const tail = childNode ? childNode.getTailWithChildren() : ""
-          return cellFn(tail, rowNumber + 1, index)
+          const beam = childNode ? childNode.getBeamWithChildren() : ""
+          return cellFn(beam, rowNumber + 1, index)
         })
         .join(delimiter)
     })
@@ -440,7 +442,7 @@ class ImmutableNode extends EnvironmentNodeType {
     this._getChildren().forEach(node => {
       if (!node.length) return true
       header.forEach((col, index) => {
-        const cellValue = node.getNode(col).getTail()
+        const cellValue = node.getNode(col).getBeam()
         if (!cellValue) return true
         const length = cellValue.toString().length
         if (length > widths[index]) widths[index] = length > maxWidth ? maxWidth : length
@@ -505,7 +507,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   copyTo(node, index) {
-    const newNode = node._loadLineAndChildren(
+    const newNode = node._setLineAndChildren(
       this.getLine(),
       this.childrenToString(),
       index === undefined ? node.length : index
@@ -521,7 +523,7 @@ class ImmutableNode extends EnvironmentNodeType {
     return "\n"
   }
 
-  getWI() {
+  getZI() {
     return " "
   }
 
@@ -533,7 +535,7 @@ class ImmutableNode extends EnvironmentNodeType {
     return " "
   }
 
-  _textToTailAndChildrenTuple(text) {
+  _textToBeamAndChildrenTuple(text) {
     const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
     const children = !lines.length
@@ -563,63 +565,63 @@ class ImmutableNode extends EnvironmentNodeType {
     this._clearChildren()
     if (!content) return this
 
-    // Load from string
+    // set from string
     if (typeof content === "string") return this._parseString(content)
 
-    // Load from TreeNotation object
+    // set from TreeNotation object
     if (content instanceof ImmutableNode) {
       const me = this
       content._getChildren().forEach(node => {
-        me._loadLineAndChildren(node.getLine(), node.childrenToString())
+        me._setLineAndChildren(node.getLine(), node.childrenToString())
       })
       return this
     }
 
-    // If we load from object, create an array of inserted objects to avoid circular loops
+    // If we set from object, create an array of inserted objects to avoid circular loops
     if (!circularCheckArray) circularCheckArray = [content]
 
-    return this._loadFromObject(content, circularCheckArray)
+    return this._setFromObject(content, circularCheckArray)
   }
 
-  _loadFromObject(content, circularCheckArray) {
-    for (let head in content) {
-      if (!content.hasOwnProperty(head)) continue
-      this._appendFromJavascriptObjectTuple(head, content[head], circularCheckArray)
+  _setFromObject(content, circularCheckArray) {
+    for (let base in content) {
+      if (!content.hasOwnProperty(base)) continue
+      this._appendFromJavascriptObjectTuple(base, content[base], circularCheckArray)
     }
 
     return this
   }
 
   // todo: refactor the below.
-  _appendFromJavascriptObjectTuple(head, tail, circularCheckArray) {
-    const type = typeof tail
+  _appendFromJavascriptObjectTuple(base, beam, circularCheckArray) {
+    const type = typeof beam
     let line
     let children
-    if (tail === null) line = head + " " + null
-    else if (tail === undefined) line = head
+    if (beam === null) line = base + " " + null
+    else if (beam === undefined) line = base
     else if (type === "string") {
-      const tuple = this._textToTailAndChildrenTuple(tail)
-      line = head + " " + tuple[0]
+      const tuple = this._textToBeamAndChildrenTuple(beam)
+      line = base + " " + tuple[0]
       children = tuple[1]
-    } else if (type !== "object") line = head + " " + tail
-    else if (tail instanceof Date) line = head + " " + tail.getTime().toString()
-    else if (tail instanceof ImmutableNode) {
-      line = head
-      children = new ImmutableNode(tail.childrenToString(), tail.getLine())
-    } else if (type === "function") line = head + " " + tail.toString()
-    else if (circularCheckArray.indexOf(tail) === -1) {
-      circularCheckArray.push(tail)
-      line = head
-      const length = tail instanceof Array ? tail.length : Object.keys(tail).length
-      if (length) children = new TreeNotation()._setChildren(tail, circularCheckArray)
+    } else if (type !== "object") line = base + " " + beam
+    else if (beam instanceof Date) line = base + " " + beam.getTime().toString()
+    else if (beam instanceof ImmutableNode) {
+      line = base
+      children = new ImmutableNode(beam.childrenToString(), beam.getLine())
+    } else if (type === "function") line = base + " " + beam.toString()
+    else if (circularCheckArray.indexOf(beam) === -1) {
+      circularCheckArray.push(beam)
+      line = base
+      const length = beam instanceof Array ? beam.length : Object.keys(beam).length
+      if (length) children = new TreeNotation()._setChildren(beam, circularCheckArray)
     } else {
       // iirc this is return early from circular
       return
     }
-    this._loadLineAndChildren(line, children)
+    this._setLineAndChildren(line, children)
   }
 
-  _loadLineAndChildren(line, children, index = this.length) {
+  _setLineAndChildren(line, children, index = this.length) {
     const nodeClass = this.parseNodeType(line)
     const parsedNode = new nodeClass(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
@@ -658,32 +660,32 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getIndex() {
-    // StringMap<int> {head: index}
-    // When there are multiple tails with the same head, _index stores the last tail.
+    // StringMap<int> {base: index}
+    // When there are multiple tails with the same base, _index stores the last beam.
     return this._index || this._makeIndex()
   }
 
-  getTails() {
-    return this.getChildren().map(node => node.getTail())
+  getBeams() {
+    return this.getChildren().map(node => node.getBeam())
   }
 
   getChildrenByNodeType(type) {
     return this.getChildren().filter(child => child instanceof type)
   }
 
-  indexOfLast(head) {
-    const result = this._getIndex()[head]
+  indexOfLast(base) {
+    const result = this._getIndex()[base]
     return result === undefined ? -1 : result
   }
 
-  indexOf(head) {
-    if (!this.has(head)) return -1
+  indexOf(base) {
+    if (!this.has(base)) return -1
 
     const length = this.length
     const nodes = this.getChildren()
 
     for (let index = 0; index < length; index++) {
-      if (nodes[index].getHead() === head) return index
+      if (nodes[index].getBase() === base) return index
     }
     return -1
   }
@@ -692,8 +694,8 @@ class ImmutableNode extends EnvironmentNodeType {
     return this._toObject()
   }
 
-  getHeads() {
-    return this._getChildren().map(node => node.getHead())
+  getBases() {
+    return this._getChildren().map(node => node.getBase())
   }
 
   _makeIndex(startAt = 0) {
@@ -703,7 +705,7 @@ class ImmutableNode extends EnvironmentNodeType {
     const length = nodes.length
 
     for (let index = startAt; index < length; index++) {
-      newIndex[nodes[index].getHead()] = index
+      newIndex[nodes[index].getBase()] = index
     }
 
     return newIndex
@@ -726,17 +728,17 @@ class ImmutableNode extends EnvironmentNodeType {
     return new this.constructor(this.childrenToString(), this.getLine())
   }
 
-  has(head) {
-    return this._getIndex()[head] !== undefined
+  has(base) {
+    return this._getIndex()[base] !== undefined
   }
 
-  _getHeadByIndex(index) {
+  _getBaseByIndex(index) {
     // Passing -1 gets the last item, et cetera
     const length = this.length
 
     if (index < 0) index = length + index
     if (index >= length) return undefined
-    return this.getChildren()[index].getHead()
+    return this.getChildren()[index].getBase()
   }
 
   parseNodeType(line) {
@@ -772,34 +774,34 @@ class TreeNotation extends ImmutableNode {
   }
 
   setWord(index, word) {
-    const wi = this.getWI()
+    const wi = this.getZI()
     const words = this._getLine().split(wi)
     words[index] = word
     this._setLine(words.join(wi))
     return this
   }
 
-  setTail(tail) {
-    if (tail === this.getTail()) return this
-    const newArray = [this.getHead()]
-    if (tail !== undefined) {
-      tail = tail.toString()
-      if (tail.match(this.getYI())) return this.setTailWithChildren(tail)
-      newArray.push(tail)
+  setBeam(beam) {
+    if (beam === this.getBeam()) return this
+    const newArray = [this.getBase()]
+    if (beam !== undefined) {
+      beam = beam.toString()
+      if (beam.match(this.getYI())) return this.setBeamWithChildren(beam)
+      newArray.push(beam)
     }
     this._updateMTime()
-    return this._setLine(newArray.join(this.getWI()))
+    return this._setLine(newArray.join(this.getZI()))
   }
 
-  setTailWithChildren(text) {
+  setBeamWithChildren(text) {
     if (!text.includes(this.getYI())) {
       this._clearChildren()
-      return this.setTail(text)
+      return this.setBeam(text)
     }
 
     const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
-    this.setTail(firstLine)
+    this.setBeam(firstLine)
 
     // tood: cleanup.
     const remainingString = lines.join(this.getYI())
@@ -809,9 +811,9 @@ class TreeNotation extends ImmutableNode {
     return this
   }
 
-  setHead(head) {
-    if (head === this.getHead()) return this
-    this.getWords()[0] = head
+  setBase(base) {
+    if (base === this.getBase()) return this
+    this.getWords()[0] = base
     this._updateMTime()
     return this
   }
@@ -823,7 +825,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   duplicate() {
-    return this.getParent()._loadLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
+    return this.getParent()._setLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
   }
 
   destroy() {
@@ -832,18 +834,18 @@ class TreeNotation extends ImmutableNode {
 
   setFromText(text) {
     if (this.toString() === text) return this
-    const tuple = this._textToTailAndChildrenTuple(text)
+    const tuple = this._textToBeamAndChildrenTuple(text)
     this.setLine(tuple[0])
     return this._setChildren(tuple[1])
   }
 
   append(line, children) {
-    return this._loadLineAndChildren(line, children)
+    return this._setLineAndChildren(line, children)
   }
 
   concat(node) {
     if (typeof node === "string") node = new TreeNotation(node)
-    return node._getChildren().map(node => this._loadLineAndChildren(node.getLine(), node.childrenToString()))
+    return node._getChildren().map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
   _deleteByIndexes(indexesToDelete) {
@@ -882,94 +884,94 @@ class TreeNotation extends ImmutableNode {
     return this
   }
 
-  _rename(oldHead, newHead) {
-    const index = this.indexOf(oldHead)
+  _rename(oldBase, newBase) {
+    const index = this.indexOf(oldBase)
 
     if (index === -1) return this
-    this.getChildren()[index].setHead(newHead)
+    this.getChildren()[index].setBase(newBase)
     this._clearIndex()
     return this
   }
 
   remap(map) {
     this.getChildren().forEach(node => {
-      const head = node.getHead()
-      if (map[head] !== undefined) node.setHead(map[head])
+      const base = node.getBase()
+      if (map[base] !== undefined) node.setBase(map[base])
     })
     return this
   }
 
-  rename(oldHead, newHead) {
-    this._rename(oldHead, newHead)
+  rename(oldBase, newBase) {
+    this._rename(oldBase, newBase)
     return this
   }
 
   renameAll(oldName, newName) {
-    this.findNodes(oldName).forEach(node => node.setHead(newName))
+    this.findNodes(oldName).forEach(node => node.setBase(newName))
     return this
   }
 
-  _deleteByHead(head) {
-    if (!this.has(head)) return this
+  _deleteByBase(base) {
+    if (!this.has(base)) return this
     const allNodes = this._getChildren()
     const indexesToDelete = []
     allNodes.forEach((node, index) => {
-      if (node.getHead() === head) indexesToDelete.push(index)
+      if (node.getBase() === base) indexesToDelete.push(index)
     })
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(head = "") {
+  delete(base = "") {
     const xi = this.getXI()
-    if (!head.includes(xi)) return this._deleteByHead(head)
+    if (!base.includes(xi)) return this._deleteByBase(base)
 
-    const parts = head.split(xi)
-    const nextHead = parts.pop()
+    const parts = base.split(xi)
+    const nextBase = parts.pop()
     const targetNode = this.getNode(parts.join(xi))
 
-    return targetNode ? targetNode._deleteByHead(nextHead) : 0
+    return targetNode ? targetNode._deleteByBase(nextBase) : 0
   }
 
   extend(nodeOrStr) {
     if (!(nodeOrStr instanceof TreeNotation)) nodeOrStr = new TreeNotation(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {
-      const path = node.getHead()
-      const tail = node.getTail()
-      const targetNode = this.touchNode(path).setTail(tail)
+      const path = node.getBase()
+      const beam = node.getBeam()
+      const targetNode = this.touchNode(path).setBeam(beam)
       if (node.length) targetNode.extend(node.childrenToString())
     })
     return this
   }
 
   insert(line, children, index) {
-    return this._loadLineAndChildren(line, children, index)
+    return this._setLineAndChildren(line, children, index)
   }
 
   prepend(line, children) {
     return this.insert(line, children, 0)
   }
 
-  pushTailAndChildren(tail, children) {
+  pushBeamAndChildren(beam, children) {
     let index = this.length
 
     while (this.has(index.toString())) {
       index++
     }
-    const line = index.toString() + (tail === undefined ? "" : this.getWI() + tail)
+    const line = index.toString() + (beam === undefined ? "" : this.getZI() + beam)
     return this.append(line, children)
   }
 
-  _touchNode(headPathArray) {
+  _touchNode(basePathArray) {
     let contextNode = this
-    headPathArray.forEach(head => {
-      contextNode = contextNode.getNode(head) || contextNode.append(head)
+    basePathArray.forEach(base => {
+      contextNode = contextNode.getNode(base) || contextNode.append(base)
     })
     return contextNode
   }
 
   _touchNodeByString(str) {
     str = str.replace(this.getYIRegex(), "") // todo: do we want to do this sanitization?
-    return this._touchNode(str.split(this.getWI()))
+    return this._touchNode(str.split(this.getZI()))
   }
 
   touchNode(str) {
@@ -986,9 +988,9 @@ class TreeNotation extends ImmutableNode {
       else if (!nodeB.length) return 1
 
       for (let nameIndex = 0; nameIndex < namesLength; nameIndex++) {
-        const head = nameOrNames[nameIndex]
-        const av = nodeA.getNode(head).getTail()
-        const bv = nodeB.getNode(head).getTail()
+        const base = nameOrNames[nameIndex]
+        const av = nodeA.getNode(base).getBeam()
+        const bv = nodeB.getNode(base).getBeam()
 
         if (av > bv) return 1
         else if (av < bv) return -1
@@ -1088,7 +1090,7 @@ class TreeNotation extends ImmutableNode {
   static _rowsToTreeNode(rows, delimiter, hasHeaders) {
     const numberOfColumns = rows[0].length
     const treeNode = new TreeNotation()
-    const names = this._getHeader(rows, hasHeaders)
+    const names = this._getBaseer(rows, hasHeaders)
 
     const rowCount = rows.length
     for (let rowIndex = hasHeaders ? 1 : 0; rowIndex < rowCount; rowIndex++) {
@@ -1112,7 +1114,7 @@ class TreeNotation extends ImmutableNode {
         obj[names[index]] = cellValue
       })
 
-      treeNode.pushTailAndChildren(undefined, obj)
+      treeNode.pushBeamAndChildren(undefined, obj)
     }
     return treeNode
   }
@@ -1157,11 +1159,11 @@ class TreeNotation extends ImmutableNode {
     // Set attributes
     if (xml.attributes) {
       for (let index = 0; index < xml.attributes.length; index++) {
-        result.setTail(xml.attributes[index].name, xml.attributes[index].value)
+        result.setBeam(xml.attributes[index].name, xml.attributes[index].value)
       }
     }
 
-    if (xml.data) children.pushTailAndChildren(xml.data)
+    if (xml.data) children.pushBeamAndChildren(xml.data)
 
     // Set content
     if (xml.childNodes && xml.childNodes.length > 0) {
@@ -1174,7 +1176,7 @@ class TreeNotation extends ImmutableNode {
         else if (child.tagName) children.append(child.tagName)
         else if (child.data) {
           const data = child.data.trim()
-          if (data) children.pushTailAndChildren(data)
+          if (data) children.pushBeamAndChildren(data)
         }
       }
     }
@@ -1184,17 +1186,17 @@ class TreeNotation extends ImmutableNode {
     return result
   }
 
-  static _getHeader(rows, hasHeaders) {
+  static _getBaseer(rows, hasHeaders) {
     const numberOfColumns = rows[0].length
     const headerRow = hasHeaders ? rows[0] : []
-    const wordDelimiter = " "
-    const assignmentRegex = new RegExp(wordDelimiter, "g")
+    const ZI = " "
+    const ziRegex = new RegExp(ZI, "g")
 
     if (hasHeaders) {
-      // Strip any assignmentChars from column names in the header row.
-      // This makes the mapping not quite 1 to 1 if there are any assignmentChars in names.
+      // Strip any ZIs from column names in the header row.
+      // This makes the mapping not quite 1 to 1 if there are any ZIs in names.
       for (let index = 0; index < numberOfColumns; index++) {
-        headerRow[index] = headerRow[index].replace(assignmentRegex, "")
+        headerRow[index] = headerRow[index].replace(ziRegex, "")
       }
     } else {
       // If str has no headers, create them as 0,1,2,3
@@ -1206,7 +1208,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "4.1.2"
+    return "5.0.0"
   }
 }
 

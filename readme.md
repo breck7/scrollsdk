@@ -53,7 +53,7 @@ Node.js:
 Example ETNs
 ------------
 
-This library includes 3 simple, but very useful, demo ETNs, located in the etns/ subfolder:
+This library includes 3 simple, but useful, demo ETNs, located in the etns/ subfolder:
 
 - Bray => An HTML ETN
 - Hakon => A CSS ETN

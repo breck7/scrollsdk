@@ -4,7 +4,7 @@ const TreeNotation = require("../treenotation.js")
 
 class HakonPropertyNode extends TreeNotation {
   toCss(spaces) {
-    return `${spaces}${this.getHead()}: ${this.getTail()};`
+    return `${spaces}${this.getBase()}: ${this.getBeam()};`
   }
 }
 
@@ -17,7 +17,7 @@ class HakonSelectorNode extends TreeNotation {
   getSelector() {
     const parentSelector = this.getParent().getSelector()
 
-    const head = this.getHead()
+    const head = this.getBase()
     const selector = head
       .split(",")
       .map(part => {

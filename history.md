@@ -1,3 +1,18 @@
+5.0.0 / 2017-7-24
+=================
+- Breaking: getWI is now getZI for consistency with X,Y,Z convention.
+- Breaking: getHead is now getBase
+- Breaking: setHead is now setBase
+- Breaking: pathVectorToPathName is now pathVectorToBasePath
+- Breaking: getPathName is now getBasePath
+- Breaking: getTail is now getBeam
+- Breaking: setTail is now setBeam
+- Breaking: findTail is now findBeam
+- Breaking: pushTailAndChildren is now pushBeamAndChildren
+- Breaking: getTailWithChildren is now getBeamWithChildren
+- Breaking: setTailWithChildren is now setBeamWithChildren
+- Breaking: getTails is now getBeams
+
 4.1.2 / 2017-6-26
 =================
 - Added setWord method

@@ -1210,6 +1210,7 @@ testTree.getBasePath = equal => {
   equal(child.getRootNode(), tree)
   equal(child.getStack().length, 6)
   equal(simple.getNode("foo").getStack().length, 1)
+  equal(child.getBasePath(parent), "data")
 }
 
 testTree.getPathVector = equal => {

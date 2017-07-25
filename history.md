@@ -1,3 +1,7 @@
+5.1.0 / 2017-7-25
+=================
+- Added "relativeTo" parameter to: getPoint, isRoot, getRootNode, getStack, getStackString, getBasePath, getPathVector
+
 5.0.1 / 2017-7-24
 =================
 - Bug fix: getBasePath works

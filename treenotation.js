@@ -35,24 +35,24 @@ class ImmutableNode extends EnvironmentNodeType {
     return this._parent
   }
 
-  getPoint() {
+  getPoint(relativeTo) {
     return {
-      x: this._getXCoordinate(),
-      y: this._getYCoordinate()
+      x: this._getXCoordinate(relativeTo),
+      y: this._getYCoordinate(relativeTo)
     }
   }
 
-  _getYCoordinate() {
-    return this.isRoot() ? 0 : this.getRootNode().getTopDownArray().indexOf(this) + 1 // todo: may be slow for big trees.
+  _getYCoordinate(relativeTo) {
+    return this.isRoot(relativeTo) ? 0 : this.getRootNode(relativeTo).getTopDownArray().indexOf(this) + 1 // todo: may be slow for big trees.
   }
 
-  isRoot() {
-    return !this.getParent()
+  isRoot(relativeTo) {
+    return relativeTo === this || !this.getParent()
   }
 
-  getRootNode() {
-    if (this.isRoot()) return this
-    return this.getParent().getRootNode()
+  getRootNode(relativeTo) {
+    if (this.isRoot(relativeTo)) return this
+    return this.getParent().getRootNode(relativeTo)
   }
 
   toString(indentCount = 0, language = this) {
@@ -109,15 +109,17 @@ class ImmutableNode extends EnvironmentNodeType {
     return (beam ? beam : "") + (this.length ? this.getYI() + this._childrenToString() : "")
   }
 
-  getStack() {
-    if (this.isRoot()) return []
+  getStack(relativeTo) {
+    if (this.isRoot(relativeTo)) return []
     const parent = this.getParent()
-    if (parent.isRoot()) return [this]
-    else return parent.getStack().concat([this])
+    if (parent.isRoot(relativeTo)) return [this]
+    else return parent.getStack(relativeTo).concat([this])
   }
 
-  getStackString() {
-    return this.getStack().map((node, index) => this.getXI().repeat(index) + node.getLine()).join(this.getYI())
+  getStackString(relativeTo) {
+    return this.getStack(relativeTo)
+      .map((node, index) => this.getXI().repeat(index) + node.getLine())
+      .join(this.getYI())
   }
 
   getLine(language = this) {
@@ -125,16 +127,16 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   // todo: return array? getPathArray?
-  getBasePath() {
-    if (this.isRoot()) return ""
-    else if (this.getParent().isRoot()) return this.getBase()
+  getBasePath(relativeTo) {
+    if (this.isRoot(relativeTo)) return ""
+    else if (this.getParent().isRoot(relativeTo)) return this.getBase()
 
-    return this.getParent().getBasePath() + this.getXI() + this.getBase()
+    return this.getParent().getBasePath(relativeTo) + this.getXI() + this.getBase()
   }
 
-  getPathVector() {
-    if (this.isRoot()) return []
-    const path = this.getParent().getPathVector()
+  getPathVector(relativeTo) {
+    if (this.isRoot(relativeTo)) return []
+    const path = this.getParent().getPathVector(relativeTo)
     path.push(this.getIndex())
     return path
   }
@@ -216,8 +218,8 @@ class ImmutableNode extends EnvironmentNodeType {
     })
   }
 
-  _getXCoordinate() {
-    return this.getStack().length
+  _getXCoordinate(relativeTo) {
+    return this.getStack(relativeTo).length
   }
 
   getParentFirstArray() {
@@ -1208,7 +1210,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.0.1"
+    return "5.1.0"
   }
 }
 

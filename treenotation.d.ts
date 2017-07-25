@@ -18,18 +18,18 @@ interface TreeNotation {
   (tree?: content, line?: string): This
 
   getIndex: () => int
-  getPoint: () => point
-  getPathVector: () => pathVector
+  getPoint: (relativeTo?: TreeNotation) => point
+  getPathVector: (relativeTo?: TreeNotation) => pathVector
   getLine: () => nodeString
   getChildrenByNodeType: () => TreeNotation[]
-  getStack: () => TreeNotation[]
-  getStackString: () => string
+  getStack: (relativeTo?: TreeNotation) => TreeNotation[]
+  getStackString: (relativeTo?: TreeNotation) => string
   getParent: () => TreeNotation | undefined
-  getRootNode: () => This | TreeNotation
+  getRootNode: (relativeTo?: TreeNotation) => This | TreeNotation
   getBase: () => word
   getWords: (startingFrom?: int) => word[]
   getLoad: () => string | Undefined // Always refers to part of the line after the base, given that ZI is space.
-  getBasePath: () => basePath
+  getBasePath: (relativeTo?: TreeNotation) => basePath
   getTopDownArray: () => TreeNotation[] // returns all nodes as array in preorder order
   getGraph: (headKey?: word) => TreeNotation[] // if no param, uses getWord(1)
   getBeamWithChildren: () => string
@@ -42,7 +42,7 @@ interface TreeNotation {
   getNode: (path: basePath) => TreeNotation
   getNodes: () => TreeNotation[]
   length: number
-  nodeAt: (index: int) => TreeNotation
+  nodeAt: (index: int | pathVector) => TreeNotation
   findNodes: (path: basePath) => TreeNotation[]
   findBeam: (path: basePath) => string | Undefined
   format: (str: formatString) => string

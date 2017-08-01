@@ -35,6 +35,19 @@ class ImmutableNode extends EnvironmentNodeType {
     return this._parent
   }
 
+  getInheritanceTree() {
+    const paths = {}
+    const result = new TreeNotation()
+    this.getChildren().forEach(node => {
+      const key = node.getWord(0)
+      const parentKey = node.getWord(1)
+      const parentPath = paths[parentKey]
+      paths[key] = parentPath ? [parentPath, key].join(" ") : key
+      result.touchNode(paths[key])
+    })
+    return result
+  }
+
   getPoint(relativeTo) {
     return {
       x: this._getXCoordinate(relativeTo),
@@ -1210,7 +1223,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.1.0"
+    return "5.2.0"
   }
 }
 

@@ -1,3 +1,7 @@
+5.2.0 / 2017-8-1
+================
+- Added getInheritanceTree method
+
 5.1.0 / 2017-7-25
 =================
 - Added "relativeTo" parameter to: getPoint, isRoot, getRootNode, getStack, getStackString, getBasePath, getPathVector

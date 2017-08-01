@@ -1029,6 +1029,28 @@ testTree.getBeam = equal => {
   equal(treeWithNumbers.getNode("1").getBeam(), "bob")
 }
 
+testTree.getInheritanceTree = equal => {
+  // Arrange
+  const classes = `abstractBase
+abstractModalBase abstractBase
+helpModal abstractModalBase
+abstractButton abstractBase
+helpButton abstractButton`
+
+  // Act
+  const inheritanceTree = new TreeNotation(classes).getInheritanceTree()
+
+  // Assert
+  equal(
+    inheritanceTree.toString(),
+    `abstractBase
+ abstractModalBase
+  helpModal
+ abstractButton
+  helpButton`
+  )
+}
+
 testTree.getLines = equal => {
   // Arrange
   const value = new TreeNotation("hello\n world")

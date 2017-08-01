@@ -35,6 +35,7 @@ interface TreeNotation {
   getBeamWithChildren: () => string
   getNext: () => TreeNotation // wrapsaround
   getPrevious: () => TreeNotation // wrapsaround
+  getInheritanceTree: () => TreeNotation // useful when your trees follow the convention "className parentClassName" line structure
   isTerminal: () => Boolean
   clone: () => TreeNotation
   copyTo: (tree: TreeNotation, index?: int) => TreeNotation
@@ -89,6 +90,7 @@ interface TreeNotation {
   reverse: () => This
   shift: () => TreeNotation
   sort: (sortFn: sortFn) => This
+  touchNode: (basePath: basePath) => TreeNotation
 }
 
 interface StaticTreeNotation {

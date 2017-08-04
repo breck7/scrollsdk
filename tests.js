@@ -2319,6 +2319,24 @@ testTree.toFixedWidthTable = equal => {
   equal(b.toFixedWidthTable(1), "n\nj\nf", "Expected max width to be enforced")
 }
 
+testTree.nest = equal => {
+  // Arrange/Act
+  const testStr2 = `html
+ head
+  body
+   h3${TreeNotation.nest("", 3)}
+   h1${TreeNotation.nest("h2 2", 3)}`
+  const test = new TreeNotation(testStr2)
+
+  // Assert
+  equal(test.getNode("html head body").getChildren().length, 3)
+  equal(test.getNode("html head body h2").getBeam(), "2")
+
+  equal(new TreeNotation(`${TreeNotation.nest("foo bar", 0)}`).getNode("foo").getBeam(), "bar")
+  equal(new TreeNotation(`${TreeNotation.nest("foo bar", 1)}`).getNode(" foo").getBeam(), "bar")
+  equal(new TreeNotation(`${TreeNotation.nest("foo bar", 2)}`).nodeAt([0, 0]).getBeam(), "foo bar")
+}
+
 testTree.toObject = equal => {
   // Arrange
   const a = new TreeNotation("hello world")

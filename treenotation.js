@@ -1222,8 +1222,15 @@ class TreeNotation extends ImmutableNode {
     return headerRow
   }
 
+  static nest(str, xValue) {
+    const YI = "\n"
+    const XI = " "
+    const indent = YI + XI.repeat(xValue)
+    return str ? indent + str.replace(/\n/g, indent) : ""
+  }
+
   static getVersion() {
-    return "5.2.0"
+    return "5.3.0"
   }
 }
 

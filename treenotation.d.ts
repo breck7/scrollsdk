@@ -95,6 +95,7 @@ interface TreeNotation {
 
 interface StaticTreeNotation {
   getVersion: () => string
+  nest: (lines: string, xi: int) => string // Insert lines, if any, as child nodes prefixed with the given number of XI characters
   fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeNotation
   fromJson: (str: Json) => TreeNotation
   fromCsv: (str: string, hasHeaders?: boolean) => TreeNotation

@@ -1,3 +1,7 @@
+5.3.0 / 2017-8-3
+================
+- Added nest static method
+
 5.2.0 / 2017-8-1
 ================
 - Added getInheritanceTree method

@@ -72,7 +72,7 @@ interface TreeNotation {
   extend: (tree: TreeNotation | string) => This // recursively extend the object
   destroy: () => undefined
   duplicate: () => TreeNotation
-  getMTime: () => number | undefined // Only updates on changes to line. Returns undefined if no modifications yet.
+  getMTime: () => number // Only updates on changes to line. Initializes lazily on first call.
   setLine: (line: string) => This
   setFromText: (text: string) => This
   insert: (line: string, tree?: TreeNotation, index?: int) => TreeNotation

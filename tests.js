@@ -2608,8 +2608,10 @@ testTree.treeNodes = equal => {
   // Arrange
   const a = new TreeNotation("text")
   const node = a.nodeAt(0)
+  const originalMtime = node.getMTime()
 
   // Assert
+  equal(originalMtime > 0, true)
   equal(node.isTerminal(), true)
   equal(node.getBase(), "text")
   equal(node.getBeam(), undefined)

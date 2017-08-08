@@ -773,6 +773,7 @@ class ImmutableNode extends EnvironmentNodeType {
 
 class TreeNotation extends ImmutableNode {
   getMTime() {
+    if (!this._mtime) this._updateMTime()
     return this._mtime
   }
 
@@ -1230,7 +1231,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.3.0"
+    return "5.4.0"
   }
 }
 

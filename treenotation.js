@@ -777,6 +777,20 @@ class TreeNotation extends ImmutableNode {
     return this._mtime
   }
 
+  getTreeMTime() {
+    const mtime = this.getMTime()
+    const childTimes = this.getChildren().map(child => child.getTreeMTime())
+    childTimes.push(mtime)
+    let newTime = Math.max.apply(null, childTimes)
+    if (
+      this._tmtime &&
+      this._tmtime > newTime // if something has been deleted, set the TMTime to now.
+    )
+      newTime = this._getNow()
+    this._tmtime = newTime
+    return this._tmtime
+  }
+
   _clearIndex() {
     delete this._index
   }
@@ -1231,7 +1245,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.4.0"
+    return "5.5.0"
   }
 }
 

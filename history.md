@@ -1,3 +1,7 @@
+5.5.0 / 2017-8-8
+================
+- Added getTreeMTime method
+
 5.4.0 / 2017-8-8
 ================
 - Breaking: getMTime now always returns a number (previously it could return undefined). Initializes lazily on first call.

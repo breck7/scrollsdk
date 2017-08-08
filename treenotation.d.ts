@@ -73,6 +73,7 @@ interface TreeNotation {
   destroy: () => undefined
   duplicate: () => TreeNotation
   getMTime: () => number // Only updates on changes to line. Initializes lazily on first call.
+  getTreeMTime: () => number // get time tree was last modified. Initializes lazily on first call.
   setLine: (line: string) => This
   setFromText: (text: string) => This
   insert: (line: string, tree?: TreeNotation, index?: int) => TreeNotation

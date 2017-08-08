@@ -2604,6 +2604,31 @@ testTree.toOutline = equal => {
   )
 }
 
+testTree.getTreeMTime = equal => {
+  // Arrange
+  const a = new TreeNotation(`text
+ foo
+  bar
+some
+ other`)
+  const mtime = a.getTreeMTime()
+  const fooTime = a.getNode("text foo").getTreeMTime()
+
+  // Act
+  a.delete("some other")
+
+  // Assert
+  const newTime = a.getTreeMTime()
+  equal(newTime > mtime, true, `newtime mtime ${newTime} ${mtime}`)
+  equal(a.getNode("text foo").getTreeMTime() === fooTime, true)
+
+  // Act
+  a.getNode("text foo").setBeam("wham")
+
+  // Assert
+  equal(a.getNode("text foo").getTreeMTime() > fooTime, true)
+}
+
 testTree.treeNodes = equal => {
   // Arrange
   const a = new TreeNotation("text")

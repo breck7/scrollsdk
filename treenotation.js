@@ -23,7 +23,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   execute(context) {
-    return this.getChildren().map(child => child.execute(context)).join("\n")
+    return Promise.all(this.getChildren().map(child => child.execute(context)))
   }
 
   _getUid() {
@@ -53,6 +53,10 @@ class ImmutableNode extends EnvironmentNodeType {
       x: this._getXCoordinate(relativeTo),
       y: this._getYCoordinate(relativeTo)
     }
+  }
+
+  getIndentation(relativeTo) {
+    return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
   _getYCoordinate(relativeTo) {
@@ -1245,7 +1249,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.5.0"
+    return "5.6.0"
   }
 }
 

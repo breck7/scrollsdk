@@ -1,3 +1,8 @@
+5.6.0 / 2017-8-18
+=================
+- Breaking: base execute now returns a Promise.all that resolves when all children have resolves
+- Added getIndentation method
+
 5.5.0 / 2017-8-8
 ================
 - Added getTreeMTime method

@@ -988,6 +988,21 @@ testTree.getLine = equal => {
   equal(node.getMTime() > mtime, true)
 }
 
+testTree.getIndentation = equal => {
+  // Arrange
+  const tree = new TreeNotation(testStrings.webpageTrimmed)
+
+  // Act/assert
+  equal(tree.getNode("body").getIndentation(), "")
+  equal(tree.getNode("body div").getIndentation(), " ")
+  equal(tree.getNode("body div content").getIndentation(), "  ")
+
+  equal(
+    testStrings.webpageTrimmed,
+    tree.getTopDownArray().map(line => line.getIndentation() + line.getLine()).join("\n")
+  )
+}
+
 testTree.getBeam = equal => {
   // Arrange
   const tree = new TreeNotation("hello world")
@@ -1193,7 +1208,7 @@ testTree.simpleETN = equal => {
   class AdditionNode extends TreeNotation {
     execute() {
       const words = this.getBeam().split(" ")
-      return words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
+      return Promise.resolve(words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0))
     }
   }
   class MathETN extends TreeNotation {
@@ -1208,15 +1223,15 @@ testTree.simpleETN = equal => {
   const program = new MathETN(source)
 
   // Act
-  const result = program.execute()
-
-  // Assert
-  equal(
-    result,
-    `9
+  const result = program.execute().then(results => {
+    // Assert
+    equal(
+      results.join("\n"),
+      `9
 4
 316`
-  )
+    )
+  })
 }
 
 testTree.getBasePath = equal => {

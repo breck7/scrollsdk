@@ -811,7 +811,7 @@ class TreeNotation extends ImmutableNode {
     const wi = this.getZI()
     const words = this._getLine().split(wi)
     words[index] = word
-    this._setLine(words.join(wi))
+    this.setLine(words.join(wi))
     return this
   }
 
@@ -846,15 +846,14 @@ class TreeNotation extends ImmutableNode {
   }
 
   setBase(base) {
-    if (base === this.getBase()) return this
-    this.getWords()[0] = base
-    this._updateMTime()
-    return this
+    return this.setWord(0, base)
   }
 
   setLine(line) {
     if (line === this.getLine()) return this
     this._updateMTime()
+    // todo: clear parent TMTimes
+    this.getParent()._clearIndex()
     return this._setLine(line)
   }
 
@@ -1249,7 +1248,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.6.0"
+    return "5.6.1"
   }
 }
 

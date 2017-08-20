@@ -1,3 +1,7 @@
+5.6.1 / 2017-8-20
+=================
+- Fix: stale index when using setLine or setBase methods
+
 5.6.0 / 2017-8-18
 =================
 - Breaking: base execute now returns a Promise.all that resolves when all children have resolves

@@ -979,6 +979,7 @@ testTree.getLine = equal => {
 
   // Assert
   equal(node.getLine(), "hello world")
+  equal(tree.has("hello"), true)
 
   // Act
   node.setLine("hi earth")
@@ -986,6 +987,8 @@ testTree.getLine = equal => {
   // Assert
   equal(tree.toString(), "hi earth")
   equal(node.getMTime() > mtime, true)
+  equal(tree.has("hello"), false)
+  console.log(tree.toString())
 }
 
 testTree.getIndentation = equal => {
@@ -2672,6 +2675,7 @@ testTree.treeNodes = equal => {
   equal(node.isTerminal(), false)
   equal(node.childrenToString(), "color blue")
   equal(a.toString(), "text hello world\n color blue")
+  equal(a.has("text"), true)
 
   // Act
   const mtime = node.getMTime()
@@ -2680,6 +2684,7 @@ testTree.treeNodes = equal => {
   // Assert
   equal(a.toString(), "foo hello world\n color blue")
   equal(node.getMTime() > mtime, true)
+  equal(a.has("text"), false)
 
   // Act
   node.setChildren("")

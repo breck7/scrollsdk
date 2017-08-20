@@ -1682,6 +1682,29 @@ testTree.setWord = equal => {
   equal(a.getLine(), "? result checkThis 1 2")
 }
 
+testTree.etnDependingOnParent = equal => {
+  // Arrange
+  class ReverseEtnNode extends TreeNotation {
+    parseNodeType(line) {
+      this.getParent().getLine()
+      return TreeNotation
+    }
+  }
+
+  class TestLanguage extends TreeNotation {
+    parseNodeType() {
+      return ReverseEtnNode
+    }
+  }
+
+  // Act
+  // This tests against a regression, it should not throw.
+  const program = new TestLanguage(`foo
+ bar`)
+  // Assert.
+  equal(program.length, 1)
+}
+
 testTree.multiline = equal => {
   // Arrange
   const a = new TreeNotation("my multiline\n string")

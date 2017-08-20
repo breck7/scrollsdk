@@ -18,8 +18,8 @@ class ImmutableNode extends EnvironmentNodeType {
   constructor(children, line, parent) {
     super()
     this._parent = parent
-    this._setChildren(children)
     this._setLine(line)
+    this._setChildren(children)
   }
 
   execute(context) {

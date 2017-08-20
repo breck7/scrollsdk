@@ -1248,7 +1248,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.6.1"
+    return "5.6.2"
   }
 }
 

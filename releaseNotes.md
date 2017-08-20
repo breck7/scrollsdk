@@ -1,3 +1,7 @@
+5.6.2 / 2017-8-20
+=================
+- Fix: child nodes can now inspect their parent's line at parse time to enable dependent types
+
 5.6.1 / 2017-8-20
 =================
 - Fix: stale index when using setLine or setBase methods

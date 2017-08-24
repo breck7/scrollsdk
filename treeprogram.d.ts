@@ -1,4 +1,4 @@
-declare type content = string | TreeNotation | Object | any
+declare type content = string | TreeProgram | Object | any
 declare type int = number
 declare type nodeString = string // A string that does not contain YI ("\n")
 declare type basePath = string // user emailAddress
@@ -9,44 +9,44 @@ declare type This = any
 declare type filepath = string
 declare type formatString = string // "Hello {name}! You are {age} years old."
 declare type Json = string // JSON string
-declare type nodeIterator = (node: TreeNotation, index: int) => boolean
+declare type nodeIterator = (node: TreeProgram, index: int) => boolean
 declare type sortResultInt = int // -1 0 1
-declare type nodeMapFn = (node: TreeNotation) => string
-declare type sortFn = (nodeA: TreeNotation, nodeB: TreeNotation) => sortResultInt
+declare type nodeMapFn = (node: TreeProgram) => string
+declare type sortFn = (nodeA: TreeProgram, nodeB: TreeProgram) => sortResultInt
 declare type point = { x: int; y: int } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
-interface TreeNotation {
+interface TreeProgram {
   (tree?: content, line?: string): This
 
   getIndex: () => int
-  getPoint: (relativeTo?: TreeNotation) => point
-  getPathVector: (relativeTo?: TreeNotation) => pathVector
+  getPoint: (relativeTo?: TreeProgram) => point
+  getPathVector: (relativeTo?: TreeProgram) => pathVector
   getLine: () => nodeString
-  getChildrenByNodeType: () => TreeNotation[]
-  getStack: (relativeTo?: TreeNotation) => TreeNotation[]
-  getStackString: (relativeTo?: TreeNotation) => string
-  getParent: () => TreeNotation | undefined
-  getRootNode: (relativeTo?: TreeNotation) => This | TreeNotation
+  getChildrenByNodeType: () => TreeProgram[]
+  getStack: (relativeTo?: TreeProgram) => TreeProgram[]
+  getStackString: (relativeTo?: TreeProgram) => string
+  getParent: () => TreeProgram | undefined
+  getRootNode: (relativeTo?: TreeProgram) => This | TreeProgram
   getBase: () => word
   getWord: (index: int) => word
   getWords: (startingFrom?: int) => word[]
   getLoad: () => string | Undefined // Always refers to part of the line after the base, given that ZI is space.
-  getBasePath: (relativeTo?: TreeNotation) => basePath
-  getTopDownArray: () => TreeNotation[] // returns all nodes as array in preorder order
-  getGraph: (headKey?: word) => TreeNotation[] // if no param, uses getWord(1)
-  getNext: () => TreeNotation // wrapsaround
-  getPrevious: () => TreeNotation // wrapsaround
-  getInheritanceTree: () => TreeNotation // useful when your trees follow the convention "className parentClassName" line structure
+  getBasePath: (relativeTo?: TreeProgram) => basePath
+  getTopDownArray: () => TreeProgram[] // returns all nodes as array in preorder order
+  getGraph: (headKey?: word) => TreeProgram[] // if no param, uses getWord(1)
+  getNext: () => TreeProgram // wrapsaround
+  getPrevious: () => TreeProgram // wrapsaround
+  getInheritanceTree: () => TreeProgram // useful when your trees follow the convention "className parentClassName" line structure
   execute: () => Promise<any>
   isTerminal: () => Boolean
-  clone: () => TreeNotation
-  copyTo: (tree: TreeNotation, index?: int) => TreeNotation
+  clone: () => TreeProgram
+  copyTo: (tree: TreeProgram, index?: int) => TreeProgram
   getLines: () => string[]
-  getNode: (path: basePath) => TreeNotation
-  getNodes: () => TreeNotation[]
+  getNode: (path: basePath) => TreeProgram
+  getNodes: () => TreeProgram[]
   length: number
-  nodeAt: (index: int | pathVector) => TreeNotation
-  findNodes: (path: basePath) => TreeNotation[]
+  nodeAt: (index: int | pathVector) => TreeProgram
+  findNodes: (path: basePath) => TreeProgram[]
   findBeam: (path: basePath) => string | Undefined
   format: (str: formatString) => string
   getColumn: (path: word) => (string | Undefined)[]
@@ -68,20 +68,20 @@ interface TreeNotation {
   toString: () => string
   toXml: () => string
 
-  append: (line: string, tree?: TreeNotation) => TreeNotation
-  concat: (b: TreeNotation | string) => This
+  append: (line: string, tree?: TreeProgram) => TreeProgram
+  concat: (b: TreeProgram | string) => This
   delete: (path: basePath) => This // todo: rename delete child?
-  extend: (tree: TreeNotation | string) => This // recursively extend the object
+  extend: (tree: TreeProgram | string) => This // recursively extend the object
   destroy: () => undefined
-  duplicate: () => TreeNotation
+  duplicate: () => TreeProgram
   getMTime: () => number // Only updates on changes to line. Initializes lazily on first call.
   getTreeMTime: () => number // get time tree was last modified. Initializes lazily on first call.
   setLine: (line: string) => This
   setFromText: (text: string) => This
-  insert: (line: string, tree?: TreeNotation, index?: int) => TreeNotation
+  insert: (line: string, tree?: TreeProgram, index?: int) => TreeProgram
   invert: () => This // Flips bases and beams on all top level nodes. Does not recurse.
-  prepend: (line: string, tree?: TreeNotation) => TreeNotation
-  pushBeamAndTree: (beam?: string, tree?: TreeNotation) => TreeNotation // Base will be set to this.length + 1. todo: remove?
+  prepend: (line: string, tree?: TreeProgram) => TreeProgram
+  pushBeamAndTree: (beam?: string, tree?: TreeProgram) => TreeProgram // Base will be set to this.length + 1. todo: remove?
   remap: (key: Object) => This // Does not recurse.
   rename: (oldBase: word, newBase: word) => This
   renameAll: (oldBase: word, newBase: word) => This
@@ -90,19 +90,19 @@ interface TreeNotation {
   setWord: (index: int, value: string) => This
   setBeam: (value?: content) => This
   reverse: () => This
-  shift: () => TreeNotation
+  shift: () => TreeProgram
   sort: (sortFn: sortFn) => This
-  touchNode: (basePath: basePath) => TreeNotation
+  touchNode: (basePath: basePath) => TreeProgram
 }
 
-interface StaticTreeNotation {
+interface StaticTreeProgram {
   getVersion: () => string
   nest: (lines: string, xi: int) => string // Insert lines, if any, as child nodes prefixed with the given number of XI characters
-  fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeNotation
-  fromJson: (str: Json) => TreeNotation
-  fromCsv: (str: string, hasHeaders?: boolean) => TreeNotation
-  fromSsv: (str: string, hasHeaders?: boolean) => TreeNotation
-  fromTsv: (str: string, hasHeaders?: boolean) => TreeNotation
-  fromXml: (str: string) => TreeNotation
+  fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeProgram
+  fromJson: (str: Json) => TreeProgram
+  fromCsv: (str: string, hasHeaders?: boolean) => TreeProgram
+  fromSsv: (str: string, hasHeaders?: boolean) => TreeProgram
+  fromTsv: (str: string, hasHeaders?: boolean) => TreeProgram
+  fromXml: (str: string) => TreeProgram
   executeFile: (path: filepath) => Promise<any>
 }

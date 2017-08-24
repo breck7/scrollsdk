@@ -1,3 +1,10 @@
+6.0.0 / 2017-8-24
+=================
+- Breaking: Renamed TreeNotation to TreeProgram.
+- Breaking: github is now at breck7/treeprogram
+- Breaking: npm install treenotation is now npm install treeprogram
+- Fix: fixed timing bug in getTreeMTime
+
 5.7.0 / 2017-8-24
 =================
 - New: getWord can now take a negative int

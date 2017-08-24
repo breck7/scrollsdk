@@ -37,7 +37,7 @@ class ImmutableNode extends EnvironmentNodeType {
 
   getInheritanceTree() {
     const paths = {}
-    const result = new TreeNotation()
+    const result = new TreeProgram()
     this.getChildren().forEach(node => {
       const key = node.getWord(0)
       const parentKey = node.getWord(1)
@@ -590,7 +590,7 @@ class ImmutableNode extends EnvironmentNodeType {
     // set from string
     if (typeof content === "string") return this._parseString(content)
 
-    // set from TreeNotation object
+    // set from TreeProgram object
     if (content instanceof ImmutableNode) {
       const me = this
       content._getChildren().forEach(node => {
@@ -635,7 +635,7 @@ class ImmutableNode extends EnvironmentNodeType {
       circularCheckArray.push(beam)
       line = base
       const length = beam instanceof Array ? beam.length : Object.keys(beam).length
-      if (length) children = new TreeNotation()._setChildren(beam, circularCheckArray)
+      if (length) children = new TreeProgram()._setChildren(beam, circularCheckArray)
     } else {
       // iirc this is return early from circular
       return
@@ -778,24 +778,24 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 }
 
-class TreeNotation extends ImmutableNode {
+class TreeProgram extends ImmutableNode {
   getMTime() {
     if (!this._mtime) this._updateMTime()
     return this._mtime
   }
 
+  _getChildrenMTime() {
+    const mTimes = this.getChildren().map(child => child.getTreeMTime())
+    const newestTime = Math.max.apply(null, mTimes)
+    const newestChildWasDeleted = this._cmtime && this._cmtime > newestTime
+    this._cmtime = newestChildWasDeleted ? this._getNow() : newestTime
+    return this._cmtime
+  }
+
   getTreeMTime() {
     const mtime = this.getMTime()
-    const childTimes = this.getChildren().map(child => child.getTreeMTime())
-    childTimes.push(mtime)
-    let newTime = Math.max.apply(null, childTimes)
-    if (
-      this._tmtime &&
-      this._tmtime > newTime // if something has been deleted, set the TMTime to now.
-    )
-      newTime = this._getNow()
-    this._tmtime = newTime
-    return this._tmtime
+    const cmtime = this._getChildrenMTime()
+    return Math.max(mtime, cmtime)
   }
 
   _clearIndex() {
@@ -843,7 +843,7 @@ class TreeNotation extends ImmutableNode {
 
     // tood: cleanup.
     const remainingString = lines.join(this.getYI())
-    const children = new TreeNotation(remainingString)
+    const children = new TreeProgram(remainingString)
     if (!remainingString) children.append("")
     this.setChildren(children)
     return this
@@ -881,7 +881,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   concat(node) {
-    if (typeof node === "string") node = new TreeNotation(node)
+    if (typeof node === "string") node = new TreeProgram(node)
     return node._getChildren().map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
@@ -970,7 +970,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   extend(nodeOrStr) {
-    if (!(nodeOrStr instanceof TreeNotation)) nodeOrStr = new TreeNotation(nodeOrStr)
+    if (!(nodeOrStr instanceof TreeProgram)) nodeOrStr = new TreeProgram(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {
       const path = node.getBase()
       const beam = node.getBeam()
@@ -1042,7 +1042,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   static fromJson(str) {
-    return new TreeNotation(JSON.parse(str))
+    return new TreeProgram(JSON.parse(str))
   }
 
   static fromSsv(str, hasHeaders) {
@@ -1126,12 +1126,12 @@ class TreeNotation extends ImmutableNode {
   // Given an array return a tree
   static _rowsToTreeNode(rows, delimiter, hasHeaders) {
     const numberOfColumns = rows[0].length
-    const treeNode = new TreeNotation()
+    const treeNode = new TreeProgram()
     const names = this._getHeader(rows, hasHeaders)
 
     const rowCount = rows.length
     for (let rowIndex = hasHeaders ? 1 : 0; rowIndex < rowCount; rowIndex++) {
-      const rowTree = new TreeNotation()
+      const rowTree = new TreeProgram()
       let row = rows[rowIndex]
       // If the row contains too many columns, shift the extra columns onto the last one.
       // This allows you to not have to escape delimiter characters in the final column.
@@ -1190,8 +1190,8 @@ class TreeNotation extends ImmutableNode {
   }
 
   static _treeNodeFromXml(xml) {
-    const result = new TreeNotation()
-    const children = new TreeNotation()
+    const result = new TreeProgram()
+    const children = new TreeProgram()
 
     // Set attributes
     if (xml.attributes) {
@@ -1226,7 +1226,7 @@ class TreeNotation extends ImmutableNode {
   static executeFile(programPath) {
     const fs = require("fs")
     const code = fs.readFileSync(programPath, "utf8")
-    const program = new TreeNotation(code)
+    const program = new TreeProgram(code)
     const etnFile = program.getNode("#!").getWord(-1)
     const etnClass = require(etnFile)
     const etnProgram = new etnClass(code)
@@ -1266,6 +1266,6 @@ class TreeNotation extends ImmutableNode {
   }
 }
 
-TreeNotation.ImmutableNode = ImmutableNode
+TreeProgram.ImmutableNode = ImmutableNode
 
-if (typeof exports !== "undefined") module.exports = TreeNotation
+if (typeof exports !== "undefined") module.exports = TreeProgram

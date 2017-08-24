@@ -1,9 +1,9 @@
-const TreeNotation = require("../treenotation.js")
+const TreeProgram = require("../treeprogram.js")
 const Tape = require("tape")
 
-class UnitTestSection extends TreeNotation {}
+class UnitTestSection extends TreeProgram {}
 
-class Wall extends TreeNotation {
+class WallProgram extends TreeProgram {
   parseNodeType(line) {
     return UnitTestSection
   }
@@ -24,4 +24,4 @@ class Wall extends TreeNotation {
   }
 }
 
-module.exports = Wall
+module.exports = WallProgram

@@ -1,17 +1,17 @@
 {
-  "name": "treenotation",
-  "version": "5.7.0",
+  "name": "treeprogram",
+  "version": "6.0.0",
   "description": "Javascript Tree Notation implementation.",
-  "main": "treenotation.js",
+  "main": "treeprogram.js",
   "scripts": {
     "test": "./tasks/unit.js",
     "start": "./tasks/start.js"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/breck7/treenotation"
+    "url": "git://github.com/breck7/treeprogram"
   },
-  "keywords": "treenotation",
+  "keywords": "treeprogram",
   "devDependencies": {
     "express": "*",
     "tape": "^4.6.3",

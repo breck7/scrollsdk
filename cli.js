@@ -1,1 +1,1 @@
-require("./TreeNotation.js").executeFile(process.argv[3])
+require("./TreeProgram.js").executeFile(process.argv[3])

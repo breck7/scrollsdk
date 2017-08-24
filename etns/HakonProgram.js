@@ -1,14 +1,14 @@
-const TreeNotation = require("../treenotation.js")
+const TreeProgram = require("../treeprogram.js")
 
 // tood: create a real ETN.
 
-class HakonPropertyNode extends TreeNotation {
+class HakonPropertyNode extends TreeProgram {
   toCss(spaces) {
     return `${spaces}${this.getBase()}: ${this.getBeam()};`
   }
 }
 
-class HakonSelectorNode extends TreeNotation {
+class HakonSelectorNode extends TreeProgram {
   parseNodeType(line) {
     if (line.includes(" ")) return HakonPropertyNode
     return HakonSelectorNode
@@ -38,9 +38,9 @@ ${propertyNodes.map(child => child.toCss(spaces)).join("\n")}
   }
 }
 
-class Hakon extends TreeNotation {
+class HakonProgram extends TreeProgram {
   parseNodeType(line) {
-    if (!line) return TreeNotation
+    if (!line) return TreeProgram
     return HakonSelectorNode
   }
 
@@ -53,4 +53,4 @@ class Hakon extends TreeNotation {
   }
 }
 
-module.exports = Hakon
+module.exports = HakonProgram

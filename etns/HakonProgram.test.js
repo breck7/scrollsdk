@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict
 
-const Hakon = require("./Hakon.js")
-const Wall = require("./Wall.js")
+const HakonProgram = require("./HakonProgram.js")
+const WallProgram = require("./WallProgram.js")
 
 const program = `basics
  in
@@ -26,13 +26,13 @@ const program = `basics
   }
   `
 
-const tests = new Wall(program)
+const tests = new WallProgram(program)
 
 !module.parent
   ? tests.execute(node => {
       const sourceETNCode = node.getNode("in").childrenToString()
       const expected = node.getNode("out").childrenToString()
-      const actual = new Hakon(sourceETNCode).toCss()
+      const actual = new HakonProgram(sourceETNCode).toCss()
       const message = node.getLine()
       return {
         actual: actual,

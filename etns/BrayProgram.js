@@ -1,12 +1,12 @@
-const TreeNotation = require("../treenotation.js")
+const TreeProgram = require("../treeprogram.js")
 
-class BrayContentNode extends TreeNotation {
+class BrayContentNode extends TreeProgram {
   _toHtml() {
     return this.getBeamWithChildren()
   }
 }
 
-class BrayAttributeNode extends TreeNotation {
+class BrayAttributeNode extends TreeProgram {
   _toHtml() {
     return ""
   }
@@ -16,13 +16,13 @@ class BrayAttributeNode extends TreeNotation {
   }
 }
 
-class Bray extends TreeNotation {
+class BrayProgram extends TreeProgram {
   getTag() {
     return this.getWord(1)
   }
 
   parseNodeType(line) {
-    if (line.startsWith(">")) return Bray
+    if (line.startsWith(">")) return BrayProgram
     if (line.startsWith("content")) return BrayContentNode
     return BrayAttributeNode
   }
@@ -52,4 +52,4 @@ class Bray extends TreeNotation {
   }
 }
 
-module.exports = Bray
+module.exports = BrayProgram

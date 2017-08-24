@@ -3,7 +3,7 @@ Tree Notation
 
 Tree Notation is a minimal notation for encoding tree data structures. You can read the paper introducing Tree Notation here (https://github.com/breck7/treenotation/blob/master/paper/treenotation.pdf).
 
-This library is designed to serve as a base for building higher level domain specific languages, called ETNs. Unlike antique languages, ETNs don't require a transformation to a discordant Abstract Syntax Tree. As a result, you can easily build efficient static code tools and new types of editing experiences.
+This Tree Program library is designed to serve as a base for building higher level domain specific languages, called ETNs. Unlike antique languages, ETNs don't require a transformation to a discordant Abstract Syntax Tree. As a result, you can easily build efficient static code tools and new types of editing experiences.
 
 ETNs allow you to do things that were previously not possible. For example, using TN and ETNs, you can create visual programming environments where a user can seamlessly transition between editing a program visually and editing its text source code.
 
@@ -43,23 +43,23 @@ Using this Libary
 
 Node.js:
 
-    npm install treenotation
+    npm install treeprogram
 
-    const TreeNotation = require("treenotation")
-    const program = new TreeNotation(`message hello World`)
+    const TreeProgram = require("treeprogram")
+    const program = new TreeProgram(`message hello World`)
     console.log(program.getNode(`message`).getTail())
 
 
 Example ETNs
 ------------
 
-This library includes 3 simple, but useful, demo ETNs, located in the etns/ subfolder:
+This library includes 3 simple demo ETNs, located in the etns/ subfolder:
 
-- Bray => An HTML ETN
-- Hakon => A CSS ETN
-- Wall => A Unit Testing ETN
+- BrayProgram => An HTML ETN
+- HakonProgram => A CSS ETN
+- WallProgram => A Unit Testing ETN
 
-They demonstrate how easy it is to create an ETN.
+They demonstrate how easy it is to create an ETN. (Note: they are a little outdated. More examples to come.)
 
 Creating an ETN
 ---------------
@@ -68,7 +68,7 @@ Creating your own ETN with this library is somewhat more advanced, but much simp
 
 1. Create a class for each node type in your new language. You can do this incrementally.
 
-2. Create a root node class. I've found a helpful convention is to suffix your root node with ETN.
+2. Create a root node class. The convention is to suffix your root node with Program.
 
 3. Add a parseNodeType method to your root node and/or intermediate and child nodes. ETNs use a top down parsing strategy.
 
@@ -80,26 +80,26 @@ OR
 
 OR
 
-4c. If you are making a compiling ETN, add some "to" methods.
+4c. If you are making a compiling ETN, add compile methods.
 
 5. Start writing code in your new programming language!
 
 Feel free to reach out if you have any questions. Happy ETNing!
 
-      class MathETN extends TreeNotation {
+      class MathProgram extends TreeProgram {
         // Look! You created a top down parser!
         parseNodeType(line) {
           if (line.startsWith("+")) return AdditionNode
-          return MathETN
+          return MathProgram
         }
 
         // Look! You created a compiler!
-        toJavascript() {
-          this.getChildren().map(child => child.toJavascript())
+        compile() {
+          this.getChildren().map(child => child.compile())
         }
       }
 
-      class AdditionNode extends TreeNotation {
+      class AdditionNode extends TreeProgram {
         // Look! You created an interpreter!
         execute() {
           const words = this.getTail().split(" ")
@@ -111,14 +111,14 @@ Feel free to reach out if you have any questions. Happy ETNing!
           return this.getTail().split(" ").map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
         }
 
-        toJavascript() {
+        compile() {
           return this.getNumbers().join(" + ")
         }
       }
       const source = `+ 2 7
     + 3 1
     + 15 1.0 200 100`
-      const program = new MathETN(source)
+      const program = new MathProgram(source)
       console.log(program.execute())
 
 
@@ -128,9 +128,9 @@ In 30 lines of code, we created a simple programming language, wrote a program i
 Development Status
 ------------------
 
-As you can see by the History.md, Tree Notation is undergoing rapid iteration and breaking changes are frequent.
+As you can see by the History.md, Tree Program is undergoing rapid iteration and breaking changes are frequent.
 
-By Version 5, things should settle down.
+By Version 10, things should settle down.
 
 If you want to be an early adopter, it's not too bad. The library is relatively small, simple and stable, has decent code coverage(Istanbul numbers as of 6/15/2017: 94.86% Statements 1533/1616 76.57% Branches 268/350 93.25% Functions 152/163 96.32% Lines 1439/1494), and I do mention all breaking changes in History.md and follow Semantic Versioning.
 

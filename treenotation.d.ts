@@ -6,6 +6,7 @@ declare type pathVector = int[] // example: [0,1,1]
 declare type word = string // string that cannot contain the YI, XI or ZI
 declare type Undefined = any
 declare type This = any
+declare type filepath = string
 declare type formatString = string // "Hello {name}! You are {age} years old."
 declare type Json = string // JSON string
 declare type nodeIterator = (node: TreeNotation, index: int) => boolean
@@ -36,6 +37,7 @@ interface TreeNotation {
   getNext: () => TreeNotation // wrapsaround
   getPrevious: () => TreeNotation // wrapsaround
   getInheritanceTree: () => TreeNotation // useful when your trees follow the convention "className parentClassName" line structure
+  execute: () => Promise<any>
   isTerminal: () => Boolean
   clone: () => TreeNotation
   copyTo: (tree: TreeNotation, index?: int) => TreeNotation
@@ -102,4 +104,5 @@ interface StaticTreeNotation {
   fromSsv: (str: string, hasHeaders?: boolean) => TreeNotation
   fromTsv: (str: string, hasHeaders?: boolean) => TreeNotation
   fromXml: (str: string) => TreeNotation
+  executeFile: (path: filepath) => Promise<any>
 }

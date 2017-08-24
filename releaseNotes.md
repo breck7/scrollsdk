@@ -1,3 +1,8 @@
+5.7.0 / 2017-8-24
+=================
+- New: getWord can now take a negative int
+- New: added static method executeFile and cli.js
+
 5.6.2 / 2017-8-20
 =================
 - Fix: child nodes can now inspect their parent's line at parse time to enable dependent types

@@ -33,7 +33,6 @@ interface TreeNotation {
   getBasePath: (relativeTo?: TreeNotation) => basePath
   getTopDownArray: () => TreeNotation[] // returns all nodes as array in preorder order
   getGraph: (headKey?: word) => TreeNotation[] // if no param, uses getWord(1)
-  getBeamWithChildren: () => string
   getNext: () => TreeNotation // wrapsaround
   getPrevious: () => TreeNotation // wrapsaround
   getInheritanceTree: () => TreeNotation // useful when your trees follow the convention "className parentClassName" line structure
@@ -85,7 +84,6 @@ interface TreeNotation {
   rename: (oldBase: word, newBase: word) => This
   renameAll: (oldBase: word, newBase: word) => This
   sortBy: (baseOrBases: word | word[]) => This
-  setBeamWithChildren: (text: string) => This
   setBase: (base: word) => This
   setWord: (index: int, value: string) => This
   setBeam: (value?: content) => This

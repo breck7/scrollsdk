@@ -124,6 +124,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getBeamWithChildren() {
+    // todo: deprecate
     const beam = this.getBeam()
     return (beam ? beam : "") + (this.length ? this.getYI() + this._childrenToString() : "")
   }
@@ -830,6 +831,7 @@ class TreeNotation extends ImmutableNode {
   }
 
   setBeamWithChildren(text) {
+    // todo: deprecate
     if (!text.includes(this.getYI())) {
       this._clearChildren()
       return this.setBeam(text)
@@ -1125,7 +1127,7 @@ class TreeNotation extends ImmutableNode {
   static _rowsToTreeNode(rows, delimiter, hasHeaders) {
     const numberOfColumns = rows[0].length
     const treeNode = new TreeNotation()
-    const names = this._getBaseer(rows, hasHeaders)
+    const names = this._getHeader(rows, hasHeaders)
 
     const rowCount = rows.length
     for (let rowIndex = hasHeaders ? 1 : 0; rowIndex < rowCount; rowIndex++) {
@@ -1221,7 +1223,17 @@ class TreeNotation extends ImmutableNode {
     return result
   }
 
-  static _getBaseer(rows, hasHeaders) {
+  static executeFile(programPath) {
+    const fs = require("fs")
+    const code = fs.readFileSync(programPath, "utf8")
+    const program = new TreeNotation(code)
+    const etnFile = program.getNode("#!").getWord(-1)
+    const etnClass = require(etnFile)
+    const etnProgram = new etnClass(code)
+    return etnProgram.execute(programPath)
+  }
+
+  static _getHeader(rows, hasHeaders) {
     const numberOfColumns = rows[0].length
     const headerRow = hasHeaders ? rows[0] : []
     const ZI = " "

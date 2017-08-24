@@ -84,7 +84,9 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getWord(index) {
-    return this._getLine().split(this.getZI())[index]
+    const words = this._getLine().split(this.getZI())
+    if (index < 0) index = words.length + index
+    return words[index]
   }
 
   _toHtml(indentCount) {

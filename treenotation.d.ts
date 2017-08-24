@@ -27,6 +27,7 @@ interface TreeNotation {
   getParent: () => TreeNotation | undefined
   getRootNode: (relativeTo?: TreeNotation) => This | TreeNotation
   getBase: () => word
+  getWord: (index: int) => word
   getWords: (startingFrom?: int) => word[]
   getLoad: () => string | Undefined // Always refers to part of the line after the base, given that ZI is space.
   getBasePath: (relativeTo?: TreeNotation) => basePath

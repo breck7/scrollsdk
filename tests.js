@@ -424,6 +424,16 @@ testTree.append = equal => {
   equal(tree.length, 4)
 }
 
+testTree.getWord = equal => {
+  // Arrange
+  const tree = new TreeNotation("a b c")
+  const aNode = tree.getNode("a")
+
+  // Act/Assert
+  equal(aNode.getWord(1), "b")
+  equal(aNode.getWord(-1), "c")
+}
+
 testTree.at = equal => {
   // Arrange
   const value = new TreeNotation("hello world\nhow are you\nhola friend")

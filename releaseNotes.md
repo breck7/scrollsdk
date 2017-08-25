@@ -1,3 +1,9 @@
+6.1.0 / 2017-8-25
+=================
+- New: added getDefaultNodeType and getNodeTypes methods
+- New: added default compile method
+- Fix: updated outdated code in readme
+
 6.0.0 / 2017-8-24
 =================
 - Breaking: Renamed TreeNotation to TreeProgram.

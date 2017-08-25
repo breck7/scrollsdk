@@ -26,6 +26,10 @@ class ImmutableNode extends EnvironmentNodeType {
     return Promise.all(this.getChildren().map(child => child.execute(context)))
   }
 
+  compile() {
+    return this.getChildren().map(child => child.compile()).join("\n")
+  }
+
   _getUid() {
     if (!this._uid) this._uid = ImmutableNode._makeUniqueId()
     return this._uid
@@ -763,8 +767,16 @@ class ImmutableNode extends EnvironmentNodeType {
     return this.getChildren()[index].getBase()
   }
 
-  parseNodeType(line) {
+  getNodeTypes() {
+    return {}
+  }
+
+  getDefaultNodeType(line) {
     return this.constructor
+  }
+
+  parseNodeType(line) {
+    return this.getNodeTypes()[line.split(" ")[0]] || this.getDefaultNodeType(line)
   }
 
   static _makeUniqueId() {
@@ -1262,7 +1274,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   static getVersion() {
-    return "5.7.0"
+    return "6.1.0"
   }
 }
 

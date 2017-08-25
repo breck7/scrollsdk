@@ -88,41 +88,35 @@ Feel free to reach out if you have any questions. Happy ETNing!
 
       class MathProgram extends TreeProgram {
         // Look! You created a top down parser!
-        parseNodeType(line) {
-          if (line.startsWith("+")) return AdditionNode
-          return MathProgram
-        }
-
-        // Look! You created a compiler!
-        compile() {
-          this.getChildren().map(child => child.compile())
+        getNodeTypes() {
+          return {"+" : AdditionNode}
         }
       }
 
       class AdditionNode extends TreeProgram {
         // Look! You created an interpreter!
         execute() {
-          const words = this.getTail().split(" ")
-          return words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
+          return this.getNumbers().reduce((prev, current) => prev + current, 0)
         }
 
         // Look! You created a declarative file format!
         getNumbers() {
-          return this.getTail().split(" ").map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0)
+          return this.getWords(1).map(word => parseFloat(word))
         }
 
+        // Look! You created a compiler!
         compile() {
           return this.getNumbers().join(" + ")
         }
       }
       const source = `+ 2 7
     + 3 1
-    + 15 1.0 200 100`
+    + 15 1.1 200 100`
       const program = new MathProgram(source)
       console.log(program.execute())
 
 
-In 30 lines of code, we created a simple programming language, wrote a program in that language, wrote a parser, interpreter, and compiler, and ran that program! Not bad.
+In 28 lines of code, we created a simple programming language, wrote a program in that language, wrote a parser, interpreter, and compiler, and ran that program! Not bad.
 
 
 Development Status

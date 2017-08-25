@@ -1218,23 +1218,45 @@ testTree.getIndex = equal => {
 
 testTree.simpleETN = equal => {
   // Arrange
-  class AdditionNode extends TreeProgram {
-    execute() {
-      const words = this.getBeam().split(" ")
-      return Promise.resolve(words.map(word => parseFloat(word)).reduce((prev, current) => prev + current, 0))
+  class MathProgram extends TreeProgram {
+    // Look! You created a top down parser!
+    getNodeTypes() {
+      return { "+": AdditionNode }
     }
   }
-  class MathProgram extends TreeProgram {
-    parseNodeType(line) {
-      if (line.startsWith("+")) return AdditionNode
-      return MathProgram
+
+  class AdditionNode extends TreeProgram {
+    // Look! You created an interpreter!
+    execute() {
+      return this.getNumbers().reduce((prev, current) => prev + current, 0)
+    }
+
+    // Look! You created a declarative file format!
+    getNumbers() {
+      return this.getWords(1).map(word => parseFloat(word))
+    }
+
+    // Look! You created a compiler!
+    compile() {
+      return this.getNumbers().join(" + ")
     }
   }
   const source = `+ 2 7
 + 3 1
-+ 15 1.0 200 100`
++ 15 1.1 200 100`
+
+  // Act
   const program = new MathProgram(source)
+  const compiled = program.compile()
+
+  // Assert
   equal(program.length, 3)
+  equal(
+    compiled,
+    `2 + 7
+3 + 1
+15 + 1.1 + 200 + 100`
+  )
 
   // Act
   const result = program.execute().then(results => {
@@ -1243,7 +1265,7 @@ testTree.simpleETN = equal => {
       results.join("\n"),
       `9
 4
-316`
+316.1`
     )
   })
 }

@@ -6,6 +6,7 @@ declare type pathVector = int[] // example: [0,1,1]
 declare type word = string // string that cannot contain the YI, XI or ZI
 declare type Undefined = any
 declare type This = any
+declare type NodeTypeMap = any // {"+" : AdditionNode}
 declare type filepath = string
 declare type formatString = string // "Hello {name}! You are {age} years old."
 declare type Json = string // JSON string
@@ -18,6 +19,7 @@ declare type point = { x: int; y: int } // Point on the Cartesian plane where th
 interface TreeProgram {
   (tree?: content, line?: string): This
 
+  compile: () => string
   getIndex: () => int
   getPoint: (relativeTo?: TreeProgram) => point
   getPathVector: (relativeTo?: TreeProgram) => pathVector
@@ -68,6 +70,12 @@ interface TreeProgram {
   toString: () => string
   toXml: () => string
 
+  // Methods for ETNs
+  getDefaultNodeType: (line: string) => TreeProgram
+  getNodeTypes: () => NodeTypeMap
+  parseNodeType: (line: string) => TreeProgram
+
+  // Mutable Methods
   append: (line: string, tree?: TreeProgram) => TreeProgram
   concat: (b: TreeProgram | string) => This
   delete: (path: basePath) => This // todo: rename delete child?

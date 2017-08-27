@@ -1373,6 +1373,59 @@ Mammal Animal
   equal(tree.getNode("Animal").getGraph().length, 2)
 }
 
+testTree.getExpanded = equal => {
+  // Arrange
+  const tree = new TreeProgram(
+    `Thing
+ color
+ ab
+Animal Thing
+ dna
+ ab overridden`
+  )
+  // Act/Assert
+  equal(
+    tree.getExpanded(),
+    `Thing
+ color
+ ab
+Animal Thing
+ color
+ ab overridden
+ dna`
+  )
+
+  // Arrange
+  const tree2 = new TreeProgram(
+    `Thing
+ color
+Animal Thing
+ dna
+Monkey Mammal
+ oohoohahah
+Mammal Animal
+ milk`
+  )
+  // Act/Assert
+  equal(
+    tree2.getExpanded(),
+    `Thing
+ color
+Animal Thing
+ color
+ dna
+Monkey Mammal
+ color
+ dna
+ milk
+ oohoohahah
+Mammal Animal
+ color
+ dna
+ milk`
+  )
+}
+
 testTree.htmlDsl = equal => {
   // Arrange
   const html = new TreeProgram("h1 hello world\nh1 hello world")

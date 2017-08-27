@@ -30,6 +30,7 @@ interface TreeProgram {
   getParent: () => TreeProgram | undefined
   getRootNode: (relativeTo?: TreeProgram) => This | TreeProgram
   getBase: () => word
+  getExpanded: () => string
   getWord: (index: int) => word
   getWords: (startingFrom?: int) => word[]
   getLoad: () => string | Undefined // Always refers to part of the line after the base, given that ZI is space.

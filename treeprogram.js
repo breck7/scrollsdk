@@ -424,6 +424,17 @@ class ImmutableNode extends EnvironmentNodeType {
     return graph
   }
 
+  _expand() {
+    const graph = this.getGraph()
+    const result = new TreeProgram()
+    graph.forEach(node => result.extend(node))
+    return new TreeProgram().append(this.getLine(), result)
+  }
+
+  getExpanded() {
+    return this.getChildren().map(child => child._expand()).join("\n")
+  }
+
   pathVectorToBasePath(pathVector) {
     const path = pathVector.slice() // copy array
     const names = []
@@ -1274,7 +1285,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   static getVersion() {
-    return "6.1.0"
+    return "6.1.1"
   }
 }
 

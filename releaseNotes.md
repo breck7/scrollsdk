@@ -1,3 +1,7 @@
+6.1.1 / 2017-8-27
+=================
+- New: added getExpanded method
+
 6.1.0 / 2017-8-25
 =================
 - New: added getDefaultNodeType and getNodeTypes methods

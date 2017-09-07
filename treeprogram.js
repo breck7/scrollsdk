@@ -809,10 +809,19 @@ class TreeProgram extends ImmutableNode {
 
   _getChildrenMTime() {
     const mTimes = this.getChildren().map(child => child.getTreeMTime())
+    const cmTime = this._getCMTime()
+    if (cmTime) mTimes.push(cmTime)
     const newestTime = Math.max.apply(null, mTimes)
-    const newestChildWasDeleted = this._cmtime && this._cmtime > newestTime
-    this._cmtime = newestChildWasDeleted ? this._getNow() : newestTime
+    return this._setCMTime(newestTime || this._getNow())._getCMTime()
+  }
+
+  _getCMTime() {
     return this._cmtime
+  }
+
+  _setCMTime(value) {
+    this._cmtime = value
+    return this
   }
 
   getTreeMTime() {
@@ -912,7 +921,7 @@ class TreeProgram extends ImmutableNode {
     this._clearIndex()
     // note: assumes indexesToDelete is in ascending order
     indexesToDelete.reverse().forEach(index => this.getChildren().splice(index, 1))
-    return this
+    return this._setCMTime(this._getNow())
   }
 
   _deleteNode(node) {
@@ -1285,7 +1294,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   static getVersion() {
-    return "6.1.1"
+    return "6.1.2"
   }
 }
 

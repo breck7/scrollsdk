@@ -1,3 +1,7 @@
+6.1.2 / 2017-9-6
+================
+- Fix: bug fix in getCMTime
+
 6.1.1 / 2017-8-27
 =================
 - New: added getExpanded method

@@ -2747,13 +2747,24 @@ some
   // Assert
   const newTime = a.getTreeMTime()
   equal(newTime > mtime, true, `newtime is greater than mtime ${newTime} ${mtime}`)
-  equal(a.getNode("text foo").getTreeMTime() === fooTime, true)
+  equal(a.getNode("text foo").getTreeMTime() === fooTime, true, "times are equal")
 
   // Act
   a.getNode("text foo").setBeam("wham")
 
   // Assert
-  equal(a.getNode("text foo").getTreeMTime() > fooTime, true)
+  equal(a.getNode("text foo").getTreeMTime() > fooTime, true, "mod child updates")
+
+  // Arrange
+  const b = new TreeProgram(`foo`)
+  b.append("bar")
+  const bTime = b.getTreeMTime()
+
+  // Act
+  b.getNode("foo").destroy()
+
+  // Assert
+  equal(b.getTreeMTime() > bTime, true, "time increased")
 }
 
 testTree.treeNodes = equal => {

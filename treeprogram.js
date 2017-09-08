@@ -1310,7 +1310,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   static getVersion() {
-    return "6.1.2"
+    return "6.1.3"
   }
 }
 

@@ -1,3 +1,9 @@
+6.1.3 / 2017-9-8
+================
+- New: added executeSync method
+- Docs: removed outdated ETNs
+- Infra: switched to Tap from Tape to get code coverage working again with nyc
+
 6.1.2 / 2017-9-6
 ================
 - Fix: bug fix in getCMTime

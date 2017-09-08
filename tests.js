@@ -273,7 +273,14 @@ testTree.constructorTests = equal => {
 
   // Assert
   equal(tree2.getNode("foobar").getBeam(), undefined, "Value should be empty")
-  equal(tree2.getNode("foobar").getNode("one").getBeam(), "1", "Value should be 1")
+  equal(
+    tree2
+      .getNode("foobar")
+      .getNode("one")
+      .getBeam(),
+    "1",
+    "Value should be 1"
+  )
 
   equal(typeof tree2.getNode("foobar"), "object", "Trees should be objects")
   equal(tree2.getNode("foobar") instanceof TreeProgram, true, "Nested trees should be trees")
@@ -743,11 +750,14 @@ testTree.forEach = equal => {
   const value2 = new TreeProgram("hello world\nhi mom")
 
   // Act
-  value2.getChildren().filter(n => n.getBase() !== "hello").forEach(node => {
-    const property = node.getBase()
-    const value = node.getBeam()
-    count++
-  })
+  value2
+    .getChildren()
+    .filter(n => n.getBase() !== "hello")
+    .forEach(node => {
+      const property = node.getBase()
+      const value = node.getBeam()
+      count++
+    })
   // Assert
   equal(count, 1)
 
@@ -866,7 +876,13 @@ testTree.fromCsv = equal => {
 
   // Assert
   equal(tree2.length, 1)
-  equal(tree2.nodeAt(0).getNode("Country").getBeam(), "USA")
+  equal(
+    tree2
+      .nodeAt(0)
+      .getNode("Country")
+      .getBeam(),
+    "USA"
+  )
 
   // Arrange
   const tree3 = TreeProgram.fromCsv("")
@@ -951,8 +967,20 @@ testTree.fromSsv = equal => {
   const fixedCol = TreeProgram.fromSsv(testStrings.ssvFixedColumns)
 
   // Assert
-  equal(fixedCol.nodeAt(0).getNode("comment").getBeam(), testStrings.ssvFixedColumnComment1)
-  equal(fixedCol.nodeAt(1).getNode("comment").getBeam(), testStrings.ssvFixedColumnComment2)
+  equal(
+    fixedCol
+      .nodeAt(0)
+      .getNode("comment")
+      .getBeam(),
+    testStrings.ssvFixedColumnComment1
+  )
+  equal(
+    fixedCol
+      .nodeAt(1)
+      .getNode("comment")
+      .getBeam(),
+    testStrings.ssvFixedColumnComment2
+  )
   equal(fixedCol.nodeAt(1).length, 2)
 
   // Arrange/Act
@@ -1012,7 +1040,10 @@ testTree.getIndentation = equal => {
 
   equal(
     testStrings.webpageTrimmed,
-    tree.getTopDownArray().map(line => line.getIndentation() + line.getLine()).join("\n")
+    tree
+      .getTopDownArray()
+      .map(line => line.getIndentation() + line.getLine())
+      .join("\n")
   )
 }
 
@@ -1084,7 +1115,13 @@ testTree.getLines = equal => {
   const value = new TreeProgram("hello\n world")
 
   // Assert
-  equal(value.getLines().join("").indexOf(" "), -1)
+  equal(
+    value
+      .getLines()
+      .join("")
+      .indexOf(" "),
+    -1
+  )
 }
 
 testTree.getNodes = equal => {
@@ -1096,7 +1133,10 @@ testTree.getNodes = equal => {
   equal(value.findNodes("hello").length, 2)
 
   // Act
-  const result = value.findNodes("hello").map(node => node.getBeam()).join("")
+  const result = value
+    .findNodes("hello")
+    .map(node => node.getBeam())
+    .join("")
 
   // Assert
   equal(result, "worldworld")
@@ -1227,7 +1267,7 @@ testTree.simpleETN = equal => {
 
   class AdditionNode extends TreeProgram {
     // Look! You created an interpreter!
-    execute() {
+    executeSync() {
       return this.getNumbers().reduce((prev, current) => prev + current, 0)
     }
 
@@ -1259,15 +1299,14 @@ testTree.simpleETN = equal => {
   )
 
   // Act
-  const result = program.execute().then(results => {
-    // Assert
-    equal(
-      results.join("\n"),
-      `9
+  const results = program.executeSync()
+  // Assert
+  equal(
+    results.join("\n"),
+    `9
 4
 316.1`
-    )
-  })
+  )
 }
 
 testTree.getBasePath = equal => {
@@ -1950,7 +1989,10 @@ d
   )
 
   // Act/Assert
-  const result = reg.getTopDownArray().map(node => node.getPoint().y).join(" ")
+  const result = reg
+    .getTopDownArray()
+    .map(node => node.getPoint().y)
+    .join(" ")
   equal(result, "1 2 3 4 5")
   equal(reg.getNode("a").getPoint().y, 1)
 }
@@ -1995,7 +2037,10 @@ q quantity`
   )
 
   const expandMapObj = map.clone().toObject()
-  const contractMap = map.clone().invert().toObject()
+  const contractMap = map
+    .clone()
+    .invert()
+    .toObject()
 
   // Act
   const remapped = new TreeProgram(test)
@@ -2139,8 +2184,22 @@ testTree.reverse = equal => {
   tree2.nodeAt(0).reverse()
 
   // Assert
-  equal(tree2.nodeAt(0).nodeAt(0).getBase(), "age", "Expected reversed properties")
-  equal(tree2.nodeAt(1).nodeAt(0).getBase(), "name", "Expected unchanged properties")
+  equal(
+    tree2
+      .nodeAt(0)
+      .nodeAt(0)
+      .getBase(),
+    "age",
+    "Expected reversed properties"
+  )
+  equal(
+    tree2
+      .nodeAt(1)
+      .nodeAt(0)
+      .getBase(),
+    "name",
+    "Expected unchanged properties"
+  )
 }
 
 testTree.set = equal => {
@@ -2241,7 +2300,10 @@ testTree.set = equal => {
   const tree7 = new TreeProgram("name John\nage\nfavoriteColors\n blue\n  blue1 1\n  blue2 2\n green\n red 1\n")
 
   // Act
-  tree7.touchNode("favoriteColors blue").setBeam("purple").toString()
+  tree7
+    .touchNode("favoriteColors blue")
+    .setBeam("purple")
+    .toString()
 
   // Assert
   equal(tree7.getNode("favoriteColors blue").getBeam(), "purple")
@@ -2647,9 +2709,18 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const preOrder = traversal.getTopDownArray().map(node => node.getLine()).join(" ")
-  const postOrder = traversal.getChildrenFirstArray().map(node => node.getLine()).join(" ")
-  const breadthfirst = traversal.getParentFirstArray().map(node => node.getLine()).join(" ")
+  const preOrder = traversal
+    .getTopDownArray()
+    .map(node => node.getLine())
+    .join(" ")
+  const postOrder = traversal
+    .getChildrenFirstArray()
+    .map(node => node.getLine())
+    .join(" ")
+  const breadthfirst = traversal
+    .getParentFirstArray()
+    .map(node => node.getLine())
+    .join(" ")
 
   // Assert
   equal(preOrder, "0 01 02 020 021 1 10 11 110 12 2", "expected topDown visiting to work")
@@ -2670,9 +2741,18 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const wikipreorder = wikipediaBinaryTree.getTopDownArray().map(node => node.getLine()).join("")
-  const wikibreadthfirst = wikipediaBinaryTree.getParentFirstArray().map(node => node.getLine()).join("")
-  const wikipostorder = wikipediaBinaryTree.getChildrenFirstArray().map(node => node.getLine()).join("")
+  const wikipreorder = wikipediaBinaryTree
+    .getTopDownArray()
+    .map(node => node.getLine())
+    .join("")
+  const wikibreadthfirst = wikipediaBinaryTree
+    .getParentFirstArray()
+    .map(node => node.getLine())
+    .join("")
+  const wikipostorder = wikipediaBinaryTree
+    .getChildrenFirstArray()
+    .map(node => node.getLine())
+    .join("")
 
   // Assert
   equal(wikipreorder, "fbadcegih")

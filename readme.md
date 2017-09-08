@@ -49,18 +49,6 @@ Node.js:
     const program = new TreeProgram(`message hello World`)
     console.log(program.getNode(`message`).getTail())
 
-
-Example ETNs
-------------
-
-This library includes 3 simple demo ETNs, located in the etns/ subfolder:
-
-- BrayProgram => An HTML ETN
-- HakonProgram => A CSS ETN
-- WallProgram => A Unit Testing ETN
-
-They demonstrate how easy it is to create an ETN. (Note: they are a little outdated. More examples to come.)
-
 Creating an ETN
 ---------------
 

@@ -1,11 +1,11 @@
 #! /usr/local/bin/node
 
-const test = require("tape")
+const tap = require("tap")
 const testTree = require("../tests.js")
 
 Object.keys(testTree).forEach(key => {
-	test(key, assert => {
-		testTree[key](assert.equal)
-		assert.end()
-	})
+  tap.test(key, function(childTest) {
+    const testCase = testTree[key](childTest.equal)
+    childTest.end()
+  })
 })

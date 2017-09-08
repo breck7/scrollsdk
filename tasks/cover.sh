@@ -1,2 +1,1 @@
-istanbul cover tasks/unit.js
-open coverage/lcov-report/index.html
+tap --cov --coverage-report=lcov ./tasks/unit.js

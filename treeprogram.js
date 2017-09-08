@@ -26,8 +26,14 @@ class ImmutableNode extends EnvironmentNodeType {
     return Promise.all(this.getChildren().map(child => child.execute(context)))
   }
 
+  executeSync(context) {
+    return this.getChildren().map(child => child.executeSync(context))
+  }
+
   compile() {
-    return this.getChildren().map(child => child.compile()).join("\n")
+    return this.getChildren()
+      .map(child => child.compile())
+      .join("\n")
   }
 
   _getUid() {
@@ -64,7 +70,11 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getYCoordinate(relativeTo) {
-    return this.isRoot(relativeTo) ? 0 : this.getRootNode(relativeTo).getTopDownArray().indexOf(this) + 1 // todo: may be slow for big trees.
+    return this.isRoot(relativeTo)
+      ? 0
+      : this.getRootNode(relativeTo)
+          .getTopDownArray()
+          .indexOf(this) + 1 // todo: may be slow for big trees.
   }
 
   isRoot(relativeTo) {
@@ -319,7 +329,9 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _childrenToString(indentCount, language = this) {
-    return this.getChildren().map(node => node.toString(indentCount, language)).join(language.getYI())
+    return this.getChildren()
+      .map(node => node.toString(indentCount, language))
+      .join(language.getYI())
   }
 
   childrenToString() {
@@ -432,7 +444,9 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   getExpanded() {
-    return this.getChildren().map(child => child._expand()).join("\n")
+    return this.getChildren()
+      .map(child => child._expand())
+      .join("\n")
   }
 
   pathVectorToBasePath(pathVector) {
@@ -749,7 +763,9 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _childrenToXml(indentCount) {
-    return this.getChildren().map(node => node._toXml(indentCount)).join("")
+    return this.getChildren()
+      .map(node => node._toXml(indentCount))
+      .join("")
   }
 
   _getIndentCount(str) {

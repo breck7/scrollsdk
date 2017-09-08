@@ -41,6 +41,7 @@ interface TreeProgram {
   getPrevious: () => TreeProgram // wrapsaround
   getInheritanceTree: () => TreeProgram // useful when your trees follow the convention "className parentClassName" line structure
   execute: () => Promise<any>
+  executeSync: () => any[]
   isTerminal: () => Boolean
   clone: () => TreeProgram
   copyTo: (tree: TreeProgram, index?: int) => TreeProgram

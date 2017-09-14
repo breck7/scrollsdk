@@ -1,3 +1,13 @@
+7.0.0 / 2017-9-14
+=================
+- Breaking: getNodeTypes is now getSymbolMap
+- Breaking: getDefaultNodeType is now getCatchAllNodeClass
+- Breaking: getBase is now getSymbol
+- Breaking: getBasePath is now getSymbolPath
+- Breaking: getBases is now getSymbols
+- Breaking: pathVectorToBasePath is now pathVectorToSymbolPath
+- Breaking: setBase is now setSymbol
+
 6.1.3 / 2017-9-8
 ================
 - New: added executeSync method

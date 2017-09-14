@@ -1,12 +1,12 @@
 declare type content = string | TreeProgram | Object | any
 declare type int = number
 declare type nodeString = string // A string that does not contain YI ("\n")
-declare type basePath = string // user emailAddress
+declare type symbolPath = string // user emailAddress
 declare type pathVector = int[] // example: [0,1,1]
 declare type word = string // string that cannot contain the YI, XI or ZI
 declare type Undefined = any
 declare type This = any
-declare type NodeTypeMap = any // {"+" : AdditionNode}
+declare type SymbolMap = Object // {"+" : AdditionNode}
 declare type filepath = string
 declare type formatString = string // "Hello {name}! You are {age} years old."
 declare type Json = string // JSON string
@@ -29,12 +29,12 @@ interface TreeProgram {
   getStackString: (relativeTo?: TreeProgram) => string
   getParent: () => TreeProgram | undefined
   getRootNode: (relativeTo?: TreeProgram) => This | TreeProgram
-  getBase: () => word
+  getSymbol: () => word
   getExpanded: () => string
   getWord: (index: int) => word
   getWords: (startingFrom?: int) => word[]
-  getLoad: () => string | Undefined // Always refers to part of the line after the base, given that ZI is space.
-  getBasePath: (relativeTo?: TreeProgram) => basePath
+  getBeam: () => string | Undefined // Always refers to part of the line after the symbol, given that ZI is space.
+  getSymbolPath: (relativeTo?: TreeProgram) => symbolPath
   getTopDownArray: () => TreeProgram[] // returns all nodes as array in preorder order
   getGraph: (headKey?: word) => TreeProgram[] // if no param, uses getWord(1)
   getNext: () => TreeProgram // wrapsaround
@@ -46,20 +46,20 @@ interface TreeProgram {
   clone: () => TreeProgram
   copyTo: (tree: TreeProgram, index?: int) => TreeProgram
   getLines: () => string[]
-  getNode: (path: basePath) => TreeProgram
+  getNode: (path: symbolPath) => TreeProgram
   getNodes: () => TreeProgram[]
   length: number
   nodeAt: (index: int | pathVector) => TreeProgram
-  findNodes: (path: basePath) => TreeProgram[]
-  findBeam: (path: basePath) => string | Undefined
+  findNodes: (path: symbolPath) => TreeProgram[]
+  findBeam: (path: symbolPath) => string | Undefined
   format: (str: formatString) => string
   getColumn: (path: word) => (string | Undefined)[]
-  getBases: () => word[]
+  getSymbols: () => word[]
   getBeams: () => (string | Undefined)[]
-  has: (base: word) => boolean
-  indexOf: (base: word) => int
-  indexOfLast: (base: word) => int // Returns index of last occurrence of base
-  pathVectorToBasePath: (vector: pathVector) => basePath // convert an index path to base path
+  has: (symbol: word) => boolean
+  indexOf: (symbol: word) => int
+  indexOfLast: (symbol: word) => int // Returns index of last occurrence of symbol
+  pathVectorToSymbolPath: (vector: pathVector) => symbolPath // convert an index path to symbol path
   toHtml: () => string
   toJson: () => string
   toObject: () => Object
@@ -73,14 +73,14 @@ interface TreeProgram {
   toXml: () => string
 
   // Methods for ETNs
-  getDefaultNodeType: (line: string) => TreeProgram
-  getNodeTypes: () => NodeTypeMap
+  getCatchAllNodeClass: (line: string) => TreeProgram
+  getSymbolMap: () => SymbolMap
   parseNodeType: (line: string) => TreeProgram
 
   // Mutable Methods
   append: (line: string, tree?: TreeProgram) => TreeProgram
   concat: (b: TreeProgram | string) => This
-  delete: (path: basePath) => This // todo: rename delete child?
+  delete: (path: symbolPath) => This // todo: rename delete child?
   extend: (tree: TreeProgram | string) => This // recursively extend the object
   destroy: () => undefined
   duplicate: () => TreeProgram
@@ -89,20 +89,20 @@ interface TreeProgram {
   setLine: (line: string) => This
   setFromText: (text: string) => This
   insert: (line: string, tree?: TreeProgram, index?: int) => TreeProgram
-  invert: () => This // Flips bases and beams on all top level nodes. Does not recurse.
+  invert: () => This // Flips symbols and beams on all top level nodes. Does not recurse.
   prepend: (line: string, tree?: TreeProgram) => TreeProgram
-  pushBeamAndTree: (beam?: string, tree?: TreeProgram) => TreeProgram // Base will be set to this.length + 1. todo: remove?
+  pushBeamAndTree: (beam?: string, tree?: TreeProgram) => TreeProgram // Symbol will be set to this.length + 1. todo: remove?
   remap: (key: Object) => This // Does not recurse.
-  rename: (oldBase: word, newBase: word) => This
-  renameAll: (oldBase: word, newBase: word) => This
-  sortBy: (baseOrBases: word | word[]) => This
-  setBase: (base: word) => This
+  rename: (oldSymbol: word, newSymbol: word) => This
+  renameAll: (oldSymbol: word, newSymbol: word) => This
+  sortBy: (symbolOrSymbols: word | word[]) => This
+  setSymbol: (symbol: word) => This
   setWord: (index: int, value: string) => This
   setBeam: (value?: content) => This
   reverse: () => This
   shift: () => TreeProgram
   sort: (sortFn: sortFn) => This
-  touchNode: (basePath: basePath) => TreeProgram
+  touchNode: (symbolPath: symbolPath) => TreeProgram
 }
 
 interface StaticTreeProgram {

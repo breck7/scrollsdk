@@ -1,3 +1,7 @@
+7.1.0 / 2017-9-15
+=================
+- Breaking; Symbol is now Keyword throughout. Same changes at 7.0.0, except substitute keyword for symbol.
+
 7.0.0 / 2017-9-14
 =================
 - Breaking: getNodeTypes is now getSymbolMap

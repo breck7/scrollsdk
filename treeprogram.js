@@ -112,7 +112,7 @@ class ImmutableNode extends EnvironmentNodeType {
       nodeChildren: "nodeChildren"
     }
     const edge = this.getXI().repeat(indentCount)
-    // Set up the symbol part of the node
+    // Set up the keyword part of the node
     const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
     const lineHtml = this._getLineHtml()
     const childrenHtml = this.length
@@ -128,7 +128,7 @@ class ImmutableNode extends EnvironmentNodeType {
     return startFrom ? this._words.slice(startFrom) : this._words
   }
 
-  getSymbol() {
+  getKeyword() {
     return this.getWords()[0]
   }
 
@@ -161,11 +161,11 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   // todo: return array? getPathArray?
-  getSymbolPath(relativeTo) {
+  getKeywordPath(relativeTo) {
     if (this.isRoot(relativeTo)) return ""
-    else if (this.getParent().isRoot(relativeTo)) return this.getSymbol()
+    else if (this.getParent().isRoot(relativeTo)) return this.getKeyword()
 
-    return this.getParent().getSymbolPath(relativeTo) + this.getXI() + this.getSymbol()
+    return this.getParent().getKeywordPath(relativeTo) + this.getXI() + this.getKeyword()
   }
 
   getPathVector(relativeTo) {
@@ -185,7 +185,7 @@ class ImmutableNode extends EnvironmentNodeType {
 
   _getLineHtml() {
     return this.getWords()
-      .map((word, index) => `<span class="word${index ? "" : " symbol"}">${ImmutableNode._stripHtml(word)}</span>`)
+      .map((word, index) => `<span class="word${index ? "" : " keyword"}">${ImmutableNode._stripHtml(word)}</span>`)
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
@@ -200,7 +200,7 @@ class ImmutableNode extends EnvironmentNodeType {
 
   _toXml(indentCount) {
     const indent = " ".repeat(indentCount)
-    const tag = this.getSymbol()
+    const tag = this.getKeyword()
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
 
@@ -212,7 +212,7 @@ class ImmutableNode extends EnvironmentNodeType {
     // If the node has a beam and a subtree return it as a string, as
     // Javascript object values can't be both a leaf and a tree.
     const tupleValue = hasChildrenNoBeam ? this.toObject() : hasBeamAndHasChildren ? this.getBeamWithChildren() : beam
-    return [this.getSymbol(), tupleValue]
+    return [this.getKeyword(), tupleValue]
   }
 
   _indexOfNode(needleNode) {
@@ -346,9 +346,9 @@ class ImmutableNode extends EnvironmentNodeType {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(symbolPath) {
+  findNodes(keywordPath) {
     return this._getChildren().filter(node => {
-      if (node.getSymbol() === symbolPath) return true
+      if (node.getKeyword() === keywordPath) return true
       return false
     })
   }
@@ -368,23 +368,23 @@ class ImmutableNode extends EnvironmentNodeType {
     })
   }
 
-  getNode(symbolPath) {
-    return this._getNodeByPath(symbolPath)
+  getNode(keywordPath) {
+    return this._getNodeByPath(keywordPath)
   }
 
-  findBeam(symbolPath) {
-    const node = this._getNodeByPath(symbolPath)
+  findBeam(keywordPath) {
+    const node = this._getNodeByPath(keywordPath)
     return node === undefined ? undefined : node.getBeam()
   }
 
-  _getNodeByPath(symbolPath) {
+  _getNodeByPath(keywordPath) {
     const xi = this.getXI()
-    if (!symbolPath.includes(xi)) {
-      const index = this.indexOfLast(symbolPath)
+    if (!keywordPath.includes(xi)) {
+      const index = this.indexOfLast(keywordPath)
       return index === -1 ? undefined : this._nodeAt(index)
     }
 
-    const parts = symbolPath.split(xi)
+    const parts = keywordPath.split(xi)
     const current = parts.shift()
     const currentNode = this.getChildren()[this._getIndex()[current]]
     return currentNode ? currentNode._getNodeByPath(parts.join(xi)) : undefined
@@ -415,7 +415,7 @@ class ImmutableNode extends EnvironmentNodeType {
     this._getChildren().forEach(node => {
       if (!node.length) return undefined
       node._getChildren().forEach(node => {
-        obj[node.getSymbol()] = 1
+        obj[node.getKeyword()] = 1
       })
     })
     return Object.keys(obj)
@@ -449,13 +449,13 @@ class ImmutableNode extends EnvironmentNodeType {
       .join("\n")
   }
 
-  pathVectorToSymbolPath(pathVector) {
+  pathVectorToKeywordPath(pathVector) {
     const path = pathVector.slice() // copy array
     const names = []
     let node = this
     while (path.length) {
       if (!node) return names
-      names.push(node.nodeAt(path[0]).getSymbol())
+      names.push(node.nodeAt(path[0]).getKeyword())
       node = node.nodeAt(path.shift())
     }
     return names
@@ -528,13 +528,13 @@ class ImmutableNode extends EnvironmentNodeType {
 
       if (lastStatesCopy.push([outlineTreeNode, last]) && lastStates.length > 0) {
         let line = ""
-        // symbold on the "was last element" states of whatever we're nested within,
+        // keywordd on the "was last element" states of whatever we're nested within,
         // we need to append either blankness or a branch to our line
         lastStates.forEach((lastState, idx) => {
           if (idx > 0) line += lastState[1] ? " " : "│"
         })
 
-        // the prefix varies symbold on whether the key contains something to show and
+        // the prefix varies keywordd on whether the key contains something to show and
         // whether we're dealing with the last element in this collection
         // the extra "-" just makes things stand out more.
         line += (last ? "└" : "├") + nodeFn(node)
@@ -635,34 +635,34 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _setFromObject(content, circularCheckArray) {
-    for (let symbol in content) {
-      if (!content.hasOwnProperty(symbol)) continue
-      this._appendFromJavascriptObjectTuple(symbol, content[symbol], circularCheckArray)
+    for (let keyword in content) {
+      if (!content.hasOwnProperty(keyword)) continue
+      this._appendFromJavascriptObjectTuple(keyword, content[keyword], circularCheckArray)
     }
 
     return this
   }
 
   // todo: refactor the below.
-  _appendFromJavascriptObjectTuple(symbol, beam, circularCheckArray) {
+  _appendFromJavascriptObjectTuple(keyword, beam, circularCheckArray) {
     const type = typeof beam
     let line
     let children
-    if (beam === null) line = symbol + " " + null
-    else if (beam === undefined) line = symbol
+    if (beam === null) line = keyword + " " + null
+    else if (beam === undefined) line = keyword
     else if (type === "string") {
       const tuple = this._textToBeamAndChildrenTuple(beam)
-      line = symbol + " " + tuple[0]
+      line = keyword + " " + tuple[0]
       children = tuple[1]
-    } else if (type !== "object") line = symbol + " " + beam
-    else if (beam instanceof Date) line = symbol + " " + beam.getTime().toString()
+    } else if (type !== "object") line = keyword + " " + beam
+    else if (beam instanceof Date) line = keyword + " " + beam.getTime().toString()
     else if (beam instanceof ImmutableNode) {
-      line = symbol
+      line = keyword
       children = new ImmutableNode(beam.childrenToString(), beam.getLine())
-    } else if (type === "function") line = symbol + " " + beam.toString()
+    } else if (type === "function") line = keyword + " " + beam.toString()
     else if (circularCheckArray.indexOf(beam) === -1) {
       circularCheckArray.push(beam)
-      line = symbol
+      line = keyword
       const length = beam instanceof Array ? beam.length : Object.keys(beam).length
       if (length) children = new TreeProgram()._setChildren(beam, circularCheckArray)
     } else {
@@ -711,8 +711,8 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   _getIndex() {
-    // StringMap<int> {symbol: index}
-    // When there are multiple tails with the same symbol, _index stores the last beam.
+    // StringMap<int> {keyword: index}
+    // When there are multiple tails with the same keyword, _index stores the last beam.
     return this._index || this._makeIndex()
   }
 
@@ -724,19 +724,19 @@ class ImmutableNode extends EnvironmentNodeType {
     return this.getChildren().filter(child => child instanceof type)
   }
 
-  indexOfLast(symbol) {
-    const result = this._getIndex()[symbol]
+  indexOfLast(keyword) {
+    const result = this._getIndex()[keyword]
     return result === undefined ? -1 : result
   }
 
-  indexOf(symbol) {
-    if (!this.has(symbol)) return -1
+  indexOf(keyword) {
+    if (!this.has(keyword)) return -1
 
     const length = this.length
     const nodes = this.getChildren()
 
     for (let index = 0; index < length; index++) {
-      if (nodes[index].getSymbol() === symbol) return index
+      if (nodes[index].getKeyword() === keyword) return index
     }
     return -1
   }
@@ -745,8 +745,8 @@ class ImmutableNode extends EnvironmentNodeType {
     return this._toObject()
   }
 
-  getSymbols() {
-    return this._getChildren().map(node => node.getSymbol())
+  getKeywords() {
+    return this._getChildren().map(node => node.getKeyword())
   }
 
   _makeIndex(startAt = 0) {
@@ -756,7 +756,7 @@ class ImmutableNode extends EnvironmentNodeType {
     const length = nodes.length
 
     for (let index = startAt; index < length; index++) {
-      newIndex[nodes[index].getSymbol()] = index
+      newIndex[nodes[index].getKeyword()] = index
     }
 
     return newIndex
@@ -781,20 +781,20 @@ class ImmutableNode extends EnvironmentNodeType {
     return new this.constructor(this.childrenToString(), this.getLine())
   }
 
-  has(symbol) {
-    return this._getIndex()[symbol] !== undefined
+  has(keyword) {
+    return this._getIndex()[keyword] !== undefined
   }
 
-  _getSymbolByIndex(index) {
+  _getKeywordByIndex(index) {
     // Passing -1 gets the last item, et cetera
     const length = this.length
 
     if (index < 0) index = length + index
     if (index >= length) return undefined
-    return this.getChildren()[index].getSymbol()
+    return this.getChildren()[index].getKeyword()
   }
 
-  getSymbolMap() {
+  getKeywordMap() {
     return {}
   }
 
@@ -803,7 +803,7 @@ class ImmutableNode extends EnvironmentNodeType {
   }
 
   parseNodeType(line) {
-    return this.getSymbolMap()[line.split(" ")[0]] || this.getCatchAllNodeClass(line)
+    return this.getKeywordMap()[line.split(" ")[0]] || this.getCatchAllNodeClass(line)
   }
 
   static _makeUniqueId() {
@@ -868,7 +868,7 @@ class TreeProgram extends ImmutableNode {
 
   setBeam(beam) {
     if (beam === this.getBeam()) return this
-    const newArray = [this.getSymbol()]
+    const newArray = [this.getKeyword()]
     if (beam !== undefined) {
       beam = beam.toString()
       if (beam.match(this.getYI())) return this.setBeamWithChildren(beam)
@@ -897,8 +897,8 @@ class TreeProgram extends ImmutableNode {
     return this
   }
 
-  setSymbol(symbol) {
-    return this.setWord(0, symbol)
+  setKeyword(keyword) {
+    return this.setWord(0, keyword)
   }
 
   setLine(line) {
@@ -969,58 +969,58 @@ class TreeProgram extends ImmutableNode {
     return this
   }
 
-  _rename(oldSymbol, newSymbol) {
-    const index = this.indexOf(oldSymbol)
+  _rename(oldKeyword, newKeyword) {
+    const index = this.indexOf(oldKeyword)
 
     if (index === -1) return this
-    this.getChildren()[index].setSymbol(newSymbol)
+    this.getChildren()[index].setKeyword(newKeyword)
     this._clearIndex()
     return this
   }
 
   remap(map) {
     this.getChildren().forEach(node => {
-      const symbol = node.getSymbol()
-      if (map[symbol] !== undefined) node.setSymbol(map[symbol])
+      const keyword = node.getKeyword()
+      if (map[keyword] !== undefined) node.setKeyword(map[keyword])
     })
     return this
   }
 
-  rename(oldSymbol, newSymbol) {
-    this._rename(oldSymbol, newSymbol)
+  rename(oldKeyword, newKeyword) {
+    this._rename(oldKeyword, newKeyword)
     return this
   }
 
   renameAll(oldName, newName) {
-    this.findNodes(oldName).forEach(node => node.setSymbol(newName))
+    this.findNodes(oldName).forEach(node => node.setKeyword(newName))
     return this
   }
 
-  _deleteBySymbol(symbol) {
-    if (!this.has(symbol)) return this
+  _deleteByKeyword(keyword) {
+    if (!this.has(keyword)) return this
     const allNodes = this._getChildren()
     const indexesToDelete = []
     allNodes.forEach((node, index) => {
-      if (node.getSymbol() === symbol) indexesToDelete.push(index)
+      if (node.getKeyword() === keyword) indexesToDelete.push(index)
     })
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(symbol = "") {
+  delete(keyword = "") {
     const xi = this.getXI()
-    if (!symbol.includes(xi)) return this._deleteBySymbol(symbol)
+    if (!keyword.includes(xi)) return this._deleteByKeyword(keyword)
 
-    const parts = symbol.split(xi)
-    const nextSymbol = parts.pop()
+    const parts = keyword.split(xi)
+    const nextKeyword = parts.pop()
     const targetNode = this.getNode(parts.join(xi))
 
-    return targetNode ? targetNode._deleteBySymbol(nextSymbol) : 0
+    return targetNode ? targetNode._deleteByKeyword(nextKeyword) : 0
   }
 
   extend(nodeOrStr) {
     if (!(nodeOrStr instanceof TreeProgram)) nodeOrStr = new TreeProgram(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {
-      const path = node.getSymbol()
+      const path = node.getKeyword()
       const beam = node.getBeam()
       const targetNode = this.touchNode(path).setBeam(beam)
       if (node.length) targetNode.extend(node.childrenToString())
@@ -1046,10 +1046,10 @@ class TreeProgram extends ImmutableNode {
     return this.append(line, children)
   }
 
-  _touchNode(symbolPathArray) {
+  _touchNode(keywordPathArray) {
     let contextNode = this
-    symbolPathArray.forEach(symbol => {
-      contextNode = contextNode.getNode(symbol) || contextNode.append(symbol)
+    keywordPathArray.forEach(keyword => {
+      contextNode = contextNode.getNode(keyword) || contextNode.append(keyword)
     })
     return contextNode
   }
@@ -1073,9 +1073,9 @@ class TreeProgram extends ImmutableNode {
       else if (!nodeB.length) return 1
 
       for (let nameIndex = 0; nameIndex < namesLength; nameIndex++) {
-        const symbol = nameOrNames[nameIndex]
-        const av = nodeA.getNode(symbol).getBeam()
-        const bv = nodeB.getNode(symbol).getBeam()
+        const keyword = nameOrNames[nameIndex]
+        const av = nodeA.getNode(keyword).getBeam()
+        const bv = nodeB.getNode(keyword).getBeam()
 
         if (av > bv) return 1
         else if (av < bv) return -1
@@ -1310,7 +1310,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   static getVersion() {
-    return "7.0.0"
+    return "7.1.0"
   }
 }
 

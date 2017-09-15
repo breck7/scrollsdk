@@ -372,7 +372,7 @@ domains
   const node = new TreeProgram(" ").nodeAt(0)
 
   // Act/Assert
-  equal(node.getSymbol(), "")
+  equal(node.getKeyword(), "")
   equal(node.getBeam(), "")
 
   // Arrange
@@ -615,7 +615,7 @@ other`
 
   // Act
   tree6.getChildren().forEach(node => {
-    if (!node.getSymbol().startsWith("p")) return true
+    if (!node.getKeyword().startsWith("p")) return true
     node.setBeam("President")
     node.delete("class")
   })
@@ -734,7 +734,7 @@ testTree.forEach = equal => {
 
   // Act
   value.getChildren().forEach(function(node) {
-    const property = node.getSymbol()
+    const property = node.getKeyword()
     const v = node.getBeam()
     result += property.toUpperCase()
     result += v.toUpperCase()
@@ -752,9 +752,9 @@ testTree.forEach = equal => {
   // Act
   value2
     .getChildren()
-    .filter(n => n.getSymbol() !== "hello")
+    .filter(n => n.getKeyword() !== "hello")
     .forEach(node => {
-      const property = node.getSymbol()
+      const property = node.getKeyword()
       const value = node.getBeam()
       count++
     })
@@ -838,7 +838,7 @@ testTree.firstProperty = equal => {
   const value = new TreeProgram("hello world\nhi mom")
 
   // Assert
-  equal(value.nodeAt(0).getSymbol(), "hello")
+  equal(value.nodeAt(0).getKeyword(), "hello")
 }
 
 testTree.firstValue = equal => {
@@ -1090,10 +1090,10 @@ testTree.getBeam = equal => {
 
 testTree.getInheritanceTree = equal => {
   // Arrange
-  const classes = `abstractSymbol
-abstractModalSymbol abstractSymbol
-helpModal abstractModalSymbol
-abstractButton abstractSymbol
+  const classes = `abstractKeyword
+abstractModalKeyword abstractKeyword
+helpModal abstractModalKeyword
+abstractButton abstractKeyword
 helpButton abstractButton`
 
   // Act
@@ -1102,8 +1102,8 @@ helpButton abstractButton`
   // Assert
   equal(
     inheritanceTree.toString(),
-    `abstractSymbol
- abstractModalSymbol
+    `abstractKeyword
+ abstractModalKeyword
   helpModal
  abstractButton
   helpButton`
@@ -1260,7 +1260,7 @@ testTree.simpleETN = equal => {
   // Arrange
   class MathProgram extends TreeProgram {
     // Look! You created a top down parser!
-    getSymbolMap() {
+    getKeywordMap() {
       return { "+": AdditionNode }
     }
   }
@@ -1309,7 +1309,7 @@ testTree.simpleETN = equal => {
   )
 }
 
-testTree.getSymbolPath = equal => {
+testTree.getKeywordPath = equal => {
   // Arrange
   const tree = new TreeProgram(testStrings.every)
   const parent = tree.getNode("domains test.test.com pages home settings")
@@ -1317,12 +1317,12 @@ testTree.getSymbolPath = equal => {
   const simple = new TreeProgram("foo bar")
 
   // Assert
-  equal(child.getSymbolPath(), "domains test.test.com pages home settings data")
+  equal(child.getKeywordPath(), "domains test.test.com pages home settings data")
   equal(child.getParent(), parent)
   equal(child.getRootNode(), tree)
   equal(child.getStack().length, 6)
   equal(simple.getNode("foo").getStack().length, 1)
-  equal(child.getSymbolPath(parent), "data")
+  equal(child.getKeywordPath(parent), "data")
 }
 
 testTree.getPathVector = equal => {
@@ -1340,7 +1340,7 @@ testTree.getPathVector = equal => {
   equal(tree.nodeAt(child.getPathVector()), child)
 
   // Act
-  const newNamePath = tree.pathVectorToSymbolPath([5, 0, 4, 0, 0])
+  const newNamePath = tree.pathVectorToKeywordPath([5, 0, 4, 0, 0])
 
   // Assert
   equal(newNamePath.join(" "), namePath)
@@ -1472,7 +1472,7 @@ testTree.htmlDsl = equal => {
 
   // Act
   html.getChildren().forEach(node => {
-    const property = node.getSymbol()
+    const property = node.getKeyword()
     const value = node.getBeam()
     page += "<" + property + ">" + value + "</" + property + ">"
   })
@@ -1546,7 +1546,7 @@ testTree.lastProperty = equal => {
   // Arrange
   const value = new TreeProgram("hello world\nhi mom")
   // Assert
-  equal(value.nodeAt(-1).getSymbol(), "hi")
+  equal(value.nodeAt(-1).getKeyword(), "hi")
 }
 
 testTree.lastValue = equal => {
@@ -1769,7 +1769,7 @@ testTree.copyToRegression = equal => {
  >div`
 
   const migrateNode = node => {
-    if (!node.getSymbol().startsWith(">")) return true
+    if (!node.getKeyword().startsWith(">")) return true
     if (node.length) {
       const cla = node.getNode("class").getBeam()
       if (cla) node.setBeam(cla)
@@ -1778,8 +1778,8 @@ testTree.copyToRegression = equal => {
         const nodes = css.getChildren()
         const toMove = []
         nodes.forEach(propNode => {
-          const name = propNode.getSymbol().replace(":", " ")
-          propNode.setSymbol("@" + name)
+          const name = propNode.getKeyword().replace(":", " ")
+          propNode.setKeyword("@" + name)
           toMove.push(propNode)
         })
         toMove.reverse()
@@ -1909,7 +1909,7 @@ testTree.multiline = equal => {
 testTree.order = equal => {
   // Arrange
   const a = new TreeProgram("john\n age 5\nsusy\n age 6\nbob\n age 10")
-  const types = a.getSymbols().join(" ")
+  const types = a.getKeywords().join(" ")
 
   // Assert
   equal(types, "john susy bob", "order is preserved")
@@ -2122,20 +2122,20 @@ testTree.reorder = equal => {
   a.touchNode("hi").setBeam("mom")
 
   // Assert
-  equal(a.getSymbols().join(" "), "hello hi", "order correct")
+  equal(a.getKeywords().join(" "), "hello hi", "order correct")
 
   // Act
   a.insert("yo pal", undefined, 0)
 
   // Assert
-  equal(a.getSymbols().join(" "), "yo hello hi", "order correct")
+  equal(a.getKeywords().join(" "), "yo hello hi", "order correct")
 
   // Act
   const result = a.insert("hola pal", undefined, 2)
   equal(result instanceof TreeProgram, true)
 
   // Assert
-  equal(a.getSymbols().join(" "), "yo hello hola hi", "order correct")
+  equal(a.getKeywords().join(" "), "yo hello hola hi", "order correct")
 }
 
 testTree.next = equal => {
@@ -2155,10 +2155,10 @@ bob
   // Assert
   equal(a.getNext().toString(), a.toString())
   equal(a.getPrevious().toString(), a.toString())
-  equal(b.getPrevious().getSymbol(), "bob")
-  equal(b.getNext().getSymbol(), "susy")
-  equal(c.getNext().getSymbol(), "score")
-  equal(c.getPrevious().getSymbol(), "score")
+  equal(b.getPrevious().getKeyword(), "bob")
+  equal(b.getNext().getKeyword(), "susy")
+  equal(c.getNext().getKeyword(), "score")
+  equal(c.getPrevious().getKeyword(), "score")
 }
 
 testTree.reverse = equal => {
@@ -2188,7 +2188,7 @@ testTree.reverse = equal => {
     tree2
       .nodeAt(0)
       .nodeAt(0)
-      .getSymbol(),
+      .getKeyword(),
     "age",
     "Expected reversed properties"
   )
@@ -2196,7 +2196,7 @@ testTree.reverse = equal => {
     tree2
       .nodeAt(1)
       .nodeAt(0)
-      .getSymbol(),
+      .getKeyword(),
     "name",
     "Expected unchanged properties"
   )
@@ -2264,17 +2264,17 @@ testTree.set = equal => {
   // Act
   tree4.touchNode("hi").setBeam("mom")
   // Assert
-  equal(tree4.getSymbols().join(" "), "hello hi", "order correct")
+  equal(tree4.getKeywords().join(" "), "hello hi", "order correct")
 
   // Act
   tree4.insert("yo pal", undefined, 0)
   // Assert
-  equal(tree4.getSymbols().join(" "), "yo hello hi", "order correct")
+  equal(tree4.getKeywords().join(" "), "yo hello hi", "order correct")
 
   // Act
   tree4.insert("hola pal", undefined, 2)
   // Assert
-  equal(tree4.getSymbols().join(" "), "yo hello hola hi", "order correct")
+  equal(tree4.getKeywords().join(" "), "yo hello hola hi", "order correct")
 
   // Arrange
   const tree5 = new TreeProgram()
@@ -2401,26 +2401,26 @@ testTree.sort = equal => {
   // Arrange
   const tree = new TreeProgram("john\n age 5\nsusy\n age 6\nbob\n age 10")
   // Assert
-  equal(tree.getSymbols().join(" "), "john susy bob")
+  equal(tree.getKeywords().join(" "), "john susy bob")
   // Act
   tree.sort((a, b) => {
-    return b.getSymbol() < a.getSymbol()
+    return b.getKeyword() < a.getKeyword()
   })
   // Assert
-  equal(tree.getSymbols().join(" "), "bob john susy")
+  equal(tree.getKeywords().join(" "), "bob john susy")
 }
 
 testTree.sortBy = equal => {
   // Arrange
   const tree = new TreeProgram("john\n age 5\nsusy\n age 6\nbob\n age 10\nsam\n age 21\nbrian\n age 6")
   // Assert
-  equal(tree.getSymbols().join(" "), "john susy bob sam brian")
+  equal(tree.getKeywords().join(" "), "john susy bob sam brian")
 
   // Act
   tree.sortBy("age")
 
   // Assert
-  equal(tree.getSymbols().join(" "), "bob sam john susy brian")
+  equal(tree.getKeywords().join(" "), "bob sam john susy brian")
 
   // Sort by multiple properties
   // Arrange
@@ -2856,7 +2856,7 @@ testTree.treeNodes = equal => {
   // Assert
   equal(originalMtime > 0, true)
   equal(node.isTerminal(), true)
-  equal(node.getSymbol(), "text")
+  equal(node.getKeyword(), "text")
   equal(node.getBeam(), undefined)
   equal(node.length, 0)
 
@@ -2879,7 +2879,7 @@ testTree.treeNodes = equal => {
 
   // Act
   const mtime = node.getMTime()
-  node.setSymbol("foo")
+  node.setKeyword("foo")
 
   // Assert
   equal(a.toString(), "foo hello world\n color blue")

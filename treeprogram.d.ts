@@ -31,6 +31,8 @@ interface TreeProgram {
   getRootNode: (relativeTo?: TreeProgram) => This | TreeProgram
   getKeyword: () => word
   getExpanded: () => string
+  getErrors: () => string[] // parse errors. base class is permissive and will always have 0 errors.
+  getWordTypeLine: () => string // something like "any int int". base class words are always any type.
   getWord: (index: int) => word
   getWords: (startingFrom?: int) => word[]
   getBeam: () => string | Undefined // Always refers to part of the line after the keyword, given that ZI is space.

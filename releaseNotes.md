@@ -1,3 +1,8 @@
+7.1.1 / 2017-9-17
+=================
+- New: getErrors and getWordTypeLine methods
+- Fix: fix for executeFile static method when more than one #! line.
+
 7.1.0 / 2017-9-15
 =================
 - Breaking; Symbol is now Keyword throughout. Same changes at 7.0.0, except substitute keyword for symbol.

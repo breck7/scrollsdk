@@ -26,6 +26,14 @@ class ImmutableNode extends EnvironmentNodeType {
     return Promise.all(this.getChildren().map(child => child.execute(context)))
   }
 
+  getErrors() {
+    return []
+  }
+
+  getWordTypeLine() {
+    return "any ".repeat(this.getWords().length).trim()
+  }
+
   executeSync(context) {
     return this.getChildren().map(child => child.executeSync(context))
   }
@@ -1275,7 +1283,9 @@ class TreeProgram extends ImmutableNode {
     const fs = require("fs")
     const code = fs.readFileSync(programPath, "utf8")
     const program = new TreeProgram(code)
-    const etnFile = program.getNode("#!").getWord(-1)
+    const hashBangNode = program.nodeAt(0)
+    if (hashBangNode.getKeyword() !== "#!") throw new Error("Expected #! node on first line.")
+    const etnFile = hashBangNode.getWord(-1)
     const etnClass = require(etnFile)
     const etnProgram = new etnClass(code)
     return etnProgram.execute(programPath)
@@ -1310,7 +1320,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   static getVersion() {
-    return "7.1.0"
+    return "7.1.1"
   }
 }
 

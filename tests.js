@@ -2847,6 +2847,14 @@ some
   equal(b.getTreeMTime() > bTime, true, "time increased")
 }
 
+testTree.typeTests = equal => {
+  // Arrange
+  const a = new TreeProgram("text")
+  // Assert
+  equal(a.getErrors().length, 0)
+  equal(a.getWordTypeLine(), "any")
+}
+
 testTree.treeNodes = equal => {
   // Arrange
   const a = new TreeProgram("text")

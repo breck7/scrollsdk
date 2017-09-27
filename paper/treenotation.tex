@@ -23,9 +23,9 @@
 
 \begin{abstract}
 %\boldmath
-This paper is written for programmers around the world. We hope by freely sharing a powerful new discovery, we might inspire you, dear programmer, to create new tools and languages, so that we all may experience a quantum leap in programming productivity.
+This paper presents Tree Notation, a new simple, universal syntax. Language designers can invent new programming languages, called Tree Languages, on top of Tree Notation. Tree Languages have a number of advantages over traditional programming languages.
 
-We include a Visual Abstract to succinctly display the problem and discovery. Then we describe the problem--the abstract syntax tree (AST)--and introduce the novel solution we discovered: a new family of 2D programming languages that align source code with geometric trees and remove the AST. Then we make some predictions and conclude with a plea to steal this idea.
+We include a Visual Abstract to succinctly display the problem and discovery. Then we describe the problem--the abstract syntax tree (AST) step--and introduce the novel solution we discovered: a new family of 2D programming languages that are written directly as geometric trees.
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
@@ -33,20 +33,20 @@ We include a Visual Abstract to succinctly display the problem and discovery. Th
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=90mm]{treenotation.png}
-\caption{This Visual Abstract explains the core idea of the paper. This diagram is also the output of a program written in a new ETN called Flow.}
+\caption{This Visual Abstract explains the core idea of the paper. This diagram is also the output of a program written in a new Tree Language called Flow.}
 \end{figure}
 
 \section{The Problem}
 
-Programming is complicated. Our current high-level antique languages (HALs) add to this complexity. To run HAL code we first transform it to an AST and then transform that to executable machine code. ASTs have enabled local minimum gains in developer productivity. But programmers lose time and insight due to discrepancies between HAL code and ASTs. We searched, over a number of years, to discover a simpler way, and stumbled upon Tree Notation (TN).
+Programming is complicated. Our current 1-dimensional languages (1DLs) add to this complexity. To run 1DL code we first strip whitespace, then transform it to an AST and then transform that to executable machine code. These intermediate steps have enabled local minimum gains in developer productivity. But programmers lose time and insight due to discrepancies between 1DL code and ASTs. We searched, over a number of years, to discover a simpler way, and stumbled upon Tree Notation (TN).
 
 \section{The Solution: Tree Notation}
 
-In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), we introduce TN, a new 2D notation. A node in TN maps to an XY point on a 2D plane. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called ETNs ("Extends Tree Notation"), are easy to create and can be simple or Turing Complete.
+In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), we introduce TN, a new 2D notation. A node in TN maps to an XY point on a 2D plane. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called Tree Languages (TLs), are easy to create and can be simple or Turing Complete.
 
 TN encodes one data structure, a \textbf{TreeNode}, with two members: a string called \textbf{line} and an optional array of child TreeNodes called \textbf{children}.
 
-TN defines two special characters, Y Increment (YI) and X Increment (XI). YI is "\textbackslash n" and XI is " ".  XI is a space, not a tab. Many ETNs also add a Word Increment (WI) to provide a more succint way of encoding common node types.
+TN defines two special characters, Y Increment (YI) and X Increment (XI). YI is "\textbackslash n" and XI is " ".  XI is a space, not a tab. Many TLs also add a Word Increment (WI) to provide a more succint way of encoding common node types.
 
 A comparison quickly illustrates nearly the entirety of the notation:
 
@@ -73,19 +73,19 @@ visitors
 
 \subsection{Simplicity}
 
-As shown in Fig 1, TN simply maps source code to an XY plane which makes reading code locally and globally easy, and ETN programs use far fewer source nodes than equivalent HAL programs. ETNs let programmers write much shorter, perfect programs.
+As shown in Fig 1, TN simply maps source code to an XY plane which makes reading code locally and globally easy, and TL programs use far fewer source nodes than equivalent 1DL programs. TLs let programmers write much shorter, perfect programs.
 
 \subsection{Zero parse errors}
 
-Parse errors do not exist in TN. Every text string is a valid TN program. ETNs implement microparsers that parallelize easily and can creatively handle errors.
+Parse errors do not exist in TN. Every text string is a valid TN program. TLs implement microparsers that parallelize easily and can creatively handle errors.
 
-With most HALs, to get from a blank program to a certain valid program in keystroke increments requires stops at invalid programs. With TN all intermediate steps are valid TN programs.
+With most 1DLs, to get from a blank program to a certain valid program in keystroke increments requires stops at invalid programs. With TN all intermediate steps are valid TN programs.
 
-A user can edit the nodes of a program at runtime with no risk of breaking the TN parsing of the entire program. "Errors", still can exist at the ETN level, but ETN microparsers can handle errors independently and even correct errors automatically. ETNs slapchop development and debug time.
+A user can edit the nodes of a program at runtime with no risk of breaking the TN parsing of the entire program. "Errors", still can exist at the TL level, but TL microparsers can handle errors independently and even correct errors automatically. TLs cut development and debug time.
 
 \subsection{Semantic diffs}
 
-HALs ignore whitespace and so permit programmers and programs to encode the same object to different programs. This often causes merge conflicts for non-semantic changes.
+1DLs ignore whitespace and so permit programmers and programs to encode the same object to different programs. This often causes merge conflicts for non-semantic changes.
 
 TN does not ignore whitespace and diffs contain only semantic meaning. Just one right way to encode a program.
 
@@ -114,9 +114,9 @@ source
 
 TN is new and tooling support rounds to zero.
 
-TN lacks primitive types. Many HALs have notations for common types like floats, and parse directly to efficient in-memory structures. ETNs make TN useful. The GER demonstrates how useful ETNs can be built with just a few lines of code, which is far less code than one needs to implement even a simple HAL such as JSON \cite{Ooms}.
+TN lacks primitive types. Many 1DLs have notations for common types like floats, and parse directly to efficient in-memory structures. TLs make TN useful. The GER demonstrates how useful TLs can be built with just a few lines of code, which is far less code than one needs to implement even a simple 1DL such as JSON \cite{Ooms}.
 
-TN is verbose without an ETN. A complex node in TN takes multiple lines. Base HALs allow multiple nodes per line.
+TN is verbose without a TL. A complex node in TN takes multiple lines. Base 1DLs allow multiple nodes per line.
 
 Some developers dislike space-indented notations, some wrongly prefer tabs, and some just have no taste.
 
@@ -124,7 +124,7 @@ Some developers dislike space-indented notations, some wrongly prefer tabs, and 
 
 \textbf{Prediction 1: no structure will be found that cannot serialize to TN.} Some LISP programmers believe all structures are recursive lists (or perhaps "recursive cons"). We believe in The Tree Conjecture (TTC): \textbf{All structures are trees}.
 
-For example, a map could serialize to MapETN:
+For example, a map could serialize to MapTL:
 
 \begin{lstlisting}
 ty aaaabbcccdddefggghjjjjjklllmmmnopprrsssvz
@@ -133,7 +133,7 @@ ty aaaabbcccdddefggghjjjjjklllmmmnopprrsssvz
 
 Therefore, maps are a type of tree. TTC stands.
 
-\textbf{Prediction 2: ETNs will be found for every popular AL.} Below is some code in a simple ETN, JsonETN:
+\textbf{Prediction 2: TLs will be found for every popular AL.} Below is some code in a simple TL, JsonTL:
 
 \begin{lstlisting}
 o
@@ -141,11 +141,11 @@ o
  n ma 902
 \end{lstlisting}
 
-ETNs will be found for great ALs including C, RISC-V, ES6, and Arc. Some ETNs have already been found \cite{Roughan}, but their common TN DNA has gone unseen. The immediate benefit of discovering an ETN for an AL is that programs can then be written in an ETN editor and compiled to that AL.
+TLs will be found for great ALs including C, RISC-V, ES6, and Arc. Some TLs have already been found \cite{Roughan}, but their common TN DNA has gone unseen. The immediate benefit of discovering a TL for an AL is that programs can then be written in a TL editor and compiled to that AL.
 
 \textbf{Prediction 3: Tree Oriented Programming (TOP) will supersede Object Oriented Programming.} A new style of programming, TOP, will arise. TOP programmers will frequently reference 2D views of their program.
 
-\textbf{Prediction 4: The simplest 2D text encodings for neural networks will be ETNs.} High level ETNs will be found to translate machine written programs into understandable trees.
+\textbf{Prediction 4: The simplest 2D text encodings for neural networks will be TLs.} High level TLs will be found to translate machine written programs into understandable trees.
 
 \section{Literature Review}
 
@@ -153,11 +153,11 @@ Turing Machines with 2D Tapes have been studied and are known to be Turing Compl
 
 Relevant math surely exists under the categories including graph, group, set, braid and knot, topology and geometry.
 
-The closest someone came to discovering TN, and ETNs, was perhaps Mark B. Wells, who wrote a brillant paper at Los Alamos, back in 1972 which predicted the discovery and utility of something like ETNs. Alas, his paper went almost entirely ignored \cite{Wells}. This exemplifies why they call it REsearch.
+The closest someone came to discovering TN, and TLs, was perhaps Mark B. Wells, who wrote a brillant paper at Los Alamos, back in 1972 which predicted the discovery and utility of something like TLs. Alas, his paper went almost entirely ignored \cite{Wells}. This exemplifies why they call it REsearch.
 
 \section{Steal this idea}
 
-We now turn our attention to building new ETNs and tools for data science, visual programming, ML, parallel computing and more. The GER contains a TN library, some ETNs, and one more thing. We hope you, fellow programmers, will "steal" this idea and together we can use this new discovery to build faster!
+We now turn our attention to building new TLs and tools for data science, visual programming, ML, parallel computing and more. The GER contains a TN library, some TLs, and one more thing. We hope you, fellow programmers, will "steal" this idea and together we can use this new discovery to build faster!
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=90mm]{tree.jpg}

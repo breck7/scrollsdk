@@ -1,34 +1,19 @@
 Tree Notation
 =============
 
-Tree Notation is a minimal notation for encoding tree data structures.
+Tree Notation is a simple, universal syntax for programming languages. On top of Tree Notation, people can design "Tree Languages", that are as powerful as any traditional programming language.
 
-Tree Notation Basics
---------------------
+An example program written in a Tree Language:
 
-A JSON object like:
+    if true
+     print Hello world
 
-    {
-     "title" : "Hello world",
-     "visitors": {
-      "mozilla": 802
-     }
-    }
-
-Can be written in Tree Notation like this:
-
-    title Hello world
-    visitors
-     mozilla 802
-
+In Tree Notation, the units of measure are words and nodes. Each line is equal to one node. The example program above has 5 words and 2 nodes. The first word of a node is called the keyword. This program has 2 keywords (if and print). Notice how the second line in the program above is intented by one space, this makes it a child node of the line above it.
 
 Who this Library is For
 -----------------------
 
-If you want to build languages on top of Tree Notation, or build Tree editing tools, this library is for you.
-
-If you are building new languages on top of Tree Notation, we additionally have another library that we
-haven't released yet that makes doing so much easier. Drop us a message to test it out.
+This library is for people who want to build Tree Languages or Tree editing tools.
 
 Using this Library
 -----------------
@@ -61,9 +46,9 @@ as a reference. If you do build a library for another language, let me know and 
 Theory
 ------
 
-You can read the paper introducing Tree Notation here (https://github.com/breck7/treenotation/blob/master/paper/treenotation.pdf).
+You can read the paper introducing Tree Notation here (https://github.com/breck7/treeprogram/blob/master/paper/treenotation.pdf).
 
-The basic gist of the theory is that all structures are trees and that tree notation is all you need to represent trees.
+The basic gist of the theory is that all structures are trees, tree notation is all you need to represent trees, and you can easily build Turing Complete programming languages using just Tree Notation.
 
 Copyright & License
 -------------------

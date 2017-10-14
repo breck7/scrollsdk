@@ -1,3 +1,8 @@
+7.2.0 / 2017-10-14
+==================
+- Breaking: for use in browser, now use treeprogram.browser.js instead of treeprogram.js
+- Infra: prep work for grammar and blaze library merger -- consoleApp and src directory
+
 7.1.1 / 2017-9-17
 =================
 - New: getErrors and getWordTypeLine methods

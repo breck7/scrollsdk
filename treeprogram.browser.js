@@ -799,7 +799,7 @@ window.ImmutableNode = ImmutableNode
 
 
 
-class TreeProgram extends ImmutableNode {
+class MutableNode extends ImmutableNode {
   getMTime() {
     if (!this._mtime) this._updateMTime()
     return this._mtime
@@ -834,7 +834,7 @@ class TreeProgram extends ImmutableNode {
 
   getInheritanceTree() {
     const paths = {}
-    const result = new TreeProgram()
+    const result = new MutableNode()
     this.getChildren().forEach(node => {
       const key = node.getWord(0)
       const parentKey = node.getWord(1)
@@ -847,9 +847,9 @@ class TreeProgram extends ImmutableNode {
 
   _expand() {
     const graph = this.getGraph()
-    const result = new TreeProgram()
+    const result = new MutableNode()
     graph.forEach(node => result.extend(node))
-    return new TreeProgram().append(this.getLine(), result)
+    return new MutableNode().append(this.getLine(), result)
   }
 
   getExpanded() {
@@ -899,7 +899,7 @@ class TreeProgram extends ImmutableNode {
 
     // tood: cleanup.
     const remainingString = lines.join(this.getYI())
-    const children = new TreeProgram(remainingString)
+    const children = new MutableNode(remainingString)
     if (!remainingString) children.append("")
     this.setChildren(children)
     return this
@@ -937,7 +937,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   concat(node) {
-    if (typeof node === "string") node = new TreeProgram(node)
+    if (typeof node === "string") node = new MutableNode(node)
     return node._getChildren().map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
@@ -1026,7 +1026,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   extend(nodeOrStr) {
-    if (!(nodeOrStr instanceof TreeProgram)) nodeOrStr = new TreeProgram(nodeOrStr)
+    if (!(nodeOrStr instanceof MutableNode)) nodeOrStr = new MutableNode(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {
       const path = node.getKeyword()
       const beam = node.getBeam()
@@ -1067,6 +1067,13 @@ class TreeProgram extends ImmutableNode {
     return this._touchNode(str.split(this.getZI()))
   }
 
+  getGrammarString() {
+    return `any
+ @catchAllKeyword any
+any
+ @parameters any*`
+  }
+
   touchNode(str) {
     return this._touchNodeByString(str)
   }
@@ -1098,7 +1105,7 @@ class TreeProgram extends ImmutableNode {
   }
 
   static fromJson(str) {
-    return new TreeProgram(JSON.parse(str))
+    return new MutableNode(JSON.parse(str))
   }
 
   static fromSsv(str, hasHeaders) {
@@ -1182,12 +1189,12 @@ class TreeProgram extends ImmutableNode {
   // Given an array return a tree
   static _rowsToTreeNode(rows, delimiter, hasHeaders) {
     const numberOfColumns = rows[0].length
-    const treeNode = new TreeProgram()
+    const treeNode = new MutableNode()
     const names = this._getHeader(rows, hasHeaders)
 
     const rowCount = rows.length
     for (let rowIndex = hasHeaders ? 1 : 0; rowIndex < rowCount; rowIndex++) {
-      const rowTree = new TreeProgram()
+      const rowTree = new MutableNode()
       let row = rows[rowIndex]
       // If the row contains too many columns, shift the extra columns onto the last one.
       // This allows you to not have to escape delimiter characters in the final column.
@@ -1246,8 +1253,8 @@ class TreeProgram extends ImmutableNode {
   }
 
   static _treeNodeFromXml(xml) {
-    const result = new TreeProgram()
-    const children = new TreeProgram()
+    const result = new MutableNode()
+    const children = new MutableNode()
 
     // Set attributes
     if (xml.attributes) {
@@ -1323,5 +1330,12 @@ class TreeProgram extends ImmutableNode {
     return "7.1.1"
   }
 }
+
+window.MutableNode = MutableNode
+
+
+
+
+class TreeProgram extends MutableNode {}
 
 window.TreeProgram = TreeProgram

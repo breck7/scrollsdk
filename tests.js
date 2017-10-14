@@ -1,6 +1,7 @@
 "use strict"
 
-const TreeProgram = require("./treeprogram.js")
+const TreeProgram = require("./index.js")
+const ImmutableNode = require("./src/ImmutableNode.js")
 
 const testStrings = {}
 
@@ -2780,11 +2781,11 @@ testTree.fromJson = equal => {
 
 testTree.immutable = equal => {
   // Arrange
-  const ImmutableNode = TreeProgram.ImmutableNode
   const immutableNode = new ImmutableNode("hello world")
   const mutableNode = new TreeProgram("hello world")
 
   // Assert
+  equal(immutableNode instanceof TreeProgram, false)
   equal(typeof immutableNode.setBeam, "undefined")
   equal(typeof mutableNode.setBeam, "function")
 }

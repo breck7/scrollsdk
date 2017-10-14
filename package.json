@@ -2,7 +2,7 @@
   "name": "treeprogram",
   "version": "7.1.1",
   "description": "Javascript Tree Notation implementation.",
-  "main": "treeprogram.js",
+  "main": "index.js",
   "scripts": {
     "test": "tap ./test/basics.js",
     "cover": "tap ./test/basics.js -- --cov --coverage-report=lcov",
@@ -17,7 +17,7 @@
     "express": "*",
     "jquery": "*",
     "qunitjs": "*",
-    "tap": "^10.7."
+    "tap": "^10.7.2"
   },
   "license": "MIT"
 }

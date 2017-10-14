@@ -1,4 +1,4 @@
-const TreeProgram = require("./treeprogram.js")
+const TreeProgram = require("./index.js")
 const fs = require("fs")
 
 class ConsoleApp {
@@ -41,14 +41,23 @@ class ConsoleApp {
     // todo: bring blaze and grammar into tp library
   }
 
-  compile(programPath) {
-    // todo: bring blaze and grammar into tp library
-  }
-
-  run(programPath) {
+  _getLanguagePathOrThrow(programPath) {
     const extension = ConsoleApp._getFileExtension(programPath)
     const languagePath = this.getLanguages()[extension]
     if (!languagePath) throw new Error(`No installed language for '${extension}'`)
+    return languagePath
+  }
+
+  compile(programPath) {
+    const languagePath = this._getLanguagePathOrThrow(programPath)
+    const program = TreeProgram.makeProgram(programPath, languagePath)
+    program.delete("#!")
+    const path = program.getCompiledProgramName(programPath)
+    fs.writeFileSync(path, program.compile(), "utf8")
+  }
+
+  run(programPath) {
+    const languagePath = this._getLanguagePathOrThrow(programPath)
     return TreeProgram.executeFile(programPath, languagePath)
   }
 

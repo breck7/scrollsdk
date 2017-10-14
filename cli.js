@@ -3,7 +3,7 @@
 const fs = require("fs")
 const os = require("os")
 
-const TreeProgram = require("./treeprogram.js")
+const TreeProgram = require("./index.js")
 const ConsoleApp = require("./consoleApp.js")
 
 const languagesObj = new TreeProgram(fs.readFileSync(os.homedir() + "/languages.tree", "utf8")).toObject()

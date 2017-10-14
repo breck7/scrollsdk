@@ -1279,16 +1279,12 @@ class TreeProgram extends ImmutableNode {
     return result
   }
 
-  static executeFile(programPath) {
+  static executeFile(programPath, languagePath) {
     const fs = require("fs")
+    const languageClass = require(languagePath)
     const code = fs.readFileSync(programPath, "utf8")
-    const program = new TreeProgram(code)
-    const hashBangNode = program.nodeAt(0)
-    if (hashBangNode.getKeyword() !== "#!") throw new Error("Expected #! node on first line.")
-    const etnFile = hashBangNode.getWord(-1)
-    const etnClass = require(etnFile)
-    const etnProgram = new etnClass(code)
-    return etnProgram.execute(programPath)
+    const program = new languageClass(code)
+    return program.execute(programPath)
   }
 
   static _getHeader(rows, hasHeaders) {

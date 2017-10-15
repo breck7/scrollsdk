@@ -1,0 +1,33 @@
+grammar
+ @catchAllKeyword keywordDefinition
+keywordRule
+monadicKeywordRule keywordRule
+ @parameters any
+@targetExtension monadicKeywordRule
+@catchAllKeyword monadicKeywordRule
+@parseClass monadicKeywordRule
+@frequency monadicKeywordRule
+@ohayoSvg monadicKeywordRule
+@ohayoTileSize keywordRule
+ @parameters int int
+@ohayoTileClass keywordRule
+ @parameters any filepath
+variadicKeywordRule keywordRule
+ @parameters any*
+@parameters variadicKeywordRule
+@compiled variadicKeywordRule
+@listDelimiter variadicKeywordRule
+@openChildren variadicKeywordRule
+@closeChildren variadicKeywordRule
+@compiledIndentCharacter variadicKeywordRule
+@description variadicKeywordRule
+ntKeywordRule keywordRule
+@keywords ntKeywordRule
+error
+ @parseClass ErrorNode
+keywordDefinition
+ @parameters any*
+ @catchAllKeyword error
+ @parseClass NonTerminalNode
+ @keywords
+  keywordRule

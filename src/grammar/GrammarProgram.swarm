@@ -1,0 +1,38 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/tree
+#setup
+#test stress test
+ #setup
+  require ./GrammarProgram.js
+  %%|
+   testlang
+    @targetExtension stressed
+    @keywords
+     stressNode
+   stressNode
+   block stressNode
+    @keywords
+     stressNode
+   to block
+    @parameters word
+    @compiled to {word}
+    @closeChildren end
+ getRunTimeKeywordNames
+  =# 3
+ getDefinitionByName to
+  =~ object
+  getSuggestedSize
+   =~ object
+ getTopNodeTypes
+  =# 3
+ getTargetExtension
+  == stressed
+ getExtensionName
+  == testlang
+ getDocs
+  =~ string
+ toSublimeSyntaxFile
+  =~ string
+ isDefined notDefined
+  == false
+ isDefined to
+  == true

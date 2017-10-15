@@ -37,8 +37,12 @@ class ConsoleApp {
     // todo: create template
   }
 
-  check() {
-    // todo: bring blaze and grammar into tp library
+  check(programPath) {
+    const languagePath = this._getLanguagePathOrThrow(programPath)
+    const program = TreeProgram.makeProgram(programPath, languagePath)
+    const errors = program.getProgramErrors()
+    console.log(`${errors.length} errors for ${programPath} with grammar ${languagePath}`)
+    if (errors.length) console.log(errors)
   }
 
   _getLanguagePathOrThrow(programPath) {
@@ -49,11 +53,12 @@ class ConsoleApp {
   }
 
   compile(programPath) {
+    // todo: allow user to provide destination
     const languagePath = this._getLanguagePathOrThrow(programPath)
     const program = TreeProgram.makeProgram(programPath, languagePath)
-    program.delete("#!")
     const path = program.getCompiledProgramName(programPath)
-    fs.writeFileSync(path, program.compile(), "utf8")
+    const compiledCode = program.compile()
+    fs.writeFileSync(path, compiledCode, "utf8")
   }
 
   run(programPath) {

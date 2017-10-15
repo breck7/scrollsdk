@@ -1,11 +1,9 @@
 "use strict"
-
 class AbstractNode {
   _getNow() {
     return performance.now()
   }
 }
-
 
 
 
@@ -31,12 +29,6 @@ class ImmutableNode extends AbstractNode {
 
   executeSync(context) {
     return this.getChildren().map(child => child.executeSync(context))
-  }
-
-  compile() {
-    return this.getChildren()
-      .map(child => child.compile())
-      .join("\n")
   }
 
   _getUid() {
@@ -633,15 +625,15 @@ class ImmutableNode extends AbstractNode {
       children = tuple[1]
     } else if (type !== "object") line = keyword + " " + beam
     else if (beam instanceof Date) line = keyword + " " + beam.getTime().toString()
-    else if (beam instanceof ImmutableNode) {
+    else if (beam instanceof TreeNode) {
       line = keyword
-      children = new ImmutableNode(beam.childrenToString(), beam.getLine())
+      children = new TreeNode(beam.childrenToString(), beam.getLine())
     } else if (type === "function") line = keyword + " " + beam.toString()
     else if (circularCheckArray.indexOf(beam) === -1) {
       circularCheckArray.push(beam)
       line = keyword
       const length = beam instanceof Array ? beam.length : Object.keys(beam).length
-      if (length) children = new ImmutableNode()._setChildren(beam, circularCheckArray)
+      if (length) children = new TreeNode()._setChildren(beam, circularCheckArray)
     } else {
       // iirc this is return early from circular
       return
@@ -794,12 +786,7 @@ class ImmutableNode extends AbstractNode {
   }
 }
 
-window.ImmutableNode = ImmutableNode
-
-
-
-
-class MutableNode extends ImmutableNode {
+class TreeNode extends ImmutableNode {
   getMTime() {
     if (!this._mtime) this._updateMTime()
     return this._mtime
@@ -834,7 +821,7 @@ class MutableNode extends ImmutableNode {
 
   getInheritanceTree() {
     const paths = {}
-    const result = new MutableNode()
+    const result = new TreeNode()
     this.getChildren().forEach(node => {
       const key = node.getWord(0)
       const parentKey = node.getWord(1)
@@ -847,9 +834,9 @@ class MutableNode extends ImmutableNode {
 
   _expand() {
     const graph = this.getGraph()
-    const result = new MutableNode()
+    const result = new TreeNode()
     graph.forEach(node => result.extend(node))
-    return new MutableNode().append(this.getLine(), result)
+    return new TreeNode().append(this.getLine(), result)
   }
 
   getExpanded() {
@@ -899,7 +886,7 @@ class MutableNode extends ImmutableNode {
 
     // tood: cleanup.
     const remainingString = lines.join(this.getYI())
-    const children = new MutableNode(remainingString)
+    const children = new TreeNode(remainingString)
     if (!remainingString) children.append("")
     this.setChildren(children)
     return this
@@ -937,7 +924,7 @@ class MutableNode extends ImmutableNode {
   }
 
   concat(node) {
-    if (typeof node === "string") node = new MutableNode(node)
+    if (typeof node === "string") node = new TreeNode(node)
     return node._getChildren().map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
@@ -1026,7 +1013,7 @@ class MutableNode extends ImmutableNode {
   }
 
   extend(nodeOrStr) {
-    if (!(nodeOrStr instanceof MutableNode)) nodeOrStr = new MutableNode(nodeOrStr)
+    if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {
       const path = node.getKeyword()
       const beam = node.getBeam()
@@ -1067,13 +1054,6 @@ class MutableNode extends ImmutableNode {
     return this._touchNode(str.split(this.getZI()))
   }
 
-  getGrammarString() {
-    return `any
- @catchAllKeyword any
-any
- @parameters any*`
-  }
-
   touchNode(str) {
     return this._touchNodeByString(str)
   }
@@ -1105,7 +1085,7 @@ any
   }
 
   static fromJson(str) {
-    return new MutableNode(JSON.parse(str))
+    return new TreeNode(JSON.parse(str))
   }
 
   static fromSsv(str, hasHeaders) {
@@ -1189,12 +1169,12 @@ any
   // Given an array return a tree
   static _rowsToTreeNode(rows, delimiter, hasHeaders) {
     const numberOfColumns = rows[0].length
-    const treeNode = new MutableNode()
+    const treeNode = new TreeNode()
     const names = this._getHeader(rows, hasHeaders)
 
     const rowCount = rows.length
     for (let rowIndex = hasHeaders ? 1 : 0; rowIndex < rowCount; rowIndex++) {
-      const rowTree = new MutableNode()
+      const rowTree = new TreeNode()
       let row = rows[rowIndex]
       // If the row contains too many columns, shift the extra columns onto the last one.
       // This allows you to not have to escape delimiter characters in the final column.
@@ -1253,8 +1233,8 @@ any
   }
 
   static _treeNodeFromXml(xml) {
-    const result = new MutableNode()
-    const children = new MutableNode()
+    const result = new TreeNode()
+    const children = new TreeNode()
 
     // Set attributes
     if (xml.attributes) {
@@ -1331,11 +1311,945 @@ any
   }
 }
 
-window.MutableNode = MutableNode
+window.TreeNode = TreeNode
+
+const TreeSlotTypes = `any
+ isValid .?
+something
+ isValid .
+url
+ isValid .?
+type
+ isValid ^(any|url|something|int|boolean|number)$
+int
+ isValid ^\-?[0-9]+$
+reduction
+ isValid ^(count|sum|average|min|max|median)$
+boolean
+ isValid ^(false|true)$
+number
+ isValid ^\-?[0-9]*\.?[0-9]*$
+prob
+ description Number between 0 and 1
+ isValid ^\-?[0-9]*\.?[0-9]*$
+alphanumeric
+ isValid ^[a-zA-Z0-9]+$
+comparison
+ isValid ^(\<|\>|==)$
+filepath
+ isValid ^[a-zA-Z0-9\.\_\/\-]+$
+identifier
+ isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
+alpha
+ isValid ^[a-zA-Z]+$`
+
+window.TreeSlotTypes = TreeSlotTypes
 
 
 
 
-class TreeProgram extends MutableNode {}
+class TreeCell {
+  constructor(word, type, node, line, index) {
+    this._word = word
+    this._type = type
+    this._line = line
+    this._node = node
+    this._index = index + 1
+  }
+
+  getType() {
+    return (this._type && this._type.replace("*", "")) || undefined
+  }
+
+  getWord() {
+    return this._word
+  }
+
+  isOptional() {
+    return this._type && this._type.endsWith("*")
+  }
+
+  getErrorMessage() {
+    const index = this._index
+    const type = this.getType()
+    const fullLine = this._node.getLine()
+    const line = this._line
+    const word = this._word
+    if (word === undefined && this.isOptional()) return ""
+    if (word === undefined)
+      return `Unfilled "${type}" slot in "${fullLine}" at line ${line} slot ${index}. definition: ${this._node
+        .getDefinition()
+        .toString()}`
+    if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} slot ${index}`
+
+    const wordTypeClass = TreeCell._getTreeSlotTypes()[type]
+    if (!wordTypeClass)
+      return `Grammar definition error: No slot type "${type}" found in "${fullLine}" on line ${line}.`
+
+    const isValid = wordTypeClass.isValid(this._word)
+    return isValid
+      ? ""
+      : `Invalid word in "${fullLine}" at line ${line} slot ${index}. "${word}" does not fit in "${type}" slot.`
+  }
+
+  static _getTreeSlotTypes() {
+    this._initCache()
+    return TreeCell._cache_treeSlotTypes
+  }
+
+  static _initCache() {
+    if (TreeCell._cache_treeSlotTypes) return
+
+    const program = new TreeNode(TreeSlotTypes)
+    TreeCell._cache_treeSlotTypes = {}
+    program.getChildren().forEach(child => {
+      TreeCell._cache_treeSlotTypes[child.getLine()] = {
+        isValid: str => str.match(new RegExp(child.findBeam("isValid")))
+      }
+    })
+  }
+}
+
+window.TreeCell = TreeCell
+
+
+
+class GrammarConstNode extends TreeNode {
+  getValue() {
+    // todo: parse type
+    if (this.length) return this.childrenToString()
+    return this.getWords(2).join(" ")
+  }
+  getName() {
+    return this.getKeyword()
+  }
+}
+
+window.GrammarConstNode = GrammarConstNode
+
+const GrammarConstants = {}
+
+// parsing
+GrammarConstants.keywords = "@keywords"
+GrammarConstants.parameters = "@parameters"
+GrammarConstants.catchAllKeyword = "@catchAllKeyword"
+GrammarConstants.defaults = "@defaults"
+GrammarConstants.constants = "@constants"
+
+// executing
+GrammarConstants.blazeClass = "@blazeClass"
+
+// compiling
+GrammarConstants.compiled = "@compiled"
+GrammarConstants.compiledIndentCharacter = "@compiledIndentCharacter"
+GrammarConstants.listDelimiter = "@listDelimiter"
+GrammarConstants.openChildren = "@openChildren"
+GrammarConstants.closeChildren = "@closeChildren"
+GrammarConstants.targetExtension = "@targetExtension"
+
+// developing
+GrammarConstants.description = "@description"
+GrammarConstants.frequency = "@frequency"
+
+// ohayo ui
+GrammarConstants.ohayoSvg = "@ohayoSvg"
+GrammarConstants.ohayoTileSize = "@ohayoTileSize"
+GrammarConstants.ohayoTileClass = "@ohayoTileClass"
+GrammarConstants.ohayoTileScript = "@ohayoTileScript"
+GrammarConstants.ohayoTileCssScript = "@ohayoTileCssScript"
+
+window.GrammarConstants = GrammarConstants
+
+
+
+
+
+class DynamicNode extends TreeNode {
+  getProgram() {
+    return this.getParent().getProgram()
+  }
+
+  getDefinition() {
+    return this.getProgram()
+      .getGrammarProgram()
+      .getDefinitionByKeywordPath(this.getKeywordPath())
+  }
+
+  _getParameterMap() {
+    const cells = this.getTreeCellArray()
+    const parameterMap = {}
+    cells.forEach(cell => {
+      const type = cell.getType()
+      if (!parameterMap[type]) parameterMap[type] = []
+      parameterMap[type].push(cell.getWord())
+    })
+    return parameterMap
+  }
+
+  getCompiledIndentation() {
+    const definition = this.getDefinition()
+    const compiledIndentCharacter = definition.findBeam(GrammarConstants.compiledIndentCharacter)
+    const indent = this.getIndentation()
+    return compiledIndentCharacter !== undefined ? compiledIndentCharacter.repeat(indent.length) : indent
+  }
+
+  getCompiledLine() {
+    const definition = this.getDefinition()
+    const listDelimiter = definition.findBeam(GrammarConstants.listDelimiter)
+    const parameterMap = this._getParameterMap()
+    const jsStr = definition.findBeam(GrammarConstants.compiled)
+    return jsStr ? DynamicNode._formatStr(jsStr, listDelimiter, parameterMap) : this.getLine()
+  }
+
+  compile() {
+    return this.getCompiledIndentation() + this.getCompiledLine()
+  }
+
+  getErrors() {
+    // Not enough parameters
+    // Too many parameters
+    // Incorrect parameter
+
+    const errors = this.getTreeCellArray()
+      .filter(wordCheck => wordCheck.getErrorMessage())
+      .map(check => check.getErrorMessage())
+
+    return errors
+  }
+
+  getTreeCellArray() {
+    const point = this.getPoint()
+    const definition = this.getDefinition()
+    const parameters = definition.getBeamParameters()
+    const parameterLength = parameters.length
+    const lastParameterType = parameters[parameterLength - 1]
+    const lastParameterListType = lastParameterType && lastParameterType.endsWith("*") ? lastParameterType : undefined
+    const words = this.getWords(1)
+    const length = Math.max(words.length, parameterLength)
+    const checks = []
+    for (let index = 0; index < length; index++) {
+      const word = words[index]
+      const type = index >= parameterLength ? lastParameterListType : parameters[index]
+      checks[index] = new TreeCell(word, type, this, point.y, index)
+    }
+    return checks
+  }
+
+  // todo: just make a fn that computes proper spacing and then is given a node to print
+  getWordTypeLine() {
+    const parameterWords = this.getTreeCellArray().map(slot => slot.getType())
+    return ["keyword"].concat(parameterWords).join(" ")
+  }
+
+  static _formatStr(str, listDelimiter = " ", parameterMap) {
+    return str.replace(/{([^\}]+)}/g, (match, path) => {
+      const isList = path.endsWith("*")
+      const typePath = path.replace("*", "")
+      const arr = parameterMap[typePath]
+      if (!arr) return ""
+      const word = isList ? arr.join(listDelimiter) : arr.shift()
+      return word
+    })
+  }
+}
+
+window.DynamicNode = DynamicNode
+
+
+
+class TreeErrorNode extends DynamicNode {
+  getWordTypeLine() {
+    return "error ".repeat(this.getWords().length).trim()
+  }
+
+  getErrors() {
+    return [`Unknown type "${this.getKeyword()}" at line ${this.getPoint().y}`]
+  }
+}
+
+window.TreeErrorNode = TreeErrorNode
+
+
+
+class TreeNonTerminalNode extends DynamicNode {
+  getKeywordMap() {
+    return this.getDefinition().getRunTimeKeywordMap()
+  }
+
+  getCatchAllNodeClass(line) {
+    return this.getDefinition().getRunTimeCatchAllNodeClass()
+  }
+
+  compile() {
+    const definition = this.getDefinition()
+    const openChildrenString = definition.getOpenChildrenString()
+    const closeChildrenString = definition.getCloseChildrenString()
+
+    const compiledLine = this.getCompiledLine()
+    const indent = this.getCompiledIndentation()
+
+    const compiledChildren = this.getChildren()
+      .map(child => child.compile())
+      .join("\n")
+
+    return `${indent}${compiledLine}${openChildrenString}
+${compiledChildren}
+${indent}${closeChildrenString}`
+  }
+}
+
+window.TreeNonTerminalNode = TreeNonTerminalNode
+
+
+
+class TreeTerminalNode extends DynamicNode {}
+
+window.TreeTerminalNode = TreeTerminalNode
+
+
+
+class AbstractGrammarDefinitionNode extends TreeNonTerminalNode {
+  getRunTimeKeywordMap() {
+    this._initKeywordsMapCache()
+    return this._cache_keywordsMap
+  }
+
+  getRunTimeKeywordNames() {
+    return Object.keys(this.getRunTimeKeywordMap())
+  }
+
+  getRunTimeKeywordMapWithDefinitions() {
+    const defs = this._getDefinitionCache()
+    return AbstractGrammarDefinitionNode._mapValues(this.getRunTimeKeywordMap(), key => defs[key])
+  }
+
+  _initKeywordsMapCache() {
+    if (this._cache_keywordsMap) return undefined
+    // todo: make this handle extensions.
+    const allDefs = this._getDefinitionCache()
+    const keywordMap = {}
+    this._cache_keywordsMap = keywordMap
+    const acceptableKeywords = this.getAllowableKeywords()
+    // terminals dont have acceptable keywords
+    if (!Object.keys(acceptableKeywords).length) return undefined
+    const matching = Object.keys(allDefs).filter(key => allDefs[key].isAKeyword(acceptableKeywords))
+
+    matching.forEach(key => {
+      keywordMap[key] = allDefs[key].getJavascriptClassForNode()
+    })
+  }
+
+  getAllowableKeywords() {
+    const keywords = this._getKeyWordsNode()
+    return keywords ? keywords.toObject() : {}
+  }
+
+  getTopNodeTypes() {
+    const definitions = this._getDefinitionCache()
+    const keywords = this.getRunTimeKeywordMap()
+    const arr = Object.keys(keywords).map(keyword => definitions[keyword])
+    arr.sort(AbstractGrammarDefinitionNode._sortByAccessor(definition => definition.getFrequency()))
+    arr.reverse()
+    return arr.map(definition => definition.getKeyword())
+  }
+
+  getDefinitionByName(keyword) {
+    const definitions = this._getDefinitionCache()
+    return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
+  }
+
+  _getCatchAllDefinition() {
+    const catchAllKeyword = this._getRunTimeCatchAllKeyword()
+    const definitions = this._getDefinitionCache()
+    const def = definitions[catchAllKeyword]
+    // todo: implement contraints like a grammar file MUST have a catch all.
+    return def ? def : this.getParent()._getCatchAllDefinition()
+  }
+
+  _initCatchCallNodeCache() {
+    if (this._cache_catchAll) return undefined
+
+    this._cache_catchAll = this._getCatchAllDefinition().getJavascriptClassForNode()
+  }
+
+  getAutocompleteWords(inputStr, additionalWords = []) {
+    // todo: add more tests
+    const str = this.getRunTimeKeywordNames()
+      .concat(additionalWords)
+      .join("\n")
+
+    // default is to just autocomplete using all words in existing program.
+    return AbstractGrammarDefinitionNode._getUniqueWordsArray(str)
+      .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
+      .map(obj => obj.word)
+  }
+
+  isDefined(keyword) {
+    return !!this._getDefinitionCache()[keyword.toLowerCase()]
+  }
+
+  getRunTimeCatchAllNodeClass() {
+    this._initCatchCallNodeCache()
+    return this._cache_catchAll
+  }
+
+  static _mapValues(object, fn) {
+    const result = {}
+    Object.keys(object).forEach(key => {
+      result[key] = fn(key)
+    })
+    return result
+  }
+
+  static _sortByAccessor(accessor) {
+    return (objectA, objectB) => {
+      const av = accessor(objectA)
+      const bv = accessor(objectB)
+      let result = av < bv ? -1 : av > bv ? 1 : 0
+      if (av === undefined && bv !== undefined) result = -1
+      else if (bv === undefined && av !== undefined) result = 1
+      return result
+    }
+  }
+
+  static _getUniqueWordsArray(allWords) {
+    const words = allWords.replace(/\n/g, " ").split(" ")
+    const index = {}
+    words.forEach(word => {
+      if (!index[word]) index[word] = 0
+      index[word]++
+    })
+    return Object.keys(index).map(key => {
+      return {
+        word: key,
+        count: index[key]
+      }
+    })
+  }
+}
+
+window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
+
+
+
+
+
+class GrammarConstantsNode extends TreeNode {
+  getCatchAllNodeClass(line) {
+    return GrammarConstNode
+  }
+
+  getConstantsObj() {
+    const result = {}
+    this.getChildren().forEach(node => {
+      const name = node.getName()
+      result[name] = node.getValue()
+    })
+    return result
+  }
+}
+
+window.GrammarConstantsNode = GrammarConstantsNode
+
+
+
+class GrammarDefinitionErrorNode extends TreeNode {
+  getErrors() {
+    return [`Unknown type "${this.getKeyword()}" at line ${this.getPoint().y}`]
+  }
+
+  getWordTypeLine() {
+    return ["keyword"].concat(this.getWords(1).map(word => "any")).join(" ")
+  }
+}
+
+window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
+
+
+const GrammarGrammar = `grammar
+ @catchAllKeyword keyword
+setting
+ @parameters any
+anysetting setting
+ @parameters any*
+@targetExtension setting
+@catchAllKeyword setting
+@blazeClass setting
+@parameters anysetting
+@compiled anysetting
+@listDelimiter anysetting
+@openChildren anysetting
+@closeChildren anysetting
+@description anysetting
+@ohayoTileSize setting
+ @parameters int int
+@ohayoTileClass setting
+ @parameters any filepath
+keyword
+ @parameters any*
+ @blazeClass /aientist/client/grammar/GrammarKeywordDefinitionNode.js
+ @keywords
+  @targetExtension
+  @shellCommand
+  @parameters
+  @defaults
+  @constants
+  @keywords
+  @improvs
+  @catchAllKeyword
+  @blazeClass
+  @compiled
+  @listDelimiter
+  @openChildren
+  @closeChildren
+  @options
+  @description
+  @ohayoSvg
+  @ohayoTileSize
+  @ohayoTileClass
+  @ohayoTileScript
+  @ohayoTileCssScript
+  @frequency`
+
+window.GrammarGrammar = GrammarGrammar
+
+
+
+
+
+
+
+
+
+
+
+class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
+  getKeywordMap() {
+    const types = [
+      GrammarConstants.frequency,
+      GrammarConstants.openChildren,
+      GrammarConstants.closeChildren,
+      GrammarConstants.keywords,
+      GrammarConstants.parameters,
+      GrammarConstants.description,
+      GrammarConstants.blazeClass,
+      GrammarConstants.catchAllKeyword,
+      GrammarConstants.defaults,
+      GrammarConstants.compiled,
+      GrammarConstants.listDelimiter,
+      GrammarConstants.ohayoSvg,
+      GrammarConstants.ohayoTileSize,
+      GrammarConstants.ohayoTileClass,
+      GrammarConstants.ohayoTileScript,
+      GrammarConstants.ohayoTileCssScript
+    ]
+    const map = {}
+    types.forEach(type => {
+      map[type] = TreeNode
+    })
+    map[GrammarConstants.constants] = GrammarConstantsNode
+    return map
+  }
+
+  _getRunTimeCatchAllKeyword() {
+    return this.findBeam(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
+  }
+
+  isAKeyword(keywordsMap) {
+    const chain = this._getKeywordChain()
+    return Object.keys(keywordsMap).some(keyword => chain[keyword])
+  }
+
+  _getKeywordChain() {
+    this._initKeywordChainCache()
+    return this._cache_keywordChain
+  }
+
+  _initKeywordChainCache() {
+    if (this._cache_keywordChain) return undefined
+    const cache = {}
+    cache[this.getKeyword()] = true
+    const beam = this.getBeam()
+    if (beam) {
+      cache[beam] = true
+      const defs = this._getDefinitionCache()
+      const parentDef = defs[beam]
+      Object.assign(cache, parentDef._getKeywordChain())
+    }
+    this._cache_keywordChain = cache
+  }
+
+  _getKeyWordsNode() {
+    return this.getNode(GrammarConstants.keywords)
+  }
+
+  _getDefinitionCache() {
+    return this.getParent()._getDefinitionCache()
+  }
+
+  getCatchAllNodeClass(line) {
+    return GrammarDefinitionErrorNode
+  }
+
+  isNodeJs() {
+    return typeof exports !== "undefined"
+  }
+
+  getJavascriptClassForNode() {
+    this._initClassCache()
+    return this._cache_class
+  }
+
+  isNonTerminal() {
+    return this.has(GrammarConstants.keywords)
+  }
+
+  _initClassCache() {
+    if (this._cache_class) return undefined
+    const getClassNameFromFilePath = filename =>
+      filename
+        .replace(/\.[^\.]+$/, "")
+        .split("/")
+        .pop()
+    const filepath = this.findBeam(GrammarConstants.blazeClass)
+
+    if (!filepath)
+      this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode // todo: remove "window" below?
+    else this._cache_class = this.isNodeJs() ? require(filepath) : window[getClassNameFromFilePath(filepath)]
+  }
+
+  getDoc() {
+    return this.getKeyword()
+  }
+
+  getOpenChildrenString() {
+    return this.findBeam(GrammarConstants.openChildren) || ""
+  }
+
+  getCloseChildrenString() {
+    return this.findBeam(GrammarConstants.closeChildren) || ""
+  }
+
+  _getDefaultsNode() {
+    return this.findBeam(GrammarConstants.defaults)
+  }
+
+  getDefaultFor(name) {
+    const defaults = this._getDefaultsNode()
+    return defaults ? defaults.findBeam(name) : undefined
+  }
+
+  getBeamParameters() {
+    const parameters = this.findBeam(GrammarConstants.parameters)
+    return parameters ? parameters.split(" ") : []
+  }
+
+  getDesignKind() {
+    const arity = this.getArity()
+    return ["zilch", "monad", "double", "triple", "quadruple", "quintuple"][arity] || "ugly"
+  }
+
+  getArity() {
+    // todo: what about variadic arity?
+    return this.getBeamParameters().length
+  }
+
+  getReturnType() {
+    return "any"
+  }
+
+  getDescription() {
+    return this.findBeam(GrammarConstants.description) || ""
+  }
+
+  getAllTileSettingsDefinitions() {
+    const allKeywordDefs = this.getRunTimeKeywordMapWithDefinitions()
+    return Object.values(allKeywordDefs).filter(def => def.isTileSettingDefinition())
+  }
+
+  isTileSettingDefinition() {
+    return this.isAKeyword({ setting: true })
+  }
+
+  getSvg() {
+    return this.findBeam(GrammarConstants.ohayoSvg) || "table"
+  }
+
+  getSuggestedSize() {
+    const ohayoTileSize = this.findBeam(GrammarConstants.ohayoTileSize) || "280 220"
+    const parts = ohayoTileSize.split(" ").map(ohayoTileSize => parseInt(ohayoTileSize))
+    return {
+      width: parts[0],
+      height: parts[1]
+    }
+  }
+
+  getConstantsObject() {
+    const constantsNode = this.getNode(GrammarConstants.constants)
+    return constantsNode ? constantsNode.getConstantsObj() : {}
+  }
+
+  getFrequency() {
+    const val = this.findBeam(GrammarConstants.frequency)
+    return val ? parseFloat(val) : 0
+  }
+
+  _initTileClassCache() {
+    if (this._cache_tileClass) return undefined
+    const hardCodedTileClass =
+      this.findBeam(GrammarConstants.ohayoTileClass) ||
+      "AbstractTileChisel /aientist/client/tiles/AbstractTileChisel.js"
+    const requireParts = hardCodedTileClass.split(" ")
+    const className = requireParts[0]
+    const filepath = requireParts[1]
+    const isNodeJs = typeof require !== "undefined"
+    const globalNamespace = isNodeJs ? process : window
+
+    // note: we have the section check because of a bug in electron: https://github.com/electron/electron/issues/1586
+    // where we'd have unexpected instanceof failures due to 2 loadings of the same class.
+    if (isNodeJs && !globalNamespace[className]) {
+      const realClass = require(filepath)
+      globalNamespace[realClass.name] = realClass
+    }
+
+    this._cache_tileClass = globalNamespace[className]
+  }
+
+  getDefinitionTileClass() {
+    this._initTileClassCache()
+    return this._cache_tileClass
+  }
+
+  toFormBray(value) {
+    return `@input
+ data-onChangeCommand tile changeTileSettingAndRenderCommand
+ name ${this.getKeyword()}
+ value ${value}`
+  }
+}
+
+window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
+
+
+
+
+
+
+
+class GrammarRootNode extends AbstractGrammarDefinitionNode {
+  parseNodeType() {
+    return TreeNode
+  }
+}
+
+class GrammarProgram extends AbstractGrammarDefinitionNode {
+  parseNodeType(line) {
+    // for now, first node will be root node.
+    if (this.length === 0) return GrammarRootNode
+    return GrammarKeywordDefinitionNode
+  }
+
+  _getGrammarRootNode() {
+    return this.nodeAt(0) // todo: fragile?
+  }
+
+  // todo: remove?
+  getTargetExtension() {
+    return this._getGrammarRootNode().findBeam(GrammarConstants.targetExtension)
+  }
+
+  getExtensionName() {
+    return this._getGrammarRootNode().getKeyword()
+  }
+
+  _getKeyWordsNode() {
+    return this._getGrammarRootNode().getNode(GrammarConstants.keywords)
+  }
+
+  getDefinitionByKeywordPath(keywordPath) {
+    const parts = keywordPath.split(" ")
+    let subject = this
+    let def
+    while (parts.length) {
+      const part = parts.shift()
+      def = subject.getRunTimeKeywordMapWithDefinitions()[part]
+      if (!def) def = subject._getCatchAllDefinition()
+      subject = def
+    }
+    return def
+  }
+
+  getDocs() {
+    return this.toString()
+  }
+
+  _initDefinitionCache() {
+    if (this._cache_definitions) return undefined
+    const definitionMap = {}
+
+    this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(definitionNode => {
+      definitionMap[definitionNode.getKeyword()] = definitionNode
+    })
+
+    this._cache_definitions = definitionMap
+  }
+
+  _getDefinitionCache() {
+    this._initDefinitionCache()
+    return this._cache_definitions
+  }
+
+  _getDefinitions() {
+    return Object.values(this._getDefinitionCache())
+  }
+
+  _getRunTimeCatchAllKeyword() {
+    return this._getGrammarRootNode().findBeam(GrammarConstants.catchAllKeyword)
+  }
+
+  toSublimeSyntaxFile() {
+    // todo.
+    return `%YAML 1.2
+---
+name: ${this.getExtensionName()}
+file_extensions: [${this.getExtensionName()}]
+scope: source.${this.getExtensionName()}
+
+contexts:
+ main:
+   - match: (\A|^) *[^ ]+
+     scope: storage.type.tree
+     set: [parameters]
+
+ parameters:
+   - match: $
+     scope: entity.name.type.tree
+     pop: true`
+  }
+}
+
+window.GrammarProgram = GrammarProgram
+
+
+
+
+
+class AnyProgram extends TreeNode {
+  getProgram() {
+    return this
+  }
+
+  getGrammarProgram() {
+    if (!AnyProgram._grammarProgram)
+      AnyProgram._grammarProgram = new GrammarProgram(`any
+ @catchAllKeyword any
+any
+ @parameters any*`)
+    return AnyProgram._grammarProgram
+  }
+}
+
+window.AnyProgram = AnyProgram
+
+
+
+
+
+class TreeProgram extends AnyProgram {
+  getKeywordMap() {
+    return this.getDefinition().getRunTimeKeywordMap()
+  }
+
+  getCatchAllNodeClass(line) {
+    // todo: blank line
+    // todo: restore didyoumean
+    return this.getDefinition().getRunTimeCatchAllNodeClass()
+  }
+
+  getProgramErrors() {
+    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
+    return [].concat.apply([], nodeErrors)
+  }
+
+  getErrorCount() {
+    const grammarProgram = this.getDefinition()
+    return {
+      errorCount: this.getProgramErrors().length,
+      name: grammarProgram.getExtensionName()
+    }
+  }
+
+  compile() {
+    return this.getChildren()
+      .map(child => child.compile())
+      .join("\n")
+  }
+
+  async run() {}
+
+  getDefinition() {
+    return this.getGrammarProgram()
+  }
+
+  getGrammarString() {
+    return `any
+ @catchAllKeyword any
+any
+ @parameters any*`
+  }
+
+  getGrammarProgram() {
+    return TreeProgram.getCachedGrammarProgram(this)
+  }
+
+  getProgramWordTypeString() {
+    return this.getTopDownArray()
+      .map(child => child.getIndentation() + child.getWordTypeLine())
+      .join("\n")
+  }
+
+  getWordTypeAtPosition(lineIndex, wordIndex) {
+    this._initWordTypeCache()
+    const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1]
+    return typeNode ? typeNode.getWord(wordIndex - 1) : ""
+  }
+
+  _initWordTypeCache() {
+    const treeMTime = this.getTreeMTime()
+    if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
+
+    this._cache_typeTree = new TreeProgram(this.getProgramWordTypeString())
+    this._cache_programWordTypeStringMTime = treeMTime
+  }
+
+  getCompiledProgramName(programPath) {
+    const grammarProgram = this.getDefinition()
+    return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
+  }
+
+  static compileCompiler(grammarString) {
+    return new GrammarProgram(new AnyProgram(grammarString).getExpanded())
+  }
+
+  static getCachedGrammarProgram(program) {
+    const key = program.getGrammarString()
+    if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
+    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(key)
+    return this._cache_grammarPrograms[key]
+  }
+
+  static getGrammarErrors(programPath, grammarFilePath) {
+    const fs = require("fs")
+    const removeFirstLine = str => str.substr(str.indexOf("\n") + 1)
+    class TemporaryLanguageFromGrammarFileProgram extends TreeProgram {
+      getGrammarString() {
+        return removeFirstLine(fs.readFileSync(grammarFilePath, "utf8"))
+      }
+    }
+    let source = fs.readFileSync(programPath, "utf8")
+    const program = new TemporaryLanguageFromGrammarFileProgram(source)
+    return program.getProgramErrors()
+  }
+}
 
 window.TreeProgram = TreeProgram

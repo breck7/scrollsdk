@@ -1,7 +1,7 @@
 "use strict"
 
 const TreeProgram = require("./index.js")
-const ImmutableNode = require("./src/ImmutableNode.js")
+const TreeNode = require("./src/TreeNode.js")
 
 const testStrings = {}
 
@@ -252,7 +252,7 @@ const testTree = {}
 testTree.constructorTests = equal => {
   // Assert
   equal(!!TreeProgram, true, "TreeProgram class should exist")
-  equal(new TreeProgram() instanceof TreeProgram, true, "TreeProgram should return a tree")
+  equal(new TreeProgram() instanceof TreeNode, true, "TreeProgram should return a tree")
 
   // Arrange/Act
   const tree = new TreeProgram("hello world")
@@ -284,7 +284,7 @@ testTree.constructorTests = equal => {
   )
 
   equal(typeof tree2.getNode("foobar"), "object", "Trees should be objects")
-  equal(tree2.getNode("foobar") instanceof TreeProgram, true, "Nested trees should be trees")
+  equal(tree2.getNode("foobar") instanceof TreeNode, true, "Nested trees should be trees")
 
   // Arrange
   const tree3 = new TreeProgram("list\nsingle value")
@@ -569,7 +569,7 @@ testTree.delete = equal => {
   tree2.touchNode("earth north_america united_states california san_francisco").setBeam("mission")
 
   // Assert
-  equal(tree2.getNode("earth north_america united_states california") instanceof TreeProgram, true, "node exists")
+  equal(tree2.getNode("earth north_america united_states california") instanceof TreeNode, true, "node exists")
   equal(
     tree2.getNode("earth north_america united_states california san_francisco").getBeam(),
     "mission",
@@ -582,7 +582,7 @@ testTree.delete = equal => {
   const deleteResult = tree2.delete("earth north_america united_states california san_francisco")
 
   // Assert
-  equal(deleteResult instanceof TreeProgram, true, "returns tree")
+  equal(deleteResult instanceof TreeNode, true, "returns tree")
   equal(tree2.getNode("earth north_america united_states california san_francisco"), undefined, "neighborhood is gone")
 
   // Test deleting a non-existant property
@@ -1027,7 +1027,6 @@ testTree.getLine = equal => {
   equal(tree.toString(), "hi earth")
   equal(node.getMTime() > mtime, true)
   equal(tree.has("hello"), false)
-  console.log(tree.toString())
 }
 
 testTree.getIndentation = equal => {
@@ -1943,7 +1942,7 @@ sub
   )
 
   // Assert
-  equal(node.getNode("foo foo tree") instanceof TreeProgram, true)
+  equal(node.getNode("foo foo tree") instanceof TreeNode, true)
   equal(node.getNode("foo foo") instanceof NodeETN, true)
   equal(node.getNode("sub leaf") instanceof LeafNode, true)
 }
@@ -1958,7 +1957,7 @@ testTree.prepend = equal => {
   const result = a.prepend("foo bar")
   // Assert
   equal(a.toString(), "foo bar\nhello world")
-  equal(result instanceof TreeProgram, true)
+  equal(result instanceof TreeNode, true)
 }
 
 testTree.getPoint = equal => {
@@ -2007,13 +2006,13 @@ testTree.pushBeamAndChildren = equal => {
 
   // Assert
   equal(a.getNode("0").getBeam(), "hello world")
-  equal(result instanceof TreeProgram, true)
+  equal(result instanceof TreeNode, true)
 
   // Act
   a.pushBeamAndChildren(undefined, new TreeProgram())
 
   // Assert
-  equal(a.getNode("1") instanceof TreeProgram, true, "1 is instance of TreeProgram")
+  equal(a.getNode("1") instanceof TreeNode, true, "1 is instance of TreeProgram")
 }
 
 testTree.remap = equal => {
@@ -2065,7 +2064,7 @@ testTree.rename = equal => {
   equal(index, 0, "index okay")
 
   // Act
-  equal(a.rename("john", "breck") instanceof TreeProgram, true, "returns itself for chaining")
+  equal(a.rename("john", "breck") instanceof TreeNode, true, "returns itself for chaining")
   a.rename("candy", "ice")
 
   // Assert
@@ -2133,7 +2132,7 @@ testTree.reorder = equal => {
 
   // Act
   const result = a.insert("hola pal", undefined, 2)
-  equal(result instanceof TreeProgram, true)
+  equal(result instanceof TreeNode, true)
 
   // Assert
   equal(a.getKeywords().join(" "), "yo hello hola hi", "order correct")
@@ -2210,7 +2209,7 @@ testTree.set = equal => {
   // Assert
   equal(tree.getNode("hello").getBeam(), "world")
   equal(
-    tree.touchNode("hello").setBeam("mom") instanceof TreeProgram,
+    tree.touchNode("hello").setBeam("mom") instanceof TreeNode,
     true,
     "set should return instance so we can chain it"
   )
@@ -2454,10 +2453,10 @@ testTree.syntax = equal => {
      and this one has extra indents
  num 12
 `
-  const a = new TreeProgram(test)
+  const a = new TreeNode(test)
   const test2 = `person;=name=Breck;=country=USA;=books;==one=SICP;==two=Pragmatic;=num=12;=multiline=this=is=a=string;==over=multiple=lines.;=====and=this=one=has=extra=indents;=num=12;`
 
-  class TestLanguage extends TreeProgram {
+  class TestLanguage extends TreeNode {
     getZI() {
       return "="
     }
@@ -2777,17 +2776,6 @@ testTree.fromJson = equal => {
     TreeProgram.fromJson(JSON.stringify(testStrings.json2)).toString(),
     new TreeProgram(testStrings.json2tree).getNode("docs").childrenToString()
   )
-}
-
-testTree.immutable = equal => {
-  // Arrange
-  const immutableNode = new ImmutableNode("hello world")
-  const mutableNode = new TreeProgram("hello world")
-
-  // Assert
-  equal(immutableNode instanceof TreeProgram, false)
-  equal(typeof immutableNode.setBeam, "undefined")
-  equal(typeof mutableNode.setBeam, "function")
 }
 
 testTree.toOutline = equal => {

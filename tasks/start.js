@@ -2,14 +2,20 @@
 
 const express = require("express")
 const fs = require("fs")
+const BrowserScript = require("./BrowserScript.js")
+
 const app = express()
-const browserfy = require("./browserfy.js")
 
 app.get("/*.js", (req, res) => {
   const filename = req.path.substr(1)
   fs.readFile(filename, "utf8", (err, file) => {
     if (err) throw err
-    res.send(browserfy(file))
+    res.send(
+      new BrowserScript(file)
+        .removeRequires()
+        .changeNodeExportsToWindowExports()
+        .getString()
+    )
   })
 })
 

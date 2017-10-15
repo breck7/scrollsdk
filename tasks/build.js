@@ -1,14 +1,29 @@
 #! /usr/local/bin/node
 
-const browserfy = require("./browserfy.js")
+const recursiveReadSync = require("recursive-readdir-sync")
 const fs = require("fs")
+const BrowserScript = require("./BrowserScript.js")
 
 const outputFile = __dirname + `/../treeprogram.browser.js`
-const browserVersion = ["AbstractBrowserNode.js", "ImmutableNode.js", "MutableNode.js", "TreeProgram.js"]
-  .map(filename => __dirname + `/../src/${filename}`)
-  .map(src => fs.readFileSync(src, "utf8"))
-  .map(content => browserfy(content))
-  .join("\n")
-  .replace(/"use strict"\n/g, "")
 
-fs.writeFileSync(outputFile, `"use strict"\n` + browserVersion, "utf8")
+const ProjectProgram = require("/aientist/project/ProjectProgram.js")
+const files = recursiveReadSync(__dirname + "/../src")
+  .filter(file => file.includes(".js"))
+  .filter(file => !file.includes(".test.js"))
+const projectProgram = ProjectProgram.getProjectProgram(files)
+const scripts = projectProgram
+  .getOrderedDependenciesArray()
+  .filter(file => !file.includes("AbstractNodeJsNode.js"))
+  .filter(file => !file.includes("StressTest.js"))
+
+const combined = scripts
+  .map(src => fs.readFileSync(src, "utf8"))
+  .map(content =>
+    new BrowserScript(content)
+      .removeRequires()
+      .changeNodeExportsToWindowExports()
+      .getString()
+  )
+  .join("\n")
+
+fs.writeFileSync(outputFile, `"use strict"\n` + combined, "utf8")

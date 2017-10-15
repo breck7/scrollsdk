@@ -1,3 +1,9 @@
+8.0.0 / 2017-10-15
+==================
+- New: Create new Tree Languages using a tree grammar file
+- New: Tree Console app
+- Breaking: ImmutableNode no longer exposed on TreeProgram
+
 7.2.0 / 2017-10-14
 ==================
 - Breaking: for use in browser, now use treeprogram.browser.js instead of treeprogram.js

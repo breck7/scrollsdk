@@ -31,6 +31,10 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().map(child => child.executeSync(context))
   }
 
+  isNodeJs() {
+    return typeof exports !== "undefined"
+  }
+
   _getUid() {
     if (!this._uid) this._uid = ImmutableNode._makeUniqueId()
     return this._uid
@@ -642,8 +646,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   _setLineAndChildren(line, children, index = this.length) {
-    const nodeClass = this.parseNodeType(line)
-    const parsedNode = new nodeClass(children, line, this)
+    const jsNodeClass = this.parseNodeType(line)
+    const parsedNode = new jsNodeClass(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
     this.getChildren().splice(adjustedIndex, 0, parsedNode)
@@ -672,8 +676,8 @@ class ImmutableNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const nodeClass = parent.parseNodeType(lineContent)
-      lastNode = new nodeClass(undefined, lineContent, parent)
+      const jsNodeClass = parent.parseNodeType(lineContent)
+      lastNode = new jsNodeClass(undefined, lineContent, parent)
       parent._getChildren().push(lastNode)
     })
     return this
@@ -1307,7 +1311,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "7.1.1"
+    return "8.0.0"
   }
 }
 
@@ -1414,6 +1418,130 @@ window.TreeCell = TreeCell
 
 
 
+class AbstractGrammarDefinitionNode extends TreeNode {
+  getRunTimeKeywordMap() {
+    this._initKeywordsMapCache()
+    return this._cache_keywordsMap
+  }
+
+  getRunTimeKeywordNames() {
+    return Object.keys(this.getRunTimeKeywordMap())
+  }
+
+  getRunTimeKeywordMapWithDefinitions() {
+    const defs = this._getDefinitionCache()
+    return AbstractGrammarDefinitionNode._mapValues(this.getRunTimeKeywordMap(), key => defs[key])
+  }
+
+  _initKeywordsMapCache() {
+    if (this._cache_keywordsMap) return undefined
+    // todo: make this handle extensions.
+    const allDefs = this._getDefinitionCache()
+    const keywordMap = {}
+    this._cache_keywordsMap = keywordMap
+    const acceptableKeywords = this.getAllowableKeywords()
+    // terminals dont have acceptable keywords
+    if (!Object.keys(acceptableKeywords).length) return undefined
+    const matching = Object.keys(allDefs).filter(key => allDefs[key].isAKeyword(acceptableKeywords))
+
+    matching.forEach(key => {
+      keywordMap[key] = allDefs[key].getJavascriptClassForNode()
+    })
+  }
+
+  getAllowableKeywords() {
+    const keywords = this._getKeyWordsNode()
+    return keywords ? keywords.toObject() : {}
+  }
+
+  getTopNodeTypes() {
+    const definitions = this._getDefinitionCache()
+    const keywords = this.getRunTimeKeywordMap()
+    const arr = Object.keys(keywords).map(keyword => definitions[keyword])
+    arr.sort(AbstractGrammarDefinitionNode._sortByAccessor(definition => definition.getFrequency()))
+    arr.reverse()
+    return arr.map(definition => definition.getKeyword())
+  }
+
+  getDefinitionByName(keyword) {
+    const definitions = this._getDefinitionCache()
+    return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
+  }
+
+  _getCatchAllDefinition() {
+    const catchAllKeyword = this._getRunTimeCatchAllKeyword()
+    const definitions = this._getDefinitionCache()
+    const def = definitions[catchAllKeyword]
+    // todo: implement contraints like a grammar file MUST have a catch all.
+    return def ? def : this.getParent()._getCatchAllDefinition()
+  }
+
+  _initCatchCallNodeCache() {
+    if (this._cache_catchAll) return undefined
+
+    this._cache_catchAll = this._getCatchAllDefinition().getJavascriptClassForNode()
+  }
+
+  getAutocompleteWords(inputStr, additionalWords = []) {
+    // todo: add more tests
+    const str = this.getRunTimeKeywordNames()
+      .concat(additionalWords)
+      .join("\n")
+
+    // default is to just autocomplete using all words in existing program.
+    return AbstractGrammarDefinitionNode._getUniqueWordsArray(str)
+      .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
+      .map(obj => obj.word)
+  }
+
+  isDefined(keyword) {
+    return !!this._getDefinitionCache()[keyword.toLowerCase()]
+  }
+
+  getRunTimeCatchAllNodeClass() {
+    this._initCatchCallNodeCache()
+    return this._cache_catchAll
+  }
+
+  static _mapValues(object, fn) {
+    const result = {}
+    Object.keys(object).forEach(key => {
+      result[key] = fn(key)
+    })
+    return result
+  }
+
+  static _sortByAccessor(accessor) {
+    return (objectA, objectB) => {
+      const av = accessor(objectA)
+      const bv = accessor(objectB)
+      let result = av < bv ? -1 : av > bv ? 1 : 0
+      if (av === undefined && bv !== undefined) result = -1
+      else if (bv === undefined && av !== undefined) result = 1
+      return result
+    }
+  }
+
+  static _getUniqueWordsArray(allWords) {
+    const words = allWords.replace(/\n/g, " ").split(" ")
+    const index = {}
+    words.forEach(word => {
+      if (!index[word]) index[word] = 0
+      index[word]++
+    })
+    return Object.keys(index).map(key => {
+      return {
+        word: key,
+        count: index[key]
+      }
+    })
+  }
+}
+
+window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
+
+
+
 class GrammarConstNode extends TreeNode {
   getValue() {
     // todo: parse type
@@ -1437,7 +1565,7 @@ GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
 
 // executing
-GrammarConstants.blazeClass = "@blazeClass"
+GrammarConstants.parseClass = "@parseClass"
 
 // compiling
 GrammarConstants.compiled = "@compiled"
@@ -1563,7 +1691,7 @@ class TreeErrorNode extends DynamicNode {
   }
 
   getErrors() {
-    return [`Unknown type "${this.getKeyword()}" at line ${this.getPoint().y}`]
+    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
   }
 }
 
@@ -1608,130 +1736,6 @@ window.TreeTerminalNode = TreeTerminalNode
 
 
 
-class AbstractGrammarDefinitionNode extends TreeNonTerminalNode {
-  getRunTimeKeywordMap() {
-    this._initKeywordsMapCache()
-    return this._cache_keywordsMap
-  }
-
-  getRunTimeKeywordNames() {
-    return Object.keys(this.getRunTimeKeywordMap())
-  }
-
-  getRunTimeKeywordMapWithDefinitions() {
-    const defs = this._getDefinitionCache()
-    return AbstractGrammarDefinitionNode._mapValues(this.getRunTimeKeywordMap(), key => defs[key])
-  }
-
-  _initKeywordsMapCache() {
-    if (this._cache_keywordsMap) return undefined
-    // todo: make this handle extensions.
-    const allDefs = this._getDefinitionCache()
-    const keywordMap = {}
-    this._cache_keywordsMap = keywordMap
-    const acceptableKeywords = this.getAllowableKeywords()
-    // terminals dont have acceptable keywords
-    if (!Object.keys(acceptableKeywords).length) return undefined
-    const matching = Object.keys(allDefs).filter(key => allDefs[key].isAKeyword(acceptableKeywords))
-
-    matching.forEach(key => {
-      keywordMap[key] = allDefs[key].getJavascriptClassForNode()
-    })
-  }
-
-  getAllowableKeywords() {
-    const keywords = this._getKeyWordsNode()
-    return keywords ? keywords.toObject() : {}
-  }
-
-  getTopNodeTypes() {
-    const definitions = this._getDefinitionCache()
-    const keywords = this.getRunTimeKeywordMap()
-    const arr = Object.keys(keywords).map(keyword => definitions[keyword])
-    arr.sort(AbstractGrammarDefinitionNode._sortByAccessor(definition => definition.getFrequency()))
-    arr.reverse()
-    return arr.map(definition => definition.getKeyword())
-  }
-
-  getDefinitionByName(keyword) {
-    const definitions = this._getDefinitionCache()
-    return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
-  }
-
-  _getCatchAllDefinition() {
-    const catchAllKeyword = this._getRunTimeCatchAllKeyword()
-    const definitions = this._getDefinitionCache()
-    const def = definitions[catchAllKeyword]
-    // todo: implement contraints like a grammar file MUST have a catch all.
-    return def ? def : this.getParent()._getCatchAllDefinition()
-  }
-
-  _initCatchCallNodeCache() {
-    if (this._cache_catchAll) return undefined
-
-    this._cache_catchAll = this._getCatchAllDefinition().getJavascriptClassForNode()
-  }
-
-  getAutocompleteWords(inputStr, additionalWords = []) {
-    // todo: add more tests
-    const str = this.getRunTimeKeywordNames()
-      .concat(additionalWords)
-      .join("\n")
-
-    // default is to just autocomplete using all words in existing program.
-    return AbstractGrammarDefinitionNode._getUniqueWordsArray(str)
-      .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
-      .map(obj => obj.word)
-  }
-
-  isDefined(keyword) {
-    return !!this._getDefinitionCache()[keyword.toLowerCase()]
-  }
-
-  getRunTimeCatchAllNodeClass() {
-    this._initCatchCallNodeCache()
-    return this._cache_catchAll
-  }
-
-  static _mapValues(object, fn) {
-    const result = {}
-    Object.keys(object).forEach(key => {
-      result[key] = fn(key)
-    })
-    return result
-  }
-
-  static _sortByAccessor(accessor) {
-    return (objectA, objectB) => {
-      const av = accessor(objectA)
-      const bv = accessor(objectB)
-      let result = av < bv ? -1 : av > bv ? 1 : 0
-      if (av === undefined && bv !== undefined) result = -1
-      else if (bv === undefined && av !== undefined) result = 1
-      return result
-    }
-  }
-
-  static _getUniqueWordsArray(allWords) {
-    const words = allWords.replace(/\n/g, " ").split(" ")
-    const index = {}
-    words.forEach(word => {
-      if (!index[word]) index[word] = 0
-      index[word]++
-    })
-    return Object.keys(index).map(key => {
-      return {
-        word: key,
-        count: index[key]
-      }
-    })
-  }
-}
-
-window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
-
-
-
 
 
 class GrammarConstantsNode extends TreeNode {
@@ -1755,7 +1759,7 @@ window.GrammarConstantsNode = GrammarConstantsNode
 
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors() {
-    return [`Unknown type "${this.getKeyword()}" at line ${this.getPoint().y}`]
+    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
   }
 
   getWordTypeLine() {
@@ -1766,52 +1770,6 @@ class GrammarDefinitionErrorNode extends TreeNode {
 window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
 
 
-const GrammarGrammar = `grammar
- @catchAllKeyword keyword
-setting
- @parameters any
-anysetting setting
- @parameters any*
-@targetExtension setting
-@catchAllKeyword setting
-@blazeClass setting
-@parameters anysetting
-@compiled anysetting
-@listDelimiter anysetting
-@openChildren anysetting
-@closeChildren anysetting
-@description anysetting
-@ohayoTileSize setting
- @parameters int int
-@ohayoTileClass setting
- @parameters any filepath
-keyword
- @parameters any*
- @blazeClass /aientist/client/grammar/GrammarKeywordDefinitionNode.js
- @keywords
-  @targetExtension
-  @shellCommand
-  @parameters
-  @defaults
-  @constants
-  @keywords
-  @improvs
-  @catchAllKeyword
-  @blazeClass
-  @compiled
-  @listDelimiter
-  @openChildren
-  @closeChildren
-  @options
-  @description
-  @ohayoSvg
-  @ohayoTileSize
-  @ohayoTileClass
-  @ohayoTileScript
-  @ohayoTileCssScript
-  @frequency`
-
-window.GrammarGrammar = GrammarGrammar
 
 
 
@@ -1832,10 +1790,12 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       GrammarConstants.keywords,
       GrammarConstants.parameters,
       GrammarConstants.description,
-      GrammarConstants.blazeClass,
+      GrammarConstants.parseClass,
       GrammarConstants.catchAllKeyword,
       GrammarConstants.defaults,
       GrammarConstants.compiled,
+      GrammarConstants.targetExtension,
+      GrammarConstants.compiledIndentCharacter,
       GrammarConstants.listDelimiter,
       GrammarConstants.ohayoSvg,
       GrammarConstants.ohayoTileSize,
@@ -1891,10 +1851,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return GrammarDefinitionErrorNode
   }
 
-  isNodeJs() {
-    return typeof exports !== "undefined"
-  }
-
   getJavascriptClassForNode() {
     this._initClassCache()
     return this._cache_class
@@ -1911,9 +1867,16 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
         .replace(/\.[^\.]+$/, "")
         .split("/")
         .pop()
-    const filepath = this.findBeam(GrammarConstants.blazeClass)
+    const filepath = this.findBeam(GrammarConstants.parseClass)
 
-    if (!filepath)
+    const builtIns = {
+      ErrorNode: TreeErrorNode,
+      TerminalNode: TreeTerminalNode,
+      NonTerminalNode: TreeNonTerminalNode
+    }
+
+    if (builtIns[filepath]) this._cache_class = builtIns[filepath]
+    else if (!filepath)
       this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode // todo: remove "window" below?
     else this._cache_class = this.isNodeJs() ? require(filepath) : window[getClassNameFromFilePath(filepath)]
   }
@@ -1942,20 +1905,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getBeamParameters() {
     const parameters = this.findBeam(GrammarConstants.parameters)
     return parameters ? parameters.split(" ") : []
-  }
-
-  getDesignKind() {
-    const arity = this.getArity()
-    return ["zilch", "monad", "double", "triple", "quadruple", "quintuple"][arity] || "ugly"
-  }
-
-  getArity() {
-    // todo: what about variadic arity?
-    return this.getBeamParameters().length
-  }
-
-  getReturnType() {
-    return "any"
   }
 
   getDescription() {
@@ -1992,32 +1941,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getFrequency() {
     const val = this.findBeam(GrammarConstants.frequency)
     return val ? parseFloat(val) : 0
-  }
-
-  _initTileClassCache() {
-    if (this._cache_tileClass) return undefined
-    const hardCodedTileClass =
-      this.findBeam(GrammarConstants.ohayoTileClass) ||
-      "AbstractTileChisel /aientist/client/tiles/AbstractTileChisel.js"
-    const requireParts = hardCodedTileClass.split(" ")
-    const className = requireParts[0]
-    const filepath = requireParts[1]
-    const isNodeJs = typeof require !== "undefined"
-    const globalNamespace = isNodeJs ? process : window
-
-    // note: we have the section check because of a bug in electron: https://github.com/electron/electron/issues/1586
-    // where we'd have unexpected instanceof failures due to 2 loadings of the same class.
-    if (isNodeJs && !globalNamespace[className]) {
-      const realClass = require(filepath)
-      globalNamespace[realClass.name] = realClass
-    }
-
-    this._cache_tileClass = globalNamespace[className]
-  }
-
-  getDefinitionTileClass() {
-    this._initTileClassCache()
-    return this._cache_tileClass
   }
 
   toFormBray(value) {
@@ -2139,6 +2062,11 @@ class AnyProgram extends TreeNode {
     return this
   }
 
+  getProgramErrors() {
+    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
+    return [].concat.apply([], nodeErrors)
+  }
+
   getGrammarProgram() {
     if (!AnyProgram._grammarProgram)
       AnyProgram._grammarProgram = new GrammarProgram(`any
@@ -2155,6 +2083,7 @@ window.AnyProgram = AnyProgram
 
 
 
+
 class TreeProgram extends AnyProgram {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
@@ -2164,11 +2093,6 @@ class TreeProgram extends AnyProgram {
     // todo: blank line
     // todo: restore didyoumean
     return this.getDefinition().getRunTimeCatchAllNodeClass()
-  }
-
-  getProgramErrors() {
-    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
-    return [].concat.apply([], nodeErrors)
   }
 
   getErrorCount() {
@@ -2240,7 +2164,6 @@ any
 
   static getGrammarErrors(programPath, grammarFilePath) {
     const fs = require("fs")
-    const removeFirstLine = str => str.substr(str.indexOf("\n") + 1)
     class TemporaryLanguageFromGrammarFileProgram extends TreeProgram {
       getGrammarString() {
         return removeFirstLine(fs.readFileSync(grammarFilePath, "utf8"))
@@ -2251,5 +2174,7 @@ any
     return program.getProgramErrors()
   }
 }
+
+TreeProgram.TreeNode = TreeNode
 
 window.TreeProgram = TreeProgram

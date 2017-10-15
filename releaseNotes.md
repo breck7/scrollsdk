@@ -1,3 +1,7 @@
+8.0.1 / 2017-10-15
+==================
+- Fix: fixed browser version
+
 8.0.0 / 2017-10-15
 ==================
 - New: Create new Tree Languages using a tree grammar file

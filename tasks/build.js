@@ -7,14 +7,12 @@ const BrowserScript = require("./BrowserScript.js")
 const outputFile = __dirname + `/../treeprogram.browser.js`
 
 const ProjectProgram = require("/aientist/project/ProjectProgram.js")
-const files = recursiveReadSync(__dirname + "/../src")
-  .filter(file => file.includes(".js"))
-  .filter(file => !file.includes(".test.js"))
+const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".js"))
 const projectProgram = ProjectProgram.getProjectProgram(files)
 const scripts = projectProgram
   .getOrderedDependenciesArray()
   .filter(file => !file.includes("AbstractNodeJsNode.js"))
-  .filter(file => !file.includes("StressTest.js"))
+  .filter(file => !file.includes("TreeGrammarProgram.js"))
 
 const combined = scripts
   .map(src => fs.readFileSync(src, "utf8"))

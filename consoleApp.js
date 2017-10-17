@@ -33,8 +33,10 @@ class ConsoleApp {
   }
 
   create(languageName) {
-    fs.mkdirSync(languageName)
+    // const stampProgramCode = `define LANG ${languageName}\n` + fs.readFileSync(__dirname + "/create.stamp", "utf8")
+    // fs.mkdirSync(languageName)
     // todo: create template
+    console.log("not implemented yet")
   }
 
   check(programPath) {

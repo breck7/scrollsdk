@@ -1,0 +1,41 @@
+file .gitignore
+ data
+  node_modules/
+file package.pack
+ data
+  name LANG
+  version 1.0.0
+  description A Tree Language for
+  main index.js
+  keywords LANG
+  license MIT
+  dependencies
+   treeprogram *
+file readme.mark
+ data
+  # LANG - A Tree Language for
+file index.js
+ data
+  const TreeProgram = require("treeprogram")
+  const fs = require("fs")
+  const LANGGrammar = fs.readFileSync(__dirname + "/LANG.grammar", "utf8")
+  
+  class LANGProgram extends TreeProgram {
+    getGrammarString() {
+      return LANGGrammar
+    }
+  }
+  
+  module.exports = LANGProgram
+file LANG.grammar
+ data
+  LANG
+   @description A Tree Language for
+   @catchAllKeyword error
+   @keywords
+    root
+  root
+  error
+   @parseClass ErrorNode
+dir tests/
+file tests/tests.swarm

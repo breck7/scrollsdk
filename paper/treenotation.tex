@@ -11,11 +11,11 @@
 
 \title{Tree Notation: an antifragile program notation}
 
-\author{Breck~Yunits and a,a,b,b,c,c,d,d,j,j,m,m,m,n,n,p,r,s,t,t,x% <-this % stops a space
+\author{Breck~Yunits and others% <-this % stops a space
 \thanks{Breck Yunits is a software engineer from Brockton, MA (breck7@gmail.com).}% <-this % stops a space
 }
 
-\markboth{June~2017}%
+\markboth{June~2017, Updated October 2017}%
 {Shell \MakeLowercase{\textit{et al.}}: Bare Demo of IEEEtran.cls for Journals}
 
 \maketitle
@@ -25,7 +25,7 @@
 %\boldmath
 This paper presents Tree Notation, a new simple, universal syntax. Language designers can invent new programming languages, called Tree Languages, on top of Tree Notation. Tree Languages have a number of advantages over traditional programming languages.
 
-We include a Visual Abstract to succinctly display the problem and discovery. Then we describe the problem--the abstract syntax tree (AST) step--and introduce the novel solution we discovered: a new family of 2D programming languages that are written directly as geometric trees.
+We include a Visual Abstract to succinctly display the problem and discovery. Then we describe the problem--the BNF to abstract syntax tree (AST) parse step--and introduce the novel solution we discovered: a new family of 2D programming languages that are written directly as geometric trees.
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
@@ -38,11 +38,11 @@ We include a Visual Abstract to succinctly display the problem and discovery. Th
 
 \section{The Problem}
 
-Programming is complicated. Our current 1-dimensional languages (1DLs) add to this complexity. To run 1DL code we first strip whitespace, then transform it to an AST and then transform that to executable machine code. These intermediate steps have enabled local minimum gains in developer productivity. But programmers lose time and insight due to discrepancies between 1DL code and ASTs. We searched, over a number of years, to discover a simpler way, and stumbled upon Tree Notation (TN).
+Programming is complicated. Our current 1-dimensional languages (1DLs) add to this complexity. To run 1DL code we first strip whitespace, then transform it to an AST and then transform that to executable machine code. These intermediate steps have enabled local minimum gains in developer productivity. But programmers lose time and insight due to discrepancies between 1DL code and ASTs.
 
 \section{The Solution: Tree Notation}
 
-In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), we introduce TN, a new 2D notation. A node in TN maps to an XY point on a 2D plane. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called Tree Languages (TLs), are easy to create and can be simple or Turing Complete.
+In this paper and accompanying GitHub ES6 Repo (GER - github.com/breck7/treenotation), we introduce Tree Notation (TN), a new 2D notation. A node in TN maps to an XY point on a 2D plane. You can extend TN to create domain specific languages (DSLs) that don't require a transformation to a discordant AST. These DSLs, called Tree Languages (TLs), are easy to create and can be simple or Turing Complete.
 
 TN encodes one data structure, a \textbf{TreeNode}, with two members: a string called \textbf{line} and an optional array of child TreeNodes called \textbf{children}.
 
@@ -54,7 +54,7 @@ JSON:
 
 \begin{lstlisting}
 {
- "title" : "Jack and Ada at BCHS",
+ "title" : "Web Stats",
  "visitors": {
   "mozilla": 802
  }
@@ -64,7 +64,7 @@ JSON:
 Tree Notation:
 
 \begin{lstlisting}
-title Jack and Ada at BCHS
+title Web Stats
 visitors
  mozilla 802
 \end{lstlisting}
@@ -127,13 +127,13 @@ Some developers dislike space-indented notations, some wrongly prefer tabs, and 
 For example, a map could serialize to MapTL:
 
 \begin{lstlisting}
-ty aaaabbcccdddefggghjjjjjklllmmmnopprrsssvz
-0106 9de7a5727e35ebfccc5937459f62042bc15d8a35
+dsl Domain Specific Language
+sf San Francisco
 \end{lstlisting}
 
 Therefore, maps are a type of tree. TTC stands.
 
-\textbf{Prediction 2: TLs will be found for every popular AL.} Below is some code in a simple TL, JsonTL:
+\textbf{Prediction 2: TLs will be found for every popular 1DL.} Below is some code in a simple TL, JsonTL:
 
 \begin{lstlisting}
 o
@@ -141,7 +141,7 @@ o
  n ma 902
 \end{lstlisting}
 
-TLs will be found for great ALs including C, RISC-V, ES6, and Arc. Some TLs have already been found \cite{Roughan}, but their common TN DNA has gone unseen. The immediate benefit of discovering a TL for an AL is that programs can then be written in a TL editor and compiled to that AL.
+TLs will be found for great 1DLs including C, RISC-V, ES6, and Arc. Some TLs have already been found \cite{Roughan}, but their common TN DNA has gone unseen. The immediate benefit of creating a TL for an 1DL is that programs can then be written in a TL editor and compiled to that 1DL.
 
 \textbf{Prediction 3: Tree Oriented Programming (TOP) will supersede Object Oriented Programming.} A new style of programming, TOP, will arise. TOP programmers will frequently reference 2D views of their program.
 
@@ -149,15 +149,15 @@ TLs will be found for great ALs including C, RISC-V, ES6, and Arc. Some TLs have
 
 \section{Literature Review}
 
-Turing Machines with 2D Tapes have been studied and are known to be Turing Complete\cite{Toida}. A few esoteric 2D programming languages are available online\cite{Ender}. At time of publication, 312 programming languages and notations were searched. Over 10,000 pages of research was read. TN was not found.
+Turing Machines with 2D Tapes have been studied and are known to be Turing Complete\cite{Toida}. A few esoteric 2D programming languages are available online\cite{Ender}. At time of publication, 387 programming languages and notations were searched and many thousands of pages of research and code was read but TN was not found.
 
-Relevant math surely exists under the categories including graph, group, set, braid and knot, topology and geometry.
+The closest someone came to discovering TN, and TLs, was perhaps Mark B. Wells, who wrote a brillant paper at Los Alamos, back in 1972 which predicted the discovery and utility of something like TLs \cite{Wells}.
 
-The closest someone came to discovering TN, and TLs, was perhaps Mark B. Wells, who wrote a brillant paper at Los Alamos, back in 1972 which predicted the discovery and utility of something like TLs. Alas, his paper went almost entirely ignored \cite{Wells}. This exemplifies why they call it REsearch.
+\section{Further Research}
 
-\section{Steal this idea}
+The GER contains a TN parser, grammar notation, Tree Language compiler-compiler (TLCC), VM, and some TLs.
 
-We now turn our attention to building new TLs and tools for data science, visual programming, ML, parallel computing and more. The GER contains a TN library, some TLs, and one more thing. We hope you, fellow programmers, will "steal" this idea and together we can use this new discovery to build faster!
+Future publications might explore the Tree Notation Grammar, TLCC, or machine-written TL programs.
 \begin{figure}[ht!]
 \centering
 \includegraphics[width=90mm]{tree.jpg}

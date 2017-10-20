@@ -1,40 +1,63 @@
->h2 Problem
- gridPosition 14,8,26,3
- content The Problem
+>h2 The problem
+ left 14
+ top 8
+ width 26
+ height 6
  style text-align: center;
->h2 Solution
- gridPosition 14,22,26,4
- content The Solution: Tree Notation &amp; ETNs
+>h2 The Solution: Tree Languages
+ left 14
+ top 22
+ width 26
+ height 5
  style text-align: center;
-layout custom
->h3
- gridPosition 27,11,13,10
- content Transforms to a Tree
->h3
- gridPosition 27,25,13,10
- content Is a Tree
->h3
- gridPosition 41,18,9,11
- content Get Same Result
- >text
-  gridPosition 25,15,3,3
-  content &gt;
- >text
-  gridPosition 39,22,3,3
-  content &gt;
- >text
-  gridPosition 25,29,3,3
-  content &gt;
->text
- gridPosition 15,28,11,8
- content getLocation
+>h3 Transform to Trees
+ left 27
+ top 11
+ width 13
+ height 10
+>h3 Are Already Trees
+ left 27
+ top 25
+ width 13
+ height 10
+>h3 Produce Same Result
+ left 41
+ top 18
+ width 9
+ height 11
+>p &gt;
+ left 25
+ top 15
+ width 3
+ height 3
+>p &gt;
+ left 39
+ top 22
+ width 3
+ height 3
+>p &gt;
+ left 25
+ top 29
+ width 3
+ height 3
+>p
+ left 15
+ top 28
+ width 11
+ height 8
+ slang
+  getLocation
    1145 duke
    98103 ibiza
   print getLocation 1145
  style font-family: monospace; font-size: 15px;
->text
- gridPosition 15,14,10,9
- content getLocation (key: int) {
+>p
+ left 15
+ top 12
+ width 10
+ height 14
+ slang
+  getLocation (key: int) {
    if (key === 1145)
    return "duke"
    if (key === 98103)
@@ -42,15 +65,23 @@ layout custom
   }
   print(getLocation(1145));
 >pre
- gridPosition 28,28,3,9
- content ├oº
-  │├oºº
-  │└oºº
-  └oººº
->text
- gridPosition 31,27,9,9
+ left 28
+ top 28
+ width 3
+ height 9
+ slang
+  ├o
+  │├oº
+  │└oº
+  └oºº
+>p
+ left 31
+ top 27
+ width 9
+ height 12
  style font-size: 12px;
- content mapToXY(SourceCode)
+ slang
+  mapToXY(SourceCode)
   =
   mapToXY(TreeForm)
   
@@ -58,10 +89,14 @@ layout custom
   so SourceCode = Tree
   
   Also, a ~10x size reduction
->text
- gridPosition 31,13,8,9
+>p
+ left 31
+ top 13
+ width 8
+ height 9
  style font-size: 12px;
- content mapToXY(SourceCode)
+ slang
+  mapToXY(SourceCode)
   !=
   mapToXY(TreeForm)
   
@@ -69,9 +104,13 @@ layout custom
   so SourceCode != Tree
   
 >pre
- gridPosition 28,14,3,9
+ left 28
+ top 14
+ width 3
+ height 9
  style font-size: 3px;
- content ├oº
+ slang
+  ├oº
   │├oº
   ││├oº
   ││├oº
@@ -107,21 +146,34 @@ layout custom
    │ └oº
    ├oº
    └oº
->h3
- gridPosition 14,11,12,11
- content Antique Source Code
->h3
- gridPosition 14,25,12,10
- content ETN Source Code
->text
- gridPosition 41,21,8,9
- content 
+>h3 1D Programs
+ left 14
+ top 11
+ width 12
+ height 11
+>h3 Tree Programs
+ left 14
+ top 25
+ width 12
+ height 10
+>p
+ left 41
+ top 21
+ width 8
+ height 9
+ slang
   ./program.source
   "duke"
->text
- gridPosition 13,27,5,5
- content   0,0 --&gt; x
+>p
+ left 13
+ top 27
+ width 5
+ height 15
+ slang
+  0,0 --&gt; x
       |
      V
     -y
  style color: red;
+@wall
+ layout custom

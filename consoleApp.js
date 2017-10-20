@@ -63,7 +63,14 @@ class ConsoleApp {
     fs.writeFileSync(path, compiledCode, "utf8")
   }
 
+  _logProgramPath(programPath) {
+    // everytime you run/check/compile a tree program, log it by default.
+    // that way, if a language changes or you need to do refactors, you have the
+    // data of file paths handy..
+  }
+
   run(programPath) {
+    this._logProgramPath(programPath)
     const languagePath = this._getLanguagePathOrThrow(programPath)
     return TreeProgram.executeFile(programPath, languagePath)
   }

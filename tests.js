@@ -1256,7 +1256,7 @@ testTree.getIndex = equal => {
   equal(child1.getIndex(), 1, "Has correct index")
 }
 
-testTree.simpleETN = equal => {
+testTree.simpleTreeLanguage = equal => {
   // Arrange
   class MathProgram extends TreeProgram {
     // Look! You created a top down parser!
@@ -1807,7 +1807,7 @@ testTree.setWord = equal => {
   equal(a.getLine(), "? result checkThis 1 2")
 }
 
-testTree.etnDependingOnParent = equal => {
+testTree.treeLanguageDependingOnParent = equal => {
   // Arrange
   class ReverseEtnNode extends TreeProgram {
     parseNodeType(line) {
@@ -1924,16 +1924,16 @@ testTree.parseNode = equal => {
       return SubNode
     }
   }
-  class NodeETN extends TreeProgram {
+  class TestLanguageNode extends TreeProgram {
     parseNodeType(line) {
       if (line.startsWith("tree")) return TreeProgram
       if (line.startsWith("sub")) return SubNode
-      return NodeETN
+      return TestLanguageNode
     }
   }
 
   // Act
-  const node = new NodeETN(
+  const node = new TestLanguageNode(
     `foo bar
  foo bar
   tree bar
@@ -1943,7 +1943,7 @@ sub
 
   // Assert
   equal(node.getNode("foo foo tree") instanceof TreeNode, true)
-  equal(node.getNode("foo foo") instanceof NodeETN, true)
+  equal(node.getNode("foo foo") instanceof TestLanguageNode, true)
   equal(node.getNode("sub leaf") instanceof LeafNode, true)
 }
 

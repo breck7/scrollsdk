@@ -74,7 +74,7 @@ interface TreeProgram {
   toString: () => string
   toXml: () => string
 
-  // Methods for ETNs
+  // Methods for Tree Languages
   getCatchAllNodeClass: (line: string) => TreeProgram
   getKeywordMap: () => KeywordMap
   parseNodeType: (line: string) => TreeProgram

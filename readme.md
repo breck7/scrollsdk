@@ -13,19 +13,12 @@ In Tree Notation, the units of measure are words and nodes. Each line is equal t
 Who this Library is For
 -----------------------
 
-This library is for people who want to build Tree Languages or Tree editing tools.
+This library is for people who want to design Tree Languages or make Tree Program editing tools.
 
 Using this Library
 -----------------
 
-Node.js:
-
-    npm install treeprogram
-
-    const TreeProgram = require("treeprogram")
-    const program = new TreeProgram(`message hello World`)
-    console.log(program.getNode(`message`).getTail())
-
+Instructions coming soon! If you'd like to create a new Tree Language, shoot me an email and I can help you until we have documentation.
 
 Development Status
 ------------------

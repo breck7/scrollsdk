@@ -172,7 +172,12 @@ testStrings.csvNoHeaders = `bob,12,red
 mike,321,blue
 al,1214,green`
 
-testStrings.toFixedWidthTable = `name score color
+testStrings.toTableLeft = `name score color
+bob  12    red  
+mike 321   blue 
+al   1214  green`
+
+testStrings.toTable = `name score color
  bob    12   red
 mike   321  blue
   al  1214 green`
@@ -2496,16 +2501,17 @@ testTree.toCsv = equal => {
   equal(b.toCsv(), `lines\n"1\n2\n3"`)
 }
 
-testTree.toFixedWidthTable = equal => {
+testTree.toTable = equal => {
   // Arrange
   const a = TreeProgram.fromCsv("name,score,color\n" + testStrings.csvNoHeaders)
   // Act/Assert
-  equal(a.toFixedWidthTable(), testStrings.toFixedWidthTable, "Expected correct spacing")
+  equal(a.toTable(), testStrings.toTableLeft, "Expected correct spacing")
+  equal(a.toTable(undefined, true), testStrings.toTable, "Expected correct spacing")
 
   // Arrange
   const b = TreeProgram.fromCsv("name\njoe\nfrankenstein")
   // Act/Assert
-  equal(b.toFixedWidthTable(1), "n\nj\nf", "Expected max width to be enforced")
+  equal(b.toTable(1), "n\nj\nf", "Expected max width to be enforced")
 }
 
 testTree.nest = equal => {

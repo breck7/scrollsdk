@@ -1,3 +1,7 @@
+8.1.0 / 2017-10-25
+==================
+- Breaking: renamed fixedWidthTable method to toTable and changed default to left aligned.
+
 8.0.1 / 2017-10-15
 ==================
 - Fix: fixed browser version

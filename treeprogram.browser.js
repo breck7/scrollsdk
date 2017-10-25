@@ -459,7 +459,11 @@ class ImmutableNode extends AbstractNode {
     return headerRow + "\n" + rows.join("\n")
   }
 
-  toFixedWidthTable(maxWidth = 100) {
+  toTable(maxWidth = 100, alignRight = false) {
+    return this._toTable(maxWidth, alignRight)
+  }
+
+  _toTable(maxWidth, alignRight = false) {
     const header = this._getUnionNames()
     const widths = header.map(col => (col.length > maxWidth ? maxWidth : col.length))
 
@@ -472,6 +476,7 @@ class ImmutableNode extends AbstractNode {
         if (length > widths[index]) widths[index] = length > maxWidth ? maxWidth : length
       })
     })
+
     const cellFn = (cellText, row, col) => {
       const width = widths[col]
       // Strip newlines in fixedWidth output
@@ -480,7 +485,8 @@ class ImmutableNode extends AbstractNode {
       if (cellLength > width) {
         return cellValue.substr(0, width)
       }
-      return " ".repeat(width - cellLength) + cellValue
+      const padding = " ".repeat(width - cellLength)
+      return alignRight ? padding + cellValue : cellValue + padding
     }
     return this._toDelimited(" ", header, cellFn)
   }
@@ -1311,7 +1317,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.0.0"
+    return "8.1.0"
   }
 }
 

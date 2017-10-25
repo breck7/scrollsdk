@@ -29,7 +29,8 @@ class ConsoleApp {
     const languages = Object.keys(this.getLanguages())
     languages.sort()
     console.log("The following Tree Languages are installed on your system:")
-    console.log(languages.join("\n"))
+    const ssv = TreeProgram.fromSsv("language path\n" + new TreeProgram(this.getLanguages()).toString())
+    console.log(ssv.toTable())
   }
 
   create(languageName) {

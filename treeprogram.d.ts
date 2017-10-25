@@ -67,7 +67,7 @@ interface TreeProgram {
   toObject: () => Object
   toCsv: () => string
   toDelimited: (delimiter: string, header: word[]) => string
-  toFixedWidthTable: (maxWidth?: int) => string
+  toTable: (maxWidth?: int, alignRight?: boolean) => string // Output a table with padding up to maxWidth in each cell
   toSsv: () => string
   toTsv: () => string
   toOutline: (mapFn?: nodeMapFn) => string

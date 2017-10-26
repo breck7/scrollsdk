@@ -12,19 +12,16 @@ class ConsoleApp {
   }
 
   help() {
-    const commands = [
-      "help - Show help",
-      "compile [programPath] - Compile a file",
-      "check [programPath] - Check a file for grammar errors",
-      "run [programPath] - Execute a Tree Language Program",
-      "create [languageName] - Create a new Tree Language",
-      "list - List installed Tree Languages",
-      "programs - List all Tree Programs ever parsed with this cli tool",
-      "version - List installed Tree Notation version"
-    ]
-    commands.sort()
-    console.log("The following commands are available:")
-    console.log(commands.join("\n"))
+    const help = `command param description
+check programPath Check a file for grammar errors
+compile programPath Compile a file
+create languageName Create a new Tree Language
+help  Show help
+list  List installed Tree Languages
+programs  List all Tree Programs ever parsed with this cli tool
+run programPath Execute a Tree Language Program
+version  List installed Tree Notation version`
+    console.log(TreeProgram.fromSsv(help).toTable())
   }
 
   list() {

@@ -1317,7 +1317,20 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.1.0"
+    return "8.2.1"
+  }
+
+  static getPathWithoutFileName(path) {
+    const parts = path.split("/") // todo: change for windows?
+    parts.pop()
+    return parts.join("/")
+  }
+
+  static getClassNameFromFilePath(filename) {
+    return filename
+      .replace(/\.[^\.]+$/, "")
+      .split("/")
+      .pop()
   }
 }
 
@@ -1868,11 +1881,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   _initClassCache() {
     if (this._cache_class) return undefined
-    const getClassNameFromFilePath = filename =>
-      filename
-        .replace(/\.[^\.]+$/, "")
-        .split("/")
-        .pop()
     const filepath = this.findBeam(GrammarConstants.parseClass)
 
     const builtIns = {
@@ -1882,9 +1890,13 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     }
 
     if (builtIns[filepath]) this._cache_class = builtIns[filepath]
-    else if (!filepath)
-      this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode // todo: remove "window" below?
-    else this._cache_class = this.isNodeJs() ? require(filepath) : window[getClassNameFromFilePath(filepath)]
+    else if (!filepath) this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
+    else {
+      // todo: remove "window" below?
+      const basePath = TreeNode.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
+      const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
+      this._cache_class = this.isNodeJs() ? require(fullPath) : window[TreeNode.getClassNameFromFilePath(filepath)]
+    }
   }
 
   getDoc() {
@@ -1976,6 +1988,17 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     // for now, first node will be root node.
     if (this.length === 0) return GrammarRootNode
     return GrammarKeywordDefinitionNode
+  }
+
+  setFilePath(filepath) {
+    // todo: remove this method
+    this._filepath = filepath
+    return this
+  }
+
+  // todo: remove?
+  getFilePath() {
+    return this._filepath
   }
 
   _getGrammarRootNode() {
@@ -2157,14 +2180,19 @@ any
     return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
   }
 
-  static compileCompiler(grammarString) {
-    return new GrammarProgram(new AnyProgram(grammarString).getExpanded())
+  getGrammarFilePath() {
+    return ""
+  }
+
+  static compileCompiler(grammarString, filepath) {
+    return new GrammarProgram(new AnyProgram(grammarString).getExpanded()).setFilePath(filepath) // todo: remove non-raii set
   }
 
   static getCachedGrammarProgram(program) {
     const key = program.getGrammarString()
+    const filepath = program.getGrammarFilePath()
     if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(key)
+    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(key, filepath)
     return this._cache_grammarPrograms[key]
   }
 

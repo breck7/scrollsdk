@@ -1,12 +1,13 @@
 #! /usr/local/bin/node
 
-const recursiveReadSync = require("recursive-readdir-sync")
 const fs = require("fs")
+const recursiveReadSync = require("recursive-readdir-sync")
+const ProjectProgram = require("project-lang")
+
 const BrowserScript = require("./BrowserScript.js")
 
 const outputFile = __dirname + `/../treeprogram.browser.js`
 
-const ProjectProgram = require("/aientist/project/ProjectProgram.js")
 const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".js"))
 const projectProgram = ProjectProgram.getProjectProgram(files)
 const scripts = projectProgram

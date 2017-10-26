@@ -24,6 +24,7 @@
   },
   "license": "MIT",
   "dependencies": {
+    "project-lang": "^1.0.0",
     "recursive-readdir-sync": "^1.0.6"
   }
 }

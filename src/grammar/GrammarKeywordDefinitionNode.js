@@ -103,9 +103,8 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     else {
       // todo: remove "window" below?
       const basePath = TreeNode.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
-      this._cache_class = this.isNodeJs()
-        ? require(basePath + filepath)
-        : window[TreeNode.getClassNameFromFilePath(filepath)]
+      const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
+      this._cache_class = this.isNodeJs() ? require(fullPath) : window[TreeNode.getClassNameFromFilePath(filepath)]
     }
   }
 

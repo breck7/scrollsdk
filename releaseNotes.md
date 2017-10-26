@@ -1,3 +1,7 @@
+8.2.1 / 2017-10-26
+==================
+- New: support absolute paths in grammar files
+
 8.2.0 / 2017-10-26
 ==================
 - New: export TreeNonTerminalNode class

@@ -1,6 +1,6 @@
 {
   "name": "treeprogram",
-  "version": "8.2.1",
+  "version": "8.2.2",
   "description": "Javascript Tree Notation implementation.",
   "main": "index.js",
   "bin": {

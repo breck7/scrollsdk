@@ -1,3 +1,7 @@
+8.2.2 / 2017-10-26
+==================
+- Infra: recursive dependency fix and console code cleanup
+
 8.2.1 / 2017-10-26
 ==================
 - New: support absolute paths in grammar files

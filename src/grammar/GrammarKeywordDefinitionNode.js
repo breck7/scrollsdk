@@ -90,11 +90,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   _initClassCache() {
     if (this._cache_class) return undefined
-    const getClassNameFromFilePath = filename =>
-      filename
-        .replace(/\.[^\.]+$/, "")
-        .split("/")
-        .pop()
     const filepath = this.findBeam(GrammarConstants.parseClass)
 
     const builtIns = {
@@ -104,9 +99,14 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     }
 
     if (builtIns[filepath]) this._cache_class = builtIns[filepath]
-    else if (!filepath)
-      this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode // todo: remove "window" below?
-    else this._cache_class = this.isNodeJs() ? require(filepath) : window[getClassNameFromFilePath(filepath)]
+    else if (!filepath) this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
+    else {
+      // todo: remove "window" below?
+      const basePath = TreeNode.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
+      this._cache_class = this.isNodeJs()
+        ? require(basePath + filepath)
+        : window[TreeNode.getClassNameFromFilePath(filepath)]
+    }
   }
 
   getDoc() {

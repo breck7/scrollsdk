@@ -70,14 +70,19 @@ any
     return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
   }
 
-  static compileCompiler(grammarString) {
-    return new GrammarProgram(new AnyProgram(grammarString).getExpanded())
+  getGrammarFilePath() {
+    return ""
+  }
+
+  static compileCompiler(grammarString, filepath) {
+    return new GrammarProgram(new AnyProgram(grammarString).getExpanded()).setFilePath(filepath) // todo: remove non-raii set
   }
 
   static getCachedGrammarProgram(program) {
     const key = program.getGrammarString()
+    const filepath = program.getGrammarFilePath()
     if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(key)
+    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(key, filepath)
     return this._cache_grammarPrograms[key]
   }
 

@@ -1310,7 +1310,20 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.1.0"
+    return "8.2.0"
+  }
+
+  static getPathWithoutFileName(path) {
+    const parts = path.split("/") // todo: change for windows?
+    parts.pop()
+    return parts.join("/")
+  }
+
+  static getClassNameFromFilePath(filename) {
+    return filename
+      .replace(/\.[^\.]+$/, "")
+      .split("/")
+      .pop()
   }
 }
 

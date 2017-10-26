@@ -17,6 +17,17 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return GrammarKeywordDefinitionNode
   }
 
+  setFilePath(filepath) {
+    // todo: remove this method
+    this._filepath = filepath
+    return this
+  }
+
+  // todo: remove?
+  getFilePath() {
+    return this._filepath
+  }
+
   _getGrammarRootNode() {
     return this.nodeAt(0) // todo: fragile?
   }

@@ -16,6 +16,10 @@ file readme.mark
   # LANG - A Tree Language for
 file index.js
  data
+  module.exports = require("./src/LANGProgram.js")
+dir src/
+file src/LANGProgram.js
+ data
   const TreeProgram = require("treeprogram")
   const fs = require("fs")
   const LANGGrammar = fs.readFileSync(__dirname + "/LANG.grammar", "utf8")
@@ -24,10 +28,14 @@ file index.js
     getGrammarString() {
       return LANGGrammar
     }
+  
+    getGrammarFilePath() {
+      return __dirname + "/LANG.grammar"
+    }
   }
   
   module.exports = LANGProgram
-file LANG.grammar
+file src/LANG.grammar
  data
   LANG
    @description A Tree Language for

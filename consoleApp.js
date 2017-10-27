@@ -4,8 +4,12 @@ const os = require("os")
 
 class ConsoleApp {
   constructor(languagePath) {
-    this._lanuagePath = languagePath
+    this._languagePath = languagePath
     this._languages = new TreeProgram(fs.readFileSync(languagePath, "utf8"))
+  }
+
+  _getRegistryPath() {
+    return this._languagePath
   }
 
   getLanguages() {
@@ -20,6 +24,7 @@ create languageName Create a new Tree Language
 help  Show help
 list  List installed Tree Languages
 history  List all Tree Programs ever parsed with this cli tool
+register languageJsPath Register a new language
 run programPath Execute a Tree Language Program
 version  List installed Tree Notation version`
     console.log(TreeProgram.fromSsv(help).toTable())
@@ -28,7 +33,7 @@ version  List installed Tree Notation version`
   list() {
     const languages = this.getLanguages().getKeywords()
     languages.sort()
-    console.log(`# Tree Languages in ${this._lanuagePath}`)
+    console.log(`# Tree Languages in ${this._getRegistryPath()}`)
     const ssv = TreeProgram.fromSsv("language path\n" + this.getLanguages().toString())
     console.log(ssv.toTable())
   }
@@ -73,6 +78,15 @@ version  List installed Tree Notation version`
   history() {
     const data = fs.readFileSync(this._getLogFilePath(), "utf8")
     console.log(new TreeProgram(new TreeProgram(data.trim()).toObject()).getKeywords().join("\n"))
+  }
+
+  register(languageJsPath) {
+    // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
+    const languageClass = require(languageJsPath)
+    const program = new languageClass()
+    const grammarProgram = program.getGrammarProgram()
+    const extension = grammarProgram.getExtensionName()
+    fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${languageJsPath}`, "utf8")
   }
 
   _logProgramPath(programPath) {

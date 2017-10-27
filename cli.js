@@ -6,8 +6,8 @@ const os = require("os")
 const TreeProgram = require("./index.js")
 const ConsoleApp = require("./consoleApp.js")
 
-const languagesObj = new TreeProgram(fs.readFileSync(os.homedir() + "/languages.tree", "utf8")).toObject()
-const app = new ConsoleApp(languagesObj)
+const languagesPath = os.homedir() + "/languages.tree"
+const app = new ConsoleApp(languagesPath)
 
 const action = process.argv[2]
 const param = process.argv[3]

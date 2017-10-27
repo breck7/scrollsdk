@@ -3,8 +3,9 @@ const fs = require("fs")
 const os = require("os")
 
 class ConsoleApp {
-  constructor(languagesObj = {}) {
-    this._languages = languagesObj
+  constructor(languagePath) {
+    this._lanuagePath = languagePath
+    this._languages = new TreeProgram(fs.readFileSync(languagePath, "utf8"))
   }
 
   getLanguages() {
@@ -18,17 +19,17 @@ compile programPath Compile a file
 create languageName Create a new Tree Language
 help  Show help
 list  List installed Tree Languages
-programs  List all Tree Programs ever parsed with this cli tool
+history  List all Tree Programs ever parsed with this cli tool
 run programPath Execute a Tree Language Program
 version  List installed Tree Notation version`
     console.log(TreeProgram.fromSsv(help).toTable())
   }
 
   list() {
-    const languages = Object.keys(this.getLanguages())
+    const languages = this.getLanguages().getKeywords()
     languages.sort()
-    console.log("The following Tree Languages are installed on your system:")
-    const ssv = TreeProgram.fromSsv("language path\n" + new TreeProgram(this.getLanguages()).toString())
+    console.log(`# Tree Languages in ${this._lanuagePath}`)
+    const ssv = TreeProgram.fromSsv("language path\n" + this.getLanguages().toString())
     console.log(ssv.toTable())
   }
 
@@ -50,7 +51,7 @@ version  List installed Tree Notation version`
 
   _getLanguagePathOrThrow(programPath) {
     const extension = ConsoleApp._getFileExtension(programPath)
-    const languagePath = this.getLanguages()[extension]
+    const languagePath = this.getLanguages().toObject()[extension]
     if (!languagePath) throw new Error(`No installed language for '${extension}'`)
     return languagePath
   }
@@ -66,10 +67,10 @@ version  List installed Tree Notation version`
   }
 
   _getLogFilePath() {
-    return os.homedir() + "/programs.tree"
+    return os.homedir() + "/history.tree"
   }
 
-  programs() {
+  history() {
     const data = fs.readFileSync(this._getLogFilePath(), "utf8")
     console.log(new TreeProgram(new TreeProgram(data.trim()).toObject()).getKeywords().join("\n"))
   }

@@ -1,3 +1,8 @@
+8.2.3 / 2017-10-27
+==================
+- New: export TreeTerminalNode class
+- Infra: minor cleanup of cli app
+
 8.2.2 / 2017-10-26
 ==================
 - Infra: recursive dependency fix and console code cleanup

@@ -17,7 +17,7 @@ file readme.mark
 file index.js
  data
   module.exports = require("./src/LANGProgram.js")
-dir src/
+folder src/
 file src/LANGProgram.js
  data
   const TreeProgram = require("treeprogram")
@@ -45,5 +45,5 @@ file src/LANG.grammar
   root
   error
    @parseClass ErrorNode
-dir tests/
+folder tests/
 file tests/tests.swarm

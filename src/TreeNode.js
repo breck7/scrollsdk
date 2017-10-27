@@ -1310,7 +1310,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.2.2"
+    return "8.2.3"
   }
 
   static getPathWithoutFileName(path) {

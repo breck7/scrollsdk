@@ -13,6 +13,7 @@ declare type Json = string // JSON string
 declare type nodeIterator = (node: TreeProgram, index: int) => boolean
 declare type sortResultInt = int // -1 0 1
 declare type nodeMapFn = (node: TreeProgram) => string
+declare type replaceNodeFn = (str: string) => string
 declare type sortFn = (nodeA: TreeProgram, nodeB: TreeProgram) => sortResultInt
 declare type point = { x: int; y: int } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
@@ -32,6 +33,9 @@ interface TreeProgram {
   getKeyword: () => word
   getExpanded: () => string
   getErrors: () => string[] // parse errors. base class is permissive and will always have 0 errors.
+  getSiblings: () => TreeProgram[]
+  getOlderSiblings: () => TreeProgram[] // where older sibling is a node with a lower index
+  getYoungerSiblings: () => TreeProgram[] // where younger sibling is a node with a higher index
   getWordTypeLine: () => string // something like "any int int". base class words are always any type.
   getWord: (index: int) => word
   getWords: (startingFrom?: int) => word[]
@@ -94,6 +98,7 @@ interface TreeProgram {
   invert: () => This // Flips keywords and beams on all top level nodes. Does not recurse.
   prepend: (line: string, tree?: TreeProgram) => TreeProgram
   pushBeamAndTree: (beam?: string, tree?: TreeProgram) => TreeProgram // Keyword will be set to this.length + 1. todo: remove?
+  replaceNode: (fn: replaceNodeFn) => TreeProgram
   remap: (key: Object) => This // Does not recurse.
   rename: (oldKeyword: word, newKeyword: word) => This
   renameAll: (oldKeyword: word, newKeyword: word) => This

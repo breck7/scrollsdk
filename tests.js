@@ -961,6 +961,46 @@ joe,23`
   // Assert
 }
 
+testTree.siblings = equal => {
+  // Arrange
+  const test = new TreeProgram(`a
+b
+c`)
+
+  // Act
+  const a = test.getNode("a")
+  const b = test.getNode("b")
+  const c = test.getNode("c")
+
+  // Assert
+  equal(a.getSiblings().length, 2)
+  equal(a.getOlderSiblings().length, 0)
+  equal(a.getYoungerSiblings().length, 2)
+  equal(b.getSiblings().length, 2)
+  equal(b.getOlderSiblings().length, 1)
+  equal(b.getYoungerSiblings().length, 1)
+  equal(c.getSiblings().length, 2)
+  equal(c.getOlderSiblings().length, 2)
+  equal(c.getYoungerSiblings().length, 0)
+}
+
+testTree.replaceNode = equal => {
+  // Arrange
+  const test = new TreeProgram(`a
+b`)
+  const a = test.getNode("a")
+
+  // Act
+  a.replaceNode(str => str.replace("a", "z"))
+
+  // Assert
+  equal(
+    test.toString(),
+    `z
+b`
+  )
+}
+
 testTree.fromSsv = equal => {
   // Arrange/Act
   const a = TreeProgram.fromSsv(testStrings.ssv)
@@ -1266,9 +1306,11 @@ testTree.simpleTreeLanguage = equal => {
   class MathProgram extends TreeProgram {
     // Look! You created a top down parser!
     getKeywordMap() {
-      return { "+": AdditionNode }
+      return { "+": AdditionNode, "-": SubstractionNode }
     }
   }
+
+  class SubstractionNode extends TreeProgram {}
 
   class AdditionNode extends TreeProgram {
     // Look! You created an interpreter!
@@ -1312,6 +1354,18 @@ testTree.simpleTreeLanguage = equal => {
 4
 316.1`
   )
+
+  // Edit the program and assure parsing is correct
+  // Assert
+  equal(program.getChildrenByNodeType(AdditionNode).length, 3)
+  equal(program.getChildrenByNodeType(SubstractionNode).length, 0)
+
+  // Act
+  program.nodeAt(0).replaceNode(str => str.replace("+", "-"))
+
+  // Assert
+  equal(program.getChildrenByNodeType(AdditionNode).length, 2)
+  equal(program.getChildrenByNodeType(SubstractionNode).length, 1)
 }
 
 testTree.getKeywordPath = equal => {

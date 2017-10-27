@@ -1,3 +1,8 @@
+8.3.0 / 2017-10-27
+==================
+- New: replaceNode method
+- New: getSiblings, getYoungerSiblings, getOlderSiblings methods
+
 8.2.3 / 2017-10-27
 ==================
 - New: export TreeTerminalNode class

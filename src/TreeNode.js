@@ -28,11 +28,30 @@ class ImmutableNode extends AbstractNode {
     return typeof exports !== "undefined"
   }
 
+  getOlderSiblings() {
+    return this.getParent()
+      .getChildren()
+      .slice(0, this.getIndex())
+  }
+
+  getYoungerSiblings() {
+    return this.getParent()
+      .getChildren()
+      .slice(this.getIndex() + 1)
+  }
+
+  getSiblings() {
+    return this.getParent()
+      .getChildren()
+      .filter(node => node !== this)
+  }
+
   _getUid() {
     if (!this._uid) this._uid = ImmutableNode._makeUniqueId()
     return this._uid
   }
 
+  // todo: rename getMother? grandMother et cetera?
   getParent() {
     return this._parent
   }
@@ -1026,6 +1045,16 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
+  replaceNode(fn) {
+    const str = fn(this.toString())
+    const parent = this.getParent()
+    const index = this.getIndex()
+    const newNodeText = new TreeNode(str).nodeAt(0)
+    const newNode = parent.insert(newNodeText.getLine(), newNodeText.childrenToString(), index)
+    this.destroy()
+    return newNode
+  }
+
   insert(line, children, index) {
     return this._setLineAndChildren(line, children, index)
   }
@@ -1310,7 +1339,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.2.3"
+    return "8.3.0"
   }
 
   static getPathWithoutFileName(path) {

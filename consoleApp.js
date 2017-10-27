@@ -42,7 +42,8 @@ version  List installed Tree Notation version`
     // const stampProgramCode = `define LANG ${languageName}\n` + fs.readFileSync(__dirname + "/create.stamp", "utf8")
     // fs.mkdirSync(languageName)
     // todo: create template
-    console.log("not implemented yet")
+    const languagePath = this.getLanguages().toObject().stamp
+    TreeProgram.executeFile(__dirname + "/create.stamp", languagePath)
   }
 
   check(programPath) {

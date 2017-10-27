@@ -1,3 +1,6 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/tree
+prompt LANG lowercase Enter the file extension of your new language
+prompt DESCRIPTION any Enter a description of your new language
 file .gitignore
  data
   node_modules/
@@ -13,7 +16,7 @@ file package.pack
    treeprogram *
 file readme.mark
  data
-  # LANG - A Tree Language for
+  # LANG - DESCRIPTION
 file index.js
  data
   module.exports = require("./src/LANGProgram.js")
@@ -38,7 +41,7 @@ file src/LANGProgram.js
 file src/LANG.grammar
  data
   LANG
-   @description A Tree Language for
+   @description DESCRIPTION
    @catchAllKeyword error
    @keywords
     root

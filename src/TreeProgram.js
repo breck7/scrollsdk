@@ -1,5 +1,7 @@
 const AnyProgram = require("./AnyProgram.js")
 const TreeNode = require("./TreeNode.js")
+const TreeNonTerminalNode = require("./TreeNonTerminalNode.js")
+const TreeTerminalNode = require("./TreeTerminalNode.js")
 
 const GrammarProgram = require("./grammar/GrammarProgram.js")
 
@@ -100,5 +102,7 @@ any
 }
 
 TreeProgram.TreeNode = TreeNode
+TreeProgram.NonTerminalNode = TreeNonTerminalNode
+TreeProgram.TerminalNode = TreeTerminalNode
 
 module.exports = TreeProgram

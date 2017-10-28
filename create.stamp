@@ -1,27 +1,28 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/tree
 prompt LANG lowercase Enter the file extension of your new language
-prompt DESCRIPTION any Enter a description of your new language
-file .gitignore
+prompt DESCRIPTION any Enter a description for LANG
+folder LANG
+file LANG/.gitignore
  data
   node_modules/
-file package.pack
+file LANG/package.pack
  data
   name LANG
   version 1.0.0
-  description A Tree Language for
+  description DESCRIPTION
   main index.js
   keywords LANG
   license MIT
   dependencies
    treeprogram *
-file readme.mark
+file LANG/readme.mark
  data
   # LANG - DESCRIPTION
-file index.js
+file LANG/index.js
  data
   module.exports = require("./src/LANGProgram.js")
-folder src/
-file src/LANGProgram.js
+folder LANG/src/
+file LANG/src/LANGProgram.js
  data
   const TreeProgram = require("treeprogram")
   const fs = require("fs")
@@ -38,7 +39,7 @@ file src/LANGProgram.js
   }
   
   module.exports = LANGProgram
-file src/LANG.grammar
+file LANG/src/LANG.grammar
  data
   LANG
    @description DESCRIPTION
@@ -48,5 +49,6 @@ file src/LANG.grammar
   root
   error
    @parseClass ErrorNode
-folder tests/
-file tests/tests.swarm
+folder LANG/tests/
+file LANG/tests/tests.swarm
+file LANG/tests/sample.LANG

@@ -1,3 +1,7 @@
+8.3.1 / 2017-10-28
+==================
+- Fix: expose TerminalNode and NonTerminalNode in browser distribution
+
 8.3.0 / 2017-10-27
 ==================
 - New: replaceNode method

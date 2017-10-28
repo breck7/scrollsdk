@@ -17,10 +17,24 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return GrammarKeywordDefinitionNode
   }
 
+  getProgram() {
+    return this
+  }
+
   setFilePath(filepath) {
     // todo: remove this method
     this._filepath = filepath
     return this
+  }
+
+  setNodeClasses(obj) {
+    // todo: remove
+    this._rootNodeClasses = obj
+    return this
+  }
+
+  getRootNodeClasses() {
+    return this._rootNodeClasses
   }
 
   // todo: remove?

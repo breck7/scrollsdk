@@ -44,7 +44,7 @@ any
   }
 
   getGrammarProgram() {
-    return TreeProgram.getCachedGrammarProgram(this)
+    return TreeProgram._getCachedGrammarProgram(this)
   }
 
   getProgramWordTypeString() {
@@ -76,15 +76,23 @@ any
     return ""
   }
 
-  static compileCompiler(grammarString, filepath) {
-    return new GrammarProgram(new AnyProgram(grammarString).getExpanded()).setFilePath(filepath) // todo: remove non-raii set
+  getNodeClasses() {
+    return {}
   }
 
-  static getCachedGrammarProgram(program) {
-    const key = program.getGrammarString()
+  static compileCompiler(program) {
+    const grammarString = program.getGrammarString()
     const filepath = program.getGrammarFilePath()
+    // todo: remove non-raii methods
+    return new GrammarProgram(new AnyProgram(grammarString).getExpanded())
+      .setFilePath(filepath)
+      .setNodeClasses(program.getNodeClasses())
+  }
+
+  static _getCachedGrammarProgram(program) {
+    const key = program.getGrammarString()
     if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(key, filepath)
+    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(program)
     return this._cache_grammarPrograms[key]
   }
 

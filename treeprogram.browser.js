@@ -1346,7 +1346,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.3.1"
+    return "8.4.0"
   }
 
   static getPathWithoutFileName(path) {
@@ -1467,6 +1467,10 @@ window.TreeCell = TreeCell
 
 
 class AbstractGrammarDefinitionNode extends TreeNode {
+  getProgram() {
+    return this.getParent()
+  }
+
   getRunTimeKeywordMap() {
     this._initKeywordsMapCache()
     return this._cache_keywordsMap
@@ -1899,24 +1903,31 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return GrammarDefinitionErrorNode
   }
 
+  isNonTerminal() {
+    return this.has(GrammarConstants.keywords)
+  }
+
   getJavascriptClassForNode() {
     this._initClassCache()
     return this._cache_class
   }
 
-  isNonTerminal() {
-    return this.has(GrammarConstants.keywords)
+  _getNodeClasses() {
+    const builtIns = {
+      ErrorNode: TreeErrorNode,
+      TerminalNode: TreeTerminalNode,
+      NonTerminalNode: TreeNonTerminalNode
+    }
+
+    Object.assign(builtIns, this.getProgram().getRootNodeClasses())
+    return builtIns
   }
 
   _initClassCache() {
     if (this._cache_class) return undefined
     const filepath = this.findBeam(GrammarConstants.parseClass)
 
-    const builtIns = {
-      ErrorNode: TreeErrorNode,
-      TerminalNode: TreeTerminalNode,
-      NonTerminalNode: TreeNonTerminalNode
-    }
+    const builtIns = this._getNodeClasses()
 
     if (builtIns[filepath]) this._cache_class = builtIns[filepath]
     else if (!filepath) this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
@@ -2019,10 +2030,24 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return GrammarKeywordDefinitionNode
   }
 
+  getProgram() {
+    return this
+  }
+
   setFilePath(filepath) {
     // todo: remove this method
     this._filepath = filepath
     return this
+  }
+
+  setNodeClasses(obj) {
+    // todo: remove
+    this._rootNodeClasses = obj
+    return this
+  }
+
+  getRootNodeClasses() {
+    return this._rootNodeClasses
   }
 
   // todo: remove?
@@ -2183,7 +2208,7 @@ any
   }
 
   getGrammarProgram() {
-    return TreeProgram.getCachedGrammarProgram(this)
+    return TreeProgram._getCachedGrammarProgram(this)
   }
 
   getProgramWordTypeString() {
@@ -2215,15 +2240,23 @@ any
     return ""
   }
 
-  static compileCompiler(grammarString, filepath) {
-    return new GrammarProgram(new AnyProgram(grammarString).getExpanded()).setFilePath(filepath) // todo: remove non-raii set
+  getNodeClasses() {
+    return {}
   }
 
-  static getCachedGrammarProgram(program) {
-    const key = program.getGrammarString()
+  static compileCompiler(program) {
+    const grammarString = program.getGrammarString()
     const filepath = program.getGrammarFilePath()
+    // todo: remove non-raii methods
+    return new GrammarProgram(new AnyProgram(grammarString).getExpanded())
+      .setFilePath(filepath)
+      .setNodeClasses(program.getNodeClasses())
+  }
+
+  static _getCachedGrammarProgram(program) {
+    const key = program.getGrammarString()
     if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(key, filepath)
+    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(program)
     return this._cache_grammarPrograms[key]
   }
 

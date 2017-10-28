@@ -79,24 +79,31 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return GrammarDefinitionErrorNode
   }
 
+  isNonTerminal() {
+    return this.has(GrammarConstants.keywords)
+  }
+
   getJavascriptClassForNode() {
     this._initClassCache()
     return this._cache_class
   }
 
-  isNonTerminal() {
-    return this.has(GrammarConstants.keywords)
+  _getNodeClasses() {
+    const builtIns = {
+      ErrorNode: TreeErrorNode,
+      TerminalNode: TreeTerminalNode,
+      NonTerminalNode: TreeNonTerminalNode
+    }
+
+    Object.assign(builtIns, this.getProgram().getRootNodeClasses())
+    return builtIns
   }
 
   _initClassCache() {
     if (this._cache_class) return undefined
     const filepath = this.findBeam(GrammarConstants.parseClass)
 
-    const builtIns = {
-      ErrorNode: TreeErrorNode,
-      TerminalNode: TreeTerminalNode,
-      NonTerminalNode: TreeNonTerminalNode
-    }
+    const builtIns = this._getNodeClasses()
 
     if (builtIns[filepath]) this._cache_class = builtIns[filepath]
     else if (!filepath) this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode

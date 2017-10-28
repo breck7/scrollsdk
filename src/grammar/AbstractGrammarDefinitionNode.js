@@ -1,6 +1,10 @@
 const TreeNode = require("../TreeNode.js")
 
 class AbstractGrammarDefinitionNode extends TreeNode {
+  getProgram() {
+    return this.getParent()
+  }
+
   getRunTimeKeywordMap() {
     this._initKeywordsMapCache()
     return this._cache_keywordsMap

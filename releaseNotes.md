@@ -1,3 +1,7 @@
+8.4.0 / 2017-10-28
+==================
+- New: added getNodeClasses method to TreeProgram to support multiple node classes in 1 file
+
 8.3.1 / 2017-10-28
 ==================
 - Fix: expose TerminalNode and NonTerminalNode in browser distribution

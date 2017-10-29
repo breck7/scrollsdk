@@ -20,10 +20,6 @@ file LANG/readme.mark
   # LANG - DESCRIPTION
 file LANG/index.js
  data
-  module.exports = require("./src/LANGProgram.js")
-folder LANG/src/
-file LANG/src/LANGProgram.js
- data
   const TreeProgram = require("treeprogram")
   const fs = require("fs")
   const LANGGrammar = fs.readFileSync(__dirname + "/LANG.grammar", "utf8")
@@ -39,7 +35,7 @@ file LANG/src/LANGProgram.js
   }
   
   module.exports = LANGProgram
-file LANG/src/LANG.grammar
+file LANG/LANG.grammar
  data
   LANG
    @description DESCRIPTION
@@ -49,6 +45,5 @@ file LANG/src/LANG.grammar
   root
   error
    @parseClass ErrorNode
-folder LANG/tests/
-file LANG/tests/tests.swarm
-file LANG/tests/sample.LANG
+file LANG/tests.swarm
+file LANG/sample.LANG

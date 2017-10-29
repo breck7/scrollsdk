@@ -5,7 +5,12 @@ const os = require("os")
 class ConsoleApp {
   constructor(languagePath) {
     this._languagePath = languagePath
+    this._touchFile(languagePath)
     this._languages = new TreeProgram(fs.readFileSync(languagePath, "utf8"))
+  }
+
+  _touchFile(path) {
+    if (!fs.existsSync(path)) fs.writeFileSync(path, "", "utf8")
   }
 
   _getRegistryPath() {
@@ -93,6 +98,7 @@ version  List installed Tree Notation version`
   _logProgramPath(programPath) {
     const logFilePath = this._getLogFilePath()
     const line = `${programPath} ${Date.now()}\n`
+    this._touchFile(logFilePath)
     fs.appendFile(logFilePath, line, "utf8", () => {})
     // everytime you run/check/compile a tree program, log it by default.
     // that way, if a language changes or you need to do refactors, you have the

@@ -1,3 +1,8 @@
+8.4.1 / 2017-10-28
+==================
+- Fix: init the languages and history file on cli first use
+- Infra: added a tiny bit of documentation to readme
+
 8.4.0 / 2017-10-28
 ==================
 - New: added getNodeClasses method to TreeProgram to support multiple node classes in 1 file

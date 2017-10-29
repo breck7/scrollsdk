@@ -18,7 +18,18 @@ This library is for people who want to design Tree Languages or make Tree Progra
 Using this Library
 -----------------
 
-Instructions coming soon! If you'd like to create a new Tree Language, shoot me an email and I can help you until we have documentation.
+This library ships with a command line utility:
+
+    npm install treeprogram
+    tree help
+
+To use it in an npm project:
+
+    const treeprogram = require("treeprogram")
+    const tree = new treeprogram("hello world")
+    console.log(tree.toString())
+
+More instructions coming soon! If you'd like to create a new Tree Language, shoot me an email and I can help you until we have more documentation.
 
 Development Status
 ------------------

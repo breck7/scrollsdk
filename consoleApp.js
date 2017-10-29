@@ -36,10 +36,10 @@ version  List installed Tree Notation version`
   }
 
   list() {
-    const languages = this.getLanguages().getKeywords()
+    const languages = this.getLanguages().clone()
+    console.log(`${languages.length} Tree Languages registered in ${this._getRegistryPath()}`)
     languages.sort()
-    console.log(`# Tree Languages in ${this._getRegistryPath()}`)
-    const ssv = TreeProgram.fromSsv("language path\n" + this.getLanguages().toString())
+    const ssv = TreeProgram.fromSsv("language module\n" + languages.toString())
     console.log(ssv.toTable())
   }
 

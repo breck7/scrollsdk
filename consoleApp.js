@@ -129,7 +129,13 @@ version  List installed Tree Notation version`
       const usage = program.getGrammarUsage(path)
       report.extend(usage.toString())
     })
-    console.log(report.toString())
+    const folderName = languageName
+    const stampFile = new TreeProgram(`folder ${folderName}`)
+    report.getChildren().forEach(node => {
+      const fileNode = stampFile.append(`file ${folderName}/${node.getKeyword()}.ssv`)
+      fileNode.append("data", `${node.getBeam()}\n` + node.childrenToString())
+    })
+    console.log(stampFile.toString())
   }
 
   version() {

@@ -81,9 +81,11 @@ version  List installed Tree Notation version`
     return os.homedir() + "/history.tree"
   }
 
-  history() {
+  history(languageName) {
     const data = fs.readFileSync(this._getLogFilePath(), "utf8")
-    console.log(new TreeProgram(new TreeProgram(data.trim()).toObject()).getKeywords().join("\n"))
+    const files = new TreeProgram(new TreeProgram(data.trim()).toObject()).getKeywords()
+    if (!languageName) console.log(files.join("\n"))
+    console.log(files.filter(file => file.endsWith(languageName)).join("\n"))
   }
 
   register(languageJsPath) {

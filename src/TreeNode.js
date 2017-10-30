@@ -1034,6 +1034,7 @@ class TreeNode extends ImmutableNode {
     return targetNode ? targetNode._deleteByKeyword(nextKeyword) : 0
   }
 
+  // todo: add more testing.
   extend(nodeOrStr) {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {

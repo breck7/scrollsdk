@@ -127,7 +127,7 @@ version  List installed Tree Notation version`
       const code = fs.readFileSync(path, "utf8")
       const program = new languageClass(code)
       const usage = program.getGrammarUsage(path)
-      report.extend(usage)
+      report.extend(usage.toString())
     })
     console.log(report.toString())
   }

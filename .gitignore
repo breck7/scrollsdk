@@ -6,3 +6,4 @@ node_modules/
 *.aux
 *.log
 *.synctex.gz
+debugger.js

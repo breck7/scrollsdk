@@ -1,3 +1,8 @@
+8.5.0 / 2017-10-30
+==================
+- New usage command line tool
+- New getGrammarUsage method
+
 8.4.1 / 2017-10-28
 ==================
 - Fix: init the languages and history file on cli first use

@@ -136,11 +136,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return defaults ? defaults.findBeam(name) : undefined
   }
 
-  getBeamParameters() {
-    const parameters = this.findBeam(GrammarConstants.parameters)
-    return parameters ? parameters.split(" ") : []
-  }
-
   getDescription() {
     return this.findBeam(GrammarConstants.description) || ""
   }

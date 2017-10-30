@@ -1,4 +1,5 @@
 const TreeNode = require("../TreeNode.js")
+const GrammarConstants = require("./GrammarConstants.js")
 
 class AbstractGrammarDefinitionNode extends TreeNode {
   getProgram() {
@@ -17,6 +18,11 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   getRunTimeKeywordMapWithDefinitions() {
     const defs = this._getDefinitionCache()
     return AbstractGrammarDefinitionNode._mapValues(this.getRunTimeKeywordMap(), key => defs[key])
+  }
+
+  getBeamParameters() {
+    const parameters = this.findBeam(GrammarConstants.parameters)
+    return parameters ? parameters.split(" ") : []
   }
 
   _initKeywordsMapCache() {

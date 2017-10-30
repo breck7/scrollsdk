@@ -28,9 +28,10 @@ compile programPath Compile a file
 create languageName Create a new Tree Language
 help  Show help
 list  List installed Tree Languages
-history  List all Tree Programs ever parsed with this cli tool
+history languageName List all programs ever parsed with this cli tool
 register languageJsPath Register a new language
 run programPath Execute a Tree Language Program
+usage languageName Analyze Global Keyword Usage for a given language
 version  List installed Tree Notation version`
     console.log(TreeProgram.fromSsv(help).toTable())
   }
@@ -82,11 +83,14 @@ version  List installed Tree Notation version`
   }
 
   history(languageName) {
+    console.log(this._history(languageName).join(" "))
+  }
+
+  _history(languageName) {
     const data = fs.readFileSync(this._getLogFilePath(), "utf8")
     const files = new TreeProgram(new TreeProgram(data.trim()).toObject()).getKeywords()
     const existing = files.filter(file => fs.existsSync(file))
-    if (!languageName) console.log(existing.join("\n"))
-    console.log(existing.filter(file => file.endsWith(languageName)).join(" "))
+    return languageName ? existing.filter(file => file.endsWith(languageName)) : existing
   }
 
   register(languageJsPath) {
@@ -112,6 +116,20 @@ version  List installed Tree Notation version`
     this._logProgramPath(programPath)
     const languagePath = this._getLanguagePathOrThrow(programPath)
     return TreeProgram.executeFile(programPath, languagePath)
+  }
+
+  usage(languageName) {
+    const files = this._history(languageName)
+    const languagePath = this._getLanguagePathOrThrow(files[0])
+    const languageClass = require(languagePath)
+    const report = new TreeProgram()
+    files.forEach(path => {
+      const code = fs.readFileSync(path, "utf8")
+      const program = new languageClass(code)
+      const usage = program.getGrammarUsage(path)
+      report.extend(usage)
+    })
+    console.log(report.toString())
   }
 
   version() {

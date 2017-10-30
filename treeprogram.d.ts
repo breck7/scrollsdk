@@ -33,6 +33,7 @@ interface TreeProgram {
   getKeyword: () => word
   getExpanded: () => string
   getErrors: () => string[] // parse errors. base class is permissive and will always have 0 errors.
+  getGrammarUsage: () => TreeProgram[] // returns a report on what keywords from its language the program uses
   getSiblings: () => TreeProgram[]
   getOlderSiblings: () => TreeProgram[] // where older sibling is a node with a lower index
   getYoungerSiblings: () => TreeProgram[] // where younger sibling is a node with a higher index

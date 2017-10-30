@@ -36,13 +36,6 @@ class TreeProgram extends AnyProgram {
     return this.getGrammarProgram()
   }
 
-  getGrammarString() {
-    return `any
- @catchAllKeyword any
-any
- @parameters any*`
-  }
-
   getGrammarUsage(filepath = "") {
     const usage = new TreeProgram()
     const grammarProgram = this.getGrammarProgram()

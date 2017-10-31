@@ -23,7 +23,7 @@ class ConsoleApp {
 
   help() {
     const help = `command param description
-check programPath Check a file for grammar errors
+check programPathOrLanguage Check a file(s) for grammar errors
 compile programPath Compile a file
 create languageName Create a new Tree Language
 help  Show help
@@ -52,13 +52,23 @@ version  List installed Tree Notation version`
     TreeProgram.executeFile(__dirname + "/create.stamp", languagePath)
   }
 
-  check(programPath) {
+  check(programPathOrLanguage) {
+    if (programPathOrLanguage.includes(".")) return this._checkAndLog(programPathOrLanguage)
+    const files = this._history(programPathOrLanguage)
+    files.forEach(file => this._checkAndLog(file))
+  }
+
+  _checkAndLog(programPath) {
+    const errors = this._check(programPath)
+    console.log(`${errors.length} errors for ${programPath}`)
+    if (errors.length) console.log(errors)
+  }
+
+  _check(programPath) {
     this._logProgramPath(programPath)
     const languagePath = this._getLanguagePathOrThrow(programPath)
     const program = TreeProgram.makeProgram(programPath, languagePath)
-    const errors = program.getProgramErrors()
-    console.log(`${errors.length} errors for ${programPath} with grammar ${languagePath}`)
-    if (errors.length) console.log(errors)
+    return program.getProgramErrors()
   }
 
   _getLanguagePathOrThrow(programPath) {

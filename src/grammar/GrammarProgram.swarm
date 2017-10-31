@@ -13,7 +13,7 @@
     @keywords
      stressNode
    to block
-    @parameters word
+    @columns word
     @compiled to {word}
     @closeChildren end
  getRunTimeKeywordNames

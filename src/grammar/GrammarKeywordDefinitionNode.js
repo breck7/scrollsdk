@@ -16,7 +16,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       GrammarConstants.openChildren,
       GrammarConstants.closeChildren,
       GrammarConstants.keywords,
-      GrammarConstants.parameters,
+      GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.parseClass,
       GrammarConstants.catchAllKeyword,

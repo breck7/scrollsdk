@@ -1,3 +1,7 @@
+8.6.0 / 2017-10-30
+==================
+- Breaking: renamed @parameters to @columns in Grammar Tree Language
+
 8.5.0 / 2017-10-30
 ==================
 - New usage command line tool

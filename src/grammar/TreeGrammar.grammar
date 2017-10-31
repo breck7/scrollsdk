@@ -2,19 +2,19 @@ grammar
  @catchAllKeyword keywordDefinition
 keywordRule
 monadicKeywordRule keywordRule
- @parameters any
+ @columns any
 @targetExtension monadicKeywordRule
 @catchAllKeyword monadicKeywordRule
 @parseClass monadicKeywordRule
 @frequency monadicKeywordRule
 @ohayoSvg monadicKeywordRule
 @ohayoTileSize keywordRule
- @parameters int int
+ @columns int int
 @ohayoTileClass keywordRule
- @parameters any filepath
+ @columns any filepath
 variadicKeywordRule keywordRule
- @parameters any*
-@parameters variadicKeywordRule
+ @columns any*
+@columns variadicKeywordRule
 @compiled variadicKeywordRule
 @listDelimiter variadicKeywordRule
 @openChildren variadicKeywordRule
@@ -26,7 +26,7 @@ ntKeywordRule keywordRule
 error
  @parseClass ErrorNode
 keywordDefinition
- @parameters any*
+ @columns any*
  @catchAllKeyword error
  @parseClass NonTerminalNode
  @keywords

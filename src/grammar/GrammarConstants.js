@@ -2,7 +2,7 @@ const GrammarConstants = {}
 
 // parsing
 GrammarConstants.keywords = "@keywords"
-GrammarConstants.parameters = "@parameters"
+GrammarConstants.columns = "@columns"
 GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"

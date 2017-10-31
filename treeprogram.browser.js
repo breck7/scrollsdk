@@ -1041,6 +1041,7 @@ class TreeNode extends ImmutableNode {
     return targetNode ? targetNode._deleteByKeyword(nextKeyword) : 0
   }
 
+  // todo: add more testing.
   extend(nodeOrStr) {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
     nodeOrStr.getChildren().forEach(node => {
@@ -1346,7 +1347,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.5.0"
+    return "8.6.0"
   }
 
   static getPathWithoutFileName(path) {
@@ -1483,7 +1484,7 @@ const GrammarConstants = {}
 
 // parsing
 GrammarConstants.keywords = "@keywords"
-GrammarConstants.parameters = "@parameters"
+GrammarConstants.columns = "@columns"
 GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
@@ -1681,7 +1682,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getBeamParameters() {
-    const parameters = this.findBeam(GrammarConstants.parameters)
+    const parameters = this.findBeam(GrammarConstants.columns)
     return parameters ? parameters.split(" ") : []
   }
 
@@ -1846,7 +1847,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       GrammarConstants.openChildren,
       GrammarConstants.closeChildren,
       GrammarConstants.keywords,
-      GrammarConstants.parameters,
+      GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.parseClass,
       GrammarConstants.catchAllKeyword,
@@ -2146,17 +2147,21 @@ class AnyProgram extends TreeNode {
     return this
   }
 
+  getGrammarString() {
+    return `any
+ @description Default grammar
+ @catchAllKeyword any
+any
+ @columns any*`
+  }
+
   getProgramErrors() {
     const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
     return [].concat.apply([], nodeErrors)
   }
 
   getGrammarProgram() {
-    if (!AnyProgram._grammarProgram)
-      AnyProgram._grammarProgram = new GrammarProgram(`any
- @catchAllKeyword any
-any
- @parameters any*`)
+    if (!AnyProgram._grammarProgram) AnyProgram._grammarProgram = new GrammarProgram(this.getGrammarString())
     return AnyProgram._grammarProgram
   }
 }
@@ -2199,13 +2204,6 @@ class TreeProgram extends AnyProgram {
 
   getDefinition() {
     return this.getGrammarProgram()
-  }
-
-  getGrammarString() {
-    return `any
- @catchAllKeyword any
-any
- @parameters any*`
   }
 
   getGrammarUsage(filepath = "") {

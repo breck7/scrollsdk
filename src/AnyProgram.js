@@ -12,7 +12,7 @@ class AnyProgram extends TreeNode {
  @description Default grammar
  @catchAllKeyword any
 any
- @parameters any*`
+ @columns any*`
   }
 
   getProgramErrors() {

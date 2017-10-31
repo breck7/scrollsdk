@@ -21,7 +21,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getBeamParameters() {
-    const parameters = this.findBeam(GrammarConstants.parameters)
+    const parameters = this.findBeam(GrammarConstants.columns)
     return parameters ? parameters.split(" ") : []
   }
 

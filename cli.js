@@ -1,13 +1,11 @@
 #! /usr/bin/env node --use_strict
 
 const fs = require("fs")
-const os = require("os")
 
 const TreeProgram = require("./index.js")
 const ConsoleApp = require("./consoleApp.js")
 
-const languagesPath = os.homedir() + "/languages.tree"
-const app = new ConsoleApp(languagesPath)
+const app = new ConsoleApp()
 
 const action = process.argv[2]
 const param = process.argv[3]

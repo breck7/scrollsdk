@@ -3,7 +3,7 @@ const fs = require("fs")
 
 class TreeGrammarProgram extends TreeProgram {
   getGrammarString() {
-    return fs.readFileSync(__dirname + "/TreeGrammar.grammar", "utf8")
+    return fs.readFileSync(this.getGrammarFilePath(), "utf8")
   }
 
   getGrammarFilePath() {

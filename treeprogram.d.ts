@@ -20,7 +20,7 @@ declare type point = { x: int; y: int } // Point on the Cartesian plane where th
 interface TreeProgram {
   (tree?: content, line?: string): This
 
-  compile: () => string
+  compile: (targetExtension: string) => string
   getIndex: () => int
   getPoint: (relativeTo?: TreeProgram) => point
   getPathVector: (relativeTo?: TreeProgram) => pathVector

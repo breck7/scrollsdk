@@ -3,10 +3,10 @@ const fs = require("fs")
 const os = require("os")
 
 class ConsoleApp {
-  constructor(languagePath) {
-    this._languagePath = languagePath
-    this._initFile(languagePath)
-    this._languages = new TreeProgram(fs.readFileSync(languagePath, "utf8"))
+  constructor(languagesPath = os.homedir() + "/languages.tree") {
+    this._languagePath = languagesPath
+    this._initFile(languagesPath)
+    this._languages = new TreeProgram(fs.readFileSync(languagesPath, "utf8"))
   }
 
   _initFile(path, initialString = "") {

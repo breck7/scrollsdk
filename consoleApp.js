@@ -5,12 +5,12 @@ const os = require("os")
 class ConsoleApp {
   constructor(languagePath) {
     this._languagePath = languagePath
-    this._touchFile(languagePath)
+    this._initFile(languagePath)
     this._languages = new TreeProgram(fs.readFileSync(languagePath, "utf8"))
   }
 
-  _touchFile(path) {
-    if (!fs.existsSync(path)) fs.writeFileSync(path, "", "utf8")
+  _initFile(path, initialString = "") {
+    if (!fs.existsSync(path)) fs.writeFileSync(path, initialString, "utf8")
   }
 
   _getRegistryPath() {
@@ -65,7 +65,6 @@ version  List installed Tree Notation version`
   }
 
   _check(programPath) {
-    this._logProgramPath(programPath)
     const languagePath = this._getLanguagePathOrThrow(programPath)
     const program = TreeProgram.makeProgram(programPath, languagePath)
     return program.getProgramErrors()
@@ -79,28 +78,46 @@ version  List installed Tree Notation version`
   }
 
   compile(programPath) {
-    this._logProgramPath(programPath)
     // todo: allow user to provide destination
     const languagePath = this._getLanguagePathOrThrow(programPath)
     const program = TreeProgram.makeProgram(programPath, languagePath)
     const path = program.getCompiledProgramName(programPath)
     const compiledCode = program.compile()
-    fs.writeFileSync(path, compiledCode, "utf8")
+    console.log(compiledCode) // they can pipe it to a file
   }
 
   _getLogFilePath() {
-    return os.homedir() + "/history.tree"
+    return os.homedir() + "/history.ssv"
   }
 
   history(languageName) {
-    console.log(this._history(languageName).join(" "))
+    if (languageName) console.log(this._history(languageName).join(" "))
+    else console.log(this._getHistoryFile())
+  }
+
+  _getHistoryFile() {
+    return fs.readFileSync(this._getLogFilePath(), "utf8")
   }
 
   _history(languageName) {
-    const data = fs.readFileSync(this._getLogFilePath(), "utf8")
-    const files = new TreeProgram(new TreeProgram(data.trim()).toObject()).getKeywords()
-    const existing = files.filter(file => fs.existsSync(file))
-    return languageName ? existing.filter(file => file.endsWith(languageName)) : existing
+    // todo: store history of all commands
+    // todo: build language for cli history
+    // todo: refactor this
+    // todo: the findBeam method is bad (confuse with getBeam). clean up.
+    // todo: some easier one step way to get a set from a column
+    // todo: add support for initing a TreeProgram from a JS set and map
+    const data = TreeProgram.fromSsv(this._getHistoryFile())
+    const files = data
+      .getChildren()
+      .filter(node => {
+        const command = node.findBeam("command")
+        const filepath = node.findBeam("param")
+        if (!filepath) return false
+        if (["check", "run", "", "compile"].includes(command)) return true
+      })
+      .map(node => node.findBeam("param"))
+    const items = Object.keys(new TreeProgram(files.join("\n")).toObject())
+    return items.filter(file => file.endsWith(languageName)).filter(file => fs.existsSync(file))
   }
 
   register(languageJsPath) {
@@ -112,18 +129,18 @@ version  List installed Tree Notation version`
     fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${languageJsPath}`, "utf8")
   }
 
-  _logProgramPath(programPath) {
-    const logFilePath = this._getLogFilePath()
-    const line = `${programPath} ${Date.now()}\n`
-    this._touchFile(logFilePath)
-    fs.appendFile(logFilePath, line, "utf8", () => {})
+  addToHistory(one, two) {
     // everytime you run/check/compile a tree program, log it by default.
     // that way, if a language changes or you need to do refactors, you have the
     // data of file paths handy..
+    // also the usage data can be used to improve the cli app
+    const line = `${one || ""} ${two || ""} ${Date.now()}\n`
+    const logFilePath = this._getLogFilePath()
+    this._initFile(logFilePath, "command param timestamp\n")
+    fs.appendFile(logFilePath, line, "utf8", () => {})
   }
 
   run(programPath) {
-    this._logProgramPath(programPath)
     const languagePath = this._getLanguagePathOrThrow(programPath)
     return TreeProgram.executeFile(programPath, languagePath)
   }

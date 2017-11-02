@@ -1,4 +1,4 @@
-const TreeSlotTypes = `any
+const ColumnTypes = `any
  isValid .?
 something
  isValid .
@@ -28,4 +28,4 @@ identifier
 alpha
  isValid ^[a-zA-Z]+$`
 
-module.exports = TreeSlotTypes
+module.exports = ColumnTypes

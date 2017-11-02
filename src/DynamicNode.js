@@ -13,6 +13,10 @@ class DynamicNode extends TreeNode {
       .getDefinitionByKeywordPath(this.getKeywordPath())
   }
 
+  getCompilerNode(targetLanguage) {
+    return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
+  }
+
   _getParameterMap() {
     const cells = this.getTreeCellArray()
     const parameterMap = {}
@@ -24,23 +28,23 @@ class DynamicNode extends TreeNode {
     return parameterMap
   }
 
-  getCompiledIndentation() {
-    const definition = this.getDefinition()
-    const compiledIndentCharacter = definition.findBeam(GrammarConstants.compiledIndentCharacter)
+  getCompiledIndentation(targetLanguage) {
+    const compiler = this.getCompilerNode(targetLanguage)
+    const indentCharacter = compiler.getIndentCharacter()
     const indent = this.getIndentation()
-    return compiledIndentCharacter !== undefined ? compiledIndentCharacter.repeat(indent.length) : indent
+    return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
 
-  getCompiledLine() {
-    const definition = this.getDefinition()
-    const listDelimiter = definition.findBeam(GrammarConstants.listDelimiter)
+  getCompiledLine(targetLanguage) {
+    const compiler = this.getCompilerNode(targetLanguage)
+    const listDelimiter = compiler.getListDelimiter()
     const parameterMap = this._getParameterMap()
-    const jsStr = definition.findBeam(GrammarConstants.compiled)
-    return jsStr ? DynamicNode._formatStr(jsStr, listDelimiter, parameterMap) : this.getLine()
+    const str = compiler.getTransformation()
+    return str ? DynamicNode._formatStr(str, listDelimiter, parameterMap) : this.getLine()
   }
 
-  compile() {
-    return this.getCompiledIndentation() + this.getCompiledLine()
+  compile(targetLanguage) {
+    return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage)
   }
 
   getErrors() {

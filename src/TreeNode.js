@@ -429,6 +429,7 @@ class ImmutableNode extends AbstractNode {
     const name = key ? this.findBeam(key) : this.getWord(1)
     if (!name) return []
     const parentNode = this.getParent().getNode(name)
+    if (!parentNode) throw new Error(`"${this.getLine()} tried to extend "${name}" but "${name}" not found.`)
     const graph = parentNode._getGraph(key)
     graph.push(parentNode)
     return graph
@@ -1340,7 +1341,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.6.0"
+    return "9.0.0"
   }
 
   static getPathWithoutFileName(path) {

@@ -1,4 +1,4 @@
-const ColumnTypes = `any
+const TreeColumnTypes = `any
  isValid .?
 something
  isValid .
@@ -28,4 +28,4 @@ identifier
 alpha
  isValid ^[a-zA-Z]+$`
 
-module.exports = ColumnTypes
+module.exports = TreeColumnTypes

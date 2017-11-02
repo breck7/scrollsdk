@@ -9,16 +9,16 @@ class TreeNonTerminalNode extends DynamicNode {
     return this.getDefinition().getRunTimeCatchAllNodeClass()
   }
 
-  compile() {
-    const definition = this.getDefinition()
-    const openChildrenString = definition.getOpenChildrenString()
-    const closeChildrenString = definition.getCloseChildrenString()
+  compile(targetExtension) {
+    const compiler = this.getCompilerNode(targetExtension)
+    const openChildrenString = compiler.getOpenChildrenString()
+    const closeChildrenString = compiler.getCloseChildrenString()
 
-    const compiledLine = this.getCompiledLine()
-    const indent = this.getCompiledIndentation()
+    const compiledLine = this.getCompiledLine(targetExtension)
+    const indent = this.getCompiledIndentation(targetExtension)
 
     const compiledChildren = this.getChildren()
-      .map(child => child.compile())
+      .map(child => child.compile(targetExtension))
       .join("\n")
 
     return `${indent}${compiledLine}${openChildrenString}

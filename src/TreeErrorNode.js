@@ -6,7 +6,7 @@ class TreeErrorNode extends DynamicNode {
   }
 
   getErrors() {
-    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
+    return [`Unknown keyword "${this.getKeyword()}" in "${this.getParent().getKeyword()}" at line ${this.getPoint().y}`]
   }
 }
 

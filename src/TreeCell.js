@@ -1,5 +1,5 @@
 const TreeNode = require("./TreeNode.js")
-const ColumnTypes = require("./ColumnTypes.js")
+const TreeColumnTypes = require("./TreeColumnTypes.js")
 
 class TreeCell {
   constructor(word, type, node, line, index) {

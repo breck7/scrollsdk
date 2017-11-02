@@ -46,11 +46,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this.nodeAt(0) // todo: fragile?
   }
 
-  // todo: remove?
-  getTargetExtension() {
-    return this._getGrammarRootNode().findBeam(GrammarConstants.targetExtension)
-  }
-
   getExtensionName() {
     return this._getGrammarRootNode().getKeyword()
   }

@@ -3,26 +3,54 @@ grammar
 keywordRule
 monadicKeywordRule keywordRule
  @columns any
-@targetExtension monadicKeywordRule
 @catchAllKeyword monadicKeywordRule
 @parseClass monadicKeywordRule
 @frequency monadicKeywordRule
-@ohayoSvg monadicKeywordRule
-@ohayoTileSize keywordRule
- @columns int int
-@ohayoTileClass keywordRule
- @columns any filepath
 variadicKeywordRule keywordRule
  @columns any*
 @columns variadicKeywordRule
-@compiled variadicKeywordRule
-@listDelimiter variadicKeywordRule
-@openChildren variadicKeywordRule
-@closeChildren variadicKeywordRule
-@compiledIndentCharacter variadicKeywordRule
+compilerRule
+ @columns any*
+@compiler monadicKeywordRule
+ @parseClass ./GrammarCompilerNode.js
+ @keywords
+  @sub
+  @listDelimiter
+  @openChildren
+  @closeChildren
+  @indentCharacter
+@sub compilerRule
+@listDelimiter compilerRule
+@openChildren compilerRule
+@closeChildren compilerRule
+@indentCharacter compilerRule
 @description variadicKeywordRule
 ntKeywordRule keywordRule
+defaultTuple
+ @columns any any*
+@defaults keywordRule
+ @catchAllKeyword defaultTuple
+constantAny
+ @columns any*
+ @catchAllKeyword constantAny
+constantDefinition
+ @columns any*
+ @catchAllKeyword constantAny
+@constants keywordRule
+ @catchAllKeyword constantDefinition
 @keywords ntKeywordRule
+@ohayoTileScript monadicKeywordRule
+ @description todo: remove
+@ohayoTileCssScript monadicKeywordRule
+ @description todo: remove
+@ohayoSvg monadicKeywordRule
+ @description todo: remove
+@ohayoTileSize keywordRule
+ @columns int int
+ @description todo: remove
+@ohayoTileClass keywordRule
+ @columns any filepath
+ @description todo: remove
 error
  @parseClass ErrorNode
 keywordDefinition

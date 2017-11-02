@@ -24,9 +24,9 @@ class TreeProgram extends AnyProgram {
     }
   }
 
-  compile() {
+  compile(targetExtension) {
     return this.getChildren()
-      .map(child => child.compile())
+      .map(child => child.compile(targetExtension))
       .join("\n")
   }
 

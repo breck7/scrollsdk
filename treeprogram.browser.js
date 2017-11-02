@@ -5,6 +5,38 @@ class AbstractNode {
   }
 }
 
+const TreeColumnTypes = `any
+ isValid .?
+something
+ isValid .
+url
+ isValid .?
+type
+ isValid ^(any|url|something|int|boolean|number)$
+int
+ isValid ^\-?[0-9]+$
+reduction
+ isValid ^(count|sum|average|min|max|median)$
+boolean
+ isValid ^(false|true)$
+number
+ isValid ^\-?[0-9]*\.?[0-9]*$
+prob
+ description Number between 0 and 1
+ isValid ^\-?[0-9]*\.?[0-9]*$
+alphanumeric
+ isValid ^[a-zA-Z0-9]+$
+comparison
+ isValid ^(\<|\>|==)$
+filepath
+ isValid ^[a-zA-Z0-9\.\_\/\-]+$
+identifier
+ isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
+alpha
+ isValid ^[a-zA-Z]+$`
+
+window.TreeColumnTypes = TreeColumnTypes
+
 
 
 class ImmutableNode extends AbstractNode {
@@ -436,6 +468,7 @@ class ImmutableNode extends AbstractNode {
     const name = key ? this.findBeam(key) : this.getWord(1)
     if (!name) return []
     const parentNode = this.getParent().getNode(name)
+    if (!parentNode) throw new Error(`"${this.getLine()} tried to extend "${name}" but "${name}" not found.`)
     const graph = parentNode._getGraph(key)
     graph.push(parentNode)
     return graph
@@ -1347,7 +1380,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "8.6.0"
+    return "9.0.0"
   }
 
   static getPathWithoutFileName(path) {
@@ -1365,38 +1398,6 @@ class TreeNode extends ImmutableNode {
 }
 
 window.TreeNode = TreeNode
-
-const TreeSlotTypes = `any
- isValid .?
-something
- isValid .
-url
- isValid .?
-type
- isValid ^(any|url|something|int|boolean|number)$
-int
- isValid ^\-?[0-9]+$
-reduction
- isValid ^(count|sum|average|min|max|median)$
-boolean
- isValid ^(false|true)$
-number
- isValid ^\-?[0-9]*\.?[0-9]*$
-prob
- description Number between 0 and 1
- isValid ^\-?[0-9]*\.?[0-9]*$
-alphanumeric
- isValid ^[a-zA-Z0-9]+$
-comparison
- isValid ^(\<|\>|==)$
-filepath
- isValid ^[a-zA-Z0-9\.\_\/\-]+$
-identifier
- isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
-alpha
- isValid ^[a-zA-Z]+$`
-
-window.TreeSlotTypes = TreeSlotTypes
 
 
 
@@ -1430,33 +1431,33 @@ class TreeCell {
     const word = this._word
     if (word === undefined && this.isOptional()) return ""
     if (word === undefined)
-      return `Unfilled "${type}" slot in "${fullLine}" at line ${line} slot ${index}. definition: ${this._node
+      return `Unfilled "${type}" column in "${fullLine}" at line ${line} column ${index}. definition: ${this._node
         .getDefinition()
         .toString()}`
-    if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} slot ${index}`
+    if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} column ${index}`
 
-    const wordTypeClass = TreeCell._getTreeSlotTypes()[type]
+    const wordTypeClass = TreeCell._getTreeColumnTypes()[type]
     if (!wordTypeClass)
-      return `Grammar definition error: No slot type "${type}" found in "${fullLine}" on line ${line}.`
+      return `Grammar definition error: No column type "${type}" found in "${fullLine}" on line ${line}.`
 
     const isValid = wordTypeClass.isValid(this._word)
     return isValid
       ? ""
-      : `Invalid word in "${fullLine}" at line ${line} slot ${index}. "${word}" does not fit in "${type}" slot.`
+      : `Invalid word in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
   }
 
-  static _getTreeSlotTypes() {
+  static _getTreeColumnTypes() {
     this._initCache()
-    return TreeCell._cache_treeSlotTypes
+    return TreeCell._cache_treeColumnTypes
   }
 
   static _initCache() {
-    if (TreeCell._cache_treeSlotTypes) return
+    if (TreeCell._cache_treeColumnTypes) return
 
-    const program = new TreeNode(TreeSlotTypes)
-    TreeCell._cache_treeSlotTypes = {}
+    const program = new TreeNode(TreeColumnTypes)
+    TreeCell._cache_treeColumnTypes = {}
     program.getChildren().forEach(child => {
-      TreeCell._cache_treeSlotTypes[child.getLine()] = {
+      TreeCell._cache_treeColumnTypes[child.getLine()] = {
         isValid: str => str.match(new RegExp(child.findBeam("isValid")))
       }
     })
@@ -1489,22 +1490,24 @@ GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
 
-// executing
-GrammarConstants.parseClass = "@parseClass"
+// virtual machines instantiating and executing
+GrammarConstants.parseClass = "@parseClass" // todo: make a map to support different cc and vms
+// @machines js
 
 // compiling
-GrammarConstants.compiled = "@compiled"
-GrammarConstants.compiledIndentCharacter = "@compiledIndentCharacter"
-GrammarConstants.listDelimiter = "@listDelimiter"
-GrammarConstants.openChildren = "@openChildren"
-GrammarConstants.closeChildren = "@closeChildren"
-GrammarConstants.targetExtension = "@targetExtension"
+GrammarConstants.compilerKeyword = "@compiler"
+GrammarConstants.compiler = {}
+GrammarConstants.compiler.sub = "@sub" // replacement instructions
+GrammarConstants.compiler.indentCharacter = "@indentCharacter"
+GrammarConstants.compiler.listDelimiter = "@listDelimiter"
+GrammarConstants.compiler.openChildren = "@openChildren"
+GrammarConstants.compiler.closeChildren = "@closeChildren"
 
 // developing
 GrammarConstants.description = "@description"
 GrammarConstants.frequency = "@frequency"
 
-// ohayo ui
+// ohayo ui. todo: remove all.
 GrammarConstants.ohayoSvg = "@ohayoSvg"
 GrammarConstants.ohayoTileSize = "@ohayoTileSize"
 GrammarConstants.ohayoTileClass = "@ohayoTileClass"
@@ -1528,6 +1531,10 @@ class DynamicNode extends TreeNode {
       .getDefinitionByKeywordPath(this.getKeywordPath())
   }
 
+  getCompilerNode(targetLanguage) {
+    return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
+  }
+
   _getParameterMap() {
     const cells = this.getTreeCellArray()
     const parameterMap = {}
@@ -1539,23 +1546,23 @@ class DynamicNode extends TreeNode {
     return parameterMap
   }
 
-  getCompiledIndentation() {
-    const definition = this.getDefinition()
-    const compiledIndentCharacter = definition.findBeam(GrammarConstants.compiledIndentCharacter)
+  getCompiledIndentation(targetLanguage) {
+    const compiler = this.getCompilerNode(targetLanguage)
+    const indentCharacter = compiler.getIndentCharacter()
     const indent = this.getIndentation()
-    return compiledIndentCharacter !== undefined ? compiledIndentCharacter.repeat(indent.length) : indent
+    return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
 
-  getCompiledLine() {
-    const definition = this.getDefinition()
-    const listDelimiter = definition.findBeam(GrammarConstants.listDelimiter)
+  getCompiledLine(targetLanguage) {
+    const compiler = this.getCompilerNode(targetLanguage)
+    const listDelimiter = compiler.getListDelimiter()
     const parameterMap = this._getParameterMap()
-    const jsStr = definition.findBeam(GrammarConstants.compiled)
-    return jsStr ? DynamicNode._formatStr(jsStr, listDelimiter, parameterMap) : this.getLine()
+    const str = compiler.getTransformation()
+    return str ? DynamicNode._formatStr(str, listDelimiter, parameterMap) : this.getLine()
   }
 
-  compile() {
-    return this.getCompiledIndentation() + this.getCompiledLine()
+  compile(targetLanguage) {
+    return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage)
   }
 
   getErrors() {
@@ -1616,7 +1623,7 @@ class TreeErrorNode extends DynamicNode {
   }
 
   getErrors() {
-    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
+    return [`Unknown keyword "${this.getKeyword()}" in "${this.getParent().getKeyword()}" at line ${this.getPoint().y}`]
   }
 }
 
@@ -1633,16 +1640,16 @@ class TreeNonTerminalNode extends DynamicNode {
     return this.getDefinition().getRunTimeCatchAllNodeClass()
   }
 
-  compile() {
-    const definition = this.getDefinition()
-    const openChildrenString = definition.getOpenChildrenString()
-    const closeChildrenString = definition.getCloseChildrenString()
+  compile(targetExtension) {
+    const compiler = this.getCompilerNode(targetExtension)
+    const openChildrenString = compiler.getOpenChildrenString()
+    const closeChildrenString = compiler.getCloseChildrenString()
 
-    const compiledLine = this.getCompiledLine()
-    const indent = this.getCompiledIndentation()
+    const compiledLine = this.getCompiledLine(targetExtension)
+    const indent = this.getCompiledIndentation(targetExtension)
 
     const compiledChildren = this.getChildren()
-      .map(child => child.compile())
+      .map(child => child.compile(targetExtension))
       .join("\n")
 
     return `${indent}${compiledLine}${openChildrenString}
@@ -1662,9 +1669,74 @@ window.TreeTerminalNode = TreeTerminalNode
 
 
 
+
+class GrammarCompilerNode extends TreeNode {
+  getKeywordMap() {
+    const types = [
+      GrammarConstants.compiler.sub,
+      GrammarConstants.compiler.indentCharacter,
+      GrammarConstants.compiler.listDelimiter,
+      GrammarConstants.compiler.openChildren,
+      GrammarConstants.compiler.closeChildren
+    ]
+    const map = {}
+    types.forEach(type => {
+      map[type] = TreeNode
+    })
+    return map
+  }
+
+  getTargetExtension() {
+    return this.getWord(1)
+  }
+
+  getListDelimiter() {
+    return this.findBeam(GrammarConstants.compiler.listDelimiter)
+  }
+
+  getTransformation() {
+    return this.findBeam(GrammarConstants.compiler.sub)
+  }
+
+  getIndentCharacter() {
+    return this.findBeam(GrammarConstants.compiler.indentCharacter)
+  }
+
+  getOpenChildrenString() {
+    return this.findBeam(GrammarConstants.compiler.openChildren) || ""
+  }
+
+  getCloseChildrenString() {
+    return this.findBeam(GrammarConstants.compiler.closeChildren) || ""
+  }
+}
+
+window.GrammarCompilerNode = GrammarCompilerNode
+
+
+
+
+
 class AbstractGrammarDefinitionNode extends TreeNode {
   getProgram() {
     return this.getParent()
+  }
+
+  getDefinitionCompilerNode(targetLanguage, node) {
+    const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage)
+    if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)
+    return compilerNode
+  }
+
+  _getCompilerNodes() {
+    return this.getChildrenByNodeType(GrammarCompilerNode) || []
+  }
+
+  // todo: remove?
+  // for now by convention first compiler is "target extension"
+  getTargetExtension() {
+    const firstNode = this._getCompilerNodes()[0]
+    return firstNode ? firstNode.getTargetExtension() : ""
   }
 
   getRunTimeKeywordMap() {
@@ -1840,22 +1912,17 @@ window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
 
 
 
+
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
     const types = [
       GrammarConstants.frequency,
-      GrammarConstants.openChildren,
-      GrammarConstants.closeChildren,
       GrammarConstants.keywords,
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.parseClass,
       GrammarConstants.catchAllKeyword,
       GrammarConstants.defaults,
-      GrammarConstants.compiled,
-      GrammarConstants.targetExtension,
-      GrammarConstants.compiledIndentCharacter,
-      GrammarConstants.listDelimiter,
       GrammarConstants.ohayoSvg,
       GrammarConstants.ohayoTileSize,
       GrammarConstants.ohayoTileClass,
@@ -1867,7 +1934,12 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       map[type] = TreeNode
     })
     map[GrammarConstants.constants] = GrammarConstantsNode
+    map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
     return map
+  }
+
+  getCatchAllNodeClass(line) {
+    return GrammarDefinitionErrorNode
   }
 
   _getRunTimeCatchAllKeyword() {
@@ -1904,10 +1976,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   _getDefinitionCache() {
     return this.getParent()._getDefinitionCache()
-  }
-
-  getCatchAllNodeClass(line) {
-    return GrammarDefinitionErrorNode
   }
 
   isNonTerminal() {
@@ -1948,14 +2016,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   getDoc() {
     return this.getKeyword()
-  }
-
-  getOpenChildrenString() {
-    return this.findBeam(GrammarConstants.openChildren) || ""
-  }
-
-  getCloseChildrenString() {
-    return this.findBeam(GrammarConstants.closeChildren) || ""
   }
 
   _getDefaultsNode() {
@@ -2059,11 +2119,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   _getGrammarRootNode() {
     return this.nodeAt(0) // todo: fragile?
-  }
-
-  // todo: remove?
-  getTargetExtension() {
-    return this._getGrammarRootNode().findBeam(GrammarConstants.targetExtension)
   }
 
   getExtensionName() {
@@ -2194,9 +2249,9 @@ class TreeProgram extends AnyProgram {
     }
   }
 
-  compile() {
+  compile(targetExtension) {
     return this.getChildren()
-      .map(child => child.compile())
+      .map(child => child.compile(targetExtension))
       .join("\n")
   }
 

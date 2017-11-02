@@ -5,17 +5,18 @@
   require ./GrammarProgram.js
   %%|
    testlang
-    @targetExtension stressed
+    @compiler txt
     @keywords
-     stressNode
-   stressNode
-   block stressNode
+     baseNode
+   baseNode
+   block baseNode
     @keywords
-     stressNode
+     baseNode
    to block
     @columns word
-    @compiled to {word}
-    @closeChildren end
+    @compiler txt
+     @sub to {word}
+     @closeChildren end
  getRunTimeKeywordNames
   =# 3
  getDefinitionByName to
@@ -25,7 +26,7 @@
  getTopNodeTypes
   =# 3
  getTargetExtension
-  == stressed
+  == txt
  getExtensionName
   == testlang
  getDocs

@@ -3,6 +3,7 @@ const TreeNode = require("../TreeNode.js")
 const GrammarConstants = require("./GrammarConstants.js")
 const GrammarDefinitionErrorNode = require("./GrammarDefinitionErrorNode.js")
 const GrammarConstantsNode = require("./GrammarConstantsNode.js")
+const GrammarCompilerNode = require("./GrammarCompilerNode.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 
 const TreeNonTerminalNode = require("../TreeNonTerminalNode.js")
@@ -13,18 +14,12 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
     const types = [
       GrammarConstants.frequency,
-      GrammarConstants.openChildren,
-      GrammarConstants.closeChildren,
       GrammarConstants.keywords,
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.parseClass,
       GrammarConstants.catchAllKeyword,
       GrammarConstants.defaults,
-      GrammarConstants.compiled,
-      GrammarConstants.targetExtension,
-      GrammarConstants.compiledIndentCharacter,
-      GrammarConstants.listDelimiter,
       GrammarConstants.ohayoSvg,
       GrammarConstants.ohayoTileSize,
       GrammarConstants.ohayoTileClass,
@@ -36,7 +31,12 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       map[type] = TreeNode
     })
     map[GrammarConstants.constants] = GrammarConstantsNode
+    map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
     return map
+  }
+
+  getCatchAllNodeClass(line) {
+    return GrammarDefinitionErrorNode
   }
 
   _getRunTimeCatchAllKeyword() {
@@ -73,10 +73,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   _getDefinitionCache() {
     return this.getParent()._getDefinitionCache()
-  }
-
-  getCatchAllNodeClass(line) {
-    return GrammarDefinitionErrorNode
   }
 
   isNonTerminal() {
@@ -117,14 +113,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   getDoc() {
     return this.getKeyword()
-  }
-
-  getOpenChildrenString() {
-    return this.findBeam(GrammarConstants.openChildren) || ""
-  }
-
-  getCloseChildrenString() {
-    return this.findBeam(GrammarConstants.closeChildren) || ""
   }
 
   _getDefaultsNode() {

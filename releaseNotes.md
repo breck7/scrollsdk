@@ -1,3 +1,12 @@
+9.0.0 / 2017-11-02
+==================
+- New: support for multiple compile targets
+- New: CLI history command can show all history
+- New: CLI check command now alternately accepts a language extension to check a collection
+- Breaking: @targetExtension => @compiler, @compiled => @sub, @compiledIndentCharacter => @indentCharacter
+- Breaking: @sub, @indentCharacter, @listDelimiter, @openChildren, @closeChildren moved under @compiler
+- Infra: renamed slot types to columnTypes and better error messaging for when graph expansion fails
+
 8.6.0 / 2017-10-30
 ==================
 - Breaking: renamed @parameters to @columns in Grammar Tree Language

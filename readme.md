@@ -36,7 +36,7 @@ Development Status
 
 If you look at releaseNotes.md, you'll see Tree Program is undergoing rapid iteration and breaking changes are frequent.
 
-By Version 10, things should settle down.
+By Version 15, things should settle down.
 
 If you want to be an early adopter, it's not too bad. The library is relatively small, simple and stable, has decent code coverage(Istanbul numbers as of 6/15/2017: 94.86% Statements 1533/1616 76.57% Branches 268/350 93.25% Functions 152/163 96.32% Lines 1439/1494), and I do mention all breaking changes in releaseNotes.md and follow Semantic Versioning.
 

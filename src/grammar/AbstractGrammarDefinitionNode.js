@@ -1,9 +1,27 @@
 const TreeNode = require("../TreeNode.js")
 const GrammarConstants = require("./GrammarConstants.js")
+const GrammarCompilerNode = require("./GrammarCompilerNode.js")
 
 class AbstractGrammarDefinitionNode extends TreeNode {
   getProgram() {
     return this.getParent()
+  }
+
+  getDefinitionCompilerNode(targetLanguage, node) {
+    const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage)
+    if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)
+    return compilerNode
+  }
+
+  _getCompilerNodes() {
+    return this.getChildrenByNodeType(GrammarCompilerNode) || []
+  }
+
+  // todo: remove?
+  // for now by convention first compiler is "target extension"
+  getTargetExtension() {
+    const firstNode = this._getCompilerNodes()[0]
+    return firstNode ? firstNode.getTargetExtension() : ""
   }
 
   getRunTimeKeywordMap() {

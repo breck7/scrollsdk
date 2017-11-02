@@ -112,7 +112,8 @@ version  List installed Tree Notation version`
       .filter(node => {
         const command = node.findBeam("command")
         const filepath = node.findBeam("param")
-        if (!filepath) return false
+        // make sure theres a filder and it has an extension.
+        if (!filepath || !filepath.includes(".")) return false
         if (["check", "run", "", "compile"].includes(command)) return true
       })
       .map(node => node.findBeam("param"))

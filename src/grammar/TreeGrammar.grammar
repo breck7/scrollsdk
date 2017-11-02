@@ -12,7 +12,6 @@ variadicKeywordRule keywordRule
 compilerRule
  @columns any*
 @compiler monadicKeywordRule
- @parseClass ./GrammarCompilerNode.js
  @keywords
   @sub
   @listDelimiter

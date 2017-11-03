@@ -24,10 +24,15 @@ class TreeProgram extends AnyProgram {
     }
   }
 
+  // todo: implement
+  _getNodeJoinCharacter() {
+    return "\n"
+  }
+
   compile(targetExtension) {
     return this.getChildren()
       .map(child => child.compile(targetExtension))
-      .join("\n")
+      .join(this._getNodeJoinCharacter())
   }
 
   async run() {}

@@ -9,6 +9,11 @@ class TreeNonTerminalNode extends DynamicNode {
     return this.getDefinition().getRunTimeCatchAllNodeClass()
   }
 
+  // todo: implement
+  _getNodeJoinCharacter() {
+    return "\n"
+  }
+
   compile(targetExtension) {
     const compiler = this.getCompilerNode(targetExtension)
     const openChildrenString = compiler.getOpenChildrenString()
@@ -19,7 +24,7 @@ class TreeNonTerminalNode extends DynamicNode {
 
     const compiledChildren = this.getChildren()
       .map(child => child.compile(targetExtension))
-      .join("\n")
+      .join(this._getNodeJoinCharacter())
 
     return `${indent}${compiledLine}${openChildrenString}
 ${compiledChildren}

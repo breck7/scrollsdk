@@ -55,7 +55,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const matching = Object.keys(allDefs).filter(key => allDefs[key].isAKeyword(acceptableKeywords))
 
     matching.forEach(key => {
-      keywordMap[key] = allDefs[key].getJavascriptClassForNode()
+      keywordMap[key] = allDefs[key].getParserClass()
     })
   }
 
@@ -89,7 +89,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   _initCatchCallNodeCache() {
     if (this._cache_catchAll) return undefined
 
-    this._cache_catchAll = this._getCatchAllDefinition().getJavascriptClassForNode()
+    this._cache_catchAll = this._getCatchAllDefinition().getParserClass()
   }
 
   getAutocompleteWords(inputStr, additionalWords = []) {

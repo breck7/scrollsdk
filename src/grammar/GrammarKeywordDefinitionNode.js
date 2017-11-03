@@ -4,6 +4,7 @@ const GrammarConstants = require("./GrammarConstants.js")
 const GrammarDefinitionErrorNode = require("./GrammarDefinitionErrorNode.js")
 const GrammarConstantsNode = require("./GrammarConstantsNode.js")
 const GrammarCompilerNode = require("./GrammarCompilerNode.js")
+const GrammarParserClassNode = require("./GrammarParserClassNode.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 
 const TreeNonTerminalNode = require("../TreeNonTerminalNode.js")
@@ -17,7 +18,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       GrammarConstants.keywords,
       GrammarConstants.columns,
       GrammarConstants.description,
-      GrammarConstants.parseClass,
       GrammarConstants.catchAllKeyword,
       GrammarConstants.defaults,
       GrammarConstants.ohayoSvg,
@@ -32,6 +32,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     })
     map[GrammarConstants.constants] = GrammarConstantsNode
     map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
+    map[GrammarConstants.parser] = GrammarParserClassNode
     return map
   }
 
@@ -79,11 +80,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.has(GrammarConstants.keywords)
   }
 
-  getJavascriptClassForNode() {
-    this._initClassCache()
-    return this._cache_class
-  }
-
   _getNodeClasses() {
     const builtIns = {
       ErrorNode: TreeErrorNode,
@@ -95,19 +91,29 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return builtIns
   }
 
-  _initClassCache() {
-    if (this._cache_class) return undefined
-    const filepath = this.findBeam(GrammarConstants.parseClass)
+  getParserClass() {
+    this._initParserClassCache()
+    return this._cache_parserClass
+  }
+
+  // todo: cleanup
+  _initParserClassCache() {
+    if (this._cache_parserClass) return undefined
+    // todo: refactor to better way to get js one
+    const parserNode = this.findNodes(GrammarConstants.parser).find(node => node.getWord(1) === "js")
+    const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
 
     const builtIns = this._getNodeClasses()
 
-    if (builtIns[filepath]) this._cache_class = builtIns[filepath]
-    else if (!filepath) this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
+    if (builtIns[filepath]) this._cache_parserClass = builtIns[filepath]
+    else if (!filepath) this._cache_parserClass = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
     else {
       // todo: remove "window" below?
       const basePath = TreeNode.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
       const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
-      this._cache_class = this.isNodeJs() ? require(fullPath) : window[TreeNode.getClassNameFromFilePath(filepath)]
+      this._cache_parserClass = this.isNodeJs()
+        ? require(fullPath)
+        : window[TreeNode.getClassNameFromFilePath(filepath)]
     }
   }
 

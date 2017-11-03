@@ -22,7 +22,7 @@ alphanumeric
 comparison
  isValid ^(\<|\>|==)$
 filepath
- isValid ^[a-zA-Z0-9\.\_\/\-]+$
+ isValid ^[a-zA-Z0-9\.\_\/\-\@]+$
 identifier
  isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
 alpha

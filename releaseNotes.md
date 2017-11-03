@@ -1,3 +1,9 @@
+9.1.0 / 2017-11-02
+==================
+- New: refactored Tree Grammar to support compiler-compilers and vms in languages other than ES6
+- Breaking: "@parseClass" => "@parser js"
+- Fix: @ char is now acceptable in filepaths
+
 9.0.0 / 2017-11-02
 ==================
 - New: support for multiple compile targets

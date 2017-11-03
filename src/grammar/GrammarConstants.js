@@ -7,9 +7,8 @@ GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
 
-// virtual machines instantiating and executing
-GrammarConstants.parseClass = "@parseClass" // todo: make a map to support different cc and vms
-// @machines js
+// parser/vm instantiating and executing
+GrammarConstants.parser = "@parser"
 
 // compiling
 GrammarConstants.compilerKeyword = "@compiler"

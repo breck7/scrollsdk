@@ -1,5 +1,1 @@
-"use strict"
-
-const TreeProgram = require("./src/TreeProgram.js")
-
-module.exports = TreeProgram
+module.exports = require("./src/TreeProgram.js")

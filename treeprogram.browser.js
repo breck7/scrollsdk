@@ -29,7 +29,7 @@ alphanumeric
 comparison
  isValid ^(\<|\>|==)$
 filepath
- isValid ^[a-zA-Z0-9\.\_\/\-]+$
+ isValid ^[a-zA-Z0-9\.\_\/\-\@]+$
 identifier
  isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
 alpha
@@ -1380,7 +1380,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "9.0.0"
+    return "9.1.0"
   }
 
   static getPathWithoutFileName(path) {
@@ -1490,9 +1490,8 @@ GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
 
-// virtual machines instantiating and executing
-GrammarConstants.parseClass = "@parseClass" // todo: make a map to support different cc and vms
-// @machines js
+// parser/vm instantiating and executing
+GrammarConstants.parser = "@parser"
 
 // compiling
 GrammarConstants.compilerKeyword = "@compiler"
@@ -1770,7 +1769,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const matching = Object.keys(allDefs).filter(key => allDefs[key].isAKeyword(acceptableKeywords))
 
     matching.forEach(key => {
-      keywordMap[key] = allDefs[key].getJavascriptClassForNode()
+      keywordMap[key] = allDefs[key].getParserClass()
     })
   }
 
@@ -1804,7 +1803,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   _initCatchCallNodeCache() {
     if (this._cache_catchAll) return undefined
 
-    this._cache_catchAll = this._getCatchAllDefinition().getJavascriptClassForNode()
+    this._cache_catchAll = this._getCatchAllDefinition().getParserClass()
   }
 
   getAutocompleteWords(inputStr, additionalWords = []) {
@@ -1903,6 +1902,17 @@ window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
 
 
 
+class GrammarParserClassNode extends TreeNode {
+  getParserClassFilePath() {
+    return this.getWord(2)
+  }
+}
+
+window.GrammarParserClassNode = GrammarParserClassNode
+
+
+
+
 
 
 
@@ -1920,7 +1930,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       GrammarConstants.keywords,
       GrammarConstants.columns,
       GrammarConstants.description,
-      GrammarConstants.parseClass,
       GrammarConstants.catchAllKeyword,
       GrammarConstants.defaults,
       GrammarConstants.ohayoSvg,
@@ -1935,6 +1944,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     })
     map[GrammarConstants.constants] = GrammarConstantsNode
     map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
+    map[GrammarConstants.parser] = GrammarParserClassNode
     return map
   }
 
@@ -1982,11 +1992,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.has(GrammarConstants.keywords)
   }
 
-  getJavascriptClassForNode() {
-    this._initClassCache()
-    return this._cache_class
-  }
-
   _getNodeClasses() {
     const builtIns = {
       ErrorNode: TreeErrorNode,
@@ -1998,19 +2003,29 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return builtIns
   }
 
-  _initClassCache() {
-    if (this._cache_class) return undefined
-    const filepath = this.findBeam(GrammarConstants.parseClass)
+  getParserClass() {
+    this._initParserClassCache()
+    return this._cache_parserClass
+  }
+
+  // todo: cleanup
+  _initParserClassCache() {
+    if (this._cache_parserClass) return undefined
+    // todo: refactor to better way to get js one
+    const parserNode = this.findNodes(GrammarConstants.parser).find(node => node.getWord(1) === "js")
+    const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
 
     const builtIns = this._getNodeClasses()
 
-    if (builtIns[filepath]) this._cache_class = builtIns[filepath]
-    else if (!filepath) this._cache_class = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
+    if (builtIns[filepath]) this._cache_parserClass = builtIns[filepath]
+    else if (!filepath) this._cache_parserClass = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
     else {
       // todo: remove "window" below?
       const basePath = TreeNode.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
       const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
-      this._cache_class = this.isNodeJs() ? require(fullPath) : window[TreeNode.getClassNameFromFilePath(filepath)]
+      this._cache_parserClass = this.isNodeJs()
+        ? require(fullPath)
+        : window[TreeNode.getClassNameFromFilePath(filepath)]
     }
   }
 

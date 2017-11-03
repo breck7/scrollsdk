@@ -3,8 +3,10 @@ grammar
 keywordRule
 monadicKeywordRule keywordRule
  @columns any
+diadicKeywordRule keywordRule
+ @columns any any
 @catchAllKeyword monadicKeywordRule
-@parseClass monadicKeywordRule
+@parser diadicKeywordRule
 @frequency monadicKeywordRule
 variadicKeywordRule keywordRule
  @columns any*
@@ -51,10 +53,10 @@ constantDefinition
  @columns any filepath
  @description todo: remove
 error
- @parseClass ErrorNode
+ @parser js ErrorNode
 keywordDefinition
  @columns any*
  @catchAllKeyword error
- @parseClass NonTerminalNode
+ @parser js NonTerminalNode
  @keywords
   keywordRule

@@ -1,4 +1,5 @@
 const AbstractNode = require("./AbstractNodeJsNode.js")
+const TreeUtils = require("./TreeUtils.js")
 
 class ImmutableNode extends AbstractNode {
   constructor(children, line, parent) {
@@ -183,7 +184,7 @@ class ImmutableNode extends AbstractNode {
 
   _getLineHtml() {
     return this.getWords()
-      .map((word, index) => `<span class="word${index ? "" : " keyword"}">${ImmutableNode._stripHtml(word)}</span>`)
+      .map((word, index) => `<span class="word${index ? "" : " keyword"}">${TreeUtils.stripHtml(word)}</span>`)
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
@@ -803,10 +804,6 @@ class ImmutableNode extends AbstractNode {
     this._uniqueId++
     return this._uniqueId
   }
-
-  static _stripHtml(text) {
-    return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
-  }
 }
 
 class TreeNode extends ImmutableNode {
@@ -1300,18 +1297,6 @@ class TreeNode extends ImmutableNode {
     return result
   }
 
-  static executeFile(programPath, languagePath) {
-    const program = this.makeProgram(programPath, languagePath)
-    return program.execute(programPath)
-  }
-
-  static makeProgram(programPath, languagePath) {
-    const fs = require("fs")
-    const languageClass = require(languagePath)
-    const code = fs.readFileSync(programPath, "utf8")
-    return new languageClass(code)
-  }
-
   static _getHeader(rows, hasHeaders) {
     const numberOfColumns = rows[0].length
     const headerRow = hasHeaders ? rows[0] : []
@@ -1342,19 +1327,6 @@ class TreeNode extends ImmutableNode {
 
   static getVersion() {
     return "9.1.0"
-  }
-
-  static getPathWithoutFileName(path) {
-    const parts = path.split("/") // todo: change for windows?
-    parts.pop()
-    return parts.join("/")
-  }
-
-  static getClassNameFromFilePath(filename) {
-    return filename
-      .replace(/\.[^\.]+$/, "")
-      .split("/")
-      .pop()
   }
 }
 

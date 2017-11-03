@@ -1,4 +1,5 @@
 const TreeNode = require("../TreeNode.js")
+const TreeUtils = require("../TreeUtils.js")
 
 const GrammarConstants = require("./GrammarConstants.js")
 const GrammarDefinitionErrorNode = require("./GrammarDefinitionErrorNode.js")
@@ -109,11 +110,11 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     else if (!filepath) this._cache_parserClass = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
     else {
       // todo: remove "window" below?
-      const basePath = TreeNode.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
+      const basePath = TreeUtils.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
       const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
       this._cache_parserClass = this.isNodeJs()
         ? require(fullPath)
-        : window[TreeNode.getClassNameFromFilePath(filepath)]
+        : window[TreeUtils.getClassNameFromFilePath(filepath)]
     }
   }
 

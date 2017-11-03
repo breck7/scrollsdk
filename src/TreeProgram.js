@@ -1,5 +1,6 @@
 const AnyProgram = require("./AnyProgram.js")
 const TreeNode = require("./TreeNode.js")
+const TreeUtils = require("./TreeUtils.js")
 const TreeNonTerminalNode = require("./TreeNonTerminalNode.js")
 const TreeTerminalNode = require("./TreeTerminalNode.js")
 
@@ -58,10 +59,6 @@ class TreeProgram extends AnyProgram {
     return usage
   }
 
-  getGrammarProgram() {
-    return TreeProgram._getCachedGrammarProgram(this)
-  }
-
   getProgramWordTypeString() {
     return this.getTopDownArray()
       .map(child => child.getIndentation() + child.getWordTypeLine())
@@ -95,7 +92,11 @@ class TreeProgram extends AnyProgram {
     return {}
   }
 
-  static compileCompiler(program) {
+  getGrammarProgram() {
+    return TreeProgram.getCachedGrammarProgram(this)
+  }
+
+  static _compileCompiler(program) {
     const grammarString = program.getGrammarString()
     const filepath = program.getGrammarFilePath()
     // todo: remove non-raii methods
@@ -104,26 +105,15 @@ class TreeProgram extends AnyProgram {
       .setNodeClasses(program.getNodeClasses())
   }
 
-  static _getCachedGrammarProgram(program) {
+  static getCachedGrammarProgram(program) {
     const key = program.getGrammarString()
     if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(program)
+    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this._compileCompiler(program)
     return this._cache_grammarPrograms[key]
-  }
-
-  static getGrammarErrors(programPath, grammarFilePath) {
-    const fs = require("fs")
-    class TemporaryLanguageFromGrammarFileProgram extends TreeProgram {
-      getGrammarString() {
-        return removeFirstLine(fs.readFileSync(grammarFilePath, "utf8"))
-      }
-    }
-    let source = fs.readFileSync(programPath, "utf8")
-    const program = new TemporaryLanguageFromGrammarFileProgram(source)
-    return program.getProgramErrors()
   }
 }
 
+TreeProgram.Utils = TreeUtils
 TreeProgram.TreeNode = TreeNode
 TreeProgram.NonTerminalNode = TreeNonTerminalNode
 TreeProgram.TerminalNode = TreeTerminalNode

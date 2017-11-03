@@ -37,6 +37,78 @@ alpha
 
 window.TreeColumnTypes = TreeColumnTypes
 
+class TreeUtils {
+  static getPathWithoutFileName(path) {
+    const parts = path.split("/") // todo: change for windows?
+    parts.pop()
+    return parts.join("/")
+  }
+
+  static getClassNameFromFilePath(filename) {
+    return filename
+      .replace(/\.[^\.]+$/, "")
+      .split("/")
+      .pop()
+  }
+
+  static getFileExtension(url = "") {
+    url = url.match(/\.([^\.]+)$/)
+    return (url && url[1]) || ""
+  }
+
+  static formatStr(str, listDelimiter = " ", parameterMap) {
+    return str.replace(/{([^\}]+)}/g, (match, path) => {
+      const isList = path.endsWith("*")
+      const typePath = path.replace("*", "")
+      const arr = parameterMap[typePath]
+      if (!arr) return ""
+      const word = isList ? arr.join(listDelimiter) : arr.shift()
+      return word
+    })
+  }
+
+  static stripHtml(text) {
+    return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
+  }
+
+  static getUniqueWordsArray(allWords) {
+    const words = allWords.replace(/\n/g, " ").split(" ")
+    const index = {}
+    words.forEach(word => {
+      if (!index[word]) index[word] = 0
+      index[word]++
+    })
+    return Object.keys(index).map(key => {
+      return {
+        word: key,
+        count: index[key]
+      }
+    })
+  }
+
+  static mapValues(object, fn) {
+    const result = {}
+    Object.keys(object).forEach(key => {
+      result[key] = fn(key)
+    })
+    return result
+  }
+
+  static sortByAccessor(accessor) {
+    return (objectA, objectB) => {
+      const av = accessor(objectA)
+      const bv = accessor(objectB)
+      let result = av < bv ? -1 : av > bv ? 1 : 0
+      if (av === undefined && bv !== undefined) result = -1
+      else if (bv === undefined && av !== undefined) result = 1
+      return result
+    }
+  }
+}
+
+window.TreeUtils = TreeUtils
+
+
 
 
 class ImmutableNode extends AbstractNode {
@@ -222,7 +294,7 @@ class ImmutableNode extends AbstractNode {
 
   _getLineHtml() {
     return this.getWords()
-      .map((word, index) => `<span class="word${index ? "" : " keyword"}">${ImmutableNode._stripHtml(word)}</span>`)
+      .map((word, index) => `<span class="word${index ? "" : " keyword"}">${TreeUtils.stripHtml(word)}</span>`)
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
@@ -842,10 +914,6 @@ class ImmutableNode extends AbstractNode {
     this._uniqueId++
     return this._uniqueId
   }
-
-  static _stripHtml(text) {
-    return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
-  }
 }
 
 class TreeNode extends ImmutableNode {
@@ -1339,18 +1407,6 @@ class TreeNode extends ImmutableNode {
     return result
   }
 
-  static executeFile(programPath, languagePath) {
-    const program = this.makeProgram(programPath, languagePath)
-    return program.execute(programPath)
-  }
-
-  static makeProgram(programPath, languagePath) {
-    const fs = require("fs")
-    const languageClass = require(languagePath)
-    const code = fs.readFileSync(programPath, "utf8")
-    return new languageClass(code)
-  }
-
   static _getHeader(rows, hasHeaders) {
     const numberOfColumns = rows[0].length
     const headerRow = hasHeaders ? rows[0] : []
@@ -1381,19 +1437,6 @@ class TreeNode extends ImmutableNode {
 
   static getVersion() {
     return "9.1.0"
-  }
-
-  static getPathWithoutFileName(path) {
-    const parts = path.split("/") // todo: change for windows?
-    parts.pop()
-    return parts.join("/")
-  }
-
-  static getClassNameFromFilePath(filename) {
-    return filename
-      .replace(/\.[^\.]+$/, "")
-      .split("/")
-      .pop()
   }
 }
 
@@ -1519,6 +1562,7 @@ window.GrammarConstants = GrammarConstants
 
 
 
+
 class DynamicNode extends TreeNode {
   getProgram() {
     return this.getParent().getProgram()
@@ -1557,7 +1601,7 @@ class DynamicNode extends TreeNode {
     const listDelimiter = compiler.getListDelimiter()
     const parameterMap = this._getParameterMap()
     const str = compiler.getTransformation()
-    return str ? DynamicNode._formatStr(str, listDelimiter, parameterMap) : this.getLine()
+    return str ? TreeUtils.formatStr(str, listDelimiter, parameterMap) : this.getLine()
   }
 
   compile(targetLanguage) {
@@ -1599,17 +1643,6 @@ class DynamicNode extends TreeNode {
     const parameterWords = this.getTreeCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
   }
-
-  static _formatStr(str, listDelimiter = " ", parameterMap) {
-    return str.replace(/{([^\}]+)}/g, (match, path) => {
-      const isList = path.endsWith("*")
-      const typePath = path.replace("*", "")
-      const arr = parameterMap[typePath]
-      if (!arr) return ""
-      const word = isList ? arr.join(listDelimiter) : arr.shift()
-      return word
-    })
-  }
 }
 
 window.DynamicNode = DynamicNode
@@ -1639,6 +1672,11 @@ class TreeNonTerminalNode extends DynamicNode {
     return this.getDefinition().getRunTimeCatchAllNodeClass()
   }
 
+  // todo: implement
+  _getNodeJoinCharacter() {
+    return "\n"
+  }
+
   compile(targetExtension) {
     const compiler = this.getCompilerNode(targetExtension)
     const openChildrenString = compiler.getOpenChildrenString()
@@ -1649,7 +1687,7 @@ class TreeNonTerminalNode extends DynamicNode {
 
     const compiledChildren = this.getChildren()
       .map(child => child.compile(targetExtension))
-      .join("\n")
+      .join(this._getNodeJoinCharacter())
 
     return `${indent}${compiledLine}${openChildrenString}
 ${compiledChildren}
@@ -1716,6 +1754,7 @@ window.GrammarCompilerNode = GrammarCompilerNode
 
 
 
+
 class AbstractGrammarDefinitionNode extends TreeNode {
   getProgram() {
     return this.getParent()
@@ -1749,7 +1788,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
   getRunTimeKeywordMapWithDefinitions() {
     const defs = this._getDefinitionCache()
-    return AbstractGrammarDefinitionNode._mapValues(this.getRunTimeKeywordMap(), key => defs[key])
+    return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key])
   }
 
   getBeamParameters() {
@@ -1782,7 +1821,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const definitions = this._getDefinitionCache()
     const keywords = this.getRunTimeKeywordMap()
     const arr = Object.keys(keywords).map(keyword => definitions[keyword])
-    arr.sort(AbstractGrammarDefinitionNode._sortByAccessor(definition => definition.getFrequency()))
+    arr.sort(AbstractGrammarDefinitionNode.sortByAccessor(definition => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getKeyword())
   }
@@ -1813,7 +1852,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
       .join("\n")
 
     // default is to just autocomplete using all words in existing program.
-    return AbstractGrammarDefinitionNode._getUniqueWordsArray(str)
+    return TreeUtils.getUniqueWordsArray(str)
       .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
       .map(obj => obj.word)
   }
@@ -1825,40 +1864,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   getRunTimeCatchAllNodeClass() {
     this._initCatchCallNodeCache()
     return this._cache_catchAll
-  }
-
-  static _mapValues(object, fn) {
-    const result = {}
-    Object.keys(object).forEach(key => {
-      result[key] = fn(key)
-    })
-    return result
-  }
-
-  static _sortByAccessor(accessor) {
-    return (objectA, objectB) => {
-      const av = accessor(objectA)
-      const bv = accessor(objectB)
-      let result = av < bv ? -1 : av > bv ? 1 : 0
-      if (av === undefined && bv !== undefined) result = -1
-      else if (bv === undefined && av !== undefined) result = 1
-      return result
-    }
-  }
-
-  static _getUniqueWordsArray(allWords) {
-    const words = allWords.replace(/\n/g, " ").split(" ")
-    const index = {}
-    words.forEach(word => {
-      if (!index[word]) index[word] = 0
-      index[word]++
-    })
-    return Object.keys(index).map(key => {
-      return {
-        word: key,
-        count: index[key]
-      }
-    })
   }
 }
 
@@ -1909,6 +1914,7 @@ class GrammarParserClassNode extends TreeNode {
 }
 
 window.GrammarParserClassNode = GrammarParserClassNode
+
 
 
 
@@ -2021,11 +2027,11 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     else if (!filepath) this._cache_parserClass = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
     else {
       // todo: remove "window" below?
-      const basePath = TreeNode.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
+      const basePath = TreeUtils.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
       const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
       this._cache_parserClass = this.isNodeJs()
         ? require(fullPath)
-        : window[TreeNode.getClassNameFromFilePath(filepath)]
+        : window[TreeUtils.getClassNameFromFilePath(filepath)]
     }
   }
 
@@ -2245,6 +2251,7 @@ window.AnyProgram = AnyProgram
 
 
 
+
 class TreeProgram extends AnyProgram {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
@@ -2264,10 +2271,15 @@ class TreeProgram extends AnyProgram {
     }
   }
 
+  // todo: implement
+  _getNodeJoinCharacter() {
+    return "\n"
+  }
+
   compile(targetExtension) {
     return this.getChildren()
       .map(child => child.compile(targetExtension))
-      .join("\n")
+      .join(this._getNodeJoinCharacter())
   }
 
   async run() {}
@@ -2291,10 +2303,6 @@ class TreeProgram extends AnyProgram {
       stats.append([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
     })
     return usage
-  }
-
-  getGrammarProgram() {
-    return TreeProgram._getCachedGrammarProgram(this)
   }
 
   getProgramWordTypeString() {
@@ -2330,7 +2338,11 @@ class TreeProgram extends AnyProgram {
     return {}
   }
 
-  static compileCompiler(program) {
+  getGrammarProgram() {
+    return TreeProgram.getCachedGrammarProgram(this)
+  }
+
+  static _compileCompiler(program) {
     const grammarString = program.getGrammarString()
     const filepath = program.getGrammarFilePath()
     // todo: remove non-raii methods
@@ -2339,15 +2351,38 @@ class TreeProgram extends AnyProgram {
       .setNodeClasses(program.getNodeClasses())
   }
 
-  static _getCachedGrammarProgram(program) {
+  static getCachedGrammarProgram(program) {
     const key = program.getGrammarString()
     if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this.compileCompiler(program)
+    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this._compileCompiler(program)
     return this._cache_grammarPrograms[key]
+  }
+}
+
+TreeProgram.Utils = TreeUtils
+TreeProgram.TreeNode = TreeNode
+TreeProgram.NonTerminalNode = TreeNonTerminalNode
+TreeProgram.TerminalNode = TreeTerminalNode
+
+window.TreeProgram = TreeProgram
+
+
+
+
+
+class TreeMeta {
+  static executeFile(programPath, languagePath) {
+    const program = this.makeProgram(programPath, languagePath)
+    return program.execute(programPath)
+  }
+
+  static makeProgram(programPath, languagePath) {
+    const languageClass = require(languagePath)
+    const code = fs.readFileSync(programPath, "utf8")
+    return new languageClass(code)
   }
 
   static getGrammarErrors(programPath, grammarFilePath) {
-    const fs = require("fs")
     class TemporaryLanguageFromGrammarFileProgram extends TreeProgram {
       getGrammarString() {
         return removeFirstLine(fs.readFileSync(grammarFilePath, "utf8"))
@@ -2359,8 +2394,4 @@ class TreeProgram extends AnyProgram {
   }
 }
 
-TreeProgram.TreeNode = TreeNode
-TreeProgram.NonTerminalNode = TreeNonTerminalNode
-TreeProgram.TerminalNode = TreeTerminalNode
-
-window.TreeProgram = TreeProgram
+window.TreeMeta = TreeMeta

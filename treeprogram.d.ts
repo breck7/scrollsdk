@@ -122,5 +122,8 @@ interface StaticTreeProgram {
   fromSsv: (str: string, hasHeaders?: boolean) => TreeProgram
   fromTsv: (str: string, hasHeaders?: boolean) => TreeProgram
   fromXml: (str: string) => TreeProgram
+}
+
+interface TreeMeta {
   executeFile: (path: filepath) => Promise<any>
 }

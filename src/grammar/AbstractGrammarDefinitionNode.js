@@ -1,4 +1,5 @@
 const TreeNode = require("../TreeNode.js")
+const TreeUtils = require("../TreeUtils.js")
 const GrammarConstants = require("./GrammarConstants.js")
 const GrammarCompilerNode = require("./GrammarCompilerNode.js")
 
@@ -35,7 +36,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
   getRunTimeKeywordMapWithDefinitions() {
     const defs = this._getDefinitionCache()
-    return AbstractGrammarDefinitionNode._mapValues(this.getRunTimeKeywordMap(), key => defs[key])
+    return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key])
   }
 
   getBeamParameters() {
@@ -68,7 +69,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const definitions = this._getDefinitionCache()
     const keywords = this.getRunTimeKeywordMap()
     const arr = Object.keys(keywords).map(keyword => definitions[keyword])
-    arr.sort(AbstractGrammarDefinitionNode._sortByAccessor(definition => definition.getFrequency()))
+    arr.sort(AbstractGrammarDefinitionNode.sortByAccessor(definition => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getKeyword())
   }
@@ -99,7 +100,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
       .join("\n")
 
     // default is to just autocomplete using all words in existing program.
-    return AbstractGrammarDefinitionNode._getUniqueWordsArray(str)
+    return TreeUtils.getUniqueWordsArray(str)
       .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
       .map(obj => obj.word)
   }
@@ -111,40 +112,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   getRunTimeCatchAllNodeClass() {
     this._initCatchCallNodeCache()
     return this._cache_catchAll
-  }
-
-  static _mapValues(object, fn) {
-    const result = {}
-    Object.keys(object).forEach(key => {
-      result[key] = fn(key)
-    })
-    return result
-  }
-
-  static _sortByAccessor(accessor) {
-    return (objectA, objectB) => {
-      const av = accessor(objectA)
-      const bv = accessor(objectB)
-      let result = av < bv ? -1 : av > bv ? 1 : 0
-      if (av === undefined && bv !== undefined) result = -1
-      else if (bv === undefined && av !== undefined) result = 1
-      return result
-    }
-  }
-
-  static _getUniqueWordsArray(allWords) {
-    const words = allWords.replace(/\n/g, " ").split(" ")
-    const index = {}
-    words.forEach(word => {
-      if (!index[word]) index[word] = 0
-      index[word]++
-    })
-    return Object.keys(index).map(key => {
-      return {
-        word: key,
-        count: index[key]
-      }
-    })
   }
 }
 

@@ -1,6 +1,7 @@
 const TreeNode = require("./TreeNode.js")
 const GrammarConstants = require("./grammar/GrammarConstants.js")
 const TreeCell = require("./TreeCell.js")
+const TreeUtils = require("./TreeUtils.js")
 
 class DynamicNode extends TreeNode {
   getProgram() {
@@ -40,7 +41,7 @@ class DynamicNode extends TreeNode {
     const listDelimiter = compiler.getListDelimiter()
     const parameterMap = this._getParameterMap()
     const str = compiler.getTransformation()
-    return str ? DynamicNode._formatStr(str, listDelimiter, parameterMap) : this.getLine()
+    return str ? TreeUtils.formatStr(str, listDelimiter, parameterMap) : this.getLine()
   }
 
   compile(targetLanguage) {
@@ -81,17 +82,6 @@ class DynamicNode extends TreeNode {
   getWordTypeLine() {
     const parameterWords = this.getTreeCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
-  }
-
-  static _formatStr(str, listDelimiter = " ", parameterMap) {
-    return str.replace(/{([^\}]+)}/g, (match, path) => {
-      const isList = path.endsWith("*")
-      const typePath = path.replace("*", "")
-      const arr = parameterMap[typePath]
-      if (!arr) return ""
-      const word = isList ? arr.join(listDelimiter) : arr.shift()
-      return word
-    })
   }
 }
 

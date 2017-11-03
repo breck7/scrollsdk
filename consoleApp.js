@@ -1,4 +1,6 @@
 const TreeProgram = require("./index.js")
+const TreeMeta = require("./src/TreeMeta.js")
+const TreeUtils = require("./src/TreeUtils.js")
 const fs = require("fs")
 const os = require("os")
 
@@ -49,7 +51,7 @@ version  List installed Tree Notation version`
     // fs.mkdirSync(languageName)
     // todo: create template
     const languagePath = this.getLanguages().toObject().stamp
-    TreeProgram.executeFile(__dirname + "/create.stamp", languagePath)
+    TreeMeta.executeFile(__dirname + "/create.stamp", languagePath)
   }
 
   check(programPathOrLanguage) {
@@ -66,12 +68,12 @@ version  List installed Tree Notation version`
 
   _check(programPath) {
     const languagePath = this._getLanguagePathOrThrow(programPath)
-    const program = TreeProgram.makeProgram(programPath, languagePath)
+    const program = TreeMeta.makeProgram(programPath, languagePath)
     return program.getProgramErrors()
   }
 
   _getLanguagePathOrThrow(programPath) {
-    const extension = ConsoleApp._getFileExtension(programPath)
+    const extension = TreeUtils.getFileExtension(programPath)
     const languagePath = this.getLanguages().toObject()[extension]
     if (!languagePath) throw new Error(`No installed language for '${extension}'`)
     return languagePath
@@ -80,7 +82,7 @@ version  List installed Tree Notation version`
   compile(programPath) {
     // todo: allow user to provide destination
     const languagePath = this._getLanguagePathOrThrow(programPath)
-    const program = TreeProgram.makeProgram(programPath, languagePath)
+    const program = TreeMeta.makeProgram(programPath, languagePath)
     const path = program.getCompiledProgramName(programPath)
     const compiledCode = program.compile()
     console.log(compiledCode) // they can pipe it to a file
@@ -143,7 +145,7 @@ version  List installed Tree Notation version`
 
   run(programPath) {
     const languagePath = this._getLanguagePathOrThrow(programPath)
-    return TreeProgram.executeFile(programPath, languagePath)
+    return TreeMeta.executeFile(programPath, languagePath)
   }
 
   usage(languageName) {
@@ -168,11 +170,6 @@ version  List installed Tree Notation version`
 
   version() {
     console.log(`TreeProgram version ${TreeProgram.getVersion()}`)
-  }
-
-  static _getFileExtension(url = "") {
-    url = url.match(/\.([^\.]+)$/)
-    return (url && url[1]) || ""
   }
 }
 

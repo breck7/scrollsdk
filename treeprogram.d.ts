@@ -14,6 +14,7 @@ declare type nodeIterator = (node: TreeProgram, index: int) => boolean
 declare type sortResultInt = int // -1 0 1
 declare type nodeMapFn = (node: TreeProgram) => string
 declare type replaceNodeFn = (str: string) => string
+declare type errorMessage = string
 declare type sortFn = (nodeA: TreeProgram, nodeB: TreeProgram) => sortResultInt
 declare type point = { x: int; y: int } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
@@ -124,6 +125,8 @@ interface StaticTreeProgram {
   fromXml: (str: string) => TreeProgram
 }
 
-interface TreeMeta {
+interface TreeTools {
   executeFile: (path: filepath) => Promise<any>
+  makeProgram: (programPath: filepath, languagePath: filepath) => TreeProgram
+  getGrammarErrors: (programPath: filepath, grammarFilePath: filepath) => errorMessage[]
 }

@@ -2370,7 +2370,7 @@ window.TreeProgram = TreeProgram
 
 
 
-class TreeMeta {
+class TreeTools {
   static executeFile(programPath, languagePath) {
     const program = this.makeProgram(programPath, languagePath)
     return program.execute(programPath)
@@ -2394,4 +2394,4 @@ class TreeMeta {
   }
 }
 
-window.TreeMeta = TreeMeta
+window.TreeTools = TreeTools

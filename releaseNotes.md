@@ -1,3 +1,9 @@
+9.2.0 / 2017-11-03
+==================
+- Breaking: TreeProgram.getGrammarErrors => TreeProgram.Tools.getGrammarErrors
+- Breaking: TreeProgram.executeFile => TreeProgram.Tools.executeFile
+- Infra: cleanup for making grammar files source of truth
+
 9.1.0 / 2017-11-02
 ==================
 - New: refactored Tree Grammar to support compiler-compilers and vms in languages other than ES6

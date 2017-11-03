@@ -2,7 +2,7 @@ const fs = require("fs")
 
 const TreeProgram = require("./TreeProgram.js")
 
-class TreeMeta {
+class TreeTools {
   static executeFile(programPath, languagePath) {
     const program = this.makeProgram(programPath, languagePath)
     return program.execute(programPath)
@@ -26,4 +26,4 @@ class TreeMeta {
   }
 }
 
-module.exports = TreeMeta
+module.exports = TreeTools

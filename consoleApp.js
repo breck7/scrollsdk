@@ -1,5 +1,5 @@
 const TreeProgram = require("./index.js")
-const TreeMeta = require("./src/TreeMeta.js")
+const TreeTools = require("./src/TreeTools.js")
 const TreeUtils = require("./src/TreeUtils.js")
 const fs = require("fs")
 const os = require("os")
@@ -51,7 +51,7 @@ version  List installed Tree Notation version`
     // fs.mkdirSync(languageName)
     // todo: create template
     const languagePath = this.getLanguages().toObject().stamp
-    TreeMeta.executeFile(__dirname + "/create.stamp", languagePath)
+    TreeTools.executeFile(__dirname + "/create.stamp", languagePath)
   }
 
   check(programPathOrLanguage) {
@@ -68,7 +68,7 @@ version  List installed Tree Notation version`
 
   _check(programPath) {
     const languagePath = this._getLanguagePathOrThrow(programPath)
-    const program = TreeMeta.makeProgram(programPath, languagePath)
+    const program = TreeTools.makeProgram(programPath, languagePath)
     return program.getProgramErrors()
   }
 
@@ -82,7 +82,7 @@ version  List installed Tree Notation version`
   compile(programPath) {
     // todo: allow user to provide destination
     const languagePath = this._getLanguagePathOrThrow(programPath)
-    const program = TreeMeta.makeProgram(programPath, languagePath)
+    const program = TreeTools.makeProgram(programPath, languagePath)
     const path = program.getCompiledProgramName(programPath)
     const compiledCode = program.compile()
     console.log(compiledCode) // they can pipe it to a file
@@ -145,7 +145,7 @@ version  List installed Tree Notation version`
 
   run(programPath) {
     const languagePath = this._getLanguagePathOrThrow(programPath)
-    return TreeMeta.executeFile(programPath, languagePath)
+    return TreeTools.executeFile(programPath, languagePath)
   }
 
   usage(languageName) {

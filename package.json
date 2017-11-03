@@ -1,7 +1,7 @@
 {
   "name": "treeprogram",
-  "version": "9.1.0",
-  "description": "Javascript Tree Notation implementation.",
+  "version": "9.2.0",
+  "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {
     "tree": "./cli.js"

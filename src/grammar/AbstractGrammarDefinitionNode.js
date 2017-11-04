@@ -51,11 +51,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return builtIns
   }
 
-  getParserClass() {
-    this._initParserClassCache()
-    return this._cache_parserClass
-  }
-
   _getDefaultParserClass() {
     return this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
   }
@@ -68,18 +63,23 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this.isNodeJs() ? require(fullPath) : window[TreeUtils.getClassNameFromFilePath(filepath)]
   }
 
-  // todo: cleanup
-  _initParserClassCache() {
-    if (this._cache_parserClass) return undefined
-    const parserNode = this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
+  _getParserNode() {
+    return this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
+  }
+
+  getParserClass() {
+    if (!this._cache_parserClass) this._cache_parserClass = this._getParserClass()
+    return this._cache_parserClass
+  }
+
+  _getParserClass() {
+    const parserNode = this._getParserNode()
     const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
 
     const builtIns = this._getNodeClasses()
     const builtIn = builtIns[filepath]
 
-    this._cache_parserClass = builtIn
-      ? builtIn
-      : filepath ? this._getParserClassFromFilePath(filepath) : this._getDefaultParserClass()
+    return builtIn ? builtIn : filepath ? this._getParserClassFromFilePath(filepath) : this._getDefaultParserClass()
   }
 
   getCatchAllNodeClass(line) {

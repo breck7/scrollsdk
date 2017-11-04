@@ -1,0 +1,16 @@
+jibberish
+ @description Test a root parser node
+ @parser js ./jibberishProgram.js
+ @compiler txt
+ @keywords
+  baseNode
+baseNode
+block baseNode
+ @keywords
+  baseNode
+foo baseNode
+to block
+ @columns word
+ @compiler txt
+  @sub to {word}
+  @closeChildren end

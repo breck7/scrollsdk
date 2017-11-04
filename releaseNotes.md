@@ -1,3 +1,9 @@
+10.1.0 / 2017-11-04
+===================
+- Fix: parsing top level program class fix
+- Fix: getNodeByColumns now works when search and target have different # of columns
+- Infra: started tests for console, static, and grammar classes
+
 10.0.1 / 2017-11-03
 ===================
 - Fix: static method path bug fixes

@@ -232,7 +232,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   _hasColumns(columns) {
-    return this.getWords().every((word, index) => word === columns[index])
+    const words = this.getWords()
+    return columns.every((searchTerm, index) => searchTerm === words[index])
   }
 
   getNodeByColumns(...columns) {
@@ -1339,7 +1340,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "10.0.1"
+    return "10.1.0"
   }
 }
 

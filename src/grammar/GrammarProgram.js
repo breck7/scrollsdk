@@ -4,7 +4,11 @@ const GrammarConstants = require("./GrammarConstants.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 const GrammarKeywordDefinitionNode = require("./GrammarKeywordDefinitionNode.js")
 
-class GrammarRootNode extends AbstractGrammarDefinitionNode {}
+class GrammarRootNode extends AbstractGrammarDefinitionNode {
+  _getDefaultParserClass() {
+    // todo: return TreeProgram? need to clean up a circular dep
+  }
+}
 
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   parseNodeType(line) {
@@ -17,12 +21,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().getTargetExtension()
   }
 
-  _getDefaultParserClass() {
-    // todo: return TreeProgram? need to clean up a circular dep
-  }
-
   getProgram() {
     return this
+  }
+
+  getRootParserClass() {
+    return this._getGrammarRootNode().getParserClass()
   }
 
   setNodeClasses(obj) {

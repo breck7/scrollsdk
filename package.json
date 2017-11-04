@@ -1,14 +1,14 @@
 {
   "name": "treeprogram",
-  "version": "10.0.1",
+  "version": "10.1.0",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {
     "tree": "./cli.js"
   },
   "scripts": {
-    "test": "tap ./test/basics.js",
-    "cover": "tap ./test/basics.js -- --cov --coverage-report=lcov",
+    "test": "./tasks/test.js",
+    "cover": "./tasks/cover.sh",
     "start": "./tasks/start.js"
   },
   "repository": {

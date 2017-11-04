@@ -1,7 +1,7 @@
 "use strict"
 
-const TreeProgram = require("./index.js")
-const TreeNode = require("./src/TreeNode.js")
+const TreeProgram = require("../index.js")
+const TreeNode = require("../src/TreeNode.js")
 
 const testStrings = {}
 
@@ -551,6 +551,20 @@ testTree.getNodeByColumns = equal => {
 
   // Assert
   equal(node.getParent().findBeam("key"), "b")
+
+  // Arrange
+  const jib = new TreeProgram(`jibberish
+ @description Test a root parser node
+ @parser js ./jibberishProgram.js
+ @compiler txt
+ @keywords
+  baseNode`)
+
+  // Act
+  const node2 = jib.getNodeByColumns("@parser", "js")
+
+  // Assert
+  equal(node2.getKeyword(), "@parser")
 }
 
 testTree.delete = equal => {

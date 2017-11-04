@@ -3,10 +3,11 @@ const fs = require("fs")
 const TreeProgram = require("./src/TreeProgram.js")
 const GrammarProgram = require("./src/grammar/GrammarProgram.js")
 
-TreeProgram.executeFile = (programPath, grammarPath) => this.makeProgram(programPath, grammarPath).execute(programPath)
+TreeProgram.executeFile = (programPath, grammarPath) =>
+  TreeProgram.makeProgram(programPath, grammarPath).execute(programPath)
 
 TreeProgram.makeProgram = (programPath, grammarPath) => {
-  const programClass = this.getProgramClassFromGrammarFile(grammarPath)
+  const programClass = TreeProgram.getProgramClassFromGrammarFile(grammarPath)
   const code = fs.readFileSync(programPath, "utf8")
   return new programClass(code)
 }

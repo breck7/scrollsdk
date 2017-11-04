@@ -1,3 +1,7 @@
+10.0.1 / 2017-11-03
+===================
+- Fix: static method path bug fixes
+
 10.0.0 / 2017-11-03
 ===================
 - New: getNodeByColumns method

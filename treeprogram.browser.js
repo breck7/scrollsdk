@@ -344,7 +344,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   _hasColumns(columns) {
-    return this.getWords().every((word, index) => word === columns[index])
+    const words = this.getWords()
+    return columns.every((searchTerm, index) => searchTerm === words[index])
   }
 
   getNodeByColumns(...columns) {
@@ -1451,7 +1452,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "10.0.0"
+    return "10.1.0"
   }
 }
 
@@ -1865,11 +1866,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return builtIns
   }
 
-  getParserClass() {
-    this._initParserClassCache()
-    return this._cache_parserClass
-  }
-
   _getDefaultParserClass() {
     return this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
   }
@@ -1882,18 +1878,23 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this.isNodeJs() ? require(fullPath) : window[TreeUtils.getClassNameFromFilePath(filepath)]
   }
 
-  // todo: cleanup
-  _initParserClassCache() {
-    if (this._cache_parserClass) return undefined
-    const parserNode = this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
+  _getParserNode() {
+    return this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
+  }
+
+  getParserClass() {
+    if (!this._cache_parserClass) this._cache_parserClass = this._getParserClass()
+    return this._cache_parserClass
+  }
+
+  _getParserClass() {
+    const parserNode = this._getParserNode()
     const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
 
     const builtIns = this._getNodeClasses()
     const builtIn = builtIns[filepath]
 
-    this._cache_parserClass = builtIn
-      ? builtIn
-      : filepath ? this._getParserClassFromFilePath(filepath) : this._getDefaultParserClass()
+    return builtIn ? builtIn : filepath ? this._getParserClassFromFilePath(filepath) : this._getDefaultParserClass()
   }
 
   getCatchAllNodeClass(line) {
@@ -2121,7 +2122,11 @@ window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
 
 
 
-class GrammarRootNode extends AbstractGrammarDefinitionNode {}
+class GrammarRootNode extends AbstractGrammarDefinitionNode {
+  _getDefaultParserClass() {
+    // todo: return TreeProgram? need to clean up a circular dep
+  }
+}
 
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   parseNodeType(line) {
@@ -2134,12 +2139,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().getTargetExtension()
   }
 
-  _getDefaultParserClass() {
-    // todo: return TreeProgram? need to clean up a circular dep
-  }
-
   getProgram() {
     return this
+  }
+
+  getRootParserClass() {
+    return this._getGrammarRootNode().getParserClass()
   }
 
   setNodeClasses(obj) {

@@ -1,4 +1,5 @@
 grammar
+ @description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  @catchAllKeyword keywordDefinition
 keywordRule
 monadicKeywordRule keywordRule

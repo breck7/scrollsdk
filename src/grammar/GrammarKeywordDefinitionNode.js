@@ -2,45 +2,9 @@ const TreeNode = require("../TreeNode.js")
 const TreeUtils = require("../TreeUtils.js")
 
 const GrammarConstants = require("./GrammarConstants.js")
-const GrammarDefinitionErrorNode = require("./GrammarDefinitionErrorNode.js")
-const GrammarConstantsNode = require("./GrammarConstantsNode.js")
-const GrammarCompilerNode = require("./GrammarCompilerNode.js")
-const GrammarParserClassNode = require("./GrammarParserClassNode.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 
-const TreeNonTerminalNode = require("../TreeNonTerminalNode.js")
-const TreeTerminalNode = require("../TreeTerminalNode.js")
-const TreeErrorNode = require("../TreeErrorNode.js")
-
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
-  getKeywordMap() {
-    const types = [
-      GrammarConstants.frequency,
-      GrammarConstants.keywords,
-      GrammarConstants.columns,
-      GrammarConstants.description,
-      GrammarConstants.catchAllKeyword,
-      GrammarConstants.defaults,
-      GrammarConstants.ohayoSvg,
-      GrammarConstants.ohayoTileSize,
-      GrammarConstants.ohayoTileClass,
-      GrammarConstants.ohayoTileScript,
-      GrammarConstants.ohayoTileCssScript
-    ]
-    const map = {}
-    types.forEach(type => {
-      map[type] = TreeNode
-    })
-    map[GrammarConstants.constants] = GrammarConstantsNode
-    map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
-    map[GrammarConstants.parser] = GrammarParserClassNode
-    return map
-  }
-
-  getCatchAllNodeClass(line) {
-    return GrammarDefinitionErrorNode
-  }
-
   _getRunTimeCatchAllKeyword() {
     return this.findBeam(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
   }
@@ -75,47 +39,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   _getDefinitionCache() {
     return this.getParent()._getDefinitionCache()
-  }
-
-  isNonTerminal() {
-    return this.has(GrammarConstants.keywords)
-  }
-
-  _getNodeClasses() {
-    const builtIns = {
-      ErrorNode: TreeErrorNode,
-      TerminalNode: TreeTerminalNode,
-      NonTerminalNode: TreeNonTerminalNode
-    }
-
-    Object.assign(builtIns, this.getProgram().getRootNodeClasses())
-    return builtIns
-  }
-
-  getParserClass() {
-    this._initParserClassCache()
-    return this._cache_parserClass
-  }
-
-  // todo: cleanup
-  _initParserClassCache() {
-    if (this._cache_parserClass) return undefined
-    // todo: refactor to better way to get js one
-    const parserNode = this.findNodes(GrammarConstants.parser).find(node => node.getWord(1) === "js")
-    const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
-
-    const builtIns = this._getNodeClasses()
-
-    if (builtIns[filepath]) this._cache_parserClass = builtIns[filepath]
-    else if (!filepath) this._cache_parserClass = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
-    else {
-      // todo: remove "window" below?
-      const basePath = TreeUtils.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
-      const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
-      this._cache_parserClass = this.isNodeJs()
-        ? require(fullPath)
-        : window[TreeUtils.getClassNameFromFilePath(filepath)]
-    }
   }
 
   getDoc() {

@@ -12,7 +12,7 @@ something
 url
  isValid .?
 type
- isValid ^(any|url|something|int|boolean|number)$
+ isValid ^(any|url|something|int|boolean|number|lowercase)$
 int
  isValid ^\-?[0-9]+$
 reduction
@@ -32,6 +32,8 @@ filepath
  isValid ^[a-zA-Z0-9\.\_\/\-\@]+$
 identifier
  isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
+lowercase
+ isValid ^[a-z]+$
 alpha
  isValid ^[a-zA-Z]+$`
 
@@ -339,6 +341,14 @@ class ImmutableNode extends AbstractNode {
     const arr = []
     this._getTopDownArray(arr)
     return arr
+  }
+
+  _hasColumns(columns) {
+    return this.getWords().every((word, index) => word === columns[index])
+  }
+
+  getNodeByColumns(...columns) {
+    return this.getTopDownArray().find(node => node._hasColumns(columns))
   }
 
   _getTopDownArray(arr) {
@@ -884,7 +894,12 @@ class ImmutableNode extends AbstractNode {
     return new this.constructor(this.childrenToString(), this.getLine())
   }
 
+  // todo: rename to hasKeyword
   has(keyword) {
+    return this._hasKeyword(keyword)
+  }
+
+  _hasKeyword(keyword) {
     return this._getIndex()[keyword] !== undefined
   }
 
@@ -1436,7 +1451,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "9.1.0"
+    return "10.0.0"
   }
 }
 
@@ -1535,6 +1550,7 @@ GrammarConstants.constants = "@constants"
 
 // parser/vm instantiating and executing
 GrammarConstants.parser = "@parser"
+GrammarConstants.parserJs = "js"
 
 // compiling
 GrammarConstants.compilerKeyword = "@compiler"
@@ -1754,8 +1770,136 @@ window.GrammarCompilerNode = GrammarCompilerNode
 
 
 
+class GrammarConstantsNode extends TreeNode {
+  getCatchAllNodeClass(line) {
+    return GrammarConstNode
+  }
+
+  getConstantsObj() {
+    const result = {}
+    this.getChildren().forEach(node => {
+      const name = node.getName()
+      result[name] = node.getValue()
+    })
+    return result
+  }
+}
+
+window.GrammarConstantsNode = GrammarConstantsNode
+
+
+
+class GrammarDefinitionErrorNode extends TreeNode {
+  getErrors() {
+    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
+  }
+
+  getWordTypeLine() {
+    return ["keyword"].concat(this.getWords(1).map(word => "any")).join(" ")
+  }
+}
+
+window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
+
+
+
+
+class GrammarParserClassNode extends TreeNode {
+  getParserClassFilePath() {
+    return this.getWord(2)
+  }
+}
+
+window.GrammarParserClassNode = GrammarParserClassNode
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class AbstractGrammarDefinitionNode extends TreeNode {
+  getKeywordMap() {
+    const types = [
+      GrammarConstants.frequency,
+      GrammarConstants.keywords,
+      GrammarConstants.columns,
+      GrammarConstants.description,
+      GrammarConstants.catchAllKeyword,
+      GrammarConstants.defaults,
+      GrammarConstants.ohayoSvg,
+      GrammarConstants.ohayoTileSize,
+      GrammarConstants.ohayoTileClass,
+      GrammarConstants.ohayoTileScript,
+      GrammarConstants.ohayoTileCssScript
+    ]
+    const map = {}
+    types.forEach(type => {
+      map[type] = TreeNode
+    })
+    map[GrammarConstants.constants] = GrammarConstantsNode
+    map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
+    map[GrammarConstants.parser] = GrammarParserClassNode
+    return map
+  }
+
+  isNonTerminal() {
+    return this.has(GrammarConstants.keywords)
+  }
+
+  _getNodeClasses() {
+    const builtIns = {
+      ErrorNode: TreeErrorNode,
+      TerminalNode: TreeTerminalNode,
+      NonTerminalNode: TreeNonTerminalNode
+    }
+
+    Object.assign(builtIns, this.getProgram().getRootNodeClasses())
+    return builtIns
+  }
+
+  getParserClass() {
+    this._initParserClassCache()
+    return this._cache_parserClass
+  }
+
+  _getDefaultParserClass() {
+    return this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
+  }
+
+  _getParserClassFromFilePath(filepath) {
+    const rootPath = this.getRootNode().getTheGrammarFilePath() // todo:remove this line
+    const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
+    const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
+    // todo: remove "window" below?
+    return this.isNodeJs() ? require(fullPath) : window[TreeUtils.getClassNameFromFilePath(filepath)]
+  }
+
+  // todo: cleanup
+  _initParserClassCache() {
+    if (this._cache_parserClass) return undefined
+    const parserNode = this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
+    const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
+
+    const builtIns = this._getNodeClasses()
+    const builtIn = builtIns[filepath]
+
+    this._cache_parserClass = builtIn
+      ? builtIn
+      : filepath ? this._getParserClassFromFilePath(filepath) : this._getDefaultParserClass()
+  }
+
+  getCatchAllNodeClass(line) {
+    return GrammarDefinitionErrorNode
+  }
+
   getProgram() {
     return this.getParent()
   }
@@ -1873,91 +2017,9 @@ window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
 
 
 
-class GrammarConstantsNode extends TreeNode {
-  getCatchAllNodeClass(line) {
-    return GrammarConstNode
-  }
-
-  getConstantsObj() {
-    const result = {}
-    this.getChildren().forEach(node => {
-      const name = node.getName()
-      result[name] = node.getValue()
-    })
-    return result
-  }
-}
-
-window.GrammarConstantsNode = GrammarConstantsNode
-
-
-
-class GrammarDefinitionErrorNode extends TreeNode {
-  getErrors() {
-    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
-  }
-
-  getWordTypeLine() {
-    return ["keyword"].concat(this.getWords(1).map(word => "any")).join(" ")
-  }
-}
-
-window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
-
-
-
-
-class GrammarParserClassNode extends TreeNode {
-  getParserClassFilePath() {
-    return this.getWord(2)
-  }
-}
-
-window.GrammarParserClassNode = GrammarParserClassNode
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
-  getKeywordMap() {
-    const types = [
-      GrammarConstants.frequency,
-      GrammarConstants.keywords,
-      GrammarConstants.columns,
-      GrammarConstants.description,
-      GrammarConstants.catchAllKeyword,
-      GrammarConstants.defaults,
-      GrammarConstants.ohayoSvg,
-      GrammarConstants.ohayoTileSize,
-      GrammarConstants.ohayoTileClass,
-      GrammarConstants.ohayoTileScript,
-      GrammarConstants.ohayoTileCssScript
-    ]
-    const map = {}
-    types.forEach(type => {
-      map[type] = TreeNode
-    })
-    map[GrammarConstants.constants] = GrammarConstantsNode
-    map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
-    map[GrammarConstants.parser] = GrammarParserClassNode
-    return map
-  }
-
-  getCatchAllNodeClass(line) {
-    return GrammarDefinitionErrorNode
-  }
-
   _getRunTimeCatchAllKeyword() {
     return this.findBeam(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
   }
@@ -1992,47 +2054,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   _getDefinitionCache() {
     return this.getParent()._getDefinitionCache()
-  }
-
-  isNonTerminal() {
-    return this.has(GrammarConstants.keywords)
-  }
-
-  _getNodeClasses() {
-    const builtIns = {
-      ErrorNode: TreeErrorNode,
-      TerminalNode: TreeTerminalNode,
-      NonTerminalNode: TreeNonTerminalNode
-    }
-
-    Object.assign(builtIns, this.getProgram().getRootNodeClasses())
-    return builtIns
-  }
-
-  getParserClass() {
-    this._initParserClassCache()
-    return this._cache_parserClass
-  }
-
-  // todo: cleanup
-  _initParserClassCache() {
-    if (this._cache_parserClass) return undefined
-    // todo: refactor to better way to get js one
-    const parserNode = this.findNodes(GrammarConstants.parser).find(node => node.getWord(1) === "js")
-    const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
-
-    const builtIns = this._getNodeClasses()
-
-    if (builtIns[filepath]) this._cache_parserClass = builtIns[filepath]
-    else if (!filepath) this._cache_parserClass = this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
-    else {
-      // todo: remove "window" below?
-      const basePath = TreeUtils.getPathWithoutFileName(this.getRootNode().getFilePath()) + "/"
-      const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
-      this._cache_parserClass = this.isNodeJs()
-        ? require(fullPath)
-        : window[TreeUtils.getClassNameFromFilePath(filepath)]
-    }
   }
 
   getDoc() {
@@ -2100,11 +2121,7 @@ window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
 
 
 
-class GrammarRootNode extends AbstractGrammarDefinitionNode {
-  parseNodeType() {
-    return TreeNode
-  }
-}
+class GrammarRootNode extends AbstractGrammarDefinitionNode {}
 
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   parseNodeType(line) {
@@ -2113,13 +2130,15 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return GrammarKeywordDefinitionNode
   }
 
-  getProgram() {
-    return this
+  getTargetExtension() {
+    return this._getGrammarRootNode().getTargetExtension()
   }
 
-  setFilePath(filepath) {
-    // todo: remove this method
-    this._filepath = filepath
+  _getDefaultParserClass() {
+    // todo: return TreeProgram? need to clean up a circular dep
+  }
+
+  getProgram() {
     return this
   }
 
@@ -2134,8 +2153,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // todo: remove?
-  getFilePath() {
-    return this._filepath
+  getTheGrammarFilePath() {
+    return this.getLine()
   }
 
   _getGrammarRootNode() {
@@ -2223,28 +2242,26 @@ class AnyProgram extends TreeNode {
     return this
   }
 
-  getGrammarString() {
-    return `any
- @description Default grammar
- @catchAllKeyword any
-any
- @columns any*`
-  }
-
   getProgramErrors() {
     const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
     return [].concat.apply([], nodeErrors)
   }
 
   getGrammarProgram() {
-    if (!AnyProgram._grammarProgram) AnyProgram._grammarProgram = new GrammarProgram(this.getGrammarString())
+    if (AnyProgram._grammarProgram) return AnyProgram._grammarProgram
+
+    const anyGrammar = `any
+ @description Default grammar
+ @catchAllKeyword any
+any
+ @columns any*`
+
+    AnyProgram._grammarProgram = new GrammarProgram(anyGrammar)
     return AnyProgram._grammarProgram
   }
 }
 
 window.AnyProgram = AnyProgram
-
-
 
 
 
@@ -2330,32 +2347,8 @@ class TreeProgram extends AnyProgram {
     return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
   }
 
-  getGrammarFilePath() {
-    return ""
-  }
-
   getNodeClasses() {
     return {}
-  }
-
-  getGrammarProgram() {
-    return TreeProgram.getCachedGrammarProgram(this)
-  }
-
-  static _compileCompiler(program) {
-    const grammarString = program.getGrammarString()
-    const filepath = program.getGrammarFilePath()
-    // todo: remove non-raii methods
-    return new GrammarProgram(new AnyProgram(grammarString).getExpanded())
-      .setFilePath(filepath)
-      .setNodeClasses(program.getNodeClasses())
-  }
-
-  static getCachedGrammarProgram(program) {
-    const key = program.getGrammarString()
-    if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this._compileCompiler(program)
-    return this._cache_grammarPrograms[key]
   }
 }
 
@@ -2365,33 +2358,3 @@ TreeProgram.NonTerminalNode = TreeNonTerminalNode
 TreeProgram.TerminalNode = TreeTerminalNode
 
 window.TreeProgram = TreeProgram
-
-
-
-
-
-class TreeTools {
-  static executeFile(programPath, languagePath) {
-    const program = this.makeProgram(programPath, languagePath)
-    return program.execute(programPath)
-  }
-
-  static makeProgram(programPath, languagePath) {
-    const languageClass = require(languagePath)
-    const code = fs.readFileSync(programPath, "utf8")
-    return new languageClass(code)
-  }
-
-  static getGrammarErrors(programPath, grammarFilePath) {
-    class TemporaryLanguageFromGrammarFileProgram extends TreeProgram {
-      getGrammarString() {
-        return removeFirstLine(fs.readFileSync(grammarFilePath, "utf8"))
-      }
-    }
-    let source = fs.readFileSync(programPath, "utf8")
-    const program = new TemporaryLanguageFromGrammarFileProgram(source)
-    return program.getProgramErrors()
-  }
-}
-
-window.TreeTools = TreeTools

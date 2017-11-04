@@ -542,6 +542,17 @@ testTree.concat = equal => {
   equal(newNodes.length, 1)
 }
 
+testTree.getNodeByColumns = equal => {
+  // Arrange
+  const test = new TreeProgram(testStrings.sortByMultiple)
+
+  // Act
+  const node = test.getNodeByColumns("name", "Success")
+
+  // Assert
+  equal(node.getParent().findBeam("key"), "b")
+}
+
 testTree.delete = equal => {
   // Arrange
   const tree = new TreeProgram()

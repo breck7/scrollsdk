@@ -7,21 +7,21 @@ class AnyProgram extends TreeNode {
     return this
   }
 
-  getGrammarString() {
-    return `any
- @description Default grammar
- @catchAllKeyword any
-any
- @columns any*`
-  }
-
   getProgramErrors() {
     const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
     return [].concat.apply([], nodeErrors)
   }
 
   getGrammarProgram() {
-    if (!AnyProgram._grammarProgram) AnyProgram._grammarProgram = new GrammarProgram(this.getGrammarString())
+    if (AnyProgram._grammarProgram) return AnyProgram._grammarProgram
+
+    const anyGrammar = `any
+ @description Default grammar
+ @catchAllKeyword any
+any
+ @columns any*`
+
+    AnyProgram._grammarProgram = new GrammarProgram(anyGrammar)
     return AnyProgram._grammarProgram
   }
 }

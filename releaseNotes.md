@@ -1,3 +1,10 @@
+10.0.0 / 2017-11-03
+===================
+- New: getNodeByColumns method
+- Breaking: grammar file is now primary file, use static getProgramClassFromGrammarFile method to create a VM/compiler
+- Breaking: languages.tree => grammars.tree
+- Breaking: grammars.tree now points to grammar files, not index files
+
 9.2.0 / 2017-11-03
 ==================
 - Breaking: TreeProgram.getGrammarErrors => TreeProgram.Tools.getGrammarErrors

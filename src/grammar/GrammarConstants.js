@@ -9,6 +9,7 @@ GrammarConstants.constants = "@constants"
 
 // parser/vm instantiating and executing
 GrammarConstants.parser = "@parser"
+GrammarConstants.parserJs = "js"
 
 // compiling
 GrammarConstants.compilerKeyword = "@compiler"

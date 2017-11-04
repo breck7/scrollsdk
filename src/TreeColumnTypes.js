@@ -5,7 +5,7 @@ something
 url
  isValid .?
 type
- isValid ^(any|url|something|int|boolean|number)$
+ isValid ^(any|url|something|int|boolean|number|lowercase)$
 int
  isValid ^\-?[0-9]+$
 reduction
@@ -25,6 +25,8 @@ filepath
  isValid ^[a-zA-Z0-9\.\_\/\-\@]+$
 identifier
  isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
+lowercase
+ isValid ^[a-z]+$
 alpha
  isValid ^[a-zA-Z]+$`
 

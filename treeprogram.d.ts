@@ -12,6 +12,7 @@ declare type formatString = string // "Hello {name}! You are {age} years old."
 declare type Json = string // JSON string
 declare type nodeIterator = (node: TreeProgram, index: int) => boolean
 declare type sortResultInt = int // -1 0 1
+declare type TreeProgramClass = Object // a class that extends TreeProgram
 declare type nodeMapFn = (node: TreeProgram) => string
 declare type replaceNodeFn = (str: string) => string
 declare type errorMessage = string
@@ -54,6 +55,7 @@ interface TreeProgram {
   clone: () => TreeProgram
   copyTo: (tree: TreeProgram, index?: int) => TreeProgram
   getLines: () => string[]
+  getNodeByColumns: (...columns: string[]) => TreeProgram | Undefined
   getNode: (path: keywordPath) => TreeProgram
   getNodes: () => TreeProgram[]
   length: number
@@ -123,10 +125,7 @@ interface StaticTreeProgram {
   fromSsv: (str: string, hasHeaders?: boolean) => TreeProgram
   fromTsv: (str: string, hasHeaders?: boolean) => TreeProgram
   fromXml: (str: string) => TreeProgram
-}
-
-interface TreeTools {
   executeFile: (path: filepath) => Promise<any>
   makeProgram: (programPath: filepath, languagePath: filepath) => TreeProgram
-  getGrammarErrors: (programPath: filepath, grammarFilePath: filepath) => errorMessage[]
+  getProgramClassFromGrammarFile: (grammarPath: filepath) => TreeProgramClass
 }

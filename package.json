@@ -1,6 +1,6 @@
 {
   "name": "treeprogram",
-  "version": "9.2.0",
+  "version": "10.0.0",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {

@@ -231,6 +231,14 @@ class ImmutableNode extends AbstractNode {
     return arr
   }
 
+  _hasColumns(columns) {
+    return this.getWords().every((word, index) => word === columns[index])
+  }
+
+  getNodeByColumns(...columns) {
+    return this.getTopDownArray().find(node => node._hasColumns(columns))
+  }
+
   _getTopDownArray(arr) {
     this.getChildren().forEach(child => {
       arr.push(child)
@@ -774,7 +782,12 @@ class ImmutableNode extends AbstractNode {
     return new this.constructor(this.childrenToString(), this.getLine())
   }
 
+  // todo: rename to hasKeyword
   has(keyword) {
+    return this._hasKeyword(keyword)
+  }
+
+  _hasKeyword(keyword) {
     return this._getIndex()[keyword] !== undefined
   }
 
@@ -1326,7 +1339,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "9.2.0"
+    return "10.0.0"
   }
 }
 

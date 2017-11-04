@@ -4,8 +4,6 @@ const TreeUtils = require("./TreeUtils.js")
 const TreeNonTerminalNode = require("./TreeNonTerminalNode.js")
 const TreeTerminalNode = require("./TreeTerminalNode.js")
 
-const GrammarProgram = require("./grammar/GrammarProgram.js")
-
 class TreeProgram extends AnyProgram {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
@@ -84,32 +82,8 @@ class TreeProgram extends AnyProgram {
     return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
   }
 
-  getGrammarFilePath() {
-    return ""
-  }
-
   getNodeClasses() {
     return {}
-  }
-
-  getGrammarProgram() {
-    return TreeProgram.getCachedGrammarProgram(this)
-  }
-
-  static _compileCompiler(program) {
-    const grammarString = program.getGrammarString()
-    const filepath = program.getGrammarFilePath()
-    // todo: remove non-raii methods
-    return new GrammarProgram(new AnyProgram(grammarString).getExpanded())
-      .setFilePath(filepath)
-      .setNodeClasses(program.getNodeClasses())
-  }
-
-  static getCachedGrammarProgram(program) {
-    const key = program.getGrammarString()
-    if (!this._cache_grammarPrograms) this._cache_grammarPrograms = {}
-    if (!this._cache_grammarPrograms[key]) this._cache_grammarPrograms[key] = this._compileCompiler(program)
-    return this._cache_grammarPrograms[key]
   }
 }
 

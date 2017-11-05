@@ -1340,7 +1340,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "10.1.0"
+    return "10.1.1"
   }
 }
 

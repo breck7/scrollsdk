@@ -4,7 +4,7 @@ const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 const ProjectProgram = require("project-lang")
 
-const BrowserScript = require("./BrowserScript.js")
+const BrowserScript = require("../BrowserScript.js")
 
 const outputFile = __dirname + `/../treeprogram.browser.js`
 

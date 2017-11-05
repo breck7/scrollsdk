@@ -8,7 +8,7 @@ const app = express()
 
 app.get("/*.js", (req, res) => {
   const filename = req.path.substr(1)
-  fs.readFile(filename, "utf8", (err, file) => {
+  fs.readFile(__dirname + "/" + filename, "utf8", (err, file) => {
     if (err) throw err
     res.send(
       new BrowserScript(file)
@@ -19,9 +19,9 @@ app.get("/*.js", (req, res) => {
   })
 })
 
-app.use(express.static("."))
+app.use(express.static(__dirname))
 
 const port = 8888
 app.listen(port, () => {
-  console.log(`Running. cmd+dblclick: http://localhost:${port}/test.html`)
+  console.log(`Running garden. cmd+dblclick: http://localhost:${port}/`)
 })

@@ -29,6 +29,7 @@ class ConsoleApp {
 check programPathOrGrammarName Check a file(s) for grammar errors
 compile programPath Compile a file
 create  Create a new Grammar
+garden  Start the Tree Garden web app
 help  Show help
 list  List installed Grammars
 history grammarName List all programs ever parsed with this cli tool
@@ -56,7 +57,7 @@ version  List installed Tree Notation version`
   }
 
   create() {
-    TreeProgram.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName(grammarName))
+    TreeProgram.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName("stamp"))
   }
 
   check(programPathOrGrammarName) {
@@ -82,6 +83,10 @@ version  List installed Tree Notation version`
     const grammarPath = this._getGrammarPathByGrammarName(extension)
     if (!grammarPath) throw new Error(`No installed grammar for '${extension}'`)
     return grammarPath
+  }
+
+  garden() {
+    require("./garden.express.js")
   }
 
   compile(programPath) {

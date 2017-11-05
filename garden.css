@@ -1,0 +1,9 @@
+body {
+  font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana,
+    sans-serif;
+}
+
+textarea {
+  width: 300px;
+  height: 200px;
+}

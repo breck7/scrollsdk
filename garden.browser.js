@@ -5,5 +5,12 @@ $(document).ready(function() {
     window.tree = tree
   })
 
+  $("#treeprogram").on("blur", function() {
+    localStorage.setItem("tree", $(this).val())
+  })
+
+  const val = localStorage.getItem("tree")
+  if (val) $("#treeprogram").val(val)
+
   $("#treeprogram").keyup()
 })

@@ -10,6 +10,7 @@ const outputFile = __dirname + `/../treeprogram.browser.js`
 
 const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".js"))
 const projectProgram = ProjectProgram.getProjectProgram(files)
+fs.writeFileSync(__dirname + "/../treeprogram.project", projectProgram.toString(), "utf8")
 const scripts = projectProgram.getOrderedDependenciesArray().filter(file => !file.includes("AbstractNodeJsNode.js"))
 
 const combined = scripts

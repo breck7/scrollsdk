@@ -1,6 +1,6 @@
-const GrammarBackedProgram = require("../../src/grammar/GrammarBackedProgram.js")
+const AbstractGrammarBackedProgram = require("../../src/grammar/AbstractGrammarBackedProgram.js")
 
-class jibberishProgram extends GrammarBackedProgram {
+class jibberishProgram extends AbstractGrammarBackedProgram {
   executeSync() {
     return 42
   }

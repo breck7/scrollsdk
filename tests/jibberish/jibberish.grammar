@@ -11,7 +11,7 @@ block topLevel
 foo topLevel
 nodeWithConsts topLevel
  @constants
-  greeting hello world
+  greeting string hello world
 to block
  @columns word
  @compiler txt

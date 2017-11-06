@@ -1,13 +1,13 @@
 const TreeUtils = require("./base/TreeUtils.js")
 const TreeNode = require("./base/TreeNode.js")
 
-const GrammarBackedProgram = require("./grammar/GrammarBackedProgram.js")
+const AbstractGrammarBackedProgram = require("./grammar/AbstractGrammarBackedProgram.js")
 const GrammarBackedNonTerminalNode = require("./grammar/GrammarBackedNonTerminalNode.js")
 const GrammarBackedTerminalNode = require("./grammar/GrammarBackedTerminalNode.js")
 
 const otree = {}
 
-otree.GrammarBackedProgram = GrammarBackedProgram
+otree.AbstractGrammarBackedProgram = AbstractGrammarBackedProgram
 otree.Utils = TreeUtils
 otree.TreeNode = TreeNode
 otree.NonTerminalNode = GrammarBackedNonTerminalNode

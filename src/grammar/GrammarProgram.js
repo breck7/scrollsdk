@@ -1,14 +1,12 @@
 const TreeNode = require("../base/TreeNode.js")
 
-const GrammarBackedProgram = require("./GrammarBackedProgram.js")
+const AbstractGrammarBackedProgram = require("./AbstractGrammarBackedProgram.js")
 const GrammarConstants = require("./GrammarConstants.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 const GrammarKeywordDefinitionNode = require("./GrammarKeywordDefinitionNode.js")
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
-  _getDefaultParserClass() {
-    // todo: return GrammarBackedProgram?s need to clean up a circular dep
-  }
+  _getDefaultParserClass() {}
 }
 
 class GrammarProgram extends AbstractGrammarDefinitionNode {
@@ -24,10 +22,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   getProgram() {
     return this
-  }
-
-  getRootParserClass() {
-    return this._getGrammarRootNode().getParserClass()
   }
 
   setNodeClasses(obj) {
@@ -98,6 +92,22 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().findBeam(GrammarConstants.catchAllKeyword)
   }
 
+  _getRootParserClass() {
+    const definedClass = this._getGrammarRootNode().getParserClass()
+    const extendedClass = definedClass || AbstractGrammarBackedProgram
+    const grammarProgram = this
+    return class extends extendedClass {
+      getGrammarProgram() {
+        return grammarProgram
+      }
+    }
+  }
+
+  getRootParserClass() {
+    if (!this._cache_rootParserClass) this._cache_rootParserClass = this._getRootParserClass()
+    return this._cache_rootParserClass
+  }
+
   toSublimeSyntaxFile() {
     // todo.
     return `%YAML 1.2
@@ -116,18 +126,6 @@ contexts:
    - match: $
      scope: entity.name.type.tree
      pop: true`
-  }
-
-  static getParserClass(grammarCode, grammarPath) {
-    // todo: catching
-    const expandedGrammarCode = new TreeNode(grammarCode).getExpanded()
-    const grammarProgram = new GrammarProgram(expandedGrammarCode, grammarPath)
-    const extendedClass = grammarProgram.getRootParserClass() || GrammarBackedProgram
-    return class extends extendedClass {
-      getGrammarProgram() {
-        return grammarProgram
-      }
-    }
   }
 }
 

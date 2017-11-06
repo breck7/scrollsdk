@@ -117,7 +117,7 @@ interface TreeNode {
   touchNode: (keywordPath: keywordPath) => TreeNode
 }
 
-interface GrammarBackedProgram {
+interface AbstractGrammarBackedProgram {
   getGrammarUsage: () => TreeNode[] // returns a report on what keywords from its language the program uses
 }
 
@@ -134,7 +134,7 @@ interface StaticTreeNode {
 interface otree {
   TreeNode: TreeNode
   executeFile: (path: filepath) => Promise<any>
-  makeProgram: (programPath: filepath, languagePath: filepath) => GrammarBackedProgram
+  makeProgram: (programPath: filepath, languagePath: filepath) => AbstractGrammarBackedProgram
   getProgramClassFromGrammarFile: (grammarPath: filepath) => GrammarBackedProgramClass
   getVersion: () => string
 }

@@ -1,6 +1,6 @@
 const TreeNode = require("../base/TreeNode.js")
 
-class GrammarBackedProgram extends TreeNode {
+class AbstractGrammarBackedProgram extends TreeNode {
   getProgram() {
     return this
   }
@@ -35,7 +35,7 @@ class GrammarBackedProgram extends TreeNode {
   }
 
   getGrammarUsage(filepath = "") {
-    const usage = new GrammarBackedProgram()
+    const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgram()
     const keywordDefinitions = grammarProgram.getChildren()
     keywordDefinitions.forEach(child => {
@@ -67,7 +67,7 @@ class GrammarBackedProgram extends TreeNode {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
 
-    this._cache_typeTree = new GrammarBackedProgram(this.getProgramWordTypeString())
+    this._cache_typeTree = new TreeNode(this.getProgramWordTypeString())
     this._cache_programWordTypeStringMTime = treeMTime
   }
 
@@ -81,4 +81,4 @@ class GrammarBackedProgram extends TreeNode {
   }
 }
 
-module.exports = GrammarBackedProgram
+module.exports = AbstractGrammarBackedProgram

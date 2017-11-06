@@ -24,13 +24,10 @@ quack.quickTest("jibberish", equal => {
   // Act
   const grammarProgram = new GrammarProgram(jibberishGrammarCode, grammarPath)
   const rootParserClass = grammarProgram.getRootParserClass()
+  const program = new rootParserClass(sampleJibberishCode)
 
   // Assert
-  equal(rootParserClass, jibberishProgram)
-
-  /*
-  // Arrange
-  const program = new rootParserClass(sampleJibberishCode)
+  equal(program instanceof jibberishProgram, true, "correct program class")
 
   // Act
   const fooNode = program.getNode("foo")
@@ -39,7 +36,6 @@ quack.quickTest("jibberish", equal => {
   const nodeDef = constNode.getDefinition()
 
   // Assert
-  debugger
   equal(fooDef.getKeyword(), "foo")
   equal(nodeDef.getKeyword(), "nodeWithConsts")
 
@@ -48,5 +44,4 @@ quack.quickTest("jibberish", equal => {
 
   // Assert
   equal(constObj.greeting, "hello world")
-  */
 })

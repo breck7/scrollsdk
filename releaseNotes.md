@@ -1,3 +1,7 @@
+11.1.0 / 2017-11-06
+===================
+- Fix: path and other fixes from otree move
+
 11.0.0 / 2017-11-06
 ===================
 - Breaking: renamed TreeProgram to otree

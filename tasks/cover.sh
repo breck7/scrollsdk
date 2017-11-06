@@ -1,1 +1,1 @@
-tap --cov --coverage-report=lcov ./tasks/unit.js
+tap --cov --coverage-report=lcov ./tasks/test.js

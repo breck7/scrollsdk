@@ -20,30 +20,16 @@ file LANG/readme.mark
   # LANG - DESCRIPTION
 file LANG/index.js
  data
-  const TreeProgram = require("treeprogram")
-  const fs = require("fs")
-  const LANGGrammar = fs.readFileSync(__dirname + "/LANG.grammar", "utf8")
-  
-  class LANGProgram extends TreeProgram {
-    getGrammarString() {
-      return LANGGrammar
-    }
-  
-    getGrammarFilePath() {
-      return __dirname + "/LANG.grammar"
-    }
-  }
-  
-  module.exports = LANGProgram
+  module.exports = require("treeprogram").getProgramClassFromGrammarFile(__dirname + "/LANG.grammar")
 file LANG/LANG.grammar
  data
   LANG
    @description DESCRIPTION
    @catchAllKeyword error
    @keywords
-    root
-  root
+    topLevel
+  topLevel
   error
-   @parseClass ErrorNode
+   @parser js ErrorNode
 file LANG/tests.swarm
 file LANG/sample.LANG

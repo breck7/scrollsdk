@@ -1,10 +1,32 @@
-const AnyProgram = require("./AnyProgram.js")
-const TreeNode = require("./TreeNode.js")
-const TreeUtils = require("./TreeUtils.js")
-const TreeNonTerminalNode = require("./TreeNonTerminalNode.js")
-const TreeTerminalNode = require("./TreeTerminalNode.js")
+const GrammarProgram = require("./GrammarProgram.js")
+const TreeNode = require("../base/TreeNode.js")
+const TreeUtils = require("../base/TreeUtils.js")
+const GrammarBackedNonTerminalNode = require("./GrammarBackedNonTerminalNode.js")
+const GrammarBackedTerminalNode = require("./GrammarBackedTerminalNode.js")
 
-class TreeProgram extends AnyProgram {
+class GrammarBackedProgram extends TreeNode {
+  getProgram() {
+    return this
+  }
+
+  getProgramErrors() {
+    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
+    return [].concat.apply([], nodeErrors)
+  }
+
+  getGrammarProgram() {
+    if (GrammarBackedProgram._grammarProgram) return GrammarBackedProgram._grammarProgram
+
+    const anyGrammar = `any
+ @description Default grammar
+ @catchAllKeyword any
+any
+ @columns any*`
+
+    GrammarBackedProgram._grammarProgram = new GrammarProgram(anyGrammar)
+    return GrammarBackedProgram._grammarProgram
+  }
+
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
   }
@@ -41,7 +63,7 @@ class TreeProgram extends AnyProgram {
   }
 
   getGrammarUsage(filepath = "") {
-    const usage = new TreeProgram()
+    const usage = new GrammarBackedProgram()
     const grammarProgram = this.getGrammarProgram()
     const keywordDefinitions = grammarProgram.getChildren()
     keywordDefinitions.forEach(child => {
@@ -73,7 +95,7 @@ class TreeProgram extends AnyProgram {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
 
-    this._cache_typeTree = new TreeProgram(this.getProgramWordTypeString())
+    this._cache_typeTree = new GrammarBackedProgram(this.getProgramWordTypeString())
     this._cache_programWordTypeStringMTime = treeMTime
   }
 
@@ -87,9 +109,9 @@ class TreeProgram extends AnyProgram {
   }
 }
 
-TreeProgram.Utils = TreeUtils
-TreeProgram.TreeNode = TreeNode
-TreeProgram.NonTerminalNode = TreeNonTerminalNode
-TreeProgram.TerminalNode = TreeTerminalNode
+GrammarBackedProgram.Utils = TreeUtils
+GrammarBackedProgram.TreeNode = TreeNode
+GrammarBackedProgram.NonTerminalNode = GrammarBackedNonTerminalNode
+GrammarBackedProgram.TerminalNode = GrammarBackedTerminalNode
 
-module.exports = TreeProgram
+module.exports = GrammarBackedProgram

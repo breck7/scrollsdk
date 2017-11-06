@@ -1,6 +1,6 @@
-const DynamicNode = require("./DynamicNode.js")
+const GrammarBackedNode = require("./GrammarBackedNode.js")
 
-class TreeErrorNode extends DynamicNode {
+class GrammarBackedErrorNode extends GrammarBackedNode {
   getWordTypeLine() {
     return "error ".repeat(this.getWords().length).trim()
   }
@@ -10,4 +10,4 @@ class TreeErrorNode extends DynamicNode {
   }
 }
 
-module.exports = TreeErrorNode
+module.exports = GrammarBackedErrorNode

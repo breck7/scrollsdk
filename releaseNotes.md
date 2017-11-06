@@ -1,3 +1,7 @@
+10.1.2 / 2017-11-06
+===================
+- Infra: rearranged code into base node and grammar backed folders
+
 10.1.1 / 2017-11-05
 ===================
 - New: started Tree Garden web console

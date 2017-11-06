@@ -1,4 +1,4 @@
-const TreeNode = require("../TreeNode.js")
+const TreeNode = require("../base/TreeNode.js")
 
 class GrammarParserClassNode extends TreeNode {
   getParserClassFilePath() {

@@ -1,5 +1,5 @@
-const TreeNode = require("../TreeNode.js")
-const TreeUtils = require("../TreeUtils.js")
+const TreeNode = require("../base/TreeNode.js")
+const TreeUtils = require("../base/TreeUtils.js")
 
 const GrammarConstants = require("./GrammarConstants.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")

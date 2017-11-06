@@ -1,7 +1,7 @@
 "use strict"
 
 const TreeProgram = require("../index.js")
-const TreeNode = require("../src/TreeNode.js")
+const TreeNode = require("../src/base/TreeNode.js")
 
 const testStrings = {}
 

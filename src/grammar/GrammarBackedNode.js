@@ -1,9 +1,11 @@
-const TreeNode = require("./TreeNode.js")
-const GrammarConstants = require("./grammar/GrammarConstants.js")
-const TreeCell = require("./TreeCell.js")
-const TreeUtils = require("./TreeUtils.js")
+const TreeNode = require("../base/TreeNode.js")
+const TreeUtils = require("../base/TreeUtils.js")
 
-class DynamicNode extends TreeNode {
+const GrammarConstants = require("./GrammarConstants.js")
+
+const GrammarBackedCell = require("./GrammarBackedCell.js")
+
+class GrammarBackedNode extends TreeNode {
   getProgram() {
     return this.getParent().getProgram()
   }
@@ -19,7 +21,7 @@ class DynamicNode extends TreeNode {
   }
 
   _getParameterMap() {
-    const cells = this.getTreeCellArray()
+    const cells = this.getGrammarBackedCellArray()
     const parameterMap = {}
     cells.forEach(cell => {
       const type = cell.getType()
@@ -53,14 +55,14 @@ class DynamicNode extends TreeNode {
     // Too many parameters
     // Incorrect parameter
 
-    const errors = this.getTreeCellArray()
+    const errors = this.getGrammarBackedCellArray()
       .filter(wordCheck => wordCheck.getErrorMessage())
       .map(check => check.getErrorMessage())
 
     return errors
   }
 
-  getTreeCellArray() {
+  getGrammarBackedCellArray() {
     const point = this.getPoint()
     const definition = this.getDefinition()
     const parameters = definition.getBeamParameters()
@@ -73,16 +75,16 @@ class DynamicNode extends TreeNode {
     for (let index = 0; index < length; index++) {
       const word = words[index]
       const type = index >= parameterLength ? lastParameterListType : parameters[index]
-      checks[index] = new TreeCell(word, type, this, point.y, index)
+      checks[index] = new GrammarBackedCell(word, type, this, point.y, index)
     }
     return checks
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getWordTypeLine() {
-    const parameterWords = this.getTreeCellArray().map(slot => slot.getType())
+    const parameterWords = this.getGrammarBackedCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
   }
 }
 
-module.exports = DynamicNode
+module.exports = GrammarBackedNode

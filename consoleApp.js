@@ -1,6 +1,6 @@
 const TreeProgram = require("./index.js")
 const GrammarProgram = require("./src/grammar/GrammarProgram.js")
-const TreeUtils = require("./src/TreeUtils.js")
+const TreeUtils = require("./src/base/TreeUtils.js")
 const fs = require("fs")
 const os = require("os")
 

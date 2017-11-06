@@ -1,6 +1,6 @@
-const DynamicNode = require("./DynamicNode.js")
+const GrammarBackedNode = require("./GrammarBackedNode.js")
 
-class TreeNonTerminalNode extends DynamicNode {
+class GrammarBackedNonTerminalNode extends GrammarBackedNode {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
   }
@@ -32,4 +32,4 @@ ${indent}${closeChildrenString}`
   }
 }
 
-module.exports = TreeNonTerminalNode
+module.exports = GrammarBackedNonTerminalNode

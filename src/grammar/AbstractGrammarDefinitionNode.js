@@ -1,15 +1,15 @@
-const TreeNode = require("../TreeNode.js")
-const TreeNonTerminalNode = require("../TreeNonTerminalNode.js")
-const TreeTerminalNode = require("../TreeTerminalNode.js")
-const TreeErrorNode = require("../TreeErrorNode.js")
+const TreeNode = require("../base/TreeNode.js")
+const TreeUtils = require("../base/TreeUtils.js")
 
-const TreeUtils = require("../TreeUtils.js")
 const GrammarConstants = require("./GrammarConstants.js")
-
 const GrammarDefinitionErrorNode = require("./GrammarDefinitionErrorNode.js")
 const GrammarParserClassNode = require("./GrammarParserClassNode.js")
 const GrammarCompilerNode = require("./GrammarCompilerNode.js")
 const GrammarConstantsNode = require("./GrammarConstantsNode.js")
+
+const GrammarBackedNonTerminalNode = require("./GrammarBackedNonTerminalNode.js")
+const GrammarBackedTerminalNode = require("./GrammarBackedTerminalNode.js")
+const GrammarBackedErrorNode = require("./GrammarBackedErrorNode.js")
 
 class AbstractGrammarDefinitionNode extends TreeNode {
   getKeywordMap() {
@@ -42,9 +42,9 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
   _getNodeClasses() {
     const builtIns = {
-      ErrorNode: TreeErrorNode,
-      TerminalNode: TreeTerminalNode,
-      NonTerminalNode: TreeNonTerminalNode
+      ErrorNode: GrammarBackedErrorNode,
+      TerminalNode: GrammarBackedTerminalNode,
+      NonTerminalNode: GrammarBackedNonTerminalNode
     }
 
     Object.assign(builtIns, this.getProgram().getRootNodeClasses())
@@ -52,7 +52,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   _getDefaultParserClass() {
-    return this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
+    return this.isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
   _getParserClassFromFilePath(filepath) {

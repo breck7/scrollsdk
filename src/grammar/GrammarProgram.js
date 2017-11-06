@@ -1,4 +1,4 @@
-const TreeNode = require("../TreeNode.js")
+const TreeNode = require("../base/TreeNode.js")
 
 const GrammarConstants = require("./GrammarConstants.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
@@ -6,7 +6,7 @@ const GrammarKeywordDefinitionNode = require("./GrammarKeywordDefinitionNode.js"
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   _getDefaultParserClass() {
-    // todo: return TreeProgram? need to clean up a circular dep
+    // todo: return GrammarBackedProgram?s need to clean up a circular dep
   }
 }
 

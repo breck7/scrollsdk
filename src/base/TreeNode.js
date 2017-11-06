@@ -1,4 +1,4 @@
-const AbstractNode = require("./AbstractNodeJsNode.js")
+const AbstractNode = require("./AbstractNode.node.js")
 const TreeUtils = require("./TreeUtils.js")
 
 class ImmutableNode extends AbstractNode {
@@ -621,7 +621,7 @@ class ImmutableNode extends AbstractNode {
     // set from string
     if (typeof content === "string") return this._parseString(content)
 
-    // set from TreeProgram object
+    // set from tree object
     if (content instanceof ImmutableNode) {
       const me = this
       content._getChildren().forEach(node => {
@@ -1340,7 +1340,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "10.1.1"
+    return "10.1.2"
   }
 }
 

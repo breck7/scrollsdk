@@ -1,4 +1,4 @@
-const TreeColumnTypes = `any
+const GrammarBackedColumnTypes = `any
  isValid .?
 something
  isValid .
@@ -30,4 +30,4 @@ lowercase
 alpha
  isValid ^[a-zA-Z]+$`
 
-module.exports = TreeColumnTypes
+module.exports = GrammarBackedColumnTypes

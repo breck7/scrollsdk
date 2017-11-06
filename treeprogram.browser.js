@@ -5,40 +5,6 @@ class AbstractNode {
   }
 }
 
-const TreeColumnTypes = `any
- isValid .?
-something
- isValid .
-url
- isValid .?
-type
- isValid ^(any|url|something|int|boolean|number|lowercase)$
-int
- isValid ^\-?[0-9]+$
-reduction
- isValid ^(count|sum|average|min|max|median)$
-boolean
- isValid ^(false|true)$
-number
- isValid ^\-?[0-9]*\.?[0-9]*$
-prob
- description Number between 0 and 1
- isValid ^\-?[0-9]*\.?[0-9]*$
-alphanumeric
- isValid ^[a-zA-Z0-9]+$
-comparison
- isValid ^(\<|\>|==)$
-filepath
- isValid ^[a-zA-Z0-9\.\_\/\-\@]+$
-identifier
- isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
-lowercase
- isValid ^[a-z]+$
-alpha
- isValid ^[a-zA-Z]+$`
-
-window.TreeColumnTypes = TreeColumnTypes
-
 class TreeUtils {
   static getPathWithoutFileName(path) {
     const parts = path.split("/") // todo: change for windows?
@@ -733,7 +699,7 @@ class ImmutableNode extends AbstractNode {
     // set from string
     if (typeof content === "string") return this._parseString(content)
 
-    // set from TreeProgram object
+    // set from tree object
     if (content instanceof ImmutableNode) {
       const me = this
       content._getChildren().forEach(node => {
@@ -1452,16 +1418,50 @@ class TreeNode extends ImmutableNode {
   }
 
   static getVersion() {
-    return "10.1.0"
+    return "10.1.2"
   }
 }
 
 window.TreeNode = TreeNode
 
+const GrammarBackedColumnTypes = `any
+ isValid .?
+something
+ isValid .
+url
+ isValid .?
+type
+ isValid ^(any|url|something|int|boolean|number|lowercase)$
+int
+ isValid ^\-?[0-9]+$
+reduction
+ isValid ^(count|sum|average|min|max|median)$
+boolean
+ isValid ^(false|true)$
+number
+ isValid ^\-?[0-9]*\.?[0-9]*$
+prob
+ description Number between 0 and 1
+ isValid ^\-?[0-9]*\.?[0-9]*$
+alphanumeric
+ isValid ^[a-zA-Z0-9]+$
+comparison
+ isValid ^(\<|\>|==)$
+filepath
+ isValid ^[a-zA-Z0-9\.\_\/\-\@]+$
+identifier
+ isValid ^[$A-Za-z_][0-9a-zA-Z_$]*$
+lowercase
+ isValid ^[a-z]+$
+alpha
+ isValid ^[a-zA-Z]+$`
+
+window.GrammarBackedColumnTypes = GrammarBackedColumnTypes
 
 
 
-class TreeCell {
+
+class GrammarBackedCell {
   constructor(word, type, node, line, index) {
     this._word = word
     this._type = type
@@ -1495,7 +1495,7 @@ class TreeCell {
         .toString()}`
     if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} column ${index}`
 
-    const wordTypeClass = TreeCell._getTreeColumnTypes()[type]
+    const wordTypeClass = GrammarBackedCell._getGrammarBackedColumnTypes()[type]
     if (!wordTypeClass)
       return `Grammar definition error: No column type "${type}" found in "${fullLine}" on line ${line}.`
 
@@ -1505,25 +1505,25 @@ class TreeCell {
       : `Invalid word in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
   }
 
-  static _getTreeColumnTypes() {
+  static _getGrammarBackedColumnTypes() {
     this._initCache()
-    return TreeCell._cache_treeColumnTypes
+    return GrammarBackedCell._cache_treeColumnTypes
   }
 
   static _initCache() {
-    if (TreeCell._cache_treeColumnTypes) return
+    if (GrammarBackedCell._cache_treeColumnTypes) return
 
-    const program = new TreeNode(TreeColumnTypes)
-    TreeCell._cache_treeColumnTypes = {}
+    const program = new TreeNode(GrammarBackedColumnTypes)
+    GrammarBackedCell._cache_treeColumnTypes = {}
     program.getChildren().forEach(child => {
-      TreeCell._cache_treeColumnTypes[child.getLine()] = {
+      GrammarBackedCell._cache_treeColumnTypes[child.getLine()] = {
         isValid: str => str.match(new RegExp(child.findBeam("isValid")))
       }
     })
   }
 }
 
-window.TreeCell = TreeCell
+window.GrammarBackedCell = GrammarBackedCell
 
 
 
@@ -1580,7 +1580,9 @@ window.GrammarConstants = GrammarConstants
 
 
 
-class DynamicNode extends TreeNode {
+
+
+class GrammarBackedNode extends TreeNode {
   getProgram() {
     return this.getParent().getProgram()
   }
@@ -1596,7 +1598,7 @@ class DynamicNode extends TreeNode {
   }
 
   _getParameterMap() {
-    const cells = this.getTreeCellArray()
+    const cells = this.getGrammarBackedCellArray()
     const parameterMap = {}
     cells.forEach(cell => {
       const type = cell.getType()
@@ -1630,14 +1632,14 @@ class DynamicNode extends TreeNode {
     // Too many parameters
     // Incorrect parameter
 
-    const errors = this.getTreeCellArray()
+    const errors = this.getGrammarBackedCellArray()
       .filter(wordCheck => wordCheck.getErrorMessage())
       .map(check => check.getErrorMessage())
 
     return errors
   }
 
-  getTreeCellArray() {
+  getGrammarBackedCellArray() {
     const point = this.getPoint()
     const definition = this.getDefinition()
     const parameters = definition.getBeamParameters()
@@ -1650,23 +1652,23 @@ class DynamicNode extends TreeNode {
     for (let index = 0; index < length; index++) {
       const word = words[index]
       const type = index >= parameterLength ? lastParameterListType : parameters[index]
-      checks[index] = new TreeCell(word, type, this, point.y, index)
+      checks[index] = new GrammarBackedCell(word, type, this, point.y, index)
     }
     return checks
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getWordTypeLine() {
-    const parameterWords = this.getTreeCellArray().map(slot => slot.getType())
+    const parameterWords = this.getGrammarBackedCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
   }
 }
 
-window.DynamicNode = DynamicNode
+window.GrammarBackedNode = GrammarBackedNode
 
 
 
-class TreeErrorNode extends DynamicNode {
+class GrammarBackedErrorNode extends GrammarBackedNode {
   getWordTypeLine() {
     return "error ".repeat(this.getWords().length).trim()
   }
@@ -1676,11 +1678,11 @@ class TreeErrorNode extends DynamicNode {
   }
 }
 
-window.TreeErrorNode = TreeErrorNode
+window.GrammarBackedErrorNode = GrammarBackedErrorNode
 
 
 
-class TreeNonTerminalNode extends DynamicNode {
+class GrammarBackedNonTerminalNode extends GrammarBackedNode {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
   }
@@ -1712,13 +1714,13 @@ ${indent}${closeChildrenString}`
   }
 }
 
-window.TreeNonTerminalNode = TreeNonTerminalNode
+window.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode
 
 
 
-class TreeTerminalNode extends DynamicNode {}
+class GrammarBackedTerminalNode extends GrammarBackedNode {}
 
-window.TreeTerminalNode = TreeTerminalNode
+window.GrammarBackedTerminalNode = GrammarBackedTerminalNode
 
 
 
@@ -1857,9 +1859,9 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
   _getNodeClasses() {
     const builtIns = {
-      ErrorNode: TreeErrorNode,
-      TerminalNode: TreeTerminalNode,
-      NonTerminalNode: TreeNonTerminalNode
+      ErrorNode: GrammarBackedErrorNode,
+      TerminalNode: GrammarBackedTerminalNode,
+      NonTerminalNode: GrammarBackedNonTerminalNode
     }
 
     Object.assign(builtIns, this.getProgram().getRootNodeClasses())
@@ -1867,7 +1869,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   _getDefaultParserClass() {
-    return this.isNonTerminal() ? TreeNonTerminalNode : TreeTerminalNode
+    return this.isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
   _getParserClassFromFilePath(filepath) {
@@ -2124,7 +2126,7 @@ window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   _getDefaultParserClass() {
-    // todo: return TreeProgram? need to clean up a circular dep
+    // todo: return GrammarBackedProgram?s need to clean up a circular dep
   }
 }
 
@@ -2242,7 +2244,9 @@ window.GrammarProgram = GrammarProgram
 
 
 
-class AnyProgram extends TreeNode {
+
+
+class GrammarBackedProgram extends TreeNode {
   getProgram() {
     return this
   }
@@ -2253,7 +2257,7 @@ class AnyProgram extends TreeNode {
   }
 
   getGrammarProgram() {
-    if (AnyProgram._grammarProgram) return AnyProgram._grammarProgram
+    if (GrammarBackedProgram._grammarProgram) return GrammarBackedProgram._grammarProgram
 
     const anyGrammar = `any
  @description Default grammar
@@ -2261,20 +2265,10 @@ class AnyProgram extends TreeNode {
 any
  @columns any*`
 
-    AnyProgram._grammarProgram = new GrammarProgram(anyGrammar)
-    return AnyProgram._grammarProgram
+    GrammarBackedProgram._grammarProgram = new GrammarProgram(anyGrammar)
+    return GrammarBackedProgram._grammarProgram
   }
-}
 
-window.AnyProgram = AnyProgram
-
-
-
-
-
-
-
-class TreeProgram extends AnyProgram {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
   }
@@ -2311,7 +2305,7 @@ class TreeProgram extends AnyProgram {
   }
 
   getGrammarUsage(filepath = "") {
-    const usage = new TreeProgram()
+    const usage = new GrammarBackedProgram()
     const grammarProgram = this.getGrammarProgram()
     const keywordDefinitions = grammarProgram.getChildren()
     keywordDefinitions.forEach(child => {
@@ -2343,7 +2337,7 @@ class TreeProgram extends AnyProgram {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
 
-    this._cache_typeTree = new TreeProgram(this.getProgramWordTypeString())
+    this._cache_typeTree = new GrammarBackedProgram(this.getProgramWordTypeString())
     this._cache_programWordTypeStringMTime = treeMTime
   }
 
@@ -2357,9 +2351,15 @@ class TreeProgram extends AnyProgram {
   }
 }
 
-TreeProgram.Utils = TreeUtils
-TreeProgram.TreeNode = TreeNode
-TreeProgram.NonTerminalNode = TreeNonTerminalNode
-TreeProgram.TerminalNode = TreeTerminalNode
+GrammarBackedProgram.Utils = TreeUtils
+GrammarBackedProgram.TreeNode = TreeNode
+GrammarBackedProgram.NonTerminalNode = GrammarBackedNonTerminalNode
+GrammarBackedProgram.TerminalNode = GrammarBackedTerminalNode
+
+window.GrammarBackedProgram = GrammarBackedProgram
+
+
+
+const TreeProgram = GrammarBackedProgram
 
 window.TreeProgram = TreeProgram

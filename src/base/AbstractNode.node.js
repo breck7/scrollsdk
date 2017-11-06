@@ -1,7 +1,7 @@
-class AbstractNodeJsNode {
+class AbstractNode {
   _getNow() {
     return parseFloat(process.hrtime().join(""))
   }
 }
 
-module.exports = AbstractNodeJsNode
+module.exports = AbstractNode

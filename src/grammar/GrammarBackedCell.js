@@ -1,7 +1,7 @@
-const TreeNode = require("./TreeNode.js")
-const TreeColumnTypes = require("./TreeColumnTypes.js")
+const TreeNode = require("../base/TreeNode.js")
+const GrammarBackedColumnTypes = require("./GrammarBackedColumnTypes.js")
 
-class TreeCell {
+class GrammarBackedCell {
   constructor(word, type, node, line, index) {
     this._word = word
     this._type = type
@@ -35,7 +35,7 @@ class TreeCell {
         .toString()}`
     if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} column ${index}`
 
-    const wordTypeClass = TreeCell._getTreeColumnTypes()[type]
+    const wordTypeClass = GrammarBackedCell._getGrammarBackedColumnTypes()[type]
     if (!wordTypeClass)
       return `Grammar definition error: No column type "${type}" found in "${fullLine}" on line ${line}.`
 
@@ -45,22 +45,22 @@ class TreeCell {
       : `Invalid word in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
   }
 
-  static _getTreeColumnTypes() {
+  static _getGrammarBackedColumnTypes() {
     this._initCache()
-    return TreeCell._cache_treeColumnTypes
+    return GrammarBackedCell._cache_treeColumnTypes
   }
 
   static _initCache() {
-    if (TreeCell._cache_treeColumnTypes) return
+    if (GrammarBackedCell._cache_treeColumnTypes) return
 
-    const program = new TreeNode(TreeColumnTypes)
-    TreeCell._cache_treeColumnTypes = {}
+    const program = new TreeNode(GrammarBackedColumnTypes)
+    GrammarBackedCell._cache_treeColumnTypes = {}
     program.getChildren().forEach(child => {
-      TreeCell._cache_treeColumnTypes[child.getLine()] = {
+      GrammarBackedCell._cache_treeColumnTypes[child.getLine()] = {
         isValid: str => str.match(new RegExp(child.findBeam("isValid")))
       }
     })
   }
 }
 
-module.exports = TreeCell
+module.exports = GrammarBackedCell

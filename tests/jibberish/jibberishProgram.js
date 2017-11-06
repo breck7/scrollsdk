@@ -1,6 +1,6 @@
-const TreeProgram = require("../../index.js")
+const GrammarBackedProgram = require("../../src/grammar/GrammarBackedProgram.js")
 
-class jibberishProgram extends TreeProgram {
+class jibberishProgram extends GrammarBackedProgram {
   executeSync() {
     return 42
   }

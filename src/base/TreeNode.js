@@ -346,6 +346,17 @@ class ImmutableNode extends AbstractNode {
     return this._childrenToString()
   }
 
+  // todo: implement
+  _getNodeJoinCharacter() {
+    return "\n"
+  }
+
+  compile(targetExtension) {
+    return this.getChildren()
+      .map(child => child.compile(targetExtension))
+      .join(this._getNodeJoinCharacter())
+  }
+
   toXml() {
     return this._childrenToXml(0)
   }
@@ -724,6 +735,10 @@ class ImmutableNode extends AbstractNode {
 
   getChildrenByNodeType(type) {
     return this.getChildren().filter(child => child instanceof type)
+  }
+
+  getNodeByType(type) {
+    return this.getChildren().find(child => child instanceof type)
   }
 
   indexOfLast(keyword) {
@@ -1337,10 +1352,6 @@ class TreeNode extends ImmutableNode {
     const XI = " "
     const indent = YI + XI.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
-  }
-
-  static getVersion() {
-    return "10.1.2"
   }
 }
 

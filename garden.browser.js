@@ -1,16 +1,17 @@
 $(document).ready(function() {
-  $("#treeprogram").on("keyup", function() {
-    var tree = new TreeProgram($(this).val())
+  const mainArea = $("#tree")
+  mainArea.on("keyup", function() {
+    var tree = new TreeNode($(this).val())
     $("#outline").html(tree.toOutline())
     window.tree = tree
   })
 
-  $("#treeprogram").on("blur", function() {
+  mainArea.on("blur", function() {
     localStorage.setItem("tree", $(this).val())
   })
 
   const val = localStorage.getItem("tree")
-  if (val) $("#treeprogram").val(val)
+  if (val) mainArea.val(val)
 
-  $("#treeprogram").keyup()
+  mainArea.keyup()
 })

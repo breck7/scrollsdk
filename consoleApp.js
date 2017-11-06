@@ -1,4 +1,5 @@
-const TreeProgram = require("./index.js")
+const otree = require("./index.js")
+const TreeNode = otree.TreeNode
 const GrammarProgram = require("./src/grammar/GrammarProgram.js")
 const TreeUtils = require("./src/base/TreeUtils.js")
 const fs = require("fs")
@@ -9,7 +10,7 @@ class ConsoleApp {
     this._grammarsPath = grammarsPath
     this._initFile(grammarsPath)
     const grammarsSsv = fs.readFileSync(grammarsPath, "utf8")
-    this._grammarsTree = TreeProgram.fromSsv(grammarsSsv) // todo: index on name, or build a Tree Grammar lang
+    this._grammarsTree = TreeNode.fromSsv(grammarsSsv) // todo: index on name, or build a Tree Grammar lang
   }
 
   _initFile(path, initialString = "") {
@@ -37,7 +38,7 @@ register grammarPath Register a new grammar
 run programPath Execute a Tree Language Program
 usage grammarName Analyze Global Keyword Usage for a given grammar
 version  List installed Tree Notation version`
-    console.log(TreeProgram.fromSsv(help).toTable())
+    console.log(TreeNode.fromSsv(help).toTable())
   }
 
   list() {
@@ -57,7 +58,7 @@ version  List installed Tree Notation version`
   }
 
   create() {
-    TreeProgram.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName("stamp"))
+    otree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName("stamp"))
   }
 
   check(programPathOrGrammarName) {
@@ -74,7 +75,7 @@ version  List installed Tree Notation version`
 
   _check(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = TreeProgram.makeProgram(programPath, grammarPath)
+    const program = otree.makeProgram(programPath, grammarPath)
     return program.getProgramErrors()
   }
 
@@ -92,7 +93,7 @@ version  List installed Tree Notation version`
   compile(programPath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = TreeProgram.makeProgram(programPath, grammarPath)
+    const program = otree.makeProgram(programPath, grammarPath)
     const path = program.getCompiledProgramName(programPath)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const targetExtension = grammarProgram.getTargetExtension()
@@ -119,8 +120,8 @@ version  List installed Tree Notation version`
     // todo: refactor this
     // todo: the findBeam method is bad (confuse with getBeam). clean up.
     // todo: some easier one step way to get a set from a column
-    // todo: add support for initing a TreeProgram from a JS set and map
-    const data = TreeProgram.fromSsv(this._getHistoryFile())
+    // todo: add support for initing a TreeNode from a JS set and map
+    const data = TreeNode.fromSsv(this._getHistoryFile())
     const files = data
       .getChildren()
       .filter(node => {
@@ -131,7 +132,7 @@ version  List installed Tree Notation version`
         if (["check", "run", "", "compile"].includes(command)) return true
       })
       .map(node => node.findBeam("param"))
-    const items = Object.keys(new TreeProgram(files.join("\n")).toObject())
+    const items = Object.keys(new TreeNode(files.join("\n")).toObject())
     return items.filter(file => file.endsWith(grammarName)).filter(file => fs.existsSync(file))
   }
 
@@ -161,7 +162,7 @@ version  List installed Tree Notation version`
 
   _run(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    return TreeProgram.executeFile(programPath, grammarPath)
+    return otree.executeFile(programPath, grammarPath)
   }
 
   run(programPathOrGrammarName) {
@@ -173,8 +174,8 @@ version  List installed Tree Notation version`
   usage(grammarName) {
     const files = this._history(grammarName)
     const grammarPath = this._getGrammarPathOrThrow(files[0])
-    const programClass = TreeProgram.getProgramClassFromGrammarFile(grammarPath)
-    const report = new TreeProgram()
+    const programClass = otree.getProgramClassFromGrammarFile(grammarPath)
+    const report = new TreeNode()
     files.forEach(path => {
       const code = fs.readFileSync(path, "utf8")
       const program = new programClass(code)
@@ -182,7 +183,7 @@ version  List installed Tree Notation version`
       report.extend(usage.toString())
     })
     const folderName = grammarName
-    const stampFile = new TreeProgram(`folder ${folderName}`)
+    const stampFile = new TreeNode(`folder ${folderName}`)
     report.getChildren().forEach(node => {
       const fileNode = stampFile.append(`file ${folderName}/${node.getKeyword()}.ssv`)
       fileNode.append("data", `${node.getBeam()}\n` + node.childrenToString())
@@ -191,7 +192,7 @@ version  List installed Tree Notation version`
   }
 
   version() {
-    console.log(`TreeProgram version ${TreeProgram.getVersion()}`)
+    console.log(`otree version ${otree.getVersion()}`)
   }
 }
 

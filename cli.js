@@ -2,7 +2,6 @@
 
 const fs = require("fs")
 
-const TreeProgram = require("./index.js")
 const ConsoleApp = require("./consoleApp.js")
 
 const app = new ConsoleApp()

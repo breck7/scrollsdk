@@ -3,7 +3,7 @@
 	[
 		{
 			"path": ".",
-			"folder_exclude_patterns": ["node_modules", "ignore", "coverage"]
+			"folder_exclude_patterns": ["node_modules", "ignore", "coverage", ".nyc_output"]
 		}
 	],
 	"build_systems":

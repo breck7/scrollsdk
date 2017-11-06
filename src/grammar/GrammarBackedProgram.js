@@ -1,8 +1,4 @@
-const GrammarProgram = require("./GrammarProgram.js")
 const TreeNode = require("../base/TreeNode.js")
-const TreeUtils = require("../base/TreeUtils.js")
-const GrammarBackedNonTerminalNode = require("./GrammarBackedNonTerminalNode.js")
-const GrammarBackedTerminalNode = require("./GrammarBackedTerminalNode.js")
 
 class GrammarBackedProgram extends TreeNode {
   getProgram() {
@@ -12,19 +8,6 @@ class GrammarBackedProgram extends TreeNode {
   getProgramErrors() {
     const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
     return [].concat.apply([], nodeErrors)
-  }
-
-  getGrammarProgram() {
-    if (GrammarBackedProgram._grammarProgram) return GrammarBackedProgram._grammarProgram
-
-    const anyGrammar = `any
- @description Default grammar
- @catchAllKeyword any
-any
- @columns any*`
-
-    GrammarBackedProgram._grammarProgram = new GrammarProgram(anyGrammar)
-    return GrammarBackedProgram._grammarProgram
   }
 
   getKeywordMap() {
@@ -43,17 +26,6 @@ any
       errorCount: this.getProgramErrors().length,
       name: grammarProgram.getExtensionName()
     }
-  }
-
-  // todo: implement
-  _getNodeJoinCharacter() {
-    return "\n"
-  }
-
-  compile(targetExtension) {
-    return this.getChildren()
-      .map(child => child.compile(targetExtension))
-      .join(this._getNodeJoinCharacter())
   }
 
   async run() {}
@@ -108,10 +80,5 @@ any
     return {}
   }
 }
-
-GrammarBackedProgram.Utils = TreeUtils
-GrammarBackedProgram.TreeNode = TreeNode
-GrammarBackedProgram.NonTerminalNode = GrammarBackedNonTerminalNode
-GrammarBackedProgram.TerminalNode = GrammarBackedTerminalNode
 
 module.exports = GrammarBackedProgram

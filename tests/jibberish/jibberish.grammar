@@ -3,12 +3,15 @@ jibberish
  @parser js ./jibberishProgram.js
  @compiler txt
  @keywords
-  baseNode
-baseNode
-block baseNode
+  topLevel
+topLevel
+block topLevel
  @keywords
-  baseNode
-foo baseNode
+  topLevel
+foo topLevel
+nodeWithConsts topLevel
+ @constants
+  greeting hello world
 to block
  @columns word
  @compiler txt

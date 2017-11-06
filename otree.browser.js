@@ -424,6 +424,17 @@ class ImmutableNode extends AbstractNode {
     return this._childrenToString()
   }
 
+  // todo: implement
+  _getNodeJoinCharacter() {
+    return "\n"
+  }
+
+  compile(targetExtension) {
+    return this.getChildren()
+      .map(child => child.compile(targetExtension))
+      .join(this._getNodeJoinCharacter())
+  }
+
   toXml() {
     return this._childrenToXml(0)
   }
@@ -802,6 +813,10 @@ class ImmutableNode extends AbstractNode {
 
   getChildrenByNodeType(type) {
     return this.getChildren().filter(child => child instanceof type)
+  }
+
+  getNodeByType(type) {
+    return this.getChildren().find(child => child instanceof type)
   }
 
   indexOfLast(keyword) {
@@ -1416,10 +1431,6 @@ class TreeNode extends ImmutableNode {
     const indent = YI + XI.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
-
-  static getVersion() {
-    return "10.1.2"
-  }
 }
 
 window.TreeNode = TreeNode
@@ -1524,6 +1535,91 @@ class GrammarBackedCell {
 }
 
 window.GrammarBackedCell = GrammarBackedCell
+
+
+
+class GrammarBackedProgram extends TreeNode {
+  getProgram() {
+    return this
+  }
+
+  getProgramErrors() {
+    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
+    return [].concat.apply([], nodeErrors)
+  }
+
+  getKeywordMap() {
+    return this.getDefinition().getRunTimeKeywordMap()
+  }
+
+  getCatchAllNodeClass(line) {
+    // todo: blank line
+    // todo: restore didyoumean
+    return this.getDefinition().getRunTimeCatchAllNodeClass()
+  }
+
+  getErrorCount() {
+    const grammarProgram = this.getDefinition()
+    return {
+      errorCount: this.getProgramErrors().length,
+      name: grammarProgram.getExtensionName()
+    }
+  }
+
+  async run() {}
+
+  getDefinition() {
+    return this.getGrammarProgram()
+  }
+
+  getGrammarUsage(filepath = "") {
+    const usage = new GrammarBackedProgram()
+    const grammarProgram = this.getGrammarProgram()
+    const keywordDefinitions = grammarProgram.getChildren()
+    keywordDefinitions.forEach(child => {
+      usage.append([child.getWord(0), "line-id", "keyword", child.getBeamParameters().join(" ")].join(" "))
+    })
+    const programNodes = this.getTopDownArray()
+    programNodes.forEach((programNode, lineNumber) => {
+      const def = programNode.getDefinition()
+      const keyword = def.getKeyword()
+      const stats = usage.getNode(keyword)
+      stats.append([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
+    })
+    return usage
+  }
+
+  getProgramWordTypeString() {
+    return this.getTopDownArray()
+      .map(child => child.getIndentation() + child.getWordTypeLine())
+      .join("\n")
+  }
+
+  getWordTypeAtPosition(lineIndex, wordIndex) {
+    this._initWordTypeCache()
+    const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1]
+    return typeNode ? typeNode.getWord(wordIndex - 1) : ""
+  }
+
+  _initWordTypeCache() {
+    const treeMTime = this.getTreeMTime()
+    if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
+
+    this._cache_typeTree = new GrammarBackedProgram(this.getProgramWordTypeString())
+    this._cache_programWordTypeStringMTime = treeMTime
+  }
+
+  getCompiledProgramName(programPath) {
+    const grammarProgram = this.getDefinition()
+    return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
+  }
+
+  getNodeClasses() {
+    return {}
+  }
+}
+
+window.GrammarBackedProgram = GrammarBackedProgram
 
 
 
@@ -2022,6 +2118,7 @@ window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
 
 
 
+
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   _getRunTimeCatchAllKeyword() {
     return this.findBeam(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
@@ -2099,7 +2196,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   getConstantsObject() {
-    const constantsNode = this.getNode(GrammarConstants.constants)
+    const constantsNode = this.getNodeByType(GrammarConstantsNode)
     return constantsNode ? constantsNode.getConstantsObj() : {}
   }
 
@@ -2117,6 +2214,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 }
 
 window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
+
 
 
 
@@ -2236,6 +2334,18 @@ contexts:
      scope: entity.name.type.tree
      pop: true`
   }
+
+  static getParserClass(grammarCode, grammarPath) {
+    // todo: catching
+    const expandedGrammarCode = new TreeNode(grammarCode).getExpanded()
+    const grammarProgram = new GrammarProgram(expandedGrammarCode, grammarPath)
+    const extendedClass = grammarProgram.getRootParserClass() || GrammarBackedProgram
+    return class extends extendedClass {
+      getGrammarProgram() {
+        return grammarProgram
+      }
+    }
+  }
 }
 
 window.GrammarProgram = GrammarProgram
@@ -2246,120 +2356,15 @@ window.GrammarProgram = GrammarProgram
 
 
 
-class GrammarBackedProgram extends TreeNode {
-  getProgram() {
-    return this
-  }
 
-  getProgramErrors() {
-    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
-    return [].concat.apply([], nodeErrors)
-  }
+const otree = {}
 
-  getGrammarProgram() {
-    if (GrammarBackedProgram._grammarProgram) return GrammarBackedProgram._grammarProgram
+otree.GrammarBackedProgram = GrammarBackedProgram
+otree.Utils = TreeUtils
+otree.TreeNode = TreeNode
+otree.NonTerminalNode = GrammarBackedNonTerminalNode
+otree.TerminalNode = GrammarBackedTerminalNode
 
-    const anyGrammar = `any
- @description Default grammar
- @catchAllKeyword any
-any
- @columns any*`
+otree.getVersion = () => "10.1.2"
 
-    GrammarBackedProgram._grammarProgram = new GrammarProgram(anyGrammar)
-    return GrammarBackedProgram._grammarProgram
-  }
-
-  getKeywordMap() {
-    return this.getDefinition().getRunTimeKeywordMap()
-  }
-
-  getCatchAllNodeClass(line) {
-    // todo: blank line
-    // todo: restore didyoumean
-    return this.getDefinition().getRunTimeCatchAllNodeClass()
-  }
-
-  getErrorCount() {
-    const grammarProgram = this.getDefinition()
-    return {
-      errorCount: this.getProgramErrors().length,
-      name: grammarProgram.getExtensionName()
-    }
-  }
-
-  // todo: implement
-  _getNodeJoinCharacter() {
-    return "\n"
-  }
-
-  compile(targetExtension) {
-    return this.getChildren()
-      .map(child => child.compile(targetExtension))
-      .join(this._getNodeJoinCharacter())
-  }
-
-  async run() {}
-
-  getDefinition() {
-    return this.getGrammarProgram()
-  }
-
-  getGrammarUsage(filepath = "") {
-    const usage = new GrammarBackedProgram()
-    const grammarProgram = this.getGrammarProgram()
-    const keywordDefinitions = grammarProgram.getChildren()
-    keywordDefinitions.forEach(child => {
-      usage.append([child.getWord(0), "line-id", "keyword", child.getBeamParameters().join(" ")].join(" "))
-    })
-    const programNodes = this.getTopDownArray()
-    programNodes.forEach((programNode, lineNumber) => {
-      const def = programNode.getDefinition()
-      const keyword = def.getKeyword()
-      const stats = usage.getNode(keyword)
-      stats.append([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
-    })
-    return usage
-  }
-
-  getProgramWordTypeString() {
-    return this.getTopDownArray()
-      .map(child => child.getIndentation() + child.getWordTypeLine())
-      .join("\n")
-  }
-
-  getWordTypeAtPosition(lineIndex, wordIndex) {
-    this._initWordTypeCache()
-    const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1]
-    return typeNode ? typeNode.getWord(wordIndex - 1) : ""
-  }
-
-  _initWordTypeCache() {
-    const treeMTime = this.getTreeMTime()
-    if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
-
-    this._cache_typeTree = new GrammarBackedProgram(this.getProgramWordTypeString())
-    this._cache_programWordTypeStringMTime = treeMTime
-  }
-
-  getCompiledProgramName(programPath) {
-    const grammarProgram = this.getDefinition()
-    return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
-  }
-
-  getNodeClasses() {
-    return {}
-  }
-}
-
-GrammarBackedProgram.Utils = TreeUtils
-GrammarBackedProgram.TreeNode = TreeNode
-GrammarBackedProgram.NonTerminalNode = GrammarBackedNonTerminalNode
-GrammarBackedProgram.TerminalNode = GrammarBackedTerminalNode
-
-window.GrammarBackedProgram = GrammarBackedProgram
-
-
-
-const TreeProgram = GrammarBackedProgram
-
-window.TreeProgram = TreeProgram
+window.otree = otree

@@ -1,3 +1,7 @@
+11.0.0 / 2017-11-06
+===================
+- Breaking: renamed TreeProgram to otree
+
 10.1.2 / 2017-11-06
 ===================
 - Infra: rearranged code into base node and grammar backed folders

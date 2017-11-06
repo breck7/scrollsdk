@@ -1,5 +1,6 @@
 const TreeNode = require("../base/TreeNode.js")
 
+const GrammarBackedProgram = require("./GrammarBackedProgram.js")
 const GrammarConstants = require("./GrammarConstants.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 const GrammarKeywordDefinitionNode = require("./GrammarKeywordDefinitionNode.js")
@@ -115,6 +116,18 @@ contexts:
    - match: $
      scope: entity.name.type.tree
      pop: true`
+  }
+
+  static getParserClass(grammarCode, grammarPath) {
+    // todo: catching
+    const expandedGrammarCode = new TreeNode(grammarCode).getExpanded()
+    const grammarProgram = new GrammarProgram(expandedGrammarCode, grammarPath)
+    const extendedClass = grammarProgram.getRootParserClass() || GrammarBackedProgram
+    return class extends extendedClass {
+      getGrammarProgram() {
+        return grammarProgram
+      }
+    }
   }
 }
 

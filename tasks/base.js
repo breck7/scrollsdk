@@ -11,4 +11,4 @@ const runTests = testTree => {
   })
 }
 
-runTests(require("../tests/unit.js"))
+runTests(require("../tests/base.js"))

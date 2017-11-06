@@ -1,4 +1,4 @@
-declare type content = string | TreeProgram | Object | any
+declare type content = string | TreeNode | Object | any
 declare type int = number
 declare type nodeString = string // A string that does not contain YI ("\n")
 declare type keywordPath = string // user emailAddress
@@ -10,57 +10,58 @@ declare type KeywordMap = Object // {"+" : AdditionNode}
 declare type filepath = string
 declare type formatString = string // "Hello {name}! You are {age} years old."
 declare type Json = string // JSON string
-declare type nodeIterator = (node: TreeProgram, index: int) => boolean
+declare type nodeIterator = (node: TreeNode, index: int) => boolean
 declare type sortResultInt = int // -1 0 1
-declare type TreeProgramClass = Object // a class that extends TreeProgram
-declare type nodeMapFn = (node: TreeProgram) => string
+declare type TreeNodeClass = Object // a class that extends TreeNode
+declare type GrammarBackedProgramClass = TreeNodeClass
+declare type nodeMapFn = (node: TreeNode) => string
 declare type replaceNodeFn = (str: string) => string
 declare type errorMessage = string
-declare type sortFn = (nodeA: TreeProgram, nodeB: TreeProgram) => sortResultInt
+declare type sortFn = (nodeA: TreeNode, nodeB: TreeNode) => sortResultInt
 declare type point = { x: int; y: int } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
-interface TreeProgram {
+interface TreeNode {
   (tree?: content, line?: string): This
 
   compile: (targetExtension: string) => string
   getIndex: () => int
-  getPoint: (relativeTo?: TreeProgram) => point
-  getPathVector: (relativeTo?: TreeProgram) => pathVector
+  getPoint: (relativeTo?: TreeNode) => point
+  getPathVector: (relativeTo?: TreeNode) => pathVector
   getLine: () => nodeString
-  getChildrenByNodeType: () => TreeProgram[]
-  getStack: (relativeTo?: TreeProgram) => TreeProgram[]
-  getStackString: (relativeTo?: TreeProgram) => string
-  getParent: () => TreeProgram | undefined
-  getRootNode: (relativeTo?: TreeProgram) => This | TreeProgram
+  getChildrenByNodeType: (type: TreeNodeClass) => TreeNode[]
+  getNodeByType: (type: TreeNodeClass) => TreeNode | Undefined
+  getStack: (relativeTo?: TreeNode) => TreeNode[]
+  getStackString: (relativeTo?: TreeNode) => string
+  getParent: () => TreeNode | undefined
+  getRootNode: (relativeTo?: TreeNode) => This | TreeNode
   getKeyword: () => word
   getExpanded: () => string
   getErrors: () => string[] // parse errors. base class is permissive and will always have 0 errors.
-  getGrammarUsage: () => TreeProgram[] // returns a report on what keywords from its language the program uses
-  getSiblings: () => TreeProgram[]
-  getOlderSiblings: () => TreeProgram[] // where older sibling is a node with a lower index
-  getYoungerSiblings: () => TreeProgram[] // where younger sibling is a node with a higher index
+  getSiblings: () => TreeNode[]
+  getOlderSiblings: () => TreeNode[] // where older sibling is a node with a lower index
+  getYoungerSiblings: () => TreeNode[] // where younger sibling is a node with a higher index
   getWordTypeLine: () => string // something like "any int int". base class words are always any type.
   getWord: (index: int) => word
   getWords: (startingFrom?: int) => word[]
   getBeam: () => string | Undefined // Always refers to part of the line after the keyword, given that ZI is space.
-  getKeywordPath: (relativeTo?: TreeProgram) => keywordPath
-  getTopDownArray: () => TreeProgram[] // returns all nodes as array in preorder order
-  getGraph: (headKey?: word) => TreeProgram[] // if no param, uses getWord(1)
-  getNext: () => TreeProgram // wrapsaround
-  getPrevious: () => TreeProgram // wrapsaround
-  getInheritanceTree: () => TreeProgram // useful when your trees follow the convention "className parentClassName" line structure
+  getKeywordPath: (relativeTo?: TreeNode) => keywordPath
+  getTopDownArray: () => TreeNode[] // returns all nodes as array in preorder order
+  getGraph: (headKey?: word) => TreeNode[] // if no param, uses getWord(1)
+  getNext: () => TreeNode // wrapsaround
+  getPrevious: () => TreeNode // wrapsaround
+  getInheritanceTree: () => TreeNode // useful when your trees follow the convention "className parentClassName" line structure
   execute: (context: any) => Promise<any>
   executeSync: (context: any) => any[]
   isTerminal: () => Boolean
-  clone: () => TreeProgram
-  copyTo: (tree: TreeProgram, index?: int) => TreeProgram
+  clone: () => TreeNode
+  copyTo: (tree: TreeNode, index?: int) => TreeNode
   getLines: () => string[]
-  getNodeByColumns: (...columns: string[]) => TreeProgram | Undefined
-  getNode: (path: keywordPath) => TreeProgram
-  getNodes: () => TreeProgram[]
+  getNodeByColumns: (...columns: string[]) => TreeNode | Undefined
+  getNode: (path: keywordPath) => TreeNode
+  getNodes: () => TreeNode[]
   length: number
-  nodeAt: (index: int | pathVector) => TreeProgram
-  findNodes: (path: keywordPath) => TreeProgram[]
+  nodeAt: (index: int | pathVector) => TreeNode
+  findNodes: (path: keywordPath) => TreeNode[]
   findBeam: (path: keywordPath) => string | Undefined
   format: (str: formatString) => string
   getColumn: (path: word) => (string | Undefined)[]
@@ -83,26 +84,26 @@ interface TreeProgram {
   toXml: () => string
 
   // Methods for Tree Languages
-  getCatchAllNodeClass: (line: string) => TreeProgram
+  getCatchAllNodeClass: (line: string) => TreeNode
   getKeywordMap: () => KeywordMap
-  parseNodeType: (line: string) => TreeProgram
+  parseNodeType: (line: string) => TreeNode
 
   // Mutable Methods
-  append: (line: string, tree?: TreeProgram) => TreeProgram
-  concat: (b: TreeProgram | string) => This
+  append: (line: string, tree?: TreeNode) => TreeNode
+  concat: (b: TreeNode | string) => This
   delete: (path: keywordPath) => This // todo: rename delete child?
-  extend: (tree: TreeProgram | string) => This // recursively extend the object
+  extend: (tree: TreeNode | string) => This // recursively extend the object
   destroy: () => undefined
-  duplicate: () => TreeProgram
+  duplicate: () => TreeNode
   getMTime: () => number // Only updates on changes to line. Initializes lazily on first call.
   getTreeMTime: () => number // get time tree was last modified. Initializes lazily on first call.
   setLine: (line: string) => This
   setFromText: (text: string) => This
-  insert: (line: string, tree?: TreeProgram, index?: int) => TreeProgram
+  insert: (line: string, tree?: TreeNode, index?: int) => TreeNode
   invert: () => This // Flips keywords and beams on all top level nodes. Does not recurse.
-  prepend: (line: string, tree?: TreeProgram) => TreeProgram
-  pushBeamAndTree: (beam?: string, tree?: TreeProgram) => TreeProgram // Keyword will be set to this.length + 1. todo: remove?
-  replaceNode: (fn: replaceNodeFn) => TreeProgram
+  prepend: (line: string, tree?: TreeNode) => TreeNode
+  pushBeamAndTree: (beam?: string, tree?: TreeNode) => TreeNode // Keyword will be set to this.length + 1. todo: remove?
+  replaceNode: (fn: replaceNodeFn) => TreeNode
   remap: (key: Object) => This // Does not recurse.
   rename: (oldKeyword: word, newKeyword: word) => This
   renameAll: (oldKeyword: word, newKeyword: word) => This
@@ -111,21 +112,29 @@ interface TreeProgram {
   setWord: (index: int, value: string) => This
   setBeam: (value?: content) => This
   reverse: () => This
-  shift: () => TreeProgram
+  shift: () => TreeNode
   sort: (sortFn: sortFn) => This
-  touchNode: (keywordPath: keywordPath) => TreeProgram
+  touchNode: (keywordPath: keywordPath) => TreeNode
 }
 
-interface StaticTreeProgram {
-  getVersion: () => string
+interface GrammarBackedProgram {
+  getGrammarUsage: () => TreeNode[] // returns a report on what keywords from its language the program uses
+}
+
+interface StaticTreeNode {
   nest: (lines: string, xi: int) => string // Insert lines, if any, as child nodes prefixed with the given number of XI characters
-  fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeProgram
-  fromJson: (str: Json) => TreeProgram
-  fromCsv: (str: string, hasHeaders?: boolean) => TreeProgram
-  fromSsv: (str: string, hasHeaders?: boolean) => TreeProgram
-  fromTsv: (str: string, hasHeaders?: boolean) => TreeProgram
-  fromXml: (str: string) => TreeProgram
+  fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeNode
+  fromJson: (str: Json) => TreeNode
+  fromCsv: (str: string, hasHeaders?: boolean) => TreeNode
+  fromSsv: (str: string, hasHeaders?: boolean) => TreeNode
+  fromTsv: (str: string, hasHeaders?: boolean) => TreeNode
+  fromXml: (str: string) => TreeNode
+}
+
+interface otree {
+  TreeNode: TreeNode
   executeFile: (path: filepath) => Promise<any>
-  makeProgram: (programPath: filepath, languagePath: filepath) => TreeProgram
-  getProgramClassFromGrammarFile: (grammarPath: filepath) => TreeProgramClass
+  makeProgram: (programPath: filepath, languagePath: filepath) => GrammarBackedProgram
+  getProgramClassFromGrammarFile: (grammarPath: filepath) => GrammarBackedProgramClass
+  getVersion: () => string
 }

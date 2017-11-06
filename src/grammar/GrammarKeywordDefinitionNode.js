@@ -2,6 +2,7 @@ const TreeNode = require("../base/TreeNode.js")
 const TreeUtils = require("../base/TreeUtils.js")
 
 const GrammarConstants = require("./GrammarConstants.js")
+const GrammarConstantsNode = require("./GrammarConstantsNode.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
@@ -81,7 +82,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   getConstantsObject() {
-    const constantsNode = this.getNode(GrammarConstants.constants)
+    const constantsNode = this.getNodeByType(GrammarConstantsNode)
     return constantsNode ? constantsNode.getConstantsObj() : {}
   }
 

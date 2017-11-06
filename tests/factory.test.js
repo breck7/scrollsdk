@@ -2,7 +2,7 @@
 
 const quack = require("./quack.js")
 
-const TreeProgram = require("../index.js")
+const otree = require("../index.js")
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
 
 quack.quickTest("makeProgram", equal => {
@@ -11,12 +11,12 @@ quack.quickTest("makeProgram", equal => {
   const grammarPath = __dirname + "/jibberish/jibberish.grammar"
 
   // Act
-  const program = TreeProgram.makeProgram(programPath, grammarPath)
+  const program = otree.makeProgram(programPath, grammarPath)
   const result = program.executeSync()
 
   // Assert
   equal(program instanceof jibberishProgram, true, "parent program class parsed correctly")
   equal(result, 42)
 
-  // TreeProgram.getProgramClassFromGrammarFile
+  // otree.getProgramClassFromGrammarFile
 })

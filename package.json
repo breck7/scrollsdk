@@ -1,10 +1,10 @@
 {
-  "name": "treeprogram",
-  "version": "10.1.2",
+  "name": "otree",
+  "version": "11.0.0",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {
-    "tree": "./cli.js"
+    "otree": "./cli.js"
   },
   "scripts": {
     "test": "./tasks/test.js",
@@ -13,9 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/breck7/treeprogram"
+    "url": "git://github.com/breck7/otree"
   },
-  "keywords": "treeprogram",
+  "keywords": "otree",
   "devDependencies": {
     "express": "*",
     "jquery": "*",

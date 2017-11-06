@@ -2,7 +2,7 @@
 
 const recursiveReadSync = require("recursive-readdir-sync")
 
-require("./unit.js")
+require("./base.js")
 
 const allFiles = recursiveReadSync(__dirname + "/../tests/")
 

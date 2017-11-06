@@ -14,13 +14,13 @@ file LANG/package.pack
   keywords LANG
   license MIT
   dependencies
-   treeprogram *
+   otree *
 file LANG/readme.mark
  data
   # LANG - DESCRIPTION
 file LANG/index.js
  data
-  module.exports = require("treeprogram").getProgramClassFromGrammarFile(__dirname + "/LANG.grammar")
+  module.exports = require("otree").getProgramClassFromGrammarFile(__dirname + "/LANG.grammar")
 file LANG/LANG.grammar
  data
   LANG

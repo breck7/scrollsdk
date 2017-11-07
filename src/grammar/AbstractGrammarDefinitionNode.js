@@ -9,7 +9,6 @@ const GrammarConstantsNode = require("./GrammarConstantsNode.js")
 
 const GrammarBackedNonTerminalNode = require("./GrammarBackedNonTerminalNode.js")
 const GrammarBackedTerminalNode = require("./GrammarBackedTerminalNode.js")
-const GrammarBackedErrorNode = require("./GrammarBackedErrorNode.js")
 
 class AbstractGrammarDefinitionNode extends TreeNode {
   getKeywordMap() {
@@ -40,27 +39,8 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.keywords)
   }
 
-  _getNodeClasses() {
-    const builtIns = {
-      ErrorNode: GrammarBackedErrorNode,
-      TerminalNode: GrammarBackedTerminalNode,
-      NonTerminalNode: GrammarBackedNonTerminalNode
-    }
-
-    Object.assign(builtIns, this.getProgram().getRootNodeClasses())
-    return builtIns
-  }
-
   _getDefaultParserClass() {
     return this.isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
-  }
-
-  _getParserClassFromFilePath(filepath) {
-    const rootPath = this.getRootNode().getTheGrammarFilePath() // todo:remove this line
-    const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
-    const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
-    // todo: remove "window" below?
-    return this.isNodeJs() ? require(fullPath) : window[TreeUtils.getClassNameFromFilePath(filepath)]
   }
 
   _getParserNode() {
@@ -74,12 +54,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
   _getParserClass() {
     const parserNode = this._getParserNode()
-    const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
-
-    const builtIns = this._getNodeClasses()
-    const builtIn = builtIns[filepath]
-
-    return builtIn ? builtIn : filepath ? this._getParserClassFromFilePath(filepath) : this._getDefaultParserClass()
+    return parserNode ? parserNode.getParserClass() : this._getDefaultParserClass()
   }
 
   getCatchAllNodeClass(line) {

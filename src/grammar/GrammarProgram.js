@@ -24,16 +24,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
-  setNodeClasses(obj) {
-    // todo: remove
-    this._rootNodeClasses = obj
-    return this
-  }
-
-  getRootNodeClasses() {
-    return this._rootNodeClasses
-  }
-
   // todo: remove?
   getTheGrammarFilePath() {
     return this.getLine()

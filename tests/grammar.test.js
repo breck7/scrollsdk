@@ -5,6 +5,7 @@ const quack = require("./quack.js")
 const fs = require("fs")
 const GrammarProgram = require("../src/grammar/GrammarProgram.js")
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
+const jibberishNodes = require("./jibberish/jibberishNodes.js")
 
 quack.quickTest("basics", equal => {
   // Arrange
@@ -44,4 +45,10 @@ quack.quickTest("jibberish", equal => {
 
   // Assert
   equal(constObj.greeting, "hello world")
+
+  // Act
+  const addition = program.getNode("+")
+
+  // Assert
+  equal(addition instanceof jibberishNodes.additionNode, true)
 })

@@ -26,10 +26,6 @@ class ConsoleApp {
   }
 
   help() {
-    console.log(this.getHelp())
-  }
-
-  getHelp() {
     const help = `command param description
 check programPathOrGrammarName Check a file(s) for grammar errors
 compile programPath Compile a file
@@ -47,9 +43,9 @@ version  List installed Tree Notation version`
 
   list() {
     const grammars = this.getGrammars().clone()
-    console.log(`${grammars.length} Tree Grammars registered in ${this._getRegistryPath()}`)
     grammars.sortBy("name")
-    console.log(grammars.toTable())
+    return `${grammars.length} Tree Grammars registered in ${this._getRegistryPath()}
+${grammars.toTable()}`
   }
 
   _getGrammarPathByGrammarName(grammarName) {
@@ -110,10 +106,6 @@ version  List installed Tree Notation version`
   }
 
   history(grammarName) {
-    console.log(this.getHistory())
-  }
-
-  getHistory(grammarName) {
     return grammarName ? this._history(grammarName).join(" ") : this._getHistoryFile()
   }
 
@@ -179,10 +171,6 @@ version  List installed Tree Notation version`
   }
 
   usage(grammarName) {
-    console.log(this.getUsage(grammarName))
-  }
-
-  getUsage(grammarName) {
     const files = this._history(grammarName)
     const grammarPath = this._getGrammarPathOrThrow(files[0])
     const programClass = otree.getParser(grammarPath)
@@ -203,7 +191,7 @@ version  List installed Tree Notation version`
   }
 
   version() {
-    console.log(`otree version ${otree.getVersion()}`)
+    return `otree version ${otree.getVersion()}`
   }
 }
 

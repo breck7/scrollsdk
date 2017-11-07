@@ -12,6 +12,9 @@ foo topLevel
 nodeWithConsts topLevel
  @constants
   greeting string hello world
++ topLevel
+ @parser js ./jibberishNodes.js additionNode
+ @columns int*
 to block
  @columns word
  @compiler txt

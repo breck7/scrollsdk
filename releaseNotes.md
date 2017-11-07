@@ -1,3 +1,7 @@
+11.3.0 / 2017-11-07
+===================
+- New: added support for putting multiple parse nodes in one file
+
 11.2.3 / 2017-11-06
 ===================
 - Infra: TestCoverage 90.44% Smt 2137/2363 72.32% Brnch 384/531 85.37% Fn 496/581 91.89% Loc 2017/2195

@@ -11,11 +11,11 @@ const param = process.argv[3]
 
 if (app[action]) {
   app.addToHistory(action, param)
-  app[action](param)
+  console.log(app[action](param))
 } else if (!action) {
   app.addToHistory()
-  app.help()
+  console.log(app.help())
 } else if (fs.existsSync(action)) {
   app.addToHistory(undefined, action)
-  app.run(action)
+  console.log(app.run(action))
 } else console.log(`Unknown command '${action}'. Type 'tree help' to see available commands.`)

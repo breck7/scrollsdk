@@ -9,13 +9,13 @@ quack.quickTest("basics", equal => {
   const app = new ConsoleApp()
 
   // Act/Assert
-  equal(app.getGrammars().length > 0, true)
-  equal(app.getHelp().length > 0, true)
-  equal(!!app.getHistory(), true)
-  equal(!!app.getHistory("grammar"), true)
+  equal(typeof app.getGrammars().toString(), "string")
+  equal(typeof app.help(), "string")
+  equal(typeof app.history(), "string")
+  equal(typeof app.history("grammar"), "string")
+  equal(typeof app.list(), "string")
+  equal(typeof app.version(), "string")
+  equal(typeof app.usage("grammar"), "string")
 
   app.check(__dirname + "/../TreeGrammar.grammar")
-  app.list()
-  app.version()
-  equal(!!app.getUsage("grammar"), true)
 })

@@ -686,8 +686,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   _setLineAndChildren(line, children, index = this.length) {
-    const jsNodeClass = this.parseNodeType(line)
-    const parsedNode = new jsNodeClass(children, line, this)
+    const parserClass = this.parseNodeType(line)
+    const parsedNode = new parserClass(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
     this.getChildren().splice(adjustedIndex, 0, parsedNode)
@@ -716,8 +716,8 @@ class ImmutableNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const jsNodeClass = parent.parseNodeType(lineContent)
-      lastNode = new jsNodeClass(undefined, lineContent, parent)
+      const parserClass = parent.parseNodeType(lineContent)
+      lastNode = new parserClass(undefined, lineContent, parent)
       parent._getChildren().push(lastNode)
     })
     return this

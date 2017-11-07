@@ -37,7 +37,11 @@ class GrammarParserClassNode extends TreeNode {
     const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
 
     // todo: remove "window" below?
-    return this.isNodeJs() ? require(fullPath) : window[TreeUtils.getClassNameFromFilePath(filepath)]
+    if (!this.isNodeJs()) return window[TreeUtils.getClassNameFromFilePath(filepath)]
+
+    const theModule = require(fullPath)
+    const subModule = this.getSubModuleName()
+    return subModule ? theModule[subModule] : theModule
   }
 }
 

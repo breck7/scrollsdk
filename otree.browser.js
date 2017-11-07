@@ -2363,6 +2363,6 @@ otree.TreeNode = TreeNode
 otree.NonTerminalNode = GrammarBackedNonTerminalNode
 otree.TerminalNode = GrammarBackedTerminalNode
 
-otree.getVersion = () => "11.2.0"
+otree.getVersion = () => "11.2.2"
 
 window.otree = otree

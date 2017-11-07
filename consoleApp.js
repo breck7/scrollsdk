@@ -174,7 +174,7 @@ version  List installed Tree Notation version`
   usage(grammarName) {
     const files = this._history(grammarName)
     const grammarPath = this._getGrammarPathOrThrow(files[0])
-    const programClass = otree.getProgramClassFromGrammarFile(grammarPath)
+    const programClass = otree.getParser(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
       const code = fs.readFileSync(path, "utf8")

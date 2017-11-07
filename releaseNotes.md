@@ -1,3 +1,7 @@
+11.2.1 / 2017-11-06
+===================
+- Fix: path fixes
+
 11.2.0 / 2017-11-06
 ===================
 - Breaking: otree.getProgramClassFromGrammarFile is now otree.getParser

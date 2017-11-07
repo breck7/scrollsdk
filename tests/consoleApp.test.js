@@ -10,4 +10,12 @@ quack.quickTest("basics", equal => {
 
   // Act/Assert
   equal(app.getGrammars().length > 0, true)
+  equal(app.getHelp().length > 0, true)
+  equal(!!app.getHistory(), true)
+  equal(!!app.getHistory("grammar"), true)
+
+  app.check(__dirname + "/../TreeGrammar.grammar")
+  app.list()
+  app.version()
+  equal(!!app.getUsage("grammar"), true)
 })

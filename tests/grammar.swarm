@@ -1,8 +1,8 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/tree
+#! /usr/local/bin/node --use_strict /usr/local/bin/otree
 #setup
 #test stress test
  #setup
-  require ./GrammarProgram.js
+  require ../src/grammar/GrammarProgram.js
   %%|
    testlang
     @compiler txt

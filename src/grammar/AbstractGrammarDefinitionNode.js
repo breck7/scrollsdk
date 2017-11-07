@@ -151,7 +151,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const definitions = this._getDefinitionCache()
     const keywords = this.getRunTimeKeywordMap()
     const arr = Object.keys(keywords).map(keyword => definitions[keyword])
-    arr.sort(AbstractGrammarDefinitionNode.sortByAccessor(definition => definition.getFrequency()))
+    arr.sort(TreeUtils.sortByAccessor(definition => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getKeyword())
   }

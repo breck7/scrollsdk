@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/tree
+#! /usr/local/bin/node --use_strict /usr/local/bin/otree
 prompt LANG lowercase Enter the file extension of your new language
 prompt DESCRIPTION any Enter a description for LANG
 folder LANG

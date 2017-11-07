@@ -26,6 +26,10 @@ class ConsoleApp {
   }
 
   help() {
+    console.log(this.getHelp())
+  }
+
+  getHelp() {
     const help = `command param description
 check programPathOrGrammarName Check a file(s) for grammar errors
 compile programPath Compile a file
@@ -38,7 +42,7 @@ register grammarPath Register a new grammar
 run programPath Execute a Tree Language Program
 usage grammarName Analyze Global Keyword Usage for a given grammar
 version  List installed Tree Notation version`
-    console.log(TreeNode.fromSsv(help).toTable())
+    return TreeNode.fromSsv(help).toTable()
   }
 
   list() {
@@ -106,8 +110,11 @@ version  List installed Tree Notation version`
   }
 
   history(grammarName) {
-    if (grammarName) console.log(this._history(grammarName).join(" "))
-    else console.log(this._getHistoryFile())
+    console.log(this.getHistory())
+  }
+
+  getHistory(grammarName) {
+    return grammarName ? this._history(grammarName).join(" ") : this._getHistoryFile()
   }
 
   _getHistoryFile() {
@@ -172,6 +179,10 @@ version  List installed Tree Notation version`
   }
 
   usage(grammarName) {
+    console.log(this.getUsage(grammarName))
+  }
+
+  getUsage(grammarName) {
     const files = this._history(grammarName)
     const grammarPath = this._getGrammarPathOrThrow(files[0])
     const programClass = otree.getParser(grammarPath)
@@ -188,7 +199,7 @@ version  List installed Tree Notation version`
       const fileNode = stampFile.append(`file ${folderName}/${node.getKeyword()}.ssv`)
       fileNode.append("data", `${node.getBeam()}\n` + node.childrenToString())
     })
-    console.log(stampFile.toString())
+    return stampFile.toString()
   }
 
   version() {

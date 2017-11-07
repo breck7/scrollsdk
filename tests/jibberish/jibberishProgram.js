@@ -1,6 +1,6 @@
-const AbstractGrammarBackedProgram = require("../../src/grammar/AbstractGrammarBackedProgram.js")
+const otree = require("../../index.js")
 
-class jibberishProgram extends AbstractGrammarBackedProgram {
+class jibberishProgram extends otree.program {
   executeSync() {
     return 42
   }

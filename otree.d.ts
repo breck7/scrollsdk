@@ -133,8 +133,9 @@ interface StaticTreeNode {
 
 interface otree {
   TreeNode: TreeNode
+  program: AbstractGrammarBackedProgram
   executeFile: (path: filepath) => Promise<any>
   makeProgram: (programPath: filepath, languagePath: filepath) => AbstractGrammarBackedProgram
-  getProgramClassFromGrammarFile: (grammarPath: filepath) => GrammarBackedProgramClass
+  getParser: (grammarPath: filepath) => GrammarBackedProgramClass
   getVersion: () => string
 }

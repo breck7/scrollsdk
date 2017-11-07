@@ -7,12 +7,12 @@ const GrammarBackedTerminalNode = require("./grammar/GrammarBackedTerminalNode.j
 
 const otree = {}
 
-otree.AbstractGrammarBackedProgram = AbstractGrammarBackedProgram
+otree.program = AbstractGrammarBackedProgram
 otree.Utils = TreeUtils
 otree.TreeNode = TreeNode
 otree.NonTerminalNode = GrammarBackedNonTerminalNode
 otree.TerminalNode = GrammarBackedTerminalNode
 
-otree.getVersion = () => "11.1.0"
+otree.getVersion = () => "11.2.0"
 
 module.exports = otree

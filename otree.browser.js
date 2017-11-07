@@ -2241,10 +2241,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
-  getRootParserClass() {
-    return this._getGrammarRootNode().getParserClass()
-  }
-
   setNodeClasses(obj) {
     // todo: remove
     this._rootNodeClasses = obj
@@ -2313,6 +2309,22 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().findBeam(GrammarConstants.catchAllKeyword)
   }
 
+  _getRootParserClass() {
+    const definedClass = this._getGrammarRootNode().getParserClass()
+    const extendedClass = definedClass || AbstractGrammarBackedProgram
+    const grammarProgram = this
+    return class extends extendedClass {
+      getGrammarProgram() {
+        return grammarProgram
+      }
+    }
+  }
+
+  getRootParserClass() {
+    if (!this._cache_rootParserClass) this._cache_rootParserClass = this._getRootParserClass()
+    return this._cache_rootParserClass
+  }
+
   toSublimeSyntaxFile() {
     // todo.
     return `%YAML 1.2
@@ -2332,18 +2344,6 @@ contexts:
      scope: entity.name.type.tree
      pop: true`
   }
-
-  static getParserClass(grammarCode, grammarPath) {
-    // todo: catching
-    const expandedGrammarCode = new TreeNode(grammarCode).getExpanded()
-    const grammarProgram = new GrammarProgram(expandedGrammarCode, grammarPath)
-    const extendedClass = grammarProgram.getRootParserClass() || AbstractGrammarBackedProgram
-    return class extends extendedClass {
-      getGrammarProgram() {
-        return grammarProgram
-      }
-    }
-  }
 }
 
 window.GrammarProgram = GrammarProgram
@@ -2357,12 +2357,12 @@ window.GrammarProgram = GrammarProgram
 
 const otree = {}
 
-otree.AbstractGrammarBackedProgram = AbstractGrammarBackedProgram
+otree.program = AbstractGrammarBackedProgram
 otree.Utils = TreeUtils
 otree.TreeNode = TreeNode
 otree.NonTerminalNode = GrammarBackedNonTerminalNode
 otree.TerminalNode = GrammarBackedTerminalNode
 
-otree.getVersion = () => "10.1.2"
+otree.getVersion = () => "11.2.0"
 
 window.otree = otree

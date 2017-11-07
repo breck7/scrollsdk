@@ -11,7 +11,7 @@ otree.makeProgram = (programPath, grammarPath) => {
   return new programClass(code)
 }
 
-otree.getProgramClassFromGrammarFile = grammarPath => {
+otree.getParser = grammarPath => {
   const grammarCode = fs.readFileSync(grammarPath, "utf8")
   const expandedGrammarCode = new otree.TreeNode(grammarCode).getExpanded()
   const grammarProgram = new GrammarProgram(expandedGrammarCode, grammarPath)

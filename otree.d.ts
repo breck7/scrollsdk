@@ -119,7 +119,7 @@ interface TreeNode {
 }
 
 interface AbstractGrammarBackedProgram {
-  getGrammarUsage: () => TreeNode[] // returns a report on what keywords from its language the program uses
+  getKeywordUsage: () => TreeNode[] // returns a report on what keywords from its language the program uses
 }
 
 interface StaticTreeNode {

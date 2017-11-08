@@ -51,4 +51,17 @@ quack.quickTest("jibberish", equal => {
 
   // Assert
   equal(addition instanceof jibberishNodes.additionNode, true)
+
+  // Act
+  const wordTypesProgram = new rootParserClass(`foo
++ 2 3 2`)
+  const wordTypes = wordTypesProgram.getProgramWordTypeString()
+
+  // Assert
+  equal(
+    wordTypes,
+    `keyword
+keyword int int int`,
+    "word types should match"
+  )
 })

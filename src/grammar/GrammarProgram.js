@@ -24,6 +24,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
+  getKeywordDefinitions() {
+    return this.getChildren()
+  }
+
   // todo: remove?
   getTheGrammarFilePath() {
     return this.getLine()

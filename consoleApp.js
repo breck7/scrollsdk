@@ -160,7 +160,7 @@ ${grammars.toTable()}`
     files.forEach(path => {
       const code = fs.readFileSync(path, "utf8")
       const program = new programClass(code)
-      const usage = program.getGrammarUsage(path)
+      const usage = program.getKeywordUsage(path)
       report.extend(usage.toString())
     })
     const folderName = grammarName

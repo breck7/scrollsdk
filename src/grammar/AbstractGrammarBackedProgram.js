@@ -20,24 +20,14 @@ class AbstractGrammarBackedProgram extends TreeNode {
     return this.getDefinition().getRunTimeCatchAllNodeClass()
   }
 
-  getErrorCount() {
-    const grammarProgram = this.getDefinition()
-    return {
-      errorCount: this.getProgramErrors().length,
-      name: grammarProgram.getExtensionName()
-    }
-  }
-
-  async run() {}
-
   getDefinition() {
     return this.getGrammarProgram()
   }
 
-  getGrammarUsage(filepath = "") {
+  getKeywordUsage(filepath = "") {
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgram()
-    const keywordDefinitions = grammarProgram.getChildren()
+    const keywordDefinitions = grammarProgram.getKeywordDefinitions()
     keywordDefinitions.forEach(child => {
       usage.append([child.getWord(0), "line-id", "keyword", child.getBeamParameters().join(" ")].join(" "))
     })
@@ -74,10 +64,6 @@ class AbstractGrammarBackedProgram extends TreeNode {
   getCompiledProgramName(programPath) {
     const grammarProgram = this.getDefinition()
     return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
-  }
-
-  getNodeClasses() {
-    return {}
   }
 }
 

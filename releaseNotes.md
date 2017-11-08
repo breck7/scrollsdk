@@ -1,3 +1,8 @@
+11.4.0 / 2017-11-08
+===================
+- Breaking: getGrammarUsage is now getKeywordUsage
+- Breaking: removed undocumented getNodeClasses, run, and getErrorCount methods
+
 11.3.0 / 2017-11-07
 ===================
 - New: added support for putting multiple parse nodes in one file

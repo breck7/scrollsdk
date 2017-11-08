@@ -18,4 +18,6 @@ otree.getParser = grammarPath => {
   return grammarProgram.getRootParserClass()
 }
 
+otree.GrammarProgram = GrammarProgram
+
 module.exports = otree

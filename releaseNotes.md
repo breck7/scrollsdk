@@ -1,3 +1,7 @@
+11.4.1 / 2017-11-08
+===================
+- New: export GrammarProgram
+
 11.4.0 / 2017-11-08
 ===================
 - Breaking: getGrammarUsage is now getKeywordUsage

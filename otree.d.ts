@@ -122,6 +122,8 @@ interface AbstractGrammarBackedProgram {
   getKeywordUsage: () => TreeNode[] // returns a report on what keywords from its language the program uses
 }
 
+interface GrammarProgram {}
+
 interface StaticTreeNode {
   nest: (lines: string, xi: int) => string // Insert lines, if any, as child nodes prefixed with the given number of XI characters
   fromDelimited: (str: string, delimiter: string, hasHeaders?: boolean, quoteChar?: string) => TreeNode
@@ -135,6 +137,7 @@ interface StaticTreeNode {
 interface otree {
   TreeNode: TreeNode
   program: AbstractGrammarBackedProgram
+  GrammarProgram: GrammarProgram
   executeFile: (path: filepath) => Promise<any>
   makeProgram: (programPath: filepath, languagePath: filepath) => AbstractGrammarBackedProgram
   getParser: (grammarPath: filepath) => GrammarBackedProgramClass

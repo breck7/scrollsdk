@@ -764,8 +764,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   _setLineAndChildren(line, children, index = this.length) {
-    const jsNodeClass = this.parseNodeType(line)
-    const parsedNode = new jsNodeClass(children, line, this)
+    const parserClass = this.parseNodeType(line)
+    const parsedNode = new parserClass(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
     this.getChildren().splice(adjustedIndex, 0, parsedNode)
@@ -794,8 +794,8 @@ class ImmutableNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const jsNodeClass = parent.parseNodeType(lineContent)
-      lastNode = new jsNodeClass(undefined, lineContent, parent)
+      const parserClass = parent.parseNodeType(lineContent)
+      lastNode = new parserClass(undefined, lineContent, parent)
       parent._getChildren().push(lastNode)
     })
     return this
@@ -1457,24 +1457,14 @@ class AbstractGrammarBackedProgram extends TreeNode {
     return this.getDefinition().getRunTimeCatchAllNodeClass()
   }
 
-  getErrorCount() {
-    const grammarProgram = this.getDefinition()
-    return {
-      errorCount: this.getProgramErrors().length,
-      name: grammarProgram.getExtensionName()
-    }
-  }
-
-  async run() {}
-
   getDefinition() {
     return this.getGrammarProgram()
   }
 
-  getGrammarUsage(filepath = "") {
+  getKeywordUsage(filepath = "") {
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgram()
-    const keywordDefinitions = grammarProgram.getChildren()
+    const keywordDefinitions = grammarProgram.getKeywordDefinitions()
     keywordDefinitions.forEach(child => {
       usage.append([child.getWord(0), "line-id", "keyword", child.getBeamParameters().join(" ")].join(" "))
     })
@@ -1511,10 +1501,6 @@ class AbstractGrammarBackedProgram extends TreeNode {
   getCompiledProgramName(programPath) {
     const grammarProgram = this.getDefinition()
     return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
-  }
-
-  getNodeClasses() {
-    return {}
   }
 }
 
@@ -1637,6 +1623,9 @@ class GrammarConstNode extends TreeNode {
 window.GrammarConstNode = GrammarConstNode
 
 const GrammarConstants = {}
+
+// word parsing
+GrammarConstants.regex = "@regex" // temporary?
 
 // parsing
 GrammarConstants.keywords = "@keywords"
@@ -1903,14 +1892,52 @@ window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
 
 
 
+
+
+
+
+
 class GrammarParserClassNode extends TreeNode {
   getParserClassFilePath() {
     return this.getWord(2)
   }
+
+  getSubModuleName() {
+    return this.getWord(3)
+  }
+
+  _getNodeClasses() {
+    const builtIns = {
+      ErrorNode: GrammarBackedErrorNode,
+      TerminalNode: GrammarBackedTerminalNode,
+      NonTerminalNode: GrammarBackedNonTerminalNode
+    }
+
+    return builtIns
+  }
+
+  getParserClass() {
+    const filepath = this.getParserClassFilePath()
+    const builtIns = this._getNodeClasses()
+    const builtIn = builtIns[filepath]
+
+    if (builtIn) return builtIn
+
+    const rootPath = this.getRootNode().getTheGrammarFilePath()
+
+    const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
+    const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
+
+    // todo: remove "window" below?
+    if (!this.isNodeJs()) return window[TreeUtils.getClassNameFromFilePath(filepath)]
+
+    const theModule = require(fullPath)
+    const subModule = this.getSubModuleName()
+    return subModule ? theModule[subModule] : theModule
+  }
 }
 
 window.GrammarParserClassNode = GrammarParserClassNode
-
 
 
 
@@ -1929,6 +1956,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const types = [
       GrammarConstants.frequency,
       GrammarConstants.keywords,
+      GrammarConstants.regex,
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,
@@ -1953,27 +1981,8 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.keywords)
   }
 
-  _getNodeClasses() {
-    const builtIns = {
-      ErrorNode: GrammarBackedErrorNode,
-      TerminalNode: GrammarBackedTerminalNode,
-      NonTerminalNode: GrammarBackedNonTerminalNode
-    }
-
-    Object.assign(builtIns, this.getProgram().getRootNodeClasses())
-    return builtIns
-  }
-
   _getDefaultParserClass() {
     return this.isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
-  }
-
-  _getParserClassFromFilePath(filepath) {
-    const rootPath = this.getRootNode().getTheGrammarFilePath() // todo:remove this line
-    const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
-    const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
-    // todo: remove "window" below?
-    return this.isNodeJs() ? require(fullPath) : window[TreeUtils.getClassNameFromFilePath(filepath)]
   }
 
   _getParserNode() {
@@ -1987,12 +1996,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
   _getParserClass() {
     const parserNode = this._getParserNode()
-    const filepath = parserNode ? parserNode.getParserClassFilePath() : undefined
-
-    const builtIns = this._getNodeClasses()
-    const builtIn = builtIns[filepath]
-
-    return builtIn ? builtIn : filepath ? this._getParserClassFromFilePath(filepath) : this._getDefaultParserClass()
+    return parserNode ? parserNode.getParserClass() : this._getDefaultParserClass()
   }
 
   getCatchAllNodeClass(line) {
@@ -2241,14 +2245,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
-  setNodeClasses(obj) {
-    // todo: remove
-    this._rootNodeClasses = obj
-    return this
-  }
-
-  getRootNodeClasses() {
-    return this._rootNodeClasses
+  getKeywordDefinitions() {
+    return this.getChildren()
   }
 
   // todo: remove?
@@ -2363,6 +2361,6 @@ otree.TreeNode = TreeNode
 otree.NonTerminalNode = GrammarBackedNonTerminalNode
 otree.TerminalNode = GrammarBackedTerminalNode
 
-otree.getVersion = () => "11.2.3"
+otree.getVersion = () => "11.4.0"
 
 window.otree = otree

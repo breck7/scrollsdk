@@ -1,5 +1,8 @@
 const GrammarConstants = {}
 
+// word parsing
+GrammarConstants.regex = "@regex" // temporary?
+
 // parsing
 GrammarConstants.keywords = "@keywords"
 GrammarConstants.columns = "@columns"

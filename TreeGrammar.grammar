@@ -12,6 +12,7 @@ diadicKeywordRule keywordRule
 variadicKeywordRule keywordRule
  @columns any*
 @columns variadicKeywordRule
+@regex variadicKeywordRule
 compilerRule
  @columns any*
 @compiler monadicKeywordRule

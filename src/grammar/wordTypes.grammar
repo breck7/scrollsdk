@@ -1,7 +1,7 @@
 wordTypes
  @description A collection of common word types
 any
- @matchAll
+ @regex .?
 lowercaseLetter
  @char a b c d e f g h i j k l m n o p q r s t u v w x y z
 uppercaseLetter
@@ -10,6 +10,7 @@ letter
  @match lowercaseLetter
  @match uppercaseLetter
 word
+ @regex ^[a-zA-Z]+$
  @match letter
  @match letter word
 zero
@@ -20,6 +21,7 @@ digit
  @match zero
  @match nonzero
 int
+ @regex ^\-?[0-9]+$
  @match digit
  @match nonzero int
 decimal
@@ -69,6 +71,7 @@ false
  @char f F 0
  @chars false False FALSE
 boolean
+ @regex ^(false|true|t|f|T|F|0|1|True|False|TRUE|FALSE)$
  @match true
  @match false
 type
@@ -92,7 +95,9 @@ urlLetter
  @match letter
  @match digit
 url
+ @regex .?
  @match urlLetter
  @match urlLetter url
 reduction
+ @regex ^(count|sum|average|min|max|median)$
  @chars count sum average min max median

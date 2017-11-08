@@ -1,0 +1,98 @@
+wordTypes
+ @description A collection of common word types
+any
+ @matchAll
+lowercaseLetter
+ @char a b c d e f g h i j k l m n o p q r s t u v w x y z
+uppercaseLetter
+ @char A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+letter
+ @match lowercaseLetter
+ @match uppercaseLetter
+word
+ @match letter
+ @match letter word
+zero
+ @char 0
+nonzero
+ @char 1 2 3 4 5 6 7 8 9
+digit
+ @match zero
+ @match nonzero
+int
+ @match digit
+ @match nonzero int
+decimal
+ @char .
+numberSequence
+ @match digit
+ @match digit numberSequence
+fraction
+ @match decimal numberSequence
+number
+ @match int
+ @match fraction
+ @match zero fraction
+ @match int fraction
+equal
+ @chars ==
+lt
+ @char <
+gt
+ @char >
+ltoe
+ @chars <=
+gtoe
+ @chars >=
+notEqual
+ @chars !=
+comparison
+ @match equal
+ @match lt
+ @match gt
+ @match ltoe
+ @match gtoe
+ @match notEqual
+alphanumeric
+ @match letter
+ @match digit
+alphanumericSequence
+ @match alphanumeric
+ @match alphanumeric alphanumeric
+identifier
+ @match letter
+ @match letter alphanumericSequence
+true
+ @char t T 1
+ @chars true True TRUE
+false
+ @char f F 0
+ @chars false False FALSE
+boolean
+ @match true
+ @match false
+type
+ @chars any url something int boolean number lowercase prob alphanumeric comparison filepath identifier alpha
+filepathChar
+ @char _ / - @
+ @match letter
+filepath
+ @match filepathChar
+ @match filepathChar filepath
+lowercase
+ @match lowercaseLetter
+ @match lowercaseLetter lowercase
+uppercase
+ @match uppercaseLetter
+ @match uppercaseLetter uppercase
+prob
+ @match fraction
+urlLetter
+ @char / : . - _ ?
+ @match letter
+ @match digit
+url
+ @match urlLetter
+ @match urlLetter url
+reduction
+ @chars count sum average min max median

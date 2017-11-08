@@ -7,7 +7,7 @@ monadicKeywordRule keywordRule
 diadicKeywordRule keywordRule
  @columns any any
 @catchAllKeyword monadicKeywordRule
-@parser diadicKeywordRule
+@parser variadicKeywordRule
 @frequency monadicKeywordRule
 variadicKeywordRule keywordRule
  @columns any*

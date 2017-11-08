@@ -53,6 +53,7 @@ interface TreeNode {
   execute: (context: any) => Promise<any>
   executeSync: (context: any) => any[]
   isTerminal: () => Boolean
+  isRoot: () => Boolean
   clone: () => TreeNode
   copyTo: (tree: TreeNode, index?: int) => TreeNode
   getLines: () => string[]

@@ -26,18 +26,7 @@ class ConsoleApp {
   }
 
   help() {
-    const help = `command param description
-check programPathOrGrammarName Check a file(s) for grammar errors
-compile programPath Compile a file
-create  Create a new Grammar
-garden  Start the Tree Garden web app
-help  Show help
-list  List installed Grammars
-history grammarName List all programs ever parsed with this cli tool
-register grammarPath Register a new grammar
-run programPath Execute a Tree Language Program
-usage grammarName Analyze Global Keyword Usage for a given grammar
-version  List installed Tree Notation version`
+    const help = fs.readFileSync(__dirname + "/help.ssv", "utf8")
     return TreeNode.fromSsv(help).toTable()
   }
 
@@ -64,13 +53,12 @@ ${grammars.toTable()}`
   check(programPathOrGrammarName) {
     if (programPathOrGrammarName.includes(".")) return this._checkAndLog(programPathOrGrammarName)
     const files = this._history(programPathOrGrammarName)
-    files.forEach(file => this._checkAndLog(file))
+    return files.map(file => this._checkAndLog(file)).join("\n")
   }
 
   _checkAndLog(programPath) {
     const errors = this._check(programPath)
-    console.log(`${errors.length} errors for ${programPath}`)
-    if (errors.length) console.log(errors)
+    return `${errors.length} errors for ${programPath}${errors.length ? "\n" + errors : ""}`
   }
 
   _check(programPath) {
@@ -98,7 +86,7 @@ ${grammars.toTable()}`
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const targetExtension = grammarProgram.getTargetExtension()
     const compiledCode = program.compile(targetExtension)
-    console.log(compiledCode) // they can pipe it to a file
+    return compiledCode
   }
 
   _getLogFilePath() {
@@ -151,12 +139,6 @@ ${grammars.toTable()}`
     const logFilePath = this._getLogFilePath()
     this._initFile(logFilePath, "command param timestamp\n")
     fs.appendFile(logFilePath, line, "utf8", () => {})
-  }
-
-  check(programPathOrGrammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._checkAndLog(programPathOrGrammarName)
-    const files = this._history(programPathOrGrammarName)
-    files.forEach(file => this._checkAndLog(file))
   }
 
   _run(programPath) {

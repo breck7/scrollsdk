@@ -1,0 +1,12 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/otree
+#setup
+#test basics
+ #setup
+  require ../src/base/TreeNode.js
+  %%|
+   hello world
+ getChildren
+  =# 1
+ nodeAt 0
+  getBeam
+   == world

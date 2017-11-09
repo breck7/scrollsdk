@@ -280,6 +280,10 @@ class ImmutableNode extends AbstractNode {
     return this.getTopDownArray().find(node => node._hasColumns(columns))
   }
 
+  getNodeByColumn(index, name) {
+    return this.getChildren().find(node => node.getWord(index) === name)
+  }
+
   _getTopDownArray(arr) {
     this.getChildren().forEach(child => {
       arr.push(child)
@@ -481,23 +485,26 @@ class ImmutableNode extends AbstractNode {
   }
 
   getGraphByKey(key) {
-    const graph = this._getGraph(key)
+    const graph = this._getGraph((node, id) => node.getNodeByColumn(0, id), node => node.findBeam(key))
     graph.push(this)
     return graph
   }
 
-  getGraph() {
-    const graph = this._getGraph()
+  getGraph(idColumnNumber, parentIdColumnNumber) {
+    const graph = this._getGraph(
+      (node, id) => node.getNodeByColumn(idColumnNumber, id),
+      node => node.getWord(parentIdColumnNumber)
+    )
     graph.push(this)
     return graph
   }
 
-  _getGraph(key) {
-    const name = key ? this.findBeam(key) : this.getWord(1)
-    if (!name) return []
-    const parentNode = this.getParent().getNode(name)
+  _getGraph(getNodeByIdFn, getParentIdFn) {
+    const parentId = getParentIdFn(this)
+    if (!parentId) return []
+    const parentNode = getNodeByIdFn(this.getParent(), parentId)
     if (!parentNode) throw new Error(`"${this.getLine()} tried to extend "${name}" but "${name}" not found.`)
-    const graph = parentNode._getGraph(key)
+    const graph = parentNode._getGraph(getNodeByIdFn, getParentIdFn)
     graph.push(parentNode)
     return graph
   }
@@ -931,16 +938,16 @@ class TreeNode extends ImmutableNode {
     return result
   }
 
-  _expand() {
-    const graph = this.getGraph()
+  _expand(idColumnNumber, parentIdColumnNumber) {
+    const graph = this.getGraph(idColumnNumber, parentIdColumnNumber)
     const result = new TreeNode()
     graph.forEach(node => result.extend(node))
     return new TreeNode().appendLineAndChildren(this.getLine(), result)
   }
 
-  getExpanded() {
+  getExpanded(idColumnNumber, parentIdColumnNumber) {
     return this.getChildren()
-      .map(child => child._expand())
+      .map(child => child._expand(idColumnNumber, parentIdColumnNumber))
       .join("\n")
   }
 

@@ -39,7 +39,7 @@ interface TreeNode {
   getKeywordPathRelativeTo: (relativeTo: TreeNode) => keywordPath
   getParent: () => TreeNode | undefined
   getKeyword: () => word
-  getExpanded: () => string
+  getExpanded: (idColumnNumber: int, parentIdColumnNumber: int) => string
   getErrors: () => string[] // parse errors. base class is permissive and will always have 0 errors.
   getSiblings: () => TreeNode[]
   getOlderSiblings: () => TreeNode[] // where older sibling is a node with a lower index
@@ -51,7 +51,7 @@ interface TreeNode {
   getBeam: () => string | Undefined // Always refers to part of the line after the keyword, given that ZI is space.
   getTopDownArray: () => TreeNode[] // returns all nodes as array in preorder order
   getGraphByKey: (headKey: word) => TreeNode[]
-  getGraph: () => TreeNode[] // uses getWord(1) as the key
+  getGraph: (idColumnNumber: int, parentIdColumnNumber: int) => TreeNode[]
   getNext: () => TreeNode // wrapsaround
   getPrevious: () => TreeNode // wrapsaround
   getInheritanceTree: () => TreeNode // useful when your trees follow the convention "className parentClassName" line structure
@@ -62,6 +62,7 @@ interface TreeNode {
   clone: () => TreeNode
   copyTo: (tree: TreeNode, index: int) => TreeNode
   getLines: () => string[]
+  getNodeByColumn: (index: int, name: string) => TreeNode | Undefined
   getNodeByColumns: (...columns: string[]) => TreeNode | Undefined
   getNode: (path: keywordPath) => TreeNode
   getNodes: () => TreeNode[]

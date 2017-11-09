@@ -1493,9 +1493,9 @@ Mammal Animal
  milk`
   )
   // Act/Assert
-  equal(tree.getNode("Monkey").getGraph().length, 4)
-  equal(tree.getNode("Thing").getGraph().length, 1)
-  equal(tree.getNode("Animal").getGraph().length, 2)
+  equal(tree.getNode("Monkey").getGraph(0, 1).length, 4)
+  equal(tree.getNode("Thing").getGraph(0, 1).length, 1)
+  equal(tree.getNode("Animal").getGraph(0, 1).length, 2)
 }
 
 testTree.getExpanded = equal => {
@@ -1510,7 +1510,7 @@ Animal Thing
   )
   // Act/Assert
   equal(
-    tree.getExpanded(),
+    tree.getExpanded(0, 1),
     `Thing
  color
  ab
@@ -1533,7 +1533,7 @@ Mammal Animal
   )
   // Act/Assert
   equal(
-    tree2.getExpanded(),
+    tree2.getExpanded(0, 1),
     `Thing
  color
 Animal Thing

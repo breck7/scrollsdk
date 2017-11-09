@@ -41,9 +41,21 @@ class AbstractGrammarBackedProgram extends TreeNode {
     return usage
   }
 
-  getProgramWordTypeString() {
+  getInPlaceSyntaxTree() {
     return this.getTopDownArray()
-      .map(child => child.getIndentation() + child.getWordTypeLine())
+      .map(child => child.getIndentation() + child.getLineSyntax())
+      .join("\n")
+  }
+
+  getInPlaceSyntaxTreeWithNodeTypes() {
+    return this.getTopDownArray()
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
+      .join("\n")
+  }
+
+  getTreeWithNodeTypes() {
+    return this.getTopDownArray()
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
       .join("\n")
   }
 
@@ -57,7 +69,7 @@ class AbstractGrammarBackedProgram extends TreeNode {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
 
-    this._cache_typeTree = new TreeNode(this.getProgramWordTypeString())
+    this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree())
     this._cache_programWordTypeStringMTime = treeMTime
   }
 

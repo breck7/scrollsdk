@@ -1,3 +1,9 @@
+12.1.0 / 2017-11-09
+===================
+- Breaking: getWordTypeLine is now getLineSyntax
+- Breaking: getProgramWordTypeString is now getInPlaceSyntaxTree
+- New: getTreeWithNodeTypes and getInPlaceSyntaxTreeWithNodeTypes methods for inspecting the parse
+
 12.0.0 / 2017-11-09
 ===================
 - Breaking: grammar file grammar change, first node should be @grammar, keywords should be @keyword

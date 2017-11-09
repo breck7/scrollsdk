@@ -5,7 +5,7 @@ class GrammarDefinitionErrorNode extends TreeNode {
     return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
   }
 
-  getWordTypeLine() {
+  getLineSyntax() {
     return ["keyword"].concat(this.getWordsFrom(1).map(word => "any")).join(" ")
   }
 }

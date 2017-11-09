@@ -44,7 +44,7 @@ interface TreeNode {
   getSiblings: () => TreeNode[]
   getOlderSiblings: () => TreeNode[] // where older sibling is a node with a lower index
   getYoungerSiblings: () => TreeNode[] // where younger sibling is a node with a higher index
-  getWordTypeLine: () => string // something like "any int int". base class words are always any type.
+  getLineSyntax: () => string // something like "AdditionNode int int"
   getWord: (index: int) => word
   getWords: () => word[]
   getWordsFrom: (startingFrom: int) => word[]

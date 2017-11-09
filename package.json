@@ -1,6 +1,6 @@
 {
   "name": "otree",
-  "version": "12.0.0",
+  "version": "12.1.0",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {

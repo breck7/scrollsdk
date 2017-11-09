@@ -55,13 +55,31 @@ quack.quickTest("jibberish", equal => {
   // Act
   const wordTypesProgram = new rootParserClass(`foo
 + 2 3 2`)
-  const wordTypes = wordTypesProgram.getProgramWordTypeString()
+  const wordTypes = wordTypesProgram.getInPlaceSyntaxTree()
 
   // Assert
   equal(
     wordTypes,
     `keyword
 keyword int int int`,
+    "word types should match"
+  )
+
+  // Act
+  const nodeTypes = wordTypesProgram.getInPlaceSyntaxTreeWithNodeTypes()
+  const treeWithNodeTypes = wordTypesProgram.getTreeWithNodeTypes()
+
+  // Assert
+  equal(
+    nodeTypes,
+    `GrammarBackedTerminalNode keyword
+additionNode keyword int int int`,
+    "word types should match"
+  )
+  equal(
+    treeWithNodeTypes,
+    `GrammarBackedTerminalNode foo
+additionNode + 2 3 2`,
     "word types should match"
   )
 })

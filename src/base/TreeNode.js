@@ -17,7 +17,7 @@ class ImmutableNode extends AbstractNode {
     return []
   }
 
-  getWordTypeLine() {
+  getLineSyntax() {
     return "any ".repeat(this.getWords().length).trim()
   }
 

@@ -2923,7 +2923,7 @@ testTree.typeTests = equal => {
   const a = new TreeNode("text")
   // Assert
   equal(a.getErrors().length, 0)
-  equal(a.getWordTypeLine(), "any")
+  equal(a.getLineSyntax(), "any")
 }
 
 testTree.treeNodes = equal => {

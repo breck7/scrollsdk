@@ -1,7 +1,7 @@
 const GrammarBackedNode = require("./GrammarBackedNode.js")
 
 class GrammarBackedErrorNode extends GrammarBackedNode {
-  getWordTypeLine() {
+  getLineSyntax() {
     return "error ".repeat(this.getWords().length).trim()
   }
 

@@ -81,7 +81,7 @@ class GrammarBackedNode extends TreeNode {
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
-  getWordTypeLine() {
+  getLineSyntax() {
     const parameterWords = this.getGrammarBackedCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
   }

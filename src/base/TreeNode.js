@@ -57,11 +57,19 @@ class ImmutableNode extends AbstractNode {
     return this._parent
   }
 
-  getPoint(relativeTo) {
+  getPoint() {
+    return this._getPoint()
+  }
+
+  _getPoint(relativeTo) {
     return {
       x: this._getXCoordinate(relativeTo),
       y: this._getYCoordinate(relativeTo)
     }
+  }
+
+  getPointRelativeTo(relativeTo) {
+    return this._getPoint(relativeTo)
   }
 
   getIndentation(relativeTo) {
@@ -71,7 +79,7 @@ class ImmutableNode extends AbstractNode {
   _getYCoordinate(relativeTo) {
     return this.isRoot(relativeTo)
       ? 0
-      : this.getRootNode(relativeTo)
+      : this._getRootNode(relativeTo)
           .getTopDownArray()
           .indexOf(this) + 1 // todo: may be slow for big trees.
   }
@@ -80,9 +88,13 @@ class ImmutableNode extends AbstractNode {
     return relativeTo === this || !this.getParent()
   }
 
-  getRootNode(relativeTo) {
+  getRootNode() {
+    return this._getRootNode()
+  }
+
+  _getRootNode(relativeTo) {
     if (this.isRoot(relativeTo)) return this
-    return this.getParent().getRootNode(relativeTo)
+    return this.getParent()._getRootNode(relativeTo)
   }
 
   toString(indentCount = 0, language = this) {
@@ -122,9 +134,17 @@ class ImmutableNode extends AbstractNode {
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
 
-  getWords(startFrom = 0) {
+  _getWords(startFrom) {
     if (!this._words) this._words = this._getLine().split(this.getZI())
     return startFrom ? this._words.slice(startFrom) : this._words
+  }
+
+  getWords() {
+    return this._getWords(0)
+  }
+
+  getWordsFrom(startFrom) {
+    return this._getWords(startFrom)
   }
 
   getKeyword() {
@@ -132,7 +152,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getBeam() {
-    const words = this.getWords(1)
+    const words = this.getWordsFrom(1)
     return words.length ? words.join(this.getZI()) : undefined
   }
 
@@ -142,15 +162,19 @@ class ImmutableNode extends AbstractNode {
     return (beam ? beam : "") + (this.length ? this.getYI() + this._childrenToString() : "")
   }
 
-  getStack(relativeTo) {
+  getStack() {
+    return this._getStack()
+  }
+
+  _getStack(relativeTo) {
     if (this.isRoot(relativeTo)) return []
     const parent = this.getParent()
     if (parent.isRoot(relativeTo)) return [this]
-    else return parent.getStack(relativeTo).concat([this])
+    else return parent._getStack(relativeTo).concat([this])
   }
 
-  getStackString(relativeTo) {
-    return this.getStack(relativeTo)
+  getStackString() {
+    return this._getStack()
       .map((node, index) => this.getXI().repeat(index) + node.getLine())
       .join(this.getYI())
   }
@@ -160,14 +184,30 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: return array? getPathArray?
-  getKeywordPath(relativeTo) {
+  _getKeywordPath(relativeTo) {
     if (this.isRoot(relativeTo)) return ""
     else if (this.getParent().isRoot(relativeTo)) return this.getKeyword()
 
-    return this.getParent().getKeywordPath(relativeTo) + this.getXI() + this.getKeyword()
+    return this.getParent()._getKeywordPath(relativeTo) + this.getXI() + this.getKeyword()
   }
 
-  getPathVector(relativeTo) {
+  getKeywordPathRelativeTo(relativeTo) {
+    return this._getKeywordPath(relativeTo)
+  }
+
+  getKeywordPath() {
+    return this._getKeywordPath()
+  }
+
+  getPathVector() {
+    return this._getPathVector()
+  }
+
+  getPathVectorRelativeTo(relativeTo) {
+    return this._getPathVector(relativeTo)
+  }
+
+  _getPathVector(relativeTo) {
     if (this.isRoot(relativeTo)) return []
     const path = this.getParent().getPathVector(relativeTo)
     path.push(this.getIndex())
@@ -261,7 +301,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   _getXCoordinate(relativeTo) {
-    return this.getStack(relativeTo).length
+    return this._getStack(relativeTo).length
   }
 
   getParentFirstArray() {
@@ -440,8 +480,14 @@ class ImmutableNode extends AbstractNode {
     return Object.keys(obj)
   }
 
-  getGraph(key) {
+  getGraphByKey(key) {
     const graph = this._getGraph(key)
+    graph.push(this)
+    return graph
+  }
+
+  getGraph() {
+    const graph = this._getGraph()
     graph.push(this)
     return graph
   }
@@ -493,7 +539,11 @@ class ImmutableNode extends AbstractNode {
     return headerRow + "\n" + rows.join("\n")
   }
 
-  toTable(maxWidth = 100, alignRight = false) {
+  toTable() {
+    return this._toTable(100, false)
+  }
+
+  toFormattedTable(maxWidth, alignRight) {
     return this._toTable(maxWidth, alignRight)
   }
 
@@ -529,12 +579,16 @@ class ImmutableNode extends AbstractNode {
     return this.toDelimited(" ")
   }
 
-  toOutline(nodeFn) {
+  toOutline() {
+    return this._toOutline(node => node.getLine())
+  }
+
+  toMappedOutline(nodeFn) {
     return this._toOutline(nodeFn)
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  _toOutline(nodeFn = node => node.getLine()) {
+  _toOutline(nodeFn) {
     const growBranch = (outlineTreeNode, last, lastStates, nodeFn, callback) => {
       let lastStatesCopy = lastStates.slice(0)
       const node = outlineTreeNode.node
@@ -571,11 +625,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   copyTo(node, index) {
-    const newNode = node._setLineAndChildren(
-      this.getLine(),
-      this.childrenToString(),
-      index === undefined ? node.length : index
-    )
+    const newNode = node._setLineAndChildren(this.getLine(), this.childrenToString(), index)
     return newNode
   }
 
@@ -885,7 +935,7 @@ class TreeNode extends ImmutableNode {
     const graph = this.getGraph()
     const result = new TreeNode()
     graph.forEach(node => result.extend(node))
-    return new TreeNode().append(this.getLine(), result)
+    return new TreeNode().appendLineAndChildren(this.getLine(), result)
   }
 
   getExpanded() {
@@ -936,7 +986,7 @@ class TreeNode extends ImmutableNode {
     // tood: cleanup.
     const remainingString = lines.join(this.getYI())
     const children = new TreeNode(remainingString)
-    if (!remainingString) children.append("")
+    if (!remainingString) children.appendLine("")
     this.setChildren(children)
     return this
   }
@@ -968,7 +1018,11 @@ class TreeNode extends ImmutableNode {
     return this._setChildren(tuple[1])
   }
 
-  append(line, children) {
+  appendLine(line) {
+    return this._setLineAndChildren(line)
+  }
+
+  appendLineAndChildren(line, children) {
     return this._setLineAndChildren(line, children)
   }
 
@@ -999,7 +1053,7 @@ class TreeNode extends ImmutableNode {
   shift() {
     if (!this.length) return null
     const node = this.getChildren().shift()
-    return node.copyTo(new this.constructor())
+    return node.copyTo(new this.constructor(), 0)
   }
 
   sort(fn) {
@@ -1078,17 +1132,21 @@ class TreeNode extends ImmutableNode {
     const parent = this.getParent()
     const index = this.getIndex()
     const newNodeText = new TreeNode(str).nodeAt(0)
-    const newNode = parent.insert(newNodeText.getLine(), newNodeText.childrenToString(), index)
+    const newNode = parent.insertLineAndChildren(newNodeText.getLine(), newNodeText.childrenToString(), index)
     this.destroy()
     return newNode
   }
 
-  insert(line, children, index) {
+  insertLineAndChildren(line, children, index) {
     return this._setLineAndChildren(line, children, index)
   }
 
-  prepend(line, children) {
-    return this.insert(line, children, 0)
+  insertLine(line, index) {
+    return this._setLineAndChildren(line, undefined, index)
+  }
+
+  prependLine(line) {
+    return this.insertLine(line, 0)
   }
 
   pushBeamAndChildren(beam, children) {
@@ -1098,13 +1156,13 @@ class TreeNode extends ImmutableNode {
       index++
     }
     const line = index.toString() + (beam === undefined ? "" : this.getZI() + beam)
-    return this.append(line, children)
+    return this.appendLineAndChildren(line, children)
   }
 
   _touchNode(keywordPathArray) {
     let contextNode = this
     keywordPathArray.forEach(keyword => {
-      contextNode = contextNode.getNode(keyword) || contextNode.append(keyword)
+      contextNode = contextNode.getNode(keyword) || contextNode.appendLine(keyword)
     })
     return contextNode
   }
@@ -1140,27 +1198,36 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  static fromCsv(str, hasHeaders) {
-    return this.fromDelimited(str, ",", hasHeaders)
+  static fromCsv(str) {
+    return this.fromDelimited(str, ",", '"')
   }
 
   static fromJson(str) {
     return new TreeNode(JSON.parse(str))
   }
 
-  static fromSsv(str, hasHeaders) {
-    return this.fromDelimited(str, " ", hasHeaders)
+  static fromSsv(str) {
+    return this.fromDelimited(str, " ", '"')
   }
 
-  static fromTsv(str, hasHeaders) {
-    return this.fromDelimited(str, "\t", hasHeaders)
+  static fromTsv(str) {
+    return this.fromDelimited(str, "\t", '"')
   }
 
-  static fromDelimited(str, delimiter, hasHeaders, quoteChar = '"') {
-    const rows = str.includes(quoteChar)
+  static fromDelimited(str, delimiter, quoteChar) {
+    const rows = this._getEscapedRows(str, delimiter, quoteChar)
+    return this._rowsToTreeNode(rows, delimiter, true)
+  }
+
+  static _getEscapedRows(str, delimiter, quoteChar) {
+    return str.includes(quoteChar)
       ? this._strToRows(str, delimiter, quoteChar)
       : str.split("\n").map(line => line.split(delimiter))
-    return this._rowsToTreeNode(rows, delimiter, hasHeaders === false ? false : true)
+  }
+
+  static fromDelimitedNoHeaders(str, delimiter, quoteChar) {
+    const rows = this._getEscapedRows(str, delimiter, quoteChar)
+    return this._rowsToTreeNode(rows, delimiter, false)
   }
 
   static _strToRows(str, delimiter, quoteChar, newLineChar = "\n") {
@@ -1312,8 +1379,9 @@ class TreeNode extends ImmutableNode {
 
         if (child.tagName && child.tagName.match(/parsererror/i)) throw new Error("Parse Error")
 
-        if (child.childNodes.length > 0 && child.tagName) children.append(child.tagName, this._treeNodeFromXml(child))
-        else if (child.tagName) children.append(child.tagName)
+        if (child.childNodes.length > 0 && child.tagName)
+          children.appendLineAndChildren(child.tagName, this._treeNodeFromXml(child))
+        else if (child.tagName) children.appendLine(child.tagName)
         else if (child.data) {
           const data = child.data.trim()
           if (data) children.pushBeamAndChildren(data)

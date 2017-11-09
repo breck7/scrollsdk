@@ -1,3 +1,21 @@
+11.5.0 / 2017-11-08
+===================
+- New: appendLine method
+- New: insertLine method
+- Breaking: append is now appendLineAndChildren
+- Breaking: insert is now insertLineAndChildren
+- Breaking: prepend is now prependLine and takes only 1 param
+- Breaking: copyTo now requires second arg
+- Breaking: toOutline now takes 0 args. use toMappedOutline to pass a mapping fn
+- Breaking: fromCsv, fromSsv, fromTsv no longer take optional hasHeaders param. Use new fromDelimitedNoHeaders
+- Breaking: fromDelimited now requires quoteChar param
+- Breaking: toTable now accepts 0 params, use toFormattedTable to pass params
+- Breaking: getPoint now takes no params, use getPointRelativeTo; getPathVector => getPathVectorRelativeTo
+- Breaking: getKeywordPath now takes no params, use getKeywordPathRelativeTo
+- Breaking: getStack, getRootNode now take no params
+- Breaking: getWords now takes 0 params. use getWordsFrom
+- Breaking: use getGraphByKey to getGraphByKey
+
 11.4.1 / 2017-11-08
 ===================
 - New: export GrammarProgram

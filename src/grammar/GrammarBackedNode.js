@@ -69,7 +69,7 @@ class GrammarBackedNode extends TreeNode {
     const parameterLength = parameters.length
     const lastParameterType = parameters[parameterLength - 1]
     const lastParameterListType = lastParameterType && lastParameterType.endsWith("*") ? lastParameterType : undefined
-    const words = this.getWords(1)
+    const words = this.getWordsFrom(1)
     const length = Math.max(words.length, parameterLength)
     const checks = []
     for (let index = 0; index < length; index++) {

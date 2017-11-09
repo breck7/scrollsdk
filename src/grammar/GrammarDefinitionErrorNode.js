@@ -6,7 +6,7 @@ class GrammarDefinitionErrorNode extends TreeNode {
   }
 
   getWordTypeLine() {
-    return ["keyword"].concat(this.getWords(1).map(word => "any")).join(" ")
+    return ["keyword"].concat(this.getWordsFrom(1).map(word => "any")).join(" ")
   }
 }
 

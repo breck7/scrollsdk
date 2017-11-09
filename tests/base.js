@@ -411,9 +411,9 @@ testTree.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
   equal(new TestTree(test).nodeAt(0).length, 2)
 
   const rootTree = new TestTree()
-  const tree = rootTree.append("", new TestTree())
-  tree.append("")
-  tree.append("")
+  const tree = rootTree.appendLineAndChildren("", new TestTree())
+  tree.appendLine("")
+  tree.appendLine("")
   const newTree = new TestTree(rootTree.toString())
   equal(newTree.nodeAt(0).length, 2)
 }
@@ -423,14 +423,14 @@ testTree.append = equal => {
   const tree = new TreeNode("hello world")
 
   // Act
-  tree.append("foo bar")
+  tree.appendLine("foo bar")
   tree.touchNode("foo2").setBeam("bar")
 
   // Assert
   equal(tree.getNode("foo").getBeam(), "bar")
 
   // Act
-  tree.append("foo two")
+  tree.appendLine("foo two")
 
   // Assert
   equal(tree.length, 4)
@@ -959,7 +959,7 @@ testTree.fromCsv = equal => {
 
 testTree.fromCsvNoHeaders = equal => {
   // Arrange
-  const a = TreeNode.fromCsv(testStrings.csvNoHeaders, false)
+  const a = TreeNode.fromDelimitedNoHeaders(testStrings.csvNoHeaders, ",", '"')
 
   // Assert
   equal(a.length, 3)
@@ -968,7 +968,7 @@ testTree.fromCsvNoHeaders = equal => {
 
 testTree.fromDelimited = equal => {
   // Arrange
-  const a = TreeNode.fromDelimited(testStrings.fromDelimited, "^", undefined, "~")
+  const a = TreeNode.fromDelimited(testStrings.fromDelimited, "^", "~")
 
   // Assert
   equal(a.length, 2)
@@ -979,7 +979,9 @@ testTree.fromDelimited = equal => {
   const b = TreeNode.fromDelimited(
     `name,score
 
-joe,23`
+joe,23`,
+    ",",
+    '"'
   )
 
   // Assert
@@ -1344,7 +1346,7 @@ testTree.simpleTreeLanguage = equal => {
 
     // Look! You created a declarative file format!
     getNumbers() {
-      return this.getWords(1).map(word => parseFloat(word))
+      return this.getWordsFrom(1).map(word => parseFloat(word))
     }
 
     // Look! You created a compiler!
@@ -1406,7 +1408,7 @@ testTree.getKeywordPath = equal => {
   equal(child.getRootNode(), tree)
   equal(child.getStack().length, 6)
   equal(simple.getNode("foo").getStack().length, 1)
-  equal(child.getKeywordPath(parent), "data")
+  equal(child.getKeywordPathRelativeTo(parent), "data")
 }
 
 testTree.getPathVector = equal => {
@@ -1473,9 +1475,9 @@ Mammal
  milk`
   )
   // Act/Assert
-  equal(tree.getNode("Monkey").getGraph("extends").length, 4)
-  equal(tree.getNode("Thing").getGraph("extends").length, 1)
-  equal(tree.getNode("Animal").getGraph("extends").length, 2)
+  equal(tree.getNode("Monkey").getGraphByKey("extends").length, 4)
+  equal(tree.getNode("Thing").getGraphByKey("extends").length, 1)
+  equal(tree.getNode("Animal").getGraphByKey("extends").length, 2)
 }
 
 testTree.getGraphConventional = equal => {
@@ -1580,7 +1582,7 @@ testTree.indexOf = equal => {
   equal(tree.indexOf("color"), 1)
 
   // Act
-  tree.append("hello world")
+  tree.appendLine("hello world")
 
   // Assert
   equal(tree.indexOf("hello"), 0)
@@ -1592,14 +1594,14 @@ testTree.insert = equal => {
   const tree = new TreeNode("hello world")
 
   // Act
-  tree.insert("hi mom", undefined, 0)
+  tree.insertLine("hi mom", 0)
 
   // Assert
   equal(tree.indexOf("hi"), 0, "Expected hi at position 0")
 
   // Insert using an index longer than the current object
   // Act
-  tree.insert("test dad", undefined, 10)
+  tree.insertLine("test dad", 10)
 
   // Assert
   equal(tree.nodeAt(2).getBeam(), "dad", "Expected insert at int greater than length to append")
@@ -1607,7 +1609,7 @@ testTree.insert = equal => {
 
   // Insert using a negative index
   // Act
-  tree.insert("test2 sister", undefined, -1)
+  tree.insertLine("test2 sister", -1)
 
   // Assert
   equal(tree.nodeAt(2).getBeam(), "sister")
@@ -1821,7 +1823,7 @@ chart2
   const node0 = value.getChildren()[0]
 
   // Act
-  const node = value.getChildren()[1].copyTo(node0)
+  const node = value.getChildren()[1].copyTo(node0, node0.length)
   value.getChildren()[1].destroy()
 
   // Assert
@@ -2031,14 +2033,14 @@ sub
   equal(node.getNode("sub leaf") instanceof LeafNode, true)
 }
 
-testTree.prepend = equal => {
+testTree.prependLine = equal => {
   // Arrange
   const a = new TreeNode("hello world")
   // Assert
   equal(a.toString(), "hello world")
 
   // Act
-  const result = a.prepend("foo bar")
+  const result = a.prependLine("foo bar")
   // Assert
   equal(a.toString(), "foo bar\nhello world")
   equal(result instanceof TreeNode, true)
@@ -2209,13 +2211,13 @@ testTree.reorder = equal => {
   equal(a.getKeywords().join(" "), "hello hi", "order correct")
 
   // Act
-  a.insert("yo pal", undefined, 0)
+  a.insertLine("yo pal", 0)
 
   // Assert
   equal(a.getKeywords().join(" "), "yo hello hi", "order correct")
 
   // Act
-  const result = a.insert("hola pal", undefined, 2)
+  const result = a.insertLine("hola pal", 2)
   equal(result instanceof TreeNode, true)
 
   // Assert
@@ -2311,7 +2313,7 @@ testTree.set = equal => {
 
   // Test dupes
   // Arrange
-  tree.append("hello bob")
+  tree.appendLine("hello bob")
 
   // Act
   tree.touchNode("hello").setBeam("tim")
@@ -2351,12 +2353,12 @@ testTree.set = equal => {
   equal(tree4.getKeywords().join(" "), "hello hi", "order correct")
 
   // Act
-  tree4.insert("yo pal", undefined, 0)
+  tree4.insertLine("yo pal", 0)
   // Assert
   equal(tree4.getKeywords().join(" "), "yo hello hi", "order correct")
 
   // Act
-  tree4.insert("hola pal", undefined, 2)
+  tree4.insertLine("hola pal", 2)
   // Assert
   equal(tree4.getKeywords().join(" "), "yo hello hola hi", "order correct")
 
@@ -2585,12 +2587,12 @@ testTree.toTable = equal => {
   const a = TreeNode.fromCsv("name,score,color\n" + testStrings.csvNoHeaders)
   // Act/Assert
   equal(a.toTable(), testStrings.toTableLeft, "Expected correct spacing")
-  equal(a.toTable(undefined, true), testStrings.toTable, "Expected correct spacing")
+  equal(a.toFormattedTable(100, true), testStrings.toTable, "Expected correct spacing")
 
   // Arrange
   const b = TreeNode.fromCsv("name\njoe\nfrankenstein")
   // Act/Assert
-  equal(b.toTable(1), "n\nj\nf", "Expected max width to be enforced")
+  equal(b.toFormattedTable(1, false), "n\nj\nf", "Expected max width to be enforced")
 }
 
 testTree.nest = equal => {
@@ -2873,7 +2875,7 @@ testTree.toOutline = equal => {
 `
   )
   equal(
-    treeNode.toOutline(node => "o"),
+    treeNode.toMappedOutline(node => "o"),
     `└o
  └o
 `
@@ -2906,7 +2908,7 @@ some
 
   // Arrange
   const b = new TreeNode(`foo`)
-  b.append("bar")
+  b.appendLine("bar")
   const bTime = b.getTreeMTime()
 
   // Act

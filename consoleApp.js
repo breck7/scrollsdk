@@ -128,6 +128,7 @@ ${grammars.toTable()}`
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const extension = grammarProgram.getExtensionName()
     fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${grammarPath}`, "utf8")
+    return `Registered ${extension}`
   }
 
   addToHistory(one, two) {
@@ -166,8 +167,8 @@ ${grammars.toTable()}`
     const folderName = grammarName
     const stampFile = new TreeNode(`folder ${folderName}`)
     report.getChildren().forEach(node => {
-      const fileNode = stampFile.append(`file ${folderName}/${node.getKeyword()}.ssv`)
-      fileNode.append("data", `${node.getBeam()}\n` + node.childrenToString())
+      const fileNode = stampFile.appendLine(`file ${folderName}/${node.getKeyword()}.ssv`)
+      fileNode.appendLineAndChildren("data", `${node.getBeam()}\n` + node.childrenToString())
     })
     return stampFile.toString()
   }

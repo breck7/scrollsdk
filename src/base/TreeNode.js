@@ -959,6 +959,14 @@ class TreeNode extends ImmutableNode {
     this._mtime = this._getNow()
   }
 
+  insertWord(index, word) {
+    const wi = this.getZI()
+    const words = this._getLine().split(wi)
+    words.splice(index, 0, word)
+    this.setLine(words.join(wi))
+    return this
+  }
+
   setWord(index, word) {
     const wi = this.getZI()
     const words = this._getLine().split(wi)

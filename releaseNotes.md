@@ -1,3 +1,9 @@
+12.2.0 / 2017-11-09
+===================
+- New: insertWord method
+- Fix: fixes to usage reports
+- Breaking: renamed getBeamParameters to getNodeColumnTypes
+
 12.1.0 / 2017-11-09
 ===================
 - Breaking: getWordTypeLine is now getLineSyntax

@@ -29,12 +29,12 @@ class AbstractGrammarBackedProgram extends TreeNode {
     const grammarProgram = this.getGrammarProgram()
     const keywordDefinitions = grammarProgram.getKeywordDefinitions()
     keywordDefinitions.forEach(child => {
-      usage.appendLine([child.getWord(0), "line-id", "keyword", child.getBeamParameters().join(" ")].join(" "))
+      usage.appendLine([child.getId(), "line-id", "keyword", child.getNodeColumnTypes().join(" ")].join(" "))
     })
     const programNodes = this.getTopDownArray()
     programNodes.forEach((programNode, lineNumber) => {
       const def = programNode.getDefinition()
-      const keyword = def.getKeyword()
+      const keyword = def.getId()
       const stats = usage.getNode(keyword)
       stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
     })

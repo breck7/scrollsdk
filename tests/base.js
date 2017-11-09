@@ -1884,6 +1884,15 @@ testTree.copyToRegression = equal => {
   equal(tree.toString(), expected)
 }
 
+testTree.insertWord = equal => {
+  // Arrange
+  const a = new TreeNode("? result chekThis 1 2").getNode("?")
+  // Act
+  a.insertWord(2, "checkThis")
+  // Assert
+  equal(a.getLine(), "? result checkThis chekThis 1 2")
+}
+
 testTree.setWord = equal => {
   // Arrange
   const a = new TreeNode("? result chekThis 1 2").getNode("?")

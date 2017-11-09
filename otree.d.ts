@@ -109,6 +109,7 @@ interface TreeNode {
   getTreeMTime: () => number // get time tree was last modified. Initializes lazily on first call.
   setLine: (line: string) => This
   setFromText: (text: string) => This
+  insertWord: (index: int, value: string) => This
   insertLine: (line: string, index: int) => TreeNode
   insertLineAndChildren: (line: string, tree: content, index: int) => TreeNode
   invert: () => This // Flips keywords and beams on all top level nodes. Does not recurse.

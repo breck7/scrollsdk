@@ -65,7 +65,7 @@ class GrammarBackedNode extends TreeNode {
   getGrammarBackedCellArray() {
     const point = this.getPoint()
     const definition = this.getDefinition()
-    const parameters = definition.getBeamParameters()
+    const parameters = definition.getNodeColumnTypes()
     const parameterLength = parameters.length
     const lastParameterType = parameters[parameterLength - 1]
     const lastParameterListType = lastParameterType && lastParameterType.endsWith("*") ? lastParameterType : undefined

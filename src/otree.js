@@ -13,6 +13,6 @@ otree.TreeNode = TreeNode
 otree.NonTerminalNode = GrammarBackedNonTerminalNode
 otree.TerminalNode = GrammarBackedTerminalNode
 
-otree.getVersion = () => "12.2.0"
+otree.getVersion = () => "12.2.1"
 
 module.exports = otree

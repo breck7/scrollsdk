@@ -503,7 +503,7 @@ class ImmutableNode extends AbstractNode {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
     const parentNode = getNodeByIdFn(this.getParent(), parentId)
-    if (!parentNode) throw new Error(`"${this.getLine()} tried to extend "${name}" but "${name}" not found.`)
+    if (!parentNode) throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
     const graph = parentNode._getGraph(getNodeByIdFn, getParentIdFn)
     graph.push(parentNode)
     return graph

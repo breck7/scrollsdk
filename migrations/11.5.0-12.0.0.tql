@@ -1,0 +1,7 @@
+selectNodes
+ y === 1
+  insertWord 0 @grammar
+selectNodes
+ y > 1
+  x === 1
+   insertWord 0 @keyword

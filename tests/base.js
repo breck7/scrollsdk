@@ -1549,6 +1549,16 @@ Mammal Animal
  dna
  milk`
   )
+
+  const badMap = new TreeNode(`foo
+bar foo
+car non-existant`)
+  try {
+    badMap.getExpanded(0, 1)
+    equal(true, false, "expanding with missing id should throw")
+  } catch (err) {
+    equal(err.toString().includes("non-existant"), true, "expanding with missing id throws")
+  }
 }
 
 testTree.htmlDsl = equal => {

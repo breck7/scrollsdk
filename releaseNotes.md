@@ -1,3 +1,7 @@
+12.2.1 / 2017-11-09
+===================
+- Fix: bug fix in getExpanded
+
 12.2.0 / 2017-11-09
 ===================
 - New: insertWord method

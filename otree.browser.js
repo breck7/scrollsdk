@@ -95,7 +95,7 @@ class ImmutableNode extends AbstractNode {
     return []
   }
 
-  getWordTypeLine() {
+  getLineSyntax() {
     return "any ".repeat(this.getWords().length).trim()
   }
 
@@ -358,6 +358,10 @@ class ImmutableNode extends AbstractNode {
     return this.getTopDownArray().find(node => node._hasColumns(columns))
   }
 
+  getNodeByColumn(index, name) {
+    return this.getChildren().find(node => node.getWord(index) === name)
+  }
+
   _getTopDownArray(arr) {
     this.getChildren().forEach(child => {
       arr.push(child)
@@ -559,23 +563,26 @@ class ImmutableNode extends AbstractNode {
   }
 
   getGraphByKey(key) {
-    const graph = this._getGraph(key)
+    const graph = this._getGraph((node, id) => node.getNodeByColumn(0, id), node => node.findBeam(key))
     graph.push(this)
     return graph
   }
 
-  getGraph() {
-    const graph = this._getGraph()
+  getGraph(idColumnNumber, parentIdColumnNumber) {
+    const graph = this._getGraph(
+      (node, id) => node.getNodeByColumn(idColumnNumber, id),
+      node => node.getWord(parentIdColumnNumber)
+    )
     graph.push(this)
     return graph
   }
 
-  _getGraph(key) {
-    const name = key ? this.findBeam(key) : this.getWord(1)
-    if (!name) return []
-    const parentNode = this.getParent().getNode(name)
+  _getGraph(getNodeByIdFn, getParentIdFn) {
+    const parentId = getParentIdFn(this)
+    if (!parentId) return []
+    const parentNode = getNodeByIdFn(this.getParent(), parentId)
     if (!parentNode) throw new Error(`"${this.getLine()} tried to extend "${name}" but "${name}" not found.`)
-    const graph = parentNode._getGraph(key)
+    const graph = parentNode._getGraph(getNodeByIdFn, getParentIdFn)
     graph.push(parentNode)
     return graph
   }
@@ -1009,16 +1016,16 @@ class TreeNode extends ImmutableNode {
     return result
   }
 
-  _expand() {
-    const graph = this.getGraph()
+  _expand(idColumnNumber, parentIdColumnNumber) {
+    const graph = this.getGraph(idColumnNumber, parentIdColumnNumber)
     const result = new TreeNode()
     graph.forEach(node => result.extend(node))
     return new TreeNode().appendLineAndChildren(this.getLine(), result)
   }
 
-  getExpanded() {
+  getExpanded(idColumnNumber, parentIdColumnNumber) {
     return this.getChildren()
-      .map(child => child._expand())
+      .map(child => child._expand(idColumnNumber, parentIdColumnNumber))
       .join("\n")
   }
 
@@ -1028,6 +1035,14 @@ class TreeNode extends ImmutableNode {
 
   _updateMTime() {
     this._mtime = this._getNow()
+  }
+
+  insertWord(index, word) {
+    const wi = this.getZI()
+    const words = this._getLine().split(wi)
+    words.splice(index, 0, word)
+    this.setLine(words.join(wi))
+    return this
   }
 
   setWord(index, word) {
@@ -1534,21 +1549,33 @@ class AbstractGrammarBackedProgram extends TreeNode {
     const grammarProgram = this.getGrammarProgram()
     const keywordDefinitions = grammarProgram.getKeywordDefinitions()
     keywordDefinitions.forEach(child => {
-      usage.appendLine([child.getWord(0), "line-id", "keyword", child.getBeamParameters().join(" ")].join(" "))
+      usage.appendLine([child.getId(), "line-id", "keyword", child.getNodeColumnTypes().join(" ")].join(" "))
     })
     const programNodes = this.getTopDownArray()
     programNodes.forEach((programNode, lineNumber) => {
       const def = programNode.getDefinition()
-      const keyword = def.getKeyword()
+      const keyword = def.getId()
       const stats = usage.getNode(keyword)
       stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
     })
     return usage
   }
 
-  getProgramWordTypeString() {
+  getInPlaceSyntaxTree() {
     return this.getTopDownArray()
-      .map(child => child.getIndentation() + child.getWordTypeLine())
+      .map(child => child.getIndentation() + child.getLineSyntax())
+      .join("\n")
+  }
+
+  getInPlaceSyntaxTreeWithNodeTypes() {
+    return this.getTopDownArray()
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
+      .join("\n")
+  }
+
+  getTreeWithNodeTypes() {
+    return this.getTopDownArray()
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
       .join("\n")
   }
 
@@ -1562,7 +1589,7 @@ class AbstractGrammarBackedProgram extends TreeNode {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
 
-    this._cache_typeTree = new TreeNode(this.getProgramWordTypeString())
+    this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree())
     this._cache_programWordTypeStringMTime = treeMTime
   }
 
@@ -1692,6 +1719,11 @@ window.GrammarConstNode = GrammarConstNode
 
 const GrammarConstants = {}
 
+// node types
+GrammarConstants.grammar = "@grammar"
+GrammarConstants.keyword = "@keyword"
+GrammarConstants.wordType = "@wordType"
+
 // word parsing
 GrammarConstants.regex = "@regex" // temporary?
 
@@ -1795,7 +1827,7 @@ class GrammarBackedNode extends TreeNode {
   getGrammarBackedCellArray() {
     const point = this.getPoint()
     const definition = this.getDefinition()
-    const parameters = definition.getBeamParameters()
+    const parameters = definition.getNodeColumnTypes()
     const parameterLength = parameters.length
     const lastParameterType = parameters[parameterLength - 1]
     const lastParameterListType = lastParameterType && lastParameterType.endsWith("*") ? lastParameterType : undefined
@@ -1811,7 +1843,7 @@ class GrammarBackedNode extends TreeNode {
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
-  getWordTypeLine() {
+  getLineSyntax() {
     const parameterWords = this.getGrammarBackedCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
   }
@@ -1822,7 +1854,7 @@ window.GrammarBackedNode = GrammarBackedNode
 
 
 class GrammarBackedErrorNode extends GrammarBackedNode {
-  getWordTypeLine() {
+  getLineSyntax() {
     return "error ".repeat(this.getWords().length).trim()
   }
 
@@ -1950,7 +1982,7 @@ class GrammarDefinitionErrorNode extends TreeNode {
     return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
   }
 
-  getWordTypeLine() {
+  getLineSyntax() {
     return ["keyword"].concat(this.getWordsFrom(1).map(word => "any")).join(" ")
   }
 }
@@ -2045,6 +2077,10 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return map
   }
 
+  getId() {
+    return this.getWord(1)
+  }
+
   isNonTerminal() {
     return this.has(GrammarConstants.keywords)
   }
@@ -2106,7 +2142,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key])
   }
 
-  getBeamParameters() {
+  getNodeColumnTypes() {
     const parameters = this.findBeam(GrammarConstants.columns)
     return parameters ? parameters.split(" ") : []
   }
@@ -2128,7 +2164,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getAllowableKeywords() {
-    const keywords = this._getKeyWordsNode()
+    const keywords = this._getKeywordsNode()
     return keywords ? keywords.toObject() : {}
   }
 
@@ -2138,7 +2174,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const arr = Object.keys(keywords).map(keyword => definitions[keyword])
     arr.sort(TreeUtils.sortByAccessor(definition => definition.getFrequency()))
     arr.reverse()
-    return arr.map(definition => definition.getKeyword())
+    return arr.map(definition => definition.getId())
   }
 
   getDefinitionByName(keyword) {
@@ -2206,21 +2242,25 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this._cache_keywordChain
   }
 
+  _getParentKeyword() {
+    return this.getWord(2)
+  }
+
   _initKeywordChainCache() {
     if (this._cache_keywordChain) return undefined
     const cache = {}
-    cache[this.getKeyword()] = true
-    const beam = this.getBeam()
-    if (beam) {
-      cache[beam] = true
+    cache[this.getId()] = true
+    const parentKeyword = this._getParentKeyword()
+    if (parentKeyword) {
+      cache[parentKeyword] = true
       const defs = this._getDefinitionCache()
-      const parentDef = defs[beam]
+      const parentDef = defs[parentKeyword]
       Object.assign(cache, parentDef._getKeywordChain())
     }
     this._cache_keywordChain = cache
   }
 
-  _getKeyWordsNode() {
+  _getKeywordsNode() {
     return this.getNode(GrammarConstants.keywords)
   }
 
@@ -2229,7 +2269,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   getDoc() {
-    return this.getKeyword()
+    return this.getId()
   }
 
   _getDefaultsNode() {
@@ -2280,7 +2320,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   toFormBray(value) {
     return `@input
  data-onChangeCommand tile changeTileSettingAndRenderCommand
- name ${this.getKeyword()}
+ name ${this.getId()}
  value ${value}`
   }
 }
@@ -2289,20 +2329,34 @@ window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
 
 
 
-
-
-
-
-
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   _getDefaultParserClass() {}
 }
 
+window.GrammarRootNode = GrammarRootNode
+
+
+
+class GrammarWordTypeNode extends AbstractGrammarDefinitionNode {}
+
+window.GrammarWordTypeNode = GrammarWordTypeNode
+
+
+
+
+
+
+
+
+
+
 class GrammarProgram extends AbstractGrammarDefinitionNode {
-  parseNodeType(line) {
-    // for now, first node will be root node.
-    if (this.length === 0) return GrammarRootNode
-    return GrammarKeywordDefinitionNode
+  getKeywordMap() {
+    const map = {}
+    map[GrammarConstants.grammar] = GrammarRootNode
+    map[GrammarConstants.wordType] = GrammarWordTypeNode
+    map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
+    return map
   }
 
   getTargetExtension() {
@@ -2323,14 +2377,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   _getGrammarRootNode() {
-    return this.nodeAt(0) // todo: fragile?
+    return this.getNodeByType(GrammarRootNode)
   }
 
   getExtensionName() {
-    return this._getGrammarRootNode().getKeyword()
+    return this._getGrammarRootNode().getId()
   }
 
-  _getKeyWordsNode() {
+  _getKeywordsNode() {
     return this._getGrammarRootNode().getNode(GrammarConstants.keywords)
   }
 
@@ -2356,7 +2410,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const definitionMap = {}
 
     this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(definitionNode => {
-      definitionMap[definitionNode.getKeyword()] = definitionNode
+      definitionMap[definitionNode.getId()] = definitionNode
     })
 
     this._cache_definitions = definitionMap
@@ -2429,6 +2483,6 @@ otree.TreeNode = TreeNode
 otree.NonTerminalNode = GrammarBackedNonTerminalNode
 otree.TerminalNode = GrammarBackedTerminalNode
 
-otree.getVersion = () => "11.5.0"
+otree.getVersion = () => "12.2.0"
 
 window.otree = otree

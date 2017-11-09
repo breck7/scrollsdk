@@ -1,5 +1,10 @@
 const GrammarConstants = {}
 
+// node types
+GrammarConstants.grammar = "@grammar"
+GrammarConstants.keyword = "@keyword"
+GrammarConstants.wordType = "@wordType"
+
 // word parsing
 GrammarConstants.regex = "@regex" // temporary?
 

@@ -1,103 +1,103 @@
-wordTypes
+@grammar wordTypes
  @description A collection of common word types
-any
+@wordType any
  @regex .?
-lowercaseLetter
+@wordType lowercaseLetter
  @char a b c d e f g h i j k l m n o p q r s t u v w x y z
-uppercaseLetter
+@wordType uppercaseLetter
  @char A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
-letter
+@wordType letter
  @match lowercaseLetter
  @match uppercaseLetter
-word
+@wordType word
  @regex ^[a-zA-Z]+$
  @match letter
  @match letter word
-zero
+@wordType zero
  @char 0
-nonzero
+@wordType nonzero
  @char 1 2 3 4 5 6 7 8 9
-digit
+@wordType digit
  @match zero
  @match nonzero
-int
+@wordType int
  @regex ^\-?[0-9]+$
  @match digit
  @match nonzero int
-decimal
+@wordType decimal
  @char .
-numberSequence
+@wordType numberSequence
  @match digit
  @match digit numberSequence
-fraction
+@wordType fraction
  @match decimal numberSequence
-number
+@wordType number
  @match int
  @match fraction
  @match zero fraction
  @match int fraction
-equal
+@wordType equal
  @chars ==
-lt
+@wordType lt
  @char <
-gt
+@wordType gt
  @char >
-ltoe
+@wordType ltoe
  @chars <=
-gtoe
+@wordType gtoe
  @chars >=
-notEqual
+@wordType notEqual
  @chars !=
-comparison
+@wordType comparison
  @match equal
  @match lt
  @match gt
  @match ltoe
  @match gtoe
  @match notEqual
-alphanumeric
+@wordType alphanumeric
  @match letter
  @match digit
-alphanumericSequence
+@wordType alphanumericSequence
  @match alphanumeric
  @match alphanumeric alphanumeric
-identifier
+@wordType identifier
  @match letter
  @match letter alphanumericSequence
-true
+@wordType true
  @char t T 1
  @chars true True TRUE
-false
+@wordType false
  @char f F 0
  @chars false False FALSE
-boolean
+@wordType boolean
  @regex ^(false|true|t|f|T|F|0|1|True|False|TRUE|FALSE)$
  @match true
  @match false
-type
+@wordType type
  @chars any url something int boolean number lowercase prob alphanumeric comparison filepath identifier alpha
-filepathChar
+@wordType filepathChar
  @char _ / - @
  @match letter
-filepath
+@wordType filepath
  @match filepathChar
  @match filepathChar filepath
-lowercase
+@wordType lowercase
  @match lowercaseLetter
  @match lowercaseLetter lowercase
-uppercase
+@wordType uppercase
  @match uppercaseLetter
  @match uppercaseLetter uppercase
-prob
+@wordType prob
  @match fraction
-urlLetter
+@wordType urlLetter
  @char / : . - _ ?
  @match letter
  @match digit
-url
+@wordType url
  @regex .?
  @match urlLetter
  @match urlLetter url
-reduction
+@wordType reduction
  @regex ^(count|sum|average|min|max|median)$
  @chars count sum average min max median

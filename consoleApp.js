@@ -58,7 +58,7 @@ ${grammars.toTable()}`
 
   _checkAndLog(programPath) {
     const errors = this._check(programPath)
-    return `${errors.length} errors for ${programPath}${errors.length ? "\n" + errors : ""}`
+    return `${errors.length} errors for ${programPath}${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   _check(programPath) {

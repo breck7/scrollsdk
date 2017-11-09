@@ -1,5 +1,6 @@
-11.6.0 / 2017-11-09
+12.0.0 / 2017-11-09
 ===================
+- Breaking: grammar file grammar change, first node should be @grammar, keywords should be @keyword
 - Breaking: getGraph now takes 2 params, use getGraph(0, 1) for previous behavior
 - Breaking: getExpanded now takes 2 params, use getExpanded(0, 1) for previous behavior
 - New: getNodeByColumn method

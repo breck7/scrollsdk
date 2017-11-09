@@ -4,15 +4,15 @@
  #setup
   require ../src/grammar/GrammarProgram.js
   %%|
-   testlang
+   @grammar testlang
     @compiler txt
     @keywords
      baseNode
-   baseNode
-   block baseNode
+   @keyword baseNode
+   @keyword block baseNode
     @keywords
      baseNode
-   to block
+   @keyword to block
     @columns word
     @compiler txt
      @sub to {word}

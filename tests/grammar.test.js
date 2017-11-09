@@ -37,8 +37,8 @@ quack.quickTest("jibberish", equal => {
   const nodeDef = constNode.getDefinition()
 
   // Assert
-  equal(fooDef.getKeyword(), "foo")
-  equal(nodeDef.getKeyword(), "nodeWithConsts")
+  equal(fooDef.getId(), "foo")
+  equal(nodeDef.getId(), "nodeWithConsts")
 
   // Act
   const constObj = nodeDef.getConstantsObject()

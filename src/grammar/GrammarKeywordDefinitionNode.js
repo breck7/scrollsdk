@@ -20,21 +20,25 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this._cache_keywordChain
   }
 
+  _getParentKeyword() {
+    return this.getWord(2)
+  }
+
   _initKeywordChainCache() {
     if (this._cache_keywordChain) return undefined
     const cache = {}
-    cache[this.getKeyword()] = true
-    const beam = this.getBeam()
-    if (beam) {
-      cache[beam] = true
+    cache[this.getId()] = true
+    const parentKeyword = this._getParentKeyword()
+    if (parentKeyword) {
+      cache[parentKeyword] = true
       const defs = this._getDefinitionCache()
-      const parentDef = defs[beam]
+      const parentDef = defs[parentKeyword]
       Object.assign(cache, parentDef._getKeywordChain())
     }
     this._cache_keywordChain = cache
   }
 
-  _getKeyWordsNode() {
+  _getKeywordsNode() {
     return this.getNode(GrammarConstants.keywords)
   }
 
@@ -43,7 +47,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   getDoc() {
-    return this.getKeyword()
+    return this.getId()
   }
 
   _getDefaultsNode() {
@@ -94,7 +98,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   toFormBray(value) {
     return `@input
  data-onChangeCommand tile changeTileSettingAndRenderCommand
- name ${this.getKeyword()}
+ name ${this.getId()}
  value ${value}`
   }
 }

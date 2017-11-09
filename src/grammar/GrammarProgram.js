@@ -4,16 +4,16 @@ const AbstractGrammarBackedProgram = require("./AbstractGrammarBackedProgram.js"
 const GrammarConstants = require("./GrammarConstants.js")
 const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.js")
 const GrammarKeywordDefinitionNode = require("./GrammarKeywordDefinitionNode.js")
-
-class GrammarRootNode extends AbstractGrammarDefinitionNode {
-  _getDefaultParserClass() {}
-}
+const GrammarRootNode = require("./GrammarRootNode.js")
+const GrammarWordTypeNode = require("./GrammarWordTypeNode.js")
 
 class GrammarProgram extends AbstractGrammarDefinitionNode {
-  parseNodeType(line) {
-    // for now, first node will be root node.
-    if (this.length === 0) return GrammarRootNode
-    return GrammarKeywordDefinitionNode
+  getKeywordMap() {
+    const map = {}
+    map[GrammarConstants.grammar] = GrammarRootNode
+    map[GrammarConstants.wordType] = GrammarWordTypeNode
+    map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
+    return map
   }
 
   getTargetExtension() {
@@ -34,14 +34,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   _getGrammarRootNode() {
-    return this.nodeAt(0) // todo: fragile?
+    return this.getNodeByType(GrammarRootNode)
   }
 
   getExtensionName() {
-    return this._getGrammarRootNode().getKeyword()
+    return this._getGrammarRootNode().getId()
   }
 
-  _getKeyWordsNode() {
+  _getKeywordsNode() {
     return this._getGrammarRootNode().getNode(GrammarConstants.keywords)
   }
 
@@ -67,7 +67,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const definitionMap = {}
 
     this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(definitionNode => {
-      definitionMap[definitionNode.getKeyword()] = definitionNode
+      definitionMap[definitionNode.getId()] = definitionNode
     })
 
     this._cache_definitions = definitionMap

@@ -36,6 +36,10 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return map
   }
 
+  getId() {
+    return this.getWord(1)
+  }
+
   isNonTerminal() {
     return this.has(GrammarConstants.keywords)
   }
@@ -119,7 +123,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getAllowableKeywords() {
-    const keywords = this._getKeyWordsNode()
+    const keywords = this._getKeywordsNode()
     return keywords ? keywords.toObject() : {}
   }
 
@@ -129,7 +133,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const arr = Object.keys(keywords).map(keyword => definitions[keyword])
     arr.sort(TreeUtils.sortByAccessor(definition => definition.getFrequency()))
     arr.reverse()
-    return arr.map(definition => definition.getKeyword())
+    return arr.map(definition => definition.getId())
   }
 
   getDefinitionByName(keyword) {

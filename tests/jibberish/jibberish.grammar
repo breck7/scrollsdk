@@ -1,21 +1,21 @@
-jibberish
+@grammar jibberish
  @description Test a root parser node
  @parser js ./jibberishProgram.js
  @compiler txt
  @keywords
   topLevel
-topLevel
-block topLevel
+@keyword topLevel
+@keyword block topLevel
  @keywords
   topLevel
-foo topLevel
-nodeWithConsts topLevel
+@keyword foo topLevel
+@keyword nodeWithConsts topLevel
  @constants
   greeting string hello world
-+ topLevel
+@keyword + topLevel
  @parser js ./jibberishNodes.js additionNode
  @columns int*
-to block
+@keyword to block
  @columns word
  @compiler txt
   @sub to {word}

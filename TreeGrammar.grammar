@@ -1,63 +1,95 @@
-grammar
+@grammar grammar
  @description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
- @catchAllKeyword keywordDefinition
-keywordRule
-monadicKeywordRule keywordRule
+ @catchAllKeyword error
+ @keywords
+  @grammar
+  @keyword
+  @wordType
+@keyword @grammar
  @columns any
-diadicKeywordRule keywordRule
+ @keywords
+  @description
+  @keywords
+  @parser
+  @compiler
+  @catchAllKeyword
+@keyword @wordType
+ @columns any
+ @keywords
+  @regex
+@keyword @regex
+ @columns any*
+@wordType int
+ @regex ^\-?[0-9]+$
+@wordType word
+ @regex ^[a-zA-Z]+$
+@wordType lowercaseWord
+ @regex ^[a-z]+$
+@wordType any
+ @regex .?
+@wordType filepath
+ @regex .?
+@wordType keyword
+ @regex .?
+@keyword keywordRule
+@keyword monadicKeywordRule keywordRule
+ @columns any
+@keyword diadicKeywordRule keywordRule
  @columns any any
-@catchAllKeyword monadicKeywordRule
-@parser variadicKeywordRule
-@frequency monadicKeywordRule
-variadicKeywordRule keywordRule
+@keyword @catchAllKeyword monadicKeywordRule
+@keyword @parser variadicKeywordRule
+@keyword @frequency monadicKeywordRule
+@keyword variadicKeywordRule keywordRule
  @columns any*
-@columns variadicKeywordRule
-@regex variadicKeywordRule
-compilerRule
+@keyword @columns variadicKeywordRule
+@keyword @regex variadicKeywordRule
+@keyword compilerRule
  @columns any*
-@compiler monadicKeywordRule
+@keyword @compiler monadicKeywordRule
  @keywords
   @sub
   @listDelimiter
   @openChildren
   @closeChildren
   @indentCharacter
-@sub compilerRule
-@listDelimiter compilerRule
-@openChildren compilerRule
-@closeChildren compilerRule
-@indentCharacter compilerRule
-@description variadicKeywordRule
-ntKeywordRule keywordRule
-defaultTuple
+@keyword @sub compilerRule
+@keyword @listDelimiter compilerRule
+@keyword @openChildren compilerRule
+@keyword @closeChildren compilerRule
+@keyword @indentCharacter compilerRule
+@keyword @description variadicKeywordRule
+@keyword ntKeywordRule keywordRule
+@keyword defaultTuple
  @columns any any*
-@defaults keywordRule
+@keyword @defaults keywordRule
  @catchAllKeyword defaultTuple
-constantAny
+@keyword constantAny
  @columns any*
  @catchAllKeyword constantAny
-constantDefinition
+@keyword constantDefinition
  @columns any*
  @catchAllKeyword constantAny
-@constants keywordRule
+@keyword @constants keywordRule
  @catchAllKeyword constantDefinition
-@keywords ntKeywordRule
-@ohayoTileScript monadicKeywordRule
+@keyword keywordUse
+@keyword @keywords ntKeywordRule
+ @catchAllKeyword keywordUse
+@keyword @ohayoTileScript monadicKeywordRule
  @description todo: remove
-@ohayoTileCssScript monadicKeywordRule
+@keyword @ohayoTileCssScript monadicKeywordRule
  @description todo: remove
-@ohayoSvg monadicKeywordRule
+@keyword @ohayoSvg monadicKeywordRule
  @description todo: remove
-@ohayoTileSize keywordRule
+@keyword @ohayoTileSize keywordRule
  @columns int int
  @description todo: remove
-@ohayoTileClass keywordRule
+@keyword @ohayoTileClass keywordRule
  @columns any filepath
  @description todo: remove
-error
+@keyword error
  @parser js ErrorNode
-keywordDefinition
- @columns any*
+@keyword @keyword
+ @columns any any*
  @catchAllKeyword error
  @parser js NonTerminalNode
  @keywords

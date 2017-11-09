@@ -20,16 +20,16 @@ file LANG/readme.mark
   # LANG - DESCRIPTION
 file LANG/index.js
  data
-  module.exports = require("otree").getProgramClassFromGrammarFile(__dirname + "/LANG.grammar")
+  module.exports = require("otree").getParser(__dirname + "/LANG.grammar")
 file LANG/LANG.grammar
  data
-  LANG
+  @grammar LANG
    @description DESCRIPTION
    @catchAllKeyword error
    @keywords
     topLevel
-  topLevel
-  error
+  @keyword topLevel
+  @keyword error
    @parser js ErrorNode
 file LANG/tests.swarm
 file LANG/sample.LANG

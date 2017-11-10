@@ -32,6 +32,7 @@
 @wordType fraction
  @match decimal numberSequence
 @wordType number
+ @regex ^\-?[0-9]*\.?[0-9]*$
  @match int
  @match fraction
  @match zero fraction
@@ -56,12 +57,14 @@
  @match gtoe
  @match notEqual
 @wordType alphanumeric
+ @regex ^[a-zA-Z0-9]+$
  @match letter
  @match digit
 @wordType alphanumericSequence
  @match alphanumeric
  @match alphanumeric alphanumeric
 @wordType identifier
+ @regex ^[$A-Za-z_][0-9a-zA-Z_$]*$
  @match letter
  @match letter alphanumericSequence
 @wordType true
@@ -71,6 +74,7 @@
  @char f F 0
  @chars false False FALSE
 @wordType boolean
+ @regex ^(false|true)$
  @regex ^(false|true|t|f|T|F|0|1|True|False|TRUE|FALSE)$
  @match true
  @match false
@@ -80,6 +84,7 @@
  @char _ / - @
  @match letter
 @wordType filepath
+ @regex .?
  @match filepathChar
  @match filepathChar filepath
 @wordType lowercase

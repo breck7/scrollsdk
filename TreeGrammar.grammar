@@ -5,6 +5,8 @@
   @grammar
   @keyword
   @wordType
+@wordType filepath
+ @regex .?
 @wordType int
  @regex ^\-?[0-9]+$
 @wordType word

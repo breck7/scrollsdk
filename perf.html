@@ -1,5 +1,5 @@
 <script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
-<script src="/otree.browser.js"></script>
+<script src="/jtree.browser.js"></script>
 <script id="test" type="tree">199955
  Date 2016-07-01
  Value 24.3
@@ -5254,7 +5254,7 @@ const trials = 200
 const runTest = () => {
 
 	for (let index = 0; index < trials; index++) {
-	map[index] = new otree.TreeNode(data)
+	map[index] = new jtree.TreeNode(data)
 }
 console.log(`parsed ${lineLength * trials} lines of TN code in ${Date.now() - startTime}ms`)
 }

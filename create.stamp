@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/otree
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 prompt LANG lowercase Enter the file extension of your new language
 prompt DESCRIPTION any Enter a description for LANG
 folder LANG
@@ -14,13 +14,13 @@ file LANG/package.pack
   keywords LANG
   license MIT
   dependencies
-   otree *
+   jtree *
 file LANG/readme.mark
  data
   # LANG - DESCRIPTION
 file LANG/index.js
  data
-  module.exports = require("otree").getParser(__dirname + "/LANG.grammar")
+  module.exports = require("jtree").getParser(__dirname + "/LANG.grammar")
 file LANG/LANG.grammar
  data
   @grammar LANG

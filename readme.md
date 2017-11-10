@@ -20,13 +20,13 @@ Using this Library
 
 This library ships with a command line utility:
 
-    npm install otree
-    otree help
+    npm install jtree
+    jtree help
 
 To use it in an npm project:
 
-    const otree = require("otree")
-    const tree = new otree.TreeNode("hello world")
+    const jtree = require("jtree")
+    const tree = new jtree.TreeNode("hello world")
     console.log(tree.toString())
 
 More instructions coming soon! If you'd like to create a new Tree Language, shoot me an email and I can help you until we have more documentation.
@@ -34,7 +34,7 @@ More instructions coming soon! If you'd like to create a new Tree Language, shoo
 Development Status
 ------------------
 
-If you look at releaseNotes.md, you'll see this otree library is undergoing rapid iteration and breaking changes are frequent.
+If you look at releaseNotes.md, you'll see this jtree library is undergoing rapid iteration and breaking changes are frequent.
 
 By Version 15, things should settle down.
 
@@ -50,7 +50,7 @@ as a reference. If you do build a library for another language, let me know and 
 Theory
 ------
 
-You can read the paper introducing Tree Notation here (https://github.com/breck7/otree/blob/master/paper/treenotation.pdf).
+You can read the paper introducing Tree Notation here (https://github.com/breck7/jtree/blob/master/paper/treenotation.pdf).
 
 The basic gist of the theory is that all structures are trees, tree notation is all you need to represent trees, and you can easily build Turing Complete programming languages using just Tree Notation.
 

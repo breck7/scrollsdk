@@ -1,22 +1,22 @@
 const fs = require("fs")
 
-const otree = require("./otree.js")
+const jtree = require("./jtree.js")
 const GrammarProgram = require("./grammar/GrammarProgram.js")
 
-otree.executeFile = (programPath, grammarPath) => otree.makeProgram(programPath, grammarPath).execute(programPath)
+jtree.executeFile = (programPath, grammarPath) => jtree.makeProgram(programPath, grammarPath).execute(programPath)
 
-otree.makeProgram = (programPath, grammarPath) => {
-  const programClass = otree.getParser(grammarPath)
+jtree.makeProgram = (programPath, grammarPath) => {
+  const programClass = jtree.getParser(grammarPath)
   const code = fs.readFileSync(programPath, "utf8")
   return new programClass(code)
 }
 
-otree.getParser = grammarPath => {
+jtree.getParser = grammarPath => {
   const grammarCode = fs.readFileSync(grammarPath, "utf8")
   const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
   return grammarProgram.getRootParserClass()
 }
 
-otree.GrammarProgram = GrammarProgram
+jtree.GrammarProgram = GrammarProgram
 
-module.exports = otree
+module.exports = jtree

@@ -1,5 +1,5 @@
-const otree = require("./index.js")
-const TreeNode = otree.TreeNode
+const jtree = require("./index.js")
+const TreeNode = jtree.TreeNode
 const GrammarProgram = require("./src/grammar/GrammarProgram.js")
 const TreeUtils = require("./src/base/TreeUtils.js")
 const fs = require("fs")
@@ -47,7 +47,7 @@ ${grammars.toTable()}`
   }
 
   create() {
-    otree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName("stamp"))
+    jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName("stamp"))
   }
 
   check(programPathOrGrammarName) {
@@ -63,7 +63,7 @@ ${grammars.toTable()}`
 
   _check(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = otree.makeProgram(programPath, grammarPath)
+    const program = jtree.makeProgram(programPath, grammarPath)
     return program.getProgramErrors()
   }
 
@@ -81,7 +81,7 @@ ${grammars.toTable()}`
   compile(programPath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = otree.makeProgram(programPath, grammarPath)
+    const program = jtree.makeProgram(programPath, grammarPath)
     const path = program.getCompiledProgramName(programPath)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const targetExtension = grammarProgram.getTargetExtension()
@@ -144,7 +144,7 @@ ${grammars.toTable()}`
 
   _run(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    return otree.executeFile(programPath, grammarPath)
+    return jtree.executeFile(programPath, grammarPath)
   }
 
   run(programPathOrGrammarName) {
@@ -156,7 +156,7 @@ ${grammars.toTable()}`
   usage(grammarName) {
     const files = this._history(grammarName)
     const grammarPath = this._getGrammarPathOrThrow(files[0])
-    const programClass = otree.getParser(grammarPath)
+    const programClass = jtree.getParser(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
       const code = fs.readFileSync(path, "utf8")
@@ -174,7 +174,7 @@ ${grammars.toTable()}`
   }
 
   version() {
-    return `otree version ${otree.getVersion()}`
+    return `jtree version ${jtree.getVersion()}`
   }
 }
 

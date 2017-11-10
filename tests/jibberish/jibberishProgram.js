@@ -1,6 +1,6 @@
-const otree = require("../../index.js")
+const jtree = require("../../index.js")
 
-class jibberishProgram extends otree.program {
+class jibberishProgram extends jtree.program {
   executeSync() {
     return 42
   }

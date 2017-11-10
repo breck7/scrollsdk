@@ -1,10 +1,10 @@
 {
-  "name": "otree",
+  "name": "jtree",
   "version": "13.0.0",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {
-    "otree": "./cli.js"
+    "jtree": "./cli.js"
   },
   "scripts": {
     "test": "./tasks/test.js",
@@ -13,9 +13,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/breck7/otree"
+    "url": "git://github.com/breck7/jtree"
   },
-  "keywords": "otree",
+  "keywords": "jtree",
   "devDependencies": {
     "express": "*",
     "jquery": "*",

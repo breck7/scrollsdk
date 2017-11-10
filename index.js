@@ -1,1 +1,1 @@
-module.exports = require("./src/otree.node.js")
+module.exports = require("./src/jtree.node.js")

@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="node_modules/qunitjs/qunit/qunit.js"></script>
-    <script type="text/javascript" src="otree.browser.js"></script>
+    <script type="text/javascript" src="jtree.browser.js"></script>
     <script type="text/javascript" src="./tests/base.js"></script>
     <script type="text/javascript">
       QUnit.config.autostart = false
       $(document).ready(function() {
-        QUnit.module("otree")
+        QUnit.module("jtree")
         Object.keys(testTree).forEach(key => {
           QUnit.test(key, assert => {
             testTree[key]((expected, actual, message) => assert.strictEqual(expected, actual, message))

@@ -5,14 +5,14 @@ const AbstractGrammarBackedProgram = require("./grammar/AbstractGrammarBackedPro
 const GrammarBackedNonTerminalNode = require("./grammar/GrammarBackedNonTerminalNode.js")
 const GrammarBackedTerminalNode = require("./grammar/GrammarBackedTerminalNode.js")
 
-const otree = {}
+const jtree = {}
 
-otree.program = AbstractGrammarBackedProgram
-otree.Utils = TreeUtils
-otree.TreeNode = TreeNode
-otree.NonTerminalNode = GrammarBackedNonTerminalNode
-otree.TerminalNode = GrammarBackedTerminalNode
+jtree.program = AbstractGrammarBackedProgram
+jtree.Utils = TreeUtils
+jtree.TreeNode = TreeNode
+jtree.NonTerminalNode = GrammarBackedNonTerminalNode
+jtree.TerminalNode = GrammarBackedTerminalNode
 
-otree.getVersion = () => "13.0.0"
+jtree.getVersion = () => "13.0.0"
 
-module.exports = otree
+module.exports = jtree

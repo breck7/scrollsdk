@@ -145,7 +145,7 @@ interface StaticTreeNode {
   fromXml: (str: string) => TreeNode
 }
 
-interface otree {
+interface jtree {
   TreeNode: TreeNode
   program: AbstractGrammarBackedProgram
   GrammarProgram: GrammarProgram

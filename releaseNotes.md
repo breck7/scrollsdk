@@ -1,3 +1,7 @@
+14.0.0 / 2017-11-10
+===================
+- Breaking: renamed otree to jtree
+
 13.0.0 / 2017-11-09
 ===================
 - Breaking: Tree Grammar switched to @wordType nodes for defining word types, no more implicit types

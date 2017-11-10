@@ -1,6 +1,6 @@
-const otree = require("../../index.js")
+const jtree = require("../../index.js")
 
-class additionNode extends otree.NonTerminalNode {}
+class additionNode extends jtree.NonTerminalNode {}
 
 const nodes = {}
 

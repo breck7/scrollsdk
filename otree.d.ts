@@ -114,7 +114,7 @@ interface TreeNode {
   insertLineAndChildren: (line: string, tree: content, index: int) => TreeNode
   invert: () => This // Flips keywords and beams on all top level nodes. Does not recurse.
   prependLine: (line: string) => TreeNode
-  replaceNode: (fn: replaceNodeFn) => TreeNode
+  replaceNode: (fn: replaceNodeFn) => TreeNode[]
   remap: (key: Object) => This // Does not recurse.
   rename: (oldKeyword: word, newKeyword: word) => This
   renameAll: (oldKeyword: word, newKeyword: word) => This

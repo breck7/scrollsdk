@@ -1146,10 +1146,14 @@ class TreeNode extends ImmutableNode {
     const str = fn(this.toString())
     const parent = this.getParent()
     const index = this.getIndex()
-    const newNodeText = new TreeNode(str).nodeAt(0)
-    const newNode = parent.insertLineAndChildren(newNodeText.getLine(), newNodeText.childrenToString(), index)
+    const newNodes = new TreeNode(str)
+    const returnedNodes = []
+    newNodes.getChildren().forEach((child, childIndex) => {
+      const newNode = parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
+      returnedNodes.push(newNode)
+    })
     this.destroy()
-    return newNode
+    return returnedNodes
   }
 
   insertLineAndChildren(line, children, index) {

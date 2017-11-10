@@ -2,8 +2,17 @@
  @description Test a root parser node
  @parser js ./jibberishProgram.js
  @compiler txt
+ @catchAllKeyword error
  @keywords
   topLevel
+@wordType int
+ @regex ^\-?[0-9]+$
+@wordType onoff
+ @regex ^(on|off)$
+@wordType word
+ @regex .?
+@keyword error
+ @parser js ErrorNode
 @keyword topLevel
 @keyword block topLevel
  @keywords
@@ -15,6 +24,8 @@
 @keyword + topLevel
  @parser js ./jibberishNodes.js additionNode
  @columns int*
+@keyword lightbulbState
+ @columns onoff
 @keyword to block
  @columns word
  @compiler txt

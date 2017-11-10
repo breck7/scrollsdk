@@ -24,8 +24,8 @@ quack.quickTest("jibberish", equal => {
 
   // Act
   const grammarProgram = new GrammarProgram(jibberishGrammarCode, grammarPath)
-  const rootParserClass = grammarProgram.getRootParserClass()
-  const program = new rootParserClass(sampleJibberishCode)
+  const rootJibberishParserClass = grammarProgram.getRootParserClass()
+  const program = new rootJibberishParserClass(sampleJibberishCode)
 
   // Assert
   equal(program instanceof jibberishProgram, true, "correct program class")
@@ -53,7 +53,7 @@ quack.quickTest("jibberish", equal => {
   equal(addition instanceof jibberishNodes.additionNode, true)
 
   // Act
-  const wordTypesProgram = new rootParserClass(`foo
+  const wordTypesProgram = new rootJibberishParserClass(`foo
 + 2 3 2`)
   const wordTypes = wordTypesProgram.getInPlaceSyntaxTree()
 
@@ -82,4 +82,10 @@ additionNode keyword int int int`,
 additionNode + 2 3 2`,
     "word types should match"
   )
+
+  // Arrange
+  const programWithBugs = new rootJibberishParserClass(`+ foo bar`)
+
+  // Act
+  equal(programWithBugs.getProgramErrors().length, 2)
 })

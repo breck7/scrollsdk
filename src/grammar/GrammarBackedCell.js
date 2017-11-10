@@ -1,12 +1,12 @@
 const TreeNode = require("../base/TreeNode.js")
-const GrammarBackedColumnTypes = require("./GrammarBackedColumnTypes.js")
 
 class GrammarBackedCell {
-  constructor(word, type, node, line, index) {
+  constructor(word, type, node, line, index, grammarProgram) {
     this._word = word
     this._type = type
     this._line = line
     this._node = node
+    this._grammarProgram = grammarProgram
     this._index = index + 1
   }
 
@@ -35,31 +35,17 @@ class GrammarBackedCell {
         .toString()}`
     if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} column ${index}`
 
-    const wordTypeClass = GrammarBackedCell._getGrammarBackedColumnTypes()[type]
+    const grammarProgram = this._grammarProgram
+    const runTimeGrammarBackedProgram = this._node.getProgram()
+    const wordTypes = grammarProgram.getWordTypes()
+    const wordTypeClass = wordTypes[type]
     if (!wordTypeClass)
-      return `Grammar definition error: No column type "${type}" found in "${fullLine}" on line ${line}.`
+      return `Grammar definition error: No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}.`
 
-    const isValid = wordTypeClass.isValid(this._word)
+    const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
     return isValid
       ? ""
       : `Invalid word in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
-  }
-
-  static _getGrammarBackedColumnTypes() {
-    this._initCache()
-    return GrammarBackedCell._cache_treeColumnTypes
-  }
-
-  static _initCache() {
-    if (GrammarBackedCell._cache_treeColumnTypes) return
-
-    const program = new TreeNode(GrammarBackedColumnTypes)
-    GrammarBackedCell._cache_treeColumnTypes = {}
-    program.getChildren().forEach(child => {
-      GrammarBackedCell._cache_treeColumnTypes[child.getLine()] = {
-        isValid: str => str.match(new RegExp(child.findBeam("isValid")))
-      }
-    })
   }
 }
 

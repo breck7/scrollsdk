@@ -20,6 +20,17 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().getTargetExtension()
   }
 
+  getWordTypes() {
+    if (!this._cache_wordTypes) this._cache_wordTypes = this._getWordTypes()
+    return this._cache_wordTypes
+  }
+
+  _getWordTypes() {
+    const types = {}
+    this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[type.getTypeId()] = type))
+    return types
+  }
+
   getProgram() {
     return this
   }
@@ -120,6 +131,14 @@ contexts:
    - match: $
      scope: entity.name.type.tree
      pop: true`
+  }
+
+  static newFromCondensed(grammarCode, grammarPath) {
+    // todo: handle imports
+    const tree = new TreeNode(grammarCode)
+
+    const expandedGrammarCode = tree.getExpanded(1, 2)
+    return new GrammarProgram(expandedGrammarCode, grammarPath)
   }
 }
 

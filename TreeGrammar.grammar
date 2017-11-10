@@ -5,20 +5,6 @@
   @grammar
   @keyword
   @wordType
-@keyword @grammar
- @columns any
- @keywords
-  @description
-  @keywords
-  @parser
-  @compiler
-  @catchAllKeyword
-@keyword @wordType
- @columns any
- @keywords
-  @regex
-@keyword @regex
- @columns any*
 @wordType int
  @regex ^\-?[0-9]+$
 @wordType word
@@ -31,6 +17,25 @@
  @regex .?
 @wordType keyword
  @regex .?
+@wordType wordType
+ @keywordTable @wordType 1
+@keyword @grammar
+ @columns any
+ @keywords
+  @description
+  @keywords
+  @parser
+  @compiler
+  @catchAllKeyword
+@keyword @wordType
+ @columns any
+ @keywords
+  @regex
+  @keywordTable
+@keyword @regex
+ @columns any*
+@keyword @keywordTable
+ @columns any int
 @keyword keywordRule
 @keyword monadicKeywordRule keywordRule
  @columns any
@@ -41,7 +46,8 @@
 @keyword @frequency monadicKeywordRule
 @keyword variadicKeywordRule keywordRule
  @columns any*
-@keyword @columns variadicKeywordRule
+@keyword @columns keywordRule
+ @columns wordType*
 @keyword @regex variadicKeywordRule
 @keyword compilerRule
  @columns any*

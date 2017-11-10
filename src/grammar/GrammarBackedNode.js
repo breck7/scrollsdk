@@ -21,7 +21,7 @@ class GrammarBackedNode extends TreeNode {
   }
 
   _getParameterMap() {
-    const cells = this.getGrammarBackedCellArray()
+    const cells = this._getGrammarBackedCellArray()
     const parameterMap = {}
     cells.forEach(cell => {
       const type = cell.getType()
@@ -55,16 +55,17 @@ class GrammarBackedNode extends TreeNode {
     // Too many parameters
     // Incorrect parameter
 
-    const errors = this.getGrammarBackedCellArray()
+    const errors = this._getGrammarBackedCellArray()
       .filter(wordCheck => wordCheck.getErrorMessage())
       .map(check => check.getErrorMessage())
 
     return errors
   }
 
-  getGrammarBackedCellArray() {
+  _getGrammarBackedCellArray() {
     const point = this.getPoint()
     const definition = this.getDefinition()
+    const grammarProgram = definition.getProgram()
     const parameters = definition.getNodeColumnTypes()
     const parameterLength = parameters.length
     const lastParameterType = parameters[parameterLength - 1]
@@ -75,14 +76,14 @@ class GrammarBackedNode extends TreeNode {
     for (let index = 0; index < length; index++) {
       const word = words[index]
       const type = index >= parameterLength ? lastParameterListType : parameters[index]
-      checks[index] = new GrammarBackedCell(word, type, this, point.y, index)
+      checks[index] = new GrammarBackedCell(word, type, this, point.y, index, grammarProgram)
     }
     return checks
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getLineSyntax() {
-    const parameterWords = this.getGrammarBackedCellArray().map(slot => slot.getType())
+    const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
   }
 }

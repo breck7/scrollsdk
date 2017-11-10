@@ -22,6 +22,6 @@ quack.quickTest("basics", equal => {
   const jibErrors = app.check(__dirname + "/jibberish/jibberish.grammar")
 
   // Assert
-  equal(grammarErrors.includes("0 errors"), true, "no errors in TreeGrammar")
+  equal(grammarErrors.includes("0 errors"), true, grammarErrors)
   equal(jibErrors.includes("0 errors"), true, jibErrors)
 })

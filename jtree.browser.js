@@ -76,6 +76,9 @@ class TreeUtils {
 
 window.TreeUtils = TreeUtils
 
+
+
+
 class ImmutableNode extends AbstractNode {
   constructor(children, line, parent) {
     super()
@@ -1519,6 +1522,8 @@ class TreeNode extends ImmutableNode {
 
 window.TreeNode = TreeNode
 
+
+
 class AbstractGrammarBackedProgram extends TreeNode {
   getProgram() {
     return this
@@ -1600,6 +1605,8 @@ class AbstractGrammarBackedProgram extends TreeNode {
 
 window.AbstractGrammarBackedProgram = AbstractGrammarBackedProgram
 
+
+
 class GrammarBackedCell {
   constructor(word, type, node, line, index, grammarProgram) {
     this._word = word
@@ -1650,6 +1657,8 @@ class GrammarBackedCell {
 }
 
 window.GrammarBackedCell = GrammarBackedCell
+
+
 
 class GrammarConstNode extends TreeNode {
   getValue() {
@@ -1707,6 +1716,13 @@ GrammarConstants.ohayoTileScript = "@ohayoTileScript"
 GrammarConstants.ohayoTileCssScript = "@ohayoTileCssScript"
 
 window.GrammarConstants = GrammarConstants
+
+
+
+
+
+
+
 
 class GrammarBackedNode extends TreeNode {
   getProgram() {
@@ -1793,6 +1809,8 @@ class GrammarBackedNode extends TreeNode {
 
 window.GrammarBackedNode = GrammarBackedNode
 
+
+
 class GrammarBackedErrorNode extends GrammarBackedNode {
   getLineSyntax() {
     return "error ".repeat(this.getWords().length).trim()
@@ -1804,6 +1822,8 @@ class GrammarBackedErrorNode extends GrammarBackedNode {
 }
 
 window.GrammarBackedErrorNode = GrammarBackedErrorNode
+
+
 
 class GrammarBackedNonTerminalNode extends GrammarBackedNode {
   getKeywordMap() {
@@ -1839,9 +1859,15 @@ ${indent}${closeChildrenString}`
 
 window.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode
 
+
+
 class GrammarBackedTerminalNode extends GrammarBackedNode {}
 
 window.GrammarBackedTerminalNode = GrammarBackedTerminalNode
+
+
+
+
 
 class GrammarCompilerNode extends TreeNode {
   getKeywordMap() {
@@ -1886,6 +1912,10 @@ class GrammarCompilerNode extends TreeNode {
 
 window.GrammarCompilerNode = GrammarCompilerNode
 
+
+
+
+
 class GrammarConstantsNode extends TreeNode {
   getCatchAllNodeClass(line) {
     return GrammarConstNode
@@ -1903,6 +1933,8 @@ class GrammarConstantsNode extends TreeNode {
 
 window.GrammarConstantsNode = GrammarConstantsNode
 
+
+
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors() {
     return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
@@ -1914,6 +1946,14 @@ class GrammarDefinitionErrorNode extends TreeNode {
 }
 
 window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
+
+
+
+
+
+
+
+
 
 class GrammarParserClassNode extends TreeNode {
   getParserClassFilePath() {
@@ -1956,6 +1996,18 @@ class GrammarParserClassNode extends TreeNode {
 }
 
 window.GrammarParserClassNode = GrammarParserClassNode
+
+
+
+
+
+
+
+
+
+
+
+
 
 class AbstractGrammarDefinitionNode extends TreeNode {
   getKeywordMap() {
@@ -2126,6 +2178,13 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
 window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
 
+
+
+
+
+
+
+
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   _getRunTimeCatchAllKeyword() {
     return this.findBeam(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
@@ -2226,11 +2285,16 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
 window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
 
+
+
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   _getDefaultParserClass() {}
 }
 
 window.GrammarRootNode = GrammarRootNode
+
+
+
 
 class GrammarWordTypeNode extends AbstractGrammarDefinitionNode {
   isValid(str, runTimeGrammarBackedProgram) {
@@ -2268,6 +2332,15 @@ class GrammarWordTypeNode extends AbstractGrammarDefinitionNode {
 }
 
 window.GrammarWordTypeNode = GrammarWordTypeNode
+
+
+
+
+
+
+
+
+
 
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
@@ -2406,6 +2479,13 @@ contexts:
 
 window.GrammarProgram = GrammarProgram
 
+
+
+
+
+
+
+
 const jtree = {}
 
 jtree.program = AbstractGrammarBackedProgram
@@ -2414,6 +2494,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "13.0.0"
+jtree.getVersion = () => "14.0.0"
 
 window.jtree = jtree

@@ -1,7 +1,7 @@
 13.0.0 / 2017-11-09
 ===================
+- Breaking: Tree Grammar switched to @wordType nodes for defining word types, no more implicit types
 - Breaking: replaceNode now returns an array
-
 
 12.2.1 / 2017-11-09
 ===================

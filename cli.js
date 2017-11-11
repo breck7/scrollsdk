@@ -7,11 +7,12 @@ const ConsoleApp = require("./consoleApp.js")
 const app = new ConsoleApp()
 
 const action = process.argv[2]
-const param = process.argv[3]
+const paramOne = process.argv[3]
+const paramTwo = process.argv[4]
 
 if (app[action]) {
-  app.addToHistory(action, param)
-  console.log(app[action](param))
+  app.addToHistory(action, paramOne, paramTwo)
+  console.log(app[action](paramOne, paramTwo))
 } else if (!action) {
   app.addToHistory()
   console.log(app.help())

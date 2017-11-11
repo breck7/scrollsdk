@@ -50,9 +50,12 @@ ${grammars.toTable()}`
     jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName("stamp"))
   }
 
-  check(programPathOrGrammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._checkAndLog(programPathOrGrammarName)
-    const files = this._history(programPathOrGrammarName)
+  check(programPath) {
+    return this._checkAndLog(programPath)
+  }
+
+  checkAll(grammarName) {
+    const files = this._history(grammarName)
     return files.map(file => this._checkAndLog(file)).join("\n")
   }
 
@@ -78,13 +81,13 @@ ${grammars.toTable()}`
     require("./garden.express.js")
   }
 
-  compile(programPath) {
+  compile(programPath, targetExtension) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
     const path = program.getCompiledProgramName(programPath)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
-    const targetExtension = grammarProgram.getTargetExtension()
+    targetExtension = targetExtension || grammarProgram.getTargetExtension()
     const compiledCode = program.compile(targetExtension)
     return compiledCode
   }
@@ -113,12 +116,12 @@ ${grammars.toTable()}`
       .getChildren()
       .filter(node => {
         const command = node.findBeam("command")
-        const filepath = node.findBeam("param")
+        const filepath = node.findBeam("paramOne")
         // make sure theres a filder and it has an extension.
         if (!filepath || !filepath.includes(".")) return false
         if (["check", "run", "", "compile"].includes(command)) return true
       })
-      .map(node => node.findBeam("param"))
+      .map(node => node.findBeam("paramOne"))
     const items = Object.keys(new TreeNode(files.join("\n")).toObject())
     return items.filter(file => file.endsWith(grammarName)).filter(file => fs.existsSync(file))
   }
@@ -131,14 +134,14 @@ ${grammars.toTable()}`
     return `Registered ${extension}`
   }
 
-  addToHistory(one, two) {
+  addToHistory(one, two, three) {
     // everytime you run/check/compile a tree program, log it by default.
     // that way, if a language changes or you need to do refactors, you have the
     // data of file paths handy..
     // also the usage data can be used to improve the cli app
-    const line = `${one || ""} ${two || ""} ${Date.now()}\n`
+    const line = `${one || ""} ${two || ""} ${three || ""} ${Date.now()}\n`
     const logFilePath = this._getLogFilePath()
-    this._initFile(logFilePath, "command param timestamp\n")
+    this._initFile(logFilePath, "command paramOne paramTwo timestamp\n")
     fs.appendFile(logFilePath, line, "utf8", () => {})
   }
 

@@ -1,12 +1,13 @@
-command param description
-check programPathOrGrammarName Check a file(s) for grammar errors
-compile programPath Compile a file
-create  Create a new Grammar
-garden  Start the Tree Garden web app
-help  Show help
-list  List installed Grammars
-history grammarName List all programs ever parsed with this cli tool
-register grammarPath Register a new grammar
-run programPath Execute a Tree Language Program
-usage grammarName Analyze Global Keyword Usage for a given grammar
-version  List installed Tree Notation version
+command paramOne paramTwo description
+check programPath  Check a file for grammar errors
+checkAll grammarName  Check all files for grammar errors
+compile programPath targetExtension Compile a file
+create   Create a new Grammar
+garden   Start the Tree Garden web app
+help   Show help
+list   List installed Grammars
+history grammarName  List all programs ever parsed with this cli tool
+register grammarPath  Register a new grammar
+run programPath  Execute a Tree Language Program
+usage grammarName  Analyze Global Keyword Usage for a given grammar
+version   List installed Tree Notation version

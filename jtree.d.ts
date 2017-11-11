@@ -65,7 +65,7 @@ interface TreeNode {
   getNodeByColumn: (index: int, name: string) => TreeNode | Undefined
   getNodeByColumns: (...columns: string[]) => TreeNode | Undefined
   getNode: (path: keywordPath) => TreeNode
-  getNodes: () => TreeNode[]
+  getChildren: () => TreeNode[]
   length: number
   nodeAt: (index: int | pathVector) => TreeNode
   findNodes: (path: keywordPath) => TreeNode[]

@@ -1,3 +1,8 @@
+14.1.0 / 2017-11-11
+===================
+- New: split check into check and checkAll commands
+- New: compile cli command can now take a target extension
+
 14.0.1 / 2017-11-11
 ===================
 - Infra: Moved dependencies to devDependencies

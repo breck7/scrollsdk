@@ -1,3 +1,7 @@
+14.0.1 / 2017-11-11
+===================
+- Infra: Moved dependencies to devDependencies
+
 14.0.0 / 2017-11-10
 ===================
 - Breaking: renamed otree to jtree

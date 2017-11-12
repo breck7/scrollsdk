@@ -1708,13 +1708,6 @@ GrammarConstants.compiler.closeChildren = "@closeChildren"
 GrammarConstants.description = "@description"
 GrammarConstants.frequency = "@frequency"
 
-// ohayo ui. todo: remove all.
-GrammarConstants.ohayoSvg = "@ohayoSvg"
-GrammarConstants.ohayoTileSize = "@ohayoTileSize"
-GrammarConstants.ohayoTileClass = "@ohayoTileClass"
-GrammarConstants.ohayoTileScript = "@ohayoTileScript"
-GrammarConstants.ohayoTileCssScript = "@ohayoTileCssScript"
-
 window.GrammarConstants = GrammarConstants
 
 
@@ -2018,12 +2011,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,
-      GrammarConstants.defaults,
-      GrammarConstants.ohayoSvg,
-      GrammarConstants.ohayoTileSize,
-      GrammarConstants.ohayoTileClass,
-      GrammarConstants.ohayoTileScript,
-      GrammarConstants.ohayoTileCssScript
+      GrammarConstants.defaults
     ]
     const map = {}
     types.forEach(type => {
@@ -2250,19 +2238,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   isTileSettingDefinition() {
     return this.isAKeyword({ setting: true })
-  }
-
-  getSvg() {
-    return this.findBeam(GrammarConstants.ohayoSvg) || "table"
-  }
-
-  getSuggestedSize() {
-    const ohayoTileSize = this.findBeam(GrammarConstants.ohayoTileSize) || "280 220"
-    const parts = ohayoTileSize.split(" ").map(ohayoTileSize => parseInt(ohayoTileSize))
-    return {
-      width: parts[0],
-      height: parts[1]
-    }
   }
 
   getConstantsObject() {
@@ -2494,6 +2469,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.0.0"
+jtree.getVersion = () => "14.2.0"
 
 window.jtree = jtree

@@ -72,19 +72,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.isAKeyword({ setting: true })
   }
 
-  getSvg() {
-    return this.findBeam(GrammarConstants.ohayoSvg) || "table"
-  }
-
-  getSuggestedSize() {
-    const ohayoTileSize = this.findBeam(GrammarConstants.ohayoTileSize) || "280 220"
-    const parts = ohayoTileSize.split(" ").map(ohayoTileSize => parseInt(ohayoTileSize))
-    return {
-      width: parts[0],
-      height: parts[1]
-    }
-  }
-
   getConstantsObject() {
     const constantsNode = this.getNodeByType(GrammarConstantsNode)
     return constantsNode ? constantsNode.getConstantsObj() : {}

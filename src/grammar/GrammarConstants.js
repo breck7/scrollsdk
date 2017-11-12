@@ -33,11 +33,4 @@ GrammarConstants.compiler.closeChildren = "@closeChildren"
 GrammarConstants.description = "@description"
 GrammarConstants.frequency = "@frequency"
 
-// ohayo ui. todo: remove all.
-GrammarConstants.ohayoSvg = "@ohayoSvg"
-GrammarConstants.ohayoTileSize = "@ohayoTileSize"
-GrammarConstants.ohayoTileClass = "@ohayoTileClass"
-GrammarConstants.ohayoTileScript = "@ohayoTileScript"
-GrammarConstants.ohayoTileCssScript = "@ohayoTileCssScript"
-
 module.exports = GrammarConstants

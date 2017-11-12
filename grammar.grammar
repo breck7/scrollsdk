@@ -1,6 +1,7 @@
 @grammar grammar
  @description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  @catchAllKeyword error
+ @version 1.0.0
  @keywords
   @grammar
   @keyword
@@ -19,6 +20,8 @@
  @regex .?
 @wordType keyword
  @regex .?
+@wordType semanticVersion
+ @regex ^[0-9]+\.[0-9]+\.[0-9]+$
 @wordType wordType
  @keywordTable @wordType 1
 @keyword @grammar
@@ -29,6 +32,9 @@
   @parser
   @compiler
   @catchAllKeyword
+  @version
+@keyword @version
+ @columns semanticVersion
 @keyword @wordType
  @columns any
  @keywords
@@ -82,18 +88,6 @@
 @keyword keywordUse
 @keyword @keywords ntKeywordRule
  @catchAllKeyword keywordUse
-@keyword @ohayoTileScript monadicKeywordRule
- @description todo: remove
-@keyword @ohayoTileCssScript monadicKeywordRule
- @description todo: remove
-@keyword @ohayoSvg monadicKeywordRule
- @description todo: remove
-@keyword @ohayoTileSize keywordRule
- @columns int int
- @description todo: remove
-@keyword @ohayoTileClass keywordRule
- @columns any filepath
- @description todo: remove
 @keyword error
  @parser js ErrorNode
 @keyword @keyword

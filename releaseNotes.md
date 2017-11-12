@@ -1,3 +1,9 @@
+14.2.0 / 2017-11-12
+===================
+- New: added @version keyword to grammar
+- Infra: renamed TreeGrammar.grammar to grammar.grammar
+- Infra: removed ohayo constants
+
 14.1.0 / 2017-11-11
 ===================
 - New: split check into check and checkAll commands

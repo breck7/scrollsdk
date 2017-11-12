@@ -18,7 +18,7 @@ quack.quickTest("basics", equal => {
   equal(typeof app.usage("grammar"), "string", "usage")
 
   // Act
-  const grammarErrors = app.check(__dirname + "/../TreeGrammar.grammar")
+  const grammarErrors = app.check(__dirname + "/../grammar.grammar")
   const jibErrors = app.check(__dirname + "/jibberish/jibberish.grammar")
 
   // Assert

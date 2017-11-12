@@ -21,8 +21,6 @@
   =# 3
  getDefinitionByName to
   =~ object
-  getSuggestedSize
-   =~ object
  getTopNodeTypes
   =# 3
  getTargetExtension

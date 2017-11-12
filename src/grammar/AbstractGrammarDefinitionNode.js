@@ -19,12 +19,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,
-      GrammarConstants.defaults,
-      GrammarConstants.ohayoSvg,
-      GrammarConstants.ohayoTileSize,
-      GrammarConstants.ohayoTileClass,
-      GrammarConstants.ohayoTileScript,
-      GrammarConstants.ohayoTileCssScript
+      GrammarConstants.defaults
     ]
     const map = {}
     types.forEach(type => {

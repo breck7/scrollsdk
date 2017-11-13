@@ -79,6 +79,7 @@ ${grammars.toTable()}`
 
   garden() {
     require("./garden.express.js")
+    return "Starting garden"
   }
 
   compile(programPath, targetExtension) {

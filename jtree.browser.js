@@ -354,6 +354,10 @@ class ImmutableNode extends AbstractNode {
     return columns.every((searchTerm, index) => searchTerm === words[index])
   }
 
+  hasWord(index, word) {
+    return this.getWord(index) === word
+  }
+
   getNodeByColumns(...columns) {
     return this.getTopDownArray().find(node => node._hasColumns(columns))
   }
@@ -1027,6 +1031,31 @@ class TreeNode extends ImmutableNode {
     return this.getChildren()
       .map(child => child._expand(idColumnNumber, parentIdColumnNumber))
       .join("\n")
+  }
+
+  macroExpand(macroDefKeyword, macroUsageKeyword) {
+    const clone = this.clone()
+    const defs = clone.findNodes(macroDefKeyword)
+    const allUses = clone.findNodes(macroUsageKeyword)
+    const zi = clone.getZI()
+    defs.forEach(def => {
+      const macroName = def.getWord(1)
+      const uses = allUses.filter(node => node.hasWord(1, macroName))
+      const params = def.getWordsFrom(2)
+      const replaceFn = str => {
+        const paramValues = str.split(zi).slice(2)
+        let newTree = def.childrenToString()
+        params.forEach((param, index) => {
+          newTree = newTree.replace(new RegExp(param, "g"), paramValues[index])
+        })
+        return newTree
+      }
+      uses.forEach(node => {
+        node.replaceNode(replaceFn)
+      })
+      def.destroy()
+    })
+    return clone
   }
 
   setChildren(children) {
@@ -2469,6 +2498,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.2.0"
+jtree.getVersion = () => "14.3.0"
 
 window.jtree = jtree

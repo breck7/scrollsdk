@@ -74,9 +74,11 @@ interface TreeNode {
   getColumn: (path: word) => (string | Undefined)[]
   getKeywords: () => word[]
   getBeams: () => (string | Undefined)[]
-  has: (keyword: word) => boolean
+  has: (keyword: word) => boolean // todo: rename
+  hasWord: (index: int, word: string) => boolean
   indexOf: (keyword: word) => int
   indexOfLast: (keyword: word) => int // Returns index of last occurrence of keyword
+  macroExpand(macroDefKeyword: string, macroUsageKeyword: string) => TreeNode
   pathVectorToKeywordPath: (vector: pathVector) => keywordPath // convert an index path to keyword path
   toHtml: () => string
   toJson: () => string

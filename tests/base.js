@@ -1498,6 +1498,36 @@ Mammal Animal
   equal(tree.getNode("Animal").getGraph(0, 1).length, 2)
 }
 
+testTree.macroExpand = equal => {
+  // Arrange
+  const test = `macro red SUBREDDIT
+ >reddit SUBREDDIT
+  >h2 Top stories in SUBREDDIT
+  >pie
+  >table
+  >line
+use red programming
+use red programmingLanguages`
+
+  // Act
+  const expanded = new TreeNode(test).macroExpand("macro", "use")
+
+  // Assert
+  equal(
+    expanded.toString(),
+    `>reddit programming
+ >h2 Top stories in programming
+ >pie
+ >table
+ >line
+>reddit programmingLanguages
+ >h2 Top stories in programmingLanguages
+ >pie
+ >table
+ >line`
+  )
+}
+
 testTree.getExpanded = equal => {
   // Arrange
   const tree = new TreeNode(

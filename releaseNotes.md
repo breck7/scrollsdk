@@ -1,3 +1,8 @@
+14.3.0 / 2017-11-13
+===================
+- New: added macroExpand method
+- New: hasWord method
+
 14.2.0 / 2017-11-12
 ===================
 - New: added @version keyword to grammar

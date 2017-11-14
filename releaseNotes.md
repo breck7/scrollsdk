@@ -1,3 +1,7 @@
+14.3.1 / 2017-11-14
+===================
+- New: cases cli command
+
 14.3.0 / 2017-11-13
 ===================
 - New: added macroExpand method

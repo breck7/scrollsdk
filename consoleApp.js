@@ -4,12 +4,13 @@ const GrammarProgram = require("./src/grammar/GrammarProgram.js")
 const TreeUtils = require("./src/base/TreeUtils.js")
 const fs = require("fs")
 const os = require("os")
+const recursiveReadSync = require("recursive-readdir-sync")
 
 class ConsoleApp {
   constructor(grammarsPath = os.homedir() + "/grammars.ssv") {
     this._grammarsPath = grammarsPath
     this._initFile(grammarsPath)
-    const grammarsSsv = fs.readFileSync(grammarsPath, "utf8")
+    const grammarsSsv = this._read(grammarsPath)
     this._grammarsTree = TreeNode.fromSsv(grammarsSsv) // todo: index on name, or build a Tree Grammar lang
   }
 
@@ -21,12 +22,38 @@ class ConsoleApp {
     return this._grammarsPath
   }
 
+  _read(path) {
+    return fs.readFileSync(path, "utf8")
+  }
+
+  cases(folder, grammarName) {
+    const files = recursiveReadSync(folder).filter(file => file.endsWith("." + grammarName))
+    const grammarProgram = this._getGrammarProgram(grammarName)
+    const targetExtension = grammarProgram.getTargetExtension()
+    files.map(filename => {
+      const errors = this._check(filename)
+      if (errors.length) {
+        throw new Error(`Type check errors ${errors}`)
+      }
+      const actual = this.compile(filename, targetExtension)
+      const expectedPath = filename.replace("." + grammarName, "." + targetExtension)
+      const expected = this._read(expectedPath)
+      if (expected !== actual) {
+        const errorTree = new TreeNode()
+        errorTree.appendLineAndChildren("expected", expected)
+        errorTree.appendLineAndChildren("actual", actual)
+        throw new Error("Compile Errors\n" + errorTree.toString())
+      }
+      console.log(`${filename} passed`)
+    })
+  }
+
   getGrammars() {
     return this._grammarsTree
   }
 
   help() {
-    const help = fs.readFileSync(__dirname + "/help.ssv", "utf8")
+    const help = this._read(__dirname + "/help.ssv")
     return TreeNode.fromSsv(help).toTable()
   }
 
@@ -82,12 +109,17 @@ ${grammars.toTable()}`
     return "Starting garden"
   }
 
+  _getGrammarProgram(grammarName) {
+    const grammarPath = this._getGrammarPathByGrammarName(grammarName)
+    return new GrammarProgram(this._read(grammarPath))
+  }
+
   compile(programPath, targetExtension) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
     const path = program.getCompiledProgramName(programPath)
-    const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
+    const grammarProgram = new GrammarProgram(this._read(grammarPath))
     targetExtension = targetExtension || grammarProgram.getTargetExtension()
     const compiledCode = program.compile(targetExtension)
     return compiledCode
@@ -102,7 +134,7 @@ ${grammars.toTable()}`
   }
 
   _getHistoryFile() {
-    return fs.readFileSync(this._getLogFilePath(), "utf8")
+    return this._read(this._getLogFilePath())
   }
 
   _history(grammarName) {
@@ -129,7 +161,7 @@ ${grammars.toTable()}`
 
   register(grammarPath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
-    const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
+    const grammarProgram = new GrammarProgram(this._read(grammarPath))
     const extension = grammarProgram.getExtensionName()
     fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${grammarPath}`, "utf8")
     return `Registered ${extension}`
@@ -163,7 +195,7 @@ ${grammars.toTable()}`
     const programClass = jtree.getParser(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
-      const code = fs.readFileSync(path, "utf8")
+      const code = this._read(path)
       const program = new programClass(code)
       const usage = program.getKeywordUsage(path)
       report.extend(usage.toString())

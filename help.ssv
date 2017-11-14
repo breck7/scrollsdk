@@ -1,4 +1,5 @@
 command paramOne paramTwo description
+cases folderPath grammarName Test all cases in a given folder
 check programPath  Check a file for grammar errors
 checkAll grammarName  Check all files for grammar errors
 compile programPath targetExtension Compile a file

@@ -1316,6 +1316,25 @@ testTree.getExpectingABranchButHittingALeaf = equal => {
   equal(value.getNode("posts branch"), undefined)
 }
 
+testTree.getNodesByPrefixes = equal => {
+  // Arrange
+  const test = `id foobar
+ link
+ link blue
+  color orange
+ link black
+  color green`
+  const tree = new TreeNode(test)
+
+  // Act
+  const nodes = tree.getNodesByLinePrefixes(["id foobar", "link blue", "color"])
+  const nodes2 = tree.getNodesByLinePrefixes(["id foobar", "link bl"])
+
+  // Assert
+  equal(nodes[0].getLine(), "color orange")
+  equal(nodes2.length, 2)
+}
+
 testTree.getIndex = equal => {
   // Arrange
   const tree = new TreeNode("r1\n name bob\nr2\n name joe")

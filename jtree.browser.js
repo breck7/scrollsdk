@@ -513,6 +513,20 @@ class ImmutableNode extends AbstractNode {
     })
   }
 
+  getNodesByLinePrefixes(columns) {
+    const matches = []
+    this._getNodesByLinePrefixes(matches, columns)
+    return matches
+  }
+
+  _getNodesByLinePrefixes(matches, columns) {
+    const cols = columns.slice(0)
+    const prefix = cols.shift()
+    const candidates = this.getChildren().filter(child => child.getLine().startsWith(prefix))
+    if (!cols.length) return candidates.forEach(cand => matches.push(cand))
+    candidates.forEach(cand => cand._getNodesByLinePrefixes(matches, cols))
+  }
+
   getNode(keywordPath) {
     return this._getNodeByPath(keywordPath)
   }
@@ -2498,6 +2512,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.3.0"
+jtree.getVersion = () => "14.3.2"
 
 window.jtree = jtree

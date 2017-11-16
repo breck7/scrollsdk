@@ -1,3 +1,7 @@
+14.3.2 / 2017-11-16
+===================
+- New: getNodesByLinePrefixes method
+
 14.3.1 / 2017-11-14
 ===================
 - New: cases cli command

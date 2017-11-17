@@ -1,3 +1,7 @@
+14.3.3 / 2017-11-17
+===================
+- New: added toMarkdownTable methods
+
 14.3.2 / 2017-11-16
 ===================
 - New: getNodesByLinePrefixes method

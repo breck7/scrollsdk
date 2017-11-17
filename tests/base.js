@@ -2716,6 +2716,43 @@ testTree.toSsv = equal => {
   equal(!!b.toSsv(), true)
 }
 
+testTree.toMarkdownTable = equal => {
+  // Arrange
+  const test = `event abc
+ title ABC 2017
+ date 09/18/2017 - 09/10/2017
+ location Boston, MA
+ website https://www.foobar.com/
+event lala2018
+ title Lala 2018
+ date 11/02/2018 - 11/03/2018
+ location San Fran
+ twitter foo
+ website http://www.blah.com`
+  const expected = `|Title|Date|Location|Website|
+|-|-|-|-|
+|ABC 2017|09/18/2017 - 09/10/2017|Boston, MA|https://www.foobar.com/|
+|Lala 2018|11/02/2018 - 11/03/2018|San Fran|http://www.blah.com|`
+  const simpleExpected = `|title|date|location|website|twitter|
+|-|-|-|-|-|
+|ABC 2017|09/18/2017 - 09/10/2017|Boston, MA|https://www.foobar.com/||
+|Lala 2018|11/02/2018 - 11/03/2018|San Fran|http://www.blah.com|foo|`
+  const tree = new TreeNode(test)
+
+  const ucfirst = str => str.charAt(0).toUpperCase() + str.slice(1)
+
+  // Act
+  const simple = tree.toMarkdownTable()
+  const table = tree.toMarkdownTableAdvanced(
+    ["title", "date", "location", "website"],
+    (value, row, col) => (row ? value : ucfirst(value))
+  )
+
+  // Assert
+  equal(table, expected, "markdown ok")
+  equal(simple, simpleExpected, "markdown simple ok")
+}
+
 testTree.setBeamWithChildrenRegression = equal => {
   // Arrange
   const tree = new TreeNode("hello world")

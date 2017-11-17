@@ -1207,6 +1207,34 @@ class TreeNode extends ImmutableNode {
     return this._setLineAndChildren(line, undefined, index)
   }
 
+  _getMatrix(columns) {
+    const matrix = []
+    this.getChildren().forEach(child => {
+      const row = []
+      columns.forEach(col => {
+        row.push(child.findBeam(col))
+      })
+      matrix.push(row)
+    })
+    return matrix
+  }
+
+  toMarkdownTable() {
+    return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val)
+  }
+
+  toMarkdownTableAdvanced(columns, formatFn) {
+    const matrix = this._getMatrix(columns)
+    const empty = columns.map(col => "-")
+    matrix.unshift(empty)
+    matrix.unshift(columns)
+    const lines = matrix.map((row, rowIndex) => {
+      const formattedValues = row.map((val, colIndex) => formatFn(val, rowIndex, colIndex))
+      return `|${formattedValues.join("|")}|`
+    })
+    return lines.join("\n")
+  }
+
   prependLine(line) {
     return this.insertLine(line, 0)
   }

@@ -16,6 +16,7 @@ declare type TreeNodeClass = Object // a class that extends TreeNode
 declare type GrammarBackedProgramClass = TreeNodeClass
 declare type nodeMapFn = (node: TreeNode) => string
 declare type replaceNodeFn = (str: string) => string
+declare type matrixFormatFn = (str: string, rowIndex: int, colIndex: int) => string
 declare type errorMessage = string
 declare type sortFn = (nodeA: TreeNode, nodeB: TreeNode) => sortResultInt
 declare type point = { x: int; y: int } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
@@ -90,6 +91,8 @@ interface TreeNode {
   toFormattedTable: (maxWidth: int, alignRight: boolean) => string // Output a table with padding up to maxWidth in each cell
   toSsv: () => string
   toTsv: () => string
+  toMarkdownTable: () => string
+  toMarkdownTableAdvanced: (columns: word[], formatFn: matrixFormatFn) => string
   toMappedOutline: (mapFn: nodeMapFn) => string
   toOutline: () => string
   toString: () => string

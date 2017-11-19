@@ -1,3 +1,7 @@
+14.4.0 / 2017-11-19
+===================
+- New: added @enum wordType
+
 14.3.3 / 2017-11-17
 ===================
 - New: added toMarkdownTable methods

@@ -53,6 +53,11 @@ class TreeUtils {
       }
     })
   }
+  static arrayToMap(arr) {
+    const map = {}
+    arr.forEach(val => (map[val] = true))
+    return map
+  }
 
   static mapValues(object, fn) {
     const result = {}
@@ -1754,6 +1759,7 @@ GrammarConstants.wordType = "@wordType"
 // word parsing
 GrammarConstants.regex = "@regex" // temporary?
 GrammarConstants.keywordTable = "@keywordTable" // temporary?
+GrammarConstants.enum = "@enum" // temporary?
 
 // parsing
 GrammarConstants.keywords = "@keywords"
@@ -2078,7 +2084,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const types = [
       GrammarConstants.frequency,
       GrammarConstants.keywords,
-      GrammarConstants.regex,
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,
@@ -2302,13 +2307,23 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.findBeam(GrammarConstants.description) || ""
   }
 
+  // todo: delete
   getAllTileSettingsDefinitions() {
     const allKeywordDefs = this.getRunTimeKeywordMapWithDefinitions()
     return Object.values(allKeywordDefs).filter(def => def.isTileSettingDefinition())
   }
 
+  // todo: delete
   isTileSettingDefinition() {
     return this.isAKeyword({ setting: true })
+  }
+
+  // todo: delete
+  toFormBray(value) {
+    return `@input
+ data-onChangeCommand tile changeTileSettingAndRenderCommand
+ name ${this.getId()}
+ value ${value}`
   }
 
   getConstantsObject() {
@@ -2319,13 +2334,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getFrequency() {
     const val = this.findBeam(GrammarConstants.frequency)
     return val ? parseFloat(val) : 0
-  }
-
-  toFormBray(value) {
-    return `@input
- data-onChangeCommand tile changeTileSettingAndRenderCommand
- name ${this.getId()}
- value ${value}`
   }
 }
 
@@ -2342,25 +2350,23 @@ window.GrammarRootNode = GrammarRootNode
 
 
 
-class GrammarWordTypeNode extends AbstractGrammarDefinitionNode {
-  isValid(str, runTimeGrammarBackedProgram) {
-    str = str.replace(/\*$/, "") // todo: cleanup
-    if (this._regex) return str.match(this._regex)
-    if (this._keywordTable) return this._keywordTable[str] === true
-    // todo: add symbol table lookup.
-    if (this.has(GrammarConstants.keywordTable)) {
-      this._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram)
-      return this._keywordTable[str] === true
-    }
-    if (!this._regex) this._regex = new RegExp(this._getRegex())
+
+// todo: add standard types, enum types, from disk types
+
+class AbstractGrammarWordTestNode extends TreeNode {}
+
+class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
+  isValid(str) {
+    if (!this._regex) this._regex = new RegExp(this.getBeam())
     return str.match(this._regex)
   }
+}
 
+class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
   _getKeywordTable(runTimeGrammarBackedProgram) {
     // @keywordTable @wordType 1
-    const tableInstructions = this.getNode(GrammarConstants.keywordTable)
-    const nodeType = tableInstructions.getWord(1)
-    const wordIndex = parseInt(tableInstructions.getWord(2))
+    const nodeType = this.getWord(1)
+    const wordIndex = parseInt(this.getWord(2))
     const table = {}
     runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
       table[node.getWord(wordIndex)] = true
@@ -2368,8 +2374,38 @@ class GrammarWordTypeNode extends AbstractGrammarDefinitionNode {
     return table
   }
 
-  _getRegex() {
-    return this.findBeam(GrammarConstants.regex)
+  isValid(str, runTimeGrammarBackedProgram) {
+    if (!this._keywordTable) this._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram)
+    return this._keywordTable[str] === true
+  }
+}
+
+class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
+  isValid(str) {
+    // @enum c c++ java
+    if (!this._map) this._map = TreeUtils.arrayToMap(this.getWordsFrom(1))
+    return this._map[str]
+  }
+}
+
+class GrammarWordTypeNode extends TreeNode {
+  getKeywordMap() {
+    const types = []
+    types[GrammarConstants.regex] = GrammarRegexTestNode
+    types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode
+    types[GrammarConstants.enum] = GrammarEnumTestNode
+    return types
+  }
+
+  isValid(str, runTimeGrammarBackedProgram) {
+    str = str.replace(/\*$/, "") // todo: cleanup
+    return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node =>
+      node.isValid(str, runTimeGrammarBackedProgram)
+    )
+  }
+
+  getId() {
+    return this.getWord(1)
   }
 
   getTypeId() {
@@ -2408,7 +2444,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   _getWordTypes() {
     const types = {}
-    this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[type.getTypeId()] = type))
+    this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[type.getId()] = type))
     return types
   }
 
@@ -2417,7 +2453,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getKeywordDefinitions() {
-    return this.getChildren()
+    return this.getChildrenByNodeType(GrammarKeywordDefinitionNode)
   }
 
   // todo: remove?
@@ -2540,6 +2576,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.3.3"
+jtree.getVersion = () => "14.4.0"
 
 window.jtree = jtree

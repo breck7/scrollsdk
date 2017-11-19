@@ -11,4 +11,4 @@ allFiles.filter(file => file.endsWith(".test.js")).forEach(file => require(file)
 
 allFiles
   .filter(file => file.endsWith(".swarm"))
-  .forEach(file => jtree.executeFile(file, "/Users/breck/swarm/src/swarm.grammar"))
+  .forEach(file => jtree.executeFile(file, "/Users/breck/grammars/swarm/src/swarm.grammar"))

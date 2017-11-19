@@ -40,7 +40,10 @@
  @keywords
   @regex
   @keywordTable
+  @enum
 @keyword @regex
+ @columns any*
+@keyword @enum
  @columns any*
 @keyword @keywordTable
  @columns any int

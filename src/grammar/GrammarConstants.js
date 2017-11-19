@@ -8,6 +8,7 @@ GrammarConstants.wordType = "@wordType"
 // word parsing
 GrammarConstants.regex = "@regex" // temporary?
 GrammarConstants.keywordTable = "@keywordTable" // temporary?
+GrammarConstants.enum = "@enum" // temporary?
 
 // parsing
 GrammarConstants.keywords = "@keywords"

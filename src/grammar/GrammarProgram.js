@@ -27,7 +27,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   _getWordTypes() {
     const types = {}
-    this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[type.getTypeId()] = type))
+    this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[type.getId()] = type))
     return types
   }
 
@@ -36,7 +36,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getKeywordDefinitions() {
-    return this.getChildren()
+    return this.getChildrenByNodeType(GrammarKeywordDefinitionNode)
   }
 
   // todo: remove?

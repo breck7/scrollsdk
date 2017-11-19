@@ -29,6 +29,7 @@ quack.quickTest("jibberish", equal => {
 
   // Assert
   equal(program instanceof jibberishProgram, true, "correct program class")
+  equal(program.getProgramErrors().length, 0, `${program.getProgramErrors()}`)
 
   // Act
   const fooNode = program.getNode("foo")

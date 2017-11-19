@@ -15,7 +15,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     const types = [
       GrammarConstants.frequency,
       GrammarConstants.keywords,
-      GrammarConstants.regex,
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,

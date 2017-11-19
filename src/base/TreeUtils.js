@@ -46,6 +46,11 @@ class TreeUtils {
       }
     })
   }
+  static arrayToMap(arr) {
+    const map = {}
+    arr.forEach(val => (map[val] = true))
+    return map
+  }
 
   static mapValues(object, fn) {
     const result = {}

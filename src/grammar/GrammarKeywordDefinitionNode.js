@@ -63,13 +63,23 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.findBeam(GrammarConstants.description) || ""
   }
 
+  // todo: delete
   getAllTileSettingsDefinitions() {
     const allKeywordDefs = this.getRunTimeKeywordMapWithDefinitions()
     return Object.values(allKeywordDefs).filter(def => def.isTileSettingDefinition())
   }
 
+  // todo: delete
   isTileSettingDefinition() {
     return this.isAKeyword({ setting: true })
+  }
+
+  // todo: delete
+  toFormBray(value) {
+    return `@input
+ data-onChangeCommand tile changeTileSettingAndRenderCommand
+ name ${this.getId()}
+ value ${value}`
   }
 
   getConstantsObject() {
@@ -80,13 +90,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getFrequency() {
     const val = this.findBeam(GrammarConstants.frequency)
     return val ? parseFloat(val) : 0
-  }
-
-  toFormBray(value) {
-    return `@input
- data-onChangeCommand tile changeTileSettingAndRenderCommand
- name ${this.getId()}
- value ${value}`
   }
 }
 

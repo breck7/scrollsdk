@@ -1,6 +1,6 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 #setup
-#test basics
+#test swarm base
  #setup
   require ../src/base/TreeNode.js
   %%|

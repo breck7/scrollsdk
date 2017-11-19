@@ -7,10 +7,10 @@
   topLevel
 @wordType int
  @regex ^\-?[0-9]+$
-@wordType onoff
- @regex ^(on|off)$
 @wordType word
  @regex .?
+@wordType onoff
+ @enum on off
 @keyword error
  @parser js ErrorNode
 @keyword topLevel
@@ -24,7 +24,7 @@
 @keyword + topLevel
  @parser js ./jibberishNodes.js additionNode
  @columns int*
-@keyword lightbulbState
+@keyword lightbulbState topLevel
  @columns onoff
 @keyword to block
  @columns word

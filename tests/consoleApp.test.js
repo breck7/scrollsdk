@@ -4,7 +4,7 @@ const quack = require("./quack.js")
 
 const ConsoleApp = require("../consoleApp.js")
 
-quack.quickTest("basics", equal => {
+quack.quickTest("console basics", equal => {
   // Arrange
   const app = new ConsoleApp()
 

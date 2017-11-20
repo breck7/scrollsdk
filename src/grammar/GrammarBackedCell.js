@@ -18,8 +18,16 @@ class GrammarBackedCell {
     return this._word
   }
 
+  getParsed() {
+    return this._getWordTypeClass().parse(this._word)
+  }
+
   isOptional() {
     return this._type && this._type.endsWith("*")
+  }
+
+  _getWordTypeClass() {
+    return this._grammarProgram.getWordTypes()[this.getType()]
   }
 
   getErrorMessage() {
@@ -37,8 +45,7 @@ class GrammarBackedCell {
 
     const grammarProgram = this._grammarProgram
     const runTimeGrammarBackedProgram = this._node.getProgram()
-    const wordTypes = grammarProgram.getWordTypes()
-    const wordTypeClass = wordTypes[type]
+    const wordTypeClass = this._getWordTypeClass()
     if (!wordTypeClass)
       return `Grammar definition error: No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}.`
 

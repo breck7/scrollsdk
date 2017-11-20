@@ -39,13 +39,32 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   }
 }
 
+class GrammarWordParserNode extends TreeNode {
+  parse(str) {
+    const fns = {
+      parseInt: parseInt,
+      parseFloat: parseFloat
+    }
+    const fnName = this.getWord(2)
+    const fn = fns[fnName]
+    if (fn) return fn(str)
+    return str
+  }
+}
+
 class GrammarWordTypeNode extends TreeNode {
   getKeywordMap() {
     const types = []
     types[GrammarConstants.regex] = GrammarRegexTestNode
     types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
+    types[GrammarConstants.parseWith] = GrammarWordParserNode
     return types
+  }
+
+  parse(str) {
+    const parser = this.getNode(GrammarConstants.parseWith)
+    return parser ? parser.parse(str) : str
   }
 
   isValid(str, runTimeGrammarBackedProgram) {

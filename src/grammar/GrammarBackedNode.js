@@ -20,6 +20,10 @@ class GrammarBackedNode extends TreeNode {
     return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
   }
 
+  getParsedWords() {
+    return this._getGrammarBackedCellArray().map(word => word.getParsed())
+  }
+
   _getParameterMap() {
     const cells = this._getGrammarBackedCellArray()
     const parameterMap = {}

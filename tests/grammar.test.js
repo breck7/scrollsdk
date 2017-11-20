@@ -65,6 +65,7 @@ quack.quickTest("jibberish", equal => {
 keyword int int int`,
     "word types should match"
   )
+  equal(wordTypesProgram.nodeAt(1).getParsedWords()[0], 2)
 
   // Act
   const nodeTypes = wordTypesProgram.getInPlaceSyntaxTreeWithNodeTypes()

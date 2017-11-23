@@ -1701,8 +1701,16 @@ class GrammarBackedCell {
     return this._word
   }
 
+  getParsed() {
+    return this._getWordTypeClass().parse(this._word)
+  }
+
   isOptional() {
     return this._type && this._type.endsWith("*")
+  }
+
+  _getWordTypeClass() {
+    return this._grammarProgram.getWordTypes()[this.getType()]
   }
 
   getErrorMessage() {
@@ -1713,22 +1721,21 @@ class GrammarBackedCell {
     const word = this._word
     if (word === undefined && this.isOptional()) return ""
     if (word === undefined)
-      return `Unfilled "${type}" column in "${fullLine}" at line ${line} column ${index}. definition: ${this._node
+      return `unfilledColumnError "${type}" column in "${fullLine}" at line ${line} column ${index}. definition: ${this._node
         .getDefinition()
         .toString()}`
-    if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} column ${index}`
+    if (type === undefined) return `extraWordError "${word}" in "${fullLine}" at line ${line} column ${index}`
 
     const grammarProgram = this._grammarProgram
     const runTimeGrammarBackedProgram = this._node.getProgram()
-    const wordTypes = grammarProgram.getWordTypes()
-    const wordTypeClass = wordTypes[type]
+    const wordTypeClass = this._getWordTypeClass()
     if (!wordTypeClass)
-      return `Grammar definition error: No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}.`
+      return `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}.`
 
     const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
     return isValid
       ? ""
-      : `Invalid word in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
+      : `invalidWordError in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
   }
 }
 
@@ -1760,6 +1767,7 @@ GrammarConstants.wordType = "@wordType"
 GrammarConstants.regex = "@regex" // temporary?
 GrammarConstants.keywordTable = "@keywordTable" // temporary?
 GrammarConstants.enum = "@enum" // temporary?
+GrammarConstants.parseWith = "@parseWith" // temporary?
 
 // parsing
 GrammarConstants.keywords = "@keywords"
@@ -1807,6 +1815,10 @@ class GrammarBackedNode extends TreeNode {
 
   getCompilerNode(targetLanguage) {
     return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
+  }
+
+  getParsedWords() {
+    return this._getGrammarBackedCellArray().map(word => word.getParsed())
   }
 
   _getParameterMap() {
@@ -1887,7 +1899,9 @@ class GrammarBackedErrorNode extends GrammarBackedNode {
   }
 
   getErrors() {
-    return [`Unknown keyword "${this.getKeyword()}" in "${this.getParent().getKeyword()}" at line ${this.getPoint().y}`]
+    return [
+      `unknownKeywordError "${this.getKeyword()}" in "${this.getParent().getKeyword()}" at line ${this.getPoint().y}`
+    ]
   }
 }
 
@@ -2007,7 +2021,7 @@ window.GrammarConstantsNode = GrammarConstantsNode
 
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors() {
-    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
+    return [`unknownKeywordError "${this.getKeyword()}" at line ${this.getPoint().y}`]
   }
 
   getLineSyntax() {
@@ -2388,13 +2402,32 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   }
 }
 
+class GrammarWordParserNode extends TreeNode {
+  parse(str) {
+    const fns = {
+      parseInt: parseInt,
+      parseFloat: parseFloat
+    }
+    const fnName = this.getWord(2)
+    const fn = fns[fnName]
+    if (fn) return fn(str)
+    return str
+  }
+}
+
 class GrammarWordTypeNode extends TreeNode {
   getKeywordMap() {
     const types = []
     types[GrammarConstants.regex] = GrammarRegexTestNode
     types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
+    types[GrammarConstants.parseWith] = GrammarWordParserNode
     return types
+  }
+
+  parse(str) {
+    const parser = this.getNode(GrammarConstants.parseWith)
+    return parser ? parser.parse(str) : str
   }
 
   isValid(str, runTimeGrammarBackedProgram) {
@@ -2576,6 +2609,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.4.0"
+jtree.getVersion = () => "14.5.0"
 
 window.jtree = jtree

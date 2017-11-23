@@ -6,7 +6,9 @@ class GrammarBackedErrorNode extends GrammarBackedNode {
   }
 
   getErrors() {
-    return [`Unknown keyword "${this.getKeyword()}" in "${this.getParent().getKeyword()}" at line ${this.getPoint().y}`]
+    return [
+      `unknownKeywordError "${this.getKeyword()}" in "${this.getParent().getKeyword()}" at line ${this.getPoint().y}`
+    ]
   }
 }
 

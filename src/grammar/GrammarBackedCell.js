@@ -38,21 +38,21 @@ class GrammarBackedCell {
     const word = this._word
     if (word === undefined && this.isOptional()) return ""
     if (word === undefined)
-      return `Unfilled "${type}" column in "${fullLine}" at line ${line} column ${index}. definition: ${this._node
+      return `unfilledColumnError "${type}" column in "${fullLine}" at line ${line} column ${index}. definition: ${this._node
         .getDefinition()
         .toString()}`
-    if (type === undefined) return `Extra word "${word}" in "${fullLine}" at line ${line} column ${index}`
+    if (type === undefined) return `extraWordError "${word}" in "${fullLine}" at line ${line} column ${index}`
 
     const grammarProgram = this._grammarProgram
     const runTimeGrammarBackedProgram = this._node.getProgram()
     const wordTypeClass = this._getWordTypeClass()
     if (!wordTypeClass)
-      return `Grammar definition error: No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}.`
+      return `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}.`
 
     const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
     return isValid
       ? ""
-      : `Invalid word in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
+      : `invalidWordError in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
   }
 }
 

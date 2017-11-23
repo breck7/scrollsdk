@@ -2,7 +2,7 @@ const TreeNode = require("../base/TreeNode.js")
 
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors() {
-    return [`Unknown keyword "${this.getKeyword()}" at line ${this.getPoint().y}`]
+    return [`unknownKeywordError "${this.getKeyword()}" at line ${this.getPoint().y}`]
   }
 
   getLineSyntax() {

@@ -1,3 +1,8 @@
+14.5.0 / 2017-11-23
+===================
+- New: standardized error messages into a grammar
+- New: @parseWith wordType property
+
 14.4.0 / 2017-11-19
 ===================
 - New: added @enum wordType

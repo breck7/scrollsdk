@@ -41,6 +41,8 @@
   @regex
   @keywordTable
   @enum
+  @parseWith
+@keyword @parseWith variadicKeywordRule
 @keyword @regex
  @columns any*
 @keyword @enum

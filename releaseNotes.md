@@ -1,3 +1,7 @@
+14.5.1 / 2017-11-24
+===================
+- Infra: removed dead code
+
 14.5.0 / 2017-11-23
 ===================
 - New: standardized error messages into a grammar

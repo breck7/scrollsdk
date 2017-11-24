@@ -2321,25 +2321,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.findBeam(GrammarConstants.description) || ""
   }
 
-  // todo: delete
-  getAllTileSettingsDefinitions() {
-    const allKeywordDefs = this.getRunTimeKeywordMapWithDefinitions()
-    return Object.values(allKeywordDefs).filter(def => def.isTileSettingDefinition())
-  }
-
-  // todo: delete
-  isTileSettingDefinition() {
-    return this.isAKeyword({ setting: true })
-  }
-
-  // todo: delete
-  toFormBray(value) {
-    return `@input
- data-onChangeCommand tile changeTileSettingAndRenderCommand
- name ${this.getId()}
- value ${value}`
-  }
-
   getConstantsObject() {
     const constantsNode = this.getNodeByType(GrammarConstantsNode)
     return constantsNode ? constantsNode.getConstantsObj() : {}
@@ -2609,6 +2590,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.5.0"
+jtree.getVersion = () => "14.5.1"
 
 window.jtree = jtree

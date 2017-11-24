@@ -13,6 +13,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.5.0"
+jtree.getVersion = () => "14.5.1"
 
 module.exports = jtree

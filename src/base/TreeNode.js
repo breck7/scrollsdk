@@ -963,6 +963,7 @@ class TreeNode extends ImmutableNode {
     return new TreeNode().appendLineAndChildren(this.getLine(), result)
   }
 
+  // todo: fix bug where you have duplicate IDs for different types!
   getExpanded(idColumnNumber, parentIdColumnNumber) {
     return this.getChildren()
       .map(child => child._expand(idColumnNumber, parentIdColumnNumber))

@@ -1,3 +1,8 @@
+14.6.0 / 2018-09-23
+===================
+- Bug fix: Fix for browsers removing monotonically increasing perf.now
+- New: getChildren() now returns a copy of array enabling in loop deletes
+
 14.5.1 / 2017-11-24
 ===================
 - Infra: removed dead code

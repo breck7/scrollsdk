@@ -67,7 +67,7 @@ interface TreeNode {
   getNodeByColumns: (...columns: string[]) => TreeNode | Undefined
   getNode: (path: keywordPath) => TreeNode
   getNodesByLinePrefixes: (colums: string[]) => TreeNode[]
-  getChildren: () => TreeNode[]
+  getChildren: () => TreeNode[] // Returns references to node objects in a copy of child array
   length: number
   nodeAt: (index: int | pathVector) => TreeNode
   findNodes: (path: keywordPath) => TreeNode[]

@@ -3020,7 +3020,24 @@ some
   b.getNode("foo").destroy()
 
   // Assert
-  equal(b.getTreeMTime() > bTime, true, "time increased")
+  equal(b.getTreeMTime() > bTime, true, `time increased from ${bTime} to ${b.getTreeMTime()}`)
+}
+
+testTree.destroyLoop = equal => {
+  // Arrange
+  const a = new TreeNode(`a
+ d
+b
+ d
+c
+ d`)
+  // Act
+  a.getChildren().forEach(child => {
+    child.destroy()
+  })
+
+  // Assert
+  equal(a.length, 0)
 }
 
 testTree.typeTests = equal => {

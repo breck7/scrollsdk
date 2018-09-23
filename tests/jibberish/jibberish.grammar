@@ -22,8 +22,9 @@
 @keyword nodeWithConsts topLevel
  @constants
   greeting string hello world
-@keyword + topLevel
+@keyword add topLevel
  @parser js ./jibberishNodes.js additionNode
+@keyword + add
  @columns int*
 @keyword lightbulbState topLevel
  @columns onoff

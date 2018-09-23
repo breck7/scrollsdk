@@ -23,7 +23,7 @@ quack.quickTest("jibberish", equal => {
   const sampleJibberishCode = fs.readFileSync(__dirname + "/jibberish/sample.jibberish", "utf8")
 
   // Act
-  const grammarProgram = new GrammarProgram(jibberishGrammarCode, grammarPath)
+  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
   const rootJibberishParserClass = grammarProgram.getRootParserClass()
   const program = new rootJibberishParserClass(sampleJibberishCode)
 

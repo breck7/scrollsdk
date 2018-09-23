@@ -17,12 +17,12 @@
   },
   "keywords": "jtree",
   "devDependencies": {
-    "express": "*",
-    "jquery": "*",
+    "express": "^4.16.3",
+    "jquery": "^3.3.1",
     "project-lang": "^1.6.0",
-    "qunitjs": "*",
+    "qunitjs": "^2.4.1",
     "recursive-readdir-sync": "^1.0.6",
-    "tap": "^10.7.2"
+    "tap": "^10.7.3"
   },
   "license": "MIT"
 }

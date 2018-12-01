@@ -104,9 +104,9 @@ ${grammars.toTable()}`
     return grammarPath
   }
 
-  garden() {
-    require("./garden.express.js")
-    return "Starting garden"
+  sandbox() {
+    require("./sandbox.express.js")
+    return "Starting sandbox"
   }
 
   _getGrammarProgram(grammarName) {

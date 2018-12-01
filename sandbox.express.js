@@ -23,5 +23,5 @@ app.use(express.static(__dirname))
 
 const port = 8888
 app.listen(port, () => {
-  console.log(`Running garden. cmd+dblclick: http://localhost:${port}/`)
+  console.log(`Running sandbox. cmd+dblclick: http://localhost:${port}/sandbox`)
 })

@@ -2557,9 +2557,7 @@ testTree.sort = equal => {
   // Assert
   equal(tree.getKeywords().join(" "), "john susy bob")
   // Act
-  tree.sort((a, b) => {
-    return b.getKeyword() < a.getKeyword()
-  })
+  tree.sort((a, b) => (b.getKeyword() < a.getKeyword() ? 1 : b.getKeyword() === a.getKeyword() ? 0 : -1))
   // Assert
   equal(tree.getKeywords().join(" "), "bob john susy")
 }
@@ -2743,9 +2741,8 @@ event lala2018
 
   // Act
   const simple = tree.toMarkdownTable()
-  const table = tree.toMarkdownTableAdvanced(
-    ["title", "date", "location", "website"],
-    (value, row, col) => (row ? value : ucfirst(value))
+  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) =>
+    row ? value : ucfirst(value)
   )
 
   // Assert

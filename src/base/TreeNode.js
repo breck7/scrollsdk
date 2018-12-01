@@ -267,6 +267,15 @@ class ImmutableNode extends AbstractNode {
     return result
   }
 
+  getSlice(startIndexInclusive, stopIndexExclusive) {
+    return new TreeNode(
+      this.getChildren()
+        .slice(startIndexInclusive, stopIndexExclusive)
+        .map(child => child.toString())
+        .join("\n")
+    )
+  }
+
   getTopDownArray() {
     const arr = []
     this._getTopDownArray(arr)

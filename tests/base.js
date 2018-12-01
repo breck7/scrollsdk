@@ -1451,6 +1451,16 @@ testTree.getPathVector = equal => {
   equal(newNamePath.join(" "), namePath)
 }
 
+testTree.getSlice = equal => {
+  // Arrange
+  const tree = new TreeNode(`a
+b
+c
+d`)
+  // Act/Assert
+  equal(tree.getSlice(3, 4).toString(), "d")
+}
+
 testTree.has = equal => {
   // Arrange
   const tree = new TreeNode("hello world\nnested\nfoo ")

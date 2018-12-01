@@ -66,6 +66,7 @@ interface TreeNode {
   getPointRelativeTo: (relativeTo: TreeNode) => point
   getPrevious: () => TreeNode // wrapsaround
   getRootNode: () => This | TreeNode
+  getSlice: (startIndexInclusive, stopIndexExclusive) => TreeNode[]
   getSiblings: () => TreeNode[]
   getStack: () => TreeNode[]
   getStackString: () => string

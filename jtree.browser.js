@@ -215,7 +215,9 @@ class ImmutableNode extends AbstractNode {
     }
     const edge = this.getXI().repeat(indentCount)
     // Set up the keyword part of the node
-    const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
+    const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${
+      classes.xi
+    }">${edge}</span>`
     const lineHtml = this._getLineHtml()
     const childrenHtml = this.length
       ? `<span class="${classes.yi}">${this.getYI()}</span>` +
@@ -638,6 +640,39 @@ class ImmutableNode extends AbstractNode {
     return this.toDelimited(",")
   }
 
+  _getTypes(header) {
+    const matrix = this._getMatrix(header)
+    const types = header.map(i => "int")
+    matrix.forEach(row => {
+      row.forEach((value, index) => {
+        const type = types[index]
+        if (type === "string") return 1
+        if (value === undefined || value === "") return 1
+        if (type === "float") {
+          if (value.match(/^\-?[0-9]*\.?[0-9]*$/)) return 1
+          types[index] = "string"
+        }
+        if (value.match(/^\-?[0-9]+$/)) return 1
+        types[index] = "string"
+      })
+    })
+    return types
+  }
+
+  toDataTable(header) {
+    header = header || this._getUnionNames()
+    const types = this._getTypes(header)
+    const parsers = {
+      string: i => i,
+      float: parseFloat,
+      int: parseInt
+    }
+    const cellFn = (cellValue, rowIndex, columnIndex) => (rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue)
+    const arrays = this._toArrays(header, cellFn)
+    arrays.rows.unshift(arrays.header)
+    return arrays.rows
+  }
+
   toDelimited(delimiter, header) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
@@ -645,18 +680,37 @@ class ImmutableNode extends AbstractNode {
     return this._toDelimited(delimiter, header, cellFn)
   }
 
-  _toDelimited(delimiter, header, cellFn) {
-    const headerRow = header.map((columnName, index) => cellFn(columnName, 0, index)).join(delimiter)
-    const rows = this._getChildren().map((node, rowNumber) => {
-      return header
-        .map((columnName, index) => {
-          const childNode = node.getNode(columnName)
-          const beam = childNode ? childNode.getBeamWithChildren() : ""
-          return cellFn(beam, rowNumber + 1, index)
-        })
-        .join(delimiter)
+  _getMatrix(columns) {
+    const matrix = []
+    this._getChildren().forEach(child => {
+      const row = []
+      columns.forEach(col => {
+        row.push(child.findBeam(col))
+      })
+      matrix.push(row)
     })
-    return headerRow + "\n" + rows.join("\n")
+    return matrix
+  }
+
+  _toArrays(header, cellFn) {
+    const skipHeaderRow = 1
+    const headerArray = header.map((columnName, index) => cellFn(columnName, 0, index))
+    const rows = this._getChildren().map((node, rowNumber) =>
+      header.map((columnName, columnIndex) => {
+        const childNode = node.getNode(columnName)
+        const beam = childNode ? childNode.getBeamWithChildren() : ""
+        return cellFn(beam, rowNumber + skipHeaderRow, columnIndex)
+      })
+    )
+    return {
+      rows: rows,
+      header: headerArray
+    }
+  }
+
+  _toDelimited(delimiter, header, cellFn) {
+    const data = this._toArrays(header, cellFn)
+    return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
 
   toTable() {
@@ -1302,18 +1356,6 @@ class TreeNode extends ImmutableNode {
     return this._setLineAndChildren(line, undefined, index)
   }
 
-  _getMatrix(columns) {
-    const matrix = []
-    this._getChildren().forEach(child => {
-      const row = []
-      columns.forEach(col => {
-        row.push(child.findBeam(col))
-      })
-      matrix.push(row)
-    })
-    return matrix
-  }
-
   toMarkdownTable() {
     return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val)
   }
@@ -1536,6 +1578,17 @@ class TreeNode extends ImmutableNode {
     } catch (err) {
       return this._treeNodeFromXml(this._parseXml2(str)).getNode("children")
     }
+  }
+
+  static _zipObject(keys, values) {
+    const obj = {}
+    keys.forEach((key, index) => (obj[key] = values[index]))
+    return obj
+  }
+
+  static fromDataTable(table) {
+    const header = table.shift()
+    return new TreeNode(table.map(row => this._zipObject(header, row)))
   }
 
   static _parseXml2(str) {

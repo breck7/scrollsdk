@@ -2679,6 +2679,25 @@ testTree.nest = equal => {
   equal(new TreeNode(`${TreeNode.nest("foo bar", 2)}`).nodeAt([0, 0]).getBeam(), "foo bar")
 }
 
+testTree.toDataTable = equal => {
+  // Arrange
+  const data = [["name", "age", "score"], ["coke", 29, 86], ["pepsi", 48, 16], ["soda", 32, 43]]
+
+  // Act
+  const tree = TreeNode.fromDataTable(data)
+
+  // Assert
+  equal(tree.getNode("2 age").getBeam(), "32")
+
+  // Act
+  const dt = tree.toDataTable()
+
+  // Assert
+  equal(dt[2][2], 16)
+  equal(dt[0][1], "age")
+  equal(dt[3][0], "soda")
+}
+
 testTree.toObject = equal => {
   // Arrange
   const a = new TreeNode("hello world")

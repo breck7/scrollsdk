@@ -6,6 +6,7 @@ declare type pathVector = int[] // example: [0,1,1]
 declare type word = string // string that cannot contain the YI, XI or ZI
 declare type Undefined = any
 declare type This = any
+declare type dataTable = (any[])[]
 declare type KeywordMap = Object // {"+" : AdditionNode}
 declare type filepath = string
 declare type formatString = string // "Hello {name}! You are {age} years old."
@@ -84,6 +85,7 @@ interface TreeNode {
   nodeAt: (index: int | pathVector) => TreeNode
   pathVectorToKeywordPath: (vector: pathVector) => keywordPath // convert an index path to keyword path
   toCsv: () => string
+  toDataTable: () => dataTable
   toDelimited: (delimiter: string, header: word[]) => string
   toFormattedTable: (maxWidth: int, alignRight: boolean) => string // Output a table with padding up to maxWidth in each cell
   toHtml: () => string
@@ -143,9 +145,10 @@ interface GrammarProgram {}
 
 interface StaticTreeNode {
   nest: (lines: string, xi: int) => string // Insert lines, if any, as child nodes prefixed with the given number of XI characters
+  fromCsv: (str: string) => TreeNode
+  fromDataTable: (dt: dataTable) => TreeNode
   fromDelimited: (str: string, delimiter: string, quoteChar: string) => TreeNode
   fromDelimitedNoHeaders: (str: string, delimiter: string, quoteChar: string) => TreeNode
-  fromCsv: (str: string) => TreeNode
   fromJson: (str: Json) => TreeNode
   fromSsv: (str: string) => TreeNode
   fromTsv: (str: string) => TreeNode

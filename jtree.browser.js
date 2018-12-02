@@ -195,10 +195,6 @@ class ImmutableNode extends AbstractNode {
     return value
   }
 
-  getRest() {
-    return this.getWords().slice(1)
-  }
-
   getWord(index) {
     const words = this._getLine().split(this.getZI())
     if (index < 0) index = words.length + index
@@ -244,15 +240,15 @@ class ImmutableNode extends AbstractNode {
     return this.getWords()[0]
   }
 
-  getBeam() {
+  getContent() {
     const words = this.getWordsFrom(1)
     return words.length ? words.join(this.getZI()) : undefined
   }
 
-  getBeamWithChildren() {
+  getContentWithChildren() {
     // todo: deprecate
-    const beam = this.getBeam()
-    return (beam ? beam : "") + (this.length ? this.getYI() + this._childrenToString() : "")
+    const content = this.getContent()
+    return (content ? content : "") + (this.length ? this.getYI() + this._childrenToString() : "")
   }
 
   getStack() {
@@ -322,7 +318,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   _getXmlContent(indentCount) {
-    if (this.getBeam() !== undefined) return this.getBeamWithChildren()
+    if (this.getContent() !== undefined) return this.getContentWithChildren()
     return this.length
       ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(
           indentCount
@@ -337,13 +333,17 @@ class ImmutableNode extends AbstractNode {
   }
 
   _toObjectTuple() {
-    const beam = this.getBeam()
+    const content = this.getContent()
     const length = this.length
-    const hasChildrenNoBeam = beam === undefined && length
-    const hasBeamAndHasChildren = beam !== undefined && length
-    // If the node has a beam and a subtree return it as a string, as
+    const hasChildrenNoContent = content === undefined && length
+    const hasContentAndHasChildren = content !== undefined && length
+    // If the node has a content and a subtree return it as a string, as
     // Javascript object values can't be both a leaf and a tree.
-    const tupleValue = hasChildrenNoBeam ? this.toObject() : hasBeamAndHasChildren ? this.getBeamWithChildren() : beam
+    const tupleValue = hasChildrenNoContent
+      ? this.toObject()
+      : hasContentAndHasChildren
+      ? this.getContentWithChildren()
+      : content
     return [this.getKeyword(), tupleValue]
   }
 
@@ -530,14 +530,14 @@ class ImmutableNode extends AbstractNode {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const node = that.getNode(path)
-      return node ? node.getBeam() : ""
+      return node ? node.getContent() : ""
     })
   }
 
   getColumn(path) {
     return this._getChildren().map(node => {
       const cell = node.getNode(path)
-      return cell === undefined ? undefined : cell.getBeam()
+      return cell === undefined ? undefined : cell.getContent()
     })
   }
 
@@ -559,9 +559,9 @@ class ImmutableNode extends AbstractNode {
     return this._getNodeByPath(keywordPath)
   }
 
-  findBeam(keywordPath) {
+  get(keywordPath) {
     const node = this._getNodeByPath(keywordPath)
-    return node === undefined ? undefined : node.getBeam()
+    return node === undefined ? undefined : node.getContent()
   }
 
   _getNodeByPath(keywordPath) {
@@ -609,7 +609,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getGraphByKey(key) {
-    const graph = this._getGraph((node, id) => node.getNodeByColumn(0, id), node => node.findBeam(key))
+    const graph = this._getGraph((node, id) => node.getNodeByColumn(0, id), node => node.get(key))
     graph.push(this)
     return graph
   }
@@ -694,7 +694,7 @@ class ImmutableNode extends AbstractNode {
     this._getChildren().forEach(child => {
       const row = []
       columns.forEach(col => {
-        row.push(child.findBeam(col))
+        row.push(child.get(col))
       })
       matrix.push(row)
     })
@@ -707,8 +707,8 @@ class ImmutableNode extends AbstractNode {
     const rows = this._getChildren().map((node, rowNumber) =>
       header.map((columnName, columnIndex) => {
         const childNode = node.getNode(columnName)
-        const beam = childNode ? childNode.getBeamWithChildren() : ""
-        return cellFn(beam, rowNumber + skipHeaderRow, columnIndex)
+        const content = childNode ? childNode.getContentWithChildren() : ""
+        return cellFn(content, rowNumber + skipHeaderRow, columnIndex)
       })
     )
     return {
@@ -737,7 +737,7 @@ class ImmutableNode extends AbstractNode {
     this._getChildren().forEach(node => {
       if (!node.length) return true
       header.forEach((col, index) => {
-        const cellValue = node.getNode(col).getBeam()
+        const cellValue = node.getNode(col).getContent()
         if (!cellValue) return true
         const length = cellValue.toString().length
         if (length > widths[index]) widths[index] = length > maxWidth ? maxWidth : length
@@ -832,7 +832,7 @@ class ImmutableNode extends AbstractNode {
     return " "
   }
 
-  _textToBeamAndChildrenTuple(text) {
+  _textToContentAndChildrenTuple(text) {
     const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
     const children = !lines.length
@@ -890,27 +890,27 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: refactor the below.
-  _appendFromJavascriptObjectTuple(keyword, beam, circularCheckArray) {
-    const type = typeof beam
+  _appendFromJavascriptObjectTuple(keyword, content, circularCheckArray) {
+    const type = typeof content
     let line
     let children
-    if (beam === null) line = keyword + " " + null
-    else if (beam === undefined) line = keyword
+    if (content === null) line = keyword + " " + null
+    else if (content === undefined) line = keyword
     else if (type === "string") {
-      const tuple = this._textToBeamAndChildrenTuple(beam)
+      const tuple = this._textToContentAndChildrenTuple(content)
       line = keyword + " " + tuple[0]
       children = tuple[1]
-    } else if (type !== "object") line = keyword + " " + beam
-    else if (beam instanceof Date) line = keyword + " " + beam.getTime().toString()
-    else if (beam instanceof TreeNode) {
+    } else if (type !== "object") line = keyword + " " + content
+    else if (content instanceof Date) line = keyword + " " + content.getTime().toString()
+    else if (content instanceof TreeNode) {
       line = keyword
-      children = new TreeNode(beam.childrenToString(), beam.getLine())
-    } else if (type === "function") line = keyword + " " + beam.toString()
-    else if (circularCheckArray.indexOf(beam) === -1) {
-      circularCheckArray.push(beam)
+      children = new TreeNode(content.childrenToString(), content.getLine())
+    } else if (type === "function") line = keyword + " " + content.toString()
+    else if (circularCheckArray.indexOf(content) === -1) {
+      circularCheckArray.push(content)
       line = keyword
-      const length = beam instanceof Array ? beam.length : Object.keys(beam).length
-      if (length) children = new TreeNode()._setChildren(beam, circularCheckArray)
+      const length = content instanceof Array ? content.length : Object.keys(content).length
+      if (length) children = new TreeNode()._setChildren(content, circularCheckArray)
     } else {
       // iirc this is return early from circular
       return
@@ -958,12 +958,12 @@ class ImmutableNode extends AbstractNode {
 
   _getIndex() {
     // StringMap<int> {keyword: index}
-    // When there are multiple tails with the same keyword, _index stores the last beam.
+    // When there are multiple tails with the same keyword, _index stores the last content.
     return this._index || this._makeIndex()
   }
 
-  getBeams() {
-    return this._getChildren().map(node => node.getBeam())
+  getContentsArray() {
+    return this._getChildren().map(node => node.getContent())
   }
 
   getChildrenByNodeType(type) {
@@ -1177,28 +1177,28 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  setBeam(beam) {
-    if (beam === this.getBeam()) return this
+  setContent(content) {
+    if (content === this.getContent()) return this
     const newArray = [this.getKeyword()]
-    if (beam !== undefined) {
-      beam = beam.toString()
-      if (beam.match(this.getYI())) return this.setBeamWithChildren(beam)
-      newArray.push(beam)
+    if (content !== undefined) {
+      content = content.toString()
+      if (content.match(this.getYI())) return this.setContentWithChildren(content)
+      newArray.push(content)
     }
     this._updateMTime()
     return this._setLine(newArray.join(this.getZI()))
   }
 
-  setBeamWithChildren(text) {
+  setContentWithChildren(text) {
     // todo: deprecate
     if (!text.includes(this.getYI())) {
       this._clearChildren()
-      return this.setBeam(text)
+      return this.setContent(text)
     }
 
     const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
-    this.setBeam(firstLine)
+    this.setContent(firstLine)
 
     // tood: cleanup.
     const remainingString = lines.join(this.getYI())
@@ -1228,9 +1228,13 @@ class TreeNode extends ImmutableNode {
     this.getParent()._deleteNode(this)
   }
 
+  set(keywordPath, text) {
+    return this.touchNode(keywordPath).setContentWithChildren(text)
+  }
+
   setFromText(text) {
     if (this.toString() === text) return this
-    const tuple = this._textToBeamAndChildrenTuple(text)
+    const tuple = this._textToContentAndChildrenTuple(text)
     this.setLine(tuple[0])
     return this._setChildren(tuple[1])
   }
@@ -1336,8 +1340,8 @@ class TreeNode extends ImmutableNode {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
     nodeOrStr._getChildren().forEach(node => {
       const path = node.getKeyword()
-      const beam = node.getBeam()
-      const targetNode = this.touchNode(path).setBeam(beam)
+      const content = node.getContent()
+      const targetNode = this.touchNode(path).setContent(content)
       if (node.length) targetNode.extend(node.childrenToString())
     })
     return this
@@ -1385,13 +1389,13 @@ class TreeNode extends ImmutableNode {
     return this.insertLine(line, 0)
   }
 
-  pushBeamAndChildren(beam, children) {
+  pushContentAndChildren(content, children) {
     let index = this.length
 
     while (this.has(index.toString())) {
       index++
     }
-    const line = index.toString() + (beam === undefined ? "" : this.getZI() + beam)
+    const line = index.toString() + (content === undefined ? "" : this.getZI() + content)
     return this.appendLineAndChildren(line, children)
   }
 
@@ -1423,8 +1427,8 @@ class TreeNode extends ImmutableNode {
 
       for (let nameIndex = 0; nameIndex < namesLength; nameIndex++) {
         const keyword = nameOrNames[nameIndex]
-        const av = nodeA.getNode(keyword).getBeam()
-        const bv = nodeB.getNode(keyword).getBeam()
+        const av = nodeA.getNode(keyword).getContent()
+        const bv = nodeB.getNode(keyword).getContent()
 
         if (av > bv) return 1
         else if (av < bv) return -1
@@ -1557,7 +1561,7 @@ class TreeNode extends ImmutableNode {
         obj[names[index]] = cellValue
       })
 
-      treeNode.pushBeamAndChildren(undefined, obj)
+      treeNode.pushContentAndChildren(undefined, obj)
     }
     return treeNode
   }
@@ -1613,11 +1617,11 @@ class TreeNode extends ImmutableNode {
     // Set attributes
     if (xml.attributes) {
       for (let index = 0; index < xml.attributes.length; index++) {
-        result.setBeam(xml.attributes[index].name, xml.attributes[index].value)
+        result.setContent(xml.attributes[index].name, xml.attributes[index].value)
       }
     }
 
-    if (xml.data) children.pushBeamAndChildren(xml.data)
+    if (xml.data) children.pushContentAndChildren(xml.data)
 
     // Set content
     if (xml.childNodes && xml.childNodes.length > 0) {
@@ -1631,7 +1635,7 @@ class TreeNode extends ImmutableNode {
         else if (child.tagName) children.appendLine(child.tagName)
         else if (child.data) {
           const data = child.data.trim()
-          if (data) children.pushBeamAndChildren(data)
+          if (data) children.pushContentAndChildren(data)
         }
       }
     }
@@ -2048,23 +2052,23 @@ class GrammarCompilerNode extends TreeNode {
   }
 
   getListDelimiter() {
-    return this.findBeam(GrammarConstants.compiler.listDelimiter)
+    return this.get(GrammarConstants.compiler.listDelimiter)
   }
 
   getTransformation() {
-    return this.findBeam(GrammarConstants.compiler.sub)
+    return this.get(GrammarConstants.compiler.sub)
   }
 
   getIndentCharacter() {
-    return this.findBeam(GrammarConstants.compiler.indentCharacter)
+    return this.get(GrammarConstants.compiler.indentCharacter)
   }
 
   getOpenChildrenString() {
-    return this.findBeam(GrammarConstants.compiler.openChildren) || ""
+    return this.get(GrammarConstants.compiler.openChildren) || ""
   }
 
   getCloseChildrenString() {
-    return this.findBeam(GrammarConstants.compiler.closeChildren) || ""
+    return this.get(GrammarConstants.compiler.closeChildren) || ""
   }
 }
 
@@ -2253,7 +2257,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getNodeColumnTypes() {
-    const parameters = this.findBeam(GrammarConstants.columns)
+    const parameters = this.get(GrammarConstants.columns)
     return parameters ? parameters.split(" ") : []
   }
 
@@ -2339,7 +2343,7 @@ window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
 
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   _getRunTimeCatchAllKeyword() {
-    return this.findBeam(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
+    return this.get(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
   }
 
   isAKeyword(keywordsMap) {
@@ -2383,16 +2387,16 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   _getDefaultsNode() {
-    return this.findBeam(GrammarConstants.defaults)
+    return this.get(GrammarConstants.defaults)
   }
 
   getDefaultFor(name) {
     const defaults = this._getDefaultsNode()
-    return defaults ? defaults.findBeam(name) : undefined
+    return defaults ? defaults.get(name) : undefined
   }
 
   getDescription() {
-    return this.findBeam(GrammarConstants.description) || ""
+    return this.get(GrammarConstants.description) || ""
   }
 
   getConstantsObject() {
@@ -2401,7 +2405,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   getFrequency() {
-    const val = this.findBeam(GrammarConstants.frequency)
+    const val = this.get(GrammarConstants.frequency)
     return val ? parseFloat(val) : 0
   }
 }
@@ -2426,7 +2430,7 @@ class AbstractGrammarWordTestNode extends TreeNode {}
 
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
   isValid(str) {
-    if (!this._regex) this._regex = new RegExp(this.getBeam())
+    if (!this._regex) this._regex = new RegExp(this.getContent())
     return str.match(this._regex)
   }
 }
@@ -2599,7 +2603,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   _getRunTimeCatchAllKeyword() {
-    return this._getGrammarRootNode().findBeam(GrammarConstants.catchAllKeyword)
+    return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword)
   }
 
   _getRootParserClass() {
@@ -2664,6 +2668,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "14.6.0"
+jtree.getVersion = () => "15.0.0"
 
 window.jtree = jtree

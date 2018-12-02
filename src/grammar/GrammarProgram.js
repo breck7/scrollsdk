@@ -94,7 +94,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   _getRunTimeCatchAllKeyword() {
-    return this._getGrammarRootNode().findBeam(GrammarConstants.catchAllKeyword)
+    return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword)
   }
 
   _getRootParserClass() {

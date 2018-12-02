@@ -68,7 +68,7 @@ ${grammars.toTable()}`
     const node = this.getGrammars()
       .getNodeByColumns("name", grammarName)
       .getParent()
-      .findBeam("filepath")
+      .get("filepath")
 
     return node
   }
@@ -141,20 +141,19 @@ ${grammars.toTable()}`
     // todo: store history of all commands
     // todo: build language for cli history
     // todo: refactor this
-    // todo: the findBeam method is bad (confuse with getBeam). clean up.
     // todo: some easier one step way to get a set from a column
     // todo: add support for initing a TreeNode from a JS set and map
     const data = TreeNode.fromSsv(this._getHistoryFile())
     const files = data
       .getChildren()
       .filter(node => {
-        const command = node.findBeam("command")
-        const filepath = node.findBeam("paramOne")
+        const command = node.get("command")
+        const filepath = node.get("paramOne")
         // make sure theres a filder and it has an extension.
         if (!filepath || !filepath.includes(".")) return false
         if (["check", "run", "", "compile"].includes(command)) return true
       })
-      .map(node => node.findBeam("paramOne"))
+      .map(node => node.get("paramOne"))
     const items = Object.keys(new TreeNode(files.join("\n")).toObject())
     return items.filter(file => file.endsWith(grammarName)).filter(file => fs.existsSync(file))
   }
@@ -204,7 +203,7 @@ ${grammars.toTable()}`
     const stampFile = new TreeNode(`folder ${folderName}`)
     report.getChildren().forEach(node => {
       const fileNode = stampFile.appendLine(`file ${folderName}/${node.getKeyword()}.ssv`)
-      fileNode.appendLineAndChildren("data", `${node.getBeam()}\n` + node.childrenToString())
+      fileNode.appendLineAndChildren("data", `${node.getContent()}\n` + node.childrenToString())
     })
     return stampFile.toString()
   }

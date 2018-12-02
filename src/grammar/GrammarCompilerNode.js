@@ -23,23 +23,23 @@ class GrammarCompilerNode extends TreeNode {
   }
 
   getListDelimiter() {
-    return this.findBeam(GrammarConstants.compiler.listDelimiter)
+    return this.get(GrammarConstants.compiler.listDelimiter)
   }
 
   getTransformation() {
-    return this.findBeam(GrammarConstants.compiler.sub)
+    return this.get(GrammarConstants.compiler.sub)
   }
 
   getIndentCharacter() {
-    return this.findBeam(GrammarConstants.compiler.indentCharacter)
+    return this.get(GrammarConstants.compiler.indentCharacter)
   }
 
   getOpenChildrenString() {
-    return this.findBeam(GrammarConstants.compiler.openChildren) || ""
+    return this.get(GrammarConstants.compiler.openChildren) || ""
   }
 
   getCloseChildrenString() {
-    return this.findBeam(GrammarConstants.compiler.closeChildren) || ""
+    return this.get(GrammarConstants.compiler.closeChildren) || ""
   }
 }
 

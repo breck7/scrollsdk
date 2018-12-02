@@ -8,7 +8,7 @@ class AbstractGrammarWordTestNode extends TreeNode {}
 
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
   isValid(str) {
-    if (!this._regex) this._regex = new RegExp(this.getBeam())
+    if (!this._regex) this._regex = new RegExp(this.getContent())
     return str.match(this._regex)
   }
 }

@@ -1,3 +1,15 @@
+15.0.0 / 2018-12-01
+===================
+- New: added toDataTable and fromDataTable methods
+- New: added getSlice method
+- New: added set method (to revert to original get/set behavior)
+- Breaking: renamed findBeam to get
+- Breaking: renamed getBeam to getContent
+- Breaking: renamed getBeams to getContentsArray
+- Breaking: removed undocumented getRest method
+- Infra: renamed "garden" to "sandbox" for clarity
+- Infra: moved "papers" to one folder
+
 14.6.0 / 2018-09-23
 ===================
 - Bug fix: Fix for browsers removing monotonically increasing perf.now

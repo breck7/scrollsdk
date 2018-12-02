@@ -96,7 +96,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getNodeColumnTypes() {
-    const parameters = this.findBeam(GrammarConstants.columns)
+    const parameters = this.get(GrammarConstants.columns)
     return parameters ? parameters.split(" ") : []
   }
 

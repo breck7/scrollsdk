@@ -7,7 +7,7 @@ const AbstractGrammarDefinitionNode = require("./AbstractGrammarDefinitionNode.j
 
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   _getRunTimeCatchAllKeyword() {
-    return this.findBeam(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
+    return this.get(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
   }
 
   isAKeyword(keywordsMap) {
@@ -51,16 +51,16 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   _getDefaultsNode() {
-    return this.findBeam(GrammarConstants.defaults)
+    return this.get(GrammarConstants.defaults)
   }
 
   getDefaultFor(name) {
     const defaults = this._getDefaultsNode()
-    return defaults ? defaults.findBeam(name) : undefined
+    return defaults ? defaults.get(name) : undefined
   }
 
   getDescription() {
-    return this.findBeam(GrammarConstants.description) || ""
+    return this.get(GrammarConstants.description) || ""
   }
 
   getConstantsObject() {
@@ -69,7 +69,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   getFrequency() {
-    const val = this.findBeam(GrammarConstants.frequency)
+    const val = this.get(GrammarConstants.frequency)
     return val ? parseFloat(val) : 0
   }
 }

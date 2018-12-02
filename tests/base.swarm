@@ -8,5 +8,5 @@
  getChildren
   =# 1
  nodeAt 0
-  getBeam
+  getContent
    == world

@@ -1,3 +1,7 @@
+15.0.1 / 2018-01-02
+===================
+- Fix: Chrome wasn't always monotonically increasing perf.now due to precision
+
 15.0.0 / 2018-12-01
 ===================
 - New: added toDataTable and fromDataTable methods
@@ -12,7 +16,7 @@
 
 14.6.0 / 2018-09-23
 ===================
-- Bug fix: Fix for browsers removing monotonically increasing perf.now
+- Fix: Fix for browsers removing monotonically increasing perf.now
 - New: getChildren() now returns a copy of array enabling in loop deletes
 
 14.5.1 / 2017-11-24

@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "15.0.0",
+  "version": "15.0.1",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "./tasks/test.js",
     "cover": "./tasks/cover.sh",
-    "start": "./tasks/start.js"
+    "start": "./sandbox.express.js"
   },
   "repository": {
     "type": "git",

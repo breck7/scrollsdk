@@ -1,12 +1,16 @@
 "use strict"
 let _jtreeLatestTime = 0
+let _jtreeMinTimeIncrement = 0.000000000001
 class AbstractNode {
   _getNow() {
     // We add this loop to restore monotonically increasing .now():
     // https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
     let time = performance.now()
     while (time <= _jtreeLatestTime) {
-      time += 0.00000000001
+      if (time === time + _jtreeMinTimeIncrement)
+        // Some browsers have different return values for perf.now()
+        _jtreeMinTimeIncrement = 10 * _jtreeMinTimeIncrement
+      time += _jtreeMinTimeIncrement
     }
     _jtreeLatestTime = time
     return time
@@ -61,6 +65,7 @@ class TreeUtils {
       }
     })
   }
+
   static arrayToMap(arr) {
     const map = {}
     arr.forEach(val => (map[val] = true))
@@ -1436,6 +1441,21 @@ class TreeNode extends ImmutableNode {
       return 0
     })
     return this
+  }
+
+  static getDatasets() {
+    return {
+      iris: this.fromSsv(`Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+5.1 3.5 1.4 0.2 setosa
+4.9 3 1.4 0.2 setosa
+4.7 3.2 1.3 0.2 setosa
+7 3.2 4.7 1.4 versicolor
+6.4 3.2 4.5 1.5 versicolor
+6.9 3.1 4.9 1.5 versicolor
+7.6 3 6.6 2.1 virginica
+4.9 2.5 4.5 1.7 virginica
+7.3 2.9 6.3 1.8 virginica`)
+    }
   }
 
   static fromCsv(str) {

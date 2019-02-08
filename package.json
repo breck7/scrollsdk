@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "15.0.1",
+  "version": "15.0.2",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {

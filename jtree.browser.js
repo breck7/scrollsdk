@@ -525,8 +525,9 @@ class ImmutableNode extends AbstractNode {
   }
 
   findNodes(keywordPath) {
-    return this._getChildren().filter(node => {
-      if (node.getKeyword() === keywordPath) return true
+    // todo: can easily speed this up
+    return this.getTopDownArray().filter(node => {
+      if (node.getKeywordPath() === keywordPath) return true
       return false
     })
   }
@@ -861,6 +862,7 @@ class ImmutableNode extends AbstractNode {
 
   _clearChildren() {
     delete this._children
+    this._clearIndex()
   }
 
   _setChildren(content, circularCheckArray) {
@@ -1441,21 +1443,6 @@ class TreeNode extends ImmutableNode {
       return 0
     })
     return this
-  }
-
-  static getDatasets() {
-    return {
-      iris: this.fromSsv(`Sepal.Length Sepal.Width Petal.Length Petal.Width Species
-5.1 3.5 1.4 0.2 setosa
-4.9 3 1.4 0.2 setosa
-4.7 3.2 1.3 0.2 setosa
-7 3.2 4.7 1.4 versicolor
-6.4 3.2 4.5 1.5 versicolor
-6.9 3.1 4.9 1.5 versicolor
-7.6 3 6.6 2.1 virginica
-4.9 2.5 4.5 1.7 virginica
-7.3 2.9 6.3 1.8 virginica`)
-    }
   }
 
   static fromCsv(str) {
@@ -2688,6 +2675,6 @@ jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 
-jtree.getVersion = () => "15.0.0"
+jtree.getVersion = () => "15.0.2"
 
 window.jtree = jtree

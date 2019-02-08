@@ -1,4 +1,9 @@
-15.0.1 / 2018-01-02
+15.0.2 / 2019-02-07
+===================
+- Fix: setChildren wasn't clearing cache
+- Fix: findNodes wasn't recursing
+
+15.0.1 / 2019-01-02
 ===================
 - Fix: Chrome wasn't always monotonically increasing perf.now due to precision
 

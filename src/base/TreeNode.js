@@ -429,8 +429,9 @@ class ImmutableNode extends AbstractNode {
   }
 
   findNodes(keywordPath) {
-    return this._getChildren().filter(node => {
-      if (node.getKeyword() === keywordPath) return true
+    // todo: can easily speed this up
+    return this.getTopDownArray().filter(node => {
+      if (node.getKeywordPath() === keywordPath) return true
       return false
     })
   }

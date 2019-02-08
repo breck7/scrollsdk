@@ -1198,7 +1198,11 @@ testTree.getLines = equal => {
 testTree.getNodes = equal => {
   // Arrange
   const value = new TreeNode("hello world\nhello world")
-  var each = ""
+  const deep = new TreeNode(`language
+ line
+  score 2
+ line
+  score 12`)
 
   // Assert
   equal(value.findNodes("hello").length, 2)
@@ -1211,6 +1215,14 @@ testTree.getNodes = equal => {
 
   // Assert
   equal(result, "worldworld")
+  equal(deep.findNodes("language line score").length, 2)
+  equal(
+    deep
+      .findNodes("language line score")
+      .map(a => a.getContent())
+      .join(""),
+    "212"
+  )
 }
 
 testTree.getContentsArray = equal => {

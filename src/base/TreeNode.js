@@ -765,6 +765,7 @@ class ImmutableNode extends AbstractNode {
 
   _clearChildren() {
     delete this._children
+    this._clearIndex()
   }
 
   _setChildren(content, circularCheckArray) {

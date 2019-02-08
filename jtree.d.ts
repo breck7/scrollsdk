@@ -129,6 +129,7 @@ interface TreeNode {
   replaceNode: (fn: replaceNodeFn) => TreeNode[]
   reverse: () => This
   set: (keywordPath: keywordPath, content: content) => This
+  setChildren: (text: content) => This
   setContent: (value: content) => This
   setContentWithChildren: (value: content) => This
   setFromText: (text: content) => This

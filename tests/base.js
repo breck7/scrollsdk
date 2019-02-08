@@ -3129,12 +3129,14 @@ testTree.treeNodes = equal => {
   equal(a.toString(), "foo hello world\n color blue")
   equal(node.getMTime() > mtime, true)
   equal(a.has("text"), false)
+  equal(node.has("color"), true)
 
   // Act
   node.setChildren("")
 
   // Assert
   equal(!!node.toString(), true)
+  equal(node.has("color"), false)
 }
 
 module.exports = testTree

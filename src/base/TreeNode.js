@@ -969,7 +969,9 @@ class ImmutableNode extends AbstractNode {
   }
 
   parseNodeType(line) {
-    return this.getKeywordMap()[line.split(" ")[0]] || this.getCatchAllNodeClass(line)
+    const firstBreak = line.indexOf(this.getZI())
+    const keyword = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
+    return this.getKeywordMap()[keyword] || this.getCatchAllNodeClass(line)
   }
 
   static _makeUniqueId() {

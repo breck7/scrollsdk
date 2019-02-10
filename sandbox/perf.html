@@ -5256,7 +5256,11 @@ const runTest = () => {
 	for (let index = 0; index < trials; index++) {
 	map[index] = new jtree.TreeNode(data)
 }
-console.log(`parsed ${lineLength * trials} lines of TN code in ${Date.now() - startTime}ms`)
+const elapsed = Date.now() - startTime
+
+let msg = `parsed ${lineLength * trials} lines of TN code in ${elapsed}ms. ${lineLength/(elapsed/1000)} lines per second`
+document.write(msg)
+console.log(msg)
 }
 runTest()
 </script>

@@ -76,12 +76,27 @@ class ImmutableNode extends AbstractNode {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
+  _iterateThroughTopDownArray(fn) {
+    for (let child of this.getChildren()) {
+      if (fn(child)) return true
+      if (child._iterateThroughTopDownArray(fn)) return true
+    }
+    return false
+  }
+
+  _getLineNumber(target) {
+    let lineNumber = 1
+    this._iterateThroughTopDownArray(node => {
+      if (node === target) return true
+      lineNumber++
+    })
+    return lineNumber
+  }
+
   _getYCoordinate(relativeTo) {
-    return this.isRoot(relativeTo)
-      ? 0
-      : this._getRootNode(relativeTo)
-          .getTopDownArray()
-          .indexOf(this) + 1 // todo: may be slow for big trees.
+    if (this.isRoot(relativeTo)) return 0
+    const start = relativeTo || this.getRootNode()
+    return start._getLineNumber(this)
   }
 
   isRoot(relativeTo) {
@@ -961,7 +976,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getKeywordMap() {
-    return {}
+    return undefined
   }
 
   getCatchAllNodeClass(line) {
@@ -969,9 +984,11 @@ class ImmutableNode extends AbstractNode {
   }
 
   parseNodeType(line) {
+    const map = this.getKeywordMap()
+    if (!map) return this.getCatchAllNodeClass(line)
     const firstBreak = line.indexOf(this.getZI())
     const keyword = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
-    return this.getKeywordMap()[keyword] || this.getCatchAllNodeClass(line)
+    return map[keyword] || this.getCatchAllNodeClass(line)
   }
 
   static _makeUniqueId() {

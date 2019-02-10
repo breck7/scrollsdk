@@ -81,7 +81,7 @@ interface TreeNode {
   indexOfLast: (keyword: word) => int // Returns index of last occurrence of keyword
   isRoot: () => Boolean
   isTerminal: () => Boolean
-  length: number
+  length: int
   macroExpand: (macroDefKeyword: string, macroUsageKeyword: string) => TreeNode
   nodeAt: (index: int | pathVector) => TreeNode
   pathVectorToKeywordPath: (vector: pathVector) => keywordPath // convert an index path to keyword path

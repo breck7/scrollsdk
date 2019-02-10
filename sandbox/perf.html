@@ -5248,19 +5248,22 @@
 <script type="text/javascript">
 const data = $("#test").html()
 const map = {}
-const startTime = Date.now()
 const lineLength = data.split("\n").length
 const trials = 200
 const runTest = () => {
 
-	for (let index = 0; index < trials; index++) {
-	map[index] = new jtree.TreeNode(data)
-}
-const elapsed = Date.now() - startTime
+  const startTime = Date.now()
 
-let msg = `parsed ${lineLength * trials} lines of TN code in ${elapsed}ms. ${lineLength/(elapsed/1000)} lines per second`
-document.write(msg)
-console.log(msg)
+  for (let index = 0; index < trials; index++) {
+  	map[index] = new jtree.TreeNode(data)
+  }
+  const elapsed = Date.now() - startTime
+
+  let totalLines = lineLength * trials
+  const ps = (totalLines/(elapsed/1000)).toLocaleString()
+  let msg = `parsed ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`
+  document.write(msg)
+  console.log(msg)
 }
 runTest()
 </script>

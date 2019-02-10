@@ -8,6 +8,7 @@ const GrammarCompilerNode = require("./GrammarCompilerNode.js")
 const GrammarConstantsNode = require("./GrammarConstantsNode.js")
 
 const GrammarBackedNonTerminalNode = require("./GrammarBackedNonTerminalNode.js")
+const GrammarBackedAnyNode = require("./GrammarBackedAnyNode.js")
 const GrammarBackedTerminalNode = require("./GrammarBackedTerminalNode.js")
 
 class AbstractGrammarDefinitionNode extends TreeNode {
@@ -34,15 +35,21 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this.getWord(1)
   }
 
-  isNonTerminal() {
-    return this.has(GrammarConstants.keywords)
+  _isNonTerminal() {
+    return this._isAnyNode() || this.has(GrammarConstants.keywords)
+  }
+
+  _isAnyNode() {
+    return this.has(GrammarConstants.any)
   }
 
   _getDefaultParserClass() {
-    return this.isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
+    if (this._isAnyNode()) return GrammarBackedAnyNode
+
+    return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
-  _getParserNode() {
+  _getCustomDefinedParserNode() {
     return this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
   }
 
@@ -51,9 +58,12 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_parserClass
   }
 
+  /* Parser class is the actual JS class doing the parsing, different than Node type. */
   _getParserClass() {
-    const parserNode = this._getParserNode()
-    return parserNode ? parserNode.getParserClass() : this._getDefaultParserClass()
+    const customDefinedParserNode = this._getCustomDefinedParserNode()
+    if (customDefinedParserNode) return customDefinedParserNode.getParserClass()
+    let cls = this._getDefaultParserClass()
+    return cls
   }
 
   getCatchAllNodeClass(line) {

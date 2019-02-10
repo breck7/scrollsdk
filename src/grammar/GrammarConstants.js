@@ -17,6 +17,7 @@ GrammarConstants.columns = "@columns"
 GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
+GrammarConstants.any = "@any"
 
 // parser/vm instantiating and executing
 GrammarConstants.parser = "@parser"

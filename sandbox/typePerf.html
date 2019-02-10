@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head><script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="/jtree.browser.js"></script>
+<script id="grammar" type="tree">@grammar jibberish
+ @description Test a root parser node
+ @compiler txt
+ @catchAllKeyword error
+ @keywords
+  topLevel
+  text
+@wordType int
+ @regex ^\-?[0-9]+$
+ @parseWith js parseInt
+@wordType word
+ @regex .?
+@wordType onoff
+ @enum on off
+@keyword error
+ @parser js ErrorNode
+@keyword topLevel
+@keyword block topLevel
+ @keywords
+  topLevel
+@keyword foo topLevel
+@keyword nodeWithConsts topLevel
+ @constants
+  greeting string hello world
+@keyword text
+ @any
+@keyword add topLevel
+@keyword + add
+ @columns int*
+@keyword lightbulbState topLevel
+ @columns onoff
+@keyword to block
+ @columns word
+ @compiler txt
+  @sub to {word}
+  @closeChildren end
+</script>
+<script id="code" type="tree">foo
+ whoodat
+nodeWithConsts
+lightbulbState on
+lightbulbState off
++ 2 3 2
+bam
+text
+thisShouldError
+to fillThis</script>
+<script type="text/javascript">
+
+const programCode = $("#code").html()
+const grammar = $("#grammar").html()
+
+const log = msg => {
+  $("body").append(msg + "<br>")
+  console.log(msg)
+}
+
+const main = () => {
+  const startTime = Date.now()
+  log("Building language...")
+   const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootParserClass()
+
+  log("Loading program...")
+  const code = new jtree.TreeNode(programCode)
+  let long = jtree.TreeNode.toString()
+  long = long + long + long + long
+  long = long + long + long + long
+  long = long + long + long + long
+  long = long + long + long + long
+  code.getNode("text").setChildren(long)
+
+  long = "+ 34 432 423 43\n"
+  long = long + long
+  long = long + long
+  long = long + long
+  long = long + long
+  code.getNode("to").setChildren(long.trim())
+
+  const program = new programClass(code)
+
+  log("Checking errors...")
+  const errors = program.getProgramErrors()
+  const expected = 2
+
+
+  const elapsed = Date.now() - startTime
+
+  let totalLines = code.getTopDownArray().length
+  const ps = (totalLines/(elapsed/1000)).toLocaleString()
+  let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Errors: ${errors.length} === ${expected}`
+
+  log(msg)
+  log("")
+  log(errors.join("<br>"))
+
+  //log("<pre>" + program.toString() + "</pre>")
+  // log(program.getSyntaxTreeHtml())
+}
+
+$(main)
+</script></head>
+<body></body>
+</html>

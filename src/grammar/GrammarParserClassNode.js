@@ -2,6 +2,7 @@ const TreeNode = require("../base/TreeNode.js")
 const TreeUtils = require("../base/TreeUtils.js")
 
 const GrammarBackedNonTerminalNode = require("./GrammarBackedNonTerminalNode.js")
+const GrammarBackedAnyNode = require("./GrammarBackedAnyNode.js")
 const GrammarBackedTerminalNode = require("./GrammarBackedTerminalNode.js")
 const GrammarBackedErrorNode = require("./GrammarBackedErrorNode.js")
 
@@ -18,7 +19,8 @@ class GrammarParserClassNode extends TreeNode {
     const builtIns = {
       ErrorNode: GrammarBackedErrorNode,
       TerminalNode: GrammarBackedTerminalNode,
-      NonTerminalNode: GrammarBackedNonTerminalNode
+      NonTerminalNode: GrammarBackedNonTerminalNode,
+      AnyNode: GrammarBackedAnyNode
     }
 
     return builtIns
@@ -37,7 +39,11 @@ class GrammarParserClassNode extends TreeNode {
     const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
 
     // todo: remove "window" below?
-    if (!this.isNodeJs()) return window[TreeUtils.getClassNameFromFilePath(filepath)]
+    if (!this.isNodeJs()) {
+      const cls = window[TreeUtils.getClassNameFromFilePath(filepath)]
+      if (!cls) console.error(`WARNING: class ${filepath} not found.`)
+      return cls
+    }
 
     const theModule = require(fullPath)
     const subModule = this.getSubModuleName()

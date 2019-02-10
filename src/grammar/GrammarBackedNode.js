@@ -67,7 +67,6 @@ class GrammarBackedNode extends TreeNode {
   }
 
   _getGrammarBackedCellArray() {
-    const point = this.getPoint()
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
     const parameters = definition.getNodeColumnTypes()
@@ -80,7 +79,7 @@ class GrammarBackedNode extends TreeNode {
     for (let index = 0; index < length; index++) {
       const word = words[index]
       const type = index >= parameterLength ? lastParameterListType : parameters[index]
-      checks[index] = new GrammarBackedCell(word, type, this, point.y, index, grammarProgram)
+      checks[index] = new GrammarBackedCell(word, type, this, index, grammarProgram)
     }
     return checks
   }

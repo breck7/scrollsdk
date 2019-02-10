@@ -94,9 +94,6 @@ class TreeUtils {
 
 window.TreeUtils = TreeUtils
 
-
-
-
 class ImmutableNode extends AbstractNode {
   constructor(children, line, parent) {
     super()
@@ -172,12 +169,27 @@ class ImmutableNode extends AbstractNode {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
+  _iterateThroughTopDownArray(fn) {
+    for (let child of this.getChildren()) {
+      if (fn(child)) return true
+      if (child._iterateThroughTopDownArray(fn)) return true
+    }
+    return false
+  }
+
+  _getLineNumber(target) {
+    let lineNumber = 1
+    this._iterateThroughTopDownArray(node => {
+      if (node === target) return true
+      lineNumber++
+    })
+    return lineNumber
+  }
+
   _getYCoordinate(relativeTo) {
-    return this.isRoot(relativeTo)
-      ? 0
-      : this._getRootNode(relativeTo)
-          .getTopDownArray()
-          .indexOf(this) + 1 // todo: may be slow for big trees.
+    if (this.isRoot(relativeTo)) return 0
+    const start = relativeTo || this.getRootNode()
+    return start._getLineNumber(this)
   }
 
   isRoot(relativeTo) {
@@ -1057,7 +1069,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getKeywordMap() {
-    return {}
+    return undefined
   }
 
   getCatchAllNodeClass(line) {
@@ -1065,9 +1077,11 @@ class ImmutableNode extends AbstractNode {
   }
 
   parseNodeType(line) {
+    const map = this.getKeywordMap()
+    if (!map) return this.getCatchAllNodeClass(line)
     const firstBreak = line.indexOf(this.getZI())
     const keyword = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
-    return this.getKeywordMap()[keyword] || this.getCatchAllNodeClass(line)
+    return map[keyword] || this.getCatchAllNodeClass(line)
   }
 
   static _makeUniqueId() {
@@ -1685,8 +1699,6 @@ class TreeNode extends ImmutableNode {
 
 window.TreeNode = TreeNode
 
-
-
 class AbstractGrammarBackedProgram extends TreeNode {
   getProgram() {
     return this
@@ -1768,13 +1780,10 @@ class AbstractGrammarBackedProgram extends TreeNode {
 
 window.AbstractGrammarBackedProgram = AbstractGrammarBackedProgram
 
-
-
 class GrammarBackedCell {
-  constructor(word, type, node, line, index, grammarProgram) {
+  constructor(word, type, node, index, grammarProgram) {
     this._word = word
     this._type = type
-    this._line = line
     this._node = node
     this._grammarProgram = grammarProgram
     this._index = index + 1
@@ -1800,35 +1809,37 @@ class GrammarBackedCell {
     return this._grammarProgram.getWordTypes()[this.getType()]
   }
 
+  _getLineNumber() {
+    return this._node.getPoint().y
+  }
+
   getErrorMessage() {
     const index = this._index
     const type = this.getType()
     const fullLine = this._node.getLine()
-    const line = this._line
     const word = this._word
     if (word === undefined && this.isOptional()) return ""
     if (word === undefined)
-      return `unfilledColumnError "${type}" column in "${fullLine}" at line ${line} column ${index}. definition: ${this._node
+      return `unfilledColumnError "${type}" column in "${fullLine}" at line ${this._getLineNumber()} column ${index}. definition: ${this._node
         .getDefinition()
         .toString()}`
-    if (type === undefined) return `extraWordError "${word}" in "${fullLine}" at line ${line} column ${index}`
+    if (type === undefined)
+      return `extraWordError "${word}" in "${fullLine}" at line ${this._getLineNumber()} column ${index}`
 
     const grammarProgram = this._grammarProgram
     const runTimeGrammarBackedProgram = this._node.getProgram()
     const wordTypeClass = this._getWordTypeClass()
     if (!wordTypeClass)
-      return `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}.`
+      return `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${this._getLineNumber()}.`
 
     const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
     return isValid
       ? ""
-      : `invalidWordError in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column.`
+      : `invalidWordError in "${fullLine}" at line ${this._getLineNumber()} column ${index}. "${word}" does not fit in "${type}" column.`
   }
 }
 
 window.GrammarBackedCell = GrammarBackedCell
-
-
 
 class GrammarConstNode extends TreeNode {
   getValue() {
@@ -1881,13 +1892,6 @@ GrammarConstants.description = "@description"
 GrammarConstants.frequency = "@frequency"
 
 window.GrammarConstants = GrammarConstants
-
-
-
-
-
-
-
 
 class GrammarBackedNode extends TreeNode {
   getProgram() {
@@ -1951,7 +1955,6 @@ class GrammarBackedNode extends TreeNode {
   }
 
   _getGrammarBackedCellArray() {
-    const point = this.getPoint()
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
     const parameters = definition.getNodeColumnTypes()
@@ -1964,7 +1967,7 @@ class GrammarBackedNode extends TreeNode {
     for (let index = 0; index < length; index++) {
       const word = words[index]
       const type = index >= parameterLength ? lastParameterListType : parameters[index]
-      checks[index] = new GrammarBackedCell(word, type, this, point.y, index, grammarProgram)
+      checks[index] = new GrammarBackedCell(word, type, this, index, grammarProgram)
     }
     return checks
   }
@@ -1977,8 +1980,6 @@ class GrammarBackedNode extends TreeNode {
 }
 
 window.GrammarBackedNode = GrammarBackedNode
-
-
 
 class GrammarBackedErrorNode extends GrammarBackedNode {
   getLineSyntax() {
@@ -1993,8 +1994,6 @@ class GrammarBackedErrorNode extends GrammarBackedNode {
 }
 
 window.GrammarBackedErrorNode = GrammarBackedErrorNode
-
-
 
 class GrammarBackedNonTerminalNode extends GrammarBackedNode {
   getKeywordMap() {
@@ -2030,15 +2029,9 @@ ${indent}${closeChildrenString}`
 
 window.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode
 
-
-
 class GrammarBackedTerminalNode extends GrammarBackedNode {}
 
 window.GrammarBackedTerminalNode = GrammarBackedTerminalNode
-
-
-
-
 
 class GrammarCompilerNode extends TreeNode {
   getKeywordMap() {
@@ -2083,10 +2076,6 @@ class GrammarCompilerNode extends TreeNode {
 
 window.GrammarCompilerNode = GrammarCompilerNode
 
-
-
-
-
 class GrammarConstantsNode extends TreeNode {
   getCatchAllNodeClass(line) {
     return GrammarConstNode
@@ -2104,8 +2093,6 @@ class GrammarConstantsNode extends TreeNode {
 
 window.GrammarConstantsNode = GrammarConstantsNode
 
-
-
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors() {
     return [`unknownKeywordError "${this.getKeyword()}" at line ${this.getPoint().y}`]
@@ -2117,14 +2104,6 @@ class GrammarDefinitionErrorNode extends TreeNode {
 }
 
 window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
-
-
-
-
-
-
-
-
 
 class GrammarParserClassNode extends TreeNode {
   getParserClassFilePath() {
@@ -2167,18 +2146,6 @@ class GrammarParserClassNode extends TreeNode {
 }
 
 window.GrammarParserClassNode = GrammarParserClassNode
-
-
-
-
-
-
-
-
-
-
-
-
 
 class AbstractGrammarDefinitionNode extends TreeNode {
   getKeywordMap() {
@@ -2343,13 +2310,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
 window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
 
-
-
-
-
-
-
-
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   _getRunTimeCatchAllKeyword() {
     return this.get(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
@@ -2421,17 +2381,11 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
 window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
 
-
-
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   _getDefaultParserClass() {}
 }
 
 window.GrammarRootNode = GrammarRootNode
-
-
-
-
 
 // todo: add standard types, enum types, from disk types
 
@@ -2515,15 +2469,6 @@ class GrammarWordTypeNode extends TreeNode {
 }
 
 window.GrammarWordTypeNode = GrammarWordTypeNode
-
-
-
-
-
-
-
-
-
 
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
@@ -2661,13 +2606,6 @@ contexts:
 }
 
 window.GrammarProgram = GrammarProgram
-
-
-
-
-
-
-
 
 const jtree = {}
 

@@ -5,6 +5,7 @@
  @catchAllKeyword error
  @keywords
   topLevel
+  text
 @wordType int
  @regex ^\-?[0-9]+$
  @parseWith js parseInt
@@ -22,6 +23,8 @@
 @keyword nodeWithConsts topLevel
  @constants
   greeting string hello world
+@keyword text
+ @any
 @keyword add topLevel
  @parser js ./jibberishNodes.js additionNode
 @keyword + add

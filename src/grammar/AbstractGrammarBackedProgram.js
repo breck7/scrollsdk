@@ -6,7 +6,9 @@ class AbstractGrammarBackedProgram extends TreeNode {
   }
 
   getProgramErrors() {
-    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
+    const nodeErrors = this.getTopDownArray()
+      .map(node => node.getErrors())
+      .filter(arr => arr.length)
     return [].concat.apply([], nodeErrors)
   }
 
@@ -51,6 +53,32 @@ class AbstractGrammarBackedProgram extends TreeNode {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
       .join("\n")
+  }
+
+  getSyntaxTreeHtml() {
+    const getColor = child => {
+      if (child.getLineSyntax().includes("error")) return "red"
+      return "black"
+    }
+    const zip = (a1, a2) => {
+      let last = a1.length > a2.length ? a1.length : a2.length
+      let parts = []
+      for (let index = 0; index < last; index++) {
+        parts.push(`${a1[index]}:${a2[index]}`)
+      }
+      return parts.join(" ")
+    }
+    return this.getTopDownArray()
+      .map(
+        child =>
+          `<div style="white-space: pre;">${
+            child.constructor.name
+          } ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(
+            child.getLineSyntax().split(" "),
+            child.getLine().split(" ")
+          )}</span></div>`
+      )
+      .join("")
   }
 
   getTreeWithNodeTypes() {

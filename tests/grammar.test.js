@@ -16,16 +16,23 @@ quack.quickTest("basics", equal => {
   // Assert
 })
 
-quack.quickTest("jibberish", equal => {
+const makeJibberishProgram = code => {
   // Arrange
   const grammarPath = __dirname + "/jibberish/jibberish.grammar"
   const jibberishGrammarCode = fs.readFileSync(grammarPath, "utf8")
-  const sampleJibberishCode = fs.readFileSync(__dirname + "/jibberish/sample.jibberish", "utf8")
 
   // Act
   const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
   const rootJibberishParserClass = grammarProgram.getRootParserClass()
-  const program = new rootJibberishParserClass(sampleJibberishCode)
+  return new rootJibberishParserClass(code)
+}
+
+quack.quickTest("jibberish", equal => {
+  // Arrange
+  const sampleJibberishCode = fs.readFileSync(__dirname + "/jibberish/sample.jibberish", "utf8")
+
+  // Act
+  const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
   equal(program instanceof jibberishProgram, true, "correct program class")
@@ -54,7 +61,7 @@ quack.quickTest("jibberish", equal => {
   equal(addition instanceof jibberishNodes.additionNode, true)
 
   // Act
-  const wordTypesProgram = new rootJibberishParserClass(`foo
+  const wordTypesProgram = makeJibberishProgram(`foo
 + 2 3 2`)
   const wordTypes = wordTypesProgram.getInPlaceSyntaxTree()
 
@@ -86,8 +93,22 @@ additionNode + 2 3 2`,
   )
 
   // Arrange
-  const programWithBugs = new rootJibberishParserClass(`+ foo bar`)
+  const programWithBugs = makeJibberishProgram(`+ foo bar`)
 
-  // Act
+  // Act/Assert
   equal(programWithBugs.getProgramErrors().length, 2)
+})
+
+quack.quickTest("any nodes", equal => {
+  // Arrange/Act
+  const programWithBugs = makeJibberishProgram(`text foobar
+ This is an any node.
+ this is some text.
+ hello world
+ 
+ 1+1`)
+
+  // Assert
+  const errors = programWithBugs.getProgramErrors().join("\n")
+  equal(errors, "")
 })

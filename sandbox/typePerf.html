@@ -57,14 +57,10 @@ const grammar = $("#grammar").html()
 const log = msg => {
   $("body").append(msg + "<br>")
   console.log(msg)
+  $("body").width()
 }
 
-const main = () => {
-  const startTime = Date.now()
-  log("Building language...")
-   const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootParserClass()
-
-  log("Loading program...")
+const getCode = () => {
   const code = new jtree.TreeNode(programCode)
   let long = jtree.TreeNode.toString()
   long = long + long + long + long
@@ -78,29 +74,46 @@ const main = () => {
   long = long + long + long + long + long + long + long + long
   long = long + long + long + long + long + long + long + long
   code.getNode("to").setChildren(long.trim())
+  return code
+}
+
+const main = code => {
+  log("Building language...")
+   const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootParserClass()
+
+  log("Loading program...")
 
   const program = new programClass(code)
 
   log("Checking errors...")
+  const startTime = Date.now()
   const errors = program.getProgramErrors()
+  //const errors = []
   const expected = 2
-
-
   const elapsed = Date.now() - startTime
 
-  let totalLines = code.getTopDownArray().length
+  let totalLines = code.getNumberOfLines()
   const ps = (totalLines/(elapsed/1000)).toLocaleString()
   let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Errors: ${errors.length} === ${expected}`
 
   log(msg)
   log("")
-  log(errors.join("<br>"))
+  log("First five errors:")
+  log(errors.slice(0,5).join("<br>"))
 
   //log("<pre>" + program.toString() + "</pre>")
   // log(program.getSyntaxTreeHtml())
 }
 
-$(main)
+
+
+$(() => {
+  let someUrl = ""
+  if (someUrl)
+    $.get(someUrl).then(data => main(new jtree.TreeNode(data)))
+  else
+    main(getCode())
+})
 </script></head>
-<body></body>
+<body>Perf test<br></body>
 </html>

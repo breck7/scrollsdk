@@ -6,17 +6,25 @@ class AbstractGrammarBackedProgram extends TreeNode {
   }
 
   *getProgramErrorsIterator() {
-    for (let node of this.getTopDownArray()) {
+    let line = 1
+    for (let node of this.getTopDownArrayIterator()) {
+      node._cachedLineNumber = line
       const errs = node.getErrors()
+      delete node._cachedLineNumber
       if (errs.length) yield errs
     }
   }
 
   getProgramErrors() {
-    const nodeErrors = this.getTopDownArray()
-      .map(node => node.getErrors())
-      .filter(arr => arr.length)
-    return [].concat.apply([], nodeErrors)
+    const errors = []
+    let line = 1
+    for (let node of this.getTopDownArray()) {
+      node._cachedLineNumber = line
+      const errs = node.getErrors()
+      errs.forEach(err => errors.push(err))
+      delete node._cachedLineNumber
+    }
+    return errors
   }
 
   getKeywordMap() {

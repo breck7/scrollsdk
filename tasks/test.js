@@ -3,7 +3,7 @@
 const jtree = require("../index.js")
 const recursiveReadSync = require("recursive-readdir-sync")
 
-require("./base.js")
+require("./runBaseTests.js")
 
 const allFiles = recursiveReadSync(__dirname + "/../tests/")
 

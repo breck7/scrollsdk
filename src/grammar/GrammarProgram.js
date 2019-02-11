@@ -57,15 +57,20 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getDefinitionByKeywordPath(keywordPath) {
+    if (!this._cachedDefinitions) this._cachedDefinitions = {}
+    if (this._cachedDefinitions[keywordPath]) return this._cachedDefinitions[keywordPath]
+
     const parts = keywordPath.split(" ")
     let subject = this
     let def
-    while (parts.length) {
-      const part = parts.shift()
+    for (let index = 0; index < parts.length; index++) {
+      const part = parts[index]
       def = subject.getRunTimeKeywordMapWithDefinitions()[part]
       if (!def) def = subject._getCatchAllDefinition()
       subject = def
     }
+
+    this._cachedDefinitions[keywordPath] = def
     return def
   }
 

@@ -76,24 +76,32 @@ class ImmutableNode extends AbstractNode {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
-  _iterateThroughTopDownArray(fn) {
+  *getTopDownArrayIterator() {
     for (let child of this.getChildren()) {
-      if (fn(child)) return true
-      if (child._iterateThroughTopDownArray(fn)) return true
+      yield child
+      yield* child.getTopDownArrayIterator()
     }
-    return false
+  }
+
+  getNumberOfLines() {
+    let lineCount = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      lineCount++
+    }
+    return lineCount
   }
 
   _getLineNumber(target) {
     let lineNumber = 1
-    this._iterateThroughTopDownArray(node => {
-      if (node === target) return true
+    for (let node of this.getTopDownArrayIterator()) {
+      if (node === target) return lineNumber
       lineNumber++
-    })
+    }
     return lineNumber
   }
 
   _getYCoordinate(relativeTo) {
+    if (this._cachedLineNumber) return this._cachedLineNumber
     if (this.isRoot(relativeTo)) return 0
     const start = relativeTo || this.getRootNode()
     return start._getLineNumber(this)
@@ -192,8 +200,9 @@ class ImmutableNode extends AbstractNode {
       .join(this.getYI())
   }
 
-  getLine(language = this) {
-    return this.getWords().join(language.getZI())
+  getLine(language) {
+    if (!this._words && !language) return this._getLine() // todo: how does this interact with "language" param?
+    return this.getWords().join((language || this).getZI())
   }
 
   // todo: return array? getPathArray?

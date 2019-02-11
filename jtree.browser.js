@@ -94,6 +94,9 @@ class TreeUtils {
 
 window.TreeUtils = TreeUtils
 
+
+
+
 class ImmutableNode extends AbstractNode {
   constructor(children, line, parent) {
     super()
@@ -169,24 +172,32 @@ class ImmutableNode extends AbstractNode {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
-  _iterateThroughTopDownArray(fn) {
+  *getTopDownArrayIterator() {
     for (let child of this.getChildren()) {
-      if (fn(child)) return true
-      if (child._iterateThroughTopDownArray(fn)) return true
+      yield child
+      yield* child.getTopDownArrayIterator()
     }
-    return false
+  }
+
+  getNumberOfLines() {
+    let lineCount = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      lineCount++
+    }
+    return lineCount
   }
 
   _getLineNumber(target) {
     let lineNumber = 1
-    this._iterateThroughTopDownArray(node => {
-      if (node === target) return true
+    for (let node of this.getTopDownArrayIterator()) {
+      if (node === target) return lineNumber
       lineNumber++
-    })
+    }
     return lineNumber
   }
 
   _getYCoordinate(relativeTo) {
+    if (this._cachedLineNumber) return this._cachedLineNumber
     if (this.isRoot(relativeTo)) return 0
     const start = relativeTo || this.getRootNode()
     return start._getLineNumber(this)
@@ -285,8 +296,9 @@ class ImmutableNode extends AbstractNode {
       .join(this.getYI())
   }
 
-  getLine(language = this) {
-    return this.getWords().join(language.getZI())
+  getLine(language) {
+    if (!this._words && !language) return this._getLine() // todo: how does this interact with "language" param?
+    return this.getWords().join((language || this).getZI())
   }
 
   // todo: return array? getPathArray?
@@ -1699,23 +1711,30 @@ class TreeNode extends ImmutableNode {
 
 window.TreeNode = TreeNode
 
+
+
 class AbstractGrammarBackedProgram extends TreeNode {
   getProgram() {
     return this
   }
 
   *getProgramErrorsIterator() {
-    for (let node of this.getTopDownArray()) {
+    for (let node of this.getTopDownArrayIterator()) {
       const errs = node.getErrors()
       if (errs.length) yield errs
     }
   }
 
   getProgramErrors() {
-    const nodeErrors = this.getTopDownArray()
-      .map(node => node.getErrors())
-      .filter(arr => arr.length)
-    return [].concat.apply([], nodeErrors)
+    const errors = []
+    let line = 1
+    for (let node of this.getTopDownArray()) {
+      node._cachedLineNumber = line
+      const errs = node.getErrors()
+      errs.forEach(err => errors.push(err))
+      delete node._cachedLineNumber
+    }
+    return errors
   }
 
   getKeywordMap() {
@@ -1816,6 +1835,8 @@ class AbstractGrammarBackedProgram extends TreeNode {
 
 window.AbstractGrammarBackedProgram = AbstractGrammarBackedProgram
 
+
+
 /*
 A cell contains a word but also the type information for that word.
 */
@@ -1880,6 +1901,8 @@ class GrammarBackedCell {
 
 window.GrammarBackedCell = GrammarBackedCell
 
+
+
 class GrammarConstNode extends TreeNode {
   getValue() {
     // todo: parse type
@@ -1932,6 +1955,13 @@ GrammarConstants.description = "@description"
 GrammarConstants.frequency = "@frequency"
 
 window.GrammarConstants = GrammarConstants
+
+
+
+
+
+
+
 
 class GrammarBackedNode extends TreeNode {
   getProgram() {
@@ -2021,6 +2051,8 @@ class GrammarBackedNode extends TreeNode {
 
 window.GrammarBackedNode = GrammarBackedNode
 
+
+
 class GrammarBackedErrorNode extends GrammarBackedNode {
   getLineSyntax() {
     return "error ".repeat(this.getWords().length).trim()
@@ -2035,6 +2067,8 @@ class GrammarBackedErrorNode extends GrammarBackedNode {
 }
 
 window.GrammarBackedErrorNode = GrammarBackedErrorNode
+
+
 
 class GrammarBackedNonTerminalNode extends GrammarBackedNode {
   getKeywordMap() {
@@ -2070,6 +2104,8 @@ ${indent}${closeChildrenString}`
 
 window.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode
 
+
+
 class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
   getKeywordMap() {
     return {}
@@ -2086,9 +2122,15 @@ class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
 
 window.GrammarBackedAnyNode = GrammarBackedAnyNode
 
+
+
 class GrammarBackedTerminalNode extends GrammarBackedNode {}
 
 window.GrammarBackedTerminalNode = GrammarBackedTerminalNode
+
+
+
+
 
 class GrammarCompilerNode extends TreeNode {
   getKeywordMap() {
@@ -2133,6 +2175,10 @@ class GrammarCompilerNode extends TreeNode {
 
 window.GrammarCompilerNode = GrammarCompilerNode
 
+
+
+
+
 class GrammarConstantsNode extends TreeNode {
   getCatchAllNodeClass(line) {
     return GrammarConstNode
@@ -2150,6 +2196,8 @@ class GrammarConstantsNode extends TreeNode {
 
 window.GrammarConstantsNode = GrammarConstantsNode
 
+
+
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors() {
     return [`unknownKeywordError "${this.getKeyword()}" at line ${this.getPoint().y}`]
@@ -2161,6 +2209,15 @@ class GrammarDefinitionErrorNode extends TreeNode {
 }
 
 window.GrammarDefinitionErrorNode = GrammarDefinitionErrorNode
+
+
+
+
+
+
+
+
+
 
 class GrammarParserClassNode extends TreeNode {
   getParserClassFilePath() {
@@ -2208,6 +2265,19 @@ class GrammarParserClassNode extends TreeNode {
 }
 
 window.GrammarParserClassNode = GrammarParserClassNode
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class AbstractGrammarDefinitionNode extends TreeNode {
   getKeywordMap() {
@@ -2381,6 +2451,13 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 
 window.AbstractGrammarDefinitionNode = AbstractGrammarDefinitionNode
 
+
+
+
+
+
+
+
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   _getRunTimeCatchAllKeyword() {
     return this.get(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
@@ -2452,11 +2529,17 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
 window.GrammarKeywordDefinitionNode = GrammarKeywordDefinitionNode
 
+
+
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   _getDefaultParserClass() {}
 }
 
 window.GrammarRootNode = GrammarRootNode
+
+
+
+
 
 // todo: add standard types, enum types, from disk types
 
@@ -2541,6 +2624,15 @@ class GrammarWordTypeNode extends TreeNode {
 
 window.GrammarWordTypeNode = GrammarWordTypeNode
 
+
+
+
+
+
+
+
+
+
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
     const map = {}
@@ -2591,15 +2683,20 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getDefinitionByKeywordPath(keywordPath) {
+    if (!this._cachedDefinitions) this._cachedDefinitions = {}
+    if (this._cachedDefinitions[keywordPath]) return this._cachedDefinitions[keywordPath]
+
     const parts = keywordPath.split(" ")
     let subject = this
     let def
-    while (parts.length) {
-      const part = parts.shift()
+    for (let index = 0; index < parts.length; index++) {
+      const part = parts[index]
       def = subject.getRunTimeKeywordMapWithDefinitions()[part]
       if (!def) def = subject._getCatchAllDefinition()
       subject = def
     }
+
+    this._cachedDefinitions[keywordPath] = def
     return def
   }
 
@@ -2678,6 +2775,14 @@ contexts:
 
 window.GrammarProgram = GrammarProgram
 
+
+
+
+
+
+
+
+
 const jtree = {}
 
 jtree.program = AbstractGrammarBackedProgram
@@ -2687,6 +2792,6 @@ jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 jtree.AnyNode = GrammarBackedAnyNode
 
-jtree.getVersion = () => "15.0.2"
+jtree.getVersion = () => "15.1.0"
 
 window.jtree = jtree

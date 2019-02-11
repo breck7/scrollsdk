@@ -1,3 +1,10 @@
+15.2.0 / 2019-02-10
+===================
+- New: added getNumberOfLines() method
+- Perf: GrammarProgram speedup 20%+
+- Perf: getProgramErrors speedup 10x+
+- Perf: toString speedup 5%+
+
 15.1.0 / 2019-02-10
 ===================
 - Perf: 10x+ faster typechecking of "any" nodes

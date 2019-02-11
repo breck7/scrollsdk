@@ -5,6 +5,13 @@ class AbstractGrammarBackedProgram extends TreeNode {
     return this
   }
 
+  *getProgramErrorsIterator() {
+    for (let node of this.getTopDownArray()) {
+      const errs = node.getErrors()
+      if (errs.length) yield errs
+    }
+  }
+
   getProgramErrors() {
     const nodeErrors = this.getTopDownArray()
       .map(node => node.getErrors())
@@ -55,7 +62,8 @@ class AbstractGrammarBackedProgram extends TreeNode {
       .join("\n")
   }
 
-  getSyntaxTreeHtml() {
+  // todo: refine and make public
+  _getSyntaxTreeHtml() {
     const getColor = child => {
       if (child.getLineSyntax().includes("error")) return "red"
       return "black"

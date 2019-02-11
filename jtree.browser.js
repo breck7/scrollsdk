@@ -1704,8 +1704,17 @@ class AbstractGrammarBackedProgram extends TreeNode {
     return this
   }
 
+  *getProgramErrorsIterator() {
+    for (let node of this.getTopDownArray()) {
+      const errs = node.getErrors()
+      if (errs.length) yield errs
+    }
+  }
+
   getProgramErrors() {
-    const nodeErrors = this.getTopDownArray().map(node => node.getErrors())
+    const nodeErrors = this.getTopDownArray()
+      .map(node => node.getErrors())
+      .filter(arr => arr.length)
     return [].concat.apply([], nodeErrors)
   }
 
@@ -1752,6 +1761,33 @@ class AbstractGrammarBackedProgram extends TreeNode {
       .join("\n")
   }
 
+  // todo: refine and make public
+  _getSyntaxTreeHtml() {
+    const getColor = child => {
+      if (child.getLineSyntax().includes("error")) return "red"
+      return "black"
+    }
+    const zip = (a1, a2) => {
+      let last = a1.length > a2.length ? a1.length : a2.length
+      let parts = []
+      for (let index = 0; index < last; index++) {
+        parts.push(`${a1[index]}:${a2[index]}`)
+      }
+      return parts.join(" ")
+    }
+    return this.getTopDownArray()
+      .map(
+        child =>
+          `<div style="white-space: pre;">${
+            child.constructor.name
+          } ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(
+            child.getLineSyntax().split(" "),
+            child.getLine().split(" ")
+          )}</span></div>`
+      )
+      .join("")
+  }
+
   getTreeWithNodeTypes() {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
@@ -1780,6 +1816,9 @@ class AbstractGrammarBackedProgram extends TreeNode {
 
 window.AbstractGrammarBackedProgram = AbstractGrammarBackedProgram
 
+/*
+A cell contains a word but also the type information for that word.
+*/
 class GrammarBackedCell {
   constructor(word, type, node, index, grammarProgram) {
     this._word = word
@@ -1873,6 +1912,7 @@ GrammarConstants.columns = "@columns"
 GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
+GrammarConstants.any = "@any"
 
 // parser/vm instantiating and executing
 GrammarConstants.parser = "@parser"
@@ -1987,9 +2027,10 @@ class GrammarBackedErrorNode extends GrammarBackedNode {
   }
 
   getErrors() {
-    return [
-      `unknownKeywordError "${this.getKeyword()}" in "${this.getParent().getKeyword()}" at line ${this.getPoint().y}`
-    ]
+    const parent = this.getParent()
+    const locationMsg = parent.isRoot() ? "" : `in "${parent.getKeyword()}" `
+    const point = this.getPoint()
+    return [`unknownKeywordError "${this.getKeyword()}" ${locationMsg}at line ${point.y} column ${point.x}`]
   }
 }
 
@@ -2028,6 +2069,22 @@ ${indent}${closeChildrenString}`
 }
 
 window.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode
+
+class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
+  getKeywordMap() {
+    return {}
+  }
+
+  getErrors() {
+    return []
+  }
+
+  getCatchAllNodeClass(line) {
+    return GrammarBackedAnyNode
+  }
+}
+
+window.GrammarBackedAnyNode = GrammarBackedAnyNode
 
 class GrammarBackedTerminalNode extends GrammarBackedNode {}
 
@@ -2118,7 +2175,8 @@ class GrammarParserClassNode extends TreeNode {
     const builtIns = {
       ErrorNode: GrammarBackedErrorNode,
       TerminalNode: GrammarBackedTerminalNode,
-      NonTerminalNode: GrammarBackedNonTerminalNode
+      NonTerminalNode: GrammarBackedNonTerminalNode,
+      AnyNode: GrammarBackedAnyNode
     }
 
     return builtIns
@@ -2137,7 +2195,11 @@ class GrammarParserClassNode extends TreeNode {
     const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
 
     // todo: remove "window" below?
-    if (!this.isNodeJs()) return window[TreeUtils.getClassNameFromFilePath(filepath)]
+    if (!this.isNodeJs()) {
+      const cls = window[TreeUtils.getClassNameFromFilePath(filepath)]
+      if (!cls) console.error(`WARNING: class ${filepath} not found.`)
+      return cls
+    }
 
     const theModule = require(fullPath)
     const subModule = this.getSubModuleName()
@@ -2171,15 +2233,21 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this.getWord(1)
   }
 
-  isNonTerminal() {
-    return this.has(GrammarConstants.keywords)
+  _isNonTerminal() {
+    return this._isAnyNode() || this.has(GrammarConstants.keywords)
+  }
+
+  _isAnyNode() {
+    return this.has(GrammarConstants.any)
   }
 
   _getDefaultParserClass() {
-    return this.isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
+    if (this._isAnyNode()) return GrammarBackedAnyNode
+
+    return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
-  _getParserNode() {
+  _getCustomDefinedParserNode() {
     return this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
   }
 
@@ -2188,9 +2256,12 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_parserClass
   }
 
+  /* Parser class is the actual JS class doing the parsing, different than Node type. */
   _getParserClass() {
-    const parserNode = this._getParserNode()
-    return parserNode ? parserNode.getParserClass() : this._getDefaultParserClass()
+    const customDefinedParserNode = this._getCustomDefinedParserNode()
+    if (customDefinedParserNode) return customDefinedParserNode.getParserClass()
+    let cls = this._getDefaultParserClass()
+    return cls
   }
 
   getCatchAllNodeClass(line) {
@@ -2614,6 +2685,7 @@ jtree.Utils = TreeUtils
 jtree.TreeNode = TreeNode
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
+jtree.AnyNode = GrammarBackedAnyNode
 
 jtree.getVersion = () => "15.0.2"
 

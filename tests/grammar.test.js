@@ -97,11 +97,18 @@ additionNode + 2 3 2`,
 
   // Act/Assert
   equal(programWithBugs.getProgramErrors().length, 2)
+
+  // Act
+  let count = 0
+  for (let err of programWithBugs.getProgramErrorsIterator()) {
+    // 2 errors in 1 line
+    equal(err.length, 2)
+  }
 })
 
 quack.quickTest("any nodes", equal => {
   // Arrange/Act
-  const programWithBugs = makeJibberishProgram(`text foobar
+  const anyProgram = makeJibberishProgram(`text foobar
  This is an any node.
  this is some text.
  hello world
@@ -109,6 +116,12 @@ quack.quickTest("any nodes", equal => {
  1+1`)
 
   // Assert
-  const errors = programWithBugs.getProgramErrors().join("\n")
+  let errors = anyProgram.getProgramErrors().join("\n")
   equal(errors, "")
+
+  // Act
+  for (let err of anyProgram.getProgramErrorsIterator()) {
+    // Should be no errors
+    equal(true, false)
+  }
 })

@@ -33,8 +33,10 @@
   @compiler
   @catchAllKeyword
   @version
+  @any
 @keyword @version
  @columns semanticVersion
+@keyword @any
 @keyword @wordType
  @columns any
  @keywords
@@ -91,6 +93,7 @@
 @keyword @constants keywordRule
  @catchAllKeyword constantDefinition
 @keyword keywordUse
+@keyword @any keywordRule
 @keyword @keywords ntKeywordRule
  @catchAllKeyword keywordUse
 @keyword error

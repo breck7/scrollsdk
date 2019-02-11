@@ -1,3 +1,12 @@
+15.0.3 / 2019-02-10
+===================
+- Perf: 10x+ faster typechecking of "any" nodes
+- Perf: 60% faster typechecking of other types
+- Perf: 50% faster parsing for large trees
+- Infra: sandbox cleanup
+- New: added getProgramErrorsIterator() method
+- New: experimental _getSyntaxTreeHtml() method
+
 15.0.2 / 2019-02-07
 ===================
 - Fix: setChildren wasn't clearing cache

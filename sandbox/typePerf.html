@@ -69,15 +69,14 @@ const main = () => {
   let long = jtree.TreeNode.toString()
   long = long + long + long + long
   long = long + long + long + long
-  long = long + long + long + long
-  long = long + long + long + long
   code.getNode("text").setChildren(long)
 
-  long = "+ 34 432 423 43\n"
-  long = long + long
-  long = long + long
-  long = long + long
-  long = long + long
+  long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n"
+  long = long + long + long + long + long + long + long + long
+  long = long + long + long + long + long + long + long + long
+  long = long + long + long + long + long + long + long + long
+  long = long + long + long + long + long + long + long + long
+  long = long + long + long + long + long + long + long + long
   code.getNode("to").setChildren(long.trim())
 
   const program = new programClass(code)

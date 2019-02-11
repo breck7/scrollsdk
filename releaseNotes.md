@@ -1,4 +1,4 @@
-15.0.3 / 2019-02-10
+15.1.0 / 2019-02-10
 ===================
 - Perf: 10x+ faster typechecking of "any" nodes
 - Perf: 60% faster typechecking of other types

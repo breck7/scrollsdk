@@ -21,7 +21,7 @@ app.get("/*.js", (req, res) => {
 
 app.use(express.static(__dirname))
 
-const port = 8765
+const port = 3333
 app.listen(port, () => {
   console.log(`Running sandbox. cmd+dblclick: http://localhost:${port}/sandbox`)
 })

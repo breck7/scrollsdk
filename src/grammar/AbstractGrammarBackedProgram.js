@@ -1,4 +1,5 @@
 const TreeNode = require("../base/TreeNode.js")
+const GrammarConstants = require("./GrammarConstants.js")
 
 class AbstractGrammarBackedProgram extends TreeNode {
   getProgram() {
@@ -25,6 +26,22 @@ class AbstractGrammarBackedProgram extends TreeNode {
       delete node._cachedLineNumber
     }
     return errors
+  }
+
+  // Helper method for selecting potential keywords needed to update grammar file.
+  getInvalidKeywords(level = undefined) {
+    return Array.from(
+      new Set(
+        this.getProgramErrors()
+          .filter(err => err.kind === GrammarConstants.invalidKeywordError)
+          .filter(err => (level ? level === err.level : true))
+          .map(err => err.subkind)
+      )
+    )
+  }
+
+  getProgramErrorMessages() {
+    return this.getProgramErrors().map(err => err.message)
   }
 
   getKeywordMap() {

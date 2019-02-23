@@ -1,3 +1,26 @@
+15.3.0 / 2019-02-19
+===================
+- New: for convenience added map, forEach, filter, find and slice methods aliasing getChildren().map, et cetera
+- New: sortByColumns() method
+- New: predictGrammarFile method
+- New: getInvalidKeywords method
+- New: @abstract keyword in grammars
+- New: @any keyword in grammars
+- New: any, bit, bool, float, int default word types
+- New: toDisk method in node.js version
+- New: added getOneHot method
+- New: deleteColumn method
+- New: getColumnNames method
+- New: isBlankLine method
+- New: isEmpty method
+- New: deleteChildren method
+- New: added sample of iris dataset to static TreeNode for handy testing and exploring
+- Fix: renameAll fix
+- Breaking: getExpanded - if multiple parent nodes match, getExpanded will extend node with matching keyword
+- Breaking: getProgramErrors() is now getProgramErrorMessages(). getProgramErrors() now returns err objects
+- Infra: makeRandomTree method & updates to perf test pages
+- Infra: Default sandbox port now 3333
+
 15.2.0 / 2019-02-10
 ===================
 - New: added getNumberOfLines() method

@@ -10,9 +10,9 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.get(GrammarConstants.catchAllKeyword) || this.getParent()._getRunTimeCatchAllKeyword()
   }
 
-  isAKeyword(keywordsMap) {
+  _isOrExtendsAKeywordInScope(keywordsInScope) {
     const chain = this._getKeywordChain()
-    return Object.keys(keywordsMap).some(keyword => chain[keyword])
+    return keywordsInScope.some(keyword => chain[keyword])
   }
 
   _getKeywordChain() {
@@ -31,8 +31,9 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     const parentKeyword = this._getParentKeyword()
     if (parentKeyword) {
       cache[parentKeyword] = true
-      const defs = this._getDefinitionCache()
+      const defs = this._getProgramKeywordDefinitionCache()
       const parentDef = defs[parentKeyword]
+      if (!parentDef) throw new Error(`${parentKeyword} not found`)
       Object.assign(cache, parentDef._getKeywordChain())
     }
     this._cache_keywordChain = cache
@@ -42,8 +43,8 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.getNode(GrammarConstants.keywords)
   }
 
-  _getDefinitionCache() {
-    return this.getParent()._getDefinitionCache()
+  _getProgramKeywordDefinitionCache() {
+    return this.getParent()._getProgramKeywordDefinitionCache()
   }
 
   getDoc() {

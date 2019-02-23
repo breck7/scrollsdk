@@ -5246,24 +5246,39 @@
  Value 38
  Date -3124108800000</script>
 <script type="text/javascript">
-const data = $("#test").html()
-const map = {}
-const lineLength = data.split("\n").length
-const trials = 200
-const runTest = () => {
+const parseTest = () => {
+  const data = $("#test").html()
+  const map = {}
+  const lineLength = data.split("\n").length
+  const trials = 200
 
   const startTime = Date.now()
 
   for (let index = 0; index < trials; index++) {
-  	map[index] = new jtree.TreeNode(data)
+  	map[index] = new TreeNode(data)
   }
   const elapsed = Date.now() - startTime
 
   let totalLines = lineLength * trials
   const ps = (totalLines/(elapsed/1000)).toLocaleString()
-  let msg = `parsed ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`
+  let msg = `parsed ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second<br><br>`
   document.write(msg)
   console.log(msg)
 }
-runTest()
+parseTest()
+
+const toStringTest = () => {
+  const data = new TreeNode(jtree.Utils.makeRandomTree(10000))
+  const startTime = Date.now()
+
+  const res = data.toString()
+  const elapsed = Date.now() - startTime
+
+  let totalLines = data.getNumberOfLines()
+  const ps = (totalLines/(elapsed/1000)).toLocaleString()
+  let msg = `toString ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`
+  document.write(msg)
+  console.log(msg)
+}
+toStringTest()
 </script>

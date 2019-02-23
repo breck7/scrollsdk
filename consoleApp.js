@@ -94,7 +94,7 @@ ${grammars.toTable()}`
   _check(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    return program.getProgramErrors()
+    return program.getProgramErrorMessages()
   }
 
   _getGrammarPathOrThrow(programPath) {
@@ -145,7 +145,6 @@ ${grammars.toTable()}`
     // todo: add support for initing a TreeNode from a JS set and map
     const data = TreeNode.fromSsv(this._getHistoryFile())
     const files = data
-      .getChildren()
       .filter(node => {
         const command = node.get("command")
         const filepath = node.get("paramOne")
@@ -201,7 +200,7 @@ ${grammars.toTable()}`
     })
     const folderName = grammarName
     const stampFile = new TreeNode(`folder ${folderName}`)
-    report.getChildren().forEach(node => {
+    report.forEach(node => {
       const fileNode = stampFile.appendLine(`file ${folderName}/${node.getKeyword()}.ssv`)
       fileNode.appendLineAndChildren("data", `${node.getContent()}\n` + node.childrenToString())
     })

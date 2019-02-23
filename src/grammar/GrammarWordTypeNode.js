@@ -83,4 +83,60 @@ class GrammarWordTypeNode extends TreeNode {
   }
 }
 
+class GrammarWordTypeIntNode extends GrammarWordTypeNode {
+  isValid(str) {
+    const num = parseInt(str)
+    if (isNaN(num)) return false
+    return num.toString() === str
+  }
+
+  parse(str) {
+    return parseInt(str)
+  }
+}
+
+class GrammarWordTypeBitNode extends GrammarWordTypeNode {
+  isValid(str) {
+    return str === "0" || str === "1"
+  }
+
+  parse(str) {
+    return !!parseInt(str)
+  }
+}
+
+class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
+  isValid(str) {
+    return !isNaN(parseFloat(str))
+  }
+
+  parse(str) {
+    return parseFloat(str)
+  }
+}
+
+class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
+  isValid(str) {
+    return new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]).has(str.toLowerCase())
+  }
+
+  parse(str) {
+    return !!parseInt(str)
+  }
+}
+
+class GrammarWordTypeAnyNode extends GrammarWordTypeNode {
+  isValid() {
+    return true
+  }
+}
+
+GrammarWordTypeNode.types = {
+  any: GrammarWordTypeAnyNode,
+  float: GrammarWordTypeFloatNode,
+  bit: GrammarWordTypeBitNode,
+  bool: GrammarWordTypeBoolNode,
+  int: GrammarWordTypeIntNode
+}
+
 module.exports = GrammarWordTypeNode

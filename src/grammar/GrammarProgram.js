@@ -7,13 +7,30 @@ const GrammarKeywordDefinitionNode = require("./GrammarKeywordDefinitionNode.js"
 const GrammarRootNode = require("./GrammarRootNode.js")
 const GrammarWordTypeNode = require("./GrammarWordTypeNode.js")
 
+class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
+  _isAbstract() {
+    return true
+  }
+}
+
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
     const map = {}
     map[GrammarConstants.grammar] = GrammarRootNode
     map[GrammarConstants.wordType] = GrammarWordTypeNode
     map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
+    map[GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode
     return map
+  }
+
+  parseNodeType(line) {
+    // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
+    // Todo: this only supports single word type inheritance.
+    const parts = line.split(this.getZI())
+    let type =
+      parts[0] === GrammarConstants.wordType &&
+      (GrammarWordTypeNode.types[parts[1]] || GrammarWordTypeNode.types[parts[2]])
+    return type ? type : super.parseNodeType(line)
   }
 
   getTargetExtension() {
@@ -27,6 +44,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   _getWordTypes() {
     const types = {}
+    // todo: add built in word types?
     this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[type.getId()] = type))
     return types
   }
@@ -78,24 +96,20 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this.toString()
   }
 
-  _initDefinitionCache() {
-    if (this._cache_definitions) return undefined
-    const definitionMap = {}
+  _initProgramKeywordDefinitionCache() {
+    if (this._cache_keywordDefinitions) return undefined
+    const keywordDefinitionMap = {}
 
-    this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(definitionNode => {
-      definitionMap[definitionNode.getId()] = definitionNode
+    this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
+      keywordDefinitionMap[keywordDefinitionNode.getId()] = keywordDefinitionNode
     })
 
-    this._cache_definitions = definitionMap
+    this._cache_keywordDefinitions = keywordDefinitionMap
   }
 
-  _getDefinitionCache() {
-    this._initDefinitionCache()
-    return this._cache_definitions
-  }
-
-  _getDefinitions() {
-    return Object.values(this._getDefinitionCache())
+  _getProgramKeywordDefinitionCache() {
+    this._initProgramKeywordDefinitionCache()
+    return this._cache_keywordDefinitions
   }
 
   _getRunTimeCatchAllKeyword() {
@@ -144,6 +158,73 @@ contexts:
 
     const expandedGrammarCode = tree.getExpanded(1, 2)
     return new GrammarProgram(expandedGrammarCode, grammarPath)
+  }
+
+  static _getBestType(values) {
+    const all = fn => {
+      for (let i = 0; i < values.length; i++) {
+        if (!fn(values[i])) return false
+      }
+      return true
+    }
+    if (all(str => str === "0" || str === "1")) return "bit"
+
+    if (
+      all(str => {
+        const num = parseInt(str)
+        if (isNaN(num)) return false
+        return num.toString() === str
+      })
+    ) {
+      return "int"
+    }
+
+    if (all(str => !str.match(/[^\d\.\-]/))) return "float"
+
+    const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
+    if (all(str => bools.has(str.toLowerCase()))) return "bool"
+
+    return "any"
+  }
+
+  static predictGrammarFile(str, keywords = undefined) {
+    const tree = str instanceof TreeNode ? str : new TreeNode(str)
+    const xi = " " // todo: make param?
+    keywords = keywords || tree._getUnionNames()
+    return keywords //this.getInvalidKeywords()
+      .map(keyword => {
+        const lines = tree.getColumn(keyword).filter(i => i)
+        const cells = lines.map(line => line.split(xi))
+        const sizes = new Set(cells.map(c => c.length))
+        const max = Math.max(...Array.from(sizes))
+        const min = Math.min(...Array.from(sizes))
+        let columns = []
+        for (let index = 0; index < max; index++) {
+          const set = new Set(cells.map(c => c[index]))
+          const values = Array.from(set).filter(c => c)
+          const type = GrammarProgram._getBestType(values)
+          columns.push(type)
+        }
+        if (max > min) {
+          //columns = columns.slice(0, min)
+          let last = columns.pop()
+          while (columns[columns.length - 1] === last) {
+            columns.pop()
+          }
+          columns.push(last + "*")
+        }
+
+        const childrenAnyString = tree._isLeafColumn(keyword) ? "" : `\n @any`
+
+        if (!columns.length) return `@keyword ${keyword}${childrenAnyString}`
+
+        if (columns.length > 1)
+          return `@keyword ${keyword}
+ @columns ${columns.join(xi)}${childrenAnyString}`
+
+        return `@keyword ${keyword} ${columns[0]}${childrenAnyString}`
+      })
+      .join("\n")
   }
 }
 

@@ -19,6 +19,7 @@ declare type nodeMapFn = (node: TreeNode) => string
 declare type replaceNodeFn = (str: string) => string
 declare type matrixFormatFn = (str: string, rowIndex: int, colIndex: int) => string
 declare type errorMessage = string
+declare type parseError = { message: string }
 declare type sortFn = (nodeA: TreeNode, nodeB: TreeNode) => sortResultInt
 declare type point = { x: int; y: int } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
@@ -39,8 +40,9 @@ interface TreeNode {
   getChildren: () => TreeNode[] // Returns references to node objects in a copy of child array
   getChildrenByNodeType: (type: TreeNodeClass) => TreeNode[]
   getColumn: (path: word) => (string | Undefined)[]
-  getErrors: () => string[] // parse errors. base class is permissive and will always have 0 errors.
-  getExpanded: (idColumnNumber: int, parentIdColumnNumber: int) => string
+  getColumnNames: () => string[]
+  getErrors: () => parseError[] // parse errors. base class is permissive and will always have 0 errors.
+  getExpanded: (idColumnNumber: int, parentIdColumnNumber: int) => TreeNode
   getGraph: (idColumnNumber: int, parentIdColumnNumber: int) => TreeNode[]
   getGraphByKey: (headKey: word) => TreeNode[]
   getIndex: () => int
@@ -58,6 +60,7 @@ interface TreeNode {
   getNodeByColumns: (...columns: string[]) => TreeNode | Undefined
   getNodeByType: (type: TreeNodeClass) => TreeNode | Undefined
   getNodesByLinePrefixes: (colums: string[]) => TreeNode[]
+  getNumberOfLines: () => int
   getOlderSiblings: () => TreeNode[] // where older sibling is a node with a lower index
   getParent: () => TreeNode | undefined
   getPathVector: () => pathVector
@@ -79,6 +82,8 @@ interface TreeNode {
   hasWord: (index: int, word: string) => boolean
   indexOf: (keyword: word) => int
   indexOfLast: (keyword: word) => int // Returns index of last occurrence of keyword
+  isEmpty: () => Boolean // can have a keyword but no content or children
+  isBlankLine: () => Boolean
   isRoot: () => Boolean
   isTerminal: () => Boolean
   length: int
@@ -112,6 +117,7 @@ interface TreeNode {
   appendLineAndChildren: (line: string, tree: content) => TreeNode
   concat: (b: TreeNode | string) => This
   delete: (path: keywordPath) => This // todo: perhaps rename to delete child
+  deleteColumn: (path: keyword) => This
   destroy: () => undefined
   duplicate: () => TreeNode
   extend: (tree: TreeNode | string) => This // recursively extend the object
@@ -146,7 +152,9 @@ interface AbstractGrammarBackedProgram {
   getKeywordUsage: () => TreeNode[] // returns a report on what keywords from its language the program uses
 }
 
-interface GrammarProgram {}
+interface GrammarProgram {
+  getProgramErrorsIterator: () => string[]
+}
 
 interface StaticTreeNode {
   nest: (lines: string, xi: int) => string // Insert lines, if any, as child nodes prefixed with the given number of XI characters
@@ -158,6 +166,7 @@ interface StaticTreeNode {
   fromSsv: (str: string) => TreeNode
   fromTsv: (str: string) => TreeNode
   fromXml: (str: string) => TreeNode
+  iris: string
 }
 
 interface jtree {

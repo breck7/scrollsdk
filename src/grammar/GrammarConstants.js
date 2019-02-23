@@ -4,6 +4,7 @@ const GrammarConstants = {}
 GrammarConstants.grammar = "@grammar"
 GrammarConstants.keyword = "@keyword"
 GrammarConstants.wordType = "@wordType"
+GrammarConstants.abstract = "@abstract"
 
 // word parsing
 GrammarConstants.regex = "@regex" // temporary?
@@ -35,5 +36,8 @@ GrammarConstants.compiler.closeChildren = "@closeChildren"
 // developing
 GrammarConstants.description = "@description"
 GrammarConstants.frequency = "@frequency"
+
+// errors
+GrammarConstants.invalidKeywordError = "invalidKeywordError"
 
 module.exports = GrammarConstants

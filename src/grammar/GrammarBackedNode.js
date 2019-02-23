@@ -11,9 +11,12 @@ class GrammarBackedNode extends TreeNode {
   }
 
   getDefinition() {
-    return this.getProgram()
-      .getGrammarProgram()
-      .getDefinitionByKeywordPath(this.getKeywordPath())
+    return (
+      this.getProgram()
+        .getGrammarProgram()
+        // todo: do we need a relative to with this keyword path?
+        .getDefinitionByKeywordPath(this.getKeywordPath())
+    )
   }
 
   getCompilerNode(targetLanguage) {
@@ -59,27 +62,26 @@ class GrammarBackedNode extends TreeNode {
     // Too many parameters
     // Incorrect parameter
 
-    const errors = this._getGrammarBackedCellArray()
-      .filter(wordCheck => wordCheck.getErrorMessage())
-      .map(check => check.getErrorMessage())
-
-    return errors
+    return this._getGrammarBackedCellArray()
+      .map(check => check.getErrorIfAny())
+      .filter(i => i)
   }
 
   _getGrammarBackedCellArray() {
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
     const parameters = definition.getNodeColumnTypes()
+    const expectedPattern = parameters.join(" ")
     const parameterLength = parameters.length
     const lastParameterType = parameters[parameterLength - 1]
     const lastParameterListType = lastParameterType && lastParameterType.endsWith("*") ? lastParameterType : undefined
     const words = this.getWordsFrom(1)
     const length = Math.max(words.length, parameterLength)
     const checks = []
-    for (let index = 0; index < length; index++) {
-      const word = words[index]
-      const type = index >= parameterLength ? lastParameterListType : parameters[index]
-      checks[index] = new GrammarBackedCell(word, type, this, index, grammarProgram)
+    for (let wordIndex = 0; wordIndex < length; wordIndex++) {
+      const word = words[wordIndex]
+      const type = wordIndex >= parameterLength ? lastParameterListType : parameters[wordIndex]
+      checks[wordIndex] = new GrammarBackedCell(word, type, this, wordIndex, expectedPattern, grammarProgram)
     }
     return checks
   }

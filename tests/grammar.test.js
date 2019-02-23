@@ -36,7 +36,7 @@ quack.quickTest("jibberish", equal => {
 
   // Assert
   equal(program instanceof jibberishProgram, true, "correct program class")
-  equal(program.getProgramErrors().length, 0, `${program.getProgramErrors()}`)
+  equal(program.getProgramErrors().length, 0, `${program.getProgramErrorMessages()}`)
 
   // Act
   const fooNode = program.getNode("foo")
@@ -96,7 +96,7 @@ additionNode + 2 3 2`,
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
 
   // Act/Assert
-  equal(programWithBugs.getProgramErrors().length, 2)
+  equal(programWithBugs.getProgramErrorMessages().length, 2)
 
   // Act
   let count = 0
@@ -104,6 +104,16 @@ additionNode + 2 3 2`,
     // 2 errors in 1 line
     equal(err.length, 2)
   }
+
+  // Act/Asssert
+  equal(programWithBugs.getInvalidKeywords().length, 0)
+
+  // Act
+  const programWithKeywordBugs = makeJibberishProgram(`missing 1 2
+missing2 true`)
+
+  // Assert
+  equal(programWithKeywordBugs.getInvalidKeywords().length, 2)
 })
 
 quack.quickTest("any nodes", equal => {
@@ -116,7 +126,7 @@ quack.quickTest("any nodes", equal => {
  1+1`)
 
   // Assert
-  let errors = anyProgram.getProgramErrors().join("\n")
+  let errors = anyProgram.getProgramErrorMessages().join("\n")
   equal(errors, "")
 
   // Act
@@ -124,4 +134,52 @@ quack.quickTest("any nodes", equal => {
     // Should be no errors
     equal(true, false)
   }
+})
+
+quack.quickTest("predictGrammarFile", equal => {
+  // Arrange
+  const input = `file rain
+ size 28
+ digits 321 4324
+ open true
+ temp 32.1
+ description Lorem ipsum, unless ipsum lorem.
+ account
+  balance 24
+  transactions 32
+  source no http://www.foo.foo 32
+file test
+ digits 321 435
+ size 3
+ description None.
+ open false
+ temp 32.0
+ account
+  balance 32.12
+  transactions 321
+  source yes http://to.to.to 31`
+  const expected = `@keyword size int
+@keyword digits
+ @columns int int
+@keyword open bool
+@keyword temp float
+@keyword description any*
+@keyword account
+ @any`
+
+  // Act
+  const types = GrammarProgram.predictGrammarFile(input)
+
+  // Assert
+  equal(types, expected)
+})
+
+quack.quickTest("abstract keywords", equal => {
+  // Arrange/Act
+  const anyProgram = makeJibberishProgram(`someAbstractClass
+extendsAbstract 2`)
+
+  // Assert
+  let errors = anyProgram.getProgramErrorMessages()
+  equal(errors.length, 1)
 })

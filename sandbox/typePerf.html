@@ -45,9 +45,9 @@ nodeWithConsts
 lightbulbState on
 lightbulbState off
 + 2 3 2
-bam
+bamError0
 text
-thisShouldError
+thisShouldErrorError1
 to fillThis</script>
 <script type="text/javascript">
 
@@ -62,17 +62,10 @@ const log = msg => {
 
 const getCode = () => {
   const code = new jtree.TreeNode(programCode)
-  let long = jtree.TreeNode.toString()
-  long = long + long + long + long
-  long = long + long + long + long
+  let long = jtree.TreeNode.toString().repeat(20)
   code.getNode("text").setChildren(long)
 
-  long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n"
-  long = long + long + long + long + long + long + long + long
-  long = long + long + long + long + long + long + long + long
-  long = long + long + long + long + long + long + long + long
-  long = long + long + long + long + long + long + long + long
-  long = long + long + long + long + long + long + long + long
+  long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
   code.getNode("to").setChildren(long.trim())
   return code
 }
@@ -99,7 +92,7 @@ const main = code => {
   log(msg)
   log("")
   log("First five errors:")
-  log(errors.slice(0,5).join("<br>"))
+  log(errors.slice(0,5).map(e => e.message).join("<br>"))
 
   //log("<pre>" + program.toString() + "</pre>")
   // log(program.getSyntaxTreeHtml())

@@ -1,4 +1,5 @@
 const GrammarBackedNode = require("./GrammarBackedNode.js")
+const GrammarConstants = require("./GrammarConstants.js")
 
 class GrammarBackedErrorNode extends GrammarBackedNode {
   getLineSyntax() {
@@ -7,9 +8,21 @@ class GrammarBackedErrorNode extends GrammarBackedNode {
 
   getErrors() {
     const parent = this.getParent()
-    const locationMsg = parent.isRoot() ? "" : `in "${parent.getKeyword()}" `
+    const context = parent.isRoot() ? "" : parent.getKeyword()
+    const locationMsg = context ? `in "${context}" ` : ""
     const point = this.getPoint()
-    return [`unknownKeywordError "${this.getKeyword()}" ${locationMsg}at line ${point.y} column ${point.x}`]
+    const keyword = this.getKeyword()
+    return [
+      {
+        kind: GrammarConstants.invalidKeywordError,
+        subkind: keyword,
+        context: context,
+        level: point.x,
+        message: `${GrammarConstants.invalidKeywordError} "${keyword}" ${locationMsg}at line ${point.y} column ${
+          point.x
+        }`
+      }
+    ]
   }
 }
 

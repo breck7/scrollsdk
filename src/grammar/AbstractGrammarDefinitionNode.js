@@ -39,6 +39,10 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return this._isAnyNode() || this.has(GrammarConstants.keywords)
   }
 
+  _isAbstract() {
+    return false
+  }
+
   _isAnyNode() {
     return this.has(GrammarConstants.any)
   }
@@ -101,7 +105,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getRunTimeKeywordMapWithDefinitions() {
-    const defs = this._getDefinitionCache()
+    const defs = this._getProgramKeywordDefinitionCache()
     return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key])
   }
 
@@ -110,29 +114,34 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     return parameters ? parameters.split(" ") : []
   }
 
+  /*
+   {key<string>: JSKeywordDefClass}
+  */
   _initKeywordsMapCache() {
     if (this._cache_keywordsMap) return undefined
     // todo: make this handle extensions.
-    const allDefs = this._getDefinitionCache()
-    const keywordMap = {}
-    this._cache_keywordsMap = keywordMap
-    const acceptableKeywords = this.getAllowableKeywords()
-    // terminals dont have acceptable keywords
-    if (!Object.keys(acceptableKeywords).length) return undefined
-    const matching = Object.keys(allDefs).filter(key => allDefs[key].isAKeyword(acceptableKeywords))
+    const keywordsInScope = this._getKeywordsInScope()
 
-    matching.forEach(key => {
-      keywordMap[key] = allDefs[key].getParserClass()
-    })
+    this._cache_keywordsMap = {}
+    // terminals dont have acceptable keywords
+    if (!keywordsInScope.length) return undefined
+
+    const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache()
+    Object.keys(allProgramKeywordDefinitions)
+      .filter(key => allProgramKeywordDefinitions[key]._isOrExtendsAKeywordInScope(keywordsInScope))
+      .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
+      .forEach(key => {
+        this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getParserClass()
+      })
   }
 
-  getAllowableKeywords() {
+  _getKeywordsInScope() {
     const keywords = this._getKeywordsNode()
-    return keywords ? keywords.toObject() : {}
+    return keywords ? keywords.getKeywords() : []
   }
 
   getTopNodeTypes() {
-    const definitions = this._getDefinitionCache()
+    const definitions = this._getProgramKeywordDefinitionCache()
     const keywords = this.getRunTimeKeywordMap()
     const arr = Object.keys(keywords).map(keyword => definitions[keyword])
     arr.sort(TreeUtils.sortByAccessor(definition => definition.getFrequency()))
@@ -141,13 +150,13 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getDefinitionByName(keyword) {
-    const definitions = this._getDefinitionCache()
+    const definitions = this._getProgramKeywordDefinitionCache()
     return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
   }
 
   _getCatchAllDefinition() {
     const catchAllKeyword = this._getRunTimeCatchAllKeyword()
-    const definitions = this._getDefinitionCache()
+    const definitions = this._getProgramKeywordDefinitionCache()
     const def = definitions[catchAllKeyword]
     // todo: implement contraints like a grammar file MUST have a catch all.
     return def ? def : this.getParent()._getCatchAllDefinition()
@@ -172,7 +181,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   isDefined(keyword) {
-    return !!this._getDefinitionCache()[keyword.toLowerCase()]
+    return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()]
   }
 
   getRunTimeCatchAllNodeClass() {

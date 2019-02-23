@@ -645,7 +645,7 @@ other`
   const tree6 = new TreeNode(blankTest)
 
   // Act
-  tree6.getChildren().forEach(node => {
+  tree6.forEach(node => {
     if (!node.getKeyword().startsWith("p")) return true
     node.setContent("President")
     node.delete("class")
@@ -764,7 +764,7 @@ testTree.forEach = equal => {
   var result = ""
 
   // Act
-  value.getChildren().forEach(function(node) {
+  value.forEach(function(node) {
     const property = node.getKeyword()
     const v = node.getContent()
     result += property.toUpperCase()
@@ -782,7 +782,6 @@ testTree.forEach = equal => {
 
   // Act
   value2
-    .getChildren()
     .filter(n => n.getKeyword() !== "hello")
     .forEach(node => {
       const property = node.getKeyword()
@@ -797,7 +796,7 @@ testTree.forEach = equal => {
   var i = 0
 
   // Act
-  tree.getChildren().forEach((node, index) => {
+  tree.forEach((node, index) => {
     i = i + index
   })
 
@@ -1582,7 +1581,7 @@ Animal Thing
   )
   // Act/Assert
   equal(
-    tree.getExpanded(0, 1),
+    tree.getExpanded(0, 1).toString(),
     `Thing
  color
  ab
@@ -1605,7 +1604,7 @@ Mammal Animal
   )
   // Act/Assert
   equal(
-    tree2.getExpanded(0, 1),
+    tree2.getExpanded(0, 1).toString(),
     `Thing
  color
 Animal Thing
@@ -1639,7 +1638,7 @@ testTree.htmlDsl = equal => {
   var page = ""
 
   // Act
-  html.getChildren().forEach(node => {
+  html.forEach(node => {
     const property = node.getKeyword()
     const value = node.getContent()
     page += "<" + property + ">" + value + "</" + property + ">"
@@ -1955,12 +1954,12 @@ testTree.copyToRegression = equal => {
       }
       node.delete("class")
       node.delete("css")
-      node.getChildren().forEach(migrateNode)
+      node.forEach(migrateNode)
     }
   }
 
   // Act
-  tree.getChildren().forEach(migrateNode)
+  tree.forEach(migrateNode)
 
   // Assert
   equal(tree.toString(), expected)
@@ -2221,10 +2220,10 @@ q quantity`
 
   // Act
   const remapped = new TreeNode(test)
-  remapped.getChildren().forEach(t => t.remap(expandMapObj))
+  remapped.forEach(t => t.remap(expandMapObj))
 
   const expected = remapped.clone()
-  expected.getChildren().forEach(t => t.remap(contractMap))
+  expected.forEach(t => t.remap(contractMap))
 
   // Assert
   equal(test, expected.toString())
@@ -2289,6 +2288,18 @@ testTree.renameAll = equal => {
   // Assert
   equal(a.toString(), "hey world\nhey world")
   equal(a.has("hello"), false)
+
+  // Arrange
+  const b = new TreeNode(`foo.tree
+ age 23
+foo.tree2
+ age 24`)
+
+  // Act
+  b.getNode("foo.tree2").renameAll("age", "bage")
+
+  // Assert
+  equal(b.get("foo.tree2 bage"), "24")
 }
 
 testTree.reorder = equal => {
@@ -2688,6 +2699,31 @@ testTree.toCsv = equal => {
   equal(b.toCsv(), `lines\n"1\n2\n3"`)
 }
 
+testTree.getOneHot = equal => {
+  // Arrange
+  const a = TreeNode.fromCsv(TreeNode.iris)
+  // Act
+  const col = a.getOneHot("species").getColumn("species_setosa")
+
+  // Assert
+  equal(col.length, 10)
+  equal(col[0], "0")
+  equal(col[9], "1")
+}
+
+testTree.deleteColumn = equal => {
+  // Arrange
+  const a = TreeNode.fromCsv(TreeNode.iris)
+  // Assert
+  equal(a.getColumnNames().length, 5)
+
+  // Act
+  a.deleteColumn("species")
+
+  // Assert
+  equal(a.getColumnNames().length, 4)
+}
+
 testTree.toTable = equal => {
   // Arrange
   const a = TreeNode.fromCsv("name,score,color\n" + testStrings.csvNoHeaders)
@@ -2711,7 +2747,7 @@ testTree.nest = equal => {
   const test = new TreeNode(testStr2)
 
   // Assert
-  equal(test.getNode("html head body").getChildren().length, 3)
+  equal(test.getNode("html head body").length, 3)
   equal(test.getNode("html head body h2").getContent(), "2")
 
   equal(new TreeNode(`${TreeNode.nest("foo bar", 0)}`).getNode("foo").getContent(), "bar")
@@ -3088,7 +3124,7 @@ b
 c
  d`)
   // Act
-  a.getChildren().forEach(child => {
+  a.forEach(child => {
     child.destroy()
   })
 
@@ -3102,6 +3138,25 @@ testTree.typeTests = equal => {
   // Assert
   equal(a.getErrors().length, 0)
   equal(a.getLineSyntax(), "any")
+}
+
+testTree.isBlank = equal => {
+  // Arrange
+  const a = new TreeNode("text\n\ntest \ntest2  ")
+  // Assert
+  equal(a.nodeAt(0).isBlankLine(), false)
+  equal(a.nodeAt(1).isBlankLine(), true)
+  equal(a.nodeAt(0).isEmpty(), true)
+  equal(a.nodeAt(0).isEmpty(), true)
+  equal(a.isEmpty(), false)
+  equal(a.isBlankLine(), false)
+  equal(a.getNode("test").isBlankLine(), false)
+  equal(a.getNode("test").isEmpty(), true)
+  equal(a.getNode("test2").isBlankLine(), false)
+  equal(a.getNode("test2").isEmpty(), false)
+
+  // Act/Assert
+  equal(a.deleteChildren().length, 0)
 }
 
 testTree.treeNodes = equal => {

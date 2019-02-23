@@ -6,6 +6,7 @@
   @grammar
   @keyword
   @wordType
+  @abstract
 @wordType filepath
  @regex .?
 @wordType int
@@ -37,8 +38,9 @@
 @keyword @version
  @columns semanticVersion
 @keyword @any
+@keyword @abstract @keyword
 @keyword @wordType
- @columns any
+ @columns any*
  @keywords
   @regex
   @keywordTable

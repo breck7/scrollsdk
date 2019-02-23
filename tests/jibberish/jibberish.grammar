@@ -6,6 +6,7 @@
  @keywords
   topLevel
   text
+  someAbstractClass
 @wordType int
  @regex ^\-?[0-9]+$
  @parseWith js parseInt
@@ -16,6 +17,9 @@
 @keyword error
  @parser js ErrorNode
 @keyword topLevel
+@abstract someAbstractClass
+@keyword extendsAbstract someAbstractClass
+ @columns int
 @keyword block topLevel
  @keywords
   topLevel

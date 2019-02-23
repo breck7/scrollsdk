@@ -47,6 +47,26 @@ class TreeUtils {
     })
   }
 
+  static makeRandomTree(lines = 1000) {
+    let str = ""
+    let letters = " 123abc".split("")
+    while (lines) {
+      let indent = " ".repeat(Math.round(Math.random() * 6))
+      let bit = indent
+      let rand = Math.floor(Math.random() * 30)
+
+      while (rand) {
+        bit += letters[Math.round(Math.min(Math.random() * letters.length, letters.length - 1))]
+        rand--
+      }
+
+      bit += "\n"
+      str += bit
+      lines--
+    }
+    return str
+  }
+
   static arrayToMap(arr) {
     const map = {}
     arr.forEach(val => (map[val] = true))

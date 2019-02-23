@@ -22,9 +22,7 @@ class GrammarBackedNonTerminalNode extends GrammarBackedNode {
     const compiledLine = this.getCompiledLine(targetExtension)
     const indent = this.getCompiledIndentation(targetExtension)
 
-    const compiledChildren = this.getChildren()
-      .map(child => child.compile(targetExtension))
-      .join(this._getNodeJoinCharacter())
+    const compiledChildren = this.map(child => child.compile(targetExtension)).join(this._getNodeJoinCharacter())
 
     return `${indent}${compiledLine}${openChildrenString}
 ${compiledChildren}

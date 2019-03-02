@@ -156,6 +156,16 @@ contexts:
     // todo: handle imports
     const tree = new TreeNode(grammarCode)
 
+    // Expand groups
+    const xi = tree.getXI()
+    tree.findNodes(`${GrammarConstants.abstract}${xi}${GrammarConstants.group}`).forEach(group => {
+      const abstractName = group.getParent().getWord(1)
+      group
+        .getContent()
+        .split(xi)
+        .forEach(word => tree.appendLine(`${GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`))
+    })
+
     const expandedGrammarCode = tree.getExpanded(1, 2)
     return new GrammarProgram(expandedGrammarCode, grammarPath)
   }

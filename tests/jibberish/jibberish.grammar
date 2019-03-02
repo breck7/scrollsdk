@@ -16,8 +16,11 @@
  @enum on off
 @keyword error
  @parser js ErrorNode
-@keyword topLevel
+@abstract topLevel
 @abstract someAbstractClass
+@abstract color_properties topLevel
+ @group hue saturation constrast
+ @columns int
 @keyword extendsAbstract someAbstractClass
  @columns int
 @keyword block topLevel

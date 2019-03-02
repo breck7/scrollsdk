@@ -21,6 +21,8 @@ declare type matrixFormatFn = (str: string, rowIndex: int, colIndex: int) => str
 declare type errorMessage = string
 declare type parseError = { message: string }
 declare type sortFn = (nodeA: TreeNode, nodeB: TreeNode) => sortResultInt
+declare type filterFn = (node: TreeNode) => boolean
+declare type iteratorFn = (node: TreeNode) => any
 declare type point = { x: int; y: int } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
 interface TreeNode {
@@ -33,6 +35,12 @@ interface TreeNode {
   execute: (context: any) => Promise<any>
   executeSync: (context: any) => any[]
   findNodes: (path: keywordPath) => TreeNode[]
+  getFiltered: (fn: filterFn) => TreeNode
+  map: (fn: iteratorFn) => any[]
+  forEach: (fn: iteratorFn) => This
+  slice: (start: int, end: int) => TreeNode[]
+  find: (fn: filterFn) => TreeNode
+
   format: (str: formatString) => string
   get: (path: keywordPath) => string | Undefined
   getContent: () => string | Undefined // Always refers to part of the line after the keyword, given that ZI is space.
@@ -59,9 +67,11 @@ interface TreeNode {
   getNodeByColumn: (index: int, name: string) => TreeNode | Undefined
   getNodeByColumns: (...columns: string[]) => TreeNode | Undefined
   getNodeByType: (type: TreeNodeClass) => TreeNode | Undefined
+  getNodesByRegex: (regex: RegExp) => TreeNode[]
   getNodesByLinePrefixes: (colums: string[]) => TreeNode[]
   getNumberOfLines: () => int
   getOlderSiblings: () => TreeNode[] // where older sibling is a node with a lower index
+  getOneHot: () => TreeNode
   getParent: () => TreeNode | undefined
   getPathVector: () => pathVector
   getPathVectorRelativeTo: (relativeTo: TreeNode) => pathVector
@@ -117,7 +127,10 @@ interface TreeNode {
   appendLineAndChildren: (line: string, tree: content) => TreeNode
   concat: (b: TreeNode | string) => This
   delete: (path: keywordPath) => This // todo: perhaps rename to delete child
+  deleteBlanks: () => This
   deleteColumn: (path: keyword) => This
+  deleteChildren: () => This
+  deleteDuplicates: () => This
   destroy: () => undefined
   duplicate: () => TreeNode
   extend: (tree: TreeNode | string) => This // recursively extend the object
@@ -145,15 +158,22 @@ interface TreeNode {
   shift: () => TreeNode
   sort: (sortFn: sortFn) => This
   sortBy: (keywordOrKeywords: word | word[]) => This
+  sortByColumns: (columnIndexes: int[]) => This
   touchNode: (keywordPath: keywordPath) => TreeNode
+}
+
+interface NodeTreeNode {
+  toDisk(path: filepath, format: string): This
 }
 
 interface AbstractGrammarBackedProgram {
   getKeywordUsage: () => TreeNode[] // returns a report on what keywords from its language the program uses
+  getInvalidKeywords: () => string[]
 }
 
 interface GrammarProgram {
   getProgramErrorsIterator: () => string[]
+  predictGrammarFile: () => string
 }
 
 interface StaticTreeNode {
@@ -166,6 +186,7 @@ interface StaticTreeNode {
   fromSsv: (str: string) => TreeNode
   fromTsv: (str: string) => TreeNode
   fromXml: (str: string) => TreeNode
+  fromShape: (shape: int[]) => TreeNode
   iris: string
 }
 

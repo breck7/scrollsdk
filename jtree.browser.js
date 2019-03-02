@@ -210,6 +210,14 @@ class ImmutableNode extends AbstractNode {
     return lineNumber
   }
 
+  isBlankLine() {
+    return !this.length && !this.getLine()
+  }
+
+  isEmpty() {
+    return !this.length && !this.getContent()
+  }
+
   _getYCoordinate(relativeTo) {
     if (this._cachedLineNumber) return this._cachedLineNumber
     if (this.isRoot(relativeTo)) return 0
@@ -593,6 +601,16 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node.get(path))
   }
 
+  getFiltered(fn) {
+    const clone = this.clone()
+    clone
+      .filter(node => !fn(node))
+      .forEach(node => {
+        node.destroy()
+      })
+    return clone
+  }
+
   _isLeafColumn(path) {
     for (let node of this._getChildren()) {
       const nd = node.getNode(path)
@@ -717,12 +735,10 @@ class ImmutableNode extends AbstractNode {
 
   toFlatTree() {
     const tree = this.clone()
-    tree
-      .filter(node => node.length)
-      .forEach(node => {
-        // todo: best approach here? set children as content?
-        node._clearChildren()
-      })
+    tree.forEach(node => {
+      // todo: best approach here? set children as content?
+      node.deleteChildren()
+    })
     return tree
   }
 
@@ -950,6 +966,11 @@ class ImmutableNode extends AbstractNode {
   _clearChildren() {
     delete this._children
     this._clearIndex()
+    return this
+  }
+
+  deleteChildren() {
+    return this._clearChildren()
   }
 
   _setChildren(content, circularCheckArray) {
@@ -1092,6 +1113,16 @@ class ImmutableNode extends AbstractNode {
 
   getKeywords() {
     return this.map(node => node.getKeyword())
+  }
+
+  deleteDuplicates() {
+    const set = new Set()
+    this.getTopDownArray().forEach(node => {
+      const str = node.toString()
+      if (set.has(str)) node.destroy()
+      else set.add(str)
+    })
+    return this
   }
 
   _makeIndex(startAt = 0) {
@@ -1363,6 +1394,10 @@ class TreeNode extends ImmutableNode {
     return this._setLineAndChildren(line, children)
   }
 
+  getNodesByRegex(regex) {
+    return this.filter(node => node.getKeyword().match(regex))
+  }
+
   concat(node) {
     if (typeof node === "string") node = new TreeNode(node)
     return node.map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
@@ -1502,6 +1537,13 @@ class TreeNode extends ImmutableNode {
     }
     const line = index.toString() + (content === undefined ? "" : this.getZI() + content)
     return this.appendLineAndChildren(line, children)
+  }
+
+  deleteBlanks() {
+    this.getChildren()
+      .filter(node => node.isBlankLine())
+      .forEach(node => node.destroy())
+    return this
   }
 
   _touchNode(keywordPathArray) {
@@ -1727,6 +1769,18 @@ class TreeNode extends ImmutableNode {
     return obj
   }
 
+  static fromShape(shapeArr, rootNode = new TreeNode()) {
+    const part = shapeArr.shift()
+    if (part !== undefined) {
+      for (let index = 0; index < part; index++) {
+        rootNode.appendLine(index.toString())
+      }
+    }
+    if (shapeArr.length) rootNode.forEach(node => TreeNode.fromShape(shapeArr.slice(0), node))
+
+    return rootNode
+  }
+
   static fromDataTable(table) {
     const header = table.shift()
     return new TreeNode(table.map(row => this._zipObject(header, row)))
@@ -1950,6 +2004,7 @@ GrammarConstants.columns = "@columns"
 GrammarConstants.catchAllKeyword = "@catchAllKeyword"
 GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
+GrammarConstants.group = "@group"
 GrammarConstants.any = "@any"
 
 // parser/vm instantiating and executing
@@ -3033,6 +3088,16 @@ contexts:
   static newFromCondensed(grammarCode, grammarPath) {
     // todo: handle imports
     const tree = new TreeNode(grammarCode)
+
+    // Expand groups
+    const xi = tree.getXI()
+    tree.findNodes(`${GrammarConstants.abstract}${xi}${GrammarConstants.group}`).forEach(group => {
+      const abstractName = group.getParent().getWord(1)
+      group
+        .getContent()
+        .split(xi)
+        .forEach(word => tree.appendLine(`${GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`))
+    })
 
     const expandedGrammarCode = tree.getExpanded(1, 2)
     return new GrammarProgram(expandedGrammarCode, grammarPath)

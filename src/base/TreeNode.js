@@ -485,6 +485,16 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node.get(path))
   }
 
+  getFiltered(fn) {
+    const clone = this.clone()
+    clone
+      .filter(node => !fn(node))
+      .forEach(node => {
+        node.destroy()
+      })
+    return clone
+  }
+
   _isLeafColumn(path) {
     for (let node of this._getChildren()) {
       const nd = node.getNode(path)
@@ -989,6 +999,16 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node.getKeyword())
   }
 
+  deleteDuplicates() {
+    const set = new Set()
+    this.getTopDownArray().forEach(node => {
+      const str = node.toString()
+      if (set.has(str)) node.destroy()
+      else set.add(str)
+    })
+    return this
+  }
+
   _makeIndex(startAt = 0) {
     if (!this._index || !startAt) this._index = {}
     const nodes = this._getChildren()
@@ -1258,6 +1278,10 @@ class TreeNode extends ImmutableNode {
     return this._setLineAndChildren(line, children)
   }
 
+  getNodesByRegex(regex) {
+    return this.filter(node => node.getKeyword().match(regex))
+  }
+
   concat(node) {
     if (typeof node === "string") node = new TreeNode(node)
     return node.map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
@@ -1397,6 +1421,13 @@ class TreeNode extends ImmutableNode {
     }
     const line = index.toString() + (content === undefined ? "" : this.getZI() + content)
     return this.appendLineAndChildren(line, children)
+  }
+
+  deleteBlanks() {
+    this.getChildren()
+      .filter(node => node.isBlankLine())
+      .forEach(node => node.destroy())
+    return this
   }
 
   _touchNode(keywordPathArray) {
@@ -1620,6 +1651,18 @@ class TreeNode extends ImmutableNode {
     const obj = {}
     keys.forEach((key, index) => (obj[key] = values[index]))
     return obj
+  }
+
+  static fromShape(shapeArr, rootNode = new TreeNode()) {
+    const part = shapeArr.shift()
+    if (part !== undefined) {
+      for (let index = 0; index < part; index++) {
+        rootNode.appendLine(index.toString())
+      }
+    }
+    if (shapeArr.length) rootNode.forEach(node => TreeNode.fromShape(shapeArr.slice(0), node))
+
+    return rootNode
   }
 
   static fromDataTable(table) {

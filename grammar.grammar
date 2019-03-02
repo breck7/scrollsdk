@@ -39,6 +39,9 @@
  @columns semanticVersion
 @keyword @any
 @keyword @abstract @keyword
+ @keywords
+  keywordRule
+  @group
 @keyword @wordType
  @columns any*
  @keywords
@@ -49,24 +52,26 @@
 @keyword @parseWith variadicKeywordRule
 @keyword @regex
  @columns any*
+@keyword @group
+ @columns any*
 @keyword @enum
  @columns any*
 @keyword @keywordTable
  @columns any int
-@keyword keywordRule
-@keyword monadicKeywordRule keywordRule
+@abstract keywordRule
+@abstract monadicKeywordRule keywordRule
  @columns any
-@keyword diadicKeywordRule keywordRule
+@abstract diadicKeywordRule keywordRule
  @columns any any
 @keyword @catchAllKeyword monadicKeywordRule
 @keyword @parser variadicKeywordRule
 @keyword @frequency monadicKeywordRule
-@keyword variadicKeywordRule keywordRule
+@abstract variadicKeywordRule keywordRule
  @columns any*
 @keyword @columns keywordRule
  @columns wordType*
 @keyword @regex variadicKeywordRule
-@keyword compilerRule
+@abstract compilerRule
  @columns any*
 @keyword @compiler monadicKeywordRule
  @keywords
@@ -81,7 +86,7 @@
 @keyword @closeChildren compilerRule
 @keyword @indentCharacter compilerRule
 @keyword @description variadicKeywordRule
-@keyword ntKeywordRule keywordRule
+@abstract ntKeywordRule keywordRule
 @keyword defaultTuple
  @columns any any*
 @keyword @defaults keywordRule

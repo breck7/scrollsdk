@@ -437,6 +437,16 @@ testTree.append = equal => {
   equal(tree.length, 4)
 }
 
+testTree.deleteBlanks = equal => {
+  // AAA
+  equal(new TreeNode("hello world\n\n\nhelmet\nthe").deleteBlanks().length, 3)
+}
+
+testTree.getNodesByRegex = equal => {
+  // AAA
+  equal(new TreeNode("hello world\nhelmet\nthe").getNodesByRegex(/^he/).length, 2)
+}
+
 testTree.getWord = equal => {
   // Arrange
   const tree = new TreeNode("a b c")
@@ -3054,6 +3064,49 @@ testTree.fromJson = equal => {
   equal(
     TreeNode.fromJson(JSON.stringify(testStrings.json2)).toString(),
     new TreeNode(testStrings.json2tree).getNode("docs").childrenToString()
+  )
+}
+
+testTree.getFiltered = equal => {
+  // AAA
+  equal(
+    new TreeNode(`a
+a
+a
+b
+ a
+b
+ a
+c`).getFiltered(node => node.getKeyword() === "a").length,
+    3
+  )
+}
+
+testTree.deleteDuplicates = equal => {
+  // AAA
+  equal(
+    new TreeNode(`a
+a
+a
+b
+ a
+b
+ a
+c`).deleteDuplicates().length,
+    3
+  )
+}
+
+testTree.fromShape = equal => {
+  // AAA
+  equal(
+    TreeNode.fromShape([2, 2]).toString(),
+    `0
+ 0
+ 1
+1
+ 0
+ 1`
   )
 }
 

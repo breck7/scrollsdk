@@ -3190,6 +3190,6 @@ jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 jtree.AnyNode = GrammarBackedAnyNode
 
-jtree.getVersion = () => "15.2.0"
+jtree.getVersion = () => "15.3.0"
 
 window.jtree = jtree

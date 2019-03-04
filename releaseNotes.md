@@ -1,3 +1,7 @@
+16.0.0 / 2019-03-03
+===================
+- Infra: migrated to TypeScript
+
 15.3.0 / 2019-03-01
 ===================
 - New: for convenience added map, forEach, filter, find and slice methods aliasing getChildren().map ...

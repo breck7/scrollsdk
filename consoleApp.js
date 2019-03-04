@@ -1,7 +1,5 @@
 const jtree = require("./index.js")
-const TreeNode = jtree.TreeNode
-const GrammarProgram = require("./src/grammar/GrammarProgram.js")
-const TreeUtils = require("./src/base/TreeUtils.js")
+const { TreeNode, GrammarProgram, Utils } = jtree
 const fs = require("fs")
 const os = require("os")
 const recursiveReadSync = require("recursive-readdir-sync")
@@ -98,7 +96,7 @@ ${grammars.toTable()}`
   }
 
   _getGrammarPathOrThrow(programPath) {
-    const extension = TreeUtils.getFileExtension(programPath)
+    const extension = Utils.getFileExtension(programPath)
     const grammarPath = this._getGrammarPathByGrammarName(extension)
     if (!grammarPath) throw new Error(`No installed grammar for '${extension}'`)
     return grammarPath

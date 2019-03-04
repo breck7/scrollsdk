@@ -2,7 +2,7 @@
 #setup
 #test stress test
  #setup
-  require ../src/grammar/GrammarProgram.js
+  require ../built/grammar/GrammarProgram.js default
   %%|
    @grammar testlang
     @compiler txt

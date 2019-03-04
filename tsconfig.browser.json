@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "outDir": "./built",
+    "lib": ["es6", "dom"],
+    "allowJs": true,
+    "declaration": false,
+    "target": "es6"
+  },
+  "include": ["./jtree.browser.ts"]
+}

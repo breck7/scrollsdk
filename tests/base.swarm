@@ -2,7 +2,7 @@
 #setup
 #test swarm base
  #setup
-  require ../src/base/TreeNode.js
+  require ../built/base/TreeNode.js default
   %%|
    hello world
  getChildren

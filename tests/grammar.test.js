@@ -3,7 +3,7 @@
 const quack = require("./quack.js")
 
 const fs = require("fs")
-const GrammarProgram = require("../src/grammar/GrammarProgram.js")
+const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
 const jibberishNodes = require("./jibberish/jibberishNodes.js")
 

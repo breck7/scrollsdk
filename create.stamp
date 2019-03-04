@@ -28,7 +28,7 @@ file LANG/LANG.grammar
    @catchAllKeyword error
    @keywords
     topLevel
-  @keyword topLevel
+  @abstract topLevel
   @keyword error
    @parser js ErrorNode
 file LANG/tests.swarm

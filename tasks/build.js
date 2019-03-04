@@ -2,26 +2,34 @@
 
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
-const ProjectProgram = require("project-lang")
+//const ProjectProgram = require("project-lang")
+const ProjectProgram = require("/Users/breck/grammars/project/index.js")
+const TreeNode = require("../index.js").TreeNode
 
-const BrowserScript = require("../BrowserScript.js")
+const BrowserScript = ProjectProgram.BrowserScript
 
-const outputFile = __dirname + `/../jtree.browser.js`
+const outputFile = __dirname + `/../jtree.browser.ts`
 
-const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".js"))
-const projectCode = ProjectProgram.getProjectProgram(files)
-fs.writeFileSync(__dirname + "/../jtree.project", projectCode, "utf8")
-const projectProgram = new ProjectProgram(projectCode)
-const scripts = projectProgram.getOrderedDependenciesArray().filter(file => !file.endsWith("node.js"))
+const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".ts"))
+const projectCode = new TreeNode(ProjectProgram.getProjectProgram(files))
+projectCode
+  .getTopDownArray()
+  .filter(n => n.getKeyword() === "relative")
+  .forEach(node => node.setLine(node.getLine() + ".ts"))
+fs.writeFileSync(__dirname + "/../jtree.project", projectCode.toString(), "utf8")
+const projectProgram = new ProjectProgram(projectCode.toString())
+const scripts = projectProgram.getOrderedDependenciesArray().filter(file => !file.includes(".node."))
 
 const combined = scripts
   .map(src => fs.readFileSync(src, "utf8"))
   .map(content =>
     new BrowserScript(content)
       .removeRequires()
-      .changeNodeExportsToWindowExports()
+      .removeImports()
+      .removeExports()
       .getString()
   )
   .join("\n")
 
 fs.writeFileSync(outputFile, `"use strict"\n` + combined, "utf8")
+console.log("tsc -p tsconfig.browser.json")

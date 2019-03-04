@@ -9,3 +9,4 @@ node_modules/
 debugger.js
 jtree.project
 notes.txt
+jtree.browser.ts

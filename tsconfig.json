@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "outDir": "./built",
+    "types": ["node"],
+    "lib": ["es6", "dom"],
+    "allowJs": true,
+    "declaration": false,
+    "target": "es6",
+    "module": "commonjs"
+  },
+  "include": ["./src/**/*"]
+}

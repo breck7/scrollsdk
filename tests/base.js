@@ -1,8 +1,11 @@
 "use strict"
 
-const TreeNode = require("../src/base/TreeNode.js")
+const TreeNode = require("../built/base/TreeNode.js").default
 
 const testStrings = {}
+
+const testTree = {}
+testTree._runOnly = []
 
 testStrings.webpage = `head
 body
@@ -250,8 +253,6 @@ testStrings.json = {
   ],
   spouse: null
 }
-
-const testTree = {}
 
 testTree.constructorTests = equal => {
   // Assert
@@ -1351,10 +1352,12 @@ testTree.getNodesByPrefixes = equal => {
   // Act
   const nodes = tree.getNodesByLinePrefixes(["id foobar", "link blue", "color"])
   const nodes2 = tree.getNodesByLinePrefixes(["id foobar", "link bl"])
+  const nodes3 = tree.getNodesByLinePrefixes(["id foobar", "ink"])
 
   // Assert
   equal(nodes[0].getLine(), "color orange")
   equal(nodes2.length, 2)
+  equal(nodes3.length, 0)
 }
 
 testTree.getIndex = equal => {

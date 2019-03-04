@@ -1,7 +1,9 @@
 import AbstractNode from "./AbstractNode.node"
 import TreeUtils from "./TreeUtils"
-import * as types from "../types"
-import { int, word } from "../types"
+import types from "../types"
+
+declare type int = types.int
+declare type word = types.word
 
 declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any

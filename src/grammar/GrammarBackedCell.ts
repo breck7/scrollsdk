@@ -1,5 +1,5 @@
 import TreeNode from "../base/TreeNode"
-import * as types from "../types"
+import types from "../types"
 
 /*
 A cell contains a word but also the type information for that word.

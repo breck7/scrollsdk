@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import GrammarConstants from "./GrammarConstants"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
-import * as types from "../types"
+import types from "../types"
 
 abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   *getProgramErrorsIterator() {

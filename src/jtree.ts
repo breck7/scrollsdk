@@ -15,6 +15,6 @@ jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 jtree.AnyNode = GrammarBackedAnyNode
 
-jtree.getVersion = () => "16.0.0"
+jtree.getVersion = () => "16.0.1"
 
 export default jtree

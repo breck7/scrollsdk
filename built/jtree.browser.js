@@ -103,6 +103,41 @@ class TreeUtils {
         };
     }
 }
+const GrammarConstants = {};
+// node types
+GrammarConstants.grammar = "@grammar";
+GrammarConstants.keyword = "@keyword";
+GrammarConstants.wordType = "@wordType";
+GrammarConstants.abstract = "@abstract";
+// word parsing
+GrammarConstants.regex = "@regex"; // temporary?
+GrammarConstants.keywordTable = "@keywordTable"; // temporary?
+GrammarConstants.enum = "@enum"; // temporary?
+GrammarConstants.parseWith = "@parseWith"; // temporary?
+// parsing
+GrammarConstants.keywords = "@keywords";
+GrammarConstants.columns = "@columns";
+GrammarConstants.catchAllKeyword = "@catchAllKeyword";
+GrammarConstants.defaults = "@defaults";
+GrammarConstants.constants = "@constants";
+GrammarConstants.group = "@group";
+GrammarConstants.any = "@any";
+// parser/vm instantiating and executing
+GrammarConstants.parser = "@parser";
+GrammarConstants.parserJs = "js";
+// compiling
+GrammarConstants.compilerKeyword = "@compiler";
+GrammarConstants.compiler = {};
+GrammarConstants.compiler.sub = "@sub"; // replacement instructions
+GrammarConstants.compiler.indentCharacter = "@indentCharacter";
+GrammarConstants.compiler.listDelimiter = "@listDelimiter";
+GrammarConstants.compiler.openChildren = "@openChildren";
+GrammarConstants.compiler.closeChildren = "@closeChildren";
+// developing
+GrammarConstants.description = "@description";
+GrammarConstants.frequency = "@frequency";
+// errors
+GrammarConstants.invalidKeywordError = "invalidKeywordError";
 class ImmutableNode extends AbstractNode {
     constructor(children, line, parent) {
         super();
@@ -533,19 +568,6 @@ class ImmutableNode extends AbstractNode {
         }
         return true;
     }
-    getNodesByLinePrefixes(columns) {
-        const matches = [];
-        this._getNodesByLinePrefixes(matches, columns);
-        return matches;
-    }
-    _getNodesByLinePrefixes(matches, columns) {
-        const cols = columns.slice(0);
-        const prefix = cols.shift();
-        const candidates = this.filter(child => child.getLine().startsWith(prefix));
-        if (!cols.length)
-            return candidates.forEach(cand => matches.push(cand));
-        candidates.forEach(cand => cand._getNodesByLinePrefixes(matches, cols));
-    }
     getNode(keywordPath) {
         return this._getNodeByPath(keywordPath);
     }
@@ -710,9 +732,11 @@ class ImmutableNode extends AbstractNode {
         return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n");
     }
     toTable() {
+        // Output a table for printing
         return this._toTable(100, false);
     }
     toFormattedTable(maxWidth, alignRight) {
+        // Output a table with padding up to maxWidth in each cell
         return this._toTable(maxWidth, alignRight);
     }
     _toTable(maxWidth, alignRight = false) {
@@ -785,8 +809,7 @@ class ImmutableNode extends AbstractNode {
         return output;
     }
     copyTo(node, index) {
-        const newNode = node._setLineAndChildren(this.getLine(), this.childrenToString(), index);
-        return newNode;
+        return node._setLineAndChildren(this.getLine(), this.childrenToString(), index);
     }
     toMarkdownTable() {
         return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val);
@@ -980,17 +1003,6 @@ class ImmutableNode extends AbstractNode {
     getKeywords() {
         return this.map(node => node.getKeyword());
     }
-    deleteDuplicates() {
-        const set = new Set();
-        this.getTopDownArray().forEach(node => {
-            const str = node.toString();
-            if (set.has(str))
-                node.destroy();
-            else
-                set.add(str);
-        });
-        return this;
-    }
     _makeIndex(startAt = 0) {
         if (!this._index || !startAt)
             this._index = {};
@@ -1168,6 +1180,17 @@ class TreeNode extends ImmutableNode {
         this.setLine(words.join(wi));
         return this;
     }
+    deleteDuplicates() {
+        const set = new Set();
+        this.getTopDownArray().forEach(node => {
+            const str = node.toString();
+            if (set.has(str))
+                node.destroy();
+            else
+                set.add(str);
+        });
+        return this;
+    }
     setWord(index, word) {
         const wi = this.getZI();
         const words = this._getLine().split(wi);
@@ -1243,7 +1266,23 @@ class TreeNode extends ImmutableNode {
         return this._setLineAndChildren(line, children);
     }
     getNodesByRegex(regex) {
-        return this.filter(node => node.getKeyword().match(regex));
+        const matches = [];
+        regex = regex instanceof RegExp ? [regex] : regex;
+        this._getNodesByLineRegex(matches, regex);
+        return matches;
+    }
+    getNodesByLinePrefixes(columns) {
+        const matches = [];
+        this._getNodesByLineRegex(matches, columns.map(str => new RegExp("^" + str)));
+        return matches;
+    }
+    _getNodesByLineRegex(matches, regs) {
+        const rgs = regs.slice(0);
+        const reg = rgs.shift();
+        const candidates = this.filter(child => child.getLine().match(reg));
+        if (!rgs.length)
+            return candidates.forEach(cand => matches.push(cand));
+        candidates.forEach(cand => cand._getNodesByLineRegex(matches, rgs));
     }
     concat(node) {
         if (typeof node === "string")
@@ -1289,6 +1328,7 @@ class TreeNode extends ImmutableNode {
         this._clearIndex();
         return this;
     }
+    // Does not recurse.
     remap(map) {
         this.forEach(node => {
             const keyword = node.getKeyword();
@@ -1677,6 +1717,117 @@ class AbstractRuntimeNode extends TreeNode {
         return this;
     }
 }
+class AbstractRuntimeProgram extends AbstractRuntimeNode {
+    *getProgramErrorsIterator() {
+        let line = 1;
+        for (let node of this.getTopDownArrayIterator()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            delete node._cachedLineNumber;
+            if (errs.length)
+                yield errs;
+        }
+    }
+    getProgramErrors() {
+        const errors = [];
+        let line = 1;
+        for (let node of this.getTopDownArray()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            errs.forEach(err => errors.push(err));
+            delete node._cachedLineNumber;
+        }
+        return errors;
+    }
+    // Helper method for selecting potential keywords needed to update grammar file.
+    getInvalidKeywords(level = undefined) {
+        return Array.from(new Set(this.getProgramErrors()
+            .filter(err => err.kind === GrammarConstants.invalidKeywordError)
+            .filter(err => (level ? level === err.level : true))
+            .map(err => err.subkind)));
+    }
+    getProgramErrorMessages() {
+        return this.getProgramErrors().map(err => err.message);
+    }
+    getKeywordMap() {
+        return this.getDefinition().getRunTimeKeywordMap();
+    }
+    getCatchAllNodeClass(line) {
+        // todo: blank line
+        // todo: restore didyoumean
+        return this.getDefinition().getRunTimeCatchAllNodeClass();
+    }
+    getDefinition() {
+        return this.getGrammarProgram();
+    }
+    getKeywordUsage(filepath = "") {
+        // returns a report on what keywords from its language the program uses
+        const usage = new TreeNode();
+        const grammarProgram = this.getGrammarProgram();
+        const keywordDefinitions = grammarProgram.getKeywordDefinitions();
+        keywordDefinitions.forEach(child => {
+            usage.appendLine([child.getId(), "line-id", "keyword", child.getNodeColumnTypes().join(" ")].join(" "));
+        });
+        const programNodes = this.getTopDownArray();
+        programNodes.forEach((programNode, lineNumber) => {
+            const def = programNode.getDefinition();
+            const keyword = def.getId();
+            const stats = usage.getNode(keyword);
+            stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "));
+        });
+        return usage;
+    }
+    getInPlaceSyntaxTree() {
+        return this.getTopDownArray()
+            .map(child => child.getIndentation() + child.getLineSyntax())
+            .join("\n");
+    }
+    getInPlaceSyntaxTreeWithNodeTypes() {
+        return this.getTopDownArray()
+            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
+            .join("\n");
+    }
+    // todo: refine and make public
+    _getSyntaxTreeHtml() {
+        const getColor = child => {
+            if (child.getLineSyntax().includes("error"))
+                return "red";
+            return "black";
+        };
+        const zip = (a1, a2) => {
+            let last = a1.length > a2.length ? a1.length : a2.length;
+            let parts = [];
+            for (let index = 0; index < last; index++) {
+                parts.push(`${a1[index]}:${a2[index]}`);
+            }
+            return parts.join(" ");
+        };
+        return this.getTopDownArray()
+            .map(child => `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(child.getLineSyntax().split(" "), child.getLine().split(" "))}</span></div>`)
+            .join("");
+    }
+    getTreeWithNodeTypes() {
+        return this.getTopDownArray()
+            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
+            .join("\n");
+    }
+    getWordTypeAtPosition(lineIndex, wordIndex) {
+        this._initWordTypeCache();
+        const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1];
+        return typeNode ? typeNode.getWord(wordIndex - 1) : "";
+    }
+    _initWordTypeCache() {
+        const treeMTime = this.getTreeMTime();
+        if (this._cache_programWordTypeStringMTime === treeMTime)
+            return undefined;
+        this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree());
+        this._cache_programWordTypeStringMTime = treeMTime;
+    }
+    getCompiledProgramName(programPath) {
+        const grammarProgram = this.getDefinition();
+        return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`);
+    }
+}
 /*
 A cell contains a word but also the type information for that word.
 */
@@ -1755,52 +1906,6 @@ class GrammarBackedCell {
             };
     }
 }
-class GrammarConstNode extends TreeNode {
-    getValue() {
-        // todo: parse type
-        if (this.length)
-            return this.childrenToString();
-        return this.getWordsFrom(2).join(" ");
-    }
-    getName() {
-        return this.getKeyword();
-    }
-}
-const GrammarConstants = {};
-// node types
-GrammarConstants.grammar = "@grammar";
-GrammarConstants.keyword = "@keyword";
-GrammarConstants.wordType = "@wordType";
-GrammarConstants.abstract = "@abstract";
-// word parsing
-GrammarConstants.regex = "@regex"; // temporary?
-GrammarConstants.keywordTable = "@keywordTable"; // temporary?
-GrammarConstants.enum = "@enum"; // temporary?
-GrammarConstants.parseWith = "@parseWith"; // temporary?
-// parsing
-GrammarConstants.keywords = "@keywords";
-GrammarConstants.columns = "@columns";
-GrammarConstants.catchAllKeyword = "@catchAllKeyword";
-GrammarConstants.defaults = "@defaults";
-GrammarConstants.constants = "@constants";
-GrammarConstants.group = "@group";
-GrammarConstants.any = "@any";
-// parser/vm instantiating and executing
-GrammarConstants.parser = "@parser";
-GrammarConstants.parserJs = "js";
-// compiling
-GrammarConstants.compilerKeyword = "@compiler";
-GrammarConstants.compiler = {};
-GrammarConstants.compiler.sub = "@sub"; // replacement instructions
-GrammarConstants.compiler.indentCharacter = "@indentCharacter";
-GrammarConstants.compiler.listDelimiter = "@listDelimiter";
-GrammarConstants.compiler.openChildren = "@openChildren";
-GrammarConstants.compiler.closeChildren = "@closeChildren";
-// developing
-GrammarConstants.description = "@description";
-GrammarConstants.frequency = "@frequency";
-// errors
-GrammarConstants.invalidKeywordError = "invalidKeywordError";
 class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     getProgram() {
         return this.getParent().getProgram();
@@ -1874,116 +1979,6 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     getLineSyntax() {
         const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getType());
         return ["keyword"].concat(parameterWords).join(" ");
-    }
-}
-class AbstractRuntimeProgram extends AbstractRuntimeNode {
-    *getProgramErrorsIterator() {
-        let line = 1;
-        for (let node of this.getTopDownArrayIterator()) {
-            node._cachedLineNumber = line;
-            const errs = node.getErrors();
-            delete node._cachedLineNumber;
-            if (errs.length)
-                yield errs;
-        }
-    }
-    getProgramErrors() {
-        const errors = [];
-        let line = 1;
-        for (let node of this.getTopDownArray()) {
-            node._cachedLineNumber = line;
-            const errs = node.getErrors();
-            errs.forEach(err => errors.push(err));
-            delete node._cachedLineNumber;
-        }
-        return errors;
-    }
-    // Helper method for selecting potential keywords needed to update grammar file.
-    getInvalidKeywords(level = undefined) {
-        return Array.from(new Set(this.getProgramErrors()
-            .filter(err => err.kind === GrammarConstants.invalidKeywordError)
-            .filter(err => (level ? level === err.level : true))
-            .map(err => err.subkind)));
-    }
-    getProgramErrorMessages() {
-        return this.getProgramErrors().map(err => err.message);
-    }
-    getKeywordMap() {
-        return this.getDefinition().getRunTimeKeywordMap();
-    }
-    getCatchAllNodeClass(line) {
-        // todo: blank line
-        // todo: restore didyoumean
-        return this.getDefinition().getRunTimeCatchAllNodeClass();
-    }
-    getDefinition() {
-        return this.getGrammarProgram();
-    }
-    getKeywordUsage(filepath = "") {
-        const usage = new TreeNode();
-        const grammarProgram = this.getGrammarProgram();
-        const keywordDefinitions = grammarProgram.getKeywordDefinitions();
-        keywordDefinitions.forEach(child => {
-            usage.appendLine([child.getId(), "line-id", "keyword", child.getNodeColumnTypes().join(" ")].join(" "));
-        });
-        const programNodes = this.getTopDownArray();
-        programNodes.forEach((programNode, lineNumber) => {
-            const def = programNode.getDefinition();
-            const keyword = def.getId();
-            const stats = usage.getNode(keyword);
-            stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "));
-        });
-        return usage;
-    }
-    getInPlaceSyntaxTree() {
-        return this.getTopDownArray()
-            .map(child => child.getIndentation() + child.getLineSyntax())
-            .join("\n");
-    }
-    getInPlaceSyntaxTreeWithNodeTypes() {
-        return this.getTopDownArray()
-            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
-            .join("\n");
-    }
-    // todo: refine and make public
-    _getSyntaxTreeHtml() {
-        const getColor = child => {
-            if (child.getLineSyntax().includes("error"))
-                return "red";
-            return "black";
-        };
-        const zip = (a1, a2) => {
-            let last = a1.length > a2.length ? a1.length : a2.length;
-            let parts = [];
-            for (let index = 0; index < last; index++) {
-                parts.push(`${a1[index]}:${a2[index]}`);
-            }
-            return parts.join(" ");
-        };
-        return this.getTopDownArray()
-            .map(child => `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(child.getLineSyntax().split(" "), child.getLine().split(" "))}</span></div>`)
-            .join("");
-    }
-    getTreeWithNodeTypes() {
-        return this.getTopDownArray()
-            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
-            .join("\n");
-    }
-    getWordTypeAtPosition(lineIndex, wordIndex) {
-        this._initWordTypeCache();
-        const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1];
-        return typeNode ? typeNode.getWord(wordIndex - 1) : "";
-    }
-    _initWordTypeCache() {
-        const treeMTime = this.getTreeMTime();
-        if (this._cache_programWordTypeStringMTime === treeMTime)
-            return undefined;
-        this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree());
-        this._cache_programWordTypeStringMTime = treeMTime;
-    }
-    getCompiledProgramName(programPath) {
-        const grammarProgram = this.getDefinition();
-        return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`);
     }
 }
 class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
@@ -2075,6 +2070,17 @@ class GrammarCompilerNode extends TreeNode {
     }
     getCloseChildrenString() {
         return this.get(GrammarConstants.compiler.closeChildren) || "";
+    }
+}
+class GrammarConstNode extends TreeNode {
+    getValue() {
+        // todo: parse type
+        if (this.length)
+            return this.childrenToString();
+        return this.getWordsFrom(2).join(" ");
+    }
+    getName() {
+        return this.getKeyword();
     }
 }
 class GrammarConstantsNode extends TreeNode {
@@ -2695,4 +2701,4 @@ jtree.TreeNode = TreeNode;
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
-jtree.getVersion = () => "15.3.0";
+jtree.getVersion = () => "16.0.1";

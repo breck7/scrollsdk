@@ -40,8 +40,6 @@ interface TreeNode {
   getColumnNames: () => string[]
   getErrors: () => parseError[] // parse errors. base class is permissive and will always have 0 errors.
   getExpanded: (idColumnNumber: int, parentIdColumnNumber: int) => TreeNode
-  getGraph: (idColumnNumber: int, parentIdColumnNumber: int) => TreeNode[]
-  getGraphByKey: (headKey: word) => TreeNode[]
   getInheritanceTree: () => TreeNode // useful when your trees follow the convention "className parentClassName" line structure
   getLine: () => nodeString
   getLines: () => string[]
@@ -69,7 +67,7 @@ interface TreeNode {
   // Methods for Tree Languages
   getCatchAllNodeClass: (line: string) => TreeNode
   getKeywordMap: () => KeywordMap
-  parseNodeType: (line: string) => TreeNode
+  getNodeConstructor: (line: string) => TreeNode
 
   // Mutable Methods
   getTreeMTime: () => number // get time tree was last modified. Initializes lazily on first call.

@@ -3,13 +3,16 @@ import TreeUtils from "../base/TreeUtils"
 
 import GrammarConstants from "./GrammarConstants"
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode"
-import GrammarParserClassNode from "./GrammarParserClassNode"
+import GrammarCustomConstructorNode from "./GrammarCustomConstructorNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
+
+import AbstractRuntimeNode from "./AbstractRuntimeNode"
+declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
   getKeywordMap() {
@@ -27,7 +30,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     })
     map[GrammarConstants.constants] = GrammarConstantsNode
     map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
-    map[GrammarConstants.parser] = GrammarParserClassNode
+    map[GrammarConstants.constructor] = GrammarCustomConstructorNode
     return map
   }
 
@@ -47,28 +50,30 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.any)
   }
 
-  _getCustomDefinedParserNode() {
-    return this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs)
+  _getCustomDefinedConstructorNode(): GrammarCustomConstructorNode {
+    return <GrammarCustomConstructorNode>(
+      this.getNodeByColumns(GrammarConstants.constructor, GrammarConstants.constructorJs)
+    )
   }
 
-  private _cache_parserClass
+  private _cache_definedNodeConstructor
 
-  getParserClass() {
-    if (!this._cache_parserClass) this._cache_parserClass = this._getParserClass()
-    return this._cache_parserClass
+  getDefinedConstructor() {
+    if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this._getDefinedNodeConstructor()
+    return this._cache_definedNodeConstructor
   }
 
-  _getDefaultParserClass(): any {
+  _getDefaultNodeConstructor(): RunTimeNodeConstructor {
     if (this._isAnyNode()) return GrammarBackedAnyNode
 
     return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
-  /* Parser class is the actual JS class doing the parsing, different than Node type. */
-  _getParserClass() {
-    const customDefinedParserNode = this._getCustomDefinedParserNode()
-    if (customDefinedParserNode) return customDefinedParserNode.getParserClass()
-    return this._getDefaultParserClass()
+  /* Node constructor is the actual JS class being initiated, different than the Node type. */
+  _getDefinedNodeConstructor(): RunTimeNodeConstructor {
+    const customConstructorDefinition = this._getCustomDefinedConstructorNode()
+    if (customConstructorDefinition) return customConstructorDefinition.getDefinedConstructor()
+    return this._getDefaultNodeConstructor()
   }
 
   getCatchAllNodeClass(line) {
@@ -134,7 +139,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       .filter(key => allProgramKeywordDefinitions[key].isOrExtendsAKeywordInScope(keywordsInScope))
       .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
       .forEach(key => {
-        this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getParserClass()
+        this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getDefinedConstructor()
       })
   }
 
@@ -178,7 +183,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   _initCatchCallNodeCache() {
     if (this._cache_catchAll) return undefined
 
-    this._cache_catchAll = this._getCatchAllDefinition().getParserClass()
+    this._cache_catchAll = this._getCatchAllDefinition().getDefinedConstructor()
   }
 
   getAutocompleteWords(inputStr, additionalWords = []) {

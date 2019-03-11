@@ -482,26 +482,29 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return Object.keys(obj);
     }
     getGraphByKey(key) {
-        const graph = this._getGraph((node, id) => node._getNodesByColumn(0, id), node => node.get(key));
+        const graph = this._getGraph((node, id) => node._getNodesByColumn(0, id), node => node.get(key), this);
         graph.push(this);
         return graph;
     }
     getGraph(thisColumnNumber, extendsColumnNumber) {
-        const graph = this._getGraph((node, id) => node._getNodesByColumn(thisColumnNumber, id), node => node.getWord(extendsColumnNumber));
+        const graph = this._getGraph((node, id) => node._getNodesByColumn(thisColumnNumber, id), node => node.getWord(extendsColumnNumber), this);
         graph.push(this);
         return graph;
     }
-    _getGraph(getNodesByIdFn, getParentIdFn) {
+    _getGraph(getNodesByIdFn, getParentIdFn, cannotContainNode) {
         const parentId = getParentIdFn(this);
         if (!parentId)
             return [];
-        const parentNodes = getNodesByIdFn(this.getParent(), parentId);
-        if (!parentNodes.length)
+        const potentialParentNodes = getNodesByIdFn(this.getParent(), parentId);
+        if (!potentialParentNodes.length)
             throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`);
         // Note: If multiple matches, we attempt to extend matching keyword first.
         const keyword = this.getKeyword();
-        const parentNode = parentNodes.find(node => node.getKeyword() === keyword) || parentNodes[0];
-        const graph = parentNode._getGraph(getNodesByIdFn, getParentIdFn);
+        const parentNode = potentialParentNodes.find(node => node.getKeyword() === keyword) || potentialParentNodes[0];
+        // todo: detect loops
+        if (parentNode === cannotContainNode)
+            throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`);
+        const graph = parentNode._getGraph(getNodesByIdFn, getParentIdFn, cannotContainNode);
         graph.push(parentNode);
         return graph;
     }
@@ -777,7 +780,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
             line = keyword + " " + content;
         else if (content instanceof Date)
             line = keyword + " " + content.getTime().toString();
-        else if (content instanceof TreeNode) {
+        else if (content instanceof ImmutableNode) {
             line = keyword;
             children = new TreeNode(content.childrenToString(), content.getLine());
         }
@@ -795,13 +798,13 @@ class ImmutableNode extends AbstractNode_node_1.default {
         this._setLineAndChildren(line, children);
     }
     _setLineAndChildren(line, children, index = this.length) {
-        const parserClass = this.parseNodeType(line);
-        const parsedNode = new parserClass(children, line, this);
+        const nodeConstructor = this.getNodeConstructor(line);
+        const newNode = new nodeConstructor(children, line, this);
         const adjustedIndex = index < 0 ? this.length + index : index;
-        this._getChildrenArray().splice(adjustedIndex, 0, parsedNode);
+        this._getChildrenArray().splice(adjustedIndex, 0, newNode);
         if (this._index)
             this._makeIndex(adjustedIndex);
-        return parsedNode;
+        return newNode;
     }
     _parseString(str) {
         if (!str)
@@ -825,8 +828,8 @@ class ImmutableNode extends AbstractNode_node_1.default {
             }
             const lineContent = line.substr(currentIndentCount);
             const parent = parentStack[parentStack.length - 1];
-            const parserClass = parent.parseNodeType(lineContent);
-            lastNode = new parserClass(undefined, lineContent, parent);
+            const nodeConstructor = parent.getNodeConstructor(lineContent);
+            lastNode = new nodeConstructor(undefined, lineContent, parent);
             parent._getChildrenArray().push(lastNode);
         });
         return this;
@@ -949,7 +952,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         });
         return result;
     }
-    parseNodeType(line) {
+    getNodeConstructor(line) {
         const map = this.getKeywordMap();
         if (!map)
             return this.getCatchAllNodeClass(line);

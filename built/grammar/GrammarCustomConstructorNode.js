@@ -6,8 +6,8 @@ const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode")
 const GrammarBackedAnyNode_1 = require("./GrammarBackedAnyNode");
 const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 const GrammarBackedErrorNode_1 = require("./GrammarBackedErrorNode");
-class GrammarParserClassNode extends TreeNode_1.default {
-    getParserConstructorFilePath() {
+class GrammarCustomConstructorNode extends TreeNode_1.default {
+    _getNodeConstructorFilePath() {
         return this.getWord(2);
     }
     getSubModuleName() {
@@ -22,8 +22,8 @@ class GrammarParserClassNode extends TreeNode_1.default {
         };
         return builtIns;
     }
-    getParserConstructor() {
-        const filepath = this.getParserConstructorFilePath();
+    getDefinedConstructor() {
+        const filepath = this._getNodeConstructorFilePath();
         const builtIns = this._getNodeClasses();
         const builtIn = builtIns[filepath];
         if (builtIn)
@@ -43,4 +43,4 @@ class GrammarParserClassNode extends TreeNode_1.default {
         return subModule ? theModule[subModule] : theModule;
     }
 }
-exports.default = GrammarParserClassNode;
+exports.default = GrammarCustomConstructorNode;

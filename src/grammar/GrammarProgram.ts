@@ -7,7 +7,9 @@ import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
 import GrammarWordTypeNode from "./GrammarWordTypeNode"
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
-  _getDefaultParserClass() {}
+  _getDefaultNodeConstructor() {
+    return undefined
+  }
 }
 
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
@@ -26,14 +28,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return map
   }
 
-  parseNodeType(line) {
+  getNodeConstructor(line) {
     // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
     // Todo: this only supports single word type inheritance.
     const parts = line.split(this.getZI())
     let type =
       parts[0] === GrammarConstants.wordType &&
       (GrammarWordTypeNode.types[parts[1]] || GrammarWordTypeNode.types[parts[2]])
-    return type ? type : super.parseNodeType(line)
+    return type ? type : super.getNodeConstructor(line)
   }
 
   getTargetExtension() {
@@ -125,8 +127,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword)
   }
 
-  _getRootParserClass() {
-    const definedClass = this._getGrammarRootNode().getParserClass()
+  _getRootConstructor() {
+    const definedClass = this._getGrammarRootNode().getDefinedConstructor()
     const extendedClass = definedClass || AbstractRuntimeProgram
     const grammarProgram = this
     return class extends extendedClass {
@@ -136,11 +138,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
   }
 
-  private _cache_rootParserClass
+  private _cache_rootConstructorClass
 
-  getRootParserClass() {
-    if (!this._cache_rootParserClass) this._cache_rootParserClass = this._getRootParserClass()
-    return this._cache_rootParserClass
+  getRootConstructor(): Function {
+    if (!this._cache_rootConstructorClass) this._cache_rootConstructorClass = this._getRootConstructor()
+    return this._cache_rootConstructorClass
   }
 
   toSublimeSyntaxFile() {

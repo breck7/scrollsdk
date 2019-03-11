@@ -4,7 +4,7 @@ const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarDefinitionErrorNode_1 = require("./GrammarDefinitionErrorNode");
-const GrammarParserClassNode_1 = require("./GrammarParserClassNode");
+const GrammarCustomConstructorNode_1 = require("./GrammarCustomConstructorNode");
 const GrammarCompilerNode_1 = require("./GrammarCompilerNode");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
 const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode");
@@ -26,7 +26,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         });
         map[GrammarConstants_1.default.constants] = GrammarConstantsNode_1.default;
         map[GrammarConstants_1.default.compilerKeyword] = GrammarCompilerNode_1.default;
-        map[GrammarConstants_1.default.parser] = GrammarParserClassNode_1.default;
+        map[GrammarConstants_1.default.constructor] = GrammarCustomConstructorNode_1.default;
         return map;
     }
     getId() {
@@ -41,25 +41,25 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _isAnyNode() {
         return this.has(GrammarConstants_1.default.any);
     }
-    _getCustomDefinedParserNode() {
-        return this.getNodeByColumns(GrammarConstants_1.default.parser, GrammarConstants_1.default.parserJs);
+    _getCustomDefinedConstructorNode() {
+        return (this.getNodeByColumns(GrammarConstants_1.default.constructor, GrammarConstants_1.default.constructorJs));
     }
-    getParserClass() {
-        if (!this._cache_parserClass)
-            this._cache_parserClass = this._getParserClass();
-        return this._cache_parserClass;
+    getDefinedConstructor() {
+        if (!this._cache_definedNodeConstructor)
+            this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
+        return this._cache_definedNodeConstructor;
     }
-    _getDefaultParserClass() {
+    _getDefaultNodeConstructor() {
         if (this._isAnyNode())
             return GrammarBackedAnyNode_1.default;
         return this._isNonTerminal() ? GrammarBackedNonTerminalNode_1.default : GrammarBackedTerminalNode_1.default;
     }
-    /* Parser class is the actual JS class doing the parsing, different than Node type. */
-    _getParserClass() {
-        const customDefinedParserNode = this._getCustomDefinedParserNode();
-        if (customDefinedParserNode)
-            return customDefinedParserNode.getParserClass();
-        return this._getDefaultParserClass();
+    /* Node constructor is the actual JS class being initiated, different than the Node type. */
+    _getDefinedNodeConstructor() {
+        const customConstructorDefinition = this._getCustomDefinedConstructorNode();
+        if (customConstructorDefinition)
+            return customConstructorDefinition.getDefinedConstructor();
+        return this._getDefaultNodeConstructor();
     }
     getCatchAllNodeClass(line) {
         return GrammarDefinitionErrorNode_1.default;
@@ -114,7 +114,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             .filter(key => allProgramKeywordDefinitions[key].isOrExtendsAKeywordInScope(keywordsInScope))
             .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
             .forEach(key => {
-            this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getParserClass();
+            this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getDefinedConstructor();
         });
     }
     _getKeywordsInScope() {
@@ -149,7 +149,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _initCatchCallNodeCache() {
         if (this._cache_catchAll)
             return undefined;
-        this._cache_catchAll = this._getCatchAllDefinition().getParserClass();
+        this._cache_catchAll = this._getCatchAllDefinition().getDefinedConstructor();
     }
     getAutocompleteWords(inputStr, additionalWords = []) {
         // todo: add more tests

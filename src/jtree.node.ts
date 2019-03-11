@@ -9,16 +9,16 @@ jtree.executeFile = (programPath: types.filepath, grammarPath: types.filepath): 
 
 // returns AbstractRuntimeProgram
 jtree.makeProgram = (programPath: types.filepath, grammarPath: types.filepath) => {
-  const programClass = jtree.getParser(grammarPath)
+  const programClass = jtree.getProgramConstructor(grammarPath)
   const code = fs.readFileSync(programPath, "utf8")
   return new programClass(code)
 }
 
 // returns GrammarBackedProgramClass
-jtree.getParser = (grammarPath: types.filepath) => {
+jtree.getProgramConstructor = (grammarPath: types.filepath) => {
   const grammarCode = fs.readFileSync(grammarPath, "utf8")
   const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
-  return grammarProgram.getRootParserClass()
+  return grammarProgram.getRootConstructor()
 }
 
 jtree.GrammarProgram = GrammarProgram

@@ -23,8 +23,8 @@ const makeJibberishProgram = code => {
 
   // Act
   const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
-  const rootJibberishParserClass = grammarProgram.getRootParserClass()
-  return new rootJibberishParserClass(code)
+  const rootJibberishProgramConstructor = grammarProgram.getRootConstructor()
+  return new rootJibberishProgramConstructor(code)
 }
 
 quack.quickTest("jibberish", equal => {

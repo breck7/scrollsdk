@@ -20,7 +20,7 @@ file LANG/readme.mark
   # LANG - DESCRIPTION
 file LANG/index.js
  data
-  module.exports = require("jtree").getParser(__dirname + "/LANG.grammar")
+  module.exports = require("jtree").getProgramConstructor(__dirname + "/LANG.grammar")
 file LANG/LANG.grammar
  data
   @grammar LANG
@@ -30,6 +30,6 @@ file LANG/LANG.grammar
     topLevel
   @abstract topLevel
   @keyword error
-   @parser js ErrorNode
+   @constructor js ErrorNode
 file LANG/tests.swarm
 file LANG/sample.LANG

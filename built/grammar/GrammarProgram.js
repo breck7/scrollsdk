@@ -7,7 +7,9 @@ const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode
 const GrammarKeywordDefinitionNode_1 = require("./GrammarKeywordDefinitionNode");
 const GrammarWordTypeNode_1 = require("./GrammarWordTypeNode");
 class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
-    _getDefaultParserClass() { }
+    _getDefaultNodeConstructor() {
+        return undefined;
+    }
 }
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode_1.default {
     _isAbstract() {
@@ -23,13 +25,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         map[GrammarConstants_1.default.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
     }
-    parseNodeType(line) {
+    getNodeConstructor(line) {
         // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
         // Todo: this only supports single word type inheritance.
         const parts = line.split(this.getZI());
         let type = parts[0] === GrammarConstants_1.default.wordType &&
             (GrammarWordTypeNode_1.default.types[parts[1]] || GrammarWordTypeNode_1.default.types[parts[2]]);
-        return type ? type : super.parseNodeType(line);
+        return type ? type : super.getNodeConstructor(line);
     }
     getTargetExtension() {
         return this._getGrammarRootNode().getTargetExtension();
@@ -101,8 +103,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     _getRunTimeCatchAllKeyword() {
         return this._getGrammarRootNode().get(GrammarConstants_1.default.catchAllKeyword);
     }
-    _getRootParserClass() {
-        const definedClass = this._getGrammarRootNode().getParserClass();
+    _getRootConstructor() {
+        const definedClass = this._getGrammarRootNode().getDefinedConstructor();
         const extendedClass = definedClass || AbstractRuntimeProgram_1.default;
         const grammarProgram = this;
         return class extends extendedClass {
@@ -111,10 +113,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             }
         };
     }
-    getRootParserClass() {
-        if (!this._cache_rootParserClass)
-            this._cache_rootParserClass = this._getRootParserClass();
-        return this._cache_rootParserClass;
+    getRootConstructor() {
+        if (!this._cache_rootConstructorClass)
+            this._cache_rootConstructorClass = this._getRootConstructor();
+        return this._cache_rootConstructorClass;
     }
     toSublimeSyntaxFile() {
         // todo.

@@ -30,7 +30,7 @@
  @keywords
   @description
   @keywords
-  @parser
+  @constructor
   @compiler
   @catchAllKeyword
   @version
@@ -64,7 +64,7 @@
 @abstract diadicKeywordRule keywordRule
  @columns any any
 @keyword @catchAllKeyword monadicKeywordRule
-@keyword @parser variadicKeywordRule
+@keyword @constructor variadicKeywordRule
 @keyword @frequency monadicKeywordRule
 @abstract variadicKeywordRule keywordRule
  @columns any*
@@ -104,10 +104,10 @@
 @keyword @keywords ntKeywordRule
  @catchAllKeyword keywordUse
 @keyword error
- @parser js ErrorNode
+ @constructor js ErrorNode
 @keyword @keyword
  @columns any any*
  @catchAllKeyword error
- @parser js NonTerminalNode
+ @constructor js NonTerminalNode
  @keywords
   keywordRule

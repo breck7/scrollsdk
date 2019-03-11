@@ -30,7 +30,7 @@ Alternatives: ANTLR, Ohm, JavaCC, YACC
     @grammar stamp
      @description A Tree Language for creating distributable text template files that expand to folders and files.
      @catchAllKeyword error
-     @parser js ./StampProgram.js
+     @constructor js ./StampProgram.js
      @keywords
       #!
       prompt
@@ -46,16 +46,16 @@ Alternatives: ANTLR, Ohm, JavaCC, YACC
      @columns any*
     @keyword prompt
      @columns any inputType any*
-     @parser js ./PromptNode.js
+     @constructor js ./PromptNode.js
     @keyword error
-     @parser js ErrorNode
+     @constructor js ErrorNode
     @keyword folder
      @columns filepath
-     @parser js ./FolderNode.js
+     @constructor js ./FolderNode.js
     @keyword executable
     @keyword file
      @columns filepath
-     @parser js ./FileNode.js
+     @constructor js ./FileNode.js
      @keywords
       data
       executable

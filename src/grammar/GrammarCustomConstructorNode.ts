@@ -6,8 +6,11 @@ import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
 
-class GrammarParserClassNode extends TreeNode {
-  getParserClassFilePath() {
+import AbstractRuntimeNode from "./AbstractRuntimeNode"
+declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
+
+class GrammarCustomConstructorNode extends TreeNode {
+  _getNodeConstructorFilePath() {
     return this.getWord(2)
   }
 
@@ -26,8 +29,8 @@ class GrammarParserClassNode extends TreeNode {
     return builtIns
   }
 
-  getParserClass() {
-    const filepath = this.getParserClassFilePath()
+  getDefinedConstructor(): RunTimeNodeConstructor {
+    const filepath = this._getNodeConstructorFilePath()
     const builtIns = this._getNodeClasses()
     const builtIn = builtIns[filepath]
 
@@ -51,4 +54,4 @@ class GrammarParserClassNode extends TreeNode {
   }
 }
 
-export default GrammarParserClassNode
+export default GrammarCustomConstructorNode

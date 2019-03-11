@@ -20,8 +20,8 @@ GrammarConstants.constants = "@constants";
 GrammarConstants.group = "@group";
 GrammarConstants.any = "@any";
 // parser/vm instantiating and executing
-GrammarConstants.parser = "@parser";
-GrammarConstants.parserJs = "js";
+GrammarConstants.constructor = "@constructor";
+GrammarConstants.constructorJs = "js";
 // compiling
 GrammarConstants.compilerKeyword = "@compiler";
 GrammarConstants.compiler = {};

@@ -351,15 +351,15 @@ class ImmutableNode extends AbstractNode {
     return this.getWord(index) === word
   }
 
-  getNodeByColumns(...columns: string[]) {
+  getNodeByColumns(...columns: string[]): ImmutableNode {
     return this.getTopDownArray().find(node => node._hasColumns(columns))
   }
 
-  getNodeByColumn(index: int, name: string) {
+  getNodeByColumn(index: int, name: string): ImmutableNode {
     return this.find(node => node.getWord(index) === name)
   }
 
-  _getNodesByColumn(index, name) {
+  _getNodesByColumn(index: int, name: word): ImmutableNode[] {
     return this.filter(node => node.getWord(index) === name)
   }
 
@@ -574,33 +574,42 @@ class ImmutableNode extends AbstractNode {
     return Object.keys(obj)
   }
 
-  getGraphByKey(key: word) {
-    const graph = this._getGraph((node, id) => node._getNodesByColumn(0, id), node => node.get(key))
+  getGraphByKey(key: word): ImmutableNode[] {
+    const graph = this._getGraph((node, id) => node._getNodesByColumn(0, id), node => node.get(key), this)
     graph.push(this)
     return graph
   }
 
-  getGraph(thisColumnNumber, extendsColumnNumber) {
+  getGraph(thisColumnNumber: int, extendsColumnNumber: int): ImmutableNode[] {
     const graph = this._getGraph(
       (node, id) => node._getNodesByColumn(thisColumnNumber, id),
-      node => node.getWord(extendsColumnNumber)
+      node => node.getWord(extendsColumnNumber),
+      this
     )
     graph.push(this)
     return graph
   }
 
-  _getGraph(getNodesByIdFn, getParentIdFn) {
+  _getGraph(
+    getNodesByIdFn: (thisParentNode: ImmutableNode, id: word) => ImmutableNode[],
+    getParentIdFn: (thisNode: ImmutableNode) => word,
+    cannotContainNode: ImmutableNode
+  ): ImmutableNode[] {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
-    const parentNodes = getNodesByIdFn(this.getParent(), parentId)
-    if (!parentNodes.length)
+    const potentialParentNodes = getNodesByIdFn(this.getParent(), parentId)
+    if (!potentialParentNodes.length)
       throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
 
     // Note: If multiple matches, we attempt to extend matching keyword first.
     const keyword = this.getKeyword()
-    const parentNode = parentNodes.find(node => node.getKeyword() === keyword) || parentNodes[0]
+    const parentNode = potentialParentNodes.find(node => node.getKeyword() === keyword) || potentialParentNodes[0]
 
-    const graph = parentNode._getGraph(getNodesByIdFn, getParentIdFn)
+    // todo: detect loops
+    if (parentNode === cannotContainNode)
+      throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`)
+
+    const graph = parentNode._getGraph(getNodesByIdFn, getParentIdFn, cannotContainNode)
     graph.push(parentNode)
     return graph
   }
@@ -903,7 +912,7 @@ class ImmutableNode extends AbstractNode {
     } else if (type === "function") line = keyword + " " + content.toString()
     else if (type !== "object") line = keyword + " " + content
     else if (content instanceof Date) line = keyword + " " + content.getTime().toString()
-    else if (content instanceof TreeNode) {
+    else if (content instanceof ImmutableNode) {
       line = keyword
       children = new TreeNode(content.childrenToString(), content.getLine())
     } else if (circularCheckArray.indexOf(content) === -1) {
@@ -919,14 +928,14 @@ class ImmutableNode extends AbstractNode {
   }
 
   _setLineAndChildren(line, children?, index = this.length) {
-    const parserClass = this.parseNodeType(line)
-    const parsedNode = new parserClass(children, line, this)
+    const nodeConstructor = this.getNodeConstructor(line)
+    const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
-    this._getChildrenArray().splice(adjustedIndex, 0, parsedNode)
+    this._getChildrenArray().splice(adjustedIndex, 0, newNode)
 
     if (this._index) this._makeIndex(adjustedIndex)
-    return parsedNode
+    return newNode
   }
 
   _parseString(str) {
@@ -949,8 +958,8 @@ class ImmutableNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const parserClass = parent.parseNodeType(lineContent)
-      lastNode = new parserClass(undefined, lineContent, parent)
+      const nodeConstructor = parent.getNodeConstructor(lineContent)
+      lastNode = new nodeConstructor(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })
     return this
@@ -1099,7 +1108,7 @@ class ImmutableNode extends AbstractNode {
     return result
   }
 
-  parseNodeType(line: string) {
+  getNodeConstructor(line: string) {
     const map = this.getKeywordMap()
     if (!map) return this.getCatchAllNodeClass(line)
     const firstBreak = line.indexOf(this.getZI())

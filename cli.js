@@ -189,11 +189,11 @@ ${grammars.toTable()}`
   usage(grammarName) {
     const files = this._history(grammarName)
     const grammarPath = this._getGrammarPathOrThrow(files[0])
-    const programClass = jtree.getParser(grammarPath)
+    const programConstructor = jtree.getProgramConstructor(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
       const code = this._read(path)
-      const program = new programClass(code)
+      const program = new programConstructor(code)
       const usage = program.getKeywordUsage(path)
       report.extend(usage.toString())
     })

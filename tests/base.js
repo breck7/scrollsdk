@@ -566,16 +566,16 @@ testTree.getNodeByColumns = equal => {
   // Arrange
   const jib = new TreeNode(`jibberish
  @description Test a root parser node
- @parser js ./jibberishProgram.js
+ @constructor js ./jibberishProgram.js
  @compiler txt
  @keywords
   baseNode`)
 
   // Act
-  const node2 = jib.getNodeByColumns("@parser", "js")
+  const node2 = jib.getNodeByColumns("@constructor", "js")
 
   // Assert
-  equal(node2.getKeyword(), "@parser")
+  equal(node2.getKeyword(), "@constructor")
 }
 
 testTree.delete = equal => {
@@ -1552,6 +1552,24 @@ Mammal Animal
   equal(tree.getNode("Animal").getGraph(0, 1).length, 2)
 }
 
+testTree.getGraphLoop = equal => {
+  // Arrange
+  const tree = new TreeNode(
+    `Thing Animal
+ color
+Animal Thing
+ dna`
+  )
+
+  // Act/Assert
+  try {
+    tree.getNode("Animal").getGraph(0, 1)
+    equal(true, false, "Expected an error")
+  } catch (err) {
+    equal(true, true)
+  }
+}
+
 testTree.macroExpand = equal => {
   // Arrange
   const test = `macro red SUBREDDIT
@@ -1999,14 +2017,14 @@ testTree.setWord = equal => {
 testTree.treeLanguageDependingOnParent = equal => {
   // Arrange
   class ReverseEtnNode extends TreeNode {
-    parseNodeType(line) {
+    getNodeConstructor(line) {
       this.getParent().getLine()
       return TreeNode
     }
   }
 
   class TestLanguage extends TreeNode {
-    parseNodeType() {
+    getNodeConstructor() {
       return ReverseEtnNode
     }
   }
@@ -2108,13 +2126,13 @@ testTree.parseNode = equal => {
   // Arrange
   class LeafNode extends TreeNode {}
   class SubNode extends TreeNode {
-    parseNodeType(line) {
+    getNodeConstructor(line) {
       if (line.startsWith("leaf")) return LeafNode
       return SubNode
     }
   }
   class TestLanguageNode extends TreeNode {
-    parseNodeType(line) {
+    getNodeConstructor(line) {
       if (line.startsWith("tree")) return TreeNode
       if (line.startsWith("sub")) return SubNode
       return TestLanguageNode

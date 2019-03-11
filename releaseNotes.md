@@ -1,3 +1,17 @@
+17.0.0 / 2019-03-11
+===================
+- Breaking: In TreeNode, parseNodeType is now getNodeConstructor
+- Breaking: jtree.getParser is now jtree.getProgramConstructor
+- Breaking: In .grammar files @parser is now @constructor
+- Breaking: In grammar JS getParserClass is now getDefinedConstructor
+- Breaking: In grammar JS getRootParserClass is now getRootConstructor
+- New: error message when you have an inheritance loop in grammar file
+- Infra: minor CLI app refactor
+
+16.0.1 / 2019-03-03
+===================
+- Fix: minor migration fix
+
 16.0.0 / 2019-03-03
 ===================
 - Infra: migrated to TypeScript
@@ -240,7 +254,7 @@
 9.1.0 / 2017-11-02
 ==================
 - New: refactored Tree Grammar to support compiler-compilers and vms in languages other than ES6
-- Breaking: "@parseClass" => "@parser js"
+- Breaking: "@parseClass" => "@constructor js"
 - Fix: @ char is now acceptable in filepaths
 
 9.0.0 / 2017-11-02

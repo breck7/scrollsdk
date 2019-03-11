@@ -2,11 +2,11 @@
 
 const quack = require("./quack.js")
 
-const ConsoleApp = require("../consoleApp.js")
+const CLI = require("../cli.js")
 
 quack.quickTest("console basics", equal => {
   // Arrange
-  const app = new ConsoleApp()
+  const app = new CLI()
 
   // Act/Assert
   equal(typeof app.getGrammars().toString(), "string")

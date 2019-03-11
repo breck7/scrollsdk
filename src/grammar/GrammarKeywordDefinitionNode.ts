@@ -13,7 +13,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     )
   }
 
-  _isOrExtendsAKeywordInScope(keywordsInScope) {
+  isOrExtendsAKeywordInScope(keywordsInScope: string[]): boolean {
     const chain = this._getKeywordChain()
     return keywordsInScope.some(keyword => chain[keyword])
   }

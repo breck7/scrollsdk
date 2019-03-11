@@ -111,7 +111,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             return undefined;
         const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache();
         Object.keys(allProgramKeywordDefinitions)
-            .filter(key => allProgramKeywordDefinitions[key]._isOrExtendsAKeywordInScope(keywordsInScope))
+            .filter(key => allProgramKeywordDefinitions[key].isOrExtendsAKeywordInScope(keywordsInScope))
             .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
             .forEach(key => {
             this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getParserClass();

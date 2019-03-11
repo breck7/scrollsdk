@@ -8,7 +8,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         return (this.get(GrammarConstants_1.default.catchAllKeyword) ||
             this.getParent()._getRunTimeCatchAllKeyword());
     }
-    _isOrExtendsAKeywordInScope(keywordsInScope) {
+    isOrExtendsAKeywordInScope(keywordsInScope) {
         const chain = this._getKeywordChain();
         return keywordsInScope.some(keyword => chain[keyword]);
     }

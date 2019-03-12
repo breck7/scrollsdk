@@ -11,6 +11,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       const errs = node.getErrors()
       delete node._cachedLineNumber
       if (errs.length) yield errs
+      line++
     }
   }
 
@@ -22,6 +23,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       const errs = node.getErrors()
       errs.forEach(err => errors.push(err))
       delete node._cachedLineNumber
+      line++
     }
     return errors
   }

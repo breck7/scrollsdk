@@ -6,6 +6,7 @@
 - Breaking: In grammar JS getParserClass is now getDefinedConstructor
 - Breaking: In grammar JS getRootParserClass is now getRootConstructor
 - New: error message when you have an inheritance loop in grammar file
+- Fix: line number error message regression fix
 - Infra: minor CLI app refactor
 
 16.0.1 / 2019-03-03

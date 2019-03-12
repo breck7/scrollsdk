@@ -1,0 +1,14 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+ require ./index.js
+ static
+#test _getImportsTypescript
+ getImports
+  %|
+   foobar
+  =# 0
+ getImports
+  %|
+   const Foobar = require("foobar")
+   import FamBam from "../fambam.js"
+  =# 2

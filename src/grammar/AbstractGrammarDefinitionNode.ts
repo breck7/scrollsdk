@@ -11,8 +11,7 @@ import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 
-import AbstractRuntimeNode from "./AbstractRuntimeNode"
-declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
+import types from "../types"
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
   getKeywordMap() {
@@ -63,14 +62,14 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_definedNodeConstructor
   }
 
-  _getDefaultNodeConstructor(): RunTimeNodeConstructor {
+  _getDefaultNodeConstructor(): types.RunTimeNodeConstructor {
     if (this._isAnyNode()) return GrammarBackedAnyNode
 
     return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
   /* Node constructor is the actual JS class being initiated, different than the Node type. */
-  _getDefinedNodeConstructor(): RunTimeNodeConstructor {
+  _getDefinedNodeConstructor(): types.RunTimeNodeConstructor {
     const customConstructorDefinition = this._getCustomDefinedConstructorNode()
     if (customConstructorDefinition) return customConstructorDefinition.getDefinedConstructor()
     return this._getDefaultNodeConstructor()

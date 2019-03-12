@@ -28,9 +28,21 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static resolvePath(filePath, programFilepath) {
+        // For use in Node.js only
+        if (!filePath.startsWith("."))
+            return filePath;
+        const path = require("path");
+        const folder = this.getPathWithoutFileName(programFilepath);
+        return path.resolve(folder + "/" + filePath);
+    }
     static getFileExtension(url = "") {
         const match = url.match(/\.([^\.]+)$/);
         return (match && match[1]) || "";
+    }
+    static resolveProperty(obj, path, separator = ".") {
+        const properties = Array.isArray(path) ? path : path.split(separator);
+        return properties.reduce((prev, curr) => prev && prev[curr], obj);
     }
     static formatStr(str, listDelimiter = " ", parameterMap) {
         return str.replace(/{([^\}]+)}/g, (match, path) => {
@@ -103,6 +115,38 @@ class TreeUtils {
         };
     }
 }
+TreeUtils.BrowserScript = class {
+    constructor(fileStr) {
+        this._str = fileStr;
+    }
+    addUseStrict() {
+        this._str = `"use strict";\n` + this._str;
+        return this;
+    }
+    removeRequires() {
+        this._str = this._str.replace(/(\n|^)const .* \= require\(.*/g, "$1");
+        return this;
+    }
+    removeImports() {
+        this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1");
+        return this;
+    }
+    removeExports() {
+        this._str = this._str.replace(/(\n|^)export default .*/g, "$1");
+        return this;
+    }
+    changeDefaultExportsToWindowExports() {
+        this._str = this._str.replace(/\nexport default (.*)/g, "\nwindow.$1 = $1");
+        return this;
+    }
+    changeNodeExportsToWindowExports() {
+        this._str = this._str.replace(/\nmodule\.exports \= (.*)/g, "\nwindow.$1 = $1");
+        return this;
+    }
+    getString() {
+        return this._str;
+    }
+};
 const GrammarConstants = {};
 // node types
 GrammarConstants.grammar = "@grammar";
@@ -123,8 +167,8 @@ GrammarConstants.constants = "@constants";
 GrammarConstants.group = "@group";
 GrammarConstants.any = "@any";
 // parser/vm instantiating and executing
-GrammarConstants.parser = "@parser";
-GrammarConstants.parserJs = "js";
+GrammarConstants.constructor = "@constructor";
+GrammarConstants.constructorJs = "js";
 // compiling
 GrammarConstants.compilerKeyword = "@compiler";
 GrammarConstants.compiler = {};
@@ -618,26 +662,29 @@ class ImmutableNode extends AbstractNode {
         return Object.keys(obj);
     }
     getGraphByKey(key) {
-        const graph = this._getGraph((node, id) => node._getNodesByColumn(0, id), node => node.get(key));
+        const graph = this._getGraph((node, id) => node._getNodesByColumn(0, id), node => node.get(key), this);
         graph.push(this);
         return graph;
     }
     getGraph(thisColumnNumber, extendsColumnNumber) {
-        const graph = this._getGraph((node, id) => node._getNodesByColumn(thisColumnNumber, id), node => node.getWord(extendsColumnNumber));
+        const graph = this._getGraph((node, id) => node._getNodesByColumn(thisColumnNumber, id), node => node.getWord(extendsColumnNumber), this);
         graph.push(this);
         return graph;
     }
-    _getGraph(getNodesByIdFn, getParentIdFn) {
+    _getGraph(getNodesByIdFn, getParentIdFn, cannotContainNode) {
         const parentId = getParentIdFn(this);
         if (!parentId)
             return [];
-        const parentNodes = getNodesByIdFn(this.getParent(), parentId);
-        if (!parentNodes.length)
+        const potentialParentNodes = getNodesByIdFn(this.getParent(), parentId);
+        if (!potentialParentNodes.length)
             throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`);
         // Note: If multiple matches, we attempt to extend matching keyword first.
         const keyword = this.getKeyword();
-        const parentNode = parentNodes.find(node => node.getKeyword() === keyword) || parentNodes[0];
-        const graph = parentNode._getGraph(getNodesByIdFn, getParentIdFn);
+        const parentNode = potentialParentNodes.find(node => node.getKeyword() === keyword) || potentialParentNodes[0];
+        // todo: detect loops
+        if (parentNode === cannotContainNode)
+            throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`);
+        const graph = parentNode._getGraph(getNodesByIdFn, getParentIdFn, cannotContainNode);
         graph.push(parentNode);
         return graph;
     }
@@ -913,7 +960,7 @@ class ImmutableNode extends AbstractNode {
             line = keyword + " " + content;
         else if (content instanceof Date)
             line = keyword + " " + content.getTime().toString();
-        else if (content instanceof TreeNode) {
+        else if (content instanceof ImmutableNode) {
             line = keyword;
             children = new TreeNode(content.childrenToString(), content.getLine());
         }
@@ -931,13 +978,13 @@ class ImmutableNode extends AbstractNode {
         this._setLineAndChildren(line, children);
     }
     _setLineAndChildren(line, children, index = this.length) {
-        const parserClass = this.parseNodeType(line);
-        const parsedNode = new parserClass(children, line, this);
+        const nodeConstructor = this.getNodeConstructor(line);
+        const newNode = new nodeConstructor(children, line, this);
         const adjustedIndex = index < 0 ? this.length + index : index;
-        this._getChildrenArray().splice(adjustedIndex, 0, parsedNode);
+        this._getChildrenArray().splice(adjustedIndex, 0, newNode);
         if (this._index)
             this._makeIndex(adjustedIndex);
-        return parsedNode;
+        return newNode;
     }
     _parseString(str) {
         if (!str)
@@ -961,8 +1008,8 @@ class ImmutableNode extends AbstractNode {
             }
             const lineContent = line.substr(currentIndentCount);
             const parent = parentStack[parentStack.length - 1];
-            const parserClass = parent.parseNodeType(lineContent);
-            lastNode = new parserClass(undefined, lineContent, parent);
+            const nodeConstructor = parent.getNodeConstructor(lineContent);
+            lastNode = new nodeConstructor(undefined, lineContent, parent);
             parent._getChildrenArray().push(lastNode);
         });
         return this;
@@ -1085,7 +1132,7 @@ class ImmutableNode extends AbstractNode {
         });
         return result;
     }
-    parseNodeType(line) {
+    getNodeConstructor(line) {
         const map = this.getKeywordMap();
         if (!map)
             return this.getCatchAllNodeClass(line);
@@ -1726,6 +1773,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             delete node._cachedLineNumber;
             if (errs.length)
                 yield errs;
+            line++;
         }
     }
     getProgramErrors() {
@@ -1736,6 +1784,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             const errs = node.getErrors();
             errs.forEach(err => errors.push(err));
             delete node._cachedLineNumber;
+            line++;
         }
         return errors;
     }
@@ -2096,29 +2145,11 @@ class GrammarConstantsNode extends TreeNode {
         return result;
     }
 }
-class GrammarDefinitionErrorNode extends TreeNode {
-    getErrors() {
-        const parent = this.getParent();
-        const context = parent.isRoot() ? "" : parent.getKeyword();
-        const point = this.getPoint();
-        return [
-            {
-                kind: GrammarConstants.invalidKeywordError,
-                subkind: this.getKeyword(),
-                level: point.x,
-                context: context,
-                message: `${GrammarConstants.invalidKeywordError} "${this.getKeyword()}" at line ${point.y}`
-            }
-        ];
-    }
-    getLineSyntax() {
-        return ["keyword"].concat(this.getWordsFrom(1).map(word => "any")).join(" ");
-    }
-}
-class GrammarParserClassNode extends TreeNode {
-    getParserClassFilePath() {
+class GrammarCustomConstructorNode extends TreeNode {
+    _getNodeConstructorFilePath() {
         return this.getWord(2);
     }
+    // todo: allow for deeper nesting? use Utils.resolveProperty
     getSubModuleName() {
         return this.getWord(3);
     }
@@ -2131,8 +2162,8 @@ class GrammarParserClassNode extends TreeNode {
         };
         return builtIns;
     }
-    getParserClass() {
-        const filepath = this.getParserClassFilePath();
+    getDefinedConstructor() {
+        const filepath = this._getNodeConstructorFilePath();
         const builtIns = this._getNodeClasses();
         const builtIn = builtIns[filepath];
         if (builtIn)
@@ -2152,6 +2183,25 @@ class GrammarParserClassNode extends TreeNode {
         return subModule ? theModule[subModule] : theModule;
     }
 }
+class GrammarDefinitionErrorNode extends TreeNode {
+    getErrors() {
+        const parent = this.getParent();
+        const context = parent.isRoot() ? "" : parent.getKeyword();
+        const point = this.getPoint();
+        return [
+            {
+                kind: GrammarConstants.invalidKeywordError,
+                subkind: this.getKeyword(),
+                level: point.x,
+                context: context,
+                message: `${GrammarConstants.invalidKeywordError} "${this.getKeyword()}" at line ${point.y}`
+            }
+        ];
+    }
+    getLineSyntax() {
+        return ["keyword"].concat(this.getWordsFrom(1).map(word => "any")).join(" ");
+    }
+}
 class AbstractGrammarDefinitionNode extends TreeNode {
     getKeywordMap() {
         const types = [
@@ -2168,7 +2218,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         });
         map[GrammarConstants.constants] = GrammarConstantsNode;
         map[GrammarConstants.compilerKeyword] = GrammarCompilerNode;
-        map[GrammarConstants.parser] = GrammarParserClassNode;
+        map[GrammarConstants.constructor] = GrammarCustomConstructorNode;
         return map;
     }
     getId() {
@@ -2183,25 +2233,25 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     _isAnyNode() {
         return this.has(GrammarConstants.any);
     }
-    _getCustomDefinedParserNode() {
-        return this.getNodeByColumns(GrammarConstants.parser, GrammarConstants.parserJs);
+    _getCustomDefinedConstructorNode() {
+        return (this.getNodeByColumns(GrammarConstants.constructor, GrammarConstants.constructorJs));
     }
-    getParserClass() {
-        if (!this._cache_parserClass)
-            this._cache_parserClass = this._getParserClass();
-        return this._cache_parserClass;
+    getDefinedConstructor() {
+        if (!this._cache_definedNodeConstructor)
+            this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
+        return this._cache_definedNodeConstructor;
     }
-    _getDefaultParserClass() {
+    _getDefaultNodeConstructor() {
         if (this._isAnyNode())
             return GrammarBackedAnyNode;
         return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode;
     }
-    /* Parser class is the actual JS class doing the parsing, different than Node type. */
-    _getParserClass() {
-        const customDefinedParserNode = this._getCustomDefinedParserNode();
-        if (customDefinedParserNode)
-            return customDefinedParserNode.getParserClass();
-        return this._getDefaultParserClass();
+    /* Node constructor is the actual JS class being initiated, different than the Node type. */
+    _getDefinedNodeConstructor() {
+        const customConstructorDefinition = this._getCustomDefinedConstructorNode();
+        if (customConstructorDefinition)
+            return customConstructorDefinition.getDefinedConstructor();
+        return this._getDefaultNodeConstructor();
     }
     getCatchAllNodeClass(line) {
         return GrammarDefinitionErrorNode;
@@ -2253,10 +2303,10 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             return undefined;
         const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache();
         Object.keys(allProgramKeywordDefinitions)
-            .filter(key => allProgramKeywordDefinitions[key]._isOrExtendsAKeywordInScope(keywordsInScope))
+            .filter(key => allProgramKeywordDefinitions[key].isOrExtendsAKeywordInScope(keywordsInScope))
             .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
             .forEach(key => {
-            this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getParserClass();
+            this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getDefinedConstructor();
         });
     }
     _getKeywordsInScope() {
@@ -2291,7 +2341,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     _initCatchCallNodeCache() {
         if (this._cache_catchAll)
             return undefined;
-        this._cache_catchAll = this._getCatchAllDefinition().getParserClass();
+        this._cache_catchAll = this._getCatchAllDefinition().getDefinedConstructor();
     }
     getAutocompleteWords(inputStr, additionalWords = []) {
         // todo: add more tests
@@ -2317,7 +2367,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
         return (this.get(GrammarConstants.catchAllKeyword) ||
             this.getParent()._getRunTimeCatchAllKeyword());
     }
-    _isOrExtendsAKeywordInScope(keywordsInScope) {
+    isOrExtendsAKeywordInScope(keywordsInScope) {
         const chain = this._getKeywordChain();
         return keywordsInScope.some(keyword => chain[keyword]);
     }
@@ -2489,7 +2539,9 @@ GrammarWordTypeNode.types = {
     int: GrammarWordTypeIntNode
 };
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
-    _getDefaultParserClass() { }
+    _getDefaultNodeConstructor() {
+        return undefined;
+    }
 }
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
     _isAbstract() {
@@ -2505,13 +2557,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
     }
-    parseNodeType(line) {
+    getNodeConstructor(line) {
         // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
         // Todo: this only supports single word type inheritance.
         const parts = line.split(this.getZI());
         let type = parts[0] === GrammarConstants.wordType &&
             (GrammarWordTypeNode.types[parts[1]] || GrammarWordTypeNode.types[parts[2]]);
-        return type ? type : super.parseNodeType(line);
+        return type ? type : super.getNodeConstructor(line);
     }
     getTargetExtension() {
         return this._getGrammarRootNode().getTargetExtension();
@@ -2583,8 +2635,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllKeyword() {
         return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword);
     }
-    _getRootParserClass() {
-        const definedClass = this._getGrammarRootNode().getParserClass();
+    _getRootConstructor() {
+        const definedClass = this._getGrammarRootNode().getDefinedConstructor();
         const extendedClass = definedClass || AbstractRuntimeProgram;
         const grammarProgram = this;
         return class extends extendedClass {
@@ -2593,10 +2645,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             }
         };
     }
-    getRootParserClass() {
-        if (!this._cache_rootParserClass)
-            this._cache_rootParserClass = this._getRootParserClass();
-        return this._cache_rootParserClass;
+    getRootConstructor() {
+        if (!this._cache_rootConstructorClass)
+            this._cache_rootConstructorClass = this._getRootConstructor();
+        return this._cache_rootConstructorClass;
     }
     toSublimeSyntaxFile() {
         // todo.
@@ -2701,4 +2753,5 @@ jtree.TreeNode = TreeNode;
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
-jtree.getVersion = () => "16.0.1";
+jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
+jtree.getVersion = () => "17.0.0";

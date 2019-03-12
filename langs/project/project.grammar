@@ -1,0 +1,21 @@
+@grammar project
+ @constructor js ./projectProgram.js
+ @keywords
+  file
+ @catchAllKeyword error
+@wordType filepath
+ @regex .?
+@keyword error
+ @constructor js ErrorNode
+@keyword file
+ @columns filepath
+ @keywords
+  external
+  absolute
+  relative
+ @constructor js ./ProjectNode.js
+@keyword term
+ @columns filepath
+@keyword external term
+@keyword absolute term
+@keyword relative term

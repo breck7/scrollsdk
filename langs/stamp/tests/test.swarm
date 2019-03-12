@@ -1,0 +1,21 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+#test basics stamp
+ #setup
+  require ../index.js
+  %%|
+   folder testEx
+   file testEx/hi.sh
+    data
+     echo Hello world
+    executable
+ getProgramErrors
+  =# 0
+#test static
+ #setup
+  require ../index.js
+  static
+ dirToStamp ./cases
+  =|
+   file cases/executable.stamp
+   file cases/test.stamp

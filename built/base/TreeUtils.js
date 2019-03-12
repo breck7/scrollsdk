@@ -12,9 +12,21 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static resolvePath(filePath, programFilepath) {
+        // For use in Node.js only
+        if (!filePath.startsWith("."))
+            return filePath;
+        const path = require("path");
+        const folder = this.getPathWithoutFileName(programFilepath);
+        return path.resolve(folder + "/" + filePath);
+    }
     static getFileExtension(url = "") {
         const match = url.match(/\.([^\.]+)$/);
         return (match && match[1]) || "";
+    }
+    static resolveProperty(obj, path, separator = ".") {
+        const properties = Array.isArray(path) ? path : path.split(separator);
+        return properties.reduce((prev, curr) => prev && prev[curr], obj);
     }
     static formatStr(str, listDelimiter = " ", parameterMap) {
         return str.replace(/{([^\}]+)}/g, (match, path) => {
@@ -87,4 +99,36 @@ class TreeUtils {
         };
     }
 }
+TreeUtils.BrowserScript = class {
+    constructor(fileStr) {
+        this._str = fileStr;
+    }
+    addUseStrict() {
+        this._str = `"use strict";\n` + this._str;
+        return this;
+    }
+    removeRequires() {
+        this._str = this._str.replace(/(\n|^)const .* \= require\(.*/g, "$1");
+        return this;
+    }
+    removeImports() {
+        this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1");
+        return this;
+    }
+    removeExports() {
+        this._str = this._str.replace(/(\n|^)export default .*/g, "$1");
+        return this;
+    }
+    changeDefaultExportsToWindowExports() {
+        this._str = this._str.replace(/\nexport default (.*)/g, "\nwindow.$1 = $1");
+        return this;
+    }
+    changeNodeExportsToWindowExports() {
+        this._str = this._str.replace(/\nmodule\.exports \= (.*)/g, "\nwindow.$1 = $1");
+        return this;
+    }
+    getString() {
+        return this._str;
+    }
+};
 exports.default = TreeUtils;

@@ -1,0 +1,4 @@
+prompt LANG any Enter the name of your language
+prompt VERSION int Enter an integer
+folder testRun
+file testRun/LANG.js

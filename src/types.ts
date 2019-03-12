@@ -27,6 +27,8 @@ export namespace types {
   export declare type sortFn = (nodeA: any, nodeB: any) => triInt
   export declare type filepath = string
   export declare type filterFn = (node: any, index: int) => boolean
+
+  export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
 }
 
 export default types

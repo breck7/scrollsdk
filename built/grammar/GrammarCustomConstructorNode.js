@@ -10,6 +10,7 @@ class GrammarCustomConstructorNode extends TreeNode_1.default {
     _getNodeConstructorFilePath() {
         return this.getWord(2);
     }
+    // todo: allow for deeper nesting? use Utils.resolveProperty
     getSubModuleName() {
         return this.getWord(3);
     }

@@ -5,6 +5,8 @@
 - Breaking: In .grammar files @parser is now @constructor
 - Breaking: In grammar JS getParserClass is now getDefinedConstructor
 - Breaking: In grammar JS getRootParserClass is now getRootConstructor
+- New: moved BrowserScript and swarm, project and stamp languages into this project to avoid circular dependencies
+- New: (temporary) getLanguage method for accessing included languages
 - New: error message when you have an inheritance loop in grammar file
 - Fix: line number error message regression fix
 - Infra: minor CLI app refactor

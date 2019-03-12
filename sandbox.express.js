@@ -2,7 +2,7 @@
 
 const express = require("express")
 const fs = require("fs")
-const BrowserScript = require("project-lang").BrowserScript
+const BrowserScript = require("./index.js").Utils.BrowserScript
 
 const app = express()
 

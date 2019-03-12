@@ -15,6 +15,8 @@ jtree.NonTerminalNode = GrammarBackedNonTerminalNode
 jtree.TerminalNode = GrammarBackedTerminalNode
 jtree.AnyNode = GrammarBackedAnyNode
 
-jtree.getVersion = () => "16.0.1"
+jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
+
+jtree.getVersion = () => "17.0.0"
 
 export default jtree

@@ -1,0 +1,84 @@
+@grammar swarm
+ @keywords
+  #!
+  #setup
+  testBlock
+ @catchAllKeyword error
+ @constructor js ./SwarmProgram.js
+@wordType filepath
+ @regex .?
+@wordType any
+ @regex .?
+@wordType int
+ @regex ^\-?[0-9]+$
+@keyword #setup
+ @constructor js ./TestSetupNode.js
+ @keywords
+  async
+  require
+  static
+  %%|
+@abstract terminal
+@keyword #! terminal
+ @columns filepath any*
+@keyword require terminal
+ @columns filepath any*
+@keyword async terminal
+ @description Set this in setup to test async methods.
+@keyword static terminal
+ @description Add this to setup node to import class directly without initiating it, for static method testing.
+@abstract testBlock
+ @columns any*
+ @constructor js ./TestBlock.js
+ @keywords
+  #setup
+ @catchAllKeyword commandNode
+@keyword commandNode
+ @constructor js ./CommandNode.js
+ @description Input is an object, and calls some method with an optional array of string args.
+ @columns any*
+ @catchAllKeyword commandNode
+ @keywords
+  %|
+  assertion
+@keyword #test testBlock
+@keyword +#test testBlock
+ @constructor js ./SoloTestBlock.js
+@keyword -#test testBlock
+ @constructor js ./SkippedTestBlock.js
+@keyword error
+ @constructor js ErrorNode
+@abstract assertion
+@keyword =~ assertion
+ @description Assert result is of a certain type.
+ @columns any
+ @constructor js ./AssertTypeOfNode.js
+@keyword =# assertion
+ @description Intake is an array, and checks if the length of array matches expected.
+ @columns int
+ @constructor js ./AssertLengthNode.js
+@keyword == assertion
+ @description Intake is anything with a toString method, and compares that to provided expected value.
+ @columns any*
+ @constructor js ./AssertEqualNode.js
+@keyword =| assertion
+ @description When your expected value is a multiline string.
+ @catchAllKeyword any
+ @constructor js ./AssertEqualBlockNode.js
+@keyword =+ assertion
+ @columns any*
+ @description Converts the input to string and see if the string contains the provided arguments
+ @constructor js ./AssertIncludesNode.js
+@keyword =- assertion
+ @description Converts the input to string and ensure the string does NOT contain the provided arguments
+ @columns any*
+ @constructor js ./AssertDoesNotIncludeNode.js
+@keyword any
+ @columns any*
+ @catchAllKeyword any
+@keyword %%|
+ @constructor js ./SetupConstructorArgNode.js
+ @catchAllKeyword any
+@keyword %|
+ @constructor js ./CommandArgNode.js
+ @catchAllKeyword any

@@ -2,11 +2,12 @@
 
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
-//const ProjectProgram = require("project-lang")
-const ProjectProgram = require("/Users/breck/grammars/project/index.js")
-const TreeNode = require("../index.js").TreeNode
+const jtree = require("../index.js")
+const TreeNode = jtree.TreeNode
 
-const BrowserScript = ProjectProgram.BrowserScript
+const ProjectProgram = jtree.getLanguage("project")
+
+const BrowserScript = jtree.Utils.BrowserScript
 
 const outputFile = __dirname + `/../jtree.browser.ts`
 

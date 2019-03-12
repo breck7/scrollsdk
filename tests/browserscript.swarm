@@ -1,0 +1,31 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+ require ../built/base/TreeUtils.js default.BrowserScript
+#test basics
+ #setup
+  %%|
+   const Foobar = require("foobar")
+   import FamBar from "../FamBar.js"
+   class Foobar extends FamBar {}
+   module.exports = Foobar
+   export default Testing
+ getString
+  =~ string
+  =+ require
+ removeRequires
+  getString
+   =- require
+   =+ import
+ removeImports
+  =- import
+  =- strict
+ addUseStrict
+  getString
+   =+ strict
+   =- window
+ changeNodeExportsToWindowExports
+  getString
+   =+ window
+ changeDefaultExportsToWindowExports
+  getString
+   =+ window.Testing

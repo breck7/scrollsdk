@@ -6,14 +6,14 @@ import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
 
-import AbstractRuntimeNode from "./AbstractRuntimeNode"
-declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
+import types from "../types"
 
 class GrammarCustomConstructorNode extends TreeNode {
   _getNodeConstructorFilePath() {
     return this.getWord(2)
   }
 
+  // todo: allow for deeper nesting? use Utils.resolveProperty
   getSubModuleName() {
     return this.getWord(3)
   }
@@ -29,7 +29,7 @@ class GrammarCustomConstructorNode extends TreeNode {
     return builtIns
   }
 
-  getDefinedConstructor(): RunTimeNodeConstructor {
+  getDefinedConstructor(): types.RunTimeNodeConstructor {
     const filepath = this._getNodeConstructorFilePath()
     const builtIns = this._getNodeClasses()
     const builtIn = builtIns[filepath]

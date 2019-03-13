@@ -33,7 +33,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this.getWord(1);
     }
     _isNonTerminal() {
-        return this._isAnyNode() || this.has(GrammarConstants_1.default.keywords);
+        return this._isAnyNode() || this.has(GrammarConstants_1.default.keywords) || this.has(GrammarConstants_1.default.catchAllKeyword);
     }
     _isAbstract() {
         return false;
@@ -61,7 +61,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             return customConstructorDefinition.getDefinedConstructor();
         return this._getDefaultNodeConstructor();
     }
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         return GrammarDefinitionErrorNode_1.default;
     }
     getProgram() {
@@ -110,11 +110,12 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         if (!keywordsInScope.length)
             return undefined;
         const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache();
-        Object.keys(allProgramKeywordDefinitions)
-            .filter(key => allProgramKeywordDefinitions[key].isOrExtendsAKeywordInScope(keywordsInScope))
-            .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
-            .forEach(key => {
-            this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getDefinedConstructor();
+        const keywords = Object.keys(allProgramKeywordDefinitions);
+        keywords
+            .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
+            .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
+            .forEach(keyword => {
+            this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getDefinedConstructor();
         });
     }
     _getKeywordsInScope() {
@@ -146,10 +147,10 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         // todo: implement contraints like a grammar file MUST have a catch all.
         return def ? def : this.getParent()._getCatchAllDefinition();
     }
-    _initCatchCallNodeCache() {
-        if (this._cache_catchAll)
+    _initCatchAllNodeConstructorCache() {
+        if (this._cache_catchAllConstructor)
             return undefined;
-        this._cache_catchAll = this._getCatchAllDefinition().getDefinedConstructor();
+        this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor();
     }
     getAutocompleteWords(inputStr, additionalWords = []) {
         // todo: add more tests
@@ -165,9 +166,9 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
     }
     _getProgramKeywordDefinitionCache() { }
-    getRunTimeCatchAllNodeClass() {
-        this._initCatchCallNodeCache();
-        return this._cache_catchAll;
+    getRunTimeCatchAllNodeConstructor() {
+        this._initCatchAllNodeConstructorCache();
+        return this._cache_catchAllConstructor;
     }
 }
 exports.default = AbstractGrammarDefinitionNode;

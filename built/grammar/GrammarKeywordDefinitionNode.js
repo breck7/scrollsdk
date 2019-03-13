@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
@@ -7,6 +8,12 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
     _getRunTimeCatchAllKeyword() {
         return (this.get(GrammarConstants_1.default.catchAllKeyword) ||
             this.getParent()._getRunTimeCatchAllKeyword());
+    }
+    getKeywordMap() {
+        const map = super.getKeywordMap();
+        map[GrammarConstants_1.default.any] = TreeNode_1.default;
+        map[GrammarConstants_1.default.group] = TreeNode_1.default;
+        return map;
     }
     isOrExtendsAKeywordInScope(keywordsInScope) {
         const chain = this._getKeywordChain();

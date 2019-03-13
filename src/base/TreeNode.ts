@@ -1086,7 +1086,7 @@ class ImmutableNode extends AbstractNode {
     return undefined
   }
 
-  getCatchAllNodeClass(line: string) {
+  getCatchAllNodeConstructor(line: string) {
     return this.constructor
   }
 
@@ -1110,10 +1110,10 @@ class ImmutableNode extends AbstractNode {
 
   getNodeConstructor(line: string) {
     const map = this.getKeywordMap()
-    if (!map) return this.getCatchAllNodeClass(line)
+    if (!map) return this.getCatchAllNodeConstructor(line)
     const firstBreak = line.indexOf(this.getZI())
     const keyword = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
-    return map[keyword] || this.getCatchAllNodeClass(line)
+    return map[keyword] || this.getCatchAllNodeConstructor(line)
   }
 
   private static _uniqueId: int

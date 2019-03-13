@@ -18,6 +18,16 @@ file LANG/package.pack
 file LANG/readme.mark
  data
   # LANG - DESCRIPTION
+file LANG/nodes.js
+ // If you want to augment your language with custom code, this file serves as a starting point.
+ // You can link your definitions to these classes using the @constructor keyword in your grammar file.
+ const jtree = require("jtree")
+ class ProgramNode extends jtree.program {}
+ class SomeNode extends jtree.NonTerminalNode {}
+ module.exports = {
+   ProgramNode: ProgramNode,
+   SomeNode: SomeNode,
+ }
 file LANG/index.js
  data
   module.exports = require("jtree").getProgramConstructor(__dirname + "/LANG.grammar")

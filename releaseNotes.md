@@ -1,3 +1,11 @@
+17.1.0 / 2019-03-13
+===================
+- Breaking: getCatchAllNodeClass is now getCatchAllNodeConstructor
+- Breaking: getRunTimeCatchAllNodeClass is now getRunTimeCatchAllNodeConstructor
+- Fix: catchAllKeywords can now instantiate a custom class
+- New: checking a grammar programmatically now throws an error a constructor path in a grammar file does not exist
+- Infra: added tap-mocha-reporter for clearer test run output
+
 17.0.0 / 2019-03-11
 ===================
 - Breaking: In TreeNode, parseNodeType is now getNodeConstructor

@@ -8,7 +8,7 @@ class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode_1.default {
     getErrors() {
         return [];
     }
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         return GrammarBackedAnyNode;
     }
 }

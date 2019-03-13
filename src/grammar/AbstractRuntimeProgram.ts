@@ -48,10 +48,10 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return this.getDefinition().getRunTimeKeywordMap()
   }
 
-  getCatchAllNodeClass(line) {
+  getCatchAllNodeConstructor(line) {
     // todo: blank line
     // todo: restore didyoumean
-    return this.getDefinition().getRunTimeCatchAllNodeClass()
+    return this.getDefinition().getRunTimeCatchAllNodeConstructor()
   }
 
   getDefinition() {

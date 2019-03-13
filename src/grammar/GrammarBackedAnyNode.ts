@@ -9,7 +9,7 @@ class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
     return []
   }
 
-  getCatchAllNodeClass(line) {
+  getCatchAllNodeConstructor(line) {
     return GrammarBackedAnyNode
   }
 }

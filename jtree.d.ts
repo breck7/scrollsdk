@@ -65,7 +65,7 @@ interface TreeNode {
   nodeAt: (index: int | pathVector) => TreeNode
 
   // Methods for Tree Languages
-  getCatchAllNodeClass: (line: string) => TreeNode
+  getCatchAllNodeConstructor: (line: string) => TreeNode
   getKeywordMap: () => KeywordMap
   getNodeConstructor: (line: string) => TreeNode
 

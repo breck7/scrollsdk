@@ -65,6 +65,7 @@
  @columns any any
 @keyword @catchAllKeyword monadicKeywordRule
 @keyword @constructor variadicKeywordRule
+ @description If specified, the existence of this constructor will be checked when the grammar file is checked for errors.
 @keyword @frequency monadicKeywordRule
 @abstract variadicKeywordRule keywordRule
  @columns any*

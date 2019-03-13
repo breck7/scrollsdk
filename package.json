@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "17.0.0",
+  "version": "17.1.0",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "bin": {
@@ -22,10 +22,9 @@
     "project-lang": "^1.7.0",
     "qunitjs": "*",
     "recursive-readdir-sync": "*",
-    "tap": "^12.0.1"
+    "tap": "^12.6.0",
+    "@types/node": "^11.10.4",
+    "tap-mocha-reporter": "^4.0.1"
   },
-  "license": "MIT",
-  "dependencies": {
-    "@types/node": "^11.10.4"
-  }
+  "license": "MIT"
 }

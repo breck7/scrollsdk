@@ -9,9 +9,9 @@ jtree.executeFile = (programPath: types.filepath, grammarPath: types.filepath): 
 
 // returns AbstractRuntimeProgram
 jtree.makeProgram = (programPath: types.filepath, grammarPath: types.filepath) => {
-  const programClass = jtree.getProgramConstructor(grammarPath)
+  const programConstructor = jtree.getProgramConstructor(grammarPath)
   const code = fs.readFileSync(programPath, "utf8")
-  return new programClass(code)
+  return new programConstructor(code)
 }
 
 // returns GrammarBackedProgramClass

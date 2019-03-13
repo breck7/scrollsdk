@@ -13,6 +13,13 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     )
   }
 
+  getKeywordMap() {
+    const map = super.getKeywordMap()
+    map[GrammarConstants.any] = TreeNode
+    map[GrammarConstants.group] = TreeNode
+    return map
+  }
+
   isOrExtendsAKeywordInScope(keywordsInScope: string[]): boolean {
     const chain = this._getKeywordChain()
     return keywordsInScope.some(keyword => chain[keyword])

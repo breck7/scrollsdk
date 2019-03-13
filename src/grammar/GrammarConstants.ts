@@ -1,3 +1,4 @@
+// todo: change to enum?
 const GrammarConstants: any = {}
 
 // node types
@@ -40,5 +41,6 @@ GrammarConstants.frequency = "@frequency"
 
 // errors
 GrammarConstants.invalidKeywordError = "invalidKeywordError"
+GrammarConstants.invalidConstructorPathError = "invalidConstructorPathError"
 
 export default GrammarConstants

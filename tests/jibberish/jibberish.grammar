@@ -23,6 +23,11 @@
  @columns int
 @keyword extendsAbstract someAbstractClass
  @columns int
+@keyword someCode topLevel
+ @catchAllKeyword lineOfCode
+@keyword lineOfCode
+ @columns word*
+ @constructor js ./jibberishNodes.js LineOfCodeNode
 @keyword block topLevel
  @keywords
   topLevel

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// todo: change to enum?
 const GrammarConstants = {};
 // node types
 GrammarConstants.grammar = "@grammar";
@@ -35,4 +36,5 @@ GrammarConstants.description = "@description";
 GrammarConstants.frequency = "@frequency";
 // errors
 GrammarConstants.invalidKeywordError = "invalidKeywordError";
+GrammarConstants.invalidConstructorPathError = "invalidConstructorPathError";
 exports.default = GrammarConstants;

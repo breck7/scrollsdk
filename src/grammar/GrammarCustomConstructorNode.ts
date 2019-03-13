@@ -5,6 +5,7 @@ import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
+import GrammarConstants from "./GrammarConstants"
 
 import types from "../types"
 
@@ -18,20 +19,36 @@ class GrammarCustomConstructorNode extends TreeNode {
     return this.getWord(3)
   }
 
-  _getNodeClasses() {
-    const builtIns = {
+  _getBuiltInConstructors() {
+    return {
       ErrorNode: GrammarBackedErrorNode,
       TerminalNode: GrammarBackedTerminalNode,
       NonTerminalNode: GrammarBackedNonTerminalNode,
       AnyNode: GrammarBackedAnyNode
     }
+  }
 
-    return builtIns
+  getErrors(): types.ParseError[] {
+    if (this.getDefinedConstructor()) return []
+    const parent = this.getParent()
+    const context = parent.isRoot() ? "" : parent.getKeyword()
+    const point = this.getPoint()
+    return [
+      {
+        kind: GrammarConstants.invalidConstructorPathError,
+        subkind: this.getKeyword(),
+        level: point.x,
+        context: context,
+        message: `${GrammarConstants.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${
+          point.y
+        }`
+      }
+    ]
   }
 
   getDefinedConstructor(): types.RunTimeNodeConstructor {
     const filepath = this._getNodeConstructorFilePath()
-    const builtIns = this._getNodeClasses()
+    const builtIns = this._getBuiltInConstructors()
     const builtIn = builtIns[filepath]
 
     if (builtIn) return builtIn

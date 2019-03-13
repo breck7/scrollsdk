@@ -1,14 +1,8 @@
 #! /usr/local/bin/node
+const reporter = require("tap-mocha-reporter")
+const exec = require("child_process").exec
 
-const jtree = require("../index.js")
-const recursiveReadSync = require("recursive-readdir-sync")
+const proc = exec(__dirname + "/test-all.js")
 
-require("./runBaseTests.js")
-
-const allFiles = recursiveReadSync(__dirname + "/../tests/")
-
-allFiles.filter(file => file.endsWith(".test.js")).forEach(file => require(file))
-
-allFiles
-  .filter(file => file.endsWith(".swarm"))
-  .forEach(file => jtree.executeFile(file, __dirname + "/../langs/swarm/swarm.grammar"))
+proc.stdout.pipe(reporter("dot"))
+proc.stderr.on("data", data => console.error("stderr: " + data.toString()))

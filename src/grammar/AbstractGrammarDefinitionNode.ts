@@ -38,7 +38,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   _isNonTerminal() {
-    return this._isAnyNode() || this.has(GrammarConstants.keywords)
+    return this._isAnyNode() || this.has(GrammarConstants.keywords) || this.has(GrammarConstants.catchAllKeyword)
   }
 
   _isAbstract() {
@@ -75,7 +75,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._getDefaultNodeConstructor()
   }
 
-  getCatchAllNodeClass(line) {
+  getCatchAllNodeConstructor(line) {
     return GrammarDefinitionErrorNode
   }
 
@@ -134,11 +134,12 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     if (!keywordsInScope.length) return undefined
 
     const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache()
-    Object.keys(allProgramKeywordDefinitions)
-      .filter(key => allProgramKeywordDefinitions[key].isOrExtendsAKeywordInScope(keywordsInScope))
-      .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
-      .forEach(key => {
-        this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getDefinedConstructor()
+    const keywords = Object.keys(allProgramKeywordDefinitions)
+    keywords
+      .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
+      .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
+      .forEach(keyword => {
+        this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getDefinedConstructor()
       })
   }
 
@@ -177,12 +178,12 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return def ? def : (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllDefinition()
   }
 
-  private _cache_catchAll
+  private _cache_catchAllConstructor
 
-  _initCatchCallNodeCache() {
-    if (this._cache_catchAll) return undefined
+  _initCatchAllNodeConstructorCache() {
+    if (this._cache_catchAllConstructor) return undefined
 
-    this._cache_catchAll = this._getCatchAllDefinition().getDefinedConstructor()
+    this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor()
   }
 
   getAutocompleteWords(inputStr, additionalWords = []) {
@@ -203,9 +204,9 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   _getProgramKeywordDefinitionCache(): any {}
 
-  getRunTimeCatchAllNodeClass() {
-    this._initCatchCallNodeCache()
-    return this._cache_catchAll
+  getRunTimeCatchAllNodeConstructor() {
+    this._initCatchAllNodeConstructorCache()
+    return this._cache_catchAllConstructor
   }
 }
 

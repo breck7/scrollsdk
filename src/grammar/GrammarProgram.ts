@@ -6,6 +6,8 @@ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
 import GrammarWordTypeNode from "./GrammarWordTypeNode"
 
+import types from "../types"
+
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   _getDefaultNodeConstructor() {
     return undefined
@@ -18,6 +20,8 @@ class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode 
   }
 }
 
+// GrammarProgram is a constructor that takes a grammar file, and builds a new
+// constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
     const map = {}
@@ -26,6 +30,19 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
     map[GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode
     return map
+  }
+
+  getProgramErrors(): types.ParseError[] {
+    const errors = []
+    let line = 1
+    for (let node of this.getTopDownArray()) {
+      node._cachedLineNumber = line
+      const errs = node.getErrors()
+      errs.forEach(err => errors.push(err))
+      delete node._cachedLineNumber
+      line++
+    }
+    return errors
   }
 
   getNodeConstructor(line) {
@@ -105,6 +122,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this.toString()
   }
 
+  // At present we only have global keyword definitions (you cannot have scoped keyword definitions right now).
   private _cache_keywordDefinitions
 
   _initProgramKeywordDefinitionCache() {

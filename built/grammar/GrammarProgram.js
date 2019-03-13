@@ -16,6 +16,8 @@ class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode_
         return true;
     }
 }
+// GrammarProgram is a constructor that takes a grammar file, and builds a new
+// constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getKeywordMap() {
         const map = {};
@@ -24,6 +26,18 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         map[GrammarConstants_1.default.keyword] = GrammarKeywordDefinitionNode_1.default;
         map[GrammarConstants_1.default.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
+    }
+    getProgramErrors() {
+        const errors = [];
+        let line = 1;
+        for (let node of this.getTopDownArray()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            errs.forEach(err => errors.push(err));
+            delete node._cachedLineNumber;
+            line++;
+        }
+        return errors;
     }
     getNodeConstructor(line) {
         // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?

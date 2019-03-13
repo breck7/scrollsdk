@@ -11,9 +11,16 @@ quack.quickTest("basics", equal => {
   // Arrange
   const program = new GrammarProgram()
 
+  // Arrange
+  const grammarPath = __dirname + "/jibberish/jibberish.grammar"
+  const jibberishGrammarCode = fs.readFileSync(grammarPath, "utf8")
+
   // Act
+  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
+  const errs = grammarProgram.getProgramErrors()
 
   // Assert
+  equal(errs.length, 0)
 })
 
 const makeJibberishProgram = code => {
@@ -23,6 +30,7 @@ const makeJibberishProgram = code => {
 
   // Act
   const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
+
   const rootJibberishProgramConstructor = grammarProgram.getRootConstructor()
   return new rootJibberishProgramConstructor(code)
 }
@@ -59,6 +67,9 @@ quack.quickTest("jibberish", equal => {
 
   // Assert
   equal(addition instanceof jibberishNodes.additionNode, true)
+
+  // Act/Assert
+  equal(program.getNode("someCode echo") instanceof jibberishNodes.LineOfCodeNode, true, "line of code class")
 
   // Act
   const wordTypesProgram = makeJibberishProgram(`foo

@@ -933,7 +933,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getKeywordMap() {
         return undefined;
     }
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         return this.constructor;
     }
     // Note: if you have 2 of the same keywords, will attempt to extend matching keyword first
@@ -955,10 +955,10 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getNodeConstructor(line) {
         const map = this.getKeywordMap();
         if (!map)
-            return this.getCatchAllNodeClass(line);
+            return this.getCatchAllNodeConstructor(line);
         const firstBreak = line.indexOf(this.getZI());
         const keyword = line.substr(0, firstBreak > -1 ? firstBreak : undefined);
-        return map[keyword] || this.getCatchAllNodeClass(line);
+        return map[keyword] || this.getCatchAllNodeConstructor(line);
     }
     static _makeUniqueId() {
         if (this._uniqueId === undefined)

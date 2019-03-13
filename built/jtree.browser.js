@@ -938,7 +938,8 @@ class ImmutableNode extends AbstractNode {
         for (let keyword in content) {
             if (!content.hasOwnProperty(keyword))
                 continue;
-            this._appendFromJavascriptObjectTuple(keyword, content[keyword], circularCheckArray);
+            // Branch the circularCheckArray, as we only have same branch circular arrays
+            this._appendFromJavascriptObjectTuple(keyword, content[keyword], circularCheckArray.slice(0));
         }
         return this;
     }
@@ -1025,11 +1026,13 @@ class ImmutableNode extends AbstractNode {
     getContentsArray() {
         return this.map(node => node.getContent());
     }
-    getChildrenByNodeType(type) {
-        return this.filter(child => child instanceof type);
+    // todo: rename to getChildrenByConstructor(?)
+    getChildrenByNodeType(constructor) {
+        return this.filter(child => child instanceof constructor);
     }
-    getNodeByType(type) {
-        return this.find(child => child instanceof type);
+    // todo: rename to getNodeByConstructor(?)
+    getNodeByType(constructor) {
+        return this.find(child => child instanceof constructor);
     }
     indexOfLast(keyword) {
         const result = this._getIndex()[keyword];
@@ -2792,4 +2795,4 @@ jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "17.1.0";
+jtree.getVersion = () => "17.1.1";

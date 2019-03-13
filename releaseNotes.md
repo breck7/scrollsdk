@@ -1,3 +1,7 @@
+17.1.1 / 2019-03-13
+===================
+- Fix: circular array check false positives when creating tree from Javascript object.
+
 17.1.0 / 2019-03-13
 ===================
 - Breaking: getCatchAllNodeClass is now getCatchAllNodeConstructor

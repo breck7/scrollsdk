@@ -892,7 +892,8 @@ class ImmutableNode extends AbstractNode {
   _setFromObject(content, circularCheckArray) {
     for (let keyword in content) {
       if (!content.hasOwnProperty(keyword)) continue
-      this._appendFromJavascriptObjectTuple(keyword, content[keyword], circularCheckArray)
+      // Branch the circularCheckArray, as we only have same branch circular arrays
+      this._appendFromJavascriptObjectTuple(keyword, content[keyword], circularCheckArray.slice(0))
     }
 
     return this
@@ -976,12 +977,14 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node.getContent())
   }
 
-  getChildrenByNodeType(type) {
-    return this.filter(child => child instanceof type)
+  // todo: rename to getChildrenByConstructor(?)
+  getChildrenByNodeType(constructor: Function) {
+    return this.filter(child => child instanceof constructor)
   }
 
-  getNodeByType(type: Function) {
-    return this.find(child => child instanceof type)
+  // todo: rename to getNodeByConstructor(?)
+  getNodeByType(constructor: Function) {
+    return this.find(child => child instanceof constructor)
   }
 
   indexOfLast(keyword: word): int {

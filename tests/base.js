@@ -420,6 +420,28 @@ testTree.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
   equal(newTree.nodeAt(0).length, 2)
 }
 
+testTree.duplicateReferences = equal => {
+  // Arrange
+  let b = ["abc"]
+  let a = {
+    one: b,
+    two: b
+  }
+
+  // Act/Assert
+  equal(new TreeNode(a).get("two 0"), "abc")
+
+  // Arrange
+  b = { foo: "bar" }
+  a = {
+    one: b,
+    two: b
+  }
+
+  // Act/Assert
+  equal(new TreeNode(a).get("two foo"), "bar")
+}
+
 testTree.append = equal => {
   // Arrange
   const tree = new TreeNode("hello world")

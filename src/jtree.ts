@@ -17,6 +17,6 @@ jtree.AnyNode = GrammarBackedAnyNode
 
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
 
-jtree.getVersion = () => "17.1.0"
+jtree.getVersion = () => "17.1.1"
 
 export default jtree

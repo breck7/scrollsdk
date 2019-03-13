@@ -73,7 +73,7 @@ const getCode = () => {
 
 const main = code => {
   log("Building language...")
-   const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootParserClass()
+   const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootConstructor()
 
   log("Loading program...")
 

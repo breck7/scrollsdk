@@ -147,6 +147,7 @@ TreeUtils.BrowserScript = class {
         return this._str;
     }
 };
+// todo: change to enum?
 const GrammarConstants = {};
 // node types
 GrammarConstants.grammar = "@grammar";
@@ -182,6 +183,7 @@ GrammarConstants.description = "@description";
 GrammarConstants.frequency = "@frequency";
 // errors
 GrammarConstants.invalidKeywordError = "invalidKeywordError";
+GrammarConstants.invalidConstructorPathError = "invalidConstructorPathError";
 class ImmutableNode extends AbstractNode {
     constructor(children, line, parent) {
         super();
@@ -1113,7 +1115,7 @@ class ImmutableNode extends AbstractNode {
     getKeywordMap() {
         return undefined;
     }
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         return this.constructor;
     }
     // Note: if you have 2 of the same keywords, will attempt to extend matching keyword first
@@ -1135,10 +1137,10 @@ class ImmutableNode extends AbstractNode {
     getNodeConstructor(line) {
         const map = this.getKeywordMap();
         if (!map)
-            return this.getCatchAllNodeClass(line);
+            return this.getCatchAllNodeConstructor(line);
         const firstBreak = line.indexOf(this.getZI());
         const keyword = line.substr(0, firstBreak > -1 ? firstBreak : undefined);
-        return map[keyword] || this.getCatchAllNodeClass(line);
+        return map[keyword] || this.getCatchAllNodeConstructor(line);
     }
     static _makeUniqueId() {
         if (this._uniqueId === undefined)
@@ -1801,10 +1803,10 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getKeywordMap() {
         return this.getDefinition().getRunTimeKeywordMap();
     }
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         // todo: blank line
         // todo: restore didyoumean
-        return this.getDefinition().getRunTimeCatchAllNodeClass();
+        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
     }
     getDefinition() {
         return this.getGrammarProgram();
@@ -2055,8 +2057,8 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeCodeNode {
     getKeywordMap() {
         return this.getDefinition().getRunTimeKeywordMap();
     }
-    getCatchAllNodeClass(line) {
-        return this.getDefinition().getRunTimeCatchAllNodeClass();
+    getCatchAllNodeConstructor(line) {
+        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
     }
     // todo: implement
     _getNodeJoinCharacter() {
@@ -2081,7 +2083,7 @@ class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
     getErrors() {
         return [];
     }
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         return GrammarBackedAnyNode;
     }
 }
@@ -2133,7 +2135,7 @@ class GrammarConstNode extends TreeNode {
     }
 }
 class GrammarConstantsNode extends TreeNode {
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         return GrammarConstNode;
     }
     getConstantsObj() {
@@ -2153,18 +2155,33 @@ class GrammarCustomConstructorNode extends TreeNode {
     getSubModuleName() {
         return this.getWord(3);
     }
-    _getNodeClasses() {
-        const builtIns = {
+    _getBuiltInConstructors() {
+        return {
             ErrorNode: GrammarBackedErrorNode,
             TerminalNode: GrammarBackedTerminalNode,
             NonTerminalNode: GrammarBackedNonTerminalNode,
             AnyNode: GrammarBackedAnyNode
         };
-        return builtIns;
+    }
+    getErrors() {
+        if (this.getDefinedConstructor())
+            return [];
+        const parent = this.getParent();
+        const context = parent.isRoot() ? "" : parent.getKeyword();
+        const point = this.getPoint();
+        return [
+            {
+                kind: GrammarConstants.invalidConstructorPathError,
+                subkind: this.getKeyword(),
+                level: point.x,
+                context: context,
+                message: `${GrammarConstants.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
+            }
+        ];
     }
     getDefinedConstructor() {
         const filepath = this._getNodeConstructorFilePath();
-        const builtIns = this._getNodeClasses();
+        const builtIns = this._getBuiltInConstructors();
         const builtIn = builtIns[filepath];
         if (builtIn)
             return builtIn;
@@ -2225,7 +2242,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return this.getWord(1);
     }
     _isNonTerminal() {
-        return this._isAnyNode() || this.has(GrammarConstants.keywords);
+        return this._isAnyNode() || this.has(GrammarConstants.keywords) || this.has(GrammarConstants.catchAllKeyword);
     }
     _isAbstract() {
         return false;
@@ -2253,7 +2270,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             return customConstructorDefinition.getDefinedConstructor();
         return this._getDefaultNodeConstructor();
     }
-    getCatchAllNodeClass(line) {
+    getCatchAllNodeConstructor(line) {
         return GrammarDefinitionErrorNode;
     }
     getProgram() {
@@ -2302,11 +2319,12 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         if (!keywordsInScope.length)
             return undefined;
         const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache();
-        Object.keys(allProgramKeywordDefinitions)
-            .filter(key => allProgramKeywordDefinitions[key].isOrExtendsAKeywordInScope(keywordsInScope))
-            .filter(key => !allProgramKeywordDefinitions[key]._isAbstract())
-            .forEach(key => {
-            this._cache_keywordsMap[key] = allProgramKeywordDefinitions[key].getDefinedConstructor();
+        const keywords = Object.keys(allProgramKeywordDefinitions);
+        keywords
+            .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
+            .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
+            .forEach(keyword => {
+            this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getDefinedConstructor();
         });
     }
     _getKeywordsInScope() {
@@ -2338,10 +2356,10 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         // todo: implement contraints like a grammar file MUST have a catch all.
         return def ? def : this.getParent()._getCatchAllDefinition();
     }
-    _initCatchCallNodeCache() {
-        if (this._cache_catchAll)
+    _initCatchAllNodeConstructorCache() {
+        if (this._cache_catchAllConstructor)
             return undefined;
-        this._cache_catchAll = this._getCatchAllDefinition().getDefinedConstructor();
+        this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor();
     }
     getAutocompleteWords(inputStr, additionalWords = []) {
         // todo: add more tests
@@ -2357,15 +2375,21 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
     }
     _getProgramKeywordDefinitionCache() { }
-    getRunTimeCatchAllNodeClass() {
-        this._initCatchCallNodeCache();
-        return this._cache_catchAll;
+    getRunTimeCatchAllNodeConstructor() {
+        this._initCatchAllNodeConstructorCache();
+        return this._cache_catchAllConstructor;
     }
 }
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllKeyword() {
         return (this.get(GrammarConstants.catchAllKeyword) ||
             this.getParent()._getRunTimeCatchAllKeyword());
+    }
+    getKeywordMap() {
+        const map = super.getKeywordMap();
+        map[GrammarConstants.any] = TreeNode;
+        map[GrammarConstants.group] = TreeNode;
+        return map;
     }
     isOrExtendsAKeywordInScope(keywordsInScope) {
         const chain = this._getKeywordChain();
@@ -2548,6 +2572,8 @@ class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode 
         return true;
     }
 }
+// GrammarProgram is a constructor that takes a grammar file, and builds a new
+// constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordMap() {
         const map = {};
@@ -2556,6 +2582,18 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode;
         map[GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
+    }
+    getProgramErrors() {
+        const errors = [];
+        let line = 1;
+        for (let node of this.getTopDownArray()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            errs.forEach(err => errors.push(err));
+            delete node._cachedLineNumber;
+            line++;
+        }
+        return errors;
     }
     getNodeConstructor(line) {
         // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
@@ -2754,4 +2792,4 @@ jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "17.0.0";
+jtree.getVersion = () => "17.1.0";

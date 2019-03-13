@@ -13,5 +13,7 @@ $(document).ready(function() {
   const val = localStorage.getItem("tree")
   if (val) mainArea.val(val)
 
+  $("#version").html("Version: " + jtree.getVersion())
+
   mainArea.keyup()
 })

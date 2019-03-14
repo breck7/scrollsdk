@@ -8,14 +8,14 @@
 @keyword error
  @constructor js ErrorNode
 @keyword file
- @columns filepath
+ @columns filepath*
  @keywords
   external
   absolute
   relative
  @constructor js ./ProjectNode.js
-@keyword term
- @columns filepath
+@abstract term
+ @columns filepath*
 @keyword external term
 @keyword absolute term
 @keyword relative term

@@ -3,7 +3,7 @@ const path = require("path")
 
 class ProjectNode extends jtree.NonTerminalNode {
   getFilePath() {
-    return this.getWord(1)
+    return this.getWordsFrom(1).join(" ")
   }
 
   _getDependencies() {
@@ -11,8 +11,8 @@ class ProjectNode extends jtree.NonTerminalNode {
       .map(child => {
         const keyword = child.getKeyword()
         if (keyword === "external") return ""
-        if (keyword === "absolute") return child.getWord(1)
-        const link = child.getWord(1)
+        if (keyword === "absolute") return child.getWordsFrom(1).join(" ")
+        const link = child.getWordsFrom(1).join(" ")
         const folderPath = jtree.Utils.getPathWithoutFileName(this.getFilePath())
         const resolvedPath = path.resolve(folderPath + "/" + link)
         return resolvedPath

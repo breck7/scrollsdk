@@ -1,3 +1,7 @@
+17.1.2 / 2019-03-14
+===================
+- Fix: added support for spaces in filenames in langs-project
+
 17.1.1 / 2019-03-13
 ===================
 - Fix: circular array check false positives when creating tree from Javascript object.

@@ -21,6 +21,4 @@ jtree.getProgramConstructor = (grammarPath: types.filepath) => {
   return grammarProgram.getRootConstructor()
 }
 
-jtree.GrammarProgram = GrammarProgram
-
 export default jtree

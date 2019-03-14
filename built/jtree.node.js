@@ -16,5 +16,4 @@ jtree_1.default.getProgramConstructor = (grammarPath) => {
     const grammarProgram = GrammarProgram_1.default.newFromCondensed(grammarCode, grammarPath);
     return grammarProgram.getRootConstructor();
 };
-jtree_1.default.GrammarProgram = GrammarProgram_1.default;
 exports.default = jtree_1.default;

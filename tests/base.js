@@ -1,5 +1,6 @@
 "use strict"
 
+const jtree = require("../built/jtree.js").default
 const TreeNode = require("../built/base/TreeNode.js").default
 
 const testStrings = {}
@@ -1620,6 +1621,94 @@ use red programmingLanguages`
  >table
  >line`
   )
+}
+
+testTree.isomorphicGrammarTests = equal => {
+  // Run some basic grammar tests in the browser and node
+  // Arrange
+  const grammarCode = `@grammar jibberish
+ @description Test a root parser node
+ @constructor js ./jibberishProgram.js
+ @compiler txt
+ @catchAllKeyword error
+ @keywords
+  topLevel
+  text
+  someAbstractClass
+@wordType int
+ @regex ^\-?[0-9]+$
+ @parseWith js parseInt
+@wordType word
+ @regex .?
+@wordType onoff
+ @enum on off
+@keyword error
+ @constructor js ErrorNode
+@abstract topLevel
+@abstract someAbstractClass
+@abstract color_properties topLevel
+ @group hue saturation constrast
+ @columns int
+@keyword extendsAbstract someAbstractClass
+ @columns int
+@keyword someCode topLevel
+ @catchAllKeyword lineOfCode
+@keyword lineOfCode
+ @columns word*
+ @constructor js ./jibberishNodes.js LineOfCodeNode
+@keyword block topLevel
+ @keywords
+  topLevel
+@keyword foo topLevel
+@keyword nodeWithConsts topLevel
+ @constants
+  greeting string hello world
+@keyword text
+ @any
+@keyword add topLevel
+ @constructor js ./jibberishNodes.js additionNode
+@keyword + add
+ @columns int*
+@keyword lightbulbState topLevel
+ @columns onoff
+@keyword to block
+ @columns word
+ @compiler txt
+  @sub to {word}
+  @closeChildren end`
+  const grammar = `foo
+nodeWithConsts
+lightbulbState on
+lightbulbState off
++ 2 3 2
+saturation 2
+someCode
+ echo hello world`
+
+  class additionNode extends jtree.NonTerminalNode {}
+  class LineOfCodeNode extends jtree.NonTerminalNode {}
+  class jibberishProgram extends jtree.program {}
+
+  const jibberishNodes = {}
+  jibberishNodes.additionNode = additionNode
+  jibberishNodes.LineOfCodeNode = LineOfCodeNode
+  let win = typeof window === "undefined" ? {} : window
+  win.jibberishNodes = jibberishNodes
+  win.jibberishProgram = jibberishProgram
+  win.additionNode = additionNode
+  win.LineOfCodeNode = LineOfCodeNode
+
+  // Act
+  const grammarProgram = jtree.GrammarProgram.newFromCondensed(
+    grammarCode,
+    (typeof __dirname !== "undefined" ? __dirname : "") + "/jibberish/jibberish.grammar"
+  )
+  const ProgramConstructor = grammarProgram.getRootConstructor()
+  const program = new ProgramConstructor(grammar)
+  const errs = program.getProgramErrors()
+
+  // Assert
+  equal(errs.length, 0)
 }
 
 testTree.getExpanded = equal => {

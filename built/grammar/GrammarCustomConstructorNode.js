@@ -50,10 +50,20 @@ class GrammarCustomConstructorNode extends TreeNode_1.default {
         const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath;
         // todo: remove "window" below?
         if (!this.isNodeJs()) {
-            const cls = window[TreeUtils_1.default.getClassNameFromFilePath(filepath)];
-            if (!cls)
-                console.error(`WARNING: class ${filepath} not found.`);
-            return cls;
+            const subModule = this.getSubModuleName();
+            let constructor;
+            const constructorName = TreeUtils_1.default.getClassNameFromFilePath(filepath);
+            if (subModule) {
+                constructor = TreeUtils_1.default.resolveProperty(window[constructorName], subModule);
+                if (!constructor)
+                    throw new Error(`constructor ${subModule} not found on window.${constructorName}.`);
+            }
+            else {
+                constructor = window[constructorName];
+                if (!constructor)
+                    throw new Error(`constructor window.${constructorName} deduced from ${filepath} not found.`);
+            }
+            return constructor;
         }
         const theModule = require(fullPath);
         const subModule = this.getSubModuleName();

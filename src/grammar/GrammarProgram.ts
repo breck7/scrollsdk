@@ -183,7 +183,7 @@ contexts:
      pop: true`
   }
 
-  static newFromCondensed(grammarCode, grammarPath) {
+  static newFromCondensed(grammarCode: string, grammarPath?: types.filepath) {
     // todo: handle imports
     const tree = new TreeNode(grammarCode)
 

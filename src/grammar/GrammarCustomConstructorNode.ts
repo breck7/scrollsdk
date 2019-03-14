@@ -60,9 +60,17 @@ class GrammarCustomConstructorNode extends TreeNode {
 
     // todo: remove "window" below?
     if (!this.isNodeJs()) {
-      const cls = window[TreeUtils.getClassNameFromFilePath(filepath)]
-      if (!cls) console.error(`WARNING: class ${filepath} not found.`)
-      return cls
+      const subModule = this.getSubModuleName()
+      let constructor: types.RunTimeNodeConstructor
+      const constructorName = TreeUtils.getClassNameFromFilePath(filepath)
+      if (subModule) {
+        constructor = TreeUtils.resolveProperty(window[constructorName], subModule)
+        if (!constructor) throw new Error(`constructor ${subModule} not found on window.${constructorName}.`)
+      } else {
+        constructor = window[constructorName]
+        if (!constructor) throw new Error(`constructor window.${constructorName} deduced from ${filepath} not found.`)
+      }
+      return constructor
     }
 
     const theModule = require(fullPath)

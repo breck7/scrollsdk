@@ -1,3 +1,7 @@
+17.1.3 / 2019-03-14
+===================
+- Fix: added support for constructors with nested paths in grammar languages in browser
+
 17.1.2 / 2019-03-14
 ===================
 - Fix: added support for spaces in filenames in langs-project

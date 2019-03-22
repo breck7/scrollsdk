@@ -5,6 +5,7 @@ const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.default {
+    // todo: protected?
     _getRunTimeCatchAllKeyword() {
         return (this.get(GrammarConstants_1.default.catchAllKeyword) ||
             this.getParent()._getRunTimeCatchAllKeyword());
@@ -42,6 +43,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         }
         this._cache_keywordChain = cache;
     }
+    // todo: protected?
     _getProgramKeywordDefinitionCache() {
         return this.getParent()._getProgramKeywordDefinitionCache();
     }

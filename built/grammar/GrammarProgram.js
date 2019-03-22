@@ -110,10 +110,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         });
         this._cache_keywordDefinitions = keywordDefinitionMap;
     }
+    // todo: protected?
     _getProgramKeywordDefinitionCache() {
         this._initProgramKeywordDefinitionCache();
         return this._cache_keywordDefinitions;
     }
+    // todo: protected?
     _getRunTimeCatchAllKeyword() {
         return this._getGrammarRootNode().get(GrammarConstants_1.default.catchAllKeyword);
     }
@@ -133,6 +135,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._cache_rootConstructorClass;
     }
     toSublimeSyntaxFile() {
+        const keywords = this.getKeywordDefinitions();
+        // 1 context per keyword
+        // const str = keywords.map(def => {
+        //   `${def}`
+        // }).join("\n")
         // todo.
         return `%YAML 1.2
 ---
@@ -194,7 +201,7 @@ contexts:
     static predictGrammarFile(str, keywords = undefined) {
         const tree = str instanceof TreeNode_1.default ? str : new TreeNode_1.default(str);
         const xi = " "; // todo: make param?
-        keywords = keywords || tree._getUnionNames();
+        keywords = keywords || tree.getColumnNames();
         return keywords //this.getInvalidKeywords()
             .map(keyword => {
             const lines = tree.getColumn(keyword).filter(i => i);
@@ -217,7 +224,7 @@ contexts:
                 }
                 columns.push(last + "*");
             }
-            const childrenAnyString = tree._isLeafColumn(keyword) ? "" : `\n @any`;
+            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n @any`;
             if (!columns.length)
                 return `@keyword ${keyword}${childrenAnyString}`;
             if (columns.length > 1)

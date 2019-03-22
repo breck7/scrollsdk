@@ -9,13 +9,13 @@ import GrammarWordTypeNode from "./GrammarWordTypeNode"
 import types from "../types"
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
-  _getDefaultNodeConstructor() {
+  protected _getDefaultNodeConstructor() {
     return undefined
   }
 }
 
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
-  _isAbstract() {
+  protected _isAbstract() {
     return true
   }
 }
@@ -66,7 +66,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._cache_wordTypes
   }
 
-  _getWordTypes() {
+  protected _getWordTypes() {
     const types = {}
     // todo: add built in word types?
     this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[(<GrammarWordTypeNode>type).getId()] = type))
@@ -78,7 +78,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getKeywordDefinitions() {
-    return this.getChildrenByNodeType(GrammarKeywordDefinitionNode)
+    return <GrammarKeywordDefinitionNode[]>this.getChildrenByNodeType(GrammarKeywordDefinitionNode)
   }
 
   // todo: remove?
@@ -86,7 +86,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this.getLine()
   }
 
-  _getGrammarRootNode() {
+  protected _getGrammarRootNode() {
     return <GrammarRootNode>this.getNodeByType(GrammarRootNode)
   }
 
@@ -94,7 +94,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().getId()
   }
 
-  _getKeywordsNode(): TreeNode {
+  protected _getKeywordsNode(): TreeNode {
     return this._getGrammarRootNode().getNode(GrammarConstants.keywords)
   }
 
@@ -125,7 +125,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   // At present we only have global keyword definitions (you cannot have scoped keyword definitions right now).
   private _cache_keywordDefinitions
 
-  _initProgramKeywordDefinitionCache() {
+  protected _initProgramKeywordDefinitionCache() {
     if (this._cache_keywordDefinitions) return undefined
     const keywordDefinitionMap = {}
 
@@ -136,16 +136,18 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     this._cache_keywordDefinitions = keywordDefinitionMap
   }
 
+  // todo: protected?
   _getProgramKeywordDefinitionCache() {
     this._initProgramKeywordDefinitionCache()
     return this._cache_keywordDefinitions
   }
 
+  // todo: protected?
   _getRunTimeCatchAllKeyword(): string {
     return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword)
   }
 
-  _getRootConstructor() {
+  protected _getRootConstructor() {
     const definedClass = this._getGrammarRootNode().getDefinedConstructor()
     const extendedClass = definedClass || AbstractRuntimeProgram
     const grammarProgram = this
@@ -164,6 +166,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   toSublimeSyntaxFile() {
+    const keywords = this.getKeywordDefinitions()
+
+    //1 context per keyword
+    // const str = keywords.map(def => {
+    //   `${def}`
+    // }).join("\n")
+
     // todo.
     return `%YAML 1.2
 ---
@@ -231,7 +240,7 @@ contexts:
   static predictGrammarFile(str, keywords = undefined): string {
     const tree = str instanceof TreeNode ? str : new TreeNode(str)
     const xi = " " // todo: make param?
-    keywords = keywords || tree._getUnionNames()
+    keywords = keywords || tree.getColumnNames()
     return keywords //this.getInvalidKeywords()
       .map(keyword => {
         const lines = tree.getColumn(keyword).filter(i => i)
@@ -255,7 +264,7 @@ contexts:
           columns.push(last + "*")
         }
 
-        const childrenAnyString = tree._isLeafColumn(keyword) ? "" : `\n @any`
+        const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n @any`
 
         if (!columns.length) return `@keyword ${keyword}${childrenAnyString}`
 

@@ -27,7 +27,7 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     return this._getGrammarBackedCellArray().map(word => word.getParsed())
   }
 
-  _getParameterMap() {
+  protected _getParameterMap() {
     const cells = this._getGrammarBackedCellArray()
     const parameterMap = {}
     cells.forEach(cell => {
@@ -67,7 +67,7 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
       .filter(i => i)
   }
 
-  _getGrammarBackedCellArray() {
+  protected _getGrammarBackedCellArray() {
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
     const parameters = definition.getNodeColumnTypes()

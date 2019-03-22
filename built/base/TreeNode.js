@@ -424,7 +424,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         });
         return clone;
     }
-    _isLeafColumn(path) {
+    isLeafColumn(path) {
         for (let node of this._getChildren()) {
             const nd = node.getNode(path);
             if (nd && nd.length)
@@ -798,6 +798,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         }
         this._setLineAndChildren(line, children);
     }
+    // todo: protected?
     _setLineAndChildren(line, children, index = this.length) {
         const nodeConstructor = this.getNodeConstructor(line);
         const newNode = new nodeConstructor(children, line, this);
@@ -927,6 +928,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         this.getChildren().forEach(fn);
         return this;
     }
+    // todo: protected?
     _clearIndex() {
         delete this._index;
     }

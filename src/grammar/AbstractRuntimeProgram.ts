@@ -89,7 +89,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   // todo: refine and make public
-  _getSyntaxTreeHtml() {
+  protected _getSyntaxTreeHtml() {
     const getColor = child => {
       if (child.getLineSyntax().includes("error")) return "red"
       return "black"
@@ -131,7 +131,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
 
   private _cache_programWordTypeStringMTime
 
-  _initWordTypeCache() {
+  protected _initWordTypeCache() {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
 

@@ -37,11 +37,11 @@ class GrammarBackedCell {
     return this._type && this._type.endsWith("*")
   }
 
-  _getWordTypeClass() {
+  protected _getWordTypeClass() {
     return this._grammarProgram.getWordTypes()[this.getType()]
   }
 
-  _getLineNumber() {
+  protected _getLineNumber() {
     return this._node.getPoint().y
   }
 

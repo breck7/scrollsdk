@@ -10,7 +10,7 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeCodeNode {
   }
 
   // todo: implement
-  _getNodeJoinCharacter() {
+  protected _getNodeJoinCharacter() {
     return "\n"
   }
 

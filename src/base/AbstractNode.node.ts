@@ -1,5 +1,5 @@
 abstract class AbstractNode {
-  _getNow() {
+  protected _getNow() {
     return parseFloat(process.hrtime().join(""))
   }
 

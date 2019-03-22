@@ -57,7 +57,7 @@ class ImmutableNode extends AbstractNode {
     return this.getParent().filter(node => node !== this)
   }
 
-  _getUid() {
+  protected _getUid() {
     if (!this._uid) this._uid = ImmutableNode._makeUniqueId()
     return this._uid
   }
@@ -71,7 +71,7 @@ class ImmutableNode extends AbstractNode {
     return this._getPoint()
   }
 
-  _getPoint(relativeTo?): types.point {
+  protected _getPoint(relativeTo?): types.point {
     return {
       x: this._getXCoordinate(relativeTo),
       y: this._getYCoordinate(relativeTo)
@@ -101,7 +101,7 @@ class ImmutableNode extends AbstractNode {
     return lineCount
   }
 
-  _getLineNumber(target) {
+  protected _getLineNumber(target) {
     let lineNumber = 1
     for (let node of this.getTopDownArrayIterator()) {
       if (node === target) return lineNumber
@@ -120,7 +120,7 @@ class ImmutableNode extends AbstractNode {
 
   private _cachedLineNumber: int
 
-  _getYCoordinate(relativeTo?: ImmutableNode) {
+  protected _getYCoordinate(relativeTo?: ImmutableNode) {
     if (this._cachedLineNumber) return this._cachedLineNumber
     if (this.isRoot(relativeTo)) return 0
     const start = relativeTo || this.getRootNode()
@@ -135,7 +135,7 @@ class ImmutableNode extends AbstractNode {
     return this._getRootNode()
   }
 
-  _getRootNode(relativeTo?: ImmutableNode) {
+  protected _getRootNode(relativeTo?: ImmutableNode) {
     if (this.isRoot(relativeTo)) return this
     return this.getParent()._getRootNode(relativeTo)
   }
@@ -153,7 +153,7 @@ class ImmutableNode extends AbstractNode {
     return words[index]
   }
 
-  _toHtml(indentCount) {
+  protected _toHtml(indentCount) {
     const path = this.getPathVector().join(" ")
     const classes = {
       nodeLine: "nodeLine",
@@ -175,7 +175,7 @@ class ImmutableNode extends AbstractNode {
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
 
-  _getWords(startFrom) {
+  protected _getWords(startFrom) {
     if (!this._words) this._words = this._getLine().split(this.getZI())
     return startFrom ? this._words.slice(startFrom) : this._words
   }
@@ -207,7 +207,7 @@ class ImmutableNode extends AbstractNode {
     return this._getStack()
   }
 
-  _getStack(relativeTo?: ImmutableNode) {
+  protected _getStack(relativeTo?: ImmutableNode) {
     if (this.isRoot(relativeTo)) return []
     const parent = this.getParent()
     if (parent.isRoot(relativeTo)) return [this]
@@ -243,7 +243,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: return array? getPathArray?
-  _getKeywordPath(relativeTo?) {
+  protected _getKeywordPath(relativeTo?) {
     if (this.isRoot(relativeTo)) return ""
     else if (this.getParent().isRoot(relativeTo)) return this.getKeyword()
 
@@ -266,7 +266,7 @@ class ImmutableNode extends AbstractNode {
     return this._getPathVector(relativeTo)
   }
 
-  _getPathVector(relativeTo?): types.pathVector {
+  protected _getPathVector(relativeTo?): types.pathVector {
     if (this.isRoot(relativeTo)) return []
     const path = this.getParent()._getPathVector(relativeTo)
     path.push(this.getIndex())
@@ -281,13 +281,13 @@ class ImmutableNode extends AbstractNode {
     return !this.length
   }
 
-  _getLineHtml() {
+  protected _getLineHtml() {
     return this.getWords()
       .map((word, index) => `<span class="word${index ? "" : " keyword"}">${TreeUtils.stripHtml(word)}</span>`)
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
-  _getXmlContent(indentCount) {
+  protected _getXmlContent(indentCount) {
     if (this.getContent() !== undefined) return this.getContentWithChildren()
     return this.length
       ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(
@@ -296,13 +296,13 @@ class ImmutableNode extends AbstractNode {
       : ""
   }
 
-  _toXml(indentCount) {
+  protected _toXml(indentCount) {
     const indent = " ".repeat(indentCount)
     const tag = this.getKeyword()
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
 
-  _toObjectTuple() {
+  protected _toObjectTuple() {
     const content = this.getContent()
     const length = this.length
     const hasChildrenNoContent = content === undefined && length
@@ -317,7 +317,7 @@ class ImmutableNode extends AbstractNode {
     return [this.getKeyword(), tupleValue]
   }
 
-  _indexOfNode(needleNode) {
+  protected _indexOfNode(needleNode) {
     let result = -1
     this.find((node, index) => {
       if (node === needleNode) {
@@ -342,7 +342,7 @@ class ImmutableNode extends AbstractNode {
     return arr
   }
 
-  _hasColumns(columns) {
+  protected _hasColumns(columns) {
     const words = this.getWords()
     return columns.every((searchTerm, index) => searchTerm === words[index])
   }
@@ -359,11 +359,11 @@ class ImmutableNode extends AbstractNode {
     return this.find(node => node.getWord(index) === name)
   }
 
-  _getNodesByColumn(index: int, name: word): ImmutableNode[] {
+  protected _getNodesByColumn(index: int, name: word): ImmutableNode[] {
     return this.filter(node => node.getWord(index) === name)
   }
 
-  _getTopDownArray(arr) {
+  protected _getTopDownArray(arr) {
     this.forEach(child => {
       arr.push(child)
       child._getTopDownArray(arr)
@@ -376,14 +376,14 @@ class ImmutableNode extends AbstractNode {
     return arr
   }
 
-  _getChildrenFirstArray(arr) {
+  protected _getChildrenFirstArray(arr) {
     this.forEach(child => {
       child._getChildrenFirstArray(arr)
       arr.push(child)
     })
   }
 
-  _getXCoordinate(relativeTo) {
+  protected _getXCoordinate(relativeTo) {
     return this._getStack(relativeTo).length
   }
 
@@ -396,7 +396,7 @@ class ImmutableNode extends AbstractNode {
     return arr
   }
 
-  _getLevels() {
+  protected _getLevels() {
     const levels = []
     this.getTopDownArray().forEach(node => {
       const level = node._getXCoordinate()
@@ -406,12 +406,12 @@ class ImmutableNode extends AbstractNode {
     return levels
   }
 
-  _getChildrenArray() {
+  protected _getChildrenArray() {
     if (!this._children) this._children = []
     return this._children
   }
 
-  _getChildren() {
+  protected _getChildren() {
     return this._getChildrenArray()
   }
 
@@ -427,7 +427,7 @@ class ImmutableNode extends AbstractNode {
     return this._getChildren().length
   }
 
-  _nodeAt(index) {
+  protected _nodeAt(index) {
     if (index < 0) index = this.length + index
     return this._getChildren()[index]
   }
@@ -444,7 +444,7 @@ class ImmutableNode extends AbstractNode {
     return node.nodeAt(indexOrArray.slice(1))
   }
 
-  _toObject() {
+  protected _toObject() {
     const obj = {}
     this.forEach(node => {
       const tuple = node._toObjectTuple()
@@ -457,11 +457,11 @@ class ImmutableNode extends AbstractNode {
     return this._childrenToHtml(0)
   }
 
-  _childrenToHtml(indentCount) {
+  protected _childrenToHtml(indentCount) {
     return this.map(node => node._toHtml(indentCount)).join(`<span class="yIncrement">${this.getYI()}</span>`)
   }
 
-  _childrenToString(indentCount?: int, language = this) {
+  protected _childrenToString(indentCount?: int, language = this) {
     return this.map(node => node.toString(indentCount, language)).join(language.getYI())
   }
 
@@ -470,7 +470,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: implement
-  _getNodeJoinCharacter() {
+  protected _getNodeJoinCharacter() {
     return "\n"
   }
 
@@ -513,7 +513,7 @@ class ImmutableNode extends AbstractNode {
     return clone
   }
 
-  _isLeafColumn(path) {
+  isLeafColumn(path: types.keywordPath) {
     for (let node of this._getChildren()) {
       const nd = node.getNode(path)
       if (nd && nd.length) return false
@@ -530,7 +530,7 @@ class ImmutableNode extends AbstractNode {
     return node === undefined ? undefined : node.getContent()
   }
 
-  _getNodeByPath(keywordPath) {
+  protected _getNodeByPath(keywordPath) {
     const xi = this.getXI()
     if (!keywordPath.includes(xi)) {
       const index = this.indexOfLast(keywordPath)
@@ -561,7 +561,7 @@ class ImmutableNode extends AbstractNode {
     return prev === -1 ? parent._getChildren()[length - 1] : parent._getChildren()[prev]
   }
 
-  _getUnionNames() {
+  protected _getUnionNames() {
     if (!this.length) return []
 
     const obj = {}
@@ -590,7 +590,7 @@ class ImmutableNode extends AbstractNode {
     return graph
   }
 
-  _getGraph(
+  protected _getGraph(
     getNodesByIdFn: (thisParentNode: ImmutableNode, id: word) => ImmutableNode[],
     getParentIdFn: (thisNode: ImmutableNode) => word,
     cannotContainNode: ImmutableNode
@@ -639,7 +639,7 @@ class ImmutableNode extends AbstractNode {
     return tree
   }
 
-  _getTypes(header) {
+  protected _getTypes(header) {
     const matrix = this._getMatrix(header)
     const types = header.map(i => "int")
     matrix.forEach(row => {
@@ -679,7 +679,7 @@ class ImmutableNode extends AbstractNode {
     return this._toDelimited(delimiter, header, cellFn)
   }
 
-  _getMatrix(columns) {
+  protected _getMatrix(columns) {
     const matrix = []
     this.forEach(child => {
       const row = []
@@ -691,7 +691,7 @@ class ImmutableNode extends AbstractNode {
     return matrix
   }
 
-  _toArrays(header: string[], cellFn: cellFn) {
+  protected _toArrays(header: string[], cellFn: cellFn) {
     const skipHeaderRow = 1
     const headerArray = header.map((columnName, index) => cellFn(columnName, 0, index))
     const rows = this.map((node, rowNumber) =>
@@ -707,7 +707,7 @@ class ImmutableNode extends AbstractNode {
     }
   }
 
-  _toDelimited(delimiter, header: string[], cellFn: cellFn) {
+  protected _toDelimited(delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
@@ -722,7 +722,7 @@ class ImmutableNode extends AbstractNode {
     return this._toTable(maxWidth, alignRight)
   }
 
-  _toTable(maxWidth: number, alignRight = false) {
+  protected _toTable(maxWidth: number, alignRight = false) {
     const header = this._getUnionNames()
     const widths = header.map(col => (col.length > maxWidth ? maxWidth : col.length))
 
@@ -763,7 +763,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  _toOutline(nodeFn) {
+  protected _toOutline(nodeFn) {
     const growBranch = (outlineTreeNode, last, lastStates, nodeFn, callback) => {
       let lastStatesCopy = lastStates.slice(0)
       const node = outlineTreeNode.node
@@ -839,7 +839,7 @@ class ImmutableNode extends AbstractNode {
     return " "
   }
 
-  _textToContentAndChildrenTuple(text) {
+  protected _textToContentAndChildrenTuple(text) {
     const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
     const children = !lines.length
@@ -851,23 +851,23 @@ class ImmutableNode extends AbstractNode {
     return [firstLine, children]
   }
 
-  _getLine() {
+  protected _getLine() {
     return this._line
   }
 
-  _setLine(line = "") {
+  protected _setLine(line = "") {
     this._line = line
     if (this._words) delete this._words
     return this
   }
 
-  _clearChildren() {
+  protected _clearChildren() {
     delete this._children
     this._clearIndex()
     return this
   }
 
-  _setChildren(content, circularCheckArray?: any[]) {
+  protected _setChildren(content, circularCheckArray?: any[]) {
     this._clearChildren()
     if (!content) return this
 
@@ -889,7 +889,7 @@ class ImmutableNode extends AbstractNode {
     return this._setFromObject(content, circularCheckArray)
   }
 
-  _setFromObject(content, circularCheckArray) {
+  protected _setFromObject(content, circularCheckArray) {
     for (let keyword in content) {
       if (!content.hasOwnProperty(keyword)) continue
       // Branch the circularCheckArray, as we only have same branch circular arrays
@@ -900,7 +900,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: refactor the below.
-  _appendFromJavascriptObjectTuple(keyword, content, circularCheckArray) {
+  protected _appendFromJavascriptObjectTuple(keyword, content, circularCheckArray) {
     const type = typeof content
     let line
     let children
@@ -928,6 +928,7 @@ class ImmutableNode extends AbstractNode {
     this._setLineAndChildren(line, children)
   }
 
+  // todo: protected?
   _setLineAndChildren(line, children?, index = this.length) {
     const nodeConstructor = this.getNodeConstructor(line)
     const newNode = new nodeConstructor(children, line, this)
@@ -939,7 +940,7 @@ class ImmutableNode extends AbstractNode {
     return newNode
   }
 
-  _parseString(str) {
+  protected _parseString(str) {
     if (!str) return this
     const lines = str.split(this.getYIRegex())
     const parentStack = []
@@ -966,7 +967,7 @@ class ImmutableNode extends AbstractNode {
     return this
   }
 
-  _getIndex() {
+  protected _getIndex() {
     // StringMap<int> {keyword: index}
     // When there are multiple tails with the same keyword, _index stores the last content.
     // todo: change the above behavior: when a collision occurs, create an array.
@@ -1012,7 +1013,7 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node.getKeyword())
   }
 
-  _makeIndex(startAt = 0) {
+  protected _makeIndex(startAt = 0) {
     if (!this._index || !startAt) this._index = {}
     const nodes = this._getChildren()
     const newIndex = this._index
@@ -1025,11 +1026,11 @@ class ImmutableNode extends AbstractNode {
     return newIndex
   }
 
-  _childrenToXml(indentCount) {
+  protected _childrenToXml(indentCount) {
     return this.map(node => node._toXml(indentCount)).join("")
   }
 
-  _getIndentCount(str) {
+  protected _getIndentCount(str) {
     let level = 0
     const edgeChar = this.getXI()
     while (str[level] === edgeChar) {
@@ -1047,11 +1048,11 @@ class ImmutableNode extends AbstractNode {
     return this._hasKeyword(keyword)
   }
 
-  _hasKeyword(keyword) {
+  protected _hasKeyword(keyword) {
     return this._getIndex()[keyword] !== undefined
   }
 
-  _getKeywordByIndex(index) {
+  protected _getKeywordByIndex(index) {
     // Passing -1 gets the last item, et cetera
     const length = this.length
 
@@ -1077,6 +1078,7 @@ class ImmutableNode extends AbstractNode {
     return this
   }
 
+  // todo: protected?
   _clearIndex() {
     delete this._index
   }
@@ -1149,7 +1151,7 @@ class TreeNode extends ImmutableNode {
     return this._mtime
   }
 
-  _getChildrenMTime() {
+  protected _getChildrenMTime() {
     const mTimes = this.map(child => child.getTreeMTime())
     const cmTime = this._getCMTime()
     if (cmTime) mTimes.push(cmTime)
@@ -1157,11 +1159,11 @@ class TreeNode extends ImmutableNode {
     return this._setCMTime(newestTime || this._getNow())._getCMTime()
   }
 
-  _getCMTime() {
+  protected _getCMTime() {
     return this._cmtime
   }
 
-  _setCMTime(value) {
+  protected _setCMTime(value) {
     this._cmtime = value
     return this
   }
@@ -1172,7 +1174,7 @@ class TreeNode extends ImmutableNode {
     return Math.max(mtime, cmtime)
   }
 
-  _expand(thisColumnNumber, extendsColumnNumber) {
+  protected _expand(thisColumnNumber, extendsColumnNumber) {
     const graph = this.getGraph(thisColumnNumber, extendsColumnNumber)
     const result = new TreeNode()
     graph.forEach(node => result.extend(node))
@@ -1208,7 +1210,7 @@ class TreeNode extends ImmutableNode {
     return this._setChildren(children)
   }
 
-  _updateMTime() {
+  protected _updateMTime() {
     this._mtime = this._getNow()
   }
 
@@ -1325,7 +1327,7 @@ class TreeNode extends ImmutableNode {
     return matches
   }
 
-  _getNodesByLineRegex(matches: any[], regs: RegExp[]) {
+  protected _getNodesByLineRegex(matches: any[], regs: RegExp[]) {
     const rgs = regs.slice(0)
     const reg = rgs.shift()
     const candidates = this.filter(child => child.getLine().match(reg))
@@ -1338,14 +1340,14 @@ class TreeNode extends ImmutableNode {
     return node.map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
-  _deleteByIndexes(indexesToDelete) {
+  protected _deleteByIndexes(indexesToDelete) {
     this._clearIndex()
     // note: assumes indexesToDelete is in ascending order
     indexesToDelete.reverse().forEach(index => this._getChildrenArray().splice(index, 1))
     return this._setCMTime(this._getNow())
   }
 
-  _deleteNode(node) {
+  protected _deleteNode(node) {
     const index = this._indexOfNode(node)
     return index > -1 ? this._deleteByIndexes([index]) : 0
   }
@@ -1373,7 +1375,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  _rename(oldKeyword, newKeyword) {
+  protected _rename(oldKeyword, newKeyword) {
     const index = this.indexOf(oldKeyword)
 
     if (index === -1) return this
@@ -1404,7 +1406,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  _deleteByKeyword(keyword: word) {
+  protected _deleteByKeyword(keyword: word) {
     if (!this.has(keyword)) return this
     const allNodes = this._getChildren()
     const indexesToDelete = []
@@ -1489,7 +1491,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  _touchNode(keywordPathArray) {
+  protected _touchNode(keywordPathArray) {
     let contextNode = this
     keywordPathArray.forEach(keyword => {
       contextNode = contextNode.getNode(keyword) || contextNode.appendLine(keyword)
@@ -1497,7 +1499,7 @@ class TreeNode extends ImmutableNode {
     return contextNode
   }
 
-  _touchNodeByString(str) {
+  protected _touchNodeByString(str) {
     str = str.replace(this.getYIRegex(), "") // todo: do we want to do this sanitization?
     return this._touchNode(str.split(this.getZI()))
   }

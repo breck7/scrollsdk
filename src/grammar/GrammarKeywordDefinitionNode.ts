@@ -6,6 +6,7 @@ import GrammarConstantsNode from "./GrammarConstantsNode"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
+  // todo: protected?
   _getRunTimeCatchAllKeyword(): string {
     return (
       this.get(GrammarConstants.catchAllKeyword) ||
@@ -27,16 +28,16 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
 
   private _cache_keywordChain
 
-  _getKeywordChain() {
+  protected _getKeywordChain() {
     this._initKeywordChainCache()
     return this._cache_keywordChain
   }
 
-  _getParentKeyword() {
+  protected _getParentKeyword() {
     return this.getWord(2)
   }
 
-  _initKeywordChainCache() {
+  protected _initKeywordChainCache() {
     if (this._cache_keywordChain) return undefined
     const cache = {}
     cache[this.getId()] = true
@@ -51,6 +52,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     this._cache_keywordChain = cache
   }
 
+  // todo: protected?
   _getProgramKeywordDefinitionCache() {
     return (<AbstractGrammarDefinitionNode>this.getParent())._getProgramKeywordDefinitionCache()
   }
@@ -59,7 +61,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.getId()
   }
 
-  _getDefaultsNode() {
+  protected _getDefaultsNode() {
     return this.get(GrammarConstants.defaults)
   }
 

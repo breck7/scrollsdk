@@ -37,19 +37,19 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.getWord(1)
   }
 
-  _isNonTerminal() {
+  protected _isNonTerminal() {
     return this._isAnyNode() || this.has(GrammarConstants.keywords) || this.has(GrammarConstants.catchAllKeyword)
   }
 
-  _isAbstract() {
+  protected _isAbstract() {
     return false
   }
 
-  _isAnyNode() {
+  protected _isAnyNode() {
     return this.has(GrammarConstants.any)
   }
 
-  _getCustomDefinedConstructorNode(): GrammarCustomConstructorNode {
+  protected _getCustomDefinedConstructorNode(): GrammarCustomConstructorNode {
     return <GrammarCustomConstructorNode>(
       this.getNodeByColumns(GrammarConstants.constructor, GrammarConstants.constructorJs)
     )
@@ -62,14 +62,14 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_definedNodeConstructor
   }
 
-  _getDefaultNodeConstructor(): types.RunTimeNodeConstructor {
+  protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor {
     if (this._isAnyNode()) return GrammarBackedAnyNode
 
     return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
   /* Node constructor is the actual JS class being initiated, different than the Node type. */
-  _getDefinedNodeConstructor(): types.RunTimeNodeConstructor {
+  protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor {
     const customConstructorDefinition = this._getCustomDefinedConstructorNode()
     if (customConstructorDefinition) return customConstructorDefinition.getDefinedConstructor()
     return this._getDefaultNodeConstructor()
@@ -89,7 +89,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return compilerNode
   }
 
-  _getCompilerNodes() {
+  protected _getCompilerNodes() {
     return <GrammarCompilerNode[]>this.getChildrenByNodeType(GrammarCompilerNode) || []
   }
 
@@ -124,7 +124,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   /*
    {key<string>: JSKeywordDefClass}
   */
-  _initKeywordsMapCache() {
+  protected _initKeywordsMapCache() {
     if (this._cache_keywordsMap) return undefined
     // todo: make this handle extensions.
     const keywordsInScope = this._getKeywordsInScope()
@@ -143,7 +143,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       })
   }
 
-  _getKeywordsInScope() {
+  protected _getKeywordsInScope() {
     const keywords = this._getKeywordsNode()
     return keywords ? keywords.getKeywords() : []
   }
@@ -157,10 +157,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return arr.map(definition => definition.getId())
   }
 
-  _getKeywordsNode(): TreeNode {
+  protected _getKeywordsNode(): TreeNode {
     return this.getNode(GrammarConstants.keywords)
   }
 
+  // todo: protected?
   _getRunTimeCatchAllKeyword(): string {
     return ""
   }
@@ -170,7 +171,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
   }
 
-  _getCatchAllDefinition() {
+  protected _getCatchAllDefinition() {
     const catchAllKeyword = this._getRunTimeCatchAllKeyword()
     const definitions = this._getProgramKeywordDefinitionCache()
     const def = definitions[catchAllKeyword]
@@ -180,7 +181,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   private _cache_catchAllConstructor
 
-  _initCatchAllNodeConstructorCache() {
+  protected _initCatchAllNodeConstructorCache() {
     if (this._cache_catchAllConstructor) return undefined
 
     this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor()
@@ -202,6 +203,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()]
   }
 
+  // todo: protected?
   _getProgramKeywordDefinitionCache(): any {}
 
   getRunTimeCatchAllNodeConstructor() {

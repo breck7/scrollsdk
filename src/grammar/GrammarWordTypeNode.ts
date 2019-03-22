@@ -18,7 +18,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 }
 
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
-  _getKeywordTable(runTimeGrammarBackedProgram) {
+  protected _getKeywordTable(runTimeGrammarBackedProgram) {
     // @keywordTable @wordType 1
     const nodeType = this.getWord(1)
     const wordIndex = parseInt(this.getWord(2))

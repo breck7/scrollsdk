@@ -10,7 +10,7 @@ import GrammarConstants from "./GrammarConstants"
 import types from "../types"
 
 class GrammarCustomConstructorNode extends TreeNode {
-  _getNodeConstructorFilePath() {
+  protected _getNodeConstructorFilePath() {
     return this.getWord(2)
   }
 
@@ -19,7 +19,7 @@ class GrammarCustomConstructorNode extends TreeNode {
     return this.getWord(3)
   }
 
-  _getBuiltInConstructors() {
+  protected _getBuiltInConstructors() {
     return {
       ErrorNode: GrammarBackedErrorNode,
       TerminalNode: GrammarBackedTerminalNode,

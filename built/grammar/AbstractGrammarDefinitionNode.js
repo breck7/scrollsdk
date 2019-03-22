@@ -133,6 +133,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _getKeywordsNode() {
         return this.getNode(GrammarConstants_1.default.keywords);
     }
+    // todo: protected?
     _getRunTimeCatchAllKeyword() {
         return "";
     }
@@ -165,6 +166,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     isDefined(keyword) {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
     }
+    // todo: protected?
     _getProgramKeywordDefinitionCache() { }
     getRunTimeCatchAllNodeConstructor() {
         this._initCatchAllNodeConstructorCache();

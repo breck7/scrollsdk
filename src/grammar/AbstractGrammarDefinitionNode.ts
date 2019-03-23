@@ -41,7 +41,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._isAnyNode() || this.has(GrammarConstants.keywords) || this.has(GrammarConstants.catchAllKeyword)
   }
 
-  protected _isAbstract() {
+  _isAbstract() {
     return false
   }
 
@@ -116,7 +116,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key])
   }
 
-  getNodeColumnTypes() {
+  getNodeColumnTypes(): string[] {
     const parameters = this.get(GrammarConstants.columns)
     return parameters ? parameters.split(" ") : []
   }

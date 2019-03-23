@@ -34,6 +34,7 @@ GrammarConstants.compiler.closeChildren = "@closeChildren";
 // developing
 GrammarConstants.description = "@description";
 GrammarConstants.frequency = "@frequency";
+GrammarConstants.highlightScope = "@highlightScope";
 // errors
 GrammarConstants.invalidKeywordError = "invalidKeywordError";
 GrammarConstants.invalidConstructorPathError = "invalidConstructorPathError";

@@ -20,6 +20,42 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         const chain = this._getKeywordChain();
         return keywordsInScope.some(keyword => chain[keyword]);
     }
+    _getHighlightScope() {
+        return this.get(GrammarConstants_1.default.highlightScope);
+    }
+    getSyntaxContextId() {
+        return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
+    }
+    getMatchBlock() {
+        const program = this.getProgram();
+        const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const color = (this._getHighlightScope() || "source") + "." + this.getId();
+        const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`;
+        const topHalf = ` '${this.getSyntaxContextId()}':
+  - match: ${match}
+    scope: ${color}`;
+        const cols = this.getNodeColumnTypes();
+        if (!cols.length)
+            return topHalf;
+        const captures = cols
+            .map((col, index) => {
+            const wordType = program.getWordType(col); // todo: cleanup
+            if (!wordType)
+                throw new Error(`No column type ${col} found`); // todo: standardize error/capture error at grammar time
+            return `        ${index + 1}: ${(wordType.getHighlightScope() || "source") + "." + wordType.getId()}`;
+        })
+            .join("\n");
+        const colsToRegex = cols => {
+            return cols.map(col => `({{${col.replace("*", "")}}})?`).join(" ?");
+        };
+        return `${topHalf}
+    push:
+     - match: ${colsToRegex(cols)}
+       captures:
+${captures}
+     - match: $
+       pop: true`;
+    }
     _getKeywordChain() {
         this._initKeywordChainCache();
         return this._cache_keywordChain;

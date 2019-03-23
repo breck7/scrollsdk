@@ -1,3 +1,11 @@
+18.0.0 / 2019-03-14
+===================
+- New: basic .sublime-syntax file generation works. Not fully developed.
+- New: added @highlightScope property to @keyword and @wordType in grammar language
+- New: added gen command to cli.js
+- Breaking: @wordType > @regex with `.?` should now be `.*`
+- Breaking: in @wordType > @regex now all @regex are enclosed by ^$ automatically
+
 17.1.3 / 2019-03-14
 ===================
 - Fix: added support for constructors with nested paths in grammar languages in browser

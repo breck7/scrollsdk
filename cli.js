@@ -99,13 +99,22 @@ ${grammars.toTable()}`
   _getGrammarPathOrThrow(programPath) {
     const extension = Utils.getFileExtension(programPath)
     const grammarPath = this._getGrammarPathByGrammarName(extension)
-    if (!grammarPath) throw new Error(`No installed grammar for '${extension}'`)
+    if (!grammarPath) throw new Error(`No installed grammar for file '${programPath}' with extension '${extension}'`)
     return grammarPath
   }
 
   sandbox() {
     require("./sandbox.express.js")
     return "Starting sandbox"
+  }
+
+  gen(grammarName, outputDirectory = ".") {
+    const grammarPath = this._getGrammarPathByGrammarName(grammarName)
+    const grammarProgram = GrammarProgram.newFromCondensed(fs.readFileSync(grammarPath, "utf8"), grammarPath)
+    const sub = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
+
+    fs.writeFileSync(sub, grammarProgram.toSublimeSyntaxFile(), "utf8")
+    return `Saved: ${sub}`
   }
 
   _getGrammarProgram(grammarName) {

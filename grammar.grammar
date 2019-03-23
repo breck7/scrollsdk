@@ -8,25 +8,36 @@
   @wordType
   @abstract
 @wordType filepath
- @regex .?
+ @regex .*
 @wordType int
- @regex ^\-?[0-9]+$
+ @regex \-?[0-9]+
+ @highlightScope constant.numeric
 @wordType word
- @regex ^[a-zA-Z]+$
+ @regex [a-zA-Z]+
+ @highlightScope variable.parameter
 @wordType lowercaseWord
- @regex ^[a-z]+$
+ @regex [a-z]+
 @wordType any
- @regex .?
+ @regex .*
+@wordType string
+ @regex .*
+ @highlightScope string
 @wordType filepath
- @regex .?
+ @regex .*
 @wordType keyword
- @regex .?
+ @regex [^ ]*
+ @highlightScope variable.parameter
+@wordType regex
+ @regex .*
+ @highlightScope string.regexp
 @wordType semanticVersion
- @regex ^[0-9]+\.[0-9]+\.[0-9]+$
+ @regex [0-9]+\.[0-9]+\.[0-9]+
+ @highlightScope constant.numeric
 @wordType wordType
  @keywordTable @wordType 1
 @keyword @grammar
- @columns any
+ @highlightScope constant.language
+ @columns word
  @keywords
   @description
   @keywords
@@ -34,31 +45,35 @@
   @compiler
   @catchAllKeyword
   @version
-  @any
 @keyword @version
  @columns semanticVersion
-@keyword @any
+ @highlightScope constant.language
 @keyword @abstract @keyword
+ @highlightScope entity.name.tag
  @keywords
   keywordRule
   @group
 @keyword @wordType
  @columns any*
+ @highlightScope variable.parameter
  @keywords
+  @highlightScope
   @regex
   @keywordTable
   @enum
   @parseWith
 @keyword @parseWith variadicKeywordRule
-@keyword @regex
- @columns any*
 @keyword @group
  @columns any*
+ @highlightScope entity.other.attribute-name
 @keyword @enum
  @columns any*
+ @highlightScope entity.other.attribute-name
 @keyword @keywordTable
  @columns any int
+ @highlightScope entity.other.attribute-name
 @abstract keywordRule
+ @highlightScope entity.other.attribute-name
 @abstract monadicKeywordRule keywordRule
  @columns any
 @abstract diadicKeywordRule keywordRule
@@ -72,8 +87,10 @@
 @keyword @columns keywordRule
  @columns wordType*
 @keyword @regex variadicKeywordRule
+ @columns regex*
 @abstract compilerRule
  @columns any*
+ @highlightScope entity.other.attribute-name
 @keyword @compiler monadicKeywordRule
  @keywords
   @sub
@@ -86,7 +103,8 @@
 @keyword @openChildren compilerRule
 @keyword @closeChildren compilerRule
 @keyword @indentCharacter compilerRule
-@keyword @description variadicKeywordRule
+@keyword @description keywordRule
+ @columns string*
 @abstract ntKeywordRule keywordRule
 @keyword defaultTuple
  @columns any any*
@@ -102,13 +120,16 @@
  @catchAllKeyword constantDefinition
 @keyword keywordUse
 @keyword @any keywordRule
+@keyword @highlightScope keywordRule
+ @columns any
 @keyword @keywords ntKeywordRule
  @catchAllKeyword keywordUse
 @keyword error
  @constructor js ErrorNode
 @keyword @keyword
- @columns any any*
+ @columns keyword any*
  @catchAllKeyword error
  @constructor js NonTerminalNode
+ @highlightScope variable.function
  @keywords
   keywordRule

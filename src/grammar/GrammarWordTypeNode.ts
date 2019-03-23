@@ -12,7 +12,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
   private _regex
 
   isValid(str) {
-    if (!this._regex) this._regex = new RegExp(this.getContent())
+    if (!this._regex) this._regex = new RegExp("^" + this.getContent() + "$")
     return str.match(this._regex)
   }
 }
@@ -41,8 +41,12 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   private _map
   isValid(str) {
     // @enum c c++ java
+    return this.getOptions()[str]
+  }
+
+  getOptions() {
     if (!this._map) this._map = TreeUtils.arrayToMap(this.getWordsFrom(1))
-    return this._map[str]
+    return this._map
   }
 }
 
@@ -66,7 +70,25 @@ class GrammarWordTypeNode extends TreeNode {
     types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.parseWith] = GrammarWordParserNode
+    types[GrammarConstants.highlightScope] = TreeNode
     return types
+  }
+
+  getHighlightScope() {
+    return this.get(GrammarConstants.highlightScope)
+  }
+
+  private _getEnumOptions() {
+    const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0]
+    return enumNode ? Object.keys(enumNode.getOptions()) : undefined
+  }
+
+  getRegexString() {
+    // todo: enum
+    const enumOptions = this._getEnumOptions()
+    return (
+      this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "noWordTypeRegexFound")
+    )
   }
 
   parse(str) {
@@ -99,6 +121,10 @@ class GrammarWordTypeIntNode extends GrammarWordTypeNode {
     return num.toString() === str
   }
 
+  getRegexString() {
+    return "\-?[0-9]+"
+  }
+
   parse(str) {
     return parseInt(str)
   }
@@ -107,6 +133,10 @@ class GrammarWordTypeIntNode extends GrammarWordTypeNode {
 class GrammarWordTypeBitNode extends GrammarWordTypeNode {
   isValid(str) {
     return str === "0" || str === "1"
+  }
+
+  getRegexString() {
+    return "[01]"
   }
 
   parse(str) {
@@ -119,14 +149,24 @@ class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
     return !isNaN(parseFloat(str))
   }
 
+  getRegexString() {
+    return "\-?[0-9]*\.?[0-9]*"
+  }
+
   parse(str) {
     return parseFloat(str)
   }
 }
 
 class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
+  private _options = ["1", "0", "true", "false", "t", "f", "yes", "no"]
+
   isValid(str) {
-    return new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]).has(str.toLowerCase())
+    return new Set(this._options).has(str.toLowerCase())
+  }
+
+  getRegexString() {
+    return "(?:" + this._options.join("|") + ")"
   }
 
   parse(str) {
@@ -137,6 +177,10 @@ class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
 class GrammarWordTypeAnyNode extends GrammarWordTypeNode {
   isValid() {
     return true
+  }
+
+  getRegexString() {
+    return "[^ ]+"
   }
 }
 

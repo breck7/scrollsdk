@@ -5,18 +5,25 @@ import types from "../types"
 A cell contains a word but also the type information for that word.
 */
 class GrammarBackedCell {
-  constructor(word: string, type: string, node: any, index: types.int, expectedPattern: string, grammarProgram: any) {
+  constructor(
+    word: string,
+    type: string,
+    node: any,
+    index: types.int,
+    expectedLinePattern: string,
+    grammarProgram: any
+  ) {
     this._word = word
     this._type = type
     this._node = node
-    this._expectedPattern = expectedPattern
+    this._expectedLinePattern = expectedLinePattern
     this._grammarProgram = grammarProgram
     this._index = index + 1
   }
 
   private _node: any
   private _grammarProgram: any
-  private _expectedPattern: string
+  private _expectedLinePattern: string
   private _index: types.int
   private _word: string
   private _type: string
@@ -60,7 +67,7 @@ class GrammarBackedCell {
         level: index,
         context: context,
         message: `unfilledColumnError "${type}" column in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${
-          this._expectedPattern
+          this._expectedLinePattern
         }". definition: ${this._node.getDefinition().toString()}`
       }
     if (type === undefined)
@@ -70,7 +77,7 @@ class GrammarBackedCell {
         level: index,
         context: context,
         message: `extraWordError "${word}" in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${
-          this._expectedPattern
+          this._expectedLinePattern
         }".`
       }
 
@@ -84,7 +91,7 @@ class GrammarBackedCell {
         level: index,
         context: context,
         message: `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${
-          this._expectedPattern
+          this._expectedLinePattern
         }".`
       }
 
@@ -97,7 +104,7 @@ class GrammarBackedCell {
           level: index,
           context: context,
           message: `invalidWordError in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column. Expected pattern: "${
-            this._expectedPattern
+            this._expectedLinePattern
           }".`
         }
   }

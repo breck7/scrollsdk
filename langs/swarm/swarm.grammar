@@ -6,13 +6,16 @@
  @catchAllKeyword error
  @constructor js ./SwarmProgram.js
 @wordType filepath
- @regex .?
+ @regex .*
+ @highlightScope string
 @wordType any
- @regex .?
+ @regex .*
+ @highlightScope string
 @wordType int
- @regex ^\-?[0-9]+$
+ @regex \-?[0-9]+
 @keyword #setup
  @constructor js ./TestSetupNode.js
+ @highlightScope constant.language.@grammar
  @keywords
   async
   require
@@ -21,8 +24,10 @@
 @abstract terminal
 @keyword #! terminal
  @columns filepath any*
+ @highlightScope comment
 @keyword require terminal
  @columns filepath any*
+ @highlightScope constant.language.@grammar
 @keyword async terminal
  @description Set this in setup to test async methods.
 @keyword static terminal
@@ -33,11 +38,13 @@
  @keywords
   #setup
  @catchAllKeyword commandNode
+ @highlightScope keyword.control
 @keyword commandNode
  @constructor js ./CommandNode.js
  @description Input is an object, and calls some method with an optional array of string args.
  @columns any*
  @catchAllKeyword commandNode
+ @highlightScope variable.function
  @keywords
   %|
   assertion
@@ -49,6 +56,7 @@
 @keyword error
  @constructor js ErrorNode
 @abstract assertion
+ @highlightScope keyword.operator
 @keyword =~ assertion
  @description Assert result is of a certain type.
  @columns any
@@ -78,7 +86,11 @@
  @catchAllKeyword any
 @keyword %%|
  @constructor js ./SetupConstructorArgNode.js
+ @description Pass in a multiline string to setup constructor. #todo: rename
  @catchAllKeyword any
+ @highlightScope variable.parameter
 @keyword %|
+ @highlightScope variable.parameter
+ @description Pass in a multiline string as a command arg. #todo: rename
  @constructor js ./CommandArgNode.js
  @catchAllKeyword any

@@ -9,7 +9,7 @@ class AbstractGrammarWordTestNode extends TreeNode_1.default {
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
     isValid(str) {
         if (!this._regex)
-            this._regex = new RegExp(this.getContent());
+            this._regex = new RegExp("^" + this.getContent() + "$");
         return str.match(this._regex);
     }
 }
@@ -33,9 +33,12 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
     isValid(str) {
         // @enum c c++ java
+        return this.getOptions()[str];
+    }
+    getOptions() {
         if (!this._map)
             this._map = TreeUtils_1.default.arrayToMap(this.getWordsFrom(1));
-        return this._map[str];
+        return this._map;
     }
 }
 class GrammarWordParserNode extends TreeNode_1.default {
@@ -58,7 +61,20 @@ class GrammarWordTypeNode extends TreeNode_1.default {
         types[GrammarConstants_1.default.keywordTable] = GrammarKeywordTableTestNode;
         types[GrammarConstants_1.default.enum] = GrammarEnumTestNode;
         types[GrammarConstants_1.default.parseWith] = GrammarWordParserNode;
+        types[GrammarConstants_1.default.highlightScope] = TreeNode_1.default;
         return types;
+    }
+    getHighlightScope() {
+        return this.get(GrammarConstants_1.default.highlightScope);
+    }
+    _getEnumOptions() {
+        const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0];
+        return enumNode ? Object.keys(enumNode.getOptions()) : undefined;
+    }
+    getRegexString() {
+        // todo: enum
+        const enumOptions = this._getEnumOptions();
+        return (this.get(GrammarConstants_1.default.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "noWordTypeRegexFound"));
     }
     parse(str) {
         const parser = this.getNode(GrammarConstants_1.default.parseWith);
@@ -82,6 +98,9 @@ class GrammarWordTypeIntNode extends GrammarWordTypeNode {
             return false;
         return num.toString() === str;
     }
+    getRegexString() {
+        return "\-?[0-9]+";
+    }
     parse(str) {
         return parseInt(str);
     }
@@ -89,6 +108,9 @@ class GrammarWordTypeIntNode extends GrammarWordTypeNode {
 class GrammarWordTypeBitNode extends GrammarWordTypeNode {
     isValid(str) {
         return str === "0" || str === "1";
+    }
+    getRegexString() {
+        return "[01]";
     }
     parse(str) {
         return !!parseInt(str);
@@ -98,13 +120,23 @@ class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
     isValid(str) {
         return !isNaN(parseFloat(str));
     }
+    getRegexString() {
+        return "\-?[0-9]*\.?[0-9]*";
+    }
     parse(str) {
         return parseFloat(str);
     }
 }
 class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
+    constructor() {
+        super(...arguments);
+        this._options = ["1", "0", "true", "false", "t", "f", "yes", "no"];
+    }
     isValid(str) {
-        return new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]).has(str.toLowerCase());
+        return new Set(this._options).has(str.toLowerCase());
+    }
+    getRegexString() {
+        return "(?:" + this._options.join("|") + ")";
     }
     parse(str) {
         return !!parseInt(str);
@@ -113,6 +145,9 @@ class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
 class GrammarWordTypeAnyNode extends GrammarWordTypeNode {
     isValid() {
         return true;
+    }
+    getRegexString() {
+        return "[^ ]+";
     }
 }
 GrammarWordTypeNode.types = {

@@ -4,11 +4,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 A cell contains a word but also the type information for that word.
 */
 class GrammarBackedCell {
-    constructor(word, type, node, index, expectedPattern, grammarProgram) {
+    constructor(word, type, node, index, expectedLinePattern, grammarProgram) {
         this._word = word;
         this._type = type;
         this._node = node;
-        this._expectedPattern = expectedPattern;
+        this._expectedLinePattern = expectedLinePattern;
         this._grammarProgram = grammarProgram;
         this._index = index + 1;
     }
@@ -45,7 +45,7 @@ class GrammarBackedCell {
                 subkind: type,
                 level: index,
                 context: context,
-                message: `unfilledColumnError "${type}" column in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${this._expectedPattern}". definition: ${this._node.getDefinition().toString()}`
+                message: `unfilledColumnError "${type}" column in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${this._expectedLinePattern}". definition: ${this._node.getDefinition().toString()}`
             };
         if (type === undefined)
             return {
@@ -53,7 +53,7 @@ class GrammarBackedCell {
                 subkind: fullLine,
                 level: index,
                 context: context,
-                message: `extraWordError "${word}" in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${this._expectedPattern}".`
+                message: `extraWordError "${word}" in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${this._expectedLinePattern}".`
             };
         const grammarProgram = this._grammarProgram;
         const runTimeGrammarBackedProgram = this._node.getProgram();
@@ -64,7 +64,7 @@ class GrammarBackedCell {
                 subkind: type,
                 level: index,
                 context: context,
-                message: `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${this._expectedPattern}".`
+                message: `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${this._expectedLinePattern}".`
             };
         const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram);
         return isValid
@@ -74,7 +74,7 @@ class GrammarBackedCell {
                 subkind: type,
                 level: index,
                 context: context,
-                message: `invalidWordError in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column. Expected pattern: "${this._expectedPattern}".`
+                message: `invalidWordError in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column. Expected pattern: "${this._expectedLinePattern}".`
             };
     }
 }

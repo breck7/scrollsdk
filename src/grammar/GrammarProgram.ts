@@ -15,7 +15,7 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
 }
 
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
-  protected _isAbstract() {
+  _isAbstract() {
     return true
   }
 }
@@ -59,11 +59,18 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().getTargetExtension()
   }
 
-  private _cache_wordTypes
+  private _cache_wordTypes: {
+    [name: string]: GrammarWordTypeNode
+  }
 
   getWordTypes() {
     if (!this._cache_wordTypes) this._cache_wordTypes = this._getWordTypes()
     return this._cache_wordTypes
+  }
+
+  getWordType(word: string) {
+    // todo: cleanup
+    return this.getWordTypes()[word.replace(/\*$/, "")]
   }
 
   protected _getWordTypes() {
@@ -165,31 +172,36 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._cache_rootConstructorClass
   }
 
+  getNodeColumnRegexes() {
+    const colTypes = this.getWordTypes()
+    return this.getNodeColumnTypes().map(col => colTypes[col].getRegexString())
+  }
+
   toSublimeSyntaxFile() {
-    const keywords = this.getKeywordDefinitions()
+    const wordTypes = this.getWordTypes()
+    const variables = Object.keys(wordTypes)
+      .map(name => ` ${name}: '${wordTypes[name].getRegexString()}'`)
+      .join("\n")
 
-    //1 context per keyword
-    // const str = keywords.map(def => {
-    //   `${def}`
-    // }).join("\n")
+    const keywords = this.getKeywordDefinitions().filter(kw => !kw._isAbstract())
+    const keywordContexts = keywords.map(def => def.getMatchBlock()).join("\n\n")
 
-    // todo.
+    const includes = keywords.map(keyword => `  - include: '${keyword.getSyntaxContextId()}'`).join("\n")
+
     return `%YAML 1.2
 ---
 name: ${this.getExtensionName()}
 file_extensions: [${this.getExtensionName()}]
 scope: source.${this.getExtensionName()}
 
+variables:
+${variables}
+
 contexts:
  main:
-   - match: (\A|^) *[^ ]+
-     scope: storage.type.tree
-     set: [parameters]
+${includes}
 
- parameters:
-   - match: $
-     scope: entity.name.type.tree
-     pop: true`
+${keywordContexts}`
   }
 
   static newFromCondensed(grammarCode: string, grammarPath?: types.filepath) {

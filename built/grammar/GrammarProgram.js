@@ -55,6 +55,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             this._cache_wordTypes = this._getWordTypes();
         return this._cache_wordTypes;
     }
+    getWordType(word) {
+        // todo: cleanup
+        return this.getWordTypes()[word.replace(/\*$/, "")];
+    }
     _getWordTypes() {
         const types = {};
         // todo: add built in word types?
@@ -134,29 +138,32 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             this._cache_rootConstructorClass = this._getRootConstructor();
         return this._cache_rootConstructorClass;
     }
+    getNodeColumnRegexes() {
+        const colTypes = this.getWordTypes();
+        return this.getNodeColumnTypes().map(col => colTypes[col].getRegexString());
+    }
     toSublimeSyntaxFile() {
-        const keywords = this.getKeywordDefinitions();
-        // 1 context per keyword
-        // const str = keywords.map(def => {
-        //   `${def}`
-        // }).join("\n")
-        // todo.
+        const wordTypes = this.getWordTypes();
+        const variables = Object.keys(wordTypes)
+            .map(name => ` ${name}: '${wordTypes[name].getRegexString()}'`)
+            .join("\n");
+        const keywords = this.getKeywordDefinitions().filter(kw => !kw._isAbstract());
+        const keywordContexts = keywords.map(def => def.getMatchBlock()).join("\n\n");
+        const includes = keywords.map(keyword => `  - include: '${keyword.getSyntaxContextId()}'`).join("\n");
         return `%YAML 1.2
 ---
 name: ${this.getExtensionName()}
 file_extensions: [${this.getExtensionName()}]
 scope: source.${this.getExtensionName()}
 
+variables:
+${variables}
+
 contexts:
  main:
-   - match: (\A|^) *[^ ]+
-     scope: storage.type.tree
-     set: [parameters]
+${includes}
 
- parameters:
-   - match: $
-     scope: entity.name.type.tree
-     pop: true`;
+${keywordContexts}`;
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports

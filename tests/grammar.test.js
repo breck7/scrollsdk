@@ -8,7 +8,7 @@ const jibberishProgram = require("./jibberish/jibberishProgram.js")
 const jibberishNodes = require("./jibberish/jibberishNodes.js")
 
 quack.quickTest("basics", equal => {
-  // Arrange
+  // Arrange/Act/Assert
   const program = new GrammarProgram()
 
   // Arrange
@@ -145,6 +145,19 @@ quack.quickTest("any nodes", equal => {
     // Should be no errors
     equal(true, false)
   }
+})
+
+quack.quickTest("sublimeSyntaxFile", equal => {
+  // Arrange
+  const grammarPath = __dirname + "/jibberish/jibberish.grammar"
+  const jibberishGrammarCode = fs.readFileSync(grammarPath, "utf8")
+
+  // Act
+  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
+  const code = grammarProgram.toSublimeSyntaxFile()
+
+  // Assert
+  equal(code.includes("scope:"), true)
 })
 
 quack.quickTest("predictGrammarFile", equal => {

@@ -8,6 +8,7 @@ sandbox   Start the Tree Sandbox web app
 help   Show help
 list   List installed Grammars
 history grammarName  List all programs ever parsed with this cli tool
+gen grammarName outputPath Generate sublime syntax highlighting files
 register grammarPath  Register a new grammar
 run programPath  Execute a Tree Language Program
 usage grammarName  Analyze Global Keyword Usage for a given grammar

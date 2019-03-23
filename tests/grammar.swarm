@@ -8,6 +8,8 @@
     @compiler txt
     @keywords
      baseNode
+   @wordType any
+   @wordType word any
    @keyword baseNode
    @keyword block baseNode
     @keywords

@@ -1636,10 +1636,10 @@ testTree.isomorphicGrammarTests = equal => {
   text
   someAbstractClass
 @wordType int
- @regex ^\-?[0-9]+$
+ @regex \-?[0-9]+
  @parseWith js parseInt
 @wordType word
- @regex .?
+ @regex .*
 @wordType onoff
  @enum on off
 @keyword error
@@ -1676,7 +1676,7 @@ testTree.isomorphicGrammarTests = equal => {
  @compiler txt
   @sub to {word}
   @closeChildren end`
-  const grammar = `foo
+  const code = `foo
 nodeWithConsts
 lightbulbState on
 lightbulbState off
@@ -1704,11 +1704,11 @@ someCode
     (typeof __dirname !== "undefined" ? __dirname : "") + "/jibberish/jibberish.grammar"
   )
   const ProgramConstructor = grammarProgram.getRootConstructor()
-  const program = new ProgramConstructor(grammar)
+  const program = new ProgramConstructor(code)
   const errs = program.getProgramErrors()
 
   // Assert
-  equal(errs.length, 0)
+  equal(errs.length, 0, "no errors")
 }
 
 testTree.getExpanded = equal => {

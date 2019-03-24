@@ -22,6 +22,7 @@ GrammarConstants.group = "@group";
 GrammarConstants.any = "@any";
 GrammarConstants.required = "@required"; // Require this keyword to be present in a node or program
 GrammarConstants.single = "@single"; // Have at most 1 of these
+GrammarConstants.tags = "@tags";
 // parser/vm instantiating and executing
 GrammarConstants.constructor = "@constructor";
 GrammarConstants.constructorJs = "js";

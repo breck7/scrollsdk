@@ -125,6 +125,8 @@
 @keyword @any keywordRule
 @keyword @required keywordRule
 @keyword @single keywordRule
+@keyword @tags keywordRule
+ @columns any*
 @keyword @highlightScope keywordRule
  @columns any
 @keyword @keywords ntKeywordRule

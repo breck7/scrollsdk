@@ -21,8 +21,14 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,
-      GrammarConstants.defaults
+      GrammarConstants.defaults,
+      GrammarConstants.tags,
+      GrammarConstants.any,
+      GrammarConstants.group,
+      GrammarConstants.required,
+      GrammarConstants.single
     ]
+
     const map = {}
     types.forEach(type => {
       map[type] = TreeNode

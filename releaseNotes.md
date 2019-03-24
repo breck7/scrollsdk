@@ -5,6 +5,7 @@
 - New: added gen command to cli.js
 - New: added @required feature to grammar with appropriate error messages
 - New: added @single feature to grammar with appropriate error messages
+- New: added @tags feature to grammar
 - Breaking: @wordType > @regex with `.?` should now be `.*`
 - Breaking: in @wordType > @regex now all @regex are enclosed by ^$ automatically
 

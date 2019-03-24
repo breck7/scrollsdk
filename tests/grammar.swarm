@@ -9,6 +9,7 @@
     @keywords
      baseNode
    @wordType any
+   @foo
    @wordType word any
    @keyword baseNode
    @keyword block baseNode
@@ -16,6 +17,7 @@
      baseNode
    @keyword to block
     @columns word
+    @tags test
     @compiler txt
      @sub to {word}
      @closeChildren end
@@ -37,3 +39,5 @@
   == false
  isDefined to
   == true
+ getProgramErrors
+  =# 1

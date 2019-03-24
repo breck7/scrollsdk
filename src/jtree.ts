@@ -19,6 +19,6 @@ jtree.GrammarProgram = GrammarProgram
 
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
 
-jtree.getVersion = () => "17.1.3"
+jtree.getVersion = () => "18.0.0"
 
 export default jtree

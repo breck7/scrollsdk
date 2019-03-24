@@ -1,8 +1,8 @@
-18.0.0 / 2019-03-14
+18.0.0 / 2019-03-24
 ===================
-- New: basic .sublime-syntax file generation works. Not fully developed.
+- New: basic .sublime-syntax file generation works. Scopes not yet integrated.
+- New: added gen command to cli.js for generating syntax files
 - New: added @highlightScope property to @keyword and @wordType in grammar language
-- New: added gen command to cli.js
 - New: added @required feature to grammar with appropriate error messages
 - New: added @single feature to grammar with appropriate error messages
 - New: added @tags feature to grammar

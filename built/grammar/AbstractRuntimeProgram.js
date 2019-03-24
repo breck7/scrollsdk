@@ -25,12 +25,13 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             delete node._cachedLineNumber;
             line++;
         }
+        this._getRequiredNodeErrors(errors);
         return errors;
     }
     // Helper method for selecting potential keywords needed to update grammar file.
     getInvalidKeywords(level = undefined) {
         return Array.from(new Set(this.getProgramErrors()
-            .filter(err => err.kind === GrammarConstants_1.default.invalidKeywordError)
+            .filter(err => err.kind === GrammarConstants_1.default.errors.invalidKeywordError)
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }

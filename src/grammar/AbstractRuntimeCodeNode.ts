@@ -11,12 +11,8 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
   }
 
   getDefinition() {
-    return (
-      this.getProgram()
-        .getGrammarProgram()
-        // todo: do we need a relative to with this keyword path?
-        .getDefinitionByKeywordPath(this.getKeywordPath())
-    )
+    // todo: do we need a relative to with this keyword path?
+    return this._getKeywordDefinitionByName(this.getKeywordPath())
   }
 
   getCompilerNode(targetLanguage) {
@@ -62,9 +58,25 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     // Too many parameters
     // Incorrect parameter
 
-    return this._getGrammarBackedCellArray()
+    const errors = this._getGrammarBackedCellArray()
       .map(check => check.getErrorIfAny())
       .filter(i => i)
+    // More than one
+    const definition = this.getDefinition()
+    let times
+    const keyword = this.getKeyword()
+    if (definition.isSingle() && (times = this.getParent().findNodes(keyword).length) > 1)
+      errors.push({
+        kind: GrammarConstants.errors.keywordUsedMultipleTimesError,
+        subkind: keyword,
+        level: 0,
+        context: this.getParent().getLine(),
+        message: `${
+          GrammarConstants.errors.keywordUsedMultipleTimesError
+        } keyword "${keyword}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+      })
+
+    return this._getRequiredNodeErrors(errors)
   }
 
   protected _getGrammarBackedCellArray() {

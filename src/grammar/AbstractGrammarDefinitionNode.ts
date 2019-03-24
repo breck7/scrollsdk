@@ -143,7 +143,8 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       })
   }
 
-  protected _getKeywordsInScope() {
+  // todo: protected?
+  _getKeywordsInScope(): string[] {
     const keywords = this._getKeywordsNode()
     return keywords ? keywords.getKeywords() : []
   }
@@ -161,17 +162,25 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.getNode(GrammarConstants.keywords)
   }
 
+  isRequired(): boolean {
+    return this.has(GrammarConstants.required)
+  }
+
+  isSingle(): boolean {
+    return this.has(GrammarConstants.single)
+  }
+
   // todo: protected?
   _getRunTimeCatchAllKeyword(): string {
     return ""
   }
 
-  getDefinitionByName(keyword) {
+  getKeywordDefinitionByName(keyword: string) {
     const definitions = this._getProgramKeywordDefinitionCache()
     return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
   }
 
-  protected _getCatchAllDefinition() {
+  protected _getCatchAllDefinition(): AbstractGrammarDefinitionNode {
     const catchAllKeyword = this._getRunTimeCatchAllKeyword()
     const definitions = this._getProgramKeywordDefinitionCache()
     const def = definitions[catchAllKeyword]

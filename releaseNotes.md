@@ -3,6 +3,8 @@
 - New: basic .sublime-syntax file generation works. Not fully developed.
 - New: added @highlightScope property to @keyword and @wordType in grammar language
 - New: added gen command to cli.js
+- New: added @required feature to grammar with appropriate error messages
+- New: added @single feature to grammar with appropriate error messages
 - Breaking: @wordType > @regex with `.?` should now be `.*`
 - Breaking: in @wordType > @regex now all @regex are enclosed by ^$ automatically
 

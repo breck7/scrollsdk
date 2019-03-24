@@ -118,6 +118,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getDefinedConstructor();
         });
     }
+    // todo: protected?
     _getKeywordsInScope() {
         const keywords = this._getKeywordsNode();
         return keywords ? keywords.getKeywords() : [];
@@ -133,11 +134,17 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _getKeywordsNode() {
         return this.getNode(GrammarConstants_1.default.keywords);
     }
+    isRequired() {
+        return this.has(GrammarConstants_1.default.required);
+    }
+    isSingle() {
+        return this.has(GrammarConstants_1.default.single);
+    }
     // todo: protected?
     _getRunTimeCatchAllKeyword() {
         return "";
     }
-    getDefinitionByName(keyword) {
+    getKeywordDefinitionByName(keyword) {
         const definitions = this._getProgramKeywordDefinitionCache();
         return definitions[keyword] || this._getCatchAllDefinition(); // todo: this is where we might do some type of keyword lookup for user defined fns.
     }

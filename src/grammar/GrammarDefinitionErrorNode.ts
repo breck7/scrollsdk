@@ -8,11 +8,11 @@ class GrammarDefinitionErrorNode extends TreeNode {
     const point = this.getPoint()
     return [
       {
-        kind: GrammarConstants.invalidKeywordError,
+        kind: GrammarConstants.errors.invalidKeywordError,
         subkind: this.getKeyword(),
         level: point.x,
         context: context,
-        message: `${GrammarConstants.invalidKeywordError} "${this.getKeyword()}" at line ${point.y}`
+        message: `${GrammarConstants.errors.invalidKeywordError} "${this.getKeyword()}" at line ${point.y}`
       }
     ]
   }

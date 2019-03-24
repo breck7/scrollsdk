@@ -14,6 +14,8 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         const map = super.getKeywordMap();
         map[GrammarConstants_1.default.any] = TreeNode_1.default;
         map[GrammarConstants_1.default.group] = TreeNode_1.default;
+        map[GrammarConstants_1.default.required] = TreeNode_1.default;
+        map[GrammarConstants_1.default.single] = TreeNode_1.default;
         return map;
     }
     isOrExtendsAKeywordInScope(keywordsInScope) {

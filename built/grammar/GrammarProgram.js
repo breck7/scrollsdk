@@ -27,6 +27,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         map[GrammarConstants_1.default.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
     }
+    // todo: this code is largely duplicated in abstractruntimeprogram
     getProgramErrors() {
         const errors = [];
         let line = 1;
@@ -84,7 +85,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     _getKeywordsNode() {
         return this._getGrammarRootNode().getNode(GrammarConstants_1.default.keywords);
     }
-    getDefinitionByKeywordPath(keywordPath) {
+    getKeywordDefinitionByKeywordPath(keywordPath) {
         if (!this._cachedDefinitions)
             this._cachedDefinitions = {};
         if (this._cachedDefinitions[keywordPath])

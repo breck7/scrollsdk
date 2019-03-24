@@ -32,6 +32,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return map
   }
 
+  // todo: this code is largely duplicated in abstractruntimeprogram
   getProgramErrors(): types.ParseError[] {
     const errors = []
     let line = 1
@@ -105,9 +106,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().getNode(GrammarConstants.keywords)
   }
 
-  private _cachedDefinitions
+  private _cachedDefinitions: {
+    [keyword: string]: AbstractGrammarDefinitionNode
+  }
 
-  getDefinitionByKeywordPath(keywordPath) {
+  getKeywordDefinitionByKeywordPath(keywordPath: string): AbstractGrammarDefinitionNode {
     if (!this._cachedDefinitions) this._cachedDefinitions = {}
     if (this._cachedDefinitions[keywordPath]) return this._cachedDefinitions[keywordPath]
 

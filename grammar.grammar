@@ -36,6 +36,8 @@
 @wordType wordType
  @keywordTable @wordType 1
 @keyword @grammar
+ @required
+ @single
  @highlightScope constant.language
  @columns word
  @keywords
@@ -74,6 +76,7 @@
  @highlightScope entity.other.attribute-name
 @abstract keywordRule
  @highlightScope entity.other.attribute-name
+ @single
 @abstract monadicKeywordRule keywordRule
  @columns any
 @abstract diadicKeywordRule keywordRule
@@ -120,6 +123,8 @@
  @catchAllKeyword constantDefinition
 @keyword keywordUse
 @keyword @any keywordRule
+@keyword @required keywordRule
+@keyword @single keywordRule
 @keyword @highlightScope keywordRule
  @columns any
 @keyword @keywords ntKeywordRule

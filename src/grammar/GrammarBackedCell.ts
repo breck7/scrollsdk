@@ -1,4 +1,5 @@
 import TreeNode from "../base/TreeNode"
+import GrammarConstants from "./GrammarConstants"
 import types from "../types"
 
 /*
@@ -62,23 +63,25 @@ class GrammarBackedCell {
     const context = fullLine.split(" ")[0] // todo: XI
     if (word === undefined)
       return {
-        kind: "unfilledColumnError",
+        kind: GrammarConstants.errors.unfilledColumnError,
         subkind: type,
         level: index,
         context: context,
-        message: `unfilledColumnError "${type}" column in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${
+        message: `${
+          GrammarConstants.errors.unfilledColumnError
+        } "${type}" column in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${
           this._expectedLinePattern
         }". definition: ${this._node.getDefinition().toString()}`
       }
     if (type === undefined)
       return {
-        kind: "extraWordError",
+        kind: GrammarConstants.errors.extraWordError,
         subkind: fullLine,
         level: index,
         context: context,
-        message: `extraWordError "${word}" in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${
-          this._expectedLinePattern
-        }".`
+        message: `${
+          GrammarConstants.errors.extraWordError
+        } "${word}" in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${this._expectedLinePattern}".`
       }
 
     const grammarProgram = this._grammarProgram
@@ -86,11 +89,13 @@ class GrammarBackedCell {
     const wordTypeClass = this._getWordTypeClass()
     if (!wordTypeClass)
       return {
-        kind: "grammarDefinitionError",
+        kind: GrammarConstants.errors.grammarDefinitionError,
         subkind: type,
         level: index,
         context: context,
-        message: `grammarDefinitionError No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${
+        message: `${
+          GrammarConstants.errors.grammarDefinitionError
+        } No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${
           this._expectedLinePattern
         }".`
       }
@@ -99,11 +104,13 @@ class GrammarBackedCell {
     return isValid
       ? undefined
       : {
-          kind: "invalidWordError",
+          kind: GrammarConstants.errors.invalidWordError,
           subkind: type,
           level: index,
           context: context,
-          message: `invalidWordError in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column. Expected pattern: "${
+          message: `${
+            GrammarConstants.errors.invalidWordError
+          } in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column. Expected pattern: "${
             this._expectedLinePattern
           }".`
         }

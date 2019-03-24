@@ -21,7 +21,7 @@
      @closeChildren end
  getRunTimeKeywordNames
   =# 3
- getDefinitionByName to
+ getKeywordDefinitionByName to
   =~ object
  getTopNodeTypes
   =# 3

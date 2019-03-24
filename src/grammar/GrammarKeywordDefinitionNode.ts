@@ -18,6 +18,8 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     const map = super.getKeywordMap()
     map[GrammarConstants.any] = TreeNode
     map[GrammarConstants.group] = TreeNode
+    map[GrammarConstants.required] = TreeNode
+    map[GrammarConstants.single] = TreeNode
     return map
   }
 

@@ -35,13 +35,13 @@ class GrammarCustomConstructorNode extends TreeNode {
     const point = this.getPoint()
     return [
       {
-        kind: GrammarConstants.invalidConstructorPathError,
+        kind: GrammarConstants.errors.invalidConstructorPathError,
         subkind: this.getKeyword(),
         level: point.x,
         context: context,
-        message: `${GrammarConstants.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${
-          point.y
-        }`
+        message: `${
+          GrammarConstants.errors.invalidConstructorPathError
+        } no constructor "${this.getLine()}" found at line ${point.y}`
       }
     ]
   }

@@ -16,7 +16,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   getProgramErrors(): types.ParseError[] {
-    const errors = []
+    const errors: types.ParseError[] = []
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
@@ -25,6 +25,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       delete node._cachedLineNumber
       line++
     }
+    this._getRequiredNodeErrors(errors)
     return errors
   }
 
@@ -33,7 +34,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return Array.from(
       new Set(
         this.getProgramErrors()
-          .filter(err => err.kind === GrammarConstants.invalidKeywordError)
+          .filter(err => err.kind === GrammarConstants.errors.invalidKeywordError)
           .filter(err => (level ? level === err.level : true))
           .map(err => err.subkind)
       )

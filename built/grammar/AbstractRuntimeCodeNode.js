@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeUtils_1 = require("../base/TreeUtils");
+const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarBackedCell_1 = require("./GrammarBackedCell");
 const AbstractRuntimeNode_1 = require("./AbstractRuntimeNode");
 class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
@@ -8,10 +9,8 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
         return this.getParent().getProgram();
     }
     getDefinition() {
-        return (this.getProgram()
-            .getGrammarProgram()
-            // todo: do we need a relative to with this keyword path?
-            .getDefinitionByKeywordPath(this.getKeywordPath()));
+        // todo: do we need a relative to with this keyword path?
+        return this._getKeywordDefinitionByName(this.getKeywordPath());
     }
     getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
@@ -50,9 +49,22 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
         // Not enough parameters
         // Too many parameters
         // Incorrect parameter
-        return this._getGrammarBackedCellArray()
+        const errors = this._getGrammarBackedCellArray()
             .map(check => check.getErrorIfAny())
             .filter(i => i);
+        // More than one
+        const definition = this.getDefinition();
+        let times;
+        const keyword = this.getKeyword();
+        if (definition.isSingle() && (times = this.getParent().findNodes(keyword).length) > 1)
+            errors.push({
+                kind: GrammarConstants_1.default.errors.keywordUsedMultipleTimesError,
+                subkind: keyword,
+                level: 0,
+                context: this.getParent().getLine(),
+                message: `${GrammarConstants_1.default.errors.keywordUsedMultipleTimesError} keyword "${keyword}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+            });
+        return this._getRequiredNodeErrors(errors);
     }
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();

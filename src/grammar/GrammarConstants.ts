@@ -21,6 +21,8 @@ GrammarConstants.defaults = "@defaults"
 GrammarConstants.constants = "@constants"
 GrammarConstants.group = "@group"
 GrammarConstants.any = "@any"
+GrammarConstants.required = "@required" // Require this keyword to be present in a node or program
+GrammarConstants.single = "@single" // Have at most 1 of these
 
 // parser/vm instantiating and executing
 GrammarConstants.constructor = "@constructor"
@@ -41,7 +43,14 @@ GrammarConstants.frequency = "@frequency"
 GrammarConstants.highlightScope = "@highlightScope"
 
 // errors
-GrammarConstants.invalidKeywordError = "invalidKeywordError"
-GrammarConstants.invalidConstructorPathError = "invalidConstructorPathError"
+GrammarConstants.errors = {}
+GrammarConstants.errors.invalidKeywordError = "invalidKeywordError"
+GrammarConstants.errors.invalidConstructorPathError = "invalidConstructorPathError"
+GrammarConstants.errors.invalidWordError = "invalidWordError"
+GrammarConstants.errors.grammarDefinitionError = "grammarDefinitionError"
+GrammarConstants.errors.extraWordError = "extraWordError"
+GrammarConstants.errors.unfilledColumnError = "unfilledColumnError"
+GrammarConstants.errors.missingRequiredKeywordError = "missingRequiredKeywordError"
+GrammarConstants.errors.keywordUsedMultipleTimesError = "keywordUsedMultipleTimesError"
 
 export default GrammarConstants

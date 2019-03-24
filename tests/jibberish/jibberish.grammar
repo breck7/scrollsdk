@@ -32,6 +32,9 @@
  @keywords
   topLevel
 @keyword foo topLevel
+@keyword type topLevel
+ @columns word
+ @single
 @keyword nodeWithConsts topLevel
  @constants
   greeting string hello world

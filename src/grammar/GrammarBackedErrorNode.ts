@@ -14,11 +14,11 @@ class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
     const keyword = this.getKeyword()
     return [
       {
-        kind: GrammarConstants.invalidKeywordError,
+        kind: GrammarConstants.errors.invalidKeywordError,
         subkind: keyword,
         context: context,
         level: point.x,
-        message: `${GrammarConstants.invalidKeywordError} "${keyword}" ${locationMsg}at line ${point.y} column ${
+        message: `${GrammarConstants.errors.invalidKeywordError} "${keyword}" ${locationMsg}at line ${point.y} column ${
           point.x
         }`
       }

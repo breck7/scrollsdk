@@ -24,15 +24,15 @@ quack.quickTest("basics", equal => {
 })
 
 const makeJibberishProgram = code => {
-  // Arrange
   const grammarPath = __dirname + "/jibberish/jibberish.grammar"
-  const jibberishGrammarCode = fs.readFileSync(grammarPath, "utf8")
+  const grammarCode = fs.readFileSync(grammarPath, "utf8")
+  return makeProgram(grammarCode, code, grammarPath)
+}
 
-  // Act
-  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
-
-  const rootJibberishProgramConstructor = grammarProgram.getRootConstructor()
-  return new rootJibberishProgramConstructor(code)
+const makeProgram = (grammarCode, code, grammarPath = undefined) => {
+  const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
+  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  return new rootProgramConstructor(code)
 }
 
 quack.quickTest("jibberish", equal => {
@@ -196,6 +196,31 @@ file test
 
   // Assert
   equal(types, expected)
+})
+
+quack.quickTest("required keywords", equal => {
+  // Arrange/Act
+  const path = __dirname + "/../grammar.grammar"
+  const anyProgram = makeProgram(
+    fs.readFileSync(path, "utf8"),
+    `@wordType word any
+@keyword baseNode`,
+    path
+  )
+
+  // Assert
+  let errors = anyProgram.getProgramErrorMessages()
+  equal(errors.length, 1)
+})
+
+quack.quickTest("duplicate keywords", equal => {
+  // Arrange/Act
+  const anyProgram = makeJibberishProgram(`type foo
+type bar`)
+
+  // Assert
+  let errors = anyProgram.getProgramErrorMessages()
+  equal(errors.length, 2)
 })
 
 quack.quickTest("abstract keywords", equal => {

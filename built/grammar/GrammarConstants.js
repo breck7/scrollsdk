@@ -1,51 +1,58 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 // todo: change to enum?
-const GrammarConstants = {};
-// node types
-GrammarConstants.grammar = "@grammar";
-GrammarConstants.keyword = "@keyword";
-GrammarConstants.wordType = "@wordType";
-GrammarConstants.abstract = "@abstract";
-// word parsing
-GrammarConstants.regex = "@regex"; // temporary?
-GrammarConstants.keywordTable = "@keywordTable"; // temporary?
-GrammarConstants.enum = "@enum"; // temporary?
-GrammarConstants.parseWith = "@parseWith"; // temporary?
-// parsing
-GrammarConstants.keywords = "@keywords";
-GrammarConstants.columns = "@columns";
-GrammarConstants.catchAllKeyword = "@catchAllKeyword";
-GrammarConstants.defaults = "@defaults";
-GrammarConstants.constants = "@constants";
-GrammarConstants.group = "@group";
-GrammarConstants.any = "@any";
-GrammarConstants.required = "@required"; // Require this keyword to be present in a node or program
-GrammarConstants.single = "@single"; // Have at most 1 of these
-GrammarConstants.tags = "@tags";
-// parser/vm instantiating and executing
-GrammarConstants.constructor = "@constructor";
-GrammarConstants.constructorJs = "js";
-// compiling
-GrammarConstants.compilerKeyword = "@compiler";
-GrammarConstants.compiler = {};
-GrammarConstants.compiler.sub = "@sub"; // replacement instructions
-GrammarConstants.compiler.indentCharacter = "@indentCharacter";
-GrammarConstants.compiler.listDelimiter = "@listDelimiter";
-GrammarConstants.compiler.openChildren = "@openChildren";
-GrammarConstants.compiler.closeChildren = "@closeChildren";
-// developing
-GrammarConstants.description = "@description";
-GrammarConstants.frequency = "@frequency";
-GrammarConstants.highlightScope = "@highlightScope";
-// errors
-GrammarConstants.errors = {};
-GrammarConstants.errors.invalidKeywordError = "invalidKeywordError";
-GrammarConstants.errors.invalidConstructorPathError = "invalidConstructorPathError";
-GrammarConstants.errors.invalidWordError = "invalidWordError";
-GrammarConstants.errors.grammarDefinitionError = "grammarDefinitionError";
-GrammarConstants.errors.extraWordError = "extraWordError";
-GrammarConstants.errors.unfilledColumnError = "unfilledColumnError";
-GrammarConstants.errors.missingRequiredKeywordError = "missingRequiredKeywordError";
-GrammarConstants.errors.keywordUsedMultipleTimesError = "keywordUsedMultipleTimesError";
-exports.default = GrammarConstants;
+Object.defineProperty(exports, "__esModule", { value: true });
+var GrammarConstantsCompiler;
+(function (GrammarConstantsCompiler) {
+    GrammarConstantsCompiler["sub"] = "@sub";
+    GrammarConstantsCompiler["indentCharacter"] = "@indentCharacter";
+    GrammarConstantsCompiler["listDelimiter"] = "@listDelimiter";
+    GrammarConstantsCompiler["openChildren"] = "@openChildren";
+    GrammarConstantsCompiler["closeChildren"] = "@closeChildren";
+})(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
+exports.GrammarConstantsCompiler = GrammarConstantsCompiler;
+var GrammarConstants;
+(function (GrammarConstants) {
+    // node types
+    GrammarConstants["grammar"] = "@grammar";
+    GrammarConstants["keyword"] = "@keyword";
+    GrammarConstants["wordType"] = "@wordType";
+    GrammarConstants["abstract"] = "@abstract";
+    // error check time
+    GrammarConstants["regex"] = "@regex";
+    GrammarConstants["keywordTable"] = "@keywordTable";
+    GrammarConstants["enum"] = "@enum";
+    GrammarConstants["parseWith"] = "@parseWith";
+    // parse time
+    GrammarConstants["keywords"] = "@keywords";
+    GrammarConstants["columns"] = "@columns";
+    GrammarConstants["catchAllKeyword"] = "@catchAllKeyword";
+    GrammarConstants["defaults"] = "@defaults";
+    GrammarConstants["constants"] = "@constants";
+    GrammarConstants["group"] = "@group";
+    GrammarConstants["any"] = "@any";
+    GrammarConstants["required"] = "@required";
+    GrammarConstants["single"] = "@single";
+    GrammarConstants["tags"] = "@tags";
+    // parse and interpret time
+    GrammarConstants["constructor"] = "@constructor";
+    GrammarConstants["constructorJs"] = "js";
+    // compile time
+    GrammarConstants["compilerKeyword"] = "@compiler";
+    // develop time
+    GrammarConstants["description"] = "@description";
+    GrammarConstants["frequency"] = "@frequency";
+    GrammarConstants["highlightScope"] = "@highlightScope";
+})(GrammarConstants || (GrammarConstants = {}));
+exports.GrammarConstants = GrammarConstants;
+var GrammarConstantsErrors;
+(function (GrammarConstantsErrors) {
+    GrammarConstantsErrors["invalidKeywordError"] = "invalidKeywordError";
+    GrammarConstantsErrors["invalidConstructorPathError"] = "invalidConstructorPathError";
+    GrammarConstantsErrors["invalidWordError"] = "invalidWordError";
+    GrammarConstantsErrors["grammarDefinitionError"] = "grammarDefinitionError";
+    GrammarConstantsErrors["extraWordError"] = "extraWordError";
+    GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
+    GrammarConstantsErrors["missingRequiredKeywordError"] = "missingRequiredKeywordError";
+    GrammarConstantsErrors["keywordUsedMultipleTimesError"] = "keywordUsedMultipleTimesError";
+})(GrammarConstantsErrors || (GrammarConstantsErrors = {}));
+exports.GrammarConstantsErrors = GrammarConstantsErrors;

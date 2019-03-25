@@ -1,15 +1,15 @@
 import TreeNode from "../base/TreeNode"
 
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstantsCompiler } from "./GrammarConstants"
 
 class GrammarCompilerNode extends TreeNode {
   getKeywordMap() {
     const types = [
-      GrammarConstants.compiler.sub,
-      GrammarConstants.compiler.indentCharacter,
-      GrammarConstants.compiler.listDelimiter,
-      GrammarConstants.compiler.openChildren,
-      GrammarConstants.compiler.closeChildren
+      GrammarConstantsCompiler.sub,
+      GrammarConstantsCompiler.indentCharacter,
+      GrammarConstantsCompiler.listDelimiter,
+      GrammarConstantsCompiler.openChildren,
+      GrammarConstantsCompiler.closeChildren
     ]
     const map = {}
     types.forEach(type => {
@@ -23,23 +23,23 @@ class GrammarCompilerNode extends TreeNode {
   }
 
   getListDelimiter() {
-    return this.get(GrammarConstants.compiler.listDelimiter)
+    return this.get(GrammarConstantsCompiler.listDelimiter)
   }
 
   getTransformation() {
-    return this.get(GrammarConstants.compiler.sub)
+    return this.get(GrammarConstantsCompiler.sub)
   }
 
   getIndentCharacter() {
-    return this.get(GrammarConstants.compiler.indentCharacter)
+    return this.get(GrammarConstantsCompiler.indentCharacter)
   }
 
   getOpenChildrenString() {
-    return this.get(GrammarConstants.compiler.openChildren) || ""
+    return this.get(GrammarConstantsCompiler.openChildren) || ""
   }
 
   getCloseChildrenString() {
-    return this.get(GrammarConstants.compiler.closeChildren) || ""
+    return this.get(GrammarConstantsCompiler.closeChildren) || ""
   }
 }
 

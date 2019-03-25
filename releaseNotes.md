@@ -8,6 +8,8 @@
 - New: added @tags feature to grammar
 - Breaking: @wordType > @regex with `.?` should now be `.*`
 - Breaking: in @wordType > @regex now all @regex are enclosed by ^$ automatically
+- Breaking: AbstractGrammarDefinitionNode: getDefinitionByName is now getKeywordDefinitionByName
+- Breaking: _isOrExtendsAKeywordInScope is now isOrExtendsAKeywordInScope
 
 17.1.3 / 2019-03-14
 ===================

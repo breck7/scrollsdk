@@ -1,5 +1,5 @@
 import TreeNode from "../base/TreeNode"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstantsErrors } from "./GrammarConstants"
 
 abstract class AbstractRuntimeNode extends TreeNode {
   getGrammarProgram(): any {}
@@ -26,12 +26,12 @@ abstract class AbstractRuntimeNode extends TreeNode {
       const def = keywords[keyword]
       if (def.isRequired() && !this.has(keyword)) {
         errors.push({
-          kind: GrammarConstants.errors.missingRequiredKeywordError,
+          kind: GrammarConstantsErrors.missingRequiredKeywordError,
           subkind: keyword,
           level: 0,
           context: 0,
           message: `${
-            GrammarConstants.errors.missingRequiredKeywordError
+            GrammarConstantsErrors.missingRequiredKeywordError
           } Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
         })
       }

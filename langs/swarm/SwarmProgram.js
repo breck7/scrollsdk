@@ -16,7 +16,9 @@ class SwarmProgram extends jtree.program {
   }
 
   execute(filepath) {
-    return Promise.all(this.getTestsToRun().map(test => test.execute(filepath)))
+    const tests = this.getTestsToRun()
+    tests.map(test => test.execute(filepath))
+    return `${tests.length} tests started.`
   }
 
   getTestsToRun() {

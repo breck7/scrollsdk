@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants } from "./GrammarConstants"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 

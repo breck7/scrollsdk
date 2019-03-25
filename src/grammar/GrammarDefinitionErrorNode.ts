@@ -1,5 +1,5 @@
 import TreeNode from "../base/TreeNode"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors() {
@@ -8,11 +8,11 @@ class GrammarDefinitionErrorNode extends TreeNode {
     const point = this.getPoint()
     return [
       {
-        kind: GrammarConstants.errors.invalidKeywordError,
+        kind: GrammarConstantsErrors.invalidKeywordError,
         subkind: this.getKeyword(),
         level: point.x,
         context: context,
-        message: `${GrammarConstants.errors.invalidKeywordError} "${this.getKeyword()}" at line ${point.y}`
+        message: `${GrammarConstantsErrors.invalidKeywordError} "${this.getKeyword()}" at line ${point.y}`
       }
     ]
   }

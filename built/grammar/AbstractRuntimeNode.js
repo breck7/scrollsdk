@@ -20,11 +20,11 @@ class AbstractRuntimeNode extends TreeNode_1.default {
             const def = keywords[keyword];
             if (def.isRequired() && !this.has(keyword)) {
                 errors.push({
-                    kind: GrammarConstants_1.default.errors.missingRequiredKeywordError,
+                    kind: GrammarConstants_1.GrammarConstantsErrors.missingRequiredKeywordError,
                     subkind: keyword,
                     level: 0,
                     context: 0,
-                    message: `${GrammarConstants_1.default.errors.missingRequiredKeywordError} Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
+                    message: `${GrammarConstants_1.GrammarConstantsErrors.missingRequiredKeywordError} Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
                 });
             }
         });

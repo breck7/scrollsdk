@@ -1,6 +1,6 @@
 import TreeUtils from "../base/TreeUtils"
 
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstantsErrors } from "./GrammarConstants"
 
 import GrammarBackedCell from "./GrammarBackedCell"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
@@ -67,12 +67,12 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     const keyword = this.getKeyword()
     if (definition.isSingle() && (times = this.getParent().findNodes(keyword).length) > 1)
       errors.push({
-        kind: GrammarConstants.errors.keywordUsedMultipleTimesError,
+        kind: GrammarConstantsErrors.keywordUsedMultipleTimesError,
         subkind: keyword,
         level: 0,
         context: this.getParent().getLine(),
         message: `${
-          GrammarConstants.errors.keywordUsedMultipleTimesError
+          GrammarConstantsErrors.keywordUsedMultipleTimesError
         } keyword "${keyword}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
       })
 

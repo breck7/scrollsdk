@@ -13,41 +13,41 @@ const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getKeywordMap() {
         const types = [
-            GrammarConstants_1.default.frequency,
-            GrammarConstants_1.default.keywords,
-            GrammarConstants_1.default.columns,
-            GrammarConstants_1.default.description,
-            GrammarConstants_1.default.catchAllKeyword,
-            GrammarConstants_1.default.defaults,
-            GrammarConstants_1.default.tags,
-            GrammarConstants_1.default.any,
-            GrammarConstants_1.default.group,
-            GrammarConstants_1.default.required,
-            GrammarConstants_1.default.single
+            GrammarConstants_1.GrammarConstants.frequency,
+            GrammarConstants_1.GrammarConstants.keywords,
+            GrammarConstants_1.GrammarConstants.columns,
+            GrammarConstants_1.GrammarConstants.description,
+            GrammarConstants_1.GrammarConstants.catchAllKeyword,
+            GrammarConstants_1.GrammarConstants.defaults,
+            GrammarConstants_1.GrammarConstants.tags,
+            GrammarConstants_1.GrammarConstants.any,
+            GrammarConstants_1.GrammarConstants.group,
+            GrammarConstants_1.GrammarConstants.required,
+            GrammarConstants_1.GrammarConstants.single
         ];
         const map = {};
         types.forEach(type => {
             map[type] = TreeNode_1.default;
         });
-        map[GrammarConstants_1.default.constants] = GrammarConstantsNode_1.default;
-        map[GrammarConstants_1.default.compilerKeyword] = GrammarCompilerNode_1.default;
-        map[GrammarConstants_1.default.constructor] = GrammarCustomConstructorNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.constants] = GrammarConstantsNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.compilerKeyword] = GrammarCompilerNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.constructor] = GrammarCustomConstructorNode_1.default;
         return map;
     }
     getId() {
         return this.getWord(1);
     }
     _isNonTerminal() {
-        return this._isAnyNode() || this.has(GrammarConstants_1.default.keywords) || this.has(GrammarConstants_1.default.catchAllKeyword);
+        return this._isAnyNode() || this.has(GrammarConstants_1.GrammarConstants.keywords) || this.has(GrammarConstants_1.GrammarConstants.catchAllKeyword);
     }
     _isAbstract() {
         return false;
     }
     _isAnyNode() {
-        return this.has(GrammarConstants_1.default.any);
+        return this.has(GrammarConstants_1.GrammarConstants.any);
     }
     _getCustomDefinedConstructorNode() {
-        return (this.getNodeByColumns(GrammarConstants_1.default.constructor, GrammarConstants_1.default.constructorJs));
+        return (this.getNodeByColumns(GrammarConstants_1.GrammarConstants.constructor, GrammarConstants_1.GrammarConstants.constructorJs));
     }
     getDefinedConstructor() {
         if (!this._cache_definedNodeConstructor)
@@ -99,7 +99,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return TreeUtils_1.default.mapValues(this.getRunTimeKeywordMap(), key => defs[key]);
     }
     getNodeColumnTypes() {
-        const parameters = this.get(GrammarConstants_1.default.columns);
+        const parameters = this.get(GrammarConstants_1.GrammarConstants.columns);
         return parameters ? parameters.split(" ") : [];
     }
     /*
@@ -137,13 +137,15 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return arr.map(definition => definition.getId());
     }
     _getKeywordsNode() {
-        return this.getNode(GrammarConstants_1.default.keywords);
+        // todo: allow multiple of these if we allow mixins?
+        return this.getNode(GrammarConstants_1.GrammarConstants.keywords);
     }
     isRequired() {
-        return this.has(GrammarConstants_1.default.required);
+        GrammarConstants_1.GrammarConstants;
+        return this.has(GrammarConstants_1.GrammarConstants.required);
     }
     isSingle() {
-        return this.has(GrammarConstants_1.default.single);
+        return this.has(GrammarConstants_1.GrammarConstants.single);
     }
     // todo: protected?
     _getRunTimeCatchAllKeyword() {

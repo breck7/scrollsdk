@@ -6,7 +6,7 @@ const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.default {
     // todo: protected?
     _getRunTimeCatchAllKeyword() {
-        return (this.get(GrammarConstants_1.default.catchAllKeyword) ||
+        return (this.get(GrammarConstants_1.GrammarConstants.catchAllKeyword) ||
             this.getParent()._getRunTimeCatchAllKeyword());
     }
     isOrExtendsAKeywordInScope(keywordsInScope) {
@@ -14,7 +14,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         return keywordsInScope.some(keyword => chain[keyword]);
     }
     _getHighlightScope() {
-        return this.get(GrammarConstants_1.default.highlightScope);
+        return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
     }
     getSyntaxContextId() {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
@@ -80,21 +80,21 @@ ${captures}
         return this.getId();
     }
     _getDefaultsNode() {
-        return this.get(GrammarConstants_1.default.defaults);
+        return this.get(GrammarConstants_1.GrammarConstants.defaults);
     }
     getDefaultFor(name) {
         const defaults = this._getDefaultsNode();
         return defaults ? defaults.get(name) : undefined;
     }
     getDescription() {
-        return this.get(GrammarConstants_1.default.description) || "";
+        return this.get(GrammarConstants_1.GrammarConstants.description) || "";
     }
     getConstantsObject() {
         const constantsNode = this.getNodeByType(GrammarConstantsNode_1.default);
         return constantsNode ? constantsNode.getConstantsObj() : {};
     }
     getFrequency() {
-        const val = this.get(GrammarConstants_1.default.frequency);
+        const val = this.get(GrammarConstants_1.GrammarConstants.frequency);
         return val ? parseFloat(val) : 0;
     }
 }

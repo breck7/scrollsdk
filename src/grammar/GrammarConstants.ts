@@ -1,57 +1,60 @@
 // todo: change to enum?
-const GrammarConstants: any = {}
 
-// node types
-GrammarConstants.grammar = "@grammar"
-GrammarConstants.keyword = "@keyword"
-GrammarConstants.wordType = "@wordType"
-GrammarConstants.abstract = "@abstract"
+enum GrammarConstantsCompiler {
+  sub = "@sub", // replacement instructions
+  indentCharacter = "@indentCharacter",
+  listDelimiter = "@listDelimiter",
+  openChildren = "@openChildren",
+  closeChildren = "@closeChildren"
+}
 
-// word parsing
-GrammarConstants.regex = "@regex" // temporary?
-GrammarConstants.keywordTable = "@keywordTable" // temporary?
-GrammarConstants.enum = "@enum" // temporary?
-GrammarConstants.parseWith = "@parseWith" // temporary?
+enum GrammarConstants {
+  // node types
+  grammar = "@grammar",
+  keyword = "@keyword",
+  wordType = "@wordType",
+  abstract = "@abstract",
 
-// parsing
-GrammarConstants.keywords = "@keywords"
-GrammarConstants.columns = "@columns"
-GrammarConstants.catchAllKeyword = "@catchAllKeyword"
-GrammarConstants.defaults = "@defaults"
-GrammarConstants.constants = "@constants"
-GrammarConstants.group = "@group"
-GrammarConstants.any = "@any"
-GrammarConstants.required = "@required" // Require this keyword to be present in a node or program
-GrammarConstants.single = "@single" // Have at most 1 of these
-GrammarConstants.tags = "@tags"
+  // error check time
+  regex = "@regex", // temporary?
+  keywordTable = "@keywordTable", // temporary?
+  enum = "@enum", // temporary?
+  parseWith = "@parseWith", // temporary?
 
-// parser/vm instantiating and executing
-GrammarConstants.constructor = "@constructor"
-GrammarConstants.constructorJs = "js"
+  // parse time
+  keywords = "@keywords",
+  columns = "@columns",
+  catchAllKeyword = "@catchAllKeyword",
+  defaults = "@defaults",
+  constants = "@constants",
+  group = "@group",
+  any = "@any",
+  required = "@required", // Require this keyword to be present in a node or program
+  single = "@single", // Have at most 1 of these
+  tags = "@tags",
 
-// compiling
-GrammarConstants.compilerKeyword = "@compiler"
-GrammarConstants.compiler = {}
-GrammarConstants.compiler.sub = "@sub" // replacement instructions
-GrammarConstants.compiler.indentCharacter = "@indentCharacter"
-GrammarConstants.compiler.listDelimiter = "@listDelimiter"
-GrammarConstants.compiler.openChildren = "@openChildren"
-GrammarConstants.compiler.closeChildren = "@closeChildren"
+  // parse and interpret time
+  constructor = "@constructor",
+  constructorJs = "js",
 
-// developing
-GrammarConstants.description = "@description"
-GrammarConstants.frequency = "@frequency"
-GrammarConstants.highlightScope = "@highlightScope"
+  // compile time
+  compilerKeyword = "@compiler",
 
-// errors
-GrammarConstants.errors = {}
-GrammarConstants.errors.invalidKeywordError = "invalidKeywordError"
-GrammarConstants.errors.invalidConstructorPathError = "invalidConstructorPathError"
-GrammarConstants.errors.invalidWordError = "invalidWordError"
-GrammarConstants.errors.grammarDefinitionError = "grammarDefinitionError"
-GrammarConstants.errors.extraWordError = "extraWordError"
-GrammarConstants.errors.unfilledColumnError = "unfilledColumnError"
-GrammarConstants.errors.missingRequiredKeywordError = "missingRequiredKeywordError"
-GrammarConstants.errors.keywordUsedMultipleTimesError = "keywordUsedMultipleTimesError"
+  // develop time
+  description = "@description",
+  frequency = "@frequency",
+  highlightScope = "@highlightScope"
+}
 
-export default GrammarConstants
+enum GrammarConstantsErrors {
+  invalidKeywordError = "invalidKeywordError",
+  invalidConstructorPathError = "invalidConstructorPathError",
+  invalidWordError = "invalidWordError",
+  grammarDefinitionError = "grammarDefinitionError",
+  extraWordError = "extraWordError",
+  unfilledColumnError = "unfilledColumnError",
+  missingRequiredKeywordError = "missingRequiredKeywordError",
+  keywordUsedMultipleTimesError = "keywordUsedMultipleTimesError"
+}
+
+export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler }

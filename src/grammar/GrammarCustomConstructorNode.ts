@@ -5,7 +5,7 @@ import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 
 import types from "../types"
 
@@ -35,12 +35,12 @@ class GrammarCustomConstructorNode extends TreeNode {
     const point = this.getPoint()
     return [
       {
-        kind: GrammarConstants.errors.invalidConstructorPathError,
+        kind: GrammarConstantsErrors.invalidConstructorPathError,
         subkind: this.getKeyword(),
         level: point.x,
         context: context,
         message: `${
-          GrammarConstants.errors.invalidConstructorPathError
+          GrammarConstantsErrors.invalidConstructorPathError
         } no constructor "${this.getLine()}" found at line ${point.y}`
       }
     ]

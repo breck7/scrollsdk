@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants } from "./GrammarConstants"
 
 // todo: add standard types, enum types, from disk types
 

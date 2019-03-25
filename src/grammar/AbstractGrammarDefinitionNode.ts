@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants } from "./GrammarConstants"
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode"
 import GrammarCustomConstructorNode from "./GrammarCustomConstructorNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
@@ -165,10 +165,12 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   protected _getKeywordsNode(): TreeNode {
+    // todo: allow multiple of these if we allow mixins?
     return this.getNode(GrammarConstants.keywords)
   }
 
   isRequired(): boolean {
+    GrammarConstants
     return this.has(GrammarConstants.required)
   }
 

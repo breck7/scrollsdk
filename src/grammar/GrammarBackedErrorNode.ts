@@ -1,5 +1,5 @@
 import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 
 class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
   getLineSyntax() {
@@ -14,11 +14,11 @@ class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
     const keyword = this.getKeyword()
     return [
       {
-        kind: GrammarConstants.errors.invalidKeywordError,
+        kind: GrammarConstantsErrors.invalidKeywordError,
         subkind: keyword,
         context: context,
         level: point.x,
-        message: `${GrammarConstants.errors.invalidKeywordError} "${keyword}" ${locationMsg}at line ${point.y} column ${
+        message: `${GrammarConstantsErrors.invalidKeywordError} "${keyword}" ${locationMsg}at line ${point.y} column ${
           point.x
         }`
       }

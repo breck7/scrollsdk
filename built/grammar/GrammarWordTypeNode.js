@@ -57,15 +57,15 @@ class GrammarWordParserNode extends TreeNode_1.default {
 class GrammarWordTypeNode extends TreeNode_1.default {
     getKeywordMap() {
         const types = [];
-        types[GrammarConstants_1.default.regex] = GrammarRegexTestNode;
-        types[GrammarConstants_1.default.keywordTable] = GrammarKeywordTableTestNode;
-        types[GrammarConstants_1.default.enum] = GrammarEnumTestNode;
-        types[GrammarConstants_1.default.parseWith] = GrammarWordParserNode;
-        types[GrammarConstants_1.default.highlightScope] = TreeNode_1.default;
+        types[GrammarConstants_1.GrammarConstants.regex] = GrammarRegexTestNode;
+        types[GrammarConstants_1.GrammarConstants.keywordTable] = GrammarKeywordTableTestNode;
+        types[GrammarConstants_1.GrammarConstants.enum] = GrammarEnumTestNode;
+        types[GrammarConstants_1.GrammarConstants.parseWith] = GrammarWordParserNode;
+        types[GrammarConstants_1.GrammarConstants.highlightScope] = TreeNode_1.default;
         return types;
     }
     getHighlightScope() {
-        return this.get(GrammarConstants_1.default.highlightScope);
+        return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
     }
     _getEnumOptions() {
         const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0];
@@ -74,10 +74,10 @@ class GrammarWordTypeNode extends TreeNode_1.default {
     getRegexString() {
         // todo: enum
         const enumOptions = this._getEnumOptions();
-        return (this.get(GrammarConstants_1.default.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "noWordTypeRegexFound"));
+        return (this.get(GrammarConstants_1.GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "noWordTypeRegexFound"));
     }
     parse(str) {
-        const parser = this.getNode(GrammarConstants_1.default.parseWith);
+        const parser = this.getNode(GrammarConstants_1.GrammarConstants.parseWith);
         return parser ? parser.parse(str) : str;
     }
     isValid(str, runTimeGrammarBackedProgram) {

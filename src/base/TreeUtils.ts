@@ -123,17 +123,30 @@ class TreeUtils {
     }
 
     removeImports() {
+      // todo: what if this spans multiple lines?
       this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1")
       return this
     }
 
     removeExports() {
       this._str = this._str.replace(/(\n|^)export default .*/g, "$1")
+      this._str = this._str.replace(/(\n|^)export { [^\}]+ }/g, "$1")
       return this
     }
 
     changeDefaultExportsToWindowExports() {
       this._str = this._str.replace(/\nexport default (.*)/g, "\nwindow.$1 = $1")
+
+      // todo: should we just switch to some bundler?
+      const matches = this._str.match(/\nexport { ([^\}]+) }/g)
+      if (matches)
+        this._str.replace(
+          /\nexport { ([^\}]+) }/g,
+          matches[1]
+            .split(/ /g)
+            .map(mod => `\nwindow.${mod} = ${mod}`)
+            .join("\n")
+        )
       return this
     }
 

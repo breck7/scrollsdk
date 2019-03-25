@@ -58,11 +58,11 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
         const keyword = this.getKeyword();
         if (definition.isSingle() && (times = this.getParent().findNodes(keyword).length) > 1)
             errors.push({
-                kind: GrammarConstants_1.default.errors.keywordUsedMultipleTimesError,
+                kind: GrammarConstants_1.GrammarConstantsErrors.keywordUsedMultipleTimesError,
                 subkind: keyword,
                 level: 0,
                 context: this.getParent().getLine(),
-                message: `${GrammarConstants_1.default.errors.keywordUsedMultipleTimesError} keyword "${keyword}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+                message: `${GrammarConstants_1.GrammarConstantsErrors.keywordUsedMultipleTimesError} keyword "${keyword}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
             });
         return this._getRequiredNodeErrors(errors);
     }

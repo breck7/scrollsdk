@@ -1,5 +1,5 @@
 import TreeNode from "../base/TreeNode"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstantsErrors } from "./GrammarConstants"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 import types from "../types"
 
@@ -34,7 +34,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return Array.from(
       new Set(
         this.getProgramErrors()
-          .filter(err => err.kind === GrammarConstants.errors.invalidKeywordError)
+          .filter(err => err.kind === GrammarConstantsErrors.invalidKeywordError)
           .filter(err => (level ? level === err.level : true))
           .map(err => err.subkind)
       )

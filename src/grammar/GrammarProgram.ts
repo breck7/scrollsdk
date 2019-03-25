@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode"
 
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants } from "./GrammarConstants"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
 import GrammarWordTypeNode from "./GrammarWordTypeNode"

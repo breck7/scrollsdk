@@ -21,10 +21,10 @@ class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode_
 class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getKeywordMap() {
         const map = {};
-        map[GrammarConstants_1.default.grammar] = GrammarRootNode;
-        map[GrammarConstants_1.default.wordType] = GrammarWordTypeNode_1.default;
-        map[GrammarConstants_1.default.keyword] = GrammarKeywordDefinitionNode_1.default;
-        map[GrammarConstants_1.default.abstract] = GrammarAbstractKeywordDefinitionNode;
+        map[GrammarConstants_1.GrammarConstants.grammar] = GrammarRootNode;
+        map[GrammarConstants_1.GrammarConstants.wordType] = GrammarWordTypeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.keyword] = GrammarKeywordDefinitionNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
     }
     // todo: this code is largely duplicated in abstractruntimeprogram
@@ -44,7 +44,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
         // Todo: this only supports single word type inheritance.
         const parts = line.split(this.getZI());
-        let type = parts[0] === GrammarConstants_1.default.wordType &&
+        let type = parts[0] === GrammarConstants_1.GrammarConstants.wordType &&
             (GrammarWordTypeNode_1.default.types[parts[1]] || GrammarWordTypeNode_1.default.types[parts[2]]);
         return type ? type : super.getNodeConstructor(line);
     }
@@ -83,7 +83,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._getGrammarRootNode().getId();
     }
     _getKeywordsNode() {
-        return this._getGrammarRootNode().getNode(GrammarConstants_1.default.keywords);
+        return this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.keywords);
     }
     getKeywordDefinitionByKeywordPath(keywordPath) {
         if (!this._cachedDefinitions)
@@ -122,7 +122,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     }
     // todo: protected?
     _getRunTimeCatchAllKeyword() {
-        return this._getGrammarRootNode().get(GrammarConstants_1.default.catchAllKeyword);
+        return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.catchAllKeyword);
     }
     _getRootConstructor() {
         const definedClass = this._getGrammarRootNode().getDefinedConstructor();
@@ -171,12 +171,12 @@ ${keywordContexts}`;
         const tree = new TreeNode_1.default(grammarCode);
         // Expand groups
         const xi = tree.getXI();
-        tree.findNodes(`${GrammarConstants_1.default.abstract}${xi}${GrammarConstants_1.default.group}`).forEach(group => {
+        tree.findNodes(`${GrammarConstants_1.GrammarConstants.abstract}${xi}${GrammarConstants_1.GrammarConstants.group}`).forEach(group => {
             const abstractName = group.getParent().getWord(1);
             group
                 .getContent()
                 .split(xi)
-                .forEach(word => tree.appendLine(`${GrammarConstants_1.default.keyword}${xi}${word}${xi}${abstractName}`));
+                .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`));
         });
         const expandedGrammarCode = tree.getExpanded(1, 2);
         return new GrammarProgram(expandedGrammarCode, grammarPath);

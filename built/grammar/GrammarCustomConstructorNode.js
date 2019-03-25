@@ -31,11 +31,11 @@ class GrammarCustomConstructorNode extends TreeNode_1.default {
         const point = this.getPoint();
         return [
             {
-                kind: GrammarConstants_1.default.errors.invalidConstructorPathError,
+                kind: GrammarConstants_1.GrammarConstantsErrors.invalidConstructorPathError,
                 subkind: this.getKeyword(),
                 level: point.x,
                 context: context,
-                message: `${GrammarConstants_1.default.errors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
+                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
             }
         ];
     }

@@ -1,5 +1,5 @@
 import TreeNode from "../base/TreeNode"
-import GrammarConstants from "./GrammarConstants"
+import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 import types from "../types"
 
 /*
@@ -63,24 +63,24 @@ class GrammarBackedCell {
     const context = fullLine.split(" ")[0] // todo: XI
     if (word === undefined)
       return {
-        kind: GrammarConstants.errors.unfilledColumnError,
+        kind: GrammarConstantsErrors.unfilledColumnError,
         subkind: type,
         level: index,
         context: context,
         message: `${
-          GrammarConstants.errors.unfilledColumnError
+          GrammarConstantsErrors.unfilledColumnError
         } "${type}" column in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${
           this._expectedLinePattern
         }". definition: ${this._node.getDefinition().toString()}`
       }
     if (type === undefined)
       return {
-        kind: GrammarConstants.errors.extraWordError,
+        kind: GrammarConstantsErrors.extraWordError,
         subkind: fullLine,
         level: index,
         context: context,
         message: `${
-          GrammarConstants.errors.extraWordError
+          GrammarConstantsErrors.extraWordError
         } "${word}" in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${this._expectedLinePattern}".`
       }
 
@@ -89,12 +89,12 @@ class GrammarBackedCell {
     const wordTypeClass = this._getWordTypeClass()
     if (!wordTypeClass)
       return {
-        kind: GrammarConstants.errors.grammarDefinitionError,
+        kind: GrammarConstantsErrors.grammarDefinitionError,
         subkind: type,
         level: index,
         context: context,
         message: `${
-          GrammarConstants.errors.grammarDefinitionError
+          GrammarConstantsErrors.grammarDefinitionError
         } No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${
           this._expectedLinePattern
         }".`
@@ -104,12 +104,12 @@ class GrammarBackedCell {
     return isValid
       ? undefined
       : {
-          kind: GrammarConstants.errors.invalidWordError,
+          kind: GrammarConstantsErrors.invalidWordError,
           subkind: type,
           level: index,
           context: context,
           message: `${
-            GrammarConstants.errors.invalidWordError
+            GrammarConstantsErrors.invalidWordError
           } in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column. Expected pattern: "${
             this._expectedLinePattern
           }".`

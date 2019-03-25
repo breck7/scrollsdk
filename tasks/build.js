@@ -33,4 +33,4 @@ const combined = scripts
   .join("\n")
 
 fs.writeFileSync(outputFile, `"use strict"\n` + combined, "utf8")
-console.log("tsc -p tsconfig.browser.json")
+console.log("Now: tsc -p tsconfig.browser.json")

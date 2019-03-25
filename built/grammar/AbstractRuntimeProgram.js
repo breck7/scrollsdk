@@ -31,7 +31,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     // Helper method for selecting potential keywords needed to update grammar file.
     getInvalidKeywords(level = undefined) {
         return Array.from(new Set(this.getProgramErrors()
-            .filter(err => err.kind === GrammarConstants_1.default.errors.invalidKeywordError)
+            .filter(err => err.kind === GrammarConstants_1.GrammarConstantsErrors.invalidKeywordError)
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }

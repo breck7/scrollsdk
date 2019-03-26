@@ -1,3 +1,7 @@
+18.1.1 / 2019-03-25
+===================
+- Fix: added "types" field to package.json
+
 18.1.0 / 2019-03-25
 ===================
 - New: now with d.ts files

@@ -1,8 +1,9 @@
 {
   "name": "jtree",
-  "version": "18.1.0",
+  "version": "18.1.1",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
+  "types": "./built/jtree.node.d.ts",
   "bin": {
     "jtree": "./cli.js"
   },

@@ -16,7 +16,7 @@ class jtree {
   static AnyNode = GrammarBackedAnyNode
   static GrammarProgram = GrammarProgram
   static getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
-  static getVersion = () => "18.1.0"
+  static getVersion = () => "18.1.1"
 }
 
 export default jtree

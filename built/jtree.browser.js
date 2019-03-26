@@ -2967,4 +2967,4 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "18.1.0";
+jtree.getVersion = () => "18.1.1";

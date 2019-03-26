@@ -8,6 +8,9 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
     getProgram() {
         return this.getParent().getProgram();
     }
+    getGrammarProgram() {
+        return this.getDefinition().getProgram();
+    }
     getDefinition() {
         // todo: do we need a relative to with this keyword path?
         return this._getKeywordDefinitionByName(this.getKeywordPath());

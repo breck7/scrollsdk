@@ -6,6 +6,7 @@ import GrammarWordTypeNode from "./GrammarWordTypeNode";
 import types from "../types";
 declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
     protected _getDefaultNodeConstructor(): any;
+    getProgram(): GrammarProgram;
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordMap(): {};

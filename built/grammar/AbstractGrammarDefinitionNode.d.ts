@@ -2,6 +2,7 @@ import TreeNode from "../base/TreeNode";
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode";
 import GrammarCustomConstructorNode from "./GrammarCustomConstructorNode";
 import GrammarCompilerNode from "./GrammarCompilerNode";
+import GrammarProgram from "./GrammarProgram";
 import types from "../types";
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getKeywordMap(): {};
@@ -15,7 +16,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;
     protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: any): typeof GrammarDefinitionErrorNode;
-    getProgram(): TreeNode;
+    abstract getProgram(): GrammarProgram;
     getDefinitionCompilerNode(targetLanguage: any, node: any): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;

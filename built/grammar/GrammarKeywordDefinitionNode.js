@@ -19,6 +19,9 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
     getSyntaxContextId() {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
+    getProgram() {
+        return this.getParent();
+    }
     getMatchBlock() {
         const program = this.getProgram();
         const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");

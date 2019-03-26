@@ -1,8 +1,10 @@
 import TreeNode from "../base/TreeNode"
 import { GrammarConstantsErrors } from "./GrammarConstants"
 
+/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+
 abstract class AbstractRuntimeNode extends TreeNode {
-  getGrammarProgram(): any {}
+  abstract getGrammarProgram(): GrammarProgram
 
   getProgram(): AbstractRuntimeNode {
     return this

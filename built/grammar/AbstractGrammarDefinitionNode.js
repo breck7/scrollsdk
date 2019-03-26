@@ -69,9 +69,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getCatchAllNodeConstructor(line) {
         return GrammarDefinitionErrorNode_1.default;
     }
-    getProgram() {
-        return this.getParent();
-    }
     getDefinitionCompilerNode(targetLanguage, node) {
         const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage);
         if (!compilerNode)

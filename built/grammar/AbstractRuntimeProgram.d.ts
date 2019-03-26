@@ -8,7 +8,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getProgramErrorMessages(): string[];
     getKeywordMap(): any;
     getCatchAllNodeConstructor(line: any): any;
-    getDefinition(): any;
+    getDefinition(): import("./GrammarProgram").default;
     getKeywordUsage(filepath?: string): TreeNode;
     getInPlaceSyntaxTree(): string;
     getInPlaceSyntaxTreeWithNodeTypes(): string;

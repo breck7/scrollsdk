@@ -10,6 +10,9 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
     _getDefaultNodeConstructor() {
         return undefined;
     }
+    getProgram() {
+        return this.getParent();
+    }
 }
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode_1.default {
     _isAbstract() {

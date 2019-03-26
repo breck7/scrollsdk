@@ -1,8 +1,9 @@
 import AbstractRuntimeNode from "./AbstractRuntimeNode";
 declare abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     getProgram(): AbstractRuntimeNode;
-    getDefinition(): any;
-    getCompilerNode(targetLanguage: any): any;
+    getGrammarProgram(): import("./GrammarProgram").default;
+    getDefinition(): import("./AbstractGrammarDefinitionNode").default;
+    getCompilerNode(targetLanguage: any): import("./GrammarCompilerNode").default;
     getParsedWords(): any[];
     protected _getParameterMap(): {};
     getCompiledIndentation(targetLanguage: any): any;

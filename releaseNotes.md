@@ -1,3 +1,7 @@
+18.1.2 / 2019-03-25
+===================
+- New: more typings
+
 18.1.1 / 2019-03-25
 ===================
 - Fix: added "types" field to package.json

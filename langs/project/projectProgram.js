@@ -23,7 +23,7 @@ class projectProgram extends jtree.program {
         const missingDependencies = file.getMissingDependencies(included)
         if (missingDependencies.length === 0) {
           const path = file.getFilePath()
-          cloned.nodeAt(index).destroy()
+          file.destroy()
           sorted.push(path)
           included[path] = true
           break

@@ -5,6 +5,8 @@ import { GrammarConstants } from "./GrammarConstants"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
+/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   // todo: protected?
   _getRunTimeCatchAllKeyword(): string {
@@ -27,8 +29,12 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.getId().replace(/\#/g, "HASH") // # is not allowed in sublime context names
   }
 
+  getProgram() {
+    return <GrammarProgram>this.getParent()
+  }
+
   getMatchBlock() {
-    const program = <any>this.getProgram()
+    const program = this.getProgram()
     const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     const color = (this._getHighlightScope() || "source") + "." + this.getId()
     const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`

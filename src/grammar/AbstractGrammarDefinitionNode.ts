@@ -11,6 +11,8 @@ import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 
+/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+
 import types from "../types"
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
@@ -85,9 +87,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return GrammarDefinitionErrorNode
   }
 
-  getProgram() {
-    return <TreeNode>this.getParent()
-  }
+  abstract getProgram(): GrammarProgram
 
   getDefinitionCompilerNode(targetLanguage, node) {
     const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)

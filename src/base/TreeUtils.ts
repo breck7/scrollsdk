@@ -126,6 +126,7 @@ class TreeUtils {
     removeImports() {
       // todo: what if this spans multiple lines?
       this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1")
+      this._str = this._str.replace(/(\n|^)\/\*FOR_TYPES_ONLY\*\/ import .* from .*/g, "$1")
       return this
     }
 

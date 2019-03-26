@@ -14,6 +14,10 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
   protected _getDefaultNodeConstructor() {
     return undefined
   }
+
+  getProgram() {
+    return <GrammarProgram>this.getParent()
+  }
 }
 
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
@@ -164,7 +168,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const extendedConstructor = definedConstructor || AbstractRuntimeProgram
     const grammarProgram = this
     const newClass = class extends extendedConstructor {
-      getGrammarProgram() {
+      getGrammarProgram(): GrammarProgram {
         return grammarProgram
       }
     }

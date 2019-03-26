@@ -130,6 +130,7 @@ TreeUtils.BrowserScript = class {
     removeImports() {
         // todo: what if this spans multiple lines?
         this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1");
+        this._str = this._str.replace(/(\n|^)\/\*FOR_TYPES_ONLY\*\/ import .* from .*/g, "$1");
         return this;
     }
     removeExports() {
@@ -1791,7 +1792,6 @@ class TreeNode extends ImmutableNode {
     }
 }
 class AbstractRuntimeNode extends TreeNode {
-    getGrammarProgram() { }
     getProgram() {
         return this;
     }
@@ -2014,6 +2014,9 @@ class GrammarBackedCell {
 class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     getProgram() {
         return this.getParent().getProgram();
+    }
+    getGrammarProgram() {
+        return this.getDefinition().getProgram();
     }
     getDefinition() {
         // todo: do we need a relative to with this keyword path?
@@ -2352,9 +2355,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     getCatchAllNodeConstructor(line) {
         return GrammarDefinitionErrorNode;
     }
-    getProgram() {
-        return this.getParent();
-    }
     getDefinitionCompilerNode(targetLanguage, node) {
         const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage);
         if (!compilerNode)
@@ -2485,6 +2485,9 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     }
     getSyntaxContextId() {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
+    }
+    getProgram() {
+        return this.getParent();
     }
     getMatchBlock() {
         const program = this.getProgram();
@@ -2722,6 +2725,9 @@ GrammarWordTypeNode.types = {
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
     _getDefaultNodeConstructor() {
         return undefined;
+    }
+    getProgram() {
+        return this.getParent();
     }
 }
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
@@ -2967,4 +2973,4 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "18.1.1";
+jtree.getVersion = () => "18.1.2";

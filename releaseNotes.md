@@ -1,3 +1,7 @@
+18.1.0 / 2019-03-25
+===================
+- New: now with d.ts files
+
 18.0.0 / 2019-03-24
 ===================
 - New: basic .sublime-syntax file generation works. Scopes not yet integrated.

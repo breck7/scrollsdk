@@ -106,7 +106,8 @@ class TreeUtils {
   }
 
   public static BrowserScript = class {
-    private _str: string
+    // todo: fix
+    public _str: string
 
     constructor(fileStr: string) {
       this._str = fileStr

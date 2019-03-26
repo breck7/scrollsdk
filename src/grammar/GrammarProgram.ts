@@ -1,6 +1,8 @@
 import TreeNode from "../base/TreeNode"
 
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface"
+
 import { GrammarConstants } from "./GrammarConstants"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
@@ -157,20 +159,22 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword)
   }
 
-  protected _getRootConstructor() {
-    const definedClass = this._getGrammarRootNode().getDefinedConstructor()
-    const extendedClass = definedClass || AbstractRuntimeProgram
+  protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
+    const definedConstructor = this._getGrammarRootNode().getDefinedConstructor()
+    const extendedConstructor = definedConstructor || AbstractRuntimeProgram
     const grammarProgram = this
-    return class extends extendedClass {
+    const newClass = class extends extendedConstructor {
       getGrammarProgram() {
         return grammarProgram
       }
     }
+
+    return <AbstractRuntimeProgramConstructorInterface>(<any>newClass)
   }
 
   private _cache_rootConstructorClass
 
-  getRootConstructor(): Function {
+  getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
     if (!this._cache_rootConstructorClass) this._cache_rootConstructorClass = this._getRootConstructor()
     return this._cache_rootConstructorClass
   }

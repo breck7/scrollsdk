@@ -125,14 +125,15 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.catchAllKeyword);
     }
     _getRootConstructor() {
-        const definedClass = this._getGrammarRootNode().getDefinedConstructor();
-        const extendedClass = definedClass || AbstractRuntimeProgram_1.default;
+        const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
+        const extendedConstructor = definedConstructor || AbstractRuntimeProgram_1.default;
         const grammarProgram = this;
-        return class extends extendedClass {
+        const newClass = class extends extendedConstructor {
             getGrammarProgram() {
                 return grammarProgram;
             }
         };
+        return newClass;
     }
     getRootConstructor() {
         if (!this._cache_rootConstructorClass)

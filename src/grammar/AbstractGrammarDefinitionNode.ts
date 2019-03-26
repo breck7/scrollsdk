@@ -86,7 +86,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getProgram() {
-    return this.getParent()
+    return <TreeNode>this.getParent()
   }
 
   getDefinitionCompilerNode(targetLanguage, node) {

@@ -7,18 +7,16 @@ import GrammarBackedTerminalNode from "./grammar/GrammarBackedTerminalNode"
 import GrammarBackedAnyNode from "./grammar/GrammarBackedAnyNode"
 import GrammarProgram from "./grammar/GrammarProgram"
 
-const jtree: any = {}
-
-jtree.program = AbstractRuntimeProgram
-jtree.Utils = TreeUtils
-jtree.TreeNode = TreeNode
-jtree.NonTerminalNode = GrammarBackedNonTerminalNode
-jtree.TerminalNode = GrammarBackedTerminalNode
-jtree.AnyNode = GrammarBackedAnyNode
-jtree.GrammarProgram = GrammarProgram
-
-jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
-
-jtree.getVersion = () => "18.0.0"
+class jtree {
+  static program = AbstractRuntimeProgram
+  static Utils = TreeUtils
+  static TreeNode = TreeNode
+  static NonTerminalNode = GrammarBackedNonTerminalNode
+  static TerminalNode = GrammarBackedTerminalNode
+  static AnyNode = GrammarBackedAnyNode
+  static GrammarProgram = GrammarProgram
+  static getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
+  static getVersion = () => "18.1.0"
+}
 
 export default jtree

@@ -2838,14 +2838,15 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword);
     }
     _getRootConstructor() {
-        const definedClass = this._getGrammarRootNode().getDefinedConstructor();
-        const extendedClass = definedClass || AbstractRuntimeProgram;
+        const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
+        const extendedConstructor = definedConstructor || AbstractRuntimeProgram;
         const grammarProgram = this;
-        return class extends extendedClass {
+        const newClass = class extends extendedConstructor {
             getGrammarProgram() {
                 return grammarProgram;
             }
         };
+        return newClass;
     }
     getRootConstructor() {
         if (!this._cache_rootConstructorClass)
@@ -2956,7 +2957,8 @@ ${keywordContexts}`;
             .join("\n");
     }
 }
-const jtree = {};
+class jtree {
+}
 jtree.program = AbstractRuntimeProgram;
 jtree.Utils = TreeUtils;
 jtree.TreeNode = TreeNode;
@@ -2965,4 +2967,4 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "18.0.0";
+jtree.getVersion = () => "18.1.0";

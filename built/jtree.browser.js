@@ -2355,6 +2355,9 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     getCatchAllNodeConstructor(line) {
         return GrammarDefinitionErrorNode;
     }
+    getProgram() {
+        return this.getParent();
+    }
     getDefinitionCompilerNode(targetLanguage, node) {
         const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage);
         if (!compilerNode)
@@ -2464,7 +2467,9 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
     }
     // todo: protected?
-    _getProgramKeywordDefinitionCache() { }
+    _getProgramKeywordDefinitionCache() {
+        return this.getProgram()._getProgramKeywordDefinitionCache();
+    }
     getRunTimeCatchAllNodeConstructor() {
         this._initCatchAllNodeConstructorCache();
         return this._cache_catchAllConstructor;
@@ -2485,9 +2490,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     }
     getSyntaxContextId() {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
-    }
-    getProgram() {
-        return this.getParent();
     }
     getMatchBlock() {
         const program = this.getProgram();
@@ -2544,7 +2546,7 @@ ${captures}
     }
     // todo: protected?
     _getProgramKeywordDefinitionCache() {
-        return this.getParent()._getProgramKeywordDefinitionCache();
+        return this.getProgram()._getProgramKeywordDefinitionCache();
     }
     getDoc() {
         return this.getId();
@@ -2973,4 +2975,4 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "18.1.2";
+jtree.getVersion = () => "18.1.3";

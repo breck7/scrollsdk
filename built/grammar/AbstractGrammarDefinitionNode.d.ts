@@ -3,6 +3,7 @@ import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode";
 import GrammarCustomConstructorNode from "./GrammarCustomConstructorNode";
 import GrammarCompilerNode from "./GrammarCompilerNode";
 import GrammarProgram from "./GrammarProgram";
+import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode";
 import types from "../types";
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getKeywordMap(): {};
@@ -16,7 +17,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;
     protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: any): typeof GrammarDefinitionErrorNode;
-    abstract getProgram(): GrammarProgram;
+    getProgram(): GrammarProgram;
     getDefinitionCompilerNode(targetLanguage: any, node: any): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
@@ -27,7 +28,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getNodeColumnTypes(): string[];
     protected _initKeywordsMapCache(): any;
     _getKeywordsInScope(): string[];
-    getTopNodeTypes(): any[];
+    getTopNodeTypes(): string[];
     protected _getKeywordsNode(): TreeNode;
     isRequired(): boolean;
     isSingle(): boolean;
@@ -38,7 +39,9 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _initCatchAllNodeConstructorCache(): any;
     getAutocompleteWords(inputStr: any, additionalWords?: any[]): string[];
     isDefined(keyword: any): boolean;
-    _getProgramKeywordDefinitionCache(): any;
+    _getProgramKeywordDefinitionCache(): {
+        [keyword: string]: GrammarKeywordDefinitionNode;
+    };
     getRunTimeCatchAllNodeConstructor(): any;
 }
 export default AbstractGrammarDefinitionNode;

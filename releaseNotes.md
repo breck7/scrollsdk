@@ -1,6 +1,10 @@
+18.1.3 / 2019-03-26
+===================
+- New: more TypeScript typings
+
 18.1.2 / 2019-03-25
 ===================
-- New: more typings
+- New: more TypeScript typings
 
 18.1.1 / 2019-03-25
 ===================

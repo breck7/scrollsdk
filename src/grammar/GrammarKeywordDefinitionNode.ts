@@ -29,10 +29,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.getId().replace(/\#/g, "HASH") // # is not allowed in sublime context names
   }
 
-  getProgram() {
-    return <GrammarProgram>this.getParent()
-  }
-
   getMatchBlock() {
     const program = this.getProgram()
     const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
@@ -92,7 +88,7 @@ ${captures}
 
   // todo: protected?
   _getProgramKeywordDefinitionCache() {
-    return (<AbstractGrammarDefinitionNode>this.getParent())._getProgramKeywordDefinitionCache()
+    return this.getProgram()._getProgramKeywordDefinitionCache()
   }
 
   getDoc() {

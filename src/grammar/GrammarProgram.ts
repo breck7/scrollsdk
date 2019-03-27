@@ -139,7 +139,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // At present we only have global keyword definitions (you cannot have scoped keyword definitions right now).
-  private _cache_keywordDefinitions
+  private _cache_keywordDefinitions: { [keyword: string]: GrammarKeywordDefinitionNode }
 
   protected _initProgramKeywordDefinitionCache() {
     if (this._cache_keywordDefinitions) return undefined

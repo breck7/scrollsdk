@@ -30,7 +30,9 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getDocs(): string;
     private _cache_keywordDefinitions;
     protected _initProgramKeywordDefinitionCache(): any;
-    _getProgramKeywordDefinitionCache(): any;
+    _getProgramKeywordDefinitionCache(): {
+        [keyword: string]: GrammarKeywordDefinitionNode;
+    };
     _getRunTimeCatchAllKeyword(): string;
     protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _cache_rootConstructorClass;

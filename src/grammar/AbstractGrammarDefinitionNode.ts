@@ -12,6 +12,7 @@ import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
 
 import types from "../types"
 
@@ -87,7 +88,9 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return GrammarDefinitionErrorNode
   }
 
-  abstract getProgram(): GrammarProgram
+  getProgram(): GrammarProgram {
+    return <GrammarProgram>this.getParent()
+  }
 
   getDefinitionCompilerNode(targetLanguage, node) {
     const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)
@@ -221,7 +224,9 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   // todo: protected?
-  _getProgramKeywordDefinitionCache(): any {}
+  _getProgramKeywordDefinitionCache(): { [keyword: string]: GrammarKeywordDefinitionNode } {
+    return this.getProgram()._getProgramKeywordDefinitionCache()
+  }
 
   getRunTimeCatchAllNodeConstructor() {
     this._initCatchAllNodeConstructorCache()

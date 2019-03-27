@@ -69,6 +69,9 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getCatchAllNodeConstructor(line) {
         return GrammarDefinitionErrorNode_1.default;
     }
+    getProgram() {
+        return this.getParent();
+    }
     getDefinitionCompilerNode(targetLanguage, node) {
         const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage);
         if (!compilerNode)
@@ -178,7 +181,9 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
     }
     // todo: protected?
-    _getProgramKeywordDefinitionCache() { }
+    _getProgramKeywordDefinitionCache() {
+        return this.getProgram()._getProgramKeywordDefinitionCache();
+    }
     getRunTimeCatchAllNodeConstructor() {
         this._initCatchAllNodeConstructorCache();
         return this._cache_catchAllConstructor;

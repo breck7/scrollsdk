@@ -33,7 +33,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     isRequired(): boolean;
     isSingle(): boolean;
     _getRunTimeCatchAllKeyword(): string;
-    getKeywordDefinitionByName(keyword: string): any;
+    getKeywordDefinitionByName(keyword: string): AbstractGrammarDefinitionNode;
     protected _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): any;

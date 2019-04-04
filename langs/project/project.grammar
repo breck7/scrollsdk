@@ -4,11 +4,13 @@
   file
  @catchAllKeyword error
 @wordType filepath
- @regex .?
+ @regex .*
+ @highlightScope string
 @keyword error
  @constructor js ErrorNode
 @keyword file
  @columns filepath*
+ @highlightScope keyword.control.file
  @keywords
   external
   absolute
@@ -16,6 +18,7 @@
  @constructor js ./ProjectNode.js
 @abstract term
  @columns filepath*
+ @highlightScope variable.parameter.path
 @keyword external term
 @keyword absolute term
 @keyword relative term

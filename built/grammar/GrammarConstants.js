@@ -14,6 +14,7 @@ var GrammarConstants;
 (function (GrammarConstants) {
     // node types
     GrammarConstants["grammar"] = "@grammar";
+    GrammarConstants["extensions"] = "@extensions";
     GrammarConstants["keyword"] = "@keyword";
     GrammarConstants["wordType"] = "@wordType";
     GrammarConstants["abstract"] = "@abstract";

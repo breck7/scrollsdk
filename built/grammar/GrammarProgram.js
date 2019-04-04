@@ -131,12 +131,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
         const extendedConstructor = definedConstructor || AbstractRuntimeProgram_1.default;
         const grammarProgram = this;
-        const newClass = class extends extendedConstructor {
+        return class extends extendedConstructor {
             getGrammarProgram() {
                 return grammarProgram;
             }
         };
-        return newClass;
     }
     getRootConstructor() {
         if (!this._cache_rootConstructorClass)
@@ -146,6 +145,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getNodeColumnRegexes() {
         const colTypes = this.getWordTypes();
         return this.getNodeColumnTypes().map(col => colTypes[col].getRegexString());
+    }
+    _getFileExtensions() {
+        return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.extensions)
+            ? this._getGrammarRootNode()
+                .get(GrammarConstants_1.GrammarConstants.extensions)
+                .split(" ")
+                .join(",")
+            : this.getExtensionName();
     }
     toSublimeSyntaxFile() {
         const wordTypes = this.getWordTypes();
@@ -158,7 +165,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return `%YAML 1.2
 ---
 name: ${this.getExtensionName()}
-file_extensions: [${this.getExtensionName()}]
+file_extensions: [${this._getFileExtensions()}]
 scope: source.${this.getExtensionName()}
 
 variables:

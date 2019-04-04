@@ -137,7 +137,7 @@ class TreeUtils {
     }
 
     changeDefaultExportsToWindowExports() {
-      this._str = this._str.replace(/\nexport default (.*)/g, "\nwindow.$1 = $1")
+      this._str = this._str.replace(/\nexport default ([^;]*)/g, "\nwindow.$1 = $1")
 
       // todo: should we just switch to some bundler?
       const matches = this._str.match(/\nexport { ([^\}]+) }/g)
@@ -153,7 +153,7 @@ class TreeUtils {
     }
 
     changeNodeExportsToWindowExports() {
-      this._str = this._str.replace(/\nmodule\.exports \= (.*)/g, "\nwindow.$1 = $1")
+      this._str = this._str.replace(/\nmodule\.exports \= ([^;]*)/g, "\nwindow.$1 = $1")
       return this
     }
 

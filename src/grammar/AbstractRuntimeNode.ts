@@ -4,7 +4,9 @@ import { GrammarConstantsErrors } from "./GrammarConstants"
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 
 abstract class AbstractRuntimeNode extends TreeNode {
-  abstract getGrammarProgram(): GrammarProgram
+  getGrammarProgram() {
+    return this.getProgram().getGrammarProgram()
+  }
 
   getProgram(): AbstractRuntimeNode {
     return this

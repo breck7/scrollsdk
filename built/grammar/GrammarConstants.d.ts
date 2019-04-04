@@ -7,6 +7,7 @@ declare enum GrammarConstantsCompiler {
 }
 declare enum GrammarConstants {
     grammar = "@grammar",
+    extensions = "@extensions",
     keyword = "@keyword",
     wordType = "@wordType",
     abstract = "@abstract",

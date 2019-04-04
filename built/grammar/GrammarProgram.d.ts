@@ -38,6 +38,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     getNodeColumnRegexes(): any[];
+    _getFileExtensions(): string;
     toSublimeSyntaxFile(): string;
     static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;
     static _getBestType(values: any): "any" | "int" | "float" | "bit" | "bool";

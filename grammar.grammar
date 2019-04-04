@@ -1,6 +1,7 @@
 @grammar grammar
  @description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  @catchAllKeyword error
+ @extensions grammar gram
  @version 1.0.0
  @keywords
   @grammar
@@ -42,6 +43,7 @@
  @columns word
  @keywords
   @description
+  @extensions
   @keywords
   @constructor
   @compiler
@@ -49,6 +51,9 @@
   @version
 @keyword @version
  @columns semanticVersion
+ @highlightScope constant.language
+@keyword @extensions
+ @columns string*
  @highlightScope constant.language
 @keyword @abstract @keyword
  @highlightScope entity.name.tag

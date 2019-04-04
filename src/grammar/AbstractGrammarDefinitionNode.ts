@@ -186,7 +186,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return ""
   }
 
-  getKeywordDefinitionByName(keyword: string) {
+  getKeywordDefinitionByName(keyword: string): AbstractGrammarDefinitionNode {
     const definitions = this._getProgramKeywordDefinitionCache()
     return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
   }

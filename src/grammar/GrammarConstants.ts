@@ -11,6 +11,7 @@ enum GrammarConstantsCompiler {
 enum GrammarConstants {
   // node types
   grammar = "@grammar",
+  extensions = "@extensions",
   keyword = "@keyword",
   wordType = "@wordType",
   abstract = "@abstract",

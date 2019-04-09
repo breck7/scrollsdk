@@ -49,7 +49,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return this.getDefinition().getRunTimeKeywordMap()
   }
 
-  getCatchAllNodeConstructor(line) {
+  getCatchAllNodeConstructor(line: string) {
     // todo: blank line
     // todo: restore didyoumean
     return this.getDefinition().getRunTimeCatchAllNodeConstructor()
@@ -124,7 +124,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
 
   private _cache_typeTree
 
-  getWordTypeAtPosition(lineIndex, wordIndex) {
+  getWordTypeAtPosition(lineIndex: number, wordIndex: number) {
     this._initWordTypeCache()
     const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : ""

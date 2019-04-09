@@ -12,8 +12,11 @@ export namespace types {
     y: int
   } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
-  export declare type something = string | Object | any // TreeNode
+  export declare type treeNode = any
+  export declare type something = string | Object | any | treeNode
+  export declare type line = string // no YI (\n)
   export declare type int = number
+  export declare type stringMap = { [keyword: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string
   export declare type jsonString = string
@@ -24,9 +27,10 @@ export namespace types {
   export declare type pathVector = int[] // example: [0,1,1]
   export declare type word = string // string that cannot contain the YI, XI or ZI
   export declare type triInt = int // -1 0 1
-  export declare type sortFn = (nodeA: any, nodeB: any) => triInt
   export declare type filepath = string
-  export declare type filterFn = (node: any, index: int) => boolean
+  export declare type fileExtension = string
+  export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
+  export declare type filterFn = (node: treeNode, index: int) => boolean
 
   export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
 }

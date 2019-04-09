@@ -61,7 +61,6 @@ interface TreeNode {
   getStackString: () => string
   getTopDownArray: () => TreeNode[] // returns all nodes as array in preorder order
   getYoungerSiblings: () => TreeNode[] // where younger sibling is a node with a higher index
-  macroExpand: (macroDefKeyword: string, macroUsageKeyword: string) => TreeNode
   nodeAt: (index: int | pathVector) => TreeNode
 
   // Methods for Tree Languages
@@ -72,11 +71,9 @@ interface TreeNode {
   // Mutable Methods
   getTreeMTime: () => number // get time tree was last modified. Initializes lazily on first call.
   insertLine: (line: string, index: int) => TreeNode
-  insertLineAndChildren: (line: string, tree: content, index: int) => TreeNode
   insertWord: (index: int, value: string) => This
   invert: () => This // Flips keywords and contents on all top level nodes. Does not recurse.
   prependLine: (line: string) => TreeNode
-  pushContentAndChildren: (line: string, children: content) => TreeNode
   remap: (key: Object) => This // Does not recurse.
   rename: (oldKeyword: word, newKeyword: word) => This
   renameAll: (oldKeyword: word, newKeyword: word) => This

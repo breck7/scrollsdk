@@ -1,12 +1,13 @@
 import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode"
 import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
+import types from "../types"
 
 class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
   getLineSyntax() {
     return "error ".repeat(this.getWords().length).trim()
   }
 
-  getErrors() {
+  getErrors(): types.ParseError[] {
     const parent = this.getParent()
     const context = parent.isRoot() ? "" : parent.getKeyword()
     const locationMsg = context ? `in "${context}" ` : ""

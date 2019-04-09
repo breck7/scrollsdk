@@ -99,7 +99,8 @@ ${captures}
     return this.get(GrammarConstants.defaults)
   }
 
-  getDefaultFor(name) {
+  // todo: deprecate?
+  getDefaultFor(name: string) {
     const defaults = this._getDefaultsNode()
     return defaults ? defaults.get(name) : undefined
   }

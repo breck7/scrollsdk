@@ -5,7 +5,7 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeCodeNode {
     return this.getDefinition().getRunTimeKeywordMap()
   }
 
-  getCatchAllNodeConstructor(line) {
+  getCatchAllNodeConstructor(line: string) {
     return this.getDefinition().getRunTimeCatchAllNodeConstructor()
   }
 

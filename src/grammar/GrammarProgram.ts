@@ -30,7 +30,7 @@ class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode 
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
-    const map = {}
+    const map: types.stringMap = {}
     map[GrammarConstants.grammar] = GrammarRootNode
     map[GrammarConstants.wordType] = GrammarWordTypeNode
     map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
@@ -40,7 +40,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   // todo: this code is largely duplicated in abstractruntimeprogram
   getProgramErrors(): types.ParseError[] {
-    const errors = []
+    const errors: types.ParseError[] = []
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
@@ -268,7 +268,7 @@ ${keywordContexts}`
     return "any"
   }
 
-  static predictGrammarFile(str, keywords = undefined): string {
+  static predictGrammarFile(str: string | TreeNode, keywords = undefined): string {
     const tree = str instanceof TreeNode ? str : new TreeNode(str)
     const xi = " " // todo: make param?
     keywords = keywords || tree.getColumnNames()

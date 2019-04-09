@@ -1,6 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 import { GrammarConstants } from "./GrammarConstants"
+import types from "../types"
 
 // todo: add standard types, enum types, from disk types
 
@@ -11,9 +12,9 @@ abstract class AbstractGrammarWordTestNode extends TreeNode {
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
   private _regex
 
-  isValid(str) {
+  isValid(str: string) {
     if (!this._regex) this._regex = new RegExp("^" + this.getContent() + "$")
-    return str.match(this._regex)
+    return !!str.match(this._regex)
   }
 }
 
@@ -31,7 +32,7 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
 
   private _keywordTable
 
-  isValid(str, runTimeGrammarBackedProgram) {
+  isValid(str: string, runTimeGrammarBackedProgram) {
     if (!this._keywordTable) this._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram)
     return this._keywordTable[str] === true
   }
@@ -39,9 +40,9 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
 
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   private _map
-  isValid(str) {
+  isValid(str: string) {
     // @enum c c++ java
-    return this.getOptions()[str]
+    return !!this.getOptions()[str]
   }
 
   getOptions() {
@@ -51,7 +52,7 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
 }
 
 class GrammarWordParserNode extends TreeNode {
-  parse(str) {
+  parse(str: string) {
     const fns = {
       parseInt: parseInt,
       parseFloat: parseFloat
@@ -65,7 +66,7 @@ class GrammarWordParserNode extends TreeNode {
 
 class GrammarWordTypeNode extends TreeNode {
   getKeywordMap() {
-    const types = []
+    const types: types.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
     types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
@@ -91,12 +92,12 @@ class GrammarWordTypeNode extends TreeNode {
     )
   }
 
-  parse(str) {
+  parse(str: string) {
     const parser = this.getNode(GrammarConstants.parseWith)
     return parser ? parser.parse(str) : str
   }
 
-  isValid(str, runTimeGrammarBackedProgram) {
+  isValid(str: string, runTimeGrammarBackedProgram) {
     str = str.replace(/\*$/, "") // todo: cleanup
     return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node =>
       (<AbstractGrammarWordTestNode>node).isValid(str, runTimeGrammarBackedProgram)
@@ -115,7 +116,7 @@ class GrammarWordTypeNode extends TreeNode {
 }
 
 class GrammarWordTypeIntNode extends GrammarWordTypeNode {
-  isValid(str) {
+  isValid(str: string) {
     const num = parseInt(str)
     if (isNaN(num)) return false
     return num.toString() === str
@@ -125,13 +126,13 @@ class GrammarWordTypeIntNode extends GrammarWordTypeNode {
     return "\-?[0-9]+"
   }
 
-  parse(str) {
+  parse(str: string) {
     return parseInt(str)
   }
 }
 
 class GrammarWordTypeBitNode extends GrammarWordTypeNode {
-  isValid(str) {
+  isValid(str: string) {
     return str === "0" || str === "1"
   }
 
@@ -139,13 +140,13 @@ class GrammarWordTypeBitNode extends GrammarWordTypeNode {
     return "[01]"
   }
 
-  parse(str) {
+  parse(str: string) {
     return !!parseInt(str)
   }
 }
 
 class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
-  isValid(str) {
+  isValid(str: string) {
     return !isNaN(parseFloat(str))
   }
 
@@ -153,7 +154,7 @@ class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
     return "\-?[0-9]*\.?[0-9]*"
   }
 
-  parse(str) {
+  parse(str: string) {
     return parseFloat(str)
   }
 }
@@ -161,7 +162,7 @@ class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
 class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
   private _options = ["1", "0", "true", "false", "t", "f", "yes", "no"]
 
-  isValid(str) {
+  isValid(str: string) {
     return new Set(this._options).has(str.toLowerCase())
   }
 
@@ -169,7 +170,7 @@ class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
     return "(?:" + this._options.join("|") + ")"
   }
 
-  parse(str) {
+  parse(str: string) {
     return !!parseInt(str)
   }
 }

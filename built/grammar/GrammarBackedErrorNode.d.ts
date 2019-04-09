@@ -1,13 +1,7 @@
 import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode";
-import { GrammarConstantsErrors } from "./GrammarConstants";
+import types from "../types";
 declare class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
     getLineSyntax(): string;
-    getErrors(): {
-        kind: GrammarConstantsErrors;
-        subkind: string;
-        context: string;
-        level: number;
-        message: string;
-    }[];
+    getErrors(): types.ParseError[];
 }
 export default GrammarBackedErrorNode;

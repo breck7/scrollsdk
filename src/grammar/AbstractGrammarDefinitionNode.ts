@@ -84,7 +84,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._getDefaultNodeConstructor()
   }
 
-  getCatchAllNodeConstructor(line) {
+  getCatchAllNodeConstructor(line: string) {
     return GrammarDefinitionErrorNode
   }
 

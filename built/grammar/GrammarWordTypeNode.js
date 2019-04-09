@@ -10,7 +10,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
     isValid(str) {
         if (!this._regex)
             this._regex = new RegExp("^" + this.getContent() + "$");
-        return str.match(this._regex);
+        return !!str.match(this._regex);
     }
 }
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
@@ -33,7 +33,7 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
     isValid(str) {
         // @enum c c++ java
-        return this.getOptions()[str];
+        return !!this.getOptions()[str];
     }
     getOptions() {
         if (!this._map)
@@ -56,7 +56,7 @@ class GrammarWordParserNode extends TreeNode_1.default {
 }
 class GrammarWordTypeNode extends TreeNode_1.default {
     getKeywordMap() {
-        const types = [];
+        const types = {};
         types[GrammarConstants_1.GrammarConstants.regex] = GrammarRegexTestNode;
         types[GrammarConstants_1.GrammarConstants.keywordTable] = GrammarKeywordTableTestNode;
         types[GrammarConstants_1.GrammarConstants.enum] = GrammarEnumTestNode;

@@ -3,7 +3,7 @@ import TreeNode from "../base/TreeNode"
 import GrammarConstNode from "./GrammarConstNode"
 
 class GrammarConstantsNode extends TreeNode {
-  getCatchAllNodeConstructor(line) {
+  getCatchAllNodeConstructor(line: string) {
     return GrammarConstNode
   }
 

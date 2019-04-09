@@ -1,13 +1,7 @@
 import TreeNode from "../base/TreeNode";
-import { GrammarConstantsErrors } from "./GrammarConstants";
+import types from "../types";
 declare class GrammarDefinitionErrorNode extends TreeNode {
-    getErrors(): {
-        kind: GrammarConstantsErrors;
-        subkind: string;
-        level: number;
-        context: string;
-        message: string;
-    }[];
+    getErrors(): types.ParseError[];
     getLineSyntax(): string;
 }
 export default GrammarDefinitionErrorNode;

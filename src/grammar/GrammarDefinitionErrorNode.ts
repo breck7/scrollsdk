@@ -1,8 +1,9 @@
 import TreeNode from "../base/TreeNode"
 import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
+import types from "../types"
 
 class GrammarDefinitionErrorNode extends TreeNode {
-  getErrors() {
+  getErrors(): types.ParseError[] {
     const parent = this.getParent()
     const context = parent.isRoot() ? "" : parent.getKeyword()
     const point = this.getPoint()

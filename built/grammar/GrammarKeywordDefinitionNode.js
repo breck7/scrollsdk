@@ -82,6 +82,7 @@ ${captures}
     _getDefaultsNode() {
         return this.get(GrammarConstants_1.GrammarConstants.defaults);
     }
+    // todo: deprecate?
     getDefaultFor(name) {
         const defaults = this._getDefaultsNode();
         return defaults ? defaults.get(name) : undefined;

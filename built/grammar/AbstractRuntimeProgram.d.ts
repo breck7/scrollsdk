@@ -7,7 +7,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getInvalidKeywords(level?: any): string[];
     getProgramErrorMessages(): string[];
     getKeywordMap(): any;
-    getCatchAllNodeConstructor(line: any): any;
+    getCatchAllNodeConstructor(line: string): any;
     getDefinition(): any;
     getKeywordUsage(filepath?: string): TreeNode;
     getInPlaceSyntaxTree(): string;
@@ -15,7 +15,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     protected _getSyntaxTreeHtml(): string;
     getTreeWithNodeTypes(): string;
     private _cache_typeTree;
-    getWordTypeAtPosition(lineIndex: any, wordIndex: any): any;
+    getWordTypeAtPosition(lineIndex: number, wordIndex: number): any;
     private _cache_programWordTypeStringMTime;
     protected _initWordTypeCache(): any;
     getCompiledProgramName(programPath: any): any;

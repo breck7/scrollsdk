@@ -418,7 +418,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getFiltered(fn) {
         const clone = this.clone();
         clone
-            .filter(node => !fn(node))
+            .filter((node, index) => !fn(node, index))
             .forEach(node => {
             node.destroy();
         });

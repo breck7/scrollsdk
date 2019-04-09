@@ -25,7 +25,7 @@ class ImmutableNode extends AbstractNode {
     [keyword: string]: int
   }
 
-  execute(context) {
+  execute(context: any) {
     return Promise.all(this.map(child => child.execute(context)))
   }
 
@@ -37,7 +37,7 @@ class ImmutableNode extends AbstractNode {
     return "any ".repeat(this.getWords().length).trim()
   }
 
-  executeSync(context) {
+  executeSync(context: any) {
     return this.map(child => child.executeSync(context))
   }
 
@@ -71,7 +71,7 @@ class ImmutableNode extends AbstractNode {
     return this._getPoint()
   }
 
-  protected _getPoint(relativeTo?): types.point {
+  protected _getPoint(relativeTo?: ImmutableNode): types.point {
     return {
       x: this._getXCoordinate(relativeTo),
       y: this._getYCoordinate(relativeTo)
@@ -101,7 +101,7 @@ class ImmutableNode extends AbstractNode {
     return lineCount
   }
 
-  protected _getLineNumber(target) {
+  protected _getLineNumber(target: ImmutableNode) {
     let lineNumber = 1
     for (let node of this.getTopDownArrayIterator()) {
       if (node === target) return lineNumber
@@ -153,7 +153,7 @@ class ImmutableNode extends AbstractNode {
     return words[index]
   }
 
-  protected _toHtml(indentCount) {
+  protected _toHtml(indentCount: int) {
     const path = this.getPathVector().join(" ")
     const classes = {
       nodeLine: "nodeLine",
@@ -175,7 +175,7 @@ class ImmutableNode extends AbstractNode {
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
 
-  protected _getWords(startFrom) {
+  protected _getWords(startFrom: int) {
     if (!this._words) this._words = this._getLine().split(this.getZI())
     return startFrom ? this._words.slice(startFrom) : this._words
   }
@@ -457,7 +457,7 @@ class ImmutableNode extends AbstractNode {
     return this._childrenToHtml(0)
   }
 
-  protected _childrenToHtml(indentCount) {
+  protected _childrenToHtml(indentCount: int) {
     return this.map(node => node._toHtml(indentCount)).join(`<span class="yIncrement">${this.getYI()}</span>`)
   }
 
@@ -474,7 +474,7 @@ class ImmutableNode extends AbstractNode {
     return "\n"
   }
 
-  compile(targetExtension): string {
+  compile(targetExtension: types.fileExtension): string {
     return this.map(child => child.compile(targetExtension)).join(this._getNodeJoinCharacter())
   }
 
@@ -503,10 +503,10 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node.get(path))
   }
 
-  getFiltered(fn) {
+  getFiltered(fn: types.filterFn) {
     const clone = this.clone()
     clone
-      .filter(node => !fn(node))
+      .filter((node, index) => !fn(node, index))
       .forEach(node => {
         node.destroy()
       })
@@ -940,7 +940,7 @@ class ImmutableNode extends AbstractNode {
     return newNode
   }
 
-  protected _parseString(str) {
+  protected _parseString(str: string) {
     if (!str) return this
     const lines = str.split(this.getYIRegex())
     const parentStack = []
@@ -1181,7 +1181,7 @@ class TreeNode extends ImmutableNode {
     return new TreeNode().appendLineAndChildren(this.getLine(), result)
   }
 
-  macroExpand(macroDefKeyword, macroUsageKeyword) {
+  macroExpand(macroDefKeyword: string, macroUsageKeyword: string): TreeNode {
     const clone = this.clone()
     const defs = clone.findNodes(macroDefKeyword)
     const allUses = clone.findNodes(macroUsageKeyword)
@@ -1310,12 +1310,12 @@ class TreeNode extends ImmutableNode {
     return this._setLineAndChildren(line)
   }
 
-  appendLineAndChildren(line: string, children) {
+  appendLineAndChildren(line: string, children: types.something) {
     return this._setLineAndChildren(line, children)
   }
 
   getNodesByRegex(regex: RegExp | RegExp[]) {
-    const matches = []
+    const matches: ImmutableNode[] = []
     regex = regex instanceof RegExp ? [regex] : regex
     this._getNodesByLineRegex(matches, regex)
     return matches
@@ -1327,7 +1327,7 @@ class TreeNode extends ImmutableNode {
     return matches
   }
 
-  protected _getNodesByLineRegex(matches: any[], regs: RegExp[]) {
+  protected _getNodesByLineRegex(matches: ImmutableNode[], regs: RegExp[]) {
     const rgs = regs.slice(0)
     const reg = rgs.shift()
     const candidates = this.filter(child => child.getLine().match(reg))
@@ -1335,19 +1335,19 @@ class TreeNode extends ImmutableNode {
     candidates.forEach(cand => (<any>cand)._getNodesByLineRegex(matches, rgs))
   }
 
-  concat(node) {
+  concat(node: string | ImmutableNode) {
     if (typeof node === "string") node = new TreeNode(node)
     return node.map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
-  protected _deleteByIndexes(indexesToDelete) {
+  protected _deleteByIndexes(indexesToDelete: int[]) {
     this._clearIndex()
     // note: assumes indexesToDelete is in ascending order
     indexesToDelete.reverse().forEach(index => this._getChildrenArray().splice(index, 1))
     return this._setCMTime(this._getNow())
   }
 
-  protected _deleteNode(node) {
+  protected _deleteNode(node: ImmutableNode) {
     const index = this._indexOfNode(node)
     return index > -1 ? this._deleteByIndexes([index]) : 0
   }
@@ -1462,7 +1462,7 @@ class TreeNode extends ImmutableNode {
     return returnedNodes
   }
 
-  insertLineAndChildren(line: string, children, index: int) {
+  insertLineAndChildren(line: string, children: types.something, index: int) {
     return this._setLineAndChildren(line, children, index)
   }
 
@@ -1474,7 +1474,7 @@ class TreeNode extends ImmutableNode {
     return this.insertLine(line, 0)
   }
 
-  pushContentAndChildren(content?, children?) {
+  pushContentAndChildren(content?: types.line, children?: types.something) {
     let index = this.length
 
     while (this.has(index.toString())) {

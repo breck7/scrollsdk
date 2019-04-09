@@ -9,7 +9,7 @@ declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
     getProgram(): GrammarProgram;
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
-    getKeywordMap(): {};
+    getKeywordMap(): types.stringMap;
     getProgramErrors(): types.ParseError[];
     getNodeConstructor(line: any): any;
     getTargetExtension(): string;
@@ -42,6 +42,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     toSublimeSyntaxFile(): string;
     static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;
     static _getBestType(values: any): "any" | "int" | "float" | "bit" | "bool";
-    static predictGrammarFile(str: any, keywords?: any): string;
+    static predictGrammarFile(str: string | TreeNode, keywords?: any): string;
 }
 export default GrammarProgram;

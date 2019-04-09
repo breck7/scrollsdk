@@ -3,6 +3,7 @@
     "outDir": "./built",
     "types": ["node"],
     "lib": ["es6", "dom"],
+    //"noImplicitAny": true,
     //"allowJs": true,
     "declaration": true,
     "target": "es6",

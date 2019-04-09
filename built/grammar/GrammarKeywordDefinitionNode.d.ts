@@ -14,7 +14,7 @@ declare class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode
     };
     getDoc(): string;
     protected _getDefaultsNode(): any;
-    getDefaultFor(name: any): any;
+    getDefaultFor(name: string): any;
     getDescription(): any;
     getConstantsObject(): {};
     getFrequency(): number;

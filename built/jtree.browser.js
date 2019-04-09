@@ -139,7 +139,7 @@ TreeUtils.BrowserScript = class {
         return this;
     }
     changeDefaultExportsToWindowExports() {
-        this._str = this._str.replace(/\nexport default (.*)/g, "\nwindow.$1 = $1");
+        this._str = this._str.replace(/\nexport default ([^;]*)/g, "\nwindow.$1 = $1");
         // todo: should we just switch to some bundler?
         const matches = this._str.match(/\nexport { ([^\}]+) }/g);
         if (matches)
@@ -150,7 +150,7 @@ TreeUtils.BrowserScript = class {
         return this;
     }
     changeNodeExportsToWindowExports() {
-        this._str = this._str.replace(/\nmodule\.exports \= (.*)/g, "\nwindow.$1 = $1");
+        this._str = this._str.replace(/\nmodule\.exports \= ([^;]*)/g, "\nwindow.$1 = $1");
         return this;
     }
     getString() {
@@ -170,6 +170,7 @@ var GrammarConstants;
 (function (GrammarConstants) {
     // node types
     GrammarConstants["grammar"] = "@grammar";
+    GrammarConstants["extensions"] = "@extensions";
     GrammarConstants["keyword"] = "@keyword";
     GrammarConstants["wordType"] = "@wordType";
     GrammarConstants["abstract"] = "@abstract";
@@ -626,7 +627,7 @@ class ImmutableNode extends AbstractNode {
     getFiltered(fn) {
         const clone = this.clone();
         clone
-            .filter(node => !fn(node))
+            .filter((node, index) => !fn(node, index))
             .forEach(node => {
             node.destroy();
         });
@@ -1792,6 +1793,9 @@ class TreeNode extends ImmutableNode {
     }
 }
 class AbstractRuntimeNode extends TreeNode {
+    getGrammarProgram() {
+        return this.getProgram().getGrammarProgram();
+    }
     getProgram() {
         return this;
     }
@@ -2554,6 +2558,7 @@ ${captures}
     _getDefaultsNode() {
         return this.get(GrammarConstants.defaults);
     }
+    // todo: deprecate?
     getDefaultFor(name) {
         const defaults = this._getDefaultsNode();
         return defaults ? defaults.get(name) : undefined;
@@ -2577,7 +2582,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
     isValid(str) {
         if (!this._regex)
             this._regex = new RegExp("^" + this.getContent() + "$");
-        return str.match(this._regex);
+        return !!str.match(this._regex);
     }
 }
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
@@ -2600,7 +2605,7 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
     isValid(str) {
         // @enum c c++ java
-        return this.getOptions()[str];
+        return !!this.getOptions()[str];
     }
     getOptions() {
         if (!this._map)
@@ -2623,7 +2628,7 @@ class GrammarWordParserNode extends TreeNode {
 }
 class GrammarWordTypeNode extends TreeNode {
     getKeywordMap() {
-        const types = [];
+        const types = {};
         types[GrammarConstants.regex] = GrammarRegexTestNode;
         types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode;
         types[GrammarConstants.enum] = GrammarEnumTestNode;
@@ -2849,12 +2854,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
         const extendedConstructor = definedConstructor || AbstractRuntimeProgram;
         const grammarProgram = this;
-        const newClass = class extends extendedConstructor {
+        return class extends extendedConstructor {
             getGrammarProgram() {
                 return grammarProgram;
             }
         };
-        return newClass;
     }
     getRootConstructor() {
         if (!this._cache_rootConstructorClass)
@@ -2864,6 +2868,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     getNodeColumnRegexes() {
         const colTypes = this.getWordTypes();
         return this.getNodeColumnTypes().map(col => colTypes[col].getRegexString());
+    }
+    _getFileExtensions() {
+        return this._getGrammarRootNode().get(GrammarConstants.extensions)
+            ? this._getGrammarRootNode()
+                .get(GrammarConstants.extensions)
+                .split(" ")
+                .join(",")
+            : this.getExtensionName();
     }
     toSublimeSyntaxFile() {
         const wordTypes = this.getWordTypes();
@@ -2876,7 +2888,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return `%YAML 1.2
 ---
 name: ${this.getExtensionName()}
-file_extensions: [${this.getExtensionName()}]
+file_extensions: [${this._getFileExtensions()}]
 scope: source.${this.getExtensionName()}
 
 variables:

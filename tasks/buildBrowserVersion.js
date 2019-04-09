@@ -1,9 +1,12 @@
 #! /usr/local/bin/node
 
 const fs = require("fs")
+const exec = require("child_process").exec
 const recursiveReadSync = require("recursive-readdir-sync")
 const jtree = require("../index.js")
 const TreeNode = jtree.TreeNode
+
+exec("tsc")
 
 const ProjectProgram = jtree.getLanguage("project")
 
@@ -33,4 +36,5 @@ const combined = scripts
   .join("\n")
 
 fs.writeFileSync(outputFile, `"use strict"\n` + combined, "utf8")
-console.log("Now: tsc -p tsconfig.browser.json")
+
+exec("tsc -p tsconfig.browser.json")

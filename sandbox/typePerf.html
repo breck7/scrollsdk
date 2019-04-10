@@ -1,9 +1,24 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head><script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
-<script src="/built/jtree.browser.js"></script>
-<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
-<script id="grammar" type="tree">@grammar jibberish
+  <head>
+    <script type="text/javascript" src="/sandbox/lib/jquery.min.js"></script>
+    <script src="/built/jtree.browser.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <script type="text/javascript">
+
+
+
+      const programCode = `foo
+ whoodat
+nodeWithConsts
+lightbulbState on
+lightbulbState off
++ 2 3 2
+bamError0
+text
+thisShouldErrorError1
+to fillThis`
+      const grammar = `@grammar jibberish
  @description Test a root parser node
  @compiler txt
  @catchAllKeyword error
@@ -11,10 +26,10 @@
   topLevel
   text
 @wordType int
- @regex ^\-?[0-9]+$
+ @regex \-?[0-9]+
  @parseWith js parseInt
 @wordType word
- @regex .?
+ @regex .*
 @wordType onoff
  @enum on off
 @keyword error
@@ -38,76 +53,67 @@
  @columns word
  @compiler txt
   @sub to {word}
-  @closeChildren end
-</script>
-<script id="code" type="tree">foo
- whoodat
-nodeWithConsts
-lightbulbState on
-lightbulbState off
-+ 2 3 2
-bamError0
-text
-thisShouldErrorError1
-to fillThis</script>
-<script type="text/javascript">
+  @closeChildren end`
 
-const programCode = $("#code").html()
-const grammar = $("#grammar").html()
+      const log = msg => {
+        $("body").append(msg + "<br>")
+        console.log(msg)
+        $("body").width()
+      }
 
-const log = msg => {
-  $("body").append(msg + "<br>")
-  console.log(msg)
-  $("body").width()
-}
+      const getCode = () => {
+        const code = new jtree.TreeNode(programCode)
+        let long = jtree.TreeNode.toString().repeat(20)
+        code.getNode("text").setChildren(long)
 
-const getCode = () => {
-  const code = new jtree.TreeNode(programCode)
-  let long = jtree.TreeNode.toString().repeat(20)
-  code.getNode("text").setChildren(long)
+        long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
+        code.getNode("to").setChildren(long.trim())
+        return code
+      }
 
-  long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
-  code.getNode("to").setChildren(long.trim())
-  return code
-}
+      const main = code => {
+        log("Building language...")
+        const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootConstructor()
 
-const main = code => {
-  log("Building language...")
-   const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootConstructor()
+        log("Loading program...")
 
-  log("Loading program...")
+        const program = new programClass(code)
 
-  const program = new programClass(code)
+        log("Checking errors...")
+        const startTime = Date.now()
+        const errors = program.getProgramErrors()
+        //const errors = []
+        const expected = 2
+        const elapsed = Date.now() - startTime
 
-  log("Checking errors...")
-  const startTime = Date.now()
-  const errors = program.getProgramErrors()
-  //const errors = []
-  const expected = 2
-  const elapsed = Date.now() - startTime
+        let totalLines = code.getNumberOfLines()
+        const ps = (totalLines / (elapsed / 1000)).toLocaleString()
+        let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Errors: ${
+          errors.length
+        } === ${expected}`
 
-  let totalLines = code.getNumberOfLines()
-  const ps = (totalLines/(elapsed/1000)).toLocaleString()
-  let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Errors: ${errors.length} === ${expected}`
+        log(msg)
+        log("")
+        log("First five errors:")
+        log(
+          errors
+            .slice(0, 5)
+            .map(e => e.message)
+            .join("<br>")
+        )
 
-  log(msg)
-  log("")
-  log("First five errors:")
-  log(errors.slice(0,5).map(e => e.message).join("<br>"))
+        //log("<pre>" + program.toString() + "</pre>")
+        // log(program.getSyntaxTreeHtml())
+      }
 
-  //log("<pre>" + program.toString() + "</pre>")
-  // log(program.getSyntaxTreeHtml())
-}
-
-
-
-$(() => {
-  let someUrl = ""
-  if (someUrl)
-    $.get(someUrl).then(data => main(new jtree.TreeNode(data)))
-  else
-    main(getCode())
-})
-</script></head>
-<body>Perf test<br></body>
+      $(() => {
+        let someUrl = ""
+        if (someUrl) $.get(someUrl).then(data => main(new jtree.TreeNode(data)))
+        else main(getCode())
+      })
+    </script>
+  </head>
+  <body>
+    Perf test<br />
+  </body>
 </html>

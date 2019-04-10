@@ -37,4 +37,15 @@ const combined = scripts
 
 fs.writeFileSync(outputFile, `"use strict"\n` + combined, "utf8")
 
+// Compile test file:
+fs.writeFileSync(
+  __dirname + `/../sandbox/tests.js`,
+  "// WARNING: COMPILED FILE.\n" +
+    new BrowserScript(fs.readFileSync(__dirname + "/../tests/base.js", "utf8"))
+      .removeRequires()
+      .changeNodeExportsToWindowExports()
+      .getString(),
+  "utf8"
+)
+
 exec("tsc -p tsconfig.browser.json")

@@ -14,8 +14,48 @@
       <a href="test.html">Tests</a> | <a href="perf.html">Perf</a> | <a href="typePerf.html">Type Perf</a> |
       <span id="version"></span>
     </p>
-    <p>In dev tools, you can access the parsed tree below as "window.tree"</p>
-    <textarea id="tree">hello world</textarea>
-    <pre id="outline"></pre>
+    <p>
+      This is a simple console for exploring Tree Notation. In dev tools, you can access the parsed tree below as
+      "window.tree"
+    </p>
+    <table>
+      <tr>
+        <td>
+          Tree <br />
+          <textarea id="treeConsole"></textarea>
+        </td>
+        <td>
+          toJson() <a href="#" id="jsonSample">sample</a><br />
+          <textarea id="jsonConsole"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          toCsv() <a href="#" id="csvSample">sample</a><br />
+          <textarea id="csvConsole"></textarea>
+        </td>
+        <td>
+          toXml() <br />
+          <textarea id="xmlConsole"></textarea>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          toOutline()<br />
+          <pre id="outlineConsole"></pre>
+        </td>
+        <td>
+          toHtml()<br />
+          <pre id="htmlConsole"></pre>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          toTable()<br />
+          <pre id="tableConsole"></pre>
+        </td>
+        <td></td>
+      </tr>
+    </table>
   </body>
 </html>

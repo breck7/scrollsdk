@@ -1,19 +1,73 @@
+const samples = {}
+
+samples.csv = TreeNode.iris
+
+samples.json = `{
+ "name": "jtree",
+ "version": "18.1.3",
+ "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
+ "main": "index.js",
+ "types": "./built/jtree.node.d.ts",
+ "bin": {
+  "jtree": "./cli.js"
+ },
+ "scripts": {
+  "test": "./tasks/test.js",
+  "cover": "./tasks/cover.sh",
+  "start": "./sandbox.express.js"
+ },
+ "repository": {
+  "type": "git",
+  "url": "git://github.com/breck7/jtree"
+ },
+ "keywords": "jtree",
+ "devDependencies": {
+  "express": "*",
+  "jquery": "*",
+  "project-lang": "^1.7.0",
+  "qunitjs": "*",
+  "recursive-readdir-sync": "*",
+  "tap": "^12.6.0",
+  "@types/node": "^11.10.4",
+  "tap-mocha-reporter": "^4.0.1"
+ },
+ "license": "MIT"
+}`
+
 $(document).ready(function() {
-  const mainArea = $("#tree")
-  mainArea.on("keyup", function() {
-    var tree = new TreeNode($(this).val())
-    $("#outline").html(tree.toOutline())
-    window.tree = tree
-  })
+  const treeConsole = $("#treeConsole")
+  const jsonConsole = $("#jsonConsole")
+  const outlineConsole = $("#outlineConsole")
+  const csvConsole = $("#csvConsole")
+  const xmlConsole = $("#xmlConsole")
+  const htmlConsole = $("#htmlConsole")
+  const tableConsole = $("#tableConsole")
 
-  mainArea.on("blur", function() {
-    localStorage.setItem("tree", $(this).val())
-  })
+  $("#jsonSample").on("click", () => jsonConsole.val(samples.json).keyup())
+  $("#csvSample").on("click", () => csvConsole.val(samples.csv).keyup())
 
-  const val = localStorage.getItem("tree")
-  if (val) mainArea.val(val)
-
+  // Init vars
+  if (localStorage.getItem("tree")) treeConsole.val(localStorage.getItem("tree"))
   $("#version").html("Version: " + jtree.getVersion())
 
-  mainArea.keyup()
+  const updateAll = (tree, eventSource) => {
+    if (eventSource !== treeConsole) treeConsole.val(tree.toString())
+    if (eventSource !== jsonConsole) jsonConsole.val(tree.toJson())
+    if (eventSource !== outlineConsole) outlineConsole.html(tree.toOutline())
+    if (eventSource !== csvConsole) csvConsole.val(tree.toCsv())
+    if (eventSource !== xmlConsole) xmlConsole.val(tree.toXml())
+    if (eventSource !== htmlConsole) htmlConsole.html(tree.toHtml())
+    if (eventSource !== tableConsole) tableConsole.html(tree.toTable())
+    window.tree = tree
+    localStorage.setItem("tree", tree.toString())
+  }
+
+  // Bind listeners
+  treeConsole.on("keyup", () => updateAll(new TreeNode(treeConsole.val()), treeConsole))
+  jsonConsole.on("keyup", () => updateAll(TreeNode.fromJson(jsonConsole.val()), jsonConsole))
+  csvConsole.on("keyup", () => updateAll(TreeNode.fromCsv(csvConsole.val()), csvConsole))
+  xmlConsole.on("keyup", () => updateAll(TreeNode.fromXml(xmlConsole.val()), xmlConsole))
+
+  // Trigger start
+  treeConsole.keyup()
 })

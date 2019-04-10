@@ -1,9 +1,24 @@
 body {
   font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana,
     sans-serif;
+  margin: auto;
+  max-width: 1200px;
 }
 
-textarea {
-  width: 300px;
+textarea,
+pre {
+  width: 500px;
+  padding: 5px;
+  margin: 5px;
   height: 200px;
+  font-size: 14px;
+  white-space: pre;
+  overflow: scroll;
+}
+pre {
+  line-height: 14px;
+}
+
+.keyword {
+  color: green;
 }

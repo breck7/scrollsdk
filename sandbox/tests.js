@@ -30,6 +30,48 @@ testStrings.webpageTrimmed = `body
   content hi
 `
 
+testStrings.lime = `name cref
+file_extensions c
+scope source.c
+contexts
+ main
+  pattern
+   match (if|else|for|while)
+   scope keyword.control.c
+  pattern
+   match Q
+   push string
+ string
+  meta_scope string.quoted.double.c
+  pattern
+   match !.
+   scope constant.character.escape.c
+  pattern
+   match Q
+   pop true`
+
+testStrings.limeToYaml = `%YAML 1.2
+---
+name: cref
+file_extensions: c
+scope: source.c
+contexts:
+ main:
+  - pattern:
+     match: (if|else|for|while)
+     scope: keyword.control.c
+  - pattern:
+     match: Q
+     push: string
+ string:
+  - meta_scope: string.quoted.double.c
+  - pattern:
+     match: !.
+     scope: constant.character.escape.c
+  - pattern:
+     match: Q
+     pop: true`
+
 testStrings.sortByMultiple = `
 state
  name Error
@@ -904,6 +946,20 @@ testTree.firstProperty = equal => {
 
   // Assert
   equal(value.nodeAt(0).getKeyword(), "hello")
+}
+
+testTree.hasDuplicates = equal => {
+  // Arrange/Act/Assert
+  equal(new TreeNode(testStrings.sortByMultiple).hasDuplicateKeywords(), true)
+  equal(new TreeNode().hasDuplicateKeywords(), false, "empty")
+  equal(new TreeNode("a\na").hasDuplicateKeywords(), true)
+  equal(new TreeNode("a\n a\n b").nodeAt(0).hasDuplicateKeywords(), false)
+  equal(new TreeNode("a\n b\n b").nodeAt(0).hasDuplicateKeywords(), true)
+}
+
+testTree.toYaml = equal => {
+  // Arrange/Act/Assert
+  equal(new TreeNode(testStrings.lime).toYaml(), testStrings.limeToYaml)
 }
 
 testTree.firstValue = equal => {

@@ -17,5 +17,5 @@ jtree.TerminalNode = GrammarBackedTerminalNode_1.default;
 jtree.AnyNode = GrammarBackedAnyNode_1.default;
 jtree.GrammarProgram = GrammarProgram_1.default;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "18.1.3";
+jtree.getVersion = () => "18.2.0";
 exports.default = jtree;

@@ -42,6 +42,7 @@ $(document).ready(function() {
   const xmlConsole = $("#xmlConsole")
   const htmlConsole = $("#htmlConsole")
   const tableConsole = $("#tableConsole")
+  const yamlConsole = $("#yamlConsole")
 
   $("#jsonSample").on("click", () => jsonConsole.val(samples.json).keyup())
   $("#csvSample").on("click", () => csvConsole.val(samples.csv).keyup())
@@ -58,6 +59,8 @@ $(document).ready(function() {
     if (eventSource !== xmlConsole) xmlConsole.val(tree.toXml())
     if (eventSource !== htmlConsole) htmlConsole.html(tree.toHtml())
     if (eventSource !== tableConsole) tableConsole.html(tree.toTable())
+    if (eventSource !== yamlConsole) yamlConsole.html(tree.toYaml())
+
     window.tree = tree
     localStorage.setItem("tree", tree.toString())
   }

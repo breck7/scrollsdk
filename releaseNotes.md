@@ -1,3 +1,7 @@
+18.2.0 / 2019-04-11
+===================
+- New: very basic toYaml method
+
 18.1.3 / 2019-03-26
 ===================
 - New: more TypeScript typings

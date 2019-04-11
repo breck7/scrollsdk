@@ -82,6 +82,9 @@ class ImmutableNode extends AbstractNode_node_1.default {
     isBlankLine() {
         return !this.length && !this.getLine();
     }
+    hasDuplicateKeywords() {
+        return this.length ? new Set(this.getKeywords()).size !== this.length : false;
+    }
     isEmpty() {
         return !this.length && !this.getContent();
     }
@@ -396,6 +399,70 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     toXml() {
         return this._childrenToXml(0);
+    }
+    _lineToYaml(indentLevel, listTag = "") {
+        let prefix = " ".repeat(indentLevel);
+        if (listTag && indentLevel > 1)
+            prefix = " ".repeat(indentLevel - 2) + listTag + " ";
+        return prefix + `${this.getKeyword()}:` + (this.getContent() ? " " + this.getContent() : "");
+    }
+    _isYamlList() {
+        return this.hasDuplicateKeywords();
+    }
+    toYaml() {
+        return `%YAML 1.2
+---\n${this._childrenToYaml(0).join("\n")}`;
+    }
+    _childrenToYaml(indentLevel) {
+        if (this._isYamlList())
+            return this._childrenToYamlList(indentLevel);
+        else
+            return this._childrenToYamlAssociativeArray(indentLevel);
+    }
+    // if your code-to-be-yaml has a list of associative arrays of type N and you don't
+    // want the type N to print
+    _collapseYamlLine() {
+        return false;
+    }
+    _toYamlListElement(indentLevel) {
+        const children = this._childrenToYaml(indentLevel + 1);
+        if (this._collapseYamlLine()) {
+            if (indentLevel > 1)
+                return children.join("\n").replace(" ".repeat(indentLevel), " ".repeat(indentLevel - 2) + "- ");
+            return children.join("\n");
+        }
+        else {
+            children.unshift(this._lineToYaml(indentLevel, "-"));
+            return children.join("\n");
+        }
+    }
+    _childrenToYamlList(indentLevel) {
+        return this.map(node => node._toYamlListElement(indentLevel + 2));
+    }
+    _toYamlAssociativeArrayElement(indentLevel) {
+        const children = this._childrenToYaml(indentLevel + 1);
+        children.unshift(this._lineToYaml(indentLevel));
+        return children.join("\n");
+    }
+    _childrenToYamlAssociativeArray(indentLevel) {
+        return this.map(node => node._toYamlAssociativeArrayElement(indentLevel));
+    }
+    // todo: do we need this?
+    _getDuplicateLinesMap() {
+        const count = {};
+        this.forEach(node => {
+            const line = node.getLine();
+            if (count[line])
+                count[line]++;
+            else
+                count[line] = 1;
+        });
+        this.forEach(node => {
+            const line = node.getLine();
+            if (count[line] === 1)
+                delete count[line];
+        });
+        return count;
     }
     toJson() {
         return JSON.stringify(this.toObject(), null, " ");

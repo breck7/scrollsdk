@@ -30,6 +30,7 @@ declare class ImmutableNode extends AbstractNode {
     getNumberOfLines(): int;
     protected _getLineNumber(target: ImmutableNode): number;
     isBlankLine(): boolean;
+    hasDuplicateKeywords(): boolean;
     isEmpty(): boolean;
     private _cachedLineNumber;
     protected _getYCoordinate(relativeTo?: ImmutableNode): any;
@@ -92,6 +93,16 @@ declare class ImmutableNode extends AbstractNode {
     protected _getNodeJoinCharacter(): string;
     compile(targetExtension: types.fileExtension): string;
     toXml(): types.xmlString;
+    _lineToYaml(indentLevel: number, listTag?: string): string;
+    _isYamlList(): boolean;
+    toYaml(): string;
+    _childrenToYaml(indentLevel: number): string[];
+    _collapseYamlLine(): boolean;
+    _toYamlListElement(indentLevel: number): string;
+    _childrenToYamlList(indentLevel: number): string[];
+    _toYamlAssociativeArrayElement(indentLevel: number): string;
+    _childrenToYamlAssociativeArray(indentLevel: number): string[];
+    _getDuplicateLinesMap(): types.stringMap;
     toJson(): types.jsonString;
     findNodes(keywordPath: types.keywordPath): any[];
     format(str: types.formatString): string;

@@ -5,7 +5,7 @@ Tree Notation is a metalanguage like JSON, XML, YAML or S-expressions.
 
 On top of Tree Notation, you can design "Tree Languages". Tree Languages can do lots of things. They can be simple file formats. They can even be general purpose programming languages, as powerful as any traditional programming language.
 
-[Try it out](http://treenotation.org/sandbox/)
+[Try it out](http://treenotation.org/sandbox/) | [Javascript Implementation on GitHub](https://github.com/breck7/jtree)
 
 Quick Examples
 --------------
@@ -21,13 +21,20 @@ package.tree:
     name mypackage
     version 2.1.1
     description A package
+    repository
+     type git
+     url git://github.com/username/mypackage
 
 package.json:
 
     {
       "name": "mypackage"
       "version": "2.1.1"
-      "description": "A package"
+      "description": "A package",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/username/mypackage"
+      }
     }
 
 ### For programming languages:

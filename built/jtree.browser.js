@@ -2329,12 +2329,8 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
         const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/";
         const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath;
         const theModule = require(fullPath);
-        const subModule = this._getSubModuleName();
-        return subModule ? theModule[subModule] : theModule;
-    }
-    // todo: allow for deeper nesting? use Utils.resolveProperty
-    _getSubModuleName() {
-        return this.getWord(2);
+        const subModuleName = this.getWord(2);
+        return subModuleName ? TreeUtils.resolveProperty(theModule, subModuleName) : theModule;
     }
     // todo: does this support spaces in filepaths?
     _getNodeConstructorFilePath() {
@@ -2344,9 +2340,10 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         const constructorName = this.getWord(1);
-        if (!window[constructorName])
+        const constructor = TreeUtils.resolveProperty(window, constructorName);
+        if (!constructor)
             throw new Error(`constructor window.${constructorName} not found.`);
-        return window[constructorName]; // types.RunTimeNodeConstructor
+        return constructor;
     }
 }
 class GrammarCustomConstructorsNode extends TreeNode {

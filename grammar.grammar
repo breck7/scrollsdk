@@ -58,7 +58,7 @@
 @keyword @abstract @keyword
  @highlightScope entity.name.tag
  @keywords
-  keywordRule
+  _keywordRule
   @group
 @keyword @wordType
  @columns any*
@@ -69,7 +69,7 @@
   @keywordTable
   @enum
   @parseWith
-@keyword @parseWith variadicKeywordRule
+@keyword @parseWith _variadicKeywordRule
 @keyword @group
  @columns any*
  @highlightScope entity.other.attribute-name
@@ -79,46 +79,46 @@
 @keyword @keywordTable
  @columns any int
  @highlightScope entity.other.attribute-name
-@abstract keywordRule
+@abstract _keywordRule
  @highlightScope entity.other.attribute-name
  @single
-@abstract monadicKeywordRule keywordRule
+@abstract _monadicKeywordRule _keywordRule
  @columns any
-@abstract diadicKeywordRule keywordRule
+@abstract _diadicKeywordRule _keywordRule
  @columns any any
-@keyword @catchAllKeyword monadicKeywordRule
-@abstract _constructor variadicKeywordRule
+@keyword @catchAllKeyword _monadicKeywordRule
+@abstract _constructor _variadicKeywordRule
  @description If specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-@keyword @constructors ntKeywordRule
+@keyword @constructors _nonTerminalKeywordRule
  @catchAllKeyword _constructor
-@keyword @frequency monadicKeywordRule
-@abstract variadicKeywordRule keywordRule
+@keyword @frequency _monadicKeywordRule
+@abstract _variadicKeywordRule _keywordRule
  @columns any*
-@keyword @columns keywordRule
+@keyword @columns _keywordRule
  @columns wordType*
-@keyword @regex variadicKeywordRule
+@keyword @regex _variadicKeywordRule
  @columns regex*
-@abstract compilerRule
+@abstract _compilerRule
  @columns any*
  @highlightScope entity.other.attribute-name
-@keyword @compiler monadicKeywordRule
+@keyword @compiler _monadicKeywordRule
  @keywords
   @sub
   @listDelimiter
   @openChildren
   @closeChildren
   @indentCharacter
-@keyword @sub compilerRule
-@keyword @listDelimiter compilerRule
-@keyword @openChildren compilerRule
-@keyword @closeChildren compilerRule
-@keyword @indentCharacter compilerRule
-@keyword @description keywordRule
+@keyword @sub _compilerRule
+@keyword @listDelimiter _compilerRule
+@keyword @openChildren _compilerRule
+@keyword @closeChildren _compilerRule
+@keyword @indentCharacter _compilerRule
+@keyword @description _keywordRule
  @columns string*
-@abstract ntKeywordRule keywordRule
+@abstract _nonTerminalKeywordRule _keywordRule
 @keyword defaultTuple
  @columns any any*
-@keyword @defaults keywordRule
+@keyword @defaults _keywordRule
  @catchAllKeyword defaultTuple
 @keyword constantAny
  @columns any*
@@ -126,17 +126,17 @@
 @keyword constantDefinition
  @columns any*
  @catchAllKeyword constantAny
-@keyword @constants keywordRule
+@keyword @constants _keywordRule
  @catchAllKeyword constantDefinition
 @keyword keywordUse
-@keyword @any keywordRule
-@keyword @required keywordRule
-@keyword @single keywordRule
-@keyword @tags keywordRule
+@keyword @any _keywordRule
+@keyword @required _keywordRule
+@keyword @single _keywordRule
+@keyword @tags _keywordRule
  @columns any*
-@keyword @highlightScope keywordRule
+@keyword @highlightScope _keywordRule
  @columns any
-@keyword @keywords ntKeywordRule
+@keyword @keywords _nonTerminalKeywordRule
  @catchAllKeyword keywordUse
 @keyword error
  @constructors
@@ -150,4 +150,4 @@
   browser NonTerminalNode
  @highlightScope variable.function
  @keywords
-  keywordRule
+  _keywordRule

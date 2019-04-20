@@ -16,8 +16,10 @@
  @regex ^(string|int|any)$
 @keyword #!
  @columns any*
+ @highlightScope comment
 @keyword prompt
  @columns any inputType any*
+ @highlightScope constant.language
  @constructors
   nodejs ./PromptNode.js
 @keyword error
@@ -26,11 +28,13 @@
   browser ErrorNode
 @keyword folder
  @columns filepath
+ @highlightScope variable.parameter
  @constructors
   nodejs ./FolderNode.js
 @keyword executable
 @keyword file
  @columns filepath
+ @highlightScope variable.parameter
  @constructors
   nodejs ./FileNode.js
  @keywords
@@ -39,5 +43,7 @@
 @keyword any
  @columns any*
  @catchAllKeyword any
+ @highlightScope string
 @keyword data
  @catchAllKeyword any
+ @highlightScope string

@@ -36,6 +36,9 @@
  @keywords
   topLevel
 @keyword foo topLevel
+@keyword nested topLevel
+ @constructors
+  nodejs ./jibberishNodes.js nested.someNestedNode
 @keyword type topLevel
  @columns word
  @single

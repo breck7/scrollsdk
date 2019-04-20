@@ -10,6 +10,12 @@ table {
 }
 
 td {
+  vertical-align: top;
   width: 50%;
   border: 1px solid gray;
+}
+
+pre {
+  max-width: 600px;
+  overflow: scroll;
 }

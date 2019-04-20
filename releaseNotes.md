@@ -1,6 +1,7 @@
 19.1.0 / 2019-04-20
 ===================
 - New: custom constructors can now specify a "." nested path to the JS constructor
+- New: added error printing in Grammar sandbox
 
 19.0.0 / 2019-04-19
 ===================

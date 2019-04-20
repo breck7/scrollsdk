@@ -31,5 +31,7 @@ export declare namespace types {
     type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt;
     type filterFn = (node: treeNode, index: int) => boolean;
     type RunTimeNodeConstructor = Function;
+    type TreeProgramConstructor = Function;
+    type treeProgram = treeNode;
 }
 export default types;

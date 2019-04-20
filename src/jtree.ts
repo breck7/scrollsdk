@@ -6,6 +6,7 @@ import GrammarBackedNonTerminalNode from "./grammar/GrammarBackedNonTerminalNode
 import GrammarBackedTerminalNode from "./grammar/GrammarBackedTerminalNode"
 import GrammarBackedAnyNode from "./grammar/GrammarBackedAnyNode"
 import GrammarProgram from "./grammar/GrammarProgram"
+import TreeNotationCodeMirrorMode from "./grammar/TreeNotationCodeMirrorMode"
 
 class jtree {
   static program = AbstractRuntimeProgram
@@ -15,6 +16,7 @@ class jtree {
   static TerminalNode = GrammarBackedTerminalNode
   static AnyNode = GrammarBackedAnyNode
   static GrammarProgram = GrammarProgram
+  static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
   static getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
   static getVersion = () => "18.2.0"
 }

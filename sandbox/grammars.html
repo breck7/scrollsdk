@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/sandbox/lib/codemirror.css" />
+    <link rel="stylesheet" type="text/css" href="/sandbox/lib/codemirror.show-hint.css" />
+    <script type="text/javascript" src="/sandbox/lib/codemirror.js"></script>
+    <script type="text/javascript" src="/sandbox/lib/show-hint.js"></script>
+    <script type="text/javascript" src="/sandbox/lib/javascript.js"></script>
+    <script type="text/javascript" src="/sandbox/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/built/jtree.browser.js"></script>
+    <script type="text/javascript" src="grammars.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="grammars.css" />
+  </head>
+  <body>
+    <h1>Tree Language Sandbox</h1>
+    <p>
+      <a href="test.html">Tests</a> | <a href="perf.html">Perf</a> | <a href="typePerf.html">Type Perf</a> |
+      <a href="https://github.com/breck7/jtree">Source Code</a> |
+      <span id="version"></span>
+    </p>
+    <p>
+      This is a simple console for exploring Tree Language Grammars. In dev tools, you can access the parsed trees below
+      as "window.grammarProgram" and program at "window.program".
+    </p>
+    <table>
+      <tr>
+        <td>
+          Grammar for your Tree Language<br />
+          <textarea id="grammarConsole"></textarea>
+        </td>
+        <td>
+          Source Code in your Language <br />
+          <textarea id="codeConsole"></textarea>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

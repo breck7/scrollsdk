@@ -33,6 +33,8 @@ export namespace types {
   export declare type filterFn = (node: treeNode, index: int) => boolean
 
   export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
+  export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
+  export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
 }
 
 export default types

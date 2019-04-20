@@ -1,0 +1,15 @@
+body {
+  font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana,
+    sans-serif;
+  margin: auto;
+  max-width: 1200px;
+}
+
+table {
+  width: 100%;
+}
+
+td {
+  width: 50%;
+  border: 1px solid gray;
+}

@@ -18,13 +18,14 @@
   },
   "keywords": "jtree",
   "devDependencies": {
+    "@types/node": "^11.10.4",
+    "codemirror": "^5.45.0",
     "express": "*",
     "jquery": "*",
     "project-lang": "^1.7.0",
     "qunitjs": "*",
     "recursive-readdir-sync": "*",
     "tap": "^12.6.0",
-    "@types/node": "^11.10.4",
     "tap-mocha-reporter": "^4.0.1"
   },
   "license": "MIT"

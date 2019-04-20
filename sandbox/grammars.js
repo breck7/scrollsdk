@@ -5,6 +5,7 @@ const main = grammarSourceCode => {
   // Init vars
   if (localStorage.getItem("grammarConsole")) grammarConsole.val(localStorage.getItem("grammarConsole"))
   if (localStorage.getItem("codeConsole")) codeConsole.val(localStorage.getItem("codeConsole"))
+  $("#version").html("Version: " + jtree.getVersion())
 
   const GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
   const grammarInstance = new jtree.TreeNotationCodeMirrorMode(

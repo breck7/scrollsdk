@@ -35,8 +35,9 @@ var GrammarConstants;
     GrammarConstants["single"] = "@single";
     GrammarConstants["tags"] = "@tags";
     // parse and interpret time
-    GrammarConstants["constructor"] = "@constructor";
-    GrammarConstants["constructorJs"] = "js";
+    GrammarConstants["constructors"] = "@constructors";
+    GrammarConstants["constructorNodeJs"] = "nodejs";
+    GrammarConstants["constructorBrowser"] = "browser";
     // compile time
     GrammarConstants["compilerKeyword"] = "@compiler";
     // develop time

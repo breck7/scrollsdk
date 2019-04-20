@@ -4,7 +4,8 @@
   #setup
   testBlock
  @catchAllKeyword error
- @constructor js ./SwarmProgram.js
+ @constructors
+  nodejs ./SwarmProgram.js
 @wordType filepath
  @regex .*
  @highlightScope string
@@ -14,7 +15,8 @@
 @wordType int
  @regex \-?[0-9]+
 @keyword #setup
- @constructor js ./TestSetupNode.js
+ @constructors
+  nodejs ./TestSetupNode.js
  @highlightScope constant.language.@grammar
  @keywords
   async
@@ -34,13 +36,15 @@
  @description Add this to setup node to import class directly without initiating it, for static method testing.
 @abstract testBlock
  @columns any*
- @constructor js ./TestBlock.js
+ @constructors
+  nodejs ./TestBlock.js
  @keywords
   #setup
  @catchAllKeyword commandNode
  @highlightScope keyword.control
 @keyword commandNode
- @constructor js ./CommandNode.js
+ @constructors
+  nodejs ./CommandNode.js
  @description Input is an object, and calls some method with an optional array of string args.
  @columns any*
  @catchAllKeyword commandNode
@@ -50,47 +54,59 @@
   assertion
 @keyword #test testBlock
 @keyword +#test testBlock
- @constructor js ./SoloTestBlock.js
+ @constructors
+  nodejs ./SoloTestBlock.js
 @keyword -#test testBlock
- @constructor js ./SkippedTestBlock.js
+ @constructors
+  nodejs ./SkippedTestBlock.js
 @keyword error
- @constructor js ErrorNode
+ @constructors
+  nodejs ErrorNode
+  browser ErrorNode
 @abstract assertion
  @highlightScope keyword.operator
 @keyword =~ assertion
  @description Assert result is of a certain type.
  @columns any
- @constructor js ./AssertTypeOfNode.js
+ @constructors
+  nodejs ./AssertTypeOfNode.js
 @keyword =# assertion
  @description Intake is an array, and checks if the length of array matches expected.
  @columns int
- @constructor js ./AssertLengthNode.js
+ @constructors
+  nodejs ./AssertLengthNode.js
 @keyword == assertion
  @description Intake is anything with a toString method, and compares that to provided expected value.
  @columns any*
- @constructor js ./AssertEqualNode.js
+ @constructors
+  nodejs ./AssertEqualNode.js
 @keyword =| assertion
  @description When your expected value is a multiline string.
  @catchAllKeyword any
- @constructor js ./AssertEqualBlockNode.js
+ @constructors
+  nodejs ./AssertEqualBlockNode.js
 @keyword =+ assertion
  @columns any*
  @description Converts the input to string and see if the string contains the provided arguments
- @constructor js ./AssertIncludesNode.js
+ @constructors
+  nodejs ./AssertIncludesNode.js
 @keyword =- assertion
  @description Converts the input to string and ensure the string does NOT contain the provided arguments
  @columns any*
- @constructor js ./AssertDoesNotIncludeNode.js
+ @constructors
+  nodejs ./AssertDoesNotIncludeNode.js
 @keyword any
  @columns any*
  @catchAllKeyword any
 @keyword %%|
- @constructor js ./SetupConstructorArgNode.js
+ @constructors
+  nodejs ./SetupConstructorArgNode.js
  @description Pass in a multiline string to setup constructor. #todo: rename
  @catchAllKeyword any
  @highlightScope variable.parameter
 @keyword %|
  @highlightScope variable.parameter
  @description Pass in a multiline string as a command arg. #todo: rename
- @constructor js ./CommandArgNode.js
+ @constructors
+  nodejs ./CommandArgNode.js
  @catchAllKeyword any

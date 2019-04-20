@@ -1,6 +1,7 @@
 @grammar jibberish
  @description Test a root parser node
- @constructor js ./jibberishProgram.js
+ @constructors
+  nodejs ./jibberishProgram.js
  @compiler txt
  @catchAllKeyword error
  @keywords
@@ -15,7 +16,9 @@
 @wordType onoff
  @enum on off
 @keyword error
- @constructor js ErrorNode
+ @constructors
+  nodejs ErrorNode
+  browser ErrorNode
 @abstract topLevel
 @abstract someAbstractClass
 @abstract color_properties topLevel
@@ -27,7 +30,8 @@
  @catchAllKeyword lineOfCode
 @keyword lineOfCode
  @columns word*
- @constructor js ./jibberishNodes.js LineOfCodeNode
+ @constructors
+  nodejs ./jibberishNodes.js LineOfCodeNode
 @keyword block topLevel
  @keywords
   topLevel
@@ -41,7 +45,8 @@
 @keyword text
  @any
 @keyword add topLevel
- @constructor js ./jibberishNodes.js additionNode
+ @constructors
+  nodejs ./jibberishNodes.js additionNode
 @keyword + add
  @columns int*
 @keyword lightbulbState topLevel

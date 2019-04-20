@@ -191,8 +191,9 @@ var GrammarConstants;
     GrammarConstants["single"] = "@single";
     GrammarConstants["tags"] = "@tags";
     // parse and interpret time
-    GrammarConstants["constructor"] = "@constructor";
-    GrammarConstants["constructorJs"] = "js";
+    GrammarConstants["constructors"] = "@constructors";
+    GrammarConstants["constructorNodeJs"] = "nodejs";
+    GrammarConstants["constructorBrowser"] = "browser";
     // compile time
     GrammarConstants["compilerKeyword"] = "@compiler";
     // develop time
@@ -2285,14 +2286,7 @@ class GrammarConstantsNode extends TreeNode {
         return result;
     }
 }
-class GrammarCustomConstructorNode extends TreeNode {
-    _getNodeConstructorFilePath() {
-        return this.getWord(2);
-    }
-    // todo: allow for deeper nesting? use Utils.resolveProperty
-    getSubModuleName() {
-        return this.getWord(3);
-    }
+class AbstractCustomConstructorNode extends TreeNode {
     _getBuiltInConstructors() {
         return {
             ErrorNode: GrammarBackedErrorNode,
@@ -2301,7 +2295,14 @@ class GrammarCustomConstructorNode extends TreeNode {
             AnyNode: GrammarBackedAnyNode
         };
     }
+    getDefinedConstructor() {
+        return this.getBuiltIn() || this._getCustomConstructor();
+    }
+    _getCustomConstructor() {
+        return undefined;
+    }
     getErrors() {
+        // todo: should this be a try/catch?
         if (this.getDefinedConstructor())
             return [];
         const parent = this.getParent();
@@ -2317,35 +2318,46 @@ class GrammarCustomConstructorNode extends TreeNode {
             }
         ];
     }
-    getDefinedConstructor() {
+    getBuiltIn() {
+        return this._getBuiltInConstructors()[this.getWord(1)];
+    }
+}
+class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
+    _getCustomConstructor() {
         const filepath = this._getNodeConstructorFilePath();
-        const builtIns = this._getBuiltInConstructors();
-        const builtIn = builtIns[filepath];
-        if (builtIn)
-            return builtIn;
         const rootPath = this.getRootNode().getTheGrammarFilePath();
         const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/";
         const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath;
-        // todo: remove "window" below?
-        if (!this.isNodeJs()) {
-            const subModule = this.getSubModuleName();
-            let constructor;
-            const constructorName = TreeUtils.getClassNameFromFilePath(filepath);
-            if (subModule) {
-                constructor = TreeUtils.resolveProperty(window[constructorName], subModule);
-                if (!constructor)
-                    throw new Error(`constructor ${subModule} not found on window.${constructorName}.`);
-            }
-            else {
-                constructor = window[constructorName];
-                if (!constructor)
-                    throw new Error(`constructor window.${constructorName} deduced from ${filepath} not found.`);
-            }
-            return constructor;
-        }
         const theModule = require(fullPath);
-        const subModule = this.getSubModuleName();
+        const subModule = this._getSubModuleName();
         return subModule ? theModule[subModule] : theModule;
+    }
+    // todo: allow for deeper nesting? use Utils.resolveProperty
+    _getSubModuleName() {
+        return this.getWord(2);
+    }
+    // todo: does this support spaces in filepaths?
+    _getNodeConstructorFilePath() {
+        return this.getWord(1);
+    }
+}
+class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
+    _getCustomConstructor() {
+        const constructorName = this.getWord(1);
+        if (!window[constructorName])
+            throw new Error(`constructor window.${constructorName} not found.`);
+        return window[constructorName]; // types.RunTimeNodeConstructor
+    }
+}
+class GrammarCustomConstructorsNode extends TreeNode {
+    getKeywordMap() {
+        const map = {};
+        map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode;
+        map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode;
+        return map;
+    }
+    getConstructorForEnvironment() {
+        return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser);
     }
 }
 class GrammarDefinitionErrorNode extends TreeNode {
@@ -2388,7 +2400,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         });
         map[GrammarConstants.constants] = GrammarConstantsNode;
         map[GrammarConstants.compilerKeyword] = GrammarCompilerNode;
-        map[GrammarConstants.constructor] = GrammarCustomConstructorNode;
+        map[GrammarConstants.constructors] = GrammarCustomConstructorsNode;
         return map;
     }
     getId() {
@@ -2403,9 +2415,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     _isAnyNode() {
         return this.has(GrammarConstants.any);
     }
-    _getCustomDefinedConstructorNode() {
-        return (this.getNodeByColumns(GrammarConstants.constructor, GrammarConstants.constructorJs));
-    }
     getDefinedConstructor() {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
@@ -2418,9 +2427,12 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {
-        const customConstructorDefinition = this._getCustomDefinedConstructorNode();
-        if (customConstructorDefinition)
-            return customConstructorDefinition.getDefinedConstructor();
+        const customConstructorsDefinition = this.getNode(GrammarConstants.constructors);
+        if (customConstructorsDefinition) {
+            const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
+            if (envConstructor)
+                return envConstructor.getDefinedConstructor();
+        }
         return this._getDefaultNodeConstructor();
     }
     getCatchAllNodeConstructor(line) {
@@ -3045,10 +3057,11 @@ ${keywordContexts}`;
     }
 }
 class TreeNotationCodeMirrorMode {
-    constructor(name, getProgramConstructorMethod, getProgramCodeMethod = instance => (instance ? instance.getValue() : this._originalValue), codeMirrorLib = undefined) {
+    constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
         this._getProgramConstructorMethod = getProgramConstructorMethod;
-        this._getProgramCodeMethod = getProgramCodeMethod;
+        this._getProgramCodeMethod =
+            getProgramCodeMethod || (instance => (instance ? instance.getValue() : this._originalValue));
         this._codeMirrorLib = codeMirrorLib;
     }
     _getParsedProgram() {
@@ -3182,7 +3195,6 @@ class TreeNotationCodeMirrorMode {
                 // todo: second param this.childrenToString()
                 // todo: change to getAutocomplete definitions
                 let matching = grammarNode.getAutocompleteWords(input);
-                //matching = matching.filter(name => !name.includes("_") && !name.startsWith("@"))
                 matching = matching.map(str => {
                     return {
                         text: str,

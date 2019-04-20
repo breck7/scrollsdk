@@ -1,19 +1,3 @@
-// Features:
-// 1 editor, multiple langs.
-// Multiple editors, multiple langs.
-// runtime loading.
-
-/*
-
-const projectMode = new TreeNotationCodeMirrorMode(CodeMirror)
-projectMode.registerCodeMirrorMode("project")
-projectMode.mutateTextArea("#target")
-
-
-.registerCodeMirrorMode("")
-
-
-*/
 import types from "../types"
 
 declare type codeMirrorLibType = any
@@ -23,12 +7,13 @@ class TreeNotationCodeMirrorMode {
   constructor(
     name: string,
     getProgramConstructorMethod: () => types.TreeProgramConstructor,
-    getProgramCodeMethod = instance => (instance ? <string>instance.getValue() : this._originalValue),
+    getProgramCodeMethod: (instance: codeMirrorInstanceType) => string,
     codeMirrorLib: codeMirrorLibType = undefined
   ) {
     this._name = name
     this._getProgramConstructorMethod = getProgramConstructorMethod
-    this._getProgramCodeMethod = getProgramCodeMethod
+    this._getProgramCodeMethod =
+      getProgramCodeMethod || (instance => (instance ? <string>instance.getValue() : this._originalValue))
     this._codeMirrorLib = codeMirrorLib
   }
 

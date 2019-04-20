@@ -1,5 +1,6 @@
 @grammar project
- @constructor js ./projectProgram.js
+ @constructors
+  nodejs ./projectProgram.js
  @keywords
   file
  @catchAllKeyword error
@@ -7,7 +8,9 @@
  @regex .*
  @highlightScope string
 @keyword error
- @constructor js ErrorNode
+ @constructors
+  nodejs ErrorNode
+  browser ErrorNode
 @keyword file
  @columns filepath*
  @highlightScope keyword.control.file
@@ -15,7 +18,8 @@
   external
   absolute
   relative
- @constructor js ./ProjectNode.js
+ @constructors
+  nodejs ./ProjectNode.js
 @abstract term
  @columns filepath*
  @highlightScope variable.parameter.path

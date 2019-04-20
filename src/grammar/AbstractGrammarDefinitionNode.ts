@@ -3,7 +3,7 @@ import TreeUtils from "../base/TreeUtils"
 
 import { GrammarConstants } from "./GrammarConstants"
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode"
-import GrammarCustomConstructorNode from "./GrammarCustomConstructorNode"
+import GrammarCustomConstructorsNode from "./GrammarCustomConstructorsNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 
@@ -38,7 +38,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     })
     map[GrammarConstants.constants] = GrammarConstantsNode
     map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
-    map[GrammarConstants.constructor] = GrammarCustomConstructorNode
+    map[GrammarConstants.constructors] = GrammarCustomConstructorsNode
     return map
   }
 
@@ -58,12 +58,6 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.any)
   }
 
-  protected _getCustomDefinedConstructorNode(): GrammarCustomConstructorNode {
-    return <GrammarCustomConstructorNode>(
-      this.getNodeByColumns(GrammarConstants.constructor, GrammarConstants.constructorJs)
-    )
-  }
-
   private _cache_definedNodeConstructor
 
   getDefinedConstructor() {
@@ -79,8 +73,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   /* Node constructor is the actual JS class being initiated, different than the Node type. */
   protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor {
-    const customConstructorDefinition = this._getCustomDefinedConstructorNode()
-    if (customConstructorDefinition) return customConstructorDefinition.getDefinedConstructor()
+    const customConstructorsDefinition = <GrammarCustomConstructorsNode>this.getNode(GrammarConstants.constructors)
+    if (customConstructorsDefinition) {
+      const envConstructor = customConstructorsDefinition.getConstructorForEnvironment()
+      if (envConstructor) return envConstructor.getDefinedConstructor()
+    }
     return this._getDefaultNodeConstructor()
   }
 

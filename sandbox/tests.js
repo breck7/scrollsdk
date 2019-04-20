@@ -632,16 +632,17 @@ testTree.getNodeByColumns = equal => {
   // Arrange
   const jib = new TreeNode(`jibberish
  @description Test a root parser node
- @constructor js ./jibberishProgram.js
+ @constructors
+  nodejs ./jibberishProgram.js
  @compiler txt
  @keywords
   baseNode`)
 
   // Act
-  const node2 = jib.getNodeByColumns("@constructor", "js")
+  const node2 = jib.getNode("jibberish @constructors nodejs")
 
   // Assert
-  equal(node2.getKeyword(), "@constructor")
+  equal(node2.getKeyword(), "nodejs")
 }
 
 testTree.delete = equal => {
@@ -1685,7 +1686,8 @@ testTree.isomorphicGrammarTests = equal => {
   // Arrange
   const grammarCode = `@grammar jibberish
  @description Test a root parser node
- @constructor js ./jibberishProgram.js
+ @constructors
+  nodejs ./jibberishProgram.js
  @compiler txt
  @catchAllKeyword error
  @keywords
@@ -1700,7 +1702,9 @@ testTree.isomorphicGrammarTests = equal => {
 @wordType onoff
  @enum on off
 @keyword error
- @constructor js ErrorNode
+ @constructors
+  nodejs ErrorNode
+  browser ErrorNode
 @abstract topLevel
 @abstract someAbstractClass
 @abstract color_properties topLevel
@@ -1712,7 +1716,8 @@ testTree.isomorphicGrammarTests = equal => {
  @catchAllKeyword lineOfCode
 @keyword lineOfCode
  @columns word*
- @constructor js ./jibberishNodes.js LineOfCodeNode
+ @constructors
+  nodejs ./jibberishNodes.js LineOfCodeNode
 @keyword block topLevel
  @keywords
   topLevel
@@ -1723,7 +1728,8 @@ testTree.isomorphicGrammarTests = equal => {
 @keyword text
  @any
 @keyword add topLevel
- @constructor js ./jibberishNodes.js additionNode
+ @constructors
+  nodejs ./jibberishNodes.js additionNode
 @keyword + add
  @columns int*
 @keyword lightbulbState topLevel

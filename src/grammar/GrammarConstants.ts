@@ -35,8 +35,9 @@ enum GrammarConstants {
   tags = "@tags",
 
   // parse and interpret time
-  constructor = "@constructor",
-  constructorJs = "js",
+  constructors = "@constructors",
+  constructorNodeJs = "nodejs",
+  constructorBrowser = "browser", // for browser
 
   // compile time
   compilerKeyword = "@compiler",

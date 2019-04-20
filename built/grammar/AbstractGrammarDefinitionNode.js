@@ -4,7 +4,7 @@ const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarDefinitionErrorNode_1 = require("./GrammarDefinitionErrorNode");
-const GrammarCustomConstructorNode_1 = require("./GrammarCustomConstructorNode");
+const GrammarCustomConstructorsNode_1 = require("./GrammarCustomConstructorsNode");
 const GrammarCompilerNode_1 = require("./GrammarCompilerNode");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
 const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode");
@@ -31,7 +31,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         });
         map[GrammarConstants_1.GrammarConstants.constants] = GrammarConstantsNode_1.default;
         map[GrammarConstants_1.GrammarConstants.compilerKeyword] = GrammarCompilerNode_1.default;
-        map[GrammarConstants_1.GrammarConstants.constructor] = GrammarCustomConstructorNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.constructors] = GrammarCustomConstructorsNode_1.default;
         return map;
     }
     getId() {
@@ -46,9 +46,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _isAnyNode() {
         return this.has(GrammarConstants_1.GrammarConstants.any);
     }
-    _getCustomDefinedConstructorNode() {
-        return (this.getNodeByColumns(GrammarConstants_1.GrammarConstants.constructor, GrammarConstants_1.GrammarConstants.constructorJs));
-    }
     getDefinedConstructor() {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
@@ -61,9 +58,12 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {
-        const customConstructorDefinition = this._getCustomDefinedConstructorNode();
-        if (customConstructorDefinition)
-            return customConstructorDefinition.getDefinedConstructor();
+        const customConstructorsDefinition = this.getNode(GrammarConstants_1.GrammarConstants.constructors);
+        if (customConstructorsDefinition) {
+            const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
+            if (envConstructor)
+                return envConstructor.getDefinedConstructor();
+        }
         return this._getDefaultNodeConstructor();
     }
     getCatchAllNodeConstructor(line) {

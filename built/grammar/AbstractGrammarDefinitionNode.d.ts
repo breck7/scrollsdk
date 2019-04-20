@@ -1,6 +1,5 @@
 import TreeNode from "../base/TreeNode";
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode";
-import GrammarCustomConstructorNode from "./GrammarCustomConstructorNode";
 import GrammarCompilerNode from "./GrammarCompilerNode";
 import GrammarProgram from "./GrammarProgram";
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode";
@@ -11,7 +10,6 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
     protected _isAnyNode(): boolean;
-    protected _getCustomDefinedConstructorNode(): GrammarCustomConstructorNode;
     private _cache_definedNodeConstructor;
     getDefinedConstructor(): any;
     protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;

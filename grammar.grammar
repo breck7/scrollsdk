@@ -45,7 +45,7 @@
   @description
   @extensions
   @keywords
-  @constructor
+  @constructors
   @compiler
   @catchAllKeyword
   @version
@@ -87,8 +87,10 @@
 @abstract diadicKeywordRule keywordRule
  @columns any any
 @keyword @catchAllKeyword monadicKeywordRule
-@keyword @constructor variadicKeywordRule
+@abstract _constructor variadicKeywordRule
  @description If specified, the existence of this constructor will be checked when the grammar file is checked for errors.
+@keyword @constructors ntKeywordRule
+ @catchAllKeyword _constructor
 @keyword @frequency monadicKeywordRule
 @abstract variadicKeywordRule keywordRule
  @columns any*
@@ -137,11 +139,15 @@
 @keyword @keywords ntKeywordRule
  @catchAllKeyword keywordUse
 @keyword error
- @constructor js ErrorNode
+ @constructors
+  nodejs ErrorNode
+  browser ErrorNode
 @keyword @keyword
  @columns keyword any*
  @catchAllKeyword error
- @constructor js NonTerminalNode
+ @constructors
+  nodejs NonTerminalNode
+  browser NonTerminalNode
  @highlightScope variable.function
  @keywords
   keywordRule

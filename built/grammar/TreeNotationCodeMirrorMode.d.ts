@@ -1,7 +1,8 @@
 import types from "../types";
 declare type codeMirrorLibType = any;
+declare type codeMirrorInstanceType = any;
 declare class TreeNotationCodeMirrorMode {
-    constructor(name: string, getProgramConstructorMethod: () => types.TreeProgramConstructor, getProgramCodeMethod?: (instance: any) => string, codeMirrorLib?: codeMirrorLibType);
+    constructor(name: string, getProgramConstructorMethod: () => types.TreeProgramConstructor, getProgramCodeMethod: (instance: codeMirrorInstanceType) => string, codeMirrorLib?: codeMirrorLibType);
     private _name;
     private _getProgramCodeMethod;
     private _getProgramConstructorMethod;

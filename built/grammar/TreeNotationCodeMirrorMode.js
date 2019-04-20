@@ -1,14 +1,11 @@
 "use strict";
-// Features:
-// 1 editor, multiple langs.
-// Multiple editors, multiple langs.
-// runtime loading.
 Object.defineProperty(exports, "__esModule", { value: true });
 class TreeNotationCodeMirrorMode {
-    constructor(name, getProgramConstructorMethod, getProgramCodeMethod = instance => (instance ? instance.getValue() : this._originalValue), codeMirrorLib = undefined) {
+    constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
         this._getProgramConstructorMethod = getProgramConstructorMethod;
-        this._getProgramCodeMethod = getProgramCodeMethod;
+        this._getProgramCodeMethod =
+            getProgramCodeMethod || (instance => (instance ? instance.getValue() : this._originalValue));
         this._codeMirrorLib = codeMirrorLib;
     }
     _getParsedProgram() {
@@ -142,7 +139,6 @@ class TreeNotationCodeMirrorMode {
                 // todo: second param this.childrenToString()
                 // todo: change to getAutocomplete definitions
                 let matching = grammarNode.getAutocompleteWords(input);
-                //matching = matching.filter(name => !name.includes("_") && !name.startsWith("@"))
                 matching = matching.map(str => {
                     return {
                         text: str,

@@ -1,3 +1,7 @@
+19.2.1 / 2019-04-20
+===================
+- Fix: grammar sandbox bug on first visit
+
 19.2.0 / 2019-04-20
 ===================
 - New: @highlightScope is now an enum for better checking and autocomplete

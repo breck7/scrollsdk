@@ -65,13 +65,12 @@ const main = grammarSourceCode => {
   grammarInstance.on("keyup", codeOnUpdate)
   codeInstance.on("keyup", codeOnUpdate)
 
-  grammarOnUpdate()
-  codeOnUpdate()
+  if (grammarInstance.getValue()) {
+    grammarOnUpdate()
+    codeOnUpdate()
+  }
 
-  $("#samples").on("click", "a", function() {
-    const name = $(this)
-      .text()
-      .toLowerCase()
+  const fetchGrammar = name => {
     $.get(`/langs/${name}/${name}.grammar`).then(grammar => {
       $.get(`/langs/${name}/sample.${name}`).then(sample => {
         grammarInstance.setValue(grammar)
@@ -80,6 +79,13 @@ const main = grammarSourceCode => {
         codeOnUpdate()
       })
     })
+  }
+
+  $("#samples").on("click", "a", function() {
+    const name = $(this)
+      .text()
+      .toLowerCase()
+    fetchGrammar(name)
   })
 }
 

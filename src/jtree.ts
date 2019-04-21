@@ -18,7 +18,7 @@ class jtree {
   static GrammarProgram = GrammarProgram
   static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
   static getLanguage = name => require(__dirname + `/../langs/${name}/index.js`)
-  static getVersion = () => "19.1.0"
+  static getVersion = () => "19.2.0"
 }
 
 export default jtree

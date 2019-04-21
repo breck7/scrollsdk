@@ -19,5 +19,5 @@ jtree.AnyNode = GrammarBackedAnyNode_1.default;
 jtree.GrammarProgram = GrammarProgram_1.default;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode_1.default;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "19.1.0";
+jtree.getVersion = () => "19.2.0";
 exports.default = jtree;

@@ -1,8 +1,10 @@
 19.2.0 / 2019-04-20
 ===================
 - New: @highlightScope is now an enum for better checking and autocomplete
+- New: CodeMirror now uses @highlightScope for styles.
 - Fix: we sort @enum options to now match largest hit first
 - Fix: fixed cache bug in @keywordTable
+- Breaking: CodeMirror now uses @highlightScope for styles so colors may have changed.
 
 19.1.0 / 2019-04-20
 ===================

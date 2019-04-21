@@ -69,7 +69,7 @@ Quack.quickTest("code mirror test", equal => {
   const words = `@grammar test
  @version 1.0.0
 @keyword foobar`
-  const tokens = `keyword bracket string bracket keyword bracket semanticVersion keyword bracket keyword`
+  const tokens = `atom bracket def bracket atom bracket number def bracket def`
 
   const mode = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
   const tokenLines = mode.getTokenLines(words)

@@ -1,0 +1,29 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+#test stress test
+ #setup
+  require ../built/grammar/GrammarProgram.js default
+  %%|
+   @grammar testlang
+    @compiler txt
+    @keywords
+     baseNode
+   @wordType any
+   @foo
+   @wordType word any
+   @keyword baseNode
+   @keyword block baseNode
+    @keywords
+     baseNode
+   @keyword to block
+    @columns word
+    @tags test
+    @compiler txt
+     @sub to {word}
+     @closeChildren end
+ getRunTimeKeywordNames
+  =# 3
+ getKeywordDefinitionByName to
+  =~ object
+ getTopNodeTypes
+  =# 3

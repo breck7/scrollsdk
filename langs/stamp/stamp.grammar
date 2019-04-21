@@ -9,11 +9,11 @@
   folder
   file
 @wordType any
- @regex .?
+ @regex .*
 @wordType filepath
- @regex .?
+ @regex .*
 @wordType inputType
- @regex ^(string|int|any)$
+ @regex ^(string|int|any|lowercase)$
 @keyword #!
  @columns any*
  @highlightScope comment

@@ -22,6 +22,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants_1.GrammarConstants.tags,
             GrammarConstants_1.GrammarConstants.any,
             GrammarConstants_1.GrammarConstants.group,
+            GrammarConstants_1.GrammarConstants.highlightScope,
             GrammarConstants_1.GrammarConstants.required,
             GrammarConstants_1.GrammarConstants.single
         ];
@@ -166,6 +167,9 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         if (this._cache_catchAllConstructor)
             return undefined;
         this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor();
+    }
+    getHighlightScope() {
+        return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
     }
     getAutocompleteWords(inputStr, additionalWords = []) {
         // todo: add more tests

@@ -2,6 +2,8 @@ import TreeNode from "../base/TreeNode"
 import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 import types from "../types"
 
+/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+
 /*
 A cell contains a word but also the type information for that word.
 */
@@ -12,7 +14,7 @@ class GrammarBackedCell {
     node: any,
     index: types.int,
     expectedLinePattern: string,
-    grammarProgram: any
+    grammarProgram: GrammarProgram
   ) {
     this._word = word
     this._type = type
@@ -23,7 +25,7 @@ class GrammarBackedCell {
   }
 
   private _node: any
-  private _grammarProgram: any
+  private _grammarProgram: GrammarProgram
   private _expectedLinePattern: string
   private _index: types.int
   private _word: string
@@ -31,6 +33,11 @@ class GrammarBackedCell {
 
   getType() {
     return (this._type && this._type.replace("*", "")) || undefined
+  }
+
+  getHighlightScope(): string | undefined {
+    const wordTypeClass = this._getWordTypeClass()
+    if (wordTypeClass) return wordTypeClass.getHighlightScope()
   }
 
   getWord() {

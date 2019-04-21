@@ -21,10 +21,6 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     return keywordsInScope.some(keyword => chain[keyword])
   }
 
-  _getHighlightScope() {
-    return this.get(GrammarConstants.highlightScope)
-  }
-
   getSyntaxContextId() {
     return this.getId().replace(/\#/g, "HASH") // # is not allowed in sublime context names
   }
@@ -32,7 +28,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getMatchBlock() {
     const program = this.getProgram()
     const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const color = (this._getHighlightScope() || "source") + "." + this.getId()
+    const color = (this.getHighlightScope() || "source") + "." + this.getId()
     const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`
     const topHalf = ` '${this.getSyntaxContextId()}':
   - match: ${match}

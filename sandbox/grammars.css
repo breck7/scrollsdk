@@ -19,3 +19,7 @@ pre {
   max-width: 600px;
   overflow: scroll;
 }
+
+a {
+  cursor: pointer;
+}

@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const textMateScopeToCodeMirrorStyle_1 = require("./textMateScopeToCodeMirrorStyle");
+// import * as CodeMirrorLib from "codemirror"
 class TreeNotationCodeMirrorMode {
     constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
@@ -15,35 +17,6 @@ class TreeNotationCodeMirrorMode {
             this._cachedProgram = new (this._getProgramConstructorMethod())(source);
         }
         return this._cachedProgram;
-    }
-    _wordTypeToCMStyle(wordType) {
-        const cmStyles = {
-            comment: "comment",
-            atom: "atom",
-            number: "number",
-            attribute: "attribute",
-            keyword: "keyword",
-            string: "string",
-            meta: "meta",
-            variable: "variable",
-            "variable-2": "variable-2",
-            tag: "tag",
-            "variable-3": "variable-3",
-            def: "def",
-            type: "type",
-            bracket: "bracket",
-            builtin: "builtin",
-            special: "special",
-            link: "link",
-            error: "error",
-            word: "string",
-            int: "number",
-            identifier: "variable-2",
-            functionIdentifier: "def",
-            space: "bracket",
-            parameter: "attribute"
-        };
-        return cmStyles[wordType] || wordType;
     }
     _getExcludedIntelliSenseTriggerKeys() {
         return {
@@ -167,12 +140,11 @@ class TreeNotationCodeMirrorMode {
         while (typeof next === "string") {
             const peek = stream.peek();
             if (next === " ") {
-                const style = this._wordTypeToCMStyle("space");
                 if (peek === undefined || peek === "\n") {
                     stream.skipToEnd(); // advance string to end
                     this._incrementLine(state);
                 }
-                return style;
+                return "bracket";
             }
             if (peek === " ") {
                 state.words.push(stream.current());
@@ -188,7 +160,8 @@ class TreeNotationCodeMirrorMode {
     _getWordStyle(lineIndex, wordIndex) {
         const program = this._getParsedProgram();
         // todo: if the current word is an error, don't show red?
-        return program ? this._wordTypeToCMStyle(program.getWordTypeAtPosition(lineIndex, wordIndex)) : undefined;
+        const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex);
+        return program ? textMateScopeToCodeMirrorStyle_1.default(highlightScope.split(".")) : undefined;
     }
     startState() {
         return {

@@ -83,7 +83,7 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     return this._getRequiredNodeErrors(errors)
   }
 
-  protected _getGrammarBackedCellArray() {
+  protected _getGrammarBackedCellArray(): GrammarBackedCell[] {
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
     const columnTypes = definition.getNodeColumnTypes()
@@ -112,6 +112,11 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
   getLineSyntax() {
     const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getType())
     return ["keyword"].concat(parameterWords).join(" ")
+  }
+
+  getLineHighlightScopes(defaultScope = "source") {
+    const wordScopes = this._getGrammarBackedCellArray().map(slot => slot.getHighlightScope() || defaultScope)
+    return [this.getDefinition().getHighlightScope() || defaultScope].concat(wordScopes).join(" ")
   }
 }
 

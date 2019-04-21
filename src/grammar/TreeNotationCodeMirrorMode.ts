@@ -1,7 +1,10 @@
 import types from "../types"
+import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
 declare type codeMirrorLibType = any
 declare type codeMirrorInstanceType = any
+
+// import * as CodeMirrorLib from "codemirror"
 
 class TreeNotationCodeMirrorMode {
   constructor(
@@ -33,37 +36,6 @@ class TreeNotationCodeMirrorMode {
       this._cachedProgram = new (<any>this._getProgramConstructorMethod())(source)
     }
     return this._cachedProgram
-  }
-
-  _wordTypeToCMStyle(wordType) {
-    const cmStyles = {
-      comment: "comment",
-      atom: "atom",
-      number: "number",
-      attribute: "attribute",
-      keyword: "keyword",
-      string: "string",
-      meta: "meta",
-      variable: "variable",
-      "variable-2": "variable-2",
-      tag: "tag",
-      "variable-3": "variable-3",
-      def: "def",
-      type: "type",
-      bracket: "bracket",
-      builtin: "builtin",
-      special: "special",
-      link: "link",
-      error: "error",
-      word: "string",
-      int: "number",
-      identifier: "variable-2",
-      functionIdentifier: "def",
-      space: "bracket",
-      parameter: "attribute"
-    }
-
-    return cmStyles[wordType] || wordType
   }
 
   _getExcludedIntelliSenseTriggerKeys() {
@@ -199,12 +171,11 @@ class TreeNotationCodeMirrorMode {
     while (typeof next === "string") {
       const peek = stream.peek()
       if (next === " ") {
-        const style = this._wordTypeToCMStyle("space")
         if (peek === undefined || peek === "\n") {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
-        return style
+        return "bracket"
       }
       if (peek === " ") {
         state.words.push(stream.current())
@@ -220,11 +191,12 @@ class TreeNotationCodeMirrorMode {
     return style
   }
 
-  _getWordStyle(lineIndex, wordIndex) {
+  _getWordStyle(lineIndex, wordIndex): string {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?
-    return program ? this._wordTypeToCMStyle(program.getWordTypeAtPosition(lineIndex, wordIndex)) : undefined
+    const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex)
+    return program ? <string>textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined
   }
 
   startState() {

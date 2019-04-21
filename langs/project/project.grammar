@@ -13,7 +13,7 @@
   browser ErrorNode
 @keyword file
  @columns filepath*
- @highlightScope keyword.control.file
+ @highlightScope keyword.control
  @keywords
   external
   absolute
@@ -22,7 +22,7 @@
   nodejs ./ProjectNode.js
 @abstract term
  @columns filepath*
- @highlightScope variable.parameter.path
+ @highlightScope variable.parameter
 @keyword external term
 @keyword absolute term
 @keyword relative term

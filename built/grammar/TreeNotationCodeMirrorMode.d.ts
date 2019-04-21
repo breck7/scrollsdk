@@ -12,7 +12,6 @@ declare class TreeNotationCodeMirrorMode {
     private _cmInstance;
     private _originalValue;
     _getParsedProgram(): any;
-    _wordTypeToCMStyle(wordType: any): any;
     _getExcludedIntelliSenseTriggerKeys(): {
         "8": string;
         "9": string;
@@ -51,14 +50,14 @@ declare class TreeNotationCodeMirrorMode {
         "144": string;
         "145": string;
     };
-    token(stream: any, state: any): any;
+    token(stream: any, state: any): string;
     fromTextAreaWithAutocomplete(area: any, options: any): any;
     _enableAutoComplete(cmInstance: any): void;
     _getCodeMirrorLib(): any;
     autocomplete(cmInstance: any, option: any): Promise<{}>;
     register(): this;
-    _advanceStreamAndGetTokenType(stream: any, state: any): any;
-    _getWordStyle(lineIndex: any, wordIndex: any): any;
+    _advanceStreamAndGetTokenType(stream: any, state: any): string;
+    _getWordStyle(lineIndex: any, wordIndex: any): string;
     startState(): {
         words: any[];
         lineIndex: number;

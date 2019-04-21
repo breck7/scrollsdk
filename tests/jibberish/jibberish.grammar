@@ -11,6 +11,7 @@
 @wordType int
  @regex \-?[0-9]+
  @parseWith js parseInt
+ @highlightScope constant.numeric
 @wordType word
  @regex .*
 @wordType onoff
@@ -52,6 +53,7 @@
   nodejs ./jibberishNodes.js additionNode
 @keyword + add
  @columns int*
+ @highlightScope keyword.operator.arithmetic
 @keyword lightbulbState topLevel
  @columns onoff
 @keyword to block

@@ -35,6 +35,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): any;
+    getHighlightScope(): string | undefined;
     getAutocompleteWords(inputStr: any, additionalWords?: any[]): string[];
     isDefined(keyword: any): boolean;
     _getProgramKeywordDefinitionCache(): {

@@ -15,12 +15,9 @@ abstract class AbstractRuntimeNode extends TreeNode {
   abstract getDefinition(): any
 
   protected _getKeywordDefinitionByName(path: string) {
-    return (
-      this.getProgram()
-        .getGrammarProgram()
-        // todo: do we need a relative to with this keyword path?
-        .getKeywordDefinitionByKeywordPath(path)
-    )
+    const grammarProgram = <GrammarProgram>this.getProgram().getGrammarProgram()
+    // todo: do we need a relative to with this keyword path?
+    return grammarProgram.getKeywordDefinitionByKeywordPath(path)
   }
 
   protected _getRequiredNodeErrors(errors = []) {

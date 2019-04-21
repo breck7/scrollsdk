@@ -1,3 +1,9 @@
+19.2.0 / 2019-04-20
+===================
+- New: @highlightScope is now an enum for better checking and autocomplete
+- Fix: we sort @enum options to now match largest hit first
+- Fix: fixed cache bug in @keywordTable
+
 19.1.0 / 2019-04-20
 ===================
 - New: custom constructors can now specify a "." nested path to the JS constructor

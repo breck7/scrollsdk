@@ -83,6 +83,12 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       .join("\n")
   }
 
+  getInPlaceHighlightScopeTree() {
+    return this.getTopDownArray()
+      .map(child => child.getIndentation() + child.getLineHighlightScopes())
+      .join("\n")
+  }
+
   getInPlaceSyntaxTreeWithNodeTypes() {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
@@ -122,21 +128,29 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       .join("\n")
   }
 
-  private _cache_typeTree
-
+  // todo: remove?
   getWordTypeAtPosition(lineIndex: number, wordIndex: number) {
     this._initWordTypeCache()
     const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : ""
   }
 
-  private _cache_programWordTypeStringMTime
+  getWordHighlightScopeAtPosition(lineIndex: number, wordIndex: number) {
+    this._initWordTypeCache()
+    const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
+    return typeNode ? typeNode.getWord(wordIndex - 1) : "source"
+  }
+
+  private _cache_programWordTypeStringMTime: number
+  private _cache_highlightScopeTree: TreeNode
+  private _cache_typeTree: TreeNode
 
   protected _initWordTypeCache() {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
 
     this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree())
+    this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
     this._cache_programWordTypeStringMTime = treeMTime
   }
 

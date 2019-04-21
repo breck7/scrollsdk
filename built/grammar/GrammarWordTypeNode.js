@@ -13,6 +13,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
         return !!str.match(this._regex);
     }
 }
+// todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
     _getKeywordTable(runTimeGrammarBackedProgram) {
         // @keywordTable @wordType 1
@@ -24,10 +25,12 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
         });
         return table;
     }
+    // todo: remove
     isValid(str, runTimeGrammarBackedProgram) {
-        if (!this._keywordTable)
-            this._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram);
-        return this._keywordTable[str] === true;
+        // note: hack where we store it on the program. otherwise has global effects.
+        if (!runTimeGrammarBackedProgram._keywordTable)
+            runTimeGrammarBackedProgram._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram);
+        return runTimeGrammarBackedProgram._keywordTable[str] === true;
     }
 }
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
@@ -69,7 +72,12 @@ class GrammarWordTypeNode extends TreeNode_1.default {
     }
     _getEnumOptions() {
         const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0];
-        return enumNode ? Object.keys(enumNode.getOptions()) : undefined;
+        if (!enumNode)
+            return undefined;
+        // we sort by longest first to capture longest match first. todo: add test
+        const options = Object.keys(enumNode.getOptions());
+        options.sort((a, b) => b.length - a.length);
+        return options;
     }
     getRegexString() {
         // todo: enum

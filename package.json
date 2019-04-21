@@ -18,6 +18,7 @@
   },
   "keywords": "jtree",
   "devDependencies": {
+    "@types/codemirror": "0.0.74",
     "@types/node": "^11.10.4",
     "codemirror": "^5.45.0",
     "express": "*",

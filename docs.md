@@ -1,32 +1,6 @@
 Highlight Scoping
 =================
 
-The @highlightScope property links keywords and wordTypes to scopes for coloring.
-All scopes can be found here: https://www.sublimetext.com/docs/3/scope_naming.html#keyword
+The @highlightScope property links keywords and wordTypes to scopes for coloring in Sublime and other editors.
 
-Recommended scopes are:
-
-entity.name
-entity.other.inherited-class
-entity.name.section
-entity.name.tag
-entity.other.attribute-name
-variable
-variable.language
-variable.parameter
-variable.function
-constant
-constant.numeric
-constant.language
-constant.character.escape
-storage.type
-storage.modifier
-support
-keyword
-keyword.control
-keyword.operator
-keyword.declaration
-string
-comment
-invalid
-invalid.deprecated
+You can also reference the file "scopes.list". These are taken from here: https://www.sublimetext.com/docs/3/scope_naming.html (parsed with: str = ""; for (el of document.getElementsByTagName("li")) {str += el.textContent.trim() + "\n"}; copy(str) )

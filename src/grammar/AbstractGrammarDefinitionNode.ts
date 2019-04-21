@@ -28,6 +28,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.tags,
       GrammarConstants.any,
       GrammarConstants.group,
+      GrammarConstants.highlightScope,
       GrammarConstants.required,
       GrammarConstants.single
     ]
@@ -202,6 +203,10 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     if (this._cache_catchAllConstructor) return undefined
 
     this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor()
+  }
+
+  getHighlightScope(): string | undefined {
+    return this.get(GrammarConstants.highlightScope)
   }
 
   getAutocompleteWords(inputStr, additionalWords = []) {

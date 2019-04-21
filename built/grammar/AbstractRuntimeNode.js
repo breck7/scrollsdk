@@ -10,10 +10,9 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         return this;
     }
     _getKeywordDefinitionByName(path) {
-        return (this.getProgram()
-            .getGrammarProgram()
-            // todo: do we need a relative to with this keyword path?
-            .getKeywordDefinitionByKeywordPath(path));
+        const grammarProgram = this.getProgram().getGrammarProgram();
+        // todo: do we need a relative to with this keyword path?
+        return grammarProgram.getKeywordDefinitionByKeywordPath(path);
     }
     _getRequiredNodeErrors(errors = []) {
         const nodeDef = this.getDefinition();

@@ -17,7 +17,7 @@
 @keyword #setup
  @constructors
   nodejs ./TestSetupNode.js
- @highlightScope constant.language.@grammar
+ @highlightScope constant.language
  @keywords
   async
   require
@@ -29,7 +29,7 @@
  @highlightScope comment
 @keyword require terminal
  @columns filepath any*
- @highlightScope constant.language.@grammar
+ @highlightScope constant.language
 @keyword async terminal
  @description Set this in setup to test async methods.
 @keyword static terminal

@@ -91,5 +91,9 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
         const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getType());
         return ["keyword"].concat(parameterWords).join(" ");
     }
+    getLineHighlightScopes(defaultScope = "source") {
+        const wordScopes = this._getGrammarBackedCellArray().map(slot => slot.getHighlightScope() || defaultScope);
+        return [this.getDefinition().getHighlightScope() || defaultScope].concat(wordScopes).join(" ");
+    }
 }
 exports.default = AbstractRuntimeCodeNode;

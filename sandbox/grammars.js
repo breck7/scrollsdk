@@ -4,10 +4,13 @@ const main = grammarSourceCode => {
   const codeErrorsConsole = $("#codeErrorsConsole")
   const grammarErrorsConsole = $("#grammarErrorsConsole")
 
-  // Init vars
-  if (localStorage.getItem("grammarConsole")) grammarConsole.val(localStorage.getItem("grammarConsole"))
-  if (localStorage.getItem("codeConsole")) codeConsole.val(localStorage.getItem("codeConsole"))
-  $("#version").html("Version: " + jtree.getVersion())
+  const init = () => {
+    if (localStorage.getItem("grammarConsole")) grammarConsole.val(localStorage.getItem("grammarConsole"))
+    if (localStorage.getItem("codeConsole")) codeConsole.val(localStorage.getItem("codeConsole"))
+    $("#version").html("Version: " + jtree.getVersion())
+  }
+
+  init()
 
   const GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
   const grammarInstance = new jtree.TreeNotationCodeMirrorMode(
@@ -19,53 +22,65 @@ const main = grammarSourceCode => {
     .register()
     .fromTextAreaWithAutocomplete(grammarConsole[0], { lineWrapping: true })
 
-  const updateGrammar = () => {
+  const grammarOnUpdate = () => {
     const grammarCode = grammarInstance.getValue()
     localStorage.setItem("grammarConsole", grammarCode)
     window.grammarProgram = new GrammarConstructor(grammarCode)
     const errs = window.grammarProgram.getProgramErrors()
-    grammarErrorsConsole.html(errs.length ? new TreeNode(errs).toTable() : "0 errors")
+    grammarErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
-  grammarInstance.on("keyup", updateGrammar)
 
   let grammarConstructor
   let cachedGrammarCode
 
-  const codeInstance = new jtree.TreeNotationCodeMirrorMode(
-    "custom",
-    () => {
-      const currentGrammarCode = grammarInstance.getValue()
-      if (!grammarConstructor || currentGrammarCode !== cachedGrammarCode) {
-        cachedGrammarCode = currentGrammarCode
-        const grammarPath = ""
+  const getGrammarConstructor = () => {
+    const currentGrammarCode = grammarInstance.getValue()
+    if (!grammarConstructor || currentGrammarCode !== cachedGrammarCode) {
+      cachedGrammarCode = currentGrammarCode
+      const grammarPath = ""
 
-        try {
-          const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, grammarPath)
-          grammarConstructor = grammarProgram.getRootConstructor()
-        } catch (err) {
-          debugger
-        }
+      try {
+        const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, grammarPath)
+        grammarConstructor = grammarProgram.getRootConstructor()
+      } catch (err) {
+        debugger
       }
-      return grammarConstructor
-    },
-    undefined,
-    CodeMirror
-  )
+    }
+    return grammarConstructor
+  }
+
+  const codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", getGrammarConstructor, undefined, CodeMirror)
     .register()
     .fromTextAreaWithAutocomplete(codeConsole[0], { lineWrapping: true })
 
-  const updateCode = () => {
+  const codeOnUpdate = () => {
     const code = codeInstance.getValue()
     localStorage.setItem("codeConsole", code)
-    window.program = new grammarConstructor(code)
+    window.program = new (getGrammarConstructor())(code)
     const errs = window.program.getProgramErrors()
-    codeErrorsConsole.html(new TreeNode(errs).toTable())
+    codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
-  codeInstance.on("keyup", updateCode)
+  grammarInstance.on("keyup", grammarOnUpdate)
+  grammarInstance.on("keyup", codeOnUpdate)
+  codeInstance.on("keyup", codeOnUpdate)
 
-  updateCode()
-  updateGrammar()
+  grammarOnUpdate()
+  codeOnUpdate()
+
+  $("#samples").on("click", "a", function() {
+    const name = $(this)
+      .text()
+      .toLowerCase()
+    $.get(`/langs/${name}/${name}.grammar`).then(grammar => {
+      $.get(`/langs/${name}/sample.${name}`).then(sample => {
+        grammarInstance.setValue(grammar)
+        grammarOnUpdate()
+        codeInstance.setValue(sample)
+        codeOnUpdate()
+      })
+    })
+  })
 }
 
 $(document).ready(function() {

@@ -212,6 +212,180 @@ var GrammarConstantsErrors;
     GrammarConstantsErrors["missingRequiredKeywordError"] = "missingRequiredKeywordError";
     GrammarConstantsErrors["keywordUsedMultipleTimesError"] = "keywordUsedMultipleTimesError";
 })(GrammarConstantsErrors || (GrammarConstantsErrors = {}));
+// Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
+var CmToken;
+(function (CmToken) {
+    CmToken["Atom"] = "atom";
+    CmToken["Attribute"] = "attribute";
+    CmToken["Bracket"] = "bracket";
+    CmToken["Builtin"] = "builtin";
+    CmToken["Comment"] = "comment";
+    CmToken["Def"] = "def";
+    CmToken["Error"] = "error";
+    CmToken["Header"] = "header";
+    CmToken["HR"] = "hr";
+    CmToken["Keyword"] = "keyword";
+    CmToken["Link"] = "link";
+    CmToken["Meta"] = "meta";
+    CmToken["Number"] = "number";
+    CmToken["Operator"] = "operator";
+    CmToken["Property"] = "property";
+    CmToken["Qualifier"] = "qualifier";
+    CmToken["Quote"] = "quote";
+    CmToken["String"] = "string";
+    CmToken["String2"] = "string-2";
+    CmToken["Tag"] = "tag";
+    CmToken["Type"] = "type";
+    CmToken["Variable"] = "variable";
+    CmToken["Variable2"] = "variable-2";
+    CmToken["Variable3"] = "variable-3";
+})(CmToken || (CmToken = {}));
+const tmToCm = {
+    comment: {
+        $: CmToken.Comment
+    },
+    constant: {
+        // TODO: Revision
+        $: CmToken.Def,
+        character: {
+            escape: {
+                $: CmToken.String2
+            }
+        },
+        language: {
+            $: CmToken.Atom
+        },
+        numeric: {
+            $: CmToken.Number
+        },
+        other: {
+            email: {
+                link: {
+                    $: CmToken.Link
+                }
+            },
+            symbol: {
+                // TODO: Revision
+                $: CmToken.Def
+            }
+        }
+    },
+    entity: {
+        name: {
+            class: {
+                $: CmToken.Def
+            },
+            function: {
+                $: CmToken.Def
+            },
+            tag: {
+                $: CmToken.Tag
+            },
+            type: {
+                $: CmToken.Type,
+                class: {
+                    $: CmToken.Variable
+                }
+            }
+        },
+        other: {
+            "attribute-name": {
+                $: CmToken.Attribute
+            },
+            "inherited-class": {
+                // TODO: Revision
+                $: CmToken.Def
+            }
+        },
+        support: {
+            function: {
+                // TODO: Revision
+                $: CmToken.Def
+            }
+        }
+    },
+    keyword: {
+        $: CmToken.Keyword,
+        operator: {
+            $: CmToken.Operator
+        },
+        other: {
+            "special-method": CmToken.Def
+        }
+    },
+    punctuation: {
+        $: CmToken.Operator,
+        definition: {
+            comment: {
+                $: CmToken.Comment
+            },
+            tag: {
+                $: CmToken.Bracket
+            }
+            // 'template-expression': {
+            //     $: CodeMirrorToken.Operator,
+            // },
+        }
+        // terminator: {
+        //     $: CodeMirrorToken.Operator,
+        // },
+    },
+    storage: {
+        $: CmToken.Keyword
+    },
+    string: {
+        $: CmToken.String,
+        regexp: {
+            $: CmToken.String2
+        }
+    },
+    support: {
+        class: {
+            $: CmToken.Def
+        },
+        constant: {
+            $: CmToken.Variable2
+        },
+        function: {
+            $: CmToken.Def
+        },
+        type: {
+            $: CmToken.Type
+        },
+        variable: {
+            $: CmToken.Variable2,
+            property: {
+                $: CmToken.Property
+            }
+        }
+    },
+    variable: {
+        $: CmToken.Def,
+        language: {
+            // TODO: Revision
+            $: CmToken.Variable3
+        },
+        other: {
+            object: {
+                $: CmToken.Variable,
+                property: {
+                    $: CmToken.Property
+                }
+            },
+            property: {
+                $: CmToken.Property
+            }
+        },
+        parameter: {
+            $: CmToken.Def
+        }
+    }
+};
+const textMateScopeToCodeMirrorStyle = (scopeSegments, tree = tmToCm) => {
+    const first = scopeSegments.shift();
+    const node = tree[first];
+    return node ? textMateScopeToCodeMirrorStyle(scopeSegments, node) || node.$ || null : null;
+};
 class ImmutableNode extends AbstractNode {
     constructor(children, line, parent) {
         super();
@@ -1868,10 +2042,9 @@ class AbstractRuntimeNode extends TreeNode {
         return this;
     }
     _getKeywordDefinitionByName(path) {
-        return (this.getProgram()
-            .getGrammarProgram()
-            // todo: do we need a relative to with this keyword path?
-            .getKeywordDefinitionByKeywordPath(path));
+        const grammarProgram = this.getProgram().getGrammarProgram();
+        // todo: do we need a relative to with this keyword path?
+        return grammarProgram.getKeywordDefinitionByKeywordPath(path);
     }
     _getRequiredNodeErrors(errors = []) {
         const nodeDef = this.getDefinition();
@@ -1959,6 +2132,11 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             .map(child => child.getIndentation() + child.getLineSyntax())
             .join("\n");
     }
+    getInPlaceHighlightScopeTree() {
+        return this.getTopDownArray()
+            .map(child => child.getIndentation() + child.getLineHighlightScopes())
+            .join("\n");
+    }
     getInPlaceSyntaxTreeWithNodeTypes() {
         return this.getTopDownArray()
             .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
@@ -1988,16 +2166,23 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
             .join("\n");
     }
+    // todo: remove?
     getWordTypeAtPosition(lineIndex, wordIndex) {
         this._initWordTypeCache();
         const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1];
         return typeNode ? typeNode.getWord(wordIndex - 1) : "";
+    }
+    getWordHighlightScopeAtPosition(lineIndex, wordIndex) {
+        this._initWordTypeCache();
+        const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1];
+        return typeNode ? typeNode.getWord(wordIndex - 1) : "source";
     }
     _initWordTypeCache() {
         const treeMTime = this.getTreeMTime();
         if (this._cache_programWordTypeStringMTime === treeMTime)
             return undefined;
         this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree());
+        this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree());
         this._cache_programWordTypeStringMTime = treeMTime;
     }
     getCompiledProgramName(programPath) {
@@ -2019,6 +2204,11 @@ class GrammarBackedCell {
     }
     getType() {
         return (this._type && this._type.replace("*", "")) || undefined;
+    }
+    getHighlightScope() {
+        const wordTypeClass = this._getWordTypeClass();
+        if (wordTypeClass)
+            return wordTypeClass.getHighlightScope();
     }
     getWord() {
         return this._word;
@@ -2169,6 +2359,10 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     getLineSyntax() {
         const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getType());
         return ["keyword"].concat(parameterWords).join(" ");
+    }
+    getLineHighlightScopes(defaultScope = "source") {
+        const wordScopes = this._getGrammarBackedCellArray().map(slot => slot.getHighlightScope() || defaultScope);
+        return [this.getDefinition().getHighlightScope() || defaultScope].concat(wordScopes).join(" ");
     }
 }
 class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
@@ -2388,6 +2582,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             GrammarConstants.tags,
             GrammarConstants.any,
             GrammarConstants.group,
+            GrammarConstants.highlightScope,
             GrammarConstants.required,
             GrammarConstants.single
         ];
@@ -2533,6 +2728,9 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             return undefined;
         this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor();
     }
+    getHighlightScope() {
+        return this.get(GrammarConstants.highlightScope);
+    }
     getAutocompleteWords(inputStr, additionalWords = []) {
         // todo: add more tests
         const str = this.getRunTimeKeywordNames()
@@ -2565,16 +2763,13 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
         const chain = this._getKeywordChain();
         return keywordsInScope.some(keyword => chain[keyword]);
     }
-    _getHighlightScope() {
-        return this.get(GrammarConstants.highlightScope);
-    }
     getSyntaxContextId() {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
     getMatchBlock() {
         const program = this.getProgram();
         const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const color = (this._getHighlightScope() || "source") + "." + this.getId();
+        const color = (this.getHighlightScope() || "source") + "." + this.getId();
         const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`;
         const topHalf = ` '${this.getSyntaxContextId()}':
   - match: ${match}
@@ -2661,6 +2856,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
         return !!str.match(this._regex);
     }
 }
+// todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
     _getKeywordTable(runTimeGrammarBackedProgram) {
         // @keywordTable @wordType 1
@@ -2672,10 +2868,12 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
         });
         return table;
     }
+    // todo: remove
     isValid(str, runTimeGrammarBackedProgram) {
-        if (!this._keywordTable)
-            this._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram);
-        return this._keywordTable[str] === true;
+        // note: hack where we store it on the program. otherwise has global effects.
+        if (!runTimeGrammarBackedProgram._keywordTable)
+            runTimeGrammarBackedProgram._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram);
+        return runTimeGrammarBackedProgram._keywordTable[str] === true;
     }
 }
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
@@ -2717,7 +2915,12 @@ class GrammarWordTypeNode extends TreeNode {
     }
     _getEnumOptions() {
         const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0];
-        return enumNode ? Object.keys(enumNode.getOptions()) : undefined;
+        if (!enumNode)
+            return undefined;
+        // we sort by longest first to capture longest match first. todo: add test
+        const options = Object.keys(enumNode.getOptions());
+        options.sort((a, b) => b.length - a.length);
+        return options;
     }
     getRegexString() {
         // todo: enum
@@ -3053,6 +3256,7 @@ ${keywordContexts}`;
             .join("\n");
     }
 }
+// import * as CodeMirrorLib from "codemirror"
 class TreeNotationCodeMirrorMode {
     constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
@@ -3068,35 +3272,6 @@ class TreeNotationCodeMirrorMode {
             this._cachedProgram = new (this._getProgramConstructorMethod())(source);
         }
         return this._cachedProgram;
-    }
-    _wordTypeToCMStyle(wordType) {
-        const cmStyles = {
-            comment: "comment",
-            atom: "atom",
-            number: "number",
-            attribute: "attribute",
-            keyword: "keyword",
-            string: "string",
-            meta: "meta",
-            variable: "variable",
-            "variable-2": "variable-2",
-            tag: "tag",
-            "variable-3": "variable-3",
-            def: "def",
-            type: "type",
-            bracket: "bracket",
-            builtin: "builtin",
-            special: "special",
-            link: "link",
-            error: "error",
-            word: "string",
-            int: "number",
-            identifier: "variable-2",
-            functionIdentifier: "def",
-            space: "bracket",
-            parameter: "attribute"
-        };
-        return cmStyles[wordType] || wordType;
     }
     _getExcludedIntelliSenseTriggerKeys() {
         return {
@@ -3220,12 +3395,11 @@ class TreeNotationCodeMirrorMode {
         while (typeof next === "string") {
             const peek = stream.peek();
             if (next === " ") {
-                const style = this._wordTypeToCMStyle("space");
                 if (peek === undefined || peek === "\n") {
                     stream.skipToEnd(); // advance string to end
                     this._incrementLine(state);
                 }
-                return style;
+                return "bracket";
             }
             if (peek === " ") {
                 state.words.push(stream.current());
@@ -3241,7 +3415,8 @@ class TreeNotationCodeMirrorMode {
     _getWordStyle(lineIndex, wordIndex) {
         const program = this._getParsedProgram();
         // todo: if the current word is an error, don't show red?
-        return program ? this._wordTypeToCMStyle(program.getWordTypeAtPosition(lineIndex, wordIndex)) : undefined;
+        const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex);
+        return program ? textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined;
     }
     startState() {
         return {

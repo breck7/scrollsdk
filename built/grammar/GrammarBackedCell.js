@@ -16,6 +16,11 @@ class GrammarBackedCell {
     getType() {
         return (this._type && this._type.replace("*", "")) || undefined;
     }
+    getHighlightScope() {
+        const wordTypeClass = this._getWordTypeClass();
+        if (wordTypeClass)
+            return wordTypeClass.getHighlightScope();
+    }
     getWord() {
         return this._word;
     }

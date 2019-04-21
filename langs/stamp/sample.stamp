@@ -1,0 +1,17 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+prompt LANG lowercase Enter the file extension of your new language
+prompt DESCRIPTION any Enter a description for LANG
+folder LANG
+file LANG/.gitignore
+ data
+  node_modules/
+file LANG/package.pack
+ data
+  name LANG
+  version 1.0.0
+  description DESCRIPTION
+  main index.js
+  keywords LANG
+  license MIT
+  dependencies
+   jtree *

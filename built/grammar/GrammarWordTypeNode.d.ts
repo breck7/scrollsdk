@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode";
 import types from "../types";
 declare class GrammarWordTypeNode extends TreeNode {
     getKeywordMap(): types.stringMap;
-    getHighlightScope(): any;
+    getHighlightScope(): string | undefined;
     private _getEnumOptions;
     getRegexString(): any;
     parse(str: string): any;

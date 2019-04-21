@@ -13,16 +13,13 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         const chain = this._getKeywordChain();
         return keywordsInScope.some(keyword => chain[keyword]);
     }
-    _getHighlightScope() {
-        return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
-    }
     getSyntaxContextId() {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
     getMatchBlock() {
         const program = this.getProgram();
         const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const color = (this._getHighlightScope() || "source") + "." + this.getId();
+        const color = (this.getHighlightScope() || "source") + "." + this.getId();
         const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`;
         const topHalf = ` '${this.getSyntaxContextId()}':
   - match: ${match}

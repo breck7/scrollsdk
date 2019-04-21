@@ -7,10 +7,12 @@ const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
 const jibberishNodes = require("./jibberish/jibberishNodes.js")
 
-quack.quickTest("basics", equal => {
+quack.quickTest("basic", equal => {
   // Arrange/Act/Assert
   const program = new GrammarProgram()
+})
 
+quack.quickTest("basics", equal => {
   // Arrange
   const grammarPath = __dirname + "/jibberish/jibberish.grammar"
   const jibberishGrammarCode = fs.readFileSync(grammarPath, "utf8")
@@ -20,7 +22,7 @@ quack.quickTest("basics", equal => {
   const errs = grammarProgram.getProgramErrors()
 
   // Assert
-  equal(errs.length, 0)
+  equal(errs.length, 0, errs.map(JSON.stringify).join(" "))
 })
 
 const makeJibberishProgram = code => {
@@ -101,6 +103,16 @@ additionNode keyword int int int`,
     `GrammarBackedTerminalNode foo
 additionNode + 2 3 2`,
     "word types should match"
+  )
+
+  // Act
+  const scopes = wordTypesProgram.getInPlaceHighlightScopeTree()
+
+  // Assert
+  equal(
+    scopes,
+    `source
+keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   )
 
   // Arrange

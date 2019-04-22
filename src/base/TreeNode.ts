@@ -8,6 +8,12 @@ declare type word = types.word
 declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any
 
+enum FileFormat {
+  csv = "csv",
+  tsv = "tsv",
+  tree = "tree"
+}
+
 class ImmutableNode extends AbstractNode {
   constructor(children?: any, line?: string, parent?: ImmutableNode) {
     super()
@@ -86,10 +92,31 @@ class ImmutableNode extends AbstractNode {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
-  *getTopDownArrayIterator() {
+  protected _getTopDownArray(arr) {
+    this.forEach(child => {
+      arr.push(child)
+      child._getTopDownArray(arr)
+    })
+  }
+
+  getTopDownArray(): types.treeNode[] {
+    const arr = []
+    this._getTopDownArray(arr)
+    return arr
+  }
+
+  *getTopDownArrayIterator(): IterableIterator<types.treeNode> {
     for (let child of this.getChildren()) {
       yield child
       yield* child.getTopDownArrayIterator()
+    }
+  }
+
+  nodeAtLine(lineNumber: types.positiveInt): TreeNode {
+    let index = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      if (lineNumber === index) return node
+      index++
     }
   }
 
@@ -122,7 +149,7 @@ class ImmutableNode extends AbstractNode {
     return !this.length && !this.getContent()
   }
 
-  private _cachedLineNumber: int
+  protected _cachedLineNumber: int
 
   protected _getYCoordinate(relativeTo?: ImmutableNode) {
     if (this._cachedLineNumber) return this._cachedLineNumber
@@ -190,6 +217,96 @@ class ImmutableNode extends AbstractNode {
 
   getWordsFrom(startFrom: int) {
     return this._getWords(startFrom)
+  }
+
+  private _getWordIndexCharacterStartPosition(wordIndex: int): types.positiveInt {
+    const xiLength = this.getXI().length
+    const numIndents = this._getXCoordinate(undefined) - 1
+    const indentPosition = xiLength * numIndents
+    if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
+    return (
+      indentPosition +
+      this.getWords()
+        .slice(0, wordIndex)
+        .join(this.getZI()).length +
+      this.getZI().length
+    )
+  }
+
+  getNodeInScopeAtCharIndex(charIndex: types.positiveInt) {
+    let wordIndex = this.getWordIndexAtCharacterIndex(charIndex)
+    if (wordIndex > 0) return this
+    let node: ImmutableNode = this
+    while (wordIndex < 1) {
+      node = node.getParent()
+      wordIndex++
+    }
+    return node
+  }
+
+  getWordProperties(wordIndex: int) {
+    const start = this._getWordIndexCharacterStartPosition(wordIndex)
+    const word = wordIndex < 0 ? "" : this.getWord(wordIndex)
+    return {
+      startCharIndex: start,
+      endCharIndex: start + word.length,
+      word: word
+    }
+  }
+
+  getAllWordBoundaryCoordinates() {
+    const coordinates = []
+    let line = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      node.getWordBoundaryIndices().forEach(index => {
+        coordinates.push({
+          y: line,
+          x: index
+        })
+      })
+
+      line++
+    }
+    return coordinates
+  }
+
+  getWordBoundaryIndices(): types.positiveInt[] {
+    const boundaries = [0]
+    let numberOfIndents = this._getXCoordinate(undefined) - 1
+    let start = numberOfIndents
+    // Add indents
+    while (numberOfIndents) {
+      boundaries.push(boundaries.length)
+      numberOfIndents--
+    }
+    // Add columns
+    const ziIncrement = this.getZI().length
+    this.getWords().forEach(word => {
+      if (boundaries[boundaries.length - 1] !== start) boundaries.push(start)
+      start += word.length
+      if (boundaries[boundaries.length - 1] !== start) boundaries.push(start)
+      start += ziIncrement
+    })
+    return boundaries
+  }
+
+  getWordIndexAtCharacterIndex(charIndex: types.positiveInt): int {
+    // todo: is this correct thinking for handling root?
+    if (this.isRoot()) return 0
+    const numberOfIndents = this._getXCoordinate(undefined) - 1
+    // todo: probably want to rewrite this in a performant way.
+    const spots = []
+    while (spots.length < numberOfIndents) {
+      spots.push(-(numberOfIndents - spots.length))
+    }
+    this.getWords().forEach((word, wordIndex) => {
+      word.split("").forEach(letter => {
+        spots.push(wordIndex)
+      })
+      spots.push(wordIndex)
+    })
+
+    return spots[charIndex]
   }
 
   getKeyword(): word {
@@ -340,12 +457,6 @@ class ImmutableNode extends AbstractNode {
     )
   }
 
-  getTopDownArray() {
-    const arr = []
-    this._getTopDownArray(arr)
-    return arr
-  }
-
   protected _hasColumns(columns) {
     const words = this.getWords()
     return columns.every((searchTerm, index) => searchTerm === words[index])
@@ -365,13 +476,6 @@ class ImmutableNode extends AbstractNode {
 
   protected _getNodesByColumn(index: int, name: word): ImmutableNode[] {
     return this.filter(node => node.getWord(index) === name)
-  }
-
-  protected _getTopDownArray(arr) {
-    this.forEach(child => {
-      arr.push(child)
-      child._getTopDownArray(arr)
-    })
   }
 
   getChildrenFirstArray() {
@@ -427,7 +531,7 @@ class ImmutableNode extends AbstractNode {
     return this._getChildren().slice(0)
   }
 
-  get length(): int {
+  get length(): types.positiveInt {
     return this._getChildren().length
   }
 
@@ -1213,7 +1317,7 @@ class ImmutableNode extends AbstractNode {
 
   protected static _getFileFormat(path: string) {
     const format = path.split(".").pop()
-    return types.FileFormat[format] ? format : types.FileFormat.tree
+    return FileFormat[format] ? format : FileFormat.tree
   }
 
   static iris = `sepal_length,sepal_width,petal_length,petal_width,species

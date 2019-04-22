@@ -536,6 +536,63 @@ testTree.at = equal => {
   equal(value.nodeAt(-1).getContent(), "friend")
 }
 
+testTree.getWordBoundaryIndices = equal => {
+  // Arrange
+  const tree = new TreeNode(`
+a
+web 25 zzzz OK
+ notes No notes`)
+
+  // Act
+  const boundaries = tree.getAllWordBoundaryCoordinates()
+
+  // Assert
+  equal(boundaries.length, 18)
+}
+
+testTree.getWordProperties = equal => {
+  // Arrange
+  const tree = new TreeNode(`
+a
+web 25 zzzz OK
+ notes No notes`)
+
+  // Act/Assert
+  const props = tree.nodeAtLine(3).getWordProperties(2)
+  equal(props.startCharIndex, 10)
+  equal(props.endCharIndex, 15)
+}
+
+testTree.getWordIndexAtCharacterIndex = equal => {
+  // Arrange
+  const tree = new TreeNode(`
+a
+web 25 zzzz OK
+ notes No notes`)
+  const tests = `0
+00
+000011122222333
+ 000000111222222`
+
+  // Act/Assert
+  const lineNodes = tree.getTopDownArray()
+  tests.split("\n").forEach((testLine, lineIndex) => {
+    const node = lineNodes[lineIndex]
+    testLine.split("").forEach((char, charIndex) => {
+      if (char !== " ") equal(node.getWordIndexAtCharacterIndex(charIndex), parseInt(char), `Character is '${char}'`)
+    })
+  })
+
+  // Arrange
+  const nested = new TreeNode(`a
+ b
+  c
+   d`)
+
+  // Act/Assert
+  equal(nested.getNode("a b").getWordIndexAtCharacterIndex(0), -1)
+}
+
 testTree.clone = equal => {
   // Arrange/Act
   const a = new TreeNode("hello world")
@@ -3048,6 +3105,11 @@ event lala2018
   // Assert
   equal(table, expected, "markdown ok")
   equal(simple, simpleExpected, "markdown simple ok")
+}
+
+testTree.makeRandomTree = equal => {
+  // Arrange/Act/Assert
+  equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).length, 2)
 }
 
 testTree.setContentWithChildrenRegression = equal => {

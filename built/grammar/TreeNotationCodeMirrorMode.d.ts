@@ -1,4 +1,5 @@
 import types from "../types";
+import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
 declare type codeMirrorLibType = any;
 declare type codeMirrorInstanceType = any;
 declare class TreeNotationCodeMirrorMode {
@@ -11,7 +12,7 @@ declare class TreeNotationCodeMirrorMode {
     private _cachedProgram;
     private _cmInstance;
     private _originalValue;
-    _getParsedProgram(): any;
+    _getParsedProgram(): AbstractRuntimeProgram;
     _getExcludedIntelliSenseTriggerKeys(): {
         "8": string;
         "9": string;
@@ -61,14 +62,6 @@ declare class TreeNotationCodeMirrorMode {
         }[];
         from: any;
         to: any;
-    }>;
-    autocomplete(line: string, lineIndex: types.int, charIndex: types.int): Promise<{
-        startCharIndex: number;
-        endCharIndex: number;
-        matches: {
-            text: string;
-            displayText: string;
-        }[];
     }>;
     register(): this;
     _advanceStreamAndGetTokenType(stream: any, state: any): string;

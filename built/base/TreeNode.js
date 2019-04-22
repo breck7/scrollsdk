@@ -2,7 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractNode_node_1 = require("./AbstractNode.node");
 const TreeUtils_1 = require("./TreeUtils");
-const types_1 = require("../types");
+var FileFormat;
+(function (FileFormat) {
+    FileFormat["csv"] = "csv";
+    FileFormat["tsv"] = "tsv";
+    FileFormat["tree"] = "tree";
+})(FileFormat || (FileFormat = {}));
 class ImmutableNode extends AbstractNode_node_1.default {
     constructor(children, line, parent) {
         super();
@@ -58,10 +63,29 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getIndentation(relativeTo) {
         return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1);
     }
+    _getTopDownArray(arr) {
+        this.forEach(child => {
+            arr.push(child);
+            child._getTopDownArray(arr);
+        });
+    }
+    getTopDownArray() {
+        const arr = [];
+        this._getTopDownArray(arr);
+        return arr;
+    }
     *getTopDownArrayIterator() {
         for (let child of this.getChildren()) {
             yield child;
             yield* child.getTopDownArrayIterator();
+        }
+    }
+    nodeAtLine(lineNumber) {
+        let index = 0;
+        for (let node of this.getTopDownArrayIterator()) {
+            if (lineNumber === index)
+                return node;
+            index++;
         }
     }
     getNumberOfLines() {
@@ -149,6 +173,91 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     getWordsFrom(startFrom) {
         return this._getWords(startFrom);
+    }
+    _getWordIndexCharacterStartPosition(wordIndex) {
+        const xiLength = this.getXI().length;
+        const numIndents = this._getXCoordinate(undefined) - 1;
+        const indentPosition = xiLength * numIndents;
+        if (wordIndex < 1)
+            return xiLength * (numIndents + wordIndex);
+        return (indentPosition +
+            this.getWords()
+                .slice(0, wordIndex)
+                .join(this.getZI()).length +
+            this.getZI().length);
+    }
+    getNodeInScopeAtCharIndex(charIndex) {
+        let wordIndex = this.getWordIndexAtCharacterIndex(charIndex);
+        if (wordIndex > 0)
+            return this;
+        let node = this;
+        while (wordIndex < 1) {
+            node = node.getParent();
+            wordIndex++;
+        }
+        return node;
+    }
+    getWordProperties(wordIndex) {
+        const start = this._getWordIndexCharacterStartPosition(wordIndex);
+        const word = wordIndex < 0 ? "" : this.getWord(wordIndex);
+        return {
+            startCharIndex: start,
+            endCharIndex: start + word.length,
+            word: word
+        };
+    }
+    getAllWordBoundaryCoordinates() {
+        const coordinates = [];
+        let line = 0;
+        for (let node of this.getTopDownArrayIterator()) {
+            node.getWordBoundaryIndices().forEach(index => {
+                coordinates.push({
+                    y: line,
+                    x: index
+                });
+            });
+            line++;
+        }
+        return coordinates;
+    }
+    getWordBoundaryIndices() {
+        const boundaries = [0];
+        let numberOfIndents = this._getXCoordinate(undefined) - 1;
+        let start = numberOfIndents;
+        // Add indents
+        while (numberOfIndents) {
+            boundaries.push(boundaries.length);
+            numberOfIndents--;
+        }
+        // Add columns
+        const ziIncrement = this.getZI().length;
+        this.getWords().forEach(word => {
+            if (boundaries[boundaries.length - 1] !== start)
+                boundaries.push(start);
+            start += word.length;
+            if (boundaries[boundaries.length - 1] !== start)
+                boundaries.push(start);
+            start += ziIncrement;
+        });
+        return boundaries;
+    }
+    getWordIndexAtCharacterIndex(charIndex) {
+        // todo: is this correct thinking for handling root?
+        if (this.isRoot())
+            return 0;
+        const numberOfIndents = this._getXCoordinate(undefined) - 1;
+        // todo: probably want to rewrite this in a performant way.
+        const spots = [];
+        while (spots.length < numberOfIndents) {
+            spots.push(-(numberOfIndents - spots.length));
+        }
+        this.getWords().forEach((word, wordIndex) => {
+            word.split("").forEach(letter => {
+                spots.push(wordIndex);
+            });
+            spots.push(wordIndex);
+        });
+        return spots[charIndex];
     }
     getKeyword() {
         return this.getWords()[0];
@@ -278,11 +387,6 @@ class ImmutableNode extends AbstractNode_node_1.default {
             .map(child => child.toString())
             .join("\n"));
     }
-    getTopDownArray() {
-        const arr = [];
-        this._getTopDownArray(arr);
-        return arr;
-    }
     _hasColumns(columns) {
         const words = this.getWords();
         return columns.every((searchTerm, index) => searchTerm === words[index]);
@@ -298,12 +402,6 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     _getNodesByColumn(index, name) {
         return this.filter(node => node.getWord(index) === name);
-    }
-    _getTopDownArray(arr) {
-        this.forEach(child => {
-            arr.push(child);
-            child._getTopDownArray(arr);
-        });
     }
     getChildrenFirstArray() {
         const arr = [];
@@ -1052,7 +1150,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     static _getFileFormat(path) {
         const format = path.split(".").pop();
-        return types_1.default.FileFormat[format] ? format : types_1.default.FileFormat.tree;
+        return FileFormat[format] ? format : FileFormat.tree;
     }
 }
 ImmutableNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species

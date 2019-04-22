@@ -26,13 +26,16 @@ declare class ImmutableNode extends AbstractNode {
     protected _getPoint(relativeTo?: ImmutableNode): types.point;
     getPointRelativeTo(relativeTo?: ImmutableNode): types.point;
     getIndentation(relativeTo?: ImmutableNode): string;
-    getTopDownArrayIterator(): IterableIterator<any>;
+    protected _getTopDownArray(arr: any): void;
+    getTopDownArray(): types.treeNode[];
+    getTopDownArrayIterator(): IterableIterator<types.treeNode>;
+    nodeAtLine(lineNumber: types.positiveInt): TreeNode;
     getNumberOfLines(): int;
     protected _getLineNumber(target: ImmutableNode): number;
     isBlankLine(): boolean;
     hasDuplicateKeywords(): boolean;
     isEmpty(): boolean;
-    private _cachedLineNumber;
+    protected _cachedLineNumber: int;
     protected _getYCoordinate(relativeTo?: ImmutableNode): any;
     isRoot(relativeTo?: ImmutableNode): boolean;
     getRootNode(): any;
@@ -43,6 +46,16 @@ declare class ImmutableNode extends AbstractNode {
     protected _getWords(startFrom: int): string[];
     getWords(): word[];
     getWordsFrom(startFrom: int): string[];
+    private _getWordIndexCharacterStartPosition;
+    getNodeInScopeAtCharIndex(charIndex: types.positiveInt): ImmutableNode;
+    getWordProperties(wordIndex: int): {
+        startCharIndex: number;
+        endCharIndex: number;
+        word: string;
+    };
+    getAllWordBoundaryCoordinates(): any[];
+    getWordBoundaryIndices(): types.positiveInt[];
+    getWordIndexAtCharacterIndex(charIndex: types.positiveInt): int;
     getKeyword(): word;
     getContent(): string;
     getContentWithChildren(): string;
@@ -66,13 +79,11 @@ declare class ImmutableNode extends AbstractNode {
     protected _toObjectTuple(): Object[];
     protected _indexOfNode(needleNode: any): number;
     getSlice(startIndexInclusive: int, stopIndexExclusive: int): TreeNode;
-    getTopDownArray(): any[];
     protected _hasColumns(columns: any): any;
     hasWord(index: int, word: string): boolean;
     getNodeByColumns(...columns: string[]): ImmutableNode;
     getNodeByColumn(index: int, name: string): ImmutableNode;
     protected _getNodesByColumn(index: int, name: word): ImmutableNode[];
-    protected _getTopDownArray(arr: any): void;
     getChildrenFirstArray(): any[];
     protected _getChildrenFirstArray(arr: any): void;
     protected _getXCoordinate(relativeTo: any): any;
@@ -82,7 +93,7 @@ declare class ImmutableNode extends AbstractNode {
     protected _getChildren(): ImmutableNode[];
     getLines(): string[];
     getChildren(): any[];
-    readonly length: int;
+    readonly length: types.positiveInt;
     protected _nodeAt(index: int): ImmutableNode;
     nodeAt(indexOrIndexArray: int | int[]): ImmutableNode | undefined;
     protected _toObject(): {};

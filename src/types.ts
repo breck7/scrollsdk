@@ -12,16 +12,11 @@ export namespace types {
     y: int
   } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
-  export enum FileFormat {
-    csv = "csv",
-    tsv = "tsv",
-    tree = "tree"
-  }
-
   export declare type treeNode = any
   export declare type something = string | Object | any | treeNode
   export declare type line = string // no YI (\n)
   export declare type int = number
+  export declare type positiveInt = number
   export declare type stringMap = { [keyword: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string

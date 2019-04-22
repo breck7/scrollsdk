@@ -168,12 +168,16 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
 
 quack.quickTest("autocomplete", equal => {
   // Arrange
-  const program = makeNumbersProgram(`+ 2 3`)
-  const def = program.nodeAt(0).getDefinition()
-  const matches = def.getAutocompleteWords("com")
+  const program = makeNumbersProgram(`+ 2 3
+com
+`)
 
-  // Assert
-  equal(matches.length, 1)
+  // Act/Assert
+  equal(program.getAutocompleteWordsAt(1, 0).matches.length, 1)
+  equal(program.getAutocompleteWordsAt(1, 2).matches.length, 1, "should complete comment")
+  equal(program.getAutocompleteWordsAt(1, 3).matches.length, 1, "should complete comment")
+  equal(program.getAutocompleteWordsAt(2, 0).matches.length, 3)
+  equal(program.getAutocompleteWordsAt(0, 2).matches.length, 0)
 })
 
 quack.quickTest("any nodes", equal => {

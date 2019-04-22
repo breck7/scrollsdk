@@ -401,6 +401,12 @@ const textMateScopeToCodeMirrorStyle = (scopeSegments, tree = tmToCm) => {
     const node = tree[first];
     return node ? textMateScopeToCodeMirrorStyle(scopeSegments, node) || node.$ || null : null;
 };
+var FileFormat;
+(function (FileFormat) {
+    FileFormat["csv"] = "csv";
+    FileFormat["tsv"] = "tsv";
+    FileFormat["tree"] = "tree";
+})(FileFormat || (FileFormat = {}));
 class ImmutableNode extends AbstractNode {
     constructor(children, line, parent) {
         super();
@@ -456,10 +462,29 @@ class ImmutableNode extends AbstractNode {
     getIndentation(relativeTo) {
         return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1);
     }
+    _getTopDownArray(arr) {
+        this.forEach(child => {
+            arr.push(child);
+            child._getTopDownArray(arr);
+        });
+    }
+    getTopDownArray() {
+        const arr = [];
+        this._getTopDownArray(arr);
+        return arr;
+    }
     *getTopDownArrayIterator() {
         for (let child of this.getChildren()) {
             yield child;
             yield* child.getTopDownArrayIterator();
+        }
+    }
+    nodeAtLine(lineNumber) {
+        let index = 0;
+        for (let node of this.getTopDownArrayIterator()) {
+            if (lineNumber === index)
+                return node;
+            index++;
         }
     }
     getNumberOfLines() {
@@ -547,6 +572,91 @@ class ImmutableNode extends AbstractNode {
     }
     getWordsFrom(startFrom) {
         return this._getWords(startFrom);
+    }
+    _getWordIndexCharacterStartPosition(wordIndex) {
+        const xiLength = this.getXI().length;
+        const numIndents = this._getXCoordinate(undefined) - 1;
+        const indentPosition = xiLength * numIndents;
+        if (wordIndex < 1)
+            return xiLength * (numIndents + wordIndex);
+        return (indentPosition +
+            this.getWords()
+                .slice(0, wordIndex)
+                .join(this.getZI()).length +
+            this.getZI().length);
+    }
+    getNodeInScopeAtCharIndex(charIndex) {
+        let wordIndex = this.getWordIndexAtCharacterIndex(charIndex);
+        if (wordIndex > 0)
+            return this;
+        let node = this;
+        while (wordIndex < 1) {
+            node = node.getParent();
+            wordIndex++;
+        }
+        return node;
+    }
+    getWordProperties(wordIndex) {
+        const start = this._getWordIndexCharacterStartPosition(wordIndex);
+        const word = wordIndex < 0 ? "" : this.getWord(wordIndex);
+        return {
+            startCharIndex: start,
+            endCharIndex: start + word.length,
+            word: word
+        };
+    }
+    getAllWordBoundaryCoordinates() {
+        const coordinates = [];
+        let line = 0;
+        for (let node of this.getTopDownArrayIterator()) {
+            node.getWordBoundaryIndices().forEach(index => {
+                coordinates.push({
+                    y: line,
+                    x: index
+                });
+            });
+            line++;
+        }
+        return coordinates;
+    }
+    getWordBoundaryIndices() {
+        const boundaries = [0];
+        let numberOfIndents = this._getXCoordinate(undefined) - 1;
+        let start = numberOfIndents;
+        // Add indents
+        while (numberOfIndents) {
+            boundaries.push(boundaries.length);
+            numberOfIndents--;
+        }
+        // Add columns
+        const ziIncrement = this.getZI().length;
+        this.getWords().forEach(word => {
+            if (boundaries[boundaries.length - 1] !== start)
+                boundaries.push(start);
+            start += word.length;
+            if (boundaries[boundaries.length - 1] !== start)
+                boundaries.push(start);
+            start += ziIncrement;
+        });
+        return boundaries;
+    }
+    getWordIndexAtCharacterIndex(charIndex) {
+        // todo: is this correct thinking for handling root?
+        if (this.isRoot())
+            return 0;
+        const numberOfIndents = this._getXCoordinate(undefined) - 1;
+        // todo: probably want to rewrite this in a performant way.
+        const spots = [];
+        while (spots.length < numberOfIndents) {
+            spots.push(-(numberOfIndents - spots.length));
+        }
+        this.getWords().forEach((word, wordIndex) => {
+            word.split("").forEach(letter => {
+                spots.push(wordIndex);
+            });
+            spots.push(wordIndex);
+        });
+        return spots[charIndex];
     }
     getKeyword() {
         return this.getWords()[0];
@@ -676,11 +786,6 @@ class ImmutableNode extends AbstractNode {
             .map(child => child.toString())
             .join("\n"));
     }
-    getTopDownArray() {
-        const arr = [];
-        this._getTopDownArray(arr);
-        return arr;
-    }
     _hasColumns(columns) {
         const words = this.getWords();
         return columns.every((searchTerm, index) => searchTerm === words[index]);
@@ -696,12 +801,6 @@ class ImmutableNode extends AbstractNode {
     }
     _getNodesByColumn(index, name) {
         return this.filter(node => node.getWord(index) === name);
-    }
-    _getTopDownArray(arr) {
-        this.forEach(child => {
-            arr.push(child);
-            child._getTopDownArray(arr);
-        });
     }
     getChildrenFirstArray() {
         const arr = [];
@@ -797,6 +896,18 @@ class ImmutableNode extends AbstractNode {
     }
     toXml() {
         return this._childrenToXml(0);
+    }
+    toDisk(path) {
+        if (!this.isNodeJs())
+            throw new Error("This method only works in Node.js");
+        const format = ImmutableNode._getFileFormat(path);
+        const formats = {
+            tree: tree => tree.toString(),
+            csv: tree => tree.toCsv(),
+            tsv: tree => tree.toTsv()
+        };
+        require("fs").writeFileSync(path, formats[format](this), "utf8");
+        return this;
     }
     _lineToYaml(indentLevel, listTag = "") {
         let prefix = " ".repeat(indentLevel);
@@ -1436,6 +1547,10 @@ class ImmutableNode extends AbstractNode {
         this._uniqueId++;
         return this._uniqueId;
     }
+    static _getFileFormat(path) {
+        const format = path.split(".").pop();
+        return FileFormat[format] ? format : FileFormat.tree;
+    }
 }
 ImmutableNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
@@ -2047,6 +2162,15 @@ class TreeNode extends ImmutableNode {
         const indent = YI + XI.repeat(xValue);
         return str ? indent + str.replace(/\n/g, indent) : "";
     }
+    static fromDisk(path) {
+        const format = this._getFileFormat(path);
+        const content = require("fs").readFileSync(path, "utf8");
+        return {
+            tree: content => new TreeNode(content),
+            csv: content => this.fromCsv(content),
+            tsv: content => this.fromTsv(content)
+        }[format](content);
+    }
 }
 class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram() {
@@ -2112,6 +2236,38 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             .filter(err => err.kind === GrammarConstantsErrors.invalidKeywordError)
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
+    }
+    _getAllSuggestions() {
+        return new TreeNode(this.getAllWordBoundaryCoordinates().map(coordinate => {
+            const results = this.getAutocompleteWordsAt(coordinate.y, coordinate.x);
+            return {
+                line: coordinate.y,
+                char: coordinate.x,
+                word: results.word,
+                suggestions: results.matches.map(m => m.text).join(" ")
+            };
+        })).toTable();
+    }
+    getAutocompleteWordsAt(lineIndex, charIndex) {
+        const lineNode = this.nodeAtLine(lineIndex);
+        const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex);
+        const definition = nodeInScope.getDefinition();
+        // todo: add more tests
+        // todo: second param this.childrenToString()
+        // todo: change to getAutocomplete definitions
+        const wordIndex = lineNode.getWordIndexAtCharacterIndex(charIndex);
+        const wordProperties = lineNode.getWordProperties(wordIndex);
+        return {
+            startCharIndex: wordProperties.startCharIndex,
+            endCharIndex: wordProperties.endCharIndex,
+            word: wordProperties.word,
+            matches: definition._getAutocompleteWords(wordProperties.word, wordIndex).map(str => {
+                return {
+                    text: str,
+                    displayText: str
+                };
+            })
+        };
     }
     getProgramErrorMessages() {
         return this.getProgramErrors().map(err => err.message);
@@ -2740,13 +2896,17 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     getHighlightScope() {
         return this.get(GrammarConstants.highlightScope);
     }
-    getAutocompleteWords(inputStr, columnIndex = 0, additionalWords = []) {
-        const str = this.getRunTimeKeywordNames()
-            .concat(additionalWords)
-            .join("\n");
-        return TreeUtils.getUniqueWordsArray(str)
-            .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
-            .map(obj => obj.word);
+    _getAutocompleteKeywords(partialWord) {
+        return TreeUtils.getUniqueWordsArray(this.getRunTimeKeywordNames().join("\n")).map(obj => obj.word);
+    }
+    // todo: I think partialWord should be computed here?
+    _getAutocompleteWords(partialWord, wordIndex) {
+        let words = [];
+        if (wordIndex === 0)
+            words = this._getAutocompleteKeywords(partialWord);
+        if (partialWord)
+            words = words.filter(word => word.includes(partialWord));
+        return words;
     }
     isDefined(keyword) {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
@@ -3355,7 +3515,8 @@ class TreeNotationCodeMirrorMode {
         return __awaiter(this, void 0, void 0, function* () {
             const cursor = cmInstance.getCursor();
             const codeMirrorLib = this._getCodeMirrorLib();
-            const result = yield this.autocomplete(cmInstance.getLine(cursor.line), cursor.line, cursor.ch);
+            const result = yield this._getParsedProgram().getAutocompleteWordsAt(cursor.line, cursor.ch);
+            console.log(result);
             return result.matches.length
                 ? {
                     list: result.matches,
@@ -3363,44 +3524,6 @@ class TreeNotationCodeMirrorMode {
                     to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
                 }
                 : null;
-        });
-    }
-    // todo: why is this async?
-    autocomplete(line, lineIndex, charIndex) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const mode = this;
-            let start = charIndex;
-            let end = charIndex;
-            while (start && /[^\s]/.test(line.charAt(start - 1)))
-                --start;
-            while (end < line.length && /[^\s]/.test(line.charAt(end)))
-                ++end;
-            const input = line.slice(start, end).toLowerCase();
-            // For now: we only autocomplete if its the first word on the line
-            if (start > 0 && line.slice(0, start).match(/[a-z]/i))
-                return {
-                    startCharIndex: start,
-                    endCharIndex: end,
-                    matches: []
-                };
-            const program = mode._getParsedProgram();
-            const isChildNode = start > 0 && lineIndex > 0;
-            const nodeInScope = isChildNode ? program.getTopDownArray()[lineIndex].getParent() : program;
-            const grammarNode = nodeInScope.getDefinition();
-            // todo: add more tests
-            // todo: second param this.childrenToString()
-            // todo: change to getAutocomplete definitions
-            const matches = grammarNode.getAutocompleteWords(input).map(str => {
-                return {
-                    text: str,
-                    displayText: str
-                };
-            });
-            return {
-                startCharIndex: start,
-                endCharIndex: end,
-                matches: matches
-            };
         });
     }
     register() {

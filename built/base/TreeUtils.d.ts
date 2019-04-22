@@ -6,7 +6,7 @@ declare class TreeUtils {
     static resolveProperty(obj: Object, path: string | string[], separator?: string): any;
     static formatStr(str: any, listDelimiter: string, parameterMap: any): any;
     static stripHtml(text: any): any;
-    static getUniqueWordsArray(allWords: any): {
+    static getUniqueWordsArray(allWords: string): {
         word: string;
         count: any;
     }[];

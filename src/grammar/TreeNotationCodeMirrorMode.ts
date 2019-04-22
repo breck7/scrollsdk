@@ -1,7 +1,7 @@
 import types from "../types"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
-/*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
+/*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
 
 declare type codeMirrorLibType = any
 declare type codeMirrorInstanceType = any
@@ -31,7 +31,7 @@ class TreeNotationCodeMirrorMode {
   private _cmInstance: codeMirrorInstanceType
   private _originalValue: string
 
-  _getParsedProgram() {
+  _getParsedProgram(): AbstractRuntimeProgram {
     const source = this._getProgramCodeMethod(this._cmInstance)
     if (this._cachedSource !== source) {
       this._cachedSource = source
@@ -119,7 +119,7 @@ class TreeNotationCodeMirrorMode {
   async codeMirrorAutocomplete(cmInstance, option) {
     const cursor = cmInstance.getCursor()
     const codeMirrorLib = this._getCodeMirrorLib()
-    const result = await this.autocomplete(cmInstance.getLine(cursor.line), cursor.line, cursor.ch)
+    const result = await this._getParsedProgram().getAutocompleteWordsAt(cursor.line, cursor.ch)
 
     return result.matches.length
       ? {
@@ -128,45 +128,6 @@ class TreeNotationCodeMirrorMode {
           to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
         }
       : null
-  }
-
-  // todo: why is this async?
-  async autocomplete(line: string, lineIndex: types.int, charIndex: types.int) {
-    const mode = this
-    let start = charIndex
-    let end = charIndex
-    while (start && /[^\s]/.test(line.charAt(start - 1))) --start
-    while (end < line.length && /[^\s]/.test(line.charAt(end))) ++end
-    const input = line.slice(start, end).toLowerCase()
-
-    // For now: we only autocomplete if its the first word on the line
-    if (start > 0 && line.slice(0, start).match(/[a-z]/i))
-      return {
-        startCharIndex: start,
-        endCharIndex: end,
-        matches: []
-      }
-
-    const program = mode._getParsedProgram()
-
-    const isChildNode = start > 0 && lineIndex > 0
-    const nodeInScope = isChildNode ? program.getTopDownArray()[lineIndex].getParent() : program
-    const grammarNode: AbstractGrammarDefinitionNode = nodeInScope.getDefinition()
-    // todo: add more tests
-    // todo: second param this.childrenToString()
-    // todo: change to getAutocomplete definitions
-    const matches = grammarNode.getAutocompleteWords(input).map(str => {
-      return {
-        text: str,
-        displayText: str
-      }
-    })
-
-    return {
-      startCharIndex: start,
-      endCharIndex: end,
-      matches: matches
-    }
   }
 
   register() {

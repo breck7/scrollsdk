@@ -209,14 +209,17 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.highlightScope)
   }
 
-  getAutocompleteWords(inputStr, columnIndex = 0, additionalWords = []): string[] {
-    const str = this.getRunTimeKeywordNames()
-      .concat(additionalWords)
-      .join("\n")
+  private _getAutocompleteKeywords(partialWord: string): string[] {
+    return TreeUtils.getUniqueWordsArray(this.getRunTimeKeywordNames().join("\n")).map(obj => obj.word)
+  }
 
-    return TreeUtils.getUniqueWordsArray(str)
-      .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
-      .map(obj => obj.word)
+  // todo: I think partialWord should be computed here?
+  _getAutocompleteWords(partialWord: string, wordIndex: types.positiveInt): string[] {
+    let words = []
+    if (wordIndex === 0) words = this._getAutocompleteKeywords(partialWord)
+
+    if (partialWord) words = words.filter(word => word.includes(partialWord))
+    return words
   }
 
   isDefined(keyword) {

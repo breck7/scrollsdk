@@ -10,15 +10,11 @@ export declare namespace types {
         x: int;
         y: int;
     }
-    enum FileFormat {
-        csv = "csv",
-        tsv = "tsv",
-        tree = "tree"
-    }
     type treeNode = any;
     type something = string | Object | any | treeNode;
     type line = string;
     type int = number;
+    type positiveInt = number;
     type stringMap = {
         [keyword: string]: any;
     };

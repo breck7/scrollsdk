@@ -3,6 +3,8 @@ import { GrammarConstantsErrors } from "./GrammarConstants"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 import types from "../types"
 
+/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+
 abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   *getProgramErrorsIterator() {
     let line = 1
@@ -41,6 +43,45 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     )
   }
 
+  getAllSuggestions() {
+    return new TreeNode(
+      this.getAllWordBoundaryCoordinates().map(coordinate => {
+        const results = this.getAutocompleteWordsAt(coordinate.y, coordinate.x)
+        return {
+          line: coordinate.y,
+          char: coordinate.x,
+          word: results.word,
+          suggestions: results.matches.map(m => m.text).join(" ")
+        }
+      })
+    ).toTable()
+  }
+
+  getAutocompleteWordsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt) {
+    const lineNode = this.nodeAtLine(lineIndex)
+    const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex)
+
+    const definition = (<AbstractRuntimeNode>nodeInScope).getDefinition()
+
+    // todo: add more tests
+    // todo: second param this.childrenToString()
+    // todo: change to getAutocomplete definitions
+
+    const wordIndex = lineNode.getWordIndexAtCharacterIndex(charIndex)
+    const wordProperties = lineNode.getWordProperties(wordIndex)
+    return {
+      startCharIndex: wordProperties.startCharIndex,
+      endCharIndex: wordProperties.endCharIndex,
+      word: wordProperties.word,
+      matches: definition._getAutocompleteWords(wordProperties.word, wordIndex).map(str => {
+        return {
+          text: str,
+          displayText: str
+        }
+      })
+    }
+  }
+
   getProgramErrorMessages() {
     return this.getProgramErrors().map(err => err.message)
   }
@@ -49,7 +90,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return this.getDefinition().getRunTimeKeywordMap()
   }
 
-  getDefinition() {
+  getDefinition(): GrammarProgram {
     return this.getGrammarProgram()
   }
 

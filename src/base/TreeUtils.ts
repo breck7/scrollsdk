@@ -45,7 +45,7 @@ class TreeUtils {
     return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
   }
 
-  static getUniqueWordsArray(allWords) {
+  static getUniqueWordsArray(allWords: string) {
     const words = allWords.replace(/\n/g, " ").split(" ")
     const index = {}
     words.forEach(word => {

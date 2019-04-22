@@ -5,7 +5,7 @@ import { GrammarConstantsErrors } from "./GrammarConstants"
 import GrammarBackedCell from "./GrammarBackedCell"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 
-abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
+abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   getProgram() {
     return (<AbstractRuntimeNode>this.getParent()).getProgram()
   }
@@ -90,15 +90,15 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
     const expectedLinePattern = columnTypes.join(" ")
     const numberOfColumns = columnTypes.length
     const lastColumnType = columnTypes[numberOfColumns - 1]
-    const lastColumnListType = lastColumnType && lastColumnType.endsWith("*") ? lastColumnType : undefined
+    const isLastColumnListType = lastColumnType && lastColumnType.endsWith("*") ? lastColumnType : undefined
     const words = this.getWordsFrom(1)
-    const length = Math.max(words.length, numberOfColumns)
+    const length = Math.max(words.length, isLastColumnListType ? numberOfColumns - 1 : numberOfColumns)
     const checks = []
     // A for loop instead of map because "length" can be longer than words.length
     for (let wordIndex = 0; wordIndex < length; wordIndex++) {
       checks[wordIndex] = new GrammarBackedCell(
         words[wordIndex],
-        wordIndex >= numberOfColumns ? lastColumnListType : columnTypes[wordIndex],
+        wordIndex >= numberOfColumns ? isLastColumnListType : columnTypes[wordIndex],
         this,
         wordIndex,
         expectedLinePattern,
@@ -120,4 +120,4 @@ abstract class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
   }
 }
 
-export default AbstractRuntimeCodeNode
+export default AbstractRuntimeNonRootNode

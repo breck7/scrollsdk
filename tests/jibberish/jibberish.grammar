@@ -8,6 +8,8 @@
   topLevel
   text
   someAbstractClass
+@wordType error
+ @highlightScope invalid
 @wordType int
  @regex \-?[0-9]+
  @parseWith js parseInt
@@ -17,6 +19,8 @@
 @wordType onoff
  @enum on off
 @keyword error
+ @highlightScope invalid
+ @columns error*
  @constructors
   nodejs ErrorNode
   browser ErrorNode

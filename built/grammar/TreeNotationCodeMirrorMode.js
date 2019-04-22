@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const textMateScopeToCodeMirrorStyle_1 = require("./textMateScopeToCodeMirrorStyle");
 // import * as CodeMirrorLib from "codemirror"
@@ -68,7 +76,7 @@ class TreeNotationCodeMirrorMode {
             mode: this._name,
             tabSize: 1,
             indentUnit: 1,
-            hintOptions: { hint: (cmInstance, option) => this.autocomplete(cmInstance, option) }
+            hintOptions: { hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option) }
         };
         Object.assign(defaultOptions, options);
         this._cmInstance = this._getCodeMirrorLib().fromTextArea(area, defaultOptions);
@@ -87,46 +95,56 @@ class TreeNotationCodeMirrorMode {
     _getCodeMirrorLib() {
         return this._codeMirrorLib;
     }
-    autocomplete(cmInstance, option) {
-        const mode = this;
-        const codeMirrorLib = this._getCodeMirrorLib();
-        return new Promise(function (accept) {
-            setTimeout(function () {
-                const cursor = cmInstance.getCursor();
-                const line = cmInstance.getLine(cursor.line);
-                let start = cursor.ch;
-                let end = cursor.ch;
-                while (start && /[^\s]/.test(line.charAt(start - 1)))
-                    --start;
-                while (end < line.length && /[^\s]/.test(line.charAt(end)))
-                    ++end;
-                const input = line.slice(start, end).toLowerCase();
-                // For now: we only autocomplete if its the first word on the line
-                if (start > 0 && line.slice(0, start).match(/[a-z]/i))
-                    return [];
-                const program = mode._getParsedProgram();
-                const isChildNode = start > 0 && cursor.line > 0;
-                const nodeInScope = isChildNode ? program.getTopDownArray()[cursor.line].getParent() : program;
-                const grammarNode = nodeInScope.getDefinition();
-                // todo: add more tests
-                // todo: second param this.childrenToString()
-                // todo: change to getAutocomplete definitions
-                let matching = grammarNode.getAutocompleteWords(input);
-                matching = matching.map(str => {
-                    return {
-                        text: str,
-                        displayText: str
-                    };
-                });
-                const result = matching.length
-                    ? {
-                        list: matching,
-                        from: codeMirrorLib.Pos(cursor.line, start),
-                        to: codeMirrorLib.Pos(cursor.line, end)
-                    }
-                    : null;
-                return accept(result);
-            }, 100);
+    codeMirrorAutocomplete(cmInstance, option) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cursor = cmInstance.getCursor();
+            const codeMirrorLib = this._getCodeMirrorLib();
+            const result = yield this.autocomplete(cmInstance.getLine(cursor.line), cursor.line, cursor.ch);
+            return result.matches.length
+                ? {
+                    list: result.matches,
+                    from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
+                    to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
+                }
+                : null;
+        });
+    }
+    // todo: why is this async?
+    autocomplete(line, lineIndex, charIndex) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const mode = this;
+            let start = charIndex;
+            let end = charIndex;
+            while (start && /[^\s]/.test(line.charAt(start - 1)))
+                --start;
+            while (end < line.length && /[^\s]/.test(line.charAt(end)))
+                ++end;
+            const input = line.slice(start, end).toLowerCase();
+            // For now: we only autocomplete if its the first word on the line
+            if (start > 0 && line.slice(0, start).match(/[a-z]/i))
+                return {
+                    startCharIndex: start,
+                    endCharIndex: end,
+                    matches: []
+                };
+            const program = mode._getParsedProgram();
+            const isChildNode = start > 0 && lineIndex > 0;
+            const nodeInScope = isChildNode ? program.getTopDownArray()[lineIndex].getParent() : program;
+            const grammarNode = nodeInScope.getDefinition();
+            // todo: add more tests
+            // todo: second param this.childrenToString()
+            // todo: change to getAutocomplete definitions
+            const matches = grammarNode.getAutocompleteWords(input).map(str => {
+                return {
+                    text: str,
+                    displayText: str
+                };
+            });
+            return {
+                startCharIndex: start,
+                endCharIndex: end,
+                matches: matches
+            };
         });
     }
     register() {

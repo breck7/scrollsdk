@@ -36,12 +36,10 @@ const main = grammarSourceCode => {
   const getGrammarConstructor = () => {
     const currentGrammarCode = grammarInstance.getValue()
     if (!grammarConstructor || currentGrammarCode !== cachedGrammarCode) {
-      cachedGrammarCode = currentGrammarCode
-      const grammarPath = ""
-
       try {
-        const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, grammarPath)
+        const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, "")
         grammarConstructor = grammarProgram.getRootConstructor()
+        cachedGrammarCode = currentGrammarCode
       } catch (err) {
         debugger
       }
@@ -62,7 +60,15 @@ const main = grammarSourceCode => {
   }
 
   grammarInstance.on("keyup", grammarOnUpdate)
-  grammarInstance.on("keyup", codeOnUpdate)
+  grammarInstance.on("keyup", () => {
+    codeOnUpdate()
+    // Hack to break CM cache:
+    if (true) {
+      const val = codeInstance.getValue()
+      codeInstance.setValue("\n" + val)
+      codeInstance.setValue(val)
+    }
+  })
   codeInstance.on("keyup", codeOnUpdate)
 
   if (grammarInstance.getValue()) {

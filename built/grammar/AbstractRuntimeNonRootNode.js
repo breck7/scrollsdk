@@ -4,7 +4,7 @@ const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarBackedCell_1 = require("./GrammarBackedCell");
 const AbstractRuntimeNode_1 = require("./AbstractRuntimeNode");
-class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
+class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     getProgram() {
         return this.getParent().getProgram();
     }
@@ -96,4 +96,4 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode_1.default {
         return [this.getDefinition().getHighlightScope() || defaultScope].concat(wordScopes).join(" ");
     }
 }
-exports.default = AbstractRuntimeCodeNode;
+exports.default = AbstractRuntimeNonRootNode;

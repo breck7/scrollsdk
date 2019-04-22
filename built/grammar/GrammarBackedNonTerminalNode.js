@@ -1,12 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const AbstractRuntimeCodeNode_1 = require("./AbstractRuntimeCodeNode");
-class GrammarBackedNonTerminalNode extends AbstractRuntimeCodeNode_1.default {
+const AbstractRuntimeNonRootNode_1 = require("./AbstractRuntimeNonRootNode");
+class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode_1.default {
     getKeywordMap() {
         return this.getDefinition().getRunTimeKeywordMap();
-    }
-    getCatchAllNodeConstructor(line) {
-        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
     }
     // todo: implement
     _getNodeJoinCharacter() {

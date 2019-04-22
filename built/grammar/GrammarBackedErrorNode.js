@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const AbstractRuntimeCodeNode_1 = require("./AbstractRuntimeCodeNode");
+const AbstractRuntimeNonRootNode_1 = require("./AbstractRuntimeNonRootNode");
 const GrammarConstants_1 = require("./GrammarConstants");
-class GrammarBackedErrorNode extends AbstractRuntimeCodeNode_1.default {
+class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode_1.default {
     getLineSyntax() {
         return "error ".repeat(this.getWords().length).trim();
     }

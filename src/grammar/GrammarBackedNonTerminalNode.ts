@@ -1,12 +1,8 @@
-import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode"
+import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 
-class GrammarBackedNonTerminalNode extends AbstractRuntimeCodeNode {
+class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
-  }
-
-  getCatchAllNodeConstructor(line: string) {
-    return this.getDefinition().getRunTimeCatchAllNodeConstructor()
   }
 
   // todo: implement

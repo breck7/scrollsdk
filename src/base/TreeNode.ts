@@ -431,21 +431,20 @@ class ImmutableNode extends AbstractNode {
     return this._getChildren().length
   }
 
-  protected _nodeAt(index) {
+  protected _nodeAt(index: int) {
     if (index < 0) index = this.length + index
     return this._getChildren()[index]
   }
 
-  nodeAt(indexOrArray) {
-    const type = typeof indexOrArray
-    if (type === "number") return this._nodeAt(indexOrArray)
+  nodeAt(indexOrIndexArray: int | int[]): ImmutableNode | undefined {
+    if (typeof indexOrIndexArray === "number") return this._nodeAt(indexOrIndexArray)
 
-    if (indexOrArray.length === 1) return this._nodeAt(indexOrArray[0])
+    if (indexOrIndexArray.length === 1) return this._nodeAt(indexOrIndexArray[0])
 
-    const first = indexOrArray[0]
+    const first = indexOrIndexArray[0]
     const node = this._nodeAt(first)
     if (!node) return undefined
-    return node.nodeAt(indexOrArray.slice(1))
+    return node.nodeAt(indexOrIndexArray.slice(1))
   }
 
   protected _toObject() {
@@ -484,6 +483,18 @@ class ImmutableNode extends AbstractNode {
 
   toXml(): types.xmlString {
     return this._childrenToXml(0)
+  }
+
+  toDisk(path: string) {
+    if (!this.isNodeJs()) throw new Error("This method only works in Node.js")
+    const format = ImmutableNode._getFileFormat(path)
+    const formats = {
+      tree: tree => tree.toString(),
+      csv: tree => tree.toCsv(),
+      tsv: tree => tree.toTsv()
+    }
+    require("fs").writeFileSync(path, formats[format](this), "utf8")
+    return this
   }
 
   _lineToYaml(indentLevel: number, listTag = "") {
@@ -688,7 +699,7 @@ class ImmutableNode extends AbstractNode {
   pathVectorToKeywordPath(pathVector: types.pathVector): word[] {
     const path = pathVector.slice() // copy array
     const names = []
-    let node = this
+    let node: ImmutableNode = this
     while (path.length) {
       if (!node) return names
       names.push(node.nodeAt(path[0]).getKeyword())
@@ -1198,6 +1209,11 @@ class ImmutableNode extends AbstractNode {
     if (this._uniqueId === undefined) this._uniqueId = 0
     this._uniqueId++
     return this._uniqueId
+  }
+
+  protected static _getFileFormat(path: string) {
+    const format = path.split(".").pop()
+    return types.FileFormat[format] ? format : types.FileFormat.tree
   }
 
   static iris = `sepal_length,sepal_width,petal_length,petal_width,species
@@ -1871,6 +1887,16 @@ class TreeNode extends ImmutableNode {
     const XI = " "
     const indent = YI + XI.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
+  }
+
+  static fromDisk(path: string) {
+    const format = this._getFileFormat(path)
+    const content = require("fs").readFileSync(path, "utf8")
+    return {
+      tree: content => new TreeNode(content),
+      csv: content => this.fromCsv(content),
+      tsv: content => this.fromTsv(content)
+    }[format](content)
   }
 }
 

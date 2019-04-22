@@ -54,7 +54,22 @@ declare class TreeNotationCodeMirrorMode {
     fromTextAreaWithAutocomplete(area: any, options: any): any;
     _enableAutoComplete(cmInstance: any): void;
     _getCodeMirrorLib(): any;
-    autocomplete(cmInstance: any, option: any): Promise<{}>;
+    codeMirrorAutocomplete(cmInstance: any, option: any): Promise<{
+        list: {
+            text: string;
+            displayText: string;
+        }[];
+        from: any;
+        to: any;
+    }>;
+    autocomplete(line: string, lineIndex: types.int, charIndex: types.int): Promise<{
+        startCharIndex: number;
+        endCharIndex: number;
+        matches: {
+            text: string;
+            displayText: string;
+        }[];
+    }>;
     register(): this;
     _advanceStreamAndGetTokenType(stream: any, state: any): string;
     _getWordStyle(lineIndex: any, wordIndex: any): string;

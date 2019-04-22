@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractNode_node_1 = require("./AbstractNode.node");
 const TreeUtils_1 = require("./TreeUtils");
+const types_1 = require("../types");
 class ImmutableNode extends AbstractNode_node_1.default {
     constructor(children, line, parent) {
         super();
@@ -358,17 +359,16 @@ class ImmutableNode extends AbstractNode_node_1.default {
             index = this.length + index;
         return this._getChildren()[index];
     }
-    nodeAt(indexOrArray) {
-        const type = typeof indexOrArray;
-        if (type === "number")
-            return this._nodeAt(indexOrArray);
-        if (indexOrArray.length === 1)
-            return this._nodeAt(indexOrArray[0]);
-        const first = indexOrArray[0];
+    nodeAt(indexOrIndexArray) {
+        if (typeof indexOrIndexArray === "number")
+            return this._nodeAt(indexOrIndexArray);
+        if (indexOrIndexArray.length === 1)
+            return this._nodeAt(indexOrIndexArray[0]);
+        const first = indexOrIndexArray[0];
         const node = this._nodeAt(first);
         if (!node)
             return undefined;
-        return node.nodeAt(indexOrArray.slice(1));
+        return node.nodeAt(indexOrIndexArray.slice(1));
     }
     _toObject() {
         const obj = {};
@@ -399,6 +399,18 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     toXml() {
         return this._childrenToXml(0);
+    }
+    toDisk(path) {
+        if (!this.isNodeJs())
+            throw new Error("This method only works in Node.js");
+        const format = ImmutableNode._getFileFormat(path);
+        const formats = {
+            tree: tree => tree.toString(),
+            csv: tree => tree.toCsv(),
+            tsv: tree => tree.toTsv()
+        };
+        require("fs").writeFileSync(path, formats[format](this), "utf8");
+        return this;
     }
     _lineToYaml(indentLevel, listTag = "") {
         let prefix = " ".repeat(indentLevel);
@@ -1038,6 +1050,10 @@ class ImmutableNode extends AbstractNode_node_1.default {
         this._uniqueId++;
         return this._uniqueId;
     }
+    static _getFileFormat(path) {
+        const format = path.split(".").pop();
+        return types_1.default.FileFormat[format] ? format : types_1.default.FileFormat.tree;
+    }
 }
 ImmutableNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
@@ -1648,6 +1664,15 @@ class TreeNode extends ImmutableNode {
         const XI = " ";
         const indent = YI + XI.repeat(xValue);
         return str ? indent + str.replace(/\n/g, indent) : "";
+    }
+    static fromDisk(path) {
+        const format = this._getFileFormat(path);
+        const content = require("fs").readFileSync(path, "utf8");
+        return {
+            tree: content => new TreeNode(content),
+            csv: content => this.fromCsv(content),
+            tsv: content => this.fromTsv(content)
+        }[format](content);
     }
 }
 exports.default = TreeNode;

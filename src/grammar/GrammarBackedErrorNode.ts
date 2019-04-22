@@ -1,8 +1,8 @@
-import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode"
+import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 import types from "../types"
 
-class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
+class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
   getLineSyntax() {
     return "error ".repeat(this.getWords().length).trim()
   }

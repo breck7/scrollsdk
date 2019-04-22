@@ -61,7 +61,6 @@ interface TreeNode {
   getStackString: () => string
   getTopDownArray: () => TreeNode[] // returns all nodes as array in preorder order
   getYoungerSiblings: () => TreeNode[] // where younger sibling is a node with a higher index
-  nodeAt: (index: int | pathVector) => TreeNode
 
   // Methods for Tree Languages
   getCatchAllNodeConstructor: (line: string) => TreeNode

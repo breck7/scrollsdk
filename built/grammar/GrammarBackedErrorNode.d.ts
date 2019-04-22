@@ -1,6 +1,6 @@
-import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode";
+import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
 import types from "../types";
-declare class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
+declare class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
     getLineSyntax(): string;
     getErrors(): types.ParseError[];
 }

@@ -84,6 +84,15 @@ declare const textMateScopeToCodeMirrorStyle: (scopeSegments: string[], tree?: {
             };
         };
     };
+    invalid: {
+        $: CmToken;
+        illegal: {
+            $: CmToken;
+        };
+        deprecated: {
+            $: CmToken;
+        };
+    };
     keyword: {
         $: CmToken;
         operator: {

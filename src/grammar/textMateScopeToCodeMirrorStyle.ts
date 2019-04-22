@@ -93,6 +93,14 @@ const tmToCm = {
     }
   },
 
+  invalid: {
+    $: CmToken.Error,
+    illegal: { $: CmToken.Error },
+    deprecated: {
+      $: CmToken.Error
+    }
+  },
+
   keyword: {
     $: CmToken.Keyword,
     operator: {

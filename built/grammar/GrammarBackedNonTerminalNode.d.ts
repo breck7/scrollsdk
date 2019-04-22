@@ -1,7 +1,6 @@
-import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode";
-declare class GrammarBackedNonTerminalNode extends AbstractRuntimeCodeNode {
+import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
+declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     getKeywordMap(): any;
-    getCatchAllNodeConstructor(line: string): any;
     protected _getNodeJoinCharacter(): string;
     compile(targetExtension: any): string;
 }

@@ -3049,6 +3049,11 @@ event lala2018
   equal(simple, simpleExpected, "markdown simple ok")
 }
 
+testTree.makeRandomTree = equal => {
+  // Arrange/Act/Assert
+  equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).length, 2)
+}
+
 testTree.setContentWithChildrenRegression = equal => {
   // Arrange
   const tree = new TreeNode("hello world")

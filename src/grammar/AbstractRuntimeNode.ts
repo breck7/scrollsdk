@@ -2,17 +2,22 @@ import TreeNode from "../base/TreeNode"
 import { GrammarConstantsErrors } from "./GrammarConstants"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 abstract class AbstractRuntimeNode extends TreeNode {
   getGrammarProgram() {
     return this.getProgram().getGrammarProgram()
   }
 
+  getCatchAllNodeConstructor(line: string) {
+    return this.getDefinition().getRunTimeCatchAllNodeConstructor()
+  }
+
   getProgram(): AbstractRuntimeNode {
     return this
   }
 
-  abstract getDefinition(): any
+  abstract getDefinition(): AbstractGrammarDefinitionNode
 
   protected _getKeywordDefinitionByName(path: string) {
     const grammarProgram = <GrammarProgram>this.getProgram().getGrammarProgram()

@@ -1,6 +1,8 @@
 import types from "../types"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
+/*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
+
 declare type codeMirrorLibType = any
 declare type codeMirrorInstanceType = any
 
@@ -90,7 +92,7 @@ class TreeNotationCodeMirrorMode {
       mode: this._name,
       tabSize: 1,
       indentUnit: 1,
-      hintOptions: { hint: (cmInstance, option) => this.autocomplete(cmInstance, option) }
+      hintOptions: { hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option) }
     }
 
     Object.assign(defaultOptions, options)
@@ -114,49 +116,57 @@ class TreeNotationCodeMirrorMode {
     return this._codeMirrorLib
   }
 
-  autocomplete(cmInstance, option) {
-    const mode = this
+  async codeMirrorAutocomplete(cmInstance, option) {
+    const cursor = cmInstance.getCursor()
     const codeMirrorLib = this._getCodeMirrorLib()
-    return new Promise(function(accept) {
-      setTimeout(function() {
-        const cursor = cmInstance.getCursor()
-        const line = cmInstance.getLine(cursor.line)
-        let start = cursor.ch
-        let end = cursor.ch
-        while (start && /[^\s]/.test(line.charAt(start - 1))) --start
-        while (end < line.length && /[^\s]/.test(line.charAt(end))) ++end
-        const input = line.slice(start, end).toLowerCase()
+    const result = await this.autocomplete(cmInstance.getLine(cursor.line), cursor.line, cursor.ch)
 
-        // For now: we only autocomplete if its the first word on the line
-        if (start > 0 && line.slice(0, start).match(/[a-z]/i)) return []
+    return result.matches.length
+      ? {
+          list: result.matches,
+          from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
+          to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
+        }
+      : null
+  }
 
-        const program = mode._getParsedProgram()
+  // todo: why is this async?
+  async autocomplete(line: string, lineIndex: types.int, charIndex: types.int) {
+    const mode = this
+    let start = charIndex
+    let end = charIndex
+    while (start && /[^\s]/.test(line.charAt(start - 1))) --start
+    while (end < line.length && /[^\s]/.test(line.charAt(end))) ++end
+    const input = line.slice(start, end).toLowerCase()
 
-        const isChildNode = start > 0 && cursor.line > 0
-        const nodeInScope = isChildNode ? program.getTopDownArray()[cursor.line].getParent() : program
-        const grammarNode = nodeInScope.getDefinition()
-        // todo: add more tests
-        // todo: second param this.childrenToString()
-        // todo: change to getAutocomplete definitions
-        let matching = grammarNode.getAutocompleteWords(input)
+    // For now: we only autocomplete if its the first word on the line
+    if (start > 0 && line.slice(0, start).match(/[a-z]/i))
+      return {
+        startCharIndex: start,
+        endCharIndex: end,
+        matches: []
+      }
 
-        matching = matching.map(str => {
-          return {
-            text: str,
-            displayText: str
-          }
-        })
+    const program = mode._getParsedProgram()
 
-        const result = matching.length
-          ? {
-              list: matching,
-              from: codeMirrorLib.Pos(cursor.line, start),
-              to: codeMirrorLib.Pos(cursor.line, end)
-            }
-          : null
-        return accept(result)
-      }, 100)
+    const isChildNode = start > 0 && lineIndex > 0
+    const nodeInScope = isChildNode ? program.getTopDownArray()[lineIndex].getParent() : program
+    const grammarNode: AbstractGrammarDefinitionNode = nodeInScope.getDefinition()
+    // todo: add more tests
+    // todo: second param this.childrenToString()
+    // todo: change to getAutocomplete definitions
+    const matches = grammarNode.getAutocompleteWords(input).map(str => {
+      return {
+        text: str,
+        displayText: str
+      }
     })
+
+    return {
+      startCharIndex: start,
+      endCharIndex: end,
+      matches: matches
+    }
   }
 
   register() {

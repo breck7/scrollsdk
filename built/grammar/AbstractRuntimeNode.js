@@ -6,6 +6,9 @@ class AbstractRuntimeNode extends TreeNode_1.default {
     getGrammarProgram() {
         return this.getProgram().getGrammarProgram();
     }
+    getCatchAllNodeConstructor(line) {
+        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
+    }
     getProgram() {
         return this;
     }

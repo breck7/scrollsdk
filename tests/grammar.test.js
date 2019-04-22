@@ -7,6 +7,8 @@ const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
 const jibberishNodes = require("./jibberish/jibberishNodes.js")
 
+const numbersGrammar = fs.readFileSync(__dirname + "/numbers.grammar", "utf8")
+
 quack.quickTest("basic", equal => {
   // Arrange/Act/Assert
   const program = new GrammarProgram()
@@ -24,6 +26,8 @@ quack.quickTest("basics", equal => {
   // Assert
   equal(errs.length, 0, errs.map(JSON.stringify).join(" "))
 })
+
+const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
 const makeJibberishProgram = code => {
   const grammarPath = __dirname + "/jibberish/jibberish.grammar"
@@ -96,23 +100,13 @@ keyword int int int`,
     nodeTypes,
     `GrammarBackedTerminalNode keyword
 additionNode keyword int int int`,
-    "word types should match"
+    "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
     `GrammarBackedTerminalNode foo
 additionNode + 2 3 2`,
-    "word types should match"
-  )
-
-  // Act
-  const scopes = wordTypesProgram.getInPlaceHighlightScopeTree()
-
-  // Assert
-  equal(
-    scopes,
-    `source
-keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
+    "treeWithNodeTypes word types should match"
   )
 
   // Arrange
@@ -137,6 +131,49 @@ missing2 true`)
 
   // Assert
   equal(programWithKeywordBugs.getInvalidKeywords().length, 2)
+})
+
+quack.quickTest("highlight scopes", equal => {
+  // Arrange
+  const wordTypesProgram = makeJibberishProgram(`foo
++ 2 3 2`)
+
+  // Act
+  const scopes = wordTypesProgram.getInPlaceHighlightScopeTree()
+
+  // Assert
+  equal(
+    scopes,
+    `source
+keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
+  )
+
+  // Arrange/Act/Assert
+  equal(makeJibberishProgram(`fault`).getInPlaceHighlightScopeTree(), `invalid`)
+  equal(makeJibberishProgram(`fault fault`).getInPlaceHighlightScopeTree(), `invalid invalid`)
+  equal(makeNumbersProgram(`+ 2`).getInPlaceHighlightScopeTree(), `keyword.operator.arithmetic constant.numeric`)
+
+  // Arrange
+  const program = makeJibberishProgram(`lightbulbState on
+ someerror`)
+
+  // Act/Assert
+  equal(
+    program.getInPlaceHighlightScopeTree(),
+    `source source
+ invalid`
+  )
+  equal(program.getProgramErrors().length, 1)
+})
+
+quack.quickTest("autocomplete", equal => {
+  // Arrange
+  const program = makeNumbersProgram(`+ 2 3`)
+  const def = program.nodeAt(0).getDefinition()
+  const matches = def.getAutocompleteWords("com")
+
+  // Assert
+  equal(matches.length, 1)
 })
 
 quack.quickTest("any nodes", equal => {

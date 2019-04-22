@@ -1,4 +1,4 @@
-import AbstractRuntimeCodeNode from "./AbstractRuntimeCodeNode";
-declare class GrammarBackedTerminalNode extends AbstractRuntimeCodeNode {
+import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
+declare class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
 }
 export default GrammarBackedTerminalNode;

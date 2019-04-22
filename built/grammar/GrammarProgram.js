@@ -131,6 +131,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
         const extendedConstructor = definedConstructor || AbstractRuntimeProgram_1.default;
         const grammarProgram = this;
+        // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
+        // new language.
         return class extends extendedConstructor {
             getGrammarProgram() {
                 return grammarProgram;

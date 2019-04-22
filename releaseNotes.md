@@ -1,3 +1,8 @@
+19.3.1 / 2019-04-21
+===================
+- Fix: error highlight scope fixes
+- Breaking: getAutocompleteWords now takes an optional 2nd column index parameter
+
 19.2.1 / 2019-04-20
 ===================
 - Fix: grammar sandbox bug on first visit

@@ -83,8 +83,8 @@ declare class ImmutableNode extends AbstractNode {
     getLines(): string[];
     getChildren(): any[];
     readonly length: int;
-    protected _nodeAt(index: any): ImmutableNode;
-    nodeAt(indexOrArray: any): any;
+    protected _nodeAt(index: int): ImmutableNode;
+    nodeAt(indexOrIndexArray: int | int[]): ImmutableNode | undefined;
     protected _toObject(): {};
     toHtml(): types.htmlString;
     protected _childrenToHtml(indentCount: int): string;
@@ -93,6 +93,7 @@ declare class ImmutableNode extends AbstractNode {
     protected _getNodeJoinCharacter(): string;
     compile(targetExtension: types.fileExtension): string;
     toXml(): types.xmlString;
+    toDisk(path: string): this;
     _lineToYaml(indentLevel: number, listTag?: string): string;
     _isYamlList(): boolean;
     toYaml(): string;
@@ -186,6 +187,7 @@ declare class ImmutableNode extends AbstractNode {
     getNodeConstructor(line: string): any;
     private static _uniqueId;
     static _makeUniqueId(): number;
+    protected static _getFileFormat(path: string): string;
     static iris: string;
 }
 declare class TreeNode extends ImmutableNode {
@@ -263,5 +265,6 @@ declare class TreeNode extends ImmutableNode {
     static _treeNodeFromXml(xml: any): TreeNode;
     static _getHeader(rows: any, hasHeaders: any): any;
     static nest(str: string, xValue: int): string;
+    static fromDisk(path: string): any;
 }
 export default TreeNode;

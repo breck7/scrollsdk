@@ -209,13 +209,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.highlightScope)
   }
 
-  getAutocompleteWords(inputStr, additionalWords = []) {
-    // todo: add more tests
+  getAutocompleteWords(inputStr, columnIndex = 0, additionalWords = []): string[] {
     const str = this.getRunTimeKeywordNames()
       .concat(additionalWords)
       .join("\n")
 
-    // default is to just autocomplete using all words in existing program.
     return TreeUtils.getUniqueWordsArray(str)
       .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
       .map(obj => obj.word)

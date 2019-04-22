@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 let _jtreeLatestTime = 0;
 let _jtreeMinTimeIncrement = 0.000000000001;
 class AbstractNode {
@@ -302,6 +310,13 @@ const tmToCm = {
                 // TODO: Revision
                 $: CmToken.Def
             }
+        }
+    },
+    invalid: {
+        $: CmToken.Error,
+        illegal: { $: CmToken.Error },
+        deprecated: {
+            $: CmToken.Error
         }
     },
     keyword: {
@@ -742,17 +757,16 @@ class ImmutableNode extends AbstractNode {
             index = this.length + index;
         return this._getChildren()[index];
     }
-    nodeAt(indexOrArray) {
-        const type = typeof indexOrArray;
-        if (type === "number")
-            return this._nodeAt(indexOrArray);
-        if (indexOrArray.length === 1)
-            return this._nodeAt(indexOrArray[0]);
-        const first = indexOrArray[0];
+    nodeAt(indexOrIndexArray) {
+        if (typeof indexOrIndexArray === "number")
+            return this._nodeAt(indexOrIndexArray);
+        if (indexOrIndexArray.length === 1)
+            return this._nodeAt(indexOrIndexArray[0]);
+        const first = indexOrIndexArray[0];
         const node = this._nodeAt(first);
         if (!node)
             return undefined;
-        return node.nodeAt(indexOrArray.slice(1));
+        return node.nodeAt(indexOrIndexArray.slice(1));
     }
     _toObject() {
         const obj = {};
@@ -2038,6 +2052,9 @@ class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram() {
         return this.getProgram().getGrammarProgram();
     }
+    getCatchAllNodeConstructor(line) {
+        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
+    }
     getProgram() {
         return this;
     }
@@ -2101,11 +2118,6 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
     }
     getKeywordMap() {
         return this.getDefinition().getRunTimeKeywordMap();
-    }
-    getCatchAllNodeConstructor(line) {
-        // todo: blank line
-        // todo: restore didyoumean
-        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
     }
     getDefinition() {
         return this.getGrammarProgram();
@@ -2273,7 +2285,7 @@ class GrammarBackedCell {
             };
     }
 }
-class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
+class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getProgram() {
         return this.getParent().getProgram();
     }
@@ -2345,13 +2357,13 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
         const expectedLinePattern = columnTypes.join(" ");
         const numberOfColumns = columnTypes.length;
         const lastColumnType = columnTypes[numberOfColumns - 1];
-        const lastColumnListType = lastColumnType && lastColumnType.endsWith("*") ? lastColumnType : undefined;
+        const isLastColumnListType = lastColumnType && lastColumnType.endsWith("*") ? lastColumnType : undefined;
         const words = this.getWordsFrom(1);
-        const length = Math.max(words.length, numberOfColumns);
+        const length = Math.max(words.length, isLastColumnListType ? numberOfColumns - 1 : numberOfColumns);
         const checks = [];
         // A for loop instead of map because "length" can be longer than words.length
         for (let wordIndex = 0; wordIndex < length; wordIndex++) {
-            checks[wordIndex] = new GrammarBackedCell(words[wordIndex], wordIndex >= numberOfColumns ? lastColumnListType : columnTypes[wordIndex], this, wordIndex, expectedLinePattern, grammarProgram);
+            checks[wordIndex] = new GrammarBackedCell(words[wordIndex], wordIndex >= numberOfColumns ? isLastColumnListType : columnTypes[wordIndex], this, wordIndex, expectedLinePattern, grammarProgram);
         }
         return checks;
     }
@@ -2365,7 +2377,7 @@ class AbstractRuntimeCodeNode extends AbstractRuntimeNode {
         return [this.getDefinition().getHighlightScope() || defaultScope].concat(wordScopes).join(" ");
     }
 }
-class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
+class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
     getLineSyntax() {
         return "error ".repeat(this.getWords().length).trim();
     }
@@ -2386,12 +2398,9 @@ class GrammarBackedErrorNode extends AbstractRuntimeCodeNode {
         ];
     }
 }
-class GrammarBackedNonTerminalNode extends AbstractRuntimeCodeNode {
+class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     getKeywordMap() {
         return this.getDefinition().getRunTimeKeywordMap();
-    }
-    getCatchAllNodeConstructor(line) {
-        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
     }
     // todo: implement
     _getNodeJoinCharacter() {
@@ -2420,7 +2429,7 @@ class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
         return GrammarBackedAnyNode;
     }
 }
-class GrammarBackedTerminalNode extends AbstractRuntimeCodeNode {
+class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
 }
 class GrammarCompilerNode extends TreeNode {
     getKeywordMap() {
@@ -2731,12 +2740,10 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     getHighlightScope() {
         return this.get(GrammarConstants.highlightScope);
     }
-    getAutocompleteWords(inputStr, additionalWords = []) {
-        // todo: add more tests
+    getAutocompleteWords(inputStr, columnIndex = 0, additionalWords = []) {
         const str = this.getRunTimeKeywordNames()
             .concat(additionalWords)
             .join("\n");
-        // default is to just autocomplete using all words in existing program.
         return TreeUtils.getUniqueWordsArray(str)
             .filter(obj => obj.word.includes(inputStr) && obj.word !== inputStr)
             .map(obj => obj.word);
@@ -3133,6 +3140,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
         const extendedConstructor = definedConstructor || AbstractRuntimeProgram;
         const grammarProgram = this;
+        // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
+        // new language.
         return class extends extendedConstructor {
             getGrammarProgram() {
                 return grammarProgram;
@@ -3323,7 +3332,7 @@ class TreeNotationCodeMirrorMode {
             mode: this._name,
             tabSize: 1,
             indentUnit: 1,
-            hintOptions: { hint: (cmInstance, option) => this.autocomplete(cmInstance, option) }
+            hintOptions: { hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option) }
         };
         Object.assign(defaultOptions, options);
         this._cmInstance = this._getCodeMirrorLib().fromTextArea(area, defaultOptions);
@@ -3342,46 +3351,56 @@ class TreeNotationCodeMirrorMode {
     _getCodeMirrorLib() {
         return this._codeMirrorLib;
     }
-    autocomplete(cmInstance, option) {
-        const mode = this;
-        const codeMirrorLib = this._getCodeMirrorLib();
-        return new Promise(function (accept) {
-            setTimeout(function () {
-                const cursor = cmInstance.getCursor();
-                const line = cmInstance.getLine(cursor.line);
-                let start = cursor.ch;
-                let end = cursor.ch;
-                while (start && /[^\s]/.test(line.charAt(start - 1)))
-                    --start;
-                while (end < line.length && /[^\s]/.test(line.charAt(end)))
-                    ++end;
-                const input = line.slice(start, end).toLowerCase();
-                // For now: we only autocomplete if its the first word on the line
-                if (start > 0 && line.slice(0, start).match(/[a-z]/i))
-                    return [];
-                const program = mode._getParsedProgram();
-                const isChildNode = start > 0 && cursor.line > 0;
-                const nodeInScope = isChildNode ? program.getTopDownArray()[cursor.line].getParent() : program;
-                const grammarNode = nodeInScope.getDefinition();
-                // todo: add more tests
-                // todo: second param this.childrenToString()
-                // todo: change to getAutocomplete definitions
-                let matching = grammarNode.getAutocompleteWords(input);
-                matching = matching.map(str => {
-                    return {
-                        text: str,
-                        displayText: str
-                    };
-                });
-                const result = matching.length
-                    ? {
-                        list: matching,
-                        from: codeMirrorLib.Pos(cursor.line, start),
-                        to: codeMirrorLib.Pos(cursor.line, end)
-                    }
-                    : null;
-                return accept(result);
-            }, 100);
+    codeMirrorAutocomplete(cmInstance, option) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cursor = cmInstance.getCursor();
+            const codeMirrorLib = this._getCodeMirrorLib();
+            const result = yield this.autocomplete(cmInstance.getLine(cursor.line), cursor.line, cursor.ch);
+            return result.matches.length
+                ? {
+                    list: result.matches,
+                    from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
+                    to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
+                }
+                : null;
+        });
+    }
+    // todo: why is this async?
+    autocomplete(line, lineIndex, charIndex) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const mode = this;
+            let start = charIndex;
+            let end = charIndex;
+            while (start && /[^\s]/.test(line.charAt(start - 1)))
+                --start;
+            while (end < line.length && /[^\s]/.test(line.charAt(end)))
+                ++end;
+            const input = line.slice(start, end).toLowerCase();
+            // For now: we only autocomplete if its the first word on the line
+            if (start > 0 && line.slice(0, start).match(/[a-z]/i))
+                return {
+                    startCharIndex: start,
+                    endCharIndex: end,
+                    matches: []
+                };
+            const program = mode._getParsedProgram();
+            const isChildNode = start > 0 && lineIndex > 0;
+            const nodeInScope = isChildNode ? program.getTopDownArray()[lineIndex].getParent() : program;
+            const grammarNode = nodeInScope.getDefinition();
+            // todo: add more tests
+            // todo: second param this.childrenToString()
+            // todo: change to getAutocomplete definitions
+            const matches = grammarNode.getAutocompleteWords(input).map(str => {
+                return {
+                    text: str,
+                    displayText: str
+                };
+            });
+            return {
+                startCharIndex: start,
+                endCharIndex: end,
+                matches: matches
+            };
         });
     }
     register() {

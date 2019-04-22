@@ -1,0 +1,29 @@
+@grammar numbers
+ @keywords
+  _top
+ @catchAllKeyword error
+@wordType int
+ @highlightScope constant.numeric
+@abstract _top
+@wordType error
+ @highlightScope invalid
+@keyword error
+ @columns error*
+ @constructors
+  browser ErrorNode
+ @highlightScope invalid
+@abstract arithmetic _top
+ @highlightScope keyword.operator.arithmetic
+@keyword + arithmetic
+ @columns int*
+ @keywords
+  arithmetic
+  comment
+@keyword - arithmetic
+ @columns int*
+@wordType string
+ @highlightScope string
+@keyword comment _top
+ @highlightScope string
+ @columns string*
+ @catchAllKeyword comment

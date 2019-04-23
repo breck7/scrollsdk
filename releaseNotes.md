@@ -1,3 +1,7 @@
+19.3.1 / 2019-04-22
+===================
+- Fix: grammar checking of grammar files now only checks constructors if in correct env
+
 19.3.0 / 2019-04-22
 ===================
 - New: autocomplete for words beyond keywords

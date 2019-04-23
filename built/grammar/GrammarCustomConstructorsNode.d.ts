@@ -3,6 +3,7 @@ import types from "../types";
 declare abstract class AbstractCustomConstructorNode extends TreeNode {
     private _getBuiltInConstructors;
     getDefinedConstructor(): types.RunTimeNodeConstructor;
+    protected isAppropriateEnvironment(): boolean;
     protected _getCustomConstructor(): types.RunTimeNodeConstructor;
     getErrors(): types.ParseError[];
     getBuiltIn(): any;

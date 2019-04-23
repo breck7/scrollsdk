@@ -37,6 +37,7 @@
  @columns word*
  @constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
+  browser LineOfCodeNode
 @keyword block topLevel
  @keywords
   topLevel

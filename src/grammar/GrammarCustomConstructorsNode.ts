@@ -23,13 +23,17 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
     return this.getBuiltIn() || this._getCustomConstructor()
   }
 
+  protected isAppropriateEnvironment() {
+    return true
+  }
+
   protected _getCustomConstructor(): types.RunTimeNodeConstructor {
     return undefined
   }
 
   getErrors(): types.ParseError[] {
     // todo: should this be a try/catch?
-    if (this.getDefinedConstructor()) return []
+    if (!this.isAppropriateEnvironment() || this.getDefinedConstructor()) return []
     const parent = this.getParent()
     const context = parent.isRoot() ? "" : parent.getKeyword()
     const point = this.getPoint()
@@ -67,6 +71,10 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
   private _getNodeConstructorFilePath() {
     return this.getWord(1)
   }
+
+  protected isAppropriateEnvironment() {
+    return this.isNodeJs()
+  }
 }
 
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
@@ -76,6 +84,10 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     if (!constructor) throw new Error(`constructor window.${constructorName} not found.`)
 
     return constructor
+  }
+
+  protected isAppropriateEnvironment() {
+    return !this.isNodeJs()
   }
 }
 

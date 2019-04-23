@@ -9,6 +9,7 @@ const jibberishNodes = require("./jibberish/jibberishNodes.js")
 
 const numbersGrammar = fs.readFileSync(__dirname + "/numbers.grammar", "utf8")
 const grammarGrammar = fs.readFileSync(__dirname + "/../grammar.grammar", "utf8")
+const jibberishGrammarPath = __dirname + "/jibberish/jibberish.grammar"
 
 quack.quickTest("basic", equal => {
   // Arrange/Act/Assert
@@ -17,11 +18,10 @@ quack.quickTest("basic", equal => {
 
 quack.quickTest("basics", equal => {
   // Arrange
-  const grammarPath = __dirname + "/jibberish/jibberish.grammar"
-  const jibberishGrammarCode = fs.readFileSync(grammarPath, "utf8")
+  const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
 
   // Act
-  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
+  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
   const errs = grammarProgram.getProgramErrors()
 
   // Assert
@@ -33,9 +33,8 @@ const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 const makeGrammarProgram = code => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = code => {
-  const grammarPath = __dirname + "/jibberish/jibberish.grammar"
-  const grammarCode = fs.readFileSync(grammarPath, "utf8")
-  return makeProgram(grammarCode, code, grammarPath)
+  const grammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
+  return makeProgram(grammarCode, code, jibberishGrammarPath)
 }
 
 const makeProgram = (grammarCode, code, grammarPath = undefined) => {

@@ -19,12 +19,15 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
     getDefinedConstructor() {
         return this.getBuiltIn() || this._getCustomConstructor();
     }
+    isAppropriateEnvironment() {
+        return true;
+    }
     _getCustomConstructor() {
         return undefined;
     }
     getErrors() {
         // todo: should this be a try/catch?
-        if (this.getDefinedConstructor())
+        if (!this.isAppropriateEnvironment() || this.getDefinedConstructor())
             return [];
         const parent = this.getParent();
         const context = parent.isRoot() ? "" : parent.getKeyword();
@@ -57,6 +60,9 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
     _getNodeConstructorFilePath() {
         return this.getWord(1);
     }
+    isAppropriateEnvironment() {
+        return this.isNodeJs();
+    }
 }
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
@@ -65,6 +71,9 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         if (!constructor)
             throw new Error(`constructor window.${constructorName} not found.`);
         return constructor;
+    }
+    isAppropriateEnvironment() {
+        return !this.isNodeJs();
     }
 }
 class GrammarCustomConstructorsNode extends TreeNode_1.default {

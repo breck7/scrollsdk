@@ -12,6 +12,7 @@ enum GrammarConstants {
   // node types
   grammar = "@grammar",
   extensions = "@extensions",
+  version = "@version",
   keyword = "@keyword",
   wordType = "@wordType",
   abstract = "@abstract",

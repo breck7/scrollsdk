@@ -7,6 +7,7 @@ import types from "../types";
 declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
     protected _getDefaultNodeConstructor(): any;
     getProgram(): GrammarProgram;
+    getKeywordMap(): {};
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordMap(): types.stringMap;
@@ -40,6 +41,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getNodeColumnRegexes(): any[];
     _getFileExtensions(): string;
     toSublimeSyntaxFile(): string;
+    static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;
     static _getBestType(values: any): "any" | "int" | "float" | "bit" | "bool";
     static predictGrammarFile(str: string | TreeNode, keywords?: any): string;

@@ -13,6 +13,13 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
     getProgram() {
         return this.getParent();
     }
+    getKeywordMap() {
+        // todo: this isn't quite correct. we are allowing too many keywords.
+        const map = super.getKeywordMap();
+        map[GrammarConstants_1.GrammarConstants.extensions] = TreeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.version] = TreeNode_1.default;
+        return map;
+    }
 }
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode_1.default {
     _isAbstract() {
@@ -178,6 +185,14 @@ contexts:
 ${includes}
 
 ${keywordContexts}`;
+    }
+    // A language where anything goes.
+    static getTheAnyLanguageRootConstructor() {
+        return this.newFromCondensed(`@grammar any
+ @catchAllKeyword any
+@keyword any
+ @columns any*
+@wordType any`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports

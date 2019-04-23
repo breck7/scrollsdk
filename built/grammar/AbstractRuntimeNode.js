@@ -4,6 +4,8 @@ const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarConstants_2 = require("./GrammarConstants");
 class AbstractRuntimeNode extends TreeNode_1.default {
+    // note: this is overwritten by the root node of a runtime grammar program.
+    // some of the magic that makes this all work. but maybe there's a better way.
     getGrammarProgram() {
         return this.getProgram().getGrammarProgram();
     }

@@ -10,6 +10,8 @@ import { GrammarConstants } from "./GrammarConstants"
 import types from "../types"
 
 abstract class AbstractRuntimeNode extends TreeNode {
+  // note: this is overwritten by the root node of a runtime grammar program.
+  // some of the magic that makes this all work. but maybe there's a better way.
   getGrammarProgram() {
     return this.getProgram().getGrammarProgram()
   }

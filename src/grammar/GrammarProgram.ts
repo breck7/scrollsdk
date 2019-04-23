@@ -18,6 +18,14 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
   getProgram() {
     return <GrammarProgram>this.getParent()
   }
+
+  getKeywordMap() {
+    // todo: this isn't quite correct. we are allowing too many keywords.
+    const map = super.getKeywordMap()
+    map[GrammarConstants.extensions] = TreeNode
+    map[GrammarConstants.version] = TreeNode
+    return map
+  }
 }
 
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
@@ -223,6 +231,17 @@ contexts:
 ${includes}
 
 ${keywordContexts}`
+  }
+
+  // A language where anything goes.
+  static getTheAnyLanguageRootConstructor() {
+    return this.newFromCondensed(
+      `@grammar any
+ @catchAllKeyword any
+@keyword any
+ @columns any*
+@wordType any`
+    ).getRootConstructor()
   }
 
   static newFromCondensed(grammarCode: string, grammarPath?: types.filepath) {

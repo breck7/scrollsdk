@@ -179,6 +179,7 @@ var GrammarConstants;
     // node types
     GrammarConstants["grammar"] = "@grammar";
     GrammarConstants["extensions"] = "@extensions";
+    GrammarConstants["version"] = "@version";
     GrammarConstants["keyword"] = "@keyword";
     GrammarConstants["wordType"] = "@wordType";
     GrammarConstants["abstract"] = "@abstract";
@@ -2173,6 +2174,8 @@ class TreeNode extends ImmutableNode {
     }
 }
 class AbstractRuntimeNode extends TreeNode {
+    // note: this is overwritten by the root node of a runtime grammar program.
+    // some of the magic that makes this all work. but maybe there's a better way.
     getGrammarProgram() {
         return this.getProgram().getGrammarProgram();
     }
@@ -2928,8 +2931,13 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         const catchAllKeyword = this._getRunTimeCatchAllKeyword();
         const definitions = this._getProgramKeywordDefinitionCache();
         const def = definitions[catchAllKeyword];
+        if (def)
+            return def;
         // todo: implement contraints like a grammar file MUST have a catch all.
-        return def ? def : this.getParent()._getCatchAllDefinition();
+        if (this.isRoot())
+            throw new Error(`This grammar language lacks a root catch all definition`);
+        else
+            return this.getParent()._getCatchAllDefinition();
     }
     _initCatchAllNodeConstructorCache() {
         if (this._cache_catchAllConstructor)
@@ -3217,6 +3225,13 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
     getProgram() {
         return this.getParent();
     }
+    getKeywordMap() {
+        // todo: this isn't quite correct. we are allowing too many keywords.
+        const map = super.getKeywordMap();
+        map[GrammarConstants.extensions] = TreeNode;
+        map[GrammarConstants.version] = TreeNode;
+        return map;
+    }
 }
 class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
     _isAbstract() {
@@ -3383,6 +3398,14 @@ ${includes}
 
 ${keywordContexts}`;
     }
+    // A language where anything goes.
+    static getTheAnyLanguageRootConstructor() {
+        return this.newFromCondensed(`@grammar any
+ @catchAllKeyword any
+@keyword any
+ @columns any*
+@wordType any`).getRootConstructor();
+    }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
         const tree = new TreeNode(grammarCode);
@@ -3470,8 +3493,8 @@ class TreeNotationCodeMirrorMode {
         this._codeMirrorLib = codeMirrorLib;
     }
     _getParsedProgram() {
-        const source = this._getProgramCodeMethod(this._cmInstance);
-        if (this._cachedSource !== source) {
+        const source = this._getProgramCodeMethod(this._cmInstance) || "";
+        if (!this._cachedProgram || this._cachedSource !== source) {
             this._cachedSource = source;
             this._cachedProgram = new (this._getProgramConstructorMethod())(source);
         }

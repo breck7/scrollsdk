@@ -22,6 +22,8 @@ const main = grammarSourceCode => {
     .register()
     .fromTextAreaWithAutocomplete(grammarConsole[0], { lineWrapping: true })
 
+  const getGrammarErrors = grammarCode => new GrammarConstructor(grammarCode).getProgramErrors()
+
   const grammarOnUpdate = () => {
     const grammarCode = grammarInstance.getValue()
     localStorage.setItem("grammarConsole", grammarCode)
@@ -38,7 +40,10 @@ const main = grammarSourceCode => {
     if (!grammarConstructor || currentGrammarCode !== cachedGrammarCode) {
       try {
         const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, "")
-        grammarConstructor = grammarProgram.getRootConstructor()
+        const grammarErrors = getGrammarErrors(currentGrammarCode)
+        if (grammarErrors.length) {
+          grammarConstructor = jtree.GrammarProgram.getTheAnyLanguageRootConstructor()
+        } else grammarConstructor = grammarProgram.getRootConstructor()
         cachedGrammarCode = currentGrammarCode
       } catch (err) {
         debugger
@@ -46,6 +51,17 @@ const main = grammarSourceCode => {
     }
     return grammarConstructor
   }
+
+  grammarInstance.on("keyup", grammarOnUpdate)
+  grammarInstance.on("keyup", () => {
+    codeOnUpdate()
+    // Hack to break CM cache:
+    if (true) {
+      const val = codeInstance.getValue()
+      codeInstance.setValue("\n" + val)
+      codeInstance.setValue(val)
+    }
+  })
 
   const codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", getGrammarConstructor, undefined, CodeMirror)
     .register()
@@ -59,22 +75,12 @@ const main = grammarSourceCode => {
     codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
-  grammarInstance.on("keyup", grammarOnUpdate)
-  grammarInstance.on("keyup", () => {
-    codeOnUpdate()
-    // Hack to break CM cache:
-    if (true) {
-      const val = codeInstance.getValue()
-      codeInstance.setValue("\n" + val)
-      codeInstance.setValue(val)
-    }
-  })
   codeInstance.on("keyup", codeOnUpdate)
 
-  if (grammarInstance.getValue()) {
-    grammarOnUpdate()
-    codeOnUpdate()
-  }
+  //if (grammarInstance.getValue()) {
+  grammarOnUpdate()
+  codeOnUpdate()
+  //}
 
   const fetchGrammar = (grammarPath, samplePath) => {
     $.get(grammarPath).then(grammar => {

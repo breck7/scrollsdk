@@ -19,8 +19,8 @@ class TreeNotationCodeMirrorMode {
         this._codeMirrorLib = codeMirrorLib;
     }
     _getParsedProgram() {
-        const source = this._getProgramCodeMethod(this._cmInstance);
-        if (this._cachedSource !== source) {
+        const source = this._getProgramCodeMethod(this._cmInstance) || "";
+        if (!this._cachedProgram || this._cachedSource !== source) {
             this._cachedSource = source;
             this._cachedProgram = new (this._getProgramConstructorMethod())(source);
         }

@@ -193,8 +193,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     const catchAllKeyword = this._getRunTimeCatchAllKeyword()
     const definitions = this._getProgramKeywordDefinitionCache()
     const def = definitions[catchAllKeyword]
+    if (def) return def
+
     // todo: implement contraints like a grammar file MUST have a catch all.
-    return def ? def : (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllDefinition()
+    if (this.isRoot()) throw new Error(`This grammar language lacks a root catch all definition`)
+    else return (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllDefinition()
   }
 
   private _cache_catchAllConstructor

@@ -32,8 +32,8 @@ class TreeNotationCodeMirrorMode {
   private _originalValue: string
 
   _getParsedProgram(): AbstractRuntimeProgram {
-    const source = this._getProgramCodeMethod(this._cmInstance)
-    if (this._cachedSource !== source) {
+    const source = this._getProgramCodeMethod(this._cmInstance) || ""
+    if (!this._cachedProgram || this._cachedSource !== source) {
       this._cachedSource = source
       this._cachedProgram = new (<any>this._getProgramConstructorMethod())(source)
     }

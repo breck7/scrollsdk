@@ -280,6 +280,25 @@ quack.quickTest("required keywords", equal => {
   equal(errors.length, 1)
 })
 
+quack.quickTest("minimum grammar", equal => {
+  // Arrange/Act
+  const programConstructor = GrammarProgram.newFromCondensed(
+    `@grammar any
+ @catchAllKeyword any
+@keyword any
+ @columns any*
+@wordType any`
+  ).getRootConstructor()
+  const program = new programConstructor()
+  const grammarProgram = program.getGrammarProgram()
+
+  // Assert
+  let errors = grammarProgram.getProgramErrors()
+  equal(errors.length, 0)
+  errors = program.getProgramErrors()
+  equal(errors.length, 0)
+})
+
 quack.quickTest("duplicate keywords", equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`type foo

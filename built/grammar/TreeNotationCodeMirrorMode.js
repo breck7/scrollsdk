@@ -99,8 +99,7 @@ class TreeNotationCodeMirrorMode {
         return __awaiter(this, void 0, void 0, function* () {
             const cursor = cmInstance.getCursor();
             const codeMirrorLib = this._getCodeMirrorLib();
-            const result = yield this._getParsedProgram().getAutocompleteWordsAt(cursor.line, cursor.ch);
-            console.log(result);
+            const result = yield this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
             return result.matches.length
                 ? {
                     list: result.matches,

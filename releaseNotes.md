@@ -1,13 +1,11 @@
-19.3.0 / 2019-04-21
+19.3.0 / 2019-04-22
 ===================
+- New: autocomplete for words beyond keywords
 - New: new base methods nodeAtLine, getNodeInScopeAtCharIndex, getWordIndexAtCharacterIndex, getWordProperties, getWordBoundaryIndices,   getAllWordBoundaryCoordinates
 - New: on runtime programs: getAutocompleteWordsAt and getAllSuggestions
+- New: getAutocompleteResults now provides descriptions, if present, along with completion word
 - Fix: error highlight scope fixes
-- Breaking: getAutocompleteWords now takes an optional 2nd column index parameter
 - Breaking: instead of getAutocompleteWords use getAutocompleteWordsAt
-
-
-
 
 19.2.1 / 2019-04-20
 ===================

@@ -79,6 +79,10 @@ class GrammarWordTypeNode extends TreeNode_1.default {
         options.sort((a, b) => b.length - a.length);
         return options;
     }
+    getAutocompleteWordOptions() {
+        const enumOptions = this._getEnumOptions();
+        return enumOptions || [];
+    }
     getRegexString() {
         // todo: enum
         const enumOptions = this._getEnumOptions();

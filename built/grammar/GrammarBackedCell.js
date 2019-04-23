@@ -21,6 +21,19 @@ class GrammarBackedCell {
         if (wordTypeClass)
             return wordTypeClass.getHighlightScope();
     }
+    getAutoCompleteWords(partialWord) {
+        const wordTypeClass = this._getWordTypeClass();
+        // wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
+        let words = wordTypeClass ? wordTypeClass.getAutocompleteWordOptions() : [];
+        if (partialWord)
+            words = words.filter(word => word.includes(partialWord));
+        return words.map(word => {
+            return {
+                text: word,
+                displayText: word
+            };
+        });
+    }
     getWord() {
         return this._word;
     }

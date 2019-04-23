@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
+const GrammarConstants_2 = require("./GrammarConstants");
 class AbstractRuntimeNode extends TreeNode_1.default {
     getGrammarProgram() {
         return this.getProgram().getGrammarProgram();
@@ -11,6 +12,34 @@ class AbstractRuntimeNode extends TreeNode_1.default {
     }
     getProgram() {
         return this;
+    }
+    getAutocompleteResults(partialWord, wordIndex) {
+        return wordIndex === 0
+            ? this.getAutocompleteResultsForKeywords(partialWord)
+            : this.getAutocompleteResultsForWord(partialWord, wordIndex);
+    }
+    _getGrammarBackedCellArray() {
+        return [];
+    }
+    getAutocompleteResultsForWord(partialWord, wordIndex) {
+        // todo: root should be [] correct?
+        const cell = this._getGrammarBackedCellArray()[wordIndex - 1];
+        return cell ? cell.getAutoCompleteWords(partialWord) : [];
+    }
+    getAutocompleteResultsForKeywords(partialWord) {
+        const def = this.getDefinition();
+        let defs = Object.values(def.getRunTimeKeywordMapWithDefinitions());
+        if (partialWord)
+            defs = defs.filter(def => def.getId().includes(partialWord));
+        return defs.map(def => {
+            const id = def.getId();
+            const colDescription = def.get(GrammarConstants_2.GrammarConstants.columns);
+            const description = def.getDescription() || (colDescription ? `(usage: ${id} ${colDescription})` : "");
+            return {
+                text: id,
+                displayText: id + (description ? " " + description : "")
+            };
+        });
     }
     _getKeywordDefinitionByName(path) {
         const grammarProgram = this.getProgram().getGrammarProgram();

@@ -76,9 +76,9 @@ const main = grammarSourceCode => {
     codeOnUpdate()
   }
 
-  const fetchGrammar = name => {
-    $.get(`/langs/${name}/${name}.grammar`).then(grammar => {
-      $.get(`/langs/${name}/sample.${name}`).then(sample => {
+  const fetchGrammar = (grammarPath, samplePath) => {
+    $.get(grammarPath).then(grammar => {
+      $.get(samplePath).then(sample => {
         grammarInstance.setValue(grammar)
         grammarOnUpdate()
         codeInstance.setValue(sample)
@@ -88,10 +88,12 @@ const main = grammarSourceCode => {
   }
 
   $("#samples").on("click", "a", function() {
-    const name = $(this)
-      .text()
-      .toLowerCase()
-    fetchGrammar(name)
+    const el = $(this)
+    const name = el.text().toLowerCase()
+
+    const samplePath = el.attr("data-samplePath") || `/langs/${name}/sample.${name}`
+    const grammarPath = el.attr("data-grammarPath") || `/langs/${name}/${name}.grammar`
+    fetchGrammar(grammarPath, samplePath)
   })
 }
 

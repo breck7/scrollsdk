@@ -119,7 +119,7 @@ class TreeNotationCodeMirrorMode {
   async codeMirrorAutocomplete(cmInstance, option) {
     const cursor = cmInstance.getCursor()
     const codeMirrorLib = this._getCodeMirrorLib()
-    const result = await this._getParsedProgram().getAutocompleteWordsAt(cursor.line, cursor.ch)
+    const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch)
 
     return result.matches.length
       ? {

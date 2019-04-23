@@ -24,6 +24,7 @@
 @wordType string
  @highlightScope string
 @keyword comment _top
+ @description Anything can go here!
  @highlightScope string
  @columns string*
  @catchAllKeyword comment

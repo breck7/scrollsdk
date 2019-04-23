@@ -35,9 +35,9 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }
-    _getAllSuggestions() {
+    getAllSuggestions() {
         return new TreeNode_1.default(this.getAllWordBoundaryCoordinates().map(coordinate => {
-            const results = this.getAutocompleteWordsAt(coordinate.y, coordinate.x);
+            const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x);
             return {
                 line: coordinate.y,
                 char: coordinate.x,
@@ -46,10 +46,8 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             };
         })).toTable();
     }
-    getAutocompleteWordsAt(lineIndex, charIndex) {
+    getAutocompleteResultsAt(lineIndex, charIndex) {
         const lineNode = this.nodeAtLine(lineIndex);
-        const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex);
-        const definition = nodeInScope.getDefinition();
         // todo: add more tests
         // todo: second param this.childrenToString()
         // todo: change to getAutocomplete definitions
@@ -59,12 +57,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             startCharIndex: wordProperties.startCharIndex,
             endCharIndex: wordProperties.endCharIndex,
             word: wordProperties.word,
-            matches: definition._getAutocompleteWords(wordProperties.word, wordIndex).map(str => {
-                return {
-                    text: str,
-                    displayText: str
-                };
-            })
+            matches: lineNode.getNodeInScopeAtCharIndex(charIndex).getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
     getProgramErrorMessages() {

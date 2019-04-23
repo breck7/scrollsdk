@@ -2182,6 +2182,34 @@ class AbstractRuntimeNode extends TreeNode {
     getProgram() {
         return this;
     }
+    getAutocompleteResults(partialWord, wordIndex) {
+        return wordIndex === 0
+            ? this.getAutocompleteResultsForKeywords(partialWord)
+            : this.getAutocompleteResultsForWord(partialWord, wordIndex);
+    }
+    _getGrammarBackedCellArray() {
+        return [];
+    }
+    getAutocompleteResultsForWord(partialWord, wordIndex) {
+        // todo: root should be [] correct?
+        const cell = this._getGrammarBackedCellArray()[wordIndex - 1];
+        return cell ? cell.getAutoCompleteWords(partialWord) : [];
+    }
+    getAutocompleteResultsForKeywords(partialWord) {
+        const def = this.getDefinition();
+        let defs = Object.values(def.getRunTimeKeywordMapWithDefinitions());
+        if (partialWord)
+            defs = defs.filter(def => def.getId().includes(partialWord));
+        return defs.map(def => {
+            const id = def.getId();
+            const colDescription = def.get(GrammarConstants.columns);
+            const description = def.getDescription() || (colDescription ? `(usage: ${id} ${colDescription})` : "");
+            return {
+                text: id,
+                displayText: id + (description ? " " + description : "")
+            };
+        });
+    }
     _getKeywordDefinitionByName(path) {
         const grammarProgram = this.getProgram().getGrammarProgram();
         // todo: do we need a relative to with this keyword path?
@@ -2237,9 +2265,9 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }
-    _getAllSuggestions() {
+    getAllSuggestions() {
         return new TreeNode(this.getAllWordBoundaryCoordinates().map(coordinate => {
-            const results = this.getAutocompleteWordsAt(coordinate.y, coordinate.x);
+            const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x);
             return {
                 line: coordinate.y,
                 char: coordinate.x,
@@ -2248,10 +2276,8 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             };
         })).toTable();
     }
-    getAutocompleteWordsAt(lineIndex, charIndex) {
+    getAutocompleteResultsAt(lineIndex, charIndex) {
         const lineNode = this.nodeAtLine(lineIndex);
-        const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex);
-        const definition = nodeInScope.getDefinition();
         // todo: add more tests
         // todo: second param this.childrenToString()
         // todo: change to getAutocomplete definitions
@@ -2261,12 +2287,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             startCharIndex: wordProperties.startCharIndex,
             endCharIndex: wordProperties.endCharIndex,
             word: wordProperties.word,
-            matches: definition._getAutocompleteWords(wordProperties.word, wordIndex).map(str => {
-                return {
-                    text: str,
-                    displayText: str
-                };
-            })
+            matches: lineNode.getNodeInScopeAtCharIndex(charIndex).getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
     getProgramErrorMessages() {
@@ -2377,6 +2398,19 @@ class GrammarBackedCell {
         const wordTypeClass = this._getWordTypeClass();
         if (wordTypeClass)
             return wordTypeClass.getHighlightScope();
+    }
+    getAutoCompleteWords(partialWord) {
+        const wordTypeClass = this._getWordTypeClass();
+        // wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
+        let words = wordTypeClass ? wordTypeClass.getAutocompleteWordOptions() : [];
+        if (partialWord)
+            words = words.filter(word => word.includes(partialWord));
+        return words.map(word => {
+            return {
+                text: word,
+                displayText: word
+            };
+        });
     }
     getWord() {
         return this._word;
@@ -2896,18 +2930,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     getHighlightScope() {
         return this.get(GrammarConstants.highlightScope);
     }
-    _getAutocompleteKeywords(partialWord) {
-        return TreeUtils.getUniqueWordsArray(this.getRunTimeKeywordNames().join("\n")).map(obj => obj.word);
-    }
-    // todo: I think partialWord should be computed here?
-    _getAutocompleteWords(partialWord, wordIndex) {
-        let words = [];
-        if (wordIndex === 0)
-            words = this._getAutocompleteKeywords(partialWord);
-        if (partialWord)
-            words = words.filter(word => word.includes(partialWord));
-        return words;
-    }
     isDefined(keyword) {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
     }
@@ -3088,6 +3110,10 @@ class GrammarWordTypeNode extends TreeNode {
         const options = Object.keys(enumNode.getOptions());
         options.sort((a, b) => b.length - a.length);
         return options;
+    }
+    getAutocompleteWordOptions() {
+        const enumOptions = this._getEnumOptions();
+        return enumOptions || [];
     }
     getRegexString() {
         // todo: enum
@@ -3515,8 +3541,7 @@ class TreeNotationCodeMirrorMode {
         return __awaiter(this, void 0, void 0, function* () {
             const cursor = cmInstance.getCursor();
             const codeMirrorLib = this._getCodeMirrorLib();
-            const result = yield this._getParsedProgram().getAutocompleteWordsAt(cursor.line, cursor.ch);
-            console.log(result);
+            const result = yield this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
             return result.matches.length
                 ? {
                     list: result.matches,
@@ -3585,4 +3610,4 @@ jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "19.2.1";
+jtree.getVersion = () => "19.3.0";

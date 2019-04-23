@@ -4,6 +4,7 @@ declare class GrammarWordTypeNode extends TreeNode {
     getKeywordMap(): types.stringMap;
     getHighlightScope(): string | undefined;
     private _getEnumOptions;
+    getAutocompleteWordOptions(): string[];
     getRegexString(): any;
     parse(str: string): any;
     isValid(str: string, runTimeGrammarBackedProgram: any): boolean;

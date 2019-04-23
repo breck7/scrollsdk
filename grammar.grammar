@@ -72,7 +72,10 @@
   @keywordTable
   @enum
   @parseWith
-@keyword @parseWith _variadicKeywordRule
+@keyword @parseWith
+ @columns any*
+ @highlightScope entity.other.attribute-name
+ @single
 @keyword @group
  @columns any*
  @highlightScope entity.other.attribute-name
@@ -91,7 +94,7 @@
  @columns any any
 @keyword @catchAllKeyword _monadicKeywordRule
 @abstract _constructor _variadicKeywordRule
- @description If specified, the existence of this constructor will be checked when the grammar file is checked for errors.
+ @description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
 @keyword @constructors _nonTerminalKeywordRule
  @catchAllKeyword _constructor
 @keyword @frequency _monadicKeywordRule
@@ -99,8 +102,9 @@
  @columns any*
 @keyword @columns _keywordRule
  @columns wordType*
-@keyword @regex _variadicKeywordRule
+@keyword @regex
  @columns regex*
+ @single
 @abstract _compilerRule
  @columns any*
  @highlightScope entity.other.attribute-name

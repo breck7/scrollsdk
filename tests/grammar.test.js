@@ -8,6 +8,7 @@ const jibberishProgram = require("./jibberish/jibberishProgram.js")
 const jibberishNodes = require("./jibberish/jibberishNodes.js")
 
 const numbersGrammar = fs.readFileSync(__dirname + "/numbers.grammar", "utf8")
+const grammarGrammar = fs.readFileSync(__dirname + "/../grammar.grammar", "utf8")
 
 quack.quickTest("basic", equal => {
   // Arrange/Act/Assert
@@ -28,6 +29,8 @@ quack.quickTest("basics", equal => {
 })
 
 const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
+
+const makeGrammarProgram = code => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = code => {
   const grammarPath = __dirname + "/jibberish/jibberish.grammar"
@@ -173,11 +176,23 @@ com
 `)
 
   // Act/Assert
-  equal(program.getAutocompleteWordsAt(1, 0).matches.length, 1)
-  equal(program.getAutocompleteWordsAt(1, 2).matches.length, 1, "should complete comment")
-  equal(program.getAutocompleteWordsAt(1, 3).matches.length, 1, "should complete comment")
-  equal(program.getAutocompleteWordsAt(2, 0).matches.length, 3)
-  equal(program.getAutocompleteWordsAt(0, 2).matches.length, 0)
+  equal(program.getAutocompleteResultsAt(1, 0).matches.length, 1)
+  equal(program.getAutocompleteResultsAt(1, 2).matches.length, 1, "should complete comment")
+  equal(program.getAutocompleteResultsAt(1, 3).matches.length, 1, "should complete comment")
+  equal(program.getAutocompleteResultsAt(2, 0).matches.length, 3)
+  equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
+
+  equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
+  // todo: test for descriptions in addition to returned words
+})
+
+quack.quickTest("autocomplete additional words", equal => {
+  // Arrange
+  const program = makeGrammarProgram(`@keyword foo
+ @highlightScope comme`)
+
+  // Act/Assert
+  equal(program.getAutocompleteResultsAt(1, 20).matches.length, 5)
 })
 
 quack.quickTest("any nodes", equal => {

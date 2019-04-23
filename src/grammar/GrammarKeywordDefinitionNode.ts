@@ -101,7 +101,7 @@ ${captures}
     return defaults ? defaults.get(name) : undefined
   }
 
-  getDescription() {
+  getDescription(): string {
     return this.get(GrammarConstants.description) || ""
   }
 

@@ -171,18 +171,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getHighlightScope() {
         return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
     }
-    _getAutocompleteKeywords(partialWord) {
-        return TreeUtils_1.default.getUniqueWordsArray(this.getRunTimeKeywordNames().join("\n")).map(obj => obj.word);
-    }
-    // todo: I think partialWord should be computed here?
-    _getAutocompleteWords(partialWord, wordIndex) {
-        let words = [];
-        if (wordIndex === 0)
-            words = this._getAutocompleteKeywords(partialWord);
-        if (partialWord)
-            words = words.filter(word => word.includes(partialWord));
-        return words;
-    }
     isDefined(keyword) {
         return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
     }

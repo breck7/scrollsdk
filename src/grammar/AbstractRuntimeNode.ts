@@ -1,8 +1,13 @@
 import TreeNode from "../base/TreeNode"
 import { GrammarConstantsErrors } from "./GrammarConstants"
+import { GrammarConstants } from "./GrammarConstants"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import GrammarBackedCell from "./GrammarBackedCell"
 /*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
+/*FOR_TYPES_ONLY*/ import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
+
+import types from "../types"
 
 abstract class AbstractRuntimeNode extends TreeNode {
   getGrammarProgram() {
@@ -15,6 +20,39 @@ abstract class AbstractRuntimeNode extends TreeNode {
 
   getProgram(): AbstractRuntimeNode {
     return this
+  }
+
+  getAutocompleteResults(partialWord: string, wordIndex: types.positiveInt) {
+    return wordIndex === 0
+      ? this.getAutocompleteResultsForKeywords(partialWord)
+      : this.getAutocompleteResultsForWord(partialWord, wordIndex)
+  }
+
+  protected _getGrammarBackedCellArray(): GrammarBackedCell[] {
+    return []
+  }
+
+  getAutocompleteResultsForWord(partialWord: string, wordIndex: types.positiveInt) {
+    // todo: root should be [] correct?
+    const cell = this._getGrammarBackedCellArray()[wordIndex - 1]
+    return cell ? cell.getAutoCompleteWords(partialWord) : []
+  }
+
+  getAutocompleteResultsForKeywords(partialWord: string) {
+    const def = this.getDefinition()
+    let defs: GrammarKeywordDefinitionNode[] = Object.values(def.getRunTimeKeywordMapWithDefinitions())
+
+    if (partialWord) defs = defs.filter(def => def.getId().includes(partialWord))
+
+    return defs.map(def => {
+      const id = def.getId()
+      const colDescription = def.get(GrammarConstants.columns)
+      const description = def.getDescription() || (colDescription ? `(usage: ${id} ${colDescription})` : "")
+      return {
+        text: id,
+        displayText: id + (description ? " " + description : "")
+      }
+    })
   }
 
   abstract getDefinition(): AbstractGrammarDefinitionNode

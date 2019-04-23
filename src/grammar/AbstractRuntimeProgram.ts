@@ -46,7 +46,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   getAllSuggestions() {
     return new TreeNode(
       this.getAllWordBoundaryCoordinates().map(coordinate => {
-        const results = this.getAutocompleteWordsAt(coordinate.y, coordinate.x)
+        const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x)
         return {
           line: coordinate.y,
           char: coordinate.x,
@@ -57,11 +57,8 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     ).toTable()
   }
 
-  getAutocompleteWordsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt) {
+  getAutocompleteResultsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt) {
     const lineNode = this.nodeAtLine(lineIndex)
-    const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex)
-
-    const definition = (<AbstractRuntimeNode>nodeInScope).getDefinition()
 
     // todo: add more tests
     // todo: second param this.childrenToString()
@@ -73,12 +70,10 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       startCharIndex: wordProperties.startCharIndex,
       endCharIndex: wordProperties.endCharIndex,
       word: wordProperties.word,
-      matches: definition._getAutocompleteWords(wordProperties.word, wordIndex).map(str => {
-        return {
-          text: str,
-          displayText: str
-        }
-      })
+      matches: (<AbstractRuntimeNode>lineNode.getNodeInScopeAtCharIndex(charIndex)).getAutocompleteResults(
+        wordProperties.word,
+        wordIndex
+      )
     }
   }
 

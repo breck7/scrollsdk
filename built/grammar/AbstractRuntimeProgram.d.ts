@@ -6,8 +6,8 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getProgramErrorsIterator(): IterableIterator<any>;
     getProgramErrors(): types.ParseError[];
     getInvalidKeywords(level?: any): string[];
-    _getAllSuggestions(): string;
-    getAutocompleteWordsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt): {
+    getAllSuggestions(): string;
+    getAutocompleteResultsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt): {
         startCharIndex: number;
         endCharIndex: number;
         word: string;

@@ -10,6 +10,10 @@ declare class GrammarBackedCell {
     private _type;
     getType(): string;
     getHighlightScope(): string | undefined;
+    getAutoCompleteWords(partialWord: string): {
+        text: string;
+        displayText: string;
+    }[];
     getWord(): string;
     getParsed(): any;
     isOptional(): boolean;

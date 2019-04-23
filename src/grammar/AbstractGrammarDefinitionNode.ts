@@ -209,19 +209,6 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.highlightScope)
   }
 
-  private _getAutocompleteKeywords(partialWord: string): string[] {
-    return TreeUtils.getUniqueWordsArray(this.getRunTimeKeywordNames().join("\n")).map(obj => obj.word)
-  }
-
-  // todo: I think partialWord should be computed here?
-  _getAutocompleteWords(partialWord: string, wordIndex: types.positiveInt): string[] {
-    let words = []
-    if (wordIndex === 0) words = this._getAutocompleteKeywords(partialWord)
-
-    if (partialWord) words = words.filter(word => word.includes(partialWord))
-    return words
-  }
-
   isDefined(keyword) {
     return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()]
   }

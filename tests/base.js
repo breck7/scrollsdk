@@ -3108,7 +3108,7 @@ event lala2018
 
 testTree.makeRandomTree = equal => {
   // Arrange/Act/Assert
-  equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).length, 2)
+  equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).getTopDownArray().length, 3)
 }
 
 testTree.setContentWithChildrenRegression = equal => {

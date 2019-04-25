@@ -1597,7 +1597,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  protected _deleteByKeyword(keyword: word) {
+  protected _deleteAllChildNodesWithKeyword(keyword: word) {
     if (!this.has(keyword)) return this
     const allNodes = this._getChildren()
     const indexesToDelete = []
@@ -1609,13 +1609,13 @@ class TreeNode extends ImmutableNode {
 
   delete(keyword = "") {
     const xi = this.getXI()
-    if (!keyword.includes(xi)) return this._deleteByKeyword(keyword)
+    if (!keyword.includes(xi)) return this._deleteAllChildNodesWithKeyword(keyword)
 
     const parts = keyword.split(xi)
     const nextKeyword = parts.pop()
     const targetNode = this.getNode(parts.join(xi))
 
-    return targetNode ? targetNode._deleteByKeyword(nextKeyword) : 0
+    return targetNode ? targetNode._deleteAllChildNodesWithKeyword(nextKeyword) : 0
   }
 
   deleteColumn(keyword = "") {

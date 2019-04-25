@@ -7,6 +7,8 @@ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 
+import types from "../types"
+
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   // todo: protected?
   _getRunTimeCatchAllKeyword(): string {
@@ -17,8 +19,8 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   }
 
   isOrExtendsAKeywordInScope(keywordsInScope: string[]): boolean {
-    const chain = this._getKeywordChain()
-    return keywordsInScope.some(keyword => chain[keyword])
+    const chain = this.getKeywordInheritanceSet()
+    return keywordsInScope.some(keyword => chain.has(keyword))
   }
 
   getSyntaxContextId() {
@@ -56,30 +58,33 @@ ${captures}
        pop: true`
   }
 
-  private _cache_keywordChain
+  private _cache_keywordInheritanceSet: Set<types.word>
 
-  protected _getKeywordChain() {
-    this._initKeywordChainCache()
-    return this._cache_keywordChain
+  getKeywordInheritanceSet() {
+    this._initKeywordInheritanceSetCache()
+    return this._cache_keywordInheritanceSet
   }
 
   protected _getParentKeyword() {
     return this.getWord(2)
   }
 
-  protected _initKeywordChainCache() {
-    if (this._cache_keywordChain) return undefined
-    const cache = {}
-    cache[this.getId()] = true
+  protected _initKeywordInheritanceSetCache() {
+    if (this._cache_keywordInheritanceSet) return undefined
+    const cache = new Set()
+    cache.add(this.getId())
     const parentKeyword = this._getParentKeyword()
     if (parentKeyword) {
-      cache[parentKeyword] = true
+      cache.add(parentKeyword)
       const defs = this._getProgramKeywordDefinitionCache()
       const parentDef = defs[parentKeyword]
       if (!parentDef) throw new Error(`${parentKeyword} not found`)
-      Object.assign(cache, parentDef._getKeywordChain())
+
+      for (let keyword of parentDef.getKeywordInheritanceSet()) {
+        cache.add(keyword)
+      }
     }
-    this._cache_keywordChain = cache
+    this._cache_keywordInheritanceSet = cache
   }
 
   // todo: protected?

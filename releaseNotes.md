@@ -1,3 +1,7 @@
+19.4.0 / 2019-04-24
+===================
+- New: getKeywordInheritanceSet method
+
 19.3.2 / 2019-04-23
 ===================
 - Fix: better error handling for incomplete grammars

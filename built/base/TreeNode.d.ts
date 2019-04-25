@@ -241,7 +241,7 @@ declare class TreeNode extends ImmutableNode {
     remap(map: Object): this;
     rename(oldKeyword: word, newKeyword: word): this;
     renameAll(oldName: word, newName: word): this;
-    protected _deleteByKeyword(keyword: word): this;
+    protected _deleteAllChildNodesWithKeyword(keyword: word): this;
     delete(keyword?: string): any;
     deleteColumn(keyword?: string): this;
     extend(nodeOrStr: any): this;

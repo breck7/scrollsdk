@@ -1798,7 +1798,7 @@ class TreeNode extends ImmutableNode {
         this.findNodes(oldName).forEach(node => node.setKeyword(newName));
         return this;
     }
-    _deleteByKeyword(keyword) {
+    _deleteAllChildNodesWithKeyword(keyword) {
         if (!this.has(keyword))
             return this;
         const allNodes = this._getChildren();
@@ -1812,11 +1812,11 @@ class TreeNode extends ImmutableNode {
     delete(keyword = "") {
         const xi = this.getXI();
         if (!keyword.includes(xi))
-            return this._deleteByKeyword(keyword);
+            return this._deleteAllChildNodesWithKeyword(keyword);
         const parts = keyword.split(xi);
         const nextKeyword = parts.pop();
         const targetNode = this.getNode(parts.join(xi));
-        return targetNode ? targetNode._deleteByKeyword(nextKeyword) : 0;
+        return targetNode ? targetNode._deleteAllChildNodesWithKeyword(nextKeyword) : 0;
     }
     deleteColumn(keyword = "") {
         this.forEach(node => node.delete(keyword));
@@ -2966,8 +2966,8 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
             this.getParent()._getRunTimeCatchAllKeyword());
     }
     isOrExtendsAKeywordInScope(keywordsInScope) {
-        const chain = this._getKeywordChain();
-        return keywordsInScope.some(keyword => chain[keyword]);
+        const chain = this.getKeywordInheritanceSet();
+        return keywordsInScope.some(keyword => chain.has(keyword));
     }
     getSyntaxContextId() {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
@@ -3002,28 +3002,30 @@ ${captures}
      - match: $
        pop: true`;
     }
-    _getKeywordChain() {
-        this._initKeywordChainCache();
-        return this._cache_keywordChain;
+    getKeywordInheritanceSet() {
+        this._initKeywordInheritanceSetCache();
+        return this._cache_keywordInheritanceSet;
     }
     _getParentKeyword() {
         return this.getWord(2);
     }
-    _initKeywordChainCache() {
-        if (this._cache_keywordChain)
+    _initKeywordInheritanceSetCache() {
+        if (this._cache_keywordInheritanceSet)
             return undefined;
-        const cache = {};
-        cache[this.getId()] = true;
+        const cache = new Set();
+        cache.add(this.getId());
         const parentKeyword = this._getParentKeyword();
         if (parentKeyword) {
-            cache[parentKeyword] = true;
+            cache.add(parentKeyword);
             const defs = this._getProgramKeywordDefinitionCache();
             const parentDef = defs[parentKeyword];
             if (!parentDef)
                 throw new Error(`${parentKeyword} not found`);
-            Object.assign(cache, parentDef._getKeywordChain());
+            for (let keyword of parentDef.getKeywordInheritanceSet()) {
+                cache.add(keyword);
+            }
         }
-        this._cache_keywordChain = cache;
+        this._cache_keywordInheritanceSet = cache;
     }
     // todo: protected?
     _getProgramKeywordDefinitionCache() {
@@ -3642,4 +3644,4 @@ jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "19.3.2";
+jtree.getVersion = () => "19.4.0";

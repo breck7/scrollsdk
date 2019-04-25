@@ -4,10 +4,10 @@ declare class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode
     isOrExtendsAKeywordInScope(keywordsInScope: string[]): boolean;
     getSyntaxContextId(): string;
     getMatchBlock(): string;
-    private _cache_keywordChain;
-    protected _getKeywordChain(): any;
+    private _cache_keywordInheritanceSet;
+    getKeywordInheritanceSet(): Set<string>;
     protected _getParentKeyword(): string;
-    protected _initKeywordChainCache(): any;
+    protected _initKeywordInheritanceSetCache(): any;
     _getProgramKeywordDefinitionCache(): {
         [keyword: string]: GrammarKeywordDefinitionNode;
     };

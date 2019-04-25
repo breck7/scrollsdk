@@ -1398,7 +1398,7 @@ class TreeNode extends ImmutableNode {
         this.findNodes(oldName).forEach(node => node.setKeyword(newName));
         return this;
     }
-    _deleteByKeyword(keyword) {
+    _deleteAllChildNodesWithKeyword(keyword) {
         if (!this.has(keyword))
             return this;
         const allNodes = this._getChildren();
@@ -1412,11 +1412,11 @@ class TreeNode extends ImmutableNode {
     delete(keyword = "") {
         const xi = this.getXI();
         if (!keyword.includes(xi))
-            return this._deleteByKeyword(keyword);
+            return this._deleteAllChildNodesWithKeyword(keyword);
         const parts = keyword.split(xi);
         const nextKeyword = parts.pop();
         const targetNode = this.getNode(parts.join(xi));
-        return targetNode ? targetNode._deleteByKeyword(nextKeyword) : 0;
+        return targetNode ? targetNode._deleteAllChildNodesWithKeyword(nextKeyword) : 0;
     }
     deleteColumn(keyword = "") {
         this.forEach(node => node.delete(keyword));

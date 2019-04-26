@@ -1,6 +1,7 @@
 declare class TreeUtils {
     static getPathWithoutFileName(path: any): any;
     static getClassNameFromFilePath(filename: any): any;
+    static getLineIndexAtCharacterPosition(str: string, index: number): number;
     static resolvePath(filePath: string, programFilepath: string): any;
     static getFileExtension(url?: string): string;
     static resolveProperty(obj: Object, path: string | string[], separator?: string): any;
@@ -19,6 +20,9 @@ declare class TreeUtils {
             _str: string;
             addUseStrict(): any;
             removeRequires(): any;
+            _removeAllLinesStartingWith(prefix: string): any;
+            removeNodeJsOnlyLines(): any;
+            removeHashBang(): any;
             removeImports(): any;
             removeExports(): any;
             changeDefaultExportsToWindowExports(): any;

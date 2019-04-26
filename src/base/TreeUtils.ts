@@ -12,6 +12,16 @@ class TreeUtils {
       .pop()
   }
 
+  static getLineIndexAtCharacterPosition(str: string, index: number): number {
+    const lines = str.split("\n")
+    const len = lines.length
+    let position = 0
+    for (let lineNumber = 0; lineNumber < len; lineNumber++) {
+      position += lines[lineNumber].length
+      if (position >= index) return lineNumber
+    }
+  }
+
   static resolvePath(filePath: string, programFilepath: string) {
     // For use in Node.js only
     if (!filePath.startsWith(".")) return filePath
@@ -120,6 +130,23 @@ class TreeUtils {
 
     removeRequires() {
       this._str = this._str.replace(/(\n|^)const .* \= require\(.*/g, "$1")
+      return this
+    }
+
+    _removeAllLinesStartingWith(prefix: string) {
+      this._str = this._str
+        .split("\n")
+        .filter(line => !line.startsWith(prefix))
+        .join("\n")
+      return this
+    }
+
+    removeNodeJsOnlyLines() {
+      return this._removeAllLinesStartingWith("/*NODE_JS_ONLY*/")
+    }
+
+    removeHashBang() {
+      this._str = this._str.replace(/^\#\![^\n]+\n/, "")
       return this
     }
 

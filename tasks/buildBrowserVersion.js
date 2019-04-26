@@ -43,6 +43,8 @@ fs.writeFileSync(
   "// WARNING: COMPILED FILE.\n" +
     new BrowserScript(fs.readFileSync(__dirname + "/../tests/base.js", "utf8"))
       .removeRequires()
+      .removeHashBang()
+      .removeNodeJsOnlyLines()
       .changeNodeExportsToWindowExports()
       .getString(),
   "utf8"

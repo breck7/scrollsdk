@@ -47,7 +47,8 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         })).toTable();
     }
     getAutocompleteResultsAt(lineIndex, charIndex) {
-        const lineNode = this.nodeAtLine(lineIndex);
+        const lineNode = this.nodeAtLine(lineIndex) || this;
+        const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex);
         // todo: add more tests
         // todo: second param this.childrenToString()
         // todo: change to getAutocomplete definitions
@@ -57,7 +58,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             startCharIndex: wordProperties.startCharIndex,
             endCharIndex: wordProperties.endCharIndex,
             word: wordProperties.word,
-            matches: lineNode.getNodeInScopeAtCharIndex(charIndex).getAutocompleteResults(wordProperties.word, wordIndex)
+            matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
     getProgramErrorMessages() {

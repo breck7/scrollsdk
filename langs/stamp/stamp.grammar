@@ -10,6 +10,7 @@
   file
 @wordType any
  @regex .*
+ @highlightScope string
 @wordType filepath
  @regex .*
 @wordType inputType
@@ -50,4 +51,4 @@
  @highlightScope string
 @keyword data
  @catchAllKeyword any
- @highlightScope string
+ @highlightScope variable

@@ -1,24 +1,33 @@
 #! /usr/local/bin/node --use_strict
 
 const Quack = require("./quack.js")
+const fs = require("fs")
 const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../grammar.grammar")
+const StampProgram = require("../langs/stamp/index.js")
 const TreeNotationCodeMirrorMode = require("../built/grammar/TreeNotationCodeMirrorMode.js").default
+const TreeUtils = require("../built/base/TreeUtils.js").default
 
 class MockStream {
   constructor(str) {
     this._str = str
-    this._position = -1
+    this._charPosition = -1
     this._last = 0
   }
 
   next() {
-    this._position++
-    const char = this._str[this._position]
+    this._charPosition++
+    const char = this._str[this._charPosition]
     return char === "\n" ? undefined : char
   }
 
+  get lineOracle() {
+    return {
+      line: TreeUtils.getLineIndexAtCharacterPosition(this._str, this._charPosition)
+    }
+  }
+
   current() {
-    return this._str.substr(this._last, this._position - this._last)
+    return this._str.substr(this._last, this._charPosition - this._last)
   }
 
   skipToEnd() {
@@ -28,17 +37,17 @@ class MockStream {
   }
 
   eol() {
-    const char = this._str[this._position]
+    const char = this._str[this._charPosition]
     return char === "\n" || char === undefined
   }
 
   peek() {
-    const char = this._str[this._position + 1]
+    const char = this._str[this._charPosition + 1]
     return char
   }
 
   isEndOfStream() {
-    return this._position === this._str.length
+    return this._charPosition === this._str.length
   }
 }
 
@@ -51,14 +60,14 @@ class MockCodeMirror {
     const mode = this._mode
     const testStream = new MockStream(words)
     const startState = mode.startState()
-    const tokens = []
+    let tokens = []
     const lines = []
     while (!testStream.isEndOfStream()) {
       const token = mode.token(testStream, startState)
       tokens.push(token)
       if (testStream.eol()) {
         lines.push(tokens.join(" "))
-        tokens.splice(0, tokens.length)
+        tokens = []
       }
     }
     return lines
@@ -67,12 +76,30 @@ class MockCodeMirror {
 
 Quack.quickTest("code mirror test", equal => {
   const words = `@grammar test
+ @version`
+  const tokens = `atom bracket def bracket atom`
+
+  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
+  const tokenLines = mock.getTokenLines(words)
+  equal(tokenLines.join(" "), tokens)
+})
+
+Quack.quickTest("code mirror test", equal => {
+  const words = `@grammar test
  @version 1.0.0
 @keyword foobar`
   const tokens = `atom bracket def bracket atom bracket number def bracket def`
 
-  const mode = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
-  const tokenLines = mode.getTokenLines(words)
+  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
+  const tokenLines = mock.getTokenLines(words)
   equal(tokenLines.length, 3)
   equal(tokenLines.join(" "), tokens)
+})
+
+Quack.quickTest("regression test", equal => {
+  const words = fs.readFileSync(__dirname + "/code-mirror-regression.stamp", "utf8")
+
+  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stamp", () => StampProgram, () => words))
+  const tokenLines = mock.getTokenLines(words)
+  equal(tokenLines.length, 217)
 })

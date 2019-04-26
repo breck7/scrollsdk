@@ -187,6 +187,8 @@ class ImmutableNode extends AbstractNode_node_1.default {
             this.getZI().length);
     }
     getNodeInScopeAtCharIndex(charIndex) {
+        if (this.isRoot())
+            return this;
         let wordIndex = this.getWordIndexAtCharacterIndex(charIndex);
         if (wordIndex > 0)
             return this;

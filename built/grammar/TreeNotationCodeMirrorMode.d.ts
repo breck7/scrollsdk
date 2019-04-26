@@ -1,9 +1,8 @@
 import types from "../types";
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
-declare type codeMirrorLibType = any;
-declare type codeMirrorInstanceType = any;
+import * as CodeMirrorLib from "codemirror";
 declare class TreeNotationCodeMirrorMode {
-    constructor(name: string, getProgramConstructorMethod: () => types.TreeProgramConstructor, getProgramCodeMethod: (instance: codeMirrorInstanceType) => string, codeMirrorLib?: codeMirrorLibType);
+    constructor(name: string, getProgramConstructorMethod: () => types.TreeProgramConstructor, getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib?: typeof CodeMirrorLib);
     private _name;
     private _getProgramCodeMethod;
     private _getProgramConstructorMethod;
@@ -51,26 +50,25 @@ declare class TreeNotationCodeMirrorMode {
         "144": string;
         "145": string;
     };
-    token(stream: any, state: any): string;
-    fromTextAreaWithAutocomplete(area: any, options: any): any;
+    token(stream: CodeMirrorLib.StringStream, state: any): string;
+    fromTextAreaWithAutocomplete(area: any, options: any): CodeMirrorLib.EditorFromTextArea;
     _enableAutoComplete(cmInstance: any): void;
-    _getCodeMirrorLib(): any;
-    codeMirrorAutocomplete(cmInstance: any, option: any): Promise<{
+    _getCodeMirrorLib(): typeof CodeMirrorLib;
+    codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, option: any): Promise<{
         list: {
             text: string;
             displayText: string;
         }[];
-        from: any;
-        to: any;
+        from: CodeMirrorLib.Position;
+        to: CodeMirrorLib.Position;
     }>;
     register(): this;
-    _advanceStreamAndGetTokenType(stream: any, state: any): string;
+    _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: any): string;
+    private _getLineNumber;
     _getWordStyle(lineIndex: any, wordIndex: any): string;
     startState(): {
-        words: any[];
-        lineIndex: number;
+        wordIndex: number;
     };
-    blankLine(state: any): void;
     _incrementLine(state: any): void;
 }
 export default TreeNotationCodeMirrorMode;

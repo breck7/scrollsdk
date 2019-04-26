@@ -12,6 +12,16 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static getLineIndexAtCharacterPosition(str, index) {
+        const lines = str.split("\n");
+        const len = lines.length;
+        let position = 0;
+        for (let lineNumber = 0; lineNumber < len; lineNumber++) {
+            position += lines[lineNumber].length;
+            if (position >= index)
+                return lineNumber;
+        }
+    }
     static resolvePath(filePath, programFilepath) {
         // For use in Node.js only
         if (!filePath.startsWith("."))
@@ -109,6 +119,20 @@ TreeUtils.BrowserScript = class {
     }
     removeRequires() {
         this._str = this._str.replace(/(\n|^)const .* \= require\(.*/g, "$1");
+        return this;
+    }
+    _removeAllLinesStartingWith(prefix) {
+        this._str = this._str
+            .split("\n")
+            .filter(line => !line.startsWith(prefix))
+            .join("\n");
+        return this;
+    }
+    removeNodeJsOnlyLines() {
+        return this._removeAllLinesStartingWith("/*NODE_JS_ONLY*/");
+    }
+    removeHashBang() {
+        this._str = this._str.replace(/^\#\![^\n]+\n/, "");
         return this;
     }
     removeImports() {

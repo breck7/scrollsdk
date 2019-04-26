@@ -2,6 +2,7 @@
 ===================
 - Fix: codeMirror autocomplete will now close if 1 option matching input text
 - Fix: fixed 0 autocomplete results when at position 0,0 on a blank line
+- Fix: fixed codeMirror bug in long documents
 
 19.5.0 / 2019-04-25
 ===================

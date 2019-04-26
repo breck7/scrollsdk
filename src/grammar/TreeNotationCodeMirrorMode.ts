@@ -77,7 +77,7 @@ class TreeNotationCodeMirrorMode {
     }
   }
 
-  token(stream, state) {
+  token(stream: CodeMirrorLib.StringStream, state) {
     return this._advanceStreamAndReturnTokenType(stream, state)
   }
 
@@ -139,8 +139,9 @@ class TreeNotationCodeMirrorMode {
     return this
   }
 
-  _advanceStreamAndReturnTokenType(stream, state) {
+  _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state) {
     let nextCharacter = stream.next()
+    const lineNumber = this._getLineNumber(stream, state)
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
       if (nextCharacter === " ") {
@@ -152,16 +153,21 @@ class TreeNotationCodeMirrorMode {
       }
       if (peek === " ") {
         state.wordIndex++
-        return this._getWordStyle(state.lineIndex, state.wordIndex)
+        return this._getWordStyle(lineNumber, state.wordIndex)
       }
       nextCharacter = stream.next()
     }
 
     state.wordIndex++
-    const style = this._getWordStyle(state.lineIndex, state.wordIndex)
+    const style = this._getWordStyle(lineNumber, state.wordIndex)
 
     this._incrementLine(state)
     return style
+  }
+
+  private _getLineNumber(stream, state): types.int {
+    const num = (<any>stream).lineOracle.line + 1 // state.lineIndex
+    return num
   }
 
   _getWordStyle(lineIndex, wordIndex): string {
@@ -172,20 +178,15 @@ class TreeNotationCodeMirrorMode {
     return program ? <string>textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined
   }
 
+  // todo: remove.
   startState() {
     return {
-      wordIndex: 0,
-      lineIndex: 1
+      wordIndex: 0
     }
-  }
-
-  blankLine(state) {
-    this._incrementLine(state)
   }
 
   _incrementLine(state) {
     state.wordIndex = 0
-    state.lineIndex++
   }
 }
 

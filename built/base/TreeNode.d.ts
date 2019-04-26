@@ -29,7 +29,7 @@ declare class ImmutableNode extends AbstractNode {
     protected _getTopDownArray(arr: any): void;
     getTopDownArray(): types.treeNode[];
     getTopDownArrayIterator(): IterableIterator<types.treeNode>;
-    nodeAtLine(lineNumber: types.positiveInt): TreeNode;
+    nodeAtLine(lineNumber: types.positiveInt): TreeNode | undefined;
     getNumberOfLines(): int;
     protected _getLineNumber(target: ImmutableNode): number;
     isBlankLine(): boolean;

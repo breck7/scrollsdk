@@ -36,6 +36,16 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static getLineIndexAtCharacterPosition(str, index) {
+        const lines = str.split("\n");
+        const len = lines.length;
+        let position = 0;
+        for (let lineNumber = 0; lineNumber < len; lineNumber++) {
+            position += lines[lineNumber].length;
+            if (position >= index)
+                return lineNumber;
+        }
+    }
     static resolvePath(filePath, programFilepath) {
         // For use in Node.js only
         if (!filePath.startsWith("."))
@@ -133,6 +143,20 @@ TreeUtils.BrowserScript = class {
     }
     removeRequires() {
         this._str = this._str.replace(/(\n|^)const .* \= require\(.*/g, "$1");
+        return this;
+    }
+    _removeAllLinesStartingWith(prefix) {
+        this._str = this._str
+            .split("\n")
+            .filter(line => !line.startsWith(prefix))
+            .join("\n");
+        return this;
+    }
+    removeNodeJsOnlyLines() {
+        return this._removeAllLinesStartingWith("/*NODE_JS_ONLY*/");
+    }
+    removeHashBang() {
+        this._str = this._str.replace(/^\#\![^\n]+\n/, "");
         return this;
     }
     removeImports() {
@@ -588,6 +612,8 @@ class ImmutableNode extends AbstractNode {
             this.getZI().length);
     }
     getNodeInScopeAtCharIndex(charIndex) {
+        if (this.isRoot())
+            return this;
         let wordIndex = this.getWordIndexAtCharacterIndex(charIndex);
         if (wordIndex > 0)
             return this;
@@ -2281,7 +2307,8 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
         })).toTable();
     }
     getAutocompleteResultsAt(lineIndex, charIndex) {
-        const lineNode = this.nodeAtLine(lineIndex);
+        const lineNode = this.nodeAtLine(lineIndex) || this;
+        const nodeInScope = lineNode.getNodeInScopeAtCharIndex(charIndex);
         // todo: add more tests
         // todo: second param this.childrenToString()
         // todo: change to getAutocomplete definitions
@@ -2291,7 +2318,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             startCharIndex: wordProperties.startCharIndex,
             endCharIndex: wordProperties.endCharIndex,
             word: wordProperties.word,
-            matches: lineNode.getNodeInScopeAtCharIndex(charIndex).getAutocompleteResults(wordProperties.word, wordIndex)
+            matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
     getProgramErrorMessages() {
@@ -3503,7 +3530,6 @@ ${keywordContexts}`;
             .join("\n");
     }
 }
-// import * as CodeMirrorLib from "codemirror"
 class TreeNotationCodeMirrorMode {
     constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
@@ -3561,7 +3587,7 @@ class TreeNotationCodeMirrorMode {
         };
     }
     token(stream, state) {
-        return this._advanceStreamAndGetTokenType(stream, state);
+        return this._advanceStreamAndReturnTokenType(stream, state);
     }
     fromTextAreaWithAutocomplete(area, options) {
         this._originalValue = area.value;
@@ -3570,7 +3596,9 @@ class TreeNotationCodeMirrorMode {
             mode: this._name,
             tabSize: 1,
             indentUnit: 1,
-            hintOptions: { hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option) }
+            hintOptions: {
+                hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option)
+            }
         };
         Object.assign(defaultOptions, options);
         this._cmInstance = this._getCodeMirrorLib().fromTextArea(area, defaultOptions);
@@ -3583,6 +3611,7 @@ class TreeNotationCodeMirrorMode {
         cmInstance.on("keyup", (cm, event) => {
             // https://stackoverflow.com/questions/13744176/codemirror-autocomplete-after-any-keyup
             if (!cm.state.completionActive && !excludedKeys[event.keyCode.toString()])
+                // Todo: get typings for CM autocomplete
                 codeMirrorLib.commands.autocomplete(cm, null, { completeSingle: false });
         });
     }
@@ -3591,9 +3620,12 @@ class TreeNotationCodeMirrorMode {
     }
     codeMirrorAutocomplete(cmInstance, option) {
         return __awaiter(this, void 0, void 0, function* () {
-            const cursor = cmInstance.getCursor();
+            const cursor = cmInstance.getDoc().getCursor();
             const codeMirrorLib = this._getCodeMirrorLib();
             const result = yield this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
+            // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
+            if (result.matches.length === 1 && result.matches[0].text === result.word)
+                return null;
             return result.matches.length
                 ? {
                     list: result.matches,
@@ -3609,11 +3641,12 @@ class TreeNotationCodeMirrorMode {
         codeMirrorLib.defineMIME("text/" + this._name, this._name);
         return this;
     }
-    _advanceStreamAndGetTokenType(stream, state) {
-        let next = stream.next();
-        while (typeof next === "string") {
+    _advanceStreamAndReturnTokenType(stream, state) {
+        let nextCharacter = stream.next();
+        const lineNumber = this._getLineNumber(stream, state);
+        while (typeof nextCharacter === "string") {
             const peek = stream.peek();
-            if (next === " ") {
+            if (nextCharacter === " ") {
                 if (peek === undefined || peek === "\n") {
                     stream.skipToEnd(); // advance string to end
                     this._incrementLine(state);
@@ -3621,15 +3654,19 @@ class TreeNotationCodeMirrorMode {
                 return "bracket";
             }
             if (peek === " ") {
-                state.words.push(stream.current());
-                return this._getWordStyle(state.lineIndex, state.words.length);
+                state.wordIndex++;
+                return this._getWordStyle(lineNumber, state.wordIndex);
             }
-            next = stream.next();
+            nextCharacter = stream.next();
         }
-        state.words.push(stream.current());
-        const style = this._getWordStyle(state.lineIndex, state.words.length);
+        state.wordIndex++;
+        const style = this._getWordStyle(lineNumber, state.wordIndex);
         this._incrementLine(state);
         return style;
+    }
+    _getLineNumber(stream, state) {
+        const num = stream.lineOracle.line + 1; // state.lineIndex
+        return num;
     }
     _getWordStyle(lineIndex, wordIndex) {
         const program = this._getParsedProgram();
@@ -3637,18 +3674,14 @@ class TreeNotationCodeMirrorMode {
         const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex);
         return program ? textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined;
     }
+    // todo: remove.
     startState() {
         return {
-            words: [],
-            lineIndex: 1
+            wordIndex: 0
         };
     }
-    blankLine(state) {
-        this._incrementLine(state);
-    }
     _incrementLine(state) {
-        state.words.splice(0, state.words.length);
-        state.lineIndex++;
+        state.wordIndex = 0;
     }
 }
 class jtree {
@@ -3662,4 +3695,4 @@ jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "19.5.0";
+jtree.getVersion = () => "19.5.1";

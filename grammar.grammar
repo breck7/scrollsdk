@@ -130,10 +130,14 @@
 @keyword @indentCharacter _compilerRule
 @keyword @description _keywordRule
  @columns string*
+@keyword _exampleLine
+ @columns exampleWord*
+ @highlightScope comment
+ @catchAllKeyword _exampleLine
 @keyword @example _keywordRule
  @description Provide a one line description and then a snippet of example code.
  @columns exampleWord*
- @any
+ @catchAllKeyword _exampleLine
  @highlightScope comment
 @abstract _nonTerminalKeywordRule _keywordRule
 @keyword defaultTuple

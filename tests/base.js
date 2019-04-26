@@ -1,4 +1,4 @@
-"use strict"
+#! /usr/local/bin/node
 
 const jtree = require("../built/jtree.js").default
 const TreeNode = require("../built/base/TreeNode.js").default
@@ -3449,6 +3449,16 @@ testTree.typeTests = equal => {
   equal(a.getLineSyntax(), "any")
 }
 
+testTree.utils = equal => {
+  // Arrange/Act/Assert
+  const Utils = jtree.Utils
+  equal(Utils.getLineIndexAtCharacterPosition(`abc`, 0), 0)
+  equal(Utils.getLineIndexAtCharacterPosition(`abc`, 2), 0)
+  equal(Utils.getLineIndexAtCharacterPosition(`abc\n`, 3), 0)
+  equal(Utils.getLineIndexAtCharacterPosition(`abc\na`, 4), 1)
+  equal(Utils.getLineIndexAtCharacterPosition(``, 0), 0)
+}
+
 testTree.isBlank = equal => {
   // Arrange
   const a = new TreeNode("text\n\ntest \ntest2  ")
@@ -3515,5 +3525,7 @@ testTree.treeNodes = equal => {
   equal(!!node.toString(), true)
   equal(node.has("color"), false)
 }
+
+/*NODE_JS_ONLY*/ if (!module.parent) require("./quack.js").runTestTree(testTree)
 
 module.exports = testTree

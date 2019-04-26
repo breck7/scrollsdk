@@ -58,7 +58,8 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   getAutocompleteResultsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt) {
-    const lineNode = this.nodeAtLine(lineIndex)
+    const lineNode = this.nodeAtLine(lineIndex) || this
+    const nodeInScope = <AbstractRuntimeNode>lineNode.getNodeInScopeAtCharIndex(charIndex)
 
     // todo: add more tests
     // todo: second param this.childrenToString()
@@ -70,10 +71,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       startCharIndex: wordProperties.startCharIndex,
       endCharIndex: wordProperties.endCharIndex,
       word: wordProperties.word,
-      matches: (<AbstractRuntimeNode>lineNode.getNodeInScopeAtCharIndex(charIndex)).getAutocompleteResults(
-        wordProperties.word,
-        wordIndex
-      )
+      matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
     }
   }
 
@@ -165,7 +163,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return typeNode ? typeNode.getWord(wordIndex - 1) : ""
   }
 
-  getWordHighlightScopeAtPosition(lineIndex: number, wordIndex: number) {
+  getWordHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope {
     this._initWordTypeCache()
     const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : "source"

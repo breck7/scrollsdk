@@ -168,7 +168,7 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
 
 quack.quickTest("autocomplete", equal => {
   // Arrange
-  const program = makeNumbersProgram(`+ 2 3
+  let program = makeNumbersProgram(`+ 2 3
 com
 `)
 
@@ -181,6 +181,9 @@ com
 
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
   // todo: test for descriptions in addition to returned words
+
+  // Arrange/Act/Assert
+  equal(makeNumbersProgram(``).getAutocompleteResultsAt(0, 0).matches.length, 3, "should be 3 results at root level")
 })
 
 quack.quickTest("autocomplete additional words", equal => {

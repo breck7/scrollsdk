@@ -1,3 +1,8 @@
+19.5.1 / 2019-04-26
+===================
+- Fix: codeMirror autocomplete will now close if 1 option matching input text
+- Fix: fixed 0 autocomplete results when at position 0,0 on a blank line
+
 19.5.0 / 2019-04-25
 ===================
 - New: @example keyword in grammar

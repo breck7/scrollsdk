@@ -2,18 +2,14 @@ import types from "../types"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
-
-declare type codeMirrorLibType = any
-declare type codeMirrorInstanceType = any
-
-// import * as CodeMirrorLib from "codemirror"
+/*FOR_TYPES_ONLY*/ import * as CodeMirrorLib from "codemirror"
 
 class TreeNotationCodeMirrorMode {
   constructor(
     name: string,
     getProgramConstructorMethod: () => types.TreeProgramConstructor,
-    getProgramCodeMethod: (instance: codeMirrorInstanceType) => string,
-    codeMirrorLib: codeMirrorLibType = undefined
+    getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string,
+    codeMirrorLib: typeof CodeMirrorLib = undefined
   ) {
     this._name = name
     this._getProgramConstructorMethod = getProgramConstructorMethod
@@ -23,12 +19,12 @@ class TreeNotationCodeMirrorMode {
   }
 
   private _name: string
-  private _getProgramCodeMethod: (cmInstance: codeMirrorInstanceType) => string
+  private _getProgramCodeMethod: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
   private _getProgramConstructorMethod: () => types.TreeProgramConstructor
-  private _codeMirrorLib: any
+  private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
   private _cachedProgram: types.treeProgram
-  private _cmInstance: codeMirrorInstanceType
+  private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
   _getParsedProgram(): AbstractRuntimeProgram {
@@ -82,7 +78,7 @@ class TreeNotationCodeMirrorMode {
   }
 
   token(stream, state) {
-    return this._advanceStreamAndGetTokenType(stream, state)
+    return this._advanceStreamAndReturnTokenType(stream, state)
   }
 
   fromTextAreaWithAutocomplete(area, options) {
@@ -92,7 +88,9 @@ class TreeNotationCodeMirrorMode {
       mode: this._name,
       tabSize: 1,
       indentUnit: 1,
-      hintOptions: { hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option) }
+      hintOptions: {
+        hint: (cmInstance: CodeMirrorLib.EditorFromTextArea, option) => this.codeMirrorAutocomplete(cmInstance, option)
+      }
     }
 
     Object.assign(defaultOptions, options)
@@ -108,7 +106,8 @@ class TreeNotationCodeMirrorMode {
     cmInstance.on("keyup", (cm, event) => {
       // https://stackoverflow.com/questions/13744176/codemirror-autocomplete-after-any-keyup
       if (!cm.state.completionActive && !excludedKeys[event.keyCode.toString()])
-        codeMirrorLib.commands.autocomplete(cm, null, { completeSingle: false })
+        // Todo: get typings for CM autocomplete
+        (<any>codeMirrorLib.commands).autocomplete(cm, null, { completeSingle: false })
     })
   }
 
@@ -116,10 +115,13 @@ class TreeNotationCodeMirrorMode {
     return this._codeMirrorLib
   }
 
-  async codeMirrorAutocomplete(cmInstance, option) {
-    const cursor = cmInstance.getCursor()
+  async codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, option) {
+    const cursor = cmInstance.getDoc().getCursor()
     const codeMirrorLib = this._getCodeMirrorLib()
     const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch)
+
+    // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
+    if (result.matches.length === 1 && result.matches[0].text === result.word) return null
 
     return result.matches.length
       ? {
@@ -137,11 +139,11 @@ class TreeNotationCodeMirrorMode {
     return this
   }
 
-  _advanceStreamAndGetTokenType(stream, state) {
-    let next = stream.next()
-    while (typeof next === "string") {
+  _advanceStreamAndReturnTokenType(stream, state) {
+    let nextCharacter = stream.next()
+    while (typeof nextCharacter === "string") {
       const peek = stream.peek()
-      if (next === " ") {
+      if (nextCharacter === " ") {
         if (peek === undefined || peek === "\n") {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
@@ -149,14 +151,14 @@ class TreeNotationCodeMirrorMode {
         return "bracket"
       }
       if (peek === " ") {
-        state.words.push(stream.current())
-        return this._getWordStyle(state.lineIndex, state.words.length)
+        state.wordIndex++
+        return this._getWordStyle(state.lineIndex, state.wordIndex)
       }
-      next = stream.next()
+      nextCharacter = stream.next()
     }
 
-    state.words.push(stream.current())
-    const style = this._getWordStyle(state.lineIndex, state.words.length)
+    state.wordIndex++
+    const style = this._getWordStyle(state.lineIndex, state.wordIndex)
 
     this._incrementLine(state)
     return style
@@ -172,7 +174,7 @@ class TreeNotationCodeMirrorMode {
 
   startState() {
     return {
-      words: [],
+      wordIndex: 0,
       lineIndex: 1
     }
   }
@@ -182,7 +184,7 @@ class TreeNotationCodeMirrorMode {
   }
 
   _incrementLine(state) {
-    state.words.splice(0, state.words.length)
+    state.wordIndex = 0
     state.lineIndex++
   }
 }

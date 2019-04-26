@@ -29,6 +29,7 @@ export namespace types {
   export declare type word = string // string that cannot contain the YI, XI or ZI
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
+  export declare type highlightScope = string
   export declare type fileExtension = string
   export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
   export declare type filterFn = (node: treeNode, index: int) => boolean

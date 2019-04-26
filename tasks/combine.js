@@ -5,8 +5,9 @@ const jtree = require("../index.js")
 const TreeNode = jtree.TreeNode
 const Utils = jtree.Utils
 
-const combine = (outputPath, inputFilePath) => {
+const combine = (outputPath, inputFilePath, prepareForDistribute = false) => {
   console.log("Working...")
+
   const folderPath = Utils.getPathWithoutFileName(inputFilePath) + "/"
   const fileExtension = Utils.getFileExtension(inputFilePath)
   const content = fs
@@ -14,7 +15,8 @@ const combine = (outputPath, inputFilePath) => {
     .filter(a => a.endsWith("." + fileExtension))
     .map(file => {
       const path = folderPath + file
-      return `#file ${path}\n` + fs.readFileSync(path, "utf8")
+      const distributeLine = prepareForDistribute ? `#file ${path}\n` : ""
+      return distributeLine + fs.readFileSync(path, "utf8")
     })
     .join("\n")
 
@@ -22,7 +24,8 @@ const combine = (outputPath, inputFilePath) => {
   node.delete("#onsave")
 
   const distributeFilePath = __filename.replace("combine.js", "distribute.js")
-  node.prependLine(`#onsave ${distributeFilePath}`)
+  if (prepareForDistribute) node.prependLine(`#onsave ${distributeFilePath}`)
+
   fs.writeFileSync(outputPath, node.toString(), "utf8")
   console.log("Done")
 }

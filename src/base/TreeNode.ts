@@ -112,7 +112,7 @@ class ImmutableNode extends AbstractNode {
     }
   }
 
-  nodeAtLine(lineNumber: types.positiveInt): TreeNode {
+  nodeAtLine(lineNumber: types.positiveInt): TreeNode | undefined {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (lineNumber === index) return node
@@ -234,6 +234,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getNodeInScopeAtCharIndex(charIndex: types.positiveInt) {
+    if (this.isRoot()) return this
     let wordIndex = this.getWordIndexAtCharacterIndex(charIndex)
     if (wordIndex > 0) return this
     let node: ImmutableNode = this

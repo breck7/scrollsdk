@@ -5,6 +5,7 @@ import { GrammarConstants } from "./GrammarConstants"
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode"
 import GrammarCustomConstructorsNode from "./GrammarCustomConstructorsNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
+import GrammarExampleNode from "./GrammarExampleNode"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
@@ -40,6 +41,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     map[GrammarConstants.constants] = GrammarConstantsNode
     map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
     map[GrammarConstants.constructors] = GrammarCustomConstructorsNode
+    map[GrammarConstants.example] = GrammarExampleNode
     return map
   }
 

@@ -50,6 +50,17 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         }
         return errors;
     }
+    getErrorsInGrammarExamples() {
+        const programConstructor = this.getRootConstructor();
+        const errors = [];
+        this.getKeywordDefinitions().forEach(def => def.getExamples().forEach(example => {
+            const exampleProgram = new programConstructor(example.childrenToString());
+            exampleProgram.getProgramErrors().forEach(err => {
+                errors.push(err);
+            });
+        }));
+        return errors;
+    }
     getNodeConstructor(line) {
         // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
         // Todo: this only supports single word type inheritance.

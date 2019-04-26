@@ -1,3 +1,4 @@
+import GrammarExampleNode from "./GrammarExampleNode";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 declare class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllKeyword(): string;
@@ -15,6 +16,7 @@ declare class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode
     protected _getDefaultsNode(): any;
     getDefaultFor(name: string): any;
     getDescription(): string;
+    getExamples(): GrammarExampleNode[];
     getConstantsObject(): {};
     getFrequency(): number;
 }

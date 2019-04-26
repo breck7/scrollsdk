@@ -2,7 +2,12 @@
  @description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  @catchAllKeyword error
  @extensions grammar gram
- @version 1.0.0
+ @example A grammar that parses anything:
+  @grammar latin
+   @catchAllKeyword any
+  @keyword any
+   @any
+ @version 1.1.0
  @keywords
   @grammar
   @keyword
@@ -26,6 +31,8 @@
 @wordType string
  @regex .*
  @highlightScope string
+@wordType exampleWord string
+ @highlightScope comment
 @wordType filepath
  @regex .*
 @wordType keyword
@@ -46,6 +53,7 @@
  @columns word
  @keywords
   @description
+  @example
   @extensions
   @keywords
   @constructors
@@ -122,6 +130,11 @@
 @keyword @indentCharacter _compilerRule
 @keyword @description _keywordRule
  @columns string*
+@keyword @example _keywordRule
+ @description Provide a one line description and then a snippet of example code.
+ @columns exampleWord*
+ @any
+ @highlightScope comment
 @abstract _nonTerminalKeywordRule _keywordRule
 @keyword defaultTuple
  @columns any any*

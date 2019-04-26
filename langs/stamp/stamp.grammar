@@ -20,6 +20,10 @@
 @keyword prompt
  @columns any inputType any*
  @highlightScope constant.language
+ @example Ask for a project name and create a new directory.
+  prompt PROJECT_NAME any Enter the name for your new project
+  folder PROJECT_NAME
+  file PROJECT_NAME/.gitignore
  @constructors
   nodejs ./PromptNode.js
 @keyword error

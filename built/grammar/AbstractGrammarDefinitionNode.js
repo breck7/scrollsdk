@@ -6,6 +6,7 @@ const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarDefinitionErrorNode_1 = require("./GrammarDefinitionErrorNode");
 const GrammarCustomConstructorsNode_1 = require("./GrammarCustomConstructorsNode");
 const GrammarCompilerNode_1 = require("./GrammarCompilerNode");
+const GrammarExampleNode_1 = require("./GrammarExampleNode");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
 const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode");
 const GrammarBackedAnyNode_1 = require("./GrammarBackedAnyNode");
@@ -33,6 +34,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         map[GrammarConstants_1.GrammarConstants.constants] = GrammarConstantsNode_1.default;
         map[GrammarConstants_1.GrammarConstants.compilerKeyword] = GrammarCompilerNode_1.default;
         map[GrammarConstants_1.GrammarConstants.constructors] = GrammarCustomConstructorsNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.example] = GrammarExampleNode_1.default;
         return map;
     }
     getId() {

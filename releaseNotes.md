@@ -1,3 +1,8 @@
+19.5.0 / 2019-04-25
+===================
+- New: @example keyword in grammar
+- New: getErrorsInGrammarExamples method on GrammarProgram
+
 19.4.0 / 2019-04-24
 ===================
 - New: getKeywordInheritanceSet method

@@ -12,6 +12,7 @@ declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordMap(): types.stringMap;
     getProgramErrors(): types.ParseError[];
+    getErrorsInGrammarExamples(): any[];
     getNodeConstructor(line: any): any;
     getTargetExtension(): string;
     private _cache_wordTypes;

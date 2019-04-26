@@ -31,6 +31,7 @@ declare enum GrammarConstants {
     constructorBrowser = "browser",
     compilerKeyword = "@compiler",
     description = "@description",
+    example = "@example",
     frequency = "@frequency",
     highlightScope = "@highlightScope"
 }

@@ -3,6 +3,7 @@ import TreeUtils from "../base/TreeUtils"
 
 import { GrammarConstants } from "./GrammarConstants"
 import GrammarConstantsNode from "./GrammarConstantsNode"
+import GrammarExampleNode from "./GrammarExampleNode"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
@@ -108,6 +109,10 @@ ${captures}
 
   getDescription(): string {
     return this.get(GrammarConstants.description) || ""
+  }
+
+  getExamples(): GrammarExampleNode[] {
+    return this.getChildrenByNodeType(GrammarExampleNode)
   }
 
   getConstantsObject() {

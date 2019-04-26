@@ -45,6 +45,7 @@ enum GrammarConstants {
 
   // develop time
   description = "@description",
+  example = "@example",
   frequency = "@frequency",
   highlightScope = "@highlightScope"
 }

@@ -43,6 +43,7 @@ var GrammarConstants;
     GrammarConstants["compilerKeyword"] = "@compiler";
     // develop time
     GrammarConstants["description"] = "@description";
+    GrammarConstants["example"] = "@example";
     GrammarConstants["frequency"] = "@frequency";
     GrammarConstants["highlightScope"] = "@highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));

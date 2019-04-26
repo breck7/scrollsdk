@@ -57,6 +57,8 @@
  @constructors
   nodejs ./jibberishNodes.js additionNode
 @keyword + add
+ @example Adding two numbers:
+  + 1 2
  @columns int*
  @highlightScope keyword.operator.arithmetic
 @keyword lightbulbState topLevel

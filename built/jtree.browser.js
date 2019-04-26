@@ -207,6 +207,7 @@ var GrammarConstants;
     GrammarConstants["compilerKeyword"] = "@compiler";
     // develop time
     GrammarConstants["description"] = "@description";
+    GrammarConstants["example"] = "@example";
     GrammarConstants["frequency"] = "@frequency";
     GrammarConstants["highlightScope"] = "@highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));
@@ -2781,6 +2782,8 @@ class GrammarDefinitionErrorNode extends TreeNode {
         return ["keyword"].concat(this.getWordsFrom(1).map(word => "any")).join(" ");
     }
 }
+class GrammarExampleNode extends TreeNode {
+}
 class AbstractGrammarDefinitionNode extends TreeNode {
     getKeywordMap() {
         const types = [
@@ -2804,6 +2807,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         map[GrammarConstants.constants] = GrammarConstantsNode;
         map[GrammarConstants.compilerKeyword] = GrammarCompilerNode;
         map[GrammarConstants.constructors] = GrammarCustomConstructorsNode;
+        map[GrammarConstants.example] = GrammarExampleNode;
         return map;
     }
     getId() {
@@ -3045,6 +3049,9 @@ ${captures}
     getDescription() {
         return this.get(GrammarConstants.description) || "";
     }
+    getExamples() {
+        return this.getChildrenByNodeType(GrammarExampleNode);
+    }
     getConstantsObject() {
         const constantsNode = this.getNodeByType(GrammarConstantsNode);
         return constantsNode ? constantsNode.getConstantsObj() : {};
@@ -3262,6 +3269,17 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             delete node._cachedLineNumber;
             line++;
         }
+        return errors;
+    }
+    getErrorsInGrammarExamples() {
+        const programConstructor = this.getRootConstructor();
+        const errors = [];
+        this.getKeywordDefinitions().forEach(def => def.getExamples().forEach(example => {
+            const exampleProgram = new programConstructor(example.childrenToString());
+            exampleProgram.getProgramErrors().forEach(err => {
+                errors.push(err);
+            });
+        }));
         return errors;
     }
     getNodeConstructor(line) {
@@ -3644,4 +3662,4 @@ jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
 jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
-jtree.getVersion = () => "19.4.0";
+jtree.getVersion = () => "19.5.0";

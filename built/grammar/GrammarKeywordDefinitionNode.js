@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
+const GrammarExampleNode_1 = require("./GrammarExampleNode");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
 class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.default {
     // todo: protected?
@@ -88,6 +89,9 @@ ${captures}
     }
     getDescription() {
         return this.get(GrammarConstants_1.GrammarConstants.description) || "";
+    }
+    getExamples() {
+        return this.getChildrenByNodeType(GrammarExampleNode_1.default);
     }
     getConstantsObject() {
         const constantsNode = this.getNodeByType(GrammarConstantsNode_1.default);

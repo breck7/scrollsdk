@@ -10,6 +10,7 @@ const jibberishNodes = require("./jibberish/jibberishNodes.js")
 const numbersGrammar = fs.readFileSync(__dirname + "/numbers.grammar", "utf8")
 const grammarGrammar = fs.readFileSync(__dirname + "/../grammar.grammar", "utf8")
 const jibberishGrammarPath = __dirname + "/jibberish/jibberish.grammar"
+const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
 
 quack.quickTest("basic", equal => {
   // Arrange/Act/Assert
@@ -17,10 +18,7 @@ quack.quickTest("basic", equal => {
 })
 
 quack.quickTest("basics", equal => {
-  // Arrange
-  const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
-
-  // Act
+  // Arrange/Act
   const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
   const errs = grammarProgram.getProgramErrors()
 
@@ -215,12 +213,8 @@ quack.quickTest("any nodes", equal => {
 })
 
 quack.quickTest("sublimeSyntaxFile", equal => {
-  // Arrange
-  const grammarPath = __dirname + "/jibberish/jibberish.grammar"
-  const jibberishGrammarCode = fs.readFileSync(grammarPath, "utf8")
-
-  // Act
-  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, grammarPath)
+  // Arrange/Act
+  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
   const code = grammarProgram.toSublimeSyntaxFile()
 
   // Assert
@@ -316,5 +310,30 @@ extendsAbstract 2`)
 
   // Assert
   let errors = anyProgram.getProgramErrorMessages()
+  equal(errors.length, 1)
+})
+
+quack.quickTest("examples", equal => {
+  // Arrange/Act
+  const jibberishGrammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
+
+  // Assert
+  let errors = jibberishGrammarProgram.getErrorsInGrammarExamples()
+  equal(errors.length, 0)
+
+  // Arrange/Act
+  const badGrammarProgram = GrammarProgram.newFromCondensed(
+    `@grammar bad
+ @keywords
+  +
+@keyword +
+ @columns int*
+ @example This is a bad example.
+  + 1 B
+@wordType int`
+  )
+
+  // Assert
+  errors = badGrammarProgram.getErrorsInGrammarExamples()
   equal(errors.length, 1)
 })

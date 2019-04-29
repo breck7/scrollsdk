@@ -103,9 +103,9 @@ ${grammars.toTable()}`
     return grammarPath
   }
 
-  sandbox() {
-    require("./sandbox.express.js")
-    return "Starting sandbox"
+  sandbox(port = 3333) {
+    require("./sandbox.express.js")(port)
+    return `Starting sandbox on port ${port}`
   }
 
   gen(grammarName, outputDirectory = ".") {
@@ -138,7 +138,11 @@ ${grammars.toTable()}`
   }
 
   history(grammarName) {
-    return grammarName ? this._history(grammarName).join(" ") : this._getHistoryFile()
+    return this._history(grammarName).join(" ")
+  }
+
+  allHistory() {
+    return this._getHistoryFile()
   }
 
   _getHistoryFile() {
@@ -216,7 +220,7 @@ ${grammars.toTable()}`
   }
 
   version() {
-    return `jtree version ${jtree.getVersion()}`
+    return `jtree version ${jtree.getVersion()} installed at ${__filename}`
   }
 }
 

@@ -1,15 +1,17 @@
 command paramOne paramTwo description
-cases folderPath grammarName Test all cases in a given folder
+allHistory   List all parse times and filepaths for this cli tool
 check programPath  Check a file for grammar errors
-checkAll grammarName  Check all files for grammar errors
+checkAll grammarName  Check all 'grammarName' programs for grammar errors
 compile programPath targetExtension Compile a file
+compileCheck folderPath grammarName Test all compiler test cases in a given folder
 create   Create a new Grammar
-sandbox   Start the Tree Sandbox web app
-help   Show help
-list   List installed Grammars
-history grammarName  List all programs ever parsed with this cli tool
+distribute inputFilePath  Distribute a 'combined' file into multiple destination files.
 gen grammarName outputPath Generate sublime syntax highlighting files
+help   Show this help
+list   List installed Grammars
+programs grammarName  List all files for a grammar ever parsed with this cli tool
 register grammarPath  Register a new grammar
 run programPath  Execute a Tree Language Program
+sandbox port=3333  Start the Tree Sandbox web app
 usage grammarName  Analyze Global Keyword Usage for a given grammar
-version   List installed Tree Notation version
+version   List installed Tree Notation version and location

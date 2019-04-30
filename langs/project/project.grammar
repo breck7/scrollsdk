@@ -7,6 +7,9 @@ grammar project
 wordType filepath
  regex .*
  highlightScope string
+abstract term
+ columns filepath*
+ highlightScope variable.parameter
 keyword error
  constructors
   nodejs ErrorNode
@@ -20,9 +23,6 @@ keyword file
   relative
  constructors
   nodejs ./ProjectNode.js
-abstract term
- columns filepath*
- highlightScope variable.parameter
 keyword external term
 keyword absolute term
 keyword relative term

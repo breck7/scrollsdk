@@ -77,6 +77,7 @@ keyword grammar
   version
 keyword keywordOrder
  columns keyword*
+ highlightScope constant.language
  description Optionally specify what order keywords should be sorted in when prettifying a file.
 keyword version
  columns semanticVersion

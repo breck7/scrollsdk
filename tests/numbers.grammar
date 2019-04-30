@@ -7,13 +7,13 @@ wordType int
 abstract _top
 wordType error
  highlightScope invalid
+abstract arithmetic _top
+ highlightScope keyword.operator.arithmetic
 keyword error
  columns error*
  constructors
   browser ErrorNode
  highlightScope invalid
-abstract arithmetic _top
- highlightScope keyword.operator.arithmetic
 keyword + arithmetic
  columns int*
  keywords

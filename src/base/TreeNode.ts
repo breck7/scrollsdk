@@ -1754,22 +1754,30 @@ class TreeNode extends ImmutableNode {
     if (!grandParent) return this
 
     const parentIndex = this.getParent().getIndex()
-    const newNode = grandParent.insertLineAndChildren(this.getLine(), this.getChildren(), parentIndex + 1)
+    const newNode = grandParent.insertLineAndChildren(
+      this.getLine(),
+      this.length ? this.childrenToString() : undefined,
+      parentIndex + 1
+    )
     this.destroy()
     return newNode
   }
 
   shiftRight(): TreeNode {
-    const sibling = <TreeNode>this._getClosestOlderSibling()
-    if (!sibling) return this
+    const olderSibling = <TreeNode>this._getClosestOlderSibling()
+    if (!olderSibling) return this
 
-    const newNode = sibling.appendLineAndChildren(this.getLine(), this.getChildren())
+    const newNode = olderSibling.appendLineAndChildren(
+      this.getLine(),
+      this.length ? this.childrenToString() : undefined
+    )
     this.destroy()
     return newNode
   }
 
   shiftYoungerSibsRight(): TreeNode {
-    ;(<TreeNode[]>this.getYoungerSiblings()).forEach(node => node.shiftRight())
+    const nodes = <TreeNode[]>this.getYoungerSiblings()
+    nodes.forEach(node => node.shiftRight())
     return this
   }
 

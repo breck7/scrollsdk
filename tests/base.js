@@ -1838,7 +1838,24 @@ c = 4`)
  b = 3
  c = 4`
   )
+
+  // Arrange
+  const node = new TreeNode(`#file /foo/test-combined2.delete.js
+foobar
+ test
+foo`)
+  // Assert
+  equal(node.nodeAt(0).getYoungerSiblings().length, 2, "2 younger sibs")
+
+  // Act
+  node.nodeAt(0).shiftYoungerSibsRight()
+  // Assert
+  const expected = `foobar
+ test
+foo`
+  equal(node.nodeAt(0).childrenToString(), expected)
 }
+
 
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node

@@ -2,6 +2,7 @@ command paramOne paramTwo description
 allHistory   List all parse times and filepaths for this cli tool
 check programPath  Check a file for grammar errors
 checkAll grammarName  Check all 'grammarName' programs for grammar errors
+combine grammarName  Dump all 'grammarName' programs into 1 'combined' output
 compile programPath targetExtension Compile a file
 compileCheck folderPath grammarName Test all compiler test cases in a given folder
 create   Create a new Grammar

@@ -14,6 +14,31 @@ class CLI {
     this._grammarsTree = TreeNode.fromSsv(grammarsSsv) // todo: index on name, or build a Tree Grammar lang
   }
 
+  combine(grammarName) {
+    const content = this.programs(grammarName)
+      .split(" ")
+      .map(path => {
+        const distributeLine = true ? `#file ${path}\n` : ""
+        return distributeLine + fs.readFileSync(path, "utf8")
+      })
+      .join("\n")
+
+    return new TreeNode(content).toString()
+  }
+
+  distribute(combinedFilePath) {
+    if (!combinedFilePath) throw new Error(`No combinedFilePath provided`)
+    const masterFile = new TreeNode(fs.readFileSync(combinedFilePath, "utf8"))
+    return masterFile.split("#file").map(file => {
+      const firstLine = file.nodeAt(0)
+      if (firstLine.getKeyword() !== "#file") return undefined
+      const filepath = firstLine.getWord(1)
+      firstLine.shiftYoungerSibsRight()
+      fs.writeFileSync(filepath, firstLine.childrenToString(), "utf8")
+      return filepath
+    })
+  }
+
   _initFile(path, initialString = "") {
     if (!fs.existsSync(path)) fs.writeFileSync(path, initialString, "utf8")
   }
@@ -26,6 +51,7 @@ class CLI {
     return fs.readFileSync(path, "utf8")
   }
 
+  // todo: improve or remove
   cases(folder, grammarName) {
     const files = recursiveReadSync(folder).filter(file => file.endsWith("." + grammarName))
     const grammarProgram = this._getGrammarProgram(grammarName)
@@ -137,7 +163,7 @@ ${grammars.toTable()}`
     return os.homedir() + "/history.ssv"
   }
 
-  history(grammarName) {
+  programs(grammarName) {
     return this._history(grammarName).join(" ")
   }
 

@@ -687,15 +687,15 @@ testTree.getNodeByColumns = equal => {
 
   // Arrange
   const jib = new TreeNode(`jibberish
- @description Test a root parser node
- @constructors
+ description Test a root parser node
+ constructors
   nodejs ./jibberishProgram.js
- @compiler txt
- @keywords
+ compiler txt
+ keywords
   baseNode`)
 
   // Act
-  const node2 = jib.getNode("jibberish @constructors nodejs")
+  const node2 = jib.getNode("jibberish constructors nodejs")
 
   // Assert
   equal(node2.getKeyword(), "nodejs")
@@ -1856,65 +1856,64 @@ foo`
   equal(node.nodeAt(0).childrenToString(), expected)
 }
 
-
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
-  const grammarCode = `@grammar jibberish
- @description Test a root parser node
- @constructors
+  const grammarCode = `grammar jibberish
+ description Test a root parser node
+ constructors
   nodejs ./jibberishProgram.js
- @compiler txt
- @catchAllKeyword error
- @keywords
+ compiler txt
+ catchAllKeyword error
+ keywords
   topLevel
   text
   someAbstractClass
-@wordType int
- @regex \-?[0-9]+
- @parseWith js parseInt
-@wordType word
- @regex .*
-@wordType onoff
- @enum on off
-@keyword error
- @constructors
+wordType int
+ regex \-?[0-9]+
+ parseWith js parseInt
+wordType word
+ regex .*
+wordType onoff
+ enum on off
+keyword error
+ constructors
   nodejs ErrorNode
   browser ErrorNode
-@abstract topLevel
-@abstract someAbstractClass
-@abstract color_properties topLevel
- @group hue saturation constrast
- @columns int
-@keyword extendsAbstract someAbstractClass
- @columns int
-@keyword someCode topLevel
- @catchAllKeyword lineOfCode
-@keyword lineOfCode
- @columns word*
- @constructors
+abstract topLevel
+abstract someAbstractClass
+abstract color_properties topLevel
+ group hue saturation constrast
+ columns int
+keyword extendsAbstract someAbstractClass
+ columns int
+keyword someCode topLevel
+ catchAllKeyword lineOfCode
+keyword lineOfCode
+ columns word*
+ constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
-@keyword block topLevel
- @keywords
+keyword block topLevel
+ keywords
   topLevel
-@keyword foo topLevel
-@keyword nodeWithConsts topLevel
- @constants
+keyword foo topLevel
+keyword nodeWithConsts topLevel
+ constants
   greeting string hello world
-@keyword text
- @any
-@keyword add topLevel
- @constructors
+keyword text
+ any
+keyword add topLevel
+ constructors
   nodejs ./jibberishNodes.js additionNode
-@keyword + add
- @columns int*
-@keyword lightbulbState topLevel
- @columns onoff
-@keyword to block
- @columns word
- @compiler txt
-  @sub to {word}
-  @closeChildren end`
+keyword + add
+ columns int*
+keyword lightbulbState topLevel
+ columns onoff
+keyword to block
+ columns word
+ compiler txt
+  sub to {word}
+  closeChildren end`
   const code = `foo
 nodeWithConsts
 lightbulbState on

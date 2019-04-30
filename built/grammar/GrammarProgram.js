@@ -199,11 +199,11 @@ ${keywordContexts}`;
     }
     // A language where anything goes.
     static getTheAnyLanguageRootConstructor() {
-        return this.newFromCondensed(`@grammar any
- @catchAllKeyword any
-@keyword any
- @columns any*
-@wordType any`).getRootConstructor();
+        return this.newFromCondensed(`grammar any
+ catchAllKeyword any
+keyword any
+ columns any*
+wordType any`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
@@ -271,13 +271,13 @@ ${keywordContexts}`;
                 }
                 columns.push(last + "*");
             }
-            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n @any`;
+            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n any`;
             if (!columns.length)
-                return `@keyword ${keyword}${childrenAnyString}`;
+                return `keyword ${keyword}${childrenAnyString}`;
             if (columns.length > 1)
-                return `@keyword ${keyword}
- @columns ${columns.join(xi)}${childrenAnyString}`;
-            return `@keyword ${keyword} ${columns[0]}${childrenAnyString}`;
+                return `keyword ${keyword}
+ columns ${columns.join(xi)}${childrenAnyString}`;
+            return `keyword ${keyword} ${columns[0]}${childrenAnyString}`;
         })
             .join("\n");
     }

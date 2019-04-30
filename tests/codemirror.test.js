@@ -76,8 +76,8 @@ class MockCodeMirror {
 }
 
 testTree.codeMirrorTest = equal => {
-  const words = `@grammar test
- @version`
+  const words = `grammar test
+ version`
   const tokens = `atom bracket def bracket atom`
 
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
@@ -86,9 +86,9 @@ testTree.codeMirrorTest = equal => {
 }
 
 testTree.codeMirrorTest2 = equal => {
-  const words = `@grammar test
- @version 1.0.0
-@keyword foobar`
+  const words = `grammar test
+ version 1.0.0
+keyword foobar`
   const tokens = `atom bracket def bracket atom bracket number def bracket def`
 
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))

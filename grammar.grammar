@@ -1,175 +1,176 @@
-@grammar grammar
- @description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
- @catchAllKeyword error
- @extensions grammar gram
- @example A grammar that parses anything:
-  @grammar latin
-   @catchAllKeyword any
-  @keyword any
-   @any
- @version 1.1.0
- @keywords
-  @grammar
-  @keyword
-  @wordType
-  @abstract
-@wordType int
- @regex \-?[0-9]+
- @highlightScope constant.numeric
-@wordType scopeName
- @enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
- @highlightScope string
-@wordType word
- @regex [a-zA-Z]+
- @highlightScope variable.parameter
-@wordType lowercaseWord
- @regex [a-z]+
-@wordType any
- @regex .*
-@wordType string
- @regex .*
- @highlightScope string
-@wordType exampleWord string
- @highlightScope comment
-@wordType filepath
- @regex .*
-@wordType keyword
- @regex [^ ]*
- @highlightScope variable.parameter
-@wordType regex
- @regex .*
- @highlightScope string.regexp
-@wordType semanticVersion
- @regex [0-9]+\.[0-9]+\.[0-9]+
- @highlightScope constant.numeric
-@wordType wordType
- @keywordTable @wordType 1
-@keyword @grammar
- @required
- @single
- @highlightScope constant.language
- @columns word
- @keywords
-  @description
-  @example
-  @extensions
-  @keywords
-  @constructors
-  @compiler
-  @catchAllKeyword
-  @version
-@keyword @version
- @columns semanticVersion
- @highlightScope constant.language
-@keyword @extensions
- @columns string*
- @highlightScope constant.language
-@keyword @abstract @keyword
- @highlightScope entity.name.tag
- @keywords
+grammar grammar
+ description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
+ catchAllKeyword error
+ extensions grammar gram
+ example A grammar that parses anything:
+  grammar latin
+   catchAllKeyword any
+  keyword any
+   any
+ version 1.1.0
+ keywords
+  grammar
+  keyword
+  wordType
+  abstract
+wordType int
+ regex \-?[0-9]+
+ highlightScope constant.numeric
+wordType scopeName
+ enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
+ highlightScope string
+wordType word
+ regex [a-zA-Z]+
+ highlightScope variable.parameter
+wordType lowercaseWord
+ regex [a-z]+
+wordType any
+ regex .*
+wordType string
+ regex .*
+ highlightScope string
+wordType exampleWord string
+ highlightScope comment
+wordType filepath
+ regex .*
+wordType keyword
+ regex [^ ]*
+ highlightScope variable.parameter
+wordType regex
+ regex .*
+ highlightScope string.regexp
+wordType semanticVersion
+ regex [0-9]+\.[0-9]+\.[0-9]+
+ highlightScope constant.numeric
+wordType wordType
+ keywordTable wordType 1
+keyword grammar
+ required
+ single
+ highlightScope constant.language
+ columns word
+ keywords
+  description
+  example
+  extensions
+  keywords
+  constructors
+  compiler
+  catchAllKeyword
+  version
+keyword version
+ columns semanticVersion
+ highlightScope constant.language
+keyword extensions
+ columns string*
+ highlightScope constant.language
+keyword abstract keyword
+ highlightScope entity.name.tag
+ keywords
   _keywordRule
-  @group
-@keyword @wordType
- @columns any*
- @highlightScope variable.parameter
- @keywords
-  @highlightScope
-  @regex
-  @keywordTable
-  @enum
-  @parseWith
-@keyword @parseWith
- @columns any*
- @highlightScope entity.other.attribute-name
- @single
-@keyword @group
- @columns any*
- @highlightScope entity.other.attribute-name
-@keyword @enum
- @columns any*
- @highlightScope entity.other.attribute-name
-@keyword @keywordTable
- @columns any int
- @highlightScope entity.other.attribute-name
-@abstract _keywordRule
- @highlightScope entity.other.attribute-name
- @single
-@abstract _monadicKeywordRule _keywordRule
- @columns any
-@abstract _diadicKeywordRule _keywordRule
- @columns any any
-@keyword @catchAllKeyword _monadicKeywordRule
-@abstract _constructor _variadicKeywordRule
- @description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-@keyword @constructors _nonTerminalKeywordRule
- @catchAllKeyword _constructor
-@keyword @frequency _monadicKeywordRule
-@abstract _variadicKeywordRule _keywordRule
- @columns any*
-@keyword @columns _keywordRule
- @columns wordType*
-@keyword @regex
- @columns regex*
- @single
-@abstract _compilerRule
- @columns any*
- @highlightScope entity.other.attribute-name
-@keyword @compiler _monadicKeywordRule
- @keywords
-  @sub
-  @listDelimiter
-  @openChildren
-  @closeChildren
-  @indentCharacter
-@keyword @sub _compilerRule
-@keyword @listDelimiter _compilerRule
-@keyword @openChildren _compilerRule
-@keyword @closeChildren _compilerRule
-@keyword @indentCharacter _compilerRule
-@keyword @description _keywordRule
- @columns string*
-@keyword _exampleLine
- @columns exampleWord*
- @highlightScope comment
- @catchAllKeyword _exampleLine
-@keyword @example _keywordRule
- @description Provide a one line description and then a snippet of example code.
- @columns exampleWord*
- @catchAllKeyword _exampleLine
- @highlightScope comment
-@abstract _nonTerminalKeywordRule _keywordRule
-@keyword defaultTuple
- @columns any any*
-@keyword @defaults _keywordRule
- @catchAllKeyword defaultTuple
-@keyword constantAny
- @columns any*
- @catchAllKeyword constantAny
-@keyword constantDefinition
- @columns any*
- @catchAllKeyword constantAny
-@keyword @constants _keywordRule
- @catchAllKeyword constantDefinition
-@keyword keywordUse
-@keyword @any _keywordRule
-@keyword @required _keywordRule
-@keyword @single _keywordRule
-@keyword @tags _keywordRule
- @columns any*
-@keyword @highlightScope _keywordRule
- @columns scopeName
-@keyword @keywords _nonTerminalKeywordRule
- @catchAllKeyword keywordUse
-@keyword error
- @constructors
+  group
+keyword wordType
+ columns any*
+ highlightScope variable.parameter
+ keywords
+  highlightScope
+  regex
+  keywordTable
+  enum
+  parseWith
+keyword parseWith
+ columns any*
+ highlightScope entity.other.attribute-name
+ single
+keyword group
+ columns any*
+ highlightScope entity.other.attribute-name
+keyword enum
+ columns any*
+ highlightScope entity.other.attribute-name
+keyword keywordTable
+ columns any int
+ highlightScope entity.other.attribute-name
+abstract _keywordRule
+ highlightScope entity.other.attribute-name
+ single
+abstract _monadicKeywordRule _keywordRule
+ columns any
+abstract _diadicKeywordRule _keywordRule
+ columns any any
+keyword catchAllKeyword _monadicKeywordRule
+abstract _constructor _variadicKeywordRule
+ description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
+keyword constructors _nonTerminalKeywordRule
+ catchAllKeyword _constructor
+keyword frequency _monadicKeywordRule
+abstract _variadicKeywordRule _keywordRule
+ columns any*
+keyword columns _keywordRule
+ columns wordType*
+keyword regex
+ columns regex*
+ highlightScope entity.other.attribute-name
+ single
+abstract _compilerRule
+ columns any*
+ highlightScope entity.other.attribute-name
+keyword compiler _monadicKeywordRule
+ keywords
+  sub
+  listDelimiter
+  openChildren
+  closeChildren
+  indentCharacter
+keyword sub _compilerRule
+keyword listDelimiter _compilerRule
+keyword openChildren _compilerRule
+keyword closeChildren _compilerRule
+keyword indentCharacter _compilerRule
+keyword description _keywordRule
+ columns string*
+keyword _exampleLine
+ columns exampleWord*
+ highlightScope comment
+ catchAllKeyword _exampleLine
+keyword example _keywordRule
+ description Provide a one line description and then a snippet of example code.
+ columns exampleWord*
+ catchAllKeyword _exampleLine
+ highlightScope comment
+abstract _nonTerminalKeywordRule _keywordRule
+keyword defaultTuple
+ columns any any*
+keyword defaults _keywordRule
+ catchAllKeyword defaultTuple
+keyword constantAny
+ columns any*
+ catchAllKeyword constantAny
+keyword constantDefinition
+ columns any*
+ catchAllKeyword constantAny
+keyword constants _keywordRule
+ catchAllKeyword constantDefinition
+keyword keywordUse
+keyword any _keywordRule
+keyword required _keywordRule
+keyword single _keywordRule
+keyword tags _keywordRule
+ columns any*
+keyword highlightScope _keywordRule
+ columns scopeName
+keyword keywords _nonTerminalKeywordRule
+ catchAllKeyword keywordUse
+keyword error
+ constructors
   nodejs ErrorNode
   browser ErrorNode
-@keyword @keyword
- @columns keyword any*
- @catchAllKeyword error
- @constructors
+keyword keyword
+ columns keyword any*
+ catchAllKeyword error
+ constructors
   nodejs NonTerminalNode
   browser NonTerminalNode
- @highlightScope variable.function
- @keywords
+ highlightScope variable.function
+ keywords
   _keywordRule

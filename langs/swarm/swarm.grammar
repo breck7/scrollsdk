@@ -1,112 +1,112 @@
-@grammar swarm
- @keywords
+grammar swarm
+ keywords
   #!
   #setup
   testBlock
- @catchAllKeyword error
- @constructors
+ catchAllKeyword error
+ constructors
   nodejs ./SwarmProgram.js
-@wordType filepath
- @regex .*
- @highlightScope string
-@wordType any
- @regex .*
- @highlightScope string
-@wordType int
- @regex \-?[0-9]+
-@keyword #setup
- @constructors
+wordType filepath
+ regex .*
+ highlightScope string
+wordType any
+ regex .*
+ highlightScope string
+wordType int
+ regex \-?[0-9]+
+keyword #setup
+ constructors
   nodejs ./TestSetupNode.js
- @highlightScope constant.language
- @keywords
+ highlightScope constant.language
+ keywords
   async
   require
   static
   %%|
-@abstract terminal
-@keyword #! terminal
- @columns filepath any*
- @highlightScope comment
-@keyword require terminal
- @columns filepath any*
- @highlightScope constant.language
-@keyword async terminal
- @description Set this in setup to test async methods.
-@keyword static terminal
- @description Add this to setup node to import class directly without initiating it, for static method testing.
-@abstract testBlock
- @columns any*
- @constructors
+abstract terminal
+keyword #! terminal
+ columns filepath any*
+ highlightScope comment
+keyword require terminal
+ columns filepath any*
+ highlightScope constant.language
+keyword async terminal
+ description Set this in setup to test async methods.
+keyword static terminal
+ description Add this to setup node to import class directly without initiating it, for static method testing.
+abstract testBlock
+ columns any*
+ constructors
   nodejs ./TestBlock.js
- @keywords
+ keywords
   #setup
- @catchAllKeyword commandNode
- @highlightScope keyword.control
-@keyword commandNode
- @constructors
+ catchAllKeyword commandNode
+ highlightScope keyword.control
+keyword commandNode
+ constructors
   nodejs ./CommandNode.js
- @description Input is an object, and calls some method with an optional array of string args.
- @columns any*
- @catchAllKeyword commandNode
- @highlightScope variable.function
- @keywords
+ description Input is an object, and calls some method with an optional array of string args.
+ columns any*
+ catchAllKeyword commandNode
+ highlightScope variable.function
+ keywords
   %|
   assertion
-@keyword #test testBlock
-@keyword +#test testBlock
- @constructors
+keyword #test testBlock
+keyword +#test testBlock
+ constructors
   nodejs ./SoloTestBlock.js
-@keyword -#test testBlock
- @constructors
+keyword -#test testBlock
+ constructors
   nodejs ./SkippedTestBlock.js
-@keyword error
- @constructors
+keyword error
+ constructors
   nodejs ErrorNode
   browser ErrorNode
-@abstract assertion
- @highlightScope keyword.operator
-@keyword =~ assertion
- @description Assert result is of a certain type.
- @columns any
- @constructors
+abstract assertion
+ highlightScope keyword.operator
+keyword =~ assertion
+ description Assert result is of a certain type.
+ columns any
+ constructors
   nodejs ./AssertTypeOfNode.js
-@keyword =# assertion
- @description Intake is an array, and checks if the length of array matches expected.
- @columns int
- @constructors
+keyword =# assertion
+ description Intake is an array, and checks if the length of array matches expected.
+ columns int
+ constructors
   nodejs ./AssertLengthNode.js
-@keyword == assertion
- @description Intake is anything with a toString method, and compares that to provided expected value.
- @columns any*
- @constructors
+keyword == assertion
+ description Intake is anything with a toString method, and compares that to provided expected value.
+ columns any*
+ constructors
   nodejs ./AssertEqualNode.js
-@keyword =| assertion
- @description When your expected value is a multiline string.
- @catchAllKeyword any
- @constructors
+keyword =| assertion
+ description When your expected value is a multiline string.
+ catchAllKeyword any
+ constructors
   nodejs ./AssertEqualBlockNode.js
-@keyword =+ assertion
- @columns any*
- @description Converts the input to string and see if the string contains the provided arguments
- @constructors
+keyword =+ assertion
+ columns any*
+ description Converts the input to string and see if the string contains the provided arguments
+ constructors
   nodejs ./AssertIncludesNode.js
-@keyword =- assertion
- @description Converts the input to string and ensure the string does NOT contain the provided arguments
- @columns any*
- @constructors
+keyword =- assertion
+ description Converts the input to string and ensure the string does NOT contain the provided arguments
+ columns any*
+ constructors
   nodejs ./AssertDoesNotIncludeNode.js
-@keyword any
- @columns any*
- @catchAllKeyword any
-@keyword %%|
- @constructors
+keyword any
+ columns any*
+ catchAllKeyword any
+keyword %%|
+ constructors
   nodejs ./SetupConstructorArgNode.js
- @description Pass in a multiline string to setup constructor. #todo: rename
- @catchAllKeyword any
- @highlightScope variable.parameter
-@keyword %|
- @highlightScope variable.parameter
- @description Pass in a multiline string as a command arg. #todo: rename
- @constructors
+ description Pass in a multiline string to setup constructor. #todo: rename
+ catchAllKeyword any
+ highlightScope variable.parameter
+keyword %|
+ highlightScope variable.parameter
+ description Pass in a multiline string as a command arg. #todo: rename
+ constructors
   nodejs ./CommandArgNode.js
- @catchAllKeyword any
+ catchAllKeyword any

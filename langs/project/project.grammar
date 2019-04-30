@@ -1,28 +1,28 @@
-@grammar project
- @constructors
+grammar project
+ constructors
   nodejs ./projectProgram.js
- @keywords
+ keywords
   file
- @catchAllKeyword error
-@wordType filepath
- @regex .*
- @highlightScope string
-@keyword error
- @constructors
+ catchAllKeyword error
+wordType filepath
+ regex .*
+ highlightScope string
+keyword error
+ constructors
   nodejs ErrorNode
   browser ErrorNode
-@keyword file
- @columns filepath*
- @highlightScope keyword.control
- @keywords
+keyword file
+ columns filepath*
+ highlightScope keyword.control
+ keywords
   external
   absolute
   relative
- @constructors
+ constructors
   nodejs ./ProjectNode.js
-@abstract term
- @columns filepath*
- @highlightScope variable.parameter
-@keyword external term
-@keyword absolute term
-@keyword relative term
+abstract term
+ columns filepath*
+ highlightScope variable.parameter
+keyword external term
+keyword absolute term
+keyword relative term

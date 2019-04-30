@@ -1,70 +1,70 @@
-@grammar jibberish
- @description Test a root parser node
- @constructors
+grammar jibberish
+ description Test a root parser node
+ constructors
   nodejs ./jibberishProgram.js
- @compiler txt
- @catchAllKeyword error
- @keywords
+ compiler txt
+ catchAllKeyword error
+ keywords
   topLevel
   text
   someAbstractClass
-@wordType error
- @highlightScope invalid
-@wordType int
- @regex \-?[0-9]+
- @parseWith js parseInt
- @highlightScope constant.numeric
-@wordType word
- @regex .*
-@wordType onoff
- @enum on off
-@keyword error
- @highlightScope invalid
- @columns error*
- @constructors
+wordType error
+ highlightScope invalid
+wordType int
+ regex \-?[0-9]+
+ parseWith js parseInt
+ highlightScope constant.numeric
+wordType word
+ regex .*
+wordType onoff
+ enum on off
+keyword error
+ highlightScope invalid
+ columns error*
+ constructors
   nodejs ErrorNode
   browser ErrorNode
-@abstract topLevel
-@abstract someAbstractClass
-@abstract color_properties topLevel
- @group hue saturation constrast
- @columns int
-@keyword extendsAbstract someAbstractClass
- @columns int
-@keyword someCode topLevel
- @catchAllKeyword lineOfCode
-@keyword lineOfCode
- @columns word*
- @constructors
+abstract topLevel
+abstract someAbstractClass
+abstract color_properties topLevel
+ group hue saturation constrast
+ columns int
+keyword extendsAbstract someAbstractClass
+ columns int
+keyword someCode topLevel
+ catchAllKeyword lineOfCode
+keyword lineOfCode
+ columns word*
+ constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
   browser LineOfCodeNode
-@keyword block topLevel
- @keywords
+keyword block topLevel
+ keywords
   topLevel
-@keyword foo topLevel
-@keyword nested topLevel
- @constructors
+keyword foo topLevel
+keyword nested topLevel
+ constructors
   nodejs ./jibberishNodes.js nested.someNestedNode
-@keyword type topLevel
- @columns word
- @single
-@keyword nodeWithConsts topLevel
- @constants
+keyword type topLevel
+ columns word
+ single
+keyword nodeWithConsts topLevel
+ constants
   greeting string hello world
-@keyword text
- @any
-@keyword add topLevel
- @constructors
+keyword text
+ any
+keyword add topLevel
+ constructors
   nodejs ./jibberishNodes.js additionNode
-@keyword + add
- @example Adding two numbers:
+keyword + add
+ example Adding two numbers:
   + 1 2
- @columns int*
- @highlightScope keyword.operator.arithmetic
-@keyword lightbulbState topLevel
- @columns onoff
-@keyword to block
- @columns word
- @compiler txt
-  @sub to {word}
-  @closeChildren end
+ columns int*
+ highlightScope keyword.operator.arithmetic
+keyword lightbulbState topLevel
+ columns onoff
+keyword to block
+ columns word
+ compiler txt
+  sub to {word}
+  closeChildren end

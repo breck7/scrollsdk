@@ -33,7 +33,10 @@ class CLI {
       const firstLine = file.nodeAt(0)
       if (firstLine.getKeyword() !== "#file") return undefined
       const filepath = firstLine.getWord(1)
-      firstLine.shiftYoungerSibsRight()
+
+      const needsShift = !firstLine.length
+      if (needsShift) firstLine.shiftYoungerSibsRight()
+
       fs.writeFileSync(filepath, firstLine.childrenToString(), "utf8")
       return filepath
     })

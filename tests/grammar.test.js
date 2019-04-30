@@ -188,8 +188,8 @@ com
 
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
-  const program = makeGrammarProgram(`@keyword foo
- @highlightScope comme`)
+  const program = makeGrammarProgram(`keyword foo
+ highlightScope comme`)
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(1, 20).matches.length, 5)
@@ -246,14 +246,14 @@ file test
   balance 32.12
   transactions 321
   source yes http://to.to.to 31`
-  const expected = `@keyword size int
-@keyword digits
- @columns int int
-@keyword open bool
-@keyword temp float
-@keyword description any*
-@keyword account
- @any`
+  const expected = `keyword size int
+keyword digits
+ columns int int
+keyword open bool
+keyword temp float
+keyword description any*
+keyword account
+ any`
 
   // Act
   const types = GrammarProgram.predictGrammarFile(input)
@@ -267,8 +267,8 @@ testTree.requiredKeywords = equal => {
   const path = __dirname + "/../grammar.grammar"
   const anyProgram = makeProgram(
     fs.readFileSync(path, "utf8"),
-    `@wordType word any
-@keyword baseNode`,
+    `wordType word any
+keyword baseNode`,
     path
   )
 
@@ -280,11 +280,11 @@ testTree.requiredKeywords = equal => {
 testTree.minimumGrammar = equal => {
   // Arrange/Act
   const programConstructor = GrammarProgram.newFromCondensed(
-    `@grammar any
- @catchAllKeyword any
-@keyword any
- @columns any*
-@wordType any`
+    `grammar any
+ catchAllKeyword any
+keyword any
+ columns any*
+wordType any`
   ).getRootConstructor()
   const program = new programConstructor()
   const grammarProgram = program.getGrammarProgram()
@@ -326,14 +326,14 @@ testTree.examples = equal => {
 
   // Arrange/Act
   const badGrammarProgram = GrammarProgram.newFromCondensed(
-    `@grammar bad
- @keywords
+    `grammar bad
+ keywords
   +
-@keyword +
- @columns int*
- @example This is a bad example.
+keyword +
+ columns int*
+ example This is a bad example.
   + 1 B
-@wordType int`
+wordType int`
   )
 
   // Assert

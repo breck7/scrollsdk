@@ -192,48 +192,48 @@ TreeUtils.BrowserScript = class {
 // todo: change to enum?
 var GrammarConstantsCompiler;
 (function (GrammarConstantsCompiler) {
-    GrammarConstantsCompiler["sub"] = "@sub";
-    GrammarConstantsCompiler["indentCharacter"] = "@indentCharacter";
-    GrammarConstantsCompiler["listDelimiter"] = "@listDelimiter";
-    GrammarConstantsCompiler["openChildren"] = "@openChildren";
-    GrammarConstantsCompiler["closeChildren"] = "@closeChildren";
+    GrammarConstantsCompiler["sub"] = "sub";
+    GrammarConstantsCompiler["indentCharacter"] = "indentCharacter";
+    GrammarConstantsCompiler["listDelimiter"] = "listDelimiter";
+    GrammarConstantsCompiler["openChildren"] = "openChildren";
+    GrammarConstantsCompiler["closeChildren"] = "closeChildren";
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
 var GrammarConstants;
 (function (GrammarConstants) {
     // node types
-    GrammarConstants["grammar"] = "@grammar";
-    GrammarConstants["extensions"] = "@extensions";
-    GrammarConstants["version"] = "@version";
-    GrammarConstants["keyword"] = "@keyword";
-    GrammarConstants["wordType"] = "@wordType";
-    GrammarConstants["abstract"] = "@abstract";
+    GrammarConstants["grammar"] = "grammar";
+    GrammarConstants["extensions"] = "extensions";
+    GrammarConstants["version"] = "version";
+    GrammarConstants["keyword"] = "keyword";
+    GrammarConstants["wordType"] = "wordType";
+    GrammarConstants["abstract"] = "abstract";
     // error check time
-    GrammarConstants["regex"] = "@regex";
-    GrammarConstants["keywordTable"] = "@keywordTable";
-    GrammarConstants["enum"] = "@enum";
-    GrammarConstants["parseWith"] = "@parseWith";
+    GrammarConstants["regex"] = "regex";
+    GrammarConstants["keywordTable"] = "keywordTable";
+    GrammarConstants["enum"] = "enum";
+    GrammarConstants["parseWith"] = "parseWith";
     // parse time
-    GrammarConstants["keywords"] = "@keywords";
-    GrammarConstants["columns"] = "@columns";
-    GrammarConstants["catchAllKeyword"] = "@catchAllKeyword";
-    GrammarConstants["defaults"] = "@defaults";
-    GrammarConstants["constants"] = "@constants";
-    GrammarConstants["group"] = "@group";
-    GrammarConstants["any"] = "@any";
-    GrammarConstants["required"] = "@required";
-    GrammarConstants["single"] = "@single";
-    GrammarConstants["tags"] = "@tags";
+    GrammarConstants["keywords"] = "keywords";
+    GrammarConstants["columns"] = "columns";
+    GrammarConstants["catchAllKeyword"] = "catchAllKeyword";
+    GrammarConstants["defaults"] = "defaults";
+    GrammarConstants["constants"] = "constants";
+    GrammarConstants["group"] = "group";
+    GrammarConstants["any"] = "any";
+    GrammarConstants["required"] = "required";
+    GrammarConstants["single"] = "single";
+    GrammarConstants["tags"] = "tags";
     // parse and interpret time
-    GrammarConstants["constructors"] = "@constructors";
+    GrammarConstants["constructors"] = "constructors";
     GrammarConstants["constructorNodeJs"] = "nodejs";
     GrammarConstants["constructorBrowser"] = "browser";
     // compile time
-    GrammarConstants["compilerKeyword"] = "@compiler";
+    GrammarConstants["compilerKeyword"] = "compiler";
     // develop time
-    GrammarConstants["description"] = "@description";
-    GrammarConstants["example"] = "@example";
-    GrammarConstants["frequency"] = "@frequency";
-    GrammarConstants["highlightScope"] = "@highlightScope";
+    GrammarConstants["description"] = "description";
+    GrammarConstants["example"] = "example";
+    GrammarConstants["frequency"] = "frequency";
+    GrammarConstants["highlightScope"] = "highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));
 var GrammarConstantsErrors;
 (function (GrammarConstantsErrors) {
@@ -3147,7 +3147,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
     _getKeywordTable(runTimeGrammarBackedProgram) {
-        // @keywordTable @wordType 1
+        // keywordTable wordType 1
         const nodeType = this.getWord(1);
         const wordIndex = parseInt(this.getWord(2));
         const table = {};
@@ -3166,7 +3166,7 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
 }
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
     isValid(str) {
-        // @enum c c++ java
+        // enum c c++ java
         return !!this.getOptions()[str];
     }
     getOptions() {
@@ -3493,11 +3493,11 @@ ${keywordContexts}`;
     }
     // A language where anything goes.
     static getTheAnyLanguageRootConstructor() {
-        return this.newFromCondensed(`@grammar any
- @catchAllKeyword any
-@keyword any
- @columns any*
-@wordType any`).getRootConstructor();
+        return this.newFromCondensed(`grammar any
+ catchAllKeyword any
+keyword any
+ columns any*
+wordType any`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
@@ -3565,13 +3565,13 @@ ${keywordContexts}`;
                 }
                 columns.push(last + "*");
             }
-            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n @any`;
+            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n any`;
             if (!columns.length)
-                return `@keyword ${keyword}${childrenAnyString}`;
+                return `keyword ${keyword}${childrenAnyString}`;
             if (columns.length > 1)
-                return `@keyword ${keyword}
- @columns ${columns.join(xi)}${childrenAnyString}`;
-            return `@keyword ${keyword} ${columns[0]}${childrenAnyString}`;
+                return `keyword ${keyword}
+ columns ${columns.join(xi)}${childrenAnyString}`;
+            return `keyword ${keyword} ${columns[0]}${childrenAnyString}`;
         })
             .join("\n");
     }

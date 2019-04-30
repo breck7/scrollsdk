@@ -1,54 +1,54 @@
-@grammar stamp
- @description A Tree Language for creating distributable text template files that expand to folders and files.
- @catchAllKeyword error
- @constructors
+grammar stamp
+ description A Tree Language for creating distributable text template files that expand to folders and files.
+ catchAllKeyword error
+ constructors
   nodejs ./StampProgram.js
- @keywords
+ keywords
   #!
   prompt
   folder
   file
-@wordType any
- @regex .*
- @highlightScope string
-@wordType filepath
- @regex .*
-@wordType inputType
- @regex ^(string|int|any|lowercase)$
-@keyword #!
- @columns any*
- @highlightScope comment
-@keyword prompt
- @columns any inputType any*
- @highlightScope constant.language
- @example Ask for a project name and create a new directory.
+wordType any
+ regex .*
+ highlightScope string
+wordType filepath
+ regex .*
+wordType inputType
+ regex ^(string|int|any|lowercase)$
+keyword #!
+ columns any*
+ highlightScope comment
+keyword prompt
+ columns any inputType any*
+ highlightScope constant.language
+ example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project
   folder PROJECT_NAME
   file PROJECT_NAME/.gitignore
- @constructors
+ constructors
   nodejs ./PromptNode.js
-@keyword error
- @constructors
+keyword error
+ constructors
   nodejs ErrorNode
   browser ErrorNode
-@keyword folder
- @columns filepath
- @highlightScope variable.parameter
- @constructors
+keyword folder
+ columns filepath
+ highlightScope variable.parameter
+ constructors
   nodejs ./FolderNode.js
-@keyword executable
-@keyword file
- @columns filepath
- @highlightScope variable.parameter
- @constructors
+keyword executable
+keyword file
+ columns filepath
+ highlightScope variable.parameter
+ constructors
   nodejs ./FileNode.js
- @keywords
+ keywords
   data
   executable
-@keyword any
- @columns any*
- @catchAllKeyword any
- @highlightScope string
-@keyword data
- @catchAllKeyword any
- @highlightScope variable
+keyword any
+ columns any*
+ catchAllKeyword any
+ highlightScope string
+keyword data
+ catchAllKeyword any
+ highlightScope variable

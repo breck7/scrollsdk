@@ -21,7 +21,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
   protected _getKeywordTable(runTimeGrammarBackedProgram) {
-    // @keywordTable @wordType 1
+    // keywordTable wordType 1
     const nodeType = this.getWord(1)
     const wordIndex = parseInt(this.getWord(2))
     const table = {}
@@ -43,7 +43,7 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   private _map
   isValid(str: string) {
-    // @enum c c++ java
+    // enum c c++ java
     return !!this.getOptions()[str]
   }
 

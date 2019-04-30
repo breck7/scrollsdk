@@ -1,3 +1,8 @@
+19.6.0 / 2019-04-29
+===================
+- New: new methods shiftLeft, shiftRight, shiftYoungerSibsRight, split
+
+
 19.5.1 / 2019-04-26
 ===================
 - Fix: codeMirror autocomplete will now close if 1 option matching input text

@@ -1737,6 +1737,109 @@ use red programmingLanguages`
   )
 }
 
+testTree.split = equal => {
+  // Arrange
+  const test = `#file foobar.csv
+name,score
+j,21
+frank,321
+#file index.html
+<body> hi world</body>
+#file foo.css #file
+body {
+ }`
+  const test2 = test
+    .split("\n")
+    .slice(1)
+    .join("\n") // Same without leading #file
+  const tree = new TreeNode(test)
+  const tree2 = new TreeNode(test2)
+
+  // Act
+  const splitTrees = tree.split(`#file`)
+  const splitTrees2 = tree2.split(`#file`)
+
+  // Assert
+  equal(splitTrees.length, 3)
+  equal(splitTrees2.length, 3)
+  equal(new TreeNode(`abc\n#find`).split(`#fi`).length, 1, "should not split on partial matches")
+  equal(new TreeNode(`abc\n#find\n`).split(`#find`).length, 2, "should split on end of line")
+  equal(splitTrees[1].nodeAt(1).getWord(1), "hi")
+
+  // Act/Assert
+  equal(splitTrees.join("\n"), test)
+  equal(splitTrees2.join("\n"), test2)
+
+  // Arrange/Act/Assert
+  Object.keys(testStrings).forEach(key => {
+    const tree = new TreeNode(testStrings[key])
+    const splitOn = tree.getKeywords()[0] || "foo"
+    equal(tree.split(splitOn).join("\n"), tree.toString(), `split join failed for ${key}`)
+  })
+}
+
+testTree.shifts = equal => {
+  // Arrange
+  const str = `reddit
+table
+chart`
+  const tree = new TreeNode(str)
+
+  // Act/Assert
+  // Test Noops:
+  equal(tree.shiftLeft() && tree.shiftRight() && tree.nodeAt(0).shiftLeft() && true, true)
+
+  equal(tree.length, 3)
+  equal(
+    tree
+      .nodeAt(1)
+      .shiftRight()
+      .getParent()
+      .getLine(),
+    "reddit"
+  )
+  equal(tree.length, 2)
+
+  // Act/Assert
+  equal(
+    tree
+      .nodeAtLine(1)
+      .shiftLeft()
+      .getParent()
+      .toString(),
+    str
+  )
+  equal(tree.length, 3)
+
+  // Arrange
+  const str2 = `reddit
+ table
+ chart
+ pie`
+  const tree2 = new TreeNode(str2)
+
+  // Act
+  tree2.nodeAtLine(2).shiftRight()
+  tree2.nodeAtLine(3).shiftRight()
+  equal(tree2.nodeAtLine(1).length, 2)
+
+  // Arrange/Act/Assert
+  equal(
+    new TreeNode(`file foo.js
+a = 2
+b = 3
+c = 4`)
+      .nodeAtLine(0)
+      .shiftYoungerSibsRight()
+      .getRootNode()
+      .toString(),
+    `file foo.js
+ a = 2
+ b = 3
+ c = 4`
+  )
+}
+
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange

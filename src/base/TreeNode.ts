@@ -24,7 +24,7 @@ class ImmutableNode extends AbstractNode {
 
   private _uid: int
   private _words: string[]
-  private _parent: ImmutableNode
+  private _parent: ImmutableNode | undefined
   private _children: ImmutableNode[]
   private _line: string
   private _index: {
@@ -52,14 +52,22 @@ class ImmutableNode extends AbstractNode {
   }
 
   getOlderSiblings() {
+    if (this.isRoot()) return []
     return this.getParent().slice(0, this.getIndex())
   }
 
+  protected _getClosestOlderSibling(): ImmutableNode | undefined {
+    const olderSiblings = this.getOlderSiblings()
+    return olderSiblings[olderSiblings.length - 1]
+  }
+
   getYoungerSiblings() {
+    if (this.isRoot()) return []
     return this.getParent().slice(this.getIndex() + 1)
   }
 
   getSiblings() {
+    if (this.isRoot()) return []
     return this.getParent().filter(node => node !== this)
   }
 
@@ -990,6 +998,19 @@ class ImmutableNode extends AbstractNode {
     return node._setLineAndChildren(this.getLine(), this.childrenToString(), index)
   }
 
+  // Note: Splits using a positive lookahead
+  // this.split("foo").join("\n") === this.toString()
+  split(keyword: types.word): ImmutableNode[] {
+    const constructor = <any>this.constructor
+    const YI = this.getYI()
+    const ZI = this.getZI()
+
+    // todo: cleanup. the escaping is wierd.
+    return this.toString()
+      .split(new RegExp(`\\${YI}(?=${keyword}(?:${ZI}|\\${YI}))`, "g"))
+      .map(str => new constructor(str))
+  }
+
   toMarkdownTable(): string {
     return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val)
   }
@@ -1270,7 +1291,7 @@ class ImmutableNode extends AbstractNode {
     delete this._index
   }
 
-  slice(start: int, end?: int) {
+  slice(start: int, end?: int): ImmutableNode[] {
     return this.getChildren().slice(start, end)
   }
 
@@ -1298,6 +1319,10 @@ class ImmutableNode extends AbstractNode {
       result.touchNode(paths[key])
     })
     return result
+  }
+
+  protected _getGrandParent(): ImmutableNode | undefined {
+    return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
   }
 
   getNodeConstructor(line: string) {
@@ -1721,6 +1746,30 @@ class TreeNode extends ImmutableNode {
       }
       return 0
     })
+    return this
+  }
+
+  shiftLeft(): TreeNode {
+    const grandParent = <TreeNode>this._getGrandParent()
+    if (!grandParent) return this
+
+    const parentIndex = this.getParent().getIndex()
+    const newNode = grandParent.insertLineAndChildren(this.getLine(), this.getChildren(), parentIndex + 1)
+    this.destroy()
+    return newNode
+  }
+
+  shiftRight(): TreeNode {
+    const sibling = <TreeNode>this._getClosestOlderSibling()
+    if (!sibling) return this
+
+    const newNode = sibling.appendLineAndChildren(this.getLine(), this.getChildren())
+    this.destroy()
+    return newNode
+  }
+
+  shiftYoungerSibsRight(): TreeNode {
+    ;(<TreeNode[]>this.getYoungerSiblings()).forEach(node => node.shiftRight())
     return this
   }
 

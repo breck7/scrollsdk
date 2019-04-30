@@ -19,7 +19,7 @@ class CLI {
       .split(" ")
       .map(path => {
         const distributeLine = true ? `#file ${path}\n` : ""
-        return distributeLine + fs.readFileSync(path, "utf8")
+        return distributeLine + " " + fs.readFileSync(path, "utf8").replace(/\n/g, "\n ")
       })
       .join("\n")
 

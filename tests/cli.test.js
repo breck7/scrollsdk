@@ -1,18 +1,19 @@
 #! /usr/local/bin/node --use_strict
 
-const quack = require("./quack.js")
 const fs = require("fs")
 const CLI = require("../cli.js")
 
-quack.quickTest("console basics", equal => {
+const testTree = {}
+
+testTree.consoleBasics = equal => {
   // Arrange
   const app = new CLI()
 
   // Act/Assert
   equal(typeof app.getGrammars().toString(), "string")
   equal(typeof app.help(), "string")
-  equal(typeof app.history(), "string")
-  equal(typeof app.history("grammar"), "string")
+  equal(typeof app.allHistory(), "string")
+  equal(typeof app.programs("grammar"), "string")
   equal(typeof app.list(), "string", "list works")
   equal(typeof app.version(), "string", "version ok")
   equal(typeof app.usage("grammar"), "string", "usage")
@@ -24,9 +25,9 @@ quack.quickTest("console basics", equal => {
   // Assert
   equal(grammarErrors.includes("0 errors"), true, grammarErrors)
   equal(jibErrors.includes("0 errors"), true, jibErrors)
-})
+}
 
-quack.quickTest("distribute", equal => {
+testTree.distribute = equal => {
   // Arrange
   const paths = ["test-combined1.delete.css", "test-combined2.delete.js", "test-combined.combined"].map(
     file => __dirname + "/" + file
@@ -63,4 +64,8 @@ ${data[1]}`
     // Cleanup
     fs.unlinkSync(path)
   })
-})
+}
+
+/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+
+module.exports = testTree

@@ -17,8 +17,9 @@ declare class ImmutableNode extends AbstractNode {
     getLineSyntax(): string;
     executeSync(context: any): any[];
     isNodeJs(): boolean;
-    getOlderSiblings(): any[];
-    getYoungerSiblings(): any[];
+    getOlderSiblings(): ImmutableNode[];
+    protected _getClosestOlderSibling(): ImmutableNode | undefined;
+    getYoungerSiblings(): ImmutableNode[];
     getSiblings(): any[];
     protected _getUid(): number;
     getParent(): ImmutableNode;
@@ -150,6 +151,7 @@ declare class ImmutableNode extends AbstractNode {
     toMappedOutline(nodeFn: any): string;
     protected _toOutline(nodeFn: any): string;
     copyTo(node: any, index: int): any;
+    split(keyword: types.word): ImmutableNode[];
     toMarkdownTable(): string;
     toMarkdownTableAdvanced(columns: word[], formatFn: any): string;
     toTsv(): string;
@@ -190,11 +192,12 @@ declare class ImmutableNode extends AbstractNode {
     find(fn: types.filterFn): any;
     forEach(fn: any): this;
     _clearIndex(): void;
-    slice(start: int, end?: int): any[];
+    slice(start: int, end?: int): ImmutableNode[];
     getKeywordMap(): any;
     getCatchAllNodeConstructor(line: string): Function;
     getExpanded(thisColumnNumber: any, extendsColumnNumber: any): TreeNode;
     getInheritanceTree(): TreeNode;
+    protected _getGrandParent(): ImmutableNode | undefined;
     getNodeConstructor(line: string): any;
     private static _uniqueId;
     static _makeUniqueId(): number;
@@ -255,6 +258,9 @@ declare class TreeNode extends ImmutableNode {
     protected _touchNodeByString(str: any): this;
     touchNode(str: types.keywordPath): this;
     sortByColumns(indexOrIndices: any): this;
+    shiftLeft(): TreeNode;
+    shiftRight(): TreeNode;
+    shiftYoungerSibsRight(): TreeNode;
     sortBy(nameOrNames: any): this;
     static fromCsv(str: string): TreeNode;
     static fromJson(str: types.jsonString): TreeNode;

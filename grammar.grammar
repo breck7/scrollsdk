@@ -13,8 +13,6 @@
   @keyword
   @wordType
   @abstract
-@wordType filepath
- @regex .*
 @wordType int
  @regex \-?[0-9]+
  @highlightScope constant.numeric

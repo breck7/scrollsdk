@@ -456,12 +456,22 @@ class ImmutableNode extends AbstractNode {
         return typeof exports !== "undefined";
     }
     getOlderSiblings() {
+        if (this.isRoot())
+            return [];
         return this.getParent().slice(0, this.getIndex());
     }
+    _getClosestOlderSibling() {
+        const olderSiblings = this.getOlderSiblings();
+        return olderSiblings[olderSiblings.length - 1];
+    }
     getYoungerSiblings() {
+        if (this.isRoot())
+            return [];
         return this.getParent().slice(this.getIndex() + 1);
     }
     getSiblings() {
+        if (this.isRoot())
+            return [];
         return this.getParent().filter(node => node !== this);
     }
     _getUid() {
@@ -1282,6 +1292,17 @@ class ImmutableNode extends AbstractNode {
     copyTo(node, index) {
         return node._setLineAndChildren(this.getLine(), this.childrenToString(), index);
     }
+    // Note: Splits using a positive lookahead
+    // this.split("foo").join("\n") === this.toString()
+    split(keyword) {
+        const constructor = this.constructor;
+        const YI = this.getYI();
+        const ZI = this.getZI();
+        // todo: cleanup. the escaping is wierd.
+        return this.toString()
+            .split(new RegExp(`\\${YI}(?=${keyword}(?:${ZI}|\\${YI}))`, "g"))
+            .map(str => new constructor(str));
+    }
     toMarkdownTable() {
         return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val);
     }
@@ -1560,6 +1581,9 @@ class ImmutableNode extends AbstractNode {
             result.touchNode(paths[key]);
         });
         return result;
+    }
+    _getGrandParent() {
+        return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent();
     }
     getNodeConstructor(line) {
         const map = this.getKeywordMap();
@@ -1933,6 +1957,28 @@ class TreeNode extends ImmutableNode {
             }
             return 0;
         });
+        return this;
+    }
+    shiftLeft() {
+        const grandParent = this._getGrandParent();
+        if (!grandParent)
+            return this;
+        const parentIndex = this.getParent().getIndex();
+        const newNode = grandParent.insertLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined, parentIndex + 1);
+        this.destroy();
+        return newNode;
+    }
+    shiftRight() {
+        const olderSibling = this._getClosestOlderSibling();
+        if (!olderSibling)
+            return this;
+        const newNode = olderSibling.appendLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined);
+        this.destroy();
+        return newNode;
+    }
+    shiftYoungerSibsRight() {
+        const nodes = this.getYoungerSiblings();
+        nodes.forEach(node => node.shiftRight());
         return this;
     }
     sortBy(nameOrNames) {

@@ -1856,7 +1856,6 @@ foo`
   equal(node.nodeAt(0).childrenToString(), expected)
 }
 
-
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
@@ -3646,6 +3645,6 @@ testTree.treeNodes = equal => {
   equal(node.has("color"), false)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("./quack.js").runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
 
 module.exports = testTree

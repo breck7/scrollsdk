@@ -1,10 +1,13 @@
 #! /usr/local/bin/node --use_strict
 
-const quack = require("./quack.js")
-
 const TreeTools = require("../index.js")
 
-quack.quickTest("version", equal => {
+const testTree = {}
+
+testTree.version = equal => {
   // Arrange/Act/Assert
   equal(!!TreeTools.getVersion(), true)
-})
+}
+
+/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+module.exports = testTree

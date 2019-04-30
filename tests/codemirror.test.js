@@ -1,11 +1,12 @@
 #! /usr/local/bin/node --use_strict
 
-const Quack = require("./quack.js")
 const fs = require("fs")
 const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../grammar.grammar")
 const StampProgram = require("../langs/stamp/index.js")
 const TreeNotationCodeMirrorMode = require("../built/grammar/TreeNotationCodeMirrorMode.js").default
 const TreeUtils = require("../built/base/TreeUtils.js").default
+
+const testTree = {}
 
 class MockStream {
   constructor(str) {
@@ -74,7 +75,7 @@ class MockCodeMirror {
   }
 }
 
-Quack.quickTest("code mirror test", equal => {
+testTree.codeMirrorTest = equal => {
   const words = `@grammar test
  @version`
   const tokens = `atom bracket def bracket atom`
@@ -82,9 +83,9 @@ Quack.quickTest("code mirror test", equal => {
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
   const tokenLines = mock.getTokenLines(words)
   equal(tokenLines.join(" "), tokens)
-})
+}
 
-Quack.quickTest("code mirror test", equal => {
+testTree.codeMirrorTest2 = equal => {
   const words = `@grammar test
  @version 1.0.0
 @keyword foobar`
@@ -94,12 +95,16 @@ Quack.quickTest("code mirror test", equal => {
   const tokenLines = mock.getTokenLines(words)
   equal(tokenLines.length, 3)
   equal(tokenLines.join(" "), tokens)
-})
+}
 
-Quack.quickTest("regression test", equal => {
+testTree.regressionTest = equal => {
   const words = fs.readFileSync(__dirname + "/code-mirror-regression.stamp", "utf8")
 
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stamp", () => StampProgram, () => words))
   const tokenLines = mock.getTokenLines(words)
   equal(tokenLines.length, 217)
-})
+}
+
+/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+
+module.exports = testTree

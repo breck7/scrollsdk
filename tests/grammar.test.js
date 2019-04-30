@@ -1,7 +1,5 @@
 #! /usr/local/bin/node --use_strict
 
-const quack = require("./quack.js")
-
 const fs = require("fs")
 const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
@@ -12,19 +10,21 @@ const grammarGrammar = fs.readFileSync(__dirname + "/../grammar.grammar", "utf8"
 const jibberishGrammarPath = __dirname + "/jibberish/jibberish.grammar"
 const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
 
-quack.quickTest("basic", equal => {
+const testTree = {}
+
+testTree.basic = equal => {
   // Arrange/Act/Assert
   const program = new GrammarProgram()
-})
+}
 
-quack.quickTest("basics", equal => {
+testTree.basics = equal => {
   // Arrange/Act
   const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
   const errs = grammarProgram.getProgramErrors()
 
   // Assert
   equal(errs.length, 0, errs.map(JSON.stringify).join(" "))
-})
+}
 
 const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
@@ -41,7 +41,7 @@ const makeProgram = (grammarCode, code, grammarPath = undefined) => {
   return new rootProgramConstructor(code)
 }
 
-quack.quickTest("jibberish", equal => {
+testTree.jibberish = equal => {
   // Arrange
   const sampleJibberishCode = fs.readFileSync(__dirname + "/jibberish/sample.jibberish", "utf8")
 
@@ -131,9 +131,9 @@ missing2 true`)
 
   // Assert
   equal(programWithKeywordBugs.getInvalidKeywords().length, 2)
-})
+}
 
-quack.quickTest("highlight scopes", equal => {
+testTree.highlightScopes = equal => {
   // Arrange
   const wordTypesProgram = makeJibberishProgram(`foo
 + 2 3 2`)
@@ -164,9 +164,9 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
  invalid`
   )
   equal(program.getProgramErrors().length, 1)
-})
+}
 
-quack.quickTest("autocomplete", equal => {
+testTree.autocomplete = equal => {
   // Arrange
   let program = makeNumbersProgram(`+ 2 3
 com
@@ -184,18 +184,18 @@ com
 
   // Arrange/Act/Assert
   equal(makeNumbersProgram(``).getAutocompleteResultsAt(0, 0).matches.length, 3, "should be 3 results at root level")
-})
+}
 
-quack.quickTest("autocomplete additional words", equal => {
+testTree.autocompleteAdditionalWords = equal => {
   // Arrange
   const program = makeGrammarProgram(`@keyword foo
  @highlightScope comme`)
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(1, 20).matches.length, 5)
-})
+}
 
-quack.quickTest("any nodes", equal => {
+testTree.anyNodes = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`text foobar
  This is an any node.
@@ -213,18 +213,18 @@ quack.quickTest("any nodes", equal => {
     // Should be no errors
     equal(true, false)
   }
-})
+}
 
-quack.quickTest("sublimeSyntaxFile", equal => {
+testTree.sublimeSyntaxFile = equal => {
   // Arrange/Act
   const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
   const code = grammarProgram.toSublimeSyntaxFile()
 
   // Assert
   equal(code.includes("scope:"), true)
-})
+}
 
-quack.quickTest("predictGrammarFile", equal => {
+testTree.predictGrammarFile = equal => {
   // Arrange
   const input = `file rain
  size 28
@@ -260,9 +260,9 @@ file test
 
   // Assert
   equal(types, expected)
-})
+}
 
-quack.quickTest("required keywords", equal => {
+testTree.requiredKeywords = equal => {
   // Arrange/Act
   const path = __dirname + "/../grammar.grammar"
   const anyProgram = makeProgram(
@@ -275,9 +275,9 @@ quack.quickTest("required keywords", equal => {
   // Assert
   let errors = anyProgram.getProgramErrorMessages()
   equal(errors.length, 1)
-})
+}
 
-quack.quickTest("minimum grammar", equal => {
+testTree.minimumGrammar = equal => {
   // Arrange/Act
   const programConstructor = GrammarProgram.newFromCondensed(
     `@grammar any
@@ -294,9 +294,9 @@ quack.quickTest("minimum grammar", equal => {
   equal(errors.length, 0)
   errors = program.getProgramErrors()
   equal(errors.length, 0)
-})
+}
 
-quack.quickTest("duplicate keywords", equal => {
+testTree.duplicateKeywords = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`type foo
 type bar`)
@@ -304,9 +304,9 @@ type bar`)
   // Assert
   let errors = anyProgram.getProgramErrorMessages()
   equal(errors.length, 2)
-})
+}
 
-quack.quickTest("abstract keywords", equal => {
+testTree.abstractKeywords = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`someAbstractClass
 extendsAbstract 2`)
@@ -314,9 +314,9 @@ extendsAbstract 2`)
   // Assert
   let errors = anyProgram.getProgramErrorMessages()
   equal(errors.length, 1)
-})
+}
 
-quack.quickTest("examples", equal => {
+testTree.examples = equal => {
   // Arrange/Act
   const jibberishGrammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
 
@@ -339,4 +339,8 @@ quack.quickTest("examples", equal => {
   // Assert
   errors = badGrammarProgram.getErrorsInGrammarExamples()
   equal(errors.length, 1)
-})
+}
+
+/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+module.exports = testTree
+

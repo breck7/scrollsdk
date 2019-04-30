@@ -1,11 +1,11 @@
 #! /usr/local/bin/node --use_strict
 
-const quack = require("./quack.js")
-
 const jtree = require("../index.js")
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
 
-quack.quickTest("makeProgram", equal => {
+const testTree = {}
+
+testTree.makeProgram = equal => {
   // Arrange
   const programPath = __dirname + "/jibberish/sample.jibberish"
   const grammarPath = __dirname + "/jibberish/jibberish.grammar"
@@ -19,4 +19,7 @@ quack.quickTest("makeProgram", equal => {
   equal(result, 42)
 
   // jtree.getProgramClassFromGrammarFile
-})
+}
+
+/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+module.exports = testTree

@@ -1,11 +1,12 @@
 #! /usr/local/bin/node --use_strict
 
-const quack = require("./quack.js")
 const jtree = require("../index.js")
 const TreeNode = jtree.TreeNode
 const fs = require("fs")
 
-quack.quickTest("disk tests", equal => {
+const testTree = {}
+
+testTree.diskTests = equal => {
   // Arrange
   const path = __dirname + `/temp-disk.csv`
 
@@ -25,4 +26,8 @@ quack.quickTest("disk tests", equal => {
 
   // Assert
   equal(fs.existsSync(path), false, "file does not exist")
-})
+}
+
+/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+
+module.exports = testTree

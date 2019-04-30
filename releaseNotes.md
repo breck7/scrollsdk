@@ -1,7 +1,8 @@
-19.6.0 / 2019-04-29
+20.0.0 / 2019-04-30
 ===================
 - New: new methods shiftLeft, shiftRight, shiftYoungerSibsRight, split
-
+- New: new methods keywordSort, getPrettified
+- Breaking: the "@" prefix on grammar keywords has been removed
 
 19.5.1 / 2019-04-26
 ===================

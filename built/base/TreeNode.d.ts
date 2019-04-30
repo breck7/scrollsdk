@@ -254,6 +254,7 @@ declare class TreeNode extends ImmutableNode {
     prependLine(line: string): any;
     pushContentAndChildren(content?: types.line, children?: types.something): any;
     deleteBlanks(): this;
+    keywordSort(keywordOrder: types.word[]): this;
     protected _touchNode(keywordPathArray: any): this;
     protected _touchNodeByString(str: any): this;
     touchNode(str: types.keywordPath): this;

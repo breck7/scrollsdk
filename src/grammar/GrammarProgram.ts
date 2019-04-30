@@ -24,6 +24,7 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
     const map = super.getKeywordMap()
     map[GrammarConstants.extensions] = TreeNode
     map[GrammarConstants.version] = TreeNode
+    map[GrammarConstants.keywordOrder] = TreeNode
     return map
   }
 }
@@ -86,6 +87,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   getTargetExtension() {
     return this._getGrammarRootNode().getTargetExtension()
+  }
+
+  getKeywordOrder() {
+    return this._getGrammarRootNode().get(GrammarConstants.keywordOrder)
   }
 
   private _cache_wordTypes: {

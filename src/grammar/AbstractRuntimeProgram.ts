@@ -75,6 +75,16 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     }
   }
 
+  getPrettified() {
+    const keywordOrder = this.getGrammarProgram().getKeywordOrder()
+    const clone = this.clone()
+    clone.keywordSort(keywordOrder.split(" "))
+    // todo:
+    // 2nd sort: graphOrder
+    // 3rd sort: alphabetical order:
+    return clone.toString()
+  }
+
   getProgramErrorMessages() {
     return this.getProgramErrors().map(err => err.message)
   }

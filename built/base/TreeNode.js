@@ -1497,6 +1497,22 @@ class TreeNode extends ImmutableNode {
             .forEach(node => node.destroy());
         return this;
     }
+    keywordSort(keywordOrder) {
+        const map = {};
+        keywordOrder.forEach((word, index) => {
+            map[word] = index;
+        });
+        this.sort((nodeA, nodeB) => {
+            const valA = map[nodeA.getKeyword()];
+            const valB = map[nodeB.getKeyword()];
+            if (valA > valB)
+                return 1;
+            if (valA < valB)
+                return -1;
+            return 0;
+        });
+        return this;
+    }
     _touchNode(keywordPathArray) {
         let contextNode = this;
         keywordPathArray.forEach(keyword => {

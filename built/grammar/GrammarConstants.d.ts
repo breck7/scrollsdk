@@ -9,6 +9,7 @@ declare enum GrammarConstants {
     grammar = "grammar",
     extensions = "extensions",
     version = "version",
+    keywordOrder = "keywordOrder",
     keyword = "keyword",
     wordType = "wordType",
     abstract = "abstract",

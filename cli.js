@@ -37,17 +37,21 @@ class CLI {
       const needsShift = !firstLine.length
       if (needsShift) firstLine.shiftYoungerSibsRight()
 
-      fs.writeFileSync(filepath, firstLine.childrenToString(), "utf8")
+      this._write(filepath, firstLine.childrenToString())
       return filepath
     })
   }
 
   _initFile(path, initialString = "") {
-    if (!fs.existsSync(path)) fs.writeFileSync(path, initialString, "utf8")
+    if (!fs.existsSync(path)) this._write(path, initialString)
   }
 
   _getRegistryPath() {
     return this._grammarsPath
+  }
+
+  _write(path, content) {
+    return fs.writeFileSync(path, content, "utf8")
   }
 
   _read(path) {
@@ -135,6 +139,11 @@ ${grammars.toTable()}`
   sandbox(port = 3333) {
     require("./sandbox.express.js")(port)
     return `Starting sandbox on port ${port}`
+  }
+
+  prettify(programPath) {
+    const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
+    this._write(programPath, new programConstructor(this._read(programPath)).getPrettified())
   }
 
   gen(grammarName, outputDirectory = ".") {

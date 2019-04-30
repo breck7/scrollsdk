@@ -1,6 +1,7 @@
 grammar grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
- catchAllKeyword error
+ catchAllKeyword _error
+ keywordOrder grammar wordtype abstract keyword
  extensions grammar gram
  example A grammar that parses anything:
   grammar latin
@@ -44,6 +45,21 @@ wordType semanticVersion
  highlightScope constant.numeric
 wordType wordType
  keywordTable wordType 1
+abstract _keywordRule
+ highlightScope entity.other.attribute-name
+ single
+abstract _monadicKeywordRule _keywordRule
+ columns any
+abstract _diadicKeywordRule _keywordRule
+ columns any any
+abstract _constructor _variadicKeywordRule
+ description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
+abstract _variadicKeywordRule _keywordRule
+ columns any*
+abstract _compilerRule
+ columns any*
+ highlightScope entity.other.attribute-name
+abstract _nonTerminalKeywordRule _keywordRule
 keyword grammar
  required
  single
@@ -53,19 +69,26 @@ keyword grammar
   description
   example
   extensions
+  keywordOrder
   keywords
   constructors
   compiler
   catchAllKeyword
   version
+keyword keywordOrder
+ columns keyword*
+ description Optionally specify what order keywords should be sorted in when prettifying a file.
 keyword version
  columns semanticVersion
  highlightScope constant.language
+ description Version number of your language.
 keyword extensions
  columns string*
  highlightScope constant.language
+ description File extensions of your language.
 keyword abstract keyword
  highlightScope entity.name.tag
+ description An abstract keyword cannot be used by itself but provides common functionality to keywords that extend it.
  keywords
   _keywordRule
   group
@@ -91,30 +114,20 @@ keyword enum
 keyword keywordTable
  columns any int
  highlightScope entity.other.attribute-name
-abstract _keywordRule
- highlightScope entity.other.attribute-name
- single
-abstract _monadicKeywordRule _keywordRule
- columns any
-abstract _diadicKeywordRule _keywordRule
- columns any any
 keyword catchAllKeyword _monadicKeywordRule
-abstract _constructor _variadicKeywordRule
- description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
+ description If a keyword is not found in the keywords list, instantiate this type of node instead.
 keyword constructors _nonTerminalKeywordRule
  catchAllKeyword _constructor
+ description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
 keyword frequency _monadicKeywordRule
-abstract _variadicKeywordRule _keywordRule
- columns any*
 keyword columns _keywordRule
  columns wordType*
+ description Describes the word type of each word in the line.
 keyword regex
  columns regex*
+ description The word must match this pattern or it shall be marked as an error.
  highlightScope entity.other.attribute-name
  single
-abstract _compilerRule
- columns any*
- highlightScope entity.other.attribute-name
 keyword compiler _monadicKeywordRule
  keywords
   sub
@@ -138,20 +151,19 @@ keyword example _keywordRule
  columns exampleWord*
  catchAllKeyword _exampleLine
  highlightScope comment
-abstract _nonTerminalKeywordRule _keywordRule
-keyword defaultTuple
+keyword _defaultTuple
  columns any any*
 keyword defaults _keywordRule
- catchAllKeyword defaultTuple
-keyword constantAny
+ catchAllKeyword _defaultTuple
+keyword _constantAny
  columns any*
- catchAllKeyword constantAny
-keyword constantDefinition
+ catchAllKeyword _constantAny
+keyword _constantDefinition
  columns any*
- catchAllKeyword constantAny
+ catchAllKeyword _constantAny
 keyword constants _keywordRule
- catchAllKeyword constantDefinition
-keyword keywordUse
+ catchAllKeyword _constantDefinition
+keyword _keywordUse
 keyword any _keywordRule
 keyword required _keywordRule
 keyword single _keywordRule
@@ -160,14 +172,14 @@ keyword tags _keywordRule
 keyword highlightScope _keywordRule
  columns scopeName
 keyword keywords _nonTerminalKeywordRule
- catchAllKeyword keywordUse
-keyword error
+ catchAllKeyword _keywordUse
+keyword _error
  constructors
   nodejs ErrorNode
   browser ErrorNode
 keyword keyword
  columns keyword any*
- catchAllKeyword error
+ catchAllKeyword _error
  constructors
   nodejs NonTerminalNode
   browser NonTerminalNode

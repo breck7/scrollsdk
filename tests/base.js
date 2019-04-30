@@ -3022,6 +3022,26 @@ testTree.sortBy = equal => {
   equal(tree2.getColumn("key").join(""), "acb")
 }
 
+testTree.keywordSort = equal => {
+  // Arrange
+  const tree = new TreeNode(`body
+footer
+div
+header
+div`)
+  // Act
+  tree.keywordSort("header body div footer".split(" "))
+  // Assert
+  equal(
+    tree.toString(),
+    `header
+body
+div
+div
+footer`
+  )
+}
+
 testTree.syntax = equal => {
   // Arrange
   const test = `person

@@ -61,6 +61,12 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
+    getPrettified() {
+        const keywordOrder = this.getGrammarProgram().getKeywordOrder();
+        const clone = this.clone();
+        clone.keywordSort(keywordOrder.split(" "));
+        return clone.toString();
+    }
     getProgramErrorMessages() {
         return this.getProgramErrors().map(err => err.message);
     }

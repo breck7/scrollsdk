@@ -16,6 +16,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
             displayText: string;
         }[];
     };
+    getPrettified(): any;
     getProgramErrorMessages(): string[];
     getKeywordMap(): any;
     getDefinition(): GrammarProgram;

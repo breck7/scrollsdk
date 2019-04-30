@@ -15,6 +15,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getErrorsInGrammarExamples(): any[];
     getNodeConstructor(line: any): any;
     getTargetExtension(): string;
+    getKeywordOrder(): any;
     private _cache_wordTypes;
     getWordTypes(): {
         [name: string]: GrammarWordTypeNode;

@@ -1,4 +1,4 @@
-20.0.0 / 2019-04-30
+edge / 2019-04-30
 ===================
 - New: simpler grammar files (no more @ prefix)
 - New: catchAllColumn grammar keyword

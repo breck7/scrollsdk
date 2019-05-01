@@ -8,14 +8,14 @@ wordType filepath
  regex .*
  highlightScope string
 abstract term
- columns filepath*
+ catchAllColumn filepath
  highlightScope variable.parameter
 keyword error
  constructors
   nodejs ErrorNode
   browser ErrorNode
 keyword file
- columns filepath*
+ catchAllColumn filepath
  highlightScope keyword.control
  keywords
   external

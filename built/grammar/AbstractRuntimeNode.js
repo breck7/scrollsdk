@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
-const GrammarConstants_2 = require("./GrammarConstants");
 class AbstractRuntimeNode extends TreeNode_1.default {
     // note: this is overwritten by the root node of a runtime grammar program.
     // some of the magic that makes this all work. but maybe there's a better way.
@@ -35,8 +34,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
             defs = defs.filter(def => def.getId().includes(partialWord));
         return defs.map(def => {
             const id = def.getId();
-            const colDescription = def.get(GrammarConstants_2.GrammarConstants.columns);
-            const description = def.getDescription() || (colDescription ? `(usage: ${id} ${colDescription})` : "");
+            const description = def.getDescription();
             return {
                 text: id,
                 displayText: id + (description ? " " + description : "")

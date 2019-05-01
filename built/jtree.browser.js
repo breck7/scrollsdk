@@ -204,6 +204,7 @@ var GrammarConstants;
     GrammarConstants["grammar"] = "grammar";
     GrammarConstants["extensions"] = "extensions";
     GrammarConstants["version"] = "version";
+    GrammarConstants["keywordOrder"] = "keywordOrder";
     GrammarConstants["keyword"] = "keyword";
     GrammarConstants["wordType"] = "wordType";
     GrammarConstants["abstract"] = "abstract";
@@ -215,6 +216,7 @@ var GrammarConstants;
     // parse time
     GrammarConstants["keywords"] = "keywords";
     GrammarConstants["columns"] = "columns";
+    GrammarConstants["catchAllColumn"] = "catchAllColumn";
     GrammarConstants["catchAllKeyword"] = "catchAllKeyword";
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
@@ -1922,6 +1924,22 @@ class TreeNode extends ImmutableNode {
             .forEach(node => node.destroy());
         return this;
     }
+    keywordSort(keywordOrder) {
+        const map = {};
+        keywordOrder.forEach((word, index) => {
+            map[word] = index;
+        });
+        this.sort((nodeA, nodeB) => {
+            const valA = map[nodeA.getKeyword()];
+            const valB = map[nodeB.getKeyword()];
+            if (valA > valB)
+                return 1;
+            if (valA < valB)
+                return -1;
+            return 0;
+        });
+        return this;
+    }
     _touchNode(keywordPathArray) {
         let contextNode = this;
         keywordPathArray.forEach(keyword => {
@@ -2278,8 +2296,7 @@ class AbstractRuntimeNode extends TreeNode {
             defs = defs.filter(def => def.getId().includes(partialWord));
         return defs.map(def => {
             const id = def.getId();
-            const colDescription = def.get(GrammarConstants.columns);
-            const description = def.getDescription() || (colDescription ? `(usage: ${id} ${colDescription})` : "");
+            const description = def.getDescription();
             return {
                 text: id,
                 displayText: id + (description ? " " + description : "")
@@ -2367,6 +2384,15 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
+    getPrettified() {
+        const keywordOrder = this.getGrammarProgram().getKeywordOrder();
+        const clone = this.clone();
+        clone.keywordSort(keywordOrder.split(" "));
+        // todo:
+        // 2nd sort: graphOrder
+        // 3rd sort: alphabetical order:
+        return clone.toString();
+    }
     getProgramErrorMessages() {
         return this.getProgramErrors().map(err => err.message);
     }
@@ -2382,7 +2408,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
         const grammarProgram = this.getGrammarProgram();
         const keywordDefinitions = grammarProgram.getKeywordDefinitions();
         keywordDefinitions.forEach(child => {
-            usage.appendLine([child.getId(), "line-id", "keyword", child.getNodeColumnTypes().join(" ")].join(" "));
+            usage.appendLine([child.getId(), "line-id", "keyword", child.getRequiredCellTypeNames().join(" ")].join(" "));
         });
         const programNodes = this.getTopDownArray();
         programNodes.forEach((programNode, lineNumber) => {
@@ -2469,7 +2495,7 @@ class GrammarBackedCell {
         this._index = index + 1;
     }
     getType() {
-        return (this._type && this._type.replace("*", "")) || undefined;
+        return this._type || undefined;
     }
     getHighlightScope() {
         const wordTypeClass = this._getWordTypeClass();
@@ -2478,7 +2504,6 @@ class GrammarBackedCell {
     }
     getAutoCompleteWords(partialWord) {
         const wordTypeClass = this._getWordTypeClass();
-        // wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
         let words = wordTypeClass ? wordTypeClass.getAutocompleteWordOptions() : [];
         if (partialWord)
             words = words.filter(word => word.includes(partialWord));
@@ -2495,9 +2520,6 @@ class GrammarBackedCell {
     getParsed() {
         return this._getWordTypeClass().parse(this._word);
     }
-    isOptional() {
-        return this._type && this._type.endsWith("*");
-    }
     _getWordTypeClass() {
         return this._grammarProgram.getWordTypes()[this.getType()];
     }
@@ -2506,8 +2528,6 @@ class GrammarBackedCell {
     }
     getErrorIfAny() {
         const word = this._word;
-        if (word === undefined && this.isOptional())
-            return undefined;
         const index = this._index;
         const type = this.getType();
         const fullLine = this._node.getLine();
@@ -2540,8 +2560,7 @@ class GrammarBackedCell {
                 context: context,
                 message: `${GrammarConstantsErrors.grammarDefinitionError} No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${this._expectedLinePattern}".`
             };
-        const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram);
-        return isValid
+        return wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
             ? undefined
             : {
                 kind: GrammarConstantsErrors.invalidWordError,
@@ -2620,19 +2639,18 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();
         const grammarProgram = definition.getProgram();
-        const columnTypes = definition.getNodeColumnTypes();
-        const expectedLinePattern = columnTypes.join(" ");
-        const numberOfColumns = columnTypes.length;
-        const lastColumnType = columnTypes[numberOfColumns - 1];
-        const isLastColumnListType = lastColumnType && lastColumnType.endsWith("*") ? lastColumnType : undefined;
+        const cellTypes = definition.getRequiredCellTypeNames(); // todo: are these nodeRequiredColumnTypes? ... also, rename to cell instead of column?
+        const numberOfRequiredCells = cellTypes.length;
+        const expectedLinePattern = cellTypes.join(" ");
+        const catchAllCellType = definition.getCatchAllCellTypeName();
         const words = this.getWordsFrom(1);
-        const length = Math.max(words.length, isLastColumnListType ? numberOfColumns - 1 : numberOfColumns);
-        const checks = [];
-        // A for loop instead of map because "length" can be longer than words.length
-        for (let wordIndex = 0; wordIndex < length; wordIndex++) {
-            checks[wordIndex] = new GrammarBackedCell(words[wordIndex], wordIndex >= numberOfColumns ? isLastColumnListType : columnTypes[wordIndex], this, wordIndex, expectedLinePattern, grammarProgram);
+        const numberOfCellsToFill = Math.max(words.length, numberOfRequiredCells);
+        const cells = [];
+        // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
+        for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
+            cells[cellIndex] = new GrammarBackedCell(words[cellIndex], cellIndex >= numberOfRequiredCells ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, expectedLinePattern, grammarProgram);
         }
-        return checks;
+        return cells;
     }
     // todo: just make a fn that computes proper spacing and then is given a node to print
     getLineSyntax() {
@@ -2865,6 +2883,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             GrammarConstants.columns,
             GrammarConstants.description,
             GrammarConstants.catchAllKeyword,
+            GrammarConstants.catchAllColumn,
             GrammarConstants.defaults,
             GrammarConstants.tags,
             GrammarConstants.any,
@@ -2947,9 +2966,12 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         const defs = this._getProgramKeywordDefinitionCache();
         return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key]);
     }
-    getNodeColumnTypes() {
+    getRequiredCellTypeNames() {
         const parameters = this.get(GrammarConstants.columns);
         return parameters ? parameters.split(" ") : [];
+    }
+    getCatchAllCellTypeName() {
+        return this.get(GrammarConstants.catchAllColumn);
     }
     /*
      {key<string>: JSKeywordDefClass}
@@ -3050,30 +3072,34 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
     getMatchBlock() {
+        const defaultHighlightScope = "source";
         const program = this.getProgram();
         const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const color = (this.getHighlightScope() || "source") + "." + this.getId();
+        const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getId();
         const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`;
         const topHalf = ` '${this.getSyntaxContextId()}':
   - match: ${match}
     scope: ${color}`;
-        const cols = this.getNodeColumnTypes();
-        if (!cols.length)
+        const requiredCellTypeNames = this.getRequiredCellTypeNames();
+        const catchAllCellTypeName = this.getCatchAllCellTypeName();
+        if (catchAllCellTypeName)
+            requiredCellTypeNames.push(catchAllCellTypeName);
+        if (!requiredCellTypeNames.length)
             return topHalf;
-        const captures = cols
-            .map((col, index) => {
-            const wordType = program.getWordType(col); // todo: cleanup
+        const captures = requiredCellTypeNames
+            .map((wordTypeName, index) => {
+            const wordType = program.getWordType(wordTypeName); // todo: cleanup
             if (!wordType)
-                throw new Error(`No column type ${col} found`); // todo: standardize error/capture error at grammar time
-            return `        ${index + 1}: ${(wordType.getHighlightScope() || "source") + "." + wordType.getId()}`;
+                throw new Error(`No ${GrammarConstants.wordType} ${wordTypeName} found`); // todo: standardize error/capture error at grammar time
+            return `        ${index + 1}: ${(wordType.getHighlightScope() || defaultHighlightScope) +
+                "." +
+                wordType.getId()}`;
         })
             .join("\n");
-        const colsToRegex = cols => {
-            return cols.map(col => `({{${col.replace("*", "")}}})?`).join(" ?");
-        };
+        const cellTypesToRegex = cellTypeNames => cellTypeNames.map(cellTypeName => `({{${cellTypeName}}})?`).join(" ?");
         return `${topHalf}
     push:
-     - match: ${colsToRegex(cols)}
+     - match: ${cellTypesToRegex(requiredCellTypeNames)}
        captures:
 ${captures}
      - match: $
@@ -3224,7 +3250,6 @@ class GrammarWordTypeNode extends TreeNode {
         return parser ? parser.parse(str) : str;
     }
     isValid(str, runTimeGrammarBackedProgram) {
-        str = str.replace(/\*$/, ""); // todo: cleanup
         return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));
     }
     getId() {
@@ -3312,6 +3337,7 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
         const map = super.getKeywordMap();
         map[GrammarConstants.extensions] = TreeNode;
         map[GrammarConstants.version] = TreeNode;
+        map[GrammarConstants.keywordOrder] = TreeNode;
         return map;
     }
 }
@@ -3366,14 +3392,16 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     getTargetExtension() {
         return this._getGrammarRootNode().getTargetExtension();
     }
+    getKeywordOrder() {
+        return this._getGrammarRootNode().get(GrammarConstants.keywordOrder);
+    }
     getWordTypes() {
         if (!this._cache_wordTypes)
             this._cache_wordTypes = this._getWordTypes();
         return this._cache_wordTypes;
     }
     getWordType(word) {
-        // todo: cleanup
-        return this.getWordTypes()[word.replace(/\*$/, "")];
+        return this.getWordTypes()[word];
     }
     _getWordTypes() {
         const types = {};
@@ -3456,10 +3484,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             this._cache_rootConstructorClass = this._getRootConstructor();
         return this._cache_rootConstructorClass;
     }
-    getNodeColumnRegexes() {
-        const colTypes = this.getWordTypes();
-        return this.getNodeColumnTypes().map(col => colTypes[col].getRegexString());
-    }
     _getFileExtensions() {
         return this._getGrammarRootNode().get(GrammarConstants.extensions)
             ? this._getGrammarRootNode()
@@ -3493,16 +3517,17 @@ ${keywordContexts}`;
     }
     // A language where anything goes.
     static getTheAnyLanguageRootConstructor() {
-        return this.newFromCondensed(`grammar any
- catchAllKeyword any
-keyword any
- columns any*
-wordType any`).getRootConstructor();
+        return this.newFromCondensed(`${GrammarConstants.grammar} any
+ ${GrammarConstants.catchAllKeyword} any
+${GrammarConstants.keyword} any
+ ${GrammarConstants.catchAllColumn} any
+${GrammarConstants.wordType} any`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
         const tree = new TreeNode(grammarCode);
         // Expand groups
+        // todo: rename? maybe change this to "make" or "quickKeywords"?
         const xi = tree.getXI();
         tree.findNodes(`${GrammarConstants.abstract}${xi}${GrammarConstants.group}`).forEach(group => {
             const abstractName = group.getParent().getWord(1);
@@ -3550,6 +3575,7 @@ wordType any`).getRootConstructor();
             const sizes = new Set(cells.map(c => c.length));
             const max = Math.max(...Array.from(sizes));
             const min = Math.min(...Array.from(sizes));
+            let catchAllColumn;
             let columns = [];
             for (let index = 0; index < max; index++) {
                 const set = new Set(cells.map(c => c[index]));
@@ -3559,19 +3585,19 @@ wordType any`).getRootConstructor();
             }
             if (max > min) {
                 //columns = columns.slice(0, min)
-                let last = columns.pop();
-                while (columns[columns.length - 1] === last) {
+                catchAllColumn = columns.pop();
+                while (columns[columns.length - 1] === catchAllColumn) {
                     columns.pop();
                 }
-                columns.push(last + "*");
             }
-            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n any`;
+            const catchAllColumnString = catchAllColumn ? `\n ${GrammarConstants.catchAllColumn} ${catchAllColumn}` : "";
+            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants.any}`;
             if (!columns.length)
-                return `keyword ${keyword}${childrenAnyString}`;
+                return `${GrammarConstants.keyword} ${keyword}${catchAllColumnString}${childrenAnyString}`;
             if (columns.length > 1)
-                return `keyword ${keyword}
- columns ${columns.join(xi)}${childrenAnyString}`;
-            return `keyword ${keyword} ${columns[0]}${childrenAnyString}`;
+                return `${GrammarConstants.keyword} ${keyword}
+ ${GrammarConstants.columns} ${columns.join(xi)}${catchAllColumnString}${childrenAnyString}`;
+            return `${GrammarConstants.keyword} ${keyword} ${columns[0]}${catchAllColumnString}${childrenAnyString}`;
         })
             .join("\n");
     }

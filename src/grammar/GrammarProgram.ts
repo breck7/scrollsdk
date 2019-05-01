@@ -103,8 +103,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getWordType(word: string) {
-    // todo: cleanup
-    return this.getWordTypes()[word.replace(/\*$/, "")]
+    return this.getWordTypes()[word]
   }
 
   protected _getWordTypes() {
@@ -211,11 +210,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._cache_rootConstructorClass
   }
 
-  getNodeColumnRegexes() {
-    const colTypes = this.getWordTypes()
-    return this.getNodeColumnTypes().map(col => colTypes[col].getRegexString())
-  }
-
   _getFileExtensions(): string {
     return this._getGrammarRootNode().get(GrammarConstants.extensions)
       ? this._getGrammarRootNode()
@@ -255,11 +249,11 @@ ${keywordContexts}`
   // A language where anything goes.
   static getTheAnyLanguageRootConstructor() {
     return this.newFromCondensed(
-      `grammar any
- catchAllKeyword any
-keyword any
- columns any*
-wordType any`
+      `${GrammarConstants.grammar} any
+ ${GrammarConstants.catchAllKeyword} any
+${GrammarConstants.keyword} any
+ ${GrammarConstants.catchAllColumn} any
+${GrammarConstants.wordType} any`
     ).getRootConstructor()
   }
 
@@ -268,6 +262,7 @@ wordType any`
     const tree = new TreeNode(grammarCode)
 
     // Expand groups
+    // todo: rename? maybe change this to "make" or "quickKeywords"?
     const xi = tree.getXI()
     tree.findNodes(`${GrammarConstants.abstract}${xi}${GrammarConstants.group}`).forEach(group => {
       const abstractName = group.getParent().getWord(1)
@@ -319,6 +314,7 @@ wordType any`
         const sizes = new Set(cells.map(c => c.length))
         const max = Math.max(...Array.from(sizes))
         const min = Math.min(...Array.from(sizes))
+        let catchAllColumn: string
         let columns = []
         for (let index = 0; index < max; index++) {
           const set = new Set(cells.map(c => c[index]))
@@ -328,22 +324,22 @@ wordType any`
         }
         if (max > min) {
           //columns = columns.slice(0, min)
-          let last = columns.pop()
-          while (columns[columns.length - 1] === last) {
+          catchAllColumn = columns.pop()
+          while (columns[columns.length - 1] === catchAllColumn) {
             columns.pop()
           }
-          columns.push(last + "*")
         }
 
-        const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n any`
+        const catchAllColumnString = catchAllColumn ? `\n ${GrammarConstants.catchAllColumn} ${catchAllColumn}` : ""
+        const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants.any}`
 
-        if (!columns.length) return `keyword ${keyword}${childrenAnyString}`
+        if (!columns.length) return `${GrammarConstants.keyword} ${keyword}${catchAllColumnString}${childrenAnyString}`
 
         if (columns.length > 1)
-          return `keyword ${keyword}
- columns ${columns.join(xi)}${childrenAnyString}`
+          return `${GrammarConstants.keyword} ${keyword}
+ ${GrammarConstants.columns} ${columns.join(xi)}${catchAllColumnString}${childrenAnyString}`
 
-        return `keyword ${keyword} ${columns[0]}${childrenAnyString}`
+        return `${GrammarConstants.keyword} ${keyword} ${columns[0]}${catchAllColumnString}${childrenAnyString}`
       })
       .join("\n")
   }

@@ -65,6 +65,9 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         const keywordOrder = this.getGrammarProgram().getKeywordOrder();
         const clone = this.clone();
         clone.keywordSort(keywordOrder.split(" "));
+        // todo:
+        // 2nd sort: graphOrder
+        // 3rd sort: alphabetical order:
         return clone.toString();
     }
     getProgramErrorMessages() {
@@ -82,7 +85,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         const grammarProgram = this.getGrammarProgram();
         const keywordDefinitions = grammarProgram.getKeywordDefinitions();
         keywordDefinitions.forEach(child => {
-            usage.appendLine([child.getId(), "line-id", "keyword", child.getNodeColumnTypes().join(" ")].join(" "));
+            usage.appendLine([child.getId(), "line-id", "keyword", child.getRequiredCellTypeNames().join(" ")].join(" "));
         });
         const programNodes = this.getTopDownArray();
         programNodes.forEach((programNode, lineNumber) => {

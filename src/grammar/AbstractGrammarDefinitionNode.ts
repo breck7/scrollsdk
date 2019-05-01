@@ -25,6 +25,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.columns,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,
+      GrammarConstants.catchAllColumn,
       GrammarConstants.defaults,
       GrammarConstants.tags,
       GrammarConstants.any,
@@ -125,9 +126,13 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key])
   }
 
-  getNodeColumnTypes(): string[] {
+  getRequiredCellTypeNames(): string[] {
     const parameters = this.get(GrammarConstants.columns)
     return parameters ? parameters.split(" ") : []
+  }
+
+  getCatchAllCellTypeName(): string | undefined {
+    return this.get(GrammarConstants.catchAllColumn)
   }
 
   /*

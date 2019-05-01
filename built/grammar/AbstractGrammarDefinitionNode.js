@@ -19,6 +19,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants_1.GrammarConstants.columns,
             GrammarConstants_1.GrammarConstants.description,
             GrammarConstants_1.GrammarConstants.catchAllKeyword,
+            GrammarConstants_1.GrammarConstants.catchAllColumn,
             GrammarConstants_1.GrammarConstants.defaults,
             GrammarConstants_1.GrammarConstants.tags,
             GrammarConstants_1.GrammarConstants.any,
@@ -101,9 +102,12 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         const defs = this._getProgramKeywordDefinitionCache();
         return TreeUtils_1.default.mapValues(this.getRunTimeKeywordMap(), key => defs[key]);
     }
-    getNodeColumnTypes() {
+    getRequiredCellTypeNames() {
         const parameters = this.get(GrammarConstants_1.GrammarConstants.columns);
         return parameters ? parameters.split(" ") : [];
+    }
+    getCatchAllCellTypeName() {
+        return this.get(GrammarConstants_1.GrammarConstants.catchAllColumn);
     }
     /*
      {key<string>: JSKeywordDefClass}

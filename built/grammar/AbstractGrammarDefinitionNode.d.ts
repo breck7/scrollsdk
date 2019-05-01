@@ -23,7 +23,8 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getRunTimeKeywordMap(): any;
     getRunTimeKeywordNames(): string[];
     getRunTimeKeywordMapWithDefinitions(): {};
-    getNodeColumnTypes(): string[];
+    getRequiredCellTypeNames(): string[];
+    getCatchAllCellTypeName(): string | undefined;
     protected _initKeywordsMapCache(): any;
     _getKeywordsInScope(): string[];
     getTopNodeTypes(): string[];

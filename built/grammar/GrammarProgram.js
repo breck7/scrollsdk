@@ -82,8 +82,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._cache_wordTypes;
     }
     getWordType(word) {
-        // todo: cleanup
-        return this.getWordTypes()[word.replace(/\*$/, "")];
+        return this.getWordTypes()[word];
     }
     _getWordTypes() {
         const types = {};
@@ -166,10 +165,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             this._cache_rootConstructorClass = this._getRootConstructor();
         return this._cache_rootConstructorClass;
     }
-    getNodeColumnRegexes() {
-        const colTypes = this.getWordTypes();
-        return this.getNodeColumnTypes().map(col => colTypes[col].getRegexString());
-    }
     _getFileExtensions() {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.extensions)
             ? this._getGrammarRootNode()
@@ -203,16 +198,17 @@ ${keywordContexts}`;
     }
     // A language where anything goes.
     static getTheAnyLanguageRootConstructor() {
-        return this.newFromCondensed(`grammar any
- catchAllKeyword any
-keyword any
- columns any*
-wordType any`).getRootConstructor();
+        return this.newFromCondensed(`${GrammarConstants_1.GrammarConstants.grammar} any
+ ${GrammarConstants_1.GrammarConstants.catchAllKeyword} any
+${GrammarConstants_1.GrammarConstants.keyword} any
+ ${GrammarConstants_1.GrammarConstants.catchAllColumn} any
+${GrammarConstants_1.GrammarConstants.wordType} any`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
         const tree = new TreeNode_1.default(grammarCode);
         // Expand groups
+        // todo: rename? maybe change this to "make" or "quickKeywords"?
         const xi = tree.getXI();
         tree.findNodes(`${GrammarConstants_1.GrammarConstants.abstract}${xi}${GrammarConstants_1.GrammarConstants.group}`).forEach(group => {
             const abstractName = group.getParent().getWord(1);
@@ -260,6 +256,7 @@ wordType any`).getRootConstructor();
             const sizes = new Set(cells.map(c => c.length));
             const max = Math.max(...Array.from(sizes));
             const min = Math.min(...Array.from(sizes));
+            let catchAllColumn;
             let columns = [];
             for (let index = 0; index < max; index++) {
                 const set = new Set(cells.map(c => c[index]));
@@ -269,19 +266,19 @@ wordType any`).getRootConstructor();
             }
             if (max > min) {
                 //columns = columns.slice(0, min)
-                let last = columns.pop();
-                while (columns[columns.length - 1] === last) {
+                catchAllColumn = columns.pop();
+                while (columns[columns.length - 1] === catchAllColumn) {
                     columns.pop();
                 }
-                columns.push(last + "*");
             }
-            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n any`;
+            const catchAllColumnString = catchAllColumn ? `\n ${GrammarConstants_1.GrammarConstants.catchAllColumn} ${catchAllColumn}` : "";
+            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants_1.GrammarConstants.any}`;
             if (!columns.length)
-                return `keyword ${keyword}${childrenAnyString}`;
+                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}${catchAllColumnString}${childrenAnyString}`;
             if (columns.length > 1)
-                return `keyword ${keyword}
- columns ${columns.join(xi)}${childrenAnyString}`;
-            return `keyword ${keyword} ${columns[0]}${childrenAnyString}`;
+                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}
+ ${GrammarConstants_1.GrammarConstants.columns} ${columns.join(xi)}${catchAllColumnString}${childrenAnyString}`;
+            return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword} ${columns[0]}${catchAllColumnString}${childrenAnyString}`;
         })
             .join("\n");
     }

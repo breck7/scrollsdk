@@ -10,21 +10,21 @@ wordType error
 abstract arithmetic _top
  highlightScope keyword.operator.arithmetic
 keyword error
- columns error*
+ catchAllColumn error
  constructors
   browser ErrorNode
  highlightScope invalid
 keyword + arithmetic
- columns int*
+ catchAllColumn int
  keywords
   arithmetic
   comment
 keyword - arithmetic
- columns int*
+ catchAllColumn int
 wordType string
  highlightScope string
 keyword comment _top
  description Anything can go here!
  highlightScope string
- columns string*
+ catchAllColumn string
  catchAllKeyword comment

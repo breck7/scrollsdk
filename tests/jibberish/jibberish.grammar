@@ -25,7 +25,7 @@ abstract color_properties topLevel
  columns int
 keyword error
  highlightScope invalid
- columns error*
+ catchAllColumn error
  constructors
   nodejs ErrorNode
   browser ErrorNode
@@ -34,7 +34,7 @@ keyword extendsAbstract someAbstractClass
 keyword someCode topLevel
  catchAllKeyword lineOfCode
 keyword lineOfCode
- columns word*
+ catchAllColumn word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
   browser LineOfCodeNode
@@ -59,7 +59,7 @@ keyword add topLevel
 keyword + add
  example Adding two numbers:
   + 1 2
- columns int*
+ catchAllColumn int
  highlightScope keyword.operator.arithmetic
 keyword lightbulbState topLevel
  columns onoff

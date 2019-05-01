@@ -37,6 +37,7 @@ wordType filepath
 wordType keyword
  regex [^ ]*
  highlightScope variable.parameter
+wordType fileExtension any
 wordType regex
  regex .*
  highlightScope string.regexp
@@ -55,9 +56,9 @@ abstract _diadicKeywordRule _keywordRule
 abstract _constructor _variadicKeywordRule
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
 abstract _variadicKeywordRule _keywordRule
- columns any*
+ catchAllColumn any
 abstract _compilerRule
- columns any*
+ catchAllColumn any
  highlightScope entity.other.attribute-name
 abstract _nonTerminalKeywordRule _keywordRule
 keyword grammar
@@ -76,7 +77,7 @@ keyword grammar
   catchAllKeyword
   version
 keyword keywordOrder
- columns keyword*
+ catchAllColumn keyword
  highlightScope constant.language
  description Optionally specify what order keywords should be sorted in when prettifying a file.
 keyword version
@@ -84,7 +85,7 @@ keyword version
  highlightScope constant.language
  description Version number of your language.
 keyword extensions
- columns string*
+ catchAllColumn fileExtension
  highlightScope constant.language
  description File extensions of your language.
 keyword abstract keyword
@@ -94,7 +95,8 @@ keyword abstract keyword
   _keywordRule
   group
 keyword wordType
- columns any*
+ columns any
+ catchAllColumn any
  highlightScope variable.parameter
  keywords
   highlightScope
@@ -103,14 +105,15 @@ keyword wordType
   enum
   parseWith
 keyword parseWith
- columns any*
+ catchAllColumn any
  highlightScope entity.other.attribute-name
  single
 keyword group
- columns any*
+ catchAllColumn any
  highlightScope entity.other.attribute-name
+ description Available on abstract nodes only. Use it to more concisely generate keywords all extending from this abstract keyword, if they have no special properties.
 keyword enum
- columns any*
+ catchAllColumn any
  highlightScope entity.other.attribute-name
 keyword keywordTable
  columns any int
@@ -122,10 +125,10 @@ keyword constructors _nonTerminalKeywordRule
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
 keyword frequency _monadicKeywordRule
 keyword columns _keywordRule
- columns wordType*
+ catchAllColumn wordType
  description Describes the word type of each word in the line.
 keyword regex
- columns regex*
+ catchAllColumn regex
  description The word must match this pattern or it shall be marked as an error.
  highlightScope entity.other.attribute-name
  single
@@ -142,44 +145,53 @@ keyword openChildren _compilerRule
 keyword closeChildren _compilerRule
 keyword indentCharacter _compilerRule
 keyword description _keywordRule
- columns string*
+ catchAllColumn string
 keyword _exampleLine
- columns exampleWord*
+ catchAllColumn exampleWord
  highlightScope comment
  catchAllKeyword _exampleLine
 keyword example _keywordRule
  description Provide a one line description and then a snippet of example code.
- columns exampleWord*
+ catchAllColumn exampleWord
  catchAllKeyword _exampleLine
  highlightScope comment
 keyword _defaultTuple
- columns any any*
+ columns any
+ catchAllColumn any
 keyword defaults _keywordRule
  catchAllKeyword _defaultTuple
 keyword _constantAny
- columns any*
+ catchAllColumn any
  catchAllKeyword _constantAny
 keyword _constantDefinition
- columns any*
+ catchAllColumn any
  catchAllKeyword _constantAny
 keyword constants _keywordRule
  catchAllKeyword _constantDefinition
 keyword _keywordUse
 keyword any _keywordRule
 keyword required _keywordRule
+ description If present, the parent node will have an error if one of these nodes is not provided.
 keyword single _keywordRule
+ description If present and their are more than 1 of these nodes on the parent, an error will be present.
 keyword tags _keywordRule
- columns any*
+ catchAllColumn any
 keyword highlightScope _keywordRule
  columns scopeName
+ description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
 keyword keywords _nonTerminalKeywordRule
  catchAllKeyword _keywordUse
+ description A list of possible child keywords for a node. This is a not a leaf node in order to allow seamless extending.
 keyword _error
  constructors
   nodejs ErrorNode
   browser ErrorNode
+keyword catchAllColumn _monadicKeywordRule
+ columns wordType
+ description If there are extra words in the node's line, parse these words as this type.
 keyword keyword
- columns keyword any*
+ columns keyword
+ catchAllColumn any
  catchAllKeyword _error
  constructors
   nodejs NonTerminalNode

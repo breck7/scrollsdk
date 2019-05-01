@@ -18,30 +18,34 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         return this.getId().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
     getMatchBlock() {
+        const defaultHighlightScope = "source";
         const program = this.getProgram();
         const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const color = (this.getHighlightScope() || "source") + "." + this.getId();
+        const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getId();
         const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`;
         const topHalf = ` '${this.getSyntaxContextId()}':
   - match: ${match}
     scope: ${color}`;
-        const cols = this.getNodeColumnTypes();
-        if (!cols.length)
+        const requiredCellTypeNames = this.getRequiredCellTypeNames();
+        const catchAllCellTypeName = this.getCatchAllCellTypeName();
+        if (catchAllCellTypeName)
+            requiredCellTypeNames.push(catchAllCellTypeName);
+        if (!requiredCellTypeNames.length)
             return topHalf;
-        const captures = cols
-            .map((col, index) => {
-            const wordType = program.getWordType(col); // todo: cleanup
+        const captures = requiredCellTypeNames
+            .map((wordTypeName, index) => {
+            const wordType = program.getWordType(wordTypeName); // todo: cleanup
             if (!wordType)
-                throw new Error(`No column type ${col} found`); // todo: standardize error/capture error at grammar time
-            return `        ${index + 1}: ${(wordType.getHighlightScope() || "source") + "." + wordType.getId()}`;
+                throw new Error(`No ${GrammarConstants_1.GrammarConstants.wordType} ${wordTypeName} found`); // todo: standardize error/capture error at grammar time
+            return `        ${index + 1}: ${(wordType.getHighlightScope() || defaultHighlightScope) +
+                "." +
+                wordType.getId()}`;
         })
             .join("\n");
-        const colsToRegex = cols => {
-            return cols.map(col => `({{${col.replace("*", "")}}})?`).join(" ?");
-        };
+        const cellTypesToRegex = cellTypeNames => cellTypeNames.map(cellTypeName => `({{${cellTypeName}}})?`).join(" ?");
         return `${topHalf}
     push:
-     - match: ${colsToRegex(cols)}
+     - match: ${cellTypesToRegex(requiredCellTypeNames)}
        captures:
 ${captures}
      - match: $

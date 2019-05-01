@@ -27,6 +27,7 @@ enum GrammarConstants {
   // parse time
   keywords = "keywords",
   columns = "columns",
+  catchAllColumn = "catchAllColumn",
   catchAllKeyword = "catchAllKeyword",
   defaults = "defaults",
   constants = "constants",

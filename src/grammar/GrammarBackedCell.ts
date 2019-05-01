@@ -32,7 +32,7 @@ class GrammarBackedCell {
   private _type: string
 
   getType() {
-    return (this._type && this._type.replace("*", "")) || undefined
+    return this._type || undefined
   }
 
   getHighlightScope(): string | undefined {
@@ -42,7 +42,6 @@ class GrammarBackedCell {
 
   getAutoCompleteWords(partialWord: string) {
     const wordTypeClass = this._getWordTypeClass()
-    // wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
     let words = wordTypeClass ? wordTypeClass.getAutocompleteWordOptions() : []
     if (partialWord) words = words.filter(word => word.includes(partialWord))
     return words.map(word => {
@@ -61,10 +60,6 @@ class GrammarBackedCell {
     return this._getWordTypeClass().parse(this._word)
   }
 
-  isOptional() {
-    return this._type && this._type.endsWith("*")
-  }
-
   protected _getWordTypeClass() {
     return this._grammarProgram.getWordTypes()[this.getType()]
   }
@@ -75,7 +70,6 @@ class GrammarBackedCell {
 
   getErrorIfAny(): types.ParseError {
     const word = this._word
-    if (word === undefined && this.isOptional()) return undefined
     const index = this._index
     const type = this.getType()
     const fullLine = this._node.getLine()
@@ -120,8 +114,7 @@ class GrammarBackedCell {
         }".`
       }
 
-    const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
-    return isValid
+    return wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
       ? undefined
       : {
           kind: GrammarConstantsErrors.invalidWordError,

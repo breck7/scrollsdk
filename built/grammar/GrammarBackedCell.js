@@ -14,7 +14,7 @@ class GrammarBackedCell {
         this._index = index + 1;
     }
     getType() {
-        return (this._type && this._type.replace("*", "")) || undefined;
+        return this._type || undefined;
     }
     getHighlightScope() {
         const wordTypeClass = this._getWordTypeClass();
@@ -23,7 +23,6 @@ class GrammarBackedCell {
     }
     getAutoCompleteWords(partialWord) {
         const wordTypeClass = this._getWordTypeClass();
-        // wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
         let words = wordTypeClass ? wordTypeClass.getAutocompleteWordOptions() : [];
         if (partialWord)
             words = words.filter(word => word.includes(partialWord));
@@ -40,9 +39,6 @@ class GrammarBackedCell {
     getParsed() {
         return this._getWordTypeClass().parse(this._word);
     }
-    isOptional() {
-        return this._type && this._type.endsWith("*");
-    }
     _getWordTypeClass() {
         return this._grammarProgram.getWordTypes()[this.getType()];
     }
@@ -51,8 +47,6 @@ class GrammarBackedCell {
     }
     getErrorIfAny() {
         const word = this._word;
-        if (word === undefined && this.isOptional())
-            return undefined;
         const index = this._index;
         const type = this.getType();
         const fullLine = this._node.getLine();
@@ -85,8 +79,7 @@ class GrammarBackedCell {
                 context: context,
                 message: `${GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError} No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${this._expectedLinePattern}".`
             };
-        const isValid = wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram);
-        return isValid
+        return wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
             ? undefined
             : {
                 kind: GrammarConstants_1.GrammarConstantsErrors.invalidWordError,

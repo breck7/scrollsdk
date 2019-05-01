@@ -48,8 +48,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
 
     return defs.map(def => {
       const id = def.getId()
-      const colDescription = def.get(GrammarConstants.columns)
-      const description = def.getDescription() || (colDescription ? `(usage: ${id} ${colDescription})` : "")
+      const description = def.getDescription()
       return {
         text: id,
         displayText: id + (description ? " " + description : "")

@@ -251,7 +251,8 @@ keyword digits
  columns int int
 keyword open bool
 keyword temp float
-keyword description any*
+keyword description
+ catchAllColumn any
 keyword account
  any`
 
@@ -283,7 +284,7 @@ testTree.minimumGrammar = equal => {
     `grammar any
  catchAllKeyword any
 keyword any
- columns any*
+ catchAllColumn any
 wordType any`
   ).getRootConstructor()
   const program = new programConstructor()
@@ -330,7 +331,7 @@ testTree.examples = equal => {
  keywords
   +
 keyword +
- columns int*
+ catchAllColumn int
  example This is a bad example.
   + 1 B
 wordType int`

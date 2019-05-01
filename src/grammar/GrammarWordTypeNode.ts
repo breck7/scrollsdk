@@ -111,7 +111,6 @@ class GrammarWordTypeNode extends TreeNode {
   }
 
   isValid(str: string, runTimeGrammarBackedProgram) {
-    str = str.replace(/\*$/, "") // todo: cleanup
     return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node =>
       (<AbstractGrammarWordTestNode>node).isValid(str, runTimeGrammarBackedProgram)
     )

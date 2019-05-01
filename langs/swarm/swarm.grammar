@@ -16,7 +16,7 @@ wordType int
  regex \-?[0-9]+
 abstract terminal
 abstract testBlock
- columns any*
+ catchAllColumn any
  constructors
   nodejs ./TestBlock.js
  keywords
@@ -35,10 +35,12 @@ keyword #setup
   static
   %%|
 keyword #! terminal
- columns filepath any*
+ columns filepath
+ catchAllColumn any
  highlightScope comment
 keyword require terminal
- columns filepath any*
+ columns filepath
+ catchAllColumn any
  highlightScope constant.language
 keyword async terminal
  description Set this in setup to test async methods.
@@ -48,7 +50,7 @@ keyword commandNode
  constructors
   nodejs ./CommandNode.js
  description Input is an object, and calls some method with an optional array of string args.
- columns any*
+ catchAllColumn any
  catchAllKeyword commandNode
  highlightScope variable.function
  keywords
@@ -77,7 +79,7 @@ keyword =# assertion
   nodejs ./AssertLengthNode.js
 keyword == assertion
  description Intake is anything with a toString method, and compares that to provided expected value.
- columns any*
+ catchAllColumn any
  constructors
   nodejs ./AssertEqualNode.js
 keyword =| assertion
@@ -86,17 +88,17 @@ keyword =| assertion
  constructors
   nodejs ./AssertEqualBlockNode.js
 keyword =+ assertion
- columns any*
- description Converts the input to string and see if the string contains the provided arguments
+ catchAllColumn any
+ description Converts the input to string and see if the string contains the provided string
  constructors
   nodejs ./AssertIncludesNode.js
 keyword =- assertion
- description Converts the input to string and ensure the string does NOT contain the provided arguments
- columns any*
+ description Converts the input to string and ensure the string does NOT contain the provided string
+ catchAllColumn any
  constructors
   nodejs ./AssertDoesNotIncludeNode.js
 keyword any
- columns any*
+ catchAllColumn any
  catchAllKeyword any
 keyword %%|
  constructors

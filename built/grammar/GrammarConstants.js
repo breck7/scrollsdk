@@ -28,6 +28,7 @@ var GrammarConstants;
     // parse time
     GrammarConstants["keywords"] = "keywords";
     GrammarConstants["columns"] = "columns";
+    GrammarConstants["catchAllColumn"] = "catchAllColumn";
     GrammarConstants["catchAllKeyword"] = "catchAllKeyword";
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";

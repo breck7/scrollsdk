@@ -1,8 +1,15 @@
 20.0.0 / 2019-04-30
 ===================
+- New: simpler grammar files (no more @ prefix)
+- New: catchAllColumn grammar keyword
 - New: new methods shiftLeft, shiftRight, shiftYoungerSibsRight, split
 - New: new methods keywordSort, getPrettified
+- New: new method getCatchAllCellTypeName
 - Breaking: the "@" prefix on grammar keywords has been removed
+- Breaking: for catch all columns use catchAllColumn instead of *
+- Breaking: getNodeColumnTypes is now getRequiredCellTypeNames
+- Breaking: autocomplete help now only gets description and does not fall back to showing required columns
+- Breaking: removed getNodeColumnRegexes method
 
 19.5.1 / 2019-04-26
 ===================

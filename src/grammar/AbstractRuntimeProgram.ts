@@ -103,7 +103,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     const grammarProgram = this.getGrammarProgram()
     const keywordDefinitions = grammarProgram.getKeywordDefinitions()
     keywordDefinitions.forEach(child => {
-      usage.appendLine([child.getId(), "line-id", "keyword", child.getNodeColumnTypes().join(" ")].join(" "))
+      usage.appendLine([child.getId(), "line-id", "keyword", child.getRequiredCellTypeNames().join(" ")].join(" "))
     })
     const programNodes = this.getTopDownArray()
     programNodes.forEach((programNode, lineNumber) => {

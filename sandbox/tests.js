@@ -1890,7 +1890,7 @@ keyword extendsAbstract someAbstractClass
 keyword someCode topLevel
  catchAllKeyword lineOfCode
 keyword lineOfCode
- columns word*
+ catchAllColumn word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
 keyword block topLevel
@@ -1906,7 +1906,7 @@ keyword add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
 keyword + add
- columns int*
+ catchAllColumn int
 keyword lightbulbState topLevel
  columns onoff
 keyword to block
@@ -3020,6 +3020,26 @@ testTree.sortBy = equal => {
 
   // Assert
   equal(tree2.getColumn("key").join(""), "acb")
+}
+
+testTree.keywordSort = equal => {
+  // Arrange
+  const tree = new TreeNode(`body
+footer
+div
+header
+div`)
+  // Act
+  tree.keywordSort("header body div footer".split(" "))
+  // Assert
+  equal(
+    tree.toString(),
+    `header
+body
+div
+div
+footer`
+  )
 }
 
 testTree.syntax = equal => {

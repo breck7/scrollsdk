@@ -72,19 +72,18 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();
         const grammarProgram = definition.getProgram();
-        const columnTypes = definition.getNodeColumnTypes();
-        const expectedLinePattern = columnTypes.join(" ");
-        const numberOfColumns = columnTypes.length;
-        const lastColumnType = columnTypes[numberOfColumns - 1];
-        const isLastColumnListType = lastColumnType && lastColumnType.endsWith("*") ? lastColumnType : undefined;
+        const cellTypes = definition.getRequiredCellTypeNames(); // todo: are these nodeRequiredColumnTypes? ... also, rename to cell instead of column?
+        const numberOfRequiredCells = cellTypes.length;
+        const expectedLinePattern = cellTypes.join(" ");
+        const catchAllCellType = definition.getCatchAllCellTypeName();
         const words = this.getWordsFrom(1);
-        const length = Math.max(words.length, isLastColumnListType ? numberOfColumns - 1 : numberOfColumns);
-        const checks = [];
-        // A for loop instead of map because "length" can be longer than words.length
-        for (let wordIndex = 0; wordIndex < length; wordIndex++) {
-            checks[wordIndex] = new GrammarBackedCell_1.default(words[wordIndex], wordIndex >= numberOfColumns ? isLastColumnListType : columnTypes[wordIndex], this, wordIndex, expectedLinePattern, grammarProgram);
+        const numberOfCellsToFill = Math.max(words.length, numberOfRequiredCells);
+        const cells = [];
+        // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
+        for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
+            cells[cellIndex] = new GrammarBackedCell_1.default(words[cellIndex], cellIndex >= numberOfRequiredCells ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, expectedLinePattern, grammarProgram);
         }
-        return checks;
+        return cells;
     }
     // todo: just make a fn that computes proper spacing and then is given a node to print
     getLineSyntax() {

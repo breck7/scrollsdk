@@ -16,10 +16,11 @@ wordType filepath
 wordType inputType
  regex ^(string|int|any|lowercase)$
 keyword #!
- columns any*
+ catchAllColumn any
  highlightScope comment
 keyword prompt
- columns any inputType any*
+ columns any inputType
+ catchAllColumn any
  highlightScope constant.language
  example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project
@@ -46,7 +47,7 @@ keyword file
   data
   executable
 keyword any
- columns any*
+ catchAllColumn any
  catchAllKeyword any
  highlightScope string
 keyword data

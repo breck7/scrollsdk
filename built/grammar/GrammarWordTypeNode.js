@@ -93,7 +93,6 @@ class GrammarWordTypeNode extends TreeNode_1.default {
         return parser ? parser.parse(str) : str;
     }
     isValid(str, runTimeGrammarBackedProgram) {
-        str = str.replace(/\*$/, ""); // todo: cleanup
         return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));
     }
     getId() {

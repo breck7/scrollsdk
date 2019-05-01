@@ -1890,7 +1890,7 @@ keyword extendsAbstract someAbstractClass
 keyword someCode topLevel
  catchAllKeyword lineOfCode
 keyword lineOfCode
- columns word*
+ catchAllColumn word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
 keyword block topLevel
@@ -1906,7 +1906,7 @@ keyword add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
 keyword + add
- columns int*
+ catchAllColumn int
 keyword lightbulbState topLevel
  columns onoff
 keyword to block

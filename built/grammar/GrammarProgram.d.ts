@@ -40,7 +40,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
-    getNodeColumnRegexes(): any[];
     _getFileExtensions(): string;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;

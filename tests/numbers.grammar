@@ -4,9 +4,11 @@ grammar numbers
  catchAllKeyword error
 wordType int
  highlightScope constant.numeric
-abstract _top
 wordType error
  highlightScope invalid
+wordType string
+ highlightScope string
+abstract _top
 abstract arithmetic _top
  highlightScope keyword.operator.arithmetic
 keyword error
@@ -21,8 +23,6 @@ keyword + arithmetic
   comment
 keyword - arithmetic
  catchAllColumn int
-wordType string
- highlightScope string
 keyword comment _top
  description Anything can go here!
  highlightScope string

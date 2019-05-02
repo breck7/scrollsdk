@@ -7,12 +7,14 @@ grammar
  catchAllKeyword error
  constructors
   nodejs ./SwarmProgram.js
-wordType filepath
- highlightScope string
 wordType anyWord
+ highlightScope string
+wordType filepath
  highlightScope string
 wordType int
  regex \-?[0-9]+
+abstract assertion
+ highlightScope keyword.operator
 abstract terminal
 abstract testBlock
  catchAllColumn anyWord
@@ -22,8 +24,6 @@ abstract testBlock
   #setup
  catchAllKeyword commandNode
  highlightScope keyword.control
-abstract assertion
- highlightScope keyword.operator
 keyword #setup
  constructors
   nodejs ./TestSetupNode.js
@@ -33,72 +33,6 @@ keyword #setup
   require
   static
   %%|
-keyword #! terminal
- columns filepath
- catchAllColumn anyWord
- highlightScope comment
-keyword require terminal
- columns filepath
- catchAllColumn anyWord
- highlightScope constant.language
-keyword async terminal
- description Set this in setup to test async methods.
-keyword static terminal
- description Add this to setup node to import class directly without initiating it, for static method testing.
-keyword commandNode
- constructors
-  nodejs ./CommandNode.js
- description Input is an object, and calls some method with an optional array of string args.
- catchAllColumn anyWord
- catchAllKeyword commandNode
- highlightScope variable.function
- keywords
-  %|
-  assertion
-keyword #test testBlock
-keyword +#test testBlock
- constructors
-  nodejs ./SoloTestBlock.js
-keyword -#test testBlock
- constructors
-  nodejs ./SkippedTestBlock.js
-keyword error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
-keyword =~ assertion
- description Assert result is of a certain type.
- columns anyWord
- constructors
-  nodejs ./AssertTypeOfNode.js
-keyword =# assertion
- description Intake is an array, and checks if the length of array matches expected.
- columns int
- constructors
-  nodejs ./AssertLengthNode.js
-keyword == assertion
- description Intake is anything with a toString method, and compares that to provided expected value.
- catchAllColumn anyWord
- constructors
-  nodejs ./AssertEqualNode.js
-keyword =| assertion
- description When your expected value is a multiline string.
- catchAllKeyword any
- constructors
-  nodejs ./AssertEqualBlockNode.js
-keyword =+ assertion
- catchAllColumn anyWord
- description Converts the input to string and see if the string contains the provided string
- constructors
-  nodejs ./AssertIncludesNode.js
-keyword =- assertion
- description Converts the input to string and ensure the string does NOT contain the provided string
- catchAllColumn anyWord
- constructors
-  nodejs ./AssertDoesNotIncludeNode.js
-keyword any
- catchAllColumn anyWord
- catchAllKeyword any
 keyword %%|
  constructors
   nodejs ./SetupConstructorArgNode.js
@@ -111,3 +45,69 @@ keyword %|
  constructors
   nodejs ./CommandArgNode.js
  catchAllKeyword any
+keyword any
+ catchAllColumn anyWord
+ catchAllKeyword any
+keyword commandNode
+ constructors
+  nodejs ./CommandNode.js
+ description Input is an object, and calls some method with an optional array of string args.
+ catchAllColumn anyWord
+ catchAllKeyword commandNode
+ highlightScope variable.function
+ keywords
+  %|
+  assertion
+keyword error
+ constructors
+  nodejs ErrorNode
+  browser ErrorNode
+keyword =# assertion
+ description Intake is an array, and checks if the length of array matches expected.
+ columns int
+ constructors
+  nodejs ./AssertLengthNode.js
+keyword =+ assertion
+ catchAllColumn anyWord
+ description Converts the input to string and see if the string contains the provided string
+ constructors
+  nodejs ./AssertIncludesNode.js
+keyword =- assertion
+ description Converts the input to string and ensure the string does NOT contain the provided string
+ catchAllColumn anyWord
+ constructors
+  nodejs ./AssertDoesNotIncludeNode.js
+keyword == assertion
+ description Intake is anything with a toString method, and compares that to provided expected value.
+ catchAllColumn anyWord
+ constructors
+  nodejs ./AssertEqualNode.js
+keyword =| assertion
+ description When your expected value is a multiline string.
+ catchAllKeyword any
+ constructors
+  nodejs ./AssertEqualBlockNode.js
+keyword =~ assertion
+ description Assert result is of a certain type.
+ columns anyWord
+ constructors
+  nodejs ./AssertTypeOfNode.js
+keyword #! terminal
+ columns filepath
+ catchAllColumn anyWord
+ highlightScope comment
+keyword async terminal
+ description Set this in setup to test async methods.
+keyword require terminal
+ columns filepath
+ catchAllColumn anyWord
+ highlightScope constant.language
+keyword static terminal
+ description Add this to setup node to import class directly without initiating it, for static method testing.
+keyword #test testBlock
+keyword +#test testBlock
+ constructors
+  nodejs ./SoloTestBlock.js
+keyword -#test testBlock
+ constructors
+  nodejs ./SkippedTestBlock.js

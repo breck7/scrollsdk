@@ -17,6 +17,31 @@ wordType inputType
 keyword #!
  catchAllColumn anyWord
  highlightScope comment
+keyword any
+ catchAllColumn anyWord
+ catchAllKeyword any
+ highlightScope string
+keyword data
+ catchAllKeyword any
+ highlightScope variable
+keyword error
+ constructors
+  nodejs ErrorNode
+  browser ErrorNode
+keyword executable
+keyword file
+ columns filepath
+ highlightScope variable.parameter
+ constructors
+  nodejs ./FileNode.js
+ keywords
+  data
+  executable
+keyword folder
+ columns filepath
+ highlightScope variable.parameter
+ constructors
+  nodejs ./FolderNode.js
 keyword prompt
  columns anyWord inputType
  catchAllColumn anyWord
@@ -27,28 +52,3 @@ keyword prompt
   file PROJECT_NAME/.gitignore
  constructors
   nodejs ./PromptNode.js
-keyword error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
-keyword folder
- columns filepath
- highlightScope variable.parameter
- constructors
-  nodejs ./FolderNode.js
-keyword executable
-keyword file
- columns filepath
- highlightScope variable.parameter
- constructors
-  nodejs ./FileNode.js
- keywords
-  data
-  executable
-keyword any
- catchAllColumn anyWord
- catchAllKeyword any
- highlightScope string
-keyword data
- catchAllKeyword any
- highlightScope variable

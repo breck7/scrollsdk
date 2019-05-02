@@ -15,11 +15,11 @@ wordType int
  regex \-?[0-9]+
  parseWith js parseInt
  highlightScope constant.numeric
-wordType word
 wordType onoff
  enum on off
-abstract topLevel
+wordType word
 abstract someAbstractClass
+abstract topLevel
 abstract color_properties topLevel
  group hue saturation constrast
  columns int
@@ -29,30 +29,15 @@ keyword error
  constructors
   nodejs ErrorNode
   browser ErrorNode
-keyword extendsAbstract someAbstractClass
- columns int
-keyword someCode topLevel
- catchAllKeyword lineOfCode
 keyword lineOfCode
  catchAllColumn word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
   browser LineOfCodeNode
-keyword block topLevel
- keywords
-  topLevel
-keyword foo topLevel
-keyword nested topLevel
- constructors
-  nodejs ./jibberishNodes.js nested.someNestedNode
-keyword type topLevel
- columns word
- single
-keyword nodeWithConsts topLevel
- constants
-  greeting string hello world
 keyword text
  any
+keyword extendsAbstract someAbstractClass
+ columns int
 keyword add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
@@ -61,10 +46,25 @@ keyword + add
   + 1 2
  catchAllColumn int
  highlightScope keyword.operator.arithmetic
-keyword lightbulbState topLevel
- columns onoff
+keyword block topLevel
+ keywords
+  topLevel
 keyword to block
  columns word
  compiler txt
   sub to {word}
   closeChildren end
+keyword foo topLevel
+keyword lightbulbState topLevel
+ columns onoff
+keyword nested topLevel
+ constructors
+  nodejs ./jibberishNodes.js nested.someNestedNode
+keyword nodeWithConsts topLevel
+ constants
+  greeting string hello world
+keyword someCode topLevel
+ catchAllKeyword lineOfCode
+keyword type topLevel
+ columns word
+ single

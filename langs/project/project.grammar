@@ -23,6 +23,6 @@ keyword file
   relative
  constructors
   nodejs ./ProjectNode.js
-keyword external term
 keyword absolute term
+keyword external term
 keyword relative term

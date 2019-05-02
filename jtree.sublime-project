@@ -13,6 +13,10 @@
             "shell_cmd": "./tasks/unit.js"
         },
         {
+            "name": "prettifyFile",
+            "shell_cmd": "jtree prettify ${file}"
+        },
+        {
             "name": "testFile",
             "shell_cmd": "${file}"
         }

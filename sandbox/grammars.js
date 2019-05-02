@@ -1,3 +1,10 @@
+const localStorageKeys = {
+  grammarConsole: "grammarConsole",
+  codeConsole: "codeConsole"
+}
+
+const reset = () => Object.values(localStorageKeys).forEach(val => localStorage.removeItem(val))
+
 const main = grammarSourceCode => {
   const grammarConsole = $("#grammarConsole")
   const codeConsole = $("#codeConsole")
@@ -5,8 +12,14 @@ const main = grammarSourceCode => {
   const grammarErrorsConsole = $("#grammarErrorsConsole")
 
   const init = () => {
-    if (localStorage.getItem("grammarConsole")) grammarConsole.val(localStorage.getItem("grammarConsole"))
-    if (localStorage.getItem("codeConsole")) codeConsole.val(localStorage.getItem("codeConsole"))
+    const gram = localStorage.getItem(localStorageKeys.grammarConsole)
+    console.log("Loading grammar...")
+    console.log(gram)
+    const code = localStorage.getItem(localStorageKeys.codeConsole)
+    console.log("Loading code...")
+    console.log(code)
+    if (localStorage.getItem(localStorageKeys.grammarConsole)) grammarConsole.val(gram)
+    if (code) codeConsole.val(code)
     $("#version").html("Version: " + jtree.getVersion())
   }
 
@@ -26,7 +39,7 @@ const main = grammarSourceCode => {
 
   const grammarOnUpdate = () => {
     const grammarCode = grammarInstance.getValue()
-    localStorage.setItem("grammarConsole", grammarCode)
+    localStorage.setItem(localStorageKeys.grammarConsole, grammarCode)
     window.grammarProgram = new GrammarConstructor(grammarCode)
     const errs = window.grammarProgram.getProgramErrors()
     grammarErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
@@ -47,6 +60,7 @@ const main = grammarSourceCode => {
         cachedGrammarCode = currentGrammarCode
       } catch (err) {
         console.error(err)
+        $("#otherErrors").html(err)
         debugger
       }
     }
@@ -55,7 +69,7 @@ const main = grammarSourceCode => {
 
   const codeOnUpdate = () => {
     const code = codeInstance.getValue()
-    localStorage.setItem("codeConsole", code)
+    localStorage.setItem(localStorageKeys.codeConsole, code)
     window.program = new (getGrammarConstructor())(code)
     const errs = window.program.getProgramErrors()
     codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
@@ -105,5 +119,9 @@ const main = grammarSourceCode => {
 }
 
 $(document).ready(function() {
+  $("#resetButton").on("click", function() {
+    reset()
+    console.log("reset...")
+  })
   $.get("/grammar.grammar").then(main)
 })

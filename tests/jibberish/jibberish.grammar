@@ -9,7 +9,7 @@ grammar
   topLevel
   text
   someAbstractClass
-wordType error
+wordType errorWord
  highlightScope invalid
 wordType int
  regex \-?[0-9]+
@@ -25,7 +25,7 @@ abstract color_properties topLevel
  columns int
 keyword error
  highlightScope invalid
- catchAllColumn error
+ catchAllColumn errorWord
  constructors
   nodejs ErrorNode
   browser ErrorNode

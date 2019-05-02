@@ -1,5 +1,8 @@
 // WARNING: COMPILED FILE.
 
+
+
+
 const testStrings = {}
 
 const testTree = {}
@@ -3662,4 +3665,6 @@ testTree.treeNodes = equal => {
   equal(node.has("color"), false)
 }
 
-window.testTree = testTree
+
+window.testTree
+ = testTree

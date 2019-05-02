@@ -1,6 +1,8 @@
 edge / 2019-05-01
 =================
 - New: grammar name keyword
+- Breaking: removed ability in grammar files to have a wordType and keyword share the same name
+- Breaking: getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
 - Breaking: instead of "grammar grammarName" oneliner now use the grammar name keyword
 - Fix: all word types now have default refex of [^ ]* so no need to specify it
 - Fix: grammar code cleanup

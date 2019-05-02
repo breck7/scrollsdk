@@ -46,10 +46,19 @@ const main = grammarSourceCode => {
         } else grammarConstructor = grammarProgram.getRootConstructor()
         cachedGrammarCode = currentGrammarCode
       } catch (err) {
+        console.error(err)
         debugger
       }
     }
     return grammarConstructor
+  }
+
+  const codeOnUpdate = () => {
+    const code = codeInstance.getValue()
+    localStorage.setItem("codeConsole", code)
+    window.program = new (getGrammarConstructor())(code)
+    const errs = window.program.getProgramErrors()
+    codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
   grammarInstance.on("keyup", grammarOnUpdate)
@@ -66,14 +75,6 @@ const main = grammarSourceCode => {
   const codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", getGrammarConstructor, undefined, CodeMirror)
     .register()
     .fromTextAreaWithAutocomplete(codeConsole[0], { lineWrapping: true })
-
-  const codeOnUpdate = () => {
-    const code = codeInstance.getValue()
-    localStorage.setItem("codeConsole", code)
-    window.program = new (getGrammarConstructor())(code)
-    const errs = window.program.getProgramErrors()
-    codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
-  }
 
   codeInstance.on("keyup", codeOnUpdate)
 

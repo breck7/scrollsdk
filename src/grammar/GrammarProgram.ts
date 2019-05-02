@@ -273,8 +273,7 @@ ${GrammarConstants.wordType} any`
         .forEach(word => tree.appendLine(`${GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`))
     })
 
-    const expandedGrammarCode = tree.getExpanded(1, 2)
-    return new GrammarProgram(expandedGrammarCode, grammarPath)
+    return new GrammarProgram(tree.getExpanded(1, 2), grammarPath)
   }
 
   static _getBestType(values) {

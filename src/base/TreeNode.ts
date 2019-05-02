@@ -796,9 +796,9 @@ class ImmutableNode extends AbstractNode {
     if (!potentialParentNodes.length)
       throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
 
-    // Note: If multiple matches, we attempt to extend matching keyword first.
-    const keyword = this.getKeyword()
-    const parentNode = potentialParentNodes.find(node => node.getKeyword() === keyword) || potentialParentNodes[0]
+    if (potentialParentNodes.length > 1) throw new Error(`Invalid graph. Multiple unique ids found for "${parentId}"`)
+
+    const parentNode = potentialParentNodes[0]
 
     // todo: detect loops
     if (parentNode === cannotContainNode)
@@ -1303,8 +1303,7 @@ class ImmutableNode extends AbstractNode {
     return this.constructor
   }
 
-  // Note: if you have 2 of the same keywords, will attempt to extend matching keyword first
-  getExpanded(thisColumnNumber, extendsColumnNumber) {
+  getExpanded(thisColumnNumber: int, extendsColumnNumber: int) {
     return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"))
   }
 
@@ -1391,7 +1390,7 @@ class TreeNode extends ImmutableNode {
     return Math.max(mtime, cmtime)
   }
 
-  protected _expand(thisColumnNumber, extendsColumnNumber) {
+  protected _expand(thisColumnNumber: int, extendsColumnNumber: int): TreeNode {
     const graph = this.getGraph(thisColumnNumber, extendsColumnNumber)
     const result = new TreeNode()
     graph.forEach(node => result.extend(node))

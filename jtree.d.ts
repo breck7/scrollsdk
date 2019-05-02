@@ -39,7 +39,6 @@ interface TreeNode {
   getColumn: (path: word) => (string | Undefined)[]
   getColumnNames: () => string[]
   getErrors: () => parseError[] // parse errors. base class is permissive and will always have 0 errors.
-  getExpanded: (idColumnNumber: int, parentIdColumnNumber: int) => TreeNode
   getInheritanceTree: () => TreeNode // useful when your trees follow the convention "className parentClassName" line structure
   getLine: () => nodeString
   getLines: () => string[]

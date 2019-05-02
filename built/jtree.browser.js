@@ -1115,9 +1115,9 @@ class ImmutableNode extends AbstractNode {
         const potentialParentNodes = getNodesByIdFn(this.getParent(), parentId);
         if (!potentialParentNodes.length)
             throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`);
-        // Note: If multiple matches, we attempt to extend matching keyword first.
-        const keyword = this.getKeyword();
-        const parentNode = potentialParentNodes.find(node => node.getKeyword() === keyword) || potentialParentNodes[0];
+        if (potentialParentNodes.length > 1)
+            throw new Error(`Multiple unique ids found for "${parentId}"`);
+        const parentNode = potentialParentNodes[0];
         // todo: detect loops
         if (parentNode === cannotContainNode)
             throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`);

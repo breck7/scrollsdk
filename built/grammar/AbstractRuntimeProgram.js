@@ -144,7 +144,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     getWordHighlightScopeAtPosition(lineIndex, wordIndex) {
         this._initWordTypeCache();
         const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1];
-        return typeNode ? typeNode.getWord(wordIndex - 1) : "source";
+        return typeNode ? typeNode.getWord(wordIndex - 1) : undefined;
     }
     _initWordTypeCache() {
         const treeMTime = this.getTreeMTime();

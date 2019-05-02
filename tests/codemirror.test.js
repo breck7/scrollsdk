@@ -76,32 +76,32 @@ class MockCodeMirror {
 }
 
 testTree.codeMirrorTest = equal => {
-  const words = `grammar test
+  const code = `grammar
+ name test
  version`
-  const tokens = `atom bracket def bracket atom`
 
-  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
-  const tokenLines = mock.getTokenLines(words)
-  equal(tokenLines.join(" "), tokens)
+  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => code))
+  const tokenLines = mock.getTokenLines(code)
+  equal(tokenLines.join(" "), `atom bracket atom bracket def bracket atom`)
 }
 
 testTree.codeMirrorTest2 = equal => {
-  const words = `grammar test
+  const code = `grammar
+ name test
  version 1.0.0
 keyword foobar`
-  const tokens = `atom bracket def bracket atom bracket number def bracket def`
 
-  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => words))
-  const tokenLines = mock.getTokenLines(words)
-  equal(tokenLines.length, 3)
-  equal(tokenLines.join(" "), tokens)
+  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => code))
+  const tokenLines = mock.getTokenLines(code)
+  equal(tokenLines.length, 4)
+  equal(tokenLines.join(" "), `atom bracket atom bracket def bracket atom bracket number def bracket def`)
 }
 
 testTree.regressionTest = equal => {
-  const words = fs.readFileSync(__dirname + "/code-mirror-regression.stamp", "utf8")
+  const code = fs.readFileSync(__dirname + "/code-mirror-regression.stamp", "utf8")
 
-  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stamp", () => StampProgram, () => words))
-  const tokenLines = mock.getTokenLines(words)
+  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stamp", () => StampProgram, () => code))
+  const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 217)
 }
 

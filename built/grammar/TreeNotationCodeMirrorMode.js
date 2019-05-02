@@ -151,7 +151,8 @@ class TreeNotationCodeMirrorMode {
         const program = this._getParsedProgram();
         // todo: if the current word is an error, don't show red?
         const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex);
-        return program ? textMateScopeToCodeMirrorStyle_1.default(highlightScope.split(".")) : undefined;
+        const wordStyle = highlightScope ? textMateScopeToCodeMirrorStyle_1.default(highlightScope.split(".")) : undefined;
+        return wordStyle || "noHighlightScopeDefinedInGrammar";
     }
     // todo: remove.
     startState() {

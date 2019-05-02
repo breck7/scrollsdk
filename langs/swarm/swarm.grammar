@@ -1,4 +1,5 @@
-grammar swarm
+grammar
+ name swarm
  keywords
   #!
   #setup

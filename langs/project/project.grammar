@@ -1,4 +1,5 @@
-grammar project
+grammar
+ name project
  constructors
   nodejs ./projectProgram.js
  keywords

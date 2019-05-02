@@ -27,7 +27,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     protected _getSyntaxTreeHtml(): string;
     getTreeWithNodeTypes(): string;
     getWordTypeAtPosition(lineIndex: number, wordIndex: number): any;
-    getWordHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope;
+    getWordHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope | undefined;
     private _cache_programWordTypeStringMTime;
     private _cache_highlightScopeTree;
     private _cache_typeTree;

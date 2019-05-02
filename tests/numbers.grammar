@@ -1,4 +1,5 @@
-grammar numbers
+grammar
+ name numbers
  keywords
   _top
  catchAllKeyword error

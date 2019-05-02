@@ -16,6 +16,7 @@ var GrammarConstants;
     GrammarConstants["grammar"] = "grammar";
     GrammarConstants["extensions"] = "extensions";
     GrammarConstants["version"] = "version";
+    GrammarConstants["name"] = "name";
     GrammarConstants["keywordOrder"] = "keywordOrder";
     GrammarConstants["keyword"] = "keyword";
     GrammarConstants["wordType"] = "wordType";

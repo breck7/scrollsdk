@@ -1,10 +1,12 @@
-grammar grammar
+grammar
+ name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  catchAllKeyword _error
  keywordOrder grammar wordType abstract keyword
  extensions grammar gram
  example A grammar that parses anything:
-  grammar latin
+  grammar
+   name latin
    catchAllKeyword any
   keyword any
    any
@@ -17,6 +19,8 @@ grammar grammar
 wordType int
  regex \-?[0-9]+
  highlightScope constant.numeric
+wordType float
+ regex \-?[0-9]*\.?[0-9]*
 wordType scopeName
  enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
  highlightScope string
@@ -25,7 +29,7 @@ wordType word
  highlightScope variable.parameter
 wordType lowercaseWord
  regex [a-z]+
-wordType any
+wordType anyWord
  regex .*
 wordType string
  regex .*
@@ -34,39 +38,49 @@ wordType exampleWord string
  highlightScope comment
 wordType filepath
  regex .*
-wordType keyword
+wordType keywordName
  regex [^ ]*
  highlightScope variable.parameter
-wordType fileExtension any
-wordType regex
+wordType fileExtension
+wordType regexWord
  regex .*
  highlightScope string.regexp
 wordType semanticVersion
  regex [0-9]+\.[0-9]+\.[0-9]+
  highlightScope constant.numeric
-wordType wordType
+wordType wordTypeName
+ regex .*
+wordType wordTypeEnum
  keywordTable wordType 1
+wordType extendedWordType wordTypeName
+wordType enumOption
+wordType constructorName
+wordType builtInConstructorOrConstructorName
+wordType builtInConstructorOrFilePath
+wordType compilerTargetExtension
+ description The target extension of the compiler output such as "o" or "js" or "html"
+wordType tag
+wordType extendedKeyword
+wordType grammarName
+ highlightScope constant
 abstract _keywordRule
  highlightScope entity.other.attribute-name
  single
-abstract _monadicKeywordRule _keywordRule
- columns any
-abstract _diadicKeywordRule _keywordRule
- columns any any
-abstract _constructor _variadicKeywordRule
- description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-abstract _variadicKeywordRule _keywordRule
- catchAllColumn any
 abstract _compilerRule
- catchAllColumn any
+ catchAllColumn anyWord
  highlightScope entity.other.attribute-name
 abstract _nonTerminalKeywordRule _keywordRule
+abstract _environment
+keyword name
+ columns grammarName
+ highlightScope constant.language
+ description The name of your language. Also serves as the default file extension.
 keyword grammar
  required
  single
  highlightScope constant.language
- columns word
  keywords
+  name
   description
   example
   extensions
@@ -77,7 +91,7 @@ keyword grammar
   catchAllKeyword
   version
 keyword keywordOrder
- catchAllColumn keyword
+ catchAllColumn keywordName
  highlightScope constant.language
  description Optionally specify what order keywords should be sorted in when prettifying a file.
 keyword version
@@ -95,44 +109,57 @@ keyword abstract keyword
   _keywordRule
   group
 keyword wordType
- columns any
- catchAllColumn any
+ columns wordTypeName
+ catchAllColumn extendedWordType
  highlightScope variable.parameter
  keywords
   highlightScope
   regex
   keywordTable
+  description
   enum
   parseWith
 keyword parseWith
- catchAllColumn any
+ catchAllColumn anyWord
  highlightScope entity.other.attribute-name
  single
 keyword group
- catchAllColumn any
+ catchAllColumn keywordName
  highlightScope entity.other.attribute-name
  description Available on abstract nodes only. Use it to more concisely generate keywords all extending from this abstract keyword, if they have no special properties.
 keyword enum
- catchAllColumn any
+ catchAllColumn enumOption
  highlightScope entity.other.attribute-name
 keyword keywordTable
- columns any int
+ columns anyWord int
  highlightScope entity.other.attribute-name
-keyword catchAllKeyword _monadicKeywordRule
+keyword catchAllKeyword _keywordRule
  description If a keyword is not found in the keywords list, instantiate this type of node instead.
+ columns keywordName
+keyword browser _environment
+ columns builtInConstructorOrConstructorName
+ description builtInConstructorOrConstructorName will be searched for on the window object.
+keyword nodejs _environment
+ columns builtInConstructorOrFilePath
+ catchAllColumn constructorName
+ description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
 keyword constructors _nonTerminalKeywordRule
- catchAllKeyword _constructor
+ keywords
+  nodejs
+  browser
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
-keyword frequency _monadicKeywordRule
+keyword frequency _keywordRule
+ columns float
 keyword columns _keywordRule
- catchAllColumn wordType
+ catchAllColumn wordTypeEnum
  description Describes the word type of each word in the line.
 keyword regex
- catchAllColumn regex
+ catchAllColumn regexWord
  description The word must match this pattern or it shall be marked as an error.
  highlightScope entity.other.attribute-name
  single
-keyword compiler _monadicKeywordRule
+keyword compiler _keywordRule
+ columns compilerTargetExtension
  keywords
   sub
   listDelimiter
@@ -156,15 +183,15 @@ keyword example _keywordRule
  catchAllKeyword _exampleLine
  highlightScope comment
 keyword _defaultTuple
- columns any
- catchAllColumn any
+ columns anyWord
+ catchAllColumn anyWord
 keyword defaults _keywordRule
  catchAllKeyword _defaultTuple
 keyword _constantAny
- catchAllColumn any
+ catchAllColumn anyWord
  catchAllKeyword _constantAny
 keyword _constantDefinition
- catchAllColumn any
+ catchAllColumn anyWord
  catchAllKeyword _constantAny
 keyword constants _keywordRule
  catchAllKeyword _constantDefinition
@@ -175,7 +202,7 @@ keyword required _keywordRule
 keyword single _keywordRule
  description If present and their are more than 1 of these nodes on the parent, an error will be present.
 keyword tags _keywordRule
- catchAllColumn any
+ catchAllColumn tag
 keyword highlightScope _keywordRule
  columns scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
@@ -186,12 +213,12 @@ keyword _error
  constructors
   nodejs ErrorNode
   browser ErrorNode
-keyword catchAllColumn _monadicKeywordRule
- columns wordType
+keyword catchAllColumn _keywordRule
+ columns wordTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
 keyword keyword
- columns keyword
- catchAllColumn any
+ columns keywordName
+ catchAllColumn extendedKeyword
  catchAllKeyword _error
  constructors
   nodejs NonTerminalNode

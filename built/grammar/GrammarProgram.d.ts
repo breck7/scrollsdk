@@ -26,7 +26,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordDefinitions(): GrammarKeywordDefinitionNode[];
     getTheGrammarFilePath(): string;
     protected _getGrammarRootNode(): GrammarRootNode;
-    getExtensionName(): string;
+    getExtensionName(): string | undefined;
     protected _getKeywordsNode(): TreeNode;
     private _cachedDefinitions;
     getKeywordDefinitionByKeywordPath(keywordPath: string): AbstractGrammarDefinitionNode;
@@ -40,7 +40,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
-    _getFileExtensions(): string;
+    private _getFileExtensions;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;

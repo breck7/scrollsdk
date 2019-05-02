@@ -18,6 +18,7 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
         const map = super.getKeywordMap();
         map[GrammarConstants_1.GrammarConstants.extensions] = TreeNode_1.default;
         map[GrammarConstants_1.GrammarConstants.version] = TreeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.name] = TreeNode_1.default;
         map[GrammarConstants_1.GrammarConstants.keywordOrder] = TreeNode_1.default;
         return map;
     }
@@ -104,7 +105,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this.getNodeByType(GrammarRootNode);
     }
     getExtensionName() {
-        return this._getGrammarRootNode().getId();
+        return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.name);
     }
     _getKeywordsNode() {
         return this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.keywords);

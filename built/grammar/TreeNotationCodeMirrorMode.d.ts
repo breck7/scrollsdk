@@ -63,9 +63,9 @@ declare class TreeNotationCodeMirrorMode {
         to: CodeMirrorLib.Position;
     }>;
     register(): this;
-    _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: any): string;
+    private _advanceStreamAndReturnTokenType;
     private _getLineNumber;
-    _getWordStyle(lineIndex: any, wordIndex: any): string;
+    private _getWordStyle;
     startState(): {
         wordIndex: number;
     };

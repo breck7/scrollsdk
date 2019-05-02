@@ -13,6 +13,7 @@ enum GrammarConstants {
   grammar = "grammar",
   extensions = "extensions",
   version = "version",
+  name = "name",
   keywordOrder = "keywordOrder",
   keyword = "keyword",
   wordType = "wordType",

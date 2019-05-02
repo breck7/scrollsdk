@@ -139,7 +139,7 @@ class TreeNotationCodeMirrorMode {
     return this
   }
 
-  _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state) {
+  private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state): string {
     let nextCharacter = stream.next()
     const lineNumber = this._getLineNumber(stream, state)
     while (typeof nextCharacter === "string") {
@@ -170,12 +170,14 @@ class TreeNotationCodeMirrorMode {
     return num
   }
 
-  _getWordStyle(lineIndex, wordIndex): string {
+  private _getWordStyle(lineIndex, wordIndex): string {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?
     const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex)
-    return program ? <string>textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined
+    const wordStyle = highlightScope ? <string>textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined
+
+    return wordStyle || "noHighlightScopeDefinedInGrammar"
   }
 
   // todo: remove.

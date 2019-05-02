@@ -1,4 +1,5 @@
-grammar jibberish
+grammar
+ name jibberish
  description Test a root parser node
  constructors
   nodejs ./jibberishProgram.js

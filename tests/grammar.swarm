@@ -4,7 +4,8 @@
  #setup
   require ../built/grammar/GrammarProgram.js default
   %%|
-   grammar testlang
+   grammar
+    name testlang
     compiler txt
     keywords
      baseNode

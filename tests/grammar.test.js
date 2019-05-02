@@ -281,7 +281,8 @@ keyword baseNode`,
 testTree.minimumGrammar = equal => {
   // Arrange/Act
   const programConstructor = GrammarProgram.newFromCondensed(
-    `grammar any
+    `grammar
+ name any
  catchAllKeyword any
 keyword any
  catchAllColumn any
@@ -327,7 +328,8 @@ testTree.examples = equal => {
 
   // Arrange/Act
   const badGrammarProgram = GrammarProgram.newFromCondensed(
-    `grammar bad
+    `grammar
+ name bad
  keywords
   +
 keyword +

@@ -1859,7 +1859,8 @@ foo`
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
-  const grammarCode = `grammar jibberish
+  const grammarCode = `grammar
+ name jibberish
  description Test a root parser node
  constructors
   nodejs ./jibberishProgram.js

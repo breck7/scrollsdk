@@ -204,6 +204,7 @@ var GrammarConstants;
     GrammarConstants["grammar"] = "grammar";
     GrammarConstants["extensions"] = "extensions";
     GrammarConstants["version"] = "version";
+    GrammarConstants["name"] = "name";
     GrammarConstants["keywordOrder"] = "keywordOrder";
     GrammarConstants["keyword"] = "keyword";
     GrammarConstants["wordType"] = "wordType";
@@ -2467,7 +2468,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getWordHighlightScopeAtPosition(lineIndex, wordIndex) {
         this._initWordTypeCache();
         const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1];
-        return typeNode ? typeNode.getWord(wordIndex - 1) : "source";
+        return typeNode ? typeNode.getWord(wordIndex - 1) : undefined;
     }
     _initWordTypeCache() {
         const treeMTime = this.getTreeMTime();
@@ -3337,6 +3338,7 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
         const map = super.getKeywordMap();
         map[GrammarConstants.extensions] = TreeNode;
         map[GrammarConstants.version] = TreeNode;
+        map[GrammarConstants.name] = TreeNode;
         map[GrammarConstants.keywordOrder] = TreeNode;
         return map;
     }
@@ -3423,7 +3425,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this.getNodeByType(GrammarRootNode);
     }
     getExtensionName() {
-        return this._getGrammarRootNode().getId();
+        return this._getGrammarRootNode().get(GrammarConstants.name);
     }
     _getKeywordsNode() {
         return this._getGrammarRootNode().getNode(GrammarConstants.keywords);
@@ -3744,7 +3746,8 @@ class TreeNotationCodeMirrorMode {
         const program = this._getParsedProgram();
         // todo: if the current word is an error, don't show red?
         const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex);
-        return program ? textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined;
+        const wordStyle = highlightScope ? textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined;
+        return wordStyle || "noHighlightScopeDefinedInGrammar";
     }
     // todo: remove.
     startState() {

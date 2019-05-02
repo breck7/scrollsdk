@@ -1,4 +1,5 @@
-grammar wordTypes
+grammar
+ name wordTypes
  description A collection of common word types
 wordType any
  regex .?

@@ -26,7 +26,8 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordDefinitions(): GrammarKeywordDefinitionNode[];
     getTheGrammarFilePath(): string;
     protected _getGrammarRootNode(): GrammarRootNode;
-    getExtensionName(): string | undefined;
+    getExtensionName(): string;
+    getGrammarName(): string | undefined;
     protected _getKeywordsNode(): TreeNode;
     private _cachedDefinitions;
     getKeywordDefinitionByKeywordPath(keywordPath: string): AbstractGrammarDefinitionNode;

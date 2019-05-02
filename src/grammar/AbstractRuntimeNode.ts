@@ -12,7 +12,7 @@ import types from "../types"
 abstract class AbstractRuntimeNode extends TreeNode {
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
-  getGrammarProgram() {
+  getGrammarProgram(): GrammarProgram {
     return this.getProgram().getGrammarProgram()
   }
 
@@ -59,7 +59,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
   abstract getDefinition(): AbstractGrammarDefinitionNode
 
   protected _getKeywordDefinitionByName(path: string) {
-    const grammarProgram = <GrammarProgram>this.getProgram().getGrammarProgram()
+    const grammarProgram = this.getProgram().getGrammarProgram()
     // todo: do we need a relative to with this keyword path?
     return grammarProgram.getKeywordDefinitionByKeywordPath(path)
   }

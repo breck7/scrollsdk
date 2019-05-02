@@ -3617,6 +3617,28 @@ testTree.isBlank = equal => {
   equal(a.deleteChildren().length, 0)
 }
 
+testTree.graphSort = equal => {
+  // Arrange
+  const a = new TreeNode(`dog animal
+animal
+retriever dog
+car
+cat animal
+house`)
+  a.sort(jtree.Utils.makeGraphSortFunction(0, 1))
+
+  // Assert
+  equal(
+    a.toString(),
+    `animal
+car
+house
+cat animal
+dog animal
+retriever dog`
+  )
+}
+
 testTree.treeNodes = equal => {
   // Arrange
   const a = new TreeNode("text")

@@ -688,7 +688,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         if (!potentialParentNodes.length)
             throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`);
         if (potentialParentNodes.length > 1)
-            throw new Error(`Multiple unique ids found for "${parentId}"`);
+            throw new Error(`Invalid graph. Multiple unique ids found for "${parentId}"`);
         const parentNode = potentialParentNodes[0];
         // todo: detect loops
         if (parentNode === cannotContainNode)
@@ -1141,7 +1141,6 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getCatchAllNodeConstructor(line) {
         return this.constructor;
     }
-    // Note: if you have 2 of the same keywords, will attempt to extend matching keyword first
     getExpanded(thisColumnNumber, extendsColumnNumber) {
         return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"));
     }
@@ -1498,6 +1497,9 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     keywordSort(keywordOrder) {
+        return this._keywordSort(keywordOrder);
+    }
+    _keywordSort(keywordOrder, secondarySortFn) {
         const map = {};
         keywordOrder.forEach((word, index) => {
             map[word] = index;
@@ -1508,8 +1510,8 @@ class TreeNode extends ImmutableNode {
             if (valA > valB)
                 return 1;
             if (valA < valB)
-                return -1;
-            return 0;
+                return -1; // A comes first
+            return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0;
         });
         return this;
     }

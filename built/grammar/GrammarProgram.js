@@ -105,6 +105,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this.getNodeByType(GrammarRootNode);
     }
     getExtensionName() {
+        return this.getGrammarName();
+    }
+    getGrammarName() {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.name);
     }
     _getKeywordsNode() {
@@ -218,8 +221,7 @@ ${GrammarConstants_1.GrammarConstants.wordType} any`).getRootConstructor();
                 .split(xi)
                 .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`));
         });
-        const expandedGrammarCode = tree.getExpanded(1, 2);
-        return new GrammarProgram(expandedGrammarCode, grammarPath);
+        return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
     static _getBestType(values) {
         const all = fn => {

@@ -15,6 +15,7 @@ declare class TreeUtils {
     static arrayToMap(arr: any): {};
     static mapValues(object: any, fn: any): {};
     static sortByAccessor(accessor: any): (objectA: any, objectB: any) => number;
+    static makeGraphSortFunction(thisColumnIndex: number, extendsColumnIndex: number): (nodeA: any, nodeB: any) => 1 | 0 | -1;
     static BrowserScript: {
         new (fileStr: string): {
             _str: string;

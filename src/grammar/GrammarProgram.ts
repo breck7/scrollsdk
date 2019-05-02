@@ -131,7 +131,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return <GrammarRootNode>this.getNodeByType(GrammarRootNode)
   }
 
-  getExtensionName(): string | undefined {
+  getExtensionName() {
+    return this.getGrammarName()
+  }
+
+  getGrammarName(): string | undefined {
     return this._getGrammarRootNode().get(GrammarConstants.name)
   }
 

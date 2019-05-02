@@ -108,6 +108,47 @@ class TreeUtils {
             return result;
         };
     }
+    static makeGraphSortFunction(thisColumnIndex, extendsColumnIndex) {
+        return (nodeA, nodeB) => {
+            // -1 === a before b
+            const nodeAUniqueId = nodeA.getWord(thisColumnIndex);
+            const nodeAExtends = nodeA.getWord(extendsColumnIndex);
+            const nodeBUniqueId = nodeB.getWord(thisColumnIndex);
+            const nodeBExtends = nodeB.getWord(extendsColumnIndex);
+            const nodeAExtendsNodeB = nodeAExtends && nodeAExtends === nodeBUniqueId;
+            const nodeBExtendsNodeA = nodeBExtends && nodeBExtends === nodeAUniqueId;
+            if (!nodeAExtends && !nodeBExtends) {
+                // If neither extends, sort by keyword
+                if (nodeAUniqueId > nodeBUniqueId)
+                    return 1;
+                else if (nodeAUniqueId < nodeBUniqueId)
+                    return -1;
+                return 0;
+            }
+            // If only one extends, the other comes first
+            else if (!nodeAExtends)
+                return -1;
+            else if (!nodeBExtends)
+                return 1;
+            // If A extends B, B should come first
+            if (nodeAExtendsNodeB)
+                return 1;
+            else if (nodeBExtendsNodeA)
+                return -1;
+            // Sort by what they extend
+            if (nodeAExtends > nodeBExtends)
+                return 1;
+            else if (nodeAExtends < nodeBExtends)
+                return -1;
+            // Finally sort by keyword
+            if (nodeAUniqueId > nodeBUniqueId)
+                return 1;
+            else if (nodeAUniqueId < nodeBUniqueId)
+                return -1;
+            // Should never hit this, unless we have a duplicate line.
+            return 0;
+        };
+    }
 }
 TreeUtils.BrowserScript = class {
     constructor(fileStr) {

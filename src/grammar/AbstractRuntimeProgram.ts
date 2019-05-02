@@ -1,4 +1,5 @@
 import TreeNode from "../base/TreeNode"
+import TreeUtils from "../base/TreeUtils"
 import { GrammarConstantsErrors } from "./GrammarConstants"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 import types from "../types"
@@ -78,10 +79,9 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   getPrettified() {
     const keywordOrder = this.getGrammarProgram().getKeywordOrder()
     const clone = this.clone()
-    clone.keywordSort(keywordOrder.split(" "))
-    // todo:
-    // 2nd sort: graphOrder
-    // 3rd sort: alphabetical order:
+    const isCondensed = this.getGrammarProgram().getGrammarName() === "grammar" // todo: generalize?
+    clone._keywordSort(keywordOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined)
+
     return clone.toString()
   }
 

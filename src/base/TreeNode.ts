@@ -1708,6 +1708,10 @@ class TreeNode extends ImmutableNode {
   }
 
   keywordSort(keywordOrder: types.word[]): this {
+    return this._keywordSort(keywordOrder)
+  }
+
+  protected _keywordSort(keywordOrder: types.word[], secondarySortFn?: types.sortFn): this {
     const map = {}
     keywordOrder.forEach((word, index) => {
       map[word] = index
@@ -1716,8 +1720,8 @@ class TreeNode extends ImmutableNode {
       const valA = map[nodeA.getKeyword()]
       const valB = map[nodeB.getKeyword()]
       if (valA > valB) return 1
-      if (valA < valB) return -1
-      return 0
+      if (valA < valB) return -1 // A comes first
+      return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0
     })
     return this
   }

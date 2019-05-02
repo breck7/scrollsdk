@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
+const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractRuntimeNode_1 = require("./AbstractRuntimeNode");
 class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
@@ -64,10 +65,8 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     getPrettified() {
         const keywordOrder = this.getGrammarProgram().getKeywordOrder();
         const clone = this.clone();
-        clone.keywordSort(keywordOrder.split(" "));
-        // todo:
-        // 2nd sort: graphOrder
-        // 3rd sort: alphabetical order:
+        const isCondensed = this.getGrammarProgram().getGrammarName() === "grammar"; // todo: generalize?
+        clone._keywordSort(keywordOrder.split(" "), isCondensed ? TreeUtils_1.default.makeGraphSortFunction(1, 2) : undefined);
         return clone.toString();
     }
     getProgramErrorMessages() {

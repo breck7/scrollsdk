@@ -195,7 +195,7 @@ declare class ImmutableNode extends AbstractNode {
     slice(start: int, end?: int): ImmutableNode[];
     getKeywordMap(): any;
     getCatchAllNodeConstructor(line: string): Function;
-    getExpanded(thisColumnNumber: any, extendsColumnNumber: any): TreeNode;
+    getExpanded(thisColumnNumber: int, extendsColumnNumber: int): TreeNode;
     getInheritanceTree(): TreeNode;
     protected _getGrandParent(): ImmutableNode | undefined;
     getNodeConstructor(line: string): any;
@@ -212,7 +212,7 @@ declare class TreeNode extends ImmutableNode {
     protected _getCMTime(): number;
     protected _setCMTime(value: any): this;
     getTreeMTime(): int;
-    protected _expand(thisColumnNumber: any, extendsColumnNumber: any): any;
+    protected _expand(thisColumnNumber: int, extendsColumnNumber: int): TreeNode;
     macroExpand(macroDefKeyword: string, macroUsageKeyword: string): TreeNode;
     setChildren(children: any): this;
     protected _updateMTime(): void;
@@ -255,6 +255,7 @@ declare class TreeNode extends ImmutableNode {
     pushContentAndChildren(content?: types.line, children?: types.something): any;
     deleteBlanks(): this;
     keywordSort(keywordOrder: types.word[]): this;
+    protected _keywordSort(keywordOrder: types.word[], secondarySortFn?: types.sortFn): this;
     protected _touchNode(keywordPathArray: any): this;
     protected _touchNodeByString(str: any): this;
     touchNode(str: types.keywordPath): this;

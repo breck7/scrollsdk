@@ -6,7 +6,6 @@ grammar
   file
  catchAllKeyword error
 wordType filepath
- regex .*
  highlightScope string
 abstract term
  catchAllColumn filepath

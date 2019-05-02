@@ -30,26 +30,20 @@ wordType word
 wordType lowercaseWord
  regex [a-z]+
 wordType anyWord
- regex .*
 wordType string
- regex .*
  highlightScope string
 wordType exampleWord string
  highlightScope comment
 wordType filepath
- regex .*
 wordType keywordName
- regex [^ ]*
  highlightScope variable.parameter
 wordType fileExtension
 wordType regexWord
- regex .*
  highlightScope string.regexp
 wordType semanticVersion
  regex [0-9]+\.[0-9]+\.[0-9]+
  highlightScope constant.numeric
 wordType wordTypeName
- regex .*
 wordType wordTypeEnum
  keywordTable wordType 1
 wordType extendedWordType wordTypeName

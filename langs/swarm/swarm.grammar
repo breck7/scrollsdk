@@ -8,10 +8,8 @@ grammar
  constructors
   nodejs ./SwarmProgram.js
 wordType filepath
- regex .*
  highlightScope string
 wordType any
- regex .*
  highlightScope string
 wordType int
  regex \-?[0-9]+

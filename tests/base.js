@@ -1874,7 +1874,6 @@ wordType int
  regex \-?[0-9]+
  parseWith js parseInt
 wordType word
- regex .*
 wordType onoff
  enum on off
 keyword error

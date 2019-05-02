@@ -16,7 +16,6 @@ wordType int
  parseWith js parseInt
  highlightScope constant.numeric
 wordType word
- regex .*
 wordType onoff
  enum on off
 abstract topLevel

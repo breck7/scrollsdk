@@ -2,7 +2,6 @@ grammar
  name wordTypes
  description A collection of common word types
 wordType any
- regex .?
 wordType lowercaseLetter
  char a b c d e f g h i j k l m n o p q r s t u v w x y z
 wordType uppercaseLetter
@@ -85,7 +84,6 @@ wordType filepathChar
  char _ / - 
  match letter
 wordType filepath
- regex .?
  match filepathChar
  match filepathChar filepath
 wordType lowercase
@@ -101,7 +99,6 @@ wordType urlLetter
  match letter
  match digit
 wordType url
- regex .?
  match urlLetter
  match urlLetter url
 wordType reduction

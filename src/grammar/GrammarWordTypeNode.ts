@@ -100,9 +100,7 @@ class GrammarWordTypeNode extends TreeNode {
   getRegexString() {
     // todo: enum
     const enumOptions = this._getEnumOptions()
-    return (
-      this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "noWordTypeRegexFound")
-    )
+    return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
 
   parse(str: string) {

@@ -1,3 +1,10 @@
+edge / 2019-05-01
+=================
+- New: grammar name keyword
+- Breaking: instead of "grammar grammarName" oneliner now use the grammar name keyword
+- Fix: all word types now have default refex of [^ ]* so no need to specify it
+- Fix: grammar code cleanup
+
 20.0.0 / 2019-04-30
 ===================
 - New: simpler grammar files (no more @ prefix)

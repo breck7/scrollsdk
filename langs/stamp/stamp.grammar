@@ -10,10 +10,8 @@ grammar
   folder
   file
 wordType any
- regex .*
  highlightScope string
 wordType filepath
- regex .*
 wordType inputType
  regex ^(string|int|any|lowercase)$
 keyword #!

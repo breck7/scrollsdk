@@ -1,8 +1,5 @@
 // WARNING: COMPILED FILE.
 
-
-
-
 const testStrings = {}
 
 const testTree = {}
@@ -1874,7 +1871,6 @@ wordType int
  regex \-?[0-9]+
  parseWith js parseInt
 wordType word
- regex .*
 wordType onoff
  enum on off
 keyword error
@@ -3666,6 +3662,4 @@ testTree.treeNodes = equal => {
   equal(node.has("color"), false)
 }
 
-
-window.testTree
- = testTree
+window.testTree = testTree

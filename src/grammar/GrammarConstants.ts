@@ -42,6 +42,7 @@ enum GrammarConstants {
   constructors = "constructors",
   constructorNodeJs = "nodejs",
   constructorBrowser = "browser", // for browser
+  constructorJavascript = "javascript", // for eval
 
   // compile time
   compilerKeyword = "compiler",

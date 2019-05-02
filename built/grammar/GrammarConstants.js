@@ -42,6 +42,7 @@ var GrammarConstants;
     GrammarConstants["constructors"] = "constructors";
     GrammarConstants["constructorNodeJs"] = "nodejs";
     GrammarConstants["constructorBrowser"] = "browser";
+    GrammarConstants["constructorJavascript"] = "javascript";
     // compile time
     GrammarConstants["compilerKeyword"] = "compiler";
     // develop time

@@ -76,14 +76,54 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         return !this.isNodeJs();
     }
 }
+class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
+    _getNodeJsConstructor() {
+        const jtreePath = __dirname + "/../jtree.node.js";
+        const code = `const jtree = require('${jtreePath}').default
+/* INDENT */  module.exports = ${this.childrenToString()}`;
+        if (CustomJavascriptConstructorNode.cache[code])
+            return CustomJavascriptConstructorNode.cache[code];
+        const tempFilePath = __dirname + "/constructor-" + TreeUtils_1.default.getRandomString(30) + "-temp.js";
+        const fs = require("fs");
+        try {
+            fs.writeFileSync(tempFilePath, code, "utf8");
+            CustomJavascriptConstructorNode.cache[code] = require(tempFilePath);
+        }
+        catch (err) {
+            console.error(err);
+        }
+        finally {
+            fs.unlinkSync(tempFilePath);
+        }
+        return CustomJavascriptConstructorNode.cache[code];
+    }
+    _getBrowserConstructor() {
+        const definedCode = this.childrenToString();
+        const tempClassName = "tempConstructor" + TreeUtils_1.default.getRandomString(30);
+        if (CustomJavascriptConstructorNode.cache[definedCode])
+            return CustomJavascriptConstructorNode.cache[definedCode];
+        const script = document.createElement("script");
+        script.innerHTML = `window.${tempClassName} = ${this.childrenToString()}`;
+        document.head.appendChild(script);
+        CustomJavascriptConstructorNode.cache[definedCode] = window[tempClassName];
+    }
+    _getCustomConstructor() {
+        return this.isNodeJs() ? this._getNodeJsConstructor() : this._getBrowserConstructor();
+    }
+}
+CustomJavascriptConstructorNode.cache = {};
 class GrammarCustomConstructorsNode extends TreeNode_1.default {
     getKeywordMap() {
         const map = {};
         map[GrammarConstants_1.GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode;
         map[GrammarConstants_1.GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode;
+        map[GrammarConstants_1.GrammarConstants.constructorJavascript] = CustomJavascriptConstructorNode;
         return map;
     }
     getConstructorForEnvironment() {
+        const jsConstructor = this.getNode(GrammarConstants_1.GrammarConstants.constructorJavascript);
+        if (jsConstructor)
+            return jsConstructor;
         return this.getNode(this.isNodeJs() ? GrammarConstants_1.GrammarConstants.constructorNodeJs : GrammarConstants_1.GrammarConstants.constructorBrowser);
     }
 }

@@ -176,14 +176,21 @@ com
   equal(program.getAutocompleteResultsAt(1, 0).matches.length, 1)
   equal(program.getAutocompleteResultsAt(1, 2).matches.length, 1, "should complete comment")
   equal(program.getAutocompleteResultsAt(1, 3).matches.length, 1, "should complete comment")
-  equal(program.getAutocompleteResultsAt(2, 0).matches.length, 3)
-  equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
+  equal(program.getAutocompleteResultsAt(2, 0).matches.length, 7, "all nodes")
+  equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0, "should be none")
 
   equal(program.getAutocompleteResultsAt(0, 2).matches.length, 0)
   // todo: test for descriptions in addition to returned words
 
   // Arrange/Act/Assert
-  equal(makeNumbersProgram(``).getAutocompleteResultsAt(0, 0).matches.length, 3, "should be 3 results at root level")
+  equal(makeNumbersProgram(``).getAutocompleteResultsAt(0, 0).matches.length, 7, "should be 7 results at root level")
+
+  // Arrange
+  program = makeNumbersProgram(`+ 2 3
+* 2 3 10`)
+
+  // Act/Assert
+  equal(program.executeSync().join(" "), "5 60")
 }
 
 testTree.autocompleteAdditionalWords = equal => {
@@ -346,4 +353,3 @@ wordType int`
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
 module.exports = testTree
-

@@ -166,6 +166,14 @@ keyword nodejs _environment
  columns builtInConstructorOrFilePath
  catchAllColumn constructorName
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
+wordType javascriptCodeWord
+keyword javascriptCodeLine
+ catchAllColumn javascriptCodeWord
+ catchAllKeyword javascriptCodeLine
+keyword javascript _environment
+ catchAllColumn javascriptCodeWord
+ catchAllKeyword javascriptCodeLine
+ description Put in some code to eval.
 keyword any _keywordRule
 keyword catchAllColumn _keywordRule
  columns wordTypeEnum
@@ -208,8 +216,7 @@ keyword tags _keywordRule
  catchAllColumn tag
 keyword constructors _nonTerminalKeywordRule
  keywords
-  nodejs
-  browser
+  _environment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
 keyword keywords _nonTerminalKeywordRule
  catchAllKeyword _keywordUse

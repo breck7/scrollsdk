@@ -1,31 +1,41 @@
 grammar
  name numbers
  keywords
-  _top
+  _arithmetic
+  #
  catchAllKeyword error
 wordType error
  highlightScope invalid
 wordType int
  highlightScope constant.numeric
-wordType string
- highlightScope string
-abstract _top
-abstract arithmetic _top
+wordType commentWord
+ highlightScope comment
+abstract _arithmetic
  highlightScope keyword.operator.arithmetic
+ catchAllColumn int
+ constructors
+  javascript
+   class extends jtree.NonTerminalNode {
+     executeSync() {
+       return this.getWordsFrom(2).map(parseFloat).reduce((curr, tot) => eval(`${curr}${this.getKeyword()}${tot}`), this.getWord(1))
+     }
+   }
+ keywords
+  _arithmetic
+  #
 keyword error
  catchAllColumn error
  constructors
   browser ErrorNode
  highlightScope invalid
-keyword comment _top
- description Anything can go here!
- highlightScope string
- catchAllColumn string
- catchAllKeyword comment
-keyword + arithmetic
- catchAllColumn int
- keywords
-  arithmetic
-  comment
-keyword - arithmetic
- catchAllColumn int
+keyword #
+ description This is a line comment.
+ highlightScope comment
+ catchAllColumn commentWord
+ catchAllKeyword #
+keyword comment #
+keyword + _arithmetic
+keyword - _arithmetic
+keyword * _arithmetic
+keyword % _arithmetic
+keyword / _arithmetic

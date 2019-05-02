@@ -14,10 +14,8 @@ const main = grammarSourceCode => {
   const init = () => {
     const gram = localStorage.getItem(localStorageKeys.grammarConsole)
     console.log("Loading grammar...")
-    console.log(gram)
     const code = localStorage.getItem(localStorageKeys.codeConsole)
     console.log("Loading code...")
-    console.log(code)
     if (localStorage.getItem(localStorageKeys.grammarConsole)) grammarConsole.val(gram)
     if (code) codeConsole.val(code)
     $("#version").html("Version: " + jtree.getVersion())
@@ -122,6 +120,10 @@ $(document).ready(function() {
   $("#resetButton").on("click", function() {
     reset()
     console.log("reset...")
+  })
+  $("#execButton").on("click", function() {
+    if (window.program) $("#execResults").html("Result: " + window.program.executeSync())
+    else $("#execResults").html("Program failed to execute")
   })
   $.get("/grammar.grammar").then(main)
 })

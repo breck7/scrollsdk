@@ -91,6 +91,14 @@ class TreeUtils {
             };
         });
     }
+    static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")) {
+        let str = "";
+        while (length) {
+            str += letters[Math.round(Math.min(Math.random() * letters.length, letters.length - 1))];
+            length--;
+        }
+        return str;
+    }
     static makeRandomTree(lines = 1000) {
         let str = "";
         let letters = " 123abc".split("");
@@ -130,6 +138,47 @@ class TreeUtils {
             else if (bv === undefined && av !== undefined)
                 result = 1;
             return result;
+        };
+    }
+    static makeGraphSortFunction(thisColumnIndex, extendsColumnIndex) {
+        return (nodeA, nodeB) => {
+            // -1 === a before b
+            const nodeAUniqueId = nodeA.getWord(thisColumnIndex);
+            const nodeAExtends = nodeA.getWord(extendsColumnIndex);
+            const nodeBUniqueId = nodeB.getWord(thisColumnIndex);
+            const nodeBExtends = nodeB.getWord(extendsColumnIndex);
+            const nodeAExtendsNodeB = nodeAExtends && nodeAExtends === nodeBUniqueId;
+            const nodeBExtendsNodeA = nodeBExtends && nodeBExtends === nodeAUniqueId;
+            if (!nodeAExtends && !nodeBExtends) {
+                // If neither extends, sort by keyword
+                if (nodeAUniqueId > nodeBUniqueId)
+                    return 1;
+                else if (nodeAUniqueId < nodeBUniqueId)
+                    return -1;
+                return 0;
+            }
+            // If only one extends, the other comes first
+            else if (!nodeAExtends)
+                return -1;
+            else if (!nodeBExtends)
+                return 1;
+            // If A extends B, B should come first
+            if (nodeAExtendsNodeB)
+                return 1;
+            else if (nodeBExtendsNodeA)
+                return -1;
+            // Sort by what they extend
+            if (nodeAExtends > nodeBExtends)
+                return 1;
+            else if (nodeAExtends < nodeBExtends)
+                return -1;
+            // Finally sort by keyword
+            if (nodeAUniqueId > nodeBUniqueId)
+                return 1;
+            else if (nodeAUniqueId < nodeBUniqueId)
+                return -1;
+            // Should never hit this, unless we have a duplicate line.
+            return 0;
         };
     }
 }
@@ -230,6 +279,7 @@ var GrammarConstants;
     GrammarConstants["constructors"] = "constructors";
     GrammarConstants["constructorNodeJs"] = "nodejs";
     GrammarConstants["constructorBrowser"] = "browser";
+    GrammarConstants["constructorJavascript"] = "javascript";
     // compile time
     GrammarConstants["compilerKeyword"] = "compiler";
     // develop time
@@ -1116,7 +1166,7 @@ class ImmutableNode extends AbstractNode {
         if (!potentialParentNodes.length)
             throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`);
         if (potentialParentNodes.length > 1)
-            throw new Error(`Multiple unique ids found for "${parentId}"`);
+            throw new Error(`Invalid graph. Multiple unique ids found for "${parentId}"`);
         const parentNode = potentialParentNodes[0];
         // todo: detect loops
         if (parentNode === cannotContainNode)
@@ -1569,7 +1619,6 @@ class ImmutableNode extends AbstractNode {
     getCatchAllNodeConstructor(line) {
         return this.constructor;
     }
-    // Note: if you have 2 of the same keywords, will attempt to extend matching keyword first
     getExpanded(thisColumnNumber, extendsColumnNumber) {
         return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"));
     }
@@ -1926,6 +1975,9 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     keywordSort(keywordOrder) {
+        return this._keywordSort(keywordOrder);
+    }
+    _keywordSort(keywordOrder, secondarySortFn) {
         const map = {};
         keywordOrder.forEach((word, index) => {
             map[word] = index;
@@ -1936,8 +1988,8 @@ class TreeNode extends ImmutableNode {
             if (valA > valB)
                 return 1;
             if (valA < valB)
-                return -1;
-            return 0;
+                return -1; // A comes first
+            return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0;
         });
         return this;
     }
@@ -2388,10 +2440,8 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getPrettified() {
         const keywordOrder = this.getGrammarProgram().getKeywordOrder();
         const clone = this.clone();
-        clone.keywordSort(keywordOrder.split(" "));
-        // todo:
-        // 2nd sort: graphOrder
-        // 3rd sort: alphabetical order:
+        const isCondensed = this.getGrammarProgram().getGrammarName() === "grammar"; // todo: generalize?
+        clone._keywordSort(keywordOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined);
         return clone.toString();
     }
     getProgramErrorMessages() {
@@ -2844,14 +2894,54 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         return !this.isNodeJs();
     }
 }
+class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
+    _getNodeJsConstructor() {
+        const jtreePath = __dirname + "/../jtree.node.js";
+        const code = `const jtree = require('${jtreePath}').default
+/* INDENT */  module.exports = ${this.childrenToString()}`;
+        if (CustomJavascriptConstructorNode.cache[code])
+            return CustomJavascriptConstructorNode.cache[code];
+        const tempFilePath = __dirname + "/constructor-" + TreeUtils.getRandomString(30) + "-temp.js";
+        const fs = require("fs");
+        try {
+            fs.writeFileSync(tempFilePath, code, "utf8");
+            CustomJavascriptConstructorNode.cache[code] = require(tempFilePath);
+        }
+        catch (err) {
+            console.error(err);
+        }
+        finally {
+            fs.unlinkSync(tempFilePath);
+        }
+        return CustomJavascriptConstructorNode.cache[code];
+    }
+    _getBrowserConstructor() {
+        const definedCode = this.childrenToString();
+        const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30);
+        if (CustomJavascriptConstructorNode.cache[definedCode])
+            return CustomJavascriptConstructorNode.cache[definedCode];
+        const script = document.createElement("script");
+        script.innerHTML = `window.${tempClassName} = ${this.childrenToString()}`;
+        document.head.appendChild(script);
+        CustomJavascriptConstructorNode.cache[definedCode] = window[tempClassName];
+    }
+    _getCustomConstructor() {
+        return this.isNodeJs() ? this._getNodeJsConstructor() : this._getBrowserConstructor();
+    }
+}
+CustomJavascriptConstructorNode.cache = {};
 class GrammarCustomConstructorsNode extends TreeNode {
     getKeywordMap() {
         const map = {};
         map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode;
         map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode;
+        map[GrammarConstants.constructorJavascript] = CustomJavascriptConstructorNode;
         return map;
     }
     getConstructorForEnvironment() {
+        const jsConstructor = this.getNode(GrammarConstants.constructorJavascript);
+        if (jsConstructor)
+            return jsConstructor;
         return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser);
     }
 }
@@ -3425,6 +3515,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this.getNodeByType(GrammarRootNode);
     }
     getExtensionName() {
+        return this.getGrammarName();
+    }
+    getGrammarName() {
         return this._getGrammarRootNode().get(GrammarConstants.name);
     }
     _getKeywordsNode() {
@@ -3538,8 +3631,7 @@ ${GrammarConstants.wordType} any`).getRootConstructor();
                 .split(xi)
                 .forEach(word => tree.appendLine(`${GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`));
         });
-        const expandedGrammarCode = tree.getExpanded(1, 2);
-        return new GrammarProgram(expandedGrammarCode, grammarPath);
+        return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
     static _getBestType(values) {
         const all = fn => {

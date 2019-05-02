@@ -70,6 +70,18 @@ class TreeUtils {
     })
   }
 
+  static getRandomString(
+    length = 30,
+    letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
+  ) {
+    let str = ""
+    while (length) {
+      str += letters[Math.round(Math.min(Math.random() * letters.length, letters.length - 1))]
+      length--
+    }
+    return str
+  }
+
   static makeRandomTree(lines = 1000) {
     let str = ""
     let letters = " 123abc".split("")

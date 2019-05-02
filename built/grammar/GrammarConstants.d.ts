@@ -32,6 +32,7 @@ declare enum GrammarConstants {
     constructors = "constructors",
     constructorNodeJs = "nodejs",
     constructorBrowser = "browser",
+    constructorJavascript = "javascript",
     compilerKeyword = "compiler",
     description = "description",
     example = "example",

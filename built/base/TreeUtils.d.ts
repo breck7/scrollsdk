@@ -11,6 +11,7 @@ declare class TreeUtils {
         word: string;
         count: any;
     }[];
+    static getRandomString(length?: number, letters?: string[]): string;
     static makeRandomTree(lines?: number): string;
     static arrayToMap(arr: any): {};
     static mapValues(object: any, fn: any): {};

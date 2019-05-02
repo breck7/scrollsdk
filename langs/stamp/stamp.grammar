@@ -9,17 +9,17 @@ grammar
   prompt
   folder
   file
-wordType any
+wordType anyWord
  highlightScope string
 wordType filepath
 wordType inputType
  regex ^(string|int|any|lowercase)$
 keyword #!
- catchAllColumn any
+ catchAllColumn anyWord
  highlightScope comment
 keyword prompt
- columns any inputType
- catchAllColumn any
+ columns anyWord inputType
+ catchAllColumn anyWord
  highlightScope constant.language
  example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project
@@ -46,7 +46,7 @@ keyword file
   data
   executable
 keyword any
- catchAllColumn any
+ catchAllColumn anyWord
  catchAllKeyword any
  highlightScope string
 keyword data

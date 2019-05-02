@@ -14,6 +14,8 @@ const start = port => {
       res.send(
         new BrowserScript(file)
           .removeRequires()
+          .removeHashBang()
+          .removeNodeJsOnlyLines()
           .changeNodeExportsToWindowExports()
           .getString()
       )

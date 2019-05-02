@@ -20,7 +20,7 @@ testTree.consoleBasics = equal => {
 
   // Act
   const grammarErrors = app.check(__dirname + "/../langs/grammar/grammar.grammar")
-  const jibErrors = app.check(__dirname + "/jibberish/jibberish.grammar")
+  const jibErrors = app.check(__dirname + "/../langs/jibberish/jibberish.grammar")
 
   // Assert
   equal(grammarErrors.includes("0 errors"), true, grammarErrors)

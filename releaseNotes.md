@@ -8,6 +8,7 @@ edge / 2019-05-01
 - Fix: all word types now have default regex of [^ ]* so no need to specify it
 - Fix: grammar code cleanup
 - Fix: small fixes to grammar sandbox
+- Infra: repo folder cleanup
 
 20.0.0 / 2019-04-30
 ===================

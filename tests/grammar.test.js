@@ -1,14 +1,17 @@
 #! /usr/local/bin/node --use_strict
 
+// todo: make isomorphic
+
 const fs = require("fs")
 const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
-const jibberishProgram = require("./jibberish/jibberishProgram.js")
-const jibberishNodes = require("./jibberish/jibberishNodes.js")
+const jibberishRootDir = __dirname + "/../langs/jibberish/"
+const jibberishProgram = require(jibberishRootDir + "jibberishProgram.js")
+const jibberishNodes = require(jibberishRootDir + "jibberishNodes.js")
 
 const numbersGrammar = fs.readFileSync(__dirname + "/../langs/numbers/numbers.grammar", "utf8")
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = fs.readFileSync(grammarGrammarPath, "utf8")
-const jibberishGrammarPath = __dirname + "/jibberish/jibberish.grammar"
+const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
 const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
 
 const testTree = {}
@@ -44,7 +47,7 @@ const makeProgram = (grammarCode, code, grammarPath = undefined) => {
 
 testTree.jibberish = equal => {
   // Arrange
-  const sampleJibberishCode = fs.readFileSync(__dirname + "/jibberish/sample.jibberish", "utf8")
+  const sampleJibberishCode = fs.readFileSync(jibberishRootDir + "sample.jibberish", "utf8")
 
   // Act
   const program = makeJibberishProgram(sampleJibberishCode)

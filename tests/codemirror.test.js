@@ -1,5 +1,7 @@
 #! /usr/local/bin/node --use_strict
 
+// todo: make isomorphic
+
 const fs = require("fs")
 const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
 const StampProgram = require("../langs/stamp/index.js")

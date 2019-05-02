@@ -1939,7 +1939,7 @@ someCode
   // Act
   const grammarProgram = jtree.GrammarProgram.newFromCondensed(
     grammarCode,
-    (typeof __dirname !== "undefined" ? __dirname : "") + "/jibberish/jibberish.grammar"
+    (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
   )
   const ProgramConstructor = grammarProgram.getRootConstructor()
   const program = new ProgramConstructor(code)

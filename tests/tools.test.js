@@ -1,5 +1,7 @@
 #! /usr/local/bin/node --use_strict
 
+// todo: make isomorphic
+
 const TreeTools = require("../index.js")
 
 const testTree = {}

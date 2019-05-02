@@ -1,14 +1,14 @@
 #! /usr/local/bin/node --use_strict
 
 const jtree = require("../index.js")
-const jibberishProgram = require("./jibberish/jibberishProgram.js")
+const jibberishProgram = require("../langs/jibberish/jibberishProgram.js")
 
 const testTree = {}
 
 testTree.makeProgram = equal => {
   // Arrange
-  const programPath = __dirname + "/jibberish/sample.jibberish"
-  const grammarPath = __dirname + "/jibberish/jibberish.grammar"
+  const programPath = __dirname + "/../langs/jibberish/sample.jibberish"
+  const grammarPath = __dirname + "/../langs/jibberish/jibberish.grammar"
 
   // Act
   const program = jtree.makeProgram(programPath, grammarPath)

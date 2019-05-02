@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict
 
 const fs = require("fs")
-const CLI = require("../cli.js")
+const CLI = require("../cli/cli.js")
 
 const testTree = {}
 
@@ -19,7 +19,7 @@ testTree.consoleBasics = equal => {
   equal(typeof app.usage("grammar"), "string", "usage")
 
   // Act
-  const grammarErrors = app.check(__dirname + "/../grammar.grammar")
+  const grammarErrors = app.check(__dirname + "/../langs/grammar/grammar.grammar")
   const jibErrors = app.check(__dirname + "/jibberish/jibberish.grammar")
 
   // Assert

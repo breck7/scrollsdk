@@ -1,0 +1,5 @@
+grammar
+ name latin
+ catchAllKeyword any
+keyword any
+ any

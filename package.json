@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "./built/jtree.node.d.ts",
   "bin": {
-    "jtree": "./cli.js"
+    "jtree": "./cli/cli.js"
   },
   "scripts": {
     "test": "./tasks/test.js",

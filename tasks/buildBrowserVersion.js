@@ -20,7 +20,7 @@ projectCode
   .getTopDownArray()
   .filter(n => n.getKeyword() === "relative")
   .forEach(node => node.setLine(node.getLine() + ".ts"))
-fs.writeFileSync(__dirname + "/../jtree.project", projectCode.toString(), "utf8")
+fs.writeFileSync(__dirname + "/../ignore/jtree.project", projectCode.toString(), "utf8")
 const projectProgram = new ProjectProgram(projectCode.toString())
 const scripts = projectProgram.getOrderedDependenciesArray().filter(file => !file.includes(".node."))
 
@@ -39,9 +39,9 @@ fs.writeFileSync(outputFile, `"use strict"\n` + combined, "utf8")
 
 // Compile test file:
 fs.writeFileSync(
-  __dirname + `/../sandbox/tests.js`,
+  __dirname + `/../sandbox/base.test.js`,
   "// WARNING: COMPILED FILE.\n" +
-    new BrowserScript(fs.readFileSync(__dirname + "/../tests/base.js", "utf8"))
+    new BrowserScript(fs.readFileSync(__dirname + "/../tests/base.test.js", "utf8"))
       .removeRequires()
       .removeHashBang()
       .removeNodeJsOnlyLines()

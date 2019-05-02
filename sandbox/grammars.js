@@ -125,5 +125,5 @@ $(document).ready(function() {
     if (window.program) $("#execResults").html("Result: " + window.program.executeSync())
     else $("#execResults").html("Program failed to execute")
   })
-  $.get("/grammar.grammar").then(main)
+  $.get("/langs/grammar/grammar.grammar").then(main)
 })

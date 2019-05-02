@@ -1,6 +1,6 @@
 #! /usr/bin/env node --use_strict
 
-const jtree = require("./index.js")
+const jtree = require("../index.js")
 const { TreeNode, GrammarProgram, Utils } = jtree
 const fs = require("fs")
 const os = require("os")
@@ -137,7 +137,7 @@ ${grammars.toTable()}`
   }
 
   sandbox(port = 3333) {
-    require("./sandbox.express.js")(port)
+    require("../sandbox/sandbox.express.js")(port)
     return `Starting sandbox on port ${port}`
   }
 

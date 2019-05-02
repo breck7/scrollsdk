@@ -2898,7 +2898,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
     _getNodeJsConstructor() {
         const jtreePath = __dirname + "/../jtree.node.js";
         const code = `const jtree = require('${jtreePath}').default
-/* INDENT */  module.exports = ${this.childrenToString()}`;
+/* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`;
         if (CustomJavascriptConstructorNode.cache[code])
             return CustomJavascriptConstructorNode.cache[code];
         const tempFilePath = __dirname + "/constructor-" + TreeUtils.getRandomString(30) + "-temp.js";

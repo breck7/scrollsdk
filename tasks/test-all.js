@@ -4,8 +4,6 @@ const jtree = require("../index.js")
 const recursiveReadSync = require("recursive-readdir-sync")
 const runTestTree = require("../tests/testTreeRunner.js")
 
-runTestTree(require("../tests/base.js"))
-
 const allFiles = recursiveReadSync(__dirname + "/../tests/")
 
 allFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))

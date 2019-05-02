@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict
 
 const fs = require("fs")
-const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../grammar.grammar")
+const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
 const StampProgram = require("../langs/stamp/index.js")
 const TreeNotationCodeMirrorMode = require("../built/grammar/TreeNotationCodeMirrorMode.js").default
 const TreeUtils = require("../built/base/TreeUtils.js").default

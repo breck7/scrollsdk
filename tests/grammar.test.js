@@ -5,8 +5,9 @@ const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
 const jibberishProgram = require("./jibberish/jibberishProgram.js")
 const jibberishNodes = require("./jibberish/jibberishNodes.js")
 
-const numbersGrammar = fs.readFileSync(__dirname + "/numbers.grammar", "utf8")
-const grammarGrammar = fs.readFileSync(__dirname + "/../grammar.grammar", "utf8")
+const numbersGrammar = fs.readFileSync(__dirname + "/../langs/numbers/numbers.grammar", "utf8")
+const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
+const grammarGrammar = fs.readFileSync(grammarGrammarPath, "utf8")
 const jibberishGrammarPath = __dirname + "/jibberish/jibberish.grammar"
 const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
 
@@ -272,7 +273,7 @@ keyword account
 
 testTree.requiredKeywords = equal => {
   // Arrange/Act
-  const path = __dirname + "/../grammar.grammar"
+  const path = grammarGrammarPath
   const anyProgram = makeProgram(
     fs.readFileSync(path, "utf8"),
     `wordType word any

@@ -207,7 +207,7 @@ keyword frequency _keywordRule
  columns float
 keyword highlightScope _keywordRule
  columns scopeName
- description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
+ description Provide this to get syntax highlighting in editors like Sublime and CodeMirror. These are all listed here https://www.sublimetext.com/docs/3/scope_naming.html
 keyword required _keywordRule
  description If present, the parent node will have an error if one of these nodes is not provided.
 keyword single _keywordRule

@@ -21,17 +21,6 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     getParsedWords() {
         return this._getGrammarBackedCellArray().map(word => word.getParsed());
     }
-    _getParameterMap() {
-        const cells = this._getGrammarBackedCellArray();
-        const parameterMap = {};
-        cells.forEach(cell => {
-            const type = cell.getType();
-            if (!parameterMap[type])
-                parameterMap[type] = [];
-            parameterMap[type].push(cell.getWord());
-        });
-        return parameterMap;
-    }
     getCompiledIndentation(targetLanguage) {
         const compiler = this.getCompilerNode(targetLanguage);
         const indentCharacter = compiler.getIndentCharacter();
@@ -41,9 +30,8 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     getCompiledLine(targetLanguage) {
         const compiler = this.getCompilerNode(targetLanguage);
         const listDelimiter = compiler.getListDelimiter();
-        const parameterMap = this._getParameterMap();
         const str = compiler.getTransformation();
-        return str ? TreeUtils_1.default.formatStr(str, listDelimiter, parameterMap) : this.getLine();
+        return str ? TreeUtils_1.default.formatStr(str, listDelimiter, this.cells) : this.getLine();
     }
     compile(targetLanguage) {
         return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage);
@@ -69,6 +57,19 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
             });
         return this._getRequiredNodeErrors(errors);
     }
+    get cells() {
+        const cells = {};
+        this._getGrammarBackedCellArray().forEach(cell => {
+            if (!cell.isCatchAll())
+                cells[cell.getType()] = cell.getParsed();
+            else {
+                if (!cells[cell.getType()])
+                    cells[cell.getType()] = [];
+                cells[cell.getType()].push(cell.getParsed());
+            }
+        });
+        return cells;
+    }
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();
         const grammarProgram = definition.getProgram();
@@ -81,7 +82,8 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         const cells = [];
         // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
         for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
-            cells[cellIndex] = new GrammarBackedCell_1.default(words[cellIndex], cellIndex >= numberOfRequiredCells ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, expectedLinePattern, grammarProgram);
+            const isCatchAll = cellIndex >= numberOfRequiredCells;
+            cells[cellIndex] = new GrammarBackedCell_1.default(words[cellIndex], isCatchAll ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram);
         }
         return cells;
     }

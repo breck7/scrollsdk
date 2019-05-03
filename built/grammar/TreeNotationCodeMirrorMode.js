@@ -133,13 +133,13 @@ class TreeNotationCodeMirrorMode {
                 return "bracket";
             }
             if (peek === " ") {
-                state.wordIndex++;
-                return this._getWordStyle(lineNumber, state.wordIndex);
+                state.cellIndex++;
+                return this._getCellStyle(lineNumber, state.cellIndex);
             }
             nextCharacter = stream.next();
         }
-        state.wordIndex++;
-        const style = this._getWordStyle(lineNumber, state.wordIndex);
+        state.cellIndex++;
+        const style = this._getCellStyle(lineNumber, state.cellIndex);
         this._incrementLine(state);
         return style;
     }
@@ -147,21 +147,21 @@ class TreeNotationCodeMirrorMode {
         const num = stream.lineOracle.line + 1; // state.lineIndex
         return num;
     }
-    _getWordStyle(lineIndex, wordIndex) {
+    _getCellStyle(lineIndex, cellIndex) {
         const program = this._getParsedProgram();
         // todo: if the current word is an error, don't show red?
-        const highlightScope = program.getWordHighlightScopeAtPosition(lineIndex, wordIndex);
-        const wordStyle = highlightScope ? textMateScopeToCodeMirrorStyle_1.default(highlightScope.split(".")) : undefined;
-        return wordStyle || "noHighlightScopeDefinedInGrammar";
+        const highlightScope = program.getCellHighlightScopeAtPosition(lineIndex, cellIndex);
+        const style = highlightScope ? textMateScopeToCodeMirrorStyle_1.default(highlightScope.split(".")) : undefined;
+        return style || "noHighlightScopeDefinedInGrammar";
     }
     // todo: remove.
     startState() {
         return {
-            wordIndex: 0
+            cellIndex: 0
         };
     }
     _incrementLine(state) {
-        state.wordIndex = 0;
+        state.cellIndex = 0;
     }
 }
 exports.default = TreeNotationCodeMirrorMode;

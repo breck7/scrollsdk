@@ -7,19 +7,13 @@ declare abstract class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram(): GrammarProgram;
     getCatchAllNodeConstructor(line: string): any;
     getProgram(): AbstractRuntimeNode;
-    getAutocompleteResults(partialWord: string, wordIndex: types.positiveInt): {
+    getAutocompleteResults(partialWord: string, cellIndex: types.positiveInt): {
         text: string;
         displayText: string;
     }[];
     protected _getGrammarBackedCellArray(): GrammarBackedCell[];
-    getAutocompleteResultsForWord(partialWord: string, wordIndex: types.positiveInt): {
-        text: string;
-        displayText: string;
-    }[];
-    getAutocompleteResultsForKeywords(partialWord: string): {
-        text: string;
-        displayText: string;
-    }[];
+    private _getAutocompleteResultsForCell;
+    private _getAutocompleteResultsForKeywords;
     abstract getDefinition(): AbstractGrammarDefinitionNode;
     protected _getKeywordDefinitionByName(path: string): AbstractGrammarDefinitionNode;
     protected _getRequiredNodeErrors(errors?: any[]): any[];

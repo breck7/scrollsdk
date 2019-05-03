@@ -11,9 +11,13 @@ grammar
   file
 cellType anyWord
  highlightScope string
+cellType promptWords
+ highlightScope string
 cellType filepath
+cellType varName
+ highlightScope string
 cellType inputType
- regex ^(string|int|any|lowercase)$
+ regex (string|int|any|lowercase)
 keyword #!
  catchAllCellType anyWord
  highlightScope comment
@@ -43,8 +47,8 @@ keyword folder
  constructors
   nodejs ./FolderNode.js
 keyword prompt
- cells anyWord inputType
- catchAllCellType anyWord
+ cells varName inputType
+ catchAllCellType promptWords
  highlightScope constant.language
  example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project

@@ -13,12 +13,14 @@ class GrammarBackedCell {
     type: string,
     node: any,
     index: types.int,
+    isCatchAll: boolean,
     expectedLinePattern: string,
     grammarProgram: GrammarProgram
   ) {
     this._word = word
     this._type = type
     this._node = node
+    this._isCatchAll = isCatchAll
     this._expectedLinePattern = expectedLinePattern
     this._grammarProgram = grammarProgram
     this._index = index + 1
@@ -30,9 +32,14 @@ class GrammarBackedCell {
   private _index: types.int
   private _word: string
   private _type: string
+  private _isCatchAll: boolean
 
   getType() {
     return this._type || undefined
+  }
+
+  isCatchAll() {
+    return this._isCatchAll
   }
 
   getHighlightScope(): string | undefined {

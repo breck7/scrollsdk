@@ -166,14 +166,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       .join("\n")
   }
 
-  // todo: remove?
-  getCellTypeAtPosition(lineIndex: number, wordIndex: number) {
-    this._initCellTypeCache()
-    const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1]
-    return typeNode ? typeNode.getWord(wordIndex - 1) : ""
-  }
-
-  getWordHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope | undefined {
+  getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope | undefined {
     this._initCellTypeCache()
     const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined

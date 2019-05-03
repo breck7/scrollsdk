@@ -14,20 +14,20 @@ class AbstractRuntimeNode extends TreeNode_1.default {
     getProgram() {
         return this;
     }
-    getAutocompleteResults(partialWord, wordIndex) {
-        return wordIndex === 0
-            ? this.getAutocompleteResultsForKeywords(partialWord)
-            : this.getAutocompleteResultsForWord(partialWord, wordIndex);
+    getAutocompleteResults(partialWord, cellIndex) {
+        return cellIndex === 0
+            ? this._getAutocompleteResultsForKeywords(partialWord)
+            : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
     _getGrammarBackedCellArray() {
         return [];
     }
-    getAutocompleteResultsForWord(partialWord, wordIndex) {
+    _getAutocompleteResultsForCell(partialWord, cellIndex) {
         // todo: root should be [] correct?
-        const cell = this._getGrammarBackedCellArray()[wordIndex - 1];
+        const cell = this._getGrammarBackedCellArray()[cellIndex - 1];
         return cell ? cell.getAutoCompleteWords(partialWord) : [];
     }
-    getAutocompleteResultsForKeywords(partialWord) {
+    _getAutocompleteResultsForKeywords(partialWord) {
         const def = this.getDefinition();
         let defs = Object.values(def.getRunTimeKeywordMapWithDefinitions());
         if (partialWord)

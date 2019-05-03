@@ -42,12 +42,9 @@ class TreeUtils {
 
   static formatStr(str, listDelimiter = " ", parameterMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
-      const isList = path.endsWith("*")
-      const typePath = path.replace("*", "")
-      const arr = parameterMap[typePath]
-      if (!arr) return ""
-      const word = isList ? arr.join(listDelimiter) : arr.shift()
-      return word
+      const val = parameterMap[path]
+      if (!val) return ""
+      return Array.isArray(val) ? val.join(listDelimiter) : val
     })
   }
 

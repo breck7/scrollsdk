@@ -1,6 +1,7 @@
 edge / 2019-05-01
 =================
 - New: grammar name keyword
+- New: cells property on grammar non-root runtime nodes
 - New: makeGraphSort function. Also now used in grammar file prettification
 - Breaking: in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
 - Breaking: removed ability in grammar files to have a wordType and keyword share the same name

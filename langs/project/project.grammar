@@ -22,7 +22,7 @@ keyword file
   absolute
   relative
  constructors
-  nodejs ./ProjectNode.js
+  nodejs ./FileNode.js
 keyword absolute term
 keyword external term
 keyword relative term

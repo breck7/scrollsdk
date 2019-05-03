@@ -5,16 +5,20 @@ const GrammarConstants_1 = require("./GrammarConstants");
 A cell contains a word but also the type information for that word.
 */
 class GrammarBackedCell {
-    constructor(word, type, node, index, expectedLinePattern, grammarProgram) {
+    constructor(word, type, node, index, isCatchAll, expectedLinePattern, grammarProgram) {
         this._word = word;
         this._type = type;
         this._node = node;
+        this._isCatchAll = isCatchAll;
         this._expectedLinePattern = expectedLinePattern;
         this._grammarProgram = grammarProgram;
         this._index = index + 1;
     }
     getType() {
         return this._type || undefined;
+    }
+    isCatchAll() {
+        return this._isCatchAll;
     }
     getHighlightScope() {
         const typeClass = this._getCellTypeClass();

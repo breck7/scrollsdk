@@ -6,11 +6,11 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getDefinition(): import("./AbstractGrammarDefinitionNode").default;
     getCompilerNode(targetLanguage: any): import("./GrammarCompilerNode").default;
     getParsedWords(): any[];
-    protected _getParameterMap(): {};
     getCompiledIndentation(targetLanguage: any): any;
     getCompiledLine(targetLanguage: any): any;
     compile(targetLanguage: any): any;
     getErrors(): any[];
+    readonly cells: {};
     protected _getGrammarBackedCellArray(): GrammarBackedCell[];
     getLineSyntax(): string;
     getLineHighlightScopes(defaultScope?: string): string;

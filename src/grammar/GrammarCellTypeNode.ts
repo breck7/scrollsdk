@@ -198,6 +198,7 @@ class GrammarCellTypeAnyNode extends GrammarCellTypeNode {
 GrammarCellTypeNode.types = {
   any: GrammarCellTypeAnyNode,
   float: GrammarCellTypeFloatNode,
+  number: GrammarCellTypeFloatNode,
   bit: GrammarCellTypeBitNode,
   bool: GrammarCellTypeBoolNode,
   int: GrammarCellTypeIntNode

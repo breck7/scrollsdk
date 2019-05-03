@@ -134,13 +134,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
             .join("\n");
     }
-    // todo: remove?
-    getCellTypeAtPosition(lineIndex, wordIndex) {
-        this._initCellTypeCache();
-        const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1];
-        return typeNode ? typeNode.getWord(wordIndex - 1) : "";
-    }
-    getWordHighlightScopeAtPosition(lineIndex, wordIndex) {
+    getCellHighlightScopeAtPosition(lineIndex, wordIndex) {
         this._initCellTypeCache();
         const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1];
         return typeNode ? typeNode.getWord(wordIndex - 1) : undefined;

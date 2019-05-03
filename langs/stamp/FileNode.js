@@ -9,7 +9,7 @@ echo -e "${this.childrenToString()}" >> ${filePath}`
   }
 
   getAbsolutePath() {
-    return process.cwd() + "/" + this.getWord(1)
+    return process.cwd() + "/" + this.cells.filepath
   }
 
   execute() {

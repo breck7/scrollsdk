@@ -9,10 +9,10 @@ class PromptNode extends jtree.TerminalNode {
         output: process.stdout
       })
 
-      rl.question(this.getWordsFrom(3).join(" ") + " ", answer => {
+      rl.question(this.cells.promptWords.join(" ") + " ", answer => {
         rl.close()
         // todo: typecheck the response
-        const varName = this.getWord(1)
+        const varName = this.cells.varName
         this.getYoungerSiblings().forEach(node =>
           node.replaceNode(str => str.replace(new RegExp(varName, "g"), answer))
         )

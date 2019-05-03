@@ -34,14 +34,15 @@ file LANG/index.js
   module.exports = require("jtree").getProgramConstructor(__dirname + "/LANG.grammar")
 file LANG/LANG.grammar
  data
-  @grammar LANG
-   @description DESCRIPTION
-   @catchAllKeyword error
-   @keywords
+  grammar
+   name LANG
+   description DESCRIPTION
+   catchAllKeyword error
+   keywords
     topLevel
-  @abstract topLevel
-  @keyword error
-   @constructors
+  abstract topLevel
+  keyword error
+   constructors
     browser ErrorNode
     nodejs ErrorNode
 file LANG/tests.swarm

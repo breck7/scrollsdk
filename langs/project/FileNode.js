@@ -1,18 +1,19 @@
 const jtree = require("../../index.js")
 const path = require("path")
 
-class ProjectNode extends jtree.NonTerminalNode {
+class FileNode extends jtree.NonTerminalNode {
   getFilePath() {
-    return this.getWordsFrom(1).join(" ")
+    return this.cell.filepath.join(" ")
   }
 
   _getDependencies() {
     return this.getChildren()
       .map(child => {
         const keyword = child.getKeyword()
+        const childFilePath = child.cell.filepath.join(" ")
         if (keyword === "external") return ""
-        if (keyword === "absolute") return child.getWordsFrom(1).join(" ")
-        const link = child.getWordsFrom(1).join(" ")
+        if (keyword === "absolute") return childFilePath
+        const link = childFilePath
         const folderPath = jtree.Utils.getPathWithoutFileName(this.getFilePath())
         const resolvedPath = path.resolve(folderPath + "/" + link)
         return resolvedPath
@@ -25,4 +26,4 @@ class ProjectNode extends jtree.NonTerminalNode {
   }
 }
 
-module.exports = ProjectNode
+module.exports = FileNode

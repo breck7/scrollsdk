@@ -27,17 +27,6 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this._getGrammarBackedCellArray().map(word => word.getParsed())
   }
 
-  protected _getParameterMap() {
-    const cells = this._getGrammarBackedCellArray()
-    const parameterMap = {}
-    cells.forEach(cell => {
-      const type = cell.getType()
-      if (!parameterMap[type]) parameterMap[type] = []
-      parameterMap[type].push(cell.getWord())
-    })
-    return parameterMap
-  }
-
   getCompiledIndentation(targetLanguage) {
     const compiler = this.getCompilerNode(targetLanguage)
     const indentCharacter = compiler.getIndentCharacter()
@@ -48,9 +37,8 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   getCompiledLine(targetLanguage) {
     const compiler = this.getCompilerNode(targetLanguage)
     const listDelimiter = compiler.getListDelimiter()
-    const parameterMap = this._getParameterMap()
     const str = compiler.getTransformation()
-    return str ? TreeUtils.formatStr(str, listDelimiter, parameterMap) : this.getLine()
+    return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine()
   }
 
   compile(targetLanguage) {
@@ -83,6 +71,18 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this._getRequiredNodeErrors(errors)
   }
 
+  get cells() {
+    const cells = {}
+    this._getGrammarBackedCellArray().forEach(cell => {
+      if (!cell.isCatchAll()) cells[cell.getType()] = cell.getParsed()
+      else {
+        if (!cells[cell.getType()]) cells[cell.getType()] = []
+        cells[cell.getType()].push(cell.getParsed())
+      }
+    })
+    return cells
+  }
+
   protected _getGrammarBackedCellArray(): GrammarBackedCell[] {
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
@@ -94,14 +94,16 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
 
     const words = this.getWordsFrom(1)
     const numberOfCellsToFill = Math.max(words.length, numberOfRequiredCells)
-    const cells = []
+    const cells: GrammarBackedCell[] = []
     // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
     for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
+      const isCatchAll = cellIndex >= numberOfRequiredCells
       cells[cellIndex] = new GrammarBackedCell(
         words[cellIndex],
-        cellIndex >= numberOfRequiredCells ? catchAllCellType : cellTypes[cellIndex],
+        isCatchAll ? catchAllCellType : cellTypes[cellIndex],
         this,
         cellIndex,
+        isCatchAll,
         expectedLinePattern,
         grammarProgram
       )

@@ -24,23 +24,23 @@ abstract class AbstractRuntimeNode extends TreeNode {
     return this
   }
 
-  getAutocompleteResults(partialWord: string, wordIndex: types.positiveInt) {
-    return wordIndex === 0
-      ? this.getAutocompleteResultsForKeywords(partialWord)
-      : this.getAutocompleteResultsForWord(partialWord, wordIndex)
+  getAutocompleteResults(partialWord: string, cellIndex: types.positiveInt) {
+    return cellIndex === 0
+      ? this._getAutocompleteResultsForKeywords(partialWord)
+      : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
   protected _getGrammarBackedCellArray(): GrammarBackedCell[] {
     return []
   }
 
-  getAutocompleteResultsForWord(partialWord: string, wordIndex: types.positiveInt) {
+  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: types.positiveInt) {
     // todo: root should be [] correct?
-    const cell = this._getGrammarBackedCellArray()[wordIndex - 1]
+    const cell = this._getGrammarBackedCellArray()[cellIndex - 1]
     return cell ? cell.getAutoCompleteWords(partialWord) : []
   }
 
-  getAutocompleteResultsForKeywords(partialWord: string) {
+  private _getAutocompleteResultsForKeywords(partialWord: string) {
     const def = this.getDefinition()
     let defs: GrammarKeywordDefinitionNode[] = Object.values(def.getRunTimeKeywordMapWithDefinitions())
 

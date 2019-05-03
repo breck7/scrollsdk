@@ -65,9 +65,9 @@ declare class TreeNotationCodeMirrorMode {
     register(): this;
     private _advanceStreamAndReturnTokenType;
     private _getLineNumber;
-    private _getWordStyle;
+    private _getCellStyle;
     startState(): {
-        wordIndex: number;
+        cellIndex: number;
     };
     _incrementLine(state: any): void;
 }

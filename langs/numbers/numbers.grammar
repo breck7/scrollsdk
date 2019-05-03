@@ -6,18 +6,19 @@ grammar
  catchAllKeyword error
 cellType error
  highlightScope invalid
-cellType int
+cellType number
  highlightScope constant.numeric
 cellType commentWord
  highlightScope comment
+cellType numbers number
 abstract _arithmetic
  highlightScope keyword.operator.arithmetic
- catchAllCellType int
+ catchAllCellType numbers
  constructors
   javascript
    class extends jtree.NonTerminalNode {
      executeSync() {
-       return this.getWordsFrom(2).map(parseFloat).reduce((curr, tot) => eval(`${curr}${this.getKeyword()}${tot}`), this.getWord(1))
+       return this.cells.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getKeyword()}${tot}`), this.cells.numbers[0])
      }
    }
  keywords

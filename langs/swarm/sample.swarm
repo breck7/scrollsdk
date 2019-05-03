@@ -9,15 +9,15 @@
     compiler txt
     keywords
      baseNode
-   wordType any
+   cellType any
    foo
-   wordType word any
+   cellType word any
    keyword baseNode
    keyword block baseNode
     keywords
      baseNode
    keyword to block
-    columns word
+    cells word
     tags test
     compiler txt
      sub to {word}

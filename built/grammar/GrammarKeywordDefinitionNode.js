@@ -33,13 +33,11 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
         if (!requiredCellTypeNames.length)
             return topHalf;
         const captures = requiredCellTypeNames
-            .map((wordTypeName, index) => {
-            const wordType = program.getWordType(wordTypeName); // todo: cleanup
-            if (!wordType)
-                throw new Error(`No ${GrammarConstants_1.GrammarConstants.wordType} ${wordTypeName} found`); // todo: standardize error/capture error at grammar time
-            return `        ${index + 1}: ${(wordType.getHighlightScope() || defaultHighlightScope) +
-                "." +
-                wordType.getId()}`;
+            .map((typeName, index) => {
+            const theType = program.getCellType(typeName); // todo: cleanup
+            if (!theType)
+                throw new Error(`No ${GrammarConstants_1.GrammarConstants.cellType} ${typeName} found`); // todo: standardize error/capture error at grammar time
+            return `        ${index + 1}: ${(theType.getHighlightScope() || defaultHighlightScope) + "." + theType.getId()}`;
         })
             .join("\n");
         const cellTypesToRegex = cellTypeNames => cellTypeNames.map(cellTypeName => `({{${cellTypeName}}})?`).join(" ?");

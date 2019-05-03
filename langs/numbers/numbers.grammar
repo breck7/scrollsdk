@@ -4,15 +4,15 @@ grammar
   _arithmetic
   #
  catchAllKeyword error
-wordType error
+cellType error
  highlightScope invalid
-wordType int
+cellType int
  highlightScope constant.numeric
-wordType commentWord
+cellType commentWord
  highlightScope comment
 abstract _arithmetic
  highlightScope keyword.operator.arithmetic
- catchAllColumn int
+ catchAllCellType int
  constructors
   javascript
    class extends jtree.NonTerminalNode {
@@ -24,14 +24,14 @@ abstract _arithmetic
   _arithmetic
   #
 keyword error
- catchAllColumn error
+ catchAllCellType error
  constructors
   browser ErrorNode
  highlightScope invalid
 keyword #
  description This is a line comment.
  highlightScope comment
- catchAllColumn commentWord
+ catchAllCellType commentWord
  catchAllKeyword #
 keyword comment #
 keyword + _arithmetic

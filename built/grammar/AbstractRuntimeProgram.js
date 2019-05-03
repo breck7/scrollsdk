@@ -135,23 +135,23 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             .join("\n");
     }
     // todo: remove?
-    getWordTypeAtPosition(lineIndex, wordIndex) {
-        this._initWordTypeCache();
+    getCellTypeAtPosition(lineIndex, wordIndex) {
+        this._initCellTypeCache();
         const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1];
         return typeNode ? typeNode.getWord(wordIndex - 1) : "";
     }
     getWordHighlightScopeAtPosition(lineIndex, wordIndex) {
-        this._initWordTypeCache();
+        this._initCellTypeCache();
         const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1];
         return typeNode ? typeNode.getWord(wordIndex - 1) : undefined;
     }
-    _initWordTypeCache() {
+    _initCellTypeCache() {
         const treeMTime = this.getTreeMTime();
-        if (this._cache_programWordTypeStringMTime === treeMTime)
+        if (this._cache_programCellTypeStringMTime === treeMTime)
             return undefined;
         this._cache_typeTree = new TreeNode_1.default(this.getInPlaceSyntaxTree());
         this._cache_highlightScopeTree = new TreeNode_1.default(this.getInPlaceHighlightScopeTree());
-        this._cache_programWordTypeStringMTime = treeMTime;
+        this._cache_programCellTypeStringMTime = treeMTime;
     }
     getCompiledProgramName(programPath) {
         const grammarProgram = this.getDefinition();

@@ -9,54 +9,54 @@ grammar
   topLevel
   text
   someAbstractClass
-wordType errorWord
+cellType errorWord
  highlightScope invalid
-wordType int
+cellType int
  regex \-?[0-9]+
  parseWith js parseInt
  highlightScope constant.numeric
-wordType onoff
+cellType onoff
  enum on off
-wordType word
+cellType word
 abstract someAbstractClass
 abstract topLevel
 abstract color_properties topLevel
  group hue saturation constrast
- columns int
+ cells int
 keyword error
  highlightScope invalid
- catchAllColumn errorWord
+ catchAllCellType errorWord
  constructors
   nodejs ErrorNode
   browser ErrorNode
 keyword lineOfCode
- catchAllColumn word
+ catchAllCellType word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
   browser LineOfCodeNode
 keyword text
  any
 keyword extendsAbstract someAbstractClass
- columns int
+ cells int
 keyword add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
 keyword + add
  example Adding two numbers:
   + 1 2
- catchAllColumn int
+ catchAllCellType int
  highlightScope keyword.operator.arithmetic
 keyword block topLevel
  keywords
   topLevel
 keyword to block
- columns word
+ cells word
  compiler txt
   sub to {word}
   closeChildren end
 keyword foo topLevel
 keyword lightbulbState topLevel
- columns onoff
+ cells onoff
 keyword nested topLevel
  constructors
   nodejs ./jibberishNodes.js nested.someNestedNode
@@ -66,5 +66,5 @@ keyword nodeWithConsts topLevel
 keyword someCode topLevel
  catchAllKeyword lineOfCode
 keyword type topLevel
- columns word
+ cells word
  single

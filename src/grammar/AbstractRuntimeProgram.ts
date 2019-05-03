@@ -167,29 +167,29 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   // todo: remove?
-  getWordTypeAtPosition(lineIndex: number, wordIndex: number) {
-    this._initWordTypeCache()
+  getCellTypeAtPosition(lineIndex: number, wordIndex: number) {
+    this._initCellTypeCache()
     const typeNode = this._cache_typeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : ""
   }
 
   getWordHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope | undefined {
-    this._initWordTypeCache()
+    this._initCellTypeCache()
     const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
   }
 
-  private _cache_programWordTypeStringMTime: number
+  private _cache_programCellTypeStringMTime: number
   private _cache_highlightScopeTree: TreeNode
   private _cache_typeTree: TreeNode
 
-  protected _initWordTypeCache() {
+  protected _initCellTypeCache() {
     const treeMTime = this.getTreeMTime()
-    if (this._cache_programWordTypeStringMTime === treeMTime) return undefined
+    if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
 
     this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree())
     this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
-    this._cache_programWordTypeStringMTime = treeMTime
+    this._cache_programCellTypeStringMTime = treeMTime
   }
 
   getCompiledProgramName(programPath) {

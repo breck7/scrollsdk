@@ -16,10 +16,10 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         const types = [
             GrammarConstants_1.GrammarConstants.frequency,
             GrammarConstants_1.GrammarConstants.keywords,
-            GrammarConstants_1.GrammarConstants.columns,
+            GrammarConstants_1.GrammarConstants.cells,
             GrammarConstants_1.GrammarConstants.description,
             GrammarConstants_1.GrammarConstants.catchAllKeyword,
-            GrammarConstants_1.GrammarConstants.catchAllColumn,
+            GrammarConstants_1.GrammarConstants.catchAllCellType,
             GrammarConstants_1.GrammarConstants.defaults,
             GrammarConstants_1.GrammarConstants.tags,
             GrammarConstants_1.GrammarConstants.any,
@@ -103,11 +103,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return TreeUtils_1.default.mapValues(this.getRunTimeKeywordMap(), key => defs[key]);
     }
     getRequiredCellTypeNames() {
-        const parameters = this.get(GrammarConstants_1.GrammarConstants.columns);
+        const parameters = this.get(GrammarConstants_1.GrammarConstants.cells);
         return parameters ? parameters.split(" ") : [];
     }
     getCatchAllCellTypeName() {
-        return this.get(GrammarConstants_1.GrammarConstants.catchAllColumn);
+        return this.get(GrammarConstants_1.GrammarConstants.catchAllCellType);
     }
     /*
      {key<string>: JSKeywordDefClass}

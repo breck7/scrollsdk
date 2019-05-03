@@ -82,22 +82,21 @@ testTree.jibberish = equal => {
   equal(program.getNode("someCode echo") instanceof jibberishNodes.LineOfCodeNode, true, "line of code class")
 
   // Act
-  const wordTypesProgram = makeJibberishProgram(`foo
+  const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
-  const wordTypes = wordTypesProgram.getInPlaceSyntaxTree()
 
   // Assert
   equal(
-    wordTypes,
+    someJibberishProgram.getInPlaceSyntaxTree(),
     `keyword
 keyword int int int`,
     "word types should match"
   )
-  equal(wordTypesProgram.nodeAt(1).getParsedWords()[0], 2)
+  equal(someJibberishProgram.nodeAt(1).getParsedWords()[0], 2)
 
   // Act
-  const nodeTypes = wordTypesProgram.getInPlaceSyntaxTreeWithNodeTypes()
-  const treeWithNodeTypes = wordTypesProgram.getTreeWithNodeTypes()
+  const nodeTypes = someJibberishProgram.getInPlaceSyntaxTreeWithNodeTypes()
+  const treeWithNodeTypes = someJibberishProgram.getTreeWithNodeTypes()
 
   // Assert
   equal(
@@ -139,11 +138,11 @@ missing2 true`)
 
 testTree.highlightScopes = equal => {
   // Arrange
-  const wordTypesProgram = makeJibberishProgram(`foo
+  const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
 
   // Act
-  const scopes = wordTypesProgram.getInPlaceHighlightScopeTree()
+  const scopes = someJibberishProgram.getInPlaceHighlightScopeTree()
 
   // Assert
   equal(
@@ -259,11 +258,11 @@ file test
   source yes http://to.to.to 31`
   const expected = `keyword size int
 keyword digits
- columns int int
+ cells int int
 keyword open bool
 keyword temp float
 keyword description
- catchAllColumn any
+ catchAllCellType any
 keyword account
  any`
 
@@ -279,7 +278,7 @@ testTree.requiredKeywords = equal => {
   const path = grammarGrammarPath
   const anyProgram = makeProgram(
     fs.readFileSync(path, "utf8"),
-    `wordType word any
+    `cellType word any
 keyword baseNode`,
     path
   )
@@ -296,8 +295,8 @@ testTree.minimumGrammar = equal => {
  name any
  catchAllKeyword any
 keyword any
- catchAllColumn any
-wordType any`
+ catchAllCellType any
+cellType any`
   ).getRootConstructor()
   const program = new programConstructor()
   const grammarProgram = program.getGrammarProgram()
@@ -344,10 +343,10 @@ testTree.examples = equal => {
  keywords
   +
 keyword +
- catchAllColumn int
+ catchAllCellType int
  example This is a bad example.
   + 1 B
-wordType int`
+cellType int`
   )
 
   // Assert

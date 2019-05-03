@@ -16,7 +16,7 @@ enum GrammarConstants {
   name = "name",
   keywordOrder = "keywordOrder",
   keyword = "keyword",
-  wordType = "wordType",
+  cellType = "cellType",
   abstract = "abstract",
 
   // error check time
@@ -27,8 +27,8 @@ enum GrammarConstants {
 
   // parse time
   keywords = "keywords",
-  columns = "columns",
-  catchAllColumn = "catchAllColumn",
+  cells = "cells",
+  catchAllCellType = "catchAllCellType",
   catchAllKeyword = "catchAllKeyword",
   defaults = "defaults",
   constants = "constants",

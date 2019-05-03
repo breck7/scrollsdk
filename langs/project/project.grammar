@@ -5,17 +5,17 @@ grammar
  keywords
   file
  catchAllKeyword error
-wordType filepath
+cellType filepath
  highlightScope string
 abstract term
- catchAllColumn filepath
+ catchAllCellType filepath
  highlightScope variable.parameter
 keyword error
  constructors
   nodejs ErrorNode
   browser ErrorNode
 keyword file
- catchAllColumn filepath
+ catchAllCellType filepath
  highlightScope keyword.control
  keywords
   external

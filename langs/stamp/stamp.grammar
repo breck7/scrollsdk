@@ -9,16 +9,16 @@ grammar
   prompt
   folder
   file
-wordType anyWord
+cellType anyWord
  highlightScope string
-wordType filepath
-wordType inputType
+cellType filepath
+cellType inputType
  regex ^(string|int|any|lowercase)$
 keyword #!
- catchAllColumn anyWord
+ catchAllCellType anyWord
  highlightScope comment
 keyword any
- catchAllColumn anyWord
+ catchAllCellType anyWord
  catchAllKeyword any
  highlightScope string
 keyword data
@@ -30,7 +30,7 @@ keyword error
   browser ErrorNode
 keyword executable
 keyword file
- columns filepath
+ cells filepath
  highlightScope variable.parameter
  constructors
   nodejs ./FileNode.js
@@ -38,13 +38,13 @@ keyword file
   data
   executable
 keyword folder
- columns filepath
+ cells filepath
  highlightScope variable.parameter
  constructors
   nodejs ./FolderNode.js
 keyword prompt
- columns anyWord inputType
- catchAllColumn anyWord
+ cells anyWord inputType
+ catchAllCellType anyWord
  highlightScope constant.language
  example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project

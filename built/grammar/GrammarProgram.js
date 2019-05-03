@@ -5,7 +5,7 @@ const AbstractRuntimeProgram_1 = require("./AbstractRuntimeProgram");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
 const GrammarKeywordDefinitionNode_1 = require("./GrammarKeywordDefinitionNode");
-const GrammarWordTypeNode_1 = require("./GrammarWordTypeNode");
+const GrammarCellTypeNode_1 = require("./GrammarCellTypeNode");
 class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
     _getDefaultNodeConstructor() {
         return undefined;
@@ -34,7 +34,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getKeywordMap() {
         const map = {};
         map[GrammarConstants_1.GrammarConstants.grammar] = GrammarRootNode;
-        map[GrammarConstants_1.GrammarConstants.wordType] = GrammarWordTypeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.cellType] = GrammarCellTypeNode_1.default;
         map[GrammarConstants_1.GrammarConstants.keyword] = GrammarKeywordDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
@@ -67,8 +67,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
         // Todo: this only supports single word type inheritance.
         const parts = line.split(this.getZI());
-        let type = parts[0] === GrammarConstants_1.GrammarConstants.wordType &&
-            (GrammarWordTypeNode_1.default.types[parts[1]] || GrammarWordTypeNode_1.default.types[parts[2]]);
+        let type = parts[0] === GrammarConstants_1.GrammarConstants.cellType &&
+            (GrammarCellTypeNode_1.default.types[parts[1]] || GrammarCellTypeNode_1.default.types[parts[2]]);
         return type ? type : super.getNodeConstructor(line);
     }
     getTargetExtension() {
@@ -77,18 +77,18 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getKeywordOrder() {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.keywordOrder);
     }
-    getWordTypes() {
-        if (!this._cache_wordTypes)
-            this._cache_wordTypes = this._getWordTypes();
-        return this._cache_wordTypes;
+    getCellTypes() {
+        if (!this._cache_cellTypes)
+            this._cache_cellTypes = this._getCellTypes();
+        return this._cache_cellTypes;
     }
-    getWordType(word) {
-        return this.getWordTypes()[word];
+    getCellType(word) {
+        return this.getCellTypes()[word];
     }
-    _getWordTypes() {
+    _getCellTypes() {
         const types = {};
         // todo: add built in word types?
-        this.getChildrenByNodeType(GrammarWordTypeNode_1.default).forEach(type => (types[type.getId()] = type));
+        this.getChildrenByNodeType(GrammarCellTypeNode_1.default).forEach(type => (types[type.getId()] = type));
         return types;
     }
     getProgram() {
@@ -178,9 +178,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             : this.getExtensionName();
     }
     toSublimeSyntaxFile() {
-        const wordTypes = this.getWordTypes();
-        const variables = Object.keys(wordTypes)
-            .map(name => ` ${name}: '${wordTypes[name].getRegexString()}'`)
+        const types = this.getCellTypes();
+        const variables = Object.keys(types)
+            .map(name => ` ${name}: '${types[name].getRegexString()}'`)
             .join("\n");
         const keywords = this.getKeywordDefinitions().filter(kw => !kw._isAbstract());
         const keywordContexts = keywords.map(def => def.getMatchBlock()).join("\n\n");
@@ -205,8 +205,8 @@ ${keywordContexts}`;
         return this.newFromCondensed(`${GrammarConstants_1.GrammarConstants.grammar} any
  ${GrammarConstants_1.GrammarConstants.catchAllKeyword} any
 ${GrammarConstants_1.GrammarConstants.keyword} any
- ${GrammarConstants_1.GrammarConstants.catchAllColumn} any
-${GrammarConstants_1.GrammarConstants.wordType} any`).getRootConstructor();
+ ${GrammarConstants_1.GrammarConstants.catchAllCellType} any
+${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
@@ -259,29 +259,31 @@ ${GrammarConstants_1.GrammarConstants.wordType} any`).getRootConstructor();
             const sizes = new Set(cells.map(c => c.length));
             const max = Math.max(...Array.from(sizes));
             const min = Math.min(...Array.from(sizes));
-            let catchAllColumn;
-            let columns = [];
+            let catchAllCellType;
+            let cellTypes = [];
             for (let index = 0; index < max; index++) {
                 const set = new Set(cells.map(c => c[index]));
                 const values = Array.from(set).filter(c => c);
                 const type = GrammarProgram._getBestType(values);
-                columns.push(type);
+                cellTypes.push(type);
             }
             if (max > min) {
                 //columns = columns.slice(0, min)
-                catchAllColumn = columns.pop();
-                while (columns[columns.length - 1] === catchAllColumn) {
-                    columns.pop();
+                catchAllCellType = cellTypes.pop();
+                while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
+                    cellTypes.pop();
                 }
             }
-            const catchAllColumnString = catchAllColumn ? `\n ${GrammarConstants_1.GrammarConstants.catchAllColumn} ${catchAllColumn}` : "";
+            const catchAllCellTypeString = catchAllCellType
+                ? `\n ${GrammarConstants_1.GrammarConstants.catchAllCellType} ${catchAllCellType}`
+                : "";
             const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants_1.GrammarConstants.any}`;
-            if (!columns.length)
-                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}${catchAllColumnString}${childrenAnyString}`;
-            if (columns.length > 1)
+            if (!cellTypes.length)
+                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}${catchAllCellTypeString}${childrenAnyString}`;
+            if (cellTypes.length > 1)
                 return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}
- ${GrammarConstants_1.GrammarConstants.columns} ${columns.join(xi)}${catchAllColumnString}${childrenAnyString}`;
-            return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword} ${columns[0]}${catchAllColumnString}${childrenAnyString}`;
+ ${GrammarConstants_1.GrammarConstants.cells} ${cellTypes.join(xi)}${catchAllCellTypeString}${childrenAnyString}`;
+            return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword} ${cellTypes[0]}${catchAllCellTypeString}${childrenAnyString}`;
         })
             .join("\n");
     }

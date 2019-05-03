@@ -42,12 +42,10 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     if (catchAllCellTypeName) requiredCellTypeNames.push(catchAllCellTypeName)
     if (!requiredCellTypeNames.length) return topHalf
     const captures = requiredCellTypeNames
-      .map((wordTypeName, index) => {
-        const wordType = program.getWordType(wordTypeName) // todo: cleanup
-        if (!wordType) throw new Error(`No ${GrammarConstants.wordType} ${wordTypeName} found`) // todo: standardize error/capture error at grammar time
-        return `        ${index + 1}: ${(wordType.getHighlightScope() || defaultHighlightScope) +
-          "." +
-          wordType.getId()}`
+      .map((typeName, index) => {
+        const theType = program.getCellType(typeName) // todo: cleanup
+        if (!theType) throw new Error(`No ${GrammarConstants.cellType} ${typeName} found`) // todo: standardize error/capture error at grammar time
+        return `        ${index + 1}: ${(theType.getHighlightScope() || defaultHighlightScope) + "." + theType.getId()}`
       })
       .join("\n")
 

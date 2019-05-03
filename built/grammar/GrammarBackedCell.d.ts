@@ -16,7 +16,7 @@ declare class GrammarBackedCell {
     }[];
     getWord(): string;
     getParsed(): any;
-    protected _getWordTypeClass(): import("./GrammarWordTypeNode").default;
+    protected _getCellTypeClass(): import("./GrammarCellTypeNode").default;
     protected _getLineNumber(): any;
     getErrorIfAny(): types.ParseError;
 }

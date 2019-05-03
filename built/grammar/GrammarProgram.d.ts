@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode";
 import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode";
-import GrammarWordTypeNode from "./GrammarWordTypeNode";
+import GrammarCellTypeNode from "./GrammarCellTypeNode";
 import types from "../types";
 declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
     protected _getDefaultNodeConstructor(): any;
@@ -16,12 +16,12 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getNodeConstructor(line: any): any;
     getTargetExtension(): string;
     getKeywordOrder(): any;
-    private _cache_wordTypes;
-    getWordTypes(): {
-        [name: string]: GrammarWordTypeNode;
+    private _cache_cellTypes;
+    getCellTypes(): {
+        [name: string]: GrammarCellTypeNode;
     };
-    getWordType(word: string): GrammarWordTypeNode;
-    protected _getWordTypes(): {};
+    getCellType(word: string): GrammarCellTypeNode;
+    protected _getCellTypes(): {};
     getProgram(): this;
     getKeywordDefinitions(): GrammarKeywordDefinitionNode[];
     getTheGrammarFilePath(): string;

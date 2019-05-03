@@ -6,7 +6,7 @@ import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgram
 import { GrammarConstants } from "./GrammarConstants"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
-import GrammarWordTypeNode from "./GrammarWordTypeNode"
+import GrammarCellTypeNode from "./GrammarCellTypeNode"
 
 import types from "../types"
 
@@ -42,7 +42,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
     const map: types.stringMap = {}
     map[GrammarConstants.grammar] = GrammarRootNode
-    map[GrammarConstants.wordType] = GrammarWordTypeNode
+    map[GrammarConstants.cellType] = GrammarCellTypeNode
     map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
     map[GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode
     return map
@@ -81,8 +81,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     // Todo: this only supports single word type inheritance.
     const parts = line.split(this.getZI())
     let type =
-      parts[0] === GrammarConstants.wordType &&
-      (GrammarWordTypeNode.types[parts[1]] || GrammarWordTypeNode.types[parts[2]])
+      parts[0] === GrammarConstants.cellType &&
+      (GrammarCellTypeNode.types[parts[1]] || GrammarCellTypeNode.types[parts[2]])
     return type ? type : super.getNodeConstructor(line)
   }
 
@@ -94,23 +94,23 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().get(GrammarConstants.keywordOrder)
   }
 
-  private _cache_wordTypes: {
-    [name: string]: GrammarWordTypeNode
+  private _cache_cellTypes: {
+    [name: string]: GrammarCellTypeNode
   }
 
-  getWordTypes() {
-    if (!this._cache_wordTypes) this._cache_wordTypes = this._getWordTypes()
-    return this._cache_wordTypes
+  getCellTypes() {
+    if (!this._cache_cellTypes) this._cache_cellTypes = this._getCellTypes()
+    return this._cache_cellTypes
   }
 
-  getWordType(word: string) {
-    return this.getWordTypes()[word]
+  getCellType(word: string) {
+    return this.getCellTypes()[word]
   }
 
-  protected _getWordTypes() {
+  protected _getCellTypes() {
     const types = {}
     // todo: add built in word types?
-    this.getChildrenByNodeType(GrammarWordTypeNode).forEach(type => (types[(<GrammarWordTypeNode>type).getId()] = type))
+    this.getChildrenByNodeType(GrammarCellTypeNode).forEach(type => (types[(<GrammarCellTypeNode>type).getId()] = type))
     return types
   }
 
@@ -225,9 +225,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   toSublimeSyntaxFile() {
-    const wordTypes = this.getWordTypes()
-    const variables = Object.keys(wordTypes)
-      .map(name => ` ${name}: '${wordTypes[name].getRegexString()}'`)
+    const types = this.getCellTypes()
+    const variables = Object.keys(types)
+      .map(name => ` ${name}: '${types[name].getRegexString()}'`)
       .join("\n")
 
     const keywords = this.getKeywordDefinitions().filter(kw => !kw._isAbstract())
@@ -257,8 +257,8 @@ ${keywordContexts}`
       `${GrammarConstants.grammar} any
  ${GrammarConstants.catchAllKeyword} any
 ${GrammarConstants.keyword} any
- ${GrammarConstants.catchAllColumn} any
-${GrammarConstants.wordType} any`
+ ${GrammarConstants.catchAllCellType} any
+${GrammarConstants.cellType} any`
     ).getRootConstructor()
   }
 
@@ -318,32 +318,35 @@ ${GrammarConstants.wordType} any`
         const sizes = new Set(cells.map(c => c.length))
         const max = Math.max(...Array.from(sizes))
         const min = Math.min(...Array.from(sizes))
-        let catchAllColumn: string
-        let columns = []
+        let catchAllCellType: string
+        let cellTypes = []
         for (let index = 0; index < max; index++) {
           const set = new Set(cells.map(c => c[index]))
           const values = Array.from(set).filter(c => c)
           const type = GrammarProgram._getBestType(values)
-          columns.push(type)
+          cellTypes.push(type)
         }
         if (max > min) {
           //columns = columns.slice(0, min)
-          catchAllColumn = columns.pop()
-          while (columns[columns.length - 1] === catchAllColumn) {
-            columns.pop()
+          catchAllCellType = cellTypes.pop()
+          while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
+            cellTypes.pop()
           }
         }
 
-        const catchAllColumnString = catchAllColumn ? `\n ${GrammarConstants.catchAllColumn} ${catchAllColumn}` : ""
+        const catchAllCellTypeString = catchAllCellType
+          ? `\n ${GrammarConstants.catchAllCellType} ${catchAllCellType}`
+          : ""
         const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants.any}`
 
-        if (!columns.length) return `${GrammarConstants.keyword} ${keyword}${catchAllColumnString}${childrenAnyString}`
+        if (!cellTypes.length)
+          return `${GrammarConstants.keyword} ${keyword}${catchAllCellTypeString}${childrenAnyString}`
 
-        if (columns.length > 1)
+        if (cellTypes.length > 1)
           return `${GrammarConstants.keyword} ${keyword}
- ${GrammarConstants.columns} ${columns.join(xi)}${catchAllColumnString}${childrenAnyString}`
+ ${GrammarConstants.cells} ${cellTypes.join(xi)}${catchAllCellTypeString}${childrenAnyString}`
 
-        return `${GrammarConstants.keyword} ${keyword} ${columns[0]}${catchAllColumnString}${childrenAnyString}`
+        return `${GrammarConstants.keyword} ${keyword} ${cellTypes[0]}${catchAllCellTypeString}${childrenAnyString}`
       })
       .join("\n")
   }

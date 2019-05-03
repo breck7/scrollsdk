@@ -36,13 +36,13 @@ class GrammarBackedCell {
   }
 
   getHighlightScope(): string | undefined {
-    const wordTypeClass = this._getWordTypeClass()
-    if (wordTypeClass) return wordTypeClass.getHighlightScope()
+    const typeClass = this._getCellTypeClass()
+    if (typeClass) return typeClass.getHighlightScope()
   }
 
   getAutoCompleteWords(partialWord: string) {
-    const wordTypeClass = this._getWordTypeClass()
-    let words = wordTypeClass ? wordTypeClass.getAutocompleteWordOptions() : []
+    const typeClass = this._getCellTypeClass()
+    let words = typeClass ? typeClass.getAutocompleteWordOptions() : []
     if (partialWord) words = words.filter(word => word.includes(partialWord))
     return words.map(word => {
       return {
@@ -57,11 +57,11 @@ class GrammarBackedCell {
   }
 
   getParsed() {
-    return this._getWordTypeClass().parse(this._word)
+    return this._getCellTypeClass().parse(this._word)
   }
 
-  protected _getWordTypeClass() {
-    return this._grammarProgram.getWordTypes()[this.getType()]
+  protected _getCellTypeClass() {
+    return this._grammarProgram.getCellTypes()[this.getType()]
   }
 
   protected _getLineNumber() {
@@ -100,8 +100,8 @@ class GrammarBackedCell {
 
     const grammarProgram = this._grammarProgram
     const runTimeGrammarBackedProgram = this._node.getProgram()
-    const wordTypeClass = this._getWordTypeClass()
-    if (!wordTypeClass)
+    const typeClass = this._getCellTypeClass()
+    if (!typeClass)
       return {
         kind: GrammarConstantsErrors.grammarDefinitionError,
         subkind: type,
@@ -114,7 +114,7 @@ class GrammarBackedCell {
         }".`
       }
 
-    return wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
+    return typeClass.isValid(this._word, runTimeGrammarBackedProgram)
       ? undefined
       : {
           kind: GrammarConstantsErrors.invalidWordError,

@@ -19,7 +19,7 @@ var GrammarConstants;
     GrammarConstants["name"] = "name";
     GrammarConstants["keywordOrder"] = "keywordOrder";
     GrammarConstants["keyword"] = "keyword";
-    GrammarConstants["wordType"] = "wordType";
+    GrammarConstants["cellType"] = "cellType";
     GrammarConstants["abstract"] = "abstract";
     // error check time
     GrammarConstants["regex"] = "regex";
@@ -28,8 +28,8 @@ var GrammarConstants;
     GrammarConstants["parseWith"] = "parseWith";
     // parse time
     GrammarConstants["keywords"] = "keywords";
-    GrammarConstants["columns"] = "columns";
-    GrammarConstants["catchAllColumn"] = "catchAllColumn";
+    GrammarConstants["cells"] = "cells";
+    GrammarConstants["catchAllCellType"] = "catchAllCellType";
     GrammarConstants["catchAllKeyword"] = "catchAllKeyword";
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";

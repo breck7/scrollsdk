@@ -2,7 +2,7 @@ grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  catchAllKeyword _error
- keywordOrder grammar wordType abstract keyword
+ keywordOrder grammar cellType abstract keyword
  extensions grammar gram
  example A grammar that parses anything:
   grammar
@@ -13,52 +13,53 @@ grammar
  version 1.1.0
  keywords
   grammar
-  keyword
-  wordType
+  cellType
   abstract
-wordType anyWord
-wordType builtInConstructorOrConstructorName
-wordType builtInConstructorOrFilePath
-wordType compilerTargetExtension
+  keyword
+cellType anyWord
+cellType builtInConstructorOrConstructorName
+cellType builtInConstructorOrFilePath
+cellType cellTypeEnum
+ keywordTable cellType 1
+cellType cellTypeName
+cellType compilerTargetExtension
  description The target extension of the compiler output such as "o" or "js" or "html"
-wordType constructorName
-wordType enumOption
-wordType extendedKeyword
-wordType fileExtension
-wordType filepath
-wordType float
+cellType constructorName
+cellType enumOption
+cellType extendedKeyword
+cellType fileExtension
+cellType filepath
+cellType float
  regex \-?[0-9]*\.?[0-9]*
-wordType grammarName
+cellType grammarName
  highlightScope constant
-wordType int
+cellType int
  regex \-?[0-9]+
  highlightScope constant.numeric
-wordType keywordName
+cellType javascriptCodeWord
+cellType keywordName
  highlightScope variable.parameter
-wordType lowercaseWord
+cellType lowercaseWord
  regex [a-z]+
-wordType regexWord
+cellType regexWord
  highlightScope string.regexp
-wordType scopeName
+cellType scopeName
  enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
  highlightScope string
-wordType semanticVersion
+cellType semanticVersion
  regex [0-9]+\.[0-9]+\.[0-9]+
  highlightScope constant.numeric
-wordType string
+cellType string
  highlightScope string
-wordType tag
-wordType word
+cellType tag
+cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
-wordType wordTypeEnum
- keywordTable wordType 1
-wordType wordTypeName
-wordType exampleWord string
+cellType extendedCellType cellTypeName
+cellType exampleWord string
  highlightScope comment
-wordType extendedWordType wordTypeName
 abstract _compilerRule
- catchAllColumn anyWord
+ catchAllCellType anyWord
  highlightScope entity.other.attribute-name
 abstract _environment
 abstract _keywordRule
@@ -66,28 +67,39 @@ abstract _keywordRule
  single
 abstract _nonTerminalKeywordRule _keywordRule
 keyword _constantAny
- catchAllColumn anyWord
+ catchAllCellType anyWord
  catchAllKeyword _constantAny
 keyword _constantDefinition
- catchAllColumn anyWord
+ catchAllCellType anyWord
  catchAllKeyword _constantAny
 keyword _defaultTuple
- columns anyWord
- catchAllColumn anyWord
+ cells anyWord
+ catchAllCellType anyWord
 keyword _error
  constructors
   nodejs ErrorNode
   browser ErrorNode
 keyword _exampleLine
- catchAllColumn exampleWord
+ catchAllCellType exampleWord
  highlightScope comment
  catchAllKeyword _exampleLine
 keyword _keywordUse
+keyword cellType
+ cells cellTypeName
+ catchAllCellType extendedCellType
+ highlightScope variable.parameter
+ keywords
+  highlightScope
+  regex
+  keywordTable
+  description
+  enum
+  parseWith
 keyword enum
- catchAllColumn enumOption
+ catchAllCellType enumOption
  highlightScope entity.other.attribute-name
 keyword extensions
- catchAllColumn fileExtension
+ catchAllCellType fileExtension
  highlightScope constant.language
  description File extensions of your language.
 keyword grammar
@@ -106,12 +118,15 @@ keyword grammar
   catchAllKeyword
   version
 keyword group
- catchAllColumn keywordName
+ catchAllCellType keywordName
  highlightScope entity.other.attribute-name
  description Available on abstract nodes only. Use it to more concisely generate keywords all extending from this abstract keyword, if they have no special properties.
+keyword javascriptCodeLine
+ catchAllCellType javascriptCodeWord
+ catchAllKeyword javascriptCodeLine
 keyword keyword
- columns keywordName
- catchAllColumn extendedKeyword
+ cells keywordName
+ catchAllCellType extendedKeyword
  catchAllKeyword _error
  constructors
   nodejs NonTerminalNode
@@ -120,72 +135,57 @@ keyword keyword
  keywords
   _keywordRule
 keyword keywordOrder
- catchAllColumn keywordName
+ catchAllCellType keywordName
  highlightScope constant.language
  description Optionally specify what order keywords should be sorted in when prettifying a file.
 keyword keywordTable
- columns anyWord int
+ cells anyWord int
  highlightScope entity.other.attribute-name
 keyword name
- columns grammarName
+ cells grammarName
  highlightScope constant.language
  description The name of your language. Also serves as the default file extension.
 keyword parseWith
- catchAllColumn anyWord
+ catchAllCellType anyWord
  highlightScope entity.other.attribute-name
  single
 keyword regex
- catchAllColumn regexWord
+ catchAllCellType regexWord
  description The word must match this pattern or it shall be marked as an error.
  highlightScope entity.other.attribute-name
  single
 keyword version
- columns semanticVersion
+ cells semanticVersion
  highlightScope constant.language
  description Version number of your language.
-keyword wordType
- columns wordTypeName
- catchAllColumn extendedWordType
- highlightScope variable.parameter
- keywords
-  highlightScope
-  regex
-  keywordTable
-  description
-  enum
-  parseWith
 keyword closeChildren _compilerRule
 keyword indentCharacter _compilerRule
 keyword listDelimiter _compilerRule
 keyword openChildren _compilerRule
 keyword sub _compilerRule
 keyword browser _environment
- columns builtInConstructorOrConstructorName
+ cells builtInConstructorOrConstructorName
  description builtInConstructorOrConstructorName will be searched for on the window object.
-keyword nodejs _environment
- columns builtInConstructorOrFilePath
- catchAllColumn constructorName
- description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-wordType javascriptCodeWord
-keyword javascriptCodeLine
- catchAllColumn javascriptCodeWord
- catchAllKeyword javascriptCodeLine
 keyword javascript _environment
- catchAllColumn javascriptCodeWord
+ catchAllCellType javascriptCodeWord
  catchAllKeyword javascriptCodeLine
  description Put in some code to eval.
+keyword nodejs _environment
+ cells builtInConstructorOrFilePath
+ catchAllCellType constructorName
+ description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
 keyword any _keywordRule
-keyword catchAllColumn _keywordRule
- columns wordTypeEnum
+keyword catchAllCellType _keywordRule
+ cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
 keyword catchAllKeyword _keywordRule
  description If a keyword is not found in the keywords list, instantiate this type of node instead.
- columns keywordName
-keyword columns _keywordRule
- catchAllColumn wordTypeEnum
+ cells keywordName
+keyword cells _keywordRule
+ catchAllCellType cellTypeEnum
  description Describes the word type of each word in the line.
 keyword compiler _keywordRule
- columns compilerTargetExtension
+ cells compilerTargetExtension
  keywords
   sub
   listDelimiter
@@ -197,23 +197,23 @@ keyword constants _keywordRule
 keyword defaults _keywordRule
  catchAllKeyword _defaultTuple
 keyword description _keywordRule
- catchAllColumn string
+ catchAllCellType string
 keyword example _keywordRule
  description Provide a one line description and then a snippet of example code.
- catchAllColumn exampleWord
+ catchAllCellType exampleWord
  catchAllKeyword _exampleLine
  highlightScope comment
 keyword frequency _keywordRule
- columns float
+ cells float
 keyword highlightScope _keywordRule
- columns scopeName
+ cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror. These are all listed here https://www.sublimetext.com/docs/3/scope_naming.html
 keyword required _keywordRule
  description If present, the parent node will have an error if one of these nodes is not provided.
 keyword single _keywordRule
  description If present and their are more than 1 of these nodes on the parent, an error will be present.
 keyword tags _keywordRule
- catchAllColumn tag
+ catchAllCellType tag
 keyword constructors _nonTerminalKeywordRule
  keywords
   _environment

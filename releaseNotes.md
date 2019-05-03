@@ -2,6 +2,7 @@ edge / 2019-05-01
 =================
 - New: grammar name keyword
 - New: makeGraphSort function. Also now used in grammar file prettification
+- Breaking: in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
 - Breaking: removed ability in grammar files to have a wordType and keyword share the same name
 - Breaking: getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
 - Breaking: instead of "grammar grammarName" oneliner now use the grammar name keyword

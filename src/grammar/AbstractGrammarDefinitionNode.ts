@@ -22,10 +22,10 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     const types = [
       GrammarConstants.frequency,
       GrammarConstants.keywords,
-      GrammarConstants.columns,
+      GrammarConstants.cells,
       GrammarConstants.description,
       GrammarConstants.catchAllKeyword,
-      GrammarConstants.catchAllColumn,
+      GrammarConstants.catchAllCellType,
       GrammarConstants.defaults,
       GrammarConstants.tags,
       GrammarConstants.any,
@@ -127,12 +127,12 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getRequiredCellTypeNames(): string[] {
-    const parameters = this.get(GrammarConstants.columns)
+    const parameters = this.get(GrammarConstants.cells)
     return parameters ? parameters.split(" ") : []
   }
 
   getCatchAllCellTypeName(): string | undefined {
-    return this.get(GrammarConstants.catchAllColumn)
+    return this.get(GrammarConstants.catchAllCellType)
   }
 
   /*

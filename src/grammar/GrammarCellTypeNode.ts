@@ -21,7 +21,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
   protected _getKeywordTable(runTimeGrammarBackedProgram) {
-    // keywordTable wordType 1
+    // keywordTable cellType 1
     const nodeType = this.getWord(1)
     const wordIndex = parseInt(this.getWord(2))
     const table = {}
@@ -66,7 +66,7 @@ class GrammarWordParserNode extends TreeNode {
   }
 }
 
-class GrammarWordTypeNode extends TreeNode {
+class GrammarCellTypeNode extends TreeNode {
   getKeywordMap() {
     const types: types.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
@@ -125,7 +125,7 @@ class GrammarWordTypeNode extends TreeNode {
   public static types: any
 }
 
-class GrammarWordTypeIntNode extends GrammarWordTypeNode {
+class GrammarCellTypeIntNode extends GrammarCellTypeNode {
   isValid(str: string) {
     const num = parseInt(str)
     if (isNaN(num)) return false
@@ -141,7 +141,7 @@ class GrammarWordTypeIntNode extends GrammarWordTypeNode {
   }
 }
 
-class GrammarWordTypeBitNode extends GrammarWordTypeNode {
+class GrammarCellTypeBitNode extends GrammarCellTypeNode {
   isValid(str: string) {
     return str === "0" || str === "1"
   }
@@ -155,7 +155,7 @@ class GrammarWordTypeBitNode extends GrammarWordTypeNode {
   }
 }
 
-class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
+class GrammarCellTypeFloatNode extends GrammarCellTypeNode {
   isValid(str: string) {
     return !isNaN(parseFloat(str))
   }
@@ -169,7 +169,7 @@ class GrammarWordTypeFloatNode extends GrammarWordTypeNode {
   }
 }
 
-class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
+class GrammarCellTypeBoolNode extends GrammarCellTypeNode {
   private _options = ["1", "0", "true", "false", "t", "f", "yes", "no"]
 
   isValid(str: string) {
@@ -185,7 +185,7 @@ class GrammarWordTypeBoolNode extends GrammarWordTypeNode {
   }
 }
 
-class GrammarWordTypeAnyNode extends GrammarWordTypeNode {
+class GrammarCellTypeAnyNode extends GrammarCellTypeNode {
   isValid() {
     return true
   }
@@ -195,12 +195,12 @@ class GrammarWordTypeAnyNode extends GrammarWordTypeNode {
   }
 }
 
-GrammarWordTypeNode.types = {
-  any: GrammarWordTypeAnyNode,
-  float: GrammarWordTypeFloatNode,
-  bit: GrammarWordTypeBitNode,
-  bool: GrammarWordTypeBoolNode,
-  int: GrammarWordTypeIntNode
+GrammarCellTypeNode.types = {
+  any: GrammarCellTypeAnyNode,
+  float: GrammarCellTypeFloatNode,
+  bit: GrammarCellTypeBitNode,
+  bool: GrammarCellTypeBoolNode,
+  int: GrammarCellTypeIntNode
 }
 
-export default GrammarWordTypeNode
+export default GrammarCellTypeNode

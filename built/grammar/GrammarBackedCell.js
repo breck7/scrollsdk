@@ -17,13 +17,13 @@ class GrammarBackedCell {
         return this._type || undefined;
     }
     getHighlightScope() {
-        const wordTypeClass = this._getWordTypeClass();
-        if (wordTypeClass)
-            return wordTypeClass.getHighlightScope();
+        const typeClass = this._getCellTypeClass();
+        if (typeClass)
+            return typeClass.getHighlightScope();
     }
     getAutoCompleteWords(partialWord) {
-        const wordTypeClass = this._getWordTypeClass();
-        let words = wordTypeClass ? wordTypeClass.getAutocompleteWordOptions() : [];
+        const typeClass = this._getCellTypeClass();
+        let words = typeClass ? typeClass.getAutocompleteWordOptions() : [];
         if (partialWord)
             words = words.filter(word => word.includes(partialWord));
         return words.map(word => {
@@ -37,10 +37,10 @@ class GrammarBackedCell {
         return this._word;
     }
     getParsed() {
-        return this._getWordTypeClass().parse(this._word);
+        return this._getCellTypeClass().parse(this._word);
     }
-    _getWordTypeClass() {
-        return this._grammarProgram.getWordTypes()[this.getType()];
+    _getCellTypeClass() {
+        return this._grammarProgram.getCellTypes()[this.getType()];
     }
     _getLineNumber() {
         return this._node.getPoint().y;
@@ -70,8 +70,8 @@ class GrammarBackedCell {
             };
         const grammarProgram = this._grammarProgram;
         const runTimeGrammarBackedProgram = this._node.getProgram();
-        const wordTypeClass = this._getWordTypeClass();
-        if (!wordTypeClass)
+        const typeClass = this._getCellTypeClass();
+        if (!typeClass)
             return {
                 kind: GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError,
                 subkind: type,
@@ -79,7 +79,7 @@ class GrammarBackedCell {
                 context: context,
                 message: `${GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError} No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${this._expectedLinePattern}".`
             };
-        return wordTypeClass.isValid(this._word, runTimeGrammarBackedProgram)
+        return typeClass.isValid(this._word, runTimeGrammarBackedProgram)
             ? undefined
             : {
                 kind: GrammarConstants_1.GrammarConstantsErrors.invalidWordError,

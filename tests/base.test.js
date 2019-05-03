@@ -1870,11 +1870,11 @@ testTree.isomorphicGrammarTests = equal => {
   topLevel
   text
   someAbstractClass
-wordType int
+cellType int
  regex \-?[0-9]+
  parseWith js parseInt
-wordType word
-wordType onoff
+cellType word
+cellType onoff
  enum on off
 keyword error
  constructors
@@ -1884,13 +1884,13 @@ abstract topLevel
 abstract someAbstractClass
 abstract color_properties topLevel
  group hue saturation constrast
- columns int
+ cells int
 keyword extendsAbstract someAbstractClass
- columns int
+ cells int
 keyword someCode topLevel
  catchAllKeyword lineOfCode
 keyword lineOfCode
- catchAllColumn word
+ catchAllCellType word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
 keyword block topLevel
@@ -1906,11 +1906,11 @@ keyword add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
 keyword + add
- catchAllColumn int
+ catchAllCellType int
 keyword lightbulbState topLevel
- columns onoff
+ cells onoff
 keyword to block
- columns word
+ cells word
  compiler txt
   sub to {word}
   closeChildren end`

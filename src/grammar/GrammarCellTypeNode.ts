@@ -53,26 +53,12 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   }
 }
 
-class GrammarWordParserNode extends TreeNode {
-  parse(str: string) {
-    const fns = {
-      parseInt: parseInt,
-      parseFloat: parseFloat
-    }
-    const fnName = this.getWord(2)
-    const fn = fns[fnName]
-    if (fn) return fn(str)
-    return str
-  }
-}
-
 class GrammarCellTypeNode extends TreeNode {
   getKeywordMap() {
     const types: types.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
     types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
-    types[GrammarConstants.parseWith] = GrammarWordParserNode
     types[GrammarConstants.highlightScope] = TreeNode
     return types
   }
@@ -103,9 +89,8 @@ class GrammarCellTypeNode extends TreeNode {
     return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
 
-  parse(str: string) {
-    const parser = this.getNode(GrammarConstants.parseWith)
-    return parser ? parser.parse(str) : str
+  parse(str: string): any {
+    return str
   }
 
   isValid(str: string, runTimeGrammarBackedProgram) {

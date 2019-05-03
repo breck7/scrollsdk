@@ -1871,8 +1871,6 @@ testTree.isomorphicGrammarTests = equal => {
   text
   someAbstractClass
 cellType int
- regex \-?[0-9]+
- parseWith js parseInt
 cellType word
 cellType onoff
  enum on off

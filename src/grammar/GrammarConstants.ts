@@ -23,7 +23,6 @@ enum GrammarConstants {
   regex = "regex", // temporary?
   keywordTable = "keywordTable", // temporary?
   enum = "enum", // temporary?
-  parseWith = "parseWith", // temporary?
 
   // parse time
   keywords = "keywords",

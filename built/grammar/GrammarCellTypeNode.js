@@ -44,26 +44,12 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
         return this._map;
     }
 }
-class GrammarWordParserNode extends TreeNode_1.default {
-    parse(str) {
-        const fns = {
-            parseInt: parseInt,
-            parseFloat: parseFloat
-        };
-        const fnName = this.getWord(2);
-        const fn = fns[fnName];
-        if (fn)
-            return fn(str);
-        return str;
-    }
-}
 class GrammarCellTypeNode extends TreeNode_1.default {
     getKeywordMap() {
         const types = {};
         types[GrammarConstants_1.GrammarConstants.regex] = GrammarRegexTestNode;
         types[GrammarConstants_1.GrammarConstants.keywordTable] = GrammarKeywordTableTestNode;
         types[GrammarConstants_1.GrammarConstants.enum] = GrammarEnumTestNode;
-        types[GrammarConstants_1.GrammarConstants.parseWith] = GrammarWordParserNode;
         types[GrammarConstants_1.GrammarConstants.highlightScope] = TreeNode_1.default;
         return types;
     }
@@ -89,8 +75,7 @@ class GrammarCellTypeNode extends TreeNode_1.default {
         return this.get(GrammarConstants_1.GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*");
     }
     parse(str) {
-        const parser = this.getNode(GrammarConstants_1.GrammarConstants.parseWith);
-        return parser ? parser.parse(str) : str;
+        return str;
     }
     isValid(str, runTimeGrammarBackedProgram) {
         return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));

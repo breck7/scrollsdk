@@ -12,8 +12,6 @@ grammar
 cellType errorWord
  highlightScope invalid
 cellType int
- regex \-?[0-9]+
- parseWith js parseInt
  highlightScope constant.numeric
 cellType onoff
  enum on off

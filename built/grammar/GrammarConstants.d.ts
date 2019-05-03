@@ -17,7 +17,6 @@ declare enum GrammarConstants {
     regex = "regex",
     keywordTable = "keywordTable",
     enum = "enum",
-    parseWith = "parseWith",
     keywords = "keywords",
     cells = "cells",
     catchAllCellType = "catchAllCellType",

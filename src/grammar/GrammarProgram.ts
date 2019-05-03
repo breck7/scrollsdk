@@ -337,6 +337,7 @@ ${GrammarConstants.cellType} any`
         const catchAllCellTypeString = catchAllCellType
           ? `\n ${GrammarConstants.catchAllCellType} ${catchAllCellType}`
           : ""
+
         const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants.any}`
 
         if (!cellTypes.length)

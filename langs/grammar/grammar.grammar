@@ -94,7 +94,6 @@ keyword cellType
   keywordTable
   description
   enum
-  parseWith
 keyword enum
  catchAllCellType enumOption
  highlightScope entity.other.attribute-name
@@ -145,10 +144,6 @@ keyword name
  cells grammarName
  highlightScope constant.language
  description The name of your language. Also serves as the default file extension.
-keyword parseWith
- catchAllCellType anyWord
- highlightScope entity.other.attribute-name
- single
 keyword regex
  catchAllCellType regexWord
  description The word must match this pattern or it shall be marked as an error.

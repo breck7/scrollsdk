@@ -25,7 +25,6 @@ var GrammarConstants;
     GrammarConstants["regex"] = "regex";
     GrammarConstants["keywordTable"] = "keywordTable";
     GrammarConstants["enum"] = "enum";
-    GrammarConstants["parseWith"] = "parseWith";
     // parse time
     GrammarConstants["keywords"] = "keywords";
     GrammarConstants["cells"] = "cells";

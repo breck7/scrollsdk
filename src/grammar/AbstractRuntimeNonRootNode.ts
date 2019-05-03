@@ -5,6 +5,8 @@ import { GrammarConstantsErrors } from "./GrammarConstants"
 import GrammarBackedCell from "./GrammarBackedCell"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 
+/*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+
 abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   getProgram() {
     return (<AbstractRuntimeNode>this.getParent()).getProgram()
@@ -105,7 +107,8 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
         cellIndex,
         isCatchAll,
         expectedLinePattern,
-        grammarProgram
+        grammarProgram,
+        <AbstractRuntimeProgram>this.getProgram()
       )
     }
     return cells

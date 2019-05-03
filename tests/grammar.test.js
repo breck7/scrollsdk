@@ -147,7 +147,7 @@ testTree.highlightScopes = equal => {
   // Assert
   equal(
     scopes,
-    `source
+    `constant.language
 keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   )
 
@@ -163,7 +163,7 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   // Act/Assert
   equal(
     program.getInPlaceHighlightScopeTree(),
-    `source source
+    `constant.language source
  invalid`
   )
   equal(program.getProgramErrors().length, 1)
@@ -203,6 +203,22 @@ testTree.autocompleteAdditionalWords = equal => {
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(1, 20).matches.length, 5)
+}
+
+testTree.autocompleteAdvanced = equal => {
+  // Arrange
+  const program = makeGrammarProgram(`grammar
+ name latin
+ catchAllKeyword any
+ keywords
+  faveNumber
+cellType integer
+keyword any
+keyword faveNumber
+ cells in`)
+
+  // Act/Assert
+  equal(program.getAutocompleteResultsAt(8, 9).matches.length, 1)
 }
 
 testTree.anyNodes = equal => {

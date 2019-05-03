@@ -8,7 +8,7 @@ const TreeNode = jtree.TreeNode
 
 exec("tsc")
 
-const ProjectProgram = jtree.getLanguage("project")
+const ProjectProgram = require("../langs/project/index.js")
 
 const BrowserScript = jtree.Utils.BrowserScript
 

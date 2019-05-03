@@ -1,10 +1,12 @@
 import TreeNode from "../base/TreeNode";
 import types from "../types";
+import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
 declare class GrammarCellTypeNode extends TreeNode {
     getKeywordMap(): types.stringMap;
     getHighlightScope(): string | undefined;
     private _getEnumOptions;
-    getAutocompleteWordOptions(): string[];
+    private _getKeywordTableOptions;
+    getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgram): string[];
     getRegexString(): any;
     parse(str: string): any;
     isValid(str: string, runTimeGrammarBackedProgram: any): boolean;

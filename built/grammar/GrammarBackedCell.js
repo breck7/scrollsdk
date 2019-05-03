@@ -5,7 +5,7 @@ const GrammarConstants_1 = require("./GrammarConstants");
 A cell contains a word but also the type information for that word.
 */
 class GrammarBackedCell {
-    constructor(word, type, node, index, isCatchAll, expectedLinePattern, grammarProgram) {
+    constructor(word, type, node, index, isCatchAll, expectedLinePattern, grammarProgram, runTimeProgram) {
         this._word = word;
         this._type = type;
         this._node = node;
@@ -13,6 +13,7 @@ class GrammarBackedCell {
         this._expectedLinePattern = expectedLinePattern;
         this._grammarProgram = grammarProgram;
         this._index = index + 1;
+        this._program = runTimeProgram;
     }
     getType() {
         return this._type || undefined;
@@ -27,7 +28,7 @@ class GrammarBackedCell {
     }
     getAutoCompleteWords(partialWord) {
         const typeClass = this._getCellTypeClass();
-        let words = typeClass ? typeClass.getAutocompleteWordOptions() : [];
+        let words = typeClass ? typeClass.getAutocompleteWordOptions(this._program) : [];
         if (partialWord)
             words = words.filter(word => word.includes(partialWord));
         return words.map(word => {

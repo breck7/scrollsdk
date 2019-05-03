@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
-// todo: add standard types, enum types, from disk types
 class AbstractGrammarWordTestNode extends TreeNode_1.default {
 }
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
@@ -16,6 +15,9 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
     _getKeywordTable(runTimeGrammarBackedProgram) {
+        // note: hack where we store it on the program. otherwise has global effects.
+        if (runTimeGrammarBackedProgram._keywordTable)
+            return runTimeGrammarBackedProgram._keywordTable;
         // keywordTable cellType 1
         const nodeType = this.getWord(1);
         const wordIndex = parseInt(this.getWord(2));
@@ -23,14 +25,12 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
         runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
             table[node.getWord(wordIndex)] = true;
         });
+        runTimeGrammarBackedProgram._keywordTable = table;
         return table;
     }
     // todo: remove
     isValid(str, runTimeGrammarBackedProgram) {
-        // note: hack where we store it on the program. otherwise has global effects.
-        if (!runTimeGrammarBackedProgram._keywordTable)
-            runTimeGrammarBackedProgram._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram);
-        return runTimeGrammarBackedProgram._keywordTable[str] === true;
+        return this._getKeywordTable(runTimeGrammarBackedProgram)[str] === true;
     }
 }
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
@@ -65,9 +65,12 @@ class GrammarCellTypeNode extends TreeNode_1.default {
         options.sort((a, b) => b.length - a.length);
         return options;
     }
-    getAutocompleteWordOptions() {
-        const enumOptions = this._getEnumOptions();
-        return enumOptions || [];
+    _getKeywordTableOptions(runTimeProgram) {
+        const node = this.getNode(GrammarConstants_1.GrammarConstants.keywordTable);
+        return node ? Object.keys(node._getKeywordTable(runTimeProgram)) : undefined;
+    }
+    getAutocompleteWordOptions(runTimeProgram) {
+        return this._getEnumOptions() || this._getKeywordTableOptions(runTimeProgram) || [];
     }
     getRegexString() {
         // todo: enum

@@ -3,6 +3,7 @@ import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 import types from "../types"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
 
 /*
 A cell contains a word but also the type information for that word.
@@ -15,7 +16,8 @@ class GrammarBackedCell {
     index: types.int,
     isCatchAll: boolean,
     expectedLinePattern: string,
-    grammarProgram: GrammarProgram
+    grammarProgram: GrammarProgram,
+    runTimeProgram: AbstractRuntimeProgram
   ) {
     this._word = word
     this._type = type
@@ -24,10 +26,12 @@ class GrammarBackedCell {
     this._expectedLinePattern = expectedLinePattern
     this._grammarProgram = grammarProgram
     this._index = index + 1
+    this._program = runTimeProgram
   }
 
   private _node: any
   private _grammarProgram: GrammarProgram
+  private _program: AbstractRuntimeProgram
   private _expectedLinePattern: string
   private _index: types.int
   private _word: string
@@ -49,7 +53,8 @@ class GrammarBackedCell {
 
   getAutoCompleteWords(partialWord: string) {
     const typeClass = this._getCellTypeClass()
-    let words = typeClass ? typeClass.getAutocompleteWordOptions() : []
+    let words = typeClass ? typeClass.getAutocompleteWordOptions(this._program) : []
+
     if (partialWord) words = words.filter(word => word.includes(partialWord))
     return words.map(word => {
       return {

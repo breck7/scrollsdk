@@ -9,6 +9,8 @@ grammar
   topLevel
   text
   someAbstractClass
+cellType columnNameEnum
+cellType columnName
 cellType errorWord
  highlightScope invalid
 cellType int
@@ -18,6 +20,7 @@ cellType onoff
 cellType word
 abstract someAbstractClass
 abstract topLevel
+ highlightScope constant.language
 abstract color_properties topLevel
  group hue saturation constrast
  cells int
@@ -53,6 +56,12 @@ keyword to block
   sub to {word}
   closeChildren end
 keyword foo topLevel
+keyword xColumnName topLevel
+ description The name of the column to use for the x axis
+ cells columnNameEnum
+keyword potentialColumns topLevel
+ description List of all column names that will be available for xColumnName
+ catchAllCellType columnName
 keyword lightbulbState topLevel
  cells onoff
 keyword nested topLevel

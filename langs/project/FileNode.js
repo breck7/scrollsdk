@@ -3,14 +3,14 @@ const path = require("path")
 
 class FileNode extends jtree.NonTerminalNode {
   getFilePath() {
-    return this.cell.filepath.join(" ")
+    return this.cells.filepath.join(" ")
   }
 
   _getDependencies() {
     return this.getChildren()
       .map(child => {
         const keyword = child.getKeyword()
-        const childFilePath = child.cell.filepath.join(" ")
+        const childFilePath = child.cells.filepath.join(" ")
         if (keyword === "external") return ""
         if (keyword === "absolute") return childFilePath
         const link = childFilePath

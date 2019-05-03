@@ -3,11 +3,13 @@ edge / 2019-05-01
 - New: grammar name keyword
 - New: cells property on grammar non-root runtime nodes
 - New: makeGraphSort function. Also now used in grammar file prettification
+- New: autocomplete for cellTypes
 - Breaking: in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
 - Breaking: removed ability in grammar files to have a wordType and keyword share the same name
 - Breaking: getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
 - Breaking: instead of "grammar grammarName" oneliner now use the grammar name keyword
 - Breaking: removed parseWith cellType property
+- Breaking: removed jtree.getLanguage. Instead do require('.../langs/...').
 - Fix: all word types now have default regex of [^ ]* so no need to specify it
 - Fix: grammar code cleanup
 - Fix: small fixes to grammar sandbox

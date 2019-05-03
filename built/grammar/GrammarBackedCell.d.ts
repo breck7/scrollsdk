@@ -1,9 +1,11 @@
 import types from "../types";
 import GrammarProgram from "./GrammarProgram";
+import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
 declare class GrammarBackedCell {
-    constructor(word: string, type: string, node: any, index: types.int, isCatchAll: boolean, expectedLinePattern: string, grammarProgram: GrammarProgram);
+    constructor(word: string, type: string, node: any, index: types.int, isCatchAll: boolean, expectedLinePattern: string, grammarProgram: GrammarProgram, runTimeProgram: AbstractRuntimeProgram);
     private _node;
     private _grammarProgram;
+    private _program;
     private _expectedLinePattern;
     private _index;
     private _word;

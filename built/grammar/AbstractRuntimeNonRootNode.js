@@ -83,7 +83,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
         for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
             const isCatchAll = cellIndex >= numberOfRequiredCells;
-            cells[cellIndex] = new GrammarBackedCell_1.default(words[cellIndex], isCatchAll ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram);
+            cells[cellIndex] = new GrammarBackedCell_1.default(words[cellIndex], isCatchAll ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram, this.getProgram());
         }
         return cells;
     }

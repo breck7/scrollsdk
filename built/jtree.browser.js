@@ -259,7 +259,6 @@ var GrammarConstants;
     GrammarConstants["regex"] = "regex";
     GrammarConstants["keywordTable"] = "keywordTable";
     GrammarConstants["enum"] = "enum";
-    GrammarConstants["parseWith"] = "parseWith";
     // parse time
     GrammarConstants["keywords"] = "keywords";
     GrammarConstants["cells"] = "cells";
@@ -2528,7 +2527,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
 A cell contains a word but also the type information for that word.
 */
 class GrammarBackedCell {
-    constructor(word, type, node, index, isCatchAll, expectedLinePattern, grammarProgram) {
+    constructor(word, type, node, index, isCatchAll, expectedLinePattern, grammarProgram, runTimeProgram) {
         this._word = word;
         this._type = type;
         this._node = node;
@@ -2536,6 +2535,7 @@ class GrammarBackedCell {
         this._expectedLinePattern = expectedLinePattern;
         this._grammarProgram = grammarProgram;
         this._index = index + 1;
+        this._program = runTimeProgram;
     }
     getType() {
         return this._type || undefined;
@@ -2550,7 +2550,7 @@ class GrammarBackedCell {
     }
     getAutoCompleteWords(partialWord) {
         const typeClass = this._getCellTypeClass();
-        let words = typeClass ? typeClass.getAutocompleteWordOptions() : [];
+        let words = typeClass ? typeClass.getAutocompleteWordOptions(this._program) : [];
         if (partialWord)
             words = words.filter(word => word.includes(partialWord));
         return words.map(word => {
@@ -2696,7 +2696,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
         // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
         for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
             const isCatchAll = cellIndex >= numberOfRequiredCells;
-            cells[cellIndex] = new GrammarBackedCell(words[cellIndex], isCatchAll ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram);
+            cells[cellIndex] = new GrammarBackedCell(words[cellIndex], isCatchAll ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram, this.getProgram());
         }
         return cells;
     }
@@ -2777,6 +2777,9 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
     _getKeywordTable(runTimeGrammarBackedProgram) {
+        // note: hack where we store it on the program. otherwise has global effects.
+        if (runTimeGrammarBackedProgram._keywordTable)
+            return runTimeGrammarBackedProgram._keywordTable;
         // keywordTable cellType 1
         const nodeType = this.getWord(1);
         const wordIndex = parseInt(this.getWord(2));
@@ -2784,14 +2787,12 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
         runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
             table[node.getWord(wordIndex)] = true;
         });
+        runTimeGrammarBackedProgram._keywordTable = table;
         return table;
     }
     // todo: remove
     isValid(str, runTimeGrammarBackedProgram) {
-        // note: hack where we store it on the program. otherwise has global effects.
-        if (!runTimeGrammarBackedProgram._keywordTable)
-            runTimeGrammarBackedProgram._keywordTable = this._getKeywordTable(runTimeGrammarBackedProgram);
-        return runTimeGrammarBackedProgram._keywordTable[str] === true;
+        return this._getKeywordTable(runTimeGrammarBackedProgram)[str] === true;
     }
 }
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
@@ -2805,26 +2806,12 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
         return this._map;
     }
 }
-class GrammarWordParserNode extends TreeNode {
-    parse(str) {
-        const fns = {
-            parseInt: parseInt,
-            parseFloat: parseFloat
-        };
-        const fnName = this.getWord(2);
-        const fn = fns[fnName];
-        if (fn)
-            return fn(str);
-        return str;
-    }
-}
 class GrammarCellTypeNode extends TreeNode {
     getKeywordMap() {
         const types = {};
         types[GrammarConstants.regex] = GrammarRegexTestNode;
         types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode;
         types[GrammarConstants.enum] = GrammarEnumTestNode;
-        types[GrammarConstants.parseWith] = GrammarWordParserNode;
         types[GrammarConstants.highlightScope] = TreeNode;
         return types;
     }
@@ -2840,9 +2827,12 @@ class GrammarCellTypeNode extends TreeNode {
         options.sort((a, b) => b.length - a.length);
         return options;
     }
-    getAutocompleteWordOptions() {
-        const enumOptions = this._getEnumOptions();
-        return enumOptions || [];
+    _getKeywordTableOptions(runTimeProgram) {
+        const node = this.getNode(GrammarConstants.keywordTable);
+        return node ? Object.keys(node._getKeywordTable(runTimeProgram)) : undefined;
+    }
+    getAutocompleteWordOptions(runTimeProgram) {
+        return this._getEnumOptions() || this._getKeywordTableOptions(runTimeProgram) || [];
     }
     getRegexString() {
         // todo: enum
@@ -2850,8 +2840,7 @@ class GrammarCellTypeNode extends TreeNode {
         return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*");
     }
     parse(str) {
-        const parser = this.getNode(GrammarConstants.parseWith);
-        return parser ? parser.parse(str) : str;
+        return str;
     }
     isValid(str, runTimeGrammarBackedProgram) {
         return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));
@@ -3859,5 +3848,4 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getLanguage = name => require(__dirname + `/../langs/${name}/index.js`);
 jtree.getVersion = () => "20.0.0";

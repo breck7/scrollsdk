@@ -15,7 +15,6 @@ declare class jtree {
     static AnyNode: typeof GrammarBackedAnyNode;
     static GrammarProgram: typeof GrammarProgram;
     static TreeNotationCodeMirrorMode: typeof TreeNotationCodeMirrorMode;
-    static getLanguage: (name: any) => any;
     static getVersion: () => string;
 }
 export default jtree;

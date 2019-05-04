@@ -45,7 +45,7 @@ class GrammarBackedCell {
         return this._getCellTypeClass().parse(this._word);
     }
     _getCellTypeClass() {
-        return this._grammarProgram.getCellTypes()[this.getType()];
+        return this._grammarProgram.getCellTypeDefinitions()[this.getType()];
     }
     _getLineNumber() {
         return this._node.getPoint().y;

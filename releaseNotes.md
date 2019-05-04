@@ -10,6 +10,7 @@ edge / 2019-05-01
 - Breaking: instead of "grammar grammarName" oneliner now use the grammar name keyword
 - Breaking: removed parseWith cellType property
 - Breaking: removed jtree.getLanguage. Instead do require('.../langs/...').
+- Breaking: in grammar keywordTable now enumFromGrammar
 - Fix: all word types now have default regex of [^ ]* so no need to specify it
 - Fix: grammar code cleanup
 - Fix: small fixes to grammar sandbox

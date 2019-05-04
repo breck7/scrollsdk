@@ -73,7 +73,7 @@ class GrammarBackedCell {
   }
 
   protected _getCellTypeClass() {
-    return this._grammarProgram.getCellTypes()[this.getType()]
+    return this._grammarProgram.getCellTypeDefinitions()[this.getType()]
   }
 
   protected _getLineNumber() {

@@ -13,7 +13,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
     }
 }
 // todo: remove in favor of custom word type constructors
-class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
+class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
     _getKeywordTable(runTimeGrammarBackedProgram) {
         const nodeType = this.getWord(1);
         // note: hack where we store it on the program. otherwise has global effects.
@@ -22,7 +22,7 @@ class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
         if (runTimeGrammarBackedProgram._keywordTables[nodeType])
             return runTimeGrammarBackedProgram._keywordTables[nodeType];
         // keywordTable cellType 1
-        const wordIndex = parseInt(this.getWord(2));
+        const wordIndex = 1;
         const table = {};
         runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
             table[node.getWord(wordIndex)] = true;
@@ -46,11 +46,11 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
         return this._map;
     }
 }
-class GrammarCellTypeNode extends TreeNode_1.default {
+class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
     getKeywordMap() {
         const types = {};
         types[GrammarConstants_1.GrammarConstants.regex] = GrammarRegexTestNode;
-        types[GrammarConstants_1.GrammarConstants.keywordTable] = GrammarKeywordTableTestNode;
+        types[GrammarConstants_1.GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode;
         types[GrammarConstants_1.GrammarConstants.enum] = GrammarEnumTestNode;
         types[GrammarConstants_1.GrammarConstants.highlightScope] = TreeNode_1.default;
         return types;
@@ -68,7 +68,7 @@ class GrammarCellTypeNode extends TreeNode_1.default {
         return options;
     }
     _getKeywordTableOptions(runTimeProgram) {
-        const node = this.getNode(GrammarConstants_1.GrammarConstants.keywordTable);
+        const node = this.getNode(GrammarConstants_1.GrammarConstants.enumFromGrammar);
         return node ? Object.keys(node._getKeywordTable(runTimeProgram)) : undefined;
     }
     getAutocompleteWordOptions(runTimeProgram) {
@@ -92,7 +92,7 @@ class GrammarCellTypeNode extends TreeNode_1.default {
         return this.getWord(1);
     }
 }
-class GrammarCellTypeIntNode extends GrammarCellTypeNode {
+class GrammarCellTypeIntNode extends GrammarCellTypeDefinitionNode {
     isValid(str) {
         const num = parseInt(str);
         if (isNaN(num))
@@ -106,7 +106,7 @@ class GrammarCellTypeIntNode extends GrammarCellTypeNode {
         return parseInt(str);
     }
 }
-class GrammarCellTypeBitNode extends GrammarCellTypeNode {
+class GrammarCellTypeBitNode extends GrammarCellTypeDefinitionNode {
     isValid(str) {
         return str === "0" || str === "1";
     }
@@ -117,7 +117,7 @@ class GrammarCellTypeBitNode extends GrammarCellTypeNode {
         return !!parseInt(str);
     }
 }
-class GrammarCellTypeFloatNode extends GrammarCellTypeNode {
+class GrammarCellTypeFloatNode extends GrammarCellTypeDefinitionNode {
     isValid(str) {
         return !isNaN(parseFloat(str));
     }
@@ -128,7 +128,7 @@ class GrammarCellTypeFloatNode extends GrammarCellTypeNode {
         return parseFloat(str);
     }
 }
-class GrammarCellTypeBoolNode extends GrammarCellTypeNode {
+class GrammarCellTypeBoolNode extends GrammarCellTypeDefinitionNode {
     constructor() {
         super(...arguments);
         this._options = ["1", "0", "true", "false", "t", "f", "yes", "no"];
@@ -143,7 +143,7 @@ class GrammarCellTypeBoolNode extends GrammarCellTypeNode {
         return !!parseInt(str);
     }
 }
-class GrammarCellTypeAnyNode extends GrammarCellTypeNode {
+class GrammarCellTypeAnyNode extends GrammarCellTypeDefinitionNode {
     isValid() {
         return true;
     }
@@ -151,7 +151,7 @@ class GrammarCellTypeAnyNode extends GrammarCellTypeNode {
         return "[^ ]+";
     }
 }
-GrammarCellTypeNode.types = {
+GrammarCellTypeDefinitionNode.types = {
     any: GrammarCellTypeAnyNode,
     float: GrammarCellTypeFloatNode,
     number: GrammarCellTypeFloatNode,
@@ -159,4 +159,4 @@ GrammarCellTypeNode.types = {
     bool: GrammarCellTypeBoolNode,
     int: GrammarCellTypeIntNode
 };
-exports.default = GrammarCellTypeNode;
+exports.default = GrammarCellTypeDefinitionNode;

@@ -5,7 +5,7 @@ const AbstractRuntimeProgram_1 = require("./AbstractRuntimeProgram");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
 const GrammarKeywordDefinitionNode_1 = require("./GrammarKeywordDefinitionNode");
-const GrammarCellTypeNode_1 = require("./GrammarCellTypeNode");
+const GrammarCellTypeDefinitionNode_1 = require("./GrammarCellTypeDefinitionNode");
 class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
     _getDefaultNodeConstructor() {
         return undefined;
@@ -34,7 +34,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getKeywordMap() {
         const map = {};
         map[GrammarConstants_1.GrammarConstants.grammar] = GrammarRootNode;
-        map[GrammarConstants_1.GrammarConstants.cellType] = GrammarCellTypeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.cellType] = GrammarCellTypeDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.keyword] = GrammarKeywordDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode;
         return map;
@@ -68,7 +68,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         // Todo: this only supports single word type inheritance.
         const parts = line.split(this.getZI());
         let type = parts[0] === GrammarConstants_1.GrammarConstants.cellType &&
-            (GrammarCellTypeNode_1.default.types[parts[1]] || GrammarCellTypeNode_1.default.types[parts[2]]);
+            (GrammarCellTypeDefinitionNode_1.default.types[parts[1]] || GrammarCellTypeDefinitionNode_1.default.types[parts[2]]);
         return type ? type : super.getNodeConstructor(line);
     }
     getTargetExtension() {
@@ -77,18 +77,18 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getKeywordOrder() {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.keywordOrder);
     }
-    getCellTypes() {
+    getCellTypeDefinitions() {
         if (!this._cache_cellTypes)
-            this._cache_cellTypes = this._getCellTypes();
+            this._cache_cellTypes = this._getCellTypeDefinitions();
         return this._cache_cellTypes;
     }
-    getCellType(word) {
-        return this.getCellTypes()[word];
+    getCellTypeDefinition(word) {
+        return this.getCellTypeDefinitions()[word];
     }
-    _getCellTypes() {
+    _getCellTypeDefinitions() {
         const types = {};
         // todo: add built in word types?
-        this.getChildrenByNodeType(GrammarCellTypeNode_1.default).forEach(type => (types[type.getId()] = type));
+        this.getChildrenByNodeType(GrammarCellTypeDefinitionNode_1.default).forEach(type => (types[type.getId()] = type));
         return types;
     }
     getProgram() {
@@ -178,7 +178,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             : this.getExtensionName();
     }
     toSublimeSyntaxFile() {
-        const types = this.getCellTypes();
+        const types = this.getCellTypeDefinitions();
         const variables = Object.keys(types)
             .map(name => ` ${name}: '${types[name].getRegexString()}'`)
             .join("\n");

@@ -21,19 +21,21 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 }
 
 // todo: remove in favor of custom word type constructors
-class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
+class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
   _getKeywordTable(runTimeGrammarBackedProgram: AbstractRuntimeProgram): types.stringMap {
+    const nodeType = this.getWord(1)
     // note: hack where we store it on the program. otherwise has global effects.
-    if ((<any>runTimeGrammarBackedProgram)._keywordTable) return (<any>runTimeGrammarBackedProgram)._keywordTable
+    if (!(<any>runTimeGrammarBackedProgram)._keywordTables) (<any>runTimeGrammarBackedProgram)._keywordTables = {}
+    if ((<any>runTimeGrammarBackedProgram)._keywordTables[nodeType])
+      return (<any>runTimeGrammarBackedProgram)._keywordTables[nodeType]
 
     // keywordTable cellType 1
-    const nodeType = this.getWord(1)
-    const wordIndex = parseInt(this.getWord(2))
+    const wordIndex = 1
     const table = {}
     runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
       table[node.getWord(wordIndex)] = true
     })
-    ;(<any>runTimeGrammarBackedProgram)._keywordTable = table
+    ;(<any>runTimeGrammarBackedProgram)._keywordTables[nodeType] = table
     return table
   }
 
@@ -56,11 +58,11 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   }
 }
 
-class GrammarCellTypeNode extends TreeNode {
+class GrammarCellTypeDefinitionNode extends TreeNode {
   getKeywordMap() {
     const types: types.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
-    types[GrammarConstants.keywordTable] = GrammarKeywordTableTestNode
+    types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
     return types
@@ -82,7 +84,7 @@ class GrammarCellTypeNode extends TreeNode {
   }
 
   private _getKeywordTableOptions(runTimeProgram: AbstractRuntimeProgram) {
-    const node = <GrammarKeywordTableTestNode>this.getNode(GrammarConstants.keywordTable)
+    const node = <EnumFromGrammarTestNode>this.getNode(GrammarConstants.enumFromGrammar)
     return node ? Object.keys(node._getKeywordTable(runTimeProgram)) : undefined
   }
 
@@ -117,7 +119,7 @@ class GrammarCellTypeNode extends TreeNode {
   public static types: any
 }
 
-class GrammarCellTypeIntNode extends GrammarCellTypeNode {
+class GrammarCellTypeIntNode extends GrammarCellTypeDefinitionNode {
   isValid(str: string) {
     const num = parseInt(str)
     if (isNaN(num)) return false
@@ -133,7 +135,7 @@ class GrammarCellTypeIntNode extends GrammarCellTypeNode {
   }
 }
 
-class GrammarCellTypeBitNode extends GrammarCellTypeNode {
+class GrammarCellTypeBitNode extends GrammarCellTypeDefinitionNode {
   isValid(str: string) {
     return str === "0" || str === "1"
   }
@@ -147,7 +149,7 @@ class GrammarCellTypeBitNode extends GrammarCellTypeNode {
   }
 }
 
-class GrammarCellTypeFloatNode extends GrammarCellTypeNode {
+class GrammarCellTypeFloatNode extends GrammarCellTypeDefinitionNode {
   isValid(str: string) {
     return !isNaN(parseFloat(str))
   }
@@ -161,7 +163,7 @@ class GrammarCellTypeFloatNode extends GrammarCellTypeNode {
   }
 }
 
-class GrammarCellTypeBoolNode extends GrammarCellTypeNode {
+class GrammarCellTypeBoolNode extends GrammarCellTypeDefinitionNode {
   private _options = ["1", "0", "true", "false", "t", "f", "yes", "no"]
 
   isValid(str: string) {
@@ -177,7 +179,7 @@ class GrammarCellTypeBoolNode extends GrammarCellTypeNode {
   }
 }
 
-class GrammarCellTypeAnyNode extends GrammarCellTypeNode {
+class GrammarCellTypeAnyNode extends GrammarCellTypeDefinitionNode {
   isValid() {
     return true
   }
@@ -187,7 +189,7 @@ class GrammarCellTypeAnyNode extends GrammarCellTypeNode {
   }
 }
 
-GrammarCellTypeNode.types = {
+GrammarCellTypeDefinitionNode.types = {
   any: GrammarCellTypeAnyNode,
   float: GrammarCellTypeFloatNode,
   number: GrammarCellTypeFloatNode,
@@ -196,4 +198,4 @@ GrammarCellTypeNode.types = {
   int: GrammarCellTypeIntNode
 }
 
-export default GrammarCellTypeNode
+export default GrammarCellTypeDefinitionNode

@@ -15,7 +15,7 @@ declare enum GrammarConstants {
     cellType = "cellType",
     abstract = "abstract",
     regex = "regex",
-    keywordTable = "keywordTable",
+    enumFromGrammar = "enumFromGrammar",
     enum = "enum",
     keywords = "keywords",
     cells = "cells",

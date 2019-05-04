@@ -23,7 +23,7 @@ var GrammarConstants;
     GrammarConstants["abstract"] = "abstract";
     // error check time
     GrammarConstants["regex"] = "regex";
-    GrammarConstants["keywordTable"] = "keywordTable";
+    GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
     GrammarConstants["enum"] = "enum";
     // parse time
     GrammarConstants["keywords"] = "keywords";

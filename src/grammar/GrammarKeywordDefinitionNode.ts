@@ -43,9 +43,11 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     if (!requiredCellTypeNames.length) return topHalf
     const captures = requiredCellTypeNames
       .map((typeName, index) => {
-        const theType = program.getCellType(typeName) // todo: cleanup
-        if (!theType) throw new Error(`No ${GrammarConstants.cellType} ${typeName} found`) // todo: standardize error/capture error at grammar time
-        return `        ${index + 1}: ${(theType.getHighlightScope() || defaultHighlightScope) + "." + theType.getId()}`
+        const cellTypeDefinition = program.getCellTypeDefinition(typeName) // todo: cleanup
+        if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${typeName} found`) // todo: standardize error/capture error at grammar time
+        return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) +
+          "." +
+          cellTypeDefinition.getId()}`
       })
       .join("\n")
 

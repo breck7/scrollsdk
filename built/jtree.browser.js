@@ -2777,17 +2777,19 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class GrammarKeywordTableTestNode extends AbstractGrammarWordTestNode {
     _getKeywordTable(runTimeGrammarBackedProgram) {
-        // note: hack where we store it on the program. otherwise has global effects.
-        if (runTimeGrammarBackedProgram._keywordTable)
-            return runTimeGrammarBackedProgram._keywordTable;
-        // keywordTable cellType 1
         const nodeType = this.getWord(1);
+        // note: hack where we store it on the program. otherwise has global effects.
+        if (!runTimeGrammarBackedProgram._keywordTables)
+            runTimeGrammarBackedProgram._keywordTables = {};
+        if (runTimeGrammarBackedProgram._keywordTables[nodeType])
+            return runTimeGrammarBackedProgram._keywordTables[nodeType];
+        // keywordTable cellType 1
         const wordIndex = parseInt(this.getWord(2));
         const table = {};
         runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
             table[node.getWord(wordIndex)] = true;
         });
-        runTimeGrammarBackedProgram._keywordTable = table;
+        runTimeGrammarBackedProgram._keywordTables[nodeType] = table;
         return table;
     }
     // todo: remove

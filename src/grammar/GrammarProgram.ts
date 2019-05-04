@@ -6,7 +6,7 @@ import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgram
 import { GrammarConstants } from "./GrammarConstants"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
-import GrammarCellTypeNode from "./GrammarCellTypeNode"
+import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 
 import types from "../types"
 
@@ -42,7 +42,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   getKeywordMap() {
     const map: types.stringMap = {}
     map[GrammarConstants.grammar] = GrammarRootNode
-    map[GrammarConstants.cellType] = GrammarCellTypeNode
+    map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode
     map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
     map[GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode
     return map
@@ -82,7 +82,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const parts = line.split(this.getZI())
     let type =
       parts[0] === GrammarConstants.cellType &&
-      (GrammarCellTypeNode.types[parts[1]] || GrammarCellTypeNode.types[parts[2]])
+      (GrammarCellTypeDefinitionNode.types[parts[1]] || GrammarCellTypeDefinitionNode.types[parts[2]])
     return type ? type : super.getNodeConstructor(line)
   }
 
@@ -95,22 +95,24 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   private _cache_cellTypes: {
-    [name: string]: GrammarCellTypeNode
+    [name: string]: GrammarCellTypeDefinitionNode
   }
 
-  getCellTypes() {
-    if (!this._cache_cellTypes) this._cache_cellTypes = this._getCellTypes()
+  getCellTypeDefinitions() {
+    if (!this._cache_cellTypes) this._cache_cellTypes = this._getCellTypeDefinitions()
     return this._cache_cellTypes
   }
 
-  getCellType(word: string) {
-    return this.getCellTypes()[word]
+  getCellTypeDefinition(word: string) {
+    return this.getCellTypeDefinitions()[word]
   }
 
-  protected _getCellTypes() {
-    const types = {}
+  protected _getCellTypeDefinitions() {
+    const types: { [typeName: string]: GrammarCellTypeDefinitionNode } = {}
     // todo: add built in word types?
-    this.getChildrenByNodeType(GrammarCellTypeNode).forEach(type => (types[(<GrammarCellTypeNode>type).getId()] = type))
+    this.getChildrenByNodeType(GrammarCellTypeDefinitionNode).forEach(
+      type => (types[(<GrammarCellTypeDefinitionNode>type).getId()] = type)
+    )
     return types
   }
 
@@ -225,7 +227,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   toSublimeSyntaxFile() {
-    const types = this.getCellTypes()
+    const types = this.getCellTypeDefinitions()
     const variables = Object.keys(types)
       .map(name => ` ${name}: '${types[name].getRegexString()}'`)
       .join("\n")

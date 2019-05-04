@@ -20,7 +20,7 @@ declare class GrammarBackedCell {
     }[];
     getWord(): string;
     getParsed(): any;
-    protected _getCellTypeClass(): import("./GrammarCellTypeNode").default;
+    protected _getCellTypeClass(): import("./GrammarCellTypeDefinitionNode").default;
     protected _getLineNumber(): any;
     getErrorIfAny(): types.ParseError;
 }

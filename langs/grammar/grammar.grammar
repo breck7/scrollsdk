@@ -20,7 +20,7 @@ cellType anyWord
 cellType builtInConstructorOrConstructorName
 cellType builtInConstructorOrFilePath
 cellType cellTypeEnum
- keywordTable cellType 1
+ enumFromGrammar cellType
 cellType cellTypeName
 cellType compilerTargetExtension
  description The target extension of the compiler output such as "o" or "js" or "html"
@@ -39,6 +39,9 @@ cellType int
 cellType javascriptCodeWord
 cellType keywordName
  highlightScope variable.parameter
+cellType keywordEnum
+ highlightScope variable.parameter
+ enumFromGrammar keyword
 cellType lowercaseWord
  regex [a-z]+
 cellType regexWord
@@ -91,7 +94,7 @@ keyword cellType
  keywords
   highlightScope
   regex
-  keywordTable
+  enumFromGrammar
   description
   enum
 keyword enum
@@ -137,8 +140,10 @@ keyword keywordOrder
  catchAllCellType keywordName
  highlightScope constant.language
  description Optionally specify what order keywords should be sorted in when prettifying a file.
-keyword keywordTable
- cells anyWord int
+cellType cellTypeOrKeyword
+ enum cellType keyword
+keyword enumFromGrammar
+ cells cellTypeOrKeyword
  highlightScope entity.other.attribute-name
 keyword name
  cells grammarName
@@ -175,7 +180,7 @@ keyword catchAllCellType _keywordRule
  description If there are extra words in the node's line, parse these words as this type.
 keyword catchAllKeyword _keywordRule
  description If a keyword is not found in the keywords list, instantiate this type of node instead.
- cells keywordName
+ cells keywordEnum
 keyword cells _keywordRule
  catchAllCellType cellTypeEnum
  description Describes the word type of each word in the line.

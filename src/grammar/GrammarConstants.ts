@@ -21,7 +21,7 @@ enum GrammarConstants {
 
   // error check time
   regex = "regex", // temporary?
-  keywordTable = "keywordTable", // temporary?
+  enumFromGrammar = "enumFromGrammar", // temporary?
   enum = "enum", // temporary?
 
   // parse time

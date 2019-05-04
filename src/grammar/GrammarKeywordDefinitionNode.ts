@@ -47,7 +47,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
         if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${typeName} found`) // todo: standardize error/capture error at grammar time
         return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) +
           "." +
-          cellTypeDefinition.getId()}`
+          cellTypeDefinition.getCellTypeId()}`
       })
       .join("\n")
 

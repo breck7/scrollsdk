@@ -13,7 +13,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordMap(): types.stringMap;
     getProgramErrors(): types.ParseError[];
     getErrorsInGrammarExamples(): any[];
-    getNodeConstructor(line: any): any;
     getTargetExtension(): string;
     getKeywordOrder(): any;
     private _cache_cellTypes;

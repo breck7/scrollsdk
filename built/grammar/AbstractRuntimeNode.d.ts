@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode";
 import GrammarProgram from "./GrammarProgram";
-import GrammarBackedCell from "./GrammarBackedCell";
+import { AbstractGrammarBackedCell } from "./GrammarBackedCell";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import types from "../types";
 declare abstract class AbstractRuntimeNode extends TreeNode {
@@ -11,7 +11,7 @@ declare abstract class AbstractRuntimeNode extends TreeNode {
         text: string;
         displayText: string;
     }[];
-    protected _getGrammarBackedCellArray(): GrammarBackedCell[];
+    protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     private _getAutocompleteResultsForCell;
     private _getAutocompleteResultsForKeywords;
     abstract getDefinition(): AbstractGrammarDefinitionNode;

@@ -63,14 +63,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         }));
         return errors;
     }
-    getNodeConstructor(line) {
-        // Todo: we are using 0 + 1 keywords to detect type. Should we ease this or discourage?
-        // Todo: this only supports single word type inheritance.
-        const parts = line.split(this.getZI());
-        let type = parts[0] === GrammarConstants_1.GrammarConstants.cellType &&
-            (GrammarCellTypeDefinitionNode_1.default.types[parts[1]] || GrammarCellTypeDefinitionNode_1.default.types[parts[2]]);
-        return type ? type : super.getNodeConstructor(line);
-    }
     getTargetExtension() {
         return this._getGrammarRootNode().getTargetExtension();
     }
@@ -83,12 +75,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._cache_cellTypes;
     }
     getCellTypeDefinition(word) {
-        return this.getCellTypeDefinitions()[word];
+        const type = this.getCellTypeDefinitions()[word];
+        // todo: return unknownCellTypeDefinition
+        return type;
     }
     _getCellTypeDefinitions() {
         const types = {};
         // todo: add built in word types?
-        this.getChildrenByNodeType(GrammarCellTypeDefinitionNode_1.default).forEach(type => (types[type.getId()] = type));
+        this.getChildrenByNodeType(GrammarCellTypeDefinitionNode_1.default).forEach(type => (types[type.getCellTypeId()] = type));
         return types;
     }
     getProgram() {

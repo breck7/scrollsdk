@@ -39,7 +39,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
                 throw new Error(`No ${GrammarConstants_1.GrammarConstants.cellType} ${typeName} found`); // todo: standardize error/capture error at grammar time
             return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) +
                 "." +
-                cellTypeDefinition.getId()}`;
+                cellTypeDefinition.getCellTypeId()}`;
         })
             .join("\n");
         const cellTypesToRegex = cellTypeNames => cellTypeNames.map(cellTypeName => `({{${cellTypeName}}})?`).join(" ?");

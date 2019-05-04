@@ -2,8 +2,12 @@ import TreeUtils from "../base/TreeUtils"
 
 import { GrammarConstantsErrors } from "./GrammarConstants"
 
-import GrammarBackedCell from "./GrammarBackedCell"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
+import {
+  AbstractGrammarBackedCell,
+  GrammarUnknownCellTypeCell,
+  GrammarExtraWordCellTypeCell
+} from "./GrammarBackedCell"
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
 
@@ -76,16 +80,16 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   get cells() {
     const cells = {}
     this._getGrammarBackedCellArray().forEach(cell => {
-      if (!cell.isCatchAll()) cells[cell.getType()] = cell.getParsed()
+      if (!cell.isCatchAll()) cells[cell.getCellTypeName()] = cell.getParsed()
       else {
-        if (!cells[cell.getType()]) cells[cell.getType()] = []
-        cells[cell.getType()].push(cell.getParsed())
+        if (!cells[cell.getCellTypeName()]) cells[cell.getCellTypeName()] = []
+        cells[cell.getCellTypeName()].push(cell.getParsed())
       }
     })
     return cells
   }
 
-  protected _getGrammarBackedCellArray(): GrammarBackedCell[] {
+  protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
     const cellTypes = definition.getRequiredCellTypeNames() // todo: are these nodeRequiredColumnTypes? ... also, rename to cell instead of column?
@@ -96,13 +100,23 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
 
     const words = this.getWordsFrom(1)
     const numberOfCellsToFill = Math.max(words.length, numberOfRequiredCells)
-    const cells: GrammarBackedCell[] = []
+    const cells: AbstractGrammarBackedCell<any>[] = []
     // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
     for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
       const isCatchAll = cellIndex >= numberOfRequiredCells
-      cells[cellIndex] = new GrammarBackedCell(
+
+      const cellTypeName = isCatchAll ? catchAllCellType : cellTypes[cellIndex]
+      const cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
+      // todo: no guarantee that we will have 'cellTypeDefinition'. i could type 'bint' instead of 'int'
+      const cellConstructor = cellTypeDefinition
+        ? cellTypeDefinition.getCellConstructor()
+        : cellTypeName
+        ? GrammarUnknownCellTypeCell
+        : GrammarExtraWordCellTypeCell
+
+      cells[cellIndex] = new cellConstructor(
         words[cellIndex],
-        isCatchAll ? catchAllCellType : cellTypes[cellIndex],
+        cellTypeName,
         this,
         cellIndex,
         isCatchAll,
@@ -116,7 +130,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getLineSyntax() {
-    const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getType())
+    const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getCellTypeName())
     return ["keyword"].concat(parameterWords).join(" ")
   }
 

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
-const GrammarBackedCell_1 = require("./GrammarBackedCell");
 const AbstractRuntimeNode_1 = require("./AbstractRuntimeNode");
+const GrammarBackedCell_1 = require("./GrammarBackedCell");
 class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     getProgram() {
         return this.getParent().getProgram();
@@ -61,11 +61,11 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         const cells = {};
         this._getGrammarBackedCellArray().forEach(cell => {
             if (!cell.isCatchAll())
-                cells[cell.getType()] = cell.getParsed();
+                cells[cell.getCellTypeName()] = cell.getParsed();
             else {
-                if (!cells[cell.getType()])
-                    cells[cell.getType()] = [];
-                cells[cell.getType()].push(cell.getParsed());
+                if (!cells[cell.getCellTypeName()])
+                    cells[cell.getCellTypeName()] = [];
+                cells[cell.getCellTypeName()].push(cell.getParsed());
             }
         });
         return cells;
@@ -83,13 +83,21 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
         for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
             const isCatchAll = cellIndex >= numberOfRequiredCells;
-            cells[cellIndex] = new GrammarBackedCell_1.default(words[cellIndex], isCatchAll ? catchAllCellType : cellTypes[cellIndex], this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram, this.getProgram());
+            const cellTypeName = isCatchAll ? catchAllCellType : cellTypes[cellIndex];
+            const cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
+            // todo: no guarantee that we will have 'cellTypeDefinition'. i could type 'bint' instead of 'int'
+            const cellConstructor = cellTypeDefinition
+                ? cellTypeDefinition.getCellConstructor()
+                : cellTypeName
+                    ? GrammarBackedCell_1.GrammarUnknownCellTypeCell
+                    : GrammarBackedCell_1.GrammarExtraWordCellTypeCell;
+            cells[cellIndex] = new cellConstructor(words[cellIndex], cellTypeName, this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram, this.getProgram());
         }
         return cells;
     }
     // todo: just make a fn that computes proper spacing and then is given a node to print
     getLineSyntax() {
-        const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getType());
+        const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getCellTypeName());
         return ["keyword"].concat(parameterWords).join(" ");
     }
     getLineHighlightScopes(defaultScope = "source") {

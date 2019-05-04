@@ -1,5 +1,5 @@
-import GrammarBackedCell from "./GrammarBackedCell";
 import AbstractRuntimeNode from "./AbstractRuntimeNode";
+import { AbstractGrammarBackedCell } from "./GrammarBackedCell";
 declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getProgram(): AbstractRuntimeNode;
     getGrammarProgram(): import("./GrammarProgram").default;
@@ -11,7 +11,7 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     compile(targetLanguage: any): any;
     getErrors(): any[];
     readonly cells: {};
-    protected _getGrammarBackedCellArray(): GrammarBackedCell[];
+    protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getLineSyntax(): string;
     getLineHighlightScopes(defaultScope?: string): string;
 }

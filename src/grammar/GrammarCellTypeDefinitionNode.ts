@@ -1,6 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 import { GrammarConstants } from "./GrammarConstants"
+import { GrammarIntCell, GrammarBitCell, GrammarFloatCell, GrammarBoolCell, GrammarAnyCell } from "./GrammarBackedCell"
 import types from "../types"
 
 // todo: add standard types, enum types, from disk types
@@ -68,6 +69,18 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return types
   }
 
+  getCellConstructor() {
+    const kinds = {
+      any: GrammarAnyCell,
+      float: GrammarFloatCell,
+      number: GrammarFloatCell,
+      bit: GrammarBitCell,
+      bool: GrammarBoolCell,
+      int: GrammarIntCell
+    }
+    return kinds[this.getWord(1)] || kinds[this.getWord(2)] || GrammarAnyCell
+  }
+
   getHighlightScope(): string | undefined {
     return this.get(GrammarConstants.highlightScope)
   }
@@ -98,104 +111,17 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
 
-  parse(str: string): any {
-    return str
-  }
-
   isValid(str: string, runTimeGrammarBackedProgram) {
     return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node =>
       (<AbstractGrammarWordTestNode>node).isValid(str, runTimeGrammarBackedProgram)
     )
   }
 
-  getId() {
-    return this.getWord(1)
-  }
-
-  getTypeId() {
+  getCellTypeId() {
     return this.getWord(1)
   }
 
   public static types: any
-}
-
-class GrammarCellTypeIntNode extends GrammarCellTypeDefinitionNode {
-  isValid(str: string) {
-    const num = parseInt(str)
-    if (isNaN(num)) return false
-    return num.toString() === str
-  }
-
-  getRegexString() {
-    return "\-?[0-9]+"
-  }
-
-  parse(str: string) {
-    return parseInt(str)
-  }
-}
-
-class GrammarCellTypeBitNode extends GrammarCellTypeDefinitionNode {
-  isValid(str: string) {
-    return str === "0" || str === "1"
-  }
-
-  getRegexString() {
-    return "[01]"
-  }
-
-  parse(str: string) {
-    return !!parseInt(str)
-  }
-}
-
-class GrammarCellTypeFloatNode extends GrammarCellTypeDefinitionNode {
-  isValid(str: string) {
-    return !isNaN(parseFloat(str))
-  }
-
-  getRegexString() {
-    return "\-?[0-9]*\.?[0-9]*"
-  }
-
-  parse(str: string) {
-    return parseFloat(str)
-  }
-}
-
-class GrammarCellTypeBoolNode extends GrammarCellTypeDefinitionNode {
-  private _options = ["1", "0", "true", "false", "t", "f", "yes", "no"]
-
-  isValid(str: string) {
-    return new Set(this._options).has(str.toLowerCase())
-  }
-
-  getRegexString() {
-    return "(?:" + this._options.join("|") + ")"
-  }
-
-  parse(str: string) {
-    return !!parseInt(str)
-  }
-}
-
-class GrammarCellTypeAnyNode extends GrammarCellTypeDefinitionNode {
-  isValid() {
-    return true
-  }
-
-  getRegexString() {
-    return "[^ ]+"
-  }
-}
-
-GrammarCellTypeDefinitionNode.types = {
-  any: GrammarCellTypeAnyNode,
-  float: GrammarCellTypeFloatNode,
-  number: GrammarCellTypeFloatNode,
-  bit: GrammarCellTypeBitNode,
-  bool: GrammarCellTypeBoolNode,
-  int: GrammarCellTypeIntNode
 }
 
 export default GrammarCellTypeDefinitionNode

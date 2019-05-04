@@ -8,7 +8,7 @@ import types from "../types"
 /*
 A cell contains a word but also the type information for that word.
 */
-class GrammarBackedCell {
+abstract class AbstractGrammarBackedCell<T> {
   constructor(
     word: string,
     type: string,
@@ -29,16 +29,16 @@ class GrammarBackedCell {
     this._program = runTimeProgram
   }
 
-  private _node: any
-  private _grammarProgram: GrammarProgram
-  private _program: AbstractRuntimeProgram
-  private _expectedLinePattern: string
-  private _index: types.int
-  private _word: string
-  private _type: string
-  private _isCatchAll: boolean
+  protected _node: any
+  protected _grammarProgram: GrammarProgram
+  protected _program: AbstractRuntimeProgram
+  protected _expectedLinePattern: string
+  protected _index: types.int
+  protected _word: string
+  protected _type: string
+  protected _isCatchAll: boolean
 
-  getType() {
+  getCellTypeName() {
     return this._type || undefined
   }
 
@@ -46,14 +46,16 @@ class GrammarBackedCell {
     return this._isCatchAll
   }
 
+  abstract getParsed(): T
+
   getHighlightScope(): string | undefined {
-    const typeClass = this._getCellTypeClass()
-    if (typeClass) return typeClass.getHighlightScope()
+    const definition = this._getCellTypeDefinition()
+    if (definition) return definition.getHighlightScope()
   }
 
   getAutoCompleteWords(partialWord: string) {
-    const typeClass = this._getCellTypeClass()
-    let words = typeClass ? typeClass.getAutocompleteWordOptions(this._program) : []
+    const definition = this._getCellTypeDefinition()
+    let words = definition ? definition.getAutocompleteWordOptions(this._program) : []
 
     if (partialWord) words = words.filter(word => word.includes(partialWord))
     return words.map(word => {
@@ -68,22 +70,24 @@ class GrammarBackedCell {
     return this._word
   }
 
-  getParsed() {
-    return this._getCellTypeClass().parse(this._word)
-  }
-
-  protected _getCellTypeClass() {
-    return this._grammarProgram.getCellTypeDefinitions()[this.getType()]
+  protected _getCellTypeDefinition() {
+    return this._grammarProgram.getCellTypeDefinitions()[this.getCellTypeName()]
   }
 
   protected _getLineNumber() {
     return this._node.getPoint().y
   }
 
+  protected abstract _isValid(): boolean
+
+  isValid(): boolean {
+    return this._getCellTypeDefinition().isValid(this._word, this._node.getProgram()) && this._isValid()
+  }
+
   getErrorIfAny(): types.ParseError {
     const word = this._word
     const index = this._index
-    const type = this.getType()
+    const type = this.getCellTypeName()
     const fullLine = this._node.getLine()
     const line = this._getLineNumber()
     const context = fullLine.split(" ")[0] // todo: XI
@@ -95,38 +99,14 @@ class GrammarBackedCell {
         context: context,
         message: `${
           GrammarConstantsErrors.unfilledColumnError
-        } "${type}" column in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${
+        } "${type}" cellType in "${fullLine}" at line ${line} word ${index}. Expected pattern: "${
           this._expectedLinePattern
         }". definition: ${this._node.getDefinition().toString()}`
       }
-    if (type === undefined)
-      return {
-        kind: GrammarConstantsErrors.extraWordError,
-        subkind: fullLine,
-        level: index,
-        context: context,
-        message: `${
-          GrammarConstantsErrors.extraWordError
-        } "${word}" in "${fullLine}" at line ${line} column ${index}. Expected pattern: "${this._expectedLinePattern}".`
-      }
 
-    const grammarProgram = this._grammarProgram
     const runTimeGrammarBackedProgram = this._node.getProgram()
-    const typeClass = this._getCellTypeClass()
-    if (!typeClass)
-      return {
-        kind: GrammarConstantsErrors.grammarDefinitionError,
-        subkind: type,
-        level: index,
-        context: context,
-        message: `${
-          GrammarConstantsErrors.grammarDefinitionError
-        } No column type "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${
-          this._expectedLinePattern
-        }".`
-      }
 
-    return typeClass.isValid(this._word, runTimeGrammarBackedProgram)
+    return this.isValid()
       ? undefined
       : {
           kind: GrammarConstantsErrors.invalidWordError,
@@ -135,11 +115,164 @@ class GrammarBackedCell {
           context: context,
           message: `${
             GrammarConstantsErrors.invalidWordError
-          } in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" column. Expected pattern: "${
+          } in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" cellType. Expected pattern: "${
             this._expectedLinePattern
           }".`
         }
   }
 }
 
-export default GrammarBackedCell
+class GrammarIntCell extends AbstractGrammarBackedCell<number> {
+  _isValid() {
+    const num = parseInt(this._word)
+    if (isNaN(num)) return false
+    return num.toString() === this._word
+  }
+
+  getRegexString() {
+    return "\-?[0-9]+"
+  }
+
+  getParsed() {
+    return parseInt(this._word)
+  }
+}
+
+class GrammarBitCell extends AbstractGrammarBackedCell<boolean> {
+  _isValid() {
+    const str = this._word
+    return str === "0" || str === "1"
+  }
+
+  getRegexString() {
+    return "[01]"
+  }
+
+  getParsed() {
+    return !!parseInt(this._word)
+  }
+}
+
+class GrammarFloatCell extends AbstractGrammarBackedCell<number> {
+  _isValid() {
+    return !isNaN(parseFloat(this._word))
+  }
+
+  getRegexString() {
+    return "\-?[0-9]*\.?[0-9]*"
+  }
+
+  getParsed() {
+    return parseFloat(this._word)
+  }
+}
+
+// ErrorCellType => grammar asks for a '' cell type here but the grammar does not specify a '' cell type. (todo: bring in didyoumean?)
+
+class GrammarBoolCell extends AbstractGrammarBackedCell<boolean> {
+  private _trues = new Set(["1", "true", "t", "yes"])
+  private _falses = new Set(["0", "false", "f", "no"])
+
+  _isValid() {
+    const str = this._word.toLowerCase()
+    return this._trues.has(str) || this._falses.has(str)
+  }
+
+  private _getOptions() {
+    return Array.from(this._trues).concat(Array.from(this._falses))
+  }
+
+  getRegexString() {
+    return "(?:" + this._getOptions().join("|") + ")"
+  }
+
+  getParsed() {
+    return this._trues.has(this._word.toLowerCase())
+  }
+}
+
+class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
+  _isValid() {
+    return true
+  }
+
+  getRegexString() {
+    return "[^ ]+"
+  }
+
+  getParsed() {
+    return this._word
+  }
+}
+
+class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
+  _isValid() {
+    return false
+  }
+
+  getParsed() {
+    return this._word
+  }
+
+  getErrorIfAny(): types.ParseError {
+    const word = this._word
+    const index = this._index
+    const type = this.getCellTypeName()
+    const fullLine = this._node.getLine()
+    const line = this._getLineNumber()
+    const context = fullLine.split(" ")[0] // todo: XI
+
+    return {
+      kind: GrammarConstantsErrors.extraWordError,
+      subkind: fullLine,
+      level: index,
+      context: context,
+      message: `${
+        GrammarConstantsErrors.extraWordError
+      } "${word}" in "${fullLine}" at line ${line} word ${index}. Expected pattern: "${this._expectedLinePattern}".`
+    }
+  }
+}
+
+class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
+  _isValid() {
+    return false
+  }
+
+  getParsed() {
+    return this._word
+  }
+
+  getErrorIfAny(): types.ParseError {
+    const word = this._word
+    const index = this._index
+    const type = this.getCellTypeName()
+    const fullLine = this._node.getLine()
+    const line = this._getLineNumber()
+    const context = fullLine.split(" ")[0] // todo: XI
+    const grammarProgram = this._grammarProgram
+
+    return {
+      kind: GrammarConstantsErrors.grammarDefinitionError,
+      subkind: type,
+      level: index,
+      context: context,
+      message: `${
+        GrammarConstantsErrors.grammarDefinitionError
+      } No cellType "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${
+        this._expectedLinePattern
+      }".`
+    }
+  }
+}
+
+export {
+  AbstractGrammarBackedCell,
+  GrammarIntCell,
+  GrammarBitCell,
+  GrammarFloatCell,
+  GrammarBoolCell,
+  GrammarAnyCell,
+  GrammarUnknownCellTypeCell,
+  GrammarExtraWordCellTypeCell
+}

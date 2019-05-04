@@ -3,7 +3,7 @@ import { GrammarConstantsErrors } from "./GrammarConstants"
 import { GrammarConstants } from "./GrammarConstants"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
-/*FOR_TYPES_ONLY*/ import GrammarBackedCell from "./GrammarBackedCell"
+/*FOR_TYPES_ONLY*/ import { AbstractGrammarBackedCell } from "./GrammarBackedCell"
 /*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 /*FOR_TYPES_ONLY*/ import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
 
@@ -30,7 +30,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
       : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
-  protected _getGrammarBackedCellArray(): GrammarBackedCell[] {
+  protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
     return []
   }
 

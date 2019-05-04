@@ -16,7 +16,7 @@ class AbstractGrammarBackedCell {
         this._program = runTimeProgram;
     }
     getCellTypeName() {
-        return this._type || undefined;
+        return this._type ? this._type.getCellTypeId() : undefined;
     }
     isCatchAll() {
         return this._isCatchAll;
@@ -42,7 +42,7 @@ class AbstractGrammarBackedCell {
         return this._word;
     }
     _getCellTypeDefinition() {
-        return this._grammarProgram.getCellTypeDefinitions()[this.getCellTypeName()];
+        return this._type;
     }
     _getLineNumber() {
         return this._node.getPoint().y;

@@ -6,5 +6,5 @@
     "declaration": false,
     "target": "es6"
   },
-  "include": ["./jtree.browser.ts"]
+  "include": ["./ignore/jtree.browser.ts"]
 }

@@ -4,6 +4,7 @@ import types from "../types"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+/*FOR_TYPES_ONLY*/ import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 
 /*
 A cell contains a word but also the type information for that word.
@@ -11,7 +12,7 @@ A cell contains a word but also the type information for that word.
 abstract class AbstractGrammarBackedCell<T> {
   constructor(
     word: string,
-    type: string,
+    type: GrammarCellTypeDefinitionNode,
     node: any,
     index: types.int,
     isCatchAll: boolean,
@@ -35,11 +36,11 @@ abstract class AbstractGrammarBackedCell<T> {
   protected _expectedLinePattern: string
   protected _index: types.int
   protected _word: string
-  protected _type: string
+  protected _type: GrammarCellTypeDefinitionNode
   protected _isCatchAll: boolean
 
   getCellTypeName() {
-    return this._type || undefined
+    return this._type ? this._type.getCellTypeId() : undefined
   }
 
   isCatchAll() {
@@ -71,7 +72,7 @@ abstract class AbstractGrammarBackedCell<T> {
   }
 
   protected _getCellTypeDefinition() {
-    return this._grammarProgram.getCellTypeDefinitions()[this.getCellTypeName()]
+    return this._type
   }
 
   protected _getLineNumber() {

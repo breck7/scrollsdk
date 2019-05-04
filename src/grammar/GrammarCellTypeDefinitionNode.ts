@@ -23,26 +23,25 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
-  _getKeywordTable(runTimeGrammarBackedProgram: AbstractRuntimeProgram): types.stringMap {
+  _getEnumFromGrammar(runTimeGrammarBackedProgram: AbstractRuntimeProgram): types.stringMap {
     const nodeType = this.getWord(1)
     // note: hack where we store it on the program. otherwise has global effects.
-    if (!(<any>runTimeGrammarBackedProgram)._keywordTables) (<any>runTimeGrammarBackedProgram)._keywordTables = {}
-    if ((<any>runTimeGrammarBackedProgram)._keywordTables[nodeType])
-      return (<any>runTimeGrammarBackedProgram)._keywordTables[nodeType]
+    if (!(<any>runTimeGrammarBackedProgram)._enumMaps) (<any>runTimeGrammarBackedProgram)._enumMaps = {}
+    if ((<any>runTimeGrammarBackedProgram)._enumMaps[nodeType])
+      return (<any>runTimeGrammarBackedProgram)._enumMaps[nodeType]
 
-    // keywordTable cellType 1
     const wordIndex = 1
-    const table = {}
+    const map = {}
     runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
-      table[node.getWord(wordIndex)] = true
+      map[node.getWord(wordIndex)] = true
     })
-    ;(<any>runTimeGrammarBackedProgram)._keywordTables[nodeType] = table
-    return table
+    ;(<any>runTimeGrammarBackedProgram)._enumMaps[nodeType] = map
+    return map
   }
 
   // todo: remove
   isValid(str: string, runTimeGrammarBackedProgram) {
-    return this._getKeywordTable(runTimeGrammarBackedProgram)[str] === true
+    return this._getEnumFromGrammar(runTimeGrammarBackedProgram)[str] === true
   }
 }
 
@@ -96,13 +95,13 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return options
   }
 
-  private _getKeywordTableOptions(runTimeProgram: AbstractRuntimeProgram) {
+  private _getEnumFromGrammarOptions(runTimeProgram: AbstractRuntimeProgram) {
     const node = <EnumFromGrammarTestNode>this.getNode(GrammarConstants.enumFromGrammar)
-    return node ? Object.keys(node._getKeywordTable(runTimeProgram)) : undefined
+    return node ? Object.keys(node._getEnumFromGrammar(runTimeProgram)) : undefined
   }
 
   getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgram): string[] {
-    return this._getEnumOptions() || this._getKeywordTableOptions(runTimeProgram) || []
+    return this._getEnumOptions() || this._getEnumFromGrammarOptions(runTimeProgram) || []
   }
 
   getRegexString() {

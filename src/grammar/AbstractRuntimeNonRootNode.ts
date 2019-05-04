@@ -116,7 +116,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
 
       cells[cellIndex] = new cellConstructor(
         words[cellIndex],
-        cellTypeName,
+        cellTypeDefinition,
         this,
         cellIndex,
         isCatchAll,

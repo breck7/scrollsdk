@@ -91,7 +91,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
                 : cellTypeName
                     ? GrammarBackedCell_1.GrammarUnknownCellTypeCell
                     : GrammarBackedCell_1.GrammarExtraWordCellTypeCell;
-            cells[cellIndex] = new cellConstructor(words[cellIndex], cellTypeName, this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram, this.getProgram());
+            cells[cellIndex] = new cellConstructor(words[cellIndex], cellTypeDefinition, this, cellIndex, isCatchAll, expectedLinePattern, grammarProgram, this.getProgram());
         }
         return cells;
     }

@@ -1,15 +1,16 @@
 import types from "../types";
 import GrammarProgram from "./GrammarProgram";
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
+import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 declare abstract class AbstractGrammarBackedCell<T> {
-    constructor(word: string, type: string, node: any, index: types.int, isCatchAll: boolean, expectedLinePattern: string, grammarProgram: GrammarProgram, runTimeProgram: AbstractRuntimeProgram);
+    constructor(word: string, type: GrammarCellTypeDefinitionNode, node: any, index: types.int, isCatchAll: boolean, expectedLinePattern: string, grammarProgram: GrammarProgram, runTimeProgram: AbstractRuntimeProgram);
     protected _node: any;
     protected _grammarProgram: GrammarProgram;
     protected _program: AbstractRuntimeProgram;
     protected _expectedLinePattern: string;
     protected _index: types.int;
     protected _word: string;
-    protected _type: string;
+    protected _type: GrammarCellTypeDefinitionNode;
     protected _isCatchAll: boolean;
     getCellTypeName(): string;
     isCatchAll(): boolean;
@@ -20,7 +21,7 @@ declare abstract class AbstractGrammarBackedCell<T> {
         displayText: string;
     }[];
     getWord(): string;
-    protected _getCellTypeDefinition(): import("./GrammarCellTypeDefinitionNode").default;
+    protected _getCellTypeDefinition(): GrammarCellTypeDefinitionNode;
     protected _getLineNumber(): any;
     protected abstract _isValid(): boolean;
     isValid(): boolean;

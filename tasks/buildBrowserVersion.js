@@ -12,7 +12,7 @@ const ProjectProgram = require("../langs/project/index.js")
 
 const BrowserScript = jtree.Utils.BrowserScript
 
-const outputFile = __dirname + `/../jtree.browser.ts`
+const outputFile = __dirname + `/../ignore/jtree.browser.ts`
 
 const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".ts"))
 const projectCode = new TreeNode(ProjectProgram.getProjectProgram(files))
@@ -22,9 +22,9 @@ projectCode
   .forEach(node => node.setLine(node.getLine() + ".ts"))
 fs.writeFileSync(__dirname + "/../ignore/jtree.project", projectCode.toString(), "utf8")
 const projectProgram = new ProjectProgram(projectCode.toString())
-const scripts = projectProgram.getOrderedDependenciesArray().filter(file => !file.includes(".node."))
+const typeScriptScripts = projectProgram.getOrderedDependenciesArray().filter(file => !file.includes(".node."))
 
-const combined = scripts
+const combinedTypeScriptScript = typeScriptScripts
   .map(src => fs.readFileSync(src, "utf8"))
   .map(content =>
     new BrowserScript(content)
@@ -35,6 +35,8 @@ const combined = scripts
   )
   .join("\n")
 
-fs.writeFileSync(outputFile, `"use strict"\n` + combined, "utf8")
+fs.writeFileSync(outputFile, `"use strict"\n` + combinedTypeScriptScript, "utf8")
 
-exec("tsc -p tsconfig.browser.json")
+exec("tsc -p tsconfig.browser.json", (err, stdout, stderr) => {
+  if (stderr || err) console.error(err, stdout, stderr)
+})

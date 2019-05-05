@@ -7,10 +7,11 @@ module.exports = testTree => {
         ? [testTree._runOnly]
         : testTree._runOnly
       : Object.keys(testTree).filter(key => !key.startsWith("_"))
-  testsToRun.forEach(key => {
-    tap.test(key, function(childTest) {
-      const testCase = testTree[key](childTest.equal)
+
+  for (let key of testsToRun) {
+    tap.test(key, async childTest => {
+      const testCase = await testTree[key](childTest.equal)
       childTest.end()
     })
-  })
+  }
 }

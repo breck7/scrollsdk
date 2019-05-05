@@ -4,7 +4,7 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getProgram(): AbstractRuntimeNode;
     getGrammarProgram(): import("./GrammarProgram").default;
     getDefinition(): import("./AbstractGrammarDefinitionNode").default;
-    getCompilerNode(targetLanguage: any): import("./GrammarCompilerNode").default;
+    getCompilerNode(targetLanguage: any): any;
     getParsedWords(): any[];
     getCompiledIndentation(targetLanguage: any): any;
     getCompiledLine(targetLanguage: any): any;

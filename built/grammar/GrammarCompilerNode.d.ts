@@ -1,6 +1,7 @@
 import TreeNode from "../base/TreeNode";
+import types from "../types";
 declare class GrammarCompilerNode extends TreeNode {
-    getKeywordMap(): {};
+    getKeywordMap(): types.keywordToNodeMap;
     getTargetExtension(): string;
     getListDelimiter(): any;
     getTransformation(): any;

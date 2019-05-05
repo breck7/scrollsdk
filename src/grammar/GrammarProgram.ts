@@ -11,7 +11,7 @@ import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 import types from "../types"
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
-  protected _getDefaultNodeConstructor() {
+  protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor {
     return undefined
   }
 
@@ -64,7 +64,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
-    const errors = []
+    const errors: types.ParseError[] = []
     this.getKeywordDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
@@ -167,15 +167,16 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   // At present we only have global keyword definitions (you cannot have scoped keyword definitions right now).
   private _cache_keywordDefinitions: { [keyword: string]: GrammarKeywordDefinitionNode }
 
-  protected _initProgramKeywordDefinitionCache() {
+  protected _initProgramKeywordDefinitionCache(): void {
     if (this._cache_keywordDefinitions) return undefined
-    const keywordDefinitionMap = {}
+
+    this._cache_keywordDefinitions = {}
 
     this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
-      keywordDefinitionMap[(<GrammarKeywordDefinitionNode>keywordDefinitionNode).getId()] = keywordDefinitionNode
+      this._cache_keywordDefinitions[
+        (<GrammarKeywordDefinitionNode>keywordDefinitionNode).getId()
+      ] = keywordDefinitionNode
     })
-
-    this._cache_keywordDefinitions = keywordDefinitionMap
   }
 
   // todo: protected?
@@ -203,7 +204,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     })
   }
 
-  private _cache_rootConstructorClass
+  private _cache_rootConstructorClass: AbstractRuntimeProgramConstructorInterface
 
   getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
     if (!this._cache_rootConstructorClass) this._cache_rootConstructorClass = this._getRootConstructor()

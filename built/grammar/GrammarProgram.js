@@ -131,11 +131,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     _initProgramKeywordDefinitionCache() {
         if (this._cache_keywordDefinitions)
             return undefined;
-        const keywordDefinitionMap = {};
+        this._cache_keywordDefinitions = {};
         this.getChildrenByNodeType(GrammarKeywordDefinitionNode_1.default).forEach(keywordDefinitionNode => {
-            keywordDefinitionMap[keywordDefinitionNode.getId()] = keywordDefinitionNode;
+            this._cache_keywordDefinitions[keywordDefinitionNode.getId()] = keywordDefinitionNode;
         });
-        this._cache_keywordDefinitions = keywordDefinitionMap;
     }
     // todo: protected?
     _getProgramKeywordDefinitionCache() {

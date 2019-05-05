@@ -13,7 +13,7 @@ abstract class AbstractGrammarWordTestNode extends TreeNode {
 }
 
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
-  private _regex
+  private _regex: RegExp
 
   isValid(str: string) {
     if (!this._regex) this._regex = new RegExp("^" + this.getContent() + "$")
@@ -31,7 +31,7 @@ class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
       return (<any>runTimeGrammarBackedProgram)._enumMaps[nodeType]
 
     const wordIndex = 1
-    const map = {}
+    const map: types.stringMap = {}
     runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
       map[node.getWord(wordIndex)] = true
     })
@@ -40,7 +40,7 @@ class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
   }
 
   // todo: remove
-  isValid(str: string, runTimeGrammarBackedProgram) {
+  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram) {
     return this._getEnumFromGrammar(runTimeGrammarBackedProgram)[str] === true
   }
 }
@@ -110,7 +110,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
 
-  isValid(str: string, runTimeGrammarBackedProgram) {
+  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram) {
     return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node =>
       (<AbstractGrammarWordTestNode>node).isValid(str, runTimeGrammarBackedProgram)
     )

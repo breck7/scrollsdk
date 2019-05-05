@@ -18,7 +18,7 @@ import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import types from "../types"
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
-  getKeywordMap() {
+  getKeywordMap(): types.keywordToNodeMap {
     const types = [
       GrammarConstants.frequency,
       GrammarConstants.keywords,
@@ -35,7 +35,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.single
     ]
 
-    const map = {}
+    const map: types.keywordToNodeMap = {}
     types.forEach(type => {
       map[type] = TreeNode
     })
@@ -62,7 +62,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.any)
   }
 
-  private _cache_definedNodeConstructor
+  private _cache_definedNodeConstructor: types.RunTimeNodeConstructor
 
   getDefinedConstructor() {
     if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this._getDefinedNodeConstructor()
@@ -93,7 +93,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return <GrammarProgram>this.getParent()
   }
 
-  getDefinitionCompilerNode(targetLanguage, node) {
+  getDefinitionCompilerNode(targetLanguage: string, node: TreeNode) {
     const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)
     if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)
     return compilerNode
@@ -110,7 +110,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return firstNode ? firstNode.getTargetExtension() : ""
   }
 
-  private _cache_keywordsMap
+  private _cache_keywordsMap: types.keywordToNodeMap
 
   getRunTimeKeywordMap() {
     this._initKeywordsMapCache()
@@ -123,7 +123,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   getRunTimeKeywordMapWithDefinitions() {
     const defs = this._getProgramKeywordDefinitionCache()
-    return TreeUtils.mapValues(this.getRunTimeKeywordMap(), key => defs[key])
+    return TreeUtils.mapValues<GrammarKeywordDefinitionNode>(this.getRunTimeKeywordMap(), key => defs[key])
   }
 
   getRequiredCellTypeNames(): string[] {
@@ -138,7 +138,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   /*
    {key<string>: JSKeywordDefClass}
   */
-  protected _initKeywordsMapCache() {
+  protected _initKeywordsMapCache(): void {
     if (this._cache_keywordsMap) return undefined
     // todo: make this handle extensions.
     const keywordsInScope = this._getKeywordsInScope()
@@ -167,7 +167,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     const definitions = this._getProgramKeywordDefinitionCache()
     const keywords = this.getRunTimeKeywordMap()
     const arr = Object.keys(keywords).map(keyword => definitions[keyword])
-    arr.sort(TreeUtils.sortByAccessor(definition => definition.getFrequency()))
+    arr.sort(TreeUtils.sortByAccessor((definition: GrammarKeywordDefinitionNode) => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getId())
   }
@@ -207,9 +207,9 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     else return (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllDefinition()
   }
 
-  private _cache_catchAllConstructor
+  private _cache_catchAllConstructor: types.RunTimeNodeConstructor
 
-  protected _initCatchAllNodeConstructorCache() {
+  protected _initCatchAllNodeConstructorCache(): void {
     if (this._cache_catchAllConstructor) return undefined
 
     this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor()
@@ -219,7 +219,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.highlightScope)
   }
 
-  isDefined(keyword) {
+  isDefined(keyword: string) {
     return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()]
   }
 

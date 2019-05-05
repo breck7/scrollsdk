@@ -4,6 +4,10 @@ import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
 /*FOR_TYPES_ONLY*/ import * as CodeMirrorLib from "codemirror"
 
+interface treeNotationCodeMirrorState {
+  cellIndex: number
+}
+
 class TreeNotationCodeMirrorMode {
   constructor(
     name: string,
@@ -36,7 +40,7 @@ class TreeNotationCodeMirrorMode {
     return this._cachedProgram
   }
 
-  _getExcludedIntelliSenseTriggerKeys() {
+  private _getExcludedIntelliSenseTriggerKeys(): types.stringMap {
     return {
       "8": "backspace",
       "9": "tab",
@@ -77,11 +81,11 @@ class TreeNotationCodeMirrorMode {
     }
   }
 
-  token(stream: CodeMirrorLib.StringStream, state) {
+  token(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState) {
     return this._advanceStreamAndReturnTokenType(stream, state)
   }
 
-  fromTextAreaWithAutocomplete(area, options) {
+  fromTextAreaWithAutocomplete(area: HTMLTextAreaElement, options: any) {
     this._originalValue = area.value
     const defaultOptions = {
       lineNumbers: true,
@@ -89,7 +93,8 @@ class TreeNotationCodeMirrorMode {
       tabSize: 1,
       indentUnit: 1,
       hintOptions: {
-        hint: (cmInstance: CodeMirrorLib.EditorFromTextArea, option) => this.codeMirrorAutocomplete(cmInstance, option)
+        hint: (cmInstance: CodeMirrorLib.EditorFromTextArea, options: any) =>
+          this.codeMirrorAutocomplete(cmInstance, options)
       }
     }
 
@@ -100,10 +105,10 @@ class TreeNotationCodeMirrorMode {
     return this._cmInstance
   }
 
-  _enableAutoComplete(cmInstance) {
+  _enableAutoComplete(cmInstance: CodeMirrorLib.EditorFromTextArea) {
     const excludedKeys = this._getExcludedIntelliSenseTriggerKeys()
     const codeMirrorLib = this._getCodeMirrorLib()
-    cmInstance.on("keyup", (cm, event) => {
+    cmInstance.on("keyup", (cm: CodeMirrorLib.EditorFromTextArea, event: KeyboardEvent) => {
       // https://stackoverflow.com/questions/13744176/codemirror-autocomplete-after-any-keyup
       if (!cm.state.completionActive && !excludedKeys[event.keyCode.toString()])
         // Todo: get typings for CM autocomplete
@@ -115,7 +120,7 @@ class TreeNotationCodeMirrorMode {
     return this._codeMirrorLib
   }
 
-  async codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, option) {
+  async codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, options: any) {
     const cursor = cmInstance.getDoc().getCursor()
     const codeMirrorLib = this._getCodeMirrorLib()
     const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch)
@@ -139,7 +144,10 @@ class TreeNotationCodeMirrorMode {
     return this
   }
 
-  private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state): string {
+  private _advanceStreamAndReturnTokenType(
+    stream: CodeMirrorLib.StringStream,
+    state: treeNotationCodeMirrorState
+  ): string {
     let nextCharacter = stream.next()
     const lineNumber = this._getLineNumber(stream, state)
     while (typeof nextCharacter === "string") {
@@ -165,12 +173,12 @@ class TreeNotationCodeMirrorMode {
     return style
   }
 
-  private _getLineNumber(stream, state): types.int {
+  private _getLineNumber(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): types.int {
     const num = (<any>stream).lineOracle.line + 1 // state.lineIndex
     return num
   }
 
-  private _getCellStyle(lineIndex, cellIndex): string {
+  private _getCellStyle(lineIndex: types.int, cellIndex: types.int): string {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?
@@ -181,13 +189,13 @@ class TreeNotationCodeMirrorMode {
   }
 
   // todo: remove.
-  startState() {
+  startState(): treeNotationCodeMirrorState {
     return {
       cellIndex: 0
     }
   }
 
-  _incrementLine(state) {
+  _incrementLine(state: treeNotationCodeMirrorState) {
     state.cellIndex = 0
   }
 }

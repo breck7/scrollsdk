@@ -9,7 +9,7 @@ declare class GrammarCellTypeDefinitionNode extends TreeNode {
     private _getEnumFromGrammarOptions;
     getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgram): string[];
     getRegexString(): any;
-    isValid(str: string, runTimeGrammarBackedProgram: any): boolean;
+    isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram): boolean;
     getCellTypeId(): string;
     static types: any;
 }

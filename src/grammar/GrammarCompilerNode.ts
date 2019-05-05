@@ -1,6 +1,7 @@
 import TreeNode from "../base/TreeNode"
 
 import { GrammarConstantsCompiler } from "./GrammarConstants"
+import types from "../types"
 
 class GrammarCompilerNode extends TreeNode {
   getKeywordMap() {
@@ -11,7 +12,7 @@ class GrammarCompilerNode extends TreeNode {
       GrammarConstantsCompiler.openChildren,
       GrammarConstantsCompiler.closeChildren
     ]
-    const map = {}
+    const map: types.keywordToNodeMap = {}
     types.forEach(type => {
       map[type] = TreeNode
     })

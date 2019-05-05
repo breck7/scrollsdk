@@ -1,6 +1,9 @@
 import types from "../types";
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
 import * as CodeMirrorLib from "codemirror";
+interface treeNotationCodeMirrorState {
+    cellIndex: number;
+}
 declare class TreeNotationCodeMirrorMode {
     constructor(name: string, getProgramConstructorMethod: () => types.TreeProgramConstructor, getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib?: typeof CodeMirrorLib);
     private _name;
@@ -12,49 +15,12 @@ declare class TreeNotationCodeMirrorMode {
     private _cmInstance;
     private _originalValue;
     _getParsedProgram(): AbstractRuntimeProgram;
-    _getExcludedIntelliSenseTriggerKeys(): {
-        "8": string;
-        "9": string;
-        "13": string;
-        "16": string;
-        "17": string;
-        "18": string;
-        "19": string;
-        "20": string;
-        "27": string;
-        "33": string;
-        "34": string;
-        "35": string;
-        "36": string;
-        "37": string;
-        "38": string;
-        "39": string;
-        "40": string;
-        "45": string;
-        "46": string;
-        "91": string;
-        "92": string;
-        "93": string;
-        "112": string;
-        "113": string;
-        "114": string;
-        "115": string;
-        "116": string;
-        "117": string;
-        "118": string;
-        "119": string;
-        "120": string;
-        "121": string;
-        "122": string;
-        "123": string;
-        "144": string;
-        "145": string;
-    };
-    token(stream: CodeMirrorLib.StringStream, state: any): string;
-    fromTextAreaWithAutocomplete(area: any, options: any): CodeMirrorLib.EditorFromTextArea;
-    _enableAutoComplete(cmInstance: any): void;
+    private _getExcludedIntelliSenseTriggerKeys;
+    token(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string;
+    fromTextAreaWithAutocomplete(area: HTMLTextAreaElement, options: any): CodeMirrorLib.EditorFromTextArea;
+    _enableAutoComplete(cmInstance: CodeMirrorLib.EditorFromTextArea): void;
     _getCodeMirrorLib(): typeof CodeMirrorLib;
-    codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, option: any): Promise<{
+    codeMirrorAutocomplete(cmInstance: CodeMirrorLib.EditorFromTextArea, options: any): Promise<{
         list: {
             text: string;
             displayText: string;
@@ -66,9 +32,7 @@ declare class TreeNotationCodeMirrorMode {
     private _advanceStreamAndReturnTokenType;
     private _getLineNumber;
     private _getCellStyle;
-    startState(): {
-        cellIndex: number;
-    };
-    _incrementLine(state: any): void;
+    startState(): treeNotationCodeMirrorState;
+    _incrementLine(state: treeNotationCodeMirrorState): void;
 }
 export default TreeNotationCodeMirrorMode;

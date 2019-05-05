@@ -16,9 +16,9 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
             displayText: string;
         }[];
     };
-    getPrettified(): any;
+    getPrettified(): string;
     getProgramErrorMessages(): string[];
-    getKeywordMap(): any;
+    getKeywordMap(): types.keywordToNodeMap;
     getDefinition(): GrammarProgram;
     getKeywordUsage(filepath?: string): TreeNode;
     getInPlaceSyntaxTree(): string;

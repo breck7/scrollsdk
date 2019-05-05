@@ -222,6 +222,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         const coordinates = [];
         let line = 0;
         for (let node of this.getTopDownArrayIterator()) {
+            ;
             node.getWordBoundaryIndices().forEach(index => {
                 coordinates.push({
                     y: line,
@@ -432,13 +433,13 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getParentFirstArray() {
         const levels = this._getLevels();
         const arr = [];
-        levels.forEach(level => {
+        Object.values(levels).forEach(level => {
             level.forEach(item => arr.push(item));
         });
         return arr;
     }
     _getLevels() {
-        const levels = [];
+        const levels = {};
         this.getTopDownArray().forEach(node => {
             const level = node._getXCoordinate();
             if (!levels[level])
@@ -1461,10 +1462,9 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     replaceNode(fn) {
-        const str = fn(this.toString());
         const parent = this.getParent();
         const index = this.getIndex();
-        const newNodes = new TreeNode(str);
+        const newNodes = new TreeNode(fn(this.toString()));
         const returnedNodes = [];
         newNodes.forEach((child, childIndex) => {
             const newNode = parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex);
@@ -1530,13 +1530,13 @@ class TreeNode extends ImmutableNode {
         return this._touchNodeByString(str);
     }
     sortByColumns(indexOrIndices) {
-        indexOrIndices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices];
-        const length = indexOrIndices.length;
+        const indices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices];
+        const length = indices.length;
         this.sort((nodeA, nodeB) => {
             const wordsA = nodeA.getWords();
             const wordsB = nodeB.getWords();
             for (let index = 0; index < length; index++) {
-                const col = indexOrIndices[index];
+                const col = indices[index];
                 const av = wordsA[col];
                 const bv = wordsB[col];
                 if (av === undefined)
@@ -1575,8 +1575,8 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     sortBy(nameOrNames) {
-        nameOrNames = nameOrNames instanceof Array ? nameOrNames : [nameOrNames];
-        const length = nameOrNames.length;
+        const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames];
+        const length = names.length;
         this.sort((nodeA, nodeB) => {
             if (!nodeB.length && !nodeA.length)
                 return 0;
@@ -1585,7 +1585,7 @@ class TreeNode extends ImmutableNode {
             else if (!nodeB.length)
                 return 1;
             for (let index = 0; index < length; index++) {
-                const keyword = nameOrNames[index];
+                const keyword = names[index];
                 const av = nodeA.get(keyword);
                 const bv = nodeB.get(keyword);
                 if (av > bv)
@@ -1724,9 +1724,9 @@ class TreeNode extends ImmutableNode {
             return;
         const windowObj = window;
         if (typeof windowObj.DOMParser !== "undefined")
-            this._xmlParser = xmlStr => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml");
+            this._xmlParser = (xmlStr) => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml");
         else if (typeof windowObj.ActiveXObject !== "undefined" && new windowObj.ActiveXObject("Microsoft.XMLDOM")) {
-            this._xmlParser = xmlStr => {
+            this._xmlParser = (xmlStr) => {
                 const xmlDoc = new windowObj.ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async = "false";
                 xmlDoc.loadXML(xmlStr);
@@ -1771,6 +1771,7 @@ class TreeNode extends ImmutableNode {
         el.innerHTML = str;
         return el;
     }
+    // todo: cleanup typings
     static _treeNodeFromXml(xml) {
         const result = new TreeNode();
         const children = new TreeNode();
@@ -1832,11 +1833,12 @@ class TreeNode extends ImmutableNode {
     static fromDisk(path) {
         const format = this._getFileFormat(path);
         const content = require("fs").readFileSync(path, "utf8");
-        return {
-            tree: content => new TreeNode(content),
-            csv: content => this.fromCsv(content),
-            tsv: content => this.fromTsv(content)
-        }[format](content);
+        const methods = {
+            tree: (content) => new TreeNode(content),
+            csv: (content) => this.fromCsv(content),
+            tsv: (content) => this.fromTsv(content)
+        };
+        return methods[format](content);
     }
 }
 exports.default = TreeNode;

@@ -5,7 +5,7 @@ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import types from "../types";
 declare abstract class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram(): GrammarProgram;
-    getCatchAllNodeConstructor(line: string): any;
+    getCatchAllNodeConstructor(line: string): Function;
     getProgram(): AbstractRuntimeNode;
     getAutocompleteResults(partialWord: string, cellIndex: types.positiveInt): {
         text: string;

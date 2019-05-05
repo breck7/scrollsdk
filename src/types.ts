@@ -33,10 +33,14 @@ export namespace types {
   export declare type fileExtension = string
   export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
   export declare type filterFn = (node: treeNode, index: int) => boolean
+  export declare type forEachFn = (node: treeNode, index: int) => void
 
+  export declare type TreeNodeConstructor = Function // A constructor extending TreeNodeConstructor
   export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
+
+  export declare type keywordToNodeMap = { [keyword: string]: TreeNodeConstructor }
 }
 
 export default types

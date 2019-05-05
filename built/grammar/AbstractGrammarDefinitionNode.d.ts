@@ -5,27 +5,29 @@ import GrammarProgram from "./GrammarProgram";
 import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode";
 import types from "../types";
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
-    getKeywordMap(): {};
+    getKeywordMap(): types.keywordToNodeMap;
     getId(): string;
     protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
     protected _isAnyNode(): boolean;
     private _cache_definedNodeConstructor;
-    getDefinedConstructor(): any;
+    getDefinedConstructor(): Function;
     protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;
     protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getProgram(): GrammarProgram;
-    getDefinitionCompilerNode(targetLanguage: any, node: any): GrammarCompilerNode;
+    getDefinitionCompilerNode(targetLanguage: string, node: TreeNode): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
     private _cache_keywordsMap;
-    getRunTimeKeywordMap(): any;
+    getRunTimeKeywordMap(): types.keywordToNodeMap;
     getRunTimeKeywordNames(): string[];
-    getRunTimeKeywordMapWithDefinitions(): {};
+    getRunTimeKeywordMapWithDefinitions(): {
+        [key: string]: GrammarKeywordDefinitionNode;
+    };
     getRequiredCellTypeNames(): string[];
     getCatchAllCellTypeName(): string | undefined;
-    protected _initKeywordsMapCache(): any;
+    protected _initKeywordsMapCache(): void;
     _getKeywordsInScope(): string[];
     getTopNodeTypes(): string[];
     protected _getKeywordsNode(): TreeNode;
@@ -35,12 +37,12 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getKeywordDefinitionByName(keyword: string): AbstractGrammarDefinitionNode;
     protected _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
-    protected _initCatchAllNodeConstructorCache(): any;
+    protected _initCatchAllNodeConstructorCache(): void;
     getHighlightScope(): string | undefined;
-    isDefined(keyword: any): boolean;
+    isDefined(keyword: string): boolean;
     _getProgramKeywordDefinitionCache(): {
         [keyword: string]: GrammarKeywordDefinitionNode;
     };
-    getRunTimeCatchAllNodeConstructor(): any;
+    getRunTimeCatchAllNodeConstructor(): Function;
 }
 export default AbstractGrammarDefinitionNode;

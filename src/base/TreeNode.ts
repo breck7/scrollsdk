@@ -100,7 +100,7 @@ class ImmutableNode extends AbstractNode {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
-  protected _getTopDownArray(arr) {
+  protected _getTopDownArray(arr: TreeNode[]) {
     this.forEach(child => {
       arr.push(child)
       child._getTopDownArray(arr)
@@ -108,7 +108,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getTopDownArray(): types.treeNode[] {
-    const arr = []
+    const arr: TreeNode[] = []
     this._getTopDownArray(arr)
     return arr
   }
@@ -174,7 +174,7 @@ class ImmutableNode extends AbstractNode {
     return this._getRootNode()
   }
 
-  protected _getRootNode(relativeTo?: ImmutableNode) {
+  protected _getRootNode(relativeTo?: ImmutableNode): ImmutableNode | this {
     if (this.isRoot(relativeTo)) return this
     return this.getParent()._getRootNode(relativeTo)
   }
@@ -264,10 +264,10 @@ class ImmutableNode extends AbstractNode {
   }
 
   getAllWordBoundaryCoordinates() {
-    const coordinates = []
+    const coordinates: types.point[] = []
     let line = 0
     for (let node of this.getTopDownArrayIterator()) {
-      node.getWordBoundaryIndices().forEach(index => {
+      ;(<TreeNode>node).getWordBoundaryIndices().forEach(index => {
         coordinates.push({
           y: line,
           x: index
@@ -337,7 +337,7 @@ class ImmutableNode extends AbstractNode {
     return this._getStack()
   }
 
-  protected _getStack(relativeTo?: ImmutableNode) {
+  protected _getStack(relativeTo?: ImmutableNode): ImmutableNode[] {
     if (this.isRoot(relativeTo)) return []
     const parent = this.getParent()
     if (parent.isRoot(relativeTo)) return [this]
@@ -373,7 +373,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: return array? getPathArray?
-  protected _getKeywordPath(relativeTo?) {
+  protected _getKeywordPath(relativeTo?: ImmutableNode): types.keywordPath {
     if (this.isRoot(relativeTo)) return ""
     else if (this.getParent().isRoot(relativeTo)) return this.getKeyword()
 
@@ -396,7 +396,7 @@ class ImmutableNode extends AbstractNode {
     return this._getPathVector(relativeTo)
   }
 
-  protected _getPathVector(relativeTo?): types.pathVector {
+  protected _getPathVector(relativeTo?: ImmutableNode): types.pathVector {
     if (this.isRoot(relativeTo)) return []
     const path = this.getParent()._getPathVector(relativeTo)
     path.push(this.getIndex())
@@ -417,7 +417,7 @@ class ImmutableNode extends AbstractNode {
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
-  protected _getXmlContent(indentCount) {
+  protected _getXmlContent(indentCount: types.positiveInt) {
     if (this.getContent() !== undefined) return this.getContentWithChildren()
     return this.length
       ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(
@@ -426,7 +426,7 @@ class ImmutableNode extends AbstractNode {
       : ""
   }
 
-  protected _toXml(indentCount) {
+  protected _toXml(indentCount: types.positiveInt) {
     const indent = " ".repeat(indentCount)
     const tag = this.getKeyword()
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
@@ -447,7 +447,7 @@ class ImmutableNode extends AbstractNode {
     return [this.getKeyword(), tupleValue]
   }
 
-  protected _indexOfNode(needleNode) {
+  protected _indexOfNode(needleNode: ImmutableNode) {
     let result = -1
     this.find((node, index) => {
       if (node === needleNode) {
@@ -466,7 +466,7 @@ class ImmutableNode extends AbstractNode {
     )
   }
 
-  protected _hasColumns(columns) {
+  protected _hasColumns(columns: string[]) {
     const words = this.getWords()
     return columns.every((searchTerm, index) => searchTerm === words[index])
   }
@@ -488,33 +488,33 @@ class ImmutableNode extends AbstractNode {
   }
 
   getChildrenFirstArray() {
-    const arr = []
+    const arr: ImmutableNode[] = []
     this._getChildrenFirstArray(arr)
     return arr
   }
 
-  protected _getChildrenFirstArray(arr) {
+  protected _getChildrenFirstArray(arr: ImmutableNode[]) {
     this.forEach(child => {
       child._getChildrenFirstArray(arr)
       arr.push(child)
     })
   }
 
-  protected _getXCoordinate(relativeTo) {
+  protected _getXCoordinate(relativeTo: ImmutableNode) {
     return this._getStack(relativeTo).length
   }
 
   getParentFirstArray() {
     const levels = this._getLevels()
-    const arr = []
-    levels.forEach(level => {
+    const arr: ImmutableNode[] = []
+    Object.values(levels).forEach(level => {
       level.forEach(item => arr.push(item))
     })
     return arr
   }
 
-  protected _getLevels() {
-    const levels = []
+  protected _getLevels(): { [level: number]: ImmutableNode[] } {
+    const levels: { [level: number]: ImmutableNode[] } = {}
     this.getTopDownArray().forEach(node => {
       const level = node._getXCoordinate()
       if (!levels[level]) levels[level] = []
@@ -561,7 +561,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   protected _toObject() {
-    const obj = {}
+    const obj: types.stringMap = {}
     this.forEach(node => {
       const tuple = node._toObjectTuple()
       obj[tuple[0]] = tuple[1]
@@ -664,7 +664,7 @@ class ImmutableNode extends AbstractNode {
 
   // todo: do we need this?
   _getDuplicateLinesMap(): types.stringMap {
-    const count = {}
+    const count: { [line: string]: types.positiveInt } = {}
     this.forEach(node => {
       const line = node.getLine()
       if (count[line]) count[line]++
@@ -681,7 +681,7 @@ class ImmutableNode extends AbstractNode {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(keywordPath: types.keywordPath) {
+  findNodes(keywordPath: types.keywordPath): TreeNode[] {
     // todo: can easily speed this up
     return this.getTopDownArray().filter(node => {
       if (node._getKeywordPath(this) === keywordPath) return true
@@ -1247,7 +1247,7 @@ class ImmutableNode extends AbstractNode {
     return level
   }
 
-  clone() {
+  clone(): TreeNode {
     return new (<any>this.constructor)(this.childrenToString(), this.getLine())
   }
 
@@ -1256,11 +1256,11 @@ class ImmutableNode extends AbstractNode {
     return this._hasKeyword(keyword)
   }
 
-  protected _hasKeyword(keyword) {
+  protected _hasKeyword(keyword: string) {
     return this._getIndex()[keyword] !== undefined
   }
 
-  protected _getKeywordByIndex(index) {
+  protected _getKeywordByIndex(index: int) {
     // Passing -1 gets the last item, et cetera
     const length = this.length
 
@@ -1281,7 +1281,7 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().find(fn)
   }
 
-  forEach(fn) {
+  forEach(fn: types.forEachFn) {
     this.getChildren().forEach(fn)
     return this
   }
@@ -1295,7 +1295,7 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().slice(start, end)
   }
 
-  getKeywordMap() {
+  getKeywordMap(): types.keywordToNodeMap {
     return undefined
   }
 
@@ -1308,7 +1308,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getInheritanceTree() {
-    const paths = {}
+    const paths: types.stringMap = {}
     const result = new TreeNode()
     this.forEach(node => {
       const key = node.getWord(0)
@@ -1379,7 +1379,7 @@ class TreeNode extends ImmutableNode {
     return this._cmtime
   }
 
-  protected _setCMTime(value) {
+  protected _setCMTime(value: number) {
     this._cmtime = value
     return this
   }
@@ -1460,7 +1460,7 @@ class TreeNode extends ImmutableNode {
     return this._clearChildren()
   }
 
-  setContent(content: string) {
+  setContent(content: string): TreeNode {
     if (content === this.getContent()) return this
     const newArray = [this.getKeyword()]
     if (content !== undefined) {
@@ -1538,7 +1538,7 @@ class TreeNode extends ImmutableNode {
   }
 
   getNodesByLinePrefixes(columns: string[]) {
-    const matches = []
+    const matches: TreeNode[] = []
     this._getNodesByLineRegex(matches, columns.map(str => new RegExp("^" + str)))
     return matches
   }
@@ -1591,7 +1591,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  protected _rename(oldKeyword, newKeyword) {
+  protected _rename(oldKeyword: types.word, newKeyword: types.word) {
     const index = this.indexOf(oldKeyword)
 
     if (index === -1) return this
@@ -1604,7 +1604,7 @@ class TreeNode extends ImmutableNode {
   }
 
   // Does not recurse.
-  remap(map: Object) {
+  remap(map: types.stringMap) {
     this.forEach(node => {
       const keyword = node.getKeyword()
       if (map[keyword] !== undefined) node.setKeyword(map[keyword])
@@ -1625,7 +1625,7 @@ class TreeNode extends ImmutableNode {
   protected _deleteAllChildNodesWithKeyword(keyword: word) {
     if (!this.has(keyword)) return this
     const allNodes = this._getChildren()
-    const indexesToDelete = []
+    const indexesToDelete: int[] = []
     allNodes.forEach((node, index) => {
       if (node.getKeyword() === keyword) indexesToDelete.push(index)
     })
@@ -1649,7 +1649,7 @@ class TreeNode extends ImmutableNode {
   }
 
   // todo: add more testing.
-  extend(nodeOrStr) {
+  extend(nodeOrStr: TreeNode | string) {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
     nodeOrStr.forEach(node => {
       const path = node.getKeyword()
@@ -1660,12 +1660,11 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  replaceNode(fn) {
-    const str = fn(this.toString())
+  replaceNode(fn: (thisStr: string) => string) {
     const parent = this.getParent()
     const index = this.getIndex()
-    const newNodes = new TreeNode(str)
-    const returnedNodes = []
+    const newNodes = new TreeNode(fn(this.toString()))
+    const returnedNodes: TreeNode[] = []
     newNodes.forEach((child, childIndex) => {
       const newNode = (parent as TreeNode).insertLineAndChildren(
         child.getLine(),
@@ -1712,7 +1711,7 @@ class TreeNode extends ImmutableNode {
   }
 
   protected _keywordSort(keywordOrder: types.word[], secondarySortFn?: types.sortFn): this {
-    const map = {}
+    const map: { [keyword: types.word]: int } = {}
     keywordOrder.forEach((word, index) => {
       map[word] = index
     })
@@ -1726,7 +1725,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  protected _touchNode(keywordPathArray) {
+  protected _touchNode(keywordPathArray: types.word[]) {
     let contextNode = this
     keywordPathArray.forEach(keyword => {
       contextNode = contextNode.getNode(keyword) || contextNode.appendLine(keyword)
@@ -1734,7 +1733,7 @@ class TreeNode extends ImmutableNode {
     return contextNode
   }
 
-  protected _touchNodeByString(str) {
+  protected _touchNodeByString(str: string) {
     str = str.replace(this.getYIRegex(), "") // todo: do we want to do this sanitization?
     return this._touchNode(str.split(this.getZI()))
   }
@@ -1743,16 +1742,16 @@ class TreeNode extends ImmutableNode {
     return this._touchNodeByString(str)
   }
 
-  sortByColumns(indexOrIndices) {
-    indexOrIndices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices]
+  sortByColumns(indexOrIndices: int | int[]) {
+    const indices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices]
 
-    const length = indexOrIndices.length
+    const length = indices.length
     this.sort((nodeA, nodeB) => {
       const wordsA = nodeA.getWords()
       const wordsB = nodeB.getWords()
 
       for (let index = 0; index < length; index++) {
-        const col = indexOrIndices[index]
+        const col = indices[index]
         const av = wordsA[col]
         const bv = wordsB[col]
 
@@ -1799,17 +1798,17 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  sortBy(nameOrNames) {
-    nameOrNames = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
+  sortBy(nameOrNames: types.word | types.word[]) {
+    const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
 
-    const length = nameOrNames.length
+    const length = names.length
     this.sort((nodeA, nodeB) => {
       if (!nodeB.length && !nodeA.length) return 0
       else if (!nodeA.length) return -1
       else if (!nodeB.length) return 1
 
       for (let index = 0; index < length; index++) {
-        const keyword = nameOrNames[index]
+        const keyword = names[index]
         const av = nodeA.get(keyword)
         const bv = nodeB.get(keyword)
 
@@ -1842,7 +1841,7 @@ class TreeNode extends ImmutableNode {
     return this._rowsToTreeNode(rows, delimiter, true)
   }
 
-  static _getEscapedRows(str, delimiter, quoteChar) {
+  static _getEscapedRows(str: string, delimiter: string, quoteChar: string) {
     return str.includes(quoteChar)
       ? this._strToRows(str, delimiter, quoteChar)
       : str.split("\n").map(line => line.split(delimiter))
@@ -1853,8 +1852,8 @@ class TreeNode extends ImmutableNode {
     return this._rowsToTreeNode(rows, delimiter, false)
   }
 
-  static _strToRows(str, delimiter, quoteChar, newLineChar = "\n") {
-    const rows = [[]]
+  static _strToRows(str: string, delimiter: string, quoteChar: string, newLineChar = "\n") {
+    const rows: string[][] = [[]]
     const newLine = "\n"
     const length = str.length
     let currentCell = ""
@@ -1908,7 +1907,7 @@ class TreeNode extends ImmutableNode {
     return rows
   }
 
-  static multiply(nodeA, nodeB) {
+  static multiply(nodeA: TreeNode, nodeB: TreeNode) {
     const productNode = nodeA.clone()
     productNode.forEach((node, index) => {
       node.setChildren(node.length ? this.multiply(node, nodeB) : nodeB.clone())
@@ -1917,7 +1916,7 @@ class TreeNode extends ImmutableNode {
   }
 
   // Given an array return a tree
-  static _rowsToTreeNode(rows, delimiter, hasHeaders) {
+  static _rowsToTreeNode(rows: string[][], delimiter: string, hasHeaders: boolean) {
     const numberOfColumns = rows[0].length
     const treeNode = new TreeNode()
     const names = this._getHeader(rows, hasHeaders)
@@ -1938,7 +1937,7 @@ class TreeNode extends ImmutableNode {
         }
       }
 
-      const obj = {}
+      const obj: types.stringMap = {}
       row.forEach((cellValue, index) => {
         obj[names[index]] = cellValue
       })
@@ -1948,16 +1947,17 @@ class TreeNode extends ImmutableNode {
     return treeNode
   }
 
-  private static _xmlParser
+  // todo: cleanup. add types
+  private static _xmlParser: any
 
   static _initializeXmlParser() {
     if (this._xmlParser) return
     const windowObj = <any>window
 
     if (typeof windowObj.DOMParser !== "undefined")
-      this._xmlParser = xmlStr => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml")
+      this._xmlParser = (xmlStr: string) => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml")
     else if (typeof windowObj.ActiveXObject !== "undefined" && new windowObj.ActiveXObject("Microsoft.XMLDOM")) {
-      this._xmlParser = xmlStr => {
+      this._xmlParser = (xmlStr: string) => {
         const xmlDoc = new windowObj.ActiveXObject("Microsoft.XMLDOM")
         xmlDoc.async = "false"
         xmlDoc.loadXML(xmlStr)
@@ -1977,8 +1977,8 @@ class TreeNode extends ImmutableNode {
     }
   }
 
-  static _zipObject(keys, values) {
-    const obj = {}
+  static _zipObject(keys: string[], values: any) {
+    const obj: types.stringMap = {}
     keys.forEach((key, index) => (obj[key] = values[index]))
     return obj
   }
@@ -2000,13 +2000,14 @@ class TreeNode extends ImmutableNode {
     return new TreeNode(table.map(row => this._zipObject(header, row)))
   }
 
-  static _parseXml2(str) {
+  static _parseXml2(str: string) {
     const el = document.createElement("div")
     el.innerHTML = str
     return el
   }
 
-  static _treeNodeFromXml(xml) {
+  // todo: cleanup typings
+  static _treeNodeFromXml(xml: any) {
     const result = new TreeNode()
     const children = new TreeNode()
 
@@ -2041,7 +2042,7 @@ class TreeNode extends ImmutableNode {
     return result
   }
 
-  static _getHeader(rows, hasHeaders) {
+  static _getHeader(rows: string[][], hasHeaders: boolean) {
     const numberOfColumns = rows[0].length
     const headerRow = hasHeaders ? rows[0] : []
     const ZI = " "
@@ -2069,14 +2070,16 @@ class TreeNode extends ImmutableNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static fromDisk(path: string) {
+  static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
     const content = require("fs").readFileSync(path, "utf8")
-    return {
-      tree: content => new TreeNode(content),
-      csv: content => this.fromCsv(content),
-      tsv: content => this.fromTsv(content)
-    }[format](content)
+    const methods: { [kind: string]: (content: string) => TreeNode } = {
+      tree: (content: string) => new TreeNode(content),
+      csv: (content: string) => this.fromCsv(content),
+      tsv: (content: string) => this.fromTsv(content)
+    }
+
+    return methods[format](content)
   }
 }
 

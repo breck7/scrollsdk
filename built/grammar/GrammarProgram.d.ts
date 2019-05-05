@@ -5,14 +5,14 @@ import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 import types from "../types";
 declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
-    protected _getDefaultNodeConstructor(): any;
+    protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;
     getProgram(): GrammarProgram;
-    getKeywordMap(): {};
+    getKeywordMap(): types.keywordToNodeMap;
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordMap(): types.stringMap;
     getProgramErrors(): types.ParseError[];
-    getErrorsInGrammarExamples(): any[];
+    getErrorsInGrammarExamples(): types.ParseError[];
     getTargetExtension(): string;
     getKeywordOrder(): any;
     private _cache_cellTypes;
@@ -34,7 +34,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getKeywordDefinitionByKeywordPath(keywordPath: string): AbstractGrammarDefinitionNode;
     getDocs(): string;
     private _cache_keywordDefinitions;
-    protected _initProgramKeywordDefinitionCache(): any;
+    protected _initProgramKeywordDefinitionCache(): void;
     _getProgramKeywordDefinitionCache(): {
         [keyword: string]: GrammarKeywordDefinitionNode;
     };

@@ -14,7 +14,9 @@ declare class TreeUtils {
     static getRandomString(length?: number, letters?: string[]): string;
     static makeRandomTree(lines?: number): string;
     static arrayToMap(arr: any): {};
-    static mapValues(object: any, fn: any): {};
+    static mapValues<T>(object: Object, fn: (key: string) => T): {
+        [key: string]: T;
+    };
     static sortByAccessor(accessor: any): (objectA: any, objectB: any) => number;
     static makeGraphSortFunction(thisColumnIndex: number, extendsColumnIndex: number): (nodeA: any, nodeB: any) => 1 | 0 | -1;
     static BrowserScript: {

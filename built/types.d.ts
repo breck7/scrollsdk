@@ -32,8 +32,13 @@ export declare namespace types {
     type fileExtension = string;
     type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt;
     type filterFn = (node: treeNode, index: int) => boolean;
+    type forEachFn = (node: treeNode, index: int) => void;
+    type TreeNodeConstructor = Function;
     type RunTimeNodeConstructor = Function;
     type TreeProgramConstructor = Function;
     type treeProgram = treeNode;
+    type keywordToNodeMap = {
+        [keyword: string]: TreeNodeConstructor;
+    };
 }
 export default types;

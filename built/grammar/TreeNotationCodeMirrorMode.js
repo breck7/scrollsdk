@@ -76,7 +76,7 @@ class TreeNotationCodeMirrorMode {
             tabSize: 1,
             indentUnit: 1,
             hintOptions: {
-                hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option)
+                hint: (cmInstance, options) => this.codeMirrorAutocomplete(cmInstance, options)
             }
         };
         Object.assign(defaultOptions, options);
@@ -97,7 +97,7 @@ class TreeNotationCodeMirrorMode {
     _getCodeMirrorLib() {
         return this._codeMirrorLib;
     }
-    codeMirrorAutocomplete(cmInstance, option) {
+    codeMirrorAutocomplete(cmInstance, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const cursor = cmInstance.getDoc().getCursor();
             const codeMirrorLib = this._getCodeMirrorLib();

@@ -139,7 +139,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         const definitions = this._getProgramKeywordDefinitionCache();
         const keywords = this.getRunTimeKeywordMap();
         const arr = Object.keys(keywords).map(keyword => definitions[keyword]);
-        arr.sort(TreeUtils_1.default.sortByAccessor(definition => definition.getFrequency()));
+        arr.sort(TreeUtils_1.default.sortByAccessor((definition) => definition.getFrequency()));
         arr.reverse();
         return arr.map(definition => definition.getId());
     }

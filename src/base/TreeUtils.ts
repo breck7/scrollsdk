@@ -105,8 +105,8 @@ class TreeUtils {
     return map
   }
 
-  static mapValues(object, fn) {
-    const result = {}
+  static mapValues<T>(object: Object, fn: (key: string) => T) {
+    const result: { [key: string]: T } = {}
     Object.keys(object).forEach(key => {
       result[key] = fn(key)
     })

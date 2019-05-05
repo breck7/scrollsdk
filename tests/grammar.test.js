@@ -221,6 +221,18 @@ keyword faveNumber
   equal(program.getAutocompleteResultsAt(8, 9).matches.length, 1)
 }
 
+testTree.autocompleteCustom = equal => {
+  // Arrange/Act/Assert
+  equal(makeJibberishProgram(`xColumnName `).getAutocompleteResultsAt(0, 12).matches.length, 3)
+  equal(makeJibberishProgram(`xColumnName eight`).getAutocompleteResultsAt(0, 12).matches.length, 2)
+  equal(makeJibberishProgram(`xColumnName gender`).getProgramErrors().length, 0)
+  equal(
+    makeJibberishProgram(`xColumnName genders`).getProgramErrors().length,
+    1,
+    "should have 1 error. genders doesnt fit."
+  )
+}
+
 testTree.anyNodes = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`text foobar

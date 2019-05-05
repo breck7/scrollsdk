@@ -1,9 +1,10 @@
-edge / 2019-05-01
-=================
+21.0.0 / 2019-05-04
+===================
+- New: getRunTimeEnumOptions method allows for run time autocomplete and run time validation
+- New: autocomplete for grammar cellTypes
 - New: grammar name keyword
 - New: cells property on grammar non-root runtime nodes
 - New: makeGraphSort function. Also now used in grammar file prettification
-- New: autocomplete for cellTypes
 - Breaking: in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
 - Breaking: removed ability in grammar files to have a wordType and keyword share the same name
 - Breaking: getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id

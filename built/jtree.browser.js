@@ -2334,6 +2334,9 @@ class AbstractRuntimeNode extends TreeNode {
     _getGrammarBackedCellArray() {
         return [];
     }
+    getRunTimeEnumOptions(cell) {
+        return undefined;
+    }
     _getAutocompleteResultsForCell(partialWord, cellIndex) {
         // todo: root should be [] correct?
         const cell = this._getGrammarBackedCellArray()[cellIndex - 1];
@@ -2653,6 +2656,9 @@ class AbstractGrammarBackedCell {
     getAutoCompleteWords(partialWord) {
         const definition = this._getCellTypeDefinition();
         let words = definition ? definition.getAutocompleteWordOptions(this._program) : [];
+        const runTimeOptions = this._node.getRunTimeEnumOptions(this);
+        if (runTimeOptions)
+            words = runTimeOptions.concat(words);
         if (partialWord)
             words = words.filter(word => word.includes(partialWord));
         return words.map(word => {
@@ -2672,6 +2678,9 @@ class AbstractGrammarBackedCell {
         return this._node.getPoint().y;
     }
     isValid() {
+        const runTimeOptions = this._node.getRunTimeEnumOptions(this);
+        if (runTimeOptions)
+            return runTimeOptions.includes(this._word);
         return this._getCellTypeDefinition().isValid(this._word, this._node.getProgram()) && this._isValid();
     }
     getErrorIfAny() {
@@ -3125,6 +3134,9 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
     }
     _getCustomConstructor() {
         return this.isNodeJs() ? this._getNodeJsConstructor() : this._getBrowserConstructor();
+    }
+    getCatchAllNodeConstructor() {
+        return TreeNode;
     }
 }
 CustomJavascriptConstructorNode.cache = {};
@@ -3890,4 +3902,4 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "20.0.0";
+jtree.getVersion = () => "21.0.0";

@@ -17,7 +17,7 @@ class jtree {
   static AnyNode = GrammarBackedAnyNode
   static GrammarProgram = GrammarProgram
   static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
-  static getVersion = () => "20.0.0"
+  static getVersion = () => "21.0.0"
 }
 
 export default jtree

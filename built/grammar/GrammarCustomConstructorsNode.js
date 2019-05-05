@@ -110,6 +110,9 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         return this.isNodeJs() ? this._getNodeJsConstructor() : this._getBrowserConstructor();
     }
+    getCatchAllNodeConstructor() {
+        return TreeNode_1.default;
+    }
 }
 CustomJavascriptConstructorNode.cache = {};
 class GrammarCustomConstructorsNode extends TreeNode_1.default {

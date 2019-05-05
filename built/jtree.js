@@ -18,5 +18,5 @@ jtree.TerminalNode = GrammarBackedTerminalNode_1.default;
 jtree.AnyNode = GrammarBackedAnyNode_1.default;
 jtree.GrammarProgram = GrammarProgram_1.default;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode_1.default;
-jtree.getVersion = () => "20.0.0";
+jtree.getVersion = () => "21.0.0";
 exports.default = jtree;

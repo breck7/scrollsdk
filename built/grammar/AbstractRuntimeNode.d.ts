@@ -12,6 +12,7 @@ declare abstract class AbstractRuntimeNode extends TreeNode {
         displayText: string;
     }[];
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
+    getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[];
     private _getAutocompleteResultsForCell;
     private _getAutocompleteResultsForKeywords;
     abstract getDefinition(): AbstractGrammarDefinitionNode;

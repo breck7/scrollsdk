@@ -7,5 +7,4 @@ lightbulbState off
 saturation 2
 someCode
  echo hello world
-potentialColumns year month
-xColumnName month
+xColumnName gender

@@ -29,6 +29,9 @@ class AbstractGrammarBackedCell {
     getAutoCompleteWords(partialWord) {
         const definition = this._getCellTypeDefinition();
         let words = definition ? definition.getAutocompleteWordOptions(this._program) : [];
+        const runTimeOptions = this._node.getRunTimeEnumOptions(this);
+        if (runTimeOptions)
+            words = runTimeOptions.concat(words);
         if (partialWord)
             words = words.filter(word => word.includes(partialWord));
         return words.map(word => {
@@ -48,6 +51,9 @@ class AbstractGrammarBackedCell {
         return this._node.getPoint().y;
     }
     isValid() {
+        const runTimeOptions = this._node.getRunTimeEnumOptions(this);
+        if (runTimeOptions)
+            return runTimeOptions.includes(this._word);
         return this._getCellTypeDefinition().isValid(this._word, this._node.getProgram()) && this._isValid();
     }
     getErrorIfAny() {

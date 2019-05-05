@@ -59,9 +59,13 @@ keyword foo topLevel
 keyword xColumnName topLevel
  description The name of the column to use for the x axis
  cells columnNameEnum
-keyword potentialColumns topLevel
- description List of all column names that will be available for xColumnName
- catchAllCellType columnName
+ constructors
+  javascript
+   class extends jtree.NonTerminalNode {
+     getRunTimeEnumOptions(cell) {
+       return cell.getCellTypeName() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
+     }
+   }
 keyword lightbulbState topLevel
  cells onoff
 keyword nested topLevel

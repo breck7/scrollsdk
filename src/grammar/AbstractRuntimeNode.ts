@@ -34,6 +34,10 @@ abstract class AbstractRuntimeNode extends TreeNode {
     return []
   }
 
+  getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[] {
+    return undefined
+  }
+
   private _getAutocompleteResultsForCell(partialWord: string, cellIndex: types.positiveInt) {
     // todo: root should be [] correct?
     const cell = this._getGrammarBackedCellArray()[cellIndex - 1]

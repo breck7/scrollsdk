@@ -217,16 +217,16 @@ ${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
         return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
     static _getBestType(values) {
-        const all = fn => {
+        const all = (fn) => {
             for (let i = 0; i < values.length; i++) {
                 if (!fn(values[i]))
                     return false;
             }
             return true;
         };
-        if (all(str => str === "0" || str === "1"))
+        if (all((str) => str === "0" || str === "1"))
             return "bit";
-        if (all(str => {
+        if (all((str) => {
             const num = parseInt(str);
             if (isNaN(num))
                 return false;
@@ -234,10 +234,10 @@ ${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
         })) {
             return "int";
         }
-        if (all(str => !str.match(/[^\d\.\-]/)))
+        if (all((str) => !str.match(/[^\d\.\-]/)))
             return "float";
         const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
-        if (all(str => bools.has(str.toLowerCase())))
+        if (all((str) => bools.has(str.toLowerCase())))
             return "bool";
         return "any";
     }
@@ -246,7 +246,7 @@ ${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
         const xi = " "; // todo: make param?
         keywords = keywords || tree.getColumnNames();
         return keywords //this.getInvalidKeywords()
-            .map(keyword => {
+            .map((keyword) => {
             const lines = tree.getColumn(keyword).filter(i => i);
             const cells = lines.map(line => line.split(xi));
             const sizes = new Set(cells.map(c => c.length));

@@ -7,18 +7,11 @@ import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
 import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 
+/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+
 import types from "../types"
 
 abstract class AbstractCustomConstructorNode extends TreeNode {
-  private _getBuiltInConstructors() {
-    return {
-      ErrorNode: GrammarBackedErrorNode,
-      TerminalNode: GrammarBackedTerminalNode,
-      NonTerminalNode: GrammarBackedNonTerminalNode,
-      AnyNode: GrammarBackedAnyNode
-    }
-  }
-
   getDefinedConstructor(): types.RunTimeNodeConstructor {
     return this.getBuiltIn() || this._getCustomConstructor()
   }
@@ -51,14 +44,20 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
   }
 
   getBuiltIn() {
-    return this._getBuiltInConstructors()[this.getWord(1)]
+    const constructors: types.stringMap = {
+      ErrorNode: GrammarBackedErrorNode,
+      TerminalNode: GrammarBackedTerminalNode,
+      NonTerminalNode: GrammarBackedNonTerminalNode,
+      AnyNode: GrammarBackedAnyNode
+    }
+    return constructors[this.getWord(1)]
   }
 }
 
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
   protected _getCustomConstructor(): types.RunTimeNodeConstructor {
     const filepath = this._getNodeConstructorFilePath()
-    const rootPath = this.getRootNode().getTheGrammarFilePath()
+    const rootPath = (<GrammarProgram>this.getRootNode()).getTheGrammarFilePath()
     const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
     const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
 
@@ -121,7 +120,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
     const script = document.createElement("script")
     script.innerHTML = `window.${tempClassName} = ${this.childrenToString()}`
     document.head.appendChild(script)
-    CustomJavascriptConstructorNode.cache[definedCode] = window[tempClassName]
+    CustomJavascriptConstructorNode.cache[definedCode] = (<any>window)[tempClassName]
   }
 
   protected _getCustomConstructor(): types.RunTimeNodeConstructor {
@@ -135,7 +134,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
 
 class GrammarCustomConstructorsNode extends TreeNode {
   getKeywordMap() {
-    const map = {}
+    const map: types.keywordToNodeMap = {}
     map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode
     map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode
     map[GrammarConstants.constructorJavascript] = CustomJavascriptConstructorNode
@@ -144,8 +143,10 @@ class GrammarCustomConstructorsNode extends TreeNode {
 
   getConstructorForEnvironment(): AbstractCustomConstructorNode {
     const jsConstructor = this.getNode(GrammarConstants.constructorJavascript)
-    if (jsConstructor) return jsConstructor
-    return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser)
+    if (jsConstructor) return <AbstractCustomConstructorNode>jsConstructor
+    return <AbstractCustomConstructorNode>(
+      this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser)
+    )
   }
 }
 

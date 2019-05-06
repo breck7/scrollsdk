@@ -8,7 +8,7 @@ declare class GrammarCellTypeDefinitionNode extends TreeNode {
     private _getEnumOptions;
     private _getEnumFromGrammarOptions;
     getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgram): string[];
-    getRegexString(): any;
+    getRegexString(): string;
     isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram): boolean;
     getCellTypeId(): string;
     static types: any;

@@ -68,7 +68,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
     return grammarProgram.getKeywordDefinitionByKeywordPath(path)
   }
 
-  protected _getRequiredNodeErrors(errors = []) {
+  protected _getRequiredNodeErrors(errors: types.ParseError[] = []) {
     const nodeDef = this.getDefinition()
     const keywords = nodeDef.getRunTimeKeywordMapWithDefinitions()
     Object.keys(keywords).forEach(keyword => {
@@ -78,7 +78,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
           kind: GrammarConstantsErrors.missingRequiredKeywordError,
           subkind: keyword,
           level: 0,
-          context: 0,
+          context: "",
           message: `${
             GrammarConstantsErrors.missingRequiredKeywordError
           } Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`

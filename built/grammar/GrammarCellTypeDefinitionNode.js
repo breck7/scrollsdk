@@ -55,6 +55,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
         types[GrammarConstants_1.GrammarConstants.highlightScope] = TreeNode_1.default;
         return types;
     }
+    // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
     getCellConstructor() {
         const kinds = {
             any: GrammarBackedCell_1.GrammarAnyCell,

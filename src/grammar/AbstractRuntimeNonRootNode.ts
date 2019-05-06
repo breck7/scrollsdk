@@ -10,6 +10,9 @@ import {
 } from "./GrammarBackedCell"
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+/*FOR_TYPES_ONLY*/ import GrammarCompilerNode from "./GrammarCompilerNode"
+
+import types from "../types"
 
 abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   getProgram() {
@@ -25,7 +28,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this._getKeywordDefinitionByName(this.getKeywordPath())
   }
 
-  getCompilerNode(targetLanguage) {
+  getCompilerNode(targetLanguage: types.targetLanguageId): GrammarCompilerNode {
     return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
   }
 
@@ -33,21 +36,21 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this._getGrammarBackedCellArray().map(word => word.getParsed())
   }
 
-  getCompiledIndentation(targetLanguage) {
+  getCompiledIndentation(targetLanguage: types.targetLanguageId) {
     const compiler = this.getCompilerNode(targetLanguage)
     const indentCharacter = compiler.getIndentCharacter()
     const indent = this.getIndentation()
     return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
 
-  getCompiledLine(targetLanguage) {
+  getCompiledLine(targetLanguage: types.targetLanguageId) {
     const compiler = this.getCompilerNode(targetLanguage)
     const listDelimiter = compiler.getListDelimiter()
     const str = compiler.getTransformation()
     return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine()
   }
 
-  compile(targetLanguage) {
+  compile(targetLanguage: types.targetLanguageId) {
     return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage)
   }
 
@@ -78,7 +81,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   }
 
   get cells() {
-    const cells = {}
+    const cells: types.stringMap = {}
     this._getGrammarBackedCellArray().forEach(cell => {
       if (!cell.isCatchAll()) cells[cell.getCellTypeName()] = cell.getParsed()
       else {

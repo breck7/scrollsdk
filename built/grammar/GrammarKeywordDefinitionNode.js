@@ -20,7 +20,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
     getMatchBlock() {
         const defaultHighlightScope = "source";
         const program = this.getProgram();
-        const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getId();
         const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`;
         const topHalf = ` '${this.getSyntaxContextId()}':
@@ -42,7 +42,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode_1.defau
                 cellTypeDefinition.getCellTypeId()}`;
         })
             .join("\n");
-        const cellTypesToRegex = cellTypeNames => cellTypeNames.map(cellTypeName => `({{${cellTypeName}}})?`).join(" ?");
+        const cellTypesToRegex = (cellTypeNames) => cellTypeNames.map((cellTypeName) => `({{${cellTypeName}}})?`).join(" ?");
         return `${topHalf}
     push:
      - match: ${cellTypesToRegex(requiredCellTypeNames)}
@@ -84,7 +84,7 @@ ${captures}
         return this.getId();
     }
     _getDefaultsNode() {
-        return this.get(GrammarConstants_1.GrammarConstants.defaults);
+        return this.getNode(GrammarConstants_1.GrammarConstants.defaults);
     }
     // todo: deprecate?
     getDefaultFor(name) {

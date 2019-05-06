@@ -15,7 +15,7 @@ enum FileFormat {
 }
 
 class ImmutableNode extends AbstractNode {
-  constructor(children?: any, line?: string, parent?: ImmutableNode) {
+  constructor(children?: types.children, line?: string, parent?: ImmutableNode) {
     super()
     this._parent = parent
     this._setLine(line)
@@ -602,11 +602,11 @@ class ImmutableNode extends AbstractNode {
     if (!this.isNodeJs()) throw new Error("This method only works in Node.js")
     const format = ImmutableNode._getFileFormat(path)
     const formats = {
-      tree: tree => tree.toString(),
-      csv: tree => tree.toCsv(),
-      tsv: tree => tree.toTsv()
+      tree: (tree: TreeNode) => tree.toString(),
+      csv: (tree: TreeNode) => tree.toCsv(),
+      tsv: (tree: TreeNode) => tree.toTsv()
     }
-    require("fs").writeFileSync(path, formats[format](this), "utf8")
+    require("fs").writeFileSync(path, <string>(<any>formats)[format](this), "utf8")
     return this
   }
 
@@ -725,7 +725,7 @@ class ImmutableNode extends AbstractNode {
     return node === undefined ? undefined : node.getContent()
   }
 
-  protected _getNodeByPath(keywordPath) {
+  protected _getNodeByPath(keywordPath: types.keywordPath): ImmutableNode {
     const xi = this.getXI()
     if (!keywordPath.includes(xi)) {
       const index = this.indexOfLast(keywordPath)
@@ -759,8 +759,8 @@ class ImmutableNode extends AbstractNode {
   protected _getUnionNames() {
     if (!this.length) return []
 
-    const obj = {}
-    this.forEach(node => {
+    const obj: types.stringMap = {}
+    this.forEach((node: TreeNode) => {
       if (!node.length) return undefined
       node.forEach(node => {
         obj[node.getKeyword()] = 1
@@ -834,7 +834,7 @@ class ImmutableNode extends AbstractNode {
     return tree
   }
 
-  protected _getTypes(header) {
+  protected _getTypes(header: string[]) {
     const matrix = this._getMatrix(header)
     const types = header.map(i => "int")
     matrix.forEach(row => {
@@ -855,8 +855,8 @@ class ImmutableNode extends AbstractNode {
 
   toDataTable(header = this._getUnionNames()): types.dataTable {
     const types = this._getTypes(header)
-    const parsers = {
-      string: i => i,
+    const parsers: { [parseName: string]: (str: string) => any } = {
+      string: str => str,
       float: parseFloat,
       int: parseInt
     }
@@ -867,17 +867,17 @@ class ImmutableNode extends AbstractNode {
     return arrays.rows
   }
 
-  toDelimited(delimiter, header = this._getUnionNames()) {
+  toDelimited(delimiter: types.delimiter, header = this._getUnionNames()) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn: cellFn = (str, row, column) =>
       !str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`
     return this._toDelimited(delimiter, header, cellFn)
   }
 
-  protected _getMatrix(columns) {
-    const matrix = []
+  protected _getMatrix(columns: string[]) {
+    const matrix: string[][] = []
     this.forEach(child => {
-      const row = []
+      const row: string[] = []
       columns.forEach(col => {
         row.push(child.get(col))
       })
@@ -902,7 +902,7 @@ class ImmutableNode extends AbstractNode {
     }
   }
 
-  protected _toDelimited(delimiter, header: string[], cellFn: cellFn) {
+  protected _toDelimited(delimiter: types.delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
@@ -931,7 +931,7 @@ class ImmutableNode extends AbstractNode {
       })
     })
 
-    const cellFn = (cellText, row, col) => {
+    const cellFn = (cellText: string, row: types.positiveInt, col: types.positiveInt) => {
       const width = widths[col]
       // Strip newlines in fixedWidth output
       const cellValue = cellText.toString().replace(/\n/g, "\\n")
@@ -953,15 +953,21 @@ class ImmutableNode extends AbstractNode {
     return this._toOutline(node => node.getLine())
   }
 
-  toMappedOutline(nodeFn): string {
+  toMappedOutline(nodeFn: types.nodeToStringFn): string {
     return this._toOutline(nodeFn)
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  protected _toOutline(nodeFn) {
-    const growBranch = (outlineTreeNode, last, lastStates, nodeFn, callback) => {
+  protected _toOutline(nodeFn: types.nodeToStringFn) {
+    const growBranch = (
+      outlineTreeNode: any,
+      last: boolean,
+      lastStates: any[],
+      nodeFn: types.nodeToStringFn,
+      callback: any
+    ) => {
       let lastStatesCopy = lastStates.slice(0)
-      const node = outlineTreeNode.node
+      const node: TreeNode = outlineTreeNode.node
 
       if (lastStatesCopy.push([outlineTreeNode, last]) && lastStates.length > 0) {
         let line = ""
@@ -990,11 +996,11 @@ class ImmutableNode extends AbstractNode {
     }
 
     let output = ""
-    growBranch({ node: this }, false, [], nodeFn, line => (output += line + "\n"))
+    growBranch({ node: this }, false, [], nodeFn, (line: string) => (output += line + "\n"))
     return output
   }
 
-  copyTo(node, index: int) {
+  copyTo(node: TreeNode, index: int) {
     return node._setLineAndChildren(this.getLine(), this.childrenToString(), index)
   }
 
@@ -1012,10 +1018,10 @@ class ImmutableNode extends AbstractNode {
   }
 
   toMarkdownTable(): string {
-    return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val)
+    return this.toMarkdownTableAdvanced(this._getUnionNames(), (val: string) => val)
   }
 
-  toMarkdownTableAdvanced(columns: word[], formatFn): string {
+  toMarkdownTableAdvanced(columns: word[], formatFn: types.formatFunction): string {
     const matrix = this._getMatrix(columns)
     const empty = columns.map(col => "-")
     matrix.unshift(empty)
@@ -1047,7 +1053,7 @@ class ImmutableNode extends AbstractNode {
     return " "
   }
 
-  protected _textToContentAndChildrenTuple(text) {
+  protected _textToContentAndChildrenTuple(text: string) {
     const lines = text.split(this.getYIRegex())
     const firstLine = lines.shift()
     const children = !lines.length
@@ -1075,7 +1081,7 @@ class ImmutableNode extends AbstractNode {
     return this
   }
 
-  protected _setChildren(content, circularCheckArray?: any[]) {
+  protected _setChildren(content: any, circularCheckArray?: any[]) {
     this._clearChildren()
     if (!content) return this
 
@@ -1097,7 +1103,7 @@ class ImmutableNode extends AbstractNode {
     return this._setFromObject(content, circularCheckArray)
   }
 
-  protected _setFromObject(content, circularCheckArray) {
+  protected _setFromObject(content: any, circularCheckArray: Object[]) {
     for (let keyword in content) {
       if (!content.hasOwnProperty(keyword)) continue
       // Branch the circularCheckArray, as we only have same branch circular arrays
@@ -1108,7 +1114,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(keyword, content, circularCheckArray) {
+  protected _appendFromJavascriptObjectTuple(keyword: types.word, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let children
@@ -1137,8 +1143,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: protected?
-  _setLineAndChildren(line, children?, index = this.length) {
-    const nodeConstructor = this.getNodeConstructor(line)
+  _setLineAndChildren(line: string, children?: types.children, index = this.length) {
+    const nodeConstructor: any = this.getNodeConstructor(line)
     const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
@@ -1151,9 +1157,9 @@ class ImmutableNode extends AbstractNode {
   protected _parseString(str: string) {
     if (!str) return this
     const lines = str.split(this.getYIRegex())
-    const parentStack = []
+    const parentStack: TreeNode[] = []
     let currentIndentCount = -1
-    let lastNode = this
+    let lastNode: any = this
     lines.forEach(line => {
       const indentCount = this._getIndentCount(line)
       if (indentCount > currentIndentCount) {
@@ -1168,7 +1174,7 @@ class ImmutableNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const nodeConstructor = parent.getNodeConstructor(lineContent)
+      const nodeConstructor: any = parent.getNodeConstructor(lineContent)
       lastNode = new nodeConstructor(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })
@@ -1234,11 +1240,11 @@ class ImmutableNode extends AbstractNode {
     return newIndex
   }
 
-  protected _childrenToXml(indentCount) {
+  protected _childrenToXml(indentCount: types.positiveInt) {
     return this.map(node => node._toXml(indentCount)).join("")
   }
 
-  protected _getIndentCount(str) {
+  protected _getIndentCount(str: string) {
     let level = 0
     const edgeChar = this.getXI()
     while (str[level] === edgeChar) {
@@ -1342,7 +1348,7 @@ class ImmutableNode extends AbstractNode {
 
   protected static _getFileFormat(path: string) {
     const format = path.split(".").pop()
-    return FileFormat[format] ? format : FileFormat.tree
+    return FileFormat[<any>format] ? format : FileFormat.tree
   }
 
   static iris = `sepal_length,sepal_width,petal_length,petal_width,species
@@ -1393,7 +1399,7 @@ class TreeNode extends ImmutableNode {
   protected _expand(thisColumnNumber: int, extendsColumnNumber: int): TreeNode {
     const graph = this.getGraph(thisColumnNumber, extendsColumnNumber)
     const result = new TreeNode()
-    graph.forEach(node => result.extend(node))
+    graph.forEach(node => result.extend(<TreeNode>node))
     return new TreeNode().appendLineAndChildren(this.getLine(), result)
   }
 
@@ -1406,7 +1412,7 @@ class TreeNode extends ImmutableNode {
       const macroName = def.getWord(1)
       const uses = allUses.filter(node => node.hasWord(1, macroName))
       const params = def.getWordsFrom(2)
-      const replaceFn = str => {
+      const replaceFn = (str: string) => {
         const paramValues = str.split(zi).slice(2)
         let newTree = def.childrenToString()
         params.forEach((param, index) => {
@@ -1422,7 +1428,7 @@ class TreeNode extends ImmutableNode {
     return clone
   }
 
-  setChildren(children) {
+  setChildren(children: types.children) {
     return this._setChildren(children)
   }
 
@@ -1526,7 +1532,7 @@ class TreeNode extends ImmutableNode {
     return this._setLineAndChildren(line)
   }
 
-  appendLineAndChildren(line: string, children: types.something) {
+  appendLineAndChildren(line: string, children: types.children) {
     return this._setLineAndChildren(line, children)
   }
 
@@ -1638,7 +1644,7 @@ class TreeNode extends ImmutableNode {
 
     const parts = keyword.split(xi)
     const nextKeyword = parts.pop()
-    const targetNode = this.getNode(parts.join(xi))
+    const targetNode = <TreeNode>this.getNode(parts.join(xi))
 
     return targetNode ? targetNode._deleteAllChildNodesWithKeyword(nextKeyword) : 0
   }
@@ -1677,7 +1683,7 @@ class TreeNode extends ImmutableNode {
     return returnedNodes
   }
 
-  insertLineAndChildren(line: string, children: types.something, index: int) {
+  insertLineAndChildren(line: string, children: types.children, index: int) {
     return this._setLineAndChildren(line, children, index)
   }
 
@@ -1689,7 +1695,7 @@ class TreeNode extends ImmutableNode {
     return this.insertLine(line, 0)
   }
 
-  pushContentAndChildren(content?: types.line, children?: types.something) {
+  pushContentAndChildren(content?: types.line, children?: types.children) {
     let index = this.length
 
     while (this.has(index.toString())) {
@@ -1710,8 +1716,8 @@ class TreeNode extends ImmutableNode {
     return this._keywordSort(keywordOrder)
   }
 
-  protected _keywordSort(keywordOrder: types.word[], secondarySortFn?: types.sortFn): this {
-    const map: { [keyword: types.word]: int } = {}
+  _keywordSort(keywordOrder: types.word[], secondarySortFn?: types.sortFn): this {
+    const map: { [keyword: string]: int } = {}
     keywordOrder.forEach((word, index) => {
       map[word] = index
     })

@@ -93,7 +93,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return <GrammarProgram>this.getParent()
   }
 
-  getDefinitionCompilerNode(targetLanguage: string, node: TreeNode) {
+  getDefinitionCompilerNode(targetLanguage: types.targetLanguageId, node: TreeNode) {
     const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)
     if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)
     return compilerNode
@@ -174,7 +174,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   protected _getKeywordsNode(): TreeNode {
     // todo: allow multiple of these if we allow mixins?
-    return this.getNode(GrammarConstants.keywords)
+    return <TreeNode>this.getNode(GrammarConstants.keywords)
   }
 
   isRequired(): boolean {
@@ -196,7 +196,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
   }
 
-  protected _getCatchAllDefinition(): AbstractGrammarDefinitionNode {
+  _getCatchAllDefinition(): AbstractGrammarDefinitionNode {
     const catchAllKeyword = this._getRunTimeCatchAllKeyword()
     const definitions = this._getProgramKeywordDefinitionCache()
     const def = definitions[catchAllKeyword]

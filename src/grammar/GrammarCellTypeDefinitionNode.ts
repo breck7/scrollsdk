@@ -46,7 +46,8 @@ class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
 }
 
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
-  private _map
+  private _map: types.stringMap
+
   isValid(str: string) {
     // enum c c++ java
     return !!this.getOptions()[str]
@@ -68,8 +69,9 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return types
   }
 
+  // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
   getCellConstructor() {
-    const kinds = {
+    const kinds: types.stringMap = {
       any: GrammarAnyCell,
       float: GrammarFloatCell,
       number: GrammarFloatCell,

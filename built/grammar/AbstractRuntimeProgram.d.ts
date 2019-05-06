@@ -5,7 +5,7 @@ import GrammarProgram from "./GrammarProgram";
 declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getProgramErrorsIterator(): IterableIterator<any>;
     getProgramErrors(): types.ParseError[];
-    getInvalidKeywords(level?: any): string[];
+    getInvalidKeywords(level?: types.int): string[];
     getAllSuggestions(): string;
     getAutocompleteResultsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt): {
         startCharIndex: number;
@@ -30,7 +30,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     private _cache_programCellTypeStringMTime;
     private _cache_highlightScopeTree;
     private _cache_typeTree;
-    protected _initCellTypeCache(): any;
-    getCompiledProgramName(programPath: any): any;
+    protected _initCellTypeCache(): void;
+    getCompiledProgramName(programPath: string): string;
 }
 export default AbstractRuntimeProgram;

@@ -3,10 +3,10 @@ import types from "../types";
 declare class GrammarCompilerNode extends TreeNode {
     getKeywordMap(): types.keywordToNodeMap;
     getTargetExtension(): string;
-    getListDelimiter(): any;
-    getTransformation(): any;
-    getIndentCharacter(): any;
-    getOpenChildrenString(): any;
-    getCloseChildrenString(): any;
+    getListDelimiter(): string;
+    getTransformation(): string;
+    getIndentCharacter(): string;
+    getOpenChildrenString(): string;
+    getCloseChildrenString(): string;
 }
 export default GrammarCompilerNode;

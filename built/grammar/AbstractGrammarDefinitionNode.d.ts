@@ -16,7 +16,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getProgram(): GrammarProgram;
-    getDefinitionCompilerNode(targetLanguage: string, node: TreeNode): GrammarCompilerNode;
+    getDefinitionCompilerNode(targetLanguage: types.targetLanguageId, node: TreeNode): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
     private _cache_keywordsMap;
@@ -35,7 +35,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     isSingle(): boolean;
     _getRunTimeCatchAllKeyword(): string;
     getKeywordDefinitionByName(keyword: string): AbstractGrammarDefinitionNode;
-    protected _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
+    _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): void;
     getHighlightScope(): string | undefined;

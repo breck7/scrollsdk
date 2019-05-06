@@ -1,5 +1,7 @@
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 
+import types from "../types"
+
 class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
   getKeywordMap() {
     return this.getDefinition().getRunTimeKeywordMap()
@@ -10,7 +12,7 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     return "\n"
   }
 
-  compile(targetExtension) {
+  compile(targetExtension: types.targetLanguageId) {
     const compiler = this.getCompilerNode(targetExtension)
     const openChildrenString = compiler.getOpenChildrenString()
     const closeChildrenString = compiler.getCloseChildrenString()

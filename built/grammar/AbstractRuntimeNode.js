@@ -59,7 +59,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
                     kind: GrammarConstants_1.GrammarConstantsErrors.missingRequiredKeywordError,
                     subkind: keyword,
                     level: 0,
-                    context: 0,
+                    context: "",
                     message: `${GrammarConstants_1.GrammarConstantsErrors.missingRequiredKeywordError} Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
                 });
             }

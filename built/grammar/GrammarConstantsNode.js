@@ -8,10 +8,7 @@ class GrammarConstantsNode extends TreeNode_1.default {
     }
     getConstantsObj() {
         const result = {};
-        this.forEach(node => {
-            const name = node.getName();
-            result[name] = node.getValue();
-        });
+        this.forEach(node => (result[node.getName()] = node.getValue()));
         return result;
     }
 }

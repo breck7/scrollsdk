@@ -11,7 +11,6 @@ export declare namespace types {
         y: int;
     }
     type treeNode = any;
-    type something = string | Object | any | treeNode;
     type line = string;
     type int = number;
     type positiveInt = number;
@@ -22,6 +21,7 @@ export declare namespace types {
     type xmlString = string;
     type jsonString = string;
     type dataTable = (any[])[];
+    type delimiter = string;
     type formatString = string;
     type keywordPath = string;
     type pathVector = int[];
@@ -30,9 +30,13 @@ export declare namespace types {
     type filepath = string;
     type highlightScope = string;
     type fileExtension = string;
+    type targetLanguageId = fileExtension;
     type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt;
     type filterFn = (node: treeNode, index: int) => boolean;
     type forEachFn = (node: treeNode, index: int) => void;
+    type nodeToStringFn = (node: treeNode) => string;
+    type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string;
+    type children = string | Object | treeNode | any;
     type TreeNodeConstructor = Function;
     type RunTimeNodeConstructor = Function;
     type TreeProgramConstructor = Function;

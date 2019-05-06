@@ -112,7 +112,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     }
     // todo: refine and make public
     _getSyntaxTreeHtml() {
-        const getColor = child => {
+        const getColor = (child) => {
             if (child.getLineSyntax().includes("error"))
                 return "red";
             return "black";

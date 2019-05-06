@@ -1,11 +1,13 @@
+import types from "../types"
+
 class TreeUtils {
-  static getPathWithoutFileName(path) {
+  static getPathWithoutFileName(path: string) {
     const parts = path.split("/") // todo: change for windows?
     parts.pop()
     return parts.join("/")
   }
 
-  static getClassNameFromFilePath(filename) {
+  static getClassNameFromFilePath(filename: string) {
     return filename
       .replace(/\.[^\.]+$/, "")
       .split("/")
@@ -37,10 +39,10 @@ class TreeUtils {
 
   static resolveProperty(obj: Object, path: string | string[], separator = ".") {
     const properties = Array.isArray(path) ? path : path.split(separator)
-    return properties.reduce((prev, curr) => prev && prev[curr], obj)
+    return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
   }
 
-  static formatStr(str, listDelimiter = " ", parameterMap) {
+  static formatStr(str: string, listDelimiter = " ", parameterMap: types.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
@@ -48,13 +50,13 @@ class TreeUtils {
     })
   }
 
-  static stripHtml(text) {
+  static stripHtml(text: string) {
     return text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text
   }
 
   static getUniqueWordsArray(allWords: string) {
     const words = allWords.replace(/\n/g, " ").split(" ")
-    const index = {}
+    const index: types.stringMap = {}
     words.forEach(word => {
       if (!index[word]) index[word] = 0
       index[word]++
@@ -99,8 +101,8 @@ class TreeUtils {
     return str
   }
 
-  static arrayToMap(arr) {
-    const map = {}
+  static arrayToMap(arr: Array<any>) {
+    const map: types.stringMap = {}
     arr.forEach(val => (map[val] = true))
     return map
   }
@@ -113,8 +115,8 @@ class TreeUtils {
     return result
   }
 
-  static sortByAccessor(accessor) {
-    return (objectA, objectB) => {
+  static sortByAccessor(accessor: Function) {
+    return (objectA: Object, objectB: Object) => {
       const av = accessor(objectA)
       const bv = accessor(objectB)
       let result = av < bv ? -1 : av > bv ? 1 : 0
@@ -125,7 +127,7 @@ class TreeUtils {
   }
 
   static makeGraphSortFunction(thisColumnIndex: number, extendsColumnIndex: number) {
-    return (nodeA, nodeB) => {
+    return (nodeA: types.treeNode, nodeB: types.treeNode) => {
       // -1 === a before b
       const nodeAUniqueId = nodeA.getWord(thisColumnIndex)
       const nodeAExtends = nodeA.getWord(extendsColumnIndex)

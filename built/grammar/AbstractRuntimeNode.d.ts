@@ -17,6 +17,6 @@ declare abstract class AbstractRuntimeNode extends TreeNode {
     private _getAutocompleteResultsForKeywords;
     abstract getDefinition(): AbstractGrammarDefinitionNode;
     protected _getKeywordDefinitionByName(path: string): AbstractGrammarDefinitionNode;
-    protected _getRequiredNodeErrors(errors?: any[]): any[];
+    protected _getRequiredNodeErrors(errors?: types.ParseError[]): types.ParseError[];
 }
 export default AbstractRuntimeNode;

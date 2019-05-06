@@ -54,7 +54,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
-      const errs = node.getErrors()
+      const errs: types.ParseError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       delete node._cachedLineNumber
       line++
@@ -135,7 +135,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   protected _getKeywordsNode(): TreeNode {
-    return this._getGrammarRootNode().getNode(GrammarConstants.keywords)
+    return <TreeNode>this._getGrammarRootNode().getNode(GrammarConstants.keywords)
   }
 
   private _cachedDefinitions: {
@@ -147,7 +147,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     if (this._cachedDefinitions[keywordPath]) return this._cachedDefinitions[keywordPath]
 
     const parts = keywordPath.split(" ")
-    let subject = this
+    let subject: AbstractGrammarDefinitionNode = this
     let def
     for (let index = 0; index < parts.length; index++) {
       const part = parts[index]
@@ -192,7 +192,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
     const definedConstructor = this._getGrammarRootNode().getDefinedConstructor()
-    const extendedConstructor = definedConstructor || AbstractRuntimeProgram
+    const extendedConstructor: any = definedConstructor || AbstractRuntimeProgram
     const grammarProgram = this
 
     // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
@@ -276,17 +276,17 @@ ${GrammarConstants.cellType} any`
     return new GrammarProgram(tree.getExpanded(1, 2), grammarPath)
   }
 
-  static _getBestType(values) {
-    const all = fn => {
+  static _getBestType(values: any) {
+    const all = (fn: Function) => {
       for (let i = 0; i < values.length; i++) {
         if (!fn(values[i])) return false
       }
       return true
     }
-    if (all(str => str === "0" || str === "1")) return "bit"
+    if (all((str: string) => str === "0" || str === "1")) return "bit"
 
     if (
-      all(str => {
+      all((str: string) => {
         const num = parseInt(str)
         if (isNaN(num)) return false
         return num.toString() === str
@@ -295,20 +295,20 @@ ${GrammarConstants.cellType} any`
       return "int"
     }
 
-    if (all(str => !str.match(/[^\d\.\-]/))) return "float"
+    if (all((str: string) => !str.match(/[^\d\.\-]/))) return "float"
 
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (all(str => bools.has(str.toLowerCase()))) return "bool"
+    if (all((str: string) => bools.has(str.toLowerCase()))) return "bool"
 
     return "any"
   }
 
-  static predictGrammarFile(str: string | TreeNode, keywords = undefined): string {
+  static predictGrammarFile(str: string | TreeNode, keywords: string[] = undefined): string {
     const tree = str instanceof TreeNode ? str : new TreeNode(str)
     const xi = " " // todo: make param?
     keywords = keywords || tree.getColumnNames()
     return keywords //this.getInvalidKeywords()
-      .map(keyword => {
+      .map((keyword: string) => {
         const lines = tree.getColumn(keyword).filter(i => i)
         const cells = lines.map(line => line.split(xi))
         const sizes = new Set(cells.map(c => c.length))

@@ -24,6 +24,66 @@ class AbstractNode {
         return time;
     }
 }
+// todo: change to enum?
+var GrammarConstantsCompiler;
+(function (GrammarConstantsCompiler) {
+    GrammarConstantsCompiler["sub"] = "sub";
+    GrammarConstantsCompiler["indentCharacter"] = "indentCharacter";
+    GrammarConstantsCompiler["listDelimiter"] = "listDelimiter";
+    GrammarConstantsCompiler["openChildren"] = "openChildren";
+    GrammarConstantsCompiler["closeChildren"] = "closeChildren";
+})(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
+var GrammarConstants;
+(function (GrammarConstants) {
+    // node types
+    GrammarConstants["grammar"] = "grammar";
+    GrammarConstants["extensions"] = "extensions";
+    GrammarConstants["version"] = "version";
+    GrammarConstants["name"] = "name";
+    GrammarConstants["keywordOrder"] = "keywordOrder";
+    GrammarConstants["keyword"] = "keyword";
+    GrammarConstants["cellType"] = "cellType";
+    GrammarConstants["abstract"] = "abstract";
+    // error check time
+    GrammarConstants["regex"] = "regex";
+    GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
+    GrammarConstants["enum"] = "enum";
+    // parse time
+    GrammarConstants["keywords"] = "keywords";
+    GrammarConstants["cells"] = "cells";
+    GrammarConstants["catchAllCellType"] = "catchAllCellType";
+    GrammarConstants["catchAllKeyword"] = "catchAllKeyword";
+    GrammarConstants["defaults"] = "defaults";
+    GrammarConstants["constants"] = "constants";
+    GrammarConstants["group"] = "group";
+    GrammarConstants["any"] = "any";
+    GrammarConstants["required"] = "required";
+    GrammarConstants["single"] = "single";
+    GrammarConstants["tags"] = "tags";
+    // parse and interpret time
+    GrammarConstants["constructors"] = "constructors";
+    GrammarConstants["constructorNodeJs"] = "nodejs";
+    GrammarConstants["constructorBrowser"] = "browser";
+    GrammarConstants["constructorJavascript"] = "javascript";
+    // compile time
+    GrammarConstants["compilerKeyword"] = "compiler";
+    // develop time
+    GrammarConstants["description"] = "description";
+    GrammarConstants["example"] = "example";
+    GrammarConstants["frequency"] = "frequency";
+    GrammarConstants["highlightScope"] = "highlightScope";
+})(GrammarConstants || (GrammarConstants = {}));
+var GrammarConstantsErrors;
+(function (GrammarConstantsErrors) {
+    GrammarConstantsErrors["invalidKeywordError"] = "invalidKeywordError";
+    GrammarConstantsErrors["invalidConstructorPathError"] = "invalidConstructorPathError";
+    GrammarConstantsErrors["invalidWordError"] = "invalidWordError";
+    GrammarConstantsErrors["grammarDefinitionError"] = "grammarDefinitionError";
+    GrammarConstantsErrors["extraWordError"] = "extraWordError";
+    GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
+    GrammarConstantsErrors["missingRequiredKeywordError"] = "missingRequiredKeywordError";
+    GrammarConstantsErrors["keywordUsedMultipleTimesError"] = "keywordUsedMultipleTimesError";
+})(GrammarConstantsErrors || (GrammarConstantsErrors = {}));
 class TreeUtils {
     static getPathWithoutFileName(path) {
         const parts = path.split("/"); // todo: change for windows?
@@ -235,247 +295,6 @@ TreeUtils.BrowserScript = class {
     getString() {
         return this._str;
     }
-};
-// todo: change to enum?
-var GrammarConstantsCompiler;
-(function (GrammarConstantsCompiler) {
-    GrammarConstantsCompiler["sub"] = "sub";
-    GrammarConstantsCompiler["indentCharacter"] = "indentCharacter";
-    GrammarConstantsCompiler["listDelimiter"] = "listDelimiter";
-    GrammarConstantsCompiler["openChildren"] = "openChildren";
-    GrammarConstantsCompiler["closeChildren"] = "closeChildren";
-})(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
-var GrammarConstants;
-(function (GrammarConstants) {
-    // node types
-    GrammarConstants["grammar"] = "grammar";
-    GrammarConstants["extensions"] = "extensions";
-    GrammarConstants["version"] = "version";
-    GrammarConstants["name"] = "name";
-    GrammarConstants["keywordOrder"] = "keywordOrder";
-    GrammarConstants["keyword"] = "keyword";
-    GrammarConstants["cellType"] = "cellType";
-    GrammarConstants["abstract"] = "abstract";
-    // error check time
-    GrammarConstants["regex"] = "regex";
-    GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
-    GrammarConstants["enum"] = "enum";
-    // parse time
-    GrammarConstants["keywords"] = "keywords";
-    GrammarConstants["cells"] = "cells";
-    GrammarConstants["catchAllCellType"] = "catchAllCellType";
-    GrammarConstants["catchAllKeyword"] = "catchAllKeyword";
-    GrammarConstants["defaults"] = "defaults";
-    GrammarConstants["constants"] = "constants";
-    GrammarConstants["group"] = "group";
-    GrammarConstants["any"] = "any";
-    GrammarConstants["required"] = "required";
-    GrammarConstants["single"] = "single";
-    GrammarConstants["tags"] = "tags";
-    // parse and interpret time
-    GrammarConstants["constructors"] = "constructors";
-    GrammarConstants["constructorNodeJs"] = "nodejs";
-    GrammarConstants["constructorBrowser"] = "browser";
-    GrammarConstants["constructorJavascript"] = "javascript";
-    // compile time
-    GrammarConstants["compilerKeyword"] = "compiler";
-    // develop time
-    GrammarConstants["description"] = "description";
-    GrammarConstants["example"] = "example";
-    GrammarConstants["frequency"] = "frequency";
-    GrammarConstants["highlightScope"] = "highlightScope";
-})(GrammarConstants || (GrammarConstants = {}));
-var GrammarConstantsErrors;
-(function (GrammarConstantsErrors) {
-    GrammarConstantsErrors["invalidKeywordError"] = "invalidKeywordError";
-    GrammarConstantsErrors["invalidConstructorPathError"] = "invalidConstructorPathError";
-    GrammarConstantsErrors["invalidWordError"] = "invalidWordError";
-    GrammarConstantsErrors["grammarDefinitionError"] = "grammarDefinitionError";
-    GrammarConstantsErrors["extraWordError"] = "extraWordError";
-    GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
-    GrammarConstantsErrors["missingRequiredKeywordError"] = "missingRequiredKeywordError";
-    GrammarConstantsErrors["keywordUsedMultipleTimesError"] = "keywordUsedMultipleTimesError";
-})(GrammarConstantsErrors || (GrammarConstantsErrors = {}));
-// Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
-var CmToken;
-(function (CmToken) {
-    CmToken["Atom"] = "atom";
-    CmToken["Attribute"] = "attribute";
-    CmToken["Bracket"] = "bracket";
-    CmToken["Builtin"] = "builtin";
-    CmToken["Comment"] = "comment";
-    CmToken["Def"] = "def";
-    CmToken["Error"] = "error";
-    CmToken["Header"] = "header";
-    CmToken["HR"] = "hr";
-    CmToken["Keyword"] = "keyword";
-    CmToken["Link"] = "link";
-    CmToken["Meta"] = "meta";
-    CmToken["Number"] = "number";
-    CmToken["Operator"] = "operator";
-    CmToken["Property"] = "property";
-    CmToken["Qualifier"] = "qualifier";
-    CmToken["Quote"] = "quote";
-    CmToken["String"] = "string";
-    CmToken["String2"] = "string-2";
-    CmToken["Tag"] = "tag";
-    CmToken["Type"] = "type";
-    CmToken["Variable"] = "variable";
-    CmToken["Variable2"] = "variable-2";
-    CmToken["Variable3"] = "variable-3";
-})(CmToken || (CmToken = {}));
-const tmToCm = {
-    comment: {
-        $: CmToken.Comment
-    },
-    constant: {
-        // TODO: Revision
-        $: CmToken.Def,
-        character: {
-            escape: {
-                $: CmToken.String2
-            }
-        },
-        language: {
-            $: CmToken.Atom
-        },
-        numeric: {
-            $: CmToken.Number
-        },
-        other: {
-            email: {
-                link: {
-                    $: CmToken.Link
-                }
-            },
-            symbol: {
-                // TODO: Revision
-                $: CmToken.Def
-            }
-        }
-    },
-    entity: {
-        name: {
-            class: {
-                $: CmToken.Def
-            },
-            function: {
-                $: CmToken.Def
-            },
-            tag: {
-                $: CmToken.Tag
-            },
-            type: {
-                $: CmToken.Type,
-                class: {
-                    $: CmToken.Variable
-                }
-            }
-        },
-        other: {
-            "attribute-name": {
-                $: CmToken.Attribute
-            },
-            "inherited-class": {
-                // TODO: Revision
-                $: CmToken.Def
-            }
-        },
-        support: {
-            function: {
-                // TODO: Revision
-                $: CmToken.Def
-            }
-        }
-    },
-    invalid: {
-        $: CmToken.Error,
-        illegal: { $: CmToken.Error },
-        deprecated: {
-            $: CmToken.Error
-        }
-    },
-    keyword: {
-        $: CmToken.Keyword,
-        operator: {
-            $: CmToken.Operator
-        },
-        other: {
-            "special-method": CmToken.Def
-        }
-    },
-    punctuation: {
-        $: CmToken.Operator,
-        definition: {
-            comment: {
-                $: CmToken.Comment
-            },
-            tag: {
-                $: CmToken.Bracket
-            }
-            // 'template-expression': {
-            //     $: CodeMirrorToken.Operator,
-            // },
-        }
-        // terminator: {
-        //     $: CodeMirrorToken.Operator,
-        // },
-    },
-    storage: {
-        $: CmToken.Keyword
-    },
-    string: {
-        $: CmToken.String,
-        regexp: {
-            $: CmToken.String2
-        }
-    },
-    support: {
-        class: {
-            $: CmToken.Def
-        },
-        constant: {
-            $: CmToken.Variable2
-        },
-        function: {
-            $: CmToken.Def
-        },
-        type: {
-            $: CmToken.Type
-        },
-        variable: {
-            $: CmToken.Variable2,
-            property: {
-                $: CmToken.Property
-            }
-        }
-    },
-    variable: {
-        $: CmToken.Def,
-        language: {
-            // TODO: Revision
-            $: CmToken.Variable3
-        },
-        other: {
-            object: {
-                $: CmToken.Variable,
-                property: {
-                    $: CmToken.Property
-                }
-            },
-            property: {
-                $: CmToken.Property
-            }
-        },
-        parameter: {
-            $: CmToken.Def
-        }
-    }
-};
-const textMateScopeToCodeMirrorStyle = (scopeSegments, tree = tmToCm) => {
-    const first = scopeSegments.shift();
-    const node = tree[first];
-    return node ? textMateScopeToCodeMirrorStyle(scopeSegments, node) || node.$ || null : null;
 };
 var FileFormat;
 (function (FileFormat) {
@@ -697,6 +516,7 @@ class ImmutableNode extends AbstractNode {
         const coordinates = [];
         let line = 0;
         for (let node of this.getTopDownArrayIterator()) {
+            ;
             node.getWordBoundaryIndices().forEach(index => {
                 coordinates.push({
                     y: line,
@@ -907,13 +727,13 @@ class ImmutableNode extends AbstractNode {
     getParentFirstArray() {
         const levels = this._getLevels();
         const arr = [];
-        levels.forEach(level => {
+        Object.values(levels).forEach(level => {
             level.forEach(item => arr.push(item));
         });
         return arr;
     }
     _getLevels() {
-        const levels = [];
+        const levels = {};
         this.getTopDownArray().forEach(node => {
             const level = node._getXCoordinate();
             if (!levels[level])
@@ -990,9 +810,9 @@ class ImmutableNode extends AbstractNode {
             throw new Error("This method only works in Node.js");
         const format = ImmutableNode._getFileFormat(path);
         const formats = {
-            tree: tree => tree.toString(),
-            csv: tree => tree.toCsv(),
-            tsv: tree => tree.toTsv()
+            tree: (tree) => tree.toString(),
+            csv: (tree) => tree.toCsv(),
+            tsv: (tree) => tree.toTsv()
         };
         require("fs").writeFileSync(path, formats[format](this), "utf8");
         return this;
@@ -1136,7 +956,7 @@ class ImmutableNode extends AbstractNode {
         if (!this.length)
             return [];
         const obj = {};
-        this.forEach(node => {
+        this.forEach((node) => {
             if (!node.length)
                 return undefined;
             node.forEach(node => {
@@ -1220,7 +1040,7 @@ class ImmutableNode extends AbstractNode {
     toDataTable(header = this._getUnionNames()) {
         const types = this._getTypes(header);
         const parsers = {
-            string: i => i,
+            string: str => str,
             float: parseFloat,
             int: parseInt
         };
@@ -1336,7 +1156,7 @@ class ImmutableNode extends AbstractNode {
             });
         };
         let output = "";
-        growBranch({ node: this }, false, [], nodeFn, line => (output += line + "\n"));
+        growBranch({ node: this }, false, [], nodeFn, (line) => (output += line + "\n"));
         return output;
     }
     copyTo(node, index) {
@@ -1354,7 +1174,7 @@ class ImmutableNode extends AbstractNode {
             .map(str => new constructor(str));
     }
     toMarkdownTable() {
-        return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val);
+        return this.toMarkdownTableAdvanced(this._getUnionNames(), (val) => val);
     }
     toMarkdownTableAdvanced(columns, formatFn) {
         const matrix = this._getMatrix(columns);
@@ -1705,7 +1525,7 @@ class TreeNode extends ImmutableNode {
             const macroName = def.getWord(1);
             const uses = allUses.filter(node => node.hasWord(1, macroName));
             const params = def.getWordsFrom(2);
-            const replaceFn = str => {
+            const replaceFn = (str) => {
                 const paramValues = str.split(zi).slice(2);
                 let newTree = def.childrenToString();
                 params.forEach((param, index) => {
@@ -1936,10 +1756,9 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     replaceNode(fn) {
-        const str = fn(this.toString());
         const parent = this.getParent();
         const index = this.getIndex();
-        const newNodes = new TreeNode(str);
+        const newNodes = new TreeNode(fn(this.toString()));
         const returnedNodes = [];
         newNodes.forEach((child, childIndex) => {
             const newNode = parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex);
@@ -2005,13 +1824,13 @@ class TreeNode extends ImmutableNode {
         return this._touchNodeByString(str);
     }
     sortByColumns(indexOrIndices) {
-        indexOrIndices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices];
-        const length = indexOrIndices.length;
+        const indices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices];
+        const length = indices.length;
         this.sort((nodeA, nodeB) => {
             const wordsA = nodeA.getWords();
             const wordsB = nodeB.getWords();
             for (let index = 0; index < length; index++) {
-                const col = indexOrIndices[index];
+                const col = indices[index];
                 const av = wordsA[col];
                 const bv = wordsB[col];
                 if (av === undefined)
@@ -2050,8 +1869,8 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     sortBy(nameOrNames) {
-        nameOrNames = nameOrNames instanceof Array ? nameOrNames : [nameOrNames];
-        const length = nameOrNames.length;
+        const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames];
+        const length = names.length;
         this.sort((nodeA, nodeB) => {
             if (!nodeB.length && !nodeA.length)
                 return 0;
@@ -2060,7 +1879,7 @@ class TreeNode extends ImmutableNode {
             else if (!nodeB.length)
                 return 1;
             for (let index = 0; index < length; index++) {
-                const keyword = nameOrNames[index];
+                const keyword = names[index];
                 const av = nodeA.get(keyword);
                 const bv = nodeB.get(keyword);
                 if (av > bv)
@@ -2199,9 +2018,9 @@ class TreeNode extends ImmutableNode {
             return;
         const windowObj = window;
         if (typeof windowObj.DOMParser !== "undefined")
-            this._xmlParser = xmlStr => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml");
+            this._xmlParser = (xmlStr) => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml");
         else if (typeof windowObj.ActiveXObject !== "undefined" && new windowObj.ActiveXObject("Microsoft.XMLDOM")) {
-            this._xmlParser = xmlStr => {
+            this._xmlParser = (xmlStr) => {
                 const xmlDoc = new windowObj.ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async = "false";
                 xmlDoc.loadXML(xmlStr);
@@ -2246,6 +2065,7 @@ class TreeNode extends ImmutableNode {
         el.innerHTML = str;
         return el;
     }
+    // todo: cleanup typings
     static _treeNodeFromXml(xml) {
         const result = new TreeNode();
         const children = new TreeNode();
@@ -2307,11 +2127,12 @@ class TreeNode extends ImmutableNode {
     static fromDisk(path) {
         const format = this._getFileFormat(path);
         const content = require("fs").readFileSync(path, "utf8");
-        return {
-            tree: content => new TreeNode(content),
-            csv: content => this.fromCsv(content),
-            tsv: content => this.fromTsv(content)
-        }[format](content);
+        const methods = {
+            tree: (content) => new TreeNode(content),
+            csv: (content) => this.fromCsv(content),
+            tsv: (content) => this.fromTsv(content)
+        };
+        return methods[format](content);
     }
 }
 class AbstractRuntimeNode extends TreeNode {
@@ -2371,7 +2192,7 @@ class AbstractRuntimeNode extends TreeNode {
                     kind: GrammarConstantsErrors.missingRequiredKeywordError,
                     subkind: keyword,
                     level: 0,
-                    context: 0,
+                    context: "",
                     message: `${GrammarConstantsErrors.missingRequiredKeywordError} Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
                 });
             }
@@ -2588,7 +2409,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
     }
     // todo: refine and make public
     _getSyntaxTreeHtml() {
-        const getColor = child => {
+        const getColor = (child) => {
             if (child.getLineSyntax().includes("error"))
                 return "red";
             return "black";
@@ -2932,6 +2753,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
         types[GrammarConstants.highlightScope] = TreeNode;
         return types;
     }
+    // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
     getCellConstructor() {
         const kinds = {
             any: GrammarAnyCell,
@@ -3025,22 +2847,11 @@ class GrammarConstantsNode extends TreeNode {
     }
     getConstantsObj() {
         const result = {};
-        this.forEach(node => {
-            const name = node.getName();
-            result[name] = node.getValue();
-        });
+        this.forEach(node => (result[node.getName()] = node.getValue()));
         return result;
     }
 }
 class AbstractCustomConstructorNode extends TreeNode {
-    _getBuiltInConstructors() {
-        return {
-            ErrorNode: GrammarBackedErrorNode,
-            TerminalNode: GrammarBackedTerminalNode,
-            NonTerminalNode: GrammarBackedNonTerminalNode,
-            AnyNode: GrammarBackedAnyNode
-        };
-    }
     getDefinedConstructor() {
         return this.getBuiltIn() || this._getCustomConstructor();
     }
@@ -3068,7 +2879,13 @@ class AbstractCustomConstructorNode extends TreeNode {
         ];
     }
     getBuiltIn() {
-        return this._getBuiltInConstructors()[this.getWord(1)];
+        const constructors = {
+            ErrorNode: GrammarBackedErrorNode,
+            TerminalNode: GrammarBackedTerminalNode,
+            NonTerminalNode: GrammarBackedNonTerminalNode,
+            AnyNode: GrammarBackedAnyNode
+        };
+        return constructors[this.getWord(1)];
     }
 }
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
@@ -3152,7 +2969,7 @@ class GrammarCustomConstructorsNode extends TreeNode {
         const jsConstructor = this.getNode(GrammarConstants.constructorJavascript);
         if (jsConstructor)
             return jsConstructor;
-        return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser);
+        return (this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser));
     }
 }
 class GrammarDefinitionErrorNode extends TreeNode {
@@ -3304,7 +3121,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         const definitions = this._getProgramKeywordDefinitionCache();
         const keywords = this.getRunTimeKeywordMap();
         const arr = Object.keys(keywords).map(keyword => definitions[keyword]);
-        arr.sort(TreeUtils.sortByAccessor(definition => definition.getFrequency()));
+        arr.sort(TreeUtils.sortByAccessor((definition) => definition.getFrequency()));
         arr.reverse();
         return arr.map(definition => definition.getId());
     }
@@ -3375,7 +3192,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     getMatchBlock() {
         const defaultHighlightScope = "source";
         const program = this.getProgram();
-        const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getId();
         const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`;
         const topHalf = ` '${this.getSyntaxContextId()}':
@@ -3397,7 +3214,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
                 cellTypeDefinition.getCellTypeId()}`;
         })
             .join("\n");
-        const cellTypesToRegex = cellTypeNames => cellTypeNames.map(cellTypeName => `({{${cellTypeName}}})?`).join(" ?");
+        const cellTypesToRegex = (cellTypeNames) => cellTypeNames.map((cellTypeName) => `({{${cellTypeName}}})?`).join(" ?");
         return `${topHalf}
     push:
      - match: ${cellTypesToRegex(requiredCellTypeNames)}
@@ -3439,7 +3256,7 @@ ${captures}
         return this.getId();
     }
     _getDefaultsNode() {
-        return this.get(GrammarConstants.defaults);
+        return this.getNode(GrammarConstants.defaults);
     }
     // todo: deprecate?
     getDefaultFor(name) {
@@ -3586,11 +3403,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     _initProgramKeywordDefinitionCache() {
         if (this._cache_keywordDefinitions)
             return undefined;
-        const keywordDefinitionMap = {};
+        this._cache_keywordDefinitions = {};
         this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
-            keywordDefinitionMap[keywordDefinitionNode.getId()] = keywordDefinitionNode;
+            this._cache_keywordDefinitions[keywordDefinitionNode.getId()] = keywordDefinitionNode;
         });
-        this._cache_keywordDefinitions = keywordDefinitionMap;
     }
     // todo: protected?
     _getProgramKeywordDefinitionCache() {
@@ -3673,16 +3489,16 @@ ${GrammarConstants.cellType} any`).getRootConstructor();
         return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
     static _getBestType(values) {
-        const all = fn => {
+        const all = (fn) => {
             for (let i = 0; i < values.length; i++) {
                 if (!fn(values[i]))
                     return false;
             }
             return true;
         };
-        if (all(str => str === "0" || str === "1"))
+        if (all((str) => str === "0" || str === "1"))
             return "bit";
-        if (all(str => {
+        if (all((str) => {
             const num = parseInt(str);
             if (isNaN(num))
                 return false;
@@ -3690,10 +3506,10 @@ ${GrammarConstants.cellType} any`).getRootConstructor();
         })) {
             return "int";
         }
-        if (all(str => !str.match(/[^\d\.\-]/)))
+        if (all((str) => !str.match(/[^\d\.\-]/)))
             return "float";
         const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
-        if (all(str => bools.has(str.toLowerCase())))
+        if (all((str) => bools.has(str.toLowerCase())))
             return "bool";
         return "any";
     }
@@ -3702,7 +3518,7 @@ ${GrammarConstants.cellType} any`).getRootConstructor();
         const xi = " "; // todo: make param?
         keywords = keywords || tree.getColumnNames();
         return keywords //this.getInvalidKeywords()
-            .map(keyword => {
+            .map((keyword) => {
             const lines = tree.getColumn(keyword).filter(i => i);
             const cells = lines.map(line => line.split(xi));
             const sizes = new Set(cells.map(c => c.length));
@@ -3737,6 +3553,188 @@ ${GrammarConstants.cellType} any`).getRootConstructor();
             .join("\n");
     }
 }
+// Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
+var CmToken;
+(function (CmToken) {
+    CmToken["Atom"] = "atom";
+    CmToken["Attribute"] = "attribute";
+    CmToken["Bracket"] = "bracket";
+    CmToken["Builtin"] = "builtin";
+    CmToken["Comment"] = "comment";
+    CmToken["Def"] = "def";
+    CmToken["Error"] = "error";
+    CmToken["Header"] = "header";
+    CmToken["HR"] = "hr";
+    CmToken["Keyword"] = "keyword";
+    CmToken["Link"] = "link";
+    CmToken["Meta"] = "meta";
+    CmToken["Number"] = "number";
+    CmToken["Operator"] = "operator";
+    CmToken["Property"] = "property";
+    CmToken["Qualifier"] = "qualifier";
+    CmToken["Quote"] = "quote";
+    CmToken["String"] = "string";
+    CmToken["String2"] = "string-2";
+    CmToken["Tag"] = "tag";
+    CmToken["Type"] = "type";
+    CmToken["Variable"] = "variable";
+    CmToken["Variable2"] = "variable-2";
+    CmToken["Variable3"] = "variable-3";
+})(CmToken || (CmToken = {}));
+const tmToCm = {
+    comment: {
+        $: CmToken.Comment
+    },
+    constant: {
+        // TODO: Revision
+        $: CmToken.Def,
+        character: {
+            escape: {
+                $: CmToken.String2
+            }
+        },
+        language: {
+            $: CmToken.Atom
+        },
+        numeric: {
+            $: CmToken.Number
+        },
+        other: {
+            email: {
+                link: {
+                    $: CmToken.Link
+                }
+            },
+            symbol: {
+                // TODO: Revision
+                $: CmToken.Def
+            }
+        }
+    },
+    entity: {
+        name: {
+            class: {
+                $: CmToken.Def
+            },
+            function: {
+                $: CmToken.Def
+            },
+            tag: {
+                $: CmToken.Tag
+            },
+            type: {
+                $: CmToken.Type,
+                class: {
+                    $: CmToken.Variable
+                }
+            }
+        },
+        other: {
+            "attribute-name": {
+                $: CmToken.Attribute
+            },
+            "inherited-class": {
+                // TODO: Revision
+                $: CmToken.Def
+            }
+        },
+        support: {
+            function: {
+                // TODO: Revision
+                $: CmToken.Def
+            }
+        }
+    },
+    invalid: {
+        $: CmToken.Error,
+        illegal: { $: CmToken.Error },
+        deprecated: {
+            $: CmToken.Error
+        }
+    },
+    keyword: {
+        $: CmToken.Keyword,
+        operator: {
+            $: CmToken.Operator
+        },
+        other: {
+            "special-method": CmToken.Def
+        }
+    },
+    punctuation: {
+        $: CmToken.Operator,
+        definition: {
+            comment: {
+                $: CmToken.Comment
+            },
+            tag: {
+                $: CmToken.Bracket
+            }
+            // 'template-expression': {
+            //     $: CodeMirrorToken.Operator,
+            // },
+        }
+        // terminator: {
+        //     $: CodeMirrorToken.Operator,
+        // },
+    },
+    storage: {
+        $: CmToken.Keyword
+    },
+    string: {
+        $: CmToken.String,
+        regexp: {
+            $: CmToken.String2
+        }
+    },
+    support: {
+        class: {
+            $: CmToken.Def
+        },
+        constant: {
+            $: CmToken.Variable2
+        },
+        function: {
+            $: CmToken.Def
+        },
+        type: {
+            $: CmToken.Type
+        },
+        variable: {
+            $: CmToken.Variable2,
+            property: {
+                $: CmToken.Property
+            }
+        }
+    },
+    variable: {
+        $: CmToken.Def,
+        language: {
+            // TODO: Revision
+            $: CmToken.Variable3
+        },
+        other: {
+            object: {
+                $: CmToken.Variable,
+                property: {
+                    $: CmToken.Property
+                }
+            },
+            property: {
+                $: CmToken.Property
+            }
+        },
+        parameter: {
+            $: CmToken.Def
+        }
+    }
+};
+const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
+    const matchingBranch = styleTree[scopeSegments.shift()];
+    return matchingBranch
+        ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null
+        : null;
+};
 class TreeNotationCodeMirrorMode {
     constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
@@ -3804,7 +3802,7 @@ class TreeNotationCodeMirrorMode {
             tabSize: 1,
             indentUnit: 1,
             hintOptions: {
-                hint: (cmInstance, option) => this.codeMirrorAutocomplete(cmInstance, option)
+                hint: (cmInstance, options) => this.codeMirrorAutocomplete(cmInstance, options)
             }
         };
         Object.assign(defaultOptions, options);
@@ -3825,7 +3823,7 @@ class TreeNotationCodeMirrorMode {
     _getCodeMirrorLib() {
         return this._codeMirrorLib;
     }
-    codeMirrorAutocomplete(cmInstance, option) {
+    codeMirrorAutocomplete(cmInstance, options) {
         return __awaiter(this, void 0, void 0, function* () {
             const cursor = cmInstance.getDoc().getCursor();
             const codeMirrorLib = this._getCodeMirrorLib();

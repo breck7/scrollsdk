@@ -516,9 +516,9 @@ class ImmutableNode extends AbstractNode_node_1.default {
             throw new Error("This method only works in Node.js");
         const format = ImmutableNode._getFileFormat(path);
         const formats = {
-            tree: tree => tree.toString(),
-            csv: tree => tree.toCsv(),
-            tsv: tree => tree.toTsv()
+            tree: (tree) => tree.toString(),
+            csv: (tree) => tree.toCsv(),
+            tsv: (tree) => tree.toTsv()
         };
         require("fs").writeFileSync(path, formats[format](this), "utf8");
         return this;
@@ -662,7 +662,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         if (!this.length)
             return [];
         const obj = {};
-        this.forEach(node => {
+        this.forEach((node) => {
             if (!node.length)
                 return undefined;
             node.forEach(node => {
@@ -746,7 +746,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     toDataTable(header = this._getUnionNames()) {
         const types = this._getTypes(header);
         const parsers = {
-            string: i => i,
+            string: str => str,
             float: parseFloat,
             int: parseInt
         };
@@ -862,7 +862,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
             });
         };
         let output = "";
-        growBranch({ node: this }, false, [], nodeFn, line => (output += line + "\n"));
+        growBranch({ node: this }, false, [], nodeFn, (line) => (output += line + "\n"));
         return output;
     }
     copyTo(node, index) {
@@ -880,7 +880,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
             .map(str => new constructor(str));
     }
     toMarkdownTable() {
-        return this.toMarkdownTableAdvanced(this._getUnionNames(), val => val);
+        return this.toMarkdownTableAdvanced(this._getUnionNames(), (val) => val);
     }
     toMarkdownTableAdvanced(columns, formatFn) {
         const matrix = this._getMatrix(columns);
@@ -1231,7 +1231,7 @@ class TreeNode extends ImmutableNode {
             const macroName = def.getWord(1);
             const uses = allUses.filter(node => node.hasWord(1, macroName));
             const params = def.getWordsFrom(2);
-            const replaceFn = str => {
+            const replaceFn = (str) => {
                 const paramValues = str.split(zi).slice(2);
                 let newTree = def.childrenToString();
                 params.forEach((param, index) => {

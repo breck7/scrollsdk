@@ -14,7 +14,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getProgramErrors(): types.ParseError[];
     getErrorsInGrammarExamples(): types.ParseError[];
     getTargetExtension(): string;
-    getKeywordOrder(): any;
+    getKeywordOrder(): string;
     private _cache_cellTypes;
     getCellTypeDefinitions(): {
         [name: string]: GrammarCellTypeDefinitionNode;
@@ -47,6 +47,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;
     static _getBestType(values: any): "any" | "int" | "float" | "bit" | "bool";
-    static predictGrammarFile(str: string | TreeNode, keywords?: any): string;
+    static predictGrammarFile(str: string | TreeNode, keywords?: string[]): string;
 }
 export default GrammarProgram;

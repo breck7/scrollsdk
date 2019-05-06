@@ -23,7 +23,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
-      const errs = node.getErrors()
+      const errs: types.ParseError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       delete node._cachedLineNumber
       line++
@@ -33,7 +33,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   // Helper method for selecting potential keywords needed to update grammar file.
-  getInvalidKeywords(level = undefined) {
+  getInvalidKeywords(level: types.int = undefined) {
     return Array.from(
       new Set(
         this.getProgramErrors()
@@ -109,7 +109,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     programNodes.forEach((programNode, lineNumber) => {
       const def = programNode.getDefinition()
       const keyword = def.getId()
-      const stats = usage.getNode(keyword)
+      const stats = <TreeNode>usage.getNode(keyword)
       stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
     })
     return usage
@@ -135,11 +135,11 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
 
   // todo: refine and make public
   protected _getSyntaxTreeHtml() {
-    const getColor = child => {
+    const getColor = (child: AbstractRuntimeNode) => {
       if (child.getLineSyntax().includes("error")) return "red"
       return "black"
     }
-    const zip = (a1, a2) => {
+    const zip = (a1: string[], a2: string[]) => {
       let last = a1.length > a2.length ? a1.length : a2.length
       let parts = []
       for (let index = 0; index < last; index++) {
@@ -176,7 +176,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   private _cache_highlightScopeTree: TreeNode
   private _cache_typeTree: TreeNode
 
-  protected _initCellTypeCache() {
+  protected _initCellTypeCache(): void {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
 
@@ -185,7 +185,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     this._cache_programCellTypeStringMTime = treeMTime
   }
 
-  getCompiledProgramName(programPath) {
+  getCompiledProgramName(programPath: string) {
     const grammarProgram = this.getDefinition()
     return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
   }

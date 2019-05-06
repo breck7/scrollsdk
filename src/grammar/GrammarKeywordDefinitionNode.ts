@@ -31,7 +31,7 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
   getMatchBlock() {
     const defaultHighlightScope = "source"
     const program = this.getProgram()
-    const escapeRegExp = str => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getId()
     const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`
     const topHalf = ` '${this.getSyntaxContextId()}':
@@ -51,7 +51,8 @@ class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
       })
       .join("\n")
 
-    const cellTypesToRegex = cellTypeNames => cellTypeNames.map(cellTypeName => `({{${cellTypeName}}})?`).join(" ?")
+    const cellTypesToRegex = (cellTypeNames: string[]) =>
+      cellTypeNames.map((cellTypeName: string) => `({{${cellTypeName}}})?`).join(" ?")
 
     return `${topHalf}
     push:
@@ -73,7 +74,7 @@ ${captures}
     return this.getWord(2)
   }
 
-  protected _initKeywordInheritanceSetCache() {
+  protected _initKeywordInheritanceSetCache(): void {
     if (this._cache_keywordInheritanceSet) return undefined
     const cache = new Set()
     cache.add(this.getId())
@@ -100,8 +101,8 @@ ${captures}
     return this.getId()
   }
 
-  protected _getDefaultsNode() {
-    return this.get(GrammarConstants.defaults)
+  private _getDefaultsNode() {
+    return this.getNode(GrammarConstants.defaults)
   }
 
   // todo: deprecate?

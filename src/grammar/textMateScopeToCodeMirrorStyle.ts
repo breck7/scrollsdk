@@ -1,3 +1,5 @@
+import types from "../types"
+
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 enum CmToken {
   Atom = "atom",
@@ -183,10 +185,11 @@ const tmToCm = {
   }
 }
 
-const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], tree = tmToCm): CmToken => {
-  const first = scopeSegments.shift()
-  const node = tree[first]
-  return node ? textMateScopeToCodeMirrorStyle(scopeSegments, node) || node.$ || null : null
+const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], styleTree: types.stringMap = tmToCm): CmToken => {
+  const matchingBranch = styleTree[scopeSegments.shift()]
+  return matchingBranch
+    ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null
+    : null
 }
 
 export default textMateScopeToCodeMirrorStyle

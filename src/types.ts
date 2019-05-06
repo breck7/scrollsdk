@@ -13,7 +13,6 @@ export namespace types {
   } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
   export declare type treeNode = any
-  export declare type something = string | Object | any | treeNode
   export declare type line = string // no YI (\n)
   export declare type int = number
   export declare type positiveInt = number
@@ -22,6 +21,7 @@ export namespace types {
   export declare type xmlString = string
   export declare type jsonString = string
   export declare type dataTable = (any[])[]
+  export declare type delimiter = string
 
   export declare type formatString = string // "Hello {name}! You are {age} years old."
   export declare type keywordPath = string // user emailAddress
@@ -31,9 +31,14 @@ export namespace types {
   export declare type filepath = string
   export declare type highlightScope = string
   export declare type fileExtension = string
+  export declare type targetLanguageId = fileExtension
   export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
   export declare type filterFn = (node: treeNode, index: int) => boolean
   export declare type forEachFn = (node: treeNode, index: int) => void
+  export declare type nodeToStringFn = (node: treeNode) => string
+  export declare type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string
+
+  export declare type children = string | Object | treeNode | any // todo: specify better.
 
   export declare type TreeNodeConstructor = Function // A constructor extending TreeNodeConstructor
   export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode

@@ -176,9 +176,10 @@ const tmToCm = {
         }
     }
 };
-const textMateScopeToCodeMirrorStyle = (scopeSegments, tree = tmToCm) => {
-    const first = scopeSegments.shift();
-    const node = tree[first];
-    return node ? textMateScopeToCodeMirrorStyle(scopeSegments, node) || node.$ || null : null;
+const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
+    const matchingBranch = styleTree[scopeSegments.shift()];
+    return matchingBranch
+        ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null
+        : null;
 };
 exports.default = textMateScopeToCodeMirrorStyle;

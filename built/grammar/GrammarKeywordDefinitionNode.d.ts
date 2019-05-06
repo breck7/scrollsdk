@@ -1,5 +1,6 @@
 import GrammarExampleNode from "./GrammarExampleNode";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
+import types from "../types";
 declare class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllKeyword(): string;
     isOrExtendsAKeywordInScope(keywordsInScope: string[]): boolean;
@@ -8,16 +9,16 @@ declare class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode
     private _cache_keywordInheritanceSet;
     getKeywordInheritanceSet(): Set<string>;
     protected _getParentKeyword(): string;
-    protected _initKeywordInheritanceSetCache(): any;
+    protected _initKeywordInheritanceSetCache(): void;
     _getProgramKeywordDefinitionCache(): {
         [keyword: string]: GrammarKeywordDefinitionNode;
     };
     getDoc(): string;
-    protected _getDefaultsNode(): any;
-    getDefaultFor(name: string): any;
+    private _getDefaultsNode;
+    getDefaultFor(name: string): string;
     getDescription(): string;
     getExamples(): GrammarExampleNode[];
-    getConstantsObject(): {};
+    getConstantsObject(): types.stringMap;
     getFrequency(): number;
 }
 export default GrammarKeywordDefinitionNode;

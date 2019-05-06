@@ -1,23 +1,24 @@
+import types from "../types";
 declare class TreeUtils {
-    static getPathWithoutFileName(path: any): any;
-    static getClassNameFromFilePath(filename: any): any;
+    static getPathWithoutFileName(path: string): string;
+    static getClassNameFromFilePath(filename: string): string;
     static getLineIndexAtCharacterPosition(str: string, index: number): number;
     static resolvePath(filePath: string, programFilepath: string): any;
     static getFileExtension(url?: string): string;
     static resolveProperty(obj: Object, path: string | string[], separator?: string): any;
-    static formatStr(str: any, listDelimiter: string, parameterMap: any): any;
-    static stripHtml(text: any): any;
+    static formatStr(str: string, listDelimiter: string, parameterMap: types.stringMap): string;
+    static stripHtml(text: string): string;
     static getUniqueWordsArray(allWords: string): {
         word: string;
         count: any;
     }[];
     static getRandomString(length?: number, letters?: string[]): string;
     static makeRandomTree(lines?: number): string;
-    static arrayToMap(arr: any): {};
+    static arrayToMap(arr: Array<any>): types.stringMap;
     static mapValues<T>(object: Object, fn: (key: string) => T): {
         [key: string]: T;
     };
-    static sortByAccessor(accessor: any): (objectA: any, objectB: any) => number;
+    static sortByAccessor(accessor: Function): (objectA: Object, objectB: Object) => number;
     static makeGraphSortFunction(thisColumnIndex: number, extendsColumnIndex: number): (nodeA: any, nodeB: any) => 1 | 0 | -1;
     static BrowserScript: {
         new (fileStr: string): {

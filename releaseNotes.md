@@ -1,3 +1,10 @@
+edge / 2019-05-07
+===================
+- New: glob patterns in combine script
+- Breaking: combine command line script now takes glob pattern
+- Breaking: GrammarProgram.predictGrammarFile is now new UnknownGrammarProgram(input).getPredictedGrammarFile()
+
+
 21.0.0 / 2019-05-04
 ===================
 - New: getRunTimeEnumOptions method allows for run time autocomplete and run time validation

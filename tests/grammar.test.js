@@ -262,45 +262,6 @@ testTree.sublimeSyntaxFile = equal => {
   equal(code.includes("scope:"), true)
 }
 
-testTree.predictGrammarFile = equal => {
-  // Arrange
-  const input = `file rain
- size 28
- digits 321 4324
- open true
- temp 32.1
- description Lorem ipsum, unless ipsum lorem.
- account
-  balance 24
-  transactions 32
-  source no http://www.foo.foo 32
-file test
- digits 321 435
- size 3
- description None.
- open false
- temp 32.0
- account
-  balance 32.12
-  transactions 321
-  source yes http://to.to.to 31`
-  const expected = `keyword size int
-keyword digits
- cells int int
-keyword open bool
-keyword temp float
-keyword description
- catchAllCellType any
-keyword account
- any`
-
-  // Act
-  const types = GrammarProgram.predictGrammarFile(input)
-
-  // Assert
-  equal(types, expected)
-}
-
 testTree.requiredKeywords = equal => {
   // Arrange/Act
   const path = grammarGrammarPath

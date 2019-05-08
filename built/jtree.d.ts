@@ -5,6 +5,7 @@ import GrammarBackedNonTerminalNode from "./grammar/GrammarBackedNonTerminalNode
 import GrammarBackedTerminalNode from "./grammar/GrammarBackedTerminalNode";
 import GrammarBackedAnyNode from "./grammar/GrammarBackedAnyNode";
 import GrammarProgram from "./grammar/GrammarProgram";
+import UnknownGrammarProgram from "./grammar/UnknownGrammarProgram";
 import TreeNotationCodeMirrorMode from "./grammar/TreeNotationCodeMirrorMode";
 declare class jtree {
     static program: typeof AbstractRuntimeProgram;
@@ -14,6 +15,7 @@ declare class jtree {
     static TerminalNode: typeof GrammarBackedTerminalNode;
     static AnyNode: typeof GrammarBackedAnyNode;
     static GrammarProgram: typeof GrammarProgram;
+    static UnknownGrammarProgram: typeof UnknownGrammarProgram;
     static TreeNotationCodeMirrorMode: typeof TreeNotationCodeMirrorMode;
     static getVersion: () => string;
 }

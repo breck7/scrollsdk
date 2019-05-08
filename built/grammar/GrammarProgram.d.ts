@@ -46,7 +46,5 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;
-    static _getBestType(values: any): "any" | "int" | "float" | "bit" | "bool";
-    static predictGrammarFile(str: string | TreeNode, keywords?: string[]): string;
 }
 export default GrammarProgram;

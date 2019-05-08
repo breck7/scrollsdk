@@ -6,6 +6,7 @@ import GrammarBackedNonTerminalNode from "./grammar/GrammarBackedNonTerminalNode
 import GrammarBackedTerminalNode from "./grammar/GrammarBackedTerminalNode"
 import GrammarBackedAnyNode from "./grammar/GrammarBackedAnyNode"
 import GrammarProgram from "./grammar/GrammarProgram"
+import UnknownGrammarProgram from "./grammar/UnknownGrammarProgram"
 import TreeNotationCodeMirrorMode from "./grammar/TreeNotationCodeMirrorMode"
 
 class jtree {
@@ -16,6 +17,7 @@ class jtree {
   static TerminalNode = GrammarBackedTerminalNode
   static AnyNode = GrammarBackedAnyNode
   static GrammarProgram = GrammarProgram
+  static UnknownGrammarProgram = UnknownGrammarProgram
   static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
   static getVersion = () => "21.0.0"
 }

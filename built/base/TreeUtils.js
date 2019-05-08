@@ -206,6 +206,7 @@ TreeUtils.BrowserScript = class {
     }
     changeNodeExportsToWindowExports() {
         this._str = this._str.replace(/\nmodule\.exports \= ([^;]*)/g, "\nwindow.$1 = $1");
+        this._str = this._str.replace(/\nexports\.default \= ([^;]*)/g, "\nwindow.$1 = $1");
         return this;
     }
     getString() {

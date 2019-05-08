@@ -22,6 +22,7 @@
     "@types/node": "^11.10.4",
     "codemirror": "^5.45.0",
     "express": "*",
+    "glob": "^7.1.4",
     "jquery": "*",
     "project-lang": "^1.7.0",
     "qunitjs": "*",

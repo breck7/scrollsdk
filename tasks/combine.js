@@ -1,20 +1,16 @@
 #! /usr/local/bin/node --use_strict
 
 const fs = require("fs")
+const glob = require("glob")
+
 const jtree = require("../index.js")
 const TreeNode = jtree.TreeNode
 const Utils = jtree.Utils
 
-const combine = (outputPath, inputFilePath, prepareForDistribute = false) => {
-  console.log("Working...")
-
-  const folderPath = Utils.getPathWithoutFileName(inputFilePath) + "/"
-  const fileExtension = Utils.getFileExtension(inputFilePath)
-  const content = fs
-    .readdirSync(folderPath)
-    .filter(a => a.endsWith("." + fileExtension))
-    .map(file => {
-      const path = folderPath + file
+const combine = (outputPath, globPatterns, prepareForDistribute = false) => {
+  const files = globPatterns.map(pattern => glob.sync(pattern)).flat()
+  const content = files
+    .map(path => {
       const distributeLine = prepareForDistribute ? `#file ${path}\n` : ""
       return distributeLine + fs.readFileSync(path, "utf8")
     })
@@ -30,16 +26,19 @@ const combine = (outputPath, inputFilePath, prepareForDistribute = false) => {
   console.log("Done")
 }
 
-const theSavedFilepath = process.argv[3]
-const outputFilePath = process.argv[2]
+if (!module.parent) {
+  const outputFilePath = process.argv[2]
+  const globPatterns = process.argv.slice(3)
 
-console.log(`Combining files like ${theSavedFilepath} into ${outputFilePath}`)
+  if (!outputFilePath) throw new Error(`Error: No output file specified`)
+  if (!globPatterns.length) throw new Error(`Error: No globPatterns specified`)
 
-if (!theSavedFilepath) console.log(`Error: No output file specified`)
-else {
   try {
-    combine(outputFilePath, theSavedFilepath)
+    console.log(`Combining files '${globPatterns.join(",")}' into '${outputFilePath}'`)
+    combine(outputFilePath, globPatterns)
   } catch (err) {
     console.log(err)
   }
 }
+
+module.exports = combine

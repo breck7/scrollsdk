@@ -2,66 +2,95 @@ import TreeNode from "../base/TreeNode"
 
 import { GrammarConstants } from "./GrammarConstants"
 
-class UnknownGrammarNode extends TreeNode {
-  protected getGrammarStuff() {
+import types from "../types"
+
+class UnknownGrammarProgram extends TreeNode {
+  getPredictedGrammarFile(grammarName: string): string {
+    const rootNode = new TreeNode(`grammar
+ name ${grammarName}`)
+
+    // note: right now we assume 1 global cellTypeMap and keywordMap per grammar. But we may have scopes in the future?
+    const globalCellTypeMap = new Map()
     const xi = this.getXI()
-    const myKeywords = this.getColumnNames()
+    const yi = this.getYI()
 
-    const cellTypeDefinitions: string[] = []
-    const definedCellTypes: { [cellTypeName: string]: boolean } = {}
+    this.getKeywords().forEach(keyword => rootNode.touchNode(`grammar keywords ${keyword}`))
 
-    const keywordDefinitions = myKeywords //this.getInvalidKeywords()
-      .map((keyword: string) => {
-        const lines = this.getColumn(keyword).filter(i => i)
-        const cells = lines.map(line => line.split(xi))
-        const sizes = new Set(cells.map(c => c.length))
-        const max = Math.max(...Array.from(sizes))
-        const min = Math.min(...Array.from(sizes))
-        let catchAllCellType: string
-        let cellTypes = []
-        for (let index = 0; index < max; index++) {
-          const cellType = this._getBestCellType(keyword, cells.map(c => c[index]))
-          if (cellType.cellTypeDefinition && !definedCellTypes[cellType.cellTypeName]) {
-            cellTypeDefinitions.push(cellType.cellTypeDefinition)
-            definedCellTypes[cellType.cellTypeName] = true
-          }
-          cellTypes.push(cellType.cellTypeName)
-        }
-        if (max > min) {
-          //columns = columns.slice(0, min)
-          catchAllCellType = cellTypes.pop()
-          while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
-            cellTypes.pop()
-          }
-        }
-
-        const catchAllCellTypeString = catchAllCellType
-          ? `\n ${GrammarConstants.catchAllCellType} ${catchAllCellType}`
-          : ""
-
-        const childrenAnyString = this.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants.any}`
-
-        if (!cellTypes.length)
-          return `${GrammarConstants.keyword} ${keyword}${catchAllCellTypeString}${childrenAnyString}`
-
-        if (cellTypes.length > 1)
-          return `${GrammarConstants.keyword} ${keyword}
- ${GrammarConstants.cells} ${cellTypes.join(xi)}${catchAllCellTypeString}${childrenAnyString}`
-
-        if (catchAllCellTypeString)
-          return `${GrammarConstants.keyword} ${keyword} ${catchAllCellTypeString}${childrenAnyString}`
-        else
-          return `${GrammarConstants.keyword} ${keyword}
- ${GrammarConstants.cells} ${cellTypes[0]}${childrenAnyString}`
-      })
-
-    return {
-      keywordDefinitions: keywordDefinitions,
-      cellTypeDefinitions: cellTypeDefinitions
+    const clone = <UnknownGrammarProgram>this.clone()
+    let allNodes = clone.getTopDownArrayIterator()
+    let node: TreeNode
+    for (node of allNodes) {
+      const keyword = node.getKeyword()
+      const asInt = parseInt(keyword)
+      if (!isNaN(asInt) && asInt.toString() === keyword && node.getParent().getKeyword())
+        node.setKeyword(node.getParent().getKeyword() + "Child")
     }
+    allNodes = clone.getTopDownArrayIterator()
+    const allChilds: { [keyword: string]: types.stringMap } = {}
+    const allKeywordNodes: { [keyword: string]: TreeNode[] } = {}
+    for (let node of allNodes) {
+      const keyword = node.getKeyword()
+      if (!allChilds[keyword]) allChilds[keyword] = {}
+      if (!allKeywordNodes[keyword]) allKeywordNodes[keyword] = []
+      allKeywordNodes[keyword].push(node)
+      node.forEach((child: TreeNode) => {
+        allChilds[keyword][child.getKeyword()] = true
+      })
+    }
+
+    const lineCount = clone.getNumberOfLines()
+
+    const keywords = Object.keys(allChilds).map(keyword => {
+      const defNode = <TreeNode>new TreeNode(`${GrammarConstants.keyword} ${keyword}`).nodeAt(0)
+      const childKeywords = Object.keys(allChilds[keyword])
+      if (childKeywords.length) {
+        //defNode.touchNode(GrammarConstants.any) // todo: remove?
+        childKeywords.forEach(keyword => defNode.touchNode(`keywords ${keyword}`))
+      }
+
+      const allLines = allKeywordNodes[keyword]
+      const cells = allLines
+        .map(line => line.getContent())
+        .filter(i => i)
+        .map(i => i.split(xi))
+      const sizes = new Set(cells.map(c => c.length))
+      const max = Math.max(...Array.from(sizes))
+      const min = Math.min(...Array.from(sizes))
+      let catchAllCellType: string
+      let cellTypes = []
+      for (let index = 0; index < max; index++) {
+        const cellType = this._getBestCellType(keyword, cells.map(c => c[index]))
+        if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeName))
+          globalCellTypeMap.set(cellType.cellTypeName, cellType.cellTypeDefinition)
+
+        cellTypes.push(cellType.cellTypeName)
+      }
+      if (max > min) {
+        //columns = columns.slice(0, min)
+        catchAllCellType = cellTypes.pop()
+        while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
+          cellTypes.pop()
+        }
+      }
+
+      if (catchAllCellType) defNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
+
+      if (cellTypes.length > 1) defNode.set(GrammarConstants.cells, cellTypes.join(xi))
+
+      if (!catchAllCellType && cellTypes.length === 1) defNode.set(GrammarConstants.cells, cellTypes[0])
+
+      // Todo: switch to conditional frequency
+      //defNode.set(GrammarConstants.frequency, (allLines.length / lineCount).toFixed(3))
+      return defNode.getParent().toString()
+    })
+
+    const cellTypes: string[] = []
+    globalCellTypeMap.forEach(def => cellTypes.push(def))
+
+    return [rootNode.toString(), cellTypes.join(yi), keywords.join(yi)].filter(i => i).join("\n")
   }
 
-  protected _getBestCellType(keyword: string, allValues: any[]): { cellTypeName: string; cellTypeDefinition?: string } {
+  private _getBestCellType(keyword: string, allValues: any[]): { cellTypeName: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)
     const xi = this.getXI()
     const values = Array.from(asSet).filter(c => c)
@@ -100,22 +129,5 @@ class UnknownGrammarNode extends TreeNode {
     return { cellTypeName: "any" }
   }
 }
-
-class UnknownGrammarProgram extends UnknownGrammarNode {
-  getPredictedGrammarFile(grammarName: string): string {
-    const rootNode = new TreeNode(`grammar
- name ${grammarName}`)
-
-    this.getColumnNames().forEach(keyword => rootNode.touchNode(`grammar keywords ${keyword}`))
-    const gram = this.getGrammarStuff()
-    const yi = this.getYI()
-
-    return [rootNode.toString(), gram.cellTypeDefinitions.join(yi), gram.keywordDefinitions.join(yi)]
-      .filter(i => i)
-      .join("\n")
-  }
-}
-
-class UnknownGrammarProgramNonRootNode extends UnknownGrammarNode {}
 
 export default UnknownGrammarProgram

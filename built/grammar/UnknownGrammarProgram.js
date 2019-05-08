@@ -2,16 +2,51 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
-class UnknownGrammarNode extends TreeNode_1.default {
-    getGrammarStuff() {
+class UnknownGrammarProgram extends TreeNode_1.default {
+    getPredictedGrammarFile(grammarName) {
+        const rootNode = new TreeNode_1.default(`grammar
+ name ${grammarName}`);
+        // note: right now we assume 1 global cellTypeMap and keywordMap per grammar. But we may have scopes in the future?
+        const globalCellTypeMap = new Map();
         const xi = this.getXI();
-        const myKeywords = this.getColumnNames();
-        const cellTypeDefinitions = [];
-        const definedCellTypes = {};
-        const keywordDefinitions = myKeywords //this.getInvalidKeywords()
-            .map((keyword) => {
-            const lines = this.getColumn(keyword).filter(i => i);
-            const cells = lines.map(line => line.split(xi));
+        const yi = this.getYI();
+        this.getKeywords().forEach(keyword => rootNode.touchNode(`grammar keywords ${keyword}`));
+        const clone = this.clone();
+        let allNodes = clone.getTopDownArrayIterator();
+        let node;
+        for (node of allNodes) {
+            const keyword = node.getKeyword();
+            const asInt = parseInt(keyword);
+            if (!isNaN(asInt) && asInt.toString() === keyword && node.getParent().getKeyword())
+                node.setKeyword(node.getParent().getKeyword() + "Child");
+        }
+        allNodes = clone.getTopDownArrayIterator();
+        const allChilds = {};
+        const allKeywordNodes = {};
+        for (let node of allNodes) {
+            const keyword = node.getKeyword();
+            if (!allChilds[keyword])
+                allChilds[keyword] = {};
+            if (!allKeywordNodes[keyword])
+                allKeywordNodes[keyword] = [];
+            allKeywordNodes[keyword].push(node);
+            node.forEach((child) => {
+                allChilds[keyword][child.getKeyword()] = true;
+            });
+        }
+        const lineCount = clone.getNumberOfLines();
+        const keywords = Object.keys(allChilds).map(keyword => {
+            const defNode = new TreeNode_1.default(`${GrammarConstants_1.GrammarConstants.keyword} ${keyword}`).nodeAt(0);
+            const childKeywords = Object.keys(allChilds[keyword]);
+            if (childKeywords.length) {
+                //defNode.touchNode(GrammarConstants.any) // todo: remove?
+                childKeywords.forEach(keyword => defNode.touchNode(`keywords ${keyword}`));
+            }
+            const allLines = allKeywordNodes[keyword];
+            const cells = allLines
+                .map(line => line.getContent())
+                .filter(i => i)
+                .map(i => i.split(xi));
             const sizes = new Set(cells.map(c => c.length));
             const max = Math.max(...Array.from(sizes));
             const min = Math.min(...Array.from(sizes));
@@ -19,10 +54,8 @@ class UnknownGrammarNode extends TreeNode_1.default {
             let cellTypes = [];
             for (let index = 0; index < max; index++) {
                 const cellType = this._getBestCellType(keyword, cells.map(c => c[index]));
-                if (cellType.cellTypeDefinition && !definedCellTypes[cellType.cellTypeName]) {
-                    cellTypeDefinitions.push(cellType.cellTypeDefinition);
-                    definedCellTypes[cellType.cellTypeName] = true;
-                }
+                if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeName))
+                    globalCellTypeMap.set(cellType.cellTypeName, cellType.cellTypeDefinition);
                 cellTypes.push(cellType.cellTypeName);
             }
             if (max > min) {
@@ -32,25 +65,19 @@ class UnknownGrammarNode extends TreeNode_1.default {
                     cellTypes.pop();
                 }
             }
-            const catchAllCellTypeString = catchAllCellType
-                ? `\n ${GrammarConstants_1.GrammarConstants.catchAllCellType} ${catchAllCellType}`
-                : "";
-            const childrenAnyString = this.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants_1.GrammarConstants.any}`;
-            if (!cellTypes.length)
-                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}${catchAllCellTypeString}${childrenAnyString}`;
+            if (catchAllCellType)
+                defNode.set(GrammarConstants_1.GrammarConstants.catchAllCellType, catchAllCellType);
             if (cellTypes.length > 1)
-                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}
- ${GrammarConstants_1.GrammarConstants.cells} ${cellTypes.join(xi)}${catchAllCellTypeString}${childrenAnyString}`;
-            if (catchAllCellTypeString)
-                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword} ${catchAllCellTypeString}${childrenAnyString}`;
-            else
-                return `${GrammarConstants_1.GrammarConstants.keyword} ${keyword}
- ${GrammarConstants_1.GrammarConstants.cells} ${cellTypes[0]}${childrenAnyString}`;
+                defNode.set(GrammarConstants_1.GrammarConstants.cells, cellTypes.join(xi));
+            if (!catchAllCellType && cellTypes.length === 1)
+                defNode.set(GrammarConstants_1.GrammarConstants.cells, cellTypes[0]);
+            // Todo: switch to conditional frequency
+            //defNode.set(GrammarConstants.frequency, (allLines.length / lineCount).toFixed(3))
+            return defNode.getParent().toString();
         });
-        return {
-            keywordDefinitions: keywordDefinitions,
-            cellTypeDefinitions: cellTypeDefinitions
-        };
+        const cellTypes = [];
+        globalCellTypeMap.forEach(def => cellTypes.push(def));
+        return [rootNode.toString(), cellTypes.join(yi), keywords.join(yi)].filter(i => i).join("\n");
     }
     _getBestCellType(keyword, allValues) {
         const asSet = new Set(allValues);
@@ -88,19 +115,5 @@ class UnknownGrammarNode extends TreeNode_1.default {
             };
         return { cellTypeName: "any" };
     }
-}
-class UnknownGrammarProgram extends UnknownGrammarNode {
-    getPredictedGrammarFile(grammarName) {
-        const rootNode = new TreeNode_1.default(`grammar
- name ${grammarName}`);
-        this.getColumnNames().forEach(keyword => rootNode.touchNode(`grammar keywords ${keyword}`));
-        const gram = this.getGrammarStuff();
-        const yi = this.getYI();
-        return [rootNode.toString(), gram.cellTypeDefinitions.join(yi), gram.keywordDefinitions.join(yi)]
-            .filter(i => i)
-            .join("\n");
-    }
-}
-class UnknownGrammarProgramNonRootNode extends UnknownGrammarNode {
 }
 exports.default = UnknownGrammarProgram;

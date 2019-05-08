@@ -1,0 +1,43 @@
+grammar
+ name foobar
+ keywords
+  file
+keyword file
+ keywords
+  size
+  digits
+  open
+  temp
+  description
+  edits
+  account
+ cells any
+keyword size
+ cells int
+keyword digits
+ cells int int
+keyword open
+ cells bool
+keyword temp
+ cells float
+keyword description
+ catchAllCellType any
+keyword edits
+ keywords
+  editsChild
+keyword editsChild
+ keywords
+  data
+keyword data
+ cells any
+keyword account
+ keywords
+  balance
+  transactions
+  source
+keyword balance
+ cells float
+keyword transactions
+ cells int
+keyword source
+ cells bool any int

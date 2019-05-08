@@ -15,6 +15,11 @@ testTree.predictGrammarFile = equal => {
  open true
  temp 32.1
  description Lorem ipsum, unless ipsum lorem.
+ edits
+  0
+   data Test
+  1
+   data Test2
  account
   balance 24
   transactions 32
@@ -29,33 +34,12 @@ file test
   balance 32.12
   transactions 321
   source yes http://to.to.to 31`
-  const expected = `grammar
- name foobar
- keywords
-  size
-  digits
-  open
-  temp
-  description
-  account
-keyword size
- cells int
-keyword digits
- cells int int
-keyword open
- cells bool
-keyword temp
- cells float
-keyword description
- catchAllCellType any
-keyword account
- any`
 
   // Act
   const types = new UnknownGrammarProgram(input).getPredictedGrammarFile("foobar")
 
   // Assert
-  equal(types, expected)
+  equal(types, fs.readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"))
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)

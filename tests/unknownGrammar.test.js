@@ -38,11 +38,14 @@ file test
   temp
   description
   account
-keyword size int
+keyword size
+ cells int
 keyword digits
  cells int int
-keyword open bool
-keyword temp float
+keyword open
+ cells bool
+keyword temp
+ cells float
 keyword description
  catchAllCellType any
 keyword account

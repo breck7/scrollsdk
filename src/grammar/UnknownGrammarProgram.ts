@@ -8,6 +8,7 @@ class UnknownGrammarNode extends TreeNode {
     const myKeywords = this.getColumnNames()
 
     const cellTypeDefinitions: string[] = []
+    const definedCellTypes: { [cellTypeName: string]: boolean } = {}
 
     const keywordDefinitions = myKeywords //this.getInvalidKeywords()
       .map((keyword: string) => {
@@ -19,10 +20,12 @@ class UnknownGrammarNode extends TreeNode {
         let catchAllCellType: string
         let cellTypes = []
         for (let index = 0; index < max; index++) {
-          const set = new Set(cells.map(c => c[index]))
-          const values = Array.from(set).filter(c => c)
-          const type = this._getBestType(values)
-          cellTypes.push(type)
+          const cellType = this._getBestCellType(keyword, cells.map(c => c[index]))
+          if (cellType.cellTypeDefinition && !definedCellTypes[cellType.cellTypeName]) {
+            cellTypeDefinitions.push(cellType.cellTypeDefinition)
+            definedCellTypes[cellType.cellTypeName] = true
+          }
+          cellTypes.push(cellType.cellTypeName)
         }
         if (max > min) {
           //columns = columns.slice(0, min)
@@ -45,7 +48,11 @@ class UnknownGrammarNode extends TreeNode {
           return `${GrammarConstants.keyword} ${keyword}
  ${GrammarConstants.cells} ${cellTypes.join(xi)}${catchAllCellTypeString}${childrenAnyString}`
 
-        return `${GrammarConstants.keyword} ${keyword} ${cellTypes[0]}${catchAllCellTypeString}${childrenAnyString}`
+        if (catchAllCellTypeString)
+          return `${GrammarConstants.keyword} ${keyword} ${catchAllCellTypeString}${childrenAnyString}`
+        else
+          return `${GrammarConstants.keyword} ${keyword}
+ ${GrammarConstants.cells} ${cellTypes[0]}${childrenAnyString}`
       })
 
     return {
@@ -54,14 +61,17 @@ class UnknownGrammarNode extends TreeNode {
     }
   }
 
-  protected _getBestType(values: any) {
+  protected _getBestCellType(keyword: string, allValues: any[]): { cellTypeName: string; cellTypeDefinition?: string } {
+    const asSet = new Set(allValues)
+    const xi = this.getXI()
+    const values = Array.from(asSet).filter(c => c)
     const all = (fn: Function) => {
       for (let i = 0; i < values.length; i++) {
         if (!fn(values[i])) return false
       }
       return true
     }
-    if (all((str: string) => str === "0" || str === "1")) return "bit"
+    if (all((str: string) => str === "0" || str === "1")) return { cellTypeName: "bit" }
 
     if (
       all((str: string) => {
@@ -70,15 +80,24 @@ class UnknownGrammarNode extends TreeNode {
         return num.toString() === str
       })
     ) {
-      return "int"
+      return { cellTypeName: "int" }
     }
 
-    if (all((str: string) => !str.match(/[^\d\.\-]/))) return "float"
+    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeName: "float" }
 
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (all((str: string) => bools.has(str.toLowerCase()))) return "bool"
+    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeName: "bool" }
 
-    return "any"
+    // If there are duplicate files and the set is less than enum
+    const enumLimit = 30
+    if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
+      return {
+        cellTypeName: `${keyword}Enum`,
+        cellTypeDefinition: `cellType ${keyword}Enum
+ enum ${values.join(xi)}`
+      }
+
+    return { cellTypeName: "any" }
   }
 }
 
@@ -91,7 +110,9 @@ class UnknownGrammarProgram extends UnknownGrammarNode {
     const gram = this.getGrammarStuff()
     const yi = this.getYI()
 
-    return rootNode.toString() + "\n" + gram.cellTypeDefinitions.join(yi) + gram.keywordDefinitions.join(yi)
+    return [rootNode.toString(), gram.cellTypeDefinitions.join(yi), gram.keywordDefinitions.join(yi)]
+      .filter(i => i)
+      .join("\n")
   }
 }
 

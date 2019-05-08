@@ -4,7 +4,10 @@ declare class UnknownGrammarNode extends TreeNode {
         keywordDefinitions: string[];
         cellTypeDefinitions: string[];
     };
-    protected _getBestType(values: any): "any" | "int" | "float" | "bit" | "bool";
+    protected _getBestCellType(keyword: string, allValues: any[]): {
+        cellTypeName: string;
+        cellTypeDefinition?: string;
+    };
 }
 declare class UnknownGrammarProgram extends UnknownGrammarNode {
     getPredictedGrammarFile(grammarName: string): string;

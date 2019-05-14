@@ -6,6 +6,14 @@ const fs = require("fs")
 
 const testTree = {}
 
+testTree.combineTests = equal => {
+  // Arrange
+  const combined = jtree.combineFiles([__dirname + "/*.swarm"])
+
+  // Act/Assert
+  equal(combined.toString().includes("getTargetExtension"), true, "Included something from a swarm file")
+}
+
 testTree.diskTests = equal => {
   // Arrange
   const path = __dirname + `/temp-disk.csv`

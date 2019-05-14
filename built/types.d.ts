@@ -28,6 +28,7 @@ export declare namespace types {
     type word = string;
     type triInt = int;
     type filepath = string;
+    type globPattern = string;
     type highlightScope = string;
     type fileExtension = string;
     type targetLanguageId = fileExtension;

@@ -1,7 +1,7 @@
 edge / 2019-05-07
 ===================
-- New: glob patterns in combine script
-- Breaking: combine command line script now takes glob pattern
+- New: combineFiles method in node version with glob patterns
+- Breaking: removed combine.js script
 - Breaking: GrammarProgram.predictGrammarFile is now new UnknownGrammarProgram(input).getPredictedGrammarFile()
 
 

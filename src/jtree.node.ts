@@ -22,6 +22,14 @@ class jtreeNode extends jtree {
     const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
     return grammarProgram.getRootConstructor()
   }
+
+  static combineFiles = (globPatterns: types.globPattern[]) => {
+    const glob = require("glob")
+    const files = (<any>globPatterns.map(pattern => glob.sync(pattern))).flat()
+    const content = files.map((path: types.filepath) => fs.readFileSync(path, "utf8")).join("\n")
+
+    return new jtree.TreeNode(content)
+  }
 }
 
 export default jtreeNode

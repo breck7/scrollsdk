@@ -18,4 +18,10 @@ jtreeNode.getProgramConstructor = (grammarPath) => {
     const grammarProgram = GrammarProgram_1.default.newFromCondensed(grammarCode, grammarPath);
     return grammarProgram.getRootConstructor();
 };
+jtreeNode.combineFiles = (globPatterns) => {
+    const glob = require("glob");
+    const files = globPatterns.map(pattern => glob.sync(pattern)).flat();
+    const content = files.map((path) => fs.readFileSync(path, "utf8")).join("\n");
+    return new jtree_1.default.TreeNode(content);
+};
 exports.default = jtreeNode;

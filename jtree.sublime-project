@@ -17,8 +17,12 @@
             "shell_cmd": "jtree prettify ${file}"
         },
         {
-            "name": "testFile",
+            "name": "executeFile",
             "shell_cmd": "${file}"
+        },
+        {
+            "name": "check",
+            "shell_cmd": "jtree check ${file}"
         }
     ]
 }

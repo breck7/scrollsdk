@@ -1,0 +1,27 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+#test basics hakon
+ #setup
+  require ./index.js
+  %%|
+   body
+    font-size 12px
+    h1,h2
+     color red
+   a
+    &:hover
+     color blue
+     font-size 17px
+ toCss
+  =|
+   body {
+     font-size: 12px;
+   }
+   body h1,body h2 {
+     color: red;
+   }
+   a:hover {
+     color: blue;
+     font-size: 17px;
+   }
+   

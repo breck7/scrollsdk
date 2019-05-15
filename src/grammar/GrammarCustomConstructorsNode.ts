@@ -12,7 +12,8 @@ import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 import types from "../types"
 
 abstract class AbstractCustomConstructorNode extends TreeNode {
-  getDefinedConstructor(): types.RunTimeNodeConstructor {
+  getTheDefinedConstructor(): types.RunTimeNodeConstructor {
+    // todo: allow overriding if custom constructor not found.
     return this.getBuiltIn() || this._getCustomConstructor()
   }
 
@@ -26,7 +27,7 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
 
   getErrors(): types.ParseError[] {
     // todo: should this be a try/catch?
-    if (!this.isAppropriateEnvironment() || this.getDefinedConstructor()) return []
+    if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor()) return []
     const parent = this.getParent()
     const context = parent.isRoot() ? "" : parent.getKeyword()
     const point = this.getPoint()
@@ -92,13 +93,21 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
 
 class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
   private _cached: any
-  static cache: any = {}
+  static cache: { [code: string]: types.RunTimeNodeConstructor } = {}
+
   private _getNodeJsConstructor(): types.RunTimeNodeConstructor {
     const jtreePath = __dirname + "/../jtree.node.js"
     const code = `const jtree = require('${jtreePath}').default
 /* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`
     if (CustomJavascriptConstructorNode.cache[code]) return CustomJavascriptConstructorNode.cache[code]
-    const tempFilePath = __dirname + "/constructor-" + TreeUtils.getRandomString(30) + "-temp.js"
+    const constructorName =
+      this.getParent()
+        .getParent()
+        .getWord(1) ||
+      this.getParent()
+        .getParent()
+        .get(GrammarConstants.name) + "Root"
+    const tempFilePath = `${__dirname}/constructor-${constructorName}-${TreeUtils.getRandomString(30)}-temp.js`
     const fs = require("fs")
     try {
       fs.writeFileSync(tempFilePath, code, "utf8")

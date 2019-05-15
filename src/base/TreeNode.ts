@@ -153,6 +153,10 @@ class ImmutableNode extends AbstractNode {
     return this.length ? new Set(this.getKeywords()).size !== this.length : false
   }
 
+  isAllMaps(): boolean {
+    return !this.hasDuplicateKeywords() && this.every(node => !node.hasDuplicateKeywords())
+  }
+
   isEmpty(): boolean {
     return !this.length && !this.getContent()
   }
@@ -1193,7 +1197,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: rename to getChildrenByConstructor(?)
-  getChildrenByNodeType(constructor: Function) {
+  getChildrenByNodeConstructor(constructor: Function) {
     return this.filter(child => child instanceof constructor)
   }
 
@@ -1287,6 +1291,15 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().find(fn)
   }
 
+  every(fn: types.everyFn) {
+    let index = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      if (!fn(node, index)) return false
+      index++
+    }
+    return true
+  }
+
   forEach(fn: types.forEachFn) {
     this.getChildren().forEach(fn)
     return this
@@ -1307,10 +1320,6 @@ class ImmutableNode extends AbstractNode {
 
   getCatchAllNodeConstructor(line: string) {
     return this.constructor
-  }
-
-  getExpanded(thisColumnNumber: int, extendsColumnNumber: int) {
-    return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"))
   }
 
   getInheritanceTree() {
@@ -1394,6 +1403,11 @@ class TreeNode extends ImmutableNode {
     const mtime = this.getMTime()
     const cmtime = this._getChildrenMTime()
     return Math.max(mtime, cmtime)
+  }
+
+  // todo: solve issue related to whether extend should overwrite or append.
+  getExpanded(thisColumnNumber: int, extendsColumnNumber: int) {
+    return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"))
   }
 
   protected _expand(thisColumnNumber: int, extendsColumnNumber: int): TreeNode {
@@ -1655,8 +1669,12 @@ class TreeNode extends ImmutableNode {
   }
 
   // todo: add more testing.
+  // todo: solve issue with where extend should overwrite or append
   extend(nodeOrStr: TreeNode | string) {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
+    if (!nodeOrStr.isAllMaps())
+      throw new Error(`Currently extend only works with maps but the given tree contains duplicate keys at some level.`)
+
     nodeOrStr.forEach(node => {
       const path = node.getKeyword()
       const content = node.getContent()

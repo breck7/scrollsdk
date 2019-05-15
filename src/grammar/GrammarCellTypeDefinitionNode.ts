@@ -87,7 +87,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
   }
 
   private _getEnumOptions() {
-    const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0]
+    const enumNode = this.getChildrenByNodeConstructor(GrammarEnumTestNode)[0]
     if (!enumNode) return undefined
 
     // we sort by longest first to capture longest match first. todo: add test
@@ -113,7 +113,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
   }
 
   isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram) {
-    return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node =>
+    return this.getChildrenByNodeConstructor(AbstractGrammarWordTestNode).every(node =>
       (<AbstractGrammarWordTestNode>node).isValid(str, runTimeGrammarBackedProgram)
     )
   }

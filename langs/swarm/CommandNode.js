@@ -12,7 +12,7 @@ class CommandNode extends jtree.NonTerminalNode {
   }
 
   _getArgs() {
-    const argNodes = this.getChildrenByNodeType(CommandArgNode)
+    const argNodes = this.getChildrenByNodeConstructor(CommandArgNode)
     if (argNodes.length) return argNodes.map(arg => arg.childrenToString())
     return this.getWordsFrom(1)
   }

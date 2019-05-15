@@ -36,6 +36,7 @@ export namespace types {
   export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
   export declare type filterFn = (node: treeNode, index: int) => boolean
   export declare type forEachFn = (node: treeNode, index: int) => void
+  export declare type everyFn = (node: treeNode, index: int) => boolean
   export declare type nodeToStringFn = (node: treeNode) => string
   export declare type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string
 

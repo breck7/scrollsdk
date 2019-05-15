@@ -6,7 +6,7 @@ const SetupConstructorArgNode = require("./SetupConstructorArgNode.js")
 class TestSetupNode extends jtree.NonTerminalNode {
   createTestDummy(programFilepath) {
     const requiredClass = this._getRequiredClass(programFilepath)
-    const constructorArgNode = this.getChildrenByNodeType(SetupConstructorArgNode)[0]
+    const constructorArgNode = this.getChildrenByNodeConstructor(SetupConstructorArgNode)[0]
     const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
     return this.has(SwarmConstants.static) ? requiredClass : new requiredClass(param)
   }

@@ -1,9 +1,11 @@
-edge / 2019-05-07
+21.1.0 / 2019-05-15
 ===================
 - New: combineFiles method in node version with glob patterns
+- New: Hakon package moved into here monorepo style
+- New: isAllMaps and every methods
+- Breaking: getChildrenByNodeType is now getChildrenByNodeConstructor
 - Breaking: removed combine.js script
 - Breaking: GrammarProgram.predictGrammarFile is now new UnknownGrammarProgram(input).getPredictedGrammarFile()
-
 
 21.0.0 / 2019-05-04
 ===================

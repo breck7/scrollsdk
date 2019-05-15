@@ -104,7 +104,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   protected _getCellTypeDefinitions() {
     const types: { [typeName: string]: GrammarCellTypeDefinitionNode } = {}
     // todo: add built in word types?
-    this.getChildrenByNodeType(GrammarCellTypeDefinitionNode).forEach(
+    this.getChildrenByNodeConstructor(GrammarCellTypeDefinitionNode).forEach(
       type => (types[(<GrammarCellTypeDefinitionNode>type).getCellTypeId()] = type)
     )
     return types
@@ -115,7 +115,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getKeywordDefinitions() {
-    return <GrammarKeywordDefinitionNode[]>this.getChildrenByNodeType(GrammarKeywordDefinitionNode)
+    return <GrammarKeywordDefinitionNode[]>this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode)
   }
 
   // todo: remove?
@@ -173,7 +173,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
     this._cache_keywordDefinitions = {}
 
-    this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
+    this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
       this._cache_keywordDefinitions[
         (<GrammarKeywordDefinitionNode>keywordDefinitionNode).getId()
       ] = keywordDefinitionNode
@@ -192,8 +192,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
-    const definedConstructor = this._getGrammarRootNode().getDefinedConstructor()
-    const extendedConstructor: any = definedConstructor || AbstractRuntimeProgram
+    const extendedConstructor: any =
+      this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram
     const grammarProgram = this
 
     // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your

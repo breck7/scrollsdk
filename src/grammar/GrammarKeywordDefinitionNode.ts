@@ -116,7 +116,7 @@ ${captures}
   }
 
   getExamples(): GrammarExampleNode[] {
-    return this.getChildrenByNodeType(GrammarExampleNode)
+    return this.getChildrenByNodeConstructor(GrammarExampleNode)
   }
 
   getConstantsObject() {

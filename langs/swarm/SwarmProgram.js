@@ -12,7 +12,7 @@ class SwarmProgram extends jtree.program {
   }
 
   getTestSetupNode() {
-    return this.getChildrenByNodeType(TestSetupNode)[0]
+    return this.getChildrenByNodeConstructor(TestSetupNode)[0]
   }
 
   execute(filepath) {
@@ -22,10 +22,10 @@ class SwarmProgram extends jtree.program {
   }
 
   getTestsToRun() {
-    const solos = this.getChildrenByNodeType(SoloTestBlock)
+    const solos = this.getChildrenByNodeConstructor(SoloTestBlock)
     const testsToRun = solos.length
       ? solos
-      : this.getChildrenByNodeType(TestBlock).filter(test => !(test instanceof SkippedTestBlock))
+      : this.getChildrenByNodeConstructor(TestBlock).filter(test => !(test instanceof SkippedTestBlock))
     return testsToRun
   }
 }

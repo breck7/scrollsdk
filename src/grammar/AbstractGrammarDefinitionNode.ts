@@ -64,7 +64,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   private _cache_definedNodeConstructor: types.RunTimeNodeConstructor
 
-  getDefinedConstructor() {
+  getConstructorDefinedInGrammar() {
     if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this._getDefinedNodeConstructor()
     return this._cache_definedNodeConstructor
   }
@@ -77,10 +77,12 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   /* Node constructor is the actual JS class being initiated, different than the Node type. */
   protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor {
-    const customConstructorsDefinition = <GrammarCustomConstructorsNode>this.getNode(GrammarConstants.constructors)
+    const customConstructorsDefinition = <GrammarCustomConstructorsNode>(
+      this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0]
+    )
     if (customConstructorsDefinition) {
       const envConstructor = customConstructorsDefinition.getConstructorForEnvironment()
-      if (envConstructor) return envConstructor.getDefinedConstructor()
+      if (envConstructor) return envConstructor.getTheDefinedConstructor()
     }
     return this._getDefaultNodeConstructor()
   }
@@ -100,7 +102,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   protected _getCompilerNodes() {
-    return <GrammarCompilerNode[]>this.getChildrenByNodeType(GrammarCompilerNode) || []
+    return <GrammarCompilerNode[]>this.getChildrenByNodeConstructor(GrammarCompilerNode) || []
   }
 
   // todo: remove?
@@ -153,7 +155,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
       .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
       .forEach(keyword => {
-        this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getDefinedConstructor()
+        this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getConstructorDefinedInGrammar()
       })
   }
 
@@ -212,7 +214,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   protected _initCatchAllNodeConstructorCache(): void {
     if (this._cache_catchAllConstructor) return undefined
 
-    this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor()
+    this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar()
   }
 
   getHighlightScope(): string | undefined {

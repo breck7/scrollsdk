@@ -1564,15 +1564,15 @@ testTree.simpleTreeLanguage = equal => {
 
   // Edit the program and assure parsing is correct
   // Assert
-  equal(program.getChildrenByNodeType(AdditionNode).length, 3)
-  equal(program.getChildrenByNodeType(SubstractionNode).length, 0)
+  equal(program.getChildrenByNodeConstructor(AdditionNode).length, 3)
+  equal(program.getChildrenByNodeConstructor(SubstractionNode).length, 0)
 
   // Act
   program.nodeAt(0).replaceNode(str => str.replace("+", "-"))
 
   // Assert
-  equal(program.getChildrenByNodeType(AdditionNode).length, 2)
-  equal(program.getChildrenByNodeType(SubstractionNode).length, 1)
+  equal(program.getChildrenByNodeConstructor(AdditionNode).length, 2)
+  equal(program.getChildrenByNodeConstructor(SubstractionNode).length, 1)
   equal(program.getNodeByType(SubstractionNode) instanceof SubstractionNode, true)
 }
 
@@ -2007,6 +2007,23 @@ car non-existant`)
     equal(true, false, "expanding with missing id should throw")
   } catch (err) {
     equal(err.toString().includes("non-existant"), true, "expanding with missing id throws")
+  }
+}
+
+testTree.expandedShouldNotRecursve = equal => {
+  // todo: we need to work on extend so its more straightforward
+  // Arrange
+  const tree3 = new TreeNode(
+    `constructors
+ example
+ example foobar`
+  )
+  // Act/Assert
+  try {
+    tree3.getExpanded(0, 1)
+    equal(false, true, "should have thrown")
+  } catch (err) {
+    equal(true, true, "error caught")
   }
 }
 

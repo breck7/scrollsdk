@@ -47,7 +47,10 @@ const main = grammarSourceCode => {
   let cachedGrammarCode
 
   const getGrammarConstructor = () => {
-    const currentGrammarCode = grammarInstance.getValue()
+    let currentGrammarCode = grammarInstance.getValue()
+
+    // todo: for custom constructors, if they are not there, replace?
+
     if (!grammarConstructor || currentGrammarCode !== cachedGrammarCode) {
       try {
         const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, "")
@@ -68,7 +71,9 @@ const main = grammarSourceCode => {
   const codeOnUpdate = () => {
     const code = codeInstance.getValue()
     localStorage.setItem(localStorageKeys.codeConsole, code)
-    window.program = new (getGrammarConstructor())(code)
+    const programConstructor = getGrammarConstructor()
+
+    window.program = new programConstructor(code)
     const errs = window.program.getProgramErrors()
     codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }

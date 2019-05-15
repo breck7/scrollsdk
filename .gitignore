@@ -11,3 +11,5 @@ jtree.project
 notes.txt
 jtree.browser.ts
 tasks/syntax.sh
+src/*/*.js
+src/*.js

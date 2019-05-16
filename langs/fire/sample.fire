@@ -1,2 +1,5 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 add ten 2 3 5
+add score 100 52
 dump ten
+dump score

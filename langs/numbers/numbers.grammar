@@ -6,12 +6,12 @@ grammar
   #
   #!
  catchAllKeyword error
+cellType commentWord
+ highlightScope comment
 cellType error
  highlightScope invalid
 cellType number
  highlightScope constant.numeric
-cellType commentWord
- highlightScope comment
 cellType numbers number
 abstract _arithmetic
  highlightScope keyword.operator.arithmetic
@@ -27,21 +27,21 @@ abstract _arithmetic
  keywords
   _arithmetic
   #
+keyword #
+ description This is a line comment.
+ highlightScope comment
+ catchAllCellType commentWord
+ catchAllKeyword #
 keyword error
  catchAllCellType error
  constructors
   browser ErrorNode
   nodejs ErrorNode
  highlightScope invalid
-keyword #
- description This is a line comment.
- highlightScope comment
- catchAllCellType commentWord
- catchAllKeyword #
 keyword #! #
 keyword comment #
+keyword % _arithmetic
+keyword * _arithmetic
 keyword + _arithmetic
 keyword - _arithmetic
-keyword * _arithmetic
-keyword % _arithmetic
 keyword / _arithmetic

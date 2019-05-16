@@ -142,7 +142,7 @@ class StumpNode extends jtree.NonTerminalNode {
   }
 
   isInputType() {
-    return inputTypes.includes(this.getTag()) || this.get(StumpConstants.contenteditable) === "true"
+    return StumpConstants.inputTypes.includes(this.getTag()) || this.get(StumpConstants.contenteditable) === "true"
   }
 
   findStumpNodeByChild(line) {

@@ -1,3 +1,7 @@
+22.1.1 / 2019-05-16
+===================
+- Fix: missing constant
+
 22.1.0 / 2019-05-16
 ===================
 - New: expand will append rather than set if a node is obviously not a map

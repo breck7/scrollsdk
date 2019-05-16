@@ -1,5 +1,6 @@
 grammar
  name project
+ description A Tree Language for project dependency management.
  constructors
   nodejs ./projectProgram.js
  keywords

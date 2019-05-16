@@ -1,5 +1,6 @@
 grammar
  name numbers
+ description A useless Tree Language for testing Tree Notation features.
  keywords
   _arithmetic
   #

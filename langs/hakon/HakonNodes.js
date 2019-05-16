@@ -2,7 +2,7 @@
 const jtree = require("../../index.js")
 
 class HakonPropertyNode extends jtree.TerminalNode {
-  toCss(spaces) {
+  compile(spaces) {
     return `${spaces}${this.getKeyword()}: ${this.getContent()};`
   }
 }
@@ -19,13 +19,12 @@ class HakonSelectorNode extends jtree.NonTerminalNode {
       })
       .join(",")
   }
-
-  toCss() {
-    const propertyNodes = this.getChildrenByNodeType(HakonPropertyNode)
+  compile() {
+    const propertyNodes = this.getChildrenByNodeConstructor(HakonPropertyNode)
     if (!propertyNodes.length) return ""
     const spaces = "  "
     return `${this.getSelector()} {
-${propertyNodes.map(child => child.toCss(spaces)).join("\n")}
+${propertyNodes.map(child => child.compile(spaces)).join("\n")}
 }\n`
   }
 }
@@ -34,11 +33,10 @@ class HakonProgram extends jtree.program {
   getSelector() {
     return ""
   }
-
-  toCss() {
+  compile() {
     return this.getTopDownArray()
       .filter(node => node instanceof HakonSelectorNode)
-      .map(child => child.toCss())
+      .map(child => child.compile())
       .join("")
   }
 }

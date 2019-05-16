@@ -1,0 +1,26 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+#test basics
+ #setup
+  require ./index.js
+  %%|
+   html
+    id bam
+    class someClass
+    body
+     div
+      type foo
+      bern
+       Hello world
+       This is some text
+     span Hello more
+ toHtml
+  =|
+   <html id="bam" class="someClass">
+    <body>
+     <div type="foo">Hello world
+   This is some text</div>
+     <span>Hello more</span>
+   </body>
+   </html>
+   

@@ -675,6 +675,11 @@ testTree.concat = equal => {
   equal(newNodes.length, 1)
 }
 
+testTree.getNodesByGlobPath = equal => {
+  // Arrange/Act/Assert
+  equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("* div").length, 5)
+}
+
 testTree.getNodeByColumns = equal => {
   // Arrange
   const test = new TreeNode(testStrings.sortByMultiple)

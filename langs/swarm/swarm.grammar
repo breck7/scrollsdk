@@ -1,5 +1,6 @@
 grammar
  name swarm
+ description A Tree Language for unit testing.
  keywords
   #!
   #setup

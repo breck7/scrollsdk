@@ -32,6 +32,7 @@ export namespace types {
   export declare type globPattern = string
   export declare type highlightScope = string
   export declare type fileExtension = string
+  export declare type globPath = string // * keyword keyword *
   export declare type targetLanguageId = fileExtension
   export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
   export declare type filterFn = (node: treeNode, index: int) => boolean

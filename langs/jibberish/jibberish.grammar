@@ -1,6 +1,6 @@
 grammar
  name jibberish
- description Jibberish is a useless language built purely to use for testing Tree Notation code.
+ description A useless Tree Language built for testing Tree Notation code.
  constructors
   nodejs ./jibberishProgram.js
  compiler txt
@@ -34,7 +34,7 @@ keyword lineOfCode
  catchAllCellType word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
-  browser LineOfCodeNode
+  browser LineOfCodeNode jibberishNodes.js
 keyword text
  any
 keyword extendsAbstract someAbstractClass

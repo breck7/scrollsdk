@@ -276,6 +276,48 @@ ${GrammarConstants.cellType} any`
 
     return new GrammarProgram(tree.getExpanded(1, 2), grammarPath)
   }
+
+  async loadAllConstructorScripts(baseUrlPath: string): Promise<string[]> {
+    if (!this.isBrowser()) return undefined
+    const uniqueScriptsSet = new Set(
+      this.getNodesByGlobPath(`* ${GrammarConstants.constructors} ${GrammarConstants.constructorBrowser}`)
+        .filter(node => node.getWord(2))
+        .map(node => baseUrlPath + node.getWord(2))
+    )
+
+    return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)))
+  }
+
+  private static _scriptLoadingPromises: { [url: string]: Promise<string> } = {}
+
+  private static async _appendScriptOnce(url: string) {
+    // if (this.isNodeJs()) return undefined
+    if (!url) return undefined
+    if (this._scriptLoadingPromises[url]) return this._scriptLoadingPromises[url]
+
+    this._scriptLoadingPromises[url] = this._appendScript(url)
+    return this._scriptLoadingPromises[url]
+  }
+
+  private static _appendScript(url: string) {
+    //https://bradb.net/blog/promise-based-js-script-loader/
+    return new Promise<string>(function(resolve, reject) {
+      let resolved = false
+      const scriptEl = document.createElement("script")
+
+      scriptEl.type = "text/javascript"
+      scriptEl.src = url
+      scriptEl.async = true
+      scriptEl.onload = (<any>scriptEl).onreadystatechange = function() {
+        if (!resolved && (!this.readyState || this.readyState == "complete")) {
+          resolved = true
+          resolve(url)
+        }
+      }
+      scriptEl.onerror = scriptEl.onabort = reject
+      document.head.appendChild(scriptEl)
+    })
+  }
 }
 
 export default GrammarProgram

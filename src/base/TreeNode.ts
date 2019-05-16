@@ -51,6 +51,10 @@ class ImmutableNode extends AbstractNode {
     return typeof exports !== "undefined"
   }
 
+  isBrowser() {
+    return !this.isNodeJs()
+  }
+
   getOlderSiblings() {
     if (this.isRoot()) return []
     return this.getParent().slice(0, this.getIndex())
@@ -727,6 +731,25 @@ class ImmutableNode extends AbstractNode {
   get(keywordPath: types.keywordPath) {
     const node = this._getNodeByPath(keywordPath)
     return node === undefined ? undefined : node.getContent()
+  }
+
+  getNodesByGlobPath(query: types.globPath): TreeNode[] {
+    return this._getNodesByGlobPath(query)
+  }
+
+  private _getNodesByGlobPath(globPath: types.globPath): TreeNode[] {
+    const xi = this.getXI()
+    if (!globPath.includes(xi)) {
+      if (globPath === "*") return this.getChildren()
+      return this.filter(node => node.getKeyword() === globPath)
+    }
+
+    const parts = globPath.split(xi)
+    const current = parts.shift()
+    const rest = parts.join(xi)
+    const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getKeyword() === current)
+
+    return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)))
   }
 
   protected _getNodeByPath(keywordPath: types.keywordPath): ImmutableNode {

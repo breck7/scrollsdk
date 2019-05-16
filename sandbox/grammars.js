@@ -1,19 +1,31 @@
 const localStorageKeys = {
   grammarConsole: "grammarConsole",
-  codeConsole: "codeConsole"
+  codeConsole: "codeConsole",
+  grammarPath: "grammarPath"
 }
 
 const reset = () => Object.values(localStorageKeys).forEach(val => localStorage.removeItem(val))
 
-const main = grammarSourceCode => {
+const loadScripts = async (grammarCode, grammarPath) => {
+  if (!grammarCode || !grammarPath) return undefined
+  const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "")
+  const loadedScripts = await grammarProgram.loadAllConstructorScripts(
+    jtree.Utils.getPathWithoutFileName(grammarPath) + "/"
+  )
+  console.log(`Loaded scripts ${loadedScripts.join(", ")}...`)
+}
+
+const main = async grammarSourceCode => {
   const grammarConsole = $("#grammarConsole")
   const codeConsole = $("#codeConsole")
   const codeErrorsConsole = $("#codeErrorsConsole")
   const grammarErrorsConsole = $("#grammarErrorsConsole")
 
-  const init = () => {
+  const init = async () => {
     const gram = localStorage.getItem(localStorageKeys.grammarConsole)
     console.log("Loading grammar...")
+    if (gram) await loadScripts(gram, localStorage.getItem(localStorageKeys.grammarPath))
+
     const code = localStorage.getItem(localStorageKeys.codeConsole)
     console.log("Loading code...")
     if (localStorage.getItem(localStorageKeys.grammarConsole)) grammarConsole.val(gram)
@@ -21,7 +33,7 @@ const main = grammarSourceCode => {
     $("#version").html("Version: " + jtree.getVersion())
   }
 
-  init()
+  await init()
 
   const GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
   const grammarInstance = new jtree.TreeNotationCodeMirrorMode(
@@ -62,7 +74,6 @@ const main = grammarSourceCode => {
       } catch (err) {
         console.error(err)
         $("#otherErrors").html(err)
-        debugger
       }
     }
     return grammarConstructor
@@ -100,15 +111,17 @@ const main = grammarSourceCode => {
   codeOnUpdate()
   //}
 
-  const fetchGrammar = (grammarPath, samplePath) => {
-    $.get(grammarPath).then(grammar => {
-      $.get(samplePath).then(sample => {
-        grammarInstance.setValue(grammar)
-        grammarOnUpdate()
-        codeInstance.setValue(sample)
-        codeOnUpdate()
-      })
-    })
+  const fetchGrammar = async (grammarPath, samplePath) => {
+    const grammar = await $.get(grammarPath)
+    const sample = await $.get(samplePath)
+
+    await loadScripts(grammar, grammarPath)
+    localStorage.setItem(localStorageKeys.grammarPath, grammarPath)
+
+    grammarInstance.setValue(grammar)
+    grammarOnUpdate()
+    codeInstance.setValue(sample)
+    codeOnUpdate()
   }
 
   $("#samples").on("click", "a", function() {
@@ -125,10 +138,15 @@ $(document).ready(function() {
   $("#resetButton").on("click", function() {
     reset()
     console.log("reset...")
+    window.location.reload()
   })
   $("#execButton").on("click", function() {
     if (window.program) $("#execResults").html("Result: " + window.program.executeSync())
     else $("#execResults").html("Program failed to execute")
+  })
+  $("#compileButton").on("click", function() {
+    if (window.program) $("#execResults").html("Result:\n" + window.program.compile())
+    else $("#execResults").html("Program failed to compile")
   })
   $.get("/langs/grammar/grammar.grammar").then(main)
 })

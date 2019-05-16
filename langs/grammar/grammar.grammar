@@ -55,6 +55,7 @@ cellType semanticVersion
 cellType string
  highlightScope string
 cellType tag
+cellType scriptUrl
 cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
@@ -165,6 +166,7 @@ keyword openChildren _compilerRule
 keyword sub _compilerRule
 keyword browser _environment
  cells builtInConstructorOrConstructorName
+ catchAllCellType scriptUrl
  description builtInConstructorOrConstructorName will be searched for on the window object.
 keyword javascript _environment
  catchAllCellType javascriptCodeWord

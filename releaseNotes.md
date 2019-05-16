@@ -1,11 +1,19 @@
 21.1.0 / 2019-05-15
 ===================
 - New: combineFiles method in node version with glob patterns
-- New: Hakon package moved into here monorepo style
-- New: isAllMaps and every methods
+- New: Hakon and Stump languages moved into this repo, monorepo style
+- New: isAllMaps, every, getNodesByGlobPath methods
+- New: compile button in grammar sandbox
+- New: basic browser module loading
+- New: wrote grammars for Hakon and Stump
+- Fix: better reset functionality in grammar sandbox
+- Breaking: extend now throws if attempting to extend with a non-map. Better solution to come.
 - Breaking: getChildrenByNodeType is now getChildrenByNodeConstructor
 - Breaking: removed combine.js script
 - Breaking: GrammarProgram.predictGrammarFile is now new UnknownGrammarProgram(input).getPredictedGrammarFile()
+- Breaking: instead of title or style tags in Stump use "titleTag" or "styleTag" to overcome the inherent attribute/tag html name conflict.
+- Breaking: no more @ prefix in Stump
+- Breaking: for Stump collapseNode, just have it, don't set it to "true"
 
 21.0.0 / 2019-05-04
 ===================

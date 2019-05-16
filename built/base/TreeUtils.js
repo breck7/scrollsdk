@@ -196,16 +196,28 @@ TreeUtils.BrowserScript = class {
     changeDefaultExportsToWindowExports() {
         this._str = this._str.replace(/\nexport default ([^;]*)/g, "\nwindow.$1 = $1");
         // todo: should we just switch to some bundler?
-        const matches = this._str.match(/\nexport { ([^\}]+) }/g);
+        const matches = this._str.match(/\nexport { [^\}]+ }/g);
         if (matches)
-            this._str.replace(/\nexport { ([^\}]+) }/g, matches[1]
+            this._str.replace(/\nexport { ([^\}]+) }/g, matches[0]
+                .replace("export {", "")
+                .replace("}", "")
                 .split(/ /g)
                 .map(mod => `\nwindow.${mod} = ${mod}`)
                 .join("\n"));
         return this;
     }
     changeNodeExportsToWindowExports() {
-        this._str = this._str.replace(/\nmodule\.exports \= ([^;]*)/g, "\nwindow.$1 = $1");
+        // todo: should we just switch to some bundler?
+        const reg = /\nmodule\.exports = { ?([^\}]+) ?}/;
+        const matches = this._str.match(reg);
+        if (matches) {
+            this._str = this._str.replace(reg, matches[1]
+                .split(/,/g)
+                .map(mod => mod.replace(/\s/g, ""))
+                .map(mod => `\nwindow.${mod} = ${mod}`)
+                .join("\n"));
+        }
+        this._str = this._str.replace(/\nmodule\.exports \= ([^;^{]*)/g, "\nwindow.$1 = $1");
         this._str = this._str.replace(/\nexports\.default \= ([^;]*)/g, "\nwindow.$1 = $1");
         return this;
     }

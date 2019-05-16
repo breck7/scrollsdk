@@ -30,6 +30,9 @@ class ImmutableNode extends AbstractNode_node_1.default {
     isNodeJs() {
         return typeof exports !== "undefined";
     }
+    isBrowser() {
+        return !this.isNodeJs();
+    }
     getOlderSiblings() {
         if (this.isRoot())
             return [];
@@ -119,6 +122,9 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     hasDuplicateKeywords() {
         return this.length ? new Set(this.getKeywords()).size !== this.length : false;
+    }
+    _isAllMaps() {
+        return !this.hasDuplicateKeywords() && this.every(node => !node.hasDuplicateKeywords());
     }
     isEmpty() {
         return !this.length && !this.getContent();
@@ -629,6 +635,22 @@ class ImmutableNode extends AbstractNode_node_1.default {
         const node = this._getNodeByPath(keywordPath);
         return node === undefined ? undefined : node.getContent();
     }
+    getNodesByGlobPath(query) {
+        return this._getNodesByGlobPath(query);
+    }
+    _getNodesByGlobPath(globPath) {
+        const xi = this.getXI();
+        if (!globPath.includes(xi)) {
+            if (globPath === "*")
+                return this.getChildren();
+            return this.filter(node => node.getKeyword() === globPath);
+        }
+        const parts = globPath.split(xi);
+        const current = parts.shift();
+        const rest = parts.join(xi);
+        const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getKeyword() === current);
+        return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)));
+    }
     _getNodeByPath(keywordPath) {
         const xi = this.getXI();
         if (!keywordPath.includes(xi)) {
@@ -1047,7 +1069,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return this.map(node => node.getContent());
     }
     // todo: rename to getChildrenByConstructor(?)
-    getChildrenByNodeType(constructor) {
+    getChildrenByNodeConstructor(constructor) {
         return this.filter(child => child instanceof constructor);
     }
     // todo: rename to getNodeByConstructor(?)
@@ -1125,6 +1147,15 @@ class ImmutableNode extends AbstractNode_node_1.default {
     find(fn) {
         return this.getChildren().find(fn);
     }
+    every(fn) {
+        let index = 0;
+        for (let node of this.getTopDownArrayIterator()) {
+            if (!fn(node, index))
+                return false;
+            index++;
+        }
+        return true;
+    }
     forEach(fn) {
         this.getChildren().forEach(fn);
         return this;
@@ -1141,9 +1172,6 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     getCatchAllNodeConstructor(line) {
         return this.constructor;
-    }
-    getExpanded(thisColumnNumber, extendsColumnNumber) {
-        return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"));
     }
     getInheritanceTree() {
         const paths = {};
@@ -1215,6 +1243,10 @@ class TreeNode extends ImmutableNode {
         const mtime = this.getMTime();
         const cmtime = this._getChildrenMTime();
         return Math.max(mtime, cmtime);
+    }
+    // todo: solve issue related to whether extend should overwrite or append.
+    getExpanded(thisColumnNumber, extendsColumnNumber) {
+        return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"));
     }
     _expand(thisColumnNumber, extendsColumnNumber) {
         const graph = this.getGraph(thisColumnNumber, extendsColumnNumber);
@@ -1449,9 +1481,12 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     // todo: add more testing.
+    // todo: solve issue with where extend should overwrite or append
     extend(nodeOrStr) {
         if (!(nodeOrStr instanceof TreeNode))
             nodeOrStr = new TreeNode(nodeOrStr);
+        if (!nodeOrStr._isAllMaps())
+            throw new Error(`Currently extend only works with maps but the given tree contains duplicate keys at some level.`);
         nodeOrStr.forEach(node => {
             const path = node.getKeyword();
             const content = node.getContent();
@@ -1529,6 +1564,21 @@ class TreeNode extends ImmutableNode {
     touchNode(str) {
         return this._touchNodeByString(str);
     }
+    hasLine(line) {
+        return this.getChildren().some(node => node.getLine() === line);
+    }
+    getNodesByLine(line) {
+        return this.filter(node => node.getLine() === line);
+    }
+    toggleLine(line) {
+        const lines = this.getNodesByLine(line);
+        if (lines.length) {
+            lines.map(line => line.destroy());
+            return this;
+        }
+        return this.appendLine(line);
+    }
+    // todo: remove?
     sortByColumns(indexOrIndices) {
         const indices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices];
         const length = indices.length;

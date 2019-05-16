@@ -6,6 +6,7 @@ const GrammarProgram_1 = require("./grammar/GrammarProgram");
 class jtreeNode extends jtree_1.default {
 }
 jtreeNode.executeFile = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath);
+jtreeNode.executeFileSync = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath);
 // returns AbstractRuntimeProgram
 jtreeNode.makeProgram = (programPath, grammarPath) => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath);

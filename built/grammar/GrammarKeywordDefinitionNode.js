@@ -95,7 +95,7 @@ ${captures}
         return this.get(GrammarConstants_1.GrammarConstants.description) || "";
     }
     getExamples() {
-        return this.getChildrenByNodeType(GrammarExampleNode_1.default);
+        return this.getChildrenByNodeConstructor(GrammarExampleNode_1.default);
     }
     getConstantsObject() {
         const constantsNode = this.getNodeByType(GrammarConstantsNode_1.default);

@@ -31,10 +31,12 @@ export declare namespace types {
     type globPattern = string;
     type highlightScope = string;
     type fileExtension = string;
+    type globPath = string;
     type targetLanguageId = fileExtension;
     type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt;
     type filterFn = (node: treeNode, index: int) => boolean;
     type forEachFn = (node: treeNode, index: int) => void;
+    type everyFn = (node: treeNode, index: int) => boolean;
     type nodeToStringFn = (node: treeNode) => string;
     type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string;
     type children = string | Object | treeNode | any;

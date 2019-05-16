@@ -157,7 +157,7 @@ class ImmutableNode extends AbstractNode {
     return this.length ? new Set(this.getKeywords()).size !== this.length : false
   }
 
-  isAllMaps(): boolean {
+  protected _isAllMaps(): boolean {
     return !this.hasDuplicateKeywords() && this.every(node => !node.hasDuplicateKeywords())
   }
 
@@ -1695,7 +1695,7 @@ class TreeNode extends ImmutableNode {
   // todo: solve issue with where extend should overwrite or append
   extend(nodeOrStr: TreeNode | string) {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
-    if (!nodeOrStr.isAllMaps())
+    if (!nodeOrStr._isAllMaps())
       throw new Error(`Currently extend only works with maps but the given tree contains duplicate keys at some level.`)
 
     nodeOrStr.forEach(node => {
@@ -1787,6 +1787,24 @@ class TreeNode extends ImmutableNode {
 
   touchNode(str: types.keywordPath) {
     return this._touchNodeByString(str)
+  }
+
+  hasLine(line: types.line) {
+    return this.getChildren().some(node => node.getLine() === line)
+  }
+
+  getNodesByLine(line: types.line) {
+    return this.filter(node => node.getLine() === line)
+  }
+
+  toggleLine(line: types.line): TreeNode {
+    const lines = this.getNodesByLine(line)
+    if (lines.length) {
+      lines.map(line => line.destroy())
+      return this
+    }
+
+    return this.appendLine(line)
   }
 
   // todo: remove?

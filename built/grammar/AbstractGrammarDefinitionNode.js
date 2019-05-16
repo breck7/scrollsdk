@@ -50,7 +50,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _isAnyNode() {
         return this.has(GrammarConstants_1.GrammarConstants.any);
     }
-    getDefinedConstructor() {
+    getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
         return this._cache_definedNodeConstructor;
@@ -62,11 +62,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {
-        const customConstructorsDefinition = this.getNode(GrammarConstants_1.GrammarConstants.constructors);
+        const customConstructorsDefinition = (this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode_1.default)[0]);
         if (customConstructorsDefinition) {
             const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
             if (envConstructor)
-                return envConstructor.getDefinedConstructor();
+                return envConstructor.getTheDefinedConstructor();
         }
         return this._getDefaultNodeConstructor();
     }
@@ -83,7 +83,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return compilerNode;
     }
     _getCompilerNodes() {
-        return this.getChildrenByNodeType(GrammarCompilerNode_1.default) || [];
+        return this.getChildrenByNodeConstructor(GrammarCompilerNode_1.default) || [];
     }
     // todo: remove?
     // for now by convention first compiler is "target extension"
@@ -127,7 +127,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
             .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
             .forEach(keyword => {
-            this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getDefinedConstructor();
+            this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getConstructorDefinedInGrammar();
         });
     }
     // todo: protected?
@@ -177,7 +177,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _initCatchAllNodeConstructorCache() {
         if (this._cache_catchAllConstructor)
             return undefined;
-        this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor();
+        this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar();
     }
     getHighlightScope() {
         return this.get(GrammarConstants_1.GrammarConstants.highlightScope);

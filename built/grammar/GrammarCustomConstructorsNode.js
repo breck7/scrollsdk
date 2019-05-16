@@ -8,7 +8,8 @@ const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 const GrammarBackedErrorNode_1 = require("./GrammarBackedErrorNode");
 const GrammarConstants_1 = require("./GrammarConstants");
 class AbstractCustomConstructorNode extends TreeNode_1.default {
-    getDefinedConstructor() {
+    getTheDefinedConstructor() {
+        // todo: allow overriding if custom constructor not found.
         return this.getBuiltIn() || this._getCustomConstructor();
     }
     isAppropriateEnvironment() {
@@ -19,7 +20,7 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
     }
     getErrors() {
         // todo: should this be a try/catch?
-        if (!this.isAppropriateEnvironment() || this.getDefinedConstructor())
+        if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor())
             return [];
         const parent = this.getParent();
         const context = parent.isRoot() ? "" : parent.getKeyword();
@@ -81,7 +82,13 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
 /* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`;
         if (CustomJavascriptConstructorNode.cache[code])
             return CustomJavascriptConstructorNode.cache[code];
-        const tempFilePath = __dirname + "/constructor-" + TreeUtils_1.default.getRandomString(30) + "-temp.js";
+        const constructorName = this.getParent()
+            .getParent()
+            .getWord(1) ||
+            this.getParent()
+                .getParent()
+                .get(GrammarConstants_1.GrammarConstants.name) + "Root";
+        const tempFilePath = `${__dirname}/constructor-${constructorName}-${TreeUtils_1.default.getRandomString(30)}-temp.js`;
         const fs = require("fs");
         try {
             fs.writeFileSync(tempFilePath, code, "utf8");

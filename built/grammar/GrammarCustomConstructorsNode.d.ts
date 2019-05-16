@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode";
 import types from "../types";
 declare abstract class AbstractCustomConstructorNode extends TreeNode {
-    getDefinedConstructor(): types.RunTimeNodeConstructor;
+    getTheDefinedConstructor(): types.RunTimeNodeConstructor;
     protected isAppropriateEnvironment(): boolean;
     protected _getCustomConstructor(): types.RunTimeNodeConstructor;
     getErrors(): types.ParseError[];

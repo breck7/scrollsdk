@@ -71,7 +71,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
         return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
     }
     _getEnumOptions() {
-        const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0];
+        const enumNode = this.getChildrenByNodeConstructor(GrammarEnumTestNode)[0];
         if (!enumNode)
             return undefined;
         // we sort by longest first to capture longest match first. todo: add test
@@ -92,7 +92,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
         return this.get(GrammarConstants_1.GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*");
     }
     isValid(str, runTimeGrammarBackedProgram) {
-        return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));
+        return this.getChildrenByNodeConstructor(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));
     }
     getCellTypeId() {
         return this.getWord(1);

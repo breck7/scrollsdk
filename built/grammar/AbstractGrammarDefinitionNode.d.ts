@@ -11,7 +11,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     _isAbstract(): boolean;
     protected _isAnyNode(): boolean;
     private _cache_definedNodeConstructor;
-    getDefinedConstructor(): Function;
+    getConstructorDefinedInGrammar(): Function;
     protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;
     protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;

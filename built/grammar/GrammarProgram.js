@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const AbstractRuntimeProgram_1 = require("./AbstractRuntimeProgram");
@@ -82,14 +90,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     _getCellTypeDefinitions() {
         const types = {};
         // todo: add built in word types?
-        this.getChildrenByNodeType(GrammarCellTypeDefinitionNode_1.default).forEach(type => (types[type.getCellTypeId()] = type));
+        this.getChildrenByNodeConstructor(GrammarCellTypeDefinitionNode_1.default).forEach(type => (types[type.getCellTypeId()] = type));
         return types;
     }
     getProgram() {
         return this;
     }
     getKeywordDefinitions() {
-        return this.getChildrenByNodeType(GrammarKeywordDefinitionNode_1.default);
+        return this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode_1.default);
     }
     // todo: remove?
     getTheGrammarFilePath() {
@@ -132,7 +140,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         if (this._cache_keywordDefinitions)
             return undefined;
         this._cache_keywordDefinitions = {};
-        this.getChildrenByNodeType(GrammarKeywordDefinitionNode_1.default).forEach(keywordDefinitionNode => {
+        this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode_1.default).forEach(keywordDefinitionNode => {
             this._cache_keywordDefinitions[keywordDefinitionNode.getId()] = keywordDefinitionNode;
         });
     }
@@ -146,8 +154,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.catchAllKeyword);
     }
     _getRootConstructor() {
-        const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
-        const extendedConstructor = definedConstructor || AbstractRuntimeProgram_1.default;
+        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram_1.default;
         const grammarProgram = this;
         // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
         // new language.
@@ -216,5 +223,45 @@ ${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
         });
         return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
+    loadAllConstructorScripts(baseUrlPath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.isBrowser())
+                return undefined;
+            const uniqueScriptsSet = new Set(this.getNodesByGlobPath(`* ${GrammarConstants_1.GrammarConstants.constructors} ${GrammarConstants_1.GrammarConstants.constructorBrowser}`)
+                .filter(node => node.getWord(2))
+                .map(node => baseUrlPath + node.getWord(2)));
+            return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)));
+        });
+    }
+    static _appendScriptOnce(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // if (this.isNodeJs()) return undefined
+            if (!url)
+                return undefined;
+            if (this._scriptLoadingPromises[url])
+                return this._scriptLoadingPromises[url];
+            this._scriptLoadingPromises[url] = this._appendScript(url);
+            return this._scriptLoadingPromises[url];
+        });
+    }
+    static _appendScript(url) {
+        //https://bradb.net/blog/promise-based-js-script-loader/
+        return new Promise(function (resolve, reject) {
+            let resolved = false;
+            const scriptEl = document.createElement("script");
+            scriptEl.type = "text/javascript";
+            scriptEl.src = url;
+            scriptEl.async = true;
+            scriptEl.onload = scriptEl.onreadystatechange = function () {
+                if (!resolved && (!this.readyState || this.readyState == "complete")) {
+                    resolved = true;
+                    resolve(url);
+                }
+            };
+            scriptEl.onerror = scriptEl.onabort = reject;
+            document.head.appendChild(scriptEl);
+        });
+    }
 }
+GrammarProgram._scriptLoadingPromises = {};
 exports.default = GrammarProgram;

@@ -17,6 +17,7 @@ declare class ImmutableNode extends AbstractNode {
     getLineSyntax(): string;
     executeSync(context: any): any[];
     isNodeJs(): boolean;
+    isBrowser(): boolean;
     getOlderSiblings(): ImmutableNode[];
     protected _getClosestOlderSibling(): ImmutableNode | undefined;
     getYoungerSiblings(): ImmutableNode[];
@@ -35,6 +36,7 @@ declare class ImmutableNode extends AbstractNode {
     protected _getLineNumber(target: ImmutableNode): number;
     isBlankLine(): boolean;
     hasDuplicateKeywords(): boolean;
+    protected _isAllMaps(): boolean;
     isEmpty(): boolean;
     protected _cachedLineNumber: int;
     protected _getYCoordinate(relativeTo?: ImmutableNode): number;
@@ -126,6 +128,8 @@ declare class ImmutableNode extends AbstractNode {
     isLeafColumn(path: types.keywordPath): boolean;
     getNode(keywordPath: types.keywordPath): ImmutableNode;
     get(keywordPath: types.keywordPath): string;
+    getNodesByGlobPath(query: types.globPath): TreeNode[];
+    private _getNodesByGlobPath;
     protected _getNodeByPath(keywordPath: types.keywordPath): ImmutableNode;
     getNext(): ImmutableNode;
     getPrevious(): ImmutableNode;
@@ -174,7 +178,7 @@ declare class ImmutableNode extends AbstractNode {
         [keyword: string]: number;
     };
     getContentsArray(): any[];
-    getChildrenByNodeType(constructor: Function): any[];
+    getChildrenByNodeConstructor(constructor: Function): any[];
     getNodeByType(constructor: Function): any;
     indexOfLast(keyword: word): int;
     indexOf(keyword: word): int;
@@ -192,12 +196,12 @@ declare class ImmutableNode extends AbstractNode {
     map(fn: mapFn): any[];
     filter(fn: types.filterFn): any[];
     find(fn: types.filterFn): any;
+    every(fn: types.everyFn): boolean;
     forEach(fn: types.forEachFn): this;
     _clearIndex(): void;
     slice(start: int, end?: int): ImmutableNode[];
     getKeywordMap(): types.keywordToNodeMap;
     getCatchAllNodeConstructor(line: string): Function;
-    getExpanded(thisColumnNumber: int, extendsColumnNumber: int): TreeNode;
     getInheritanceTree(): TreeNode;
     protected _getGrandParent(): ImmutableNode | undefined;
     getNodeConstructor(line: string): Function;
@@ -214,6 +218,7 @@ declare class TreeNode extends ImmutableNode {
     protected _getCMTime(): number;
     protected _setCMTime(value: number): this;
     getTreeMTime(): int;
+    getExpanded(thisColumnNumber: int, extendsColumnNumber: int): TreeNode;
     protected _expand(thisColumnNumber: int, extendsColumnNumber: int): TreeNode;
     macroExpand(macroDefKeyword: string, macroUsageKeyword: string): TreeNode;
     setChildren(children: types.children): this;
@@ -261,6 +266,9 @@ declare class TreeNode extends ImmutableNode {
     protected _touchNode(keywordPathArray: types.word[]): this;
     protected _touchNodeByString(str: string): this;
     touchNode(str: types.keywordPath): this;
+    hasLine(line: types.line): boolean;
+    getNodesByLine(line: types.line): any[];
+    toggleLine(line: types.line): TreeNode;
     sortByColumns(indexOrIndices: int | int[]): this;
     shiftLeft(): TreeNode;
     shiftRight(): TreeNode;

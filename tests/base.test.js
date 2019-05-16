@@ -1032,6 +1032,26 @@ testTree.firstValue = equal => {
   equal(value.nodeAt(0).getContent(), "world")
 }
 
+testTree.toggleLine = equal => {
+  // Arrange
+  const node = new TreeNode("chart").nodeAt(0)
+  equal(node.has("hidden"), false)
+
+  // Act
+  node.toggleLine("hidden")
+
+  // Assert
+  equal(node.hasLine("hidden"), true)
+  equal(node.has("hidden"), true)
+
+  // Act
+  node.toggleLine("hidden")
+
+  // Assert
+  equal(node.hasLine("hidden"), false)
+  equal(node.has("hidden"), false)
+}
+
 testTree.format = equal => {
   // Arrange
   const str = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"

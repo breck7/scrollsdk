@@ -280,16 +280,29 @@ TreeUtils.BrowserScript = class {
     changeDefaultExportsToWindowExports() {
         this._str = this._str.replace(/\nexport default ([^;]*)/g, "\nwindow.$1 = $1");
         // todo: should we just switch to some bundler?
-        const matches = this._str.match(/\nexport { ([^\}]+) }/g);
+        const matches = this._str.match(/\nexport { [^\}]+ }/g);
         if (matches)
-            this._str.replace(/\nexport { ([^\}]+) }/g, matches[1]
+            this._str.replace(/\nexport { ([^\}]+) }/g, matches[0]
+                .replace("export {", "")
+                .replace("}", "")
                 .split(/ /g)
                 .map(mod => `\nwindow.${mod} = ${mod}`)
                 .join("\n"));
         return this;
     }
     changeNodeExportsToWindowExports() {
-        this._str = this._str.replace(/\nmodule\.exports \= ([^;]*)/g, "\nwindow.$1 = $1");
+        // todo: should we just switch to some bundler?
+        const reg = /\nmodule\.exports = { ?([^\}]+) ?}/;
+        const matches = this._str.match(reg);
+        if (matches) {
+            this._str = this._str.replace(reg, matches[1]
+                .split(/,/g)
+                .map(mod => mod.replace(/\s/g, ""))
+                .map(mod => `\nwindow.${mod} = ${mod}`)
+                .join("\n"));
+        }
+        this._str = this._str.replace(/\nmodule\.exports \= ([^;^{]*)/g, "\nwindow.$1 = $1");
+        this._str = this._str.replace(/\nexports\.default \= ([^;]*)/g, "\nwindow.$1 = $1");
         return this;
     }
     getString() {
@@ -323,6 +336,9 @@ class ImmutableNode extends AbstractNode {
     }
     isNodeJs() {
         return typeof exports !== "undefined";
+    }
+    isBrowser() {
+        return !this.isNodeJs();
     }
     getOlderSiblings() {
         if (this.isRoot())
@@ -413,6 +429,9 @@ class ImmutableNode extends AbstractNode {
     }
     hasDuplicateKeywords() {
         return this.length ? new Set(this.getKeywords()).size !== this.length : false;
+    }
+    _isAllMaps() {
+        return !this.hasDuplicateKeywords() && this.every(node => !node.hasDuplicateKeywords());
     }
     isEmpty() {
         return !this.length && !this.getContent();
@@ -923,6 +942,22 @@ class ImmutableNode extends AbstractNode {
         const node = this._getNodeByPath(keywordPath);
         return node === undefined ? undefined : node.getContent();
     }
+    getNodesByGlobPath(query) {
+        return this._getNodesByGlobPath(query);
+    }
+    _getNodesByGlobPath(globPath) {
+        const xi = this.getXI();
+        if (!globPath.includes(xi)) {
+            if (globPath === "*")
+                return this.getChildren();
+            return this.filter(node => node.getKeyword() === globPath);
+        }
+        const parts = globPath.split(xi);
+        const current = parts.shift();
+        const rest = parts.join(xi);
+        const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getKeyword() === current);
+        return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)));
+    }
     _getNodeByPath(keywordPath) {
         const xi = this.getXI();
         if (!keywordPath.includes(xi)) {
@@ -1341,7 +1376,7 @@ class ImmutableNode extends AbstractNode {
         return this.map(node => node.getContent());
     }
     // todo: rename to getChildrenByConstructor(?)
-    getChildrenByNodeType(constructor) {
+    getChildrenByNodeConstructor(constructor) {
         return this.filter(child => child instanceof constructor);
     }
     // todo: rename to getNodeByConstructor(?)
@@ -1419,6 +1454,15 @@ class ImmutableNode extends AbstractNode {
     find(fn) {
         return this.getChildren().find(fn);
     }
+    every(fn) {
+        let index = 0;
+        for (let node of this.getTopDownArrayIterator()) {
+            if (!fn(node, index))
+                return false;
+            index++;
+        }
+        return true;
+    }
     forEach(fn) {
         this.getChildren().forEach(fn);
         return this;
@@ -1435,9 +1479,6 @@ class ImmutableNode extends AbstractNode {
     }
     getCatchAllNodeConstructor(line) {
         return this.constructor;
-    }
-    getExpanded(thisColumnNumber, extendsColumnNumber) {
-        return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"));
     }
     getInheritanceTree() {
         const paths = {};
@@ -1509,6 +1550,10 @@ class TreeNode extends ImmutableNode {
         const mtime = this.getMTime();
         const cmtime = this._getChildrenMTime();
         return Math.max(mtime, cmtime);
+    }
+    // todo: solve issue related to whether extend should overwrite or append.
+    getExpanded(thisColumnNumber, extendsColumnNumber) {
+        return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"));
     }
     _expand(thisColumnNumber, extendsColumnNumber) {
         const graph = this.getGraph(thisColumnNumber, extendsColumnNumber);
@@ -1743,9 +1788,12 @@ class TreeNode extends ImmutableNode {
         return this;
     }
     // todo: add more testing.
+    // todo: solve issue with where extend should overwrite or append
     extend(nodeOrStr) {
         if (!(nodeOrStr instanceof TreeNode))
             nodeOrStr = new TreeNode(nodeOrStr);
+        if (!nodeOrStr._isAllMaps())
+            throw new Error(`Currently extend only works with maps but the given tree contains duplicate keys at some level.`);
         nodeOrStr.forEach(node => {
             const path = node.getKeyword();
             const content = node.getContent();
@@ -1823,6 +1871,21 @@ class TreeNode extends ImmutableNode {
     touchNode(str) {
         return this._touchNodeByString(str);
     }
+    hasLine(line) {
+        return this.getChildren().some(node => node.getLine() === line);
+    }
+    getNodesByLine(line) {
+        return this.filter(node => node.getLine() === line);
+    }
+    toggleLine(line) {
+        const lines = this.getNodesByLine(line);
+        if (lines.length) {
+            lines.map(line => line.destroy());
+            return this;
+        }
+        return this.appendLine(line);
+    }
+    // todo: remove?
     sortByColumns(indexOrIndices) {
         const indices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices];
         const length = indices.length;
@@ -2769,7 +2832,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
         return this.get(GrammarConstants.highlightScope);
     }
     _getEnumOptions() {
-        const enumNode = this.getChildrenByNodeType(GrammarEnumTestNode)[0];
+        const enumNode = this.getChildrenByNodeConstructor(GrammarEnumTestNode)[0];
         if (!enumNode)
             return undefined;
         // we sort by longest first to capture longest match first. todo: add test
@@ -2790,7 +2853,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
         return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*");
     }
     isValid(str, runTimeGrammarBackedProgram) {
-        return this.getChildrenByNodeType(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));
+        return this.getChildrenByNodeConstructor(AbstractGrammarWordTestNode).every(node => node.isValid(str, runTimeGrammarBackedProgram));
     }
     getCellTypeId() {
         return this.getWord(1);
@@ -2852,7 +2915,8 @@ class GrammarConstantsNode extends TreeNode {
     }
 }
 class AbstractCustomConstructorNode extends TreeNode {
-    getDefinedConstructor() {
+    getTheDefinedConstructor() {
+        // todo: allow overriding if custom constructor not found.
         return this.getBuiltIn() || this._getCustomConstructor();
     }
     isAppropriateEnvironment() {
@@ -2863,7 +2927,7 @@ class AbstractCustomConstructorNode extends TreeNode {
     }
     getErrors() {
         // todo: should this be a try/catch?
-        if (!this.isAppropriateEnvironment() || this.getDefinedConstructor())
+        if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor())
             return [];
         const parent = this.getParent();
         const context = parent.isRoot() ? "" : parent.getKeyword();
@@ -2925,7 +2989,13 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
 /* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`;
         if (CustomJavascriptConstructorNode.cache[code])
             return CustomJavascriptConstructorNode.cache[code];
-        const tempFilePath = __dirname + "/constructor-" + TreeUtils.getRandomString(30) + "-temp.js";
+        const constructorName = this.getParent()
+            .getParent()
+            .getWord(1) ||
+            this.getParent()
+                .getParent()
+                .get(GrammarConstants.name) + "Root";
+        const tempFilePath = `${__dirname}/constructor-${constructorName}-${TreeUtils.getRandomString(30)}-temp.js`;
         const fs = require("fs");
         try {
             fs.writeFileSync(tempFilePath, code, "utf8");
@@ -3032,7 +3102,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     _isAnyNode() {
         return this.has(GrammarConstants.any);
     }
-    getDefinedConstructor() {
+    getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
         return this._cache_definedNodeConstructor;
@@ -3044,11 +3114,11 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {
-        const customConstructorsDefinition = this.getNode(GrammarConstants.constructors);
+        const customConstructorsDefinition = (this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0]);
         if (customConstructorsDefinition) {
             const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
             if (envConstructor)
-                return envConstructor.getDefinedConstructor();
+                return envConstructor.getTheDefinedConstructor();
         }
         return this._getDefaultNodeConstructor();
     }
@@ -3065,7 +3135,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return compilerNode;
     }
     _getCompilerNodes() {
-        return this.getChildrenByNodeType(GrammarCompilerNode) || [];
+        return this.getChildrenByNodeConstructor(GrammarCompilerNode) || [];
     }
     // todo: remove?
     // for now by convention first compiler is "target extension"
@@ -3109,7 +3179,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
             .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
             .forEach(keyword => {
-            this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getDefinedConstructor();
+            this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getConstructorDefinedInGrammar();
         });
     }
     // todo: protected?
@@ -3159,7 +3229,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     _initCatchAllNodeConstructorCache() {
         if (this._cache_catchAllConstructor)
             return undefined;
-        this._cache_catchAllConstructor = this._getCatchAllDefinition().getDefinedConstructor();
+        this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar();
     }
     getHighlightScope() {
         return this.get(GrammarConstants.highlightScope);
@@ -3267,7 +3337,7 @@ ${captures}
         return this.get(GrammarConstants.description) || "";
     }
     getExamples() {
-        return this.getChildrenByNodeType(GrammarExampleNode);
+        return this.getChildrenByNodeConstructor(GrammarExampleNode);
     }
     getConstantsObject() {
         const constantsNode = this.getNodeByType(GrammarConstantsNode);
@@ -3276,6 +3346,120 @@ ${captures}
     getFrequency() {
         const val = this.get(GrammarConstants.frequency);
         return val ? parseFloat(val) : 0;
+    }
+}
+class UnknownGrammarProgram extends TreeNode {
+    getPredictedGrammarFile(grammarName) {
+        const rootNode = new TreeNode(`grammar
+ name ${grammarName}`);
+        // note: right now we assume 1 global cellTypeMap and keywordMap per grammar. But we may have scopes in the future?
+        const globalCellTypeMap = new Map();
+        const xi = this.getXI();
+        const yi = this.getYI();
+        this.getKeywords().forEach(keyword => rootNode.touchNode(`grammar keywords ${keyword}`));
+        const clone = this.clone();
+        let allNodes = clone.getTopDownArrayIterator();
+        let node;
+        for (node of allNodes) {
+            const keyword = node.getKeyword();
+            const asInt = parseInt(keyword);
+            if (!isNaN(asInt) && asInt.toString() === keyword && node.getParent().getKeyword())
+                node.setKeyword(node.getParent().getKeyword() + "Child");
+        }
+        allNodes = clone.getTopDownArrayIterator();
+        const allChilds = {};
+        const allKeywordNodes = {};
+        for (let node of allNodes) {
+            const keyword = node.getKeyword();
+            if (!allChilds[keyword])
+                allChilds[keyword] = {};
+            if (!allKeywordNodes[keyword])
+                allKeywordNodes[keyword] = [];
+            allKeywordNodes[keyword].push(node);
+            node.forEach((child) => {
+                allChilds[keyword][child.getKeyword()] = true;
+            });
+        }
+        const lineCount = clone.getNumberOfLines();
+        const keywords = Object.keys(allChilds).map(keyword => {
+            const defNode = new TreeNode(`${GrammarConstants.keyword} ${keyword}`).nodeAt(0);
+            const childKeywords = Object.keys(allChilds[keyword]);
+            if (childKeywords.length) {
+                //defNode.touchNode(GrammarConstants.any) // todo: remove?
+                childKeywords.forEach(keyword => defNode.touchNode(`keywords ${keyword}`));
+            }
+            const allLines = allKeywordNodes[keyword];
+            const cells = allLines
+                .map(line => line.getContent())
+                .filter(i => i)
+                .map(i => i.split(xi));
+            const sizes = new Set(cells.map(c => c.length));
+            const max = Math.max(...Array.from(sizes));
+            const min = Math.min(...Array.from(sizes));
+            let catchAllCellType;
+            let cellTypes = [];
+            for (let index = 0; index < max; index++) {
+                const cellType = this._getBestCellType(keyword, cells.map(c => c[index]));
+                if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeName))
+                    globalCellTypeMap.set(cellType.cellTypeName, cellType.cellTypeDefinition);
+                cellTypes.push(cellType.cellTypeName);
+            }
+            if (max > min) {
+                //columns = columns.slice(0, min)
+                catchAllCellType = cellTypes.pop();
+                while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
+                    cellTypes.pop();
+                }
+            }
+            if (catchAllCellType)
+                defNode.set(GrammarConstants.catchAllCellType, catchAllCellType);
+            if (cellTypes.length > 1)
+                defNode.set(GrammarConstants.cells, cellTypes.join(xi));
+            if (!catchAllCellType && cellTypes.length === 1)
+                defNode.set(GrammarConstants.cells, cellTypes[0]);
+            // Todo: switch to conditional frequency
+            //defNode.set(GrammarConstants.frequency, (allLines.length / lineCount).toFixed(3))
+            return defNode.getParent().toString();
+        });
+        const cellTypes = [];
+        globalCellTypeMap.forEach(def => cellTypes.push(def));
+        return [rootNode.toString(), cellTypes.join(yi), keywords.join(yi)].filter(i => i).join("\n");
+    }
+    _getBestCellType(keyword, allValues) {
+        const asSet = new Set(allValues);
+        const xi = this.getXI();
+        const values = Array.from(asSet).filter(c => c);
+        const all = (fn) => {
+            for (let i = 0; i < values.length; i++) {
+                if (!fn(values[i]))
+                    return false;
+            }
+            return true;
+        };
+        if (all((str) => str === "0" || str === "1"))
+            return { cellTypeName: "bit" };
+        if (all((str) => {
+            const num = parseInt(str);
+            if (isNaN(num))
+                return false;
+            return num.toString() === str;
+        })) {
+            return { cellTypeName: "int" };
+        }
+        if (all((str) => !str.match(/[^\d\.\-]/)))
+            return { cellTypeName: "float" };
+        const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
+        if (all((str) => bools.has(str.toLowerCase())))
+            return { cellTypeName: "bool" };
+        // If there are duplicate files and the set is less than enum
+        const enumLimit = 30;
+        if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
+            return {
+                cellTypeName: `${keyword}Enum`,
+                cellTypeDefinition: `cellType ${keyword}Enum
+ enum ${values.join(xi)}`
+            };
+        return { cellTypeName: "any" };
     }
 }
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
@@ -3354,14 +3538,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     _getCellTypeDefinitions() {
         const types = {};
         // todo: add built in word types?
-        this.getChildrenByNodeType(GrammarCellTypeDefinitionNode).forEach(type => (types[type.getCellTypeId()] = type));
+        this.getChildrenByNodeConstructor(GrammarCellTypeDefinitionNode).forEach(type => (types[type.getCellTypeId()] = type));
         return types;
     }
     getProgram() {
         return this;
     }
     getKeywordDefinitions() {
-        return this.getChildrenByNodeType(GrammarKeywordDefinitionNode);
+        return this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode);
     }
     // todo: remove?
     getTheGrammarFilePath() {
@@ -3404,7 +3588,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         if (this._cache_keywordDefinitions)
             return undefined;
         this._cache_keywordDefinitions = {};
-        this.getChildrenByNodeType(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
+        this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
             this._cache_keywordDefinitions[keywordDefinitionNode.getId()] = keywordDefinitionNode;
         });
     }
@@ -3418,8 +3602,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword);
     }
     _getRootConstructor() {
-        const definedConstructor = this._getGrammarRootNode().getDefinedConstructor();
-        const extendedConstructor = definedConstructor || AbstractRuntimeProgram;
+        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram;
         const grammarProgram = this;
         // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
         // new language.
@@ -3488,71 +3671,47 @@ ${GrammarConstants.cellType} any`).getRootConstructor();
         });
         return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
-    static _getBestType(values) {
-        const all = (fn) => {
-            for (let i = 0; i < values.length; i++) {
-                if (!fn(values[i]))
-                    return false;
-            }
-            return true;
-        };
-        if (all((str) => str === "0" || str === "1"))
-            return "bit";
-        if (all((str) => {
-            const num = parseInt(str);
-            if (isNaN(num))
-                return false;
-            return num.toString() === str;
-        })) {
-            return "int";
-        }
-        if (all((str) => !str.match(/[^\d\.\-]/)))
-            return "float";
-        const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
-        if (all((str) => bools.has(str.toLowerCase())))
-            return "bool";
-        return "any";
+    loadAllConstructorScripts(baseUrlPath) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.isBrowser())
+                return undefined;
+            const uniqueScriptsSet = new Set(this.getNodesByGlobPath(`* ${GrammarConstants.constructors} ${GrammarConstants.constructorBrowser}`)
+                .filter(node => node.getWord(2))
+                .map(node => baseUrlPath + node.getWord(2)));
+            return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)));
+        });
     }
-    static predictGrammarFile(str, keywords = undefined) {
-        const tree = str instanceof TreeNode ? str : new TreeNode(str);
-        const xi = " "; // todo: make param?
-        keywords = keywords || tree.getColumnNames();
-        return keywords //this.getInvalidKeywords()
-            .map((keyword) => {
-            const lines = tree.getColumn(keyword).filter(i => i);
-            const cells = lines.map(line => line.split(xi));
-            const sizes = new Set(cells.map(c => c.length));
-            const max = Math.max(...Array.from(sizes));
-            const min = Math.min(...Array.from(sizes));
-            let catchAllCellType;
-            let cellTypes = [];
-            for (let index = 0; index < max; index++) {
-                const set = new Set(cells.map(c => c[index]));
-                const values = Array.from(set).filter(c => c);
-                const type = GrammarProgram._getBestType(values);
-                cellTypes.push(type);
-            }
-            if (max > min) {
-                //columns = columns.slice(0, min)
-                catchAllCellType = cellTypes.pop();
-                while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
-                    cellTypes.pop();
+    static _appendScriptOnce(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            // if (this.isNodeJs()) return undefined
+            if (!url)
+                return undefined;
+            if (this._scriptLoadingPromises[url])
+                return this._scriptLoadingPromises[url];
+            this._scriptLoadingPromises[url] = this._appendScript(url);
+            return this._scriptLoadingPromises[url];
+        });
+    }
+    static _appendScript(url) {
+        //https://bradb.net/blog/promise-based-js-script-loader/
+        return new Promise(function (resolve, reject) {
+            let resolved = false;
+            const scriptEl = document.createElement("script");
+            scriptEl.type = "text/javascript";
+            scriptEl.src = url;
+            scriptEl.async = true;
+            scriptEl.onload = scriptEl.onreadystatechange = function () {
+                if (!resolved && (!this.readyState || this.readyState == "complete")) {
+                    resolved = true;
+                    resolve(url);
                 }
-            }
-            const catchAllCellTypeString = catchAllCellType
-                ? `\n ${GrammarConstants.catchAllCellType} ${catchAllCellType}`
-                : "";
-            const childrenAnyString = tree.isLeafColumn(keyword) ? "" : `\n ${GrammarConstants.any}`;
-            if (!cellTypes.length)
-                return `${GrammarConstants.keyword} ${keyword}${catchAllCellTypeString}${childrenAnyString}`;
-            if (cellTypes.length > 1)
-                return `${GrammarConstants.keyword} ${keyword}
- ${GrammarConstants.cells} ${cellTypes.join(xi)}${catchAllCellTypeString}${childrenAnyString}`;
-            return `${GrammarConstants.keyword} ${keyword} ${cellTypes[0]}${catchAllCellTypeString}${childrenAnyString}`;
-        })
-            .join("\n");
+            };
+            scriptEl.onerror = scriptEl.onabort = reject;
+            document.head.appendChild(scriptEl);
+        });
     }
 }
+GrammarProgram._scriptLoadingPromises = {};
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 var CmToken;
 (function (CmToken) {
@@ -3899,5 +4058,6 @@ jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
+jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "21.0.0";
+jtree.getVersion = () => "22.0.0";

@@ -46,5 +46,9 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;
+    loadAllConstructorScripts(baseUrlPath: string): Promise<string[]>;
+    private static _scriptLoadingPromises;
+    private static _appendScriptOnce;
+    private static _appendScript;
 }
 export default GrammarProgram;

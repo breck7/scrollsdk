@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "22.1.1",
+  "version": "22.2.0",
   "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
   "main": "index.js",
   "types": "./built/jtree.node.d.ts",

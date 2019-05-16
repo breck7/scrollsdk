@@ -8,7 +8,7 @@ import GrammarProgram from "./grammar/GrammarProgram";
 import UnknownGrammarProgram from "./grammar/UnknownGrammarProgram";
 import TreeNotationCodeMirrorMode from "./grammar/TreeNotationCodeMirrorMode";
 declare class jtree {
-    static program: typeof AbstractRuntimeProgram;
+    static programRoot: typeof AbstractRuntimeProgram;
     static Utils: typeof TreeUtils;
     static TreeNode: typeof TreeNode;
     static NonTerminalNode: typeof GrammarBackedNonTerminalNode;

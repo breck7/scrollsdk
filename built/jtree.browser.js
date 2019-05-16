@@ -4059,7 +4059,7 @@ class TreeNotationCodeMirrorMode {
 }
 class jtree {
 }
-jtree.program = AbstractRuntimeProgram;
+jtree.programRoot = AbstractRuntimeProgram;
 jtree.Utils = TreeUtils;
 jtree.TreeNode = TreeNode;
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
@@ -4068,4 +4068,4 @@ jtree.AnyNode = GrammarBackedAnyNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "22.1.1";
+jtree.getVersion = () => "22.2.0";

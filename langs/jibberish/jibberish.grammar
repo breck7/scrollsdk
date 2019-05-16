@@ -2,7 +2,7 @@ grammar
  name jibberish
  description A useless Tree Language built for testing Tree Notation code.
  constructors
-  nodejs ./jibberishProgram.js
+  nodejs ./jibberishProgramRoot.js
  compiler txt
  catchAllKeyword error
  keywords

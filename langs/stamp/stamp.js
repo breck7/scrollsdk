@@ -2,7 +2,7 @@
 
 const fs = require("fs")
 const path = require("path")
-const StampProgram = require("./index.js")
+const StampProgram = require("./StampProgram.js")
 
 const getAbsPath = input => (input.startsWith("/") ? input : path.resolve(pwd + "/" + input))
 

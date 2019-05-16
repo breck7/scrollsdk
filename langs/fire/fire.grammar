@@ -8,8 +8,8 @@ grammar
   nt
  catchAllKeyword error
  constructors
-  nodejs ./FireNodes.js FireProgram
-  browser FireProgram FireNodes.js
+  nodejs ./FireNodes.js FireProgramRoot
+  browser FireProgramRoot FireNodes.js
 cellType number
  regex \-?[0-9]*\.?[0-9]*
 cellType identifier

@@ -2,7 +2,7 @@
 #setup
 #test basics stamp
  #setup
-  require ../index.js
+  require ../StampProgram.js
   %%|
    folder testEx
    file testEx/hi.sh
@@ -13,7 +13,7 @@
   =# 0
 -#test staticReenableOncePathFix
  #setup
-  require ../index.js
+  require ../StampProgram.js
   static
  dirToStamp ./cases
   =|

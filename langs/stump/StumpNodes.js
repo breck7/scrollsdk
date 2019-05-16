@@ -231,7 +231,7 @@ class StumpNode extends jtree.NonTerminalNode {
   }
 }
 
-class StumpProgram extends jtree.program {
+class StumpProgramRoot extends jtree.programRoot {
   compile() {
     return this.toHtml()
   }
@@ -239,7 +239,7 @@ class StumpProgram extends jtree.program {
 
 module.exports = {
   StumpBernNode,
-  StumpProgram,
+  StumpProgramRoot,
   StumpAttributeNode,
   StumpConstants,
   StumpNode

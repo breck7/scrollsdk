@@ -1,4 +1,3 @@
-// todo: manually copied in.
 const jtree = require("../../index.js")
 
 class HakonPropertyNode extends jtree.TerminalNode {
@@ -29,7 +28,7 @@ ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
   }
 }
 
-class HakonProgram extends jtree.program {
+class HakonProgramRoot extends jtree.programRoot {
   getSelector() {
     return ""
   }
@@ -42,7 +41,7 @@ class HakonProgram extends jtree.program {
 }
 
 module.exports = {
-  HakonProgram,
+  HakonProgramRoot,
   HakonSelectorNode,
   HakonPropertyNode
 }

@@ -2,7 +2,7 @@ grammar
  name project
  description A Tree Language for project dependency management.
  constructors
-  nodejs ./projectProgram.js
+  nodejs ./ProjectNodes.js ProjectProgramRoot
  keywords
   file
  catchAllKeyword error
@@ -23,7 +23,7 @@ keyword file
   absolute
   relative
  constructors
-  nodejs ./FileNode.js
+  nodejs ./ProjectNodes.js FileNode
 keyword absolute term
 keyword external term
 keyword relative term

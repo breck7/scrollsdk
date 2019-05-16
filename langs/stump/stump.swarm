@@ -2,7 +2,7 @@
 #setup
 #test basics
  #setup
-  require ./index.js
+  require ./StumpProgram.js
   %%|
    html
     id bam

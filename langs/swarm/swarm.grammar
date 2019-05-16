@@ -7,7 +7,7 @@ grammar
   testBlock
  catchAllKeyword error
  constructors
-  nodejs ./SwarmProgram.js
+  nodejs ./SwarmProgramRoot.js
 cellType anyWord
  highlightScope string
 cellType filepath

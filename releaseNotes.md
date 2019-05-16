@@ -1,3 +1,9 @@
+22.2.0 / 2019-05-16
+===================
+- Breaking: jtree.program is now jtree.programRoot
+- Breaking: renamed root program lang nodes so things like StumpProgram now refer to the grammar generated constructor and StumpProgramRoot to the program root instance
+- Breaking: instead of "index.js" files in the langs packages, we now have FireProgram.js, HakonProgram.js, ProjectProgram.js, StampProgram.js, StumpProgram.js, and SwarmProgram.js
+
 22.1.1 / 2019-05-16
 ===================
 - Fix: missing constant

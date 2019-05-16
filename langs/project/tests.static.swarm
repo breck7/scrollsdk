@@ -1,6 +1,6 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 #setup
- require ./index.js
+ require ./ProjectProgram.js
  static
 #test _getImportsTypescript
  getImports

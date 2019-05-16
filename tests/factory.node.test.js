@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict
 
 const jtree = require("../index.js")
-const jibberishProgram = require("../langs/jibberish/jibberishProgram.js")
+const jibberishProgramRoot = require("../langs/jibberish/jibberishProgramRoot.js")
 
 const testTree = {}
 
@@ -15,7 +15,7 @@ testTree.makeProgram = equal => {
   const result = program.executeSync()
 
   // Assert
-  equal(program instanceof jibberishProgram, true, "parent program class parsed correctly")
+  equal(program instanceof jibberishProgramRoot, true, "parent program class parsed correctly")
   equal(result, 42)
 
   // jtree.getProgramClassFromGrammarFile

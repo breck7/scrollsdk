@@ -10,7 +10,7 @@ import UnknownGrammarProgram from "./grammar/UnknownGrammarProgram"
 import TreeNotationCodeMirrorMode from "./grammar/TreeNotationCodeMirrorMode"
 
 class jtree {
-  static program = AbstractRuntimeProgram
+  static programRoot = AbstractRuntimeProgram
   static Utils = TreeUtils
   static TreeNode = TreeNode
   static NonTerminalNode = GrammarBackedNonTerminalNode
@@ -19,7 +19,7 @@ class jtree {
   static GrammarProgram = GrammarProgram
   static UnknownGrammarProgram = UnknownGrammarProgram
   static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
-  static getVersion = () => "22.1.1"
+  static getVersion = () => "22.2.0"
 }
 
 export default jtree

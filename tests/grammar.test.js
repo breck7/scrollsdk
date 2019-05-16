@@ -5,7 +5,7 @@
 const fs = require("fs")
 const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
-const jibberishProgram = require(jibberishRootDir + "jibberishProgram.js")
+const jibberishProgramRoot = require(jibberishRootDir + "jibberishProgramRoot.js")
 const jibberishNodes = require(jibberishRootDir + "jibberishNodes.js")
 
 const numbersGrammar = fs.readFileSync(__dirname + "/../langs/numbers/numbers.grammar", "utf8")
@@ -53,7 +53,7 @@ testTree.jibberish = equal => {
   const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
-  equal(program instanceof jibberishProgram, true, "correct program class")
+  equal(program instanceof jibberishProgramRoot, true, "correct program class")
   equal(program.getProgramErrors().length, 0, `${program.getProgramErrorMessages()}`)
 
   // Act

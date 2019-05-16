@@ -694,7 +694,7 @@ testTree.getNodeByColumns = equal => {
   const jib = new TreeNode(`jibberish
  description Test a root parser node
  constructors
-  nodejs ./jibberishProgram.js
+  nodejs ./jibberishProgramRoot.js
  compiler txt
  keywords
   baseNode`)
@@ -1888,7 +1888,7 @@ testTree.isomorphicGrammarTests = equal => {
  name jibberish
  description Test a root parser node
  constructors
-  nodejs ./jibberishProgram.js
+  nodejs ./jibberishProgramRoot.js
  compiler txt
  catchAllKeyword error
  keywords
@@ -1948,14 +1948,14 @@ someCode
 
   class additionNode extends jtree.NonTerminalNode {}
   class LineOfCodeNode extends jtree.NonTerminalNode {}
-  class jibberishProgram extends jtree.program {}
+  class jibberishProgramRoot extends jtree.programRoot {}
 
   const jibberishNodes = {}
   jibberishNodes.additionNode = additionNode
   jibberishNodes.LineOfCodeNode = LineOfCodeNode
   let win = typeof window === "undefined" ? {} : window
   win.jibberishNodes = jibberishNodes
-  win.jibberishProgram = jibberishProgram
+  win.jibberishProgramRoot = jibberishProgramRoot
   win.additionNode = additionNode
   win.LineOfCodeNode = LineOfCodeNode
 

@@ -2,7 +2,7 @@
 #setup
 #test basics hakon
  #setup
-  require ./index.js
+  require ./HakonProgram.js
   %%|
    body
     font-size 12px

@@ -5,8 +5,8 @@ grammar
  keywords
   stumpNode
  constructors
-  nodejs ./StumpNodes.js StumpProgram
-  browser StumpProgram StumpNodes.js
+  nodejs ./StumpNodes.js StumpProgramRoot
+  browser StumpProgramRoot StumpNodes.js
 cellType anyHtmlContent
  highlightScope string
 cellType attributeValue

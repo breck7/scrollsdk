@@ -1,20 +1,16 @@
 #! /usr/local/bin/node --use_strict
 
-const NumbersProgram = require("./Numbers.js").Program
+const Fire = require("./Fire.js")
 
 const testTree = {}
 
 testTree.all = equal => {
   // Arrange
-  const program = new NumbersProgram(`+ 2 2 1 2
-- 2 2`)
+  const program = new Fire.Program(`add ten 2 3 5`)
 
   // Act/Assert
   equal(program.getProgramErrors().length, 0)
-  equal(program.executeSync().join(" "), `7 0`)
-
-  // A/A/A
-  equal(new NumbersProgram(`+ 2 2 1 1`).executeSync().join(""), `6`)
+  equal(program.compile(), `const ten = [2, 3, 5].reduce((sum, num) => sum + num)`)
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("../../tests/testTreeRunner.js")(testTree)

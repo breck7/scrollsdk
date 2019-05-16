@@ -2035,21 +2035,16 @@ car non-existant`)
   }
 }
 
-testTree.expandedShouldNotRecursve = equal => {
+testTree.expandedShouldAppendNonMaps = equal => {
   // todo: we need to work on extend so its more straightforward
   // Arrange
-  const tree3 = new TreeNode(
+  const tree = new TreeNode(
     `constructors
  example
  example foobar`
   )
   // Act/Assert
-  try {
-    tree3.getExpanded(0, 1)
-    equal(false, true, "should have thrown")
-  } catch (err) {
-    equal(true, true, "error caught")
-  }
+  equal(tree.getExpanded(0, 1).toString(), tree.toString(), "should have thrown")
 }
 
 testTree.htmlDsl = equal => {

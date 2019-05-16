@@ -3,14 +3,22 @@ const jtree = require("../../index.js")
 // Note: do NOT support things like solo tags <br>. one way to do things.
 
 const StumpConstants = {}
+StumpConstants.titleTag = "titleTag"
+StumpConstants.styleTag = "styleTag"
 StumpConstants.tagMap = {}
-StumpConstants.tagMap.styleTag = "style"
-StumpConstants.tagMap.titleTag = "title"
+StumpConstants.tagMap[StumpConstants.styleTag] = "style"
+StumpConstants.tagMap[StumpConstants.titleTag] = "title"
+StumpConstants.tags = {}
+StumpConstants.tags.html = "html"
+StumpConstants.tags.head = "head"
+StumpConstants.tags.body = "body"
 StumpConstants.collapseNode = "collapseNode"
 StumpConstants.uidAttribute = "data-suid"
 StumpConstants.class = "class"
 StumpConstants.type = "type"
+StumpConstants.value = "value"
 StumpConstants.checkbox = "checkbox"
+StumpConstants.checkedSelector = ":checked"
 StumpConstants.contenteditable = "contenteditable"
 StumpConstants.inputTypes = ["input", "div", "textarea"]
 
@@ -189,10 +197,12 @@ class StumpNode extends jtree.NonTerminalNode {
       .join("\n")
   }
 
+  // todo: should not be here
   getStumpNodeChisel() {
     return this._chisel || this.getParent().getStumpNodeChisel()
   }
 
+  // todo: should not be here
   setStumpNodeChisel(chisel) {
     this._chisel = chisel
     return this
@@ -231,5 +241,6 @@ module.exports = {
   StumpBernNode,
   StumpProgram,
   StumpAttributeNode,
+  StumpConstants,
   StumpNode
 }

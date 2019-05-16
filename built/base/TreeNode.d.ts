@@ -36,7 +36,6 @@ declare class ImmutableNode extends AbstractNode {
     protected _getLineNumber(target: ImmutableNode): number;
     isBlankLine(): boolean;
     hasDuplicateKeywords(): boolean;
-    protected _isAllMaps(): boolean;
     isEmpty(): boolean;
     protected _cachedLineNumber: int;
     protected _getYCoordinate(relativeTo?: ImmutableNode): number;
@@ -254,6 +253,7 @@ declare class TreeNode extends ImmutableNode {
     protected _deleteAllChildNodesWithKeyword(keyword: word): this;
     delete(keyword?: string): 0 | TreeNode;
     deleteColumn(keyword?: string): this;
+    protected _getNonMaps(): TreeNode[];
     extend(nodeOrStr: TreeNode | string): this;
     replaceNode(fn: (thisStr: string) => string): TreeNode[];
     insertLineAndChildren(line: string, children: types.children, index: int): any;

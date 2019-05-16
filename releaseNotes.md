@@ -1,3 +1,7 @@
+22.1.0 / 2019-05-16
+===================
+- New: expand will append rather than set if a node is obviously not a map
+
 22.0.0 / 2019-05-15
 ===================
 - New: Hakon, Stump and Fire languages moved into this repo, monorepo style

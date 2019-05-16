@@ -157,10 +157,6 @@ class ImmutableNode extends AbstractNode {
     return this.length ? new Set(this.getKeywords()).size !== this.length : false
   }
 
-  protected _isAllMaps(): boolean {
-    return !this.hasDuplicateKeywords() && this.every(node => !node.hasDuplicateKeywords())
-  }
-
   isEmpty(): boolean {
     return !this.length && !this.getContent()
   }
@@ -1691,18 +1687,28 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
+  protected _getNonMaps(): TreeNode[] {
+    const results = this.getTopDownArray().filter(node => node.hasDuplicateKeywords())
+    if (this.hasDuplicateKeywords()) results.unshift(this)
+    return results
+  }
+
   // todo: add more testing.
   // todo: solve issue with where extend should overwrite or append
+  // todo: should take a grammar? to decide whether to overwrite or append.
   extend(nodeOrStr: TreeNode | string) {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
-    if (!nodeOrStr._isAllMaps())
-      throw new Error(`Currently extend only works with maps but the given tree contains duplicate keys at some level.`)
 
-    nodeOrStr.forEach(node => {
-      const path = node.getKeyword()
-      const content = node.getContent()
-      const targetNode = this.touchNode(path).setContent(content)
-      if (node.length) targetNode.extend(node.childrenToString())
+    const usedKeywords = new Set()
+    nodeOrStr.forEach(sourceNode => {
+      const keyword = sourceNode.getKeyword()
+      let targetNode
+      if (usedKeywords.has(keyword)) targetNode = this.appendLine(sourceNode.getLine())
+      else {
+        targetNode = this.touchNode(keyword).setContent(sourceNode.getContent())
+        usedKeywords.add(keyword)
+      }
+      if (sourceNode.length) targetNode.extend(sourceNode.childrenToString())
     })
     return this
   }

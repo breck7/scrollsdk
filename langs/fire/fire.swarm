@@ -1,0 +1,12 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+#test basics
+ #setup
+  require ./index.js
+  %%|
+   add ten 2 3 5
+   dump ten
+ compile
+  =|
+   const ten = [2, 3, 5].reduce((sum, num) => sum + num)
+   console.log(ten)

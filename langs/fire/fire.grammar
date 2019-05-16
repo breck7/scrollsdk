@@ -1,0 +1,225 @@
+grammar
+ name fire
+ description A useless Tree Language for testing Tree Notation features.
+ compiler js
+ keywords
+  #!
+  term
+  nt
+ catchAllKeyword error
+ constructors
+  nodejs ./FireNodes.js FireProgram
+  browser FireProgram FireNodes.js
+cellType number
+ regex \-?[0-9]*\.?[0-9]*
+cellType identifier
+ regex [$A-Za-z_][0-9a-zA-Z_$]*
+cellType identifiers identifier
+cellType any
+cellType boolean
+ regex (false|true)
+cellType filepath
+keyword #!
+ catchAllCellType any
+ compiler js
+  sub // #! {any}
+keyword error
+ constructors
+  nodejs ErrorNode
+  browser ErrorNode
+ compiler js
+  sub // error
+keyword nt
+ keywords
+  term
+  nt
+keyword term
+keyword assignment term
+keyword dump term
+ description Dump variable(s) to console
+ catchAllCellType identifier
+ compiler js
+  sub console.log({identifier})
+  listDelimiter , 
+ frequency .5
+keyword print term
+ description Print string to console
+ catchAllCellType any
+ compiler js
+  sub console.log("{any}")
+keyword require term
+ description Require Something
+ cells identifier filepath
+ compiler js
+  sub const {identifier} = require("{filepath}")
+ frequency .1
+keyword export term
+ description Export This
+ cells identifier
+ compiler js
+  sub module.exports = {identifier}
+ frequency .1
+keyword set# assignment
+ description Number Assignment
+ cells identifier number
+ compiler js
+  sub const {identifier} = {number}
+ frequency .3
+keyword set? assignment
+ description Boolean Assignment
+ cells identifier boolean
+ compiler js
+  sub const {identifier} = {boolean}
+ frequency .04
+keyword set$ assignment
+ description String Assignment
+ cells identifier
+ catchAllCellType any
+ compiler js
+  sub const {identifier} = "{any}"
+ frequency .2
+keyword join assignment
+ description Join strings to form new string
+ cells identifier
+ catchAllCellType identifiers
+ compiler js
+  sub const {identifier} = [{identifiers}].join("")
+  listDelimiter , 
+ frequency .2
+keyword add assignment
+ description Add items and store result
+ cells identifier
+ catchAllCellType any
+ compiler js
+  sub const {identifier} = [{any}].reduce((sum, num) => sum + num)
+  listDelimiter , 
+ frequency .1
+keyword set?< set?
+ description Less than test
+ cells identifier any any
+ compiler js
+  sub const {identifier} = {any} < {any}
+ frequency .1
+keyword set?<= set?
+ description Less than or equal to test
+ cells identifier any any
+ compiler js
+  sub const {identifier} = {any} <= {any}
+ frequency .1
+keyword set?> set?
+ description Greater than test
+ cells identifier number number
+ compiler js
+  sub const {identifier} = {number} > {number}
+ frequency .1
+keyword set?>= set?
+ description Greater than or equal to test
+ cells identifier number number
+ compiler js
+  sub const {identifier} = {number} >= {number}
+ frequency .1
+keyword set## assignment
+ cells identifier
+ catchAllCellType any
+ compiler js
+  sub const {identifier} = {any}
+ frequency .2
+keyword set#- set##
+ description Subtract Numbers
+ compiler js
+  listDelimiter  - 
+keyword set#/ set##
+ description Divide Numbers
+ compiler js
+  listDelimiter  / 
+keyword set#% set##
+ description Modulo Numbers
+ compiler js
+  listDelimiter %
+keyword set#* set##
+ description Multiply Numbers
+ compiler js
+  listDelimiter  * 
+keyword set#~ assignment
+ description Mutable Number Assignment
+ cells identifier number
+ compiler js
+  sub let {identifier} = {number}
+keyword -- term
+ description Decrement
+ cells identifier
+ compiler js
+  sub {identifier}--
+ frequency .1
+keyword ++ term
+ description Increment
+ frequency .3
+ cells identifier
+ compiler js
+  sub {identifier}++
+keyword set#[] assignment
+ description Number Array Assignment
+ cells identifier
+ catchAllCellType number
+ frequency .4
+ compiler js
+  sub const {identifier} = [{number}]
+  listDelimiter , 
+keyword set*>> assignment
+ description Function Call
+ frequency .5
+ cells identifier identifier
+ catchAllCellType any
+ compiler js
+  sub const {identifier} = {identifier}({any})
+  listDelimiter , 
+keyword >> term
+ description Function call ignore result.
+ frequency .1
+ cells identifier
+ catchAllCellType any
+ compiler js
+  sub {identifier}({any})
+  listDelimiter , 
+keyword set.>> assignment
+ description Method Call
+ frequency .5
+ cells identifier identifier identifier
+ catchAllCellType any
+ compiler js
+  sub const {identifier} = {identifier}.{identifier}({any})
+  listDelimiter , 
+keyword return term
+ cells any
+ compiler js
+  sub return {any}
+ frequency .1
+keyword jsblock nt
+ compiler js
+  openChildren  {
+  closeChildren }
+keyword setfn jsblock
+ description Function Assignment
+ cells identifier
+ catchAllCellType any
+ compiler js
+  sub const {identifier} = ({any}) =>
+  listDelimiter , 
+ frequency .1
+keyword block jsblock
+ description block of code
+ frequency .2
+ compiler js
+  sub /* {identifier} */
+keyword if jsblock
+ description If tile
+ cells identifier
+ frequency .2
+ compiler js
+  sub if ({identifier})
+keyword while jsblock
+ description While tile
+ cells identifier
+ frequency .1
+ compiler js
+  sub while ({identifier})

@@ -1,7 +1,7 @@
 21.1.0 / 2019-05-15
 ===================
 - New: combineFiles method in node version with glob patterns
-- New: Hakon and Stump languages moved into this repo, monorepo style
+- New: Hakon, Stump and Fire languages moved into this repo, monorepo style
 - New: isAllMaps, every, getNodesByGlobPath methods
 - New: compile button in grammar sandbox
 - New: basic browser module loading
@@ -14,6 +14,7 @@
 - Breaking: instead of title or style tags in Stump use "titleTag" or "styleTag" to overcome the inherent attribute/tag html name conflict.
 - Breaking: no more @ prefix in Stump
 - Breaking: for Stump collapseNode, just have it, don't set it to "true"
+- Breaking: fire has been minorly refactored
 
 21.0.0 / 2019-05-04
 ===================

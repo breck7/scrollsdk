@@ -11,7 +11,7 @@
     executable
  getProgramErrors
   =# 0
-#test static
+-#test staticReenableOncePathFix
  #setup
   require ../index.js
   static

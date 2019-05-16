@@ -12,7 +12,7 @@
     &:hover
      color blue
      font-size 17px
- toCss
+ compile
   =|
    body {
      font-size: 12px;

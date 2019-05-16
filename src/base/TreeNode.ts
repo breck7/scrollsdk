@@ -1789,6 +1789,7 @@ class TreeNode extends ImmutableNode {
     return this._touchNodeByString(str)
   }
 
+  // todo: remove?
   sortByColumns(indexOrIndices: int | int[]) {
     const indices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices]
 

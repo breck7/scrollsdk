@@ -23,7 +23,7 @@
     "codemirror": "^5.45.0",
     "express": "*",
     "glob": "^7.1.4",
-    "jquery": "*",
+    "jquery": ">=3.4.0",
     "project-lang": "^1.7.0",
     "qunitjs": "*",
     "recursive-readdir-sync": "*",

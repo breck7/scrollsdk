@@ -14,49 +14,10 @@ nodeWithConsts
 lightbulbState on
 lightbulbState off
 + 2 3 2
-bamError0
 text
 thisShouldErrorError1
 to fillThis`
-      const grammar = `@grammar jibberish
- @description Test a root parser node
- @compiler txt
- @catchAllKeyword error
- @keywords
-  topLevel
-  text
-@wordType int
- @regex \-?[0-9]+
- @parseWith js parseInt
-@wordType word
- @regex .*
-@wordType onoff
- @enum on off
-@keyword error
- @constructors
-  nodejs ErrorNode
-  browser ErrorNode
-@keyword topLevel
-@keyword block topLevel
- @keywords
-  topLevel
-@keyword foo topLevel
-@keyword nodeWithConsts topLevel
- @constants
-  greeting string hello world
-@keyword text
- @any
-@keyword add topLevel
-@keyword + add
- @columns int*
-@keyword lightbulbState topLevel
- @columns onoff
-@keyword to block
- @columns word
- @compiler txt
-  @sub to {word}
-  @closeChildren end`
-
+      
       const log = msg => {
         $("body").append(msg + "<br>")
         console.log(msg)
@@ -73,9 +34,9 @@ to fillThis`
         return code
       }
 
-      const main = code => {
+      const main = (grammarCode, code) => {
         log("Building language...")
-        const programClass = GrammarProgram.newFromCondensed(grammar, "sandbox/typePerf.html").getRootConstructor()
+        const programClass = GrammarProgram.newFromCondensed(grammarCode, "sandbox/typePerf.html").getRootConstructor()
 
         log("Loading program...")
 
@@ -108,10 +69,14 @@ to fillThis`
         // log(program.getSyntaxTreeHtml())
       }
 
-      $(() => {
+      $(async () => {
+        const grammarCode = await $.get("/langs/jibberish/jibberish.grammar")
         let someUrl = ""
-        if (someUrl) $.get(someUrl).then(data => main(new jtree.TreeNode(data)))
-        else main(getCode())
+        if (!someUrl){ main(grammarCode, getCode())}
+        else {
+          const data = await $.get(someUrl)
+          main(grammarCode, new jtree.TreeNode(data))
+        }
       })
     </script>
   </head>

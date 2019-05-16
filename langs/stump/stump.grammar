@@ -4,6 +4,9 @@ grammar
  catchAllKeyword errorNode
  keywords
   stumpNode
+ constructors
+  nodejs ./StumpNodes.js StumpProgram
+  browser StumpProgram StumpNodes.js
 cellType anyHtmlContent
  highlightScope string
 cellType attributeValue

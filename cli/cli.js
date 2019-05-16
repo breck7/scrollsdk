@@ -230,15 +230,23 @@ ${grammars.toTable()}`
     fs.appendFile(logFilePath, line, "utf8", () => {})
   }
 
-  _run(programPath) {
-    const grammarPath = this._getGrammarPathOrThrow(programPath)
-    return jtree.executeFile(programPath, grammarPath)
+  async _run(programPath) {
+    const result = await jtree.executeFile(programPath, this._getGrammarPathOrThrow(programPath))
+    return result
   }
 
-  run(programPathOrGrammarName) {
+  _runSync(programPath) {
+    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
+  }
+
+  async run(programPathOrGrammarName) {
     if (programPathOrGrammarName.includes(".")) return this._run(programPathOrGrammarName)
-    const files = this._history(programPathOrGrammarName)
-    return files.map(file => this._run(file))
+    return Promise.all(this._history(programPathOrGrammarName).map(file => this._run(file)))
+  }
+
+  runSync(programPathOrGrammarName) {
+    if (programPathOrGrammarName.includes(".")) return this._runSync(programPathOrGrammarName)
+    return this._history(programPathOrGrammarName).map(file => this._runSync(file))
   }
 
   usage(grammarName) {
@@ -264,26 +272,29 @@ ${grammars.toTable()}`
   version() {
     return `jtree version ${jtree.getVersion()} installed at ${__filename}`
   }
+
+  static async main() {
+    const app = new CLI()
+
+    const action = process.argv[2]
+    const paramOne = process.argv[3]
+    const paramTwo = process.argv[4]
+    const print = console.log
+
+    if (app[action]) {
+      app.addToHistory(action, paramOne, paramTwo)
+      print(app[action](paramOne, paramTwo))
+    } else if (!action) {
+      app.addToHistory()
+      print(app.help())
+    } else if (fs.existsSync(action)) {
+      app.addToHistory(undefined, action)
+      const result = await app.run(action)
+      print(result)
+    } else print(`Unknown command '${action}'. Type 'tree help' to see available commands.`)
+  }
 }
 
 module.exports = CLI
 
-if (!module.parent) {
-  const app = new CLI()
-
-  const action = process.argv[2]
-  const paramOne = process.argv[3]
-  const paramTwo = process.argv[4]
-  const print = console.log
-
-  if (app[action]) {
-    app.addToHistory(action, paramOne, paramTwo)
-    print(app[action](paramOne, paramTwo))
-  } else if (!action) {
-    app.addToHistory()
-    print(app.help())
-  } else if (fs.existsSync(action)) {
-    app.addToHistory(undefined, action)
-    print(app.run(action))
-  } else print(`Unknown command '${action}'. Type 'tree help' to see available commands.`)
-}
+if (!module.parent) CLI.main()

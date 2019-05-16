@@ -141,12 +141,12 @@ $(document).ready(function() {
     window.location.reload()
   })
   $("#execButton").on("click", function() {
-    if (window.program) $("#execResults").html("Result: " + window.program.executeSync())
-    else $("#execResults").html("Program failed to execute")
+    if (window.program) $("#execResults").val(window.program.executeSync())
+    else $("#execResults").val("Program failed to execute")
   })
   $("#compileButton").on("click", function() {
-    if (window.program) $("#execResults").html("Result:\n" + window.program.compile())
-    else $("#execResults").html("Program failed to compile")
+    if (window.program) $("#execResults").val(window.program.compile())
+    else $("#execResults").val("Program failed to compile")
   })
   $.get("/langs/grammar/grammar.grammar").then(main)
 })

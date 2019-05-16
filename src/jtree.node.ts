@@ -9,6 +9,9 @@ class jtreeNode extends jtree {
   static executeFile = (programPath: types.filepath, grammarPath: types.filepath): Promise<any> =>
     jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 
+  static executeFileSync = (programPath: types.filepath, grammarPath: types.filepath): any =>
+    jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
+
   // returns AbstractRuntimeProgram
   static makeProgram = (programPath: types.filepath, grammarPath: types.filepath): AbstractRuntimeProgram => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)

@@ -42,15 +42,6 @@ class StumpNode extends jtree.NonTerminalNode {
     return this.map(node => node._toHtml(indentCount)).join("")
   }
 
-  toHtml() {
-    if (this.isRoot()) return super.toHtml()
-    return this._toHtml()
-  }
-
-  compile() {
-    return this.toHtml()
-  }
-
   toHtmlWithSuids() {
     if (this.isRoot()) return super.toHtml()
     return this._toHtml(undefined, true)
@@ -224,10 +215,21 @@ class StumpNode extends jtree.NonTerminalNode {
     // todo
     return this
   }
+
+  toHtml() {
+    return this._toHtml()
+  }
+}
+
+class StumpProgram extends jtree.program {
+  compile() {
+    return this.toHtml()
+  }
 }
 
 module.exports = {
   StumpBernNode,
+  StumpProgram,
   StumpAttributeNode,
   StumpNode
 }

@@ -1,1 +1,5 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+# Should be 5:
 + 2 3
+# Should be 0:
+- 3 2 1

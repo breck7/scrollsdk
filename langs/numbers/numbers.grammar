@@ -4,6 +4,7 @@ grammar
  keywords
   _arithmetic
   #
+  #!
  catchAllKeyword error
 cellType error
  highlightScope invalid
@@ -21,6 +22,7 @@ abstract _arithmetic
      executeSync() {
        return this.cells.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getKeyword()}${tot}`), this.cells.numbers[0])
      }
+     async execute() { return this.executeSync() }
    }
  keywords
   _arithmetic
@@ -29,12 +31,14 @@ keyword error
  catchAllCellType error
  constructors
   browser ErrorNode
+  nodejs ErrorNode
  highlightScope invalid
 keyword #
  description This is a line comment.
  highlightScope comment
  catchAllCellType commentWord
  catchAllKeyword #
+keyword #! #
 keyword comment #
 keyword + _arithmetic
 keyword - _arithmetic

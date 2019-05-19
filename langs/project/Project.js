@@ -1,5 +1,6 @@
 const jtree = require("../../index.js")
 
 module.exports = {
-  Program: jtree.getProgramConstructor(__dirname + "/project.grammar")
+  Program: jtree.getProgramConstructor(__dirname + "/project.grammar"),
+  Nodes: require("./ProjectNodes.js")
 }

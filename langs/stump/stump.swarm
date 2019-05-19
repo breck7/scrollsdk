@@ -24,3 +24,14 @@
    </body>
    </html>
    
+#test div
+ #setup
+  require ./Stump.js Program
+  %%|
+   div hello world
+    id bam
+    class someClass
+ toHtml
+  =|
+   <div id="bam" class="someClass">hello world</div>
+   

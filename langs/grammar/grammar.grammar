@@ -62,14 +62,14 @@ cellType word
 cellType extendedCellType cellTypeName
 cellType exampleWord string
  highlightScope comment
-abstract _compilerRule
+abstract abstract.compilerRule
  catchAllCellType anyWord
  highlightScope entity.other.attribute-name
-abstract _environment
-abstract _keywordRule
+abstract abstract.environment
+abstract abstract.keywordRule
  highlightScope entity.other.attribute-name
  single
-abstract _nonTerminalKeywordRule _keywordRule
+abstract abstract.nonTerminalKeywordRule abstract.keywordRule
 keyword _constantAny
  catchAllCellType anyWord
  catchAllKeyword _constantAny
@@ -136,7 +136,7 @@ keyword keyword
   browser NonTerminalNode
  highlightScope variable.function
  keywords
-  _keywordRule
+  abstract.keywordRule
 keyword keywordOrder
  catchAllCellType keywordName
  highlightScope constant.language
@@ -159,34 +159,34 @@ keyword version
  cells semanticVersion
  highlightScope constant.language
  description Version number of your language.
-keyword closeChildren _compilerRule
-keyword indentCharacter _compilerRule
-keyword listDelimiter _compilerRule
-keyword openChildren _compilerRule
-keyword sub _compilerRule
-keyword browser _environment
+keyword closeChildren abstract.compilerRule
+keyword indentCharacter abstract.compilerRule
+keyword listDelimiter abstract.compilerRule
+keyword openChildren abstract.compilerRule
+keyword sub abstract.compilerRule
+keyword browser abstract.environment
  cells builtInConstructorOrConstructorName
  catchAllCellType scriptUrl
  description builtInConstructorOrConstructorName will be searched for on the window object.
-keyword javascript _environment
+keyword javascript abstract.environment
  catchAllCellType javascriptCodeWord
  catchAllKeyword javascriptCodeLine
  description Put in some code to eval.
-keyword nodejs _environment
+keyword nodejs abstract.environment
  cells builtInConstructorOrFilePath
  catchAllCellType constructorName
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-keyword any _keywordRule
-keyword catchAllCellType _keywordRule
+keyword any abstract.keywordRule
+keyword catchAllCellType abstract.keywordRule
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
-keyword catchAllKeyword _keywordRule
+keyword catchAllKeyword abstract.keywordRule
  description If a keyword is not found in the keywords list, instantiate this type of node instead.
  cells keywordEnum
-keyword cells _keywordRule
+keyword cells abstract.keywordRule
  catchAllCellType cellTypeEnum
  description Describes the word type of each word in the line.
-keyword compiler _keywordRule
+keyword compiler abstract.keywordRule
  cells compilerTargetExtension
  keywords
   sub
@@ -194,38 +194,38 @@ keyword compiler _keywordRule
   openChildren
   closeChildren
   indentCharacter
-keyword constants _keywordRule
+keyword constants abstract.keywordRule
  catchAllKeyword _constantDefinition
-keyword defaults _keywordRule
+keyword defaults abstract.keywordRule
  catchAllKeyword _defaultTuple
-keyword description _keywordRule
+keyword description abstract.keywordRule
  catchAllCellType string
-keyword example _keywordRule
+keyword example abstract.keywordRule
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleWord
  catchAllKeyword _exampleLine
  highlightScope comment
-keyword frequency _keywordRule
+keyword frequency abstract.keywordRule
  cells float
-keyword highlightScope _keywordRule
+keyword highlightScope abstract.keywordRule
  cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
-keyword required _keywordRule
+keyword required abstract.keywordRule
  description If present, the parent node will have an error if one of these nodes is not provided.
-keyword single _keywordRule
+keyword single abstract.keywordRule
  description If present and their are more than 1 of these nodes on the parent, an error will be present.
-keyword tags _keywordRule
+keyword tags abstract.keywordRule
  catchAllCellType tag
-keyword constructors _nonTerminalKeywordRule
+keyword constructors abstract.nonTerminalKeywordRule
  keywords
-  _environment
+  abstract.environment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
-keyword keywords _nonTerminalKeywordRule
+keyword keywords abstract.nonTerminalKeywordRule
  catchAllKeyword _keywordUse
  description A list of possible child keywords for a node. This is a not a leaf node in order to allow seamless extending.
 keyword abstract keyword
  highlightScope entity.name.tag
  description An abstract keyword cannot be used by itself but provides common functionality to keywords that extend it.
  keywords
-  _keywordRule
+  abstract.keywordRule
   group

@@ -5,7 +5,7 @@ import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgram
 
 import { GrammarConstants } from "./GrammarConstants"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
-import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
+import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 import UnknownGrammarProgram from "./UnknownGrammarProgram"
 
@@ -20,18 +20,18 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
     return <GrammarProgram>this.getParent()
   }
 
-  getKeywordMap() {
-    // todo: this isn't quite correct. we are allowing too many keywords.
-    const map = super.getKeywordMap()
+  getFirstWordMap() {
+    // todo: this isn't quite correct. we are allowing too many firstWords.
+    const map = super.getFirstWordMap()
     map[GrammarConstants.extensions] = TreeNode
     map[GrammarConstants.version] = TreeNode
     map[GrammarConstants.name] = TreeNode
-    map[GrammarConstants.keywordOrder] = TreeNode
+    map[GrammarConstants.nodeTypeOrder] = TreeNode
     return map
   }
 }
 
-class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode {
+class GrammarAbstractNodeTypeDefinitionNode extends GrammarNodeTypeDefinitionNode {
   _isAbstract() {
     return true
   }
@@ -40,12 +40,12 @@ class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode 
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
-  getKeywordMap() {
+  getFirstWordMap() {
     const map: types.stringMap = {}
     map[GrammarConstants.grammar] = GrammarRootNode
     map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode
-    map[GrammarConstants.keyword] = GrammarKeywordDefinitionNode
-    map[GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode
+    map[GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode
+    map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode
     return map
   }
 
@@ -66,7 +66,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
     const errors: types.ParseError[] = []
-    this.getKeywordDefinitions().forEach(def =>
+    this.getNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
         exampleProgram.getProgramErrors().forEach(err => {
@@ -81,8 +81,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().getTargetExtension()
   }
 
-  getKeywordOrder() {
-    return this._getGrammarRootNode().get(GrammarConstants.keywordOrder)
+  getNodeTypeOrder() {
+    return this._getGrammarRootNode().get(GrammarConstants.nodeTypeOrder)
   }
 
   private _cache_cellTypes: {
@@ -114,8 +114,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
-  getKeywordDefinitions() {
-    return <GrammarKeywordDefinitionNode[]>this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode)
+  getNodeTypeDefinitions() {
+    return <GrammarNodeTypeDefinitionNode[]>this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode)
   }
 
   // todo: remove?
@@ -135,29 +135,29 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().get(GrammarConstants.name)
   }
 
-  protected _getKeywordsNode(): TreeNode {
-    return <TreeNode>this._getGrammarRootNode().getNode(GrammarConstants.keywords)
+  protected _getNodeTypesNode(): TreeNode {
+    return <TreeNode>this._getGrammarRootNode().getNode(GrammarConstants.nodeTypes)
   }
 
   private _cachedDefinitions: {
-    [keyword: string]: AbstractGrammarDefinitionNode
+    [firstWord: string]: AbstractGrammarDefinitionNode
   }
 
-  getKeywordDefinitionByKeywordPath(keywordPath: string): AbstractGrammarDefinitionNode {
+  getNodeTypeDefinitionByFirstWordPath(firstWordPath: string): AbstractGrammarDefinitionNode {
     if (!this._cachedDefinitions) this._cachedDefinitions = {}
-    if (this._cachedDefinitions[keywordPath]) return this._cachedDefinitions[keywordPath]
+    if (this._cachedDefinitions[firstWordPath]) return this._cachedDefinitions[firstWordPath]
 
-    const parts = keywordPath.split(" ")
+    const parts = firstWordPath.split(" ")
     let subject: AbstractGrammarDefinitionNode = this
     let def
     for (let index = 0; index < parts.length; index++) {
       const part = parts[index]
-      def = subject.getRunTimeKeywordMapWithDefinitions()[part]
+      def = subject.getRunTimeFirstWordMapWithDefinitions()[part]
       if (!def) def = <AbstractGrammarDefinitionNode>subject._getCatchAllDefinition()
       subject = def
     }
 
-    this._cachedDefinitions[keywordPath] = def
+    this._cachedDefinitions[firstWordPath] = def
     return def
   }
 
@@ -165,30 +165,30 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this.toString()
   }
 
-  // At present we only have global keyword definitions (you cannot have scoped keyword definitions right now).
-  private _cache_keywordDefinitions: { [keyword: string]: GrammarKeywordDefinitionNode }
+  // At present we only have global nodeType definitions (you cannot have scoped nodeType definitions right now).
+  private _cache_nodeTypeDefinitions: { [nodeTypeName: string]: GrammarNodeTypeDefinitionNode }
 
-  protected _initProgramKeywordDefinitionCache(): void {
-    if (this._cache_keywordDefinitions) return undefined
+  protected _initProgramNodeTypeDefinitionCache(): void {
+    if (this._cache_nodeTypeDefinitions) return undefined
 
-    this._cache_keywordDefinitions = {}
+    this._cache_nodeTypeDefinitions = {}
 
-    this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode).forEach(keywordDefinitionNode => {
-      this._cache_keywordDefinitions[
-        (<GrammarKeywordDefinitionNode>keywordDefinitionNode).getId()
-      ] = keywordDefinitionNode
+    this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode).forEach(nodeTypeDefinitionNode => {
+      this._cache_nodeTypeDefinitions[
+        (<GrammarNodeTypeDefinitionNode>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()
+      ] = nodeTypeDefinitionNode
     })
   }
 
   // todo: protected?
-  _getProgramKeywordDefinitionCache() {
-    this._initProgramKeywordDefinitionCache()
-    return this._cache_keywordDefinitions
+  _getProgramNodeTypeDefinitionCache() {
+    this._initProgramNodeTypeDefinitionCache()
+    return this._cache_nodeTypeDefinitions
   }
 
   // todo: protected?
-  _getRunTimeCatchAllKeyword(): string {
-    return this._getGrammarRootNode().get(GrammarConstants.catchAllKeyword)
+  _getRunTimeCatchAllNodeTypeId(): string {
+    return this._getGrammarRootNode().get(GrammarConstants.catchAllNodeType)
   }
 
   protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
@@ -227,10 +227,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       .map(name => ` ${name}: '${types[name].getRegexString()}'`)
       .join("\n")
 
-    const keywords = this.getKeywordDefinitions().filter(kw => !kw._isAbstract())
-    const keywordContexts = keywords.map(def => def.getMatchBlock()).join("\n\n")
+    const defs = this.getNodeTypeDefinitions().filter(kw => !kw._isAbstract())
+    const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n")
 
-    const includes = keywords.map(keyword => `  - include: '${keyword.getSyntaxContextId()}'`).join("\n")
+    const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSyntaxContextId()}'`).join("\n")
 
     return `%YAML 1.2
 ---
@@ -245,15 +245,15 @@ contexts:
  main:
 ${includes}
 
-${keywordContexts}`
+${nodeTypeContexts}`
   }
 
   // A language where anything goes.
   static getTheAnyLanguageRootConstructor() {
     return this.newFromCondensed(
       `${GrammarConstants.grammar} any
- ${GrammarConstants.catchAllKeyword} any
-${GrammarConstants.keyword} any
+ ${GrammarConstants.catchAllNodeType} any
+${GrammarConstants.nodeType} any
  ${GrammarConstants.catchAllCellType} any
 ${GrammarConstants.cellType} any`
     ).getRootConstructor()
@@ -264,14 +264,14 @@ ${GrammarConstants.cellType} any`
     const tree = new TreeNode(grammarCode)
 
     // Expand groups
-    // todo: rename? maybe change this to "make" or "quickKeywords"?
+    // todo: rename? maybe change this to something like "makeNodeTypes"?
     const xi = tree.getXI()
     tree.findNodes(`${GrammarConstants.abstract}${xi}${GrammarConstants.group}`).forEach(group => {
       const abstractName = group.getParent().getWord(1)
       group
         .getContent()
         .split(xi)
-        .forEach(word => tree.appendLine(`${GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`))
+        .forEach(word => tree.appendLine(`${GrammarConstants.nodeType}${xi}${word}${xi}${abstractName}`))
     })
 
     return new GrammarProgram(tree.getExpanded(1, 2), grammarPath)

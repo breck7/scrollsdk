@@ -1,11 +1,11 @@
 grammar
  name numbers
  description A useless Tree Language for testing Tree Notation features.
- keywords
+ nodeTypes
   abstract.arithmetic
   #
   #!
- catchAllKeyword error
+ catchAllNodeType error
 cellType commentWord
  highlightScope comment
 cellType error
@@ -20,28 +20,28 @@ abstract abstract.arithmetic
   javascript
    class extends jtree.NonTerminalNode {
      executeSync() {
-       return this.cells.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getKeyword()}${tot}`), this.cells.numbers[0])
+       return this.cells.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.cells.numbers[0])
      }
      async execute() { return this.executeSync() }
    }
- keywords
+ nodeTypes
   abstract.arithmetic
   #
-keyword #
+nodeType #
  description This is a line comment.
  highlightScope comment
  catchAllCellType commentWord
- catchAllKeyword #
-keyword error
+ catchAllNodeType #
+nodeType error
  catchAllCellType error
  constructors
   browser ErrorNode
   nodejs ErrorNode
  highlightScope invalid
-keyword #! #
-keyword comment #
-keyword % abstract.arithmetic
-keyword * abstract.arithmetic
-keyword + abstract.arithmetic
-keyword - abstract.arithmetic
-keyword / abstract.arithmetic
+nodeType #! #
+nodeType comment #
+nodeType % abstract.arithmetic
+nodeType * abstract.arithmetic
+nodeType + abstract.arithmetic
+nodeType - abstract.arithmetic
+nodeType / abstract.arithmetic

@@ -4,8 +4,8 @@ grammar
  constructors
   nodejs ./jibberishProgramRoot.js
  compiler txt
- catchAllKeyword error
- keywords
+ catchAllNodeType error
+ nodeTypes
   topLevel
   text
   someAbstractClass
@@ -24,39 +24,39 @@ abstract topLevel
 abstract color_properties topLevel
  group hue saturation constrast
  cells int
-keyword error
+nodeType error
  highlightScope invalid
  catchAllCellType errorWord
  constructors
   nodejs ErrorNode
   browser ErrorNode
-keyword lineOfCode
+nodeType lineOfCode
  catchAllCellType word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
   browser LineOfCodeNode jibberishNodes.js
-keyword text
+nodeType text
  any
-keyword extendsAbstract someAbstractClass
+nodeType extendsAbstract someAbstractClass
  cells int
-keyword add topLevel
+nodeType add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
-keyword + add
+nodeType + add
  example Adding two numbers:
   + 1 2
  catchAllCellType int
  highlightScope keyword.operator.arithmetic
-keyword block topLevel
- keywords
+nodeType block topLevel
+ nodeTypes
   topLevel
-keyword to block
+nodeType to block
  cells word
  compiler txt
   sub to {word}
   closeChildren end
-keyword foo topLevel
-keyword xColumnName topLevel
+nodeType foo topLevel
+nodeType xColumnName topLevel
  description The name of the column to use for the x axis
  cells columnNameEnum
  constructors
@@ -66,16 +66,16 @@ keyword xColumnName topLevel
        return cell.getCellTypeName() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
      }
    }
-keyword lightbulbState topLevel
+nodeType lightbulbState topLevel
  cells onoff
-keyword nested topLevel
+nodeType nested topLevel
  constructors
   nodejs ./jibberishNodes.js nested.someNestedNode
-keyword nodeWithConsts topLevel
+nodeType nodeWithConsts topLevel
  constants
   greeting string hello world
-keyword someCode topLevel
- catchAllKeyword lineOfCode
-keyword type topLevel
+nodeType someCode topLevel
+ catchAllNodeType lineOfCode
+nodeType type topLevel
  cells word
  single

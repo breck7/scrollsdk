@@ -28,7 +28,7 @@ class ImmutableNode extends AbstractNode {
   private _children: ImmutableNode[]
   private _line: string
   private _index: {
-    [keyword: string]: int
+    [firstWord: string]: int
   }
 
   execute(context: any) {
@@ -153,8 +153,8 @@ class ImmutableNode extends AbstractNode {
     return !this.length && !this.getLine()
   }
 
-  hasDuplicateKeywords(): boolean {
-    return this.length ? new Set(this.getKeywords()).size !== this.length : false
+  hasDuplicateFirstWords(): boolean {
+    return this.length ? new Set(this.getFirstWords()).size !== this.length : false
   }
 
   isEmpty(): boolean {
@@ -205,7 +205,7 @@ class ImmutableNode extends AbstractNode {
       nodeChildren: "nodeChildren"
     }
     const edge = this.getXI().repeat(indentCount)
-    // Set up the keyword part of the node
+    // Set up the firstWord part of the node
     const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${
       classes.xi
     }">${edge}</span>`
@@ -322,7 +322,7 @@ class ImmutableNode extends AbstractNode {
     return spots[charIndex]
   }
 
-  getKeyword(): word {
+  getFirstWord(): word {
     return this.getWords()[0]
   }
 
@@ -377,19 +377,19 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: return array? getPathArray?
-  protected _getKeywordPath(relativeTo?: ImmutableNode): types.keywordPath {
+  protected _getFirstWordPath(relativeTo?: ImmutableNode): types.firstWordPath {
     if (this.isRoot(relativeTo)) return ""
-    else if (this.getParent().isRoot(relativeTo)) return this.getKeyword()
+    else if (this.getParent().isRoot(relativeTo)) return this.getFirstWord()
 
-    return this.getParent()._getKeywordPath(relativeTo) + this.getXI() + this.getKeyword()
+    return this.getParent()._getFirstWordPath(relativeTo) + this.getXI() + this.getFirstWord()
   }
 
-  getKeywordPathRelativeTo(relativeTo?: ImmutableNode): types.keywordPath {
-    return this._getKeywordPath(relativeTo)
+  getFirstWordPathRelativeTo(relativeTo?: ImmutableNode): types.firstWordPath {
+    return this._getFirstWordPath(relativeTo)
   }
 
-  getKeywordPath(): types.keywordPath {
-    return this._getKeywordPath()
+  getFirstWordPath(): types.firstWordPath {
+    return this._getFirstWordPath()
   }
 
   getPathVector(): types.pathVector {
@@ -417,7 +417,7 @@ class ImmutableNode extends AbstractNode {
 
   protected _getLineHtml() {
     return this.getWords()
-      .map((word, index) => `<span class="word${index ? "" : " keyword"}">${TreeUtils.stripHtml(word)}</span>`)
+      .map((word, index) => `<span class="word${index}">${TreeUtils.stripHtml(word)}</span>`)
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
@@ -432,7 +432,7 @@ class ImmutableNode extends AbstractNode {
 
   protected _toXml(indentCount: types.positiveInt) {
     const indent = " ".repeat(indentCount)
-    const tag = this.getKeyword()
+    const tag = this.getFirstWord()
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
 
@@ -448,7 +448,7 @@ class ImmutableNode extends AbstractNode {
       : hasContentAndHasChildren
       ? this.getContentWithChildren()
       : content
-    return [this.getKeyword(), tupleValue]
+    return [this.getFirstWord(), tupleValue]
   }
 
   protected _indexOfNode(needleNode: ImmutableNode) {
@@ -617,11 +617,11 @@ class ImmutableNode extends AbstractNode {
   _lineToYaml(indentLevel: number, listTag = "") {
     let prefix = " ".repeat(indentLevel)
     if (listTag && indentLevel > 1) prefix = " ".repeat(indentLevel - 2) + listTag + " "
-    return prefix + `${this.getKeyword()}:` + (this.getContent() ? " " + this.getContent() : "")
+    return prefix + `${this.getFirstWord()}:` + (this.getContent() ? " " + this.getContent() : "")
   }
 
   _isYamlList() {
-    return this.hasDuplicateKeywords()
+    return this.hasDuplicateFirstWords()
   }
 
   toYaml() {
@@ -685,10 +685,10 @@ class ImmutableNode extends AbstractNode {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(keywordPath: types.keywordPath): TreeNode[] {
+  findNodes(firstWordPath: types.firstWordPath): TreeNode[] {
     // todo: can easily speed this up
     return this.getTopDownArray().filter(node => {
-      if (node._getKeywordPath(this) === keywordPath) return true
+      if (node._getFirstWordPath(this) === firstWordPath) return true
       return false
     })
   }
@@ -712,7 +712,7 @@ class ImmutableNode extends AbstractNode {
     return clone
   }
 
-  isLeafColumn(path: types.keywordPath) {
+  isLeafColumn(path: types.firstWordPath) {
     for (let node of this._getChildren()) {
       const nd = node.getNode(path)
       if (nd && nd.length) return false
@@ -720,12 +720,12 @@ class ImmutableNode extends AbstractNode {
     return true
   }
 
-  getNode(keywordPath: types.keywordPath) {
-    return this._getNodeByPath(keywordPath)
+  getNode(firstWordPath: types.firstWordPath) {
+    return this._getNodeByPath(firstWordPath)
   }
 
-  get(keywordPath: types.keywordPath) {
-    const node = this._getNodeByPath(keywordPath)
+  get(firstWordPath: types.firstWordPath) {
+    const node = this._getNodeByPath(firstWordPath)
     return node === undefined ? undefined : node.getContent()
   }
 
@@ -737,25 +737,25 @@ class ImmutableNode extends AbstractNode {
     const xi = this.getXI()
     if (!globPath.includes(xi)) {
       if (globPath === "*") return this.getChildren()
-      return this.filter(node => node.getKeyword() === globPath)
+      return this.filter(node => node.getFirstWord() === globPath)
     }
 
     const parts = globPath.split(xi)
     const current = parts.shift()
     const rest = parts.join(xi)
-    const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getKeyword() === current)
+    const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getFirstWord() === current)
 
     return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)))
   }
 
-  protected _getNodeByPath(keywordPath: types.keywordPath): ImmutableNode {
+  protected _getNodeByPath(firstWordPath: types.firstWordPath): ImmutableNode {
     const xi = this.getXI()
-    if (!keywordPath.includes(xi)) {
-      const index = this.indexOfLast(keywordPath)
+    if (!firstWordPath.includes(xi)) {
+      const index = this.indexOfLast(firstWordPath)
       return index === -1 ? undefined : this._nodeAt(index)
     }
 
-    const parts = keywordPath.split(xi)
+    const parts = firstWordPath.split(xi)
     const current = parts.shift()
     const currentNode = this._getChildren()[this._getIndex()[current]]
     return currentNode ? currentNode._getNodeByPath(parts.join(xi)) : undefined
@@ -786,7 +786,7 @@ class ImmutableNode extends AbstractNode {
     this.forEach((node: TreeNode) => {
       if (!node.length) return undefined
       node.forEach(node => {
-        obj[node.getKeyword()] = 1
+        obj[node.getFirstWord()] = 1
       })
     })
     return Object.keys(obj)
@@ -832,13 +832,13 @@ class ImmutableNode extends AbstractNode {
     return graph
   }
 
-  pathVectorToKeywordPath(pathVector: types.pathVector): word[] {
+  pathVectorToFirstWordPath(pathVector: types.pathVector): word[] {
     const path = pathVector.slice() // copy array
     const names = []
     let node: ImmutableNode = this
     while (path.length) {
       if (!node) return names
-      names.push(node.nodeAt(path[0]).getKeyword())
+      names.push(node.nodeAt(path[0]).getFirstWord())
       node = node.nodeAt(path.shift())
     }
     return names
@@ -994,13 +994,13 @@ class ImmutableNode extends AbstractNode {
 
       if (lastStatesCopy.push([outlineTreeNode, last]) && lastStates.length > 0) {
         let line = ""
-        // keywordd on the "was last element" states of whatever we're nested within,
+        // firstWordd on the "was last element" states of whatever we're nested within,
         // we need to append either blankness or a branch to our line
         lastStates.forEach((lastState, idx) => {
           if (idx > 0) line += lastState[1] ? " " : "│"
         })
 
-        // the prefix varies keywordd on whether the key contains something to show and
+        // the prefix varies firstWordd on whether the key contains something to show and
         // whether we're dealing with the last element in this collection
         // the extra "-" just makes things stand out more.
         line += (last ? "└" : "├") + nodeFn(node)
@@ -1029,14 +1029,14 @@ class ImmutableNode extends AbstractNode {
 
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
-  split(keyword: types.word): ImmutableNode[] {
+  split(firstWord: types.word): ImmutableNode[] {
     const constructor = <any>this.constructor
     const YI = this.getYI()
     const ZI = this.getZI()
 
     // todo: cleanup. the escaping is wierd.
     return this.toString()
-      .split(new RegExp(`\\${YI}(?=${keyword}(?:${ZI}|\\${YI}))`, "g"))
+      .split(new RegExp(`\\${YI}(?=${firstWord}(?:${ZI}|\\${YI}))`, "g"))
       .map(str => new constructor(str))
   }
 
@@ -1127,35 +1127,35 @@ class ImmutableNode extends AbstractNode {
   }
 
   protected _setFromObject(content: any, circularCheckArray: Object[]) {
-    for (let keyword in content) {
-      if (!content.hasOwnProperty(keyword)) continue
+    for (let firstWord in content) {
+      if (!content.hasOwnProperty(firstWord)) continue
       // Branch the circularCheckArray, as we only have same branch circular arrays
-      this._appendFromJavascriptObjectTuple(keyword, content[keyword], circularCheckArray.slice(0))
+      this._appendFromJavascriptObjectTuple(firstWord, content[firstWord], circularCheckArray.slice(0))
     }
 
     return this
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(keyword: types.word, content: any, circularCheckArray: Object[]) {
+  protected _appendFromJavascriptObjectTuple(firstWord: types.word, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let children
-    if (content === null) line = keyword + " " + null
-    else if (content === undefined) line = keyword
+    if (content === null) line = firstWord + " " + null
+    else if (content === undefined) line = firstWord
     else if (type === "string") {
       const tuple = this._textToContentAndChildrenTuple(content)
-      line = keyword + " " + tuple[0]
+      line = firstWord + " " + tuple[0]
       children = tuple[1]
-    } else if (type === "function") line = keyword + " " + content.toString()
-    else if (type !== "object") line = keyword + " " + content
-    else if (content instanceof Date) line = keyword + " " + content.getTime().toString()
+    } else if (type === "function") line = firstWord + " " + content.toString()
+    else if (type !== "object") line = firstWord + " " + content
+    else if (content instanceof Date) line = firstWord + " " + content.getTime().toString()
     else if (content instanceof ImmutableNode) {
-      line = keyword
+      line = firstWord
       children = new TreeNode(content.childrenToString(), content.getLine())
     } else if (circularCheckArray.indexOf(content) === -1) {
       circularCheckArray.push(content)
-      line = keyword
+      line = firstWord
       const length = content instanceof Array ? content.length : Object.keys(content).length
       if (length) children = new TreeNode()._setChildren(content, circularCheckArray)
     } else {
@@ -1205,8 +1205,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   protected _getIndex() {
-    // StringMap<int> {keyword: index}
-    // When there are multiple tails with the same keyword, _index stores the last content.
+    // StringMap<int> {firstWord: index}
+    // When there are multiple tails with the same firstWord, _index stores the last content.
     // todo: change the above behavior: when a collision occurs, create an array.
     return this._index || this._makeIndex()
   }
@@ -1225,19 +1225,19 @@ class ImmutableNode extends AbstractNode {
     return this.find(child => child instanceof constructor)
   }
 
-  indexOfLast(keyword: word): int {
-    const result = this._getIndex()[keyword]
+  indexOfLast(firstWord: word): int {
+    const result = this._getIndex()[firstWord]
     return result === undefined ? -1 : result
   }
 
-  indexOf(keyword: word): int {
-    if (!this.has(keyword)) return -1
+  indexOf(firstWord: word): int {
+    if (!this.has(firstWord)) return -1
 
     const length = this.length
     const nodes = this._getChildren()
 
     for (let index = 0; index < length; index++) {
-      if (nodes[index].getKeyword() === keyword) return index
+      if (nodes[index].getFirstWord() === firstWord) return index
     }
     return -1
   }
@@ -1246,8 +1246,8 @@ class ImmutableNode extends AbstractNode {
     return this._toObject()
   }
 
-  getKeywords(): word[] {
-    return this.map(node => node.getKeyword())
+  getFirstWords(): word[] {
+    return this.map(node => node.getFirstWord())
   }
 
   protected _makeIndex(startAt = 0) {
@@ -1257,7 +1257,7 @@ class ImmutableNode extends AbstractNode {
     const length = nodes.length
 
     for (let index = startAt; index < length; index++) {
-      newIndex[nodes[index].getKeyword()] = index
+      newIndex[nodes[index].getFirstWord()] = index
     }
 
     return newIndex
@@ -1280,22 +1280,23 @@ class ImmutableNode extends AbstractNode {
     return new (<any>this.constructor)(this.childrenToString(), this.getLine())
   }
 
-  // todo: rename to hasKeyword
-  has(keyword: word): boolean {
-    return this._hasKeyword(keyword)
+  // todo: rename to hasFirstWord
+  has(firstWord: word): boolean {
+    return this._hasFirstWord(firstWord)
   }
 
-  protected _hasKeyword(keyword: string) {
-    return this._getIndex()[keyword] !== undefined
+  protected _hasFirstWord(firstWord: string) {
+    return this._getIndex()[firstWord] !== undefined
   }
 
-  protected _getKeywordByIndex(index: int) {
+  // todo: is this used anywhere?
+  protected _getFirstWordByIndex(index: int) {
     // Passing -1 gets the last item, et cetera
     const length = this.length
 
     if (index < 0) index = length + index
     if (index >= length) return undefined
-    return this._getChildren()[index].getKeyword()
+    return this._getChildren()[index].getFirstWord()
   }
 
   map(fn: mapFn) {
@@ -1333,7 +1334,7 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().slice(start, end)
   }
 
-  getKeywordMap(): types.keywordToNodeMap {
+  getFirstWordMap(): types.firstWordToNodeConstructorMap {
     return undefined
   }
 
@@ -1359,11 +1360,11 @@ class ImmutableNode extends AbstractNode {
   }
 
   getNodeConstructor(line: string) {
-    const map = this.getKeywordMap()
+    const map = this.getFirstWordMap()
     if (!map) return this.getCatchAllNodeConstructor(line)
     const firstBreak = line.indexOf(this.getZI())
-    const keyword = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
-    return map[keyword] || this.getCatchAllNodeConstructor(line)
+    const firstWord = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
+    return map[firstWord] || this.getCatchAllNodeConstructor(line)
   }
 
   private static _uniqueId: int
@@ -1436,10 +1437,10 @@ class TreeNode extends ImmutableNode {
     return new TreeNode().appendLineAndChildren(this.getLine(), result)
   }
 
-  macroExpand(macroDefKeyword: string, macroUsageKeyword: string): TreeNode {
+  macroExpand(macroDefinitionWord: string, macroUsageWord: string): TreeNode {
     const clone = this.clone()
-    const defs = clone.findNodes(macroDefKeyword)
-    const allUses = clone.findNodes(macroUsageKeyword)
+    const defs = clone.findNodes(macroDefinitionWord)
+    const allUses = clone.findNodes(macroUsageWord)
     const zi = clone.getZI()
     defs.forEach(def => {
       const macroName = def.getWord(1)
@@ -1501,7 +1502,7 @@ class TreeNode extends ImmutableNode {
 
   setContent(content: string): TreeNode {
     if (content === this.getContent()) return this
-    const newArray = [this.getKeyword()]
+    const newArray = [this.getFirstWord()]
     if (content !== undefined) {
       content = content.toString()
       if (content.match(this.getYI())) return this.setContentWithChildren(content)
@@ -1530,8 +1531,8 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  setKeyword(keyword: word) {
-    return this.setWord(0, keyword)
+  setFirstWord(firstWord: word) {
+    return this.setWord(0, firstWord)
   }
 
   setLine(line: string) {
@@ -1550,8 +1551,8 @@ class TreeNode extends ImmutableNode {
     ;(this.getParent() as TreeNode)._deleteNode(this)
   }
 
-  set(keywordPath: types.keywordPath, text: string) {
-    return this.touchNode(keywordPath).setContentWithChildren(text)
+  set(firstWordPath: types.firstWordPath, text: string) {
+    return this.touchNode(firstWordPath).setContentWithChildren(text)
   }
 
   setFromText(text: string) {
@@ -1630,14 +1631,14 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  protected _rename(oldKeyword: types.word, newKeyword: types.word) {
-    const index = this.indexOf(oldKeyword)
+  protected _rename(oldFirstWord: types.word, newFirstWord: types.word) {
+    const index = this.indexOf(oldFirstWord)
 
     if (index === -1) return this
 
     const node = <TreeNode>this._getChildren()[index]
 
-    node.setKeyword(newKeyword)
+    node.setFirstWord(newFirstWord)
     this._clearIndex()
     return this
   }
@@ -1645,51 +1646,51 @@ class TreeNode extends ImmutableNode {
   // Does not recurse.
   remap(map: types.stringMap) {
     this.forEach(node => {
-      const keyword = node.getKeyword()
-      if (map[keyword] !== undefined) node.setKeyword(map[keyword])
+      const firstWord = node.getFirstWord()
+      if (map[firstWord] !== undefined) node.setFirstWord(map[firstWord])
     })
     return this
   }
 
-  rename(oldKeyword: word, newKeyword: word) {
-    this._rename(oldKeyword, newKeyword)
+  rename(oldFirstWord: word, newFirstWord: word) {
+    this._rename(oldFirstWord, newFirstWord)
     return this
   }
 
   renameAll(oldName: word, newName: word) {
-    this.findNodes(oldName).forEach(node => node.setKeyword(newName))
+    this.findNodes(oldName).forEach(node => node.setFirstWord(newName))
     return this
   }
 
-  protected _deleteAllChildNodesWithKeyword(keyword: word) {
-    if (!this.has(keyword)) return this
+  protected _deleteAllChildNodesWithFirstWord(firstWord: word) {
+    if (!this.has(firstWord)) return this
     const allNodes = this._getChildren()
     const indexesToDelete: int[] = []
     allNodes.forEach((node, index) => {
-      if (node.getKeyword() === keyword) indexesToDelete.push(index)
+      if (node.getFirstWord() === firstWord) indexesToDelete.push(index)
     })
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(keyword = "") {
+  delete(path: types.firstWordPath = "") {
     const xi = this.getXI()
-    if (!keyword.includes(xi)) return this._deleteAllChildNodesWithKeyword(keyword)
+    if (!path.includes(xi)) return this._deleteAllChildNodesWithFirstWord(path)
 
-    const parts = keyword.split(xi)
-    const nextKeyword = parts.pop()
+    const parts = path.split(xi)
+    const nextFirstWord = parts.pop()
     const targetNode = <TreeNode>this.getNode(parts.join(xi))
 
-    return targetNode ? targetNode._deleteAllChildNodesWithKeyword(nextKeyword) : 0
+    return targetNode ? targetNode._deleteAllChildNodesWithFirstWord(nextFirstWord) : 0
   }
 
-  deleteColumn(keyword = "") {
-    this.forEach(node => node.delete(keyword))
+  deleteColumn(firstWord = "") {
+    this.forEach(node => node.delete(firstWord))
     return this
   }
 
   protected _getNonMaps(): TreeNode[] {
-    const results = this.getTopDownArray().filter(node => node.hasDuplicateKeywords())
-    if (this.hasDuplicateKeywords()) results.unshift(this)
+    const results = this.getTopDownArray().filter(node => node.hasDuplicateFirstWords())
+    if (this.hasDuplicateFirstWords()) results.unshift(this)
     return results
   }
 
@@ -1699,14 +1700,14 @@ class TreeNode extends ImmutableNode {
   extend(nodeOrStr: TreeNode | string) {
     if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
 
-    const usedKeywords = new Set()
+    const usedFirstWords = new Set()
     nodeOrStr.forEach(sourceNode => {
-      const keyword = sourceNode.getKeyword()
+      const firstWord = sourceNode.getFirstWord()
       let targetNode
-      if (usedKeywords.has(keyword)) targetNode = this.appendLine(sourceNode.getLine())
+      if (usedFirstWords.has(firstWord)) targetNode = this.appendLine(sourceNode.getLine())
       else {
-        targetNode = this.touchNode(keyword).setContent(sourceNode.getContent())
-        usedKeywords.add(keyword)
+        targetNode = this.touchNode(firstWord).setContent(sourceNode.getContent())
+        usedFirstWords.add(firstWord)
       }
       if (sourceNode.length) targetNode.extend(sourceNode.childrenToString())
     })
@@ -1759,18 +1760,18 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  keywordSort(keywordOrder: types.word[]): this {
-    return this._keywordSort(keywordOrder)
+  firstWordSort(firstWordOrder: types.word[]): this {
+    return this._firstWordSort(firstWordOrder)
   }
 
-  _keywordSort(keywordOrder: types.word[], secondarySortFn?: types.sortFn): this {
-    const map: { [keyword: string]: int } = {}
-    keywordOrder.forEach((word, index) => {
+  _firstWordSort(firstWordOrder: types.word[], secondarySortFn?: types.sortFn): this {
+    const map: { [firstWord: string]: int } = {}
+    firstWordOrder.forEach((word, index) => {
       map[word] = index
     })
     this.sort((nodeA, nodeB) => {
-      const valA = map[nodeA.getKeyword()]
-      const valB = map[nodeB.getKeyword()]
+      const valA = map[nodeA.getFirstWord()]
+      const valB = map[nodeB.getFirstWord()]
       if (valA > valB) return 1
       if (valA < valB) return -1 // A comes first
       return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0
@@ -1778,10 +1779,10 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  protected _touchNode(keywordPathArray: types.word[]) {
+  protected _touchNode(firstWordPathArray: types.word[]) {
     let contextNode = this
-    keywordPathArray.forEach(keyword => {
-      contextNode = contextNode.getNode(keyword) || contextNode.appendLine(keyword)
+    firstWordPathArray.forEach(firstWord => {
+      contextNode = contextNode.getNode(firstWord) || contextNode.appendLine(firstWord)
     })
     return contextNode
   }
@@ -1791,7 +1792,7 @@ class TreeNode extends ImmutableNode {
     return this._touchNode(str.split(this.getZI()))
   }
 
-  touchNode(str: types.keywordPath) {
+  touchNode(str: types.firstWordPath) {
     return this._touchNodeByString(str)
   }
 
@@ -1880,9 +1881,9 @@ class TreeNode extends ImmutableNode {
       else if (!nodeB.length) return 1
 
       for (let index = 0; index < length; index++) {
-        const keyword = names[index]
-        const av = nodeA.get(keyword)
-        const bv = nodeB.get(keyword)
+        const firstWord = names[index]
+        const av = nodeA.get(firstWord)
+        const bv = nodeB.get(firstWord)
 
         if (av > bv) return 1
         else if (av < bv) return -1

@@ -7,7 +7,7 @@ class GrammarConstNode extends TreeNode {
     return this.getWordsFrom(2).join(" ")
   }
   getName() {
-    return this.getKeyword()
+    return this.getFirstWord()
   }
 }
 

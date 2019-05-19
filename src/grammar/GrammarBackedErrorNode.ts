@@ -9,19 +9,19 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
 
   getErrors(): types.ParseError[] {
     const parent = this.getParent()
-    const context = parent.isRoot() ? "" : parent.getKeyword()
+    const context = parent.isRoot() ? "" : parent.getFirstWord()
     const locationMsg = context ? `in "${context}" ` : ""
     const point = this.getPoint()
-    const keyword = this.getKeyword()
+    const firstWord = this.getFirstWord()
     return [
       {
-        kind: GrammarConstantsErrors.invalidKeywordError,
-        subkind: keyword,
+        kind: GrammarConstantsErrors.invalidNodeTypeError,
+        subkind: firstWord,
         context: context,
         level: point.x,
-        message: `${GrammarConstantsErrors.invalidKeywordError} "${keyword}" ${locationMsg}at line ${point.y} column ${
-          point.x
-        }`
+        message: `${GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${
+          point.y
+        } column ${point.x}`
       }
     ]
   }

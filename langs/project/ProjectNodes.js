@@ -11,10 +11,10 @@ class FileNode extends jtree.NonTerminalNode {
   _getDependencies() {
     return this.getChildren()
       .map(child => {
-        const keyword = child.getKeyword()
+        const firstWord = child.getFirstWord()
         const childFilePath = child.cells.filepath.join(" ")
-        if (keyword === "external") return ""
-        if (keyword === "absolute") return childFilePath
+        if (firstWord === "external") return ""
+        if (firstWord === "absolute") return childFilePath
         const link = childFilePath
         const folderPath = jtree.Utils.getPathWithoutFileName(this.getFilePath())
         const resolvedPath = path.resolve(folderPath + "/" + link)

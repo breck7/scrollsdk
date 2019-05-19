@@ -29,12 +29,12 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
     // todo: should this be a try/catch?
     if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor()) return []
     const parent = this.getParent()
-    const context = parent.isRoot() ? "" : parent.getKeyword()
+    const context = parent.isRoot() ? "" : parent.getFirstWord()
     const point = this.getPoint()
     return [
       {
         kind: GrammarConstantsErrors.invalidConstructorPathError,
-        subkind: this.getKeyword(),
+        subkind: this.getFirstWord(),
         level: point.x,
         context: context,
         message: `${
@@ -142,8 +142,8 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
 }
 
 class GrammarCustomConstructorsNode extends TreeNode {
-  getKeywordMap() {
-    const map: types.keywordToNodeMap = {}
+  getFirstWordMap() {
+    const map: types.firstWordToNodeConstructorMap = {}
     map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode
     map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode
     map[GrammarConstants.constructorJavascript] = CustomJavascriptConstructorNode

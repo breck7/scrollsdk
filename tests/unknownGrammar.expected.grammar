@@ -1,9 +1,9 @@
 grammar
  name foobar
- keywords
+ nodeTypes
   file
-keyword file
- keywords
+nodeType file
+ nodeTypes
   size
   digits
   open
@@ -12,32 +12,32 @@ keyword file
   edits
   account
  cells any
-keyword size
+nodeType size
  cells int
-keyword digits
+nodeType digits
  cells int int
-keyword open
+nodeType open
  cells bool
-keyword temp
+nodeType temp
  cells float
-keyword description
+nodeType description
  catchAllCellType any
-keyword edits
- keywords
+nodeType edits
+ nodeTypes
   editsChild
-keyword editsChild
- keywords
+nodeType editsChild
+ nodeTypes
   data
-keyword data
+nodeType data
  cells any
-keyword account
- keywords
+nodeType account
+ nodeTypes
   balance
   transactions
   source
-keyword balance
+nodeType balance
  cells float
-keyword transactions
+nodeType transactions
  cells int
-keyword source
+nodeType source
  cells bool any int

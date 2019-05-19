@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
-import { GrammarConstantsErrors } from "./GrammarConstants"
+import { GrammarConstantsErrors, GrammarConstants } from "./GrammarConstants"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 import types from "../types"
 
@@ -32,12 +32,12 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return errors
   }
 
-  // Helper method for selecting potential keywords needed to update grammar file.
-  getInvalidKeywords(level: types.int = undefined) {
+  // Helper method for selecting potential nodeTypes needed to update grammar file.
+  getInvalidNodeTypes(level: types.int = undefined) {
     return Array.from(
       new Set(
         this.getProgramErrors()
-          .filter(err => err.kind === GrammarConstantsErrors.invalidKeywordError)
+          .filter(err => err.kind === GrammarConstantsErrors.invalidNodeTypeError)
           .filter(err => (level ? level === err.level : true))
           .map(err => err.subkind)
       )
@@ -77,10 +77,10 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   getPrettified() {
-    const keywordOrder = this.getGrammarProgram().getKeywordOrder()
+    const nodeTypeOrder = this.getGrammarProgram().getNodeTypeOrder()
     const clone = this.clone()
     const isCondensed = this.getGrammarProgram().getGrammarName() === "grammar" // todo: generalize?
-    clone._keywordSort(keywordOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined)
+    clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined)
 
     return clone.toString()
   }
@@ -89,27 +89,33 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return this.getProgramErrors().map(err => err.message)
   }
 
-  getKeywordMap() {
-    return this.getDefinition().getRunTimeKeywordMap()
+  getFirstWordMap() {
+    return this.getDefinition().getRunTimeFirstWordMap()
   }
 
   getDefinition(): GrammarProgram {
     return this.getGrammarProgram()
   }
 
-  getKeywordUsage(filepath = "") {
-    // returns a report on what keywords from its language the program uses
+  getNodeTypeUsage(filepath = "") {
+    // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgram()
-    const keywordDefinitions = grammarProgram.getKeywordDefinitions()
-    keywordDefinitions.forEach(child => {
-      usage.appendLine([child.getId(), "line-id", "keyword", child.getRequiredCellTypeNames().join(" ")].join(" "))
+    const nodeTypeDefinitions = grammarProgram.getNodeTypeDefinitions()
+    nodeTypeDefinitions.forEach(child => {
+      usage.appendLine(
+        [
+          child.getNodeTypeIdFromDefinition(),
+          "line-id",
+          GrammarConstants.nodeType,
+          child.getRequiredCellTypeNames().join(" ")
+        ].join(" ")
+      )
     })
     const programNodes = this.getTopDownArray()
     programNodes.forEach((programNode, lineNumber) => {
       const def = programNode.getDefinition()
-      const keyword = def.getId()
-      const stats = <TreeNode>usage.getNode(keyword)
+      const stats = <TreeNode>usage.getNode(def.getNodeTypeIdFromDefinition())
       stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
     })
     return usage

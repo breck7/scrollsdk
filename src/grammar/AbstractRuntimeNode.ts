@@ -5,7 +5,7 @@ import { GrammarConstants } from "./GrammarConstants"
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 /*FOR_TYPES_ONLY*/ import { AbstractGrammarBackedCell } from "./GrammarBackedCell"
 /*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
-/*FOR_TYPES_ONLY*/ import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
+/*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
 import types from "../types"
 
@@ -26,7 +26,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
 
   getAutocompleteResults(partialWord: string, cellIndex: types.positiveInt) {
     return cellIndex === 0
-      ? this._getAutocompleteResultsForKeywords(partialWord)
+      ? this._getAutocompleteResultsForFirstWord(partialWord)
       : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
@@ -44,14 +44,14 @@ abstract class AbstractRuntimeNode extends TreeNode {
     return cell ? cell.getAutoCompleteWords(partialWord) : []
   }
 
-  private _getAutocompleteResultsForKeywords(partialWord: string) {
+  private _getAutocompleteResultsForFirstWord(partialWord: string) {
     const def = this.getDefinition()
-    let defs: GrammarKeywordDefinitionNode[] = Object.values(def.getRunTimeKeywordMapWithDefinitions())
+    let defs: GrammarNodeTypeDefinitionNode[] = Object.values(def.getRunTimeFirstWordMapWithDefinitions())
 
-    if (partialWord) defs = defs.filter(def => def.getId().includes(partialWord))
+    if (partialWord) defs = defs.filter(def => def.getNodeTypeIdFromDefinition().includes(partialWord))
 
     return defs.map(def => {
-      const id = def.getId()
+      const id = def.getNodeTypeIdFromDefinition()
       const description = def.getDescription()
       return {
         text: id,
@@ -62,26 +62,27 @@ abstract class AbstractRuntimeNode extends TreeNode {
 
   abstract getDefinition(): AbstractGrammarDefinitionNode
 
-  protected _getKeywordDefinitionByName(path: string) {
-    const grammarProgram = this.getProgram().getGrammarProgram()
-    // todo: do we need a relative to with this keyword path?
-    return grammarProgram.getKeywordDefinitionByKeywordPath(path)
+  protected _getNodeTypeDefinitionByName(path: string) {
+    // todo: do we need a relative to with this firstWord path?
+    return this.getProgram()
+      .getGrammarProgram()
+      .getNodeTypeDefinitionByFirstWordPath(path)
   }
 
   protected _getRequiredNodeErrors(errors: types.ParseError[] = []) {
     const nodeDef = this.getDefinition()
-    const keywords = nodeDef.getRunTimeKeywordMapWithDefinitions()
-    Object.keys(keywords).forEach(keyword => {
-      const def = keywords[keyword]
-      if (def.isRequired() && !this.has(keyword)) {
+    const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions()
+    Object.keys(firstWords).forEach(firstWord => {
+      const def = firstWords[firstWord]
+      if (def.isRequired() && !this.has(firstWord)) {
         errors.push({
-          kind: GrammarConstantsErrors.missingRequiredKeywordError,
-          subkind: keyword,
+          kind: GrammarConstantsErrors.missingRequiredNodeTypeError,
+          subkind: firstWord,
           level: 0,
           context: "",
           message: `${
-            GrammarConstantsErrors.missingRequiredKeywordError
-          } Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
+            GrammarConstantsErrors.missingRequiredNodeTypeError
+          } Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
         })
       }
     })

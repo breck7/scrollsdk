@@ -1,21 +1,21 @@
 grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
- catchAllKeyword _error
- keywordOrder grammar cellType abstract keyword
+ catchAllNodeType _error
+ nodeTypeOrder grammar cellType abstract nodeType
  extensions grammar gram
  example A grammar that parses anything:
   grammar
    name latin
-   catchAllKeyword any
-  keyword any
+   catchAllNodeType any
+  nodeType any
    any
  version 1.1.0
- keywords
+ nodeTypes
   grammar
   cellType
   abstract
-  keyword
+  nodeType
 cellType anyWord
 cellType builtInConstructorOrConstructorName
 cellType builtInConstructorOrFilePath
@@ -26,7 +26,7 @@ cellType compilerTargetExtension
  description The target extension of the compiler output such as "o" or "js" or "html"
 cellType constructorName
 cellType enumOption
-cellType extendedKeyword
+cellType extendedNodeType
 cellType fileExtension
 cellType filepath
 cellType float
@@ -37,11 +37,11 @@ cellType int
  regex \-?[0-9]+
  highlightScope constant.numeric
 cellType javascriptCodeWord
-cellType keywordName
+cellType nodeTypeName
  highlightScope variable.parameter
-cellType keywordEnum
+cellType nodeTypeEnum
  highlightScope variable.parameter
- enumFromGrammar keyword
+ enumFromGrammar nodeType
 cellType lowercaseWord
  regex [a-z]+
 cellType regexWord
@@ -66,166 +66,166 @@ abstract abstract.compilerRule
  catchAllCellType anyWord
  highlightScope entity.other.attribute-name
 abstract abstract.environment
-abstract abstract.keywordRule
+abstract abstract.nodeTypeRule
  highlightScope entity.other.attribute-name
  single
-abstract abstract.nonTerminalKeywordRule abstract.keywordRule
-keyword _constantAny
+abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
+nodeType _constantAny
  catchAllCellType anyWord
- catchAllKeyword _constantAny
-keyword _constantDefinition
+ catchAllNodeType _constantAny
+nodeType _constantDefinition
  catchAllCellType anyWord
- catchAllKeyword _constantAny
-keyword _defaultTuple
+ catchAllNodeType _constantAny
+nodeType _defaultTuple
  cells anyWord
  catchAllCellType anyWord
-keyword _error
+nodeType _error
  constructors
   nodejs ErrorNode
   browser ErrorNode
-keyword _exampleLine
+nodeType _exampleLine
  catchAllCellType exampleWord
  highlightScope comment
- catchAllKeyword _exampleLine
-keyword _keywordUse
-keyword cellType
+ catchAllNodeType _exampleLine
+nodeType _nodeTypeUse
+nodeType cellType
  cells cellTypeName
  catchAllCellType extendedCellType
  highlightScope variable.parameter
- keywords
+ nodeTypes
   highlightScope
   regex
   enumFromGrammar
   description
   enum
-keyword enum
+nodeType enum
  catchAllCellType enumOption
  highlightScope entity.other.attribute-name
-keyword extensions
+nodeType extensions
  catchAllCellType fileExtension
  highlightScope constant.language
  description File extensions of your language.
-keyword grammar
+nodeType grammar
  required
  single
  highlightScope constant.language
- keywords
+ nodeTypes
   name
   description
   example
   extensions
-  keywordOrder
-  keywords
+  nodeTypeOrder
+  nodeTypes
   constructors
   compiler
-  catchAllKeyword
+  catchAllNodeType
   version
-keyword group
- catchAllCellType keywordName
+nodeType group
+ catchAllCellType nodeTypeName
  highlightScope entity.other.attribute-name
- description Available on abstract nodes only. Use it to more concisely generate keywords all extending from this abstract keyword, if they have no special properties.
-keyword javascriptCodeLine
+ description Available on abstract nodes only. Use it to more concisely generate nodeTypes all extending from this abstract nodeType, if they have no special properties.
+nodeType javascriptCodeLine
  catchAllCellType javascriptCodeWord
- catchAllKeyword javascriptCodeLine
-keyword keyword
- cells keywordName
- catchAllCellType extendedKeyword
- catchAllKeyword _error
+ catchAllNodeType javascriptCodeLine
+nodeType nodeType
+ cells nodeTypeName
+ catchAllCellType extendedNodeType
+ catchAllNodeType _error
  constructors
   nodejs NonTerminalNode
   browser NonTerminalNode
  highlightScope variable.function
- keywords
-  abstract.keywordRule
-keyword keywordOrder
- catchAllCellType keywordName
+ nodeTypes
+  abstract.nodeTypeRule
+nodeType nodeTypeOrder
+ catchAllCellType nodeTypeName
  highlightScope constant.language
- description Optionally specify what order keywords should be sorted in when prettifying a file.
-cellType cellTypeOrKeyword
- enum cellType keyword
-keyword enumFromGrammar
- cells cellTypeOrKeyword
+ description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
+cellType cellTypeOrNodeType
+ enum cellType nodeType
+nodeType enumFromGrammar
+ cells cellTypeOrNodeType
  highlightScope entity.other.attribute-name
-keyword name
+nodeType name
  cells grammarName
  highlightScope constant.language
  description The name of your language. Also serves as the default file extension.
-keyword regex
+nodeType regex
  catchAllCellType regexWord
  description The word must match this pattern or it shall be marked as an error.
  highlightScope entity.other.attribute-name
  single
-keyword version
+nodeType version
  cells semanticVersion
  highlightScope constant.language
  description Version number of your language.
-keyword closeChildren abstract.compilerRule
-keyword indentCharacter abstract.compilerRule
-keyword listDelimiter abstract.compilerRule
-keyword openChildren abstract.compilerRule
-keyword sub abstract.compilerRule
-keyword browser abstract.environment
+nodeType closeChildren abstract.compilerRule
+nodeType indentCharacter abstract.compilerRule
+nodeType listDelimiter abstract.compilerRule
+nodeType openChildren abstract.compilerRule
+nodeType sub abstract.compilerRule
+nodeType browser abstract.environment
  cells builtInConstructorOrConstructorName
  catchAllCellType scriptUrl
  description builtInConstructorOrConstructorName will be searched for on the window object.
-keyword javascript abstract.environment
+nodeType javascript abstract.environment
  catchAllCellType javascriptCodeWord
- catchAllKeyword javascriptCodeLine
+ catchAllNodeType javascriptCodeLine
  description Put in some code to eval.
-keyword nodejs abstract.environment
+nodeType nodejs abstract.environment
  cells builtInConstructorOrFilePath
  catchAllCellType constructorName
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-keyword any abstract.keywordRule
-keyword catchAllCellType abstract.keywordRule
+nodeType any abstract.nodeTypeRule
+nodeType catchAllCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
-keyword catchAllKeyword abstract.keywordRule
- description If a keyword is not found in the keywords list, instantiate this type of node instead.
- cells keywordEnum
-keyword cells abstract.keywordRule
+nodeType catchAllNodeType abstract.nodeTypeRule
+ description If a nodeType is not found in the nodeTypes list, instantiate this type of node instead.
+ cells nodeTypeEnum
+nodeType cells abstract.nodeTypeRule
  catchAllCellType cellTypeEnum
  description Describes the word type of each word in the line.
-keyword compiler abstract.keywordRule
+nodeType compiler abstract.nodeTypeRule
  cells compilerTargetExtension
- keywords
+ nodeTypes
   sub
   listDelimiter
   openChildren
   closeChildren
   indentCharacter
-keyword constants abstract.keywordRule
- catchAllKeyword _constantDefinition
-keyword defaults abstract.keywordRule
- catchAllKeyword _defaultTuple
-keyword description abstract.keywordRule
+nodeType constants abstract.nodeTypeRule
+ catchAllNodeType _constantDefinition
+nodeType defaults abstract.nodeTypeRule
+ catchAllNodeType _defaultTuple
+nodeType description abstract.nodeTypeRule
  catchAllCellType string
-keyword example abstract.keywordRule
+nodeType example abstract.nodeTypeRule
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleWord
- catchAllKeyword _exampleLine
+ catchAllNodeType _exampleLine
  highlightScope comment
-keyword frequency abstract.keywordRule
+nodeType frequency abstract.nodeTypeRule
  cells float
-keyword highlightScope abstract.keywordRule
+nodeType highlightScope abstract.nodeTypeRule
  cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
-keyword required abstract.keywordRule
+nodeType required abstract.nodeTypeRule
  description If present, the parent node will have an error if one of these nodes is not provided.
-keyword single abstract.keywordRule
+nodeType single abstract.nodeTypeRule
  description If present and their are more than 1 of these nodes on the parent, an error will be present.
-keyword tags abstract.keywordRule
+nodeType tags abstract.nodeTypeRule
  catchAllCellType tag
-keyword constructors abstract.nonTerminalKeywordRule
- keywords
+nodeType constructors abstract.nonTerminalNodeTypeRule
+ nodeTypes
   abstract.environment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
-keyword keywords abstract.nonTerminalKeywordRule
- catchAllKeyword _keywordUse
- description A list of possible child keywords for a node. This is a not a leaf node in order to allow seamless extending.
-keyword abstract keyword
+nodeType nodeTypes abstract.nonTerminalNodeTypeRule
+ catchAllNodeType _nodeTypeUse
+ description A list of possible child nodeTypes for a node. This is a not a leaf node in order to allow seamless extending.
+nodeType abstract nodeType
  highlightScope entity.name.tag
- description An abstract keyword cannot be used by itself but provides common functionality to keywords that extend it.
- keywords
-  abstract.keywordRule
+ description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
+ nodeTypes
+  abstract.nodeTypeRule
   group

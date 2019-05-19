@@ -1,7 +1,15 @@
+edge / 2019-05-16
+===================
+- Breaking: getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
+- Breaking: in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
+- Breaking: def.getId() is now def.getNodeTypeIdFromDefinition(), def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet 
+- Breaking: program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes
+- Breaking: in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
+
+
 22.3.0 / 2019-05-16
 ===================
 - Breaking: instead of FireProgram.js do Fire.js Program and same for Hakon and Numbers and Project and Stump and Swarm
-
 
 22.2.0 / 2019-05-16
 ===================

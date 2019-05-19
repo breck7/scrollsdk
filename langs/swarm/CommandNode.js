@@ -18,7 +18,7 @@ class CommandNode extends jtree.NonTerminalNode {
   }
 
   _executeSwarmCommand(dummy) {
-    const command = this.getKeyword()
+    const command = this.getFirstWord()
     const commandParent = this.getRootNode().getCommandParent(dummy) // todo: hacky.
     const commandFn = commandParent[command]
     return commandFn.apply(commandParent, this._getArgs())

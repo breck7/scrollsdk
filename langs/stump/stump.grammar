@@ -1,8 +1,8 @@
 grammar
  name stump
  description A Tree Language that compiles to HTML.
- catchAllKeyword errorNode
- keywords
+ catchAllNodeType errorNode
+ nodeTypes
   stumpNode
  constructors
   nodejs ./StumpNodes.js StumpProgramRoot
@@ -13,7 +13,7 @@ cellType attributeValue
  highlightScope constant
 abstract stumpNode
  group a abbr address area article aside b base bdi bdo blockquote body br button canvas caption code col colgroup datalist dd del details dfn dialog div dl dt em embed fieldset figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param pre progress q rb rp rt rtc ruby s samp script section select small source span strong styleTag sub summary sup table tbody td template textarea tfoot th thead time titleTag tr track u ul var video wbr
- keywords
+ nodeTypes
   bern
   stumpNode
   attribute
@@ -21,7 +21,7 @@ abstract stumpNode
  constructors
   nodejs ./StumpNodes.js StumpNode
   browser StumpNode StumpNodes.js
-keyword errorNode
+nodeType errorNode
  constructors
   nodejs ErrorNode
   browser ErrorNode
@@ -30,13 +30,13 @@ abstract attribute
  constructors
   nodejs ./StumpNodes.js StumpAttributeNode
   browser StumpAttributeNode StumpNodes.js
- catchAllKeyword errorNode
+ catchAllNodeType errorNode
  catchAllCellType attributeValue
-keyword lineOfContent
- catchAllKeyword lineOfContent
+nodeType lineOfContent
+ catchAllNodeType lineOfContent
  catchAllCellType anyHtmlContent
-keyword bern
- catchAllKeyword lineOfContent
+nodeType bern
+ catchAllNodeType lineOfContent
  constructors
   nodejs ./StumpNodes.js StumpBernNode
   browser StumpBernNode StumpNodes.js

@@ -3,27 +3,27 @@ grammar
  description A Tree Language for project dependency management.
  constructors
   nodejs ./ProjectNodes.js ProjectProgramRoot
- keywords
+ nodeTypes
   file
- catchAllKeyword error
+ catchAllNodeType error
 cellType filepath
  highlightScope string
 abstract term
  catchAllCellType filepath
  highlightScope variable.parameter
-keyword error
+nodeType error
  constructors
   nodejs ErrorNode
   browser ErrorNode
-keyword file
+nodeType file
  catchAllCellType filepath
  highlightScope keyword.control
- keywords
+ nodeTypes
   external
   absolute
   relative
  constructors
   nodejs ./ProjectNodes.js FileNode
-keyword absolute term
-keyword external term
-keyword relative term
+nodeType absolute term
+nodeType external term
+nodeType relative term

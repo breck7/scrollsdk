@@ -63,8 +63,8 @@ testTree.jibberish = equal => {
   const nodeDef = constNode.getDefinition()
 
   // Assert
-  equal(fooDef.getId(), "foo")
-  equal(nodeDef.getId(), "nodeWithConsts")
+  equal(fooDef.getNodeTypeIdFromDefinition(), "foo")
+  equal(nodeDef.getNodeTypeIdFromDefinition(), "nodeWithConsts")
 
   // Act
   const constObj = nodeDef.getConstantsObject()
@@ -88,8 +88,8 @@ testTree.jibberish = equal => {
   // Assert
   equal(
     someJibberishProgram.getInPlaceSyntaxTree(),
-    `keyword
-keyword int int int`,
+    `nodeType
+nodeType int int int`,
     "word types should match"
   )
   equal(someJibberishProgram.nodeAt(1).getParsedWords()[0], 2)
@@ -101,8 +101,8 @@ keyword int int int`,
   // Assert
   equal(
     nodeTypes,
-    `GrammarBackedTerminalNode keyword
-additionNode keyword int int int`,
+    `GrammarBackedTerminalNode nodeType
+additionNode nodeType int int int`,
     "nodeTypes word types should match"
   )
   equal(
@@ -126,14 +126,14 @@ additionNode + 2 3 2`,
   }
 
   // Act/Asssert
-  equal(programWithBugs.getInvalidKeywords().length, 0)
+  equal(programWithBugs.getInvalidNodeTypes().length, 0)
 
   // Act
-  const programWithKeywordBugs = makeJibberishProgram(`missing 1 2
+  const programWithNodeTypeBugs = makeJibberishProgram(`missing 1 2
 missing2 true`)
 
   // Assert
-  equal(programWithKeywordBugs.getInvalidKeywords().length, 2)
+  equal(programWithNodeTypeBugs.getInvalidNodeTypes().length, 2)
 }
 
 testTree.highlightScopes = equal => {
@@ -198,7 +198,7 @@ com
 
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
-  const program = makeGrammarProgram(`keyword foo
+  const program = makeGrammarProgram(`nodeType foo
  highlightScope comme`)
 
   // Act/Assert
@@ -209,12 +209,12 @@ testTree.autocompleteAdvanced = equal => {
   // Arrange
   const program = makeGrammarProgram(`grammar
  name latin
- catchAllKeyword any
- keywords
+ catchAllNodeType any
+ nodeTypes
   faveNumber
 cellType integer
-keyword any
-keyword faveNumber
+nodeType any
+nodeType faveNumber
  cells in`)
 
   // Act/Assert
@@ -262,13 +262,13 @@ testTree.sublimeSyntaxFile = equal => {
   equal(code.includes("scope:"), true)
 }
 
-testTree.requiredKeywords = equal => {
+testTree.requiredNodeTypes = equal => {
   // Arrange/Act
   const path = grammarGrammarPath
   const anyProgram = makeProgram(
     fs.readFileSync(path, "utf8"),
     `cellType word any
-keyword baseNode`,
+nodeType baseNode`,
     path
   )
 
@@ -282,8 +282,8 @@ testTree.minimumGrammar = equal => {
   const programConstructor = GrammarProgram.newFromCondensed(
     `grammar
  name any
- catchAllKeyword any
-keyword any
+ catchAllNodeType any
+nodeType any
  catchAllCellType any
 cellType any`
   ).getRootConstructor()
@@ -297,7 +297,7 @@ cellType any`
   equal(errors.length, 0)
 }
 
-testTree.duplicateKeywords = equal => {
+testTree.duplicateNodeTypes = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`type foo
 type bar`)
@@ -307,7 +307,7 @@ type bar`)
   equal(errors.length, 2)
 }
 
-testTree.abstractKeywords = equal => {
+testTree.abstractNodeTypes = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`someAbstractClass
 extendsAbstract 2`)
@@ -329,9 +329,9 @@ testTree.examples = equal => {
   const badGrammarProgram = GrammarProgram.newFromCondensed(
     `grammar
  name bad
- keywords
+ nodeTypes
   +
-keyword +
+nodeType +
  catchAllCellType int
  example This is a bad example.
   + 1 B

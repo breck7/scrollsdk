@@ -1,6 +1,6 @@
 import TreeUtils from "../base/TreeUtils"
 
-import { GrammarConstantsErrors } from "./GrammarConstants"
+import { GrammarConstantsErrors, GrammarConstants } from "./GrammarConstants"
 
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 import {
@@ -24,8 +24,8 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   }
 
   getDefinition() {
-    // todo: do we need a relative to with this keyword path?
-    return this._getKeywordDefinitionByName(this.getKeywordPath())
+    // todo: do we need a relative to with this firstWord path?
+    return this._getNodeTypeDefinitionByName(this.getFirstWordPath())
   }
 
   getCompilerNode(targetLanguage: types.targetLanguageId): GrammarCompilerNode {
@@ -65,16 +65,16 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     // More than one
     const definition = this.getDefinition()
     let times
-    const keyword = this.getKeyword()
-    if (definition.isSingle() && (times = this.getParent().findNodes(keyword).length) > 1)
+    const firstWord = this.getFirstWord()
+    if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
       errors.push({
-        kind: GrammarConstantsErrors.keywordUsedMultipleTimesError,
-        subkind: keyword,
+        kind: GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
+        subkind: firstWord,
         level: 0,
         context: this.getParent().getLine(),
         message: `${
-          GrammarConstantsErrors.keywordUsedMultipleTimesError
-        } keyword "${keyword}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+          GrammarConstantsErrors.nodeTypeUsedMultipleTimesError
+        } nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
       })
 
     return this._getRequiredNodeErrors(errors)
@@ -134,7 +134,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getLineSyntax() {
     const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getCellTypeName())
-    return ["keyword"].concat(parameterWords).join(" ")
+    return [<string>GrammarConstants.nodeType].concat(parameterWords).join(" ")
   }
 
   getLineHighlightScopes(defaultScope = "source") {

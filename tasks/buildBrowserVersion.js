@@ -18,7 +18,7 @@ const files = recursiveReadSync(__dirname + "/../src").filter(file => file.inclu
 const projectCode = new TreeNode(ProjectProgram.getProjectProgram(files))
 projectCode
   .getTopDownArray()
-  .filter(n => n.getKeyword() === "relative")
+  .filter(n => n.getFirstWord() === "relative")
   .forEach(node => node.setLine(node.getLine() + ".ts"))
 fs.writeFileSync(__dirname + "/../ignore/jtree.project", projectCode.toString(), "utf8")
 const projectProgram = new ProjectProgram(projectCode.toString())

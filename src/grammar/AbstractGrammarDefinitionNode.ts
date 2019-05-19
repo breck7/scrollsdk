@@ -13,18 +13,18 @@ import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
-/*FOR_TYPES_ONLY*/ import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode"
+/*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
 import types from "../types"
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
-  getKeywordMap(): types.keywordToNodeMap {
+  getFirstWordMap(): types.firstWordToNodeConstructorMap {
     const types = [
       GrammarConstants.frequency,
-      GrammarConstants.keywords,
+      GrammarConstants.nodeTypes,
       GrammarConstants.cells,
       GrammarConstants.description,
-      GrammarConstants.catchAllKeyword,
+      GrammarConstants.catchAllNodeType,
       GrammarConstants.catchAllCellType,
       GrammarConstants.defaults,
       GrammarConstants.tags,
@@ -35,23 +35,23 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.single
     ]
 
-    const map: types.keywordToNodeMap = {}
+    const map: types.firstWordToNodeConstructorMap = {}
     types.forEach(type => {
       map[type] = TreeNode
     })
     map[GrammarConstants.constants] = GrammarConstantsNode
-    map[GrammarConstants.compilerKeyword] = GrammarCompilerNode
+    map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.constructors] = GrammarCustomConstructorsNode
     map[GrammarConstants.example] = GrammarExampleNode
     return map
   }
 
-  getId() {
+  getNodeTypeIdFromDefinition() {
     return this.getWord(1)
   }
 
   protected _isNonTerminal() {
-    return this._isAnyNode() || this.has(GrammarConstants.keywords) || this.has(GrammarConstants.catchAllKeyword)
+    return this._isAnyNode() || this.has(GrammarConstants.nodeTypes) || this.has(GrammarConstants.catchAllNodeType)
   }
 
   _isAbstract() {
@@ -112,20 +112,20 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return firstNode ? firstNode.getTargetExtension() : ""
   }
 
-  private _cache_keywordsMap: types.keywordToNodeMap
+  private _cache_runTimeFirstWordToNodeConstructorMap: types.firstWordToNodeConstructorMap
 
-  getRunTimeKeywordMap() {
-    this._initKeywordsMapCache()
-    return this._cache_keywordsMap
+  getRunTimeFirstWordMap() {
+    this._initRunTimeFirstWordToNodeConstructorMap()
+    return this._cache_runTimeFirstWordToNodeConstructorMap
   }
 
-  getRunTimeKeywordNames() {
-    return Object.keys(this.getRunTimeKeywordMap())
+  getRunTimeNodeTypeNames() {
+    return Object.keys(this.getRunTimeFirstWordMap())
   }
 
-  getRunTimeKeywordMapWithDefinitions() {
-    const defs = this._getProgramKeywordDefinitionCache()
-    return TreeUtils.mapValues<GrammarKeywordDefinitionNode>(this.getRunTimeKeywordMap(), key => defs[key])
+  getRunTimeFirstWordMapWithDefinitions() {
+    const defs = this._getProgramNodeTypeDefinitionCache()
+    return TreeUtils.mapValues<GrammarNodeTypeDefinitionNode>(this.getRunTimeFirstWordMap(), key => defs[key])
   }
 
   getRequiredCellTypeNames(): string[] {
@@ -137,46 +137,45 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.catchAllCellType)
   }
 
-  /*
-   {key<string>: JSKeywordDefClass}
-  */
-  protected _initKeywordsMapCache(): void {
-    if (this._cache_keywordsMap) return undefined
+  protected _initRunTimeFirstWordToNodeConstructorMap(): void {
+    if (this._cache_runTimeFirstWordToNodeConstructorMap) return undefined
     // todo: make this handle extensions.
-    const keywordsInScope = this._getKeywordsInScope()
+    const nodeTypesInScope = this._getNodeTypesInScope()
 
-    this._cache_keywordsMap = {}
-    // terminals dont have acceptable keywords
-    if (!keywordsInScope.length) return undefined
+    this._cache_runTimeFirstWordToNodeConstructorMap = {}
+    // terminals dont have acceptable firstWords
+    if (!nodeTypesInScope.length) return undefined
 
-    const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache()
-    const keywords = Object.keys(allProgramKeywordDefinitions)
-    keywords
-      .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
-      .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
-      .forEach(keyword => {
-        this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getConstructorDefinedInGrammar()
+    const allProgramNodeTypeDefinitionsMap = this._getProgramNodeTypeDefinitionCache()
+    const nodeTypeIds = Object.keys(allProgramNodeTypeDefinitionsMap)
+    nodeTypeIds
+      .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypesInScope))
+      .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
+      .forEach(nodeTypeId => {
+        this._cache_runTimeFirstWordToNodeConstructorMap[nodeTypeId] = allProgramNodeTypeDefinitionsMap[
+          nodeTypeId
+        ].getConstructorDefinedInGrammar()
       })
   }
 
   // todo: protected?
-  _getKeywordsInScope(): string[] {
-    const keywords = this._getKeywordsNode()
-    return keywords ? keywords.getKeywords() : []
+  _getNodeTypesInScope(): string[] {
+    const nodeTypesNode = this._getNodeTypesNode()
+    return nodeTypesNode ? nodeTypesNode.getFirstWords() : []
   }
 
-  getTopNodeTypes() {
-    const definitions = this._getProgramKeywordDefinitionCache()
-    const keywords = this.getRunTimeKeywordMap()
-    const arr = Object.keys(keywords).map(keyword => definitions[keyword])
-    arr.sort(TreeUtils.sortByAccessor((definition: GrammarKeywordDefinitionNode) => definition.getFrequency()))
+  getTopNodeTypeIds() {
+    const definitions = this._getProgramNodeTypeDefinitionCache()
+    const firstWords = this.getRunTimeFirstWordMap()
+    const arr = Object.keys(firstWords).map(firstWord => definitions[firstWord])
+    arr.sort(TreeUtils.sortByAccessor((definition: GrammarNodeTypeDefinitionNode) => definition.getFrequency()))
     arr.reverse()
-    return arr.map(definition => definition.getId())
+    return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
 
-  protected _getKeywordsNode(): TreeNode {
+  protected _getNodeTypesNode(): TreeNode {
     // todo: allow multiple of these if we allow mixins?
-    return <TreeNode>this.getNode(GrammarConstants.keywords)
+    return <TreeNode>this.getNode(GrammarConstants.nodeTypes)
   }
 
   isRequired(): boolean {
@@ -189,19 +188,19 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   // todo: protected?
-  _getRunTimeCatchAllKeyword(): string {
+  _getRunTimeCatchAllNodeTypeId(): string {
     return ""
   }
 
-  getKeywordDefinitionByName(keyword: string): AbstractGrammarDefinitionNode {
-    const definitions = this._getProgramKeywordDefinitionCache()
-    return definitions[keyword] || this._getCatchAllDefinition() // todo: this is where we might do some type of keyword lookup for user defined fns.
+  getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode {
+    const definitions = this._getProgramNodeTypeDefinitionCache()
+    return definitions[firstWord] || this._getCatchAllDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.
   }
 
   _getCatchAllDefinition(): AbstractGrammarDefinitionNode {
-    const catchAllKeyword = this._getRunTimeCatchAllKeyword()
-    const definitions = this._getProgramKeywordDefinitionCache()
-    const def = definitions[catchAllKeyword]
+    const catchAllNodeTypeId = this._getRunTimeCatchAllNodeTypeId()
+    const definitions = this._getProgramNodeTypeDefinitionCache()
+    const def = definitions[catchAllNodeTypeId]
     if (def) return def
 
     // todo: implement contraints like a grammar file MUST have a catch all.
@@ -221,13 +220,13 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.highlightScope)
   }
 
-  isDefined(keyword: string) {
-    return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()]
+  isDefined(firstWord: string) {
+    return !!this._getProgramNodeTypeDefinitionCache()[firstWord.toLowerCase()]
   }
 
   // todo: protected?
-  _getProgramKeywordDefinitionCache(): { [keyword: string]: GrammarKeywordDefinitionNode } {
-    return this.getProgram()._getProgramKeywordDefinitionCache()
+  _getProgramNodeTypeDefinitionCache(): { [firstWord: string]: GrammarNodeTypeDefinitionNode } {
+    return this.getProgram()._getProgramNodeTypeDefinitionCache()
   }
 
   getRunTimeCatchAllNodeConstructor() {

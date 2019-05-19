@@ -7,24 +7,24 @@
    grammar
     name testlang
     compiler txt
-    keywords
+    nodeTypes
      baseNode
    cellType any
    foo
    cellType word any
-   keyword baseNode
-   keyword block baseNode
-    keywords
+   nodeType baseNode
+   nodeType block baseNode
+    nodeTypes
      baseNode
-   keyword to block
+   nodeType to block
     cells word
     tags test
     compiler txt
      sub to {word}
      closeChildren end
- getRunTimeKeywordNames
+ getRunTimeNodeTypeNames
   =# 3
- getKeywordDefinitionByName to
+ getNodeTypeDefinitionByName to
   =~ object
- getTopNodeTypes
+ getTopNodeTypeIds
   =# 3

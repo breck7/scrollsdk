@@ -14,8 +14,8 @@ enum GrammarConstants {
   extensions = "extensions",
   version = "version",
   name = "name",
-  keywordOrder = "keywordOrder",
-  keyword = "keyword",
+  nodeTypeOrder = "nodeTypeOrder",
+  nodeType = "nodeType",
   cellType = "cellType",
   abstract = "abstract",
 
@@ -25,15 +25,15 @@ enum GrammarConstants {
   enum = "enum", // temporary?
 
   // parse time
-  keywords = "keywords",
+  nodeTypes = "nodeTypes",
   cells = "cells",
   catchAllCellType = "catchAllCellType",
-  catchAllKeyword = "catchAllKeyword",
+  catchAllNodeType = "catchAllNodeType",
   defaults = "defaults",
   constants = "constants",
   group = "group",
   any = "any",
-  required = "required", // Require this keyword to be present in a node or program
+  required = "required", // Require this nodeType to be present in a node or program
   single = "single", // Have at most 1 of these
   tags = "tags",
 
@@ -44,7 +44,7 @@ enum GrammarConstants {
   constructorJavascript = "javascript", // for eval
 
   // compile time
-  compilerKeyword = "compiler",
+  compilerNodeType = "compiler",
 
   // develop time
   description = "description",
@@ -54,14 +54,14 @@ enum GrammarConstants {
 }
 
 enum GrammarConstantsErrors {
-  invalidKeywordError = "invalidKeywordError",
+  invalidNodeTypeError = "invalidNodeTypeError",
   invalidConstructorPathError = "invalidConstructorPathError",
   invalidWordError = "invalidWordError",
   grammarDefinitionError = "grammarDefinitionError",
   extraWordError = "extraWordError",
   unfilledColumnError = "unfilledColumnError",
-  missingRequiredKeywordError = "missingRequiredKeywordError",
-  keywordUsedMultipleTimesError = "keywordUsedMultipleTimesError"
+  missingRequiredNodeTypeError = "missingRequiredNodeTypeError",
+  nodeTypeUsedMultipleTimesError = "nodeTypeUsedMultipleTimesError"
 }
 
 export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler }

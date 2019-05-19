@@ -3,8 +3,8 @@ import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 import types from "../types"
 
 class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
-  getKeywordMap() {
-    return this.getDefinition().getRunTimeKeywordMap()
+  getFirstWordMap() {
+    return this.getDefinition().getRunTimeFirstWordMap()
   }
 
   // todo: implement

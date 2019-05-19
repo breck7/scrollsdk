@@ -9,46 +9,48 @@ class UnknownGrammarProgram extends TreeNode {
     const rootNode = new TreeNode(`grammar
  name ${grammarName}`)
 
-    // note: right now we assume 1 global cellTypeMap and keywordMap per grammar. But we may have scopes in the future?
+    // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
     const globalCellTypeMap = new Map()
     const xi = this.getXI()
     const yi = this.getYI()
 
-    this.getKeywords().forEach(keyword => rootNode.touchNode(`grammar keywords ${keyword}`))
+    this.getFirstWords().forEach(firstWord =>
+      rootNode.touchNode(`${GrammarConstants.grammar} ${GrammarConstants.nodeTypes} ${firstWord}`)
+    )
 
     const clone = <UnknownGrammarProgram>this.clone()
     let allNodes = clone.getTopDownArrayIterator()
     let node: TreeNode
     for (node of allNodes) {
-      const keyword = node.getKeyword()
-      const asInt = parseInt(keyword)
-      if (!isNaN(asInt) && asInt.toString() === keyword && node.getParent().getKeyword())
-        node.setKeyword(node.getParent().getKeyword() + "Child")
+      const firstWord = node.getFirstWord()
+      const asInt = parseInt(firstWord)
+      if (!isNaN(asInt) && asInt.toString() === firstWord && node.getParent().getFirstWord())
+        node.setFirstWord(node.getParent().getFirstWord() + "Child")
     }
     allNodes = clone.getTopDownArrayIterator()
-    const allChilds: { [keyword: string]: types.stringMap } = {}
-    const allKeywordNodes: { [keyword: string]: TreeNode[] } = {}
+    const allChilds: { [firstWord: string]: types.stringMap } = {}
+    const allFirstWordNodes: { [firstWord: string]: TreeNode[] } = {}
     for (let node of allNodes) {
-      const keyword = node.getKeyword()
-      if (!allChilds[keyword]) allChilds[keyword] = {}
-      if (!allKeywordNodes[keyword]) allKeywordNodes[keyword] = []
-      allKeywordNodes[keyword].push(node)
+      const firstWord = node.getFirstWord()
+      if (!allChilds[firstWord]) allChilds[firstWord] = {}
+      if (!allFirstWordNodes[firstWord]) allFirstWordNodes[firstWord] = []
+      allFirstWordNodes[firstWord].push(node)
       node.forEach((child: TreeNode) => {
-        allChilds[keyword][child.getKeyword()] = true
+        allChilds[firstWord][child.getFirstWord()] = true
       })
     }
 
     const lineCount = clone.getNumberOfLines()
 
-    const keywords = Object.keys(allChilds).map(keyword => {
-      const defNode = <TreeNode>new TreeNode(`${GrammarConstants.keyword} ${keyword}`).nodeAt(0)
-      const childKeywords = Object.keys(allChilds[keyword])
-      if (childKeywords.length) {
+    const firstWords = Object.keys(allChilds).map(firstWord => {
+      const defNode = <TreeNode>new TreeNode(`${GrammarConstants.nodeType} ${firstWord}`).nodeAt(0)
+      const childFirstWords = Object.keys(allChilds[firstWord])
+      if (childFirstWords.length) {
         //defNode.touchNode(GrammarConstants.any) // todo: remove?
-        childKeywords.forEach(keyword => defNode.touchNode(`keywords ${keyword}`))
+        childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants.nodeTypes} ${firstWord}`))
       }
 
-      const allLines = allKeywordNodes[keyword]
+      const allLines = allFirstWordNodes[firstWord]
       const cells = allLines
         .map(line => line.getContent())
         .filter(i => i)
@@ -59,7 +61,7 @@ class UnknownGrammarProgram extends TreeNode {
       let catchAllCellType: string
       let cellTypes = []
       for (let index = 0; index < max; index++) {
-        const cellType = this._getBestCellType(keyword, cells.map(c => c[index]))
+        const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]))
         if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeName))
           globalCellTypeMap.set(cellType.cellTypeName, cellType.cellTypeDefinition)
 
@@ -87,10 +89,10 @@ class UnknownGrammarProgram extends TreeNode {
     const cellTypes: string[] = []
     globalCellTypeMap.forEach(def => cellTypes.push(def))
 
-    return [rootNode.toString(), cellTypes.join(yi), keywords.join(yi)].filter(i => i).join("\n")
+    return [rootNode.toString(), cellTypes.join(yi), firstWords.join(yi)].filter(i => i).join("\n")
   }
 
-  private _getBestCellType(keyword: string, allValues: any[]): { cellTypeName: string; cellTypeDefinition?: string } {
+  private _getBestCellType(firstWord: string, allValues: any[]): { cellTypeName: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)
     const xi = this.getXI()
     const values = Array.from(asSet).filter(c => c)
@@ -121,8 +123,8 @@ class UnknownGrammarProgram extends TreeNode {
     const enumLimit = 30
     if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
       return {
-        cellTypeName: `${keyword}Enum`,
-        cellTypeDefinition: `cellType ${keyword}Enum
+        cellTypeName: `${firstWord}Enum`,
+        cellTypeDefinition: `cellType ${firstWord}Enum
  enum ${values.join(xi)}`
       }
 

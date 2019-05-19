@@ -10,30 +10,30 @@ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 import types from "../types"
 
-class GrammarKeywordDefinitionNode extends AbstractGrammarDefinitionNode {
+class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
   // todo: protected?
-  _getRunTimeCatchAllKeyword(): string {
+  _getRunTimeCatchAllNodeTypeId(): string {
     return (
-      this.get(GrammarConstants.catchAllKeyword) ||
-      (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllKeyword()
+      this.get(GrammarConstants.catchAllNodeType) ||
+      (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllNodeTypeId()
     )
   }
 
-  isOrExtendsAKeywordInScope(keywordsInScope: string[]): boolean {
-    const chain = this.getKeywordInheritanceSet()
-    return keywordsInScope.some(keyword => chain.has(keyword))
+  isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean {
+    const chain = this.getNodeTypeInheritanceSet()
+    return firstWordsInScope.some(firstWord => chain.has(firstWord))
   }
 
   getSyntaxContextId() {
-    return this.getId().replace(/\#/g, "HASH") // # is not allowed in sublime context names
+    return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH") // # is not allowed in sublime context names
   }
 
   getMatchBlock() {
     const defaultHighlightScope = "source"
     const program = this.getProgram()
     const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getId()
-    const match = `'^ *${escapeRegExp(this.getId())}(?: |$)'`
+    const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
+    const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`
     const topHalf = ` '${this.getSyntaxContextId()}':
   - match: ${match}
     scope: ${color}`
@@ -63,42 +63,42 @@ ${captures}
        pop: true`
   }
 
-  private _cache_keywordInheritanceSet: Set<types.word>
+  private _cache_nodeTypeInheritanceSet: Set<types.nodeTypeId>
 
-  getKeywordInheritanceSet() {
-    this._initKeywordInheritanceSetCache()
-    return this._cache_keywordInheritanceSet
+  getNodeTypeInheritanceSet() {
+    this._initNodeTypeInheritanceSetCache()
+    return this._cache_nodeTypeInheritanceSet
   }
 
-  protected _getParentKeyword() {
+  private _getIdOfNodeTypeThatThisExtends() {
     return this.getWord(2)
   }
 
-  protected _initKeywordInheritanceSetCache(): void {
-    if (this._cache_keywordInheritanceSet) return undefined
+  protected _initNodeTypeInheritanceSetCache(): void {
+    if (this._cache_nodeTypeInheritanceSet) return undefined
     const cache = new Set()
-    cache.add(this.getId())
-    const parentKeyword = this._getParentKeyword()
-    if (parentKeyword) {
-      cache.add(parentKeyword)
-      const defs = this._getProgramKeywordDefinitionCache()
-      const parentDef = defs[parentKeyword]
-      if (!parentDef) throw new Error(`${parentKeyword} not found`)
+    cache.add(this.getNodeTypeIdFromDefinition())
+    const extendedNodeTypeId = this._getIdOfNodeTypeThatThisExtends()
+    if (extendedNodeTypeId) {
+      cache.add(extendedNodeTypeId)
+      const defs = this._getProgramNodeTypeDefinitionCache()
+      const parentDef = defs[extendedNodeTypeId]
+      if (!parentDef) throw new Error(`${extendedNodeTypeId} not found`)
 
-      for (let keyword of parentDef.getKeywordInheritanceSet()) {
-        cache.add(keyword)
+      for (let firstWord of parentDef.getNodeTypeInheritanceSet()) {
+        cache.add(firstWord)
       }
     }
-    this._cache_keywordInheritanceSet = cache
+    this._cache_nodeTypeInheritanceSet = cache
   }
 
   // todo: protected?
-  _getProgramKeywordDefinitionCache() {
-    return this.getProgram()._getProgramKeywordDefinitionCache()
+  _getProgramNodeTypeDefinitionCache() {
+    return this.getProgram()._getProgramNodeTypeDefinitionCache()
   }
 
   getDoc() {
-    return this.getId()
+    return this.getNodeTypeIdFromDefinition()
   }
 
   private _getDefaultsNode() {
@@ -130,4 +130,4 @@ ${captures}
   }
 }
 
-export default GrammarKeywordDefinitionNode
+export default GrammarNodeTypeDefinitionNode

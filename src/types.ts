@@ -16,7 +16,7 @@ export namespace types {
   export declare type line = string // no YI (\n)
   export declare type int = number
   export declare type positiveInt = number
-  export declare type stringMap = { [keyword: string]: any }
+  export declare type stringMap = { [firstWord: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string
   export declare type jsonString = string
@@ -24,15 +24,17 @@ export namespace types {
   export declare type delimiter = string
 
   export declare type formatString = string // "Hello {name}! You are {age} years old."
-  export declare type keywordPath = string // user emailAddress
+  export declare type firstWordPath = string // user emailAddress
   export declare type pathVector = int[] // example: [0,1,1]
   export declare type word = string // string that cannot contain the YI, XI or ZI
+  export declare type firstWord = word
+  export declare type nodeTypeId = string
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
   export declare type globPattern = string
   export declare type highlightScope = string
   export declare type fileExtension = string
-  export declare type globPath = string // * keyword keyword *
+  export declare type globPath = string // * firstWord firstWord *
   export declare type targetLanguageId = fileExtension
   export declare type sortFn = (nodeA: treeNode, nodeB: treeNode) => triInt
   export declare type filterFn = (node: treeNode, index: int) => boolean
@@ -48,7 +50,7 @@ export namespace types {
   export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
 
-  export declare type keywordToNodeMap = { [keyword: string]: TreeNodeConstructor }
+  export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
 }
 
 export default types

@@ -31,7 +31,7 @@ class CLI {
     const masterFile = new TreeNode(fs.readFileSync(combinedFilePath, "utf8"))
     return masterFile.split("#file").map(file => {
       const firstLine = file.nodeAt(0)
-      if (firstLine.getKeyword() !== "#file") return undefined
+      if (firstLine.getFirstWord() !== "#file") return undefined
       const filepath = firstLine.getWord(1)
 
       const needsShift = !firstLine.length
@@ -257,13 +257,13 @@ ${grammars.toTable()}`
     files.forEach(path => {
       const code = this._read(path)
       const program = new programConstructor(code)
-      const usage = program.getKeywordUsage(path)
+      const usage = program.getNodeTypeUsage(path)
       report.extend(usage.toString())
     })
     const folderName = grammarName
     const stampFile = new TreeNode(`folder ${folderName}`)
     report.forEach(node => {
-      const fileNode = stampFile.appendLine(`file ${folderName}/${node.getKeyword()}.ssv`)
+      const fileNode = stampFile.appendLine(`file ${folderName}/${node.getFirstWord()}.ssv`)
       fileNode.appendLineAndChildren("data", `${node.getContent()}\n` + node.childrenToString())
     })
     return stampFile.toString()

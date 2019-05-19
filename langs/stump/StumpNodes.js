@@ -15,7 +15,7 @@ class StumpAttributeNode extends jtree.TerminalNode {
   }
 
   getAttribute() {
-    return ` ${this.getKeyword()}="${this.getContent()}"`
+    return ` ${this.getFirstWord()}="${this.getContent()}"`
   }
 }
 
@@ -23,8 +23,8 @@ class StumpAttributeNode extends jtree.TerminalNode {
 class StumpNode extends jtree.NonTerminalNode {
   getTag() {
     // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
-    const keyword = this.getKeyword()
-    return StumpConstants.tagMap[keyword] || keyword
+    const firstWord = this.getFirstWord()
+    return StumpConstants.tagMap[firstWord] || firstWord
   }
 
   _childrenToHtml(indentCount) {
@@ -139,12 +139,12 @@ class StumpNode extends jtree.NonTerminalNode {
     )
   }
 
-  findStumpNodeByKeyword(keyword) {
-    return this._findStumpNodesByBase(keyword)[0]
+  findStumpNodeByFirstWord(firstWord) {
+    return this._findStumpNodesByBase(firstWord)[0]
   }
 
-  _findStumpNodesByBase(keyword) {
-    return this.getTopDownArray().filter(node => node instanceof StumpNode && node.getKeyword() === keyword)
+  _findStumpNodesByBase(firstWord) {
+    return this.getTopDownArray().filter(node => node instanceof StumpNode && node.getFirstWord() === firstWord)
   }
 
   hasLine(line) {

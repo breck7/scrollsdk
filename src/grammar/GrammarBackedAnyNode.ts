@@ -2,7 +2,7 @@ import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import types from "../types"
 
 class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
-  getKeywordMap() {
+  getFirstWordMap() {
     return {}
   }
 

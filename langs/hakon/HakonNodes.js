@@ -2,7 +2,7 @@ const jtree = require("../../index.js")
 
 class HakonPropertyNode extends jtree.TerminalNode {
   compile(spaces) {
-    return `${spaces}${this.getKeyword()}: ${this.getContent()};`
+    return `${spaces}${this.getFirstWord()}: ${this.getContent()};`
   }
 }
 
@@ -10,7 +10,7 @@ class HakonSelectorNode extends jtree.NonTerminalNode {
   getSelector() {
     const parentSelector = this.getParent().getSelector()
 
-    return this.getKeyword()
+    return this.getFirstWord()
       .split(",")
       .map(part => {
         if (part.startsWith("&")) return parentSelector + part.substr(1)

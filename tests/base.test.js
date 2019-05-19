@@ -422,7 +422,7 @@ domains
   const node = new TreeNode(" ").nodeAt(0)
 
   // Act/Assert
-  equal(node.getKeyword(), "")
+  equal(node.getFirstWord(), "")
   equal(node.getContent(), "")
 
   // Arrange
@@ -696,14 +696,14 @@ testTree.getNodeByColumns = equal => {
  constructors
   nodejs ./jibberishProgramRoot.js
  compiler txt
- keywords
+ nodeTypes
   baseNode`)
 
   // Act
   const node2 = jib.getNode("jibberish constructors nodejs")
 
   // Assert
-  equal(node2.getKeyword(), "nodejs")
+  equal(node2.getFirstWord(), "nodejs")
 }
 
 testTree.delete = equal => {
@@ -785,7 +785,7 @@ other`
 
   // Act
   tree6.forEach(node => {
-    if (!node.getKeyword().startsWith("p")) return true
+    if (!node.getFirstWord().startsWith("p")) return true
     node.setContent("President")
     node.delete("class")
   })
@@ -904,7 +904,7 @@ testTree.forEach = equal => {
 
   // Act
   value.forEach(function(node) {
-    const property = node.getKeyword()
+    const property = node.getFirstWord()
     const v = node.getContent()
     result += property.toUpperCase()
     result += v.toUpperCase()
@@ -921,9 +921,9 @@ testTree.forEach = equal => {
 
   // Act
   value2
-    .filter(n => n.getKeyword() !== "hello")
+    .filter(n => n.getFirstWord() !== "hello")
     .forEach(node => {
-      const property = node.getKeyword()
+      const property = node.getFirstWord()
       const value = node.getContent()
       count++
     })
@@ -1007,16 +1007,16 @@ testTree.firstProperty = equal => {
   const value = new TreeNode("hello world\nhi mom")
 
   // Assert
-  equal(value.nodeAt(0).getKeyword(), "hello")
+  equal(value.nodeAt(0).getFirstWord(), "hello")
 }
 
 testTree.hasDuplicates = equal => {
   // Arrange/Act/Assert
-  equal(new TreeNode(testStrings.sortByMultiple).hasDuplicateKeywords(), true)
-  equal(new TreeNode().hasDuplicateKeywords(), false, "empty")
-  equal(new TreeNode("a\na").hasDuplicateKeywords(), true)
-  equal(new TreeNode("a\n a\n b").nodeAt(0).hasDuplicateKeywords(), false)
-  equal(new TreeNode("a\n b\n b").nodeAt(0).hasDuplicateKeywords(), true)
+  equal(new TreeNode(testStrings.sortByMultiple).hasDuplicateFirstWords(), true)
+  equal(new TreeNode().hasDuplicateFirstWords(), false, "empty")
+  equal(new TreeNode("a\na").hasDuplicateFirstWords(), true)
+  equal(new TreeNode("a\n a\n b").nodeAt(0).hasDuplicateFirstWords(), false)
+  equal(new TreeNode("a\n b\n b").nodeAt(0).hasDuplicateFirstWords(), true)
 }
 
 testTree.toYaml = equal => {
@@ -1334,10 +1334,10 @@ testTree.getContent = equal => {
 
 testTree.getInheritanceTree = equal => {
   // Arrange
-  const classes = `abstractKeyword
-abstractModalKeyword abstractKeyword
-helpModal abstractModalKeyword
-abstractButton abstractKeyword
+  const classes = `abstractNodeType
+abstractModalNodeType abstractNodeType
+helpModal abstractModalNodeType
+abstractButton abstractNodeType
 helpButton abstractButton`
 
   // Act
@@ -1346,8 +1346,8 @@ helpButton abstractButton`
   // Assert
   equal(
     inheritanceTree.toString(),
-    `abstractKeyword
- abstractModalKeyword
+    `abstractNodeType
+ abstractModalNodeType
   helpModal
  abstractButton
   helpButton`
@@ -1537,7 +1537,7 @@ testTree.simpleTreeLanguage = equal => {
   // Arrange
   class MathProgram extends TreeNode {
     // Look! You created a top down parser!
-    getKeywordMap() {
+    getFirstWordMap() {
       return { "+": AdditionNode, "-": SubstractionNode }
     }
   }
@@ -1601,7 +1601,7 @@ testTree.simpleTreeLanguage = equal => {
   equal(program.getNodeByType(SubstractionNode) instanceof SubstractionNode, true)
 }
 
-testTree.getKeywordPath = equal => {
+testTree.getFirstWordPath = equal => {
   // Arrange
   const tree = new TreeNode(testStrings.every)
   const parent = tree.getNode("domains test.test.com pages home settings")
@@ -1609,12 +1609,12 @@ testTree.getKeywordPath = equal => {
   const simple = new TreeNode("foo bar")
 
   // Assert
-  equal(child.getKeywordPath(), "domains test.test.com pages home settings data")
+  equal(child.getFirstWordPath(), "domains test.test.com pages home settings data")
   equal(child.getParent(), parent)
   equal(child.getRootNode(), tree)
   equal(child.getStack().length, 6)
   equal(simple.getNode("foo").getStack().length, 1)
-  equal(child.getKeywordPathRelativeTo(parent), "data")
+  equal(child.getFirstWordPathRelativeTo(parent), "data")
 }
 
 testTree.getPathVector = equal => {
@@ -1632,7 +1632,7 @@ testTree.getPathVector = equal => {
   equal(tree.nodeAt(child.getPathVector()), child)
 
   // Act
-  const newNamePath = tree.pathVectorToKeywordPath([5, 0, 4, 0, 0])
+  const newNamePath = tree.pathVectorToFirstWordPath([5, 0, 4, 0, 0])
 
   // Assert
   equal(newNamePath.join(" "), namePath)
@@ -1798,7 +1798,7 @@ body {
   // Arrange/Act/Assert
   Object.keys(testStrings).forEach(key => {
     const tree = new TreeNode(testStrings[key])
-    const splitOn = tree.getKeywords()[0] || "foo"
+    const splitOn = tree.getFirstWords()[0] || "foo"
     equal(tree.split(splitOn).join("\n"), tree.toString(), `split join failed for ${key}`)
   })
 }
@@ -1890,8 +1890,8 @@ testTree.isomorphicGrammarTests = equal => {
  constructors
   nodejs ./jibberishProgramRoot.js
  compiler txt
- catchAllKeyword error
- keywords
+ catchAllNodeType error
+ nodeTypes
   topLevel
   text
   someAbstractClass
@@ -1899,7 +1899,7 @@ cellType int
 cellType word
 cellType onoff
  enum on off
-keyword error
+nodeType error
  constructors
   nodejs ErrorNode
   browser ErrorNode
@@ -1908,31 +1908,31 @@ abstract someAbstractClass
 abstract color_properties topLevel
  group hue saturation constrast
  cells int
-keyword extendsAbstract someAbstractClass
+nodeType extendsAbstract someAbstractClass
  cells int
-keyword someCode topLevel
- catchAllKeyword lineOfCode
-keyword lineOfCode
+nodeType someCode topLevel
+ catchAllNodeType lineOfCode
+nodeType lineOfCode
  catchAllCellType word
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
-keyword block topLevel
- keywords
+nodeType block topLevel
+ nodeTypes
   topLevel
-keyword foo topLevel
-keyword nodeWithConsts topLevel
+nodeType foo topLevel
+nodeType nodeWithConsts topLevel
  constants
   greeting string hello world
-keyword text
+nodeType text
  any
-keyword add topLevel
+nodeType add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
-keyword + add
+nodeType + add
  catchAllCellType int
-keyword lightbulbState topLevel
+nodeType lightbulbState topLevel
  cells onoff
-keyword to block
+nodeType to block
  cells word
  compiler txt
   sub to {word}
@@ -2054,7 +2054,7 @@ testTree.htmlDsl = equal => {
 
   // Act
   html.forEach(node => {
-    const property = node.getKeyword()
+    const property = node.getFirstWord()
     const value = node.getContent()
     page += "<" + property + ">" + value + "</" + property + ">"
   })
@@ -2128,7 +2128,7 @@ testTree.lastProperty = equal => {
   // Arrange
   const value = new TreeNode("hello world\nhi mom")
   // Assert
-  equal(value.nodeAt(-1).getKeyword(), "hi")
+  equal(value.nodeAt(-1).getFirstWord(), "hi")
 }
 
 testTree.lastValue = equal => {
@@ -2351,7 +2351,7 @@ testTree.copyToRegression = equal => {
  >div`
 
   const migrateNode = node => {
-    if (!node.getKeyword().startsWith(">")) return true
+    if (!node.getFirstWord().startsWith(">")) return true
     if (node.length) {
       const cla = node.getNode("class").getContent()
       if (cla) node.setContent(cla)
@@ -2360,8 +2360,8 @@ testTree.copyToRegression = equal => {
         const nodes = css.getChildren()
         const toMove = []
         nodes.forEach(propNode => {
-          const name = propNode.getKeyword().replace(":", " ")
-          propNode.setKeyword("@" + name)
+          const name = propNode.getFirstWord().replace(":", " ")
+          propNode.setFirstWord("@" + name)
           toMove.push(propNode)
         })
         toMove.reverse()
@@ -2500,7 +2500,7 @@ testTree.multiline = equal => {
 testTree.order = equal => {
   // Arrange
   const a = new TreeNode("john\n age 5\nsusy\n age 6\nbob\n age 10")
-  const types = a.getKeywords().join(" ")
+  const types = a.getFirstWords().join(" ")
 
   // Assert
   equal(types, "john susy bob", "order is preserved")
@@ -2725,20 +2725,20 @@ testTree.reorder = equal => {
   a.touchNode("hi").setContent("mom")
 
   // Assert
-  equal(a.getKeywords().join(" "), "hello hi", "order correct")
+  equal(a.getFirstWords().join(" "), "hello hi", "order correct")
 
   // Act
   a.insertLine("yo pal", 0)
 
   // Assert
-  equal(a.getKeywords().join(" "), "yo hello hi", "order correct")
+  equal(a.getFirstWords().join(" "), "yo hello hi", "order correct")
 
   // Act
   const result = a.insertLine("hola pal", 2)
   equal(result instanceof TreeNode, true)
 
   // Assert
-  equal(a.getKeywords().join(" "), "yo hello hola hi", "order correct")
+  equal(a.getFirstWords().join(" "), "yo hello hola hi", "order correct")
 }
 
 testTree.next = equal => {
@@ -2758,10 +2758,10 @@ bob
   // Assert
   equal(a.getNext().toString(), a.toString())
   equal(a.getPrevious().toString(), a.toString())
-  equal(b.getPrevious().getKeyword(), "bob")
-  equal(b.getNext().getKeyword(), "susy")
-  equal(c.getNext().getKeyword(), "score")
-  equal(c.getPrevious().getKeyword(), "score")
+  equal(b.getPrevious().getFirstWord(), "bob")
+  equal(b.getNext().getFirstWord(), "susy")
+  equal(c.getNext().getFirstWord(), "score")
+  equal(c.getPrevious().getFirstWord(), "score")
 }
 
 testTree.reverse = equal => {
@@ -2791,7 +2791,7 @@ testTree.reverse = equal => {
     tree2
       .nodeAt(0)
       .nodeAt(0)
-      .getKeyword(),
+      .getFirstWord(),
     "age",
     "Expected reversed properties"
   )
@@ -2799,7 +2799,7 @@ testTree.reverse = equal => {
     tree2
       .nodeAt(1)
       .nodeAt(0)
-      .getKeyword(),
+      .getFirstWord(),
     "name",
     "Expected unchanged properties"
   )
@@ -2867,17 +2867,17 @@ testTree.set = equal => {
   // Act
   tree4.touchNode("hi").setContent("mom")
   // Assert
-  equal(tree4.getKeywords().join(" "), "hello hi", "order correct")
+  equal(tree4.getFirstWords().join(" "), "hello hi", "order correct")
 
   // Act
   tree4.insertLine("yo pal", 0)
   // Assert
-  equal(tree4.getKeywords().join(" "), "yo hello hi", "order correct")
+  equal(tree4.getFirstWords().join(" "), "yo hello hi", "order correct")
 
   // Act
   tree4.insertLine("hola pal", 2)
   // Assert
-  equal(tree4.getKeywords().join(" "), "yo hello hola hi", "order correct")
+  equal(tree4.getFirstWords().join(" "), "yo hello hola hi", "order correct")
 
   // Arrange
   const tree5 = new TreeNode()
@@ -3021,24 +3021,24 @@ testTree.sort = equal => {
   // Arrange
   const tree = new TreeNode("john\n age 5\nsusy\n age 6\nbob\n age 10")
   // Assert
-  equal(tree.getKeywords().join(" "), "john susy bob")
+  equal(tree.getFirstWords().join(" "), "john susy bob")
   // Act
-  tree.sort((a, b) => (b.getKeyword() < a.getKeyword() ? 1 : b.getKeyword() === a.getKeyword() ? 0 : -1))
+  tree.sort((a, b) => (b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1))
   // Assert
-  equal(tree.getKeywords().join(" "), "bob john susy")
+  equal(tree.getFirstWords().join(" "), "bob john susy")
 }
 
 testTree.sortBy = equal => {
   // Arrange
   const tree = new TreeNode("john\n age 5\nsusy\n age 6\nbob\n age 10\nsam\n age 21\nbrian\n age 6")
   // Assert
-  equal(tree.getKeywords().join(" "), "john susy bob sam brian")
+  equal(tree.getFirstWords().join(" "), "john susy bob sam brian")
 
   // Act
   tree.sortBy("age")
 
   // Assert
-  equal(tree.getKeywords().join(" "), "bob sam john susy brian")
+  equal(tree.getFirstWords().join(" "), "bob sam john susy brian")
 
   // Sort by multiple properties
   // Arrange
@@ -3057,7 +3057,7 @@ testTree.sortBy = equal => {
   equal(tree2.getColumn("key").join(""), "acb")
 }
 
-testTree.keywordSort = equal => {
+testTree.firstWordSort = equal => {
   // Arrange
   const tree = new TreeNode(`body
 footer
@@ -3065,7 +3065,7 @@ div
 header
 div`)
   // Act
-  tree.keywordSort("header body div footer".split(" "))
+  tree.firstWordSort("header body div footer".split(" "))
   // Assert
   equal(
     tree.toString(),
@@ -3507,7 +3507,7 @@ b
  a
 b
  a
-c`).getFiltered(node => node.getKeyword() === "a").length,
+c`).getFiltered(node => node.getFirstWord() === "a").length,
     3
   )
 }
@@ -3683,7 +3683,7 @@ testTree.treeNodes = equal => {
   // Assert
   equal(originalMtime > 0, true)
   equal(node.isTerminal(), true)
-  equal(node.getKeyword(), "text")
+  equal(node.getFirstWord(), "text")
   equal(node.getContent(), undefined)
   equal(node.length, 0)
 
@@ -3706,7 +3706,7 @@ testTree.treeNodes = equal => {
 
   // Act
   const mtime = node.getMTime()
-  node.setKeyword("foo")
+  node.setFirstWord("foo")
 
   // Assert
   equal(a.toString(), "foo hello world\n color blue")

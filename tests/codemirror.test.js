@@ -91,7 +91,7 @@ testTree.codeMirrorTest2 = equal => {
   const code = `grammar
  name test
  version 1.0.0
-keyword foobar`
+nodeType foobar`
 
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => code))
   const tokenLines = mock.getTokenLines(code)

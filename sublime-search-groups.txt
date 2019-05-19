@@ -1,0 +1,2 @@
+*.ts, *.js, *.d.ts, -*.min.js, -*/node_modules/*, -jtree.browser.js, -jtree.browser.ts, *.grammar, *.swarm, -jtree/sandbox/lib/*, -jtree/src/*/*.js
+*.grammar

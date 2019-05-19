@@ -132,7 +132,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
-  getLineSyntax() {
+  getLineCellTypes() {
     const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getCellTypeName())
     return [<string>GrammarConstants.nodeType].concat(parameterWords).join(" ")
   }

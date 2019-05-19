@@ -230,7 +230,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const defs = this.getNodeTypeDefinitions().filter(kw => !kw._isAbstract())
     const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n")
 
-    const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSyntaxContextId()}'`).join("\n")
+    const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSublimeSyntaxContextId()}'`).join("\n")
 
     return `%YAML 1.2
 ---

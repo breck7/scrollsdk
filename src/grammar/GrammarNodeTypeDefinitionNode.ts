@@ -24,7 +24,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     return firstWordsInScope.some(firstWord => chain.has(firstWord))
   }
 
-  getSyntaxContextId() {
+  getSublimeSyntaxContextId() {
     return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH") // # is not allowed in sublime context names
   }
 
@@ -34,7 +34,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`
-    const topHalf = ` '${this.getSyntaxContextId()}':
+    const topHalf = ` '${this.getSublimeSyntaxContextId()}':
   - match: ${match}
     scope: ${color}`
     const requiredCellTypeNames = this.getRequiredCellTypeNames()

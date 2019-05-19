@@ -3,7 +3,7 @@ import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
 import types from "../types"
 
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
-  getLineSyntax() {
+  getLineCellTypes() {
     return "error ".repeat(this.getWords().length).trim()
   }
 

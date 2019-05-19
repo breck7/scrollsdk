@@ -39,7 +39,7 @@ class ImmutableNode extends AbstractNode {
     return []
   }
 
-  getLineSyntax() {
+  getLineCellTypes() {
     return "any ".repeat(this.getWords().length).trim()
   }
 

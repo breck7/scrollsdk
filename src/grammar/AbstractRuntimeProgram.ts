@@ -121,9 +121,9 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return usage
   }
 
-  getInPlaceSyntaxTree() {
+  getInPlaceCellTypeTree() {
     return this.getTopDownArray()
-      .map(child => child.getIndentation() + child.getLineSyntax())
+      .map(child => child.getIndentation() + child.getLineCellTypes())
       .join("\n")
   }
 
@@ -133,16 +133,16 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       .join("\n")
   }
 
-  getInPlaceSyntaxTreeWithNodeTypes() {
+  getInPlaceCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
       .join("\n")
   }
 
   // todo: refine and make public
-  protected _getSyntaxTreeHtml() {
+  protected _getInPlaceCellTypeTreeHtml() {
     const getColor = (child: AbstractRuntimeNode) => {
-      if (child.getLineSyntax().includes("error")) return "red"
+      if (child.getLineCellTypes().includes("error")) return "red"
       return "black"
     }
     const zip = (a1: string[], a2: string[]) => {
@@ -159,7 +159,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
           `<div style="white-space: pre;">${
             child.constructor.name
           } ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(
-            child.getLineSyntax().split(" "),
+            child.getLineCellTypes().split(" "),
             child.getLine().split(" ")
           )}</span></div>`
       )
@@ -186,7 +186,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     const treeMTime = this.getTreeMTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
 
-    this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree())
+    this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())
     this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
     this._cache_programCellTypeStringMTime = treeMTime
   }

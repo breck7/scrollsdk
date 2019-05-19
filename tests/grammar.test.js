@@ -87,7 +87,7 @@ testTree.jibberish = equal => {
 
   // Assert
   equal(
-    someJibberishProgram.getInPlaceSyntaxTree(),
+    someJibberishProgram.getInPlaceCellTypeTree(),
     `nodeType
 nodeType int int int`,
     "word types should match"
@@ -95,7 +95,7 @@ nodeType int int int`,
   equal(someJibberishProgram.nodeAt(1).getParsedWords()[0], 2)
 
   // Act
-  const nodeTypes = someJibberishProgram.getInPlaceSyntaxTreeWithNodeTypes()
+  const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()
   const treeWithNodeTypes = someJibberishProgram.getTreeWithNodeTypes()
 
   // Assert

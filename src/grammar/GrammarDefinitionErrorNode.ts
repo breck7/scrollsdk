@@ -18,7 +18,7 @@ class GrammarDefinitionErrorNode extends TreeNode {
     ]
   }
 
-  getLineSyntax() {
+  getLineCellTypes() {
     return [<string>GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => "any")).join(" ")
   }
 }

@@ -42,7 +42,7 @@
    div
     bern
      Hello world
- getInPlaceSyntaxTree
+ getInPlaceCellTypeTree
   =|
    nodeType
     nodeType

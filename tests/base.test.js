@@ -3620,7 +3620,7 @@ testTree.typeTests = equal => {
   const a = new TreeNode("text")
   // Assert
   equal(a.getErrors().length, 0)
-  equal(a.getLineSyntax(), "any")
+  equal(a.getLineCellTypes(), "any")
 }
 
 testTree.utils = equal => {

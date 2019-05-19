@@ -12,8 +12,8 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         return this.getDefinition().getProgram();
     }
     getDefinition() {
-        // todo: do we need a relative to with this keyword path?
-        return this._getKeywordDefinitionByName(this.getKeywordPath());
+        // todo: do we need a relative to with this firstWord path?
+        return this._getNodeTypeDefinitionByName(this.getFirstWordPath());
     }
     getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
@@ -46,14 +46,14 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         // More than one
         const definition = this.getDefinition();
         let times;
-        const keyword = this.getKeyword();
-        if (definition.isSingle() && (times = this.getParent().findNodes(keyword).length) > 1)
+        const firstWord = this.getFirstWord();
+        if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
             errors.push({
-                kind: GrammarConstants_1.GrammarConstantsErrors.keywordUsedMultipleTimesError,
-                subkind: keyword,
+                kind: GrammarConstants_1.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
+                subkind: firstWord,
                 level: 0,
                 context: this.getParent().getLine(),
-                message: `${GrammarConstants_1.GrammarConstantsErrors.keywordUsedMultipleTimesError} keyword "${keyword}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+                message: `${GrammarConstants_1.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
             });
         return this._getRequiredNodeErrors(errors);
     }
@@ -98,7 +98,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     // todo: just make a fn that computes proper spacing and then is given a node to print
     getLineSyntax() {
         const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getCellTypeName());
-        return ["keyword"].concat(parameterWords).join(" ");
+        return [GrammarConstants_1.GrammarConstants.nodeType].concat(parameterWords).join(" ");
     }
     getLineHighlightScopes(defaultScope = "source") {
         const wordScopes = this._getGrammarBackedCellArray().map(slot => slot.getHighlightScope() || defaultScope);

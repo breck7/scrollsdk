@@ -29,10 +29,10 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         this._getRequiredNodeErrors(errors);
         return errors;
     }
-    // Helper method for selecting potential keywords needed to update grammar file.
-    getInvalidKeywords(level = undefined) {
+    // Helper method for selecting potential nodeTypes needed to update grammar file.
+    getInvalidNodeTypes(level = undefined) {
         return Array.from(new Set(this.getProgramErrors()
-            .filter(err => err.kind === GrammarConstants_1.GrammarConstantsErrors.invalidKeywordError)
+            .filter(err => err.kind === GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError)
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }
@@ -63,34 +63,38 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         };
     }
     getPrettified() {
-        const keywordOrder = this.getGrammarProgram().getKeywordOrder();
+        const nodeTypeOrder = this.getGrammarProgram().getNodeTypeOrder();
         const clone = this.clone();
         const isCondensed = this.getGrammarProgram().getGrammarName() === "grammar"; // todo: generalize?
-        clone._keywordSort(keywordOrder.split(" "), isCondensed ? TreeUtils_1.default.makeGraphSortFunction(1, 2) : undefined);
+        clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils_1.default.makeGraphSortFunction(1, 2) : undefined);
         return clone.toString();
     }
     getProgramErrorMessages() {
         return this.getProgramErrors().map(err => err.message);
     }
-    getKeywordMap() {
-        return this.getDefinition().getRunTimeKeywordMap();
+    getFirstWordMap() {
+        return this.getDefinition().getRunTimeFirstWordMap();
     }
     getDefinition() {
         return this.getGrammarProgram();
     }
-    getKeywordUsage(filepath = "") {
-        // returns a report on what keywords from its language the program uses
+    getNodeTypeUsage(filepath = "") {
+        // returns a report on what nodeTypes from its language the program uses
         const usage = new TreeNode_1.default();
         const grammarProgram = this.getGrammarProgram();
-        const keywordDefinitions = grammarProgram.getKeywordDefinitions();
-        keywordDefinitions.forEach(child => {
-            usage.appendLine([child.getId(), "line-id", "keyword", child.getRequiredCellTypeNames().join(" ")].join(" "));
+        const nodeTypeDefinitions = grammarProgram.getNodeTypeDefinitions();
+        nodeTypeDefinitions.forEach(child => {
+            usage.appendLine([
+                child.getNodeTypeIdFromDefinition(),
+                "line-id",
+                GrammarConstants_1.GrammarConstants.nodeType,
+                child.getRequiredCellTypeNames().join(" ")
+            ].join(" "));
         });
         const programNodes = this.getTopDownArray();
         programNodes.forEach((programNode, lineNumber) => {
             const def = programNode.getDefinition();
-            const keyword = def.getId();
-            const stats = usage.getNode(keyword);
+            const stats = usage.getNode(def.getNodeTypeIdFromDefinition());
             stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "));
         });
         return usage;

@@ -14,9 +14,9 @@ declare abstract class AbstractRuntimeNode extends TreeNode {
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[];
     private _getAutocompleteResultsForCell;
-    private _getAutocompleteResultsForKeywords;
+    private _getAutocompleteResultsForFirstWord;
     abstract getDefinition(): AbstractGrammarDefinitionNode;
-    protected _getKeywordDefinitionByName(path: string): AbstractGrammarDefinitionNode;
+    protected _getNodeTypeDefinitionByName(path: string): AbstractGrammarDefinitionNode;
     protected _getRequiredNodeErrors(errors?: types.ParseError[]): types.ParseError[];
 }
 export default AbstractRuntimeNode;

@@ -9,7 +9,7 @@ class GrammarConstNode extends TreeNode_1.default {
         return this.getWordsFrom(2).join(" ");
     }
     getName() {
-        return this.getKeyword();
+        return this.getFirstWord();
     }
 }
 exports.default = GrammarConstNode;

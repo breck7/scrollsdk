@@ -8,7 +8,7 @@ declare abstract class AbstractCustomConstructorNode extends TreeNode {
     getBuiltIn(): any;
 }
 declare class GrammarCustomConstructorsNode extends TreeNode {
-    getKeywordMap(): types.keywordToNodeMap;
+    getFirstWordMap(): types.firstWordToNodeConstructorMap;
     getConstructorForEnvironment(): AbstractCustomConstructorNode;
 }
 export default GrammarCustomConstructorsNode;

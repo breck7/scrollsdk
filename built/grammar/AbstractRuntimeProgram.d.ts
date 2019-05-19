@@ -5,7 +5,7 @@ import GrammarProgram from "./GrammarProgram";
 declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getProgramErrorsIterator(): IterableIterator<any>;
     getProgramErrors(): types.ParseError[];
-    getInvalidKeywords(level?: types.int): string[];
+    getInvalidNodeTypes(level?: types.int): string[];
     getAllSuggestions(): string;
     getAutocompleteResultsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt): {
         startCharIndex: number;
@@ -18,9 +18,9 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     };
     getPrettified(): string;
     getProgramErrorMessages(): string[];
-    getKeywordMap(): types.keywordToNodeMap;
+    getFirstWordMap(): types.firstWordToNodeConstructorMap;
     getDefinition(): GrammarProgram;
-    getKeywordUsage(filepath?: string): TreeNode;
+    getNodeTypeUsage(filepath?: string): TreeNode;
     getInPlaceSyntaxTree(): string;
     getInPlaceHighlightScopeTree(): string;
     getInPlaceSyntaxTreeWithNodeTypes(): string;

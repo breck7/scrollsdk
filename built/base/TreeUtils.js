@@ -123,7 +123,7 @@ class TreeUtils {
             const nodeAExtendsNodeB = nodeAExtends && nodeAExtends === nodeBUniqueId;
             const nodeBExtendsNodeA = nodeBExtends && nodeBExtends === nodeAUniqueId;
             if (!nodeAExtends && !nodeBExtends) {
-                // If neither extends, sort by keyword
+                // If neither extends, sort by firstWord
                 if (nodeAUniqueId > nodeBUniqueId)
                     return 1;
                 else if (nodeAUniqueId < nodeBUniqueId)
@@ -145,7 +145,7 @@ class TreeUtils {
                 return 1;
             else if (nodeAExtends < nodeBExtends)
                 return -1;
-            // Finally sort by keyword
+            // Finally sort by firstWord
             if (nodeAUniqueId > nodeBUniqueId)
                 return 1;
             else if (nodeAUniqueId < nodeBUniqueId)

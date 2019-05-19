@@ -16,7 +16,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
     }
     getAutocompleteResults(partialWord, cellIndex) {
         return cellIndex === 0
-            ? this._getAutocompleteResultsForKeywords(partialWord)
+            ? this._getAutocompleteResultsForFirstWord(partialWord)
             : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
     _getGrammarBackedCellArray() {
@@ -30,13 +30,13 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         const cell = this._getGrammarBackedCellArray()[cellIndex - 1];
         return cell ? cell.getAutoCompleteWords(partialWord) : [];
     }
-    _getAutocompleteResultsForKeywords(partialWord) {
+    _getAutocompleteResultsForFirstWord(partialWord) {
         const def = this.getDefinition();
-        let defs = Object.values(def.getRunTimeKeywordMapWithDefinitions());
+        let defs = Object.values(def.getRunTimeFirstWordMapWithDefinitions());
         if (partialWord)
-            defs = defs.filter(def => def.getId().includes(partialWord));
+            defs = defs.filter(def => def.getNodeTypeIdFromDefinition().includes(partialWord));
         return defs.map(def => {
-            const id = def.getId();
+            const id = def.getNodeTypeIdFromDefinition();
             const description = def.getDescription();
             return {
                 text: id,
@@ -44,23 +44,24 @@ class AbstractRuntimeNode extends TreeNode_1.default {
             };
         });
     }
-    _getKeywordDefinitionByName(path) {
-        const grammarProgram = this.getProgram().getGrammarProgram();
-        // todo: do we need a relative to with this keyword path?
-        return grammarProgram.getKeywordDefinitionByKeywordPath(path);
+    _getNodeTypeDefinitionByName(path) {
+        // todo: do we need a relative to with this firstWord path?
+        return this.getProgram()
+            .getGrammarProgram()
+            .getNodeTypeDefinitionByFirstWordPath(path);
     }
     _getRequiredNodeErrors(errors = []) {
         const nodeDef = this.getDefinition();
-        const keywords = nodeDef.getRunTimeKeywordMapWithDefinitions();
-        Object.keys(keywords).forEach(keyword => {
-            const def = keywords[keyword];
-            if (def.isRequired() && !this.has(keyword)) {
+        const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions();
+        Object.keys(firstWords).forEach(firstWord => {
+            const def = firstWords[firstWord];
+            if (def.isRequired() && !this.has(firstWord)) {
                 errors.push({
-                    kind: GrammarConstants_1.GrammarConstantsErrors.missingRequiredKeywordError,
-                    subkind: keyword,
+                    kind: GrammarConstants_1.GrammarConstantsErrors.missingRequiredNodeTypeError,
+                    subkind: firstWord,
                     level: 0,
                     context: "",
-                    message: `${GrammarConstants_1.GrammarConstantsErrors.missingRequiredKeywordError} Required keyword missing: "${keyword}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
+                    message: `${GrammarConstants_1.GrammarConstantsErrors.missingRequiredNodeTypeError} Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
                 });
             }
         });

@@ -15,7 +15,7 @@ export declare namespace types {
     type int = number;
     type positiveInt = number;
     type stringMap = {
-        [keyword: string]: any;
+        [firstWord: string]: any;
     };
     type htmlString = string;
     type xmlString = string;
@@ -23,9 +23,11 @@ export declare namespace types {
     type dataTable = (any[])[];
     type delimiter = string;
     type formatString = string;
-    type keywordPath = string;
+    type firstWordPath = string;
     type pathVector = int[];
     type word = string;
+    type firstWord = word;
+    type nodeTypeId = string;
     type triInt = int;
     type filepath = string;
     type globPattern = string;
@@ -44,8 +46,8 @@ export declare namespace types {
     type RunTimeNodeConstructor = Function;
     type TreeProgramConstructor = Function;
     type treeProgram = treeNode;
-    type keywordToNodeMap = {
-        [keyword: string]: TreeNodeConstructor;
+    type firstWordToNodeConstructorMap = {
+        [firstWord: string]: TreeNodeConstructor;
     };
 }
 export default types;

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractRuntimeNonRootNode_1 = require("./AbstractRuntimeNonRootNode");
 class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode_1.default {
-    getKeywordMap() {
-        return this.getDefinition().getRunTimeKeywordMap();
+    getFirstWordMap() {
+        return this.getDefinition().getRunTimeFirstWordMap();
     }
     // todo: implement
     _getNodeJoinCharacter() {

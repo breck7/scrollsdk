@@ -23,12 +23,12 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
         if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor())
             return [];
         const parent = this.getParent();
-        const context = parent.isRoot() ? "" : parent.getKeyword();
+        const context = parent.isRoot() ? "" : parent.getFirstWord();
         const point = this.getPoint();
         return [
             {
                 kind: GrammarConstants_1.GrammarConstantsErrors.invalidConstructorPathError,
-                subkind: this.getKeyword(),
+                subkind: this.getFirstWord(),
                 level: point.x,
                 context: context,
                 message: `${GrammarConstants_1.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
@@ -121,7 +121,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
 }
 CustomJavascriptConstructorNode.cache = {};
 class GrammarCustomConstructorsNode extends TreeNode_1.default {
-    getKeywordMap() {
+    getFirstWordMap() {
         const map = {};
         map[GrammarConstants_1.GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode;
         map[GrammarConstants_1.GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode;

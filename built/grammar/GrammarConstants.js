@@ -17,8 +17,8 @@ var GrammarConstants;
     GrammarConstants["extensions"] = "extensions";
     GrammarConstants["version"] = "version";
     GrammarConstants["name"] = "name";
-    GrammarConstants["keywordOrder"] = "keywordOrder";
-    GrammarConstants["keyword"] = "keyword";
+    GrammarConstants["nodeTypeOrder"] = "nodeTypeOrder";
+    GrammarConstants["nodeType"] = "nodeType";
     GrammarConstants["cellType"] = "cellType";
     GrammarConstants["abstract"] = "abstract";
     // error check time
@@ -26,10 +26,10 @@ var GrammarConstants;
     GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
     GrammarConstants["enum"] = "enum";
     // parse time
-    GrammarConstants["keywords"] = "keywords";
+    GrammarConstants["nodeTypes"] = "nodeTypes";
     GrammarConstants["cells"] = "cells";
     GrammarConstants["catchAllCellType"] = "catchAllCellType";
-    GrammarConstants["catchAllKeyword"] = "catchAllKeyword";
+    GrammarConstants["catchAllNodeType"] = "catchAllNodeType";
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
@@ -43,7 +43,7 @@ var GrammarConstants;
     GrammarConstants["constructorBrowser"] = "browser";
     GrammarConstants["constructorJavascript"] = "javascript";
     // compile time
-    GrammarConstants["compilerKeyword"] = "compiler";
+    GrammarConstants["compilerNodeType"] = "compiler";
     // develop time
     GrammarConstants["description"] = "description";
     GrammarConstants["example"] = "example";
@@ -53,13 +53,13 @@ var GrammarConstants;
 exports.GrammarConstants = GrammarConstants;
 var GrammarConstantsErrors;
 (function (GrammarConstantsErrors) {
-    GrammarConstantsErrors["invalidKeywordError"] = "invalidKeywordError";
+    GrammarConstantsErrors["invalidNodeTypeError"] = "invalidNodeTypeError";
     GrammarConstantsErrors["invalidConstructorPathError"] = "invalidConstructorPathError";
     GrammarConstantsErrors["invalidWordError"] = "invalidWordError";
     GrammarConstantsErrors["grammarDefinitionError"] = "grammarDefinitionError";
     GrammarConstantsErrors["extraWordError"] = "extraWordError";
     GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
-    GrammarConstantsErrors["missingRequiredKeywordError"] = "missingRequiredKeywordError";
-    GrammarConstantsErrors["keywordUsedMultipleTimesError"] = "keywordUsedMultipleTimesError";
+    GrammarConstantsErrors["missingRequiredNodeTypeError"] = "missingRequiredNodeTypeError";
+    GrammarConstantsErrors["nodeTypeUsedMultipleTimesError"] = "nodeTypeUsedMultipleTimesError";
 })(GrammarConstantsErrors || (GrammarConstantsErrors = {}));
 exports.GrammarConstantsErrors = GrammarConstantsErrors;

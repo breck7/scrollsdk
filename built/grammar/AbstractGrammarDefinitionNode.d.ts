@@ -2,11 +2,11 @@ import TreeNode from "../base/TreeNode";
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode";
 import GrammarCompilerNode from "./GrammarCompilerNode";
 import GrammarProgram from "./GrammarProgram";
-import GrammarKeywordDefinitionNode from "./GrammarKeywordDefinitionNode";
+import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode";
 import types from "../types";
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
-    getKeywordMap(): types.keywordToNodeMap;
-    getId(): string;
+    getFirstWordMap(): types.firstWordToNodeConstructorMap;
+    getNodeTypeIdFromDefinition(): string;
     protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
     protected _isAnyNode(): boolean;
@@ -19,29 +19,29 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getDefinitionCompilerNode(targetLanguage: types.targetLanguageId, node: TreeNode): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
-    private _cache_keywordsMap;
-    getRunTimeKeywordMap(): types.keywordToNodeMap;
-    getRunTimeKeywordNames(): string[];
-    getRunTimeKeywordMapWithDefinitions(): {
-        [key: string]: GrammarKeywordDefinitionNode;
+    private _cache_runTimeFirstWordToNodeConstructorMap;
+    getRunTimeFirstWordMap(): types.firstWordToNodeConstructorMap;
+    getRunTimeNodeTypeNames(): string[];
+    getRunTimeFirstWordMapWithDefinitions(): {
+        [key: string]: GrammarNodeTypeDefinitionNode;
     };
     getRequiredCellTypeNames(): string[];
     getCatchAllCellTypeName(): string | undefined;
-    protected _initKeywordsMapCache(): void;
-    _getKeywordsInScope(): string[];
-    getTopNodeTypes(): string[];
-    protected _getKeywordsNode(): TreeNode;
+    protected _initRunTimeFirstWordToNodeConstructorMap(): void;
+    _getNodeTypesInScope(): string[];
+    getTopNodeTypeIds(): string[];
+    protected _getNodeTypesNode(): TreeNode;
     isRequired(): boolean;
     isSingle(): boolean;
-    _getRunTimeCatchAllKeyword(): string;
-    getKeywordDefinitionByName(keyword: string): AbstractGrammarDefinitionNode;
+    _getRunTimeCatchAllNodeTypeId(): string;
+    getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode;
     _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): void;
     getHighlightScope(): string | undefined;
-    isDefined(keyword: string): boolean;
-    _getProgramKeywordDefinitionCache(): {
-        [keyword: string]: GrammarKeywordDefinitionNode;
+    isDefined(firstWord: string): boolean;
+    _getProgramNodeTypeDefinitionCache(): {
+        [firstWord: string]: GrammarNodeTypeDefinitionNode;
     };
     getRunTimeCatchAllNodeConstructor(): Function;
 }

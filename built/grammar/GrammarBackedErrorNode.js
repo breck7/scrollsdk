@@ -8,17 +8,17 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode_1.default {
     }
     getErrors() {
         const parent = this.getParent();
-        const context = parent.isRoot() ? "" : parent.getKeyword();
+        const context = parent.isRoot() ? "" : parent.getFirstWord();
         const locationMsg = context ? `in "${context}" ` : "";
         const point = this.getPoint();
-        const keyword = this.getKeyword();
+        const firstWord = this.getFirstWord();
         return [
             {
-                kind: GrammarConstants_1.GrammarConstantsErrors.invalidKeywordError,
-                subkind: keyword,
+                kind: GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError,
+                subkind: firstWord,
                 context: context,
                 level: point.x,
-                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidKeywordError} "${keyword}" ${locationMsg}at line ${point.y} column ${point.x}`
+                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${point.y} column ${point.x}`
             }
         ];
     }

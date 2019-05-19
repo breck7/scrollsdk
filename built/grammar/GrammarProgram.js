@@ -12,7 +12,7 @@ const TreeNode_1 = require("../base/TreeNode");
 const AbstractRuntimeProgram_1 = require("./AbstractRuntimeProgram");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
-const GrammarKeywordDefinitionNode_1 = require("./GrammarKeywordDefinitionNode");
+const GrammarNodeTypeDefinitionNode_1 = require("./GrammarNodeTypeDefinitionNode");
 const GrammarCellTypeDefinitionNode_1 = require("./GrammarCellTypeDefinitionNode");
 class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
     _getDefaultNodeConstructor() {
@@ -21,17 +21,17 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode_1.default {
     getProgram() {
         return this.getParent();
     }
-    getKeywordMap() {
-        // todo: this isn't quite correct. we are allowing too many keywords.
-        const map = super.getKeywordMap();
+    getFirstWordMap() {
+        // todo: this isn't quite correct. we are allowing too many firstWords.
+        const map = super.getFirstWordMap();
         map[GrammarConstants_1.GrammarConstants.extensions] = TreeNode_1.default;
         map[GrammarConstants_1.GrammarConstants.version] = TreeNode_1.default;
         map[GrammarConstants_1.GrammarConstants.name] = TreeNode_1.default;
-        map[GrammarConstants_1.GrammarConstants.keywordOrder] = TreeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.nodeTypeOrder] = TreeNode_1.default;
         return map;
     }
 }
-class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode_1.default {
+class GrammarAbstractNodeTypeDefinitionNode extends GrammarNodeTypeDefinitionNode_1.default {
     _isAbstract() {
         return true;
     }
@@ -39,12 +39,12 @@ class GrammarAbstractKeywordDefinitionNode extends GrammarKeywordDefinitionNode_
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
-    getKeywordMap() {
+    getFirstWordMap() {
         const map = {};
         map[GrammarConstants_1.GrammarConstants.grammar] = GrammarRootNode;
         map[GrammarConstants_1.GrammarConstants.cellType] = GrammarCellTypeDefinitionNode_1.default;
-        map[GrammarConstants_1.GrammarConstants.keyword] = GrammarKeywordDefinitionNode_1.default;
-        map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractKeywordDefinitionNode;
+        map[GrammarConstants_1.GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
         return map;
     }
     // todo: this code is largely duplicated in abstractruntimeprogram
@@ -63,7 +63,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getErrorsInGrammarExamples() {
         const programConstructor = this.getRootConstructor();
         const errors = [];
-        this.getKeywordDefinitions().forEach(def => def.getExamples().forEach(example => {
+        this.getNodeTypeDefinitions().forEach(def => def.getExamples().forEach(example => {
             const exampleProgram = new programConstructor(example.childrenToString());
             exampleProgram.getProgramErrors().forEach(err => {
                 errors.push(err);
@@ -74,8 +74,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getTargetExtension() {
         return this._getGrammarRootNode().getTargetExtension();
     }
-    getKeywordOrder() {
-        return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.keywordOrder);
+    getNodeTypeOrder() {
+        return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.nodeTypeOrder);
     }
     getCellTypeDefinitions() {
         if (!this._cache_cellTypes)
@@ -96,8 +96,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getProgram() {
         return this;
     }
-    getKeywordDefinitions() {
-        return this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode_1.default);
+    getNodeTypeDefinitions() {
+        return this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode_1.default);
     }
     // todo: remove?
     getTheGrammarFilePath() {
@@ -112,46 +112,46 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getGrammarName() {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.name);
     }
-    _getKeywordsNode() {
-        return this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.keywords);
+    _getNodeTypesNode() {
+        return this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.nodeTypes);
     }
-    getKeywordDefinitionByKeywordPath(keywordPath) {
+    getNodeTypeDefinitionByFirstWordPath(firstWordPath) {
         if (!this._cachedDefinitions)
             this._cachedDefinitions = {};
-        if (this._cachedDefinitions[keywordPath])
-            return this._cachedDefinitions[keywordPath];
-        const parts = keywordPath.split(" ");
+        if (this._cachedDefinitions[firstWordPath])
+            return this._cachedDefinitions[firstWordPath];
+        const parts = firstWordPath.split(" ");
         let subject = this;
         let def;
         for (let index = 0; index < parts.length; index++) {
             const part = parts[index];
-            def = subject.getRunTimeKeywordMapWithDefinitions()[part];
+            def = subject.getRunTimeFirstWordMapWithDefinitions()[part];
             if (!def)
                 def = subject._getCatchAllDefinition();
             subject = def;
         }
-        this._cachedDefinitions[keywordPath] = def;
+        this._cachedDefinitions[firstWordPath] = def;
         return def;
     }
     getDocs() {
         return this.toString();
     }
-    _initProgramKeywordDefinitionCache() {
-        if (this._cache_keywordDefinitions)
+    _initProgramNodeTypeDefinitionCache() {
+        if (this._cache_nodeTypeDefinitions)
             return undefined;
-        this._cache_keywordDefinitions = {};
-        this.getChildrenByNodeConstructor(GrammarKeywordDefinitionNode_1.default).forEach(keywordDefinitionNode => {
-            this._cache_keywordDefinitions[keywordDefinitionNode.getId()] = keywordDefinitionNode;
+        this._cache_nodeTypeDefinitions = {};
+        this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode_1.default).forEach(nodeTypeDefinitionNode => {
+            this._cache_nodeTypeDefinitions[nodeTypeDefinitionNode.getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode;
         });
     }
     // todo: protected?
-    _getProgramKeywordDefinitionCache() {
-        this._initProgramKeywordDefinitionCache();
-        return this._cache_keywordDefinitions;
+    _getProgramNodeTypeDefinitionCache() {
+        this._initProgramNodeTypeDefinitionCache();
+        return this._cache_nodeTypeDefinitions;
     }
     // todo: protected?
-    _getRunTimeCatchAllKeyword() {
-        return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.catchAllKeyword);
+    _getRunTimeCatchAllNodeTypeId() {
+        return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.catchAllNodeType);
     }
     _getRootConstructor() {
         const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram_1.default;
@@ -182,9 +182,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         const variables = Object.keys(types)
             .map(name => ` ${name}: '${types[name].getRegexString()}'`)
             .join("\n");
-        const keywords = this.getKeywordDefinitions().filter(kw => !kw._isAbstract());
-        const keywordContexts = keywords.map(def => def.getMatchBlock()).join("\n\n");
-        const includes = keywords.map(keyword => `  - include: '${keyword.getSyntaxContextId()}'`).join("\n");
+        const defs = this.getNodeTypeDefinitions().filter(kw => !kw._isAbstract());
+        const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n");
+        const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSyntaxContextId()}'`).join("\n");
         return `%YAML 1.2
 ---
 name: ${this.getExtensionName()}
@@ -198,13 +198,13 @@ contexts:
  main:
 ${includes}
 
-${keywordContexts}`;
+${nodeTypeContexts}`;
     }
     // A language where anything goes.
     static getTheAnyLanguageRootConstructor() {
         return this.newFromCondensed(`${GrammarConstants_1.GrammarConstants.grammar} any
- ${GrammarConstants_1.GrammarConstants.catchAllKeyword} any
-${GrammarConstants_1.GrammarConstants.keyword} any
+ ${GrammarConstants_1.GrammarConstants.catchAllNodeType} any
+${GrammarConstants_1.GrammarConstants.nodeType} any
  ${GrammarConstants_1.GrammarConstants.catchAllCellType} any
 ${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
     }
@@ -212,14 +212,14 @@ ${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
         // todo: handle imports
         const tree = new TreeNode_1.default(grammarCode);
         // Expand groups
-        // todo: rename? maybe change this to "make" or "quickKeywords"?
+        // todo: rename? maybe change this to something like "makeNodeTypes"?
         const xi = tree.getXI();
         tree.findNodes(`${GrammarConstants_1.GrammarConstants.abstract}${xi}${GrammarConstants_1.GrammarConstants.group}`).forEach(group => {
             const abstractName = group.getParent().getWord(1);
             group
                 .getContent()
                 .split(xi)
-                .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.keyword}${xi}${word}${xi}${abstractName}`));
+                .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.nodeType}${xi}${word}${xi}${abstractName}`));
         });
         return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }

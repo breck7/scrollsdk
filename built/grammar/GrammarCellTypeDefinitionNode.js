@@ -47,7 +47,7 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
     }
 }
 class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
-    getKeywordMap() {
+    getFirstWordMap() {
         const types = {};
         types[GrammarConstants_1.GrammarConstants.regex] = GrammarRegexTestNode;
         types[GrammarConstants_1.GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode;

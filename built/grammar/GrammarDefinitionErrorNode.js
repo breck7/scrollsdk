@@ -5,20 +5,20 @@ const GrammarConstants_1 = require("./GrammarConstants");
 class GrammarDefinitionErrorNode extends TreeNode_1.default {
     getErrors() {
         const parent = this.getParent();
-        const context = parent.isRoot() ? "" : parent.getKeyword();
+        const context = parent.isRoot() ? "" : parent.getFirstWord();
         const point = this.getPoint();
         return [
             {
-                kind: GrammarConstants_1.GrammarConstantsErrors.invalidKeywordError,
-                subkind: this.getKeyword(),
+                kind: GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError,
+                subkind: this.getFirstWord(),
                 level: point.x,
                 context: context,
-                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidKeywordError} "${this.getKeyword()}" at line ${point.y}`
+                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError} "${this.getFirstWord()}" at line ${point.y}`
             }
         ];
     }
     getLineSyntax() {
-        return ["keyword"].concat(this.getWordsFrom(1).map(word => "any")).join(" ");
+        return [GrammarConstants_1.GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => "any")).join(" ");
     }
 }
 exports.default = GrammarDefinitionErrorNode;

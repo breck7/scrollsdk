@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode";
 import types from "../types";
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
 declare class GrammarCellTypeDefinitionNode extends TreeNode {
-    getKeywordMap(): types.stringMap;
+    getFirstWordMap(): types.stringMap;
     getCellConstructor(): any;
     getHighlightScope(): string | undefined;
     private _getEnumOptions;

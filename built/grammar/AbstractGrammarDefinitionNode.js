@@ -12,13 +12,13 @@ const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode")
 const GrammarBackedAnyNode_1 = require("./GrammarBackedAnyNode");
 const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 class AbstractGrammarDefinitionNode extends TreeNode_1.default {
-    getKeywordMap() {
+    getFirstWordMap() {
         const types = [
             GrammarConstants_1.GrammarConstants.frequency,
-            GrammarConstants_1.GrammarConstants.keywords,
+            GrammarConstants_1.GrammarConstants.nodeTypes,
             GrammarConstants_1.GrammarConstants.cells,
             GrammarConstants_1.GrammarConstants.description,
-            GrammarConstants_1.GrammarConstants.catchAllKeyword,
+            GrammarConstants_1.GrammarConstants.catchAllNodeType,
             GrammarConstants_1.GrammarConstants.catchAllCellType,
             GrammarConstants_1.GrammarConstants.defaults,
             GrammarConstants_1.GrammarConstants.tags,
@@ -33,16 +33,16 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             map[type] = TreeNode_1.default;
         });
         map[GrammarConstants_1.GrammarConstants.constants] = GrammarConstantsNode_1.default;
-        map[GrammarConstants_1.GrammarConstants.compilerKeyword] = GrammarCompilerNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.compilerNodeType] = GrammarCompilerNode_1.default;
         map[GrammarConstants_1.GrammarConstants.constructors] = GrammarCustomConstructorsNode_1.default;
         map[GrammarConstants_1.GrammarConstants.example] = GrammarExampleNode_1.default;
         return map;
     }
-    getId() {
+    getNodeTypeIdFromDefinition() {
         return this.getWord(1);
     }
     _isNonTerminal() {
-        return this._isAnyNode() || this.has(GrammarConstants_1.GrammarConstants.keywords) || this.has(GrammarConstants_1.GrammarConstants.catchAllKeyword);
+        return this._isAnyNode() || this.has(GrammarConstants_1.GrammarConstants.nodeTypes) || this.has(GrammarConstants_1.GrammarConstants.catchAllNodeType);
     }
     _isAbstract() {
         return false;
@@ -91,16 +91,16 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         const firstNode = this._getCompilerNodes()[0];
         return firstNode ? firstNode.getTargetExtension() : "";
     }
-    getRunTimeKeywordMap() {
-        this._initKeywordsMapCache();
-        return this._cache_keywordsMap;
+    getRunTimeFirstWordMap() {
+        this._initRunTimeFirstWordToNodeConstructorMap();
+        return this._cache_runTimeFirstWordToNodeConstructorMap;
     }
-    getRunTimeKeywordNames() {
-        return Object.keys(this.getRunTimeKeywordMap());
+    getRunTimeNodeTypeNames() {
+        return Object.keys(this.getRunTimeFirstWordMap());
     }
-    getRunTimeKeywordMapWithDefinitions() {
-        const defs = this._getProgramKeywordDefinitionCache();
-        return TreeUtils_1.default.mapValues(this.getRunTimeKeywordMap(), key => defs[key]);
+    getRunTimeFirstWordMapWithDefinitions() {
+        const defs = this._getProgramNodeTypeDefinitionCache();
+        return TreeUtils_1.default.mapValues(this.getRunTimeFirstWordMap(), key => defs[key]);
     }
     getRequiredCellTypeNames() {
         const parameters = this.get(GrammarConstants_1.GrammarConstants.cells);
@@ -109,43 +109,40 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getCatchAllCellTypeName() {
         return this.get(GrammarConstants_1.GrammarConstants.catchAllCellType);
     }
-    /*
-     {key<string>: JSKeywordDefClass}
-    */
-    _initKeywordsMapCache() {
-        if (this._cache_keywordsMap)
+    _initRunTimeFirstWordToNodeConstructorMap() {
+        if (this._cache_runTimeFirstWordToNodeConstructorMap)
             return undefined;
         // todo: make this handle extensions.
-        const keywordsInScope = this._getKeywordsInScope();
-        this._cache_keywordsMap = {};
-        // terminals dont have acceptable keywords
-        if (!keywordsInScope.length)
+        const nodeTypesInScope = this._getNodeTypesInScope();
+        this._cache_runTimeFirstWordToNodeConstructorMap = {};
+        // terminals dont have acceptable firstWords
+        if (!nodeTypesInScope.length)
             return undefined;
-        const allProgramKeywordDefinitions = this._getProgramKeywordDefinitionCache();
-        const keywords = Object.keys(allProgramKeywordDefinitions);
-        keywords
-            .filter(keyword => allProgramKeywordDefinitions[keyword].isOrExtendsAKeywordInScope(keywordsInScope))
-            .filter(keyword => !allProgramKeywordDefinitions[keyword]._isAbstract())
-            .forEach(keyword => {
-            this._cache_keywordsMap[keyword] = allProgramKeywordDefinitions[keyword].getConstructorDefinedInGrammar();
+        const allProgramNodeTypeDefinitionsMap = this._getProgramNodeTypeDefinitionCache();
+        const nodeTypeIds = Object.keys(allProgramNodeTypeDefinitionsMap);
+        nodeTypeIds
+            .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypesInScope))
+            .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
+            .forEach(nodeTypeId => {
+            this._cache_runTimeFirstWordToNodeConstructorMap[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar();
         });
     }
     // todo: protected?
-    _getKeywordsInScope() {
-        const keywords = this._getKeywordsNode();
-        return keywords ? keywords.getKeywords() : [];
+    _getNodeTypesInScope() {
+        const nodeTypesNode = this._getNodeTypesNode();
+        return nodeTypesNode ? nodeTypesNode.getFirstWords() : [];
     }
-    getTopNodeTypes() {
-        const definitions = this._getProgramKeywordDefinitionCache();
-        const keywords = this.getRunTimeKeywordMap();
-        const arr = Object.keys(keywords).map(keyword => definitions[keyword]);
+    getTopNodeTypeIds() {
+        const definitions = this._getProgramNodeTypeDefinitionCache();
+        const firstWords = this.getRunTimeFirstWordMap();
+        const arr = Object.keys(firstWords).map(firstWord => definitions[firstWord]);
         arr.sort(TreeUtils_1.default.sortByAccessor((definition) => definition.getFrequency()));
         arr.reverse();
-        return arr.map(definition => definition.getId());
+        return arr.map(definition => definition.getNodeTypeIdFromDefinition());
     }
-    _getKeywordsNode() {
+    _getNodeTypesNode() {
         // todo: allow multiple of these if we allow mixins?
-        return this.getNode(GrammarConstants_1.GrammarConstants.keywords);
+        return this.getNode(GrammarConstants_1.GrammarConstants.nodeTypes);
     }
     isRequired() {
         GrammarConstants_1.GrammarConstants;
@@ -155,17 +152,17 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this.has(GrammarConstants_1.GrammarConstants.single);
     }
     // todo: protected?
-    _getRunTimeCatchAllKeyword() {
+    _getRunTimeCatchAllNodeTypeId() {
         return "";
     }
-    getKeywordDefinitionByName(keyword) {
-        const definitions = this._getProgramKeywordDefinitionCache();
-        return definitions[keyword] || this._getCatchAllDefinition(); // todo: this is where we might do some type of keyword lookup for user defined fns.
+    getNodeTypeDefinitionByName(firstWord) {
+        const definitions = this._getProgramNodeTypeDefinitionCache();
+        return definitions[firstWord] || this._getCatchAllDefinition(); // todo: this is where we might do some type of firstWord lookup for user defined fns.
     }
     _getCatchAllDefinition() {
-        const catchAllKeyword = this._getRunTimeCatchAllKeyword();
-        const definitions = this._getProgramKeywordDefinitionCache();
-        const def = definitions[catchAllKeyword];
+        const catchAllNodeTypeId = this._getRunTimeCatchAllNodeTypeId();
+        const definitions = this._getProgramNodeTypeDefinitionCache();
+        const def = definitions[catchAllNodeTypeId];
         if (def)
             return def;
         // todo: implement contraints like a grammar file MUST have a catch all.
@@ -182,12 +179,12 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getHighlightScope() {
         return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
     }
-    isDefined(keyword) {
-        return !!this._getProgramKeywordDefinitionCache()[keyword.toLowerCase()];
+    isDefined(firstWord) {
+        return !!this._getProgramNodeTypeDefinitionCache()[firstWord.toLowerCase()];
     }
     // todo: protected?
-    _getProgramKeywordDefinitionCache() {
-        return this.getProgram()._getProgramKeywordDefinitionCache();
+    _getProgramNodeTypeDefinitionCache() {
+        return this.getProgram()._getProgramNodeTypeDefinitionCache();
     }
     getRunTimeCatchAllNodeConstructor() {
         this._initCatchAllNodeConstructorCache();

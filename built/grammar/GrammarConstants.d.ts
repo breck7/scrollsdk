@@ -10,17 +10,17 @@ declare enum GrammarConstants {
     extensions = "extensions",
     version = "version",
     name = "name",
-    keywordOrder = "keywordOrder",
-    keyword = "keyword",
+    nodeTypeOrder = "nodeTypeOrder",
+    nodeType = "nodeType",
     cellType = "cellType",
     abstract = "abstract",
     regex = "regex",
     enumFromGrammar = "enumFromGrammar",
     enum = "enum",
-    keywords = "keywords",
+    nodeTypes = "nodeTypes",
     cells = "cells",
     catchAllCellType = "catchAllCellType",
-    catchAllKeyword = "catchAllKeyword",
+    catchAllNodeType = "catchAllNodeType",
     defaults = "defaults",
     constants = "constants",
     group = "group",
@@ -32,20 +32,20 @@ declare enum GrammarConstants {
     constructorNodeJs = "nodejs",
     constructorBrowser = "browser",
     constructorJavascript = "javascript",
-    compilerKeyword = "compiler",
+    compilerNodeType = "compiler",
     description = "description",
     example = "example",
     frequency = "frequency",
     highlightScope = "highlightScope"
 }
 declare enum GrammarConstantsErrors {
-    invalidKeywordError = "invalidKeywordError",
+    invalidNodeTypeError = "invalidNodeTypeError",
     invalidConstructorPathError = "invalidConstructorPathError",
     invalidWordError = "invalidWordError",
     grammarDefinitionError = "grammarDefinitionError",
     extraWordError = "extraWordError",
     unfilledColumnError = "unfilledColumnError",
-    missingRequiredKeywordError = "missingRequiredKeywordError",
-    keywordUsedMultipleTimesError = "keywordUsedMultipleTimesError"
+    missingRequiredNodeTypeError = "missingRequiredNodeTypeError",
+    nodeTypeUsedMultipleTimesError = "nodeTypeUsedMultipleTimesError"
 }
 export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler };

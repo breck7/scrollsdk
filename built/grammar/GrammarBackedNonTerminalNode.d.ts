@@ -1,7 +1,7 @@
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
 import types from "../types";
 declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
-    getKeywordMap(): types.keywordToNodeMap;
+    getFirstWordMap(): types.firstWordToNodeConstructorMap;
     protected _getNodeJoinCharacter(): string;
     compile(targetExtension: types.targetLanguageId): string;
 }

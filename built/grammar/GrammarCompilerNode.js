@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
 class GrammarCompilerNode extends TreeNode_1.default {
-    getKeywordMap() {
+    getFirstWordMap() {
         const types = [
             GrammarConstants_1.GrammarConstantsCompiler.sub,
             GrammarConstants_1.GrammarConstantsCompiler.indentCharacter,

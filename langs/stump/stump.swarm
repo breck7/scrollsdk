@@ -35,3 +35,15 @@
   =|
    <div id="bam" class="someClass">hello world</div>
    
+#test syntax
+ #setup
+  require ./Stump.js Program
+  %%|
+   div
+    bern
+     Hello world
+ getInPlaceSyntaxTree
+  =|
+   nodeType
+    nodeType
+     nodeType anyHtmlContent

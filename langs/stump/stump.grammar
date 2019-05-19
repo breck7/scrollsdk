@@ -32,11 +32,11 @@ abstract attribute
   browser StumpAttributeNode StumpNodes.js
  catchAllNodeType errorNode
  catchAllCellType attributeValue
-nodeType lineOfContent
- catchAllNodeType lineOfContent
+nodeType lineOfHtmlContent
+ catchAllNodeType lineOfHtmlContent
  catchAllCellType anyHtmlContent
 nodeType bern
- catchAllNodeType lineOfContent
+ catchAllNodeType lineOfHtmlContent
  constructors
   nodejs ./StumpNodes.js StumpBernNode
   browser StumpBernNode StumpNodes.js

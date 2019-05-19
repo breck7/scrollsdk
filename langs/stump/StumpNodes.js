@@ -1,5 +1,25 @@
 const jtree = require("../../index.js")
-const StumpConstants = require("./StumpConstants.js")
+
+const StumpConstants = {}
+StumpConstants.titleTag = "titleTag"
+StumpConstants.styleTag = "styleTag"
+StumpConstants.tagMap = {}
+StumpConstants.tagMap[StumpConstants.styleTag] = "style"
+StumpConstants.tagMap[StumpConstants.titleTag] = "title"
+StumpConstants.tags = {}
+StumpConstants.tags.html = "html"
+StumpConstants.tags.head = "head"
+StumpConstants.tags.body = "body"
+StumpConstants.collapseNode = "collapseNode"
+StumpConstants.uidAttribute = "data-suid"
+StumpConstants.class = "class"
+StumpConstants.type = "type"
+StumpConstants.value = "value"
+StumpConstants.name = "name"
+StumpConstants.checkbox = "checkbox"
+StumpConstants.checkedSelector = ":checked"
+StumpConstants.contenteditable = "contenteditable"
+StumpConstants.inputTypes = ["input", "div", "textarea"]
 
 // Note: do NOT support things like solo tags <br>. one way to do things.
 

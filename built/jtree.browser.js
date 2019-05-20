@@ -67,7 +67,7 @@ var GrammarConstants;
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
-    GrammarConstants["anySpecial"] = "anySpecial";
+    GrammarConstants["blob"] = "blob";
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";
@@ -2779,7 +2779,7 @@ ${compiledChildren}
 ${indent}${closeChildrenString}`;
     }
 }
-class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
+class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
     getFirstWordMap() {
         return {};
     }
@@ -2787,7 +2787,7 @@ class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
         return [];
     }
     getCatchAllNodeConstructor(line) {
-        return GrammarBackedAnyNode;
+        return GrammarBackedBlobNode;
     }
 }
 class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
@@ -2975,7 +2975,7 @@ class AbstractCustomConstructorNode extends TreeNode {
             ErrorNode: GrammarBackedErrorNode,
             TerminalNode: GrammarBackedTerminalNode,
             NonTerminalNode: GrammarBackedNonTerminalNode,
-            AnyNode: GrammarBackedAnyNode
+            BlobNode: GrammarBackedBlobNode
         };
         return constructors[this.getWord(1)];
     }
@@ -3103,7 +3103,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             GrammarConstants.firstCellType,
             GrammarConstants.defaults,
             GrammarConstants.tags,
-            GrammarConstants.anySpecial,
+            GrammarConstants.blob,
             GrammarConstants.group,
             GrammarConstants.required,
             GrammarConstants.single
@@ -3122,13 +3122,13 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return this.getWord(1);
     }
     _isNonTerminal() {
-        return this._isAnyNode() || this.has(GrammarConstants.nodeTypes) || this.has(GrammarConstants.catchAllNodeType);
+        return this._isBlobNode() || this.has(GrammarConstants.nodeTypes) || this.has(GrammarConstants.catchAllNodeType);
     }
     _isAbstract() {
         return false;
     }
-    _isAnyNode() {
-        return this.has(GrammarConstants.anySpecial);
+    _isBlobNode() {
+        return this.has(GrammarConstants.blob);
     }
     getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
@@ -3136,8 +3136,8 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return this._cache_definedNodeConstructor;
     }
     _getDefaultNodeConstructor() {
-        if (this._isAnyNode())
-            return GrammarBackedAnyNode;
+        if (this._isBlobNode())
+            return GrammarBackedBlobNode;
         return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode;
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
@@ -3416,7 +3416,7 @@ class UnknownGrammarProgram extends TreeNode {
             const defNode = new TreeNode(`${GrammarConstants.nodeType} ${firstWord}`).nodeAt(0);
             const childFirstWords = Object.keys(allChilds[firstWord]);
             if (childFirstWords.length) {
-                //defNode.touchNode(GrammarConstants.anySpecial) // todo: remove?
+                //defNode.touchNode(GrammarConstants.blob) // todo: remove?
                 childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants.nodeTypes} ${firstWord}`));
             }
             const allLines = allFirstWordNodes[firstWord];
@@ -4087,8 +4087,8 @@ jtree.Utils = TreeUtils;
 jtree.TreeNode = TreeNode;
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarBackedTerminalNode;
-jtree.AnyNode = GrammarBackedAnyNode;
+jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "22.3.0";
+jtree.getVersion = () => "23.0.0";

@@ -3,8 +3,9 @@ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import types from "../types";
 declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId(): string;
+    getExpectedLineCellTypes(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
-    getSyntaxContextId(): string;
+    getSublimeSyntaxContextId(): string;
     getMatchBlock(): string;
     private _cache_nodeTypeInheritanceSet;
     getNodeTypeInheritanceSet(): Set<string>;

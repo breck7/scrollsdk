@@ -10,6 +10,17 @@ var GrammarConstantsCompiler;
     GrammarConstantsCompiler["closeChildren"] = "closeChildren";
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
 exports.GrammarConstantsCompiler = GrammarConstantsCompiler;
+var GrammarStandardCellTypes;
+(function (GrammarStandardCellTypes) {
+    GrammarStandardCellTypes["any"] = "any";
+    GrammarStandardCellTypes["anyFirstWord"] = "anyFirstWord";
+    GrammarStandardCellTypes["float"] = "float";
+    GrammarStandardCellTypes["number"] = "number";
+    GrammarStandardCellTypes["bit"] = "bit";
+    GrammarStandardCellTypes["bool"] = "bool";
+    GrammarStandardCellTypes["int"] = "int";
+})(GrammarStandardCellTypes || (GrammarStandardCellTypes = {}));
+exports.GrammarStandardCellTypes = GrammarStandardCellTypes;
 var GrammarConstants;
 (function (GrammarConstants) {
     // node types
@@ -29,11 +40,12 @@ var GrammarConstants;
     GrammarConstants["nodeTypes"] = "nodeTypes";
     GrammarConstants["cells"] = "cells";
     GrammarConstants["catchAllCellType"] = "catchAllCellType";
+    GrammarConstants["firstCellType"] = "firstCellType";
     GrammarConstants["catchAllNodeType"] = "catchAllNodeType";
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
-    GrammarConstants["any"] = "any";
+    GrammarConstants["anySpecial"] = "anySpecial";
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";

@@ -11,6 +11,7 @@ import {
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
 /*FOR_TYPES_ONLY*/ import GrammarCompilerNode from "./GrammarCompilerNode"
+/*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
 import types from "../types"
 
@@ -23,9 +24,9 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this.getDefinition().getProgram()
   }
 
-  getDefinition() {
+  getDefinition(): GrammarNodeTypeDefinitionNode {
     // todo: do we need a relative to with this firstWord path?
-    return this._getNodeTypeDefinitionByName(this.getFirstWordPath())
+    return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByName(this.getFirstWordPath())
   }
 
   getCompilerNode(targetLanguage: types.targetLanguageId): GrammarCompilerNode {
@@ -82,64 +83,62 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
 
   get cells() {
     const cells: types.stringMap = {}
-    this._getGrammarBackedCellArray().forEach(cell => {
-      if (!cell.isCatchAll()) cells[cell.getCellTypeName()] = cell.getParsed()
-      else {
-        if (!cells[cell.getCellTypeName()]) cells[cell.getCellTypeName()] = []
-        cells[cell.getCellTypeName()].push(cell.getParsed())
-      }
-    })
+    this._getGrammarBackedCellArray()
+      .slice(1)
+      .forEach(cell => {
+        if (!cell.isCatchAll()) cells[cell.getCellTypeName()] = cell.getParsed()
+        else {
+          if (!cells[cell.getCellTypeName()]) cells[cell.getCellTypeName()] = []
+          cells[cell.getCellTypeName()].push(cell.getParsed())
+        }
+      })
     return cells
   }
 
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
-    const cellTypes = definition.getRequiredCellTypeNames() // todo: are these nodeRequiredColumnTypes? ... also, rename to cell instead of column?
-    const numberOfRequiredCells = cellTypes.length
-    const expectedLinePattern = cellTypes.join(" ")
+    const requiredCellTypesNames = definition.getRequiredCellTypeNames()
+    const firstCellTypeName = definition.getFirstCellType()
+    const numberOfRequiredCells = requiredCellTypesNames.length + 1 // todo: assuming here first cell is required.
 
-    const catchAllCellType = definition.getCatchAllCellTypeName()
+    const catchAllCellTypeName = definition.getCatchAllCellTypeName()
 
-    const words = this.getWordsFrom(1)
-    const numberOfCellsToFill = Math.max(words.length, numberOfRequiredCells)
+    const actualWordCountOrRequiredCellCount = Math.max(this.getWords().length, numberOfRequiredCells)
     const cells: AbstractGrammarBackedCell<any>[] = []
+
     // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
-    for (let cellIndex = 0; cellIndex < numberOfCellsToFill; cellIndex++) {
+    for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
       const isCatchAll = cellIndex >= numberOfRequiredCells
 
-      const cellTypeName = isCatchAll ? catchAllCellType : cellTypes[cellIndex]
-      const cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
-      // todo: no guarantee that we will have 'cellTypeDefinition'. i could type 'bint' instead of 'int'
-      const cellConstructor = cellTypeDefinition
-        ? cellTypeDefinition.getCellConstructor()
-        : cellTypeName
-        ? GrammarUnknownCellTypeCell
-        : GrammarExtraWordCellTypeCell
+      let cellTypeName
+      if (cellIndex === 0) cellTypeName = firstCellTypeName
+      else if (isCatchAll) cellTypeName = catchAllCellTypeName
+      else cellTypeName = requiredCellTypesNames[cellIndex - 1]
 
-      cells[cellIndex] = new cellConstructor(
-        words[cellIndex],
-        cellTypeDefinition,
-        this,
-        cellIndex,
-        isCatchAll,
-        expectedLinePattern,
-        grammarProgram,
-        <AbstractRuntimeProgram>this.getProgram()
-      )
+      const cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
+
+      let cellConstructor
+      if (cellTypeDefinition) cellConstructor = cellTypeDefinition.getCellConstructor()
+      else if (cellTypeName) cellConstructor = GrammarUnknownCellTypeCell
+      else cellConstructor = GrammarExtraWordCellTypeCell
+
+      cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeName, isCatchAll)
     }
     return cells
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getLineCellTypes() {
-    const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getCellTypeName())
-    return [<string>GrammarConstants.nodeType].concat(parameterWords).join(" ")
+    return this._getGrammarBackedCellArray()
+      .map(slot => slot.getCellTypeName())
+      .join(" ")
   }
 
   getLineHighlightScopes(defaultScope = "source") {
-    const wordScopes = this._getGrammarBackedCellArray().map(slot => slot.getHighlightScope() || defaultScope)
-    return [this.getDefinition().getHighlightScope() || defaultScope].concat(wordScopes).join(" ")
+    return this._getGrammarBackedCellArray()
+      .map(slot => slot.getHighlightScope() || defaultScope)
+      .join(" ")
   }
 }
 

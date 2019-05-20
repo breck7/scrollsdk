@@ -9,6 +9,7 @@ grammar
   prompt
   folder
   file
+cellType anyFirstWord
 cellType anyWord
  highlightScope string
 cellType promptWords
@@ -16,18 +17,22 @@ cellType promptWords
 cellType filepath
 cellType varName
  highlightScope string
+cellType commentWord
+ highlightScope comment
 cellType inputType
  regex (string|int|any|lowercase)
-nodeType #!
- catchAllCellType anyWord
- highlightScope comment
-nodeType any
- catchAllCellType anyWord
- catchAllNodeType any
- highlightScope string
-nodeType data
- catchAllNodeType any
+cellType property
  highlightScope variable
+nodeType #!
+ catchAllCellType commentWord
+ firstCellType commentWord
+nodeType catchAll.anyLine
+ catchAllCellType anyWord
+ catchAllNodeType catchAll.anyLine
+ firstCellType anyWord
+nodeType data
+ catchAllNodeType catchAll.anyLine
+ firstCellType property
 nodeType error
  constructors
   nodejs ErrorNode
@@ -35,7 +40,7 @@ nodeType error
 nodeType executable
 nodeType file
  cells filepath
- highlightScope variable.parameter
+ firstCellType property
  constructors
   nodejs ./FileNode.js
  nodeTypes
@@ -43,13 +48,13 @@ nodeType file
   executable
 nodeType folder
  cells filepath
- highlightScope variable.parameter
+ firstCellType property
  constructors
   nodejs ./FolderNode.js
 nodeType prompt
  cells varName inputType
  catchAllCellType promptWords
- highlightScope constant.language
+ firstCellType property
  example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project
   folder PROJECT_NAME

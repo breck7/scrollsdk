@@ -328,7 +328,7 @@ class ImmutableNode extends AbstractNode {
     getErrors() {
         return [];
     }
-    getLineSyntax() {
+    getLineCellTypes() {
         return "any ".repeat(this.getWords().length).trim();
     }
     executeSync(context) {
@@ -2365,7 +2365,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
         return cells;
     }
     // todo: just make a fn that computes proper spacing and then is given a node to print
-    getLineSyntax() {
+    getLineCellTypes() {
         const parameterWords = this._getGrammarBackedCellArray().map(slot => slot.getCellTypeName());
         return [GrammarConstants.nodeType].concat(parameterWords).join(" ");
     }
@@ -2469,9 +2469,9 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
         });
         return usage;
     }
-    getInPlaceSyntaxTree() {
+    getInPlaceCellTypeTree() {
         return this.getTopDownArray()
-            .map(child => child.getIndentation() + child.getLineSyntax())
+            .map(child => child.getIndentation() + child.getLineCellTypes())
             .join("\n");
     }
     getInPlaceHighlightScopeTree() {
@@ -2479,15 +2479,15 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             .map(child => child.getIndentation() + child.getLineHighlightScopes())
             .join("\n");
     }
-    getInPlaceSyntaxTreeWithNodeTypes() {
+    getInPlaceCellTypeTreeWithNodeConstructorNames() {
         return this.getTopDownArray()
-            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
+            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
             .join("\n");
     }
     // todo: refine and make public
-    _getSyntaxTreeHtml() {
+    _getInPlaceCellTypeTreeHtml() {
         const getColor = (child) => {
-            if (child.getLineSyntax().includes("error"))
+            if (child.getLineCellTypes().includes("error"))
                 return "red";
             return "black";
         };
@@ -2500,7 +2500,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             return parts.join(" ");
         };
         return this.getTopDownArray()
-            .map(child => `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(child.getLineSyntax().split(" "), child.getLine().split(" "))}</span></div>`)
+            .map(child => `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(child.getLineCellTypes().split(" "), child.getLine().split(" "))}</span></div>`)
             .join("");
     }
     getTreeWithNodeTypes() {
@@ -2517,7 +2517,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
         const treeMTime = this.getTreeMTime();
         if (this._cache_programCellTypeStringMTime === treeMTime)
             return undefined;
-        this._cache_typeTree = new TreeNode(this.getInPlaceSyntaxTree());
+        this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree());
         this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree());
         this._cache_programCellTypeStringMTime = treeMTime;
     }
@@ -2725,7 +2725,7 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
     }
 }
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
-    getLineSyntax() {
+    getLineCellTypes() {
         return "error ".repeat(this.getWords().length).trim();
     }
     getErrors() {
@@ -3071,7 +3071,7 @@ class GrammarDefinitionErrorNode extends TreeNode {
             }
         ];
     }
-    getLineSyntax() {
+    getLineCellTypes() {
         return [GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => "any")).join(" ");
     }
 }
@@ -3267,7 +3267,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
         const chain = this.getNodeTypeInheritanceSet();
         return firstWordsInScope.some(firstWord => chain.has(firstWord));
     }
-    getSyntaxContextId() {
+    getSublimeSyntaxContextId() {
         return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
     getMatchBlock() {
@@ -3276,7 +3276,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
         const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition();
         const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`;
-        const topHalf = ` '${this.getSyntaxContextId()}':
+        const topHalf = ` '${this.getSublimeSyntaxContextId()}':
   - match: ${match}
     scope: ${color}`;
         const requiredCellTypeNames = this.getRequiredCellTypeNames();
@@ -3643,7 +3643,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             .join("\n");
         const defs = this.getNodeTypeDefinitions().filter(kw => !kw._isAbstract());
         const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n");
-        const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSyntaxContextId()}'`).join("\n");
+        const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSublimeSyntaxContextId()}'`).join("\n");
         return `%YAML 1.2
 ---
 name: ${this.getExtensionName()}

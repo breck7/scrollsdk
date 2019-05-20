@@ -17,7 +17,7 @@ class GrammarDefinitionErrorNode extends TreeNode_1.default {
             }
         ];
     }
-    getLineSyntax() {
+    getLineCellTypes() {
         return [GrammarConstants_1.GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => "any")).join(" ");
     }
 }

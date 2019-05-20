@@ -8,13 +8,14 @@ grammar
  catchAllNodeType error
 cellType commentWord
  highlightScope comment
-cellType error
+cellType errorWord
  highlightScope invalid
 cellType number
  highlightScope constant.numeric
 cellType numbers number
-abstract abstract.arithmetic
+cellType operator
  highlightScope keyword.operator.arithmetic
+abstract abstract.arithmetic
  catchAllCellType numbers
  constructors
   javascript
@@ -24,20 +25,21 @@ abstract abstract.arithmetic
      }
      async execute() { return this.executeSync() }
    }
+ firstCellType operator
  nodeTypes
   abstract.arithmetic
   #
 nodeType #
  description This is a line comment.
- highlightScope comment
+ firstCellType commentWord
  catchAllCellType commentWord
  catchAllNodeType #
 nodeType error
- catchAllCellType error
+ catchAllCellType errorWord
  constructors
   browser ErrorNode
   nodejs ErrorNode
- highlightScope invalid
+ firstCellType errorWord
 nodeType #! #
 nodeType comment #
 nodeType % abstract.arithmetic

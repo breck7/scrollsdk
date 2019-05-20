@@ -8,6 +8,16 @@ enum GrammarConstantsCompiler {
   closeChildren = "closeChildren"
 }
 
+enum GrammarStandardCellTypes {
+  any = "any",
+  anyFirstWord = "anyFirstWord", // todo: remove
+  float = "float",
+  number = "number",
+  bit = "bit",
+  bool = "bool",
+  int = "int"
+}
+
 enum GrammarConstants {
   // node types
   grammar = "grammar",
@@ -28,11 +38,12 @@ enum GrammarConstants {
   nodeTypes = "nodeTypes",
   cells = "cells",
   catchAllCellType = "catchAllCellType",
+  firstCellType = "firstCellType",
   catchAllNodeType = "catchAllNodeType",
   defaults = "defaults",
   constants = "constants",
   group = "group",
-  any = "any",
+  anySpecial = "anySpecial",
   required = "required", // Require this nodeType to be present in a node or program
   single = "single", // Have at most 1 of these
   tags = "tags",
@@ -64,4 +75,4 @@ enum GrammarConstantsErrors {
   nodeTypeUsedMultipleTimesError = "nodeTypeUsedMultipleTimesError"
 }
 
-export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler }
+export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler, GrammarStandardCellTypes }

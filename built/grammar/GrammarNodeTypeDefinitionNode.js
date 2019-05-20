@@ -10,24 +10,30 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode_1.defa
         return (this.get(GrammarConstants_1.GrammarConstants.catchAllNodeType) ||
             this.getParent()._getRunTimeCatchAllNodeTypeId());
     }
+    getExpectedLineCellTypes() {
+        const req = [this.getFirstCellType()].concat(this.getRequiredCellTypeNames());
+        const catchAllCellType = this.getCatchAllCellTypeName();
+        if (catchAllCellType)
+            req.push(catchAllCellType + "*");
+        return req.join(" ");
+    }
     isOrExtendsANodeTypeInScope(firstWordsInScope) {
         const chain = this.getNodeTypeInheritanceSet();
         return firstWordsInScope.some(firstWord => chain.has(firstWord));
     }
-    getSyntaxContextId() {
+    getSublimeSyntaxContextId() {
         return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
     getMatchBlock() {
         const defaultHighlightScope = "source";
         const program = this.getProgram();
         const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition();
         const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`;
-        const topHalf = ` '${this.getSyntaxContextId()}':
-  - match: ${match}
-    scope: ${color}`;
+        const topHalf = ` '${this.getSublimeSyntaxContextId()}':
+  - match: ${match}`;
         const requiredCellTypeNames = this.getRequiredCellTypeNames();
         const catchAllCellTypeName = this.getCatchAllCellTypeName();
+        requiredCellTypeNames.unshift(this.getFirstCellType());
         if (catchAllCellTypeName)
             requiredCellTypeNames.push(catchAllCellTypeName);
         if (!requiredCellTypeNames.length)

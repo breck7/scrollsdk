@@ -21,7 +21,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getErrors() {
         return [];
     }
-    getLineSyntax() {
+    getLineCellTypes() {
         return "any ".repeat(this.getWords().length).trim();
     }
     executeSync(context) {

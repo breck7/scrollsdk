@@ -40,7 +40,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
 
   private _getAutocompleteResultsForCell(partialWord: string, cellIndex: types.positiveInt) {
     // todo: root should be [] correct?
-    const cell = this._getGrammarBackedCellArray()[cellIndex - 1]
+    const cell = this._getGrammarBackedCellArray()[cellIndex]
     return cell ? cell.getAutoCompleteWords(partialWord) : []
   }
 

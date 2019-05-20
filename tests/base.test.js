@@ -6,7 +6,6 @@ const TreeNode = require("../built/base/TreeNode.js").default
 const testStrings = {}
 
 const testTree = {}
-testTree._runOnly = []
 
 testStrings.webpage = `head
 body
@@ -1881,6 +1880,7 @@ foo`
   equal(node.nodeAt(0).childrenToString(), expected)
 }
 
+// todo: just make grammar tests compile in browser and ditch this duplicative code.
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
@@ -1897,6 +1897,7 @@ testTree.isomorphicGrammarTests = equal => {
   someAbstractClass
 cellType int
 cellType word
+cellType anyFirstWord
 cellType onoff
  enum on off
 nodeType error
@@ -1924,7 +1925,7 @@ nodeType nodeWithConsts topLevel
  constants
   greeting string hello world
 nodeType text
- any
+ anySpecial
 nodeType add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode

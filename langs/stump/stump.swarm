@@ -44,6 +44,6 @@
      Hello world
  getInPlaceCellTypeTree
   =|
-   nodeType
-    nodeType
-     nodeType anyHtmlContent
+   htmlTagName
+    anyFirstWord
+     anyHtmlContent anyHtmlContent

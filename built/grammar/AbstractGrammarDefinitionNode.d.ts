@@ -38,7 +38,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): void;
-    getHighlightScope(): string | undefined;
+    getFirstCellType(): string;
     isDefined(firstWord: string): boolean;
     _getProgramNodeTypeDefinitionCache(): {
         [firstWord: string]: GrammarNodeTypeDefinitionNode;

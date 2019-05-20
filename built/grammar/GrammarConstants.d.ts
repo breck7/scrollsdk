@@ -5,6 +5,15 @@ declare enum GrammarConstantsCompiler {
     openChildren = "openChildren",
     closeChildren = "closeChildren"
 }
+declare enum GrammarStandardCellTypes {
+    any = "any",
+    anyFirstWord = "anyFirstWord",
+    float = "float",
+    number = "number",
+    bit = "bit",
+    bool = "bool",
+    int = "int"
+}
 declare enum GrammarConstants {
     grammar = "grammar",
     extensions = "extensions",
@@ -20,11 +29,12 @@ declare enum GrammarConstants {
     nodeTypes = "nodeTypes",
     cells = "cells",
     catchAllCellType = "catchAllCellType",
+    firstCellType = "firstCellType",
     catchAllNodeType = "catchAllNodeType",
     defaults = "defaults",
     constants = "constants",
     group = "group",
-    any = "any",
+    anySpecial = "anySpecial",
     required = "required",
     single = "single",
     tags = "tags",
@@ -48,4 +58,4 @@ declare enum GrammarConstantsErrors {
     missingRequiredNodeTypeError = "missingRequiredNodeTypeError",
     nodeTypeUsedMultipleTimesError = "nodeTypeUsedMultipleTimesError"
 }
-export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler };
+export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler, GrammarStandardCellTypes };

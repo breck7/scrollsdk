@@ -8,16 +8,20 @@ grammar
  catchAllNodeType error
 cellType filepath
  highlightScope string
+cellType termWord
+ highlightScope variable.parameter
+cellType fileConstant
+ highlightScope keyword.control
 abstract term
  catchAllCellType filepath
- highlightScope variable.parameter
+ firstCellType termWord
 nodeType error
  constructors
   nodejs ErrorNode
   browser ErrorNode
 nodeType file
  catchAllCellType filepath
- highlightScope keyword.control
+ firstCellType fileConstant
  nodeTypes
   external
   absolute

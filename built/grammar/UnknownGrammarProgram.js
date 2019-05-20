@@ -39,7 +39,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             const defNode = new TreeNode_1.default(`${GrammarConstants_1.GrammarConstants.nodeType} ${firstWord}`).nodeAt(0);
             const childFirstWords = Object.keys(allChilds[firstWord]);
             if (childFirstWords.length) {
-                //defNode.touchNode(GrammarConstants.any) // todo: remove?
+                //defNode.touchNode(GrammarConstants.anySpecial) // todo: remove?
                 childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants_1.GrammarConstants.nodeTypes} ${firstWord}`));
             }
             const allLines = allFirstWordNodes[firstWord];

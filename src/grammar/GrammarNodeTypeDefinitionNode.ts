@@ -19,6 +19,13 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     )
   }
 
+  getExpectedLineCellTypes() {
+    const req = [this.getFirstCellType()].concat(this.getRequiredCellTypeNames())
+    const catchAllCellType = this.getCatchAllCellTypeName()
+    if (catchAllCellType) req.push(catchAllCellType + "*")
+    return req.join(" ")
+  }
+
   isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean {
     const chain = this.getNodeTypeInheritanceSet()
     return firstWordsInScope.some(firstWord => chain.has(firstWord))
@@ -32,13 +39,12 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     const defaultHighlightScope = "source"
     const program = this.getProgram()
     const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const color = (this.getHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`
     const topHalf = ` '${this.getSublimeSyntaxContextId()}':
-  - match: ${match}
-    scope: ${color}`
+  - match: ${match}`
     const requiredCellTypeNames = this.getRequiredCellTypeNames()
     const catchAllCellTypeName = this.getCatchAllCellTypeName()
+    requiredCellTypeNames.unshift(this.getFirstCellType())
     if (catchAllCellTypeName) requiredCellTypeNames.push(catchAllCellTypeName)
     if (!requiredCellTypeNames.length) return topHalf
     const captures = requiredCellTypeNames

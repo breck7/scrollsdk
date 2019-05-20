@@ -1,7 +1,7 @@
 grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
- catchAllNodeType _error
+ catchAllNodeType catchAll.error
  nodeTypeOrder grammar cellType abstract nodeType
  extensions grammar gram
  example A grammar that parses anything:
@@ -9,19 +9,26 @@ grammar
    name latin
    catchAllNodeType any
   nodeType any
-   any
+   anySpecial
  version 1.1.0
  nodeTypes
   grammar
   cellType
   abstract
   nodeType
+cellType anyFirstWord
+cellType abstractConstant
+ highlightScope entity.name.tag
 cellType anyWord
 cellType builtInConstructorOrConstructorName
 cellType builtInConstructorOrFilePath
+cellType cellPropertyName
+ highlightScope variable.parameter
 cellType cellTypeEnum
  enumFromGrammar cellType
 cellType cellTypeName
+cellType cellTypeOrNodeType
+ enum cellType nodeType
 cellType compilerTargetExtension
  description The target extension of the compiler output such as "o" or "js" or "html"
 cellType constructorName
@@ -37,25 +44,27 @@ cellType int
  regex \-?[0-9]+
  highlightScope constant.numeric
 cellType javascriptCodeWord
-cellType nodeTypeName
- highlightScope variable.parameter
+cellType lowercaseWord
+ regex [a-z]+
 cellType nodeTypeEnum
  highlightScope variable.parameter
  enumFromGrammar nodeType
-cellType lowercaseWord
- regex [a-z]+
+cellType nodeTypeName
+ highlightScope variable.parameter
+cellType propertyName
+ highlightScope constant.language
 cellType regexWord
  highlightScope string.regexp
 cellType scopeName
  enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
  highlightScope string
+cellType scriptUrl
 cellType semanticVersion
  regex [0-9]+\.[0-9]+\.[0-9]+
  highlightScope constant.numeric
 cellType string
  highlightScope string
 cellType tag
-cellType scriptUrl
 cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
@@ -64,34 +73,34 @@ cellType exampleWord string
  highlightScope comment
 abstract abstract.compilerRule
  catchAllCellType anyWord
- highlightScope entity.other.attribute-name
-abstract abstract.environment
-abstract abstract.nodeTypeRule
- highlightScope entity.other.attribute-name
- single
-abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
-nodeType _constantAny
+ firstCellType propertyName
+nodeType catchAll.constantAny
  catchAllCellType anyWord
- catchAllNodeType _constantAny
-nodeType _constantDefinition
+ catchAllNodeType catchAll.constantAny
+nodeType catchAll.constantDefinition
  catchAllCellType anyWord
- catchAllNodeType _constantAny
-nodeType _defaultTuple
+ catchAllNodeType catchAll.constantAny
+nodeType catchAll.defaultTuple
  cells anyWord
  catchAllCellType anyWord
-nodeType _error
+abstract abstract.environment
+nodeType catchAll.error
  constructors
   nodejs ErrorNode
   browser ErrorNode
-nodeType _exampleLine
+nodeType catchAll.exampleLine
  catchAllCellType exampleWord
- highlightScope comment
- catchAllNodeType _exampleLine
-nodeType _nodeTypeUse
+ firstCellType exampleWord
+ catchAllNodeType catchAll.exampleLine
+abstract abstract.nodeTypeRule
+ firstCellType propertyName
+ single
+nodeType catchAll.nodeTypeOption
+abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
 nodeType cellType
  cells cellTypeName
  catchAllCellType extendedCellType
- highlightScope variable.parameter
+ firstCellType propertyName
  nodeTypes
   highlightScope
   regex
@@ -100,15 +109,18 @@ nodeType cellType
   enum
 nodeType enum
  catchAllCellType enumOption
- highlightScope entity.other.attribute-name
+ firstCellType cellPropertyName
+nodeType enumFromGrammar
+ cells cellTypeOrNodeType
+ firstCellType cellPropertyName
 nodeType extensions
  catchAllCellType fileExtension
- highlightScope constant.language
+ firstCellType propertyName
  description File extensions of your language.
 nodeType grammar
  required
  single
- highlightScope constant.language
+ firstCellType propertyName
  nodeTypes
   name
   description
@@ -122,42 +134,41 @@ nodeType grammar
   version
 nodeType group
  catchAllCellType nodeTypeName
- highlightScope entity.other.attribute-name
+ firstCellType propertyName
  description Available on abstract nodes only. Use it to more concisely generate nodeTypes all extending from this abstract nodeType, if they have no special properties.
+nodeType highlightScope
+ cells scopeName
+ description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
+ single
 nodeType javascriptCodeLine
  catchAllCellType javascriptCodeWord
  catchAllNodeType javascriptCodeLine
+nodeType name
+ cells grammarName
+ firstCellType propertyName
+ description The name of your language. Also serves as the default file extension.
 nodeType nodeType
  cells nodeTypeName
  catchAllCellType extendedNodeType
- catchAllNodeType _error
+ catchAllNodeType catchAll.error
  constructors
   nodejs NonTerminalNode
   browser NonTerminalNode
- highlightScope variable.function
+ firstCellType propertyName
  nodeTypes
   abstract.nodeTypeRule
 nodeType nodeTypeOrder
  catchAllCellType nodeTypeName
- highlightScope constant.language
+ firstCellType propertyName
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
-cellType cellTypeOrNodeType
- enum cellType nodeType
-nodeType enumFromGrammar
- cells cellTypeOrNodeType
- highlightScope entity.other.attribute-name
-nodeType name
- cells grammarName
- highlightScope constant.language
- description The name of your language. Also serves as the default file extension.
 nodeType regex
  catchAllCellType regexWord
  description The word must match this pattern or it shall be marked as an error.
- highlightScope entity.other.attribute-name
+ firstCellType cellPropertyName
  single
 nodeType version
  cells semanticVersion
- highlightScope constant.language
+ firstCellType propertyName
  description Version number of your language.
 nodeType closeChildren abstract.compilerRule
 nodeType indentCharacter abstract.compilerRule
@@ -176,7 +187,7 @@ nodeType nodejs abstract.environment
  cells builtInConstructorOrFilePath
  catchAllCellType constructorName
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-nodeType any abstract.nodeTypeRule
+nodeType anySpecial abstract.nodeTypeRule
 nodeType catchAllCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
@@ -195,21 +206,20 @@ nodeType compiler abstract.nodeTypeRule
   closeChildren
   indentCharacter
 nodeType constants abstract.nodeTypeRule
- catchAllNodeType _constantDefinition
+ catchAllNodeType catchAll.constantDefinition
 nodeType defaults abstract.nodeTypeRule
- catchAllNodeType _defaultTuple
+ catchAllNodeType catchAll.defaultTuple
 nodeType description abstract.nodeTypeRule
  catchAllCellType string
 nodeType example abstract.nodeTypeRule
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleWord
- catchAllNodeType _exampleLine
- highlightScope comment
+ catchAllNodeType catchAll.exampleLine
+nodeType firstCellType abstract.nodeTypeRule
+ cells cellTypeEnum
+ description If you have an any node, use this to correctly parse the first word.
 nodeType frequency abstract.nodeTypeRule
  cells float
-nodeType highlightScope abstract.nodeTypeRule
- cells scopeName
- description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
 nodeType required abstract.nodeTypeRule
  description If present, the parent node will have an error if one of these nodes is not provided.
 nodeType single abstract.nodeTypeRule
@@ -221,10 +231,10 @@ nodeType constructors abstract.nonTerminalNodeTypeRule
   abstract.environment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
 nodeType nodeTypes abstract.nonTerminalNodeTypeRule
- catchAllNodeType _nodeTypeUse
+ catchAllNodeType catchAll.nodeTypeOption
  description A list of possible child nodeTypes for a node. This is a not a leaf node in order to allow seamless extending.
 nodeType abstract nodeType
- highlightScope entity.name.tag
+ firstCellType abstractConstant
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
  nodeTypes
   abstract.nodeTypeRule

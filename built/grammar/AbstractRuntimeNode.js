@@ -27,7 +27,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
     }
     _getAutocompleteResultsForCell(partialWord, cellIndex) {
         // todo: root should be [] correct?
-        const cell = this._getGrammarBackedCellArray()[cellIndex - 1];
+        const cell = this._getGrammarBackedCellArray()[cellIndex];
         return cell ? cell.getAutoCompleteWords(partialWord) : [];
     }
     _getAutocompleteResultsForFirstWord(partialWord) {

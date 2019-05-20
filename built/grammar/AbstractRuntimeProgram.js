@@ -99,9 +99,9 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         });
         return usage;
     }
-    getInPlaceSyntaxTree() {
+    getInPlaceCellTypeTree() {
         return this.getTopDownArray()
-            .map(child => child.getIndentation() + child.getLineSyntax())
+            .map(child => child.getIndentation() + child.getLineCellTypes())
             .join("\n");
     }
     getInPlaceHighlightScopeTree() {
@@ -109,15 +109,15 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             .map(child => child.getIndentation() + child.getLineHighlightScopes())
             .join("\n");
     }
-    getInPlaceSyntaxTreeWithNodeTypes() {
+    getInPlaceCellTypeTreeWithNodeConstructorNames() {
         return this.getTopDownArray()
-            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineSyntax())
+            .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
             .join("\n");
     }
     // todo: refine and make public
-    _getSyntaxTreeHtml() {
+    _getInPlaceCellTypeTreeHtml() {
         const getColor = (child) => {
-            if (child.getLineSyntax().includes("error"))
+            if (child.getLineCellTypes().includes("error"))
                 return "red";
             return "black";
         };
@@ -130,7 +130,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             return parts.join(" ");
         };
         return this.getTopDownArray()
-            .map(child => `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(child.getLineSyntax().split(" "), child.getLine().split(" "))}</span></div>`)
+            .map(child => `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(child.getLineCellTypes().split(" "), child.getLine().split(" "))}</span></div>`)
             .join("");
     }
     getTreeWithNodeTypes() {
@@ -147,7 +147,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         const treeMTime = this.getTreeMTime();
         if (this._cache_programCellTypeStringMTime === treeMTime)
             return undefined;
-        this._cache_typeTree = new TreeNode_1.default(this.getInPlaceSyntaxTree());
+        this._cache_typeTree = new TreeNode_1.default(this.getInPlaceCellTypeTree());
         this._cache_highlightScopeTree = new TreeNode_1.default(this.getInPlaceHighlightScopeTree());
         this._cache_programCellTypeStringMTime = treeMTime;
     }

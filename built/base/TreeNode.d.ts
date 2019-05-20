@@ -14,7 +14,7 @@ declare class ImmutableNode extends AbstractNode {
     private _index;
     execute(context: any): Promise<any[]>;
     getErrors(): types.ParseError[];
-    getLineSyntax(): string;
+    getLineCellTypes(): string;
     executeSync(context: any): any[];
     isNodeJs(): boolean;
     isBrowser(): boolean;

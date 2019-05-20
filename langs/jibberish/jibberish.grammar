@@ -9,6 +9,7 @@ grammar
   topLevel
   text
   someAbstractClass
+cellType anyFirstWord
 cellType columnNameEnum
 cellType columnName
 cellType errorWord
@@ -18,14 +19,18 @@ cellType int
 cellType onoff
  enum on off
 cellType word
+cellType topLevelProperty
+ highlightScope constant.language
+cellType opSymbol
+ highlightScope keyword.operator.arithmetic
 abstract someAbstractClass
 abstract topLevel
- highlightScope constant.language
+ firstCellType topLevelProperty
 abstract color_properties topLevel
  group hue saturation constrast
  cells int
 nodeType error
- highlightScope invalid
+ firstCellType errorWord
  catchAllCellType errorWord
  constructors
   nodejs ErrorNode
@@ -36,17 +41,17 @@ nodeType lineOfCode
   nodejs ./jibberishNodes.js LineOfCodeNode
   browser LineOfCodeNode jibberishNodes.js
 nodeType text
- any
+ anySpecial
 nodeType extendsAbstract someAbstractClass
  cells int
 nodeType add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode
 nodeType + add
+ firstCellType opSymbol
  example Adding two numbers:
   + 1 2
  catchAllCellType int
- highlightScope keyword.operator.arithmetic
 nodeType block topLevel
  nodeTypes
   topLevel

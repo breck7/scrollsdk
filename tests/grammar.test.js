@@ -81,37 +81,6 @@ testTree.jibberish = equal => {
   // Act/Assert
   equal(program.getNode("someCode echo") instanceof jibberishNodes.LineOfCodeNode, true, "line of code class")
 
-  // Act
-  const someJibberishProgram = makeJibberishProgram(`foo
-+ 2 3 2`)
-
-  // Assert
-  equal(
-    someJibberishProgram.getInPlaceCellTypeTree(),
-    `nodeType
-nodeType int int int`,
-    "word types should match"
-  )
-  equal(someJibberishProgram.nodeAt(1).getParsedWords()[0], 2)
-
-  // Act
-  const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()
-  const treeWithNodeTypes = someJibberishProgram.getTreeWithNodeTypes()
-
-  // Assert
-  equal(
-    nodeTypes,
-    `GrammarBackedTerminalNode nodeType
-additionNode nodeType int int int`,
-    "nodeTypes word types should match"
-  )
-  equal(
-    treeWithNodeTypes,
-    `GrammarBackedTerminalNode foo
-additionNode + 2 3 2`,
-    "treeWithNodeTypes word types should match"
-  )
-
   // Arrange
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
 
@@ -134,6 +103,39 @@ missing2 true`)
 
   // Assert
   equal(programWithNodeTypeBugs.getInvalidNodeTypes().length, 2)
+}
+
+testTree.cellTypeTree = equal => {
+  // Act
+  const someJibberishProgram = makeJibberishProgram(`foo
++ 2 3 2`)
+
+  // Assert
+  equal(
+    someJibberishProgram.getInPlaceCellTypeTree(),
+    `topLevelProperty
+opSymbol int int int`,
+    "word types should match"
+  )
+  equal(someJibberishProgram.nodeAt(1).getParsedWords()[1], 2)
+
+  // Act
+  const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()
+  const treeWithNodeTypes = someJibberishProgram.getTreeWithNodeTypes()
+
+  // Assert
+  equal(
+    nodeTypes,
+    `GrammarBackedTerminalNode topLevelProperty
+additionNode opSymbol int int int`,
+    "nodeTypes word types should match"
+  )
+  equal(
+    treeWithNodeTypes,
+    `GrammarBackedTerminalNode foo
+additionNode + 2 3 2`,
+    "treeWithNodeTypes word types should match"
+  )
 }
 
 testTree.highlightScopes = equal => {
@@ -198,7 +200,7 @@ com
 
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
-  const program = makeGrammarProgram(`nodeType foo
+  const program = makeGrammarProgram(`cellType foo
  highlightScope comme`)
 
   // Act/Assert
@@ -233,7 +235,7 @@ testTree.autocompleteCustom = equal => {
   )
 }
 
-testTree.anyNodes = equal => {
+testTree.anySpecialNodes = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`text foobar
  This is an any node.
@@ -335,6 +337,7 @@ nodeType +
  catchAllCellType int
  example This is a bad example.
   + 1 B
+cellType anyFirstWord
 cellType int`
   )
 

@@ -5,18 +5,20 @@ const GrammarConstants_1 = require("./GrammarConstants");
 A cell contains a word but also the type information for that word.
 */
 class AbstractGrammarBackedCell {
-    constructor(word, type, node, index, isCatchAll, expectedLinePattern, grammarProgram, runTimeProgram) {
-        this._word = word;
-        this._type = type;
+    constructor(node, index, typeDef, cellTypeName, isCatchAll) {
+        this._typeDef = typeDef;
         this._node = node;
         this._isCatchAll = isCatchAll;
-        this._expectedLinePattern = expectedLinePattern;
-        this._grammarProgram = grammarProgram;
-        this._index = index + 1;
-        this._program = runTimeProgram;
+        this._index = index;
+        this._cellTypeName = cellTypeName;
+        this._word = node.getWord(index);
+        this._grammarProgram = node.getDefinition().getProgram();
     }
     getCellTypeName() {
-        return this._type ? this._type.getCellTypeId() : undefined;
+        return this._cellTypeName;
+    }
+    _getProgram() {
+        return this._node.getProgram();
     }
     isCatchAll() {
         return this._isCatchAll;
@@ -28,7 +30,7 @@ class AbstractGrammarBackedCell {
     }
     getAutoCompleteWords(partialWord) {
         const definition = this._getCellTypeDefinition();
-        let words = definition ? definition.getAutocompleteWordOptions(this._program) : [];
+        let words = definition ? definition.getAutocompleteWordOptions(this._getProgram()) : [];
         const runTimeOptions = this._node.getRunTimeEnumOptions(this);
         if (runTimeOptions)
             words = runTimeOptions.concat(words);
@@ -45,42 +47,46 @@ class AbstractGrammarBackedCell {
         return this._word;
     }
     _getCellTypeDefinition() {
-        return this._type;
+        return this._typeDef;
     }
     _getLineNumber() {
         return this._node.getPoint().y;
+    }
+    _getFullLine() {
+        return this._node.getLine();
+    }
+    _getErrorContext() {
+        return this._getFullLine().split(" ")[0]; // todo: XI
+    }
+    _getExpectedLineCellTypes() {
+        return this._node.getDefinition().getExpectedLineCellTypes();
     }
     isValid() {
         const runTimeOptions = this._node.getRunTimeEnumOptions(this);
         if (runTimeOptions)
             return runTimeOptions.includes(this._word);
-        return this._getCellTypeDefinition().isValid(this._word, this._node.getProgram()) && this._isValid();
+        return this._getCellTypeDefinition().isValid(this._word, this._getProgram()) && this._isValid();
     }
     getErrorIfAny() {
-        const word = this._word;
-        const index = this._index;
-        const type = this.getCellTypeName();
-        const fullLine = this._node.getLine();
-        const line = this._getLineNumber();
-        const context = fullLine.split(" ")[0]; // todo: XI
-        if (word === undefined)
+        if (this._word !== undefined && this.isValid())
+            return undefined;
+        if (this._word === undefined)
             return {
                 kind: GrammarConstants_1.GrammarConstantsErrors.unfilledColumnError,
-                subkind: type,
-                level: index,
-                context: context,
-                message: `${GrammarConstants_1.GrammarConstantsErrors.unfilledColumnError} "${type}" cellType in "${fullLine}" at line ${line} word ${index}. Expected pattern: "${this._expectedLinePattern}". definition: ${this._node.getDefinition().toString()}`
+                subkind: this.getCellTypeName(),
+                level: this._index,
+                context: this._getErrorContext(),
+                message: `${GrammarConstants_1.GrammarConstantsErrors.unfilledColumnError} "${this.getCellTypeName()}" cellType in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node
+                    .getDefinition()
+                    .toString()}`
             };
-        const runTimeGrammarBackedProgram = this._node.getProgram();
-        return this.isValid()
-            ? undefined
-            : {
-                kind: GrammarConstants_1.GrammarConstantsErrors.invalidWordError,
-                subkind: type,
-                level: index,
-                context: context,
-                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidWordError} in "${fullLine}" at line ${line} column ${index}. "${word}" does not fit in "${type}" cellType. Expected pattern: "${this._expectedLinePattern}".`
-            };
+        return {
+            kind: GrammarConstants_1.GrammarConstantsErrors.invalidWordError,
+            subkind: this.getCellTypeName(),
+            level: this._index,
+            context: this._getErrorContext(),
+            message: `${GrammarConstants_1.GrammarConstantsErrors.invalidWordError} in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${this._word}" does not fit in "${this.getCellTypeName()}" cellType. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
+        };
     }
 }
 exports.AbstractGrammarBackedCell = AbstractGrammarBackedCell;
@@ -166,18 +172,12 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell {
         return this._word;
     }
     getErrorIfAny() {
-        const word = this._word;
-        const index = this._index;
-        const type = this.getCellTypeName();
-        const fullLine = this._node.getLine();
-        const line = this._getLineNumber();
-        const context = fullLine.split(" ")[0]; // todo: XI
         return {
             kind: GrammarConstants_1.GrammarConstantsErrors.extraWordError,
-            subkind: fullLine,
-            level: index,
-            context: context,
-            message: `${GrammarConstants_1.GrammarConstantsErrors.extraWordError} "${word}" in "${fullLine}" at line ${line} word ${index}. Expected pattern: "${this._expectedLinePattern}".`
+            subkind: "",
+            level: this._index,
+            context: this._getErrorContext(),
+            message: `${GrammarConstants_1.GrammarConstantsErrors.extraWordError} "${this._word}" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }
@@ -190,19 +190,12 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
         return this._word;
     }
     getErrorIfAny() {
-        const word = this._word;
-        const index = this._index;
-        const type = this.getCellTypeName();
-        const fullLine = this._node.getLine();
-        const line = this._getLineNumber();
-        const context = fullLine.split(" ")[0]; // todo: XI
-        const grammarProgram = this._grammarProgram;
         return {
             kind: GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError,
-            subkind: type,
-            level: index,
-            context: context,
-            message: `${GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError} No cellType "${type}" in grammar "${grammarProgram.getExtensionName()}" found in "${fullLine}" on line ${line}. Expected pattern: "${this._expectedLinePattern}".`
+            subkind: this.getCellTypeName(),
+            level: this._index,
+            context: this._getErrorContext(),
+            message: `${GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError} For word "${this._word}" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }

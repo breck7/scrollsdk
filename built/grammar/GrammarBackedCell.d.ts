@@ -1,18 +1,18 @@
 import types from "../types";
 import GrammarProgram from "./GrammarProgram";
-import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
+import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 declare abstract class AbstractGrammarBackedCell<T> {
-    constructor(word: string, type: GrammarCellTypeDefinitionNode, node: any, index: types.int, isCatchAll: boolean, expectedLinePattern: string, grammarProgram: GrammarProgram, runTimeProgram: AbstractRuntimeProgram);
-    protected _node: any;
+    constructor(node: AbstractRuntimeNonRootNode, index: types.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeName: string, isCatchAll: boolean);
+    private _node;
     protected _grammarProgram: GrammarProgram;
-    protected _program: AbstractRuntimeProgram;
-    protected _expectedLinePattern: string;
     protected _index: types.int;
     protected _word: string;
-    protected _type: GrammarCellTypeDefinitionNode;
-    protected _isCatchAll: boolean;
+    private _typeDef;
+    private _isCatchAll;
+    private _cellTypeName;
     getCellTypeName(): string;
+    private _getProgram;
     isCatchAll(): boolean;
     abstract getParsed(): T;
     getHighlightScope(): string | undefined;
@@ -23,6 +23,9 @@ declare abstract class AbstractGrammarBackedCell<T> {
     getWord(): string;
     protected _getCellTypeDefinition(): GrammarCellTypeDefinitionNode;
     protected _getLineNumber(): any;
+    protected _getFullLine(): any;
+    protected _getErrorContext(): any;
+    protected _getExpectedLineCellTypes(): any;
     protected abstract _isValid(): boolean;
     isValid(): boolean;
     getErrorIfAny(): types.ParseError;

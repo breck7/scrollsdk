@@ -1,11 +1,12 @@
 import AbstractRuntimeNode from "./AbstractRuntimeNode";
 import { AbstractGrammarBackedCell } from "./GrammarBackedCell";
 import GrammarCompilerNode from "./GrammarCompilerNode";
+import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode";
 import types from "../types";
 declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getProgram(): AbstractRuntimeNode;
     getGrammarProgram(): import("./GrammarProgram").default;
-    getDefinition(): import("./AbstractGrammarDefinitionNode").default;
+    getDefinition(): GrammarNodeTypeDefinitionNode;
     getCompilerNode(targetLanguage: types.targetLanguageId): GrammarCompilerNode;
     getParsedWords(): any[];
     getCompiledIndentation(targetLanguage: types.targetLanguageId): string;
@@ -14,7 +15,7 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getErrors(): types.ParseError[];
     readonly cells: types.stringMap;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
-    getLineSyntax(): string;
+    getLineCellTypes(): string;
     getLineHighlightScopes(defaultScope?: string): string;
 }
 export default AbstractRuntimeNonRootNode;

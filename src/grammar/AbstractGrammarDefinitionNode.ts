@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
-import { GrammarConstants } from "./GrammarConstants"
+import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
 import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode"
 import GrammarCustomConstructorsNode from "./GrammarCustomConstructorsNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
@@ -26,11 +26,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.description,
       GrammarConstants.catchAllNodeType,
       GrammarConstants.catchAllCellType,
+      GrammarConstants.firstCellType,
       GrammarConstants.defaults,
       GrammarConstants.tags,
-      GrammarConstants.any,
+      GrammarConstants.anySpecial,
       GrammarConstants.group,
-      GrammarConstants.highlightScope,
       GrammarConstants.required,
       GrammarConstants.single
     ]
@@ -59,7 +59,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   protected _isAnyNode() {
-    return this.has(GrammarConstants.any)
+    return this.has(GrammarConstants.anySpecial)
   }
 
   private _cache_definedNodeConstructor: types.RunTimeNodeConstructor
@@ -216,8 +216,8 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar()
   }
 
-  getHighlightScope(): string | undefined {
-    return this.get(GrammarConstants.highlightScope)
+  getFirstCellType(): string {
+    return this.get(GrammarConstants.firstCellType) || GrammarStandardCellTypes.anyFirstWord
   }
 
   isDefined(firstWord: string) {

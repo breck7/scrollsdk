@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractRuntimeNonRootNode_1 = require("./AbstractRuntimeNonRootNode");
 const GrammarConstants_1 = require("./GrammarConstants");
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode_1.default {
-    getLineSyntax() {
+    getLineCellTypes() {
         return "error ".repeat(this.getWords().length).trim();
     }
     getErrors() {

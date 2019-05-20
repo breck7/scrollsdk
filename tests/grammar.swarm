@@ -11,6 +11,7 @@
      baseNode
    cellType any
    foo
+   cellType anyFirstWord
    cellType word any
    nodeType baseNode
    nodeType block baseNode

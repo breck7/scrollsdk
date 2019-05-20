@@ -20,11 +20,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants_1.GrammarConstants.description,
             GrammarConstants_1.GrammarConstants.catchAllNodeType,
             GrammarConstants_1.GrammarConstants.catchAllCellType,
+            GrammarConstants_1.GrammarConstants.firstCellType,
             GrammarConstants_1.GrammarConstants.defaults,
             GrammarConstants_1.GrammarConstants.tags,
-            GrammarConstants_1.GrammarConstants.any,
+            GrammarConstants_1.GrammarConstants.anySpecial,
             GrammarConstants_1.GrammarConstants.group,
-            GrammarConstants_1.GrammarConstants.highlightScope,
             GrammarConstants_1.GrammarConstants.required,
             GrammarConstants_1.GrammarConstants.single
         ];
@@ -48,7 +48,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return false;
     }
     _isAnyNode() {
-        return this.has(GrammarConstants_1.GrammarConstants.any);
+        return this.has(GrammarConstants_1.GrammarConstants.anySpecial);
     }
     getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
@@ -176,8 +176,8 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             return undefined;
         this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar();
     }
-    getHighlightScope() {
-        return this.get(GrammarConstants_1.GrammarConstants.highlightScope);
+    getFirstCellType() {
+        return this.get(GrammarConstants_1.GrammarConstants.firstCellType) || GrammarConstants_1.GrammarStandardCellTypes.anyFirstWord;
     }
     isDefined(firstWord) {
         return !!this._getProgramNodeTypeDefinitionCache()[firstWord.toLowerCase()];

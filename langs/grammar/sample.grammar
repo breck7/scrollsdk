@@ -2,4 +2,4 @@ grammar
  name latin
  catchAllNodeType any
 nodeType any
- any
+ anySpecial

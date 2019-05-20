@@ -21,10 +21,10 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getFirstWordMap(): types.firstWordToNodeConstructorMap;
     getDefinition(): GrammarProgram;
     getNodeTypeUsage(filepath?: string): TreeNode;
-    getInPlaceSyntaxTree(): string;
+    getInPlaceCellTypeTree(): string;
     getInPlaceHighlightScopeTree(): string;
-    getInPlaceSyntaxTreeWithNodeTypes(): string;
-    protected _getSyntaxTreeHtml(): string;
+    getInPlaceCellTypeTreeWithNodeConstructorNames(): string;
+    protected _getInPlaceCellTypeTreeHtml(): string;
     getTreeWithNodeTypes(): string;
     getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope | undefined;
     private _cache_programCellTypeStringMTime;

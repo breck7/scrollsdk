@@ -8,14 +8,29 @@ grammar
  catchAllNodeType error
  constructors
   nodejs ./SwarmProgramRoot.js
+cellType anyFirstWord
 cellType anyWord
+ highlightScope string
+cellType commentWord
  highlightScope string
 cellType filepath
  highlightScope string
+cellType topWord
+ highlightScope constant.language
 cellType int
  regex \-?[0-9]+
-abstract assertion
+cellType assertWord
  highlightScope keyword.operator
+cellType controlWord
+ highlightScope keyword.control
+cellType setupWord
+ highlightScope constant.language
+cellType parameterWord
+ highlightScope variable.parameter
+cellType commandWord
+ highlightScope variable.function
+abstract assertion
+ firstCellType assertWord
 abstract terminal
 abstract testBlock
  catchAllCellType anyWord
@@ -24,11 +39,11 @@ abstract testBlock
  nodeTypes
   #setup
  catchAllNodeType commandNode
- highlightScope keyword.control
+ firstCellType controlWord
 nodeType #setup
  constructors
   nodejs ./TestSetupNode.js
- highlightScope constant.language
+ firstCellType setupWord
  nodeTypes
   async
   require
@@ -38,24 +53,25 @@ nodeType %%|
  constructors
   nodejs ./SetupConstructorArgNode.js
  description Pass in a multiline string to setup constructor. #todo: rename
- catchAllNodeType any
- highlightScope variable.parameter
+ catchAllNodeType anyNode
+ firstCellType parameterWord
 nodeType %|
- highlightScope variable.parameter
+ firstCellType parameterWord
  description Pass in a multiline string as a command arg. #todo: rename
  constructors
   nodejs ./CommandArgNode.js
- catchAllNodeType any
-nodeType any
+ catchAllNodeType anyNode
+nodeType anyNode
+ firstCellType anyWord
  catchAllCellType anyWord
- catchAllNodeType any
+ catchAllNodeType anyNode
 nodeType commandNode
  constructors
   nodejs ./CommandNode.js
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyWord
  catchAllNodeType commandNode
- highlightScope variable.function
+ firstCellType commandWord
  nodeTypes
   %|
   assertion
@@ -85,7 +101,7 @@ nodeType == assertion
   nodejs ./AssertEqualNode.js
 nodeType =| assertion
  description When your expected value is a multiline string.
- catchAllNodeType any
+ catchAllNodeType anyNode
  constructors
   nodejs ./AssertEqualBlockNode.js
 nodeType =~ assertion
@@ -95,14 +111,14 @@ nodeType =~ assertion
   nodejs ./AssertTypeOfNode.js
 nodeType #! terminal
  cells filepath
- catchAllCellType anyWord
- highlightScope comment
+ catchAllCellType commentWord
+ firstCellType commentWord
 nodeType async terminal
  description Set this in setup to test async methods.
 nodeType require terminal
  cells filepath
  catchAllCellType anyWord
- highlightScope constant.language
+ firstCellType topWord
 nodeType static terminal
  description Add this to setup node to import class directly without initiating it, for static method testing.
 nodeType #test testBlock

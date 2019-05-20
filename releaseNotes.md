@@ -1,6 +1,7 @@
 edge / 2019-05-16
 ===================
 - Breaking: highlightScope is now defined only on cellTypes (no longer on nodeTypes)
+- Breaking: "any" grammar nodeType property is now "anySpecial" and is deprecated
 - Breaking: grammars should all define a "cellType any" if they have leave any firstCellTypes undefined
 - Breaking: getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
 - Breaking: in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder

@@ -14,6 +14,8 @@
        Hello world
        This is some text
      span Hello more
+ getProgramErrors
+  =# 0
  toHtml
   =|
    <html id="bam" class="someClass">
@@ -45,5 +47,5 @@
  getInPlaceCellTypeTree
   =|
    htmlTagName
-    anyFirstWord
+    contentHolderName
      anyHtmlContent anyHtmlContent

@@ -10,3 +10,5 @@
   =|
    const ten = [2, 3, 5].reduce((sum, num) => sum + num)
    console.log(ten)
+ getProgramErrors
+  =# 0

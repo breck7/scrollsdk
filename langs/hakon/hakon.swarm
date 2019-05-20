@@ -12,6 +12,8 @@
     &:hover
      color blue
      font-size 17px
+ getProgramErrors
+  =# 0
  compile
   =|
    body {

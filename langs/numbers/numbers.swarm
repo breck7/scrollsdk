@@ -1,0 +1,12 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#setup
+#test basics Numbers
+ #setup
+  require ./Numbers.js Program
+  %%|
+   # Should be 5:
+   + 2 3
+   # Should be 0:
+   - 3 2 1
+ getProgramErrors
+  =# 0

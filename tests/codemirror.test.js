@@ -96,7 +96,7 @@ nodeType foobar`
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammar", () => GrammarProgram, () => code))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 4)
-  equal(tokenLines.join(" "), `atom bracket atom bracket def bracket atom bracket number atom bracket def`)
+  equal(tokenLines.join(" "), `atom bracket atom bracket def bracket atom bracket number def bracket def`)
 }
 
 testTree.regressionTest = equal => {

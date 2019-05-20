@@ -1,3 +1,8 @@
+23.0.1 / 2019-05-20
+===================
+- Fix: sublime syntax regression fix
+- Fix: small lang regression fixes
+
 23.0.0 / 2019-05-20
 ===================
 - Breaking: highlightScope is now defined only on cellTypes (no longer on nodeTypes)

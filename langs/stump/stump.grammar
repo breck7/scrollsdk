@@ -7,6 +7,7 @@ grammar
  constructors
   nodejs ./StumpNodes.js StumpProgramRoot
   browser StumpProgramRoot StumpNodes.js
+cellType anyFirstWord
 cellType anyHtmlContent
  highlightScope string
 cellType attributeValue

@@ -167,7 +167,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             return def;
         // todo: implement contraints like a grammar file MUST have a catch all.
         if (this.isRoot())
-            throw new Error(`This grammar language lacks a root catch all definition`);
+            throw new Error(`This grammar language "${this.getProgram().getGrammarName()}" lacks a root catch all definition`);
         else
             return this.getParent()._getCatchAllDefinition();
     }

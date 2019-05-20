@@ -24,16 +24,25 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode_1.defa
     getSublimeSyntaxContextId() {
         return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
+    _getFirstCellHighlightScope() {
+        const program = this.getProgram();
+        const cellTypeDefinition = program.getCellTypeDefinition(this.getFirstCellType());
+        // todo: standardize error/capture error at grammar time
+        if (!cellTypeDefinition)
+            throw new Error(`No ${GrammarConstants_1.GrammarConstants.cellType} ${this.getFirstCellType()} found`);
+        return cellTypeDefinition.getHighlightScope();
+    }
     getMatchBlock() {
         const defaultHighlightScope = "source";
         const program = this.getProgram();
         const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const firstWordHighlightScope = (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition();
         const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`;
         const topHalf = ` '${this.getSublimeSyntaxContextId()}':
-  - match: ${match}`;
+  - match: ${match}
+    scope: ${firstWordHighlightScope}`;
         const requiredCellTypeNames = this.getRequiredCellTypeNames();
         const catchAllCellTypeName = this.getCatchAllCellTypeName();
-        requiredCellTypeNames.unshift(this.getFirstCellType());
         if (catchAllCellTypeName)
             requiredCellTypeNames.push(catchAllCellTypeName);
         if (!requiredCellTypeNames.length)

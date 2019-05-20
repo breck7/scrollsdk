@@ -16,9 +16,9 @@ grammar
   cellType
   abstract
   nodeType
-cellType anyFirstWord
 cellType abstractConstant
  highlightScope entity.name.tag
+cellType anyFirstWord
 cellType anyWord
 cellType builtInConstructorOrConstructorName
 cellType builtInConstructorOrFilePath
@@ -27,6 +27,8 @@ cellType cellPropertyName
 cellType cellTypeEnum
  enumFromGrammar cellType
 cellType cellTypeName
+cellType cellTypeNameConstant
+ highlightScope variable.parameter
 cellType cellTypeOrNodeType
  enum cellType nodeType
 cellType compilerTargetExtension
@@ -51,6 +53,8 @@ cellType nodeTypeEnum
  enumFromGrammar nodeType
 cellType nodeTypeName
  highlightScope variable.parameter
+cellType nodeTypeNameConstant
+ highlightScope variable.function
 cellType propertyName
  highlightScope constant.language
 cellType regexWord
@@ -74,6 +78,11 @@ cellType exampleWord string
 abstract abstract.compilerRule
  catchAllCellType anyWord
  firstCellType propertyName
+abstract abstract.environment
+abstract abstract.nodeTypeRule
+ firstCellType propertyName
+ single
+abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
 nodeType catchAll.constantAny
  catchAllCellType anyWord
  catchAllNodeType catchAll.constantAny
@@ -83,7 +92,6 @@ nodeType catchAll.constantDefinition
 nodeType catchAll.defaultTuple
  cells anyWord
  catchAllCellType anyWord
-abstract abstract.environment
 nodeType catchAll.error
  constructors
   nodejs ErrorNode
@@ -92,15 +100,11 @@ nodeType catchAll.exampleLine
  catchAllCellType exampleWord
  firstCellType exampleWord
  catchAllNodeType catchAll.exampleLine
-abstract abstract.nodeTypeRule
- firstCellType propertyName
- single
 nodeType catchAll.nodeTypeOption
-abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
 nodeType cellType
  cells cellTypeName
  catchAllCellType extendedCellType
- firstCellType propertyName
+ firstCellType cellTypeNameConstant
  nodeTypes
   highlightScope
   regex
@@ -137,6 +141,7 @@ nodeType group
  firstCellType propertyName
  description Available on abstract nodes only. Use it to more concisely generate nodeTypes all extending from this abstract nodeType, if they have no special properties.
 nodeType highlightScope
+ firstCellType propertyName
  cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
@@ -154,7 +159,7 @@ nodeType nodeType
  constructors
   nodejs NonTerminalNode
   browser NonTerminalNode
- firstCellType propertyName
+ firstCellType nodeTypeNameConstant
  nodeTypes
   abstract.nodeTypeRule
 nodeType nodeTypeOrder

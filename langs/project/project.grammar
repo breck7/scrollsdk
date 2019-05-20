@@ -6,6 +6,7 @@ grammar
  nodeTypes
   file
  catchAllNodeType error
+cellType anyFirstWord
 cellType filepath
  highlightScope string
 cellType termWord

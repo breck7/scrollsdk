@@ -6,6 +6,7 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     getExpectedLineCellTypes(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
     getSublimeSyntaxContextId(): string;
+    private _getFirstCellHighlightScope;
     getMatchBlock(): string;
     private _cache_nodeTypeInheritanceSet;
     getNodeTypeInheritanceSet(): Set<string>;

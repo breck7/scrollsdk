@@ -7,9 +7,9 @@ grammar
  example A grammar that parses anything:
   grammar
    name latin
-   catchAllNodeType any
-  nodeType any
-   anySpecial
+   catchAllNodeType anyNode
+  nodeType anyNode
+   blob
  version 1.1.0
  nodeTypes
   grammar
@@ -187,7 +187,8 @@ nodeType nodejs abstract.environment
  cells builtInConstructorOrFilePath
  catchAllCellType constructorName
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-nodeType anySpecial abstract.nodeTypeRule
+nodeType blob abstract.nodeTypeRule
+ description In rare cases with untyped content you can use a blob node, for now, to skip parsing for performance gains.
 nodeType catchAllCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.

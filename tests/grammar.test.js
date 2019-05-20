@@ -235,10 +235,10 @@ testTree.autocompleteCustom = equal => {
   )
 }
 
-testTree.anySpecialNodes = equal => {
+testTree.blobNodes = equal => {
   // Arrange/Act
   const anyProgram = makeJibberishProgram(`text foobar
- This is an any node.
+ This is a blob node.
  this is some text.
  hello world
  

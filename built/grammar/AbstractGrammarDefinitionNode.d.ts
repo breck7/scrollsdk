@@ -9,7 +9,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getNodeTypeIdFromDefinition(): string;
     protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
-    protected _isAnyNode(): boolean;
+    protected _isBlobNode(): boolean;
     private _cache_definedNodeConstructor;
     getConstructorDefinedInGrammar(): Function;
     protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;

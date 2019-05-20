@@ -43,7 +43,7 @@ enum GrammarConstants {
   defaults = "defaults",
   constants = "constants",
   group = "group",
-  anySpecial = "anySpecial",
+  blob = "blob",
   required = "required", // Require this nodeType to be present in a node or program
   single = "single", // Have at most 1 of these
   tags = "tags",

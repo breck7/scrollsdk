@@ -45,7 +45,7 @@ var GrammarConstants;
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
-    GrammarConstants["anySpecial"] = "anySpecial";
+    GrammarConstants["blob"] = "blob";
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";

@@ -46,7 +46,7 @@ class UnknownGrammarProgram extends TreeNode {
       const defNode = <TreeNode>new TreeNode(`${GrammarConstants.nodeType} ${firstWord}`).nodeAt(0)
       const childFirstWords = Object.keys(allChilds[firstWord])
       if (childFirstWords.length) {
-        //defNode.touchNode(GrammarConstants.anySpecial) // todo: remove?
+        //defNode.touchNode(GrammarConstants.blob) // todo: remove?
         childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants.nodeTypes} ${firstWord}`))
       }
 

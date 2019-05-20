@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode");
-const GrammarBackedAnyNode_1 = require("./GrammarBackedAnyNode");
+const GrammarBackedBlobNode_1 = require("./GrammarBackedBlobNode");
 const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 const GrammarBackedErrorNode_1 = require("./GrammarBackedErrorNode");
 const GrammarConstants_1 = require("./GrammarConstants");
@@ -40,7 +40,7 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
             ErrorNode: GrammarBackedErrorNode_1.default,
             TerminalNode: GrammarBackedTerminalNode_1.default,
             NonTerminalNode: GrammarBackedNonTerminalNode_1.default,
-            AnyNode: GrammarBackedAnyNode_1.default
+            BlobNode: GrammarBackedBlobNode_1.default
         };
         return constructors[this.getWord(1)];
     }

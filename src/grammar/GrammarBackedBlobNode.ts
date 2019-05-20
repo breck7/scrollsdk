@@ -1,7 +1,7 @@
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import types from "../types"
 
-class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
+class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
   getFirstWordMap() {
     return {}
   }
@@ -11,8 +11,8 @@ class GrammarBackedAnyNode extends GrammarBackedNonTerminalNode {
   }
 
   getCatchAllNodeConstructor(line: string) {
-    return GrammarBackedAnyNode
+    return GrammarBackedBlobNode
   }
 }
 
-export default GrammarBackedAnyNode
+export default GrammarBackedBlobNode

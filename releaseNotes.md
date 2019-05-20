@@ -1,7 +1,7 @@
-edge / 2019-05-16
+23.0.0 / 2019-05-20
 ===================
 - Breaking: highlightScope is now defined only on cellTypes (no longer on nodeTypes)
-- Breaking: "any" grammar nodeType property is now "anySpecial" and is deprecated
+- Breaking: "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode
 - Breaking: grammars should all define a "cellType any" if they have leave any firstCellTypes undefined
 - Breaking: getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
 - Breaking: in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
@@ -9,7 +9,6 @@ edge / 2019-05-16
 - Breaking: program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeTreeWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeTree
 - Breaking: in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
 - Breaking: getLineSyntax is now getLineCellTypes
-
 
 22.3.0 / 2019-05-16
 ===================

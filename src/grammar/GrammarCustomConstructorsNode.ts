@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
-import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
+import GrammarBackedBlobNode from "./GrammarBackedBlobNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
 import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
@@ -49,7 +49,7 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
       ErrorNode: GrammarBackedErrorNode,
       TerminalNode: GrammarBackedTerminalNode,
       NonTerminalNode: GrammarBackedNonTerminalNode,
-      AnyNode: GrammarBackedAnyNode
+      BlobNode: GrammarBackedBlobNode
     }
     return constructors[this.getWord(1)]
   }

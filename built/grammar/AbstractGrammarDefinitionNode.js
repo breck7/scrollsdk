@@ -9,7 +9,7 @@ const GrammarCompilerNode_1 = require("./GrammarCompilerNode");
 const GrammarExampleNode_1 = require("./GrammarExampleNode");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
 const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode");
-const GrammarBackedAnyNode_1 = require("./GrammarBackedAnyNode");
+const GrammarBackedBlobNode_1 = require("./GrammarBackedBlobNode");
 const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getFirstWordMap() {
@@ -23,7 +23,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants_1.GrammarConstants.firstCellType,
             GrammarConstants_1.GrammarConstants.defaults,
             GrammarConstants_1.GrammarConstants.tags,
-            GrammarConstants_1.GrammarConstants.anySpecial,
+            GrammarConstants_1.GrammarConstants.blob,
             GrammarConstants_1.GrammarConstants.group,
             GrammarConstants_1.GrammarConstants.required,
             GrammarConstants_1.GrammarConstants.single
@@ -42,13 +42,13 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this.getWord(1);
     }
     _isNonTerminal() {
-        return this._isAnyNode() || this.has(GrammarConstants_1.GrammarConstants.nodeTypes) || this.has(GrammarConstants_1.GrammarConstants.catchAllNodeType);
+        return this._isBlobNode() || this.has(GrammarConstants_1.GrammarConstants.nodeTypes) || this.has(GrammarConstants_1.GrammarConstants.catchAllNodeType);
     }
     _isAbstract() {
         return false;
     }
-    _isAnyNode() {
-        return this.has(GrammarConstants_1.GrammarConstants.anySpecial);
+    _isBlobNode() {
+        return this.has(GrammarConstants_1.GrammarConstants.blob);
     }
     getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
@@ -56,8 +56,8 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this._cache_definedNodeConstructor;
     }
     _getDefaultNodeConstructor() {
-        if (this._isAnyNode())
-            return GrammarBackedAnyNode_1.default;
+        if (this._isBlobNode())
+            return GrammarBackedBlobNode_1.default;
         return this._isNonTerminal() ? GrammarBackedNonTerminalNode_1.default : GrammarBackedTerminalNode_1.default;
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */

@@ -41,7 +41,7 @@ nodeType lineOfCode
   nodejs ./jibberishNodes.js LineOfCodeNode
   browser LineOfCodeNode jibberishNodes.js
 nodeType text
- anySpecial
+ blob
 nodeType extendsAbstract someAbstractClass
  cells int
 nodeType add topLevel

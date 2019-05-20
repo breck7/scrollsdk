@@ -1925,7 +1925,7 @@ nodeType nodeWithConsts topLevel
  constants
   greeting string hello world
 nodeType text
- anySpecial
+ blob
 nodeType add topLevel
  constructors
   nodejs ./jibberishNodes.js additionNode

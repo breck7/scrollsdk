@@ -9,7 +9,7 @@ import GrammarExampleNode from "./GrammarExampleNode"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
-import GrammarBackedAnyNode from "./GrammarBackedAnyNode"
+import GrammarBackedBlobNode from "./GrammarBackedBlobNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
@@ -29,7 +29,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.firstCellType,
       GrammarConstants.defaults,
       GrammarConstants.tags,
-      GrammarConstants.anySpecial,
+      GrammarConstants.blob,
       GrammarConstants.group,
       GrammarConstants.required,
       GrammarConstants.single
@@ -51,15 +51,15 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   protected _isNonTerminal() {
-    return this._isAnyNode() || this.has(GrammarConstants.nodeTypes) || this.has(GrammarConstants.catchAllNodeType)
+    return this._isBlobNode() || this.has(GrammarConstants.nodeTypes) || this.has(GrammarConstants.catchAllNodeType)
   }
 
   _isAbstract() {
     return false
   }
 
-  protected _isAnyNode() {
-    return this.has(GrammarConstants.anySpecial)
+  protected _isBlobNode() {
+    return this.has(GrammarConstants.blob)
   }
 
   private _cache_definedNodeConstructor: types.RunTimeNodeConstructor
@@ -70,7 +70,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor {
-    if (this._isAnyNode()) return GrammarBackedAnyNode
+    if (this._isBlobNode()) return GrammarBackedBlobNode
 
     return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }

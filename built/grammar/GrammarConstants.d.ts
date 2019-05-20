@@ -34,7 +34,7 @@ declare enum GrammarConstants {
     defaults = "defaults",
     constants = "constants",
     group = "group",
-    anySpecial = "anySpecial",
+    blob = "blob",
     required = "required",
     single = "single",
     tags = "tags",

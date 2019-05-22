@@ -1,9 +1,8 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test basics jibberish
- #setup
+test basics jibberish
+ arrangeTestSubject
   require ./JibberishProgram.js
-  %%|
+  constructWithBlockString
    foo
    nodeWithConsts
    nested
@@ -15,4 +14,4 @@
     echo hello world
    xColumnName gender
  getProgramErrors
-  =# 0
+  lengthIs 0

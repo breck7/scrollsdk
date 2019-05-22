@@ -36,6 +36,19 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }
+    updateNodeTypeIds(nodeTypeMap) {
+        if (typeof nodeTypeMap === "string")
+            nodeTypeMap = new TreeNode_1.default(nodeTypeMap);
+        if (nodeTypeMap instanceof TreeNode_1.default)
+            nodeTypeMap = nodeTypeMap.toObject();
+        for (let node of this.getTopDownArrayIterator()) {
+            const nodeTypeId = node.getDefinition().getNodeTypeIdFromDefinition();
+            const newId = nodeTypeMap[nodeTypeId];
+            if (newId)
+                node.setFirstWord(newId);
+        }
+        return this;
+    }
     getAllSuggestions() {
         return new TreeNode_1.default(this.getAllWordBoundaryCoordinates().map(coordinate => {
             const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x);
@@ -84,12 +97,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         const grammarProgram = this.getGrammarProgram();
         const nodeTypeDefinitions = grammarProgram.getNodeTypeDefinitions();
         nodeTypeDefinitions.forEach(child => {
-            usage.appendLine([
-                child.getNodeTypeIdFromDefinition(),
-                "line-id",
-                GrammarConstants_1.GrammarConstants.nodeType,
-                child.getRequiredCellTypeNames().join(" ")
-            ].join(" "));
+            usage.appendLine([child.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants_1.GrammarConstants.nodeType, child.getRequiredCellTypeNames().join(" ")].join(" "));
         });
         const programNodes = this.getTopDownArray();
         programNodes.forEach((programNode, lineNumber) => {

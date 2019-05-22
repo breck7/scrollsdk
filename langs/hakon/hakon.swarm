@@ -1,9 +1,8 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test basics hakon
- #setup
+test basics hakon
+ arrangeTestSubject
   require ./Hakon.js Program
-  %%|
+  constructWithBlockString
    body
     font-size 12px
     h1,h2
@@ -13,9 +12,9 @@
      color blue
      font-size 17px
  getProgramErrors
-  =# 0
+  lengthIs 0
  compile
-  =|
+  blockStringIs
    body {
      font-size: 12px;
    }

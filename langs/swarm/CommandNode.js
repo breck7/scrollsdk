@@ -17,21 +17,21 @@ class CommandNode extends jtree.NonTerminalNode {
     return this.getWordsFrom(1)
   }
 
-  _executeSwarmCommand(dummy) {
+  _executeSwarmCommand(testSubject) {
     const command = this.getFirstWord()
-    const commandParent = this.getRootNode().getCommandParent(dummy) // todo: hacky.
+    const commandParent = this.getRootNode().getCommandParent(testSubject) // todo: hacky.
     const commandFn = commandParent[command]
     return commandFn.apply(commandParent, this._getArgs())
   }
 
-  async execute(dummy) {
-    await this._executeSwarmCommand(dummy)
-    return super.execute(dummy) // note: this might not work with closure compiler b/c of bug #2652
+  async execute(testSubject) {
+    await this._executeSwarmCommand(testSubject)
+    return super.execute(testSubject) // note: this might not work with closure compiler b/c of bug #2652
   }
 
-  executeSync(dummy) {
-    const newDummy = this._executeSwarmCommand(dummy)
-    this.map(child => child.executeSync(newDummy))
+  executeSync(testSubject) {
+    const newTestSubject = this._executeSwarmCommand(testSubject)
+    this.map(child => child.executeSync(newTestSubject))
   }
 }
 

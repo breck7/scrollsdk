@@ -7,8 +7,8 @@ const SkippedTestBlock = require("./SkippedTestBlock.js")
 const SoloTestBlock = require("./SoloTestBlock.js")
 
 class SwarmProgramRoot extends jtree.programRoot {
-  getCommandParent(testDummy) {
-    return testDummy
+  getCommandParent(testSubject) {
+    return testSubject
   }
 
   getTestSetupNode() {
@@ -23,9 +23,7 @@ class SwarmProgramRoot extends jtree.programRoot {
 
   getTestsToRun() {
     const solos = this.getChildrenByNodeConstructor(SoloTestBlock)
-    const testsToRun = solos.length
-      ? solos
-      : this.getChildrenByNodeConstructor(TestBlock).filter(test => !(test instanceof SkippedTestBlock))
+    const testsToRun = solos.length ? solos : this.getChildrenByNodeConstructor(TestBlock).filter(test => !(test instanceof SkippedTestBlock))
     return testsToRun
   }
 }

@@ -1,8 +1,8 @@
 const jtree = require("../../index.js")
 
 class AbstractAssertNode extends jtree.NonTerminalNode {
-  async execute(dummy) {
-    const finalParts = AbstractAssertNode._getMethodFromDotPath(dummy, this.getWord(1))
+  async execute(testSubject) {
+    const finalParts = AbstractAssertNode._getMethodFromDotPath(testSubject, this.getWord(1))
     const subject = finalParts[0]
     const command = finalParts[1]
     const actual = subject[command]()

@@ -1,9 +1,8 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test stress test
- #setup
+test stress test
+ arrangeTestSubject
   require ../built/grammar/GrammarProgram.js default
-  %%|
+  constructWithBlockString
    grammar
     name testlang
     compiler txt
@@ -24,22 +23,22 @@
      sub to {word}
      closeChildren end
  getRunTimeNodeTypeNames
-  =# 3
+  lengthIs 3
  getNodeTypeDefinitionByName to
-  =~ object
+  typeIs object
  getTopNodeTypeIds
-  =# 3
+  lengthIs 3
  getTargetExtension
-  == txt
+  stringIs txt
  getExtensionName
-  == testlang
+  stringIs testlang
  getDocs
-  =~ string
+  typeIs string
  toSublimeSyntaxFile
-  =~ string
+  typeIs string
  isDefined notDefined
-  == false
+  stringIs false
  isDefined to
-  == true
+  stringIs true
  getProgramErrors
-  =# 1
+  lengthIs 1

@@ -1,12 +1,11 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test swarm base
- #setup
+test swarm base
+ arrangeTestSubject
   require ../built/base/TreeNode.js default
-  %%|
+  constructWithBlockString
    hello world
  getChildren
-  =# 1
+  lengthIs 1
  nodeAt 0
   getContent
-   == world
+   stringIs world

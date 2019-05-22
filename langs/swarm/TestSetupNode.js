@@ -4,15 +4,11 @@ const SwarmConstants = require("./SwarmConstants.js")
 const SetupConstructorArgNode = require("./SetupConstructorArgNode.js")
 
 class TestSetupNode extends jtree.NonTerminalNode {
-  createTestDummy(programFilepath) {
+  getTestSubject(programFilepath) {
     const requiredClass = this._getRequiredClass(programFilepath)
     const constructorArgNode = this.getChildrenByNodeConstructor(SetupConstructorArgNode)[0]
     const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
     return this.has(SwarmConstants.static) ? requiredClass : new requiredClass(param)
-  }
-
-  isNodeJs() {
-    return typeof exports !== "undefined"
   }
 
   _getRequiredClass(programFilepath) {
@@ -31,11 +27,7 @@ class TestSetupNode extends jtree.NonTerminalNode {
     if (requiredClassParts[1]) theClass = jtree.Utils.resolveProperty(theClass, requiredClassParts[1])
 
     if (!theClass)
-      throw new Error(
-        `Required class '${requiredClass}${
-          requiredClassParts[1] ? " (" + requiredClassParts[1] + ")" : ""
-        }' not found for ${this.toString()}`
-      )
+      throw new Error(`Required class '${requiredClass}${requiredClassParts[1] ? " (" + requiredClassParts[1] + ")" : ""}' not found for ${this.toString()}`)
 
     return theClass
   }

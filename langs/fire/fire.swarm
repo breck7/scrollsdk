@@ -1,14 +1,13 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test basics
- #setup
+test basics
+ arrangeTestSubject
   require ./Fire.js Program
-  %%|
+  constructWithBlockString
    add ten 2 3 5
    dump ten
  compile
-  =|
+  blockStringIs
    const ten = [2, 3, 5].reduce((sum, num) => sum + num)
    console.log(ten)
  getProgramErrors
-  =# 0
+  lengthIs 0

@@ -228,11 +228,7 @@ testTree.autocompleteCustom = equal => {
   equal(makeJibberishProgram(`xColumnName `).getAutocompleteResultsAt(0, 12).matches.length, 3)
   equal(makeJibberishProgram(`xColumnName eight`).getAutocompleteResultsAt(0, 12).matches.length, 2)
   equal(makeJibberishProgram(`xColumnName gender`).getProgramErrors().length, 0)
-  equal(
-    makeJibberishProgram(`xColumnName genders`).getProgramErrors().length,
-    1,
-    "should have 1 error. genders doesnt fit."
-  )
+  equal(makeJibberishProgram(`xColumnName genders`).getProgramErrors().length, 1, "should have 1 error. genders doesnt fit.")
 }
 
 testTree.blobNodes = equal => {
@@ -336,6 +332,15 @@ extendsAbstract 2`)
   // Assert
   let errors = anyProgram.getProgramErrorMessages()
   equal(errors.length, 1)
+}
+
+testTree.updateNodeTypeIds = equal => {
+  // Arrange/Act
+  const anyProgram = makeJibberishProgram(`xColumnName height`)
+
+  // Assert
+  let errors = anyProgram.updateNodeTypeIds(`xColumnName xAxis`)
+  equal(anyProgram.toString(), `xAxis height`)
 }
 
 testTree.examples = equal => {

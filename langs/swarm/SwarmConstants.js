@@ -1,7 +1,7 @@
 const SwarmConstants = {}
 
 // Setup... todo: remove this file
-SwarmConstants.setup = "#setup"
+SwarmConstants.setup = "arrangeTestSubject"
 SwarmConstants.async = "async"
 SwarmConstants.require = "require"
 SwarmConstants.static = "static"

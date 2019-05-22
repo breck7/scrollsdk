@@ -1,9 +1,8 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test basics
- #setup
+test basics
+ arrangeTestSubject
   require ./Stump.js Program
-  %%|
+  constructWithBlockString
    html
     id bam
     class someClass
@@ -15,9 +14,9 @@
        This is some text
      span Hello more
  getProgramErrors
-  =# 0
+  lengthIs 0
  toHtml
-  =|
+  blockStringIs
    <html id="bam" class="someClass">
     <body>
      <div type="foo">Hello world
@@ -26,26 +25,26 @@
    </body>
    </html>
    
-#test div
- #setup
+test div
+ arrangeTestSubject
   require ./Stump.js Program
-  %%|
+  constructWithBlockString
    div hello world
     id bam
     class someClass
  toHtml
-  =|
+  blockStringIs
    <div id="bam" class="someClass">hello world</div>
    
-#test syntax
- #setup
+test syntax
+ arrangeTestSubject
   require ./Stump.js Program
-  %%|
+  constructWithBlockString
    div
     bern
      Hello world
  getInPlaceCellTypeTree
-  =|
+  blockStringIs
    htmlTagName
     contentHolderName
      anyHtmlContent anyHtmlContent

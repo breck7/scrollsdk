@@ -1,9 +1,8 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test stress test
- #setup
+test stress test
+ arrangeTestSubject
   require ../../built/grammar/GrammarProgram.js default
-  %%|
+  constructWithBlockString
    grammar
     name testlang
     compiler txt
@@ -23,8 +22,8 @@
      sub to {word}
      closeChildren end
  getRunTimeNodeTypeNames
-  =# 3
+  lengthIs 3
  getNodeTypeDefinitionByName to
-  =~ object
+  typeIs object
  getTopNodeTypeIds
-  =# 3
+  lengthIs 3

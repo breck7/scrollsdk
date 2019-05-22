@@ -44,6 +44,17 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     )
   }
 
+  updateNodeTypeIds(nodeTypeMap: TreeNode | string | types.nodeIdRenameMap) {
+    if (typeof nodeTypeMap === "string") nodeTypeMap = new TreeNode(nodeTypeMap)
+    if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <types.nodeIdRenameMap>nodeTypeMap.toObject()
+    for (let node of this.getTopDownArrayIterator()) {
+      const nodeTypeId = (<AbstractRuntimeNode>node).getDefinition().getNodeTypeIdFromDefinition()
+      const newId = nodeTypeMap[nodeTypeId]
+      if (newId) node.setFirstWord(newId)
+    }
+    return this
+  }
+
   getAllSuggestions() {
     return new TreeNode(
       this.getAllWordBoundaryCoordinates().map(coordinate => {
@@ -103,14 +114,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     const grammarProgram = this.getGrammarProgram()
     const nodeTypeDefinitions = grammarProgram.getNodeTypeDefinitions()
     nodeTypeDefinitions.forEach(child => {
-      usage.appendLine(
-        [
-          child.getNodeTypeIdFromDefinition(),
-          "line-id",
-          GrammarConstants.nodeType,
-          child.getRequiredCellTypeNames().join(" ")
-        ].join(" ")
-      )
+      usage.appendLine([child.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, child.getRequiredCellTypeNames().join(" ")].join(" "))
     })
     const programNodes = this.getTopDownArray()
     programNodes.forEach((programNode, lineNumber) => {
@@ -156,9 +160,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     return this.getTopDownArray()
       .map(
         child =>
-          `<div style="white-space: pre;">${
-            child.constructor.name
-          } ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(
+          `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(
             child.getLineCellTypes().split(" "),
             child.getLine().split(" ")
           )}</span></div>`

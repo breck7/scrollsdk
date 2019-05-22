@@ -1,21 +1,20 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
-#test basics stamp
- #setup
+test basics stamp
+ arrangeTestSubject
   require ../StampProgram.js
-  %%|
+  constructWithBlockString
    folder testEx
    file testEx/hi.sh
     data
      echo Hello world
     executable
  getProgramErrors
-  =# 0
--#test staticReenableOncePathFix
- #setup
+  lengthIs 0
+skipTest staticReenableOncePathFix
+ arrangeTestSubject
   require ../StampProgram.js
   static
  dirToStamp ./cases
-  =|
+  blockStringIs
    file cases/executable.stamp
    file cases/test.stamp

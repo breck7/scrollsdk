@@ -2479,6 +2479,19 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }
+    updateNodeTypeIds(nodeTypeMap) {
+        if (typeof nodeTypeMap === "string")
+            nodeTypeMap = new TreeNode(nodeTypeMap);
+        if (nodeTypeMap instanceof TreeNode)
+            nodeTypeMap = nodeTypeMap.toObject();
+        for (let node of this.getTopDownArrayIterator()) {
+            const nodeTypeId = node.getDefinition().getNodeTypeIdFromDefinition();
+            const newId = nodeTypeMap[nodeTypeId];
+            if (newId)
+                node.setFirstWord(newId);
+        }
+        return this;
+    }
     getAllSuggestions() {
         return new TreeNode(this.getAllWordBoundaryCoordinates().map(coordinate => {
             const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x);
@@ -2527,12 +2540,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
         const grammarProgram = this.getGrammarProgram();
         const nodeTypeDefinitions = grammarProgram.getNodeTypeDefinitions();
         nodeTypeDefinitions.forEach(child => {
-            usage.appendLine([
-                child.getNodeTypeIdFromDefinition(),
-                "line-id",
-                GrammarConstants.nodeType,
-                child.getRequiredCellTypeNames().join(" ")
-            ].join(" "));
+            usage.appendLine([child.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, child.getRequiredCellTypeNames().join(" ")].join(" "));
         });
         const programNodes = this.getTopDownArray();
         programNodes.forEach((programNode, lineNumber) => {
@@ -4152,4 +4160,4 @@ jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "23.1.0";
+jtree.getVersion = () => "23.2.0";

@@ -1,3 +1,22 @@
+23.2.0 / 2019-05-21
+===================
+- New: updateNodeTypeIds method
+- New: Swarm files now no longer require a root level setup node.
+- Infra: added prettier config to package.json
+- Breaking: Swarm grammar changed. Use code below to update programs:
+swarmProgram.updateNodeTypeIds(`#setup arrangeTestSubject
+%%| constructWithBlockString
+%| blockStringParam
+=# lengthIs
+=+ stringIncludes
+=- stringExcludes
+== stringIs
+=| blockStringIs
+=~ typeIs
+#test test
++#test testOnly
+-#test skipTest`)
+
 23.1.0 / 2019-05-21
 ===================
 - New: executeFiles method

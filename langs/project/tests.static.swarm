@@ -1,14 +1,14 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
+arrangeTestSubject
  require ./Project.js Program
  static
-#test _getImportsTypescript
+test _getImportsTypescript
  getImports
-  %|
+  blockStringParam
    foobar
-  =# 0
+  lengthIs 0
  getImports
-  %|
+  blockStringParam
    const Foobar = require("foobar")
    import FamBam from "../fambam.js"
-  =# 2
+  lengthIs 2

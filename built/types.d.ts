@@ -46,6 +46,9 @@ export declare namespace types {
     type everyFn = (node: treeNode, index: int) => boolean;
     type nodeToStringFn = (node: treeNode) => string;
     type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string;
+    type nodeIdRenameMap = {
+        [oldNodeTypeId: string]: string;
+    };
     type children = string | Object | treeNode | any;
     type TreeNodeConstructor = Function;
     type RunTimeNodeConstructor = Function;

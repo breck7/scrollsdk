@@ -1,9 +1,9 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-#setup
+arrangeTestSubject
  require ./Project.js Program
-#test basics
- #setup
-  %%|
+test basics
+ arrangeTestSubject
+  constructWithBlockString
    file /foobar/foobar.js
    file /foobar/bam.js
    file /foo/c.js
@@ -13,31 +13,31 @@
    file /foobar/after.js
     relative ./foobar.js
  getProgramErrors
-  =# 0
+  lengthIs 0
  getOrderedDependenciesArray
-  =# 4
+  lengthIs 4
   join
-   %|
+   blockStringParam
      
-   =|
+   blockStringIs
     /foobar/foobar.js /foobar/bam.js /foobar/after.js /foo/c.js
-#test spaces
- #setup
-  %%|
+test spaces
+ arrangeTestSubject
+  constructWithBlockString
    file /foobar/f oobar.js
    file /foobar/after.js
     relative ./f oobar.js
  getProgramErrors
-  =# 0
+  lengthIs 0
  getOrderedDependenciesArray
   join
-   %|
+   blockStringParam
      
-   =|
+   blockStringIs
     /foobar/f oobar.js /foobar/after.js
-#test error
- #setup
-  %%|
+test error
+ arrangeTestSubject
+  constructWithBlockString
    relative foobar.js
  getProgramErrors
-  =# 1
+  lengthIs 1

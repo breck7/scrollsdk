@@ -9,12 +9,7 @@ class TestBlock extends jtree.NonTerminalNode {
   }
 
   isAsync() {
-    return (
-      this.getTestSetupNode().has(SwarmConstants.async) ||
-      this.getParent()
-        .getTestSetupNode()
-        .has(SwarmConstants.async)
-    )
+    return this.getTestSetupNode().has(SwarmConstants.async)
   }
 
   setEqualMethod(equal) {
@@ -31,7 +26,7 @@ class TestBlock extends jtree.NonTerminalNode {
   }
 
   _executeNode(programFilepath) {
-    const testDummy = this.getTestSetupNode().createTestDummy(programFilepath)
+    const testSubject = this.getTestSetupNode().getTestSubject(programFilepath)
     const isAsync = this.isAsync()
     const executeMethod = isAsync ? "execute" : "executeSync"
     return new Promise((resolve, reject) => {
@@ -41,7 +36,7 @@ class TestBlock extends jtree.NonTerminalNode {
         this.setEqualMethod(childTest.equal)
 
         const promises = this.map(child => {
-          const result = child[executeMethod](testDummy)
+          const result = child[executeMethod](testSubject)
           return isAsync ? Promise.resolve(result) : result
         })
 
@@ -53,12 +48,8 @@ class TestBlock extends jtree.NonTerminalNode {
     })
   }
 
-  isNodeJs() {
-    return typeof exports !== "undefined"
-  }
-
   async _executeBrowser() {
-    const testDummy = this.getTestSetupNode().createTestDummy()
+    const testSubject = this.getTestSetupNode().getTestSubject()
     const isAsync = this.isAsync()
     const executeMethod = isAsync ? "execute" : "executeSync"
     const testName = this.getLine()
@@ -69,7 +60,7 @@ class TestBlock extends jtree.NonTerminalNode {
     })
 
     const promises = this.map(child => {
-      const result = child[executeMethod](testDummy)
+      const result = child[executeMethod](testSubject)
       return isAsync ? Promise.resolve(result) : result
     })
 

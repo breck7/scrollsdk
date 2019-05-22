@@ -293,6 +293,11 @@ cellType any`
   equal(errors.length, 0)
   errors = program.getProgramErrors()
   equal(errors.length, 0)
+
+  // Arrange/Act/Assert
+  const constructor = GrammarProgram.getTheAnyLanguageRootConstructor()
+  const errs = new constructor("foobar").getProgramErrors()
+  equal(errs.length, 0)
 }
 
 testTree.grammarWithLoop = equal => {

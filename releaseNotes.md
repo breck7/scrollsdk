@@ -1,3 +1,8 @@
+24.0.0 / 2019-05-21
+===================
+- New: targeting es2017
+- Fix: sandbox onload fix
+
 23.2.1 / 2019-05-21
 ===================
 - Fix: fix for updateNodeTypeIds recursion bug
@@ -7,6 +12,7 @@
 - New: updateNodeTypeIds method
 - New: Swarm files now no longer require a root level setup node.
 - Infra: added prettier config to package.json
+- Breaking: in Swarm, createTestDummy is now getTestSubject
 - Breaking: Swarm grammar changed. Use code below to update programs:
 swarmProgram.updateNodeTypeIds(`#setup arrangeTestSubject
 %%| constructWithBlockString

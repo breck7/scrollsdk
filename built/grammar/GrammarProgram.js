@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const AbstractRuntimeProgram_1 = require("./AbstractRuntimeProgram");
@@ -202,11 +194,13 @@ ${nodeTypeContexts}`;
     }
     // A language where anything goes.
     static getTheAnyLanguageRootConstructor() {
-        return this.newFromCondensed(`${GrammarConstants_1.GrammarConstants.grammar} any
- ${GrammarConstants_1.GrammarConstants.catchAllNodeType} any
-${GrammarConstants_1.GrammarConstants.nodeType} any
- ${GrammarConstants_1.GrammarConstants.catchAllCellType} any
-${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
+        return this.newFromCondensed(`${GrammarConstants_1.GrammarConstants.grammar}
+ ${GrammarConstants_1.GrammarConstants.name} any
+ ${GrammarConstants_1.GrammarConstants.catchAllNodeType} anyNode
+${GrammarConstants_1.GrammarConstants.nodeType} anyNode
+ ${GrammarConstants_1.GrammarConstants.catchAllCellType} anyWord
+ ${GrammarConstants_1.GrammarConstants.firstCellType} anyWord
+${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
@@ -223,26 +217,22 @@ ${GrammarConstants_1.GrammarConstants.cellType} any`).getRootConstructor();
         });
         return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
-    loadAllConstructorScripts(baseUrlPath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.isBrowser())
-                return undefined;
-            const uniqueScriptsSet = new Set(this.getNodesByGlobPath(`* ${GrammarConstants_1.GrammarConstants.constructors} ${GrammarConstants_1.GrammarConstants.constructorBrowser}`)
-                .filter(node => node.getWord(2))
-                .map(node => baseUrlPath + node.getWord(2)));
-            return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)));
-        });
+    async loadAllConstructorScripts(baseUrlPath) {
+        if (!this.isBrowser())
+            return undefined;
+        const uniqueScriptsSet = new Set(this.getNodesByGlobPath(`* ${GrammarConstants_1.GrammarConstants.constructors} ${GrammarConstants_1.GrammarConstants.constructorBrowser}`)
+            .filter(node => node.getWord(2))
+            .map(node => baseUrlPath + node.getWord(2)));
+        return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)));
     }
-    static _appendScriptOnce(url) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // if (this.isNodeJs()) return undefined
-            if (!url)
-                return undefined;
-            if (this._scriptLoadingPromises[url])
-                return this._scriptLoadingPromises[url];
-            this._scriptLoadingPromises[url] = this._appendScript(url);
+    static async _appendScriptOnce(url) {
+        // if (this.isNodeJs()) return undefined
+        if (!url)
+            return undefined;
+        if (this._scriptLoadingPromises[url])
             return this._scriptLoadingPromises[url];
-        });
+        this._scriptLoadingPromises[url] = this._appendScript(url);
+        return this._scriptLoadingPromises[url];
     }
     static _appendScript(url) {
         //https://bradb.net/blog/promise-based-js-script-loader/

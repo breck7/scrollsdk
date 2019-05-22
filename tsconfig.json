@@ -2,11 +2,11 @@
   "compilerOptions": {
     "outDir": "./built",
     "types": ["node"],
-    "lib": ["es6", "dom"],
+    "lib": ["es2017", "dom"],
     "noImplicitAny": true,
     //"allowJs": true,
     "declaration": true,
-    "target": "es6",
+    "target": "es2017",
     "module": "commonjs"
   },
   "include": ["./src/**/*"]

@@ -104,9 +104,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   protected _getCellTypeDefinitions() {
     const types: { [typeName: string]: GrammarCellTypeDefinitionNode } = {}
     // todo: add built in word types?
-    this.getChildrenByNodeConstructor(GrammarCellTypeDefinitionNode).forEach(
-      type => (types[(<GrammarCellTypeDefinitionNode>type).getCellTypeId()] = type)
-    )
+    this.getChildrenByNodeConstructor(GrammarCellTypeDefinitionNode).forEach(type => (types[(<GrammarCellTypeDefinitionNode>type).getCellTypeId()] = type))
     return types
   }
 
@@ -174,9 +172,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     this._cache_nodeTypeDefinitions = {}
 
     this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode).forEach(nodeTypeDefinitionNode => {
-      this._cache_nodeTypeDefinitions[
-        (<GrammarNodeTypeDefinitionNode>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()
-      ] = nodeTypeDefinitionNode
+      this._cache_nodeTypeDefinitions[(<GrammarNodeTypeDefinitionNode>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode
     })
   }
 
@@ -192,8 +188,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
-    const extendedConstructor: any =
-      this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram
+    const extendedConstructor: any = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram
     const grammarProgram = this
 
     // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
@@ -250,11 +245,13 @@ ${nodeTypeContexts}`
   // A language where anything goes.
   static getTheAnyLanguageRootConstructor() {
     return this.newFromCondensed(
-      `${GrammarConstants.grammar} any
- ${GrammarConstants.catchAllNodeType} any
-${GrammarConstants.nodeType} any
- ${GrammarConstants.catchAllCellType} any
-${GrammarConstants.cellType} any`
+      `${GrammarConstants.grammar}
+ ${GrammarConstants.name} any
+ ${GrammarConstants.catchAllNodeType} anyNode
+${GrammarConstants.nodeType} anyNode
+ ${GrammarConstants.catchAllCellType} anyWord
+ ${GrammarConstants.firstCellType} anyWord
+${GrammarConstants.cellType} anyWord`
     ).getRootConstructor()
   }
 

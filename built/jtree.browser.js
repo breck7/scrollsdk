@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 let _jtreeLatestTime = 0;
 let _jtreeMinTimeIncrement = 0.000000000001;
 class AbstractNode {
@@ -3752,11 +3744,13 @@ ${nodeTypeContexts}`;
     }
     // A language where anything goes.
     static getTheAnyLanguageRootConstructor() {
-        return this.newFromCondensed(`${GrammarConstants.grammar} any
- ${GrammarConstants.catchAllNodeType} any
-${GrammarConstants.nodeType} any
- ${GrammarConstants.catchAllCellType} any
-${GrammarConstants.cellType} any`).getRootConstructor();
+        return this.newFromCondensed(`${GrammarConstants.grammar}
+ ${GrammarConstants.name} any
+ ${GrammarConstants.catchAllNodeType} anyNode
+${GrammarConstants.nodeType} anyNode
+ ${GrammarConstants.catchAllCellType} anyWord
+ ${GrammarConstants.firstCellType} anyWord
+${GrammarConstants.cellType} anyWord`).getRootConstructor();
     }
     static newFromCondensed(grammarCode, grammarPath) {
         // todo: handle imports
@@ -3773,26 +3767,22 @@ ${GrammarConstants.cellType} any`).getRootConstructor();
         });
         return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
     }
-    loadAllConstructorScripts(baseUrlPath) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (!this.isBrowser())
-                return undefined;
-            const uniqueScriptsSet = new Set(this.getNodesByGlobPath(`* ${GrammarConstants.constructors} ${GrammarConstants.constructorBrowser}`)
-                .filter(node => node.getWord(2))
-                .map(node => baseUrlPath + node.getWord(2)));
-            return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)));
-        });
+    async loadAllConstructorScripts(baseUrlPath) {
+        if (!this.isBrowser())
+            return undefined;
+        const uniqueScriptsSet = new Set(this.getNodesByGlobPath(`* ${GrammarConstants.constructors} ${GrammarConstants.constructorBrowser}`)
+            .filter(node => node.getWord(2))
+            .map(node => baseUrlPath + node.getWord(2)));
+        return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)));
     }
-    static _appendScriptOnce(url) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // if (this.isNodeJs()) return undefined
-            if (!url)
-                return undefined;
-            if (this._scriptLoadingPromises[url])
-                return this._scriptLoadingPromises[url];
-            this._scriptLoadingPromises[url] = this._appendScript(url);
+    static async _appendScriptOnce(url) {
+        // if (this.isNodeJs()) return undefined
+        if (!url)
+            return undefined;
+        if (this._scriptLoadingPromises[url])
             return this._scriptLoadingPromises[url];
-        });
+        this._scriptLoadingPromises[url] = this._appendScript(url);
+        return this._scriptLoadingPromises[url];
     }
     static _appendScript(url) {
         //https://bradb.net/blog/promise-based-js-script-loader/
@@ -4084,22 +4074,20 @@ class TreeNotationCodeMirrorMode {
     _getCodeMirrorLib() {
         return this._codeMirrorLib;
     }
-    codeMirrorAutocomplete(cmInstance, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cursor = cmInstance.getDoc().getCursor();
-            const codeMirrorLib = this._getCodeMirrorLib();
-            const result = yield this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
-            // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
-            if (result.matches.length === 1 && result.matches[0].text === result.word)
-                return null;
-            return result.matches.length
-                ? {
-                    list: result.matches,
-                    from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
-                    to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
-                }
-                : null;
-        });
+    async codeMirrorAutocomplete(cmInstance, options) {
+        const cursor = cmInstance.getDoc().getCursor();
+        const codeMirrorLib = this._getCodeMirrorLib();
+        const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
+        // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
+        if (result.matches.length === 1 && result.matches[0].text === result.word)
+            return null;
+        return result.matches.length
+            ? {
+                list: result.matches,
+                from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
+                to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
+            }
+            : null;
     }
     register() {
         const codeMirrorLib = this._getCodeMirrorLib();
@@ -4162,4 +4150,4 @@ jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "23.2.1";
+jtree.getVersion = () => "24.0.0";

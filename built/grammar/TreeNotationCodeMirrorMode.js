@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const textMateScopeToCodeMirrorStyle_1 = require("./textMateScopeToCodeMirrorStyle");
 class TreeNotationCodeMirrorMode {
@@ -97,22 +89,20 @@ class TreeNotationCodeMirrorMode {
     _getCodeMirrorLib() {
         return this._codeMirrorLib;
     }
-    codeMirrorAutocomplete(cmInstance, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cursor = cmInstance.getDoc().getCursor();
-            const codeMirrorLib = this._getCodeMirrorLib();
-            const result = yield this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
-            // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
-            if (result.matches.length === 1 && result.matches[0].text === result.word)
-                return null;
-            return result.matches.length
-                ? {
-                    list: result.matches,
-                    from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
-                    to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
-                }
-                : null;
-        });
+    async codeMirrorAutocomplete(cmInstance, options) {
+        const cursor = cmInstance.getDoc().getCursor();
+        const codeMirrorLib = this._getCodeMirrorLib();
+        const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
+        // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
+        if (result.matches.length === 1 && result.matches[0].text === result.word)
+            return null;
+        return result.matches.length
+            ? {
+                list: result.matches,
+                from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
+                to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
+            }
+            : null;
     }
     register() {
         const codeMirrorLib = this._getCodeMirrorLib();

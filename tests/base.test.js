@@ -1690,9 +1690,9 @@ Mammal
  milk`
   )
   // Act/Assert
-  equal(tree.getNode("Monkey").getGraphByKey("extends").length, 4)
-  equal(tree.getNode("Thing").getGraphByKey("extends").length, 1)
-  equal(tree.getNode("Animal").getGraphByKey("extends").length, 2)
+  equal(tree.getNode("Monkey").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 4)
+  equal(tree.getNode("Thing").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 1)
+  equal(tree.getNode("Animal").getAncestorNodesByInheritanceViaExtendsKeyword("extends").length, 2)
 }
 
 testTree.getGraphConventional = equal => {
@@ -1708,9 +1708,9 @@ Mammal Animal
  milk`
   )
   // Act/Assert
-  equal(tree.getNode("Monkey").getGraph(0, 1).length, 4)
-  equal(tree.getNode("Thing").getGraph(0, 1).length, 1)
-  equal(tree.getNode("Animal").getGraph(0, 1).length, 2)
+  equal(tree.getNode("Monkey").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 4)
+  equal(tree.getNode("Thing").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 1)
+  equal(tree.getNode("Animal").getAncestorNodesByInheritanceViaColumnIndices(0, 1).length, 2)
 }
 
 testTree.getGraphLoop = equal => {
@@ -1724,7 +1724,7 @@ Animal Thing
 
   // Act/Assert
   try {
-    tree.getNode("Animal").getGraph(0, 1)
+    tree.getNode("Animal").getAncestorNodesByInheritanceViaColumnIndices(0, 1)
     equal(true, false, "Expected an error")
   } catch (err) {
     equal(true, true)

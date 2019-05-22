@@ -1,3 +1,10 @@
+23.1.0 / 2019-05-21
+===================
+- New: executeFiles method
+- New: 50% speed improvement in getExpanded and extend and GrammarProgram.newFromCondensed
+- Breaking: getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyword
+- Breaking: getGraph is now getAncestorNodesByInheritanceViaColumnIndices
+
 23.0.1 / 2019-05-20
 ===================
 - Fix: sublime syntax regression fix

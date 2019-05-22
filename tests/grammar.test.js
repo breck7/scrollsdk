@@ -284,8 +284,8 @@ testTree.minimumGrammar = equal => {
   const programConstructor = GrammarProgram.newFromCondensed(
     `grammar
  name any
- catchAllNodeType any
-nodeType any
+ catchAllNodeType anyNode
+nodeType anyNode
  catchAllCellType any
 cellType any`
   ).getRootConstructor()
@@ -297,6 +297,25 @@ cellType any`
   equal(errors.length, 0)
   errors = program.getProgramErrors()
   equal(errors.length, 0)
+}
+
+testTree.grammarWithLoop = equal => {
+  // Arrange/Act/Assert
+  try {
+    const programConstructor = GrammarProgram.newFromCondensed(
+      `grammar
+ name any
+ catchAllNodeType nodeA
+nodeType nodeA nodeC
+ catchAllCellType any
+nodeType nodeB nodeA
+nodeType nodeC nodeB
+cellType any`
+    ).getRootConstructor()
+    equal(false, true, "Should have thrown error")
+  } catch (err) {
+    equal(err.toString().includes("Loop"), true, `Expected correct error thrown when grammar. Got: ${err.toString()}`)
+  }
 }
 
 testTree.duplicateNodeTypes = equal => {

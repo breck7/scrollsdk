@@ -12,6 +12,12 @@ export namespace types {
     y: int
   } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
 
+  export interface inheritanceInfo {
+    node: treeNode
+    nodeId: string
+    parentId: string
+  }
+
   export declare type treeNode = any
   export declare type line = string // no YI (\n)
   export declare type int = number

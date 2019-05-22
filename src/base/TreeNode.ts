@@ -185,9 +185,11 @@ class ImmutableNode extends AbstractNode {
 
   toString(indentCount = 0, language = this): string {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
-    const content = language.getXI().repeat(indentCount) + this.getLine(language)
-    const value = content + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
-    return value
+    return (
+      language.getXI().repeat(indentCount) +
+      this.getLine(language) +
+      (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
+    )
   }
 
   getWord(index: int): word {
@@ -792,34 +794,41 @@ class ImmutableNode extends AbstractNode {
     return Object.keys(obj)
   }
 
-  getGraphByKey(key: word): ImmutableNode[] {
-    const graph = this._getGraph((node, id) => node._getNodesByColumn(0, id), node => node.get(key), this)
-    graph.push(this)
-    return graph
+  getAncestorNodesByInheritanceViaExtendsKeyword(key: word): ImmutableNode[] {
+    const ancestorNodes = this._getAncestorNodes(
+      (node, id) => node._getNodesByColumn(0, id),
+      node => node.get(key),
+      this
+    )
+    ancestorNodes.push(this)
+    return ancestorNodes
   }
 
-  getGraph(thisColumnNumber: int, extendsColumnNumber: int): ImmutableNode[] {
-    const graph = this._getGraph(
+  // Note: as you can probably tell by the name of this method, I don't recommend using this as it will likely be replaced by something better.
+  getAncestorNodesByInheritanceViaColumnIndices(thisColumnNumber: int, extendsColumnNumber: int): ImmutableNode[] {
+    const ancestorNodes = this._getAncestorNodes(
       (node, id) => node._getNodesByColumn(thisColumnNumber, id),
       node => node.getWord(extendsColumnNumber),
       this
     )
-    graph.push(this)
-    return graph
+    ancestorNodes.push(this)
+    return ancestorNodes
   }
 
-  protected _getGraph(
-    getNodesByIdFn: (thisParentNode: ImmutableNode, id: word) => ImmutableNode[],
+  protected _getAncestorNodes(
+    getPotentialParentNodesByIdFn: (thisParentNode: ImmutableNode, id: word) => ImmutableNode[],
     getParentIdFn: (thisNode: ImmutableNode) => word,
     cannotContainNode: ImmutableNode
   ): ImmutableNode[] {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
-    const potentialParentNodes = getNodesByIdFn(this.getParent(), parentId)
+
+    const potentialParentNodes = getPotentialParentNodesByIdFn(this.getParent(), parentId)
     if (!potentialParentNodes.length)
       throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
 
-    if (potentialParentNodes.length > 1) throw new Error(`Invalid graph. Multiple unique ids found for "${parentId}"`)
+    if (potentialParentNodes.length > 1)
+      throw new Error(`Invalid inheritance family tree. Multiple unique ids found for "${parentId}"`)
 
     const parentNode = potentialParentNodes[0]
 
@@ -827,9 +836,9 @@ class ImmutableNode extends AbstractNode {
     if (parentNode === cannotContainNode)
       throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`)
 
-    const graph = parentNode._getGraph(getNodesByIdFn, getParentIdFn, cannotContainNode)
-    graph.push(parentNode)
-    return graph
+    const ancestorNodes = parentNode._getAncestorNodes(getPotentialParentNodesByIdFn, getParentIdFn, cannotContainNode)
+    ancestorNodes.push(parentNode)
+    return ancestorNodes
   }
 
   pathVectorToFirstWordPath(pathVector: types.pathVector): word[] {
@@ -1425,16 +1434,94 @@ class TreeNode extends ImmutableNode {
     return Math.max(mtime, cmtime)
   }
 
-  // todo: solve issue related to whether extend should overwrite or append.
-  getExpanded(thisColumnNumber: int, extendsColumnNumber: int) {
-    return new TreeNode(this.map(child => child._expand(thisColumnNumber, extendsColumnNumber)).join("\n"))
+  private _virtualParentTree: TreeNode
+  protected _setVirtualParentTree(tree: TreeNode) {
+    this._virtualParentTree = tree
+    return this
   }
 
-  protected _expand(thisColumnNumber: int, extendsColumnNumber: int): TreeNode {
-    const graph = this.getGraph(thisColumnNumber, extendsColumnNumber)
-    const result = new TreeNode()
-    graph.forEach(node => result.extend(<TreeNode>node))
-    return new TreeNode().appendLineAndChildren(this.getLine(), result)
+  protected _getVirtualParentTreeNode() {
+    return this._virtualParentTree
+  }
+
+  private _setVirtualAncestorNodesByInheritanceViaColumnIndices(thisIdColumnNumber: int, extendsIdColumnNumber: int) {
+    const map: { [nodeId: string]: types.inheritanceInfo } = {}
+    for (let node of this.getChildren()) {
+      const nodeId = node.getWord(thisIdColumnNumber)
+      if (map[nodeId]) throw new Error(`Tried to define a node with id "${nodeId}" but one is already defined.`)
+      map[nodeId] = {
+        nodeId: nodeId,
+        node: node,
+        parentId: node.getWord(extendsIdColumnNumber)
+      }
+    }
+    // Add parent Nodes
+    Object.values(map).forEach(nodeInfo => {
+      const parentId = nodeInfo.parentId
+      const parentNode = map[parentId]
+      if (parentId && !parentNode)
+        throw new Error(`Node "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
+      if (parentId) nodeInfo.node._setVirtualParentTree(parentNode.node)
+    })
+  }
+
+  private _isVirtualExpanded: boolean
+  private _isExpanding: boolean // for loop detection
+
+  protected _expandFromVirtualParentTree() {
+    if (this._isVirtualExpanded) return this
+
+    this._isExpanding = true
+
+    let parentNode = this._getVirtualParentTreeNode()
+    if (parentNode) {
+      if (parentNode._isExpanding)
+        throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
+      parentNode._expandFromVirtualParentTree()
+      const clone = this.clone()
+      this._setChildren(parentNode.childrenToString())
+      this.extend(clone)
+    }
+
+    this._isExpanding = false
+    this._isVirtualExpanded = true
+  }
+
+  // todo: add more testing.
+  // todo: solve issue with where extend should overwrite or append
+  // todo: should take a grammar? to decide whether to overwrite or append.
+  // todo: this is slow.
+  extend(nodeOrStr: TreeNode | string) {
+    if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
+
+    const usedFirstWords = new Set()
+    nodeOrStr.forEach(sourceNode => {
+      const firstWord = sourceNode.getFirstWord()
+      let targetNode
+      const isAnArrayNotMap = usedFirstWords.has(firstWord)
+      if (!this.has(firstWord)) {
+        usedFirstWords.add(firstWord)
+        this.appendLineAndChildren(sourceNode.getLine(), sourceNode.childrenToString())
+        return true
+      }
+      if (isAnArrayNotMap) targetNode = this.appendLine(sourceNode.getLine())
+      else {
+        targetNode = this.touchNode(firstWord).setContent(sourceNode.getContent())
+        usedFirstWords.add(firstWord)
+      }
+      if (sourceNode.length) targetNode.extend(sourceNode)
+    })
+    return this
+  }
+
+  // todo: solve issue related to whether extend should overwrite or append.
+  getExpanded(thisIdColumnNumber: int, extendsIdColumnNumber: int) {
+    const clone = this.clone()
+    clone._setVirtualAncestorNodesByInheritanceViaColumnIndices(thisIdColumnNumber, extendsIdColumnNumber)
+    clone.forEach(node => {
+      node._expandFromVirtualParentTree()
+    })
+    return clone
   }
 
   macroExpand(macroDefinitionWord: string, macroUsageWord: string): TreeNode {
@@ -1692,26 +1779,6 @@ class TreeNode extends ImmutableNode {
     const results = this.getTopDownArray().filter(node => node.hasDuplicateFirstWords())
     if (this.hasDuplicateFirstWords()) results.unshift(this)
     return results
-  }
-
-  // todo: add more testing.
-  // todo: solve issue with where extend should overwrite or append
-  // todo: should take a grammar? to decide whether to overwrite or append.
-  extend(nodeOrStr: TreeNode | string) {
-    if (!(nodeOrStr instanceof TreeNode)) nodeOrStr = new TreeNode(nodeOrStr)
-
-    const usedFirstWords = new Set()
-    nodeOrStr.forEach(sourceNode => {
-      const firstWord = sourceNode.getFirstWord()
-      let targetNode
-      if (usedFirstWords.has(firstWord)) targetNode = this.appendLine(sourceNode.getLine())
-      else {
-        targetNode = this.touchNode(firstWord).setContent(sourceNode.getContent())
-        usedFirstWords.add(firstWord)
-      }
-      if (sourceNode.length) targetNode.extend(sourceNode.childrenToString())
-    })
-    return this
   }
 
   replaceNode(fn: (thisStr: string) => string) {

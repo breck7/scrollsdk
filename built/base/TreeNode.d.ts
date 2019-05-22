@@ -133,9 +133,9 @@ declare class ImmutableNode extends AbstractNode {
     getNext(): ImmutableNode;
     getPrevious(): ImmutableNode;
     protected _getUnionNames(): string[];
-    getGraphByKey(key: word): ImmutableNode[];
-    getGraph(thisColumnNumber: int, extendsColumnNumber: int): ImmutableNode[];
-    protected _getGraph(getNodesByIdFn: (thisParentNode: ImmutableNode, id: word) => ImmutableNode[], getParentIdFn: (thisNode: ImmutableNode) => word, cannotContainNode: ImmutableNode): ImmutableNode[];
+    getAncestorNodesByInheritanceViaExtendsKeyword(key: word): ImmutableNode[];
+    getAncestorNodesByInheritanceViaColumnIndices(thisColumnNumber: int, extendsColumnNumber: int): ImmutableNode[];
+    protected _getAncestorNodes(getPotentialParentNodesByIdFn: (thisParentNode: ImmutableNode, id: word) => ImmutableNode[], getParentIdFn: (thisNode: ImmutableNode) => word, cannotContainNode: ImmutableNode): ImmutableNode[];
     pathVectorToFirstWordPath(pathVector: types.pathVector): word[];
     toCsv(): string;
     toFlatTree(): TreeNode;
@@ -217,8 +217,15 @@ declare class TreeNode extends ImmutableNode {
     protected _getCMTime(): number;
     protected _setCMTime(value: number): this;
     getTreeMTime(): int;
-    getExpanded(thisColumnNumber: int, extendsColumnNumber: int): TreeNode;
-    protected _expand(thisColumnNumber: int, extendsColumnNumber: int): TreeNode;
+    private _virtualParentTree;
+    protected _setVirtualParentTree(tree: TreeNode): this;
+    protected _getVirtualParentTreeNode(): TreeNode;
+    private _setVirtualAncestorNodesByInheritanceViaColumnIndices;
+    private _isVirtualExpanded;
+    private _isExpanding;
+    protected _expandFromVirtualParentTree(): this;
+    extend(nodeOrStr: TreeNode | string): this;
+    getExpanded(thisIdColumnNumber: int, extendsIdColumnNumber: int): TreeNode;
     macroExpand(macroDefinitionWord: string, macroUsageWord: string): TreeNode;
     setChildren(children: types.children): this;
     protected _updateMTime(): void;
@@ -254,7 +261,6 @@ declare class TreeNode extends ImmutableNode {
     delete(path?: types.firstWordPath): 0 | TreeNode;
     deleteColumn(firstWord?: string): this;
     protected _getNonMaps(): TreeNode[];
-    extend(nodeOrStr: TreeNode | string): this;
     replaceNode(fn: (thisStr: string) => string): TreeNode[];
     insertLineAndChildren(line: string, children: types.children, index: int): any;
     insertLine(line: string, index: int): any;

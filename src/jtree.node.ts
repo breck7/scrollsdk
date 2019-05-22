@@ -9,6 +9,13 @@ class jtreeNode extends jtree {
   static executeFile = (programPath: types.filepath, grammarPath: types.filepath): Promise<any> =>
     jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 
+  static executeFiles = (programPaths: types.filepath[], grammarPath: types.filepath): Promise<any>[] => {
+    const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
+    return programPaths.map(programPath =>
+      new programConstructor(fs.readFileSync(programPath, "utf8")).execute(programPath)
+    )
+  }
+
   static executeFileSync = (programPath: types.filepath, grammarPath: types.filepath): any =>
     jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 

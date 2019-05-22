@@ -10,6 +10,11 @@ export declare namespace types {
         x: int;
         y: int;
     }
+    interface inheritanceInfo {
+        node: treeNode;
+        nodeId: string;
+        parentId: string;
+    }
     type treeNode = any;
     type line = string;
     type int = number;

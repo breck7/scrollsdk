@@ -336,11 +336,23 @@ extendsAbstract 2`)
 
 testTree.updateNodeTypeIds = equal => {
   // Arrange/Act
-  const anyProgram = makeJibberishProgram(`xColumnName height`)
+  const anyProgram = makeGrammarProgram(`grammar
+ name someLang
+cellType foobar
+ regex test`)
 
   // Assert
-  let errors = anyProgram.updateNodeTypeIds(`xColumnName xAxis`)
-  equal(anyProgram.toString(), `xAxis height`)
+  let errors = anyProgram.updateNodeTypeIds(`grammar language
+name grammarName
+cellType cellSpace
+regex regexString`)
+  equal(
+    anyProgram.toString(),
+    `language
+ grammarName someLang
+cellSpace foobar
+ regexString test`
+  )
 }
 
 testTree.examples = equal => {

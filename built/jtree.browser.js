@@ -2484,12 +2484,14 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
             nodeTypeMap = new TreeNode(nodeTypeMap);
         if (nodeTypeMap instanceof TreeNode)
             nodeTypeMap = nodeTypeMap.toObject();
+        const renames = [];
         for (let node of this.getTopDownArrayIterator()) {
             const nodeTypeId = node.getDefinition().getNodeTypeIdFromDefinition();
             const newId = nodeTypeMap[nodeTypeId];
             if (newId)
-                node.setFirstWord(newId);
+                renames.push([node, newId]);
         }
+        renames.forEach(pair => pair[0].setFirstWord(pair[1]));
         return this;
     }
     getAllSuggestions() {
@@ -4160,4 +4162,4 @@ jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "23.2.0";
+jtree.getVersion = () => "23.2.1";

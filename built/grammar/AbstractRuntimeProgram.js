@@ -41,12 +41,14 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             nodeTypeMap = new TreeNode_1.default(nodeTypeMap);
         if (nodeTypeMap instanceof TreeNode_1.default)
             nodeTypeMap = nodeTypeMap.toObject();
+        const renames = [];
         for (let node of this.getTopDownArrayIterator()) {
             const nodeTypeId = node.getDefinition().getNodeTypeIdFromDefinition();
             const newId = nodeTypeMap[nodeTypeId];
             if (newId)
-                node.setFirstWord(newId);
+                renames.push([node, newId]);
         }
+        renames.forEach(pair => pair[0].setFirstWord(pair[1]));
         return this;
     }
     getAllSuggestions() {

@@ -1,3 +1,7 @@
+23.2.1 / 2019-05-21
+===================
+- Fix: fix for updateNodeTypeIds recursion bug
+
 23.2.0 / 2019-05-21
 ===================
 - New: updateNodeTypeIds method

@@ -47,11 +47,13 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   updateNodeTypeIds(nodeTypeMap: TreeNode | string | types.nodeIdRenameMap) {
     if (typeof nodeTypeMap === "string") nodeTypeMap = new TreeNode(nodeTypeMap)
     if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <types.nodeIdRenameMap>nodeTypeMap.toObject()
+    const renames = []
     for (let node of this.getTopDownArrayIterator()) {
       const nodeTypeId = (<AbstractRuntimeNode>node).getDefinition().getNodeTypeIdFromDefinition()
       const newId = nodeTypeMap[nodeTypeId]
-      if (newId) node.setFirstWord(newId)
+      if (newId) renames.push([node, newId])
     }
+    renames.forEach(pair => pair[0].setFirstWord(pair[1]))
     return this
   }
 

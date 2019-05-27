@@ -14,6 +14,7 @@ var GrammarStandardCellTypes;
 (function (GrammarStandardCellTypes) {
     GrammarStandardCellTypes["any"] = "any";
     GrammarStandardCellTypes["anyFirstWord"] = "anyFirstWord";
+    GrammarStandardCellTypes["extraWord"] = "extraWord";
     GrammarStandardCellTypes["float"] = "float";
     GrammarStandardCellTypes["number"] = "number";
     GrammarStandardCellTypes["bit"] = "bit";

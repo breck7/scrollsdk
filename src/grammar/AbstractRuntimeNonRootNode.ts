@@ -1,13 +1,9 @@
 import TreeUtils from "../base/TreeUtils"
 
-import { GrammarConstantsErrors, GrammarConstants } from "./GrammarConstants"
+import { GrammarConstantsErrors, GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
 
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
-import {
-  AbstractGrammarBackedCell,
-  GrammarUnknownCellTypeCell,
-  GrammarExtraWordCellTypeCell
-} from "./GrammarBackedCell"
+import { AbstractGrammarBackedCell, GrammarUnknownCellTypeCell, GrammarExtraWordCellTypeCell } from "./GrammarBackedCell"
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
 /*FOR_TYPES_ONLY*/ import GrammarCompilerNode from "./GrammarCompilerNode"
@@ -73,9 +69,9 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
         subkind: firstWord,
         level: 0,
         context: this.getParent().getLine(),
-        message: `${
-          GrammarConstantsErrors.nodeTypeUsedMultipleTimesError
-        } nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+        message: `${GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${
+          this.getPoint().y
+        }'`
       })
 
     return this._getRequiredNodeErrors(errors)
@@ -93,6 +89,10 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
         }
       })
     return cells
+  }
+
+  private _getExtraWordCellTypeName() {
+    return GrammarStandardCellTypes.extraWord
   }
 
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
@@ -116,12 +116,16 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
       else if (isCatchAll) cellTypeName = catchAllCellTypeName
       else cellTypeName = requiredCellTypesNames[cellIndex - 1]
 
-      const cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
+      let cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
 
       let cellConstructor
       if (cellTypeDefinition) cellConstructor = cellTypeDefinition.getCellConstructor()
       else if (cellTypeName) cellConstructor = GrammarUnknownCellTypeCell
-      else cellConstructor = GrammarExtraWordCellTypeCell
+      else {
+        cellConstructor = GrammarExtraWordCellTypeCell
+        cellTypeName = this._getExtraWordCellTypeName()
+        cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
+      }
 
       cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeName, isCatchAll)
     }

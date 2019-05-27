@@ -20,6 +20,8 @@ cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
 cellType anyWord
+cellType extraWord
+ highlightScope invalid
 cellType builtInConstructorOrConstructorName
 cellType builtInConstructorOrFilePath
 cellType cellPropertyName

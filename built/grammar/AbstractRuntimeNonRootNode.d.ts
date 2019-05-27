@@ -14,6 +14,7 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     compile(targetLanguage: types.targetLanguageId): string;
     getErrors(): types.ParseError[];
     readonly cells: types.stringMap;
+    private _getExtraWordCellTypeName;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getLineCellTypes(): string;
     getLineHighlightScopes(defaultScope?: string): string;

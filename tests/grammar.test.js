@@ -206,6 +206,15 @@ com
   equal(program.executeSync().join(" "), "5 60")
 }
 
+testTree.extraWord = equal => {
+  // Arrange
+  const program = makeGrammarProgram(`grammar foobar`)
+
+  // Act/Assert
+  equal(program.getProgramErrors().length, 1)
+  equal(program.getInPlaceCellTypeTree(), "propertyName extraWord")
+}
+
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
   const program = makeGrammarProgram(`cellType foo

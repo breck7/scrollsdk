@@ -72,6 +72,9 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         });
         return cells;
     }
+    _getExtraWordCellTypeName() {
+        return GrammarConstants_1.GrammarStandardCellTypes.extraWord;
+    }
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();
         const grammarProgram = definition.getProgram();
@@ -91,14 +94,17 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
                 cellTypeName = catchAllCellTypeName;
             else
                 cellTypeName = requiredCellTypesNames[cellIndex - 1];
-            const cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
+            let cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
             let cellConstructor;
             if (cellTypeDefinition)
                 cellConstructor = cellTypeDefinition.getCellConstructor();
             else if (cellTypeName)
                 cellConstructor = GrammarBackedCell_1.GrammarUnknownCellTypeCell;
-            else
+            else {
                 cellConstructor = GrammarBackedCell_1.GrammarExtraWordCellTypeCell;
+                cellTypeName = this._getExtraWordCellTypeName();
+                cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
+            }
             cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeName, isCatchAll);
         }
         return cells;

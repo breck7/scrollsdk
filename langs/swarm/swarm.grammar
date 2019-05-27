@@ -9,6 +9,8 @@ grammar
  constructors
   nodejs ./SwarmProgramRoot.js
 cellType anyFirstWord
+cellType extraWord
+ highlightScope invalid
 cellType anyWord
  highlightScope string
 cellType commentWord

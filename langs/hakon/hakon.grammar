@@ -6,9 +6,14 @@ grammar
  constructors
   nodejs ./HakonNodes.js HakonProgramRoot
   browser HakonProgramRoot HakonNodes.js
+cellType extraWord
+ highlightScope invalid
 cellType cssValueWord
+ highlightScope constant.numeric
 cellType selector
+ highlightScope keyword.control
 cellType propertyName
+ highlightScope variable.function
 cellType errorWord
  highlightScope invalid
 abstract propertyNode

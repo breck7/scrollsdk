@@ -11,6 +11,7 @@ enum GrammarConstantsCompiler {
 enum GrammarStandardCellTypes {
   any = "any",
   anyFirstWord = "anyFirstWord", // todo: remove
+  extraWord = "extraWord",
   float = "float",
   number = "number",
   bit = "bit",

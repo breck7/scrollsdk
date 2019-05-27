@@ -8,6 +8,7 @@ declare enum GrammarConstantsCompiler {
 declare enum GrammarStandardCellTypes {
     any = "any",
     anyFirstWord = "anyFirstWord",
+    extraWord = "extraWord",
     float = "float",
     number = "number",
     bit = "bit",

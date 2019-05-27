@@ -29,6 +29,7 @@ var GrammarStandardCellTypes;
 (function (GrammarStandardCellTypes) {
     GrammarStandardCellTypes["any"] = "any";
     GrammarStandardCellTypes["anyFirstWord"] = "anyFirstWord";
+    GrammarStandardCellTypes["extraWord"] = "extraWord";
     GrammarStandardCellTypes["float"] = "float";
     GrammarStandardCellTypes["number"] = "number";
     GrammarStandardCellTypes["bit"] = "bit";
@@ -2332,117 +2333,6 @@ class AbstractRuntimeNode extends TreeNode {
         return errors;
     }
 }
-class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
-    getProgram() {
-        return this.getParent().getProgram();
-    }
-    getGrammarProgram() {
-        return this.getDefinition().getProgram();
-    }
-    getDefinition() {
-        // todo: do we need a relative to with this firstWord path?
-        return this._getNodeTypeDefinitionByName(this.getFirstWordPath());
-    }
-    getCompilerNode(targetLanguage) {
-        return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
-    }
-    getParsedWords() {
-        return this._getGrammarBackedCellArray().map(word => word.getParsed());
-    }
-    getCompiledIndentation(targetLanguage) {
-        const compiler = this.getCompilerNode(targetLanguage);
-        const indentCharacter = compiler.getIndentCharacter();
-        const indent = this.getIndentation();
-        return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent;
-    }
-    getCompiledLine(targetLanguage) {
-        const compiler = this.getCompilerNode(targetLanguage);
-        const listDelimiter = compiler.getListDelimiter();
-        const str = compiler.getTransformation();
-        return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine();
-    }
-    compile(targetLanguage) {
-        return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage);
-    }
-    getErrors() {
-        // Not enough parameters
-        // Too many parameters
-        // Incorrect parameter
-        const errors = this._getGrammarBackedCellArray()
-            .map(check => check.getErrorIfAny())
-            .filter(i => i);
-        // More than one
-        const definition = this.getDefinition();
-        let times;
-        const firstWord = this.getFirstWord();
-        if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
-            errors.push({
-                kind: GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
-                subkind: firstWord,
-                level: 0,
-                context: this.getParent().getLine(),
-                message: `${GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
-            });
-        return this._getRequiredNodeErrors(errors);
-    }
-    get cells() {
-        const cells = {};
-        this._getGrammarBackedCellArray()
-            .slice(1)
-            .forEach(cell => {
-            if (!cell.isCatchAll())
-                cells[cell.getCellTypeName()] = cell.getParsed();
-            else {
-                if (!cells[cell.getCellTypeName()])
-                    cells[cell.getCellTypeName()] = [];
-                cells[cell.getCellTypeName()].push(cell.getParsed());
-            }
-        });
-        return cells;
-    }
-    _getGrammarBackedCellArray() {
-        const definition = this.getDefinition();
-        const grammarProgram = definition.getProgram();
-        const requiredCellTypesNames = definition.getRequiredCellTypeNames();
-        const firstCellTypeName = definition.getFirstCellType();
-        const numberOfRequiredCells = requiredCellTypesNames.length + 1; // todo: assuming here first cell is required.
-        const catchAllCellTypeName = definition.getCatchAllCellTypeName();
-        const actualWordCountOrRequiredCellCount = Math.max(this.getWords().length, numberOfRequiredCells);
-        const cells = [];
-        // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
-        for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
-            const isCatchAll = cellIndex >= numberOfRequiredCells;
-            let cellTypeName;
-            if (cellIndex === 0)
-                cellTypeName = firstCellTypeName;
-            else if (isCatchAll)
-                cellTypeName = catchAllCellTypeName;
-            else
-                cellTypeName = requiredCellTypesNames[cellIndex - 1];
-            const cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
-            let cellConstructor;
-            if (cellTypeDefinition)
-                cellConstructor = cellTypeDefinition.getCellConstructor();
-            else if (cellTypeName)
-                cellConstructor = GrammarUnknownCellTypeCell;
-            else
-                cellConstructor = GrammarExtraWordCellTypeCell;
-            cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeName, isCatchAll);
-        }
-        return cells;
-    }
-    // todo: just make a fn that computes proper spacing and then is given a node to print
-    getLineCellTypes() {
-        return this._getGrammarBackedCellArray()
-            .map(slot => slot.getCellTypeName())
-            .join(" ");
-    }
-    getLineHighlightScopes(defaultScope = "source") {
-        return this._getGrammarBackedCellArray()
-            .map(slot => slot.getHighlightScope() || defaultScope)
-            .join(" ");
-    }
-}
 class AbstractRuntimeProgram extends AbstractRuntimeNode {
     *getProgramErrorsIterator() {
         let line = 1;
@@ -2794,6 +2684,123 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
             context: this._getErrorContext(),
             message: `${GrammarConstantsErrors.grammarDefinitionError} For word "${this._word}" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
+    }
+}
+class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
+    getProgram() {
+        return this.getParent().getProgram();
+    }
+    getGrammarProgram() {
+        return this.getDefinition().getProgram();
+    }
+    getDefinition() {
+        // todo: do we need a relative to with this firstWord path?
+        return this._getNodeTypeDefinitionByName(this.getFirstWordPath());
+    }
+    getCompilerNode(targetLanguage) {
+        return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
+    }
+    getParsedWords() {
+        return this._getGrammarBackedCellArray().map(word => word.getParsed());
+    }
+    getCompiledIndentation(targetLanguage) {
+        const compiler = this.getCompilerNode(targetLanguage);
+        const indentCharacter = compiler.getIndentCharacter();
+        const indent = this.getIndentation();
+        return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent;
+    }
+    getCompiledLine(targetLanguage) {
+        const compiler = this.getCompilerNode(targetLanguage);
+        const listDelimiter = compiler.getListDelimiter();
+        const str = compiler.getTransformation();
+        return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine();
+    }
+    compile(targetLanguage) {
+        return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage);
+    }
+    getErrors() {
+        // Not enough parameters
+        // Too many parameters
+        // Incorrect parameter
+        const errors = this._getGrammarBackedCellArray()
+            .map(check => check.getErrorIfAny())
+            .filter(i => i);
+        // More than one
+        const definition = this.getDefinition();
+        let times;
+        const firstWord = this.getFirstWord();
+        if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
+            errors.push({
+                kind: GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
+                subkind: firstWord,
+                level: 0,
+                context: this.getParent().getLine(),
+                message: `${GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+            });
+        return this._getRequiredNodeErrors(errors);
+    }
+    get cells() {
+        const cells = {};
+        this._getGrammarBackedCellArray()
+            .slice(1)
+            .forEach(cell => {
+            if (!cell.isCatchAll())
+                cells[cell.getCellTypeName()] = cell.getParsed();
+            else {
+                if (!cells[cell.getCellTypeName()])
+                    cells[cell.getCellTypeName()] = [];
+                cells[cell.getCellTypeName()].push(cell.getParsed());
+            }
+        });
+        return cells;
+    }
+    _getExtraWordCellTypeName() {
+        return GrammarStandardCellTypes.extraWord;
+    }
+    _getGrammarBackedCellArray() {
+        const definition = this.getDefinition();
+        const grammarProgram = definition.getProgram();
+        const requiredCellTypesNames = definition.getRequiredCellTypeNames();
+        const firstCellTypeName = definition.getFirstCellType();
+        const numberOfRequiredCells = requiredCellTypesNames.length + 1; // todo: assuming here first cell is required.
+        const catchAllCellTypeName = definition.getCatchAllCellTypeName();
+        const actualWordCountOrRequiredCellCount = Math.max(this.getWords().length, numberOfRequiredCells);
+        const cells = [];
+        // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
+        for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
+            const isCatchAll = cellIndex >= numberOfRequiredCells;
+            let cellTypeName;
+            if (cellIndex === 0)
+                cellTypeName = firstCellTypeName;
+            else if (isCatchAll)
+                cellTypeName = catchAllCellTypeName;
+            else
+                cellTypeName = requiredCellTypesNames[cellIndex - 1];
+            let cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
+            let cellConstructor;
+            if (cellTypeDefinition)
+                cellConstructor = cellTypeDefinition.getCellConstructor();
+            else if (cellTypeName)
+                cellConstructor = GrammarUnknownCellTypeCell;
+            else {
+                cellConstructor = GrammarExtraWordCellTypeCell;
+                cellTypeName = this._getExtraWordCellTypeName();
+                cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
+            }
+            cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeName, isCatchAll);
+        }
+        return cells;
+    }
+    // todo: just make a fn that computes proper spacing and then is given a node to print
+    getLineCellTypes() {
+        return this._getGrammarBackedCellArray()
+            .map(slot => slot.getCellTypeName())
+            .join(" ");
+    }
+    getLineHighlightScopes(defaultScope = "source") {
+        return this._getGrammarBackedCellArray()
+            .map(slot => slot.getHighlightScope() || defaultScope)
+            .join(" ");
     }
 }
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
@@ -4161,4 +4168,4 @@ jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "24.1.0";
+jtree.getVersion = () => "24.2.0";

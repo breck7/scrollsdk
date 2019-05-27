@@ -1,3 +1,8 @@
+24.2.0 / 2019-05-27
+===================
+- New: extraWord syntax highlighting
+- New: improved syntax highlighting for Hakon, Stump, and others
+
 24.1.0 / 2019-05-27
 ===================
 - New: getAncestorNodeTypeNamesArray method on definition nodes

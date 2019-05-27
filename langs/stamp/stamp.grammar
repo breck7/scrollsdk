@@ -10,6 +10,8 @@ grammar
   folder
   file
 cellType anyFirstWord
+cellType extraWord
+ highlightScope invalid
 cellType anyWord
  highlightScope string
 cellType promptWords

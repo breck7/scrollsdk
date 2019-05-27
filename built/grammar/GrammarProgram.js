@@ -79,6 +79,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         // todo: return unknownCellTypeDefinition
         return type;
     }
+    getNodeTypeFamilyTree() {
+        const tree = new TreeNode_1.default();
+        Object.values(this.getNodeTypeDefinitions()).forEach(node => {
+            const path = node.getAncestorNodeTypeNamesArray().join(" ");
+            tree.touchNode(path);
+        });
+        return tree;
+    }
     _getCellTypeDefinitions() {
         const types = {};
         // todo: add built in word types?

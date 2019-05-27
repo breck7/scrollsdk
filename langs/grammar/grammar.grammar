@@ -154,6 +154,7 @@ nodeType name
  description The name of your language. Also serves as the default file extension.
 nodeType nodeType
  cells nodeTypeName
+ description Node types are a core unit of your language. Examples of nodeTypes would be "header", "person", "if", "+", "define", etc.
  catchAllCellType extendedNodeType
  catchAllNodeType catchAll.error
  constructors

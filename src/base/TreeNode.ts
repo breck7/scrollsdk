@@ -186,9 +186,7 @@ class ImmutableNode extends AbstractNode {
   toString(indentCount = 0, language = this): string {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
     return (
-      language.getXI().repeat(indentCount) +
-      this.getLine(language) +
-      (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
+      language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
     )
   }
 
@@ -208,13 +206,10 @@ class ImmutableNode extends AbstractNode {
     }
     const edge = this.getXI().repeat(indentCount)
     // Set up the firstWord part of the node
-    const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${
-      classes.xi
-    }">${edge}</span>`
+    const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
     const lineHtml = this._getLineHtml()
     const childrenHtml = this.length
-      ? `<span class="${classes.yi}">${this.getYI()}</span>` +
-        `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
+      ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
       : ""
 
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
@@ -425,11 +420,7 @@ class ImmutableNode extends AbstractNode {
 
   protected _getXmlContent(indentCount: types.positiveInt) {
     if (this.getContent() !== undefined) return this.getContentWithChildren()
-    return this.length
-      ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(
-          indentCount
-        )}`
-      : ""
+    return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
 
   protected _toXml(indentCount: types.positiveInt) {
@@ -445,11 +436,7 @@ class ImmutableNode extends AbstractNode {
     const hasContentAndHasChildren = content !== undefined && length
     // If the node has a content and a subtree return it as a string, as
     // Javascript object values can't be both a leaf and a tree.
-    const tupleValue = hasChildrenNoContent
-      ? this.toObject()
-      : hasContentAndHasChildren
-      ? this.getContentWithChildren()
-      : content
+    const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.getContentWithChildren() : content
     return [this.getFirstWord(), tupleValue]
   }
 
@@ -645,8 +632,7 @@ class ImmutableNode extends AbstractNode {
   _toYamlListElement(indentLevel: number) {
     const children = this._childrenToYaml(indentLevel + 1)
     if (this._collapseYamlLine()) {
-      if (indentLevel > 1)
-        return children.join("\n").replace(" ".repeat(indentLevel), " ".repeat(indentLevel - 2) + "- ")
+      if (indentLevel > 1) return children.join("\n").replace(" ".repeat(indentLevel), " ".repeat(indentLevel - 2) + "- ")
       return children.join("\n")
     } else {
       children.unshift(this._lineToYaml(indentLevel, "-"))
@@ -795,22 +781,14 @@ class ImmutableNode extends AbstractNode {
   }
 
   getAncestorNodesByInheritanceViaExtendsKeyword(key: word): ImmutableNode[] {
-    const ancestorNodes = this._getAncestorNodes(
-      (node, id) => node._getNodesByColumn(0, id),
-      node => node.get(key),
-      this
-    )
+    const ancestorNodes = this._getAncestorNodes((node, id) => node._getNodesByColumn(0, id), node => node.get(key), this)
     ancestorNodes.push(this)
     return ancestorNodes
   }
 
   // Note: as you can probably tell by the name of this method, I don't recommend using this as it will likely be replaced by something better.
   getAncestorNodesByInheritanceViaColumnIndices(thisColumnNumber: int, extendsColumnNumber: int): ImmutableNode[] {
-    const ancestorNodes = this._getAncestorNodes(
-      (node, id) => node._getNodesByColumn(thisColumnNumber, id),
-      node => node.getWord(extendsColumnNumber),
-      this
-    )
+    const ancestorNodes = this._getAncestorNodes((node, id) => node._getNodesByColumn(thisColumnNumber, id), node => node.getWord(extendsColumnNumber), this)
     ancestorNodes.push(this)
     return ancestorNodes
   }
@@ -824,17 +802,14 @@ class ImmutableNode extends AbstractNode {
     if (!parentId) return []
 
     const potentialParentNodes = getPotentialParentNodesByIdFn(this.getParent(), parentId)
-    if (!potentialParentNodes.length)
-      throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
+    if (!potentialParentNodes.length) throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
 
-    if (potentialParentNodes.length > 1)
-      throw new Error(`Invalid inheritance family tree. Multiple unique ids found for "${parentId}"`)
+    if (potentialParentNodes.length > 1) throw new Error(`Invalid inheritance family tree. Multiple unique ids found for "${parentId}"`)
 
     const parentNode = potentialParentNodes[0]
 
     // todo: detect loops
-    if (parentNode === cannotContainNode)
-      throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`)
+    if (parentNode === cannotContainNode) throw new Error(`Loop detected between '${this.getLine()}' and '${parentNode.getLine()}'`)
 
     const ancestorNodes = parentNode._getAncestorNodes(getPotentialParentNodesByIdFn, getParentIdFn, cannotContainNode)
     ancestorNodes.push(parentNode)
@@ -892,8 +867,7 @@ class ImmutableNode extends AbstractNode {
       float: parseFloat,
       int: parseInt
     }
-    const cellFn: cellFn = (cellValue, rowIndex, columnIndex) =>
-      rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue
+    const cellFn: cellFn = (cellValue, rowIndex, columnIndex) => (rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue)
     const arrays = this._toArrays(header, cellFn)
     arrays.rows.unshift(arrays.header)
     return arrays.rows
@@ -901,8 +875,7 @@ class ImmutableNode extends AbstractNode {
 
   toDelimited(delimiter: types.delimiter, header = this._getUnionNames()) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
-    const cellFn: cellFn = (str, row, column) =>
-      !str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`
+    const cellFn: cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
     return this._toDelimited(delimiter, header, cellFn)
   }
 
@@ -991,13 +964,7 @@ class ImmutableNode extends AbstractNode {
 
   // Adapted from: https://github.com/notatestuser/treeify.js
   protected _toOutline(nodeFn: types.nodeToStringFn) {
-    const growBranch = (
-      outlineTreeNode: any,
-      last: boolean,
-      lastStates: any[],
-      nodeFn: types.nodeToStringFn,
-      callback: any
-    ) => {
+    const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: types.nodeToStringFn, callback: any) => {
       let lastStatesCopy = lastStates.slice(0)
       const node: TreeNode = outlineTreeNode.node
 
@@ -1351,6 +1318,7 @@ class ImmutableNode extends AbstractNode {
     return this.constructor
   }
 
+  // todo: make 0 and 1 a param
   getInheritanceTree() {
     const paths: types.stringMap = {}
     const result = new TreeNode()
@@ -1459,8 +1427,7 @@ class TreeNode extends ImmutableNode {
     Object.values(map).forEach(nodeInfo => {
       const parentId = nodeInfo.parentId
       const parentNode = map[parentId]
-      if (parentId && !parentNode)
-        throw new Error(`Node "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
+      if (parentId && !parentNode) throw new Error(`Node "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
       if (parentId) nodeInfo.node._setVirtualParentTree(parentNode.node)
     })
   }
@@ -1475,8 +1442,7 @@ class TreeNode extends ImmutableNode {
 
     let parentNode = this._getVirtualParentTreeNode()
     if (parentNode) {
-      if (parentNode._isExpanding)
-        throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
+      if (parentNode._isExpanding) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
       parentNode._expandFromVirtualParentTree()
       const clone = this.clone()
       this._setChildren(parentNode.childrenToString())
@@ -1787,11 +1753,7 @@ class TreeNode extends ImmutableNode {
     const newNodes = new TreeNode(fn(this.toString()))
     const returnedNodes: TreeNode[] = []
     newNodes.forEach((child, childIndex) => {
-      const newNode = (parent as TreeNode).insertLineAndChildren(
-        child.getLine(),
-        child.childrenToString(),
-        index + childIndex
-      )
+      const newNode = (parent as TreeNode).insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
       returnedNodes.push(newNode)
     })
     this.destroy()
@@ -1829,6 +1791,25 @@ class TreeNode extends ImmutableNode {
 
   firstWordSort(firstWordOrder: types.word[]): this {
     return this._firstWordSort(firstWordOrder)
+  }
+
+  setWords(words: types.word[]): this {
+    return this.setLine(words.join(this.getZI()))
+  }
+
+  setWordsFrom(index: types.positiveInt, words: types.word[]): this {
+    this.setWords(
+      this.getWords()
+        .slice(0, index)
+        .concat(words)
+    )
+    return this
+  }
+
+  appendWord(word: types.word): this {
+    const words = this.getWords()
+    words.push(word)
+    return this.setWords(words)
   }
 
   _firstWordSort(firstWordOrder: types.word[], secondarySortFn?: types.sortFn): this {
@@ -1911,11 +1892,7 @@ class TreeNode extends ImmutableNode {
     if (!grandParent) return this
 
     const parentIndex = this.getParent().getIndex()
-    const newNode = grandParent.insertLineAndChildren(
-      this.getLine(),
-      this.length ? this.childrenToString() : undefined,
-      parentIndex + 1
-    )
+    const newNode = grandParent.insertLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined, parentIndex + 1)
     this.destroy()
     return newNode
   }
@@ -1924,10 +1901,7 @@ class TreeNode extends ImmutableNode {
     const olderSibling = <TreeNode>this._getClosestOlderSibling()
     if (!olderSibling) return this
 
-    const newNode = olderSibling.appendLineAndChildren(
-      this.getLine(),
-      this.length ? this.childrenToString() : undefined
-    )
+    const newNode = olderSibling.appendLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined)
     this.destroy()
     return newNode
   }
@@ -1982,9 +1956,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static _getEscapedRows(str: string, delimiter: string, quoteChar: string) {
-    return str.includes(quoteChar)
-      ? this._strToRows(str, delimiter, quoteChar)
-      : str.split("\n").map(line => line.split(delimiter))
+    return str.includes(quoteChar) ? this._strToRows(str, delimiter, quoteChar) : str.split("\n").map(line => line.split(delimiter))
   }
 
   static fromDelimitedNoHeaders(str: string, delimiter: string, quoteChar: string) {
@@ -2094,8 +2066,7 @@ class TreeNode extends ImmutableNode {
     if (this._xmlParser) return
     const windowObj = <any>window
 
-    if (typeof windowObj.DOMParser !== "undefined")
-      this._xmlParser = (xmlStr: string) => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml")
+    if (typeof windowObj.DOMParser !== "undefined") this._xmlParser = (xmlStr: string) => new windowObj.DOMParser().parseFromString(xmlStr, "text/xml")
     else if (typeof windowObj.ActiveXObject !== "undefined" && new windowObj.ActiveXObject("Microsoft.XMLDOM")) {
       this._xmlParser = (xmlStr: string) => {
         const xmlDoc = new windowObj.ActiveXObject("Microsoft.XMLDOM")
@@ -2167,8 +2138,7 @@ class TreeNode extends ImmutableNode {
 
         if (child.tagName && child.tagName.match(/parsererror/i)) throw new Error("Parse Error")
 
-        if (child.childNodes.length > 0 && child.tagName)
-          children.appendLineAndChildren(child.tagName, this._treeNodeFromXml(child))
+        if (child.childNodes.length > 0 && child.tagName) children.appendLineAndChildren(child.tagName, this._treeNodeFromXml(child))
         else if (child.tagName) children.appendLine(child.tagName)
         else if (child.data) {
           const data = child.data.trim()

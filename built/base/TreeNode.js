@@ -148,9 +148,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     toString(indentCount = 0, language = this) {
         if (this.isRoot())
             return this._childrenToString(indentCount, language);
-        return (language.getXI().repeat(indentCount) +
-            this.getLine(language) +
-            (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : ""));
+        return (language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : ""));
     }
     getWord(index) {
         const words = this._getLine().split(this.getZI());
@@ -171,8 +169,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`;
         const lineHtml = this._getLineHtml();
         const childrenHtml = this.length
-            ? `<span class="${classes.yi}">${this.getYI()}</span>` +
-                `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
+            ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
             : "";
         return `${edgeHtml}${lineHtml}${childrenHtml}</span>`;
     }
@@ -365,9 +362,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     _getXmlContent(indentCount) {
         if (this.getContent() !== undefined)
             return this.getContentWithChildren();
-        return this.length
-            ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}`
-            : "";
+        return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : "";
     }
     _toXml(indentCount) {
         const indent = " ".repeat(indentCount);
@@ -381,11 +376,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         const hasContentAndHasChildren = content !== undefined && length;
         // If the node has a content and a subtree return it as a string, as
         // Javascript object values can't be both a leaf and a tree.
-        const tupleValue = hasChildrenNoContent
-            ? this.toObject()
-            : hasContentAndHasChildren
-                ? this.getContentWithChildren()
-                : content;
+        const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.getContentWithChildren() : content;
         return [this.getFirstWord(), tupleValue];
     }
     _indexOfNode(needleNode) {
@@ -770,14 +761,14 @@ class ImmutableNode extends AbstractNode_node_1.default {
             float: parseFloat,
             int: parseInt
         };
-        const cellFn = (cellValue, rowIndex, columnIndex) => rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue;
+        const cellFn = (cellValue, rowIndex, columnIndex) => (rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue);
         const arrays = this._toArrays(header, cellFn);
         arrays.rows.unshift(arrays.header);
         return arrays.rows;
     }
     toDelimited(delimiter, header = this._getUnionNames()) {
         const regex = new RegExp(`(\\n|\\"|\\${delimiter})`);
-        const cellFn = (str, row, column) => !str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`;
+        const cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`);
         return this._toDelimited(delimiter, header, cellFn);
     }
     _getMatrix(columns) {
@@ -1172,6 +1163,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getCatchAllNodeConstructor(line) {
         return this.constructor;
     }
+    // todo: make 0 and 1 a param
     getInheritanceTree() {
         const paths = {};
         const result = new TreeNode();
@@ -1595,6 +1587,20 @@ class TreeNode extends ImmutableNode {
     firstWordSort(firstWordOrder) {
         return this._firstWordSort(firstWordOrder);
     }
+    setWords(words) {
+        return this.setLine(words.join(this.getZI()));
+    }
+    setWordsFrom(index, words) {
+        this.setWords(this.getWords()
+            .slice(0, index)
+            .concat(words));
+        return this;
+    }
+    appendWord(word) {
+        const words = this.getWords();
+        words.push(word);
+        return this.setWords(words);
+    }
     _firstWordSort(firstWordOrder, secondarySortFn) {
         const map = {};
         firstWordOrder.forEach((word, index) => {
@@ -1725,9 +1731,7 @@ class TreeNode extends ImmutableNode {
         return this._rowsToTreeNode(rows, delimiter, true);
     }
     static _getEscapedRows(str, delimiter, quoteChar) {
-        return str.includes(quoteChar)
-            ? this._strToRows(str, delimiter, quoteChar)
-            : str.split("\n").map(line => line.split(delimiter));
+        return str.includes(quoteChar) ? this._strToRows(str, delimiter, quoteChar) : str.split("\n").map(line => line.split(delimiter));
     }
     static fromDelimitedNoHeaders(str, delimiter, quoteChar) {
         const rows = this._getEscapedRows(str, delimiter, quoteChar);

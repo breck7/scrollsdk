@@ -1,3 +1,9 @@
+24.1.0 / 2019-05-27
+===================
+- New: getAncestorNodeTypeNamesArray method on definition nodes
+- New: getNodeTypeFamilyTree method on grammarPrograms
+- New: setWords, setWordsFrom and appendWord methods on base tree
+
 24.0.0 / 2019-05-21
 ===================
 - New: targeting es2017

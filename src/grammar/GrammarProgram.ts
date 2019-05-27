@@ -101,6 +101,15 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return type
   }
 
+  getNodeTypeFamilyTree() {
+    const tree = new TreeNode()
+    Object.values(this.getNodeTypeDefinitions()).forEach(node => {
+      const path = node.getAncestorNodeTypeNamesArray().join(" ")
+      tree.touchNode(path)
+    })
+    return tree
+  }
+
   protected _getCellTypeDefinitions() {
     const types: { [typeName: string]: GrammarCellTypeDefinitionNode } = {}
     // todo: add built in word types?

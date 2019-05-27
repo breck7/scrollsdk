@@ -401,11 +401,7 @@ domains
   // Assert
   equal(tree8.getTopDownArray().length, 20)
   equal(tree8.getNumberOfLines(), 20)
-  equal(
-    tree8.getNode("domains test.test.com pages home settings data title").getContent(),
-    "Hello, World",
-    "Multiline creation should be okay."
-  )
+  equal(tree8.getNode("domains test.test.com pages home settings data title").getContent(), "Hello, World", "Multiline creation should be okay.")
 
   // Arrange
   const emptyArray = { post: { kind: {}, age: 100 } }
@@ -520,6 +516,17 @@ testTree.getWord = equal => {
   // Act/Assert
   equal(aNode.getWord(1), "b")
   equal(aNode.getWord(-1), "c")
+}
+
+testTree.setWords = equal => {
+  // Arrange
+  const tree = new TreeNode("a b c")
+  const aNode = tree.getNode("a")
+
+  // Act/Assert
+  equal(aNode.appendWord("d").toString(), "a b c d")
+  equal(aNode.setWords(["f", "g"]).toString(), "f g")
+  equal(aNode.setWordsFrom(1, ["h", "i"]).toString(), "f h i")
 }
 
 testTree.at = equal => {
@@ -738,11 +745,7 @@ testTree.delete = equal => {
 
   // Assert
   equal(tree2.getNode("earth north_america united_states california") instanceof TreeNode, true, "node exists")
-  equal(
-    tree2.getNode("earth north_america united_states california san_francisco").getContent(),
-    "mission",
-    "neighborhood is set"
-  )
+  equal(tree2.getNode("earth north_america united_states california san_francisco").getContent(), "mission", "neighborhood is set")
   equal(tree2.getNode("earth north_america united_states california").length, 1, "length okay")
   equal(tree2.length, 1, "length okay")
 
@@ -2480,11 +2483,7 @@ testTree.multiline = equal => {
   // Assert
   equal(twoNodes.length, 2)
   equal(k.getNode("settings").length, 1, "Expected subtree to have 1 empty node")
-  equal(
-    k.getNode("settings").getContentWithChildren(),
-    twoNodes.toString(),
-    "Expected setContentWithChildren and getText to work with newlines"
-  )
+  equal(k.getNode("settings").getContentWithChildren(), twoNodes.toString(), "Expected setContentWithChildren and getText to work with newlines")
   equal(k.toString(), `time 123\nsettings title Untitled\n \nday 1`)
 
   // Arrange
@@ -2812,11 +2811,7 @@ testTree.set = equal => {
 
   // Assert
   equal(tree.getNode("hello").getContent(), "world")
-  equal(
-    tree.touchNode("hello").setContent("mom") instanceof TreeNode,
-    true,
-    "set should return instance so we can chain it"
-  )
+  equal(tree.touchNode("hello").setContent("mom") instanceof TreeNode, true, "set should return instance so we can chain it")
   equal(tree.getNode("hello").getContent(), "mom")
 
   // Act
@@ -3272,9 +3267,7 @@ event lala2018
 
   // Act
   const simple = tree.toMarkdownTable()
-  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) =>
-    row ? value : ucfirst(value)
-  )
+  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) => (row ? value : ucfirst(value)))
 
   // Assert
   equal(table, expected, "markdown ok")
@@ -3355,10 +3348,7 @@ testTree.toString = equal => {
   // Act
   a.touchNode("even_more").setChildren(b)
   // Assert
-  equal(
-    a.toString(),
-    "john\n age 5\nmultiline hello\n world\nother foobar\neven_more\n a\n  text \n   this is a multline string\n   and more"
-  )
+  equal(a.toString(), "john\n age 5\nmultiline hello\n world\nother foobar\neven_more\n a\n  text \n   this is a multline string\n   and more")
 
   // Arrange
   const testCases = ["", "\n", "\n\n", "\n \n ", "   \n   \n", "foo\nbar\n\n", "\n\n foo \nbar\n"]
@@ -3492,10 +3482,7 @@ testTree.toOutline = equal => {
 
 testTree.fromJson = equal => {
   // AAA
-  equal(
-    TreeNode.fromJson(JSON.stringify(testStrings.json2)).toString(),
-    new TreeNode(testStrings.json2tree).getNode("docs").childrenToString()
-  )
+  equal(TreeNode.fromJson(JSON.stringify(testStrings.json2)).toString(), new TreeNode(testStrings.json2tree).getNode("docs").childrenToString())
 }
 
 testTree.getFiltered = equal => {

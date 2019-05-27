@@ -458,9 +458,7 @@ class ImmutableNode extends AbstractNode {
     toString(indentCount = 0, language = this) {
         if (this.isRoot())
             return this._childrenToString(indentCount, language);
-        return (language.getXI().repeat(indentCount) +
-            this.getLine(language) +
-            (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : ""));
+        return (language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : ""));
     }
     getWord(index) {
         const words = this._getLine().split(this.getZI());
@@ -481,8 +479,7 @@ class ImmutableNode extends AbstractNode {
         const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`;
         const lineHtml = this._getLineHtml();
         const childrenHtml = this.length
-            ? `<span class="${classes.yi}">${this.getYI()}</span>` +
-                `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
+            ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
             : "";
         return `${edgeHtml}${lineHtml}${childrenHtml}</span>`;
     }
@@ -675,9 +672,7 @@ class ImmutableNode extends AbstractNode {
     _getXmlContent(indentCount) {
         if (this.getContent() !== undefined)
             return this.getContentWithChildren();
-        return this.length
-            ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}`
-            : "";
+        return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : "";
     }
     _toXml(indentCount) {
         const indent = " ".repeat(indentCount);
@@ -691,11 +686,7 @@ class ImmutableNode extends AbstractNode {
         const hasContentAndHasChildren = content !== undefined && length;
         // If the node has a content and a subtree return it as a string, as
         // Javascript object values can't be both a leaf and a tree.
-        const tupleValue = hasChildrenNoContent
-            ? this.toObject()
-            : hasContentAndHasChildren
-                ? this.getContentWithChildren()
-                : content;
+        const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.getContentWithChildren() : content;
         return [this.getFirstWord(), tupleValue];
     }
     _indexOfNode(needleNode) {
@@ -1080,14 +1071,14 @@ class ImmutableNode extends AbstractNode {
             float: parseFloat,
             int: parseInt
         };
-        const cellFn = (cellValue, rowIndex, columnIndex) => rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue;
+        const cellFn = (cellValue, rowIndex, columnIndex) => (rowIndex ? parsers[types[columnIndex]](cellValue) : cellValue);
         const arrays = this._toArrays(header, cellFn);
         arrays.rows.unshift(arrays.header);
         return arrays.rows;
     }
     toDelimited(delimiter, header = this._getUnionNames()) {
         const regex = new RegExp(`(\\n|\\"|\\${delimiter})`);
-        const cellFn = (str, row, column) => !str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`;
+        const cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`);
         return this._toDelimited(delimiter, header, cellFn);
     }
     _getMatrix(columns) {
@@ -1482,6 +1473,7 @@ class ImmutableNode extends AbstractNode {
     getCatchAllNodeConstructor(line) {
         return this.constructor;
     }
+    // todo: make 0 and 1 a param
     getInheritanceTree() {
         const paths = {};
         const result = new TreeNode();
@@ -1905,6 +1897,20 @@ class TreeNode extends ImmutableNode {
     firstWordSort(firstWordOrder) {
         return this._firstWordSort(firstWordOrder);
     }
+    setWords(words) {
+        return this.setLine(words.join(this.getZI()));
+    }
+    setWordsFrom(index, words) {
+        this.setWords(this.getWords()
+            .slice(0, index)
+            .concat(words));
+        return this;
+    }
+    appendWord(word) {
+        const words = this.getWords();
+        words.push(word);
+        return this.setWords(words);
+    }
     _firstWordSort(firstWordOrder, secondarySortFn) {
         const map = {};
         firstWordOrder.forEach((word, index) => {
@@ -2035,9 +2041,7 @@ class TreeNode extends ImmutableNode {
         return this._rowsToTreeNode(rows, delimiter, true);
     }
     static _getEscapedRows(str, delimiter, quoteChar) {
-        return str.includes(quoteChar)
-            ? this._strToRows(str, delimiter, quoteChar)
-            : str.split("\n").map(line => line.split(delimiter));
+        return str.includes(quoteChar) ? this._strToRows(str, delimiter, quoteChar) : str.split("\n").map(line => line.split(delimiter));
     }
     static fromDelimitedNoHeaders(str, delimiter, quoteChar) {
         const rows = this._getEscapedRows(str, delimiter, quoteChar);
@@ -3328,8 +3332,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
 class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     // todo: protected?
     _getRunTimeCatchAllNodeTypeId() {
-        return (this.get(GrammarConstants.catchAllNodeType) ||
-            this.getParent()._getRunTimeCatchAllNodeTypeId());
+        return this.get(GrammarConstants.catchAllNodeType) || this.getParent()._getRunTimeCatchAllNodeTypeId();
     }
     getExpectedLineCellTypes() {
         const req = [this.getFirstCellType()].concat(this.getRequiredCellTypeNames());
@@ -3373,9 +3376,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
             const cellTypeDefinition = program.getCellTypeDefinition(typeName); // todo: cleanup
             if (!cellTypeDefinition)
                 throw new Error(`No ${GrammarConstants.cellType} ${typeName} found`); // todo: standardize error/capture error at grammar time
-            return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) +
-                "." +
-                cellTypeDefinition.getCellTypeId()}`;
+            return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) + "." + cellTypeDefinition.getCellTypeId()}`;
         })
             .join("\n");
         const cellTypesToRegex = (cellTypeNames) => cellTypeNames.map((cellTypeName) => `({{${cellTypeName}}})?`).join(" ?");
@@ -3388,29 +3389,31 @@ ${captures}
        pop: true`;
     }
     getNodeTypeInheritanceSet() {
-        this._initNodeTypeInheritanceSetCache();
+        this._initNodeTypeInheritanceCache();
         return this._cache_nodeTypeInheritanceSet;
     }
     _getIdOfNodeTypeThatThisExtends() {
         return this.getWord(2);
     }
-    _initNodeTypeInheritanceSetCache() {
+    getAncestorNodeTypeNamesArray() {
+        this._initNodeTypeInheritanceCache();
+        return this._cache_ancestorNodeTypeIdsArray;
+    }
+    _initNodeTypeInheritanceCache() {
         if (this._cache_nodeTypeInheritanceSet)
             return undefined;
-        const cache = new Set();
-        cache.add(this.getNodeTypeIdFromDefinition());
+        let nodeTypeNames = [];
         const extendedNodeTypeId = this._getIdOfNodeTypeThatThisExtends();
         if (extendedNodeTypeId) {
-            cache.add(extendedNodeTypeId);
             const defs = this._getProgramNodeTypeDefinitionCache();
             const parentDef = defs[extendedNodeTypeId];
             if (!parentDef)
                 throw new Error(`${extendedNodeTypeId} not found`);
-            for (let firstWord of parentDef.getNodeTypeInheritanceSet()) {
-                cache.add(firstWord);
-            }
+            nodeTypeNames = nodeTypeNames.concat(parentDef.getAncestorNodeTypeNamesArray());
         }
-        this._cache_nodeTypeInheritanceSet = cache;
+        nodeTypeNames.push(this.getNodeTypeIdFromDefinition());
+        this._cache_nodeTypeInheritanceSet = new Set(nodeTypeNames);
+        this._cache_ancestorNodeTypeIdsArray = nodeTypeNames;
     }
     // todo: protected?
     _getProgramNodeTypeDefinitionCache() {
@@ -3628,6 +3631,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const type = this.getCellTypeDefinitions()[word];
         // todo: return unknownCellTypeDefinition
         return type;
+    }
+    getNodeTypeFamilyTree() {
+        const tree = new TreeNode();
+        Object.values(this.getNodeTypeDefinitions()).forEach(node => {
+            const path = node.getAncestorNodeTypeNamesArray().join(" ");
+            tree.touchNode(path);
+        });
+        return tree;
     }
     _getCellTypeDefinitions() {
         const types = {};
@@ -4150,4 +4161,4 @@ jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "24.0.0";
+jtree.getVersion = () => "24.1.0";

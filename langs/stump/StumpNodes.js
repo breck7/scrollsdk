@@ -76,9 +76,7 @@ class StumpNode extends jtree.NonTerminalNode {
     const indentForChildNodes = !collapse && this.getChildrenByNodeConstructor(StumpNode).length > 0
     const suid = withSuid ? ` ${StumpConstants.uidAttribute}="${this._getUid()}"` : ""
     const oneLiner = this._getOneLiner()
-    return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${
-      indentForChildNodes ? "\n" : ""
-    }${children}</${tag}>${collapse ? "" : "\n"}`
+    return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
   }
 
   removeCssStumpNode() {
@@ -96,19 +94,22 @@ class StumpNode extends jtree.NonTerminalNode {
 
   addClassToStumpNode(className) {
     const classNode = this.touchNode(StumpConstants.class)
-    const words = classNode.getWords()
-    if (words.includes(className)) return this
-    classNode.setWord(words.length, className)
+    const words = classNode.getWordsFrom(1)
+    // note: we call add on shadow regardless, because at the moment stump may have gotten out of
+    // sync with shadow, if things modified the dom. todo: cleanup.
     this.getShadow().addClassToShadow(className)
+    if (words.includes(className)) return this
+    words.push(className)
+    classNode.setContent(words.join(this.getZI()))
     return this
   }
 
   removeClassFromStumpNode(className) {
     const classNode = this.getNode(StumpConstants.class)
     if (!classNode) return this
-    const newClasses = classNode.getLine().replace(" " + className, "")
-    if (newClasses === StumpConstants.class) classNode.destroy()
-    else classNode.setLine(newClasses)
+    const newClasses = classNode.getWords().filter(word => word !== className)
+    if (!newClasses.length) classNode.destroy()
+    else classNode.setContent(newClasses.join(" "))
     this.getShadow().removeClassFromShadow(className)
     return this
   }

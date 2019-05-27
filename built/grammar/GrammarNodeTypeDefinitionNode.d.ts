@@ -9,9 +9,11 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     private _getFirstCellHighlightScope;
     getMatchBlock(): string;
     private _cache_nodeTypeInheritanceSet;
+    private _cache_ancestorNodeTypeIdsArray;
     getNodeTypeInheritanceSet(): Set<string>;
     private _getIdOfNodeTypeThatThisExtends;
-    protected _initNodeTypeInheritanceSetCache(): void;
+    getAncestorNodeTypeNamesArray(): types.nodeTypeId[];
+    protected _initNodeTypeInheritanceCache(): void;
     _getProgramNodeTypeDefinitionCache(): {
         [nodeTypeName: string]: GrammarNodeTypeDefinitionNode;
     };

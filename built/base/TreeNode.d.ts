@@ -268,6 +268,9 @@ declare class TreeNode extends ImmutableNode {
     pushContentAndChildren(content?: types.line, children?: types.children): any;
     deleteBlanks(): this;
     firstWordSort(firstWordOrder: types.word[]): this;
+    setWords(words: types.word[]): this;
+    setWordsFrom(index: types.positiveInt, words: types.word[]): this;
+    appendWord(word: types.word): this;
     _firstWordSort(firstWordOrder: types.word[], secondarySortFn?: types.sortFn): this;
     protected _touchNode(firstWordPathArray: types.word[]): this;
     protected _touchNodeByString(str: string): this;

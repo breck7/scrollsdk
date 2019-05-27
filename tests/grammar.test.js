@@ -56,6 +56,13 @@ testTree.jibberish = equal => {
   equal(program instanceof jibberishProgramRoot, true, "correct program class")
   equal(program.getProgramErrors().length, 0, `${program.getProgramErrorMessages()}`)
 
+  const defNode = program
+    .getGrammarProgram()
+    .getNodeTypeFamilyTree()
+    .getNode("topLevel nodeWithConsts")
+
+  equal(defNode.toString(), "nodeWithConsts", "family tree works")
+
   // Act
   const fooNode = program.getNode("foo")
   const fooDef = fooNode.getDefinition()
@@ -65,6 +72,7 @@ testTree.jibberish = equal => {
   // Assert
   equal(fooDef.getNodeTypeIdFromDefinition(), "foo")
   equal(nodeDef.getNodeTypeIdFromDefinition(), "nodeWithConsts")
+  equal(nodeDef.getAncestorNodeTypeNamesArray().join(" "), "topLevel nodeWithConsts")
 
   // Act
   const constObj = nodeDef.getConstantsObject()

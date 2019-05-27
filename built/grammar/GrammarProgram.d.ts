@@ -20,6 +20,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
         [name: string]: GrammarCellTypeDefinitionNode;
     };
     getCellTypeDefinition(word: string): GrammarCellTypeDefinitionNode;
+    getNodeTypeFamilyTree(): TreeNode;
     protected _getCellTypeDefinitions(): {
         [typeName: string]: GrammarCellTypeDefinitionNode;
     };

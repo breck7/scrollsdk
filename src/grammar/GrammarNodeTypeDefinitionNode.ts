@@ -13,10 +13,7 @@ import types from "../types"
 class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
   // todo: protected?
   _getRunTimeCatchAllNodeTypeId(): string {
-    return (
-      this.get(GrammarConstants.catchAllNodeType) ||
-      (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllNodeTypeId()
-    )
+    return this.get(GrammarConstants.catchAllNodeType) || (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllNodeTypeId()
   }
 
   getExpectedLineCellTypes() {
@@ -47,8 +44,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     const defaultHighlightScope = "source"
     const program = this.getProgram()
     const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const firstWordHighlightScope =
-      (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
+    const firstWordHighlightScope = (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`
     const topHalf = ` '${this.getSublimeSyntaxContextId()}':
   - match: ${match}
@@ -61,14 +57,11 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
       .map((typeName, index) => {
         const cellTypeDefinition = program.getCellTypeDefinition(typeName) // todo: cleanup
         if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${typeName} found`) // todo: standardize error/capture error at grammar time
-        return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) +
-          "." +
-          cellTypeDefinition.getCellTypeId()}`
+        return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) + "." + cellTypeDefinition.getCellTypeId()}`
       })
       .join("\n")
 
-    const cellTypesToRegex = (cellTypeNames: string[]) =>
-      cellTypeNames.map((cellTypeName: string) => `({{${cellTypeName}}})?`).join(" ?")
+    const cellTypesToRegex = (cellTypeNames: string[]) => cellTypeNames.map((cellTypeName: string) => `({{${cellTypeName}}})?`).join(" ?")
 
     return `${topHalf}
     push:
@@ -80,9 +73,10 @@ ${captures}
   }
 
   private _cache_nodeTypeInheritanceSet: Set<types.nodeTypeId>
+  private _cache_ancestorNodeTypeIdsArray: types.nodeTypeId[]
 
   getNodeTypeInheritanceSet() {
-    this._initNodeTypeInheritanceSetCache()
+    this._initNodeTypeInheritanceCache()
     return this._cache_nodeTypeInheritanceSet
   }
 
@@ -90,22 +84,25 @@ ${captures}
     return this.getWord(2)
   }
 
-  protected _initNodeTypeInheritanceSetCache(): void {
+  getAncestorNodeTypeNamesArray(): types.nodeTypeId[] {
+    this._initNodeTypeInheritanceCache()
+    return this._cache_ancestorNodeTypeIdsArray
+  }
+
+  protected _initNodeTypeInheritanceCache(): void {
     if (this._cache_nodeTypeInheritanceSet) return undefined
-    const cache = new Set()
-    cache.add(this.getNodeTypeIdFromDefinition())
+    let nodeTypeNames: types.nodeTypeId[] = []
     const extendedNodeTypeId = this._getIdOfNodeTypeThatThisExtends()
     if (extendedNodeTypeId) {
-      cache.add(extendedNodeTypeId)
       const defs = this._getProgramNodeTypeDefinitionCache()
       const parentDef = defs[extendedNodeTypeId]
       if (!parentDef) throw new Error(`${extendedNodeTypeId} not found`)
 
-      for (let firstWord of parentDef.getNodeTypeInheritanceSet()) {
-        cache.add(firstWord)
-      }
+      nodeTypeNames = nodeTypeNames.concat(parentDef.getAncestorNodeTypeNamesArray())
     }
-    this._cache_nodeTypeInheritanceSet = cache
+    nodeTypeNames.push(this.getNodeTypeIdFromDefinition())
+    this._cache_nodeTypeInheritanceSet = new Set(nodeTypeNames)
+    this._cache_ancestorNodeTypeIdsArray = nodeTypeNames
   }
 
   // todo: protected?

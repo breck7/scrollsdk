@@ -63,7 +63,22 @@ Example:
     if true
      print Hello world
 
-In Tree Notation, the units of measure are words and nodes. Each line is equal to one node. The example program above has 5 words and 2 nodes. The first word of a node is called the keyword. This program has 2 keywords (if and print). Notice how the second line in the program above is indented by one space, this makes it a child node of the line above it.
+In Tree Notation, the units of measure are words and nodes. Each line is equal to one node. The example program above has 5 words and 2 nodes. In this language the nodeType is termined by the first words (if and print). Notice how the second line in the program above is indented by one space, this makes the print node a child node of the line above it, the if node.
+
+If you are familiar with Lisp terminology, you can think of words as atoms.
+
+Grammar files add the additional concept of "cells", which can be thought of as placeholders and type information for words. Grammar files define new languages with nodeTypes and cellTypes. In the example language above, the word "true" would be in a boolean cell type.
+
+
+Grammar Files
+-------------
+
+This library contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language.
+
+To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. This jtree library lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript.
+
+Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. I also have a PyTree library and CTree library which let you create new languages using just Tree Notation + Python or Tree Notation + C++. Those libraries are behind this one due to time constraints, and I'm hoping someone else will create those implementations and/or implementations in other languages.
+
 
 Who this Library is For
 -----------------------
@@ -84,7 +99,14 @@ To use it in an npm project:
     const tree = new jtree.TreeNode("hello world")
     console.log(tree.toString())
 
-More instructions coming soon! If you'd like to create a new Tree Language, shoot me an email and I can help you until I have more documentation.
+
+If you want to make your own Tree Language, launch the jtree sandbox and play around with the grammar examples:
+
+    npm install -g jtree
+    jtree sandbox 3333
+    # Open http://localhost:3333/sandbox/grammars.html
+
+More instructions coming soon! If you need help creating your language, shoot me an email and I can help you until we have more documentation.
 
 Development Status
 ------------------

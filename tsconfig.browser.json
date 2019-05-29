@@ -3,6 +3,7 @@
     "outDir": "./built",
     "lib": ["es2017", "dom"],
     "allowJs": true,
+    "moduleResolution": "node",
     "declaration": false,
     "target": "es2017"
   },

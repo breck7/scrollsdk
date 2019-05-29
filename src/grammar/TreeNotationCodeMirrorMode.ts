@@ -2,7 +2,7 @@ import types from "../types"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
-/*FOR_TYPES_ONLY*/ import * as CodeMirrorLib from "codemirror"
+/* Used for Types Only, but we want this line to remain in the combined intermediate TS program */ import * as CodeMirrorLib from "codemirror"
 
 interface treeNotationCodeMirrorState {
   cellIndex: number
@@ -17,8 +17,7 @@ class TreeNotationCodeMirrorMode {
   ) {
     this._name = name
     this._getProgramConstructorMethod = getProgramConstructorMethod
-    this._getProgramCodeMethod =
-      getProgramCodeMethod || (instance => (instance ? <string>instance.getValue() : this._originalValue))
+    this._getProgramCodeMethod = getProgramCodeMethod || (instance => (instance ? <string>instance.getValue() : this._originalValue))
     this._codeMirrorLib = codeMirrorLib
   }
 
@@ -93,8 +92,7 @@ class TreeNotationCodeMirrorMode {
       tabSize: 1,
       indentUnit: 1,
       hintOptions: {
-        hint: (cmInstance: CodeMirrorLib.EditorFromTextArea, options: any) =>
-          this.codeMirrorAutocomplete(cmInstance, options)
+        hint: (cmInstance: CodeMirrorLib.EditorFromTextArea, options: any) => this.codeMirrorAutocomplete(cmInstance, options)
       }
     }
 
@@ -144,10 +142,7 @@ class TreeNotationCodeMirrorMode {
     return this
   }
 
-  private _advanceStreamAndReturnTokenType(
-    stream: CodeMirrorLib.StringStream,
-    state: treeNotationCodeMirrorState
-  ): string {
+  private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string {
     let nextCharacter = stream.next()
     const lineNumber = this._getLineNumber(stream, state)
     while (typeof nextCharacter === "string") {

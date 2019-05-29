@@ -5,8 +5,7 @@ class TreeNotationCodeMirrorMode {
     constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
         this._getProgramConstructorMethod = getProgramConstructorMethod;
-        this._getProgramCodeMethod =
-            getProgramCodeMethod || (instance => (instance ? instance.getValue() : this._originalValue));
+        this._getProgramCodeMethod = getProgramCodeMethod || (instance => (instance ? instance.getValue() : this._originalValue));
         this._codeMirrorLib = codeMirrorLib;
     }
     _getParsedProgram() {

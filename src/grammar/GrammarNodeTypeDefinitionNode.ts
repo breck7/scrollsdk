@@ -8,7 +8,7 @@ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
   // todo: protected?
@@ -72,8 +72,8 @@ ${captures}
        pop: true`
   }
 
-  private _cache_nodeTypeInheritanceSet: Set<types.nodeTypeId>
-  private _cache_ancestorNodeTypeIdsArray: types.nodeTypeId[]
+  private _cache_nodeTypeInheritanceSet: Set<jTreeTypes.nodeTypeId>
+  private _cache_ancestorNodeTypeIdsArray: jTreeTypes.nodeTypeId[]
 
   getNodeTypeInheritanceSet() {
     this._initNodeTypeInheritanceCache()
@@ -84,14 +84,14 @@ ${captures}
     return this.getWord(2)
   }
 
-  getAncestorNodeTypeNamesArray(): types.nodeTypeId[] {
+  getAncestorNodeTypeNamesArray(): jTreeTypes.nodeTypeId[] {
     this._initNodeTypeInheritanceCache()
     return this._cache_ancestorNodeTypeIdsArray
   }
 
   protected _initNodeTypeInheritanceCache(): void {
     if (this._cache_nodeTypeInheritanceSet) return undefined
-    let nodeTypeNames: types.nodeTypeId[] = []
+    let nodeTypeNames: jTreeTypes.nodeTypeId[] = []
     const extendedNodeTypeId = this._getIdOfNodeTypeThatThisExtends()
     if (extendedNodeTypeId) {
       const defs = this._getProgramNodeTypeDefinitionCache()

@@ -1,14 +1,14 @@
 import TreeNode from "../base/TreeNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare abstract class AbstractCustomConstructorNode extends TreeNode {
-    getTheDefinedConstructor(): types.RunTimeNodeConstructor;
+    getTheDefinedConstructor(): jTreeTypes.RunTimeNodeConstructor;
     protected isAppropriateEnvironment(): boolean;
-    protected _getCustomConstructor(): types.RunTimeNodeConstructor;
-    getErrors(): types.ParseError[];
+    protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor;
+    getErrors(): jTreeTypes.ParseError[];
     getBuiltIn(): any;
 }
 declare class GrammarCustomConstructorsNode extends TreeNode {
-    getFirstWordMap(): types.firstWordToNodeConstructorMap;
+    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getConstructorForEnvironment(): AbstractCustomConstructorNode;
 }
 export default GrammarCustomConstructorsNode;

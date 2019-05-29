@@ -9,10 +9,10 @@ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 import UnknownGrammarProgram from "./UnknownGrammarProgram"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
-  protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor {
+  protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {
     return undefined
   }
 
@@ -41,7 +41,7 @@ class GrammarAbstractNodeTypeDefinitionNode extends GrammarNodeTypeDefinitionNod
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getFirstWordMap() {
-    const map: types.stringMap = {}
+    const map: jTreeTypes.stringMap = {}
     map[GrammarConstants.grammar] = GrammarRootNode
     map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode
     map[GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode
@@ -50,12 +50,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // todo: this code is largely duplicated in abstractruntimeprogram
-  getProgramErrors(): types.ParseError[] {
-    const errors: types.ParseError[] = []
+  getProgramErrors(): jTreeTypes.ParseError[] {
+    const errors: jTreeTypes.ParseError[] = []
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
-      const errs: types.ParseError[] = node.getErrors()
+      const errs: jTreeTypes.ParseError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       delete node._cachedLineNumber
       line++
@@ -65,7 +65,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
-    const errors: types.ParseError[] = []
+    const errors: jTreeTypes.ParseError[] = []
     this.getNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
@@ -264,7 +264,7 @@ ${GrammarConstants.cellType} anyWord`
     ).getRootConstructor()
   }
 
-  static newFromCondensed(grammarCode: string, grammarPath?: types.filepath) {
+  static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath) {
     // todo: handle imports
     const tree = new TreeNode(grammarCode)
 

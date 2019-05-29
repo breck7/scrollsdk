@@ -1,6 +1,6 @@
 import GrammarExampleNode from "./GrammarExampleNode";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId(): string;
     getExpectedLineCellTypes(): string;
@@ -12,7 +12,7 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     private _cache_ancestorNodeTypeIdsArray;
     getNodeTypeInheritanceSet(): Set<string>;
     private _getIdOfNodeTypeThatThisExtends;
-    getAncestorNodeTypeNamesArray(): types.nodeTypeId[];
+    getAncestorNodeTypeNamesArray(): jTreeTypes.nodeTypeId[];
     protected _initNodeTypeInheritanceCache(): void;
     _getProgramNodeTypeDefinitionCache(): {
         [nodeTypeName: string]: GrammarNodeTypeDefinitionNode;
@@ -22,7 +22,7 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     getDefaultFor(name: string): string;
     getDescription(): string;
     getExamples(): GrammarExampleNode[];
-    getConstantsObject(): types.stringMap;
+    getConstantsObject(): jTreeTypes.stringMap;
     getFrequency(): number;
 }
 export default GrammarNodeTypeDefinitionNode;

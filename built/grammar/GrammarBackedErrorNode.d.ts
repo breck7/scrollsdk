@@ -1,7 +1,7 @@
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
     getLineCellTypes(): string;
-    getErrors(): types.ParseError[];
+    getErrors(): jTreeTypes.ParseError[];
 }
 export default GrammarBackedErrorNode;

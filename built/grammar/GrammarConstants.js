@@ -64,15 +64,3 @@ var GrammarConstants;
     GrammarConstants["highlightScope"] = "highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));
 exports.GrammarConstants = GrammarConstants;
-var GrammarConstantsErrors;
-(function (GrammarConstantsErrors) {
-    GrammarConstantsErrors["invalidNodeTypeError"] = "invalidNodeTypeError";
-    GrammarConstantsErrors["invalidConstructorPathError"] = "invalidConstructorPathError";
-    GrammarConstantsErrors["invalidWordError"] = "invalidWordError";
-    GrammarConstantsErrors["grammarDefinitionError"] = "grammarDefinitionError";
-    GrammarConstantsErrors["extraWordError"] = "extraWordError";
-    GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
-    GrammarConstantsErrors["missingRequiredNodeTypeError"] = "missingRequiredNodeTypeError";
-    GrammarConstantsErrors["nodeTypeUsedMultipleTimesError"] = "nodeTypeUsedMultipleTimesError";
-})(GrammarConstantsErrors || (GrammarConstantsErrors = {}));
-exports.GrammarConstantsErrors = GrammarConstantsErrors;

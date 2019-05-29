@@ -77,17 +77,20 @@ var GrammarConstants;
     GrammarConstants["frequency"] = "frequency";
     GrammarConstants["highlightScope"] = "highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));
-var GrammarConstantsErrors;
-(function (GrammarConstantsErrors) {
-    GrammarConstantsErrors["invalidNodeTypeError"] = "invalidNodeTypeError";
-    GrammarConstantsErrors["invalidConstructorPathError"] = "invalidConstructorPathError";
-    GrammarConstantsErrors["invalidWordError"] = "invalidWordError";
-    GrammarConstantsErrors["grammarDefinitionError"] = "grammarDefinitionError";
-    GrammarConstantsErrors["extraWordError"] = "extraWordError";
-    GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
-    GrammarConstantsErrors["missingRequiredNodeTypeError"] = "missingRequiredNodeTypeError";
-    GrammarConstantsErrors["nodeTypeUsedMultipleTimesError"] = "nodeTypeUsedMultipleTimesError";
-})(GrammarConstantsErrors || (GrammarConstantsErrors = {}));
+var jTreeTypes;
+(function (jTreeTypes) {
+    let GrammarConstantsErrors;
+    (function (GrammarConstantsErrors) {
+        GrammarConstantsErrors["invalidNodeTypeError"] = "invalidNodeTypeError";
+        GrammarConstantsErrors["invalidConstructorPathError"] = "invalidConstructorPathError";
+        GrammarConstantsErrors["invalidWordError"] = "invalidWordError";
+        GrammarConstantsErrors["grammarDefinitionError"] = "grammarDefinitionError";
+        GrammarConstantsErrors["extraWordError"] = "extraWordError";
+        GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
+        GrammarConstantsErrors["missingRequiredNodeTypeError"] = "missingRequiredNodeTypeError";
+        GrammarConstantsErrors["nodeTypeUsedMultipleTimesError"] = "nodeTypeUsedMultipleTimesError";
+    })(GrammarConstantsErrors = jTreeTypes.GrammarConstantsErrors || (jTreeTypes.GrammarConstantsErrors = {}));
+})(jTreeTypes || (jTreeTypes = {}));
 class TreeUtils {
     static getPathWithoutFileName(path) {
         const parts = path.split("/"); // todo: change for windows?
@@ -2373,9 +2376,7 @@ class AbstractRuntimeNode extends TreeNode {
         return this;
     }
     getAutocompleteResults(partialWord, cellIndex) {
-        return cellIndex === 0
-            ? this._getAutocompleteResultsForFirstWord(partialWord)
-            : this._getAutocompleteResultsForCell(partialWord, cellIndex);
+        return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
     _getGrammarBackedCellArray() {
         return [];
@@ -2415,11 +2416,11 @@ class AbstractRuntimeNode extends TreeNode {
             const def = firstWords[firstWord];
             if (def.isRequired() && !this.has(firstWord)) {
                 errors.push({
-                    kind: GrammarConstantsErrors.missingRequiredNodeTypeError,
+                    kind: jTreeTypes.GrammarConstantsErrors.missingRequiredNodeTypeError,
                     subkind: firstWord,
                     level: 0,
                     context: "",
-                    message: `${GrammarConstantsErrors.missingRequiredNodeTypeError} Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
+                    message: `${jTreeTypes.GrammarConstantsErrors.missingRequiredNodeTypeError} Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
                 });
             }
         });
@@ -2454,7 +2455,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode {
     // Helper method for selecting potential nodeTypes needed to update grammar file.
     getInvalidNodeTypes(level = undefined) {
         return Array.from(new Set(this.getProgramErrors()
-            .filter(err => err.kind === GrammarConstantsErrors.invalidNodeTypeError)
+            .filter(err => err.kind === jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError)
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }
@@ -2659,20 +2660,18 @@ class AbstractGrammarBackedCell {
             return undefined;
         if (this._word === undefined)
             return {
-                kind: GrammarConstantsErrors.unfilledColumnError,
+                kind: jTreeTypes.GrammarConstantsErrors.unfilledColumnError,
                 subkind: this.getCellTypeName(),
                 level: this._index,
                 context: this._getErrorContext(),
-                message: `${GrammarConstantsErrors.unfilledColumnError} "${this.getCellTypeName()}" cellType in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node
-                    .getDefinition()
-                    .toString()}`
+                message: `${jTreeTypes.GrammarConstantsErrors.unfilledColumnError} "${this.getCellTypeName()}" cellType in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node.getDefinition().toString()}`
             };
         return {
-            kind: GrammarConstantsErrors.invalidWordError,
+            kind: jTreeTypes.GrammarConstantsErrors.invalidWordError,
             subkind: this.getCellTypeName(),
             level: this._index,
             context: this._getErrorContext(),
-            message: `${GrammarConstantsErrors.invalidWordError} in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${this._word}" does not fit in "${this.getCellTypeName()}" cellType. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
+            message: `${jTreeTypes.GrammarConstantsErrors.invalidWordError} in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${this._word}" does not fit in "${this.getCellTypeName()}" cellType. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }
@@ -2754,11 +2753,11 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell {
     }
     getErrorIfAny() {
         return {
-            kind: GrammarConstantsErrors.extraWordError,
+            kind: jTreeTypes.GrammarConstantsErrors.extraWordError,
             subkind: "",
             level: this._index,
             context: this._getErrorContext(),
-            message: `${GrammarConstantsErrors.extraWordError} "${this._word}" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
+            message: `${jTreeTypes.GrammarConstantsErrors.extraWordError} "${this._word}" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }
@@ -2771,11 +2770,11 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
     }
     getErrorIfAny() {
         return {
-            kind: GrammarConstantsErrors.grammarDefinitionError,
+            kind: jTreeTypes.GrammarConstantsErrors.grammarDefinitionError,
             subkind: this.getCellTypeName(),
             level: this._index,
             context: this._getErrorContext(),
-            message: `${GrammarConstantsErrors.grammarDefinitionError} For word "${this._word}" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
+            message: `${jTreeTypes.GrammarConstantsErrors.grammarDefinitionError} For word "${this._word}" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }
@@ -2824,11 +2823,11 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
         const firstWord = this.getFirstWord();
         if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
             errors.push({
-                kind: GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
+                kind: jTreeTypes.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
                 subkind: firstWord,
                 level: 0,
                 context: this.getParent().getLine(),
-                message: `${GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+                message: `${jTreeTypes.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
             });
         return this._getRequiredNodeErrors(errors);
     }
@@ -2908,11 +2907,11 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
         const firstWord = this.getFirstWord();
         return [
             {
-                kind: GrammarConstantsErrors.invalidNodeTypeError,
+                kind: jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError,
                 subkind: firstWord,
                 context: context,
                 level: point.x,
-                message: `${GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${point.y} column ${point.x}`
+                message: `${jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${point.y} column ${point.x}`
             }
         ];
     }
@@ -3120,11 +3119,11 @@ class AbstractCustomConstructorNode extends TreeNode {
         const point = this.getPoint();
         return [
             {
-                kind: GrammarConstantsErrors.invalidConstructorPathError,
+                kind: jTreeTypes.GrammarConstantsErrors.invalidConstructorPathError,
                 subkind: this.getFirstWord(),
                 level: point.x,
                 context: context,
-                message: `${GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
+                message: `${jTreeTypes.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
             }
         ];
     }
@@ -3225,7 +3224,7 @@ class GrammarCustomConstructorsNode extends TreeNode {
         const jsConstructor = this.getNode(GrammarConstants.constructorJavascript);
         if (jsConstructor)
             return jsConstructor;
-        return (this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser));
+        return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser);
     }
 }
 class GrammarDefinitionErrorNode extends TreeNode {
@@ -3235,11 +3234,11 @@ class GrammarDefinitionErrorNode extends TreeNode {
         const point = this.getPoint();
         return [
             {
-                kind: GrammarConstantsErrors.invalidNodeTypeError,
+                kind: jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError,
                 subkind: this.getFirstWord(),
                 level: point.x,
                 context: context,
-                message: `${GrammarConstantsErrors.invalidNodeTypeError} "${this.getFirstWord()}" at line ${point.y}`
+                message: `${jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError} "${this.getFirstWord()}" at line ${point.y}`
             }
         ];
     }
@@ -3300,7 +3299,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {
-        const customConstructorsDefinition = (this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0]);
+        const customConstructorsDefinition = this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0];
         if (customConstructorsDefinition) {
             const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
             if (envConstructor)
@@ -4093,9 +4092,7 @@ const tmToCm = {
 };
 const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
     const matchingBranch = styleTree[scopeSegments.shift()];
-    return matchingBranch
-        ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null
-        : null;
+    return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null;
 };
 class TreeNotationCodeMirrorMode {
     constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {

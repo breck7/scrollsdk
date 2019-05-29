@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const GrammarConstants_1 = require("./GrammarConstants");
+const jTreeTypes_1 = require("../jTreeTypes");
 /*
 A cell contains a word but also the type information for that word.
 */
@@ -72,20 +72,18 @@ class AbstractGrammarBackedCell {
             return undefined;
         if (this._word === undefined)
             return {
-                kind: GrammarConstants_1.GrammarConstantsErrors.unfilledColumnError,
+                kind: jTreeTypes_1.default.GrammarConstantsErrors.unfilledColumnError,
                 subkind: this.getCellTypeName(),
                 level: this._index,
                 context: this._getErrorContext(),
-                message: `${GrammarConstants_1.GrammarConstantsErrors.unfilledColumnError} "${this.getCellTypeName()}" cellType in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node
-                    .getDefinition()
-                    .toString()}`
+                message: `${jTreeTypes_1.default.GrammarConstantsErrors.unfilledColumnError} "${this.getCellTypeName()}" cellType in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node.getDefinition().toString()}`
             };
         return {
-            kind: GrammarConstants_1.GrammarConstantsErrors.invalidWordError,
+            kind: jTreeTypes_1.default.GrammarConstantsErrors.invalidWordError,
             subkind: this.getCellTypeName(),
             level: this._index,
             context: this._getErrorContext(),
-            message: `${GrammarConstants_1.GrammarConstantsErrors.invalidWordError} in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${this._word}" does not fit in "${this.getCellTypeName()}" cellType. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
+            message: `${jTreeTypes_1.default.GrammarConstantsErrors.invalidWordError} in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${this._word}" does not fit in "${this.getCellTypeName()}" cellType. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }
@@ -173,11 +171,11 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell {
     }
     getErrorIfAny() {
         return {
-            kind: GrammarConstants_1.GrammarConstantsErrors.extraWordError,
+            kind: jTreeTypes_1.default.GrammarConstantsErrors.extraWordError,
             subkind: "",
             level: this._index,
             context: this._getErrorContext(),
-            message: `${GrammarConstants_1.GrammarConstantsErrors.extraWordError} "${this._word}" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
+            message: `${jTreeTypes_1.default.GrammarConstantsErrors.extraWordError} "${this._word}" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }
@@ -191,11 +189,11 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
     }
     getErrorIfAny() {
         return {
-            kind: GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError,
+            kind: jTreeTypes_1.default.GrammarConstantsErrors.grammarDefinitionError,
             subkind: this.getCellTypeName(),
             level: this._index,
             context: this._getErrorContext(),
-            message: `${GrammarConstants_1.GrammarConstantsErrors.grammarDefinitionError} For word "${this._word}" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
+            message: `${jTreeTypes_1.default.GrammarConstantsErrors.grammarDefinitionError} For word "${this._word}" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
         };
     }
 }

@@ -1,4 +1,4 @@
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class TreeUtils {
   static getPathWithoutFileName(path: string) {
@@ -43,10 +43,10 @@ class TreeUtils {
     return closestMatch
   }
 
-  private static MAX_INT: types.positiveInt = Math.pow(2, 32) - 1
+  private static MAX_INT: jTreeTypes.positiveInt = Math.pow(2, 32) - 1
 
   // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
-  private static _getEditDistance(stringA: string, stringB: string, maxInt: types.positiveInt) {
+  private static _getEditDistance(stringA: string, stringB: string, maxInt: jTreeTypes.positiveInt) {
     // Handle null or undefined max.
     maxInt = maxInt || maxInt === 0 ? maxInt : TreeUtils.MAX_INT
 
@@ -143,7 +143,7 @@ class TreeUtils {
     return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
   }
 
-  static formatStr(str: string, listDelimiter = " ", parameterMap: types.stringMap) {
+  static formatStr(str: string, listDelimiter = " ", parameterMap: jTreeTypes.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
@@ -157,7 +157,7 @@ class TreeUtils {
 
   static getUniqueWordsArray(allWords: string) {
     const words = allWords.replace(/\n/g, " ").split(" ")
-    const index: types.stringMap = {}
+    const index: jTreeTypes.stringMap = {}
     words.forEach(word => {
       if (!index[word]) index[word] = 0
       index[word]++
@@ -200,7 +200,7 @@ class TreeUtils {
   }
 
   static arrayToMap(arr: Array<any>) {
-    const map: types.stringMap = {}
+    const map: jTreeTypes.stringMap = {}
     arr.forEach(val => (map[val] = true))
     return map
   }
@@ -225,7 +225,7 @@ class TreeUtils {
   }
 
   static makeGraphSortFunction(thisColumnIndex: number, extendsColumnIndex: number) {
-    return (nodeA: types.treeNode, nodeB: types.treeNode) => {
+    return (nodeA: jTreeTypes.treeNode, nodeB: jTreeTypes.treeNode) => {
       // -1 === a before b
       const nodeAUniqueId = nodeA.getWord(thisColumnIndex)
       const nodeAExtends = nodeA.getWord(extendsColumnIndex)

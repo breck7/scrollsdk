@@ -1,9 +1,9 @@
 import AbstractNode from "./AbstractNode.node"
 import TreeUtils from "./TreeUtils"
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
-declare type int = types.int
-declare type word = types.word
+declare type int = jTreeTypes.int
+declare type word = jTreeTypes.word
 
 declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any
@@ -15,7 +15,7 @@ enum FileFormat {
 }
 
 class ImmutableNode extends AbstractNode {
-  constructor(children?: types.children, line?: string, parent?: ImmutableNode) {
+  constructor(children?: jTreeTypes.children, line?: string, parent?: ImmutableNode) {
     super()
     this._parent = parent
     this._setLine(line)
@@ -35,7 +35,7 @@ class ImmutableNode extends AbstractNode {
     return Promise.all(this.map(child => child.execute(context)))
   }
 
-  getErrors(): types.ParseError[] {
+  getErrors(): jTreeTypes.ParseError[] {
     return []
   }
 
@@ -85,11 +85,11 @@ class ImmutableNode extends AbstractNode {
     return this._parent
   }
 
-  getPoint(): types.point {
+  getPoint(): jTreeTypes.point {
     return this._getPoint()
   }
 
-  protected _getPoint(relativeTo?: ImmutableNode): types.point {
+  protected _getPoint(relativeTo?: ImmutableNode): jTreeTypes.point {
     return {
       x: this._getXCoordinate(relativeTo),
       y: this._getYCoordinate(relativeTo)
@@ -111,20 +111,20 @@ class ImmutableNode extends AbstractNode {
     })
   }
 
-  getTopDownArray(): types.treeNode[] {
+  getTopDownArray(): jTreeTypes.treeNode[] {
     const arr: TreeNode[] = []
     this._getTopDownArray(arr)
     return arr
   }
 
-  *getTopDownArrayIterator(): IterableIterator<types.treeNode> {
+  *getTopDownArrayIterator(): IterableIterator<jTreeTypes.treeNode> {
     for (let child of this.getChildren()) {
       yield child
       yield* child.getTopDownArrayIterator()
     }
   }
 
-  nodeAtLine(lineNumber: types.positiveInt): TreeNode | undefined {
+  nodeAtLine(lineNumber: jTreeTypes.positiveInt): TreeNode | undefined {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (lineNumber === index) return node
@@ -228,7 +228,7 @@ class ImmutableNode extends AbstractNode {
     return this._getWords(startFrom)
   }
 
-  private _getWordIndexCharacterStartPosition(wordIndex: int): types.positiveInt {
+  private _getWordIndexCharacterStartPosition(wordIndex: int): jTreeTypes.positiveInt {
     const xiLength = this.getXI().length
     const numIndents = this._getXCoordinate(undefined) - 1
     const indentPosition = xiLength * numIndents
@@ -242,7 +242,7 @@ class ImmutableNode extends AbstractNode {
     )
   }
 
-  getNodeInScopeAtCharIndex(charIndex: types.positiveInt) {
+  getNodeInScopeAtCharIndex(charIndex: jTreeTypes.positiveInt) {
     if (this.isRoot()) return this
     let wordIndex = this.getWordIndexAtCharacterIndex(charIndex)
     if (wordIndex > 0) return this
@@ -265,7 +265,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getAllWordBoundaryCoordinates() {
-    const coordinates: types.point[] = []
+    const coordinates: jTreeTypes.point[] = []
     let line = 0
     for (let node of this.getTopDownArrayIterator()) {
       ;(<TreeNode>node).getWordBoundaryIndices().forEach(index => {
@@ -280,7 +280,7 @@ class ImmutableNode extends AbstractNode {
     return coordinates
   }
 
-  getWordBoundaryIndices(): types.positiveInt[] {
+  getWordBoundaryIndices(): jTreeTypes.positiveInt[] {
     const boundaries = [0]
     let numberOfIndents = this._getXCoordinate(undefined) - 1
     let start = numberOfIndents
@@ -300,7 +300,7 @@ class ImmutableNode extends AbstractNode {
     return boundaries
   }
 
-  getWordIndexAtCharacterIndex(charIndex: types.positiveInt): int {
+  getWordIndexAtCharacterIndex(charIndex: jTreeTypes.positiveInt): int {
     // todo: is this correct thinking for handling root?
     if (this.isRoot()) return 0
     const numberOfIndents = this._getXCoordinate(undefined) - 1
@@ -374,30 +374,30 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: return array? getPathArray?
-  protected _getFirstWordPath(relativeTo?: ImmutableNode): types.firstWordPath {
+  protected _getFirstWordPath(relativeTo?: ImmutableNode): jTreeTypes.firstWordPath {
     if (this.isRoot(relativeTo)) return ""
     else if (this.getParent().isRoot(relativeTo)) return this.getFirstWord()
 
     return this.getParent()._getFirstWordPath(relativeTo) + this.getXI() + this.getFirstWord()
   }
 
-  getFirstWordPathRelativeTo(relativeTo?: ImmutableNode): types.firstWordPath {
+  getFirstWordPathRelativeTo(relativeTo?: ImmutableNode): jTreeTypes.firstWordPath {
     return this._getFirstWordPath(relativeTo)
   }
 
-  getFirstWordPath(): types.firstWordPath {
+  getFirstWordPath(): jTreeTypes.firstWordPath {
     return this._getFirstWordPath()
   }
 
-  getPathVector(): types.pathVector {
+  getPathVector(): jTreeTypes.pathVector {
     return this._getPathVector()
   }
 
-  getPathVectorRelativeTo(relativeTo?: ImmutableNode): types.pathVector {
+  getPathVectorRelativeTo(relativeTo?: ImmutableNode): jTreeTypes.pathVector {
     return this._getPathVector(relativeTo)
   }
 
-  protected _getPathVector(relativeTo?: ImmutableNode): types.pathVector {
+  protected _getPathVector(relativeTo?: ImmutableNode): jTreeTypes.pathVector {
     if (this.isRoot(relativeTo)) return []
     const path = this.getParent()._getPathVector(relativeTo)
     path.push(this.getIndex())
@@ -418,12 +418,12 @@ class ImmutableNode extends AbstractNode {
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
-  protected _getXmlContent(indentCount: types.positiveInt) {
+  protected _getXmlContent(indentCount: jTreeTypes.positiveInt) {
     if (this.getContent() !== undefined) return this.getContentWithChildren()
     return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
 
-  protected _toXml(indentCount: types.positiveInt) {
+  protected _toXml(indentCount: jTreeTypes.positiveInt) {
     const indent = " ".repeat(indentCount)
     const tag = this.getFirstWord()
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
@@ -533,7 +533,7 @@ class ImmutableNode extends AbstractNode {
     return this._getChildren().slice(0)
   }
 
-  get length(): types.positiveInt {
+  get length(): jTreeTypes.positiveInt {
     return this._getChildren().length
   }
 
@@ -554,7 +554,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   protected _toObject() {
-    const obj: types.stringMap = {}
+    const obj: jTreeTypes.stringMap = {}
     this.forEach(node => {
       const tuple = node._toObjectTuple()
       obj[tuple[0]] = tuple[1]
@@ -562,7 +562,7 @@ class ImmutableNode extends AbstractNode {
     return obj
   }
 
-  toHtml(): types.htmlString {
+  toHtml(): jTreeTypes.htmlString {
     return this._childrenToHtml(0)
   }
 
@@ -583,11 +583,11 @@ class ImmutableNode extends AbstractNode {
     return "\n"
   }
 
-  compile(targetExtension: types.fileExtension): string {
+  compile(targetExtension: jTreeTypes.fileExtension): string {
     return this.map(child => child.compile(targetExtension)).join(this._getNodeJoinCharacter())
   }
 
-  toXml(): types.xmlString {
+  toXml(): jTreeTypes.xmlString {
     return this._childrenToXml(0)
   }
 
@@ -655,8 +655,8 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: do we need this?
-  _getDuplicateLinesMap(): types.stringMap {
-    const count: { [line: string]: types.positiveInt } = {}
+  _getDuplicateLinesMap(): jTreeTypes.stringMap {
+    const count: { [line: string]: jTreeTypes.positiveInt } = {}
     this.forEach(node => {
       const line = node.getLine()
       if (count[line]) count[line]++
@@ -669,11 +669,11 @@ class ImmutableNode extends AbstractNode {
     return count
   }
 
-  toJson(): types.jsonString {
+  toJson(): jTreeTypes.jsonString {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(firstWordPath: types.firstWordPath): TreeNode[] {
+  findNodes(firstWordPath: jTreeTypes.firstWordPath): TreeNode[] {
     // todo: can easily speed this up
     return this.getTopDownArray().filter(node => {
       if (node._getFirstWordPath(this) === firstWordPath) return true
@@ -681,7 +681,7 @@ class ImmutableNode extends AbstractNode {
     })
   }
 
-  format(str: types.formatString): string {
+  format(str: jTreeTypes.formatString): string {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }
@@ -690,7 +690,7 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node.get(path))
   }
 
-  getFiltered(fn: types.filterFn) {
+  getFiltered(fn: jTreeTypes.filterFn) {
     const clone = this.clone()
     clone
       .filter((node, index) => !fn(node, index))
@@ -700,7 +700,7 @@ class ImmutableNode extends AbstractNode {
     return clone
   }
 
-  isLeafColumn(path: types.firstWordPath) {
+  isLeafColumn(path: jTreeTypes.firstWordPath) {
     for (let node of this._getChildren()) {
       const nd = node.getNode(path)
       if (nd && nd.length) return false
@@ -708,20 +708,20 @@ class ImmutableNode extends AbstractNode {
     return true
   }
 
-  getNode(firstWordPath: types.firstWordPath) {
+  getNode(firstWordPath: jTreeTypes.firstWordPath) {
     return this._getNodeByPath(firstWordPath)
   }
 
-  get(firstWordPath: types.firstWordPath) {
+  get(firstWordPath: jTreeTypes.firstWordPath) {
     const node = this._getNodeByPath(firstWordPath)
     return node === undefined ? undefined : node.getContent()
   }
 
-  getNodesByGlobPath(query: types.globPath): TreeNode[] {
+  getNodesByGlobPath(query: jTreeTypes.globPath): TreeNode[] {
     return this._getNodesByGlobPath(query)
   }
 
-  private _getNodesByGlobPath(globPath: types.globPath): TreeNode[] {
+  private _getNodesByGlobPath(globPath: jTreeTypes.globPath): TreeNode[] {
     const xi = this.getXI()
     if (!globPath.includes(xi)) {
       if (globPath === "*") return this.getChildren()
@@ -736,7 +736,7 @@ class ImmutableNode extends AbstractNode {
     return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)))
   }
 
-  protected _getNodeByPath(firstWordPath: types.firstWordPath): ImmutableNode {
+  protected _getNodeByPath(firstWordPath: jTreeTypes.firstWordPath): ImmutableNode {
     const xi = this.getXI()
     if (!firstWordPath.includes(xi)) {
       const index = this.indexOfLast(firstWordPath)
@@ -770,7 +770,7 @@ class ImmutableNode extends AbstractNode {
   protected _getUnionNames() {
     if (!this.length) return []
 
-    const obj: types.stringMap = {}
+    const obj: jTreeTypes.stringMap = {}
     this.forEach((node: TreeNode) => {
       if (!node.length) return undefined
       node.forEach(node => {
@@ -816,7 +816,7 @@ class ImmutableNode extends AbstractNode {
     return ancestorNodes
   }
 
-  pathVectorToFirstWordPath(pathVector: types.pathVector): word[] {
+  pathVectorToFirstWordPath(pathVector: jTreeTypes.pathVector): word[] {
     const path = pathVector.slice() // copy array
     const names = []
     let node: ImmutableNode = this
@@ -860,7 +860,7 @@ class ImmutableNode extends AbstractNode {
     return types
   }
 
-  toDataTable(header = this._getUnionNames()): types.dataTable {
+  toDataTable(header = this._getUnionNames()): jTreeTypes.dataTable {
     const types = this._getTypes(header)
     const parsers: { [parseName: string]: (str: string) => any } = {
       string: str => str,
@@ -873,7 +873,7 @@ class ImmutableNode extends AbstractNode {
     return arrays.rows
   }
 
-  toDelimited(delimiter: types.delimiter, header = this._getUnionNames()) {
+  toDelimited(delimiter: jTreeTypes.delimiter, header = this._getUnionNames()) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn: cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
     return this._toDelimited(delimiter, header, cellFn)
@@ -907,7 +907,7 @@ class ImmutableNode extends AbstractNode {
     }
   }
 
-  protected _toDelimited(delimiter: types.delimiter, header: string[], cellFn: cellFn) {
+  protected _toDelimited(delimiter: jTreeTypes.delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
@@ -936,7 +936,7 @@ class ImmutableNode extends AbstractNode {
       })
     })
 
-    const cellFn = (cellText: string, row: types.positiveInt, col: types.positiveInt) => {
+    const cellFn = (cellText: string, row: jTreeTypes.positiveInt, col: jTreeTypes.positiveInt) => {
       const width = widths[col]
       // Strip newlines in fixedWidth output
       const cellValue = cellText.toString().replace(/\n/g, "\\n")
@@ -958,13 +958,13 @@ class ImmutableNode extends AbstractNode {
     return this._toOutline(node => node.getLine())
   }
 
-  toMappedOutline(nodeFn: types.nodeToStringFn): string {
+  toMappedOutline(nodeFn: jTreeTypes.nodeToStringFn): string {
     return this._toOutline(nodeFn)
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  protected _toOutline(nodeFn: types.nodeToStringFn) {
-    const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: types.nodeToStringFn, callback: any) => {
+  protected _toOutline(nodeFn: jTreeTypes.nodeToStringFn) {
+    const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: jTreeTypes.nodeToStringFn, callback: any) => {
       let lastStatesCopy = lastStates.slice(0)
       const node: TreeNode = outlineTreeNode.node
 
@@ -1005,7 +1005,7 @@ class ImmutableNode extends AbstractNode {
 
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
-  split(firstWord: types.word): ImmutableNode[] {
+  split(firstWord: jTreeTypes.word): ImmutableNode[] {
     const constructor = <any>this.constructor
     const YI = this.getYI()
     const ZI = this.getZI()
@@ -1020,7 +1020,7 @@ class ImmutableNode extends AbstractNode {
     return this.toMarkdownTableAdvanced(this._getUnionNames(), (val: string) => val)
   }
 
-  toMarkdownTableAdvanced(columns: word[], formatFn: types.formatFunction): string {
+  toMarkdownTableAdvanced(columns: word[], formatFn: jTreeTypes.formatFunction): string {
     const matrix = this._getMatrix(columns)
     const empty = columns.map(col => "-")
     matrix.unshift(empty)
@@ -1113,7 +1113,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(firstWord: types.word, content: any, circularCheckArray: Object[]) {
+  protected _appendFromJavascriptObjectTuple(firstWord: jTreeTypes.word, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let children
@@ -1142,7 +1142,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: protected?
-  _setLineAndChildren(line: string, children?: types.children, index = this.length) {
+  _setLineAndChildren(line: string, children?: jTreeTypes.children, index = this.length) {
     const nodeConstructor: any = this.getNodeConstructor(line)
     const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
@@ -1239,7 +1239,7 @@ class ImmutableNode extends AbstractNode {
     return newIndex
   }
 
-  protected _childrenToXml(indentCount: types.positiveInt) {
+  protected _childrenToXml(indentCount: jTreeTypes.positiveInt) {
     return this.map(node => node._toXml(indentCount)).join("")
   }
 
@@ -1279,15 +1279,15 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().map(fn)
   }
 
-  filter(fn: types.filterFn) {
+  filter(fn: jTreeTypes.filterFn) {
     return this.getChildren().filter(fn)
   }
 
-  find(fn: types.filterFn) {
+  find(fn: jTreeTypes.filterFn) {
     return this.getChildren().find(fn)
   }
 
-  every(fn: types.everyFn) {
+  every(fn: jTreeTypes.everyFn) {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (!fn(node, index)) return false
@@ -1296,7 +1296,7 @@ class ImmutableNode extends AbstractNode {
     return true
   }
 
-  forEach(fn: types.forEachFn) {
+  forEach(fn: jTreeTypes.forEachFn) {
     this.getChildren().forEach(fn)
     return this
   }
@@ -1310,7 +1310,7 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().slice(start, end)
   }
 
-  getFirstWordMap(): types.firstWordToNodeConstructorMap {
+  getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
     return undefined
   }
 
@@ -1320,7 +1320,7 @@ class ImmutableNode extends AbstractNode {
 
   // todo: make 0 and 1 a param
   getInheritanceTree() {
-    const paths: types.stringMap = {}
+    const paths: jTreeTypes.stringMap = {}
     const result = new TreeNode()
     this.forEach(node => {
       const key = node.getWord(0)
@@ -1413,7 +1413,7 @@ class TreeNode extends ImmutableNode {
   }
 
   private _setVirtualAncestorNodesByInheritanceViaColumnIndices(thisIdColumnNumber: int, extendsIdColumnNumber: int) {
-    const map: { [nodeId: string]: types.inheritanceInfo } = {}
+    const map: { [nodeId: string]: jTreeTypes.inheritanceInfo } = {}
     for (let node of this.getChildren()) {
       const nodeId = node.getWord(thisIdColumnNumber)
       if (map[nodeId]) throw new Error(`Tried to define a node with id "${nodeId}" but one is already defined.`)
@@ -1515,7 +1515,7 @@ class TreeNode extends ImmutableNode {
     return clone
   }
 
-  setChildren(children: types.children) {
+  setChildren(children: jTreeTypes.children) {
     return this._setChildren(children)
   }
 
@@ -1604,7 +1604,7 @@ class TreeNode extends ImmutableNode {
     ;(this.getParent() as TreeNode)._deleteNode(this)
   }
 
-  set(firstWordPath: types.firstWordPath, text: string) {
+  set(firstWordPath: jTreeTypes.firstWordPath, text: string) {
     return this.touchNode(firstWordPath).setContentWithChildren(text)
   }
 
@@ -1619,7 +1619,7 @@ class TreeNode extends ImmutableNode {
     return this._setLineAndChildren(line)
   }
 
-  appendLineAndChildren(line: string, children: types.children) {
+  appendLineAndChildren(line: string, children: jTreeTypes.children) {
     return this._setLineAndChildren(line, children)
   }
 
@@ -1673,7 +1673,7 @@ class TreeNode extends ImmutableNode {
     return node.copyTo(new (<any>this.constructor)(), 0)
   }
 
-  sort(fn: types.sortFn) {
+  sort(fn: jTreeTypes.sortFn) {
     this._getChildrenArray().sort(fn)
     this._clearIndex()
     return this
@@ -1684,7 +1684,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  protected _rename(oldFirstWord: types.word, newFirstWord: types.word) {
+  protected _rename(oldFirstWord: jTreeTypes.word, newFirstWord: jTreeTypes.word) {
     const index = this.indexOf(oldFirstWord)
 
     if (index === -1) return this
@@ -1697,7 +1697,7 @@ class TreeNode extends ImmutableNode {
   }
 
   // Does not recurse.
-  remap(map: types.stringMap) {
+  remap(map: jTreeTypes.stringMap) {
     this.forEach(node => {
       const firstWord = node.getFirstWord()
       if (map[firstWord] !== undefined) node.setFirstWord(map[firstWord])
@@ -1725,7 +1725,7 @@ class TreeNode extends ImmutableNode {
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(path: types.firstWordPath = "") {
+  delete(path: jTreeTypes.firstWordPath = "") {
     const xi = this.getXI()
     if (!path.includes(xi)) return this._deleteAllChildNodesWithFirstWord(path)
 
@@ -1760,7 +1760,7 @@ class TreeNode extends ImmutableNode {
     return returnedNodes
   }
 
-  insertLineAndChildren(line: string, children: types.children, index: int) {
+  insertLineAndChildren(line: string, children: jTreeTypes.children, index: int) {
     return this._setLineAndChildren(line, children, index)
   }
 
@@ -1772,7 +1772,7 @@ class TreeNode extends ImmutableNode {
     return this.insertLine(line, 0)
   }
 
-  pushContentAndChildren(content?: types.line, children?: types.children) {
+  pushContentAndChildren(content?: jTreeTypes.line, children?: jTreeTypes.children) {
     let index = this.length
 
     while (this.has(index.toString())) {
@@ -1789,15 +1789,15 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  firstWordSort(firstWordOrder: types.word[]): this {
+  firstWordSort(firstWordOrder: jTreeTypes.word[]): this {
     return this._firstWordSort(firstWordOrder)
   }
 
-  setWords(words: types.word[]): this {
+  setWords(words: jTreeTypes.word[]): this {
     return this.setLine(words.join(this.getZI()))
   }
 
-  setWordsFrom(index: types.positiveInt, words: types.word[]): this {
+  setWordsFrom(index: jTreeTypes.positiveInt, words: jTreeTypes.word[]): this {
     this.setWords(
       this.getWords()
         .slice(0, index)
@@ -1806,13 +1806,13 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  appendWord(word: types.word): this {
+  appendWord(word: jTreeTypes.word): this {
     const words = this.getWords()
     words.push(word)
     return this.setWords(words)
   }
 
-  _firstWordSort(firstWordOrder: types.word[], secondarySortFn?: types.sortFn): this {
+  _firstWordSort(firstWordOrder: jTreeTypes.word[], secondarySortFn?: jTreeTypes.sortFn): this {
     const map: { [firstWord: string]: int } = {}
     firstWordOrder.forEach((word, index) => {
       map[word] = index
@@ -1827,7 +1827,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  protected _touchNode(firstWordPathArray: types.word[]) {
+  protected _touchNode(firstWordPathArray: jTreeTypes.word[]) {
     let contextNode = this
     firstWordPathArray.forEach(firstWord => {
       contextNode = contextNode.getNode(firstWord) || contextNode.appendLine(firstWord)
@@ -1840,19 +1840,19 @@ class TreeNode extends ImmutableNode {
     return this._touchNode(str.split(this.getZI()))
   }
 
-  touchNode(str: types.firstWordPath) {
+  touchNode(str: jTreeTypes.firstWordPath) {
     return this._touchNodeByString(str)
   }
 
-  hasLine(line: types.line) {
+  hasLine(line: jTreeTypes.line) {
     return this.getChildren().some(node => node.getLine() === line)
   }
 
-  getNodesByLine(line: types.line) {
+  getNodesByLine(line: jTreeTypes.line) {
     return this.filter(node => node.getLine() === line)
   }
 
-  toggleLine(line: types.line): TreeNode {
+  toggleLine(line: jTreeTypes.line): TreeNode {
     const lines = this.getNodesByLine(line)
     if (lines.length) {
       lines.map(line => line.destroy())
@@ -1912,7 +1912,7 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
-  sortBy(nameOrNames: types.word | types.word[]) {
+  sortBy(nameOrNames: jTreeTypes.word[]) {
     const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
 
     const length = names.length
@@ -1938,7 +1938,7 @@ class TreeNode extends ImmutableNode {
     return this.fromDelimited(str, ",", '"')
   }
 
-  static fromJson(str: types.jsonString) {
+  static fromJson(str: jTreeTypes.jsonString) {
     return new TreeNode(JSON.parse(str))
   }
 
@@ -2049,7 +2049,7 @@ class TreeNode extends ImmutableNode {
         }
       }
 
-      const obj: types.stringMap = {}
+      const obj: jTreeTypes.stringMap = {}
       row.forEach((cellValue, index) => {
         obj[names[index]] = cellValue
       })
@@ -2089,7 +2089,7 @@ class TreeNode extends ImmutableNode {
   }
 
   static _zipObject(keys: string[], values: any) {
-    const obj: types.stringMap = {}
+    const obj: jTreeTypes.stringMap = {}
     keys.forEach((key, index) => (obj[key] = values[index]))
     return obj
   }
@@ -2106,7 +2106,7 @@ class TreeNode extends ImmutableNode {
     return rootNode
   }
 
-  static fromDataTable(table: types.dataTable) {
+  static fromDataTable(table: jTreeTypes.dataTable) {
     const header = table.shift()
     return new TreeNode(table.map(row => this._zipObject(header, row)))
   }

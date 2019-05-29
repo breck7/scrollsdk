@@ -1,4 +1,4 @@
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class TreeUtils {
     static getPathWithoutFileName(path: string): string;
     static getClassNameFromFilePath(filename: string): string;
@@ -9,7 +9,7 @@ declare class TreeUtils {
     static resolvePath(filePath: string, programFilepath: string): any;
     static getFileExtension(url?: string): string;
     static resolveProperty(obj: Object, path: string | string[], separator?: string): any;
-    static formatStr(str: string, listDelimiter: string, parameterMap: types.stringMap): string;
+    static formatStr(str: string, listDelimiter: string, parameterMap: jTreeTypes.stringMap): string;
     static stripHtml(text: string): string;
     static getUniqueWordsArray(allWords: string): {
         word: string;
@@ -17,7 +17,7 @@ declare class TreeUtils {
     }[];
     static getRandomString(length?: number, letters?: string[]): string;
     static makeRandomTree(lines?: number): string;
-    static arrayToMap(arr: Array<any>): types.stringMap;
+    static arrayToMap(arr: Array<any>): jTreeTypes.stringMap;
     static mapValues<T>(object: Object, fn: (key: string) => T): {
         [key: string]: T;
     };

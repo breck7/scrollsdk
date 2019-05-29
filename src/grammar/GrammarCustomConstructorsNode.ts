@@ -5,14 +5,14 @@ import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
 import GrammarBackedBlobNode from "./GrammarBackedBlobNode"
 import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
-import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
+import { GrammarConstants } from "./GrammarConstants"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 abstract class AbstractCustomConstructorNode extends TreeNode {
-  getTheDefinedConstructor(): types.RunTimeNodeConstructor {
+  getTheDefinedConstructor(): jTreeTypes.RunTimeNodeConstructor {
     // todo: allow overriding if custom constructor not found.
     return this.getBuiltIn() || this._getCustomConstructor()
   }
@@ -21,11 +21,11 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
     return true
   }
 
-  protected _getCustomConstructor(): types.RunTimeNodeConstructor {
+  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     return undefined
   }
 
-  getErrors(): types.ParseError[] {
+  getErrors(): jTreeTypes.ParseError[] {
     // todo: should this be a try/catch?
     if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor()) return []
     const parent = this.getParent()
@@ -33,19 +33,17 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
     const point = this.getPoint()
     return [
       {
-        kind: GrammarConstantsErrors.invalidConstructorPathError,
+        kind: jTreeTypes.GrammarConstantsErrors.invalidConstructorPathError,
         subkind: this.getFirstWord(),
         level: point.x,
         context: context,
-        message: `${
-          GrammarConstantsErrors.invalidConstructorPathError
-        } no constructor "${this.getLine()}" found at line ${point.y}`
+        message: `${jTreeTypes.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
       }
     ]
   }
 
   getBuiltIn() {
-    const constructors: types.stringMap = {
+    const constructors: jTreeTypes.stringMap = {
       ErrorNode: GrammarBackedErrorNode,
       TerminalNode: GrammarBackedTerminalNode,
       NonTerminalNode: GrammarBackedNonTerminalNode,
@@ -56,7 +54,7 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
 }
 
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
-  protected _getCustomConstructor(): types.RunTimeNodeConstructor {
+  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const filepath = this._getNodeConstructorFilePath()
     const rootPath = (<GrammarProgram>this.getRootNode()).getTheGrammarFilePath()
     const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
@@ -78,7 +76,7 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
 }
 
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
-  protected _getCustomConstructor(): types.RunTimeNodeConstructor {
+  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const constructorName = this.getWord(1)
     const constructor = TreeUtils.resolveProperty(window, constructorName)
     if (!constructor) throw new Error(`constructor window.${constructorName} not found.`)
@@ -93,9 +91,9 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
 
 class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
   private _cached: any
-  static cache: { [code: string]: types.RunTimeNodeConstructor } = {}
+  static cache: { [code: string]: jTreeTypes.RunTimeNodeConstructor } = {}
 
-  private _getNodeJsConstructor(): types.RunTimeNodeConstructor {
+  private _getNodeJsConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const jtreePath = __dirname + "/../jtree.node.js"
     const code = `const jtree = require('${jtreePath}').default
 /* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`
@@ -121,7 +119,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
     return CustomJavascriptConstructorNode.cache[code]
   }
 
-  private _getBrowserConstructor(): types.RunTimeNodeConstructor {
+  private _getBrowserConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const definedCode = this.childrenToString()
     const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30)
     if (CustomJavascriptConstructorNode.cache[definedCode]) return CustomJavascriptConstructorNode.cache[definedCode]
@@ -132,7 +130,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
     CustomJavascriptConstructorNode.cache[definedCode] = (<any>window)[tempClassName]
   }
 
-  protected _getCustomConstructor(): types.RunTimeNodeConstructor {
+  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     return this.isNodeJs() ? this._getNodeJsConstructor() : this._getBrowserConstructor()
   }
 
@@ -143,7 +141,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
 
 class GrammarCustomConstructorsNode extends TreeNode {
   getFirstWordMap() {
-    const map: types.firstWordToNodeConstructorMap = {}
+    const map: jTreeTypes.firstWordToNodeConstructorMap = {}
     map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode
     map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode
     map[GrammarConstants.constructorJavascript] = CustomJavascriptConstructorNode
@@ -153,9 +151,7 @@ class GrammarCustomConstructorsNode extends TreeNode {
   getConstructorForEnvironment(): AbstractCustomConstructorNode {
     const jsConstructor = this.getNode(GrammarConstants.constructorJavascript)
     if (jsConstructor) return <AbstractCustomConstructorNode>jsConstructor
-    return <AbstractCustomConstructorNode>(
-      this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser)
-    )
+    return <AbstractCustomConstructorNode>this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser)
   }
 }
 

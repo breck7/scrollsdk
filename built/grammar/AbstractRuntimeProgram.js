@@ -4,6 +4,7 @@ const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractRuntimeNode_1 = require("./AbstractRuntimeNode");
+const jTreeTypes_1 = require("../jTreeTypes");
 class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     *getProgramErrorsIterator() {
         let line = 1;
@@ -32,7 +33,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     // Helper method for selecting potential nodeTypes needed to update grammar file.
     getInvalidNodeTypes(level = undefined) {
         return Array.from(new Set(this.getProgramErrors()
-            .filter(err => err.kind === GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError)
+            .filter(err => err.kind === jTreeTypes_1.default.GrammarConstantsErrors.invalidNodeTypeError)
             .filter(err => (level ? level === err.level : true))
             .map(err => err.subkind)));
     }

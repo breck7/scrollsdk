@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode"
 
 import { GrammarConstants } from "./GrammarConstants"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   getPredictedGrammarFile(grammarName: string): string {
@@ -14,9 +14,7 @@ class UnknownGrammarProgram extends TreeNode {
     const xi = this.getXI()
     const yi = this.getYI()
 
-    this.getFirstWords().forEach(firstWord =>
-      rootNode.touchNode(`${GrammarConstants.grammar} ${GrammarConstants.nodeTypes} ${firstWord}`)
-    )
+    this.getFirstWords().forEach(firstWord => rootNode.touchNode(`${GrammarConstants.grammar} ${GrammarConstants.nodeTypes} ${firstWord}`))
 
     const clone = <UnknownGrammarProgram>this.clone()
     let allNodes = clone.getTopDownArrayIterator()
@@ -24,11 +22,10 @@ class UnknownGrammarProgram extends TreeNode {
     for (node of allNodes) {
       const firstWord = node.getFirstWord()
       const asInt = parseInt(firstWord)
-      if (!isNaN(asInt) && asInt.toString() === firstWord && node.getParent().getFirstWord())
-        node.setFirstWord(node.getParent().getFirstWord() + "Child")
+      if (!isNaN(asInt) && asInt.toString() === firstWord && node.getParent().getFirstWord()) node.setFirstWord(node.getParent().getFirstWord() + "Child")
     }
     allNodes = clone.getTopDownArrayIterator()
-    const allChilds: { [firstWord: string]: types.stringMap } = {}
+    const allChilds: { [firstWord: string]: jTreeTypes.stringMap } = {}
     const allFirstWordNodes: { [firstWord: string]: TreeNode[] } = {}
     for (let node of allNodes) {
       const firstWord = node.getFirstWord()

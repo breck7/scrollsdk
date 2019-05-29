@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
+const jTreeTypes_1 = require("../jTreeTypes");
 class GrammarDefinitionErrorNode extends TreeNode_1.default {
     getErrors() {
         const parent = this.getParent();
@@ -9,11 +10,11 @@ class GrammarDefinitionErrorNode extends TreeNode_1.default {
         const point = this.getPoint();
         return [
             {
-                kind: GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError,
+                kind: jTreeTypes_1.default.GrammarConstantsErrors.invalidNodeTypeError,
                 subkind: this.getFirstWord(),
                 level: point.x,
                 context: context,
-                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError} "${this.getFirstWord()}" at line ${point.y}`
+                message: `${jTreeTypes_1.default.GrammarConstantsErrors.invalidNodeTypeError} "${this.getFirstWord()}" at line ${point.y}`
             }
         ];
     }

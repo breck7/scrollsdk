@@ -1,8 +1,8 @@
 import TreeNode from "../base/TreeNode";
 import GrammarConstNode from "./GrammarConstNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class GrammarConstantsNode extends TreeNode {
     getCatchAllNodeConstructor(line: string): typeof GrammarConstNode;
-    getConstantsObj(): types.stringMap;
+    getConstantsObj(): jTreeTypes.stringMap;
 }
 export default GrammarConstantsNode;

@@ -1,12 +1,12 @@
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 import GrammarProgram from "./GrammarProgram";
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 declare abstract class AbstractGrammarBackedCell<T> {
-    constructor(node: AbstractRuntimeNonRootNode, index: types.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeName: string, isCatchAll: boolean);
+    constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeName: string, isCatchAll: boolean);
     private _node;
     protected _grammarProgram: GrammarProgram;
-    protected _index: types.int;
+    protected _index: jTreeTypes.int;
     protected _word: string;
     private _typeDef;
     private _isCatchAll;
@@ -28,7 +28,7 @@ declare abstract class AbstractGrammarBackedCell<T> {
     protected _getExpectedLineCellTypes(): any;
     protected abstract _isValid(): boolean;
     isValid(): boolean;
-    getErrorIfAny(): types.ParseError;
+    getErrorIfAny(): jTreeTypes.ParseError;
 }
 declare class GrammarIntCell extends AbstractGrammarBackedCell<number> {
     _isValid(): boolean;
@@ -61,11 +61,11 @@ declare class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
 declare class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
     _isValid(): boolean;
     getParsed(): string;
-    getErrorIfAny(): types.ParseError;
+    getErrorIfAny(): jTreeTypes.ParseError;
 }
 declare class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
     _isValid(): boolean;
     getParsed(): string;
-    getErrorIfAny(): types.ParseError;
+    getErrorIfAny(): jTreeTypes.ParseError;
 }
 export { AbstractGrammarBackedCell, GrammarIntCell, GrammarBitCell, GrammarFloatCell, GrammarBoolCell, GrammarAnyCell, GrammarUnknownCellTypeCell, GrammarExtraWordCellTypeCell };

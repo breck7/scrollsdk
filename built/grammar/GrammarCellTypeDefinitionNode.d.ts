@@ -1,8 +1,8 @@
 import TreeNode from "../base/TreeNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
 declare class GrammarCellTypeDefinitionNode extends TreeNode {
-    getFirstWordMap(): types.stringMap;
+    getFirstWordMap(): jTreeTypes.stringMap;
     getCellConstructor(): any;
     getHighlightScope(): string | undefined;
     private _getEnumOptions;

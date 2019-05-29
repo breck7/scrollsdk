@@ -1,4 +1,4 @@
-export declare namespace types {
+export declare namespace jTreeTypes {
     interface ParseError {
         kind: string;
         subkind: string;
@@ -68,4 +68,4 @@ export declare namespace types {
         [firstWord: string]: TreeNodeConstructor;
     };
 }
-export default types;
+export default jTreeTypes;

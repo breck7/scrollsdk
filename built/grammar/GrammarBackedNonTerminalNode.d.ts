@@ -1,8 +1,8 @@
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
-    getFirstWordMap(): types.firstWordToNodeConstructorMap;
+    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     protected _getNodeJoinCharacter(): string;
-    compile(targetExtension: types.targetLanguageId): string;
+    compile(targetExtension: jTreeTypes.targetLanguageId): string;
 }
 export default GrammarBackedNonTerminalNode;

@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class GrammarCompilerNode extends TreeNode {
-    getFirstWordMap(): types.firstWordToNodeConstructorMap;
+    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getTargetExtension(): string;
     getListDelimiter(): string;
     getTransformation(): string;

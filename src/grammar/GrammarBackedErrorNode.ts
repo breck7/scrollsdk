@@ -1,13 +1,13 @@
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
-import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
-import types from "../types"
+import { GrammarConstants } from "./GrammarConstants"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
   getLineCellTypes() {
     return "error ".repeat(this.getWords().length).trim()
   }
 
-  getErrors(): types.ParseError[] {
+  getErrors(): jTreeTypes.ParseError[] {
     const parent = this.getParent()
     const context = parent.isRoot() ? "" : parent.getFirstWord()
     const locationMsg = context ? `in "${context}" ` : ""
@@ -15,13 +15,11 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
     const firstWord = this.getFirstWord()
     return [
       {
-        kind: GrammarConstantsErrors.invalidNodeTypeError,
+        kind: jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError,
         subkind: firstWord,
         context: context,
         level: point.x,
-        message: `${GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${
-          point.y
-        } column ${point.x}`
+        message: `${jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${point.y} column ${point.x}`
       }
     ]
   }

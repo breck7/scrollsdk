@@ -1,8 +1,8 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
-import { GrammarConstantsErrors, GrammarConstants } from "./GrammarConstants"
+import { GrammarConstants } from "./GrammarConstants"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 
@@ -18,12 +18,12 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     }
   }
 
-  getProgramErrors(): types.ParseError[] {
-    const errors: types.ParseError[] = []
+  getProgramErrors(): jTreeTypes.ParseError[] {
+    const errors: jTreeTypes.ParseError[] = []
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
-      const errs: types.ParseError[] = node.getErrors()
+      const errs: jTreeTypes.ParseError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       delete node._cachedLineNumber
       line++
@@ -33,20 +33,20 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   // Helper method for selecting potential nodeTypes needed to update grammar file.
-  getInvalidNodeTypes(level: types.int = undefined) {
+  getInvalidNodeTypes(level: jTreeTypes.int = undefined) {
     return Array.from(
       new Set(
         this.getProgramErrors()
-          .filter(err => err.kind === GrammarConstantsErrors.invalidNodeTypeError)
+          .filter(err => err.kind === jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError)
           .filter(err => (level ? level === err.level : true))
           .map(err => err.subkind)
       )
     )
   }
 
-  updateNodeTypeIds(nodeTypeMap: TreeNode | string | types.nodeIdRenameMap) {
+  updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap) {
     if (typeof nodeTypeMap === "string") nodeTypeMap = new TreeNode(nodeTypeMap)
-    if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <types.nodeIdRenameMap>nodeTypeMap.toObject()
+    if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <jTreeTypes.nodeIdRenameMap>nodeTypeMap.toObject()
     const renames = []
     for (let node of this.getTopDownArrayIterator()) {
       const nodeTypeId = (<AbstractRuntimeNode>node).getDefinition().getNodeTypeIdFromDefinition()
@@ -71,7 +71,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     ).toTable()
   }
 
-  getAutocompleteResultsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt) {
+  getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt) {
     const lineNode = this.nodeAtLine(lineIndex) || this
     const nodeInScope = <AbstractRuntimeNode>lineNode.getNodeInScopeAtCharIndex(charIndex)
 
@@ -176,7 +176,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
       .join("\n")
   }
 
-  getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope | undefined {
+  getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): jTreeTypes.highlightScope | undefined {
     this._initCellTypeCache()
     const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined

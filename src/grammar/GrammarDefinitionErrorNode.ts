@@ -1,19 +1,19 @@
 import TreeNode from "../base/TreeNode"
-import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
-import types from "../types"
+import { GrammarConstants } from "./GrammarConstants"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarDefinitionErrorNode extends TreeNode {
-  getErrors(): types.ParseError[] {
+  getErrors(): jTreeTypes.ParseError[] {
     const parent = this.getParent()
     const context = parent.isRoot() ? "" : parent.getFirstWord()
     const point = this.getPoint()
     return [
       {
-        kind: GrammarConstantsErrors.invalidNodeTypeError,
+        kind: jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError,
         subkind: this.getFirstWord(),
         level: point.x,
         context: context,
-        message: `${GrammarConstantsErrors.invalidNodeTypeError} "${this.getFirstWord()}" at line ${point.y}`
+        message: `${jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError} "${this.getFirstWord()}" at line ${point.y}`
       }
     ]
   }

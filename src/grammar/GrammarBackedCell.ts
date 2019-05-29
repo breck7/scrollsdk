@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode"
-import { GrammarConstants, GrammarConstantsErrors } from "./GrammarConstants"
-import types from "../types"
+import { GrammarConstants } from "./GrammarConstants"
+import jTreeTypes from "../jTreeTypes"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
@@ -11,13 +11,7 @@ import types from "../types"
 A cell contains a word but also the type information for that word.
 */
 abstract class AbstractGrammarBackedCell<T> {
-  constructor(
-    node: AbstractRuntimeNonRootNode,
-    index: types.int,
-    typeDef: GrammarCellTypeDefinitionNode,
-    cellTypeName: string,
-    isCatchAll: boolean
-  ) {
+  constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeName: string, isCatchAll: boolean) {
     this._typeDef = typeDef
     this._node = node
     this._isCatchAll = isCatchAll
@@ -30,7 +24,7 @@ abstract class AbstractGrammarBackedCell<T> {
 
   private _node: any
   protected _grammarProgram: GrammarProgram
-  protected _index: types.int
+  protected _index: jTreeTypes.int
   protected _word: string
   private _typeDef: GrammarCellTypeDefinitionNode
   private _isCatchAll: boolean
@@ -103,32 +97,28 @@ abstract class AbstractGrammarBackedCell<T> {
     return this._getCellTypeDefinition().isValid(this._word, this._getProgram()) && this._isValid()
   }
 
-  getErrorIfAny(): types.ParseError {
+  getErrorIfAny(): jTreeTypes.ParseError {
     if (this._word !== undefined && this.isValid()) return undefined
 
     if (this._word === undefined)
       return {
-        kind: GrammarConstantsErrors.unfilledColumnError,
+        kind: jTreeTypes.GrammarConstantsErrors.unfilledColumnError,
         subkind: this.getCellTypeName(),
         level: this._index,
         context: this._getErrorContext(),
         message: `${
-          GrammarConstantsErrors.unfilledColumnError
+          jTreeTypes.GrammarConstantsErrors.unfilledColumnError
         } "${this.getCellTypeName()}" cellType in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${
           this._index
-        }. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node
-          .getDefinition()
-          .toString()}`
+        }. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node.getDefinition().toString()}`
       }
 
     return {
-      kind: GrammarConstantsErrors.invalidWordError,
+      kind: jTreeTypes.GrammarConstantsErrors.invalidWordError,
       subkind: this.getCellTypeName(),
       level: this._index,
       context: this._getErrorContext(),
-      message: `${
-        GrammarConstantsErrors.invalidWordError
-      } in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${
+      message: `${jTreeTypes.GrammarConstantsErrors.invalidWordError} in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${
         this._word
       }" does not fit in "${this.getCellTypeName()}" cellType. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
     }
@@ -227,15 +217,13 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
     return this._word
   }
 
-  getErrorIfAny(): types.ParseError {
+  getErrorIfAny(): jTreeTypes.ParseError {
     return {
-      kind: GrammarConstantsErrors.extraWordError,
+      kind: jTreeTypes.GrammarConstantsErrors.extraWordError,
       subkind: "",
       level: this._index,
       context: this._getErrorContext(),
-      message: `${GrammarConstantsErrors.extraWordError} "${
-        this._word
-      }" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${
+      message: `${jTreeTypes.GrammarConstantsErrors.extraWordError} "${this._word}" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${
         this._index
       }. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
     }
@@ -251,13 +239,13 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
     return this._word
   }
 
-  getErrorIfAny(): types.ParseError {
+  getErrorIfAny(): jTreeTypes.ParseError {
     return {
-      kind: GrammarConstantsErrors.grammarDefinitionError,
+      kind: jTreeTypes.GrammarConstantsErrors.grammarDefinitionError,
       subkind: this.getCellTypeName(),
       level: this._index,
       context: this._getErrorContext(),
-      message: `${GrammarConstantsErrors.grammarDefinitionError} For word "${
+      message: `${jTreeTypes.GrammarConstantsErrors.grammarDefinitionError} For word "${
         this._word
       }" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${
         this._index

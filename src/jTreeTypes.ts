@@ -1,10 +1,21 @@
-export namespace types {
+export namespace jTreeTypes {
   export interface ParseError {
     kind: string
     subkind: string
     level: int
     context: string
     message: string
+  }
+
+  export enum GrammarConstantsErrors {
+    invalidNodeTypeError = "invalidNodeTypeError",
+    invalidConstructorPathError = "invalidConstructorPathError",
+    invalidWordError = "invalidWordError",
+    grammarDefinitionError = "grammarDefinitionError",
+    extraWordError = "extraWordError",
+    unfilledColumnError = "unfilledColumnError",
+    missingRequiredNodeTypeError = "missingRequiredNodeTypeError",
+    nodeTypeUsedMultipleTimesError = "nodeTypeUsedMultipleTimesError"
   }
 
   export interface point {
@@ -60,4 +71,4 @@ export namespace types {
   export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
 }
 
-export default types
+export default jTreeTypes

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var types;
-(function (types) {
+var jTreeTypes;
+(function (jTreeTypes) {
     let GrammarConstantsErrors;
     (function (GrammarConstantsErrors) {
         GrammarConstantsErrors["invalidNodeTypeError"] = "invalidNodeTypeError";
@@ -12,6 +12,6 @@ var types;
         GrammarConstantsErrors["unfilledColumnError"] = "unfilledColumnError";
         GrammarConstantsErrors["missingRequiredNodeTypeError"] = "missingRequiredNodeTypeError";
         GrammarConstantsErrors["nodeTypeUsedMultipleTimesError"] = "nodeTypeUsedMultipleTimesError";
-    })(GrammarConstantsErrors = types.GrammarConstantsErrors || (types.GrammarConstantsErrors = {}));
-})(types = exports.types || (exports.types = {}));
-exports.default = types;
+    })(GrammarConstantsErrors = jTreeTypes.GrammarConstantsErrors || (jTreeTypes.GrammarConstantsErrors = {}));
+})(jTreeTypes = exports.jTreeTypes || (exports.jTreeTypes = {}));
+exports.default = jTreeTypes;

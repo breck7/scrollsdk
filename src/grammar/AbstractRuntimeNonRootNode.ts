@@ -1,6 +1,6 @@
 import TreeUtils from "../base/TreeUtils"
 
-import { GrammarConstantsErrors, GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
+import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
 
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 import { AbstractGrammarBackedCell, GrammarUnknownCellTypeCell, GrammarExtraWordCellTypeCell } from "./GrammarBackedCell"
@@ -9,7 +9,7 @@ import { AbstractGrammarBackedCell, GrammarUnknownCellTypeCell, GrammarExtraWord
 /*FOR_TYPES_ONLY*/ import GrammarCompilerNode from "./GrammarCompilerNode"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   getProgram() {
@@ -25,7 +25,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByName(this.getFirstWordPath())
   }
 
-  getCompilerNode(targetLanguage: types.targetLanguageId): GrammarCompilerNode {
+  getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
     return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
   }
 
@@ -33,21 +33,21 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this._getGrammarBackedCellArray().map(word => word.getParsed())
   }
 
-  getCompiledIndentation(targetLanguage: types.targetLanguageId) {
+  getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId) {
     const compiler = this.getCompilerNode(targetLanguage)
     const indentCharacter = compiler.getIndentCharacter()
     const indent = this.getIndentation()
     return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
 
-  getCompiledLine(targetLanguage: types.targetLanguageId) {
+  getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId) {
     const compiler = this.getCompilerNode(targetLanguage)
     const listDelimiter = compiler.getListDelimiter()
     const str = compiler.getTransformation()
     return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine()
   }
 
-  compile(targetLanguage: types.targetLanguageId) {
+  compile(targetLanguage: jTreeTypes.targetLanguageId) {
     return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage)
   }
 
@@ -65,20 +65,20 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     const firstWord = this.getFirstWord()
     if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
       errors.push({
-        kind: GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
+        kind: jTreeTypes.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
         subkind: firstWord,
         level: 0,
         context: this.getParent().getLine(),
-        message: `${GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${
-          this.getPoint().y
-        }'`
+        message: `${
+          jTreeTypes.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError
+        } nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
       })
 
     return this._getRequiredNodeErrors(errors)
   }
 
   get cells() {
-    const cells: types.stringMap = {}
+    const cells: jTreeTypes.stringMap = {}
     this._getGrammarBackedCellArray()
       .slice(1)
       .forEach(cell => {

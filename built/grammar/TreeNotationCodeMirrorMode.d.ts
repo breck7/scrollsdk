@@ -1,11 +1,11 @@
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
 import * as CodeMirrorLib from "codemirror";
 interface treeNotationCodeMirrorState {
     cellIndex: number;
 }
 declare class TreeNotationCodeMirrorMode {
-    constructor(name: string, getProgramConstructorMethod: () => types.TreeProgramConstructor, getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib?: typeof CodeMirrorLib);
+    constructor(name: string, getProgramConstructorMethod: () => jTreeTypes.TreeProgramConstructor, getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib?: typeof CodeMirrorLib);
     private _name;
     private _getProgramCodeMethod;
     private _getProgramConstructorMethod;

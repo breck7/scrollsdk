@@ -1,4 +1,4 @@
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare enum CmToken {
     Atom = "atom",
     Attribute = "attribute",
@@ -25,5 +25,5 @@ declare enum CmToken {
     Variable2 = "variable-2",
     Variable3 = "variable-3"
 }
-declare const textMateScopeToCodeMirrorStyle: (scopeSegments: string[], styleTree?: types.stringMap) => CmToken;
+declare const textMateScopeToCodeMirrorStyle: (scopeSegments: string[], styleTree?: jTreeTypes.stringMap) => CmToken;
 export default textMateScopeToCodeMirrorStyle;

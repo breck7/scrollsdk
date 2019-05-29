@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode"
 
 import GrammarConstNode from "./GrammarConstNode"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarConstantsNode extends TreeNode {
   getCatchAllNodeConstructor(line: string) {
@@ -10,7 +10,7 @@ class GrammarConstantsNode extends TreeNode {
   }
 
   getConstantsObj() {
-    const result: types.stringMap = {}
+    const result: jTreeTypes.stringMap = {}
     this.forEach(node => (result[node.getName()] = node.getValue()))
     return result
   }

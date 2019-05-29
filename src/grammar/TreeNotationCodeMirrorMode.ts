@@ -1,4 +1,4 @@
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
@@ -11,7 +11,7 @@ interface treeNotationCodeMirrorState {
 class TreeNotationCodeMirrorMode {
   constructor(
     name: string,
-    getProgramConstructorMethod: () => types.TreeProgramConstructor,
+    getProgramConstructorMethod: () => jTreeTypes.TreeProgramConstructor,
     getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string,
     codeMirrorLib: typeof CodeMirrorLib = undefined
   ) {
@@ -23,10 +23,10 @@ class TreeNotationCodeMirrorMode {
 
   private _name: string
   private _getProgramCodeMethod: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getProgramConstructorMethod: () => types.TreeProgramConstructor
+  private _getProgramConstructorMethod: () => jTreeTypes.TreeProgramConstructor
   private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
-  private _cachedProgram: types.treeProgram
+  private _cachedProgram: jTreeTypes.treeProgram
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
@@ -39,7 +39,7 @@ class TreeNotationCodeMirrorMode {
     return this._cachedProgram
   }
 
-  private _getExcludedIntelliSenseTriggerKeys(): types.stringMap {
+  private _getExcludedIntelliSenseTriggerKeys(): jTreeTypes.stringMap {
     return {
       "8": "backspace",
       "9": "tab",
@@ -168,12 +168,12 @@ class TreeNotationCodeMirrorMode {
     return style
   }
 
-  private _getLineNumber(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): types.int {
+  private _getLineNumber(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): jTreeTypes.int {
     const num = (<any>stream).lineOracle.line + 1 // state.lineIndex
     return num
   }
 
-  private _getCellStyle(lineIndex: types.int, cellIndex: types.int): string {
+  private _getCellStyle(lineIndex: jTreeTypes.int, cellIndex: jTreeTypes.int): string {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?

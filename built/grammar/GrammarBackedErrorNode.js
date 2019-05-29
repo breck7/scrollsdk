@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractRuntimeNonRootNode_1 = require("./AbstractRuntimeNonRootNode");
-const GrammarConstants_1 = require("./GrammarConstants");
+const jTreeTypes_1 = require("../jTreeTypes");
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode_1.default {
     getLineCellTypes() {
         return "error ".repeat(this.getWords().length).trim();
@@ -14,11 +14,11 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode_1.default {
         const firstWord = this.getFirstWord();
         return [
             {
-                kind: GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError,
+                kind: jTreeTypes_1.default.GrammarConstantsErrors.invalidNodeTypeError,
                 subkind: firstWord,
                 context: context,
                 level: point.x,
-                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${point.y} column ${point.x}`
+                message: `${jTreeTypes_1.default.GrammarConstantsErrors.invalidNodeTypeError} "${firstWord}" ${locationMsg}at line ${point.y} column ${point.x}`
             }
         ];
     }

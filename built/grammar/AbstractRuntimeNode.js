@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
-const GrammarConstants_1 = require("./GrammarConstants");
+const jTreeTypes_1 = require("../jTreeTypes");
 class AbstractRuntimeNode extends TreeNode_1.default {
     // note: this is overwritten by the root node of a runtime grammar program.
     // some of the magic that makes this all work. but maybe there's a better way.
@@ -15,9 +15,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         return this;
     }
     getAutocompleteResults(partialWord, cellIndex) {
-        return cellIndex === 0
-            ? this._getAutocompleteResultsForFirstWord(partialWord)
-            : this._getAutocompleteResultsForCell(partialWord, cellIndex);
+        return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
     _getGrammarBackedCellArray() {
         return [];
@@ -57,11 +55,11 @@ class AbstractRuntimeNode extends TreeNode_1.default {
             const def = firstWords[firstWord];
             if (def.isRequired() && !this.has(firstWord)) {
                 errors.push({
-                    kind: GrammarConstants_1.GrammarConstantsErrors.missingRequiredNodeTypeError,
+                    kind: jTreeTypes_1.default.GrammarConstantsErrors.missingRequiredNodeTypeError,
                     subkind: firstWord,
                     level: 0,
                     context: "",
-                    message: `${GrammarConstants_1.GrammarConstantsErrors.missingRequiredNodeTypeError} Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
+                    message: `${jTreeTypes_1.default.GrammarConstantsErrors.missingRequiredNodeTypeError} Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
                 });
             }
         });

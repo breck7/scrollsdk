@@ -1,12 +1,12 @@
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
   getFirstWordMap() {
     return {}
   }
 
-  getErrors(): types.ParseError[] {
+  getErrors(): jTreeTypes.ParseError[] {
     return []
   }
 

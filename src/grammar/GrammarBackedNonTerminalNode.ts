@@ -1,6 +1,6 @@
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
   getFirstWordMap() {
@@ -12,7 +12,7 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     return "\n"
   }
 
-  compile(targetExtension: types.targetLanguageId) {
+  compile(targetExtension: jTreeTypes.targetLanguageId) {
     const compiler = this.getCompilerNode(targetExtension)
     const openChildrenString = compiler.getOpenChildrenString()
     const closeChildrenString = compiler.getCloseChildrenString()

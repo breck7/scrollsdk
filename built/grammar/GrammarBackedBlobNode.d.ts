@@ -1,8 +1,8 @@
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
     getFirstWordMap(): {};
-    getErrors(): types.ParseError[];
+    getErrors(): jTreeTypes.ParseError[];
     getCatchAllNodeConstructor(line: string): typeof GrammarBackedBlobNode;
 }
 export default GrammarBackedBlobNode;

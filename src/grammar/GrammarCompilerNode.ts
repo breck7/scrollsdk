@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode"
 
 import { GrammarConstantsCompiler } from "./GrammarConstants"
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 class GrammarCompilerNode extends TreeNode {
   getFirstWordMap() {
@@ -12,7 +12,7 @@ class GrammarCompilerNode extends TreeNode {
       GrammarConstantsCompiler.openChildren,
       GrammarConstantsCompiler.closeChildren
     ]
-    const map: types.firstWordToNodeConstructorMap = {}
+    const map: jTreeTypes.firstWordToNodeConstructorMap = {}
     types.forEach(type => {
       map[type] = TreeNode
     })

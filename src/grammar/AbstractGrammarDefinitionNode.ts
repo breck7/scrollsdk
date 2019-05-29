@@ -15,10 +15,10 @@ import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
-  getFirstWordMap(): types.firstWordToNodeConstructorMap {
+  getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
     const types = [
       GrammarConstants.frequency,
       GrammarConstants.nodeTypes,
@@ -35,7 +35,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.single
     ]
 
-    const map: types.firstWordToNodeConstructorMap = {}
+    const map: jTreeTypes.firstWordToNodeConstructorMap = {}
     types.forEach(type => {
       map[type] = TreeNode
     })
@@ -62,24 +62,22 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.blob)
   }
 
-  private _cache_definedNodeConstructor: types.RunTimeNodeConstructor
+  private _cache_definedNodeConstructor: jTreeTypes.RunTimeNodeConstructor
 
   getConstructorDefinedInGrammar() {
     if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this._getDefinedNodeConstructor()
     return this._cache_definedNodeConstructor
   }
 
-  protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor {
+  protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {
     if (this._isBlobNode()) return GrammarBackedBlobNode
 
     return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
   /* Node constructor is the actual JS class being initiated, different than the Node type. */
-  protected _getDefinedNodeConstructor(): types.RunTimeNodeConstructor {
-    const customConstructorsDefinition = <GrammarCustomConstructorsNode>(
-      this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0]
-    )
+  protected _getDefinedNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {
+    const customConstructorsDefinition = <GrammarCustomConstructorsNode>this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0]
     if (customConstructorsDefinition) {
       const envConstructor = customConstructorsDefinition.getConstructorForEnvironment()
       if (envConstructor) return envConstructor.getTheDefinedConstructor()
@@ -95,7 +93,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return <GrammarProgram>this.getParent()
   }
 
-  getDefinitionCompilerNode(targetLanguage: types.targetLanguageId, node: TreeNode) {
+  getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode) {
     const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)
     if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)
     return compilerNode
@@ -112,7 +110,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return firstNode ? firstNode.getTargetExtension() : ""
   }
 
-  private _cache_runTimeFirstWordToNodeConstructorMap: types.firstWordToNodeConstructorMap
+  private _cache_runTimeFirstWordToNodeConstructorMap: jTreeTypes.firstWordToNodeConstructorMap
 
   getRunTimeFirstWordMap() {
     this._initRunTimeFirstWordToNodeConstructorMap()
@@ -152,9 +150,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypesInScope))
       .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
       .forEach(nodeTypeId => {
-        this._cache_runTimeFirstWordToNodeConstructorMap[nodeTypeId] = allProgramNodeTypeDefinitionsMap[
-          nodeTypeId
-        ].getConstructorDefinedInGrammar()
+        this._cache_runTimeFirstWordToNodeConstructorMap[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar()
       })
   }
 
@@ -204,12 +200,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     if (def) return def
 
     // todo: implement contraints like a grammar file MUST have a catch all.
-    if (this.isRoot())
-      throw new Error(`This grammar language "${this.getProgram().getGrammarName()}" lacks a root catch all definition`)
+    if (this.isRoot()) throw new Error(`This grammar language "${this.getProgram().getGrammarName()}" lacks a root catch all definition`)
     else return (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllDefinition()
   }
 
-  private _cache_catchAllConstructor: types.RunTimeNodeConstructor
+  private _cache_catchAllConstructor: jTreeTypes.RunTimeNodeConstructor
 
   protected _initCatchAllNodeConstructorCache(): void {
     if (this._cache_catchAllConstructor) return undefined

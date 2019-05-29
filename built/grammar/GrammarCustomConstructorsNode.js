@@ -7,6 +7,7 @@ const GrammarBackedBlobNode_1 = require("./GrammarBackedBlobNode");
 const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 const GrammarBackedErrorNode_1 = require("./GrammarBackedErrorNode");
 const GrammarConstants_1 = require("./GrammarConstants");
+const jTreeTypes_1 = require("../jTreeTypes");
 class AbstractCustomConstructorNode extends TreeNode_1.default {
     getTheDefinedConstructor() {
         // todo: allow overriding if custom constructor not found.
@@ -27,11 +28,11 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
         const point = this.getPoint();
         return [
             {
-                kind: GrammarConstants_1.GrammarConstantsErrors.invalidConstructorPathError,
+                kind: jTreeTypes_1.default.GrammarConstantsErrors.invalidConstructorPathError,
                 subkind: this.getFirstWord(),
                 level: point.x,
                 context: context,
-                message: `${GrammarConstants_1.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
+                message: `${jTreeTypes_1.default.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
             }
         ];
     }
@@ -132,7 +133,7 @@ class GrammarCustomConstructorsNode extends TreeNode_1.default {
         const jsConstructor = this.getNode(GrammarConstants_1.GrammarConstants.constructorJavascript);
         if (jsConstructor)
             return jsConstructor;
-        return (this.getNode(this.isNodeJs() ? GrammarConstants_1.GrammarConstants.constructorNodeJs : GrammarConstants_1.GrammarConstants.constructorBrowser));
+        return this.getNode(this.isNodeJs() ? GrammarConstants_1.GrammarConstants.constructorNodeJs : GrammarConstants_1.GrammarConstants.constructorBrowser);
     }
 }
 exports.default = GrammarCustomConstructorsNode;

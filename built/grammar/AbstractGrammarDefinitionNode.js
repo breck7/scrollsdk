@@ -62,7 +62,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {
-        const customConstructorsDefinition = (this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode_1.default)[0]);
+        const customConstructorsDefinition = this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode_1.default)[0];
         if (customConstructorsDefinition) {
             const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
             if (envConstructor)

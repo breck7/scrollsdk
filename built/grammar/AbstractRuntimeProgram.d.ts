@@ -1,14 +1,14 @@
 import TreeNode from "../base/TreeNode";
 import AbstractRuntimeNode from "./AbstractRuntimeNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 import GrammarProgram from "./GrammarProgram";
 declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getProgramErrorsIterator(): IterableIterator<any>;
-    getProgramErrors(): types.ParseError[];
-    getInvalidNodeTypes(level?: types.int): string[];
-    updateNodeTypeIds(nodeTypeMap: TreeNode | string | types.nodeIdRenameMap): this;
+    getProgramErrors(): jTreeTypes.ParseError[];
+    getInvalidNodeTypes(level?: jTreeTypes.int): string[];
+    updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap): this;
     getAllSuggestions(): string;
-    getAutocompleteResultsAt(lineIndex: types.positiveInt, charIndex: types.positiveInt): {
+    getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt): {
         startCharIndex: number;
         endCharIndex: number;
         word: string;
@@ -19,7 +19,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     };
     getPrettified(): string;
     getProgramErrorMessages(): string[];
-    getFirstWordMap(): types.firstWordToNodeConstructorMap;
+    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getDefinition(): GrammarProgram;
     getNodeTypeUsage(filepath?: string): TreeNode;
     getInPlaceCellTypeTree(): string;
@@ -27,7 +27,7 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getInPlaceCellTypeTreeWithNodeConstructorNames(): string;
     protected _getInPlaceCellTypeTreeHtml(): string;
     getTreeWithNodeTypes(): string;
-    getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): types.highlightScope | undefined;
+    getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): jTreeTypes.highlightScope | undefined;
     private _cache_programCellTypeStringMTime;
     private _cache_highlightScopeTree;
     private _cache_typeTree;

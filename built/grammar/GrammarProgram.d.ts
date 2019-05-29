@@ -3,16 +3,16 @@ import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgram
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
-import types from "../types";
+import jTreeTypes from "../jTreeTypes";
 declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
-    protected _getDefaultNodeConstructor(): types.RunTimeNodeConstructor;
+    protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getProgram(): GrammarProgram;
-    getFirstWordMap(): types.firstWordToNodeConstructorMap;
+    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
-    getFirstWordMap(): types.stringMap;
-    getProgramErrors(): types.ParseError[];
-    getErrorsInGrammarExamples(): types.ParseError[];
+    getFirstWordMap(): jTreeTypes.stringMap;
+    getProgramErrors(): jTreeTypes.ParseError[];
+    getErrorsInGrammarExamples(): jTreeTypes.ParseError[];
     getTargetExtension(): string;
     getNodeTypeOrder(): string;
     private _cache_cellTypes;
@@ -46,7 +46,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _getFileExtensions;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
-    static newFromCondensed(grammarCode: string, grammarPath?: types.filepath): GrammarProgram;
+    static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath): GrammarProgram;
     loadAllConstructorScripts(baseUrlPath: string): Promise<string[]>;
     private static _scriptLoadingPromises;
     private static _appendScriptOnce;

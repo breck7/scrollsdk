@@ -1,5 +1,4 @@
 import TreeNode from "../base/TreeNode"
-import { GrammarConstantsErrors } from "./GrammarConstants"
 import { GrammarConstants } from "./GrammarConstants"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
@@ -7,7 +6,7 @@ import { GrammarConstants } from "./GrammarConstants"
 /*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 abstract class AbstractRuntimeNode extends TreeNode {
   // note: this is overwritten by the root node of a runtime grammar program.
@@ -24,10 +23,8 @@ abstract class AbstractRuntimeNode extends TreeNode {
     return this
   }
 
-  getAutocompleteResults(partialWord: string, cellIndex: types.positiveInt) {
-    return cellIndex === 0
-      ? this._getAutocompleteResultsForFirstWord(partialWord)
-      : this._getAutocompleteResultsForCell(partialWord, cellIndex)
+  getAutocompleteResults(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
+    return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
@@ -38,7 +35,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
     return undefined
   }
 
-  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: types.positiveInt) {
+  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
     // todo: root should be [] correct?
     const cell = this._getGrammarBackedCellArray()[cellIndex]
     return cell ? cell.getAutoCompleteWords(partialWord) : []
@@ -69,19 +66,19 @@ abstract class AbstractRuntimeNode extends TreeNode {
       .getNodeTypeDefinitionByFirstWordPath(path)
   }
 
-  protected _getRequiredNodeErrors(errors: types.ParseError[] = []) {
+  protected _getRequiredNodeErrors(errors: jTreeTypes.ParseError[] = []) {
     const nodeDef = this.getDefinition()
     const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions()
     Object.keys(firstWords).forEach(firstWord => {
       const def = firstWords[firstWord]
       if (def.isRequired() && !this.has(firstWord)) {
         errors.push({
-          kind: GrammarConstantsErrors.missingRequiredNodeTypeError,
+          kind: jTreeTypes.GrammarConstantsErrors.missingRequiredNodeTypeError,
           subkind: firstWord,
           level: 0,
           context: "",
           message: `${
-            GrammarConstantsErrors.missingRequiredNodeTypeError
+            jTreeTypes.GrammarConstantsErrors.missingRequiredNodeTypeError
           } Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
         })
       }

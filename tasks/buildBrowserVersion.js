@@ -12,7 +12,8 @@ const ProjectProgram = require("../langs/project/Project.js").Program
 
 const BrowserScript = jtree.Utils.BrowserScript
 
-const outputFile = __dirname + `/../ignore/jtree.browser.ts`
+const outputTsFile = __dirname + `/../ignore/jtree.browser.ts`
+const outputJsFile = __dirname + `/../built/jtree.browser.js`
 
 const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".ts"))
 const projectCode = new TreeNode(ProjectProgram.getProjectProgram(files))
@@ -35,8 +36,12 @@ const combinedTypeScriptScript = typeScriptScripts
   )
   .join("\n")
 
-fs.writeFileSync(outputFile, `"use strict"\n` + combinedTypeScriptScript, "utf8")
+fs.writeFileSync(outputTsFile, `"use strict"\n` + combinedTypeScriptScript, "utf8")
 
 exec("tsc -p tsconfig.browser.json", (err, stdout, stderr) => {
-  if (stderr || err) console.error(err, stdout, stderr)
+  if (stderr || err) return console.error(err, stdout, stderr)
+
+  // This solves the wierd TS insertin
+  // todo: remove
+  fs.writeFileSync(outputJsFile, fs.readFileSync(outputJsFile, "utf8").replace("export var jTreeTypes", "var jTreeTypes"), "utf8")
 })

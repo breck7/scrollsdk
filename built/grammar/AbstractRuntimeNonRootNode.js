@@ -4,6 +4,7 @@ const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractRuntimeNode_1 = require("./AbstractRuntimeNode");
 const GrammarBackedCell_1 = require("./GrammarBackedCell");
+const jTreeTypes_1 = require("../jTreeTypes");
 class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     getProgram() {
         return this.getParent().getProgram();
@@ -49,11 +50,11 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
         const firstWord = this.getFirstWord();
         if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
             errors.push({
-                kind: GrammarConstants_1.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
+                kind: jTreeTypes_1.default.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
                 subkind: firstWord,
                 level: 0,
                 context: this.getParent().getLine(),
-                message: `${GrammarConstants_1.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
+                message: `${jTreeTypes_1.default.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError} nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
             });
         return this._getRequiredNodeErrors(errors);
     }

@@ -65,15 +65,4 @@ enum GrammarConstants {
   highlightScope = "highlightScope"
 }
 
-enum GrammarConstantsErrors {
-  invalidNodeTypeError = "invalidNodeTypeError",
-  invalidConstructorPathError = "invalidConstructorPathError",
-  invalidWordError = "invalidWordError",
-  grammarDefinitionError = "grammarDefinitionError",
-  extraWordError = "extraWordError",
-  unfilledColumnError = "unfilledColumnError",
-  missingRequiredNodeTypeError = "missingRequiredNodeTypeError",
-  nodeTypeUsedMultipleTimesError = "nodeTypeUsedMultipleTimesError"
-}
-
-export { GrammarConstants, GrammarConstantsErrors, GrammarConstantsCompiler, GrammarStandardCellTypes }
+export { GrammarConstants, GrammarConstantsCompiler, GrammarStandardCellTypes }

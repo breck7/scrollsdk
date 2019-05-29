@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
 import { GrammarIntCell, GrammarBitCell, GrammarFloatCell, GrammarBoolCell, GrammarAnyCell } from "./GrammarBackedCell"
-import types from "../types"
+import jTreeTypes from "../jTreeTypes"
 
 // todo: add standard types, enum types, from disk types
 
@@ -23,15 +23,14 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
-  _getEnumFromGrammar(runTimeGrammarBackedProgram: AbstractRuntimeProgram): types.stringMap {
+  _getEnumFromGrammar(runTimeGrammarBackedProgram: AbstractRuntimeProgram): jTreeTypes.stringMap {
     const nodeType = this.getWord(1)
     // note: hack where we store it on the program. otherwise has global effects.
     if (!(<any>runTimeGrammarBackedProgram)._enumMaps) (<any>runTimeGrammarBackedProgram)._enumMaps = {}
-    if ((<any>runTimeGrammarBackedProgram)._enumMaps[nodeType])
-      return (<any>runTimeGrammarBackedProgram)._enumMaps[nodeType]
+    if ((<any>runTimeGrammarBackedProgram)._enumMaps[nodeType]) return (<any>runTimeGrammarBackedProgram)._enumMaps[nodeType]
 
     const wordIndex = 1
-    const map: types.stringMap = {}
+    const map: jTreeTypes.stringMap = {}
     runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
       map[node.getWord(wordIndex)] = true
     })
@@ -46,7 +45,7 @@ class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
 }
 
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
-  private _map: types.stringMap
+  private _map: jTreeTypes.stringMap
 
   isValid(str: string) {
     // enum c c++ java
@@ -61,7 +60,7 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
 
 class GrammarCellTypeDefinitionNode extends TreeNode {
   getFirstWordMap() {
-    const types: types.stringMap = {}
+    const types: jTreeTypes.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
     types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
@@ -71,7 +70,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
 
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
   getCellConstructor() {
-    const kinds: types.stringMap = {}
+    const kinds: jTreeTypes.stringMap = {}
     kinds[GrammarStandardCellTypes.any] = GrammarAnyCell
     kinds[GrammarStandardCellTypes.anyFirstWord] = GrammarAnyCell
     kinds[GrammarStandardCellTypes.float] = GrammarFloatCell

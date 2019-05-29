@@ -1,6 +1,6 @@
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 import { GrammarConstants } from "./GrammarConstants"
-import { UnknownNodeTypeError } from "./TreeErrorTypes"
+import { UnknownNodeTypeError, BlankLineError } from "./TreeErrorTypes"
 import jTreeTypes from "../jTreeTypes"
 
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
@@ -9,7 +9,7 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
   }
 
   getErrors(): UnknownNodeTypeError[] {
-    return [new UnknownNodeTypeError(this)]
+    return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
   }
 }
 

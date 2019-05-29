@@ -7,7 +7,7 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode_1.default {
         return "error ".repeat(this.getWords().length).trim();
     }
     getErrors() {
-        return [new TreeErrorTypes_1.UnknownNodeTypeError(this)];
+        return [this.getFirstWord() ? new TreeErrorTypes_1.UnknownNodeTypeError(this) : new TreeErrorTypes_1.BlankLineError(this)];
     }
 }
 exports.default = GrammarBackedErrorNode;

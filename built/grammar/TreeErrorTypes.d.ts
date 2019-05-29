@@ -7,6 +7,7 @@ declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
     private _node;
     getLineIndex(): jTreeTypes.positiveInt;
     getLineNumber(): jTreeTypes.positiveInt;
+    isBlankLineError(): boolean;
     getLine(): string;
     getExtension(): string;
     getNode(): TreeNode | AbstractRuntimeNode;
@@ -38,6 +39,13 @@ declare class UnknownNodeTypeError extends FirstWordError {
     getMessage(): string;
     protected _getWordSuggestion(): string;
     getSuggestionMessage(): string;
+    applySuggestion(): this;
+}
+declare class BlankLineError extends UnknownNodeTypeError {
+    getMessage(): string;
+    isBlankLineError(): boolean;
+    getSuggestionMessage(): string;
+    applySuggestion(): this;
 }
 declare class InvalidConstructorPathError extends AbstractTreeError {
     getMessage(): string;
@@ -60,6 +68,7 @@ declare class UnknownCellTypeError extends AbstractCellError {
 declare class InvalidWordError extends AbstractCellError {
     getMessage(): string;
     getSuggestionMessage(): string;
+    applySuggestion(): this;
 }
 declare class ExtraWordError extends AbstractCellError {
     getMessage(): string;
@@ -69,4 +78,4 @@ declare class ExtraWordError extends AbstractCellError {
 declare class MissingWordError extends AbstractCellError {
     getMessage(): string;
 }
-export { UnknownNodeTypeError, InvalidConstructorPathError, InvalidWordError, UnknownCellTypeError, ExtraWordError, MissingWordError, MissingRequiredNodeTypeError, NodeTypeUsedMultipleTimesError };
+export { UnknownNodeTypeError, BlankLineError, InvalidConstructorPathError, InvalidWordError, UnknownCellTypeError, ExtraWordError, MissingWordError, MissingRequiredNodeTypeError, NodeTypeUsedMultipleTimesError };

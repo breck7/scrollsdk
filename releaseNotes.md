@@ -1,3 +1,9 @@
+edge / 2019-05-29
+===================
+- New: Added BlankLineError type.
+- New: Added inline syntax highlighting with error correction suggestions to grammar sandbox.
+- New: ErrorType messaging improvments
+
 25.0.0 / 2019-05-28
 ===================
 - New: standardized error messages with suggested fixes!

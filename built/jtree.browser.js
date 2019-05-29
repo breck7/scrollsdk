@@ -2422,6 +2422,10 @@ class AbstractTreeError {
     getLineNumber() {
         return this.getNode().getPoint().y;
     }
+    // convenience method
+    isBlankLineError() {
+        return false;
+    }
     getLine() {
         return this.getNode().getLine();
     }
@@ -2432,7 +2436,7 @@ class AbstractTreeError {
         return this._node;
     }
     getErrorTypeName() {
-        return this.constructor.name;
+        return this.constructor.name.replace("Error", "");
     }
     getCellIndex() {
         return 0;
@@ -2488,9 +2492,32 @@ class UnknownNodeTypeError extends FirstWordError {
     }
     getSuggestionMessage() {
         const suggestion = this._getWordSuggestion();
+        const node = this.getNode();
         if (suggestion)
-            return `Did you mean "${suggestion}"`;
+            return `Change "${node.getFirstWord()}" to "${suggestion}"`;
         return "";
+    }
+    applySuggestion() {
+        const suggestion = this._getWordSuggestion();
+        if (suggestion)
+            this.getNode().setWord(this.getCellIndex(), suggestion);
+        return this;
+    }
+}
+class BlankLineError extends UnknownNodeTypeError {
+    getMessage() {
+        return super.getMessage() + ` Blank lines are errors.`;
+    }
+    // convenience method
+    isBlankLineError() {
+        return true;
+    }
+    getSuggestionMessage() {
+        return `Delete line ${this.getLineNumber()}`;
+    }
+    applySuggestion() {
+        this.getNode().destroy();
+        return this;
     }
 }
 class InvalidConstructorPathError extends AbstractTreeError {
@@ -2507,7 +2534,7 @@ class MissingRequiredNodeTypeError extends AbstractTreeError {
         return super.getMessage() + ` Missing "${this._missingWord}" found.`;
     }
     getSuggestionMessage() {
-        return `Insert "${this._missingWord}" on line "${this.getLineNumber() + 1}"`;
+        return `Insert "${this._missingWord}" on line ${this.getLineNumber() + 1}`;
     }
     applySuggestion() {
         return this.getNode().prependLine(this._missingWord);
@@ -2536,8 +2563,14 @@ class InvalidWordError extends AbstractCellError {
     getSuggestionMessage() {
         const suggestion = this._getWordSuggestion();
         if (suggestion)
-            return `Did you mean "${suggestion}"`;
+            return `Change "${this.getCell().getWord()}" to "${suggestion}"`;
         return "";
+    }
+    applySuggestion() {
+        const suggestion = this._getWordSuggestion();
+        if (suggestion)
+            this.getNode().setWord(this.getCellIndex(), suggestion);
+        return this;
     }
 }
 class ExtraWordError extends AbstractCellError {
@@ -3067,7 +3100,7 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
         return "error ".repeat(this.getWords().length).trim();
     }
     getErrors() {
-        return [new UnknownNodeTypeError(this)];
+        return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)];
     }
 }
 class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
@@ -3317,7 +3350,7 @@ class GrammarCustomConstructorsNode extends TreeNode {
 }
 class GrammarDefinitionErrorNode extends TreeNode {
     getErrors() {
-        return [new UnknownNodeTypeError(this)];
+        return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)];
     }
     getLineCellTypes() {
         return [GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarStandardCellTypes.any)).join(" ");

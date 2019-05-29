@@ -13,7 +13,7 @@ const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class GrammarDefinitionErrorNode extends TreeNode_1.default {
     getErrors() {
-        return [new TreeErrorTypes_1.UnknownNodeTypeError(this)];
+        return [this.getFirstWord() ? new TreeErrorTypes_1.UnknownNodeTypeError(this) : new TreeErrorTypes_1.BlankLineError(this)];
     }
     getLineCellTypes() {
         return [GrammarConstants_1.GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarConstants_1.GrammarStandardCellTypes.any)).join(" ");

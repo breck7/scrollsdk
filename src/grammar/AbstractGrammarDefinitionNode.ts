@@ -16,11 +16,11 @@ import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 
 import jTreeTypes from "../jTreeTypes"
 
-import { UnknownNodeTypeError } from "./TreeErrorTypes"
+import { UnknownNodeTypeError, BlankLineError } from "./TreeErrorTypes"
 
 class GrammarDefinitionErrorNode extends TreeNode {
   getErrors(): jTreeTypes.TreeError[] {
-    return [new UnknownNodeTypeError(this)]
+    return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
   }
 
   getLineCellTypes() {

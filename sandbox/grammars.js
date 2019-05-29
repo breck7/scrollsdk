@@ -73,14 +73,45 @@ const main = async grammarSourceCode => {
     return grammarConstructor
   }
 
+  const codeWidgets = []
   const codeOnUpdate = () => {
     const code = codeInstance.getValue()
     localStorage.setItem(localStorageKeys.codeConsole, code)
     const programConstructor = getGrammarConstructor()
 
     window.program = new programConstructor(code)
-    const errs = window.program.getProgramErrors().map(err => err.toObject())
-    codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
+    const errs = window.program.getProgramErrors()
+    codeErrorsConsole.html(errs.length ? new TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
+
+    // todo: what if 2 errors?
+    codeInstance.operation(function() {
+      codeWidgets.forEach(widget => codeInstance.removeLineWidget(widget))
+      codeWidgets.length = 0
+
+      errs
+        .filter(err => !err.isBlankLineError())
+        .forEach(err => {
+          const el = document.createElement("div")
+          const lineNumber = err.getLineNumber() - 1
+          const suggestion = err.getSuggestionMessage()
+          let msg
+          if (suggestion) msg = `${err.getErrorTypeName()}. Suggestion: ${suggestion}`
+          else msg = `${err.getMessage()}`
+          el.appendChild(document.createTextNode(msg))
+          el.className = "LintError" + (suggestion ? "WithSuggestion" : "")
+          // todo: does this cause mem leak?
+          if (suggestion)
+            $(el).on("click", () => {
+              err.applySuggestion()
+              codeInstance.setValue(program.toString())
+              codeOnUpdate()
+            })
+          codeWidgets.push(codeInstance.addLineWidget(lineNumber, el, { coverGutter: true, noHScroll: false }))
+        })
+      const info = codeInstance.getScrollInfo()
+      const after = codeInstance.charCoords({ line: codeInstance.getCursor().line + 1, ch: 0 }, "local").top
+      if (info.top + info.clientHeight < after) codeInstance.scrollTo(null, after - info.clientHeight + 3)
+    })
   }
 
   grammarInstance.on("keyup", grammarOnUpdate)

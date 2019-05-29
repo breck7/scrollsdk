@@ -9,27 +9,31 @@ grammar
  constructors
   nodejs ./SwarmProgramRoot.js
 cellType anyFirstWord
-cellType extraWord
- highlightScope invalid
 cellType anyWord
  highlightScope string
+cellType arrangeWord
+ highlightScope constant.language
+cellType assertWord
+ highlightScope keyword.operator
+cellType commandWord
+ highlightScope variable.function
 cellType commentWord
  highlightScope comment
+cellType controlWord
+ highlightScope keyword.control
+cellType extraWord
+ highlightScope invalid
 cellType filepath
  highlightScope string
 cellType int
  regex \-?[0-9]+
  highlightScope constant.numeric.integer
-cellType assertWord
- highlightScope keyword.operator
-cellType controlWord
- highlightScope keyword.control
-cellType arrangeWord
- highlightScope constant.language
 cellType parameterWord
  highlightScope variable.parameter
-cellType commandWord
- highlightScope variable.function
+cellType typeOfOption
+ description The 6 possible results for Javascript's typeof.
+ highlightScope constant
+ enum object boolean function number string undefined
 abstract assertion
  firstCellType assertWord
 abstract terminal
@@ -42,6 +46,11 @@ abstract testBlock
   arrangeTestSubject
  catchAllNodeType commandNode
  firstCellType controlWord
+nodeType #!
+ description Standard bash hashbang line.
+ cells commentWord
+ catchAllCellType commentWord
+ firstCellType commentWord
 nodeType arrangeTestSubject
  constructors
   nodejs ./TestSetupNode.js
@@ -51,21 +60,11 @@ nodeType arrangeTestSubject
   require
   static
   constructWithBlockString
-nodeType constructWithBlockString
- constructors
-  nodejs ./SetupConstructorArgNode.js
- description Pass in a multiline string to setup constructor. #todo: rename
- catchAllNodeType textBlock
- firstCellType arrangeWord
 nodeType blockStringParam
  firstCellType parameterWord
  description Pass in a multiline string as a command arg. #todo: rename
  constructors
   nodejs ./CommandArgNode.js
- catchAllNodeType textBlock
-nodeType textBlock
- firstCellType anyWord
- catchAllCellType anyWord
  catchAllNodeType textBlock
 nodeType commandNode
  constructors
@@ -77,45 +76,50 @@ nodeType commandNode
  nodeTypes
   blockStringParam
   assertion
+nodeType constructWithBlockString
+ constructors
+  nodejs ./SetupConstructorArgNode.js
+ description Pass in a multiline string to setup constructor. #todo: rename
+ catchAllNodeType textBlock
+ firstCellType arrangeWord
 nodeType error
  constructors
   nodejs ErrorNode
   browser ErrorNode
-nodeType lengthIs assertion
- description Intake is an array, and checks if the length of array matches expected.
- cells int
- constructors
-  nodejs ./AssertLengthNode.js
-nodeType stringIncludes assertion
+nodeType textBlock
+ firstCellType anyWord
  catchAllCellType anyWord
- description Converts the input to string and see if the string contains the provided string
- constructors
-  nodejs ./AssertIncludesNode.js
-nodeType stringExcludes assertion
- description Converts the input to string and ensure the string does NOT contain the provided string
- catchAllCellType anyWord
- constructors
-  nodejs ./AssertDoesNotIncludeNode.js
-nodeType stringIs assertion
- description Intake is anything with a toString method, and compares that to provided expected value.
- catchAllCellType anyWord
- constructors
-  nodejs ./AssertEqualNode.js
+ catchAllNodeType textBlock
 nodeType blockStringIs assertion
  description When your expected value is a multiline string.
  catchAllNodeType textBlock
  constructors
   nodejs ./AssertEqualBlockNode.js
+nodeType lengthIs assertion
+ description Intake is an array, and checks if the length of array matches expected.
+ cells int
+ constructors
+  nodejs ./AssertLengthNode.js
+nodeType stringExcludes assertion
+ description Converts the input to string and ensure the string does NOT contain the provided string
+ catchAllCellType anyWord
+ constructors
+  nodejs ./AssertDoesNotIncludeNode.js
+nodeType stringIncludes assertion
+ catchAllCellType anyWord
+ description Converts the input to string and see if the string contains the provided string
+ constructors
+  nodejs ./AssertIncludesNode.js
+nodeType stringIs assertion
+ description Intake is anything with a toString method, and compares that to provided expected value.
+ catchAllCellType anyWord
+ constructors
+  nodejs ./AssertEqualNode.js
 nodeType typeIs assertion
- description Assert result is of a certain type.
- cells anyWord
+ description Assert result is one of Javascript's 6 typeof types.
+ cells typeOfOption
  constructors
   nodejs ./AssertTypeOfNode.js
-nodeType #!
- description Standard bash hashbang line.
- cells commentWord
- catchAllCellType commentWord
- firstCellType commentWord
 nodeType async terminal
  description Set this in setup to test async methods.
 nodeType require terminal
@@ -123,13 +127,13 @@ nodeType require terminal
  catchAllCellType anyWord
 nodeType static terminal
  description Add this to setup node to import class directly without initiating it, for static method testing.
+nodeType skipTest testBlock
+ description If you want to skip running a test.
+ constructors
+  nodejs ./SkippedTestBlock.js
 nodeType test testBlock
  description Basic test block.
 nodeType testOnly testBlock
  description If set, only this test block will be run.
  constructors
   nodejs ./SoloTestBlock.js
-nodeType skipTest testBlock
- description If you want to skip running a test.
- constructors
-  nodejs ./SkippedTestBlock.js

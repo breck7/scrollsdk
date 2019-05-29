@@ -19,6 +19,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getDefinedNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getProgram(): GrammarProgram;
+    getLineHints(): string;
     getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;

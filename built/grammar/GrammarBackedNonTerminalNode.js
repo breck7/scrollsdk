@@ -20,5 +20,13 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode_1.default 
 ${compiledChildren}
 ${indent}${closeChildrenString}`;
     }
+    static useAsBackupConstructor() {
+        return GrammarBackedNonTerminalNode._backupConstructorEnabled;
+    }
+    static setAsBackupConstructor(value) {
+        GrammarBackedNonTerminalNode._backupConstructorEnabled = value;
+        return GrammarBackedNonTerminalNode;
+    }
 }
+GrammarBackedNonTerminalNode._backupConstructorEnabled = false;
 exports.default = GrammarBackedNonTerminalNode;

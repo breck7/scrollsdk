@@ -113,10 +113,10 @@ exports.GrammarBitCell = GrammarBitCell;
 class GrammarFloatCell extends AbstractGrammarBackedCell {
     _isValid() {
         const num = parseFloat(this._word);
-        return !isNaN(num) && num.toString() === this._word;
+        return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(this._word);
     }
     getRegexString() {
-        return "\-?[0-9]*\.?[0-9]*";
+        return "-?\d*(\.\d+)?";
     }
     getParsed() {
         return parseFloat(this._word);

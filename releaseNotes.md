@@ -1,7 +1,9 @@
-edge / 2019-05-29
+25.1.0 / 2019-05-29
 ===================
 - New: Added BlankLineError type.
 - New: Added inline syntax highlighting with error correction suggestions to grammar sandbox.
+- New: Added parameters hints for nodeTypes with required cells in codeMirror
+- New: enabled using backup constructors in browser to allow Grammar Sandbox without access to constructor files
 - New: ErrorType messaging improvments
 
 25.0.0 / 2019-05-28

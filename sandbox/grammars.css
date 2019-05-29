@@ -35,11 +35,14 @@ a {
 }
 
 .LintError,
-.LintErrorWithSuggestion {
-  white-space: nowrap;
+.LintErrorWithSuggestion,
+.LintCellTypeHints {
+  white-space: pre;
   color: red;
-  font-size: 12px;
   background: #e5e5e5;
+}
+.LintCellTypeHints {
+  color: black;
 }
 .LintErrorWithSuggestion {
   cursor: pointer;

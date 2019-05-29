@@ -104,6 +104,12 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return <GrammarProgram>this.getParent()
   }
 
+  getLineHints(): string {
+    const id = this.getNodeTypeIdFromDefinition()
+    const catchAllCellTypeName = this.getCatchAllCellTypeName()
+    return `${id}: ${this.getRequiredCellTypeNames().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`
+  }
+
   getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode) {
     const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)
     if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)

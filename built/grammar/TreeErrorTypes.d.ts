@@ -10,6 +10,12 @@ declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
     isCursorOnWord(lineIndex: jTreeTypes.positiveInt, characterIndex: jTreeTypes.positiveInt): boolean;
     private _doesCharacterIndexFallOnWord;
     isBlankLineError(): boolean;
+    isMissingWordError(): boolean;
+    getIndent(): string;
+    getCodeMirrorLineWidgetElement(onApplySuggestionCallBack?: () => void): HTMLDivElement;
+    private _getCodeMirrorLineWidgetElementCellTypeHints;
+    private _getCodeMirrorLineWidgetElementWithoutSuggestion;
+    private _getCodeMirrorLineWidgetElementWithSuggestion;
     getLine(): string;
     getExtension(): string;
     getNode(): TreeNode | AbstractRuntimeNode;
@@ -79,5 +85,6 @@ declare class ExtraWordError extends AbstractCellError {
 }
 declare class MissingWordError extends AbstractCellError {
     getMessage(): string;
+    isMissingWordError(): boolean;
 }
 export { UnknownNodeTypeError, BlankLineError, InvalidConstructorPathError, InvalidWordError, UnknownCellTypeError, ExtraWordError, MissingWordError, MissingRequiredNodeTypeError, NodeTypeUsedMultipleTimesError };

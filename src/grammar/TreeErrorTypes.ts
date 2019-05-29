@@ -27,9 +27,50 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
     return this.getCellIndex() === this.getNode().getWordIndexAtCharacterIndex(characterIndex)
   }
 
-  // convenience method
+  // convenience method. may be removed.
   isBlankLineError() {
     return false
+  }
+
+  // convenience method. may be removed.
+  isMissingWordError() {
+    return false
+  }
+
+  getIndent() {
+    return this.getNode().getIndentation()
+  }
+
+  getCodeMirrorLineWidgetElement(onApplySuggestionCallBack = () => {}) {
+    const suggestion = this.getSuggestionMessage()
+    if (this.isMissingWordError()) return this._getCodeMirrorLineWidgetElementCellTypeHints()
+    if (suggestion) return this._getCodeMirrorLineWidgetElementWithSuggestion(onApplySuggestionCallBack, suggestion)
+    return this._getCodeMirrorLineWidgetElementWithoutSuggestion()
+  }
+
+  private _getCodeMirrorLineWidgetElementCellTypeHints() {
+    const el = document.createElement("div")
+    el.appendChild(document.createTextNode(this.getIndent() + (<AbstractRuntimeNode>this.getNode()).getDefinition().getLineHints()))
+    el.className = "LintCellTypeHints"
+    return el
+  }
+
+  private _getCodeMirrorLineWidgetElementWithoutSuggestion() {
+    const el = document.createElement("div")
+    el.appendChild(document.createTextNode(this.getIndent() + this.getMessage()))
+    el.className = "LintError"
+    return el
+  }
+
+  private _getCodeMirrorLineWidgetElementWithSuggestion(onApplySuggestionCallBack: Function, suggestion: string) {
+    const el = document.createElement("div")
+    el.appendChild(document.createTextNode(this.getIndent() + `${this.getErrorTypeName()}. Suggestion: ${suggestion}`))
+    el.className = "LintErrorWithSuggestion"
+    el.onclick = () => {
+      this.applySuggestion()
+      onApplySuggestionCallBack()
+    }
+    return el
   }
 
   getLine() {
@@ -239,6 +280,10 @@ class MissingWordError extends AbstractCellError {
 
   getMessage(): string {
     return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeName()}".`
+  }
+
+  isMissingWordError() {
+    return true
   }
 }
 

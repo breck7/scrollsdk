@@ -8,6 +8,7 @@ const reset = () => Object.values(localStorageKeys).forEach(val => localStorage.
 
 const loadScripts = async (grammarCode, grammarPath) => {
   if (!grammarCode || !grammarPath) return undefined
+  jtree.NonTerminalNode.setAsBackupConstructor(true)
   try {
     const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "")
     const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/")
@@ -101,22 +102,11 @@ const main = async grammarSourceCode => {
         .filter(err => !err.isCursorOnWord(cursor.line, cursor.ch))
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach(err => {
-          const el = document.createElement("div")
-          const lineNumber = err.getLineNumber() - 1
-          const suggestion = err.getSuggestionMessage()
-          let msg
-          if (suggestion) msg = `${err.getErrorTypeName()}. Suggestion: ${suggestion}`
-          else msg = `${err.getMessage()}`
-          el.appendChild(document.createTextNode(msg))
-          el.className = "LintError" + (suggestion ? "WithSuggestion" : "")
-          // todo: does this cause mem leak?
-          if (suggestion)
-            $(el).on("click", () => {
-              err.applySuggestion()
-              codeInstance.setValue(program.toString())
-              codeOnUpdate()
-            })
-          codeWidgets.push(codeInstance.addLineWidget(lineNumber, el, { coverGutter: true, noHScroll: false }))
+          const el = err.getCodeMirrorLineWidgetElement(() => {
+            codeInstance.setValue(program.toString())
+            codeOnUpdate()
+          })
+          codeWidgets.push(codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
         })
       const info = codeInstance.getScrollInfo()
       const after = codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top

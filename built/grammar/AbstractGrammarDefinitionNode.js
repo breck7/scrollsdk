@@ -84,6 +84,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getProgram() {
         return this.getParent();
     }
+    getLineHints() {
+        const id = this.getNodeTypeIdFromDefinition();
+        const catchAllCellTypeName = this.getCatchAllCellTypeName();
+        return `${id}: ${this.getRequiredCellTypeNames().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`;
+    }
     getDefinitionCompilerNode(targetLanguage, node) {
         const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage);
         if (!compilerNode)

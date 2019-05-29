@@ -70,6 +70,7 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
   protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const constructorName = this.getWord(1)
     const constructor = TreeUtils.resolveProperty(window, constructorName)
+    if (GrammarBackedNonTerminalNode.useAsBackupConstructor()) return GrammarBackedNonTerminalNode
     if (!constructor) throw new Error(`constructor window.${constructorName} not found.`)
 
     return constructor

@@ -17,9 +17,46 @@ class AbstractTreeError {
     _doesCharacterIndexFallOnWord(characterIndex) {
         return this.getCellIndex() === this.getNode().getWordIndexAtCharacterIndex(characterIndex);
     }
-    // convenience method
+    // convenience method. may be removed.
     isBlankLineError() {
         return false;
+    }
+    // convenience method. may be removed.
+    isMissingWordError() {
+        return false;
+    }
+    getIndent() {
+        return this.getNode().getIndentation();
+    }
+    getCodeMirrorLineWidgetElement(onApplySuggestionCallBack = () => { }) {
+        const suggestion = this.getSuggestionMessage();
+        if (this.isMissingWordError())
+            return this._getCodeMirrorLineWidgetElementCellTypeHints();
+        if (suggestion)
+            return this._getCodeMirrorLineWidgetElementWithSuggestion(onApplySuggestionCallBack, suggestion);
+        return this._getCodeMirrorLineWidgetElementWithoutSuggestion();
+    }
+    _getCodeMirrorLineWidgetElementCellTypeHints() {
+        const el = document.createElement("div");
+        el.appendChild(document.createTextNode(this.getIndent() + this.getNode().getDefinition().getLineHints()));
+        el.className = "LintCellTypeHints";
+        return el;
+    }
+    _getCodeMirrorLineWidgetElementWithoutSuggestion() {
+        const el = document.createElement("div");
+        el.appendChild(document.createTextNode(this.getIndent() + this.getMessage()));
+        el.className = "LintError";
+        return el;
+    }
+    _getCodeMirrorLineWidgetElementWithSuggestion(onApplySuggestionCallBack, suggestion) {
+        const el = document.createElement("div");
+        el.appendChild(document.createTextNode(this.getIndent() + `${this.getErrorTypeName()}. Suggestion: ${suggestion}`));
+        el.className = "LintErrorWithSuggestion";
+        el.onclick = () => {
+            this.applySuggestion();
+            onApplySuggestionCallBack();
+        };
+        return el;
     }
     getLine() {
         return this.getNode().getLine();
@@ -191,6 +228,9 @@ class MissingWordError extends AbstractCellError {
     // todo: autocomplete suggestion
     getMessage() {
         return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeName()}".`;
+    }
+    isMissingWordError() {
+        return true;
     }
 }
 exports.MissingWordError = MissingWordError;

@@ -2428,9 +2428,46 @@ class AbstractTreeError {
     _doesCharacterIndexFallOnWord(characterIndex) {
         return this.getCellIndex() === this.getNode().getWordIndexAtCharacterIndex(characterIndex);
     }
-    // convenience method
+    // convenience method. may be removed.
     isBlankLineError() {
         return false;
+    }
+    // convenience method. may be removed.
+    isMissingWordError() {
+        return false;
+    }
+    getIndent() {
+        return this.getNode().getIndentation();
+    }
+    getCodeMirrorLineWidgetElement(onApplySuggestionCallBack = () => { }) {
+        const suggestion = this.getSuggestionMessage();
+        if (this.isMissingWordError())
+            return this._getCodeMirrorLineWidgetElementCellTypeHints();
+        if (suggestion)
+            return this._getCodeMirrorLineWidgetElementWithSuggestion(onApplySuggestionCallBack, suggestion);
+        return this._getCodeMirrorLineWidgetElementWithoutSuggestion();
+    }
+    _getCodeMirrorLineWidgetElementCellTypeHints() {
+        const el = document.createElement("div");
+        el.appendChild(document.createTextNode(this.getIndent() + this.getNode().getDefinition().getLineHints()));
+        el.className = "LintCellTypeHints";
+        return el;
+    }
+    _getCodeMirrorLineWidgetElementWithoutSuggestion() {
+        const el = document.createElement("div");
+        el.appendChild(document.createTextNode(this.getIndent() + this.getMessage()));
+        el.className = "LintError";
+        return el;
+    }
+    _getCodeMirrorLineWidgetElementWithSuggestion(onApplySuggestionCallBack, suggestion) {
+        const el = document.createElement("div");
+        el.appendChild(document.createTextNode(this.getIndent() + `${this.getErrorTypeName()}. Suggestion: ${suggestion}`));
+        el.className = "LintErrorWithSuggestion";
+        el.onclick = () => {
+            this.applySuggestion();
+            onApplySuggestionCallBack();
+        };
+        return el;
     }
     getLine() {
         return this.getNode().getLine();
@@ -2594,6 +2631,9 @@ class MissingWordError extends AbstractCellError {
     // todo: autocomplete suggestion
     getMessage() {
         return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeName()}".`;
+    }
+    isMissingWordError() {
+        return true;
     }
 }
 class AbstractRuntimeNode extends TreeNode {
@@ -2923,10 +2963,10 @@ class GrammarBitCell extends AbstractGrammarBackedCell {
 class GrammarFloatCell extends AbstractGrammarBackedCell {
     _isValid() {
         const num = parseFloat(this._word);
-        return !isNaN(num) && num.toString() === this._word;
+        return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(this._word);
     }
     getRegexString() {
-        return "\-?[0-9]*\.?[0-9]*";
+        return "-?\d*(\.\d+)?";
     }
     getParsed() {
         return parseFloat(this._word);
@@ -3129,7 +3169,15 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
 ${compiledChildren}
 ${indent}${closeChildrenString}`;
     }
+    static useAsBackupConstructor() {
+        return GrammarBackedNonTerminalNode._backupConstructorEnabled;
+    }
+    static setAsBackupConstructor(value) {
+        GrammarBackedNonTerminalNode._backupConstructorEnabled = value;
+        return GrammarBackedNonTerminalNode;
+    }
 }
+GrammarBackedNonTerminalNode._backupConstructorEnabled = false;
 class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
     getFirstWordMap() {
         return {};
@@ -3287,6 +3335,8 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         const constructorName = this.getWord(1);
         const constructor = TreeUtils.resolveProperty(window, constructorName);
+        if (GrammarBackedNonTerminalNode.useAsBackupConstructor())
+            return GrammarBackedNonTerminalNode;
         if (!constructor)
             throw new Error(`constructor window.${constructorName} not found.`);
         return constructor;
@@ -3427,6 +3477,11 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     }
     getProgram() {
         return this.getParent();
+    }
+    getLineHints() {
+        const id = this.getNodeTypeIdFromDefinition();
+        const catchAllCellTypeName = this.getCatchAllCellTypeName();
+        return `${id}: ${this.getRequiredCellTypeNames().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`;
     }
     getDefinitionCompilerNode(targetLanguage, node) {
         const compilerNode = this._getCompilerNodes().find(node => node.getTargetExtension() === targetLanguage);
@@ -4372,4 +4427,4 @@ jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "25.0.0";
+jtree.getVersion = () => "25.1.0";

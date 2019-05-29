@@ -57,6 +57,8 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         const constructorName = this.getWord(1);
         const constructor = TreeUtils_1.default.resolveProperty(window, constructorName);
+        if (GrammarBackedNonTerminalNode_1.default.useAsBackupConstructor())
+            return GrammarBackedNonTerminalNode_1.default;
         if (!constructor)
             throw new Error(`constructor window.${constructorName} not found.`);
         return constructor;

@@ -25,15 +25,11 @@
   "keywords": "jtree",
   "devDependencies": {
     "@types/codemirror": "0.0.74",
-    "@types/node": "^11.10.4",
-    "codemirror": "^5.45.0",
+    "@types/node": "^11.13.12",
     "express": "*",
     "glob": "^7.1.4",
-    "jquery": ">=3.4.0",
-    "project-lang": "^1.7.0",
-    "qunitjs": "*",
     "recursive-readdir-sync": "*",
-    "tap": "^12.6.0",
+    "tap": "^14.2.0",
     "tap-mocha-reporter": "^4.0.1"
   },
   "license": "MIT"

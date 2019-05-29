@@ -1,3 +1,13 @@
+25.0.0 / 2019-05-28
+===================
+- New: standardized error messages with suggested fixes!
+- New: added deleteWordAt method
+- Fix: minor fixes to grammar sandbox and updated to use new error message code
+- Breaking: interface of errors changed, so code that uses getErrors, getErrorsInGrammarExamples, or getProgramErrors needs to change
+- Infra: refactored "types" file into "jTreeTypes"
+- Infra: removed unneeded npm packages
+- Infra: fixed TypeScript browser target build issues
+
 24.2.0 / 2019-05-27
 ===================
 - New: extraWord syntax highlighting

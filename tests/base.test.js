@@ -1,5 +1,3 @@
-#! /usr/local/bin/node
-
 const jtree = require("../built/jtree.js").default
 const TreeNode = require("../built/base/TreeNode.js").default
 

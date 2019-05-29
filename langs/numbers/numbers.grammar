@@ -6,11 +6,12 @@ grammar
   #
   #!
  catchAllNodeType error
+cellType float
 cellType commentWord
  highlightScope comment
 cellType errorWord
  highlightScope invalid
-cellType number
+cellType number float
  highlightScope constant.numeric
 cellType numbers number
 cellType operator

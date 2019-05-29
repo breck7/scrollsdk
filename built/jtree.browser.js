@@ -2422,6 +2422,12 @@ class AbstractTreeError {
     getLineNumber() {
         return this.getNode().getPoint().y;
     }
+    isCursorOnWord(lineIndex, characterIndex) {
+        return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex);
+    }
+    _doesCharacterIndexFallOnWord(characterIndex) {
+        return this.getCellIndex() === this.getNode().getWordIndexAtCharacterIndex(characterIndex);
+    }
     // convenience method
     isBlankLineError() {
         return false;
@@ -2916,7 +2922,8 @@ class GrammarBitCell extends AbstractGrammarBackedCell {
 }
 class GrammarFloatCell extends AbstractGrammarBackedCell {
     _isValid() {
-        return !isNaN(parseFloat(this._word));
+        const num = parseFloat(this._word);
+        return !isNaN(num) && num.toString() === this._word;
     }
     getRegexString() {
         return "\-?[0-9]*\.?[0-9]*";

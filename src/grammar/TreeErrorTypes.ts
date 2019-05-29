@@ -19,6 +19,14 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
     return this.getNode().getPoint().y
   }
 
+  isCursorOnWord(lineIndex: jTreeTypes.positiveInt, characterIndex: jTreeTypes.positiveInt) {
+    return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex)
+  }
+
+  private _doesCharacterIndexFallOnWord(characterIndex: jTreeTypes.positiveInt) {
+    return this.getCellIndex() === this.getNode().getWordIndexAtCharacterIndex(characterIndex)
+  }
+
   // convenience method
   isBlankLineError() {
     return false

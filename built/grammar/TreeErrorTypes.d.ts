@@ -7,6 +7,8 @@ declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
     private _node;
     getLineIndex(): jTreeTypes.positiveInt;
     getLineNumber(): jTreeTypes.positiveInt;
+    isCursorOnWord(lineIndex: jTreeTypes.positiveInt, characterIndex: jTreeTypes.positiveInt): boolean;
+    private _doesCharacterIndexFallOnWord;
     isBlankLineError(): boolean;
     getLine(): string;
     getExtension(): string;

@@ -8,9 +8,15 @@ const reset = () => Object.values(localStorageKeys).forEach(val => localStorage.
 
 const loadScripts = async (grammarCode, grammarPath) => {
   if (!grammarCode || !grammarPath) return undefined
-  const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "")
-  const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/")
-  console.log(`Loaded scripts ${loadedScripts.join(", ")}...`)
+  try {
+    const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "")
+    const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/")
+    console.log(`Loaded scripts ${loadedScripts.join(", ")}...`)
+    $("#otherErrors").html("")
+  } catch (err) {
+    console.error(err)
+    $("#otherErrors").html(err)
+  }
 }
 
 const main = async grammarSourceCode => {
@@ -83,6 +89,8 @@ const main = async grammarSourceCode => {
     const errs = window.program.getProgramErrors()
     codeErrorsConsole.html(errs.length ? new TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
 
+    const cursor = codeInstance.getCursor()
+
     // todo: what if 2 errors?
     codeInstance.operation(function() {
       codeWidgets.forEach(widget => codeInstance.removeLineWidget(widget))
@@ -90,6 +98,8 @@ const main = async grammarSourceCode => {
 
       errs
         .filter(err => !err.isBlankLineError())
+        .filter(err => !err.isCursorOnWord(cursor.line, cursor.ch))
+        .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach(err => {
           const el = document.createElement("div")
           const lineNumber = err.getLineNumber() - 1
@@ -109,7 +119,7 @@ const main = async grammarSourceCode => {
           codeWidgets.push(codeInstance.addLineWidget(lineNumber, el, { coverGutter: true, noHScroll: false }))
         })
       const info = codeInstance.getScrollInfo()
-      const after = codeInstance.charCoords({ line: codeInstance.getCursor().line + 1, ch: 0 }, "local").top
+      const after = codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top
       if (info.top + info.clientHeight < after) codeInstance.scrollTo(null, after - info.clientHeight + 3)
     })
   }

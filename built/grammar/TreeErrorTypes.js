@@ -11,6 +11,12 @@ class AbstractTreeError {
     getLineNumber() {
         return this.getNode().getPoint().y;
     }
+    isCursorOnWord(lineIndex, characterIndex) {
+        return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex);
+    }
+    _doesCharacterIndexFallOnWord(characterIndex) {
+        return this.getCellIndex() === this.getNode().getWordIndexAtCharacterIndex(characterIndex);
+    }
     // convenience method
     isBlankLineError() {
         return false;

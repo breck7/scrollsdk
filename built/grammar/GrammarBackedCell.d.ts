@@ -12,11 +12,13 @@ declare abstract class AbstractGrammarBackedCell<T> {
     private _isCatchAll;
     private _cellTypeName;
     getCellTypeName(): string;
+    getNode(): any;
+    getCellIndex(): number;
     private _getProgram;
     isCatchAll(): boolean;
     abstract getParsed(): T;
     getHighlightScope(): string | undefined;
-    getAutoCompleteWords(partialWord: string): {
+    getAutoCompleteWords(partialWord?: string): {
         text: string;
         displayText: string;
     }[];
@@ -28,7 +30,7 @@ declare abstract class AbstractGrammarBackedCell<T> {
     protected _getExpectedLineCellTypes(): any;
     protected abstract _isValid(): boolean;
     isValid(): boolean;
-    getErrorIfAny(): jTreeTypes.ParseError;
+    getErrorIfAny(): jTreeTypes.TreeError;
 }
 declare class GrammarIntCell extends AbstractGrammarBackedCell<number> {
     _isValid(): boolean;
@@ -61,11 +63,11 @@ declare class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
 declare class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
     _isValid(): boolean;
     getParsed(): string;
-    getErrorIfAny(): jTreeTypes.ParseError;
+    getErrorIfAny(): jTreeTypes.TreeError;
 }
 declare class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
     _isValid(): boolean;
     getParsed(): string;
-    getErrorIfAny(): jTreeTypes.ParseError;
+    getErrorIfAny(): jTreeTypes.TreeError;
 }
 export { AbstractGrammarBackedCell, GrammarIntCell, GrammarBitCell, GrammarFloatCell, GrammarBoolCell, GrammarAnyCell, GrammarUnknownCellTypeCell, GrammarExtraWordCellTypeCell };

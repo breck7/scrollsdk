@@ -4,8 +4,8 @@ const TreeNode_1 = require("../base/TreeNode");
 const GrammarConstants_1 = require("./GrammarConstants");
 class UnknownGrammarProgram extends TreeNode_1.default {
     getPredictedGrammarFile(grammarName) {
-        const rootNode = new TreeNode_1.default(`grammar
- name ${grammarName}`);
+        const rootNode = new TreeNode_1.default(`${GrammarConstants_1.GrammarConstants.grammar}
+ ${GrammarConstants_1.GrammarConstants.name} ${grammarName}`);
         // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
         const globalCellTypeMap = new Map();
         const xi = this.getXI();
@@ -91,20 +91,20 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             return true;
         };
         if (all((str) => str === "0" || str === "1"))
-            return { cellTypeName: "bit" };
+            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.bit };
         if (all((str) => {
             const num = parseInt(str);
             if (isNaN(num))
                 return false;
             return num.toString() === str;
         })) {
-            return { cellTypeName: "int" };
+            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.int };
         }
         if (all((str) => !str.match(/[^\d\.\-]/)))
-            return { cellTypeName: "float" };
+            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.float };
         const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
         if (all((str) => bools.has(str.toLowerCase())))
-            return { cellTypeName: "bool" };
+            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.bool };
         // If there are duplicate files and the set is less than enum
         const enumLimit = 30;
         if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
@@ -113,7 +113,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
                 cellTypeDefinition: `cellType ${firstWord}Enum
  enum ${values.join(xi)}`
             };
-        return { cellTypeName: "any" };
+        return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.any };
     }
 }
 exports.default = UnknownGrammarProgram;

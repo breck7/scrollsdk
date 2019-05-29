@@ -4,7 +4,7 @@ const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractRuntimeNode_1 = require("./AbstractRuntimeNode");
-const jTreeTypes_1 = require("../jTreeTypes");
+const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     *getProgramErrorsIterator() {
         let line = 1;
@@ -31,11 +31,10 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         return errors;
     }
     // Helper method for selecting potential nodeTypes needed to update grammar file.
-    getInvalidNodeTypes(level = undefined) {
+    getInvalidNodeTypes() {
         return Array.from(new Set(this.getProgramErrors()
-            .filter(err => err.kind === jTreeTypes_1.default.GrammarConstantsErrors.invalidNodeTypeError)
-            .filter(err => (level ? level === err.level : true))
-            .map(err => err.subkind)));
+            .filter(err => err instanceof TreeErrorTypes_1.UnknownNodeTypeError)
+            .map(err => err.getNode().getFirstWord())));
     }
     updateNodeTypeIds(nodeTypeMap) {
         if (typeof nodeTypeMap === "string")
@@ -86,7 +85,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         return clone.toString();
     }
     getProgramErrorMessages() {
-        return this.getProgramErrors().map(err => err.message);
+        return this.getProgramErrors().map(err => err.getMessage());
     }
     getFirstWordMap() {
         return this.getDefinition().getRunTimeFirstWordMap();

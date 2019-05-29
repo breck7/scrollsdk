@@ -7,7 +7,7 @@ const GrammarBackedBlobNode_1 = require("./GrammarBackedBlobNode");
 const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
 const GrammarBackedErrorNode_1 = require("./GrammarBackedErrorNode");
 const GrammarConstants_1 = require("./GrammarConstants");
-const jTreeTypes_1 = require("../jTreeTypes");
+const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class AbstractCustomConstructorNode extends TreeNode_1.default {
     getTheDefinedConstructor() {
         // todo: allow overriding if custom constructor not found.
@@ -23,18 +23,7 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
         // todo: should this be a try/catch?
         if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor())
             return [];
-        const parent = this.getParent();
-        const context = parent.isRoot() ? "" : parent.getFirstWord();
-        const point = this.getPoint();
-        return [
-            {
-                kind: jTreeTypes_1.default.GrammarConstantsErrors.invalidConstructorPathError,
-                subkind: this.getFirstWord(),
-                level: point.x,
-                context: context,
-                message: `${jTreeTypes_1.default.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
-            }
-        ];
+        return [new TreeErrorTypes_1.InvalidConstructorPathError(this)];
     }
     getBuiltIn() {
         const constructors = {

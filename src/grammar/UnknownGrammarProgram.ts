@@ -1,13 +1,13 @@
 import TreeNode from "../base/TreeNode"
 
-import { GrammarConstants } from "./GrammarConstants"
+import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
 
 import jTreeTypes from "../jTreeTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   getPredictedGrammarFile(grammarName: string): string {
-    const rootNode = new TreeNode(`grammar
- name ${grammarName}`)
+    const rootNode = new TreeNode(`${GrammarConstants.grammar}
+ ${GrammarConstants.name} ${grammarName}`)
 
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
     const globalCellTypeMap = new Map()
@@ -99,7 +99,7 @@ class UnknownGrammarProgram extends TreeNode {
       }
       return true
     }
-    if (all((str: string) => str === "0" || str === "1")) return { cellTypeName: "bit" }
+    if (all((str: string) => str === "0" || str === "1")) return { cellTypeName: GrammarStandardCellTypes.bit }
 
     if (
       all((str: string) => {
@@ -108,13 +108,13 @@ class UnknownGrammarProgram extends TreeNode {
         return num.toString() === str
       })
     ) {
-      return { cellTypeName: "int" }
+      return { cellTypeName: GrammarStandardCellTypes.int }
     }
 
-    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeName: "float" }
+    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeName: GrammarStandardCellTypes.float }
 
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeName: "bool" }
+    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeName: GrammarStandardCellTypes.bool }
 
     // If there are duplicate files and the set is less than enum
     const enumLimit = 30
@@ -125,7 +125,7 @@ class UnknownGrammarProgram extends TreeNode {
  enum ${values.join(xi)}`
       }
 
-    return { cellTypeName: "any" }
+    return { cellTypeName: GrammarStandardCellTypes.any }
   }
 }
 

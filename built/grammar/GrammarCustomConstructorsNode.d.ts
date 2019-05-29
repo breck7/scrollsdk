@@ -1,10 +1,11 @@
 import TreeNode from "../base/TreeNode";
+import { InvalidConstructorPathError } from "./TreeErrorTypes";
 import jTreeTypes from "../jTreeTypes";
 declare abstract class AbstractCustomConstructorNode extends TreeNode {
     getTheDefinedConstructor(): jTreeTypes.RunTimeNodeConstructor;
     protected isAppropriateEnvironment(): boolean;
     protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor;
-    getErrors(): jTreeTypes.ParseError[];
+    getErrors(): InvalidConstructorPathError[];
     getBuiltIn(): any;
 }
 declare class GrammarCustomConstructorsNode extends TreeNode {

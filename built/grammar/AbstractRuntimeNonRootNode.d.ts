@@ -12,7 +12,7 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
     getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
     compile(targetLanguage: jTreeTypes.targetLanguageId): string;
-    getErrors(): jTreeTypes.ParseError[];
+    getErrors(): jTreeTypes.TreeError[];
     readonly cells: jTreeTypes.stringMap;
     private _getExtraWordCellTypeName;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];

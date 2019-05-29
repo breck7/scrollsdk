@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
-const jTreeTypes_1 = require("../jTreeTypes");
+const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class AbstractRuntimeNode extends TreeNode_1.default {
     // note: this is overwritten by the root node of a runtime grammar program.
     // some of the magic that makes this all work. but maybe there's a better way.
@@ -53,15 +53,8 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions();
         Object.keys(firstWords).forEach(firstWord => {
             const def = firstWords[firstWord];
-            if (def.isRequired() && !this.has(firstWord)) {
-                errors.push({
-                    kind: jTreeTypes_1.default.GrammarConstantsErrors.missingRequiredNodeTypeError,
-                    subkind: firstWord,
-                    level: 0,
-                    context: "",
-                    message: `${jTreeTypes_1.default.GrammarConstantsErrors.missingRequiredNodeTypeError} Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
-                });
-            }
+            if (def.isRequired() && !this.has(firstWord))
+                errors.push(new TreeErrorTypes_1.MissingRequiredNodeTypeError(this, firstWord));
         });
         return errors;
     }

@@ -11,8 +11,8 @@ declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap(): jTreeTypes.stringMap;
-    getProgramErrors(): jTreeTypes.ParseError[];
-    getErrorsInGrammarExamples(): jTreeTypes.ParseError[];
+    getProgramErrors(): jTreeTypes.TreeError[];
+    getErrorsInGrammarExamples(): jTreeTypes.TreeError[];
     getTargetExtension(): string;
     getNodeTypeOrder(): string;
     private _cache_cellTypes;

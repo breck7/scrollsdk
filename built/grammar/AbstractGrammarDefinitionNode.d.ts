@@ -1,9 +1,12 @@
 import TreeNode from "../base/TreeNode";
-import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode";
 import GrammarCompilerNode from "./GrammarCompilerNode";
 import GrammarProgram from "./GrammarProgram";
 import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode";
 import jTreeTypes from "../jTreeTypes";
+declare class GrammarDefinitionErrorNode extends TreeNode {
+    getErrors(): jTreeTypes.TreeError[];
+    getLineCellTypes(): string;
+}
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getNodeTypeIdFromDefinition(): string;

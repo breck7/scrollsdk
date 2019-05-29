@@ -527,6 +527,7 @@ testTree.setWords = equal => {
   equal(aNode.appendWord("d").toString(), "a b c d")
   equal(aNode.setWords(["f", "g"]).toString(), "f g")
   equal(aNode.setWordsFrom(1, ["h", "i"]).toString(), "f h i")
+  equal(aNode.deleteWordAt(2).toString(), "f h")
 }
 
 testTree.at = equal => {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const jTreeTypes_1 = require("../jTreeTypes");
+const TreeErrorTypes_1 = require("./TreeErrorTypes");
 /*
 A cell contains a word but also the type information for that word.
 */
@@ -17,8 +17,14 @@ class AbstractGrammarBackedCell {
     getCellTypeName() {
         return this._cellTypeName;
     }
+    getNode() {
+        return this._node;
+    }
+    getCellIndex() {
+        return this._index;
+    }
     _getProgram() {
-        return this._node.getProgram();
+        return this.getNode().getProgram();
     }
     isCatchAll() {
         return this._isCatchAll;
@@ -28,10 +34,10 @@ class AbstractGrammarBackedCell {
         if (definition)
             return definition.getHighlightScope();
     }
-    getAutoCompleteWords(partialWord) {
+    getAutoCompleteWords(partialWord = "") {
         const definition = this._getCellTypeDefinition();
         let words = definition ? definition.getAutocompleteWordOptions(this._getProgram()) : [];
-        const runTimeOptions = this._node.getRunTimeEnumOptions(this);
+        const runTimeOptions = this.getNode().getRunTimeEnumOptions(this);
         if (runTimeOptions)
             words = runTimeOptions.concat(words);
         if (partialWord)
@@ -50,19 +56,21 @@ class AbstractGrammarBackedCell {
         return this._typeDef;
     }
     _getLineNumber() {
-        return this._node.getPoint().y;
+        return this.getNode().getPoint().y;
     }
     _getFullLine() {
-        return this._node.getLine();
+        return this.getNode().getLine();
     }
     _getErrorContext() {
         return this._getFullLine().split(" ")[0]; // todo: XI
     }
     _getExpectedLineCellTypes() {
-        return this._node.getDefinition().getExpectedLineCellTypes();
+        return this.getNode()
+            .getDefinition()
+            .getExpectedLineCellTypes();
     }
     isValid() {
-        const runTimeOptions = this._node.getRunTimeEnumOptions(this);
+        const runTimeOptions = this.getNode().getRunTimeEnumOptions(this);
         if (runTimeOptions)
             return runTimeOptions.includes(this._word);
         return this._getCellTypeDefinition().isValid(this._word, this._getProgram()) && this._isValid();
@@ -70,21 +78,7 @@ class AbstractGrammarBackedCell {
     getErrorIfAny() {
         if (this._word !== undefined && this.isValid())
             return undefined;
-        if (this._word === undefined)
-            return {
-                kind: jTreeTypes_1.default.GrammarConstantsErrors.unfilledColumnError,
-                subkind: this.getCellTypeName(),
-                level: this._index,
-                context: this._getErrorContext(),
-                message: `${jTreeTypes_1.default.GrammarConstantsErrors.unfilledColumnError} "${this.getCellTypeName()}" cellType in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}". definition: ${this._node.getDefinition().toString()}`
-            };
-        return {
-            kind: jTreeTypes_1.default.GrammarConstantsErrors.invalidWordError,
-            subkind: this.getCellTypeName(),
-            level: this._index,
-            context: this._getErrorContext(),
-            message: `${jTreeTypes_1.default.GrammarConstantsErrors.invalidWordError} in "${this._getFullLine()}" at line ${this._getLineNumber()} column ${this._index}. "${this._word}" does not fit in "${this.getCellTypeName()}" cellType. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
-        };
+        return this._word === undefined ? new TreeErrorTypes_1.MissingWordError(this) : new TreeErrorTypes_1.InvalidWordError(this);
     }
 }
 exports.AbstractGrammarBackedCell = AbstractGrammarBackedCell;
@@ -170,13 +164,7 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell {
         return this._word;
     }
     getErrorIfAny() {
-        return {
-            kind: jTreeTypes_1.default.GrammarConstantsErrors.extraWordError,
-            subkind: "",
-            level: this._index,
-            context: this._getErrorContext(),
-            message: `${jTreeTypes_1.default.GrammarConstantsErrors.extraWordError} "${this._word}" in "${this._getFullLine()}" at line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
-        };
+        return new TreeErrorTypes_1.ExtraWordError(this);
     }
 }
 exports.GrammarExtraWordCellTypeCell = GrammarExtraWordCellTypeCell;
@@ -188,13 +176,7 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
         return this._word;
     }
     getErrorIfAny() {
-        return {
-            kind: jTreeTypes_1.default.GrammarConstantsErrors.grammarDefinitionError,
-            subkind: this.getCellTypeName(),
-            level: this._index,
-            context: this._getErrorContext(),
-            message: `${jTreeTypes_1.default.GrammarConstantsErrors.grammarDefinitionError} For word "${this._word}" no cellType "${this.getCellTypeName()}" in grammar "${this._grammarProgram.getExtensionName()}" found in "${this._getFullLine()}" on line ${this._getLineNumber()} word ${this._index}. Expected line cell types: "${this._getExpectedLineCellTypes()}".`
-        };
+        return new TreeErrorTypes_1.UnknownCellTypeError(this);
     }
 }
 exports.GrammarUnknownCellTypeCell = GrammarUnknownCellTypeCell;

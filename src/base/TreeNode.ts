@@ -35,11 +35,12 @@ class ImmutableNode extends AbstractNode {
     return Promise.all(this.map(child => child.execute(context)))
   }
 
-  getErrors(): jTreeTypes.ParseError[] {
+  getErrors(): jTreeTypes.TreeError[] {
     return []
   }
 
   getLineCellTypes() {
+    // todo: make this any a constant
     return "any ".repeat(this.getWords().length).trim()
   }
 
@@ -1791,6 +1792,12 @@ class TreeNode extends ImmutableNode {
 
   firstWordSort(firstWordOrder: jTreeTypes.word[]): this {
     return this._firstWordSort(firstWordOrder)
+  }
+
+  deleteWordAt(wordIndex: jTreeTypes.positiveInt): this {
+    const words = this.getWords()
+    words.splice(wordIndex, 1)
+    return this.setWords(words)
   }
 
   setWords(words: jTreeTypes.word[]): this {

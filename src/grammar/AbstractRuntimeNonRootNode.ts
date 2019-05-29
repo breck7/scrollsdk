@@ -9,6 +9,8 @@ import { AbstractGrammarBackedCell, GrammarUnknownCellTypeCell, GrammarExtraWord
 /*FOR_TYPES_ONLY*/ import GrammarCompilerNode from "./GrammarCompilerNode"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
+import { NodeTypeUsedMultipleTimesError } from "./TreeErrorTypes"
+
 import jTreeTypes from "../jTreeTypes"
 
 abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
@@ -63,16 +65,12 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     const definition = this.getDefinition()
     let times
     const firstWord = this.getFirstWord()
-    if (definition.isSingle() && (times = this.getParent().findNodes(firstWord).length) > 1)
-      errors.push({
-        kind: jTreeTypes.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError,
-        subkind: firstWord,
-        level: 0,
-        context: this.getParent().getLine(),
-        message: `${
-          jTreeTypes.GrammarConstantsErrors.nodeTypeUsedMultipleTimesError
-        } nodeType "${firstWord}" used '${times}' times. '${this.getLine()}' at line '${this.getPoint().y}'`
-      })
+    if (definition.isSingle())
+      this.getParent()
+        .findNodes(firstWord)
+        .forEach((node, index) => {
+          if (index) errors.push(new NodeTypeUsedMultipleTimesError(node))
+        })
 
     return this._getRequiredNodeErrors(errors)
   }

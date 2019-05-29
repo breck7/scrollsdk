@@ -7,6 +7,8 @@ import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
 import { GrammarConstants } from "./GrammarConstants"
 
+import { InvalidConstructorPathError } from "./TreeErrorTypes"
+
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 
 import jTreeTypes from "../jTreeTypes"
@@ -25,21 +27,10 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
     return undefined
   }
 
-  getErrors(): jTreeTypes.ParseError[] {
+  getErrors(): InvalidConstructorPathError[] {
     // todo: should this be a try/catch?
     if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor()) return []
-    const parent = this.getParent()
-    const context = parent.isRoot() ? "" : parent.getFirstWord()
-    const point = this.getPoint()
-    return [
-      {
-        kind: jTreeTypes.GrammarConstantsErrors.invalidConstructorPathError,
-        subkind: this.getFirstWord(),
-        level: point.x,
-        context: context,
-        message: `${jTreeTypes.GrammarConstantsErrors.invalidConstructorPathError} no constructor "${this.getLine()}" found at line ${point.y}`
-      }
-    ]
+    return [new InvalidConstructorPathError(this)]
   }
 
   getBuiltIn() {

@@ -6,6 +6,8 @@ import { GrammarConstants } from "./GrammarConstants"
 /*FOR_TYPES_ONLY*/ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
+import { MissingRequiredNodeTypeError } from "./TreeErrorTypes"
+
 import jTreeTypes from "../jTreeTypes"
 
 abstract class AbstractRuntimeNode extends TreeNode {
@@ -66,22 +68,12 @@ abstract class AbstractRuntimeNode extends TreeNode {
       .getNodeTypeDefinitionByFirstWordPath(path)
   }
 
-  protected _getRequiredNodeErrors(errors: jTreeTypes.ParseError[] = []) {
+  protected _getRequiredNodeErrors(errors: jTreeTypes.TreeError[] = []) {
     const nodeDef = this.getDefinition()
     const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions()
     Object.keys(firstWords).forEach(firstWord => {
       const def = firstWords[firstWord]
-      if (def.isRequired() && !this.has(firstWord)) {
-        errors.push({
-          kind: jTreeTypes.GrammarConstantsErrors.missingRequiredNodeTypeError,
-          subkind: firstWord,
-          level: 0,
-          context: "",
-          message: `${
-            jTreeTypes.GrammarConstantsErrors.missingRequiredNodeTypeError
-          } Required nodeType missing: "${firstWord}" in node '${this.getLine()}' at line '${this.getPoint().y}'`
-        })
-      }
+      if (def.isRequired() && !this.has(firstWord)) errors.push(new MissingRequiredNodeTypeError(this, firstWord))
     })
     return errors
   }

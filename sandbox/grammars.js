@@ -9,9 +9,7 @@ const reset = () => Object.values(localStorageKeys).forEach(val => localStorage.
 const loadScripts = async (grammarCode, grammarPath) => {
   if (!grammarCode || !grammarPath) return undefined
   const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "")
-  const loadedScripts = await grammarProgram.loadAllConstructorScripts(
-    jtree.Utils.getPathWithoutFileName(grammarPath) + "/"
-  )
+  const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/")
   console.log(`Loaded scripts ${loadedScripts.join(", ")}...`)
 }
 
@@ -36,12 +34,7 @@ const main = async grammarSourceCode => {
   await init()
 
   const GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
-  const grammarInstance = new jtree.TreeNotationCodeMirrorMode(
-    "grammar",
-    () => GrammarConstructor,
-    undefined,
-    CodeMirror
-  )
+  const grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => GrammarConstructor, undefined, CodeMirror)
     .register()
     .fromTextAreaWithAutocomplete(grammarConsole[0], { lineWrapping: true })
 
@@ -51,7 +44,7 @@ const main = async grammarSourceCode => {
     const grammarCode = grammarInstance.getValue()
     localStorage.setItem(localStorageKeys.grammarConsole, grammarCode)
     window.grammarProgram = new GrammarConstructor(grammarCode)
-    const errs = window.grammarProgram.getProgramErrors()
+    const errs = window.grammarProgram.getProgramErrors().map(err => err.toObject())
     grammarErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
@@ -71,6 +64,7 @@ const main = async grammarSourceCode => {
           grammarConstructor = jtree.GrammarProgram.getTheAnyLanguageRootConstructor()
         } else grammarConstructor = grammarProgram.getRootConstructor()
         cachedGrammarCode = currentGrammarCode
+        $("#otherErrors").html("")
       } catch (err) {
         console.error(err)
         $("#otherErrors").html(err)
@@ -85,7 +79,7 @@ const main = async grammarSourceCode => {
     const programConstructor = getGrammarConstructor()
 
     window.program = new programConstructor(code)
-    const errs = window.program.getProgramErrors()
+    const errs = window.program.getProgramErrors().map(err => err.toObject())
     codeErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 

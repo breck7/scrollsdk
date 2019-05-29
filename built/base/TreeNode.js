@@ -22,6 +22,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return [];
     }
     getLineCellTypes() {
+        // todo: make this any a constant
         return "any ".repeat(this.getWords().length).trim();
     }
     executeSync(context) {
@@ -1586,6 +1587,11 @@ class TreeNode extends ImmutableNode {
     }
     firstWordSort(firstWordOrder) {
         return this._firstWordSort(firstWordOrder);
+    }
+    deleteWordAt(wordIndex) {
+        const words = this.getWords();
+        words.splice(wordIndex, 1);
+        return this.setWords(words);
     }
     setWords(words) {
         return this.setLine(words.join(this.getZI()));

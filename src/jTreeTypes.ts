@@ -1,23 +1,4 @@
 export namespace jTreeTypes {
-  export interface ParseError {
-    kind: string
-    subkind: string
-    level: int
-    context: string
-    message: string
-  }
-
-  export enum GrammarConstantsErrors {
-    invalidNodeTypeError = "invalidNodeTypeError",
-    invalidConstructorPathError = "invalidConstructorPathError",
-    invalidWordError = "invalidWordError",
-    grammarDefinitionError = "grammarDefinitionError",
-    extraWordError = "extraWordError",
-    unfilledColumnError = "unfilledColumnError",
-    missingRequiredNodeTypeError = "missingRequiredNodeTypeError",
-    nodeTypeUsedMultipleTimesError = "nodeTypeUsedMultipleTimesError"
-  }
-
   export interface point {
     x: int
     y: int
@@ -27,6 +8,19 @@ export namespace jTreeTypes {
     node: treeNode
     nodeId: string
     parentId: string
+  }
+
+  export interface TreeError {
+    getLineIndex(): positiveInt
+    getLine(): line
+    getExtension(): fileExtension
+    getNode(): treeNode
+    getErrorTypeName(): string
+    getCellIndex(): positiveInt
+    hasSuggestion(): boolean
+    getSuggestionMessage(): string
+    applySuggestion(): void
+    getMessage(): string
   }
 
   export declare type treeNode = any

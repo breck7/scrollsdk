@@ -2,7 +2,6 @@ import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
 import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
-import GrammarDefinitionErrorNode from "./GrammarDefinitionErrorNode"
 import GrammarCustomConstructorsNode from "./GrammarCustomConstructorsNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
 import GrammarExampleNode from "./GrammarExampleNode"
@@ -16,6 +15,18 @@ import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 
 import jTreeTypes from "../jTreeTypes"
+
+import { UnknownNodeTypeError } from "./TreeErrorTypes"
+
+class GrammarDefinitionErrorNode extends TreeNode {
+  getErrors(): jTreeTypes.TreeError[] {
+    return [new UnknownNodeTypeError(this)]
+  }
+
+  getLineCellTypes() {
+    return [<string>GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarStandardCellTypes.any)).join(" ")
+  }
+}
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
   getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {

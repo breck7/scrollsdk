@@ -2,6 +2,7 @@ import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 import { GrammarConstants } from "./GrammarConstants"
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
+import { UnknownNodeTypeError } from "./TreeErrorTypes"
 import jTreeTypes from "../jTreeTypes"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
@@ -18,12 +19,12 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     }
   }
 
-  getProgramErrors(): jTreeTypes.ParseError[] {
-    const errors: jTreeTypes.ParseError[] = []
+  getProgramErrors(): jTreeTypes.TreeError[] {
+    const errors: jTreeTypes.TreeError[] = []
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
-      const errs: jTreeTypes.ParseError[] = node.getErrors()
+      const errs: jTreeTypes.TreeError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       delete node._cachedLineNumber
       line++
@@ -33,13 +34,12 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   // Helper method for selecting potential nodeTypes needed to update grammar file.
-  getInvalidNodeTypes(level: jTreeTypes.int = undefined) {
+  getInvalidNodeTypes() {
     return Array.from(
       new Set(
         this.getProgramErrors()
-          .filter(err => err.kind === jTreeTypes.GrammarConstantsErrors.invalidNodeTypeError)
-          .filter(err => (level ? level === err.level : true))
-          .map(err => err.subkind)
+          .filter(err => err instanceof UnknownNodeTypeError)
+          .map(err => err.getNode().getFirstWord())
       )
     )
   }
@@ -99,7 +99,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   }
 
   getProgramErrorMessages() {
-    return this.getProgramErrors().map(err => err.message)
+    return this.getProgramErrors().map(err => err.getMessage())
   }
 
   getFirstWordMap() {

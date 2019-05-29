@@ -13,7 +13,7 @@ declare class ImmutableNode extends AbstractNode {
     private _line;
     private _index;
     execute(context: any): Promise<any[]>;
-    getErrors(): jTreeTypes.ParseError[];
+    getErrors(): jTreeTypes.TreeError[];
     getLineCellTypes(): string;
     executeSync(context: any): any[];
     isNodeJs(): boolean;
@@ -268,6 +268,7 @@ declare class TreeNode extends ImmutableNode {
     pushContentAndChildren(content?: jTreeTypes.line, children?: jTreeTypes.children): any;
     deleteBlanks(): this;
     firstWordSort(firstWordOrder: jTreeTypes.word[]): this;
+    deleteWordAt(wordIndex: jTreeTypes.positiveInt): this;
     setWords(words: jTreeTypes.word[]): this;
     setWordsFrom(index: jTreeTypes.positiveInt, words: jTreeTypes.word[]): this;
     appendWord(word: jTreeTypes.word): this;

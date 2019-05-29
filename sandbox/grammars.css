@@ -1,6 +1,5 @@
 body {
-  font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana,
-    sans-serif;
+  font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
   margin: auto;
   max-width: 1200px;
 }
@@ -22,7 +21,7 @@ td {
 pre {
   max-width: 600px;
   overflow: scroll;
-  margin-bottom: 30px;
+  padding-bottom: 30px;
 }
 
 a {

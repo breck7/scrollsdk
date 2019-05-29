@@ -6,7 +6,7 @@ class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
     return {}
   }
 
-  getErrors(): jTreeTypes.ParseError[] {
+  getErrors(): jTreeTypes.TreeError[] {
     return []
   }
 

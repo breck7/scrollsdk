@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode";
-import jTreeTypes from "../jTreeTypes";
+import { UnknownNodeTypeError } from "./TreeErrorTypes";
 declare class GrammarDefinitionErrorNode extends TreeNode {
-    getErrors(): jTreeTypes.ParseError[];
+    getErrors(): UnknownNodeTypeError[];
     getLineCellTypes(): string;
 }
 export default GrammarDefinitionErrorNode;

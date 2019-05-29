@@ -50,12 +50,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // todo: this code is largely duplicated in abstractruntimeprogram
-  getProgramErrors(): jTreeTypes.ParseError[] {
-    const errors: jTreeTypes.ParseError[] = []
+  getProgramErrors(): jTreeTypes.TreeError[] {
+    const errors: jTreeTypes.TreeError[] = []
     let line = 1
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = line
-      const errs: jTreeTypes.ParseError[] = node.getErrors()
+      const errs: jTreeTypes.TreeError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       delete node._cachedLineNumber
       line++
@@ -65,7 +65,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
-    const errors: jTreeTypes.ParseError[] = []
+    const errors: jTreeTypes.TreeError[] = []
     this.getNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())

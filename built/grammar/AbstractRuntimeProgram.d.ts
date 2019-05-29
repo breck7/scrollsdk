@@ -4,8 +4,8 @@ import jTreeTypes from "../jTreeTypes";
 import GrammarProgram from "./GrammarProgram";
 declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     getProgramErrorsIterator(): IterableIterator<any>;
-    getProgramErrors(): jTreeTypes.ParseError[];
-    getInvalidNodeTypes(level?: jTreeTypes.int): string[];
+    getProgramErrors(): jTreeTypes.TreeError[];
+    getInvalidNodeTypes(): any[];
     updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap): this;
     getAllSuggestions(): string;
     getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt): {

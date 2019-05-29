@@ -2,6 +2,9 @@ import types from "../types";
 declare class TreeUtils {
     static getPathWithoutFileName(path: string): string;
     static getClassNameFromFilePath(filename: string): string;
+    static didYouMean(str?: string, options?: string[], caseSensitive?: boolean, threshold?: number, thresholdAbsolute?: number): string;
+    private static MAX_INT;
+    private static _getEditDistance;
     static getLineIndexAtCharacterPosition(str: string, index: number): number;
     static resolvePath(filePath: string, programFilepath: string): any;
     static getFileExtension(url?: string): string;

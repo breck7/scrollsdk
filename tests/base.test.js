@@ -1,4 +1,5 @@
-const jtree = require("../built/jtree.js").default
+// Don't add a hashbang line, otherwise we can't run this file untouched in the browser
+
 const TreeNode = require("../built/base/TreeNode.js").default
 
 const testStrings = {}
@@ -1949,9 +1950,12 @@ saturation 2
 someCode
  echo hello world`
 
-  class additionNode extends jtree.NonTerminalNode {}
-  class LineOfCodeNode extends jtree.NonTerminalNode {}
-  class jibberishProgramRoot extends jtree.programRoot {}
+  // Allow running in both browser and nodejs:
+  const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
+
+  class additionNode extends jtreeBase.NonTerminalNode {}
+  class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
+  class jibberishProgramRoot extends jtreeBase.programRoot {}
 
   const jibberishNodes = {}
   jibberishNodes.additionNode = additionNode
@@ -1963,7 +1967,7 @@ someCode
   win.LineOfCodeNode = LineOfCodeNode
 
   // Act
-  const grammarProgram = jtree.GrammarProgram.newFromCondensed(
+  const grammarProgram = jtreeBase.GrammarProgram.newFromCondensed(
     grammarCode,
     (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
   )

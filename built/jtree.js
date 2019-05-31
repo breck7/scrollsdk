@@ -20,5 +20,5 @@ jtree.BlobNode = GrammarBackedBlobNode_1.default;
 jtree.GrammarProgram = GrammarProgram_1.default;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram_1.default;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode_1.default;
-jtree.getVersion = () => "25.1.0";
+jtree.getVersion = () => "25.2.0";
 exports.default = jtree;

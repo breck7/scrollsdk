@@ -1,7 +1,7 @@
 let _jtreeLatestTime = 0;
 let _jtreeMinTimeIncrement = 0.000000000001;
 class AbstractNode {
-    _getNow() {
+    _getProcessTimeInMilliseconds() {
         // We add this loop to restore monotonically increasing .now():
         // https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
         let time = performance.now();

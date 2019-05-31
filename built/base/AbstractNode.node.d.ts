@@ -1,4 +1,4 @@
 declare abstract class AbstractNode {
-    protected _getNow(): number;
+    protected _getProcessTimeInMilliseconds(): number;
 }
 export default AbstractNode;

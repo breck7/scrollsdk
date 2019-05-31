@@ -20,8 +20,7 @@ class jtreeNode extends jtree {
   // returns AbstractRuntimeProgram
   static makeProgram = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): AbstractRuntimeProgram => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
-    const code = fs.readFileSync(programPath, "utf8")
-    return new programConstructor(code)
+    return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
   // returns GrammarBackedProgramClass

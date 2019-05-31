@@ -19,7 +19,7 @@ StumpConstants.name = "name"
 StumpConstants.checkbox = "checkbox"
 StumpConstants.checkedSelector = ":checked"
 StumpConstants.contenteditable = "contenteditable"
-StumpConstants.inputTypes = ["input", "div", "textarea"]
+StumpConstants.inputTypes = ["input", "textarea"]
 
 // Note: do NOT support things like solo tags <br>. one way to do things.
 

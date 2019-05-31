@@ -2,7 +2,7 @@
 let _jtreeLatestTime = 0;
 let _jtreeMinTimeIncrement = 0.000000000001;
 class AbstractNode {
-    _getNow() {
+    _getProcessTimeInMilliseconds() {
         // We add this loop to restore monotonically increasing .now():
         // https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
         let time = performance.now();
@@ -1615,7 +1615,7 @@ class TreeNode extends ImmutableNode {
         if (cmTime)
             mTimes.push(cmTime);
         const newestTime = Math.max.apply(null, mTimes);
-        return this._setCMTime(newestTime || this._getNow())._getCMTime();
+        return this._setCMTime(newestTime || this._getProcessTimeInMilliseconds())._getCMTime();
     }
     _getCMTime() {
         return this._cmtime;
@@ -1739,7 +1739,7 @@ class TreeNode extends ImmutableNode {
         return this._setChildren(children);
     }
     _updateMTime() {
-        this._mtime = this._getNow();
+        this._mtime = this._getProcessTimeInMilliseconds();
     }
     insertWord(index, word) {
         const wi = this.getZI();
@@ -1861,7 +1861,7 @@ class TreeNode extends ImmutableNode {
         this._clearIndex();
         // note: assumes indexesToDelete is in ascending order
         indexesToDelete.reverse().forEach(index => this._getChildrenArray().splice(index, 1));
-        return this._setCMTime(this._getNow());
+        return this._setCMTime(this._getProcessTimeInMilliseconds());
     }
     _deleteNode(node) {
         const index = this._indexOfNode(node);
@@ -4427,4 +4427,4 @@ jtree.BlobNode = GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "25.1.0";
+jtree.getVersion = () => "25.2.0";

@@ -24,7 +24,7 @@ cellType commentWord
 cellType inputType
  regex (string|int|any|lowercase)
 cellType property
- highlightScope variable
+ highlightScope keyword.control
 nodeType #!
  catchAllCellType commentWord
  firstCellType commentWord

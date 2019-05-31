@@ -1385,7 +1385,7 @@ class TreeNode extends ImmutableNode {
     const cmTime = this._getCMTime()
     if (cmTime) mTimes.push(cmTime)
     const newestTime = Math.max.apply(null, mTimes)
-    return this._setCMTime(newestTime || this._getNow())._getCMTime()
+    return this._setCMTime(newestTime || this._getProcessTimeInMilliseconds())._getCMTime()
   }
 
   protected _getCMTime() {
@@ -1521,7 +1521,7 @@ class TreeNode extends ImmutableNode {
   }
 
   protected _updateMTime() {
-    this._mtime = this._getNow()
+    this._mtime = this._getProcessTimeInMilliseconds()
   }
 
   insertWord(index: int, word: string) {
@@ -1654,7 +1654,7 @@ class TreeNode extends ImmutableNode {
     this._clearIndex()
     // note: assumes indexesToDelete is in ascending order
     indexesToDelete.reverse().forEach(index => this._getChildrenArray().splice(index, 1))
-    return this._setCMTime(this._getNow())
+    return this._setCMTime(this._getProcessTimeInMilliseconds())
   }
 
   protected _deleteNode(node: ImmutableNode) {

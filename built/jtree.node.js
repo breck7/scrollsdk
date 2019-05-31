@@ -14,8 +14,7 @@ jtreeNode.executeFileSync = (programPath, grammarPath) => jtreeNode.makeProgram(
 // returns AbstractRuntimeProgram
 jtreeNode.makeProgram = (programPath, grammarPath) => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath);
-    const code = fs.readFileSync(programPath, "utf8");
-    return new programConstructor(code);
+    return new programConstructor(fs.readFileSync(programPath, "utf8"));
 };
 // returns GrammarBackedProgramClass
 jtreeNode.getProgramConstructor = (grammarPath) => {

@@ -1,3 +1,8 @@
+25.2.0 / 2019-05-30
+===================
+- Fix: Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds
+- Fix: Stump div is now no longer an inputType unless it has contenteditable
+
 25.1.0 / 2019-05-29
 ===================
 - New: Added BlankLineError type.

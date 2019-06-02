@@ -684,6 +684,8 @@ testTree.concat = equal => {
 testTree.getNodesByGlobPath = equal => {
   // Arrange/Act/Assert
   equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("* div").length, 5)
+  equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("*").length, new TreeNode(testStrings.webpage).length)
+  equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("body div class").length, 2)
 }
 
 testTree.getNodeByColumns = equal => {
@@ -720,6 +722,7 @@ testTree.delete = equal => {
   // Assert
   equal(tree.getNode("name").getContent(), "Breck", "name is set")
   equal(tree.length, 1, "length okay")
+  equal(tree.getFirstNode().getContent(), "Breck")
 
   // Act
   tree.delete("name")
@@ -943,6 +946,11 @@ testTree.forEach = equal => {
 
   // Assert
   equal(i, 1, "index worked")
+}
+
+testTree.every = equal => {
+  // Arrange/Act/Assert
+  equal(new TreeNode(`a 2\nb 2\nc 2`).every(node => node.getWord(1) === "2"), true)
 }
 
 testTree.extend = equal => {
@@ -2762,6 +2770,13 @@ bob
   equal(a.getNext().toString(), a.toString())
   equal(a.getPrevious().toString(), a.toString())
   equal(b.getPrevious().getFirstWord(), "bob")
+  equal(
+    b
+      .getPrevious()
+      .getNext()
+      .getFirstWord(),
+    "john"
+  )
   equal(b.getNext().getFirstWord(), "susy")
   equal(c.getNext().getFirstWord(), "score")
   equal(c.getPrevious().getFirstWord(), "score")

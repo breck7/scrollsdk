@@ -47,12 +47,11 @@ class StumpNode extends jtree.NonTerminalNode {
     return StumpConstants.tagMap[firstWord] || firstWord
   }
 
-  _childrenToHtml(indentCount) {
-    return this.map(node => node._toHtml(indentCount)).join("")
+  _getHtmlJoinByCharacter() {
+    return ``
   }
 
   toHtmlWithSuids() {
-    if (this.isRoot()) return super.toHtml()
     return this._toHtml(undefined, true)
   }
 
@@ -192,6 +191,7 @@ class StumpNode extends jtree.NonTerminalNode {
     return this.getParent().getShadowClass()
   }
 
+  // todo: whats this? move to base?
   getLines(start = 0, end) {
     return this.toString()
       .split("\n")

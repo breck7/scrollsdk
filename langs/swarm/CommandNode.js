@@ -21,6 +21,7 @@ class CommandNode extends jtree.NonTerminalNode {
     const command = this.getFirstWord()
     const commandParent = this.getRootNode().getCommandParent(testSubject) // todo: hacky.
     const commandFn = commandParent[command]
+    if (!commandFn) throw new Error(`No function "${command}" on "${commandParent.constructor.name}`)
     return commandFn.apply(commandParent, this._getArgs())
   }
 

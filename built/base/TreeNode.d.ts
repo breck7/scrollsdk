@@ -61,6 +61,7 @@ declare class ImmutableNode extends AbstractNode {
     getFirstWord(): word;
     getContent(): string;
     getContentWithChildren(): string;
+    getFirstNode(): ImmutableNode;
     getStack(): ImmutableNode[];
     protected _getStack(relativeTo?: ImmutableNode): ImmutableNode[];
     getStackString(): string;
@@ -102,6 +103,7 @@ declare class ImmutableNode extends AbstractNode {
     nodeAt(indexOrIndexArray: int | int[]): ImmutableNode | undefined;
     protected _toObject(): jTreeTypes.stringMap;
     toHtml(): jTreeTypes.htmlString;
+    protected _getHtmlJoinByCharacter(): string;
     protected _childrenToHtml(indentCount: int): string;
     protected _childrenToString(indentCount?: int, language?: this): string;
     childrenToString(): string;
@@ -118,13 +120,11 @@ declare class ImmutableNode extends AbstractNode {
     _childrenToYamlList(indentLevel: number): string[];
     _toYamlAssociativeArrayElement(indentLevel: number): string;
     _childrenToYamlAssociativeArray(indentLevel: number): string[];
-    _getDuplicateLinesMap(): jTreeTypes.stringMap;
     toJson(): jTreeTypes.jsonString;
     findNodes(firstWordPath: jTreeTypes.firstWordPath): TreeNode[];
     format(str: jTreeTypes.formatString): string;
     getColumn(path: word): string[];
     getFiltered(fn: jTreeTypes.filterFn): TreeNode;
-    isLeafColumn(path: jTreeTypes.firstWordPath): boolean;
     getNode(firstWordPath: jTreeTypes.firstWordPath): ImmutableNode;
     get(firstWordPath: jTreeTypes.firstWordPath): string;
     getNodesByGlobPath(query: jTreeTypes.globPath): TreeNode[];
@@ -138,7 +138,6 @@ declare class ImmutableNode extends AbstractNode {
     protected _getAncestorNodes(getPotentialParentNodesByIdFn: (thisParentNode: ImmutableNode, id: word) => ImmutableNode[], getParentIdFn: (thisNode: ImmutableNode) => word, cannotContainNode: ImmutableNode): ImmutableNode[];
     pathVectorToFirstWordPath(pathVector: jTreeTypes.pathVector): word[];
     toCsv(): string;
-    toFlatTree(): TreeNode;
     protected _getTypes(header: string[]): string[];
     toDataTable(header?: string[]): jTreeTypes.dataTable;
     toDelimited(delimiter: jTreeTypes.delimiter, header?: string[]): string;
@@ -191,7 +190,6 @@ declare class ImmutableNode extends AbstractNode {
     clone(): TreeNode;
     has(firstWord: word): boolean;
     protected _hasFirstWord(firstWord: string): boolean;
-    protected _getFirstWordByIndex(index: int): string;
     map(fn: mapFn): any[];
     filter(fn: jTreeTypes.filterFn): any[];
     find(fn: jTreeTypes.filterFn): any;

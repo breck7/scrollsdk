@@ -1,3 +1,9 @@
+edge / 2019-06-02
+=================
+- New: getFirstNode method
+- Breaking: removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
+- Infra: test coverage
+
 25.2.0 / 2019-05-30
 ===================
 - Fix: Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds

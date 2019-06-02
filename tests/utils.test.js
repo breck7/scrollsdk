@@ -22,6 +22,15 @@ testTree.didYouMean = equal => {
 
 testTree.getLineIndexAtCharacterPosition = equal => {
   // Arrange/Act/Assert
+  equal(jtree.Utils.getClassNameFromFilePath(`foobar/FooBam.js`), "FooBam")
+}
+
+testTree.getUniqueWordsArray = equal => {
+  equal(jtree.Utils.getUniqueWordsArray(`hi hi hey`).length, 2)
+}
+
+testTree.getLineIndexAtCharacterPosition = equal => {
+  // Arrange/Act/Assert
   const Utils = jtree.Utils
   equal(Utils.getLineIndexAtCharacterPosition(`abc`, 0), 0)
   equal(Utils.getLineIndexAtCharacterPosition(`abc`, 2), 0)

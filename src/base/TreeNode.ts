@@ -335,6 +335,10 @@ class ImmutableNode extends AbstractNode {
     return (content ? content : "") + (this.length ? this.getYI() + this._childrenToString() : "")
   }
 
+  getFirstNode(): ImmutableNode {
+    return this.nodeAt(0)
+  }
+
   getStack() {
     return this._getStack()
   }
@@ -567,8 +571,13 @@ class ImmutableNode extends AbstractNode {
     return this._childrenToHtml(0)
   }
 
+  protected _getHtmlJoinByCharacter() {
+    return `<span class="yIncrement">${this.getYI()}</span>`
+  }
+
   protected _childrenToHtml(indentCount: int) {
-    return this.map(node => node._toHtml(indentCount)).join(`<span class="yIncrement">${this.getYI()}</span>`)
+    const joinBy = this._getHtmlJoinByCharacter()
+    return this.map(node => node._toHtml(indentCount)).join(joinBy)
   }
 
   protected _childrenToString(indentCount?: int, language = this) {
@@ -655,21 +664,6 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node._toYamlAssociativeArrayElement(indentLevel))
   }
 
-  // todo: do we need this?
-  _getDuplicateLinesMap(): jTreeTypes.stringMap {
-    const count: { [line: string]: jTreeTypes.positiveInt } = {}
-    this.forEach(node => {
-      const line = node.getLine()
-      if (count[line]) count[line]++
-      else count[line] = 1
-    })
-    this.forEach(node => {
-      const line = node.getLine()
-      if (count[line] === 1) delete count[line]
-    })
-    return count
-  }
-
   toJson(): jTreeTypes.jsonString {
     return JSON.stringify(this.toObject(), null, " ")
   }
@@ -699,14 +693,6 @@ class ImmutableNode extends AbstractNode {
         node.destroy()
       })
     return clone
-  }
-
-  isLeafColumn(path: jTreeTypes.firstWordPath) {
-    for (let node of this._getChildren()) {
-      const nd = node.getNode(path)
-      if (nd && nd.length) return false
-    }
-    return true
   }
 
   getNode(firstWordPath: jTreeTypes.firstWordPath) {
@@ -831,15 +817,6 @@ class ImmutableNode extends AbstractNode {
 
   toCsv(): string {
     return this.toDelimited(",")
-  }
-
-  toFlatTree() {
-    const tree = this.clone()
-    tree.forEach(node => {
-      // todo: best approach here? set children as content?
-      node.deleteChildren()
-    })
-    return tree
   }
 
   protected _getTypes(header: string[]) {
@@ -1155,7 +1132,6 @@ class ImmutableNode extends AbstractNode {
   }
 
   protected _parseString(str: string) {
-    if (!str) return this
     const lines = str.split(this.getYIRegex())
     const parentStack: TreeNode[] = []
     let currentIndentCount = -1
@@ -1207,6 +1183,7 @@ class ImmutableNode extends AbstractNode {
     return result === undefined ? -1 : result
   }
 
+  // todo: renmae to indexOfFirst?
   indexOf(firstWord: word): int {
     if (!this.has(firstWord)) return -1
 
@@ -1216,7 +1193,6 @@ class ImmutableNode extends AbstractNode {
     for (let index = 0; index < length; index++) {
       if (nodes[index].getFirstWord() === firstWord) return index
     }
-    return -1
   }
 
   toObject(): Object {
@@ -1264,16 +1240,6 @@ class ImmutableNode extends AbstractNode {
 
   protected _hasFirstWord(firstWord: string) {
     return this._getIndex()[firstWord] !== undefined
-  }
-
-  // todo: is this used anywhere?
-  protected _getFirstWordByIndex(index: int) {
-    // Passing -1 gets the last item, et cetera
-    const length = this.length
-
-    if (index < 0) index = length + index
-    if (index >= length) return undefined
-    return this._getChildren()[index].getFirstWord()
   }
 
   map(fn: mapFn) {

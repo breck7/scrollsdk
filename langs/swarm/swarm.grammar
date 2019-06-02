@@ -32,7 +32,7 @@ cellType parameterWord
  highlightScope variable.parameter
 cellType typeOfOption
  description The 6 possible results for Javascript's typeof.
- highlightScope constant
+ highlightScope constant.language
  enum object boolean function number string undefined
 abstract assertion
  firstCellType assertWord

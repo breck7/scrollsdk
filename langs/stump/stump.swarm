@@ -36,6 +36,25 @@ test div
   blockStringIs
    <div id="bam" class="someClass">hello world</div>
    
+test uids
+ arrangeTestSubject
+  require ./Stump.js Program
+  constructWithBlockString
+   div hello world
+    id bam
+    class someClass
+ getFirstNode
+  toHtmlWithSuids
+   typeIs string
+   stringIncludes uid
+  isStumpNodeCheckbox
+   stringIs false
+  toHtml
+   typeIs string
+  isInputType
+   stringIs false
+  getStumpNodeAttr id
+   stringIs bam
 test syntax
  arrangeTestSubject
   require ./Stump.js Program

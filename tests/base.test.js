@@ -3676,6 +3676,22 @@ testTree.treeNodes = equal => {
   equal(node.has("color"), false)
 }
 
+testTree.mTimeNotIncrementingRegressionTest = equal => {
+  // Arrange
+  const node = new TreeNode("text").nodeAt(0)
+  let lastMTime = node.getMTime()
+  const numOfTrials = 100
+  // Previously we would get a flakey test about every 10k trials
+  for (let i = 0; i < numOfTrials; i++) {
+    node.setContent(i.toString())
+    let newMTime = node.getMTime()
+
+    // Assert
+    equal(newMTime > lastMTime, true, "mtime should have increased")
+    lastMTime = newMTime
+  }
+}
+
 /*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
 
 module.exports = testTree

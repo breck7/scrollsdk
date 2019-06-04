@@ -7,7 +7,7 @@ On top of Tree Notation, you can design "Tree Languages". Tree Languages can do 
 
 [Try it out](http://treenotation.org/sandbox/)
 
-[Javascript Implementation on GitHub](https://github.com/breck7/jtree)
+[TypeScript Implementation on GitHub](https://github.com/breck7/jtree)
 
 Quick Examples
 --------------

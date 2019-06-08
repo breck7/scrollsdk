@@ -53,7 +53,7 @@ $(document).ready(function() {
 
   const updateAll = (tree, eventSource) => {
     if (eventSource !== treeConsole) treeConsole.val(tree.toString())
-    if (eventSource !== jsonConsole) jsonConsole.val(tree.toJson())
+    if (eventSource !== jsonConsole) jsonConsole.val(tree.toJsonSubset())
     if (eventSource !== outlineConsole) outlineConsole.html(tree.toOutline())
     if (eventSource !== csvConsole) csvConsole.val(tree.toCsv())
     if (eventSource !== xmlConsole) xmlConsole.val(tree.toXml())
@@ -67,7 +67,7 @@ $(document).ready(function() {
 
   // Bind listeners
   treeConsole.on("keyup", () => updateAll(new TreeNode(treeConsole.val()), treeConsole))
-  jsonConsole.on("keyup", () => updateAll(TreeNode.fromJson(jsonConsole.val()), jsonConsole))
+  jsonConsole.on("keyup", () => updateAll(TreeNode.fromJsonSubset(jsonConsole.val()), jsonConsole))
   csvConsole.on("keyup", () => updateAll(TreeNode.fromCsv(csvConsole.val()), csvConsole))
   xmlConsole.on("keyup", () => updateAll(TreeNode.fromXml(xmlConsole.val()), xmlConsole))
 

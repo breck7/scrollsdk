@@ -965,7 +965,7 @@ class ImmutableNode extends AbstractNode {
     _childrenToYamlAssociativeArray(indentLevel) {
         return this.map(node => node._toYamlAssociativeArrayElement(indentLevel));
     }
-    toJson() {
+    toJsonSubset() {
         return JSON.stringify(this.toObject(), null, " ");
     }
     findNodes(firstWordPath) {
@@ -2078,7 +2078,7 @@ class TreeNode extends ImmutableNode {
     static fromCsv(str) {
         return this.fromDelimited(str, ",", '"');
     }
-    static fromJson(str) {
+    static fromJsonSubset(str) {
         return new TreeNode(JSON.parse(str));
     }
     static fromSsv(str) {

@@ -3493,9 +3493,9 @@ testTree.toOutline = equal => {
   equal(typeof new TreeNode(testStrings.every).toOutline(), "string")
 }
 
-testTree.fromJson = equal => {
+testTree.fromJsonSubset = equal => {
   // AAA
-  equal(TreeNode.fromJson(JSON.stringify(testStrings.json2)).toString(), new TreeNode(testStrings.json2tree).getNode("docs").childrenToString())
+  equal(TreeNode.fromJsonSubset(JSON.stringify(testStrings.json2)).toString(), new TreeNode(testStrings.json2tree).getNode("docs").childrenToString())
 }
 
 testTree.getFiltered = equal => {

@@ -30,9 +30,13 @@ export namespace jTreeTypes {
   export declare type stringMap = { [firstWord: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string
-  export declare type jsonString = string
   export declare type dataTable = (any[])[]
   export declare type delimiter = string
+
+  // A subset of JSON that has the property that it translates to and from JSON and Tree identically.
+  // So, this rules out JSON objects with non-string types or spaces in their key name.
+  // For closer fidelity to JSON, use a tree language.
+  export declare type jsonSubset = string
 
   export declare type formatString = string // "Hello {name}! You are {age} years old."
   export declare type firstWordPath = string // user emailAddress

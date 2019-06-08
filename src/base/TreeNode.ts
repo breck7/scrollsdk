@@ -664,7 +664,7 @@ class ImmutableNode extends AbstractNode {
     return this.map(node => node._toYamlAssociativeArrayElement(indentLevel))
   }
 
-  toJson(): jTreeTypes.jsonString {
+  toJsonSubset(): jTreeTypes.jsonSubset {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
@@ -1911,7 +1911,7 @@ class TreeNode extends ImmutableNode {
     return this.fromDelimited(str, ",", '"')
   }
 
-  static fromJson(str: jTreeTypes.jsonString) {
+  static fromJsonSubset(str: jTreeTypes.jsonSubset) {
     return new TreeNode(JSON.parse(str))
   }
 

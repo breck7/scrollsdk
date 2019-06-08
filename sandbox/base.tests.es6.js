@@ -1,6 +1,5 @@
-#! /usr/local/bin/node --use_strict
 
-const TreeNode = require("../built/base/TreeNode.js").default
+
 
 const testStrings = {}
 
@@ -3707,6 +3706,6 @@ testTree.mTimeNotIncrementingRegressionTest = equal => {
   }
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
 
-module.exports = testTree
+window.testTree
+ = testTree

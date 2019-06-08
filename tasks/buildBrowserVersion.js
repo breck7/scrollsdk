@@ -45,3 +45,12 @@ exec("tsc -p tsconfig.browser.json", (err, stdout, stderr) => {
   // todo: remove
   fs.writeFileSync(outputJsFile, fs.readFileSync(outputJsFile, "utf8").replace("export var jTreeTypes", "var jTreeTypes"), "utf8")
 })
+
+const testFile = new BrowserScript(fs.readFileSync(__dirname + "/../tests/base.test.js", "utf8"))
+  .removeRequires()
+  .removeHashBang()
+  .removeNodeJsOnlyLines()
+  .changeNodeExportsToWindowExports()
+  .getString()
+
+fs.writeFileSync(__dirname + "/../sandbox/base.tests.es6.js", testFile, "utf8")

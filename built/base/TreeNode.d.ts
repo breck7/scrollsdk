@@ -120,7 +120,7 @@ declare class ImmutableNode extends AbstractNode {
     _childrenToYamlList(indentLevel: number): string[];
     _toYamlAssociativeArrayElement(indentLevel: number): string;
     _childrenToYamlAssociativeArray(indentLevel: number): string[];
-    toJsonSubset(): jTreeTypes.jsonString;
+    toJsonSubset(): jTreeTypes.jsonSubset;
     findNodes(firstWordPath: jTreeTypes.firstWordPath): TreeNode[];
     format(str: jTreeTypes.formatString): string;
     getColumn(path: word): string[];
@@ -283,7 +283,7 @@ declare class TreeNode extends ImmutableNode {
     shiftYoungerSibsRight(): TreeNode;
     sortBy(nameOrNames: jTreeTypes.word[]): this;
     static fromCsv(str: string): TreeNode;
-    static fromJsonSubset(str: jTreeTypes.jsonString): TreeNode;
+    static fromJsonSubset(str: jTreeTypes.jsonSubset): TreeNode;
     static fromSsv(str: string): TreeNode;
     static fromTsv(str: string): TreeNode;
     static fromDelimited(str: string, delimiter: string, quoteChar: string): TreeNode;

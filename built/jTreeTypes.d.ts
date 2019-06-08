@@ -29,9 +29,9 @@ export declare namespace jTreeTypes {
     };
     type htmlString = string;
     type xmlString = string;
-    type jsonString = string;
     type dataTable = (any[])[];
     type delimiter = string;
+    type jsonSubset = string;
     type formatString = string;
     type firstWordPath = string;
     type pathVector = int[];

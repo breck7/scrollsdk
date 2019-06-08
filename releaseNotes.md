@@ -2,6 +2,7 @@ edge / 2019-06-02
 =================
 - New: getFirstNode method
 - Breaking: removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
+- Breaking: fromJson is now fromJsonSubset and toJson is now toJsonSubset
 - Infra: test coverage
 
 25.2.0 / 2019-05-30

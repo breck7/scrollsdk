@@ -1205,9 +1205,9 @@ class TreeNode extends ImmutableNode {
     _getVirtualParentTreeNode() {
         return this._virtualParentTree;
     }
-    _setVirtualAncestorNodesByInheritanceViaColumnIndices(thisIdColumnNumber, extendsIdColumnNumber) {
+    _setVirtualAncestorNodesByInheritanceViaColumnIndices(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
         const map = {};
-        for (let node of this.getChildren()) {
+        for (let node of nodes) {
             const nodeId = node.getWord(thisIdColumnNumber);
             if (map[nodeId])
                 throw new Error(`Tried to define a node with id "${nodeId}" but one is already defined.`);
@@ -1226,6 +1226,8 @@ class TreeNode extends ImmutableNode {
             if (parentId)
                 nodeInfo.node._setVirtualParentTree(parentNode.node);
         });
+        nodes.forEach(node => node._expandFromVirtualParentTree());
+        return this;
     }
     _expandFromVirtualParentTree() {
         if (this._isVirtualExpanded)
@@ -1242,6 +1244,10 @@ class TreeNode extends ImmutableNode {
         }
         this._isExpanding = false;
         this._isVirtualExpanded = true;
+    }
+    // todo: solve issue related to whether extend should overwrite or append.
+    _expandChildren(thisIdColumnNumber, extendsIdColumnNumber, childrenThatNeedExpanding = this.getChildren()) {
+        return this._setVirtualAncestorNodesByInheritanceViaColumnIndices(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber);
     }
     // todo: add more testing.
     // todo: solve issue with where extend should overwrite or append
@@ -1270,15 +1276,6 @@ class TreeNode extends ImmutableNode {
                 targetNode.extend(sourceNode);
         });
         return this;
-    }
-    // todo: solve issue related to whether extend should overwrite or append.
-    getExpanded(thisIdColumnNumber, extendsIdColumnNumber) {
-        const clone = this.clone();
-        clone._setVirtualAncestorNodesByInheritanceViaColumnIndices(thisIdColumnNumber, extendsIdColumnNumber);
-        clone.forEach(node => {
-            node._expandFromVirtualParentTree();
-        });
-        return clone;
     }
     macroExpand(macroDefinitionWord, macroUsageWord) {
         const clone = this.clone();

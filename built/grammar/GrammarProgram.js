@@ -37,6 +37,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         map[GrammarConstants_1.GrammarConstants.cellType] = GrammarCellTypeDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
+        map[GrammarConstants_1.GrammarConstants.fileDirective] = TreeNode_1.default;
         return map;
     }
     // todo: this code is largely duplicated in abstractruntimeprogram
@@ -223,7 +224,8 @@ ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
                 .split(xi)
                 .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.nodeType}${xi}${word}${xi}${abstractName}`));
         });
-        return new GrammarProgram(tree.getExpanded(1, 2), grammarPath);
+        // todo: only expand certain types.
+        return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.fileDirective)), grammarPath);
     }
     async loadAllConstructorScripts(baseUrlPath) {
         if (!this.isBrowser())

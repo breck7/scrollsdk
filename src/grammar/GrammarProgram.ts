@@ -46,6 +46,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode
     map[GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode
     map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode
+    map[GrammarConstants.fileDirective] = TreeNode
     return map
   }
 
@@ -279,7 +280,8 @@ ${GrammarConstants.cellType} anyWord`
         .forEach(word => tree.appendLine(`${GrammarConstants.nodeType}${xi}${word}${xi}${abstractName}`))
     })
 
-    return new GrammarProgram(tree.getExpanded(1, 2), grammarPath)
+    // todo: only expand certain types.
+    return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.fileDirective)), grammarPath)
   }
 
   async loadAllConstructorScripts(baseUrlPath: string): Promise<string[]> {

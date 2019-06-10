@@ -2,7 +2,7 @@ grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  catchAllNodeType catchAll.error
- nodeTypeOrder grammar cellType abstract nodeType
+ nodeTypeOrder # grammar cellType abstract nodeType
  extensions grammar gram
  example A grammar that parses anything:
   grammar
@@ -16,12 +16,11 @@ grammar
   cellType
   abstract
   nodeType
+  #
 cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
 cellType anyWord
-cellType extraWord
- highlightScope invalid
 cellType builtInConstructorOrConstructorName
 cellType builtInConstructorOrFilePath
 cellType cellPropertyName
@@ -38,7 +37,11 @@ cellType compilerTargetExtension
 cellType constructorName
 cellType enumOption
 cellType extendedNodeType
+cellType extraWord
+ highlightScope invalid
 cellType fileExtension
+cellType fileDirectiveWord
+ highlightScope comment
 cellType filepath
 cellType float
  regex \-?[0-9]*\.?[0-9]*
@@ -85,6 +88,11 @@ abstract abstract.nodeTypeRule
  firstCellType propertyName
  single
 abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
+nodeType #
+ description Directives are not part of the language grammar but used for things like preprocessors and compilers. Something like "# onsave {bash command}". Should be at top of file, if present at all.
+ catchAllCellType fileDirectiveWord
+ firstCellType fileDirectiveWord
+ catchAllNodeType #
 nodeType catchAll.constantAny
  catchAllCellType anyWord
  catchAllNodeType catchAll.constantAny

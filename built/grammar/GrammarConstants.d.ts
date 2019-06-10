@@ -18,6 +18,7 @@ declare enum GrammarStandardCellTypes {
 declare enum GrammarConstants {
     grammar = "grammar",
     extensions = "extensions",
+    fileDirective = "#",
     version = "version",
     name = "name",
     nodeTypeOrder = "nodeTypeOrder",

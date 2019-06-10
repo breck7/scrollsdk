@@ -1986,7 +1986,7 @@ someCode
   equal(errs.length, 0, "no errors")
 }
 
-testTree.getExpanded = equal => {
+testTree._expandChildren = equal => {
   // Arrange
   const tree = new TreeNode(
     `Thing
@@ -1998,7 +1998,7 @@ Animal Thing
   )
   // Act/Assert
   equal(
-    tree.getExpanded(0, 1).toString(),
+    tree._expandChildren(0, 1).toString(),
     `Thing
  color
  ab
@@ -2021,7 +2021,7 @@ Mammal Animal
   )
   // Act/Assert
   equal(
-    tree2.getExpanded(0, 1).toString(),
+    tree2._expandChildren(0, 1).toString(),
     `Thing
  color
 Animal Thing
@@ -2042,7 +2042,7 @@ Mammal Animal
 bar foo
 car non-existant`)
   try {
-    badMap.getExpanded(0, 1)
+    badMap._expandChildren(0, 1)
     equal(true, false, "expanding with missing id should throw")
   } catch (err) {
     equal(err.toString().includes("non-existant"), true, "expanding with missing id throws")
@@ -2058,7 +2058,7 @@ testTree.expandedShouldAppendNonMaps = equal => {
  example foobar`
   )
   // Act/Assert
-  equal(tree.getExpanded(0, 1).toString(), tree.toString(), "should have thrown")
+  equal(tree._expandChildren(0, 1).toString(), tree.toString(), "should have thrown")
 }
 
 testTree.htmlDsl = equal => {

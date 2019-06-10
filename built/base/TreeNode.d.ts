@@ -222,8 +222,8 @@ declare class TreeNode extends ImmutableNode {
     private _isVirtualExpanded;
     private _isExpanding;
     protected _expandFromVirtualParentTree(): this;
+    _expandChildren(thisIdColumnNumber: int, extendsIdColumnNumber: int, childrenThatNeedExpanding?: any[]): this;
     extend(nodeOrStr: TreeNode | string): this;
-    getExpanded(thisIdColumnNumber: int, extendsIdColumnNumber: int): TreeNode;
     macroExpand(macroDefinitionWord: string, macroUsageWord: string): TreeNode;
     setChildren(children: jTreeTypes.children): this;
     protected _updateMTime(): void;

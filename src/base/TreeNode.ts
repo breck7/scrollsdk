@@ -1379,9 +1379,9 @@ class TreeNode extends ImmutableNode {
     return this._virtualParentTree
   }
 
-  private _setVirtualAncestorNodesByInheritanceViaColumnIndices(thisIdColumnNumber: int, extendsIdColumnNumber: int) {
+  private _setVirtualAncestorNodesByInheritanceViaColumnIndices(nodes: TreeNode[], thisIdColumnNumber: int, extendsIdColumnNumber: int) {
     const map: { [nodeId: string]: jTreeTypes.inheritanceInfo } = {}
-    for (let node of this.getChildren()) {
+    for (let node of nodes) {
       const nodeId = node.getWord(thisIdColumnNumber)
       if (map[nodeId]) throw new Error(`Tried to define a node with id "${nodeId}" but one is already defined.`)
       map[nodeId] = {
@@ -1397,6 +1397,9 @@ class TreeNode extends ImmutableNode {
       if (parentId && !parentNode) throw new Error(`Node "${nodeInfo.nodeId}" tried to extend "${parentId}" but "${parentId}" not found.`)
       if (parentId) nodeInfo.node._setVirtualParentTree(parentNode.node)
     })
+
+    nodes.forEach(node => node._expandFromVirtualParentTree())
+    return this
   }
 
   private _isVirtualExpanded: boolean
@@ -1418,6 +1421,11 @@ class TreeNode extends ImmutableNode {
 
     this._isExpanding = false
     this._isVirtualExpanded = true
+  }
+
+  // todo: solve issue related to whether extend should overwrite or append.
+  _expandChildren(thisIdColumnNumber: int, extendsIdColumnNumber: int, childrenThatNeedExpanding = this.getChildren()) {
+    return this._setVirtualAncestorNodesByInheritanceViaColumnIndices(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber)
   }
 
   // todo: add more testing.
@@ -1445,16 +1453,6 @@ class TreeNode extends ImmutableNode {
       if (sourceNode.length) targetNode.extend(sourceNode)
     })
     return this
-  }
-
-  // todo: solve issue related to whether extend should overwrite or append.
-  getExpanded(thisIdColumnNumber: int, extendsIdColumnNumber: int) {
-    const clone = this.clone()
-    clone._setVirtualAncestorNodesByInheritanceViaColumnIndices(thisIdColumnNumber, extendsIdColumnNumber)
-    clone.forEach(node => {
-      node._expandFromVirtualParentTree()
-    })
-    return clone
   }
 
   macroExpand(macroDefinitionWord: string, macroUsageWord: string): TreeNode {

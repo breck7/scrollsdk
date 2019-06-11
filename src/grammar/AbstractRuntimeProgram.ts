@@ -6,6 +6,7 @@ import { UnknownNodeTypeError } from "./TreeErrorTypes"
 import jTreeTypes from "../jTreeTypes"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 
 abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
   *getProgramErrorsIterator() {
@@ -49,7 +50,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <jTreeTypes.nodeIdRenameMap>nodeTypeMap.toObject()
     const renames = []
     for (let node of this.getTopDownArrayIterator()) {
-      const nodeTypeId = (<AbstractRuntimeNode>node).getDefinition().getNodeTypeIdFromDefinition()
+      const nodeTypeId = (<AbstractRuntimeNonRootNode>node).getNodeTypeId()
       const newId = nodeTypeMap[nodeTypeId]
       if (newId) renames.push([node, newId])
     }
@@ -110,15 +111,12 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgram()
-    const nodeTypeDefinitions = grammarProgram.getNodeTypeDefinitions()
-    nodeTypeDefinitions.forEach(child => {
-      usage.appendLine([child.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, child.getRequiredCellTypeNames().join(" ")].join(" "))
+    grammarProgram.getNodeTypeDefinitions().forEach(def => {
+      usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeNames().join(" ")].join(" "))
     })
-    const programNodes = this.getTopDownArray()
-    programNodes.forEach((programNode, lineNumber) => {
-      const def = programNode.getDefinition()
-      const stats = <TreeNode>usage.getNode(def.getNodeTypeIdFromDefinition())
-      stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "))
+    this.getTopDownArray().forEach((node, lineNumber) => {
+      const stats = <TreeNode>usage.getNode(node.getNodeTypeId())
+      stats.appendLine([filepath + "-" + lineNumber, node.getWords().join(" ")].join(" "))
     })
     return usage
   }
@@ -189,11 +187,6 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())
     this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
     this._cache_programCellTypeStringMTime = treeMTime
-  }
-
-  getCompiledProgramName(programPath: string) {
-    const grammarProgram = this.getDefinition()
-    return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`)
   }
 }
 

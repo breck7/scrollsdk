@@ -44,7 +44,7 @@ class UnknownGrammarProgram extends TreeNode {
       const childFirstWords = Object.keys(allChilds[firstWord])
       if (childFirstWords.length) {
         //defNode.touchNode(GrammarConstants.blob) // todo: remove?
-        childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants.inScope} ${firstWord}`))
+        defNode.touchNode(GrammarConstants.inScope).setContent(childFirstWords.join(" "))
       }
 
       const allLines = allFirstWordNodes[firstWord]

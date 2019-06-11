@@ -22,6 +22,10 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this.getDefinition().getProgram()
   }
 
+  getNodeTypeId(): jTreeTypes.nodeTypeId {
+    return this.getDefinition().getNodeTypeIdFromDefinition()
+  }
+
   getDefinition(): GrammarNodeTypeDefinitionNode {
     // todo: do we need a relative to with this firstWord path?
     return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByName(this.getFirstWordPath())
@@ -62,10 +66,9 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
       .map(check => check.getErrorIfAny())
       .filter(i => i)
     // More than one
-    const definition = this.getDefinition()
     let times
     const firstWord = this.getFirstWord()
-    if (definition.isSingle())
+    if (this.getDefinition()._shouldBeJustOne())
       this.getParent()
         .findNodes(firstWord)
         .forEach((node, index) => {

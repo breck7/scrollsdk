@@ -43,7 +43,7 @@ export namespace jTreeTypes {
   export declare type pathVector = int[] // example: [0,1,1]
   export declare type word = string // string that cannot contain the YI, XI or ZI
   export declare type firstWord = word
-  export declare type nodeTypeId = string
+  export declare type nodeTypeId = string // todo: add character restrictions.
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
   export declare type globPattern = string

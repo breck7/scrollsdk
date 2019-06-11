@@ -57,7 +57,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return map
   }
 
-  getNodeTypeIdFromDefinition() {
+  getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId {
     return this.getWord(1)
   }
 
@@ -130,6 +130,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return <GrammarProgram>this.getParent()
   }
 
+  // todo: improve layout (use bold?)
   getLineHints(): string {
     const id = this.getNodeTypeIdFromDefinition()
     const catchAllCellTypeName = this.getCatchAllCellTypeName()
@@ -160,7 +161,8 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return this._cache_runTimeFirstWordToNodeConstructorMap
   }
 
-  getRunTimeNodeTypeNames() {
+  // todo: rename to getRunTimeNodeTypeIds?
+  getRunTimeNodeTypeNames(): jTreeTypes.nodeTypeId[] {
     return Object.keys(this.getRunTimeFirstWordMap())
   }
 
@@ -190,6 +192,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return requireds
   }
 
+  // todo: rename to CellTypeId?
   getCatchAllCellTypeName(): string | undefined {
     return this.get(GrammarConstants.catchAllCellType)
   }
@@ -197,29 +200,28 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
   protected _initRunTimeFirstWordToNodeConstructorMap(): void {
     if (this._cache_runTimeFirstWordToNodeConstructorMap) return undefined
     // todo: make this handle extensions.
-    const nodeTypesInScope = this._getNodeTypesInScope()
+    const nodeTypeIdsInScope = this._getInScopeNodeTypeIds()
 
     this._cache_runTimeFirstWordToNodeConstructorMap = {}
     // terminals dont have acceptable firstWords
-    if (!nodeTypesInScope.length) return undefined
+    if (!nodeTypeIdsInScope.length) return undefined
 
     const allProgramNodeTypeDefinitionsMap = this._getProgramNodeTypeDefinitionCache()
     const nodeTypeIds = Object.keys(allProgramNodeTypeDefinitionsMap)
     nodeTypeIds
-      .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypesInScope))
+      .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypeIdsInScope))
       .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
       .forEach(nodeTypeId => {
         this._cache_runTimeFirstWordToNodeConstructorMap[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar()
       })
   }
 
-  // todo: protected?
-  _getNodeTypesInScope(): string[] {
+  private _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const nodeTypesNode = this._getInScopeNode()
-    return nodeTypesNode ? nodeTypesNode.getFirstWords() : []
+    return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
 
-  getTopNodeTypeIds() {
+  getTopNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const definitions = this._getProgramNodeTypeDefinitionCache()
     const firstWords = this.getRunTimeFirstWordMap()
     const arr = Object.keys(firstWords).map(firstWord => definitions[firstWord])
@@ -238,7 +240,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return this.has(GrammarConstants.required)
   }
 
-  isSingle(): boolean {
+  _shouldBeJustOne(): boolean {
     return this.has(GrammarConstants.single)
   }
 

@@ -48,8 +48,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
   }
 
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
-    const def = this.getDefinition()
-    let defs: GrammarNodeTypeDefinitionNode[] = Object.values(def.getRunTimeFirstWordMapWithDefinitions())
+    let defs: GrammarNodeTypeDefinitionNode[] = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions())
 
     if (partialWord) defs = defs.filter(def => def.getNodeTypeIdFromDefinition().includes(partialWord))
 
@@ -73,8 +72,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
   }
 
   protected _getRequiredNodeErrors(errors: jTreeTypes.TreeError[] = []) {
-    const nodeDef = this.getDefinition()
-    const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions()
+    const firstWords = this.getDefinition().getRunTimeFirstWordMapWithDefinitions()
     Object.keys(firstWords).forEach(firstWord => {
       const def = firstWords[firstWord]
       if (def.isRequired() && !this.has(firstWord)) errors.push(new MissingRequiredNodeTypeError(this, firstWord))

@@ -21,11 +21,9 @@ abstract class AbstractGrammarBackedCell<T> {
     this._cellTypeName = cellTypeName
 
     this._word = node.getWord(index)
-    this._grammarProgram = node.getDefinition().getProgram()
   }
 
   private _node: any
-  protected _grammarProgram: GrammarProgram
   protected _index: jTreeTypes.int
   protected _word: string
   private _typeDef: GrammarCellTypeDefinitionNode
@@ -93,12 +91,6 @@ abstract class AbstractGrammarBackedCell<T> {
 
   protected _getErrorContext() {
     return this._getFullLine().split(" ")[0] // todo: XI
-  }
-
-  protected _getExpectedLineCellTypes() {
-    return this.getNode()
-      .getDefinition()
-      .getExpectedLineCellTypes()
   }
 
   protected abstract _isValid(): boolean

@@ -168,7 +168,6 @@ ${grammars.toTable()}`
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    const path = program.getCompiledProgramName(programPath)
     const grammarProgram = new GrammarProgram(this._read(grammarPath))
     targetExtension = targetExtension || grammarProgram.getTargetExtension()
     const compiledCode = program.compile(targetExtension)

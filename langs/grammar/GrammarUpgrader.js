@@ -9,6 +9,14 @@ class GrammarUpgrader extends jtree.Upgrader {
         "1.2.0": tree => {
           // update nodeTypes
           // todo: need to preserve history of grammars to have celltype safe upgrades.
+          tree.forEach(node => {
+            const types = node.getNode("nodeTypes")
+            if (types) {
+              types.setFirstWord("inScope")
+              types.setContent(types.getFirstWords().join(" "))
+              types.deleteChildren()
+            }
+          })
           return tree
         }
       }
@@ -17,5 +25,5 @@ class GrammarUpgrader extends jtree.Upgrader {
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent)
-  new GrammarUpgrader().upgradeManyPreview([__dirname + "/../*/*.grammar"], "1.1.0", "1.2.0").forEach(item => console.log(item.path, item.content))
+  new GrammarUpgrader().upgradeManyPreview([__dirname + "/../*/*.grammar"], "1.1.0", "1.2.0").forEach(item => console.log(item.path, item.tree.toString()))
 module.exports = GrammarUpgrader

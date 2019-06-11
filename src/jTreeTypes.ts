@@ -61,12 +61,21 @@ export namespace jTreeTypes {
   export declare type typeScriptCode = string
   export declare type javascriptCode = string
 
+  export declare type semanticVersion = string
+
+  export declare type asboluteFilePath = filepath
+  export declare type asboluteFolderPath = asboluteFilePath
+
   export declare type children = string | Object | treeNode | any // todo: specify better.
 
   export declare type TreeNodeConstructor = Function // A constructor extending TreeNodeConstructor
   export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
+
+  export declare type upgradeFunction = (tree: string) => string
+  export declare type upgradeToMap = { [toVersion: string]: upgradeFunction }
+  export declare type upgradeFromMap = { [fromVersion: string]: upgradeToMap }
 
   export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
 }

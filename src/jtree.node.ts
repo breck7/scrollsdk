@@ -4,8 +4,11 @@ import jtree from "./jtree"
 import jTreeTypes from "./jTreeTypes"
 import GrammarProgram from "./grammar/GrammarProgram"
 import AbstractRuntimeProgram from "./grammar/AbstractRuntimeProgram"
+import Upgrader from "./grammar/Upgrader"
 
 class jtreeNode extends jtree {
+  static Upgrader = Upgrader
+
   static executeFile = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): Promise<any> =>
     jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 

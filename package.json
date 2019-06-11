@@ -29,6 +29,7 @@
     "express": "*",
     "glob": "^7.1.4",
     "recursive-readdir-sync": "*",
+    "semver": "^6.1.1",
     "tap": "^14.2.0",
     "tap-mocha-reporter": "^4.0.1"
   },

@@ -32,7 +32,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
     const types = [
       GrammarConstants.frequency,
-      GrammarConstants.nodeTypes,
+      GrammarConstants.inScope,
       GrammarConstants.cells,
       GrammarConstants.description,
       GrammarConstants.catchAllNodeType,
@@ -88,7 +88,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
   }
 
   protected _isNonTerminal() {
-    return this._isBlobNode() || this.has(GrammarConstants.nodeTypes) || this.has(GrammarConstants.catchAllNodeType)
+    return this._isBlobNode() || this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType)
   }
 
   _isAbstract() {
@@ -215,7 +215,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
 
   // todo: protected?
   _getNodeTypesInScope(): string[] {
-    const nodeTypesNode = this._getNodeTypesNode()
+    const nodeTypesNode = this._getInScopeNode()
     return nodeTypesNode ? nodeTypesNode.getFirstWords() : []
   }
 
@@ -228,9 +228,9 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
 
-  protected _getNodeTypesNode(): TreeNode {
+  protected _getInScopeNode(): TreeNode {
     // todo: allow multiple of these if we allow mixins?
-    return <TreeNode>this.getNode(GrammarConstants.nodeTypes)
+    return <TreeNode>this.getNode(GrammarConstants.inScope)
   }
 
   isRequired(): boolean {

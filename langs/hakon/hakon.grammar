@@ -33,8 +33,7 @@ nodeType errorNode
   browser ErrorNode
 nodeType selectorNode
  firstCellType selector
- nodeTypes
-  propertyNode
+ inScope propertyNode
  catchAllNodeType selectorNode
  constructors
   nodejs ./HakonNodes.js HakonSelectorNode

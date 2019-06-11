@@ -3,8 +3,7 @@ grammar
  description A Tree Language for project dependency management.
  constructors
   nodejs ./ProjectNodes.js ProjectProgramRoot
- nodeTypes
-  file
+ inScope file
  catchAllNodeType error
 cellType anyFirstWord
 cellType filepath
@@ -23,10 +22,7 @@ nodeType error
 nodeType file
  catchAllCellType filepath
  firstCellType fileConstant
- nodeTypes
-  external
-  absolute
-  relative
+ inScope external absolute relative
  constructors
   nodejs ./ProjectNodes.js FileNode
 nodeType absolute term

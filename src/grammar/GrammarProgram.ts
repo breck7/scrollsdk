@@ -143,8 +143,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().get(GrammarConstants.name)
   }
 
-  protected _getNodeTypesNode(): TreeNode {
-    return <TreeNode>this._getGrammarRootNode().getNode(GrammarConstants.nodeTypes)
+  protected _getInScopeNode(): TreeNode {
+    return <TreeNode>this._getGrammarRootNode().getNode(GrammarConstants.inScope)
   }
 
   private _cachedDefinitions: {

@@ -4,11 +4,7 @@ grammar
  catchAllNodeType error
  constructors
   nodejs ./StampProgramRoot.js
- nodeTypes
-  #!
-  prompt
-  folder
-  file
+ inScope #! prompt folder file
 cellType anyFirstWord
 cellType extraWord
  highlightScope invalid
@@ -45,9 +41,7 @@ nodeType file
  firstCellType property
  constructors
   nodejs ./FileNode.js
- nodeTypes
-  data
-  executable
+ inScope data executable
 nodeType folder
  cells filepath
  firstCellType property

@@ -6,15 +6,13 @@ test stress test
    grammar
     name testlang
     compiler txt
-    nodeTypes
-     baseNode
+    inScope baseNode
    cellType any
    foo
    cellType word any
    nodeType baseNode
    nodeType block baseNode
-    nodeTypes
-     baseNode
+    inScope baseNode
    nodeType to block
     cells word
     tags test

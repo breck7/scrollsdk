@@ -5,10 +5,7 @@ grammar
   nodejs ./jibberishProgramRoot.js
  compiler txt
  catchAllNodeType error
- nodeTypes
-  topLevel
-  text
-  someAbstractClass
+ inScope topLevel text someAbstractClass
 cellType anyFirstWord
 cellType columnNameEnum
 cellType columnName
@@ -53,8 +50,7 @@ nodeType + add
   + 1 2
  catchAllCellType int
 nodeType block topLevel
- nodeTypes
-  topLevel
+ inScope topLevel
 nodeType to block
  cells word
  compiler txt

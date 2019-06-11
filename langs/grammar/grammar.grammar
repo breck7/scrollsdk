@@ -11,12 +11,7 @@ grammar
   nodeType anyNode
    blob
  version 1.2.0
- nodeTypes
-  grammar
-  cellType
-  abstract
-  nodeType
-  tooling
+ inScope grammar cellType abstract nodeType tooling
 cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
@@ -110,17 +105,11 @@ nodeType catchAll.exampleLine
  catchAllCellType exampleWord
  firstCellType exampleWord
  catchAllNodeType catchAll.exampleLine
-nodeType catchAll.nodeTypeOption
 nodeType cellType
  cells cellTypeName
  catchAllCellType extendedCellType
  firstCellType cellTypeNameConstant
- nodeTypes
-  highlightScope
-  regex
-  enumFromGrammar
-  description
-  enum
+ inScope highlightScope regex enumFromGrammar description enum
 nodeType enum
  catchAllCellType enumOption
  firstCellType cellPropertyName
@@ -135,17 +124,7 @@ nodeType grammar
  required
  single
  firstCellType propertyName
- nodeTypes
-  name
-  description
-  example
-  extensions
-  nodeTypeOrder
-  nodeTypes
-  constructors
-  compiler
-  catchAllNodeType
-  version
+ inScope name description example extensions nodeTypeOrder inScope constructors compiler catchAllNodeType version
 nodeType group
  catchAllCellType nodeTypeName
  firstCellType propertyName
@@ -164,15 +143,14 @@ nodeType name
  description The name of your language. Also serves as the default file extension.
 nodeType nodeType
  cells nodeTypeName
- description Node types are a core unit of your language. Examples of nodeTypes would be "header", "person", "if", "+", "define", etc.
+ description Node types are a core unit of your language. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllCellType extendedNodeType
  catchAllNodeType catchAll.error
  constructors
   nodejs NonTerminalNode
   browser NonTerminalNode
  firstCellType nodeTypeNameConstant
- nodeTypes
-  abstract.nodeTypeRule
+ inScope abstract.nodeTypeRule
 nodeType nodeTypeOrder
  catchAllCellType nodeTypeName
  firstCellType propertyName
@@ -209,19 +187,14 @@ nodeType catchAllCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
 nodeType catchAllNodeType abstract.nodeTypeRule
- description If a nodeType is not found in the nodeTypes list, instantiate this type of node instead.
+ description If a nodeType is not found in the inScope list, instantiate this type of node instead.
  cells nodeTypeEnum
 nodeType cells abstract.nodeTypeRule
  catchAllCellType cellTypeEnum
  description Describes the word type of each word in the line.
 nodeType compiler abstract.nodeTypeRule
  cells compilerTargetExtension
- nodeTypes
-  sub
-  listDelimiter
-  openChildren
-  closeChildren
-  indentCharacter
+ inScope sub listDelimiter openChildren closeChildren indentCharacter
 nodeType constants abstract.nodeTypeRule
  catchAllNodeType catchAll.constantDefinition
 nodeType defaults abstract.nodeTypeRule
@@ -244,15 +217,12 @@ nodeType single abstract.nodeTypeRule
 nodeType tags abstract.nodeTypeRule
  catchAllCellType tag
 nodeType constructors abstract.nonTerminalNodeTypeRule
- nodeTypes
-  abstract.environment
+ inScope abstract.environment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
-nodeType nodeTypes abstract.nonTerminalNodeTypeRule
- catchAllNodeType catchAll.nodeTypeOption
- description A list of possible child nodeTypes for a node. This is a not a leaf node in order to allow seamless extending.
+nodeType inScope abstract.nodeTypeRule
+ description A list of possible child nodeTypes for a node.
+ catchAllCellType nodeTypeEnum
 nodeType abstract nodeType
  firstCellType abstractConstant
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
- nodeTypes
-  abstract.nodeTypeRule
-  group
+ inScope abstract.nodeTypeRule group

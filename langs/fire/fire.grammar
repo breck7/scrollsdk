@@ -2,10 +2,7 @@ grammar
  name fire
  description A useless Tree Language for testing Tree Notation features.
  compiler js
- nodeTypes
-  #!
-  term
-  nt
+ inScope #! term nt
  catchAllNodeType error
  constructors
   nodejs ./FireNodes.js FireProgramRoot
@@ -31,9 +28,7 @@ nodeType error
  compiler js
   sub // error
 nodeType nt
- nodeTypes
-  term
-  nt
+ inScope term nt
 nodeType term
 nodeType assignment term
 nodeType dump term

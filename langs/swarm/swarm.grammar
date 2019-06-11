@@ -1,10 +1,7 @@
 grammar
  name swarm
  description A Tree Language for unit testing.
- nodeTypes
-  #!
-  arrangeTestSubject
-  testBlock
+ inScope #! arrangeTestSubject testBlock
  catchAllNodeType error
  constructors
   nodejs ./SwarmProgramRoot.js
@@ -42,8 +39,7 @@ abstract testBlock
  catchAllCellType anyWord
  constructors
   nodejs ./TestBlock.js
- nodeTypes
-  arrangeTestSubject
+ inScope arrangeTestSubject
  catchAllNodeType commandNode
  firstCellType controlWord
 nodeType #!
@@ -55,11 +51,7 @@ nodeType arrangeTestSubject
  constructors
   nodejs ./TestSetupNode.js
  firstCellType arrangeWord
- nodeTypes
-  async
-  require
-  static
-  constructWithBlockString
+ inScope async require static constructWithBlockString
 nodeType blockStringParam
  firstCellType parameterWord
  description Pass in a multiline string as a command arg. #todo: rename
@@ -73,9 +65,7 @@ nodeType commandNode
  catchAllCellType anyWord
  catchAllNodeType commandNode
  firstCellType commandWord
- nodeTypes
-  blockStringParam
-  assertion
+ inScope blockStringParam assertion
 nodeType constructWithBlockString
  constructors
   nodejs ./SetupConstructorArgNode.js

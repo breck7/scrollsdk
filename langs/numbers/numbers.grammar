@@ -1,10 +1,7 @@
 grammar
  name numbers
  description A useless Tree Language for testing Tree Notation features.
- nodeTypes
-  abstract.arithmetic
-  #
-  #!
+ inScope abstract.arithmetic # #!
  catchAllNodeType error
 cellType float
 cellType commentWord
@@ -27,9 +24,7 @@ abstract abstract.arithmetic
      async execute() { return this.executeSync() }
    }
  firstCellType operator
- nodeTypes
-  abstract.arithmetic
-  #
+ inScope abstract.arithmetic #
 nodeType #
  description This is a line comment.
  firstCellType commentWord

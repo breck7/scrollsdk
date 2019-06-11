@@ -37,7 +37,7 @@ enum GrammarConstants {
   enum = "enum", // temporary?
 
   // parse time
-  nodeTypes = "nodeTypes",
+  inScope = "inScope",
   cells = "cells",
   catchAllCellType = "catchAllCellType",
   firstCellType = "firstCellType",

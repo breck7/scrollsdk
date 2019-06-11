@@ -1,16 +1,8 @@
 grammar
  name foobar
- nodeTypes
-  file
+ inScope file
 nodeType file
- nodeTypes
-  size
-  digits
-  open
-  temp
-  description
-  edits
-  account
+ inScope size digits open temp description edits account
  cells any
 nodeType size
  cells int
@@ -23,18 +15,13 @@ nodeType temp
 nodeType description
  catchAllCellType any
 nodeType edits
- nodeTypes
-  editsChild
+ inScope editsChild
 nodeType editsChild
- nodeTypes
-  data
+ inScope data
 nodeType data
  cells any
 nodeType account
- nodeTypes
-  balance
-  transactions
-  source
+ inScope balance transactions source
 nodeType balance
  cells float
 nodeType transactions

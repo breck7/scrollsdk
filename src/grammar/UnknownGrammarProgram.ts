@@ -14,7 +14,7 @@ class UnknownGrammarProgram extends TreeNode {
     const xi = this.getXI()
     const yi = this.getYI()
 
-    this.getFirstWords().forEach(firstWord => rootNode.touchNode(`${GrammarConstants.grammar} ${GrammarConstants.nodeTypes} ${firstWord}`))
+    this.getFirstWords().forEach(firstWord => rootNode.touchNode(`${GrammarConstants.grammar} ${GrammarConstants.inScope} ${firstWord}`))
 
     const clone = <UnknownGrammarProgram>this.clone()
     let allNodes = clone.getTopDownArrayIterator()
@@ -44,7 +44,7 @@ class UnknownGrammarProgram extends TreeNode {
       const childFirstWords = Object.keys(allChilds[firstWord])
       if (childFirstWords.length) {
         //defNode.touchNode(GrammarConstants.blob) // todo: remove?
-        childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants.nodeTypes} ${firstWord}`))
+        childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants.inScope} ${firstWord}`))
       }
 
       const allLines = allFirstWordNodes[firstWord]

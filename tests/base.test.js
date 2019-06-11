@@ -704,8 +704,7 @@ testTree.getNodeByColumns = equal => {
  constructors
   nodejs ./jibberishProgramRoot.js
  compiler txt
- nodeTypes
-  baseNode`)
+ inScope baseNode`)
 
   // Act
   const node2 = jib.getNode("jibberish constructors nodejs")
@@ -1902,10 +1901,7 @@ testTree.isomorphicGrammarTests = equal => {
   nodejs ./jibberishProgramRoot.js
  compiler txt
  catchAllNodeType error
- nodeTypes
-  topLevel
-  text
-  someAbstractClass
+ inScope topLevel text someAbstractClass
 cellType int
 cellType word
 cellType anyFirstWord
@@ -1929,8 +1925,7 @@ nodeType lineOfCode
  constructors
   nodejs ./jibberishNodes.js LineOfCodeNode
 nodeType block topLevel
- nodeTypes
-  topLevel
+ inScope topLevel
 nodeType foo topLevel
 nodeType nodeWithConsts topLevel
  constants

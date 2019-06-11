@@ -229,8 +229,7 @@ testTree.autocompleteAdvanced = equal => {
   const program = makeGrammarProgram(`grammar
  name latin
  catchAllNodeType any
- nodeTypes
-  faveNumber
+ inScope faveNumber
 cellType integer
 nodeType any
 nodeType faveNumber
@@ -398,8 +397,7 @@ testTree.examples = equal => {
   const badGrammarProgram = GrammarProgram.newFromCondensed(
     `grammar
  name bad
- nodeTypes
-  +
+ inScope +
 nodeType +
  catchAllCellType int
  example This is a bad example.

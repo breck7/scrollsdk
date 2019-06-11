@@ -105,7 +105,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   getNodeTypeFamilyTree() {
     const tree = new TreeNode()
     Object.values(this.getNodeTypeDefinitions()).forEach(node => {
-      const path = node.getAncestorNodeTypeNamesArray().join(" ")
+      const path = node.getAncestorNodeTypeIdsArray().join(" ")
       tree.touchNode(path)
     })
     return tree

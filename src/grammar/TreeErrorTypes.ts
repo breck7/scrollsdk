@@ -3,6 +3,7 @@ import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeNode from "./AbstractRuntimeNode"
+/*FOR_TYPES_ONLY*/ import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 /*FOR_TYPES_ONLY*/ import { AbstractGrammarBackedCell } from "./GrammarBackedCell"
 
 abstract class AbstractTreeError implements jTreeTypes.TreeError {
@@ -50,7 +51,7 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
 
   private _getCodeMirrorLineWidgetElementCellTypeHints() {
     const el = document.createElement("div")
-    el.appendChild(document.createTextNode(this.getIndent() + (<AbstractRuntimeNode>this.getNode()).getDefinition().getLineHints()))
+    el.appendChild(document.createTextNode(this.getIndent() + <AbstractRuntimeNonRootNode>this.getNode().getLineHints()))
     el.className = "LintCellTypeHints"
     return el
   }

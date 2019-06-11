@@ -2,11 +2,11 @@ import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
 import { GrammarConstants } from "./GrammarConstants"
-import GrammarConstantsNode from "./GrammarConstantsNode"
 import GrammarExampleNode from "./GrammarExampleNode"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import GrammarConstantsNode from "./GrammarConstantsNode"
 
 import jTreeTypes from "../jTreeTypes"
 
@@ -16,13 +16,6 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     return this.get(GrammarConstants.catchAllNodeType) || (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllNodeTypeId()
   }
 
-  getExpectedLineCellTypes() {
-    const req = [this.getFirstCellType()].concat(this.getRequiredCellTypeNames())
-    const catchAllCellType = this.getCatchAllCellTypeName()
-    if (catchAllCellType) req.push(catchAllCellType + "*")
-    return req.join(" ")
-  }
-
   isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean {
     const chain = this.getNodeTypeInheritanceSet()
     return firstWordsInScope.some(firstWord => chain.has(firstWord))
@@ -30,6 +23,11 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
 
   getSublimeSyntaxContextId() {
     return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH") // # is not allowed in sublime context names
+  }
+
+  getConstantsObject() {
+    const constantsNode = this.getNode(GrammarConstants.constants)
+    return constantsNode ? (<GrammarConstantsNode>constantsNode).getConstantsObj() : {}
   }
 
   private _getFirstCellHighlightScope() {
@@ -84,7 +82,7 @@ ${captures}
     return this.getWord(2)
   }
 
-  getAncestorNodeTypeNamesArray(): jTreeTypes.nodeTypeId[] {
+  getAncestorNodeTypeIdsArray(): jTreeTypes.nodeTypeId[] {
     this._initNodeTypeInheritanceCache()
     return this._cache_ancestorNodeTypeIdsArray
   }
@@ -98,7 +96,7 @@ ${captures}
       const parentDef = defs[extendedNodeTypeId]
       if (!parentDef) throw new Error(`${extendedNodeTypeId} not found`)
 
-      nodeTypeNames = nodeTypeNames.concat(parentDef.getAncestorNodeTypeNamesArray())
+      nodeTypeNames = nodeTypeNames.concat(parentDef.getAncestorNodeTypeIdsArray())
     }
     nodeTypeNames.push(this.getNodeTypeIdFromDefinition())
     this._cache_nodeTypeInheritanceSet = new Set(nodeTypeNames)
@@ -132,22 +130,15 @@ ${captures}
     return this.getChildrenByNodeConstructor(GrammarExampleNode)
   }
 
-  getConstantsObject() {
-    const constantsNode = this.getNodeByType(GrammarConstantsNode)
-    return constantsNode ? (<GrammarConstantsNode>constantsNode).getConstantsObj() : {}
-  }
-
   getFrequency() {
     const val = this.get(GrammarConstants.frequency)
     return val ? parseFloat(val) : 0
   }
 
   toJavascript(): jTreeTypes.javascriptCode {
-    const ancestorClasses = this.getAncestorNodeTypeNamesArray()
+    const ancestorIds = this.getAncestorNodeTypeIdsArray()
     const extendsClass =
-      ancestorClasses.length > 1
-        ? this.getNodeTypeDefinitionByName(ancestorClasses[ancestorClasses.length - 2]).getGeneratedClassName()
-        : "jtree.NonTerminalNode"
+      ancestorIds.length > 1 ? this.getNodeTypeDefinitionByName(ancestorIds[ancestorIds.length - 2]).getGeneratedClassName() : "jtree.NonTerminalNode"
 
     const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code)
 

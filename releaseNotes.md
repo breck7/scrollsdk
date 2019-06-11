@@ -4,11 +4,14 @@ edge / 2019-06-02
 - New: getFirstNode method
 - New: added support for "tooling" directives in Grammar language
 - New: getNodeTypeId on NonRootRunTime nodes
+- Breaking: avoid getDefinition()--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
+- Breaking: removed getExpectedLineCellTypes--use getLineHints
 - Breaking: nodeTypes in grammar is now "inScope", and is one line instead of parent/children
 - Breaking: removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
 - Breaking: fromJson is now fromJsonSubset and toJson is now toJsonSubset
 - Breaking: deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.
 - Breaking: removed getCompiledProgramName
+- Breaking: getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
 - Infra: test coverage
 
 25.2.0 / 2019-05-30

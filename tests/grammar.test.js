@@ -66,15 +66,20 @@ testTree.jibberish = equal => {
   // Act
   const fooNode = program.getNode("foo")
   const constNode = program.getNode("nodeWithConsts")
-  const nodeDef = constNode.getDefinition()
 
   // Assert
   equal(fooNode.getNodeTypeId(), "foo")
-  equal(nodeDef.getNodeTypeIdFromDefinition(), "nodeWithConsts")
-  equal(nodeDef.getAncestorNodeTypeNamesArray().join(" "), "topLevel nodeWithConsts")
+  equal(constNode.getNodeTypeId(), "nodeWithConsts")
+  equal(
+    constNode
+      .getDefinition()
+      .getAncestorNodeTypeIdsArray()
+      .join(" "),
+    "topLevel nodeWithConsts"
+  )
 
   // Act
-  const constObj = nodeDef.getConstantsObject()
+  const constObj = constNode.getConstantsObject()
 
   // Assert
   equal(constObj.greeting, "hello world")

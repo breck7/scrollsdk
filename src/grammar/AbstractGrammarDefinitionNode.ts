@@ -130,13 +130,6 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return <GrammarProgram>this.getParent()
   }
 
-  // todo: improve layout (use bold?)
-  getLineHints(): string {
-    const id = this.getNodeTypeIdFromDefinition()
-    const catchAllCellTypeName = this.getCatchAllCellTypeName()
-    return `${id}: ${this.getRequiredCellTypeNames().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`
-  }
-
   getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode) {
     const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)
     if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)
@@ -171,6 +164,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return TreeUtils.mapValues<GrammarNodeTypeDefinitionNode>(this.getRunTimeFirstWordMap(), key => defs[key])
   }
 
+  // typeNames or TypeIds?
   getRequiredCellTypeNames(): string[] {
     const parameters = this.get(GrammarConstants.cells)
     return parameters ? parameters.split(" ") : []
@@ -249,6 +243,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return ""
   }
 
+  // todo: byName or byId?
   getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode {
     const definitions = this._getProgramNodeTypeDefinitionCache()
     return definitions[firstWord] || this._getCatchAllDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.

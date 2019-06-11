@@ -8,6 +8,7 @@ import { AbstractGrammarBackedCell, GrammarUnknownCellTypeCell, GrammarExtraWord
 /*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
 /*FOR_TYPES_ONLY*/ import GrammarCompilerNode from "./GrammarCompilerNode"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
+/*FOR_TYPES_ONLY*/ import GrammarConstantsNode from "./GrammarConstantsNode"
 
 import { NodeTypeUsedMultipleTimesError } from "./TreeErrorTypes"
 
@@ -29,6 +30,17 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   getDefinition(): GrammarNodeTypeDefinitionNode {
     // todo: do we need a relative to with this firstWord path?
     return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByName(this.getFirstWordPath())
+  }
+
+  getConstantsObject() {
+    return this.getDefinition().getConstantsObject()
+  }
+
+  // todo: improve layout (use bold?)
+  getLineHints(): string {
+    const def = this.getDefinition()
+    const catchAllCellTypeName = def.getCatchAllCellTypeName()
+    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeNames().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`
   }
 
   getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {

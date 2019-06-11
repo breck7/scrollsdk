@@ -4,19 +4,16 @@ import jTreeTypes from "../jTreeTypes"
 // todo: currently only works in nodejs
 
 const glob = require("glob")
-const fs = require("fs")
 const semver = require("semver")
 
 interface updatedFile {
-  content: string
-  path: jTreeTypes.asboluteFilePath
+  tree: TreeNode
+  path: jTreeTypes.absoluteFilePath
 }
 
 abstract class Upgrader extends TreeNode {
   upgradeManyInPlace(globPatterns: jTreeTypes.globPattern[], fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion) {
-    this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => {
-      fs.writeFileSync(file.path, file.content, "utf8")
-    })
+    this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path))
     return this
   }
 
@@ -25,9 +22,9 @@ abstract class Upgrader extends TreeNode {
   }
 
   private _upgradeMany(globPatterns: jTreeTypes.globPattern[], fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): updatedFile[] {
-    return (<any>globPatterns.map(pattern => glob.sync(pattern))).flat().map((path: jTreeTypes.asboluteFilePath) => {
+    return (<any>globPatterns.map(pattern => glob.sync(pattern))).flat().map((path: jTreeTypes.absoluteFilePath) => {
       return {
-        content: this.upgrade(fs.readFileSync(path, "utf8"), fromVersion, toVersion),
+        tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
         path: path
       }
     })
@@ -35,7 +32,7 @@ abstract class Upgrader extends TreeNode {
 
   abstract getUpgradeFromMap(): jTreeTypes.upgradeFromMap
 
-  upgrade(code: string, fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): string {
+  upgrade(code: TreeNode, fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): TreeNode {
     const updateFromMap = this.getUpgradeFromMap()
     let fromMap
     while ((fromMap = updateFromMap[fromVersion])) {

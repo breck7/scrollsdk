@@ -1,6 +1,8 @@
 import jtree from "./jtree";
 import AbstractRuntimeProgram from "./grammar/AbstractRuntimeProgram";
+import Upgrader from "./grammar/Upgrader";
 declare class jtreeNode extends jtree {
+    static Upgrader: typeof Upgrader;
     static executeFile: (programPath: string, grammarPath: string) => Promise<any>;
     static executeFiles: (programPaths: string[], grammarPath: string) => Promise<any>[];
     static executeFileSync: (programPath: string, grammarPath: string) => any;

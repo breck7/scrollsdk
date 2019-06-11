@@ -56,11 +56,21 @@ export declare namespace jTreeTypes {
     };
     type typeScriptCode = string;
     type javascriptCode = string;
+    type semanticVersion = string;
+    type asboluteFilePath = filepath;
+    type asboluteFolderPath = asboluteFilePath;
     type children = string | Object | treeNode | any;
     type TreeNodeConstructor = Function;
     type RunTimeNodeConstructor = Function;
     type TreeProgramConstructor = Function;
     type treeProgram = treeNode;
+    type upgradeFunction = (tree: string) => string;
+    type upgradeToMap = {
+        [toVersion: string]: upgradeFunction;
+    };
+    type upgradeFromMap = {
+        [fromVersion: string]: upgradeToMap;
+    };
     type firstWordToNodeConstructorMap = {
         [firstWord: string]: TreeNodeConstructor;
     };

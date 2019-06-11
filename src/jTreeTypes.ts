@@ -63,8 +63,8 @@ export namespace jTreeTypes {
 
   export declare type semanticVersion = string
 
-  export declare type asboluteFilePath = filepath
-  export declare type asboluteFolderPath = asboluteFilePath
+  export declare type absoluteFilePath = filepath
+  export declare type asboluteFolderPath = absoluteFilePath
 
   export declare type children = string | Object | treeNode | any // todo: specify better.
 
@@ -73,7 +73,7 @@ export namespace jTreeTypes {
   export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
 
-  export declare type upgradeFunction = (tree: string) => string
+  export declare type upgradeFunction = (tree: treeNode) => treeNode
   export declare type upgradeToMap = { [toVersion: string]: upgradeFunction }
   export declare type upgradeFromMap = { [fromVersion: string]: upgradeToMap }
 

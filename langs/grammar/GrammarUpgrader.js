@@ -1,17 +1,21 @@
 #! /usr/local/bin/node --use_strict
 
-const Upgrader = require("../../index.js").Upgrader
+const jtree = require("../../index.js")
 
-class GrammarUpgrader extends Upgrader {
+class GrammarUpgrader extends jtree.Upgrader {
   getUpgradeFromMap() {
     return {
       "1.1.0": {
-        "1.2.0": code => "123"
+        "1.2.0": tree => {
+          // update nodeTypes
+          // todo: need to preserve history of grammars to have celltype safe upgrades.
+          return tree
+        }
       }
     }
   }
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent)
-  new GrammarUpgrader().upgradeManyPreview("*/*.grammar", "1.1.0", "1.2.0").forEach(item => console.log(item.path, item.content))
+  new GrammarUpgrader().upgradeManyPreview([__dirname + "/../*/*.grammar"], "1.1.0", "1.2.0").forEach(item => console.log(item.path, item.content))
 module.exports = GrammarUpgrader

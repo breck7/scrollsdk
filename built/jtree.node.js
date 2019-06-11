@@ -3,8 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const jtree_1 = require("./jtree");
 const GrammarProgram_1 = require("./grammar/GrammarProgram");
+const Upgrader_1 = require("./grammar/Upgrader");
 class jtreeNode extends jtree_1.default {
 }
+jtreeNode.Upgrader = Upgrader_1.default;
 jtreeNode.executeFile = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath);
 jtreeNode.executeFiles = (programPaths, grammarPath) => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath);

@@ -37,7 +37,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         map[GrammarConstants_1.GrammarConstants.cellType] = GrammarCellTypeDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
-        map[GrammarConstants_1.GrammarConstants.fileDirective] = TreeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.toolingDirective] = TreeNode_1.default;
         return map;
     }
     // todo: this code is largely duplicated in abstractruntimeprogram
@@ -178,6 +178,33 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
                 .join(",")
             : this.getExtensionName();
     }
+    toNodeJsJavascript() {
+        return this._toJavascript();
+    }
+    toBrowserJavascript() {
+        return this._toJavascript();
+    }
+    _getRootClassName() {
+        return this.getExtensionName() + "Program";
+    }
+    _toJavascript(forNodeJs = true) {
+        const nodeTypeClasses = this.getNodeTypeDefinitions()
+            .map(def => def.toJavascript())
+            .join("\n\n");
+        const components = [this.getNodeConstructorToJavascript()].filter(code => code);
+        const rootClass = `class ${this._getRootClassName()} extends AbstractRuntimeProgram {
+  getGrammarProgram() {}
+  ${components.join("\n")}
+    }`;
+        return `${forNodeJs ? 'const jtree = require("jtree")' : ""}
+
+${nodeTypeClasses}
+
+${rootClass}
+
+${forNodeJs ? "module.exports = " + this._getRootClassName() : ""}
+`;
+    }
     toSublimeSyntaxFile() {
         const types = this.getCellTypeDefinitions();
         const variables = Object.keys(types)
@@ -216,6 +243,7 @@ ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
         const tree = new TreeNode_1.default(grammarCode);
         // Expand groups
         // todo: rename? maybe change this to something like "makeNodeTypes"?
+        // todo: where is this used? if we had imports, would that be a better solution?
         const xi = tree.getXI();
         tree.findNodes(`${GrammarConstants_1.GrammarConstants.abstract}${xi}${GrammarConstants_1.GrammarConstants.group}`).forEach(group => {
             const abstractName = group.getParent().getWord(1);
@@ -225,7 +253,7 @@ ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
                 .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.nodeType}${xi}${word}${xi}${abstractName}`));
         });
         // todo: only expand certain types.
-        return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.fileDirective)), grammarPath);
+        return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.toolingDirective)), grammarPath);
     }
     async loadAllConstructorScripts(baseUrlPath) {
         if (!this.isBrowser())

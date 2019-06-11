@@ -201,6 +201,7 @@ declare class ImmutableNode extends AbstractNode {
     getCatchAllNodeConstructor(line: string): Function;
     getInheritanceTree(): TreeNode;
     protected _getGrandParent(): ImmutableNode | undefined;
+    protected _getFirstWord(line: string): string;
     getNodeConstructor(line: string): Function;
     private static _uniqueId;
     static _makeUniqueId(): number;

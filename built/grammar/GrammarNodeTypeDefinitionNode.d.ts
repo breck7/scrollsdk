@@ -24,5 +24,6 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     getExamples(): GrammarExampleNode[];
     getConstantsObject(): jTreeTypes.stringMap;
     getFrequency(): number;
+    toJavascript(): jTreeTypes.javascriptCode;
 }
 export default GrammarNodeTypeDefinitionNode;

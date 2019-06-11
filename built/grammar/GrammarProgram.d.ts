@@ -44,6 +44,10 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _getFileExtensions;
+    toNodeJsJavascript(): jTreeTypes.javascriptCode;
+    toBrowserJavascript(): jTreeTypes.javascriptCode;
+    private _getRootClassName;
+    private _toJavascript;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath): GrammarProgram;

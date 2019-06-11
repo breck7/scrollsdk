@@ -377,6 +377,15 @@ cellSpace foobar
   )
 }
 
+testTree.toNodeJsJavascript = equal => {
+  // Arrange
+  let program = GrammarProgram.newFromCondensed(grammarGrammar)
+  // Act
+  let compiledParser = program.toNodeJsJavascript()
+  // Assert
+  equal(typeof compiledParser, "string")
+}
+
 testTree.examples = equal => {
   // Arrange/Act
   const jibberishGrammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)

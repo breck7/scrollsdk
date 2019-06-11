@@ -54,6 +54,8 @@ export declare namespace jTreeTypes {
     type nodeIdRenameMap = {
         [oldNodeTypeId: string]: string;
     };
+    type typeScriptCode = string;
+    type javascriptCode = string;
     type children = string | Object | treeNode | any;
     type TreeNodeConstructor = Function;
     type RunTimeNodeConstructor = Function;

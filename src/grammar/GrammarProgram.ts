@@ -46,7 +46,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode
     map[GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode
     map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode
-    map[GrammarConstants.toolDirective] = TreeNode
+    map[GrammarConstants.toolingDirective] = TreeNode
     return map
   }
 
@@ -226,6 +226,39 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       : this.getExtensionName()
   }
 
+  toNodeJsJavascript(): jTreeTypes.javascriptCode {
+    return this._toJavascript()
+  }
+
+  toBrowserJavascript(): jTreeTypes.javascriptCode {
+    return this._toJavascript()
+  }
+
+  private _getRootClassName() {
+    return this.getExtensionName() + "Program"
+  }
+
+  private _toJavascript(forNodeJs = true): jTreeTypes.javascriptCode {
+    const nodeTypeClasses = this.getNodeTypeDefinitions()
+      .map(def => def.toJavascript())
+      .join("\n\n")
+
+    const components = [this.getNodeConstructorToJavascript()].filter(code => code)
+    const rootClass = `class ${this._getRootClassName()} extends AbstractRuntimeProgram {
+  getGrammarProgram() {}
+  ${components.join("\n")}
+    }`
+
+    return `${forNodeJs ? 'const jtree = require("jtree")' : ""}
+
+${nodeTypeClasses}
+
+${rootClass}
+
+${forNodeJs ? "module.exports = " + this._getRootClassName() : ""}
+`
+  }
+
   toSublimeSyntaxFile() {
     const types = this.getCellTypeDefinitions()
     const variables = Object.keys(types)
@@ -271,6 +304,7 @@ ${GrammarConstants.cellType} anyWord`
 
     // Expand groups
     // todo: rename? maybe change this to something like "makeNodeTypes"?
+    // todo: where is this used? if we had imports, would that be a better solution?
     const xi = tree.getXI()
     tree.findNodes(`${GrammarConstants.abstract}${xi}${GrammarConstants.group}`).forEach(group => {
       const abstractName = group.getParent().getWord(1)
@@ -281,7 +315,7 @@ ${GrammarConstants.cellType} anyWord`
     })
 
     // todo: only expand certain types.
-    return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.toolDirective)), grammarPath)
+    return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.toolingDirective)), grammarPath)
   }
 
   async loadAllConstructorScripts(baseUrlPath: string): Promise<string[]> {

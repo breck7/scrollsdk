@@ -10,6 +10,8 @@ declare class GrammarDefinitionErrorNode extends TreeNode {
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getNodeTypeIdFromDefinition(): string;
+    getGeneratedClassName(): string;
+    getNodeConstructorToJavascript(): string;
     protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
     protected _isBlobNode(): boolean;
@@ -30,6 +32,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
         [key: string]: GrammarNodeTypeDefinitionNode;
     };
     getRequiredCellTypeNames(): string[];
+    getGetters(): string[];
     getCatchAllCellTypeName(): string | undefined;
     protected _initRunTimeFirstWordToNodeConstructorMap(): void;
     _getNodeTypesInScope(): string[];

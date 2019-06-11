@@ -1121,7 +1121,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return this.getChildren().slice(start, end);
     }
     getFirstWordMap() {
-        return undefined;
+        return {};
     }
     getCatchAllNodeConstructor(line) {
         return this.constructor;
@@ -1142,13 +1142,12 @@ class ImmutableNode extends AbstractNode_node_1.default {
     _getGrandParent() {
         return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent();
     }
-    getNodeConstructor(line) {
-        const map = this.getFirstWordMap();
-        if (!map)
-            return this.getCatchAllNodeConstructor(line);
+    _getFirstWord(line) {
         const firstBreak = line.indexOf(this.getZI());
-        const firstWord = line.substr(0, firstBreak > -1 ? firstBreak : undefined);
-        return map[firstWord] || this.getCatchAllNodeConstructor(line);
+        return line.substr(0, firstBreak > -1 ? firstBreak : undefined);
+    }
+    getNodeConstructor(line) {
+        return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line);
     }
     static _makeUniqueId() {
         if (this._uniqueId === undefined)

@@ -1278,7 +1278,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
-    return undefined
+    return {}
   }
 
   getCatchAllNodeConstructor(line: string) {
@@ -1303,12 +1303,13 @@ class ImmutableNode extends AbstractNode {
     return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
   }
 
-  getNodeConstructor(line: string) {
-    const map = this.getFirstWordMap()
-    if (!map) return this.getCatchAllNodeConstructor(line)
+  protected _getFirstWord(line: string) {
     const firstBreak = line.indexOf(this.getZI())
-    const firstWord = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
-    return map[firstWord] || this.getCatchAllNodeConstructor(line)
+    return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
+  }
+
+  getNodeConstructor(line: string) {
+    return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
   }
 
   private static _uniqueId: int

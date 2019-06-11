@@ -3,10 +3,6 @@ import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
 import jTreeTypes from "../jTreeTypes"
 
 class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
-  getFirstWordMap() {
-    return this.getDefinition().getRunTimeFirstWordMap()
-  }
-
   // todo: implement
   protected _getNodeJoinCharacter() {
     return "\n"

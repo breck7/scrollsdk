@@ -87,9 +87,6 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     getProgramErrorMessages() {
         return this.getProgramErrors().map(err => err.getMessage());
     }
-    getFirstWordMap() {
-        return this.getDefinition().getRunTimeFirstWordMap();
-    }
     getDefinition() {
         return this.getGrammarProgram();
     }

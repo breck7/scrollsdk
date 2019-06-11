@@ -49,6 +49,27 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getNodeTypeIdFromDefinition() {
         return this.getWord(1);
     }
+    getGeneratedClassName() {
+        const id = this.getNodeTypeIdFromDefinition();
+        const safeId = id.replace(/\./g, "_");
+        return `${safeId}Node`;
+    }
+    getNodeConstructorToJavascript() {
+        const nodeMap = this.getRunTimeFirstWordMapWithDefinitions();
+        // if THIS node defines a catch all constructor, use that
+        // IF IT DOES NOT, ADD NOTHING
+        // if THIS node defines a keyword map, use that first
+        // IF IT DOES NOT, ADD NOTHING
+        // CHECK PARENTS TOO
+        const firstWordMap = Object.keys(nodeMap)
+            .map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)
+            .join(",\n");
+        if (firstWordMap)
+            return `getNodeConstructor(line) {
+return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
+  return {${firstWordMap}}
+  }`;
+    }
     _isNonTerminal() {
         return this._isBlobNode() || this.has(GrammarConstants_1.GrammarConstants.nodeTypes) || this.has(GrammarConstants_1.GrammarConstants.catchAllNodeType);
     }
@@ -118,6 +139,17 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getRequiredCellTypeNames() {
         const parameters = this.get(GrammarConstants_1.GrammarConstants.cells);
         return parameters ? parameters.split(" ") : [];
+    }
+    getGetters() {
+        const requireds = this.getRequiredCellTypeNames().map((cellTypeName, index) => `get ${cellTypeName}() {
+      return this.getWord(${index + 1})
+    }`);
+        const catchAllName = this.getCatchAllCellTypeName();
+        if (catchAllName)
+            requireds.push(`get ${catchAllName}() {
+      return this.getWordsFrom(${requireds.length + 1})
+    }`);
+        return requireds;
     }
     getCatchAllCellTypeName() {
         return this.get(GrammarConstants_1.GrammarConstants.catchAllCellType);

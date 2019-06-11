@@ -58,6 +58,8 @@ export namespace jTreeTypes {
   export declare type nodeToStringFn = (node: treeNode) => string
   export declare type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string
   export declare type nodeIdRenameMap = { [oldNodeTypeId: string]: string }
+  export declare type typeScriptCode = string
+  export declare type javascriptCode = string
 
   export declare type children = string | Object | treeNode | any // todo: specify better.
 

@@ -119,5 +119,15 @@ ${captures}
         const val = this.get(GrammarConstants_1.GrammarConstants.frequency);
         return val ? parseFloat(val) : 0;
     }
+    toJavascript() {
+        const ancestorClasses = this.getAncestorNodeTypeNamesArray();
+        const extendsClass = ancestorClasses.length > 1
+            ? this.getNodeTypeDefinitionByName(ancestorClasses[ancestorClasses.length - 2]).getGeneratedClassName()
+            : "jtree.NonTerminalNode";
+        const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code);
+        return `class ${this.getGeneratedClassName()} extends ${extendsClass} {
+      ${components.join("\n")}
+    }`;
+    }
 }
 exports.default = GrammarNodeTypeDefinitionNode;

@@ -27,7 +27,7 @@ var GrammarConstants;
     // node types
     GrammarConstants["grammar"] = "grammar";
     GrammarConstants["extensions"] = "extensions";
-    GrammarConstants["fileDirective"] = "#";
+    GrammarConstants["toolingDirective"] = "tooling";
     GrammarConstants["version"] = "version";
     GrammarConstants["name"] = "name";
     GrammarConstants["nodeTypeOrder"] = "nodeTypeOrder";

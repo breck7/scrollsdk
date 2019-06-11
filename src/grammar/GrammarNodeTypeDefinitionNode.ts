@@ -141,6 +141,20 @@ ${captures}
     const val = this.get(GrammarConstants.frequency)
     return val ? parseFloat(val) : 0
   }
+
+  toJavascript(): jTreeTypes.javascriptCode {
+    const ancestorClasses = this.getAncestorNodeTypeNamesArray()
+    const extendsClass =
+      ancestorClasses.length > 1
+        ? this.getNodeTypeDefinitionByName(ancestorClasses[ancestorClasses.length - 2]).getGeneratedClassName()
+        : "jtree.NonTerminalNode"
+
+    const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code)
+
+    return `class ${this.getGeneratedClassName()} extends ${extendsClass} {
+      ${components.join("\n")}
+    }`
+  }
 }
 
 export default GrammarNodeTypeDefinitionNode

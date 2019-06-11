@@ -16,7 +16,7 @@ grammar
   cellType
   abstract
   nodeType
-  #
+  tool
 cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
@@ -40,7 +40,7 @@ cellType extendedNodeType
 cellType extraWord
  highlightScope invalid
 cellType fileExtension
-cellType fileDirectiveWord
+cellType toolDirectiveWord
  highlightScope comment
 cellType filepath
 cellType float
@@ -88,11 +88,11 @@ abstract abstract.nodeTypeRule
  firstCellType propertyName
  single
 abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
-nodeType #
- description Directives are not part of the language grammar but used for things like preprocessors and compilers. Something like "# onsave {bash command}". Should be at top of file, if present at all.
- catchAllCellType fileDirectiveWord
- firstCellType fileDirectiveWord
- catchAllNodeType #
+nodeType tool
+ description Tool directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tool onsave {bash command}". Should be at top of file, if present at all.
+ catchAllCellType toolDirectiveWord
+ firstCellType toolDirectiveWord
+ catchAllNodeType tool
 nodeType catchAll.constantAny
  catchAllCellType anyWord
  catchAllNodeType catchAll.constantAny

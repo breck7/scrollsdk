@@ -1,7 +1,7 @@
 edge / 2019-06-02
 =================
 - New: getFirstNode method
-- New: added support for directives in Grammar language
+- New: added support for tool directives in Grammar language
 - Breaking: removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
 - Breaking: fromJson is now fromJsonSubset and toJson is now toJsonSubset
 - Breaking: deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.

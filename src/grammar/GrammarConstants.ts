@@ -23,7 +23,7 @@ enum GrammarConstants {
   // node types
   grammar = "grammar",
   extensions = "extensions",
-  fileDirective = "#",
+  toolDirective = "tool",
   version = "version",
   name = "name",
   nodeTypeOrder = "nodeTypeOrder",

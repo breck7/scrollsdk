@@ -9,7 +9,7 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
   }
 
   compile(targetExtension: jTreeTypes.targetLanguageId) {
-    const compiler = this.getCompilerNode(targetExtension)
+    const compiler = this._getCompilerNode(targetExtension)
     const openChildrenString = compiler.getOpenChildrenString()
     const closeChildrenString = compiler.getCloseChildrenString()
 

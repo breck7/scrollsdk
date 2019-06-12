@@ -1,7 +1,6 @@
 import TreeNode from "../base/TreeNode"
 
 import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
-import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface"
 
 import { GrammarConstants } from "./GrammarConstants"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
@@ -10,6 +9,10 @@ import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 import UnknownGrammarProgram from "./UnknownGrammarProgram"
 
 import jTreeTypes from "../jTreeTypes"
+
+interface AbstractRuntimeProgramConstructorInterface {
+  new (code: string): AbstractRuntimeProgram
+}
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {

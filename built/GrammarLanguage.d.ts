@@ -48,6 +48,10 @@ declare enum GrammarConstants {
     frequency = "frequency",
     highlightScope = "highlightScope"
 }
+declare abstract class CompiledLanguageNonRootNode extends TreeNode {
+}
+declare abstract class CompiledLanguageRootNode extends TreeNode {
+}
 declare abstract class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram(): GrammarProgram;
     getNodeConstructor(line: string): Function;
@@ -295,6 +299,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _getFileExtensions;
     toNodeJsJavascript(jtreePath?: string): jTreeTypes.javascriptCode;
     toBrowserJavascript(): jTreeTypes.javascriptCode;
+    private _getProperName;
     private _getRootClassName;
     private _toJavascript;
     toSublimeSyntaxFile(): string;
@@ -306,4 +311,4 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private static _appendScriptOnce;
     private static _appendScript;
 }
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, AbstractRuntimeNode, AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, GrammarBackedBlobNode };
+export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, AbstractRuntimeNode, AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, CompiledLanguageNonRootNode, CompiledLanguageRootNode, GrammarBackedBlobNode };

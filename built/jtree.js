@@ -14,6 +14,8 @@ jtree.NonTerminalNode = GrammarLanguage_1.GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarLanguage_1.GrammarBackedTerminalNode;
 jtree.BlobNode = GrammarLanguage_1.GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarLanguage_1.GrammarProgram;
+jtree.CompiledLanguageRootNode = GrammarLanguage_1.CompiledLanguageRootNode;
+jtree.CompiledLanguageNonRootNode = GrammarLanguage_1.CompiledLanguageNonRootNode;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram_1.default;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode_1.default;
 jtree.getVersion = () => "25.2.0";

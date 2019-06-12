@@ -65,6 +65,12 @@ var GrammarConstants;
     GrammarConstants["highlightScope"] = "highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));
 exports.GrammarConstants = GrammarConstants;
+class CompiledLanguageNonRootNode extends TreeNode_1.default {
+}
+exports.CompiledLanguageNonRootNode = CompiledLanguageNonRootNode;
+class CompiledLanguageRootNode extends TreeNode_1.default {
+}
+exports.CompiledLanguageRootNode = CompiledLanguageRootNode;
 class AbstractRuntimeNode extends TreeNode_1.default {
     // note: this is overwritten by the root node of a runtime grammar program.
     // some of the magic that makes this all work. but maybe there's a better way.
@@ -1450,7 +1456,9 @@ ${captures}
     _toJavascript() {
         const ancestorIds = this.getAncestorNodeTypeIdsArray();
         const extendedNodeTypeId = this._getExtendedNodeTypeId();
-        const extendsClass = extendedNodeTypeId ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId).getGeneratedClassName() : "jtree.NonTerminalNode";
+        const extendsClass = extendedNodeTypeId
+            ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId).getGeneratedClassName()
+            : "jtree.CompiledLanguageNonRootNode";
         const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code);
         return `class ${this.getGeneratedClassName()} extends ${extendsClass} {
       ${components.join("\n")}
@@ -1633,31 +1641,52 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     toBrowserJavascript() {
         return this._toJavascript("", false);
     }
+    _getProperName() {
+        const name = this.getExtensionName();
+        return name.substr(0, 1).toUpperCase() + name.substr(1);
+    }
     _getRootClassName() {
-        return this.getExtensionName() + "Program";
+        return this._getProperName() + "ProgramRoot";
     }
     _toJavascript(jtreePath, forNodeJs = true) {
-        const nodeTypeClasses = this.getNodeTypeDefinitions()
-            .map(def => def._toJavascript())
-            .join("\n\n");
+        const defs = this.getNodeTypeDefinitions();
+        const nodeTypeClasses = defs.map(def => def._toJavascript()).join("\n\n");
+        const constantsName = this._getProperName() + "Constants";
+        const nodeTypeConstants = defs
+            .map(def => {
+            const id = def.getNodeTypeIdFromDefinition();
+            return `${constantsName}.nodeTypes["${id}"] = "${id}"`;
+        })
+            .join("\n");
+        const cellTypeConstants = Object.keys(this.getCellTypeDefinitions())
+            .map(id => {
+            return `${constantsName}.cellTypes["${id}"] = "${id}"`;
+        })
+            .join("\n");
         const components = [this.getNodeConstructorToJavascript()].filter(code => code);
-        const rootClass = `class ${this._getRootClassName()} extends jtree.programRoot {
+        const rootClass = `class ${this._getRootClassName()} extends jtree.CompiledLanguageRootNode {
   getGrammarProgram() {}
   ${components.join("\n")}
     }`;
         return `${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
 
+const ${constantsName} = {}
+${constantsName}.nodeTypes = {}
+${nodeTypeConstants}
+${constantsName}.cellTypes = {}
+${cellTypeConstants}
+
 ${nodeTypeClasses}
 
 ${rootClass}
 
-${forNodeJs ? "module.exports = " + this._getRootClassName() : ""}
+${forNodeJs ? `module.exports = {${constantsName}, ` + this._getRootClassName() + "}" : ""}
 `;
     }
     toSublimeSyntaxFile() {
-        const types = this.getCellTypeDefinitions();
-        const variables = Object.keys(types)
-            .map(name => ` ${name}: '${types[name].getRegexString()}'`)
+        const cellTypeDefs = this.getCellTypeDefinitions();
+        const variables = Object.keys(cellTypeDefs)
+            .map(name => ` ${name}: '${cellTypeDefs[name].getRegexString()}'`)
             .join("\n");
         const defs = this.getNodeTypeDefinitions().filter(kw => !kw._isAbstract());
         const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n");

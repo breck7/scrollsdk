@@ -6,6 +6,8 @@ import {
   AbstractRuntimeProgramRootNode,
   GrammarBackedTerminalNode,
   GrammarBackedNonTerminalNode,
+  CompiledLanguageRootNode,
+  CompiledLanguageNonRootNode,
   GrammarBackedBlobNode
 } from "./GrammarLanguage"
 import UnknownGrammarProgram from "./tools/UnknownGrammarProgram"
@@ -19,6 +21,8 @@ class jtree {
   static TerminalNode = GrammarBackedTerminalNode
   static BlobNode = GrammarBackedBlobNode
   static GrammarProgram = GrammarProgram
+  static CompiledLanguageRootNode = CompiledLanguageRootNode
+  static CompiledLanguageNonRootNode = CompiledLanguageNonRootNode
   static UnknownGrammarProgram = UnknownGrammarProgram
   static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
   static getVersion = () => "25.2.0"

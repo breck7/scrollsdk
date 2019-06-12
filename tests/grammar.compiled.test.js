@@ -15,17 +15,17 @@ const testTree = {}
 
 testTree.grammar = equal => {
   // Arrange
-  const tempFilePath = __dirname + `/../ignore/vms/GrammarProgram.compiled.temp.js`
+  const tempFilePath = __dirname + `/../ignore/vms/GrammarLanguage.compiled.temp.js`
   const jtreePath = __dirname + "/../index.js"
   try {
     fs.writeFileSync(tempFilePath, new GrammarProgram(grammarGrammar, grammarGrammarPath).toNodeJsJavascript(jtreePath), "utf8")
     // fs.writeFileSync(tempFilePath + ".expanded.grammar", GrammarProgram._condensedToExpanded(grammarGrammar), "utf8")
 
     // Act
-    const GrammarProgramCompiled = require(tempFilePath)
+    const { GrammarProgramRoot } = require(tempFilePath)
 
     // Assert
-    equal(!!new GrammarProgramCompiled(), true, "it compiled")
+    equal(!!new GrammarProgramRoot(), true, "it compiled")
   } catch (err) {
     console.error(err)
   } finally {
@@ -35,24 +35,28 @@ testTree.grammar = equal => {
 
 testTree.numbers = equal => {
   // Arrange
-  const tempFilePath = __dirname + `/../ignore/vms/NumbersProgram.compiled.temp.js`
+  const tempFilePath = __dirname + `/../ignore/vms/NumbersLanguage.compiled.temp.js`
   const jtreePath = __dirname + "/../index.js"
   try {
     fs.writeFileSync(tempFilePath, new GrammarProgram(numbersGrammar, numbersPath).toNodeJsJavascript(jtreePath), "utf8")
     // fs.writeFileSync(tempFilePath + ".expanded.grammar", GrammarProgram._condensedToExpanded(numbersGrammar), "utf8")
 
     // Act
-    const Program = require(tempFilePath)
+    const { NumbersProgramRoot, NumbersConstants } = require(tempFilePath)
 
     // Assert
-    equal(!!new Program(), true, "it compiled")
+    equal(!!new NumbersProgramRoot(), true, "it compiled")
 
     // Arrange
-    program = new Program(`+ 2 3
+    const program = new NumbersProgramRoot(`+ 2 3
 * 2 3 10`)
 
     // Act/Assert
-    equal(program.executeSync().join(" "), "5 60")
+    equal(NumbersConstants.cellTypes.float, "float", "constants generation works")
+    equal(NumbersConstants.nodeTypes.comment, "comment", "constants generation works")
+    equal(program.nodeAt(0).numbers.length, 2, "cell getters work")
+    equal(program.nodeAt(0).numbers[0], 2, "typings work")
+    equal(program.executeSync().join(" "), "5 60", "execute works")
 
     // [] cell typings
     // [] cell constants

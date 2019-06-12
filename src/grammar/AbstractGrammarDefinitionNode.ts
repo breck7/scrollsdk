@@ -207,11 +207,6 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
       })
   }
 
-  private _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
-    const nodeTypesNode = this._getInScopeNode()
-    return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
-  }
-
   getTopNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const definitions = this._getProgramNodeTypeDefinitionCache()
     const firstWords = this.getRunTimeFirstWordMap()
@@ -221,9 +216,16 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
 
-  protected _getInScopeNode(): TreeNode {
+  protected _getParentDefinition(): AbstractGrammarDefinitionNode {
+    return undefined
+  }
+
+  private _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     // todo: allow multiple of these if we allow mixins?
-    return <TreeNode>this.getNode(GrammarConstants.inScope)
+    const nodeTypesNode = this.getNode(GrammarConstants.inScope)
+    const ids = nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
+    const parentDef = this._getParentDefinition()
+    return parentDef ? ids.concat(parentDef._getInScopeNodeTypeIds()) : ids
   }
 
   isRequired(): boolean {
@@ -239,7 +241,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return ""
   }
 
-  // todo: byName or byId?
+  // todo: should this be byName? should this be byFirstWordPath?
   getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode {
     const definitions = this._getProgramNodeTypeDefinitionCache()
     return definitions[firstWord] || this._getCatchAllDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.

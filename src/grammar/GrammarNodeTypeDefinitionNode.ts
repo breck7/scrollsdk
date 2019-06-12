@@ -38,6 +38,11 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     return cellTypeDefinition.getHighlightScope()
   }
 
+  protected _getParentDefinition(): AbstractGrammarDefinitionNode {
+    const extendsId = this._getExtendedNodeTypeId()
+    return extendsId ? this.getNodeTypeDefinitionByName(extendsId) : undefined
+  }
+
   getMatchBlock() {
     const defaultHighlightScope = "source"
     const program = this.getProgram()
@@ -135,10 +140,15 @@ ${captures}
     return val ? parseFloat(val) : 0
   }
 
+  private _getExtendedNodeTypeId(): jTreeTypes.nodeTypeId {
+    const ancestorIds = this.getAncestorNodeTypeIdsArray()
+    if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
+  }
+
   toJavascript(): jTreeTypes.javascriptCode {
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
-    const extendsClass =
-      ancestorIds.length > 1 ? this.getNodeTypeDefinitionByName(ancestorIds[ancestorIds.length - 2]).getGeneratedClassName() : "jtree.NonTerminalNode"
+    const extendedNodeTypeId = this._getExtendedNodeTypeId()
+    const extendsClass = extendedNodeTypeId ? this.getNodeTypeDefinitionByName(extendedNodeTypeId).getGeneratedClassName() : "jtree.NonTerminalNode"
 
     const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code)
 

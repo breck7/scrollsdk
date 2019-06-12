@@ -530,6 +530,7 @@ class AbstractGrammarBackedCell {
         return this._word === undefined ? new MissingWordError(this) : new InvalidWordError(this);
     }
 }
+AbstractGrammarBackedCell.parserFunctionName = "";
 class GrammarIntCell extends AbstractGrammarBackedCell {
     _isValid() {
         const num = parseInt(this._word);
@@ -544,6 +545,7 @@ class GrammarIntCell extends AbstractGrammarBackedCell {
         return parseInt(this._word);
     }
 }
+GrammarIntCell.parserFunctionName = "parseInt";
 class GrammarBitCell extends AbstractGrammarBackedCell {
     _isValid() {
         const str = this._word;
@@ -568,6 +570,7 @@ class GrammarFloatCell extends AbstractGrammarBackedCell {
         return parseFloat(this._word);
     }
 }
+GrammarFloatCell.parserFunctionName = "parseFloat";
 // ErrorCellType => grammar asks for a '' cell type here but the grammar does not specify a '' cell type. (todo: bring in didyoumean?)
 class GrammarBoolCell extends AbstractGrammarBackedCell {
     constructor() {
@@ -899,6 +902,21 @@ class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
         types[GrammarConstants.highlightScope] = TreeNode_1.default;
         return types;
     }
+    getGetter(wordIndex) {
+        const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName;
+        return `get ${this.getCellTypeId()}() {
+      return ${wordToNativeJavascriptTypeParser ? wordToNativeJavascriptTypeParser + `(this.getWord(${wordIndex}))` : `this.getWord(${wordIndex})`}
+    }`;
+    }
+    getCatchAllGetter(wordIndex) {
+        const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName;
+        return `get ${this.getCellTypeId()}() {
+      return ${wordToNativeJavascriptTypeParser
+            ? `this.getWordsFrom(${wordIndex}).map(val => ${wordToNativeJavascriptTypeParser}(val))`
+            : `this.getWordsFrom(${wordIndex})`}
+    }`;
+    }
+    // `this.getWordsFrom(${requireds.length + 1})`
     // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
     getCellConstructor() {
         const kinds = {};
@@ -1253,14 +1271,12 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return parameters ? parameters.split(" ") : [];
     }
     getGetters() {
-        const requireds = this.getRequiredCellTypeIds().map((cellTypeId, index) => `get ${cellTypeId}() {
-      return this.getWord(${index + 1})
-    }`);
+        // todo: add cellType parsings
+        const grammarProgram = this.getProgram();
+        const requireds = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1));
         const catchAllCellTypeId = this.getCatchAllCellTypeId();
         if (catchAllCellTypeId)
-            requireds.push(`get ${catchAllCellTypeId}() {
-      return this.getWordsFrom(${requireds.length + 1})
-    }`);
+            requireds.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(requireds.length + 1));
         return requireds;
     }
     getCatchAllCellTypeId() {
@@ -1574,6 +1590,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     getGrammarName() {
         return this._getGrammarRootNode().get(GrammarConstants.name);
     }
+    _getMyInScopeNodeTypeIds() {
+        const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants.inScope);
+        return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
+    }
     _getInScopeNodeTypeIds() {
         const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants.inScope);
         return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
@@ -1643,7 +1663,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
     // todo: have this here or not?
     toNodeJsJavascriptPrettier(jtreePath = "jtree") {
-        return require("prettier").format(this._toJavascript(jtreePath, true), { semi: false });
+        return require("prettier").format(this._toJavascript(jtreePath, true), { semi: false, parser: "babel" });
     }
     toBrowserJavascript() {
         return this._toJavascript("", false);

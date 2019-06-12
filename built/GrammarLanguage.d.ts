@@ -140,6 +140,7 @@ declare abstract class AbstractGrammarBackedCell<T> {
     private _isCatchAll;
     private _cellTypeId;
     getCellTypeId(): string;
+    static parserFunctionName: string;
     getNode(): any;
     getCellIndex(): number;
     private _getProgram;
@@ -161,7 +162,9 @@ declare abstract class AbstractGrammarBackedCell<T> {
 }
 declare class GrammarCellTypeDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.stringMap;
-    getCellConstructor(): any;
+    getGetter(wordIndex: number): string;
+    getCatchAllGetter(wordIndex: number): string;
+    getCellConstructor(): typeof AbstractGrammarBackedCell;
     getHighlightScope(): string | undefined;
     private _getEnumOptions;
     private _getEnumFromGrammarOptions;
@@ -282,6 +285,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     protected _getGrammarRootNode(): GrammarRootNode;
     getExtensionName(): string;
     getGrammarName(): string | undefined;
+    protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     private _cachedDefinitions;
     getNodeTypeDefinitionByFirstWordPath(firstWordPath: string): AbstractGrammarDefinitionNode;

@@ -554,6 +554,8 @@ abstract class AbstractGrammarBackedCell<T> {
     return this._cellTypeId
   }
 
+  static parserFunctionName = ""
+
   getNode() {
     return this._node
   }
@@ -642,6 +644,8 @@ class GrammarIntCell extends AbstractGrammarBackedCell<number> {
   getParsed() {
     return parseInt(this._word)
   }
+
+  static parserFunctionName = "parseInt"
 }
 
 class GrammarBitCell extends AbstractGrammarBackedCell<boolean> {
@@ -672,6 +676,8 @@ class GrammarFloatCell extends AbstractGrammarBackedCell<number> {
   getParsed() {
     return parseFloat(this._word)
   }
+
+  static parserFunctionName = "parseFloat"
 }
 
 // ErrorCellType => grammar asks for a '' cell type here but the grammar does not specify a '' cell type. (todo: bring in didyoumean?)
@@ -1085,8 +1091,28 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return types
   }
 
+  getGetter(wordIndex: number) {
+    const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
+    return `get ${this.getCellTypeId()}() {
+      return ${wordToNativeJavascriptTypeParser ? wordToNativeJavascriptTypeParser + `(this.getWord(${wordIndex}))` : `this.getWord(${wordIndex})`}
+    }`
+  }
+
+  getCatchAllGetter(wordIndex: number) {
+    const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
+    return `get ${this.getCellTypeId()}() {
+      return ${
+        wordToNativeJavascriptTypeParser
+          ? `this.getWordsFrom(${wordIndex}).map(val => ${wordToNativeJavascriptTypeParser}(val))`
+          : `this.getWordsFrom(${wordIndex})`
+      }
+    }`
+  }
+
+  // `this.getWordsFrom(${requireds.length + 1})`
+
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
-  getCellConstructor() {
+  getCellConstructor(): typeof AbstractGrammarBackedCell {
     const kinds: jTreeTypes.stringMap = {}
     kinds[GrammarStandardCellTypeIds.any] = GrammarAnyCell
     kinds[GrammarStandardCellTypeIds.anyFirstWord] = GrammarAnyCell
@@ -1502,17 +1528,12 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getGetters() {
-    const requireds = this.getRequiredCellTypeIds().map(
-      (cellTypeId, index) => `get ${cellTypeId}() {
-      return this.getWord(${index + 1})
-    }`
-    )
+    // todo: add cellType parsings
+    const grammarProgram = this.getProgram()
+    const requireds = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1))
 
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
-    if (catchAllCellTypeId)
-      requireds.push(`get ${catchAllCellTypeId}() {
-      return this.getWordsFrom(${requireds.length + 1})
-    }`)
+    if (catchAllCellTypeId) requireds.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(requireds.length + 1))
 
     return requireds
   }
@@ -1888,6 +1909,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().get(GrammarConstants.name)
   }
 
+  protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+    const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants.inScope)
+    return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
+  }
+
   protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
@@ -1976,7 +2002,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   // todo: have this here or not?
   toNodeJsJavascriptPrettier(jtreePath = "jtree"): jTreeTypes.javascriptCode {
-    return require("prettier").format(this._toJavascript(jtreePath, true), { semi: false })
+    return require("prettier").format(this._toJavascript(jtreePath, true), { semi: false, parser: "babel" })
   }
 
   toBrowserJavascript(): jTreeTypes.javascriptCode {

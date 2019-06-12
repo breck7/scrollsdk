@@ -297,6 +297,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _getFileExtensions;
     toNodeJsJavascript(jtreePath?: string): jTreeTypes.javascriptCode;
+    toNodeJsJavascriptPrettier(jtreePath?: string): jTreeTypes.javascriptCode;
     toBrowserJavascript(): jTreeTypes.javascriptCode;
     private _getProperName;
     private _getRootClassName;

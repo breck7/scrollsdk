@@ -1974,6 +1974,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._toJavascript(jtreePath, true)
   }
 
+  // todo: have this here or not?
+  toNodeJsJavascriptPrettier(jtreePath = "jtree"): jTreeTypes.javascriptCode {
+    return require("prettier").format(this._toJavascript(jtreePath, true), { semi: false })
+  }
+
   toBrowserJavascript(): jTreeTypes.javascriptCode {
     return this._toJavascript("", false)
   }

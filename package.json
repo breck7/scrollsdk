@@ -28,6 +28,7 @@
     "@types/node": "^11.13.12",
     "express": "*",
     "glob": "^7.1.4",
+    "prettier": "^1.18.2",
     "recursive-readdir-sync": "*",
     "semver": "^6.1.1",
     "tap": "^14.2.0",

@@ -195,7 +195,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
       .filter(i => i)
 
     const firstWord = this.getFirstWord()
-    if (this.getDefinition()._shouldBeJustOne())
+    if (this.getDefinition().has(GrammarConstants.single))
       this.getParent()
         .findNodes(firstWord)
         .forEach((node, index) => {
@@ -1558,10 +1558,6 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.required)
   }
 
-  _shouldBeJustOne(): boolean {
-    return this.has(GrammarConstants.single)
-  }
-
   // todo: protected?
   _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId {
     return ""
@@ -1599,8 +1595,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()]
   }
 
-  // todo: protected?
-  _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: GrammarNodeTypeDefinitionNode } {
+  protected _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: GrammarNodeTypeDefinitionNode } {
     return this.getProgram()._getProgramNodeTypeDefinitionCache()
   }
 
@@ -1928,18 +1923,16 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     })
   }
 
-  // todo: protected?
   _getProgramNodeTypeDefinitionCache() {
     this._initProgramNodeTypeDefinitionCache()
     return this._cache_nodeTypeDefinitions
   }
 
-  // todo: protected?
   _getRunTimeCatchAllNodeTypeId(): string {
     return this._getGrammarRootNode().get(GrammarConstants.catchAllNodeType)
   }
 
-  protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
+  private _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
     const extendedConstructor: any = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgramRootNode
     const grammarProgram = this
 

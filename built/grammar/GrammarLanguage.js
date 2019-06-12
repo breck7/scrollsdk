@@ -167,7 +167,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
             .map(check => check.getErrorIfAny())
             .filter(i => i);
         const firstWord = this.getFirstWord();
-        if (this.getDefinition()._shouldBeJustOne())
+        if (this.getDefinition().has(GrammarConstants.single))
             this.getParent()
                 .findNodes(firstWord)
                 .forEach((node, index) => {
@@ -1294,9 +1294,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     isRequired() {
         return this.has(GrammarConstants.required);
     }
-    _shouldBeJustOne() {
-        return this.has(GrammarConstants.single);
-    }
     // todo: protected?
     _getRunTimeCatchAllNodeTypeId() {
         return "";
@@ -1328,7 +1325,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     isDefined(nodeTypeId) {
         return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()];
     }
-    // todo: protected?
     _getProgramNodeTypeDefinitionCache() {
         return this.getProgram()._getProgramNodeTypeDefinitionCache();
     }
@@ -1600,12 +1596,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             this._cache_nodeTypeDefinitions[nodeTypeDefinitionNode.getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode;
         });
     }
-    // todo: protected?
     _getProgramNodeTypeDefinitionCache() {
         this._initProgramNodeTypeDefinitionCache();
         return this._cache_nodeTypeDefinitions;
     }
-    // todo: protected?
     _getRunTimeCatchAllNodeTypeId() {
         return this._getGrammarRootNode().get(GrammarConstants.catchAllNodeType);
     }

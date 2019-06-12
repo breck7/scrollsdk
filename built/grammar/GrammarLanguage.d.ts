@@ -214,7 +214,6 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     isRequired(): boolean;
-    _shouldBeJustOne(): boolean;
     _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId;
     getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode;
     _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode;
@@ -222,7 +221,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _initCatchAllNodeConstructorCache(): void;
     getFirstCellTypeId(): jTreeTypes.cellTypeId;
     isDefined(nodeTypeId: string): boolean;
-    _getProgramNodeTypeDefinitionCache(): {
+    protected _getProgramNodeTypeDefinitionCache(): {
         [nodeTypeId: string]: GrammarNodeTypeDefinitionNode;
     };
     getRunTimeCatchAllNodeConstructor(): Function;
@@ -288,7 +287,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
         [nodeTypeId: string]: GrammarNodeTypeDefinitionNode;
     };
     _getRunTimeCatchAllNodeTypeId(): string;
-    protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
+    private _getRootConstructor;
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _getFileExtensions;

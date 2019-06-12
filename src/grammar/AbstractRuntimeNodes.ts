@@ -6,8 +6,7 @@ import jTreeTypes from "../jTreeTypes"
 import { AbstractGrammarBackedCell, GrammarUnknownCellTypeCell, GrammarExtraWordCellTypeCell } from "./GrammarBackedCell"
 import { UnknownNodeTypeError, NodeTypeUsedMultipleTimesError, MissingRequiredNodeTypeError, BlankLineError } from "./TreeErrorTypes"
 
-/*FOR_TYPES_ONLY*/ import { AbstractGrammarDefinitionNode, GrammarNodeTypeDefinitionNode, GrammarProgram } from "./NodeDefinitionNodes"
-/*FOR_TYPES_ONLY*/ import GrammarCompilerNode from "./GrammarCompilerNode"
+/*FOR_TYPES_ONLY*/ import { AbstractGrammarDefinitionNode, GrammarNodeTypeDefinitionNode, GrammarProgram, GrammarCompilerNode } from "./NodeDefinitionNodes"
 
 abstract class AbstractRuntimeNode extends TreeNode {
   // note: this is overwritten by the root node of a runtime grammar program.

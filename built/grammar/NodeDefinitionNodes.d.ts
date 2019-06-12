@@ -1,5 +1,4 @@
 import TreeNode from "../base/TreeNode";
-import GrammarCompilerNode from "./GrammarCompilerNode";
 import jTreeTypes from "../jTreeTypes";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface";
@@ -8,6 +7,15 @@ declare class GrammarDefinitionErrorNode extends TreeNode {
     getLineCellTypes(): string;
 }
 declare class GrammarExampleNode extends TreeNode {
+}
+declare class GrammarCompilerNode extends TreeNode {
+    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
+    getTargetExtension(): string;
+    getListDelimiter(): string;
+    getTransformation(): string;
+    getIndentCharacter(): string;
+    getOpenChildrenString(): string;
+    getCloseChildrenString(): string;
 }
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
@@ -133,4 +141,4 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private static _appendScriptOnce;
     private static _appendScript;
 }
-export { AbstractGrammarDefinitionNode, GrammarNodeTypeDefinitionNode, GrammarProgram };
+export { AbstractGrammarDefinitionNode, GrammarNodeTypeDefinitionNode, GrammarProgram, GrammarCompilerNode };

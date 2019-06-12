@@ -2,8 +2,7 @@ import TreeNode from "../base/TreeNode";
 import jTreeTypes from "../jTreeTypes";
 import { AbstractGrammarBackedCell } from "./GrammarBackedCell";
 import { UnknownNodeTypeError } from "./TreeErrorTypes";
-import { AbstractGrammarDefinitionNode, GrammarNodeTypeDefinitionNode, GrammarProgram } from "./NodeDefinitionNodes";
-import GrammarCompilerNode from "./GrammarCompilerNode";
+import { AbstractGrammarDefinitionNode, GrammarNodeTypeDefinitionNode, GrammarProgram, GrammarCompilerNode } from "./NodeDefinitionNodes";
 declare abstract class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram(): GrammarProgram;
     getNodeConstructor(line: string): Function;

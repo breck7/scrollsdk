@@ -17,8 +17,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     }
     getDefinition() {
         // todo: do we need a relative to with this firstWord path?
-        console.log(this.getFirstWordPath());
-        return this._getNodeTypeDefinitionByName(this.getFirstWordPath());
+        return this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath());
     }
     getConstantsObject() {
         return this.getDefinition().getConstantsObject();

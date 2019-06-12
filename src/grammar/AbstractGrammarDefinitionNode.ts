@@ -245,9 +245,9 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return ""
   }
 
-  getNodeTypeDefinitionByNodeTypeId(firstWord: string): AbstractGrammarDefinitionNode {
+  getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode {
     const definitions = this._getProgramNodeTypeDefinitionCache()
-    return definitions[firstWord] || this._getCatchAllNodeTypeDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.
+    return definitions[nodeTypeId] || this._getCatchAllNodeTypeDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.
   }
 
   _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode {
@@ -273,12 +273,12 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return this.get(GrammarConstants.firstCellType) || GrammarStandardCellTypes.anyFirstWord
   }
 
-  isDefined(firstWord: string) {
-    return !!this._getProgramNodeTypeDefinitionCache()[firstWord.toLowerCase()]
+  isDefined(nodeTypeId: string) {
+    return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()]
   }
 
   // todo: protected?
-  _getProgramNodeTypeDefinitionCache(): { [firstWord: string]: GrammarNodeTypeDefinitionNode } {
+  _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: GrammarNodeTypeDefinitionNode } {
     return this.getProgram()._getProgramNodeTypeDefinitionCache()
   }
 

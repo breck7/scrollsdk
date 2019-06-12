@@ -41,7 +41,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     isRequired(): boolean;
     _shouldBeJustOne(): boolean;
     _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId;
-    getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode;
+    getNodeTypeDefinitionByNodeTypeId(firstWord: string): AbstractGrammarDefinitionNode;
     _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): void;

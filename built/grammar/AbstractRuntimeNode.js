@@ -44,7 +44,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
             };
         });
     }
-    _getNodeTypeDefinitionByName(path) {
+    _getNodeTypeDefinitionByFirstWordPath(path) {
         // todo: do we need a relative to with this firstWord path?
         return this.getProgram()
             .getGrammarProgram()

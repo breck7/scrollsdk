@@ -198,8 +198,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     _getRunTimeCatchAllNodeTypeId() {
         return "";
     }
-    // todo: should this be byName? should this be byFirstWordPath?
-    getNodeTypeDefinitionByName(firstWord) {
+    getNodeTypeDefinitionByNodeTypeId(firstWord) {
         const definitions = this._getProgramNodeTypeDefinitionCache();
         return definitions[firstWord] || this._getCatchAllNodeTypeDefinition(); // todo: this is where we might do some type of firstWord lookup for user defined fns.
     }

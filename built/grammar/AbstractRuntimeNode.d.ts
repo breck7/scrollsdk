@@ -17,7 +17,7 @@ declare abstract class AbstractRuntimeNode extends TreeNode {
     private _getAutocompleteResultsForCell;
     private _getAutocompleteResultsForFirstWord;
     abstract getDefinition(): AbstractGrammarDefinitionNode;
-    protected _getNodeTypeDefinitionByName(path: string): AbstractGrammarDefinitionNode;
+    protected _getNodeTypeDefinitionByFirstWordPath(path: string): AbstractGrammarDefinitionNode;
     protected _getRequiredNodeErrors(errors?: jTreeTypes.TreeError[]): jTreeTypes.TreeError[];
 }
 export default AbstractRuntimeNode;

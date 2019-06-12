@@ -2104,7 +2104,6 @@ ${GrammarConstants.cellType} anyWord`
   }
 }
 
-// export constants
 export {
   GrammarConstants,
   GrammarStandardCellTypeIds,

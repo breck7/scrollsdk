@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const AbstractRuntimeNonRootNode_1 = require("./AbstractRuntimeNonRootNode");
+const AbstractRuntimeNodes_1 = require("./AbstractRuntimeNodes");
 const TreeErrorTypes_1 = require("./TreeErrorTypes");
-class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode_1.default {
+class GrammarBackedErrorNode extends AbstractRuntimeNodes_1.AbstractRuntimeNonRootNode {
     getLineCellTypes() {
         return "error ".repeat(this.getWords().length).trim();
     }

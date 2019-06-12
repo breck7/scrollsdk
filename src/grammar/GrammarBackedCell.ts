@@ -3,8 +3,7 @@ import { GrammarConstants } from "./GrammarConstants"
 import jTreeTypes from "../jTreeTypes"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
-/*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
-/*FOR_TYPES_ONLY*/ import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
+/*FOR_TYPES_ONLY*/ import { AbstractRuntimeProgramRootNode, AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes"
 /*FOR_TYPES_ONLY*/ import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 
 import { InvalidWordError, MissingWordError, ExtraWordError, UnknownCellTypeError } from "./TreeErrorTypes"
@@ -43,7 +42,7 @@ abstract class AbstractGrammarBackedCell<T> {
   }
 
   private _getProgram() {
-    return <AbstractRuntimeProgram>this.getNode().getProgram()
+    return <AbstractRuntimeProgramRootNode>this.getNode().getProgram()
   }
 
   isCatchAll() {

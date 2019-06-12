@@ -1,4 +1,4 @@
-import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
+import { AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes";
 import { UnknownNodeTypeError } from "./TreeErrorTypes";
 declare class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
     getLineCellTypes(): string;

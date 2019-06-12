@@ -1,6 +1,6 @@
 import jTreeTypes from "../jTreeTypes";
 import TreeNode from "../base/TreeNode";
-import AbstractRuntimeNode from "./AbstractRuntimeNode";
+import { AbstractRuntimeNode } from "./AbstractRuntimeNodes";
 import { AbstractGrammarBackedCell } from "./GrammarBackedCell";
 declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
     constructor(node: AbstractRuntimeNode | TreeNode);

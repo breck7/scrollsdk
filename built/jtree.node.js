@@ -13,7 +13,6 @@ jtreeNode.executeFiles = (programPaths, grammarPath) => {
     return programPaths.map(programPath => new programConstructor(fs.readFileSync(programPath, "utf8")).execute(programPath));
 };
 jtreeNode.executeFileSync = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath);
-// returns AbstractRuntimeProgram
 jtreeNode.makeProgram = (programPath, grammarPath) => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath);
     return new programConstructor(fs.readFileSync(programPath, "utf8"));

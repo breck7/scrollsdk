@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const AbstractRuntimeNonRootNode_1 = require("./AbstractRuntimeNonRootNode");
-class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode_1.default {
+const AbstractRuntimeNodes_1 = require("./AbstractRuntimeNodes");
+class GrammarBackedNonTerminalNode extends AbstractRuntimeNodes_1.AbstractRuntimeNonRootNode {
     // todo: implement
     _getNodeJoinCharacter() {
         return "\n";

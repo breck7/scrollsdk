@@ -1,4 +1,4 @@
-import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
+import { AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes"
 
 import jTreeTypes from "../jTreeTypes"
 

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeUtils_1 = require("./base/TreeUtils");
 const TreeNode_1 = require("./base/TreeNode");
-const AbstractRuntimeProgram_1 = require("./grammar/AbstractRuntimeProgram");
+const AbstractRuntimeNodes_1 = require("./grammar/AbstractRuntimeNodes");
 const GrammarBackedNonTerminalNode_1 = require("./grammar/GrammarBackedNonTerminalNode");
 const GrammarBackedTerminalNode_1 = require("./grammar/GrammarBackedTerminalNode");
 const GrammarBackedBlobNode_1 = require("./grammar/GrammarBackedBlobNode");
@@ -11,7 +11,7 @@ const UnknownGrammarProgram_1 = require("./grammar/UnknownGrammarProgram");
 const TreeNotationCodeMirrorMode_1 = require("./grammar/TreeNotationCodeMirrorMode");
 class jtree {
 }
-jtree.programRoot = AbstractRuntimeProgram_1.default;
+jtree.programRoot = AbstractRuntimeNodes_1.AbstractRuntimeProgramRootNode;
 jtree.Utils = TreeUtils_1.default;
 jtree.TreeNode = TreeNode_1.default;
 jtree.NonTerminalNode = GrammarBackedNonTerminalNode_1.default;

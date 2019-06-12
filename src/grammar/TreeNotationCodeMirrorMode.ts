@@ -1,7 +1,7 @@
 import jTreeTypes from "../jTreeTypes"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
-/*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+/*FOR_TYPES_ONLY*/ import { AbstractRuntimeProgramRootNode } from "./AbstractRuntimeNodes"
 /* Used for Types Only, but we want this line to remain in the combined intermediate TS program */ import * as CodeMirrorLib from "codemirror"
 
 interface treeNotationCodeMirrorState {
@@ -30,7 +30,7 @@ class TreeNotationCodeMirrorMode {
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
-  _getParsedProgram(): AbstractRuntimeProgram {
+  _getParsedProgram(): AbstractRuntimeProgramRootNode {
     const source = this._getProgramCodeMethod(this._cmInstance) || ""
     if (!this._cachedProgram || this._cachedSource !== source) {
       this._cachedSource = source

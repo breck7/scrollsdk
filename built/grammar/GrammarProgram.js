@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
-const AbstractRuntimeProgram_1 = require("./AbstractRuntimeProgram");
+const AbstractRuntimeNodes_1 = require("./AbstractRuntimeNodes");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
 const GrammarNodeTypeDefinitionNode_1 = require("./GrammarNodeTypeDefinitionNode");
@@ -155,7 +155,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.catchAllNodeType);
     }
     _getRootConstructor() {
-        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram_1.default;
+        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeNodes_1.AbstractRuntimeProgramRootNode;
         const grammarProgram = this;
         // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
         // new language.

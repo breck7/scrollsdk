@@ -1,4 +1,4 @@
-import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
+import { AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes";
 import jTreeTypes from "../jTreeTypes";
 declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     protected _getNodeJoinCharacter(): string;

@@ -1,4 +1,4 @@
-import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
+import { AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes"
 import { GrammarConstants } from "./GrammarConstants"
 import { UnknownNodeTypeError, BlankLineError } from "./TreeErrorTypes"
 import jTreeTypes from "../jTreeTypes"

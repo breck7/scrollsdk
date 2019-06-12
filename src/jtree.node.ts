@@ -3,7 +3,7 @@ const fs = require("fs")
 import jtree from "./jtree"
 import jTreeTypes from "./jTreeTypes"
 import GrammarProgram from "./grammar/GrammarProgram"
-import AbstractRuntimeProgram from "./grammar/AbstractRuntimeProgram"
+import { AbstractRuntimeProgramRootNode } from "./grammar/AbstractRuntimeNodes"
 import Upgrader from "./grammar/Upgrader"
 
 class jtreeNode extends jtree {
@@ -20,8 +20,7 @@ class jtreeNode extends jtree {
   static executeFileSync = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): any =>
     jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 
-  // returns AbstractRuntimeProgram
-  static makeProgram = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): AbstractRuntimeProgram => {
+  static makeProgram = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): AbstractRuntimeProgramRootNode => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }

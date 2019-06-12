@@ -1,12 +1,11 @@
 import TreeNode from "../base/TreeNode"
 
-import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+import { AbstractRuntimeProgramRootNode } from "./AbstractRuntimeNodes"
 
 import { GrammarConstants } from "./GrammarConstants"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
-import UnknownGrammarProgram from "./UnknownGrammarProgram"
 
 import jTreeTypes from "../jTreeTypes"
 
@@ -198,7 +197,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
-    const extendedConstructor: any = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram
+    const extendedConstructor: any = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgramRootNode
     const grammarProgram = this
 
     // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your

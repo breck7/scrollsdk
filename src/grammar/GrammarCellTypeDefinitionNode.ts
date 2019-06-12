@@ -6,7 +6,7 @@ import jTreeTypes from "../jTreeTypes"
 
 // todo: add standard types, enum types, from disk types
 
-/*FOR_TYPES_ONLY*/ import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+/*FOR_TYPES_ONLY*/ import { AbstractRuntimeProgramRootNode } from "./AbstractRuntimeNodes"
 
 abstract class AbstractGrammarWordTestNode extends TreeNode {
   abstract isValid(str: string, program?: any): boolean
@@ -23,7 +23,7 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
-  _getEnumFromGrammar(runTimeGrammarBackedProgram: AbstractRuntimeProgram): jTreeTypes.stringMap {
+  _getEnumFromGrammar(runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode): jTreeTypes.stringMap {
     const nodeTypes = this.getWordsFrom(1)
     const enumGroup = nodeTypes.join(" ")
     // note: hack where we store it on the program. otherwise has global effects.
@@ -40,7 +40,7 @@ class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
   }
 
   // todo: remove
-  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram) {
+  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode) {
     return this._getEnumFromGrammar(runTimeGrammarBackedProgram)[str] === true
   }
 }
@@ -97,12 +97,12 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return options
   }
 
-  private _getEnumFromGrammarOptions(runTimeProgram: AbstractRuntimeProgram) {
+  private _getEnumFromGrammarOptions(runTimeProgram: AbstractRuntimeProgramRootNode) {
     const node = <EnumFromGrammarTestNode>this.getNode(GrammarConstants.enumFromGrammar)
     return node ? Object.keys(node._getEnumFromGrammar(runTimeProgram)) : undefined
   }
 
-  getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgram): string[] {
+  getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgramRootNode): string[] {
     return this._getEnumOptions() || this._getEnumFromGrammarOptions(runTimeProgram) || []
   }
 
@@ -112,7 +112,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
 
-  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram) {
+  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode) {
     return this.getChildrenByNodeConstructor(AbstractGrammarWordTestNode).every(node =>
       (<AbstractGrammarWordTestNode>node).isValid(str, runTimeGrammarBackedProgram)
     )

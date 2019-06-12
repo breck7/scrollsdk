@@ -1,5 +1,5 @@
 import jTreeTypes from "../jTreeTypes";
-import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
+import { AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 declare abstract class AbstractGrammarBackedCell<T> {
     constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean);

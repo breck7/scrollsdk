@@ -2,8 +2,7 @@ import jTreeTypes from "../jTreeTypes"
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
-/*FOR_TYPES_ONLY*/ import AbstractRuntimeNode from "./AbstractRuntimeNode"
-/*FOR_TYPES_ONLY*/ import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode"
+/*FOR_TYPES_ONLY*/ import { AbstractRuntimeNode, AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes"
 /*FOR_TYPES_ONLY*/ import { AbstractGrammarBackedCell } from "./GrammarBackedCell"
 
 abstract class AbstractTreeError implements jTreeTypes.TreeError {

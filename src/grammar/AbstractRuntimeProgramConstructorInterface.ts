@@ -1,7 +1,7 @@
-import AbstractRuntimeProgram from "./AbstractRuntimeProgram"
+import { AbstractRuntimeProgramRootNode } from "./AbstractRuntimeNodes"
 
 interface AbstractRuntimeProgramConstructorInterface {
-  new (code: string): AbstractRuntimeProgram
+  new (code: string): AbstractRuntimeProgramRootNode
 }
 
 export default AbstractRuntimeProgramConstructorInterface

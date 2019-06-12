@@ -238,7 +238,7 @@ ${GrammarConstants_1.GrammarConstants.nodeType} anyNode
  ${GrammarConstants_1.GrammarConstants.firstCellType} anyWord
 ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
     }
-    static newFromCondensed(grammarCode, grammarPath) {
+    static _condensedToExpanded(grammarCode) {
         // todo: handle imports
         const tree = new TreeNode_1.default(grammarCode);
         // Expand groups
@@ -254,7 +254,11 @@ ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
         });
         // todo: only expand certain types.
         // inScope should be a set.
-        return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.toolingDirective)), grammarPath);
+        tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.toolingDirective));
+        return tree;
+    }
+    static newFromCondensed(grammarCode, grammarPath) {
+        return new GrammarProgram(this._condensedToExpanded(grammarCode), grammarPath);
     }
     async loadAllConstructorScripts(baseUrlPath) {
         if (!this.isBrowser())

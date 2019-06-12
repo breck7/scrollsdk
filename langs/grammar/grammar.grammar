@@ -225,4 +225,4 @@ nodeType inScope abstract.nodeTypeRule
 nodeType abstract nodeType
  firstCellType abstractConstant
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
- inScope abstract.nodeTypeRule group
+ inScope group

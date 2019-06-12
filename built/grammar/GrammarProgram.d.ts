@@ -50,6 +50,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _toJavascript;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
+    static _condensedToExpanded(grammarCode: string): TreeNode;
     static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath): GrammarProgram;
     loadAllConstructorScripts(baseUrlPath: string): Promise<string[]>;
     private static _scriptLoadingPromises;

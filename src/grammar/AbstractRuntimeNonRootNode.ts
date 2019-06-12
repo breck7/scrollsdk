@@ -36,37 +36,26 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this.getDefinition().getConstantsObject()
   }
 
-  // todo: improve layout (use bold?)
-  getLineHints(): string {
-    const def = this.getDefinition()
-    const catchAllCellTypeId = def.getCatchAllCellTypeId()
-    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
-  }
-
-  getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
+  protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
     return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
   }
 
-  getParsedWords() {
-    return this._getGrammarBackedCellArray().map(word => word.getParsed())
-  }
-
-  getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId) {
-    const compiler = this.getCompilerNode(targetLanguage)
+  protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId) {
+    const compiler = this._getCompilerNode(targetLanguage)
     const indentCharacter = compiler.getIndentCharacter()
     const indent = this.getIndentation()
     return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
 
-  getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId) {
-    const compiler = this.getCompilerNode(targetLanguage)
+  protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId) {
+    const compiler = this._getCompilerNode(targetLanguage)
     const listDelimiter = compiler.getListDelimiter()
     const str = compiler.getTransformation()
     return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine()
   }
 
   compile(targetLanguage: jTreeTypes.targetLanguageId) {
-    return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage)
+    return this._getCompiledIndentation(targetLanguage) + this._getCompiledLine(targetLanguage)
   }
 
   getErrors() {
@@ -83,6 +72,18 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
         })
 
     return this._getRequiredNodeErrors(errors)
+  }
+
+  // todo: improve layout (use bold?)
+  getLineHints(): string {
+    const def = this.getDefinition()
+    const catchAllCellTypeId = def.getCatchAllCellTypeId()
+    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
+  }
+
+  // todo: remove?
+  getParsedWords() {
+    return this._getGrammarBackedCellArray().map(word => word.getParsed())
   }
 
   get cells() {

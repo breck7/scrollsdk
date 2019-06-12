@@ -20,6 +20,7 @@ edge / 2019-06-11
 - Breaking: getCellTypeName is now getCellTypeId
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
+- Breaking: getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
 - Infra: test coverage
 
 25.2.0 / 2019-05-30

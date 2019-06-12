@@ -18,7 +18,8 @@ testTree.grammar = equal => {
   const tempFilePath = __dirname + `/../ignore/vms/GrammarProgram.compiled.temp.js`
   const jtreePath = __dirname + "/../index.js"
   try {
-    fs.writeFileSync(tempFilePath, GrammarProgram.newFromCondensed(grammarGrammar).toNodeJsJavascript(jtreePath), "utf8")
+    fs.writeFileSync(tempFilePath, new GrammarProgram(grammarGrammar, grammarGrammarPath).toNodeJsJavascript(jtreePath), "utf8")
+    // fs.writeFileSync(tempFilePath + ".expanded.grammar", GrammarProgram._condensedToExpanded(grammarGrammar), "utf8")
 
     // Act
     const GrammarProgramCompiled = require(tempFilePath)
@@ -37,7 +38,8 @@ testTree.numbers = equal => {
   const tempFilePath = __dirname + `/../ignore/vms/NumbersProgram.compiled.temp.js`
   const jtreePath = __dirname + "/../index.js"
   try {
-    fs.writeFileSync(tempFilePath, GrammarProgram.newFromCondensed(numbersGrammar).toNodeJsJavascript(jtreePath), "utf8")
+    fs.writeFileSync(tempFilePath, new GrammarProgram(numbersGrammar, numbersPath).toNodeJsJavascript(jtreePath), "utf8")
+    // fs.writeFileSync(tempFilePath + ".expanded.grammar", GrammarProgram._condensedToExpanded(numbersGrammar), "utf8")
 
     // Act
     const Program = require(tempFilePath)

@@ -297,7 +297,7 @@ ${GrammarConstants.cellType} anyWord`
     ).getRootConstructor()
   }
 
-  static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath) {
+  static _condensedToExpanded(grammarCode: string) {
     // todo: handle imports
     const tree = new TreeNode(grammarCode)
 
@@ -315,7 +315,12 @@ ${GrammarConstants.cellType} anyWord`
 
     // todo: only expand certain types.
     // inScope should be a set.
-    return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.toolingDirective)), grammarPath)
+    tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.toolingDirective))
+    return tree
+  }
+
+  static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath) {
+    return new GrammarProgram(this._condensedToExpanded(grammarCode), grammarPath)
   }
 
   async loadAllConstructorScripts(baseUrlPath: string): Promise<string[]> {

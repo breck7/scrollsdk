@@ -2,7 +2,7 @@ const fs = require("fs")
 
 import jtree from "./jtree"
 import jTreeTypes from "./jTreeTypes"
-import { GrammarProgram, AbstractRuntimeProgramRootNode } from "./grammar/GrammarLanguage"
+import { GrammarProgram, AbstractRuntimeProgramRootNode } from "./GrammarLanguage"
 import Upgrader from "./tools/Upgrader"
 
 class jtreeNode extends jtree {
@@ -28,7 +28,7 @@ class jtreeNode extends jtree {
   static getProgramConstructor = (grammarPath: jTreeTypes.filepath) => {
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
     const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
-    return grammarProgram.getRootConstructor()
+    return <any>grammarProgram.getRootConstructor()
   }
 
   static combineFiles = (globPatterns: jTreeTypes.globPattern[]) => {

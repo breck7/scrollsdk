@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode"
 
-import { GrammarConstants, GrammarStandardCellTypeIds } from "../grammar/GrammarLanguage"
+import { GrammarConstants, GrammarStandardCellTypeIds } from "../GrammarLanguage"
 
 import jTreeTypes from "../jTreeTypes"
 

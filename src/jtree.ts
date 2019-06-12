@@ -7,7 +7,7 @@ import {
   GrammarBackedTerminalNode,
   GrammarBackedNonTerminalNode,
   GrammarBackedBlobNode
-} from "./grammar/GrammarLanguage"
+} from "./GrammarLanguage"
 import UnknownGrammarProgram from "./tools/UnknownGrammarProgram"
 import TreeNotationCodeMirrorMode from "./codemirror/TreeNotationCodeMirrorMode"
 

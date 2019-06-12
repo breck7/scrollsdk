@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict
 
 const fs = require("fs")
-const GrammarProgram = require("../built/grammar/GrammarLanguage.js").GrammarProgram
+const GrammarProgram = require("../built/GrammarLanguage.js").GrammarProgram
 
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = fs.readFileSync(grammarGrammarPath, "utf8")

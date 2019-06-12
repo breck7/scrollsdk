@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeUtils_1 = require("./base/TreeUtils");
 const TreeNode_1 = require("./base/TreeNode");
-const GrammarLanguage_1 = require("./grammar/GrammarLanguage");
+const GrammarLanguage_1 = require("./GrammarLanguage");
 const UnknownGrammarProgram_1 = require("./tools/UnknownGrammarProgram");
 const TreeNotationCodeMirrorMode_1 = require("./codemirror/TreeNotationCodeMirrorMode");
 class jtree {

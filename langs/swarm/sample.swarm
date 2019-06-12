@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test stress test
  arrangeTestSubject
-  require ../../built/grammar/GrammarLanguage.js GrammarProgram
+  require ../../built/GrammarLanguage.js GrammarProgram
   constructWithBlockString
    grammar
     name testlang

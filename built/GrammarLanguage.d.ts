@@ -1,5 +1,5 @@
-import TreeNode from "../base/TreeNode";
-import jTreeTypes from "../jTreeTypes";
+import TreeNode from "./base/TreeNode";
+import jTreeTypes from "./jTreeTypes";
 interface AbstractRuntimeProgramConstructorInterface {
     new (code: string): AbstractRuntimeProgramRootNode;
 }

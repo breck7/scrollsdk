@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
-const GrammarLanguage_1 = require("../grammar/GrammarLanguage");
+const GrammarLanguage_1 = require("../GrammarLanguage");
 class UnknownGrammarProgram extends TreeNode_1.default {
     getPredictedGrammarFile(grammarName) {
         const rootNode = new TreeNode_1.default(`${GrammarLanguage_1.GrammarConstants.grammar}

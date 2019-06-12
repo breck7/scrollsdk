@@ -1,5 +1,5 @@
 import jTreeTypes from "../jTreeTypes";
-import { AbstractRuntimeProgramRootNode } from "../grammar/GrammarLanguage";
+import { AbstractRuntimeProgramRootNode } from "../GrammarLanguage";
 import * as CodeMirrorLib from "codemirror";
 interface treeNotationCodeMirrorState {
     cellIndex: number;

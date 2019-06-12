@@ -1,8 +1,10 @@
-import TreeNode from "../base/TreeNode"
-import TreeUtils from "../base/TreeUtils"
-import jTreeTypes from "../jTreeTypes"
+import TreeNode from "./base/TreeNode"
+import TreeUtils from "./base/TreeUtils"
+import jTreeTypes from "./jTreeTypes"
 
-import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface"
+interface AbstractRuntimeProgramConstructorInterface {
+  new (code: string): AbstractRuntimeProgramRootNode
+}
 
 enum GrammarConstantsCompiler {
   sub = "sub", // replacement instructions
@@ -1284,7 +1286,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
   static cache: { [code: string]: jTreeTypes.RunTimeNodeConstructor } = {}
 
   private _getNodeJsConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    const jtreePath = __dirname + "/../jtree.node.js"
+    const jtreePath = __dirname + "/jtree.node.js"
     const code = `const jtree = require('${jtreePath}').default
 /* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`
     if (CustomJavascriptConstructorNode.cache[code]) return CustomJavascriptConstructorNode.cache[code]
@@ -1947,7 +1949,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   private _cache_rootConstructorClass: AbstractRuntimeProgramConstructorInterface
 
-  getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
+  getRootConstructor() {
     if (!this._cache_rootConstructorClass) this._cache_rootConstructorClass = this._getRootConstructor()
     return this._cache_rootConstructorClass
   }

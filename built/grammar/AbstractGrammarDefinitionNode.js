@@ -178,10 +178,13 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     _getParentDefinition() {
         return undefined;
     }
+    _getMyInScopeNodeTypeIds() {
+        const nodeTypesNode = this.getNode(GrammarConstants_1.GrammarConstants.inScope);
+        return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
+    }
     _getInScopeNodeTypeIds() {
         // todo: allow multiple of these if we allow mixins?
-        const nodeTypesNode = this.getNode(GrammarConstants_1.GrammarConstants.inScope);
-        const ids = nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
+        const ids = this._getMyInScopeNodeTypeIds();
         const parentDef = this._getParentDefinition();
         return parentDef ? ids.concat(parentDef._getInScopeNodeTypeIds()) : ids;
     }
@@ -198,9 +201,9 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     // todo: should this be byName? should this be byFirstWordPath?
     getNodeTypeDefinitionByName(firstWord) {
         const definitions = this._getProgramNodeTypeDefinitionCache();
-        return definitions[firstWord] || this._getCatchAllDefinition(); // todo: this is where we might do some type of firstWord lookup for user defined fns.
+        return definitions[firstWord] || this._getCatchAllNodeTypeDefinition(); // todo: this is where we might do some type of firstWord lookup for user defined fns.
     }
-    _getCatchAllDefinition() {
+    _getCatchAllNodeTypeDefinition() {
         const catchAllNodeTypeId = this._getRunTimeCatchAllNodeTypeId();
         const definitions = this._getProgramNodeTypeDefinitionCache();
         const def = definitions[catchAllNodeTypeId];
@@ -210,12 +213,12 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
         if (this.isRoot())
             throw new Error(`This grammar language "${this.getProgram().getGrammarName()}" lacks a root catch all definition`);
         else
-            return this.getParent()._getCatchAllDefinition();
+            return this.getParent()._getCatchAllNodeTypeDefinition();
     }
     _initCatchAllNodeConstructorCache() {
         if (this._cache_catchAllConstructor)
             return undefined;
-        this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar();
+        this._cache_catchAllConstructor = this._getCatchAllNodeTypeDefinition().getConstructorDefinedInGrammar();
     }
     getFirstCellTypeId() {
         return this.get(GrammarConstants_1.GrammarConstants.firstCellType) || GrammarConstants_1.GrammarStandardCellTypes.anyFirstWord;

@@ -160,7 +160,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     for (let index = 0; index < parts.length; index++) {
       const part = parts[index]
       def = subject.getRunTimeFirstWordMapWithDefinitions()[part]
-      if (!def) def = <AbstractGrammarDefinitionNode>subject._getCatchAllDefinition()
+      if (!def) def = <AbstractGrammarDefinitionNode>subject._getCatchAllNodeTypeDefinition()
       subject = def
     }
 

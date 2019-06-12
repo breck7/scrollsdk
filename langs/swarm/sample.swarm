@@ -21,7 +21,7 @@ test stress test
      closeChildren end
  getRunTimeNodeTypeIds
   lengthIs 3
- getNodeTypeDefinitionByName to
+ getNodeTypeDefinitionByNodeTypeId to
   typeIs object
  getTopNodeTypeIds
   lengthIs 3

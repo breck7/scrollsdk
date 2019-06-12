@@ -40,7 +40,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
 
   protected _getParentDefinition(): AbstractGrammarDefinitionNode {
     const extendsId = this._getExtendedNodeTypeId()
-    return extendsId ? this.getNodeTypeDefinitionByName(extendsId) : undefined
+    return extendsId ? this.getNodeTypeDefinitionByNodeTypeId(extendsId) : undefined
   }
 
   getMatchBlock() {
@@ -148,7 +148,7 @@ ${captures}
   toJavascript(): jTreeTypes.javascriptCode {
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
     const extendedNodeTypeId = this._getExtendedNodeTypeId()
-    const extendsClass = extendedNodeTypeId ? this.getNodeTypeDefinitionByName(extendedNodeTypeId).getGeneratedClassName() : "jtree.NonTerminalNode"
+    const extendsClass = extendedNodeTypeId ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId).getGeneratedClassName() : "jtree.NonTerminalNode"
 
     const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code)
 

@@ -220,10 +220,14 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return undefined
   }
 
+  protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+    const nodeTypesNode = this.getNode(GrammarConstants.inScope)
+    return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
+  }
+
   protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     // todo: allow multiple of these if we allow mixins?
-    const nodeTypesNode = this.getNode(GrammarConstants.inScope)
-    const ids = nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
+    const ids = this._getMyInScopeNodeTypeIds()
     const parentDef = this._getParentDefinition()
     return parentDef ? ids.concat(parentDef._getInScopeNodeTypeIds()) : ids
   }
@@ -241,13 +245,12 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return ""
   }
 
-  // todo: should this be byName? should this be byFirstWordPath?
-  getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode {
+  getNodeTypeDefinitionByNodeTypeId(firstWord: string): AbstractGrammarDefinitionNode {
     const definitions = this._getProgramNodeTypeDefinitionCache()
-    return definitions[firstWord] || this._getCatchAllDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.
+    return definitions[firstWord] || this._getCatchAllNodeTypeDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.
   }
 
-  _getCatchAllDefinition(): AbstractGrammarDefinitionNode {
+  _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode {
     const catchAllNodeTypeId = this._getRunTimeCatchAllNodeTypeId()
     const definitions = this._getProgramNodeTypeDefinitionCache()
     const def = definitions[catchAllNodeTypeId]
@@ -255,7 +258,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
 
     // todo: implement contraints like a grammar file MUST have a catch all.
     if (this.isRoot()) throw new Error(`This grammar language "${this.getProgram().getGrammarName()}" lacks a root catch all definition`)
-    else return (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllDefinition()
+    else return (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllNodeTypeDefinition()
   }
 
   private _cache_catchAllConstructor: jTreeTypes.RunTimeNodeConstructor
@@ -263,7 +266,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
   protected _initCatchAllNodeConstructorCache(): void {
     if (this._cache_catchAllConstructor) return undefined
 
-    this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar()
+    this._cache_catchAllConstructor = this._getCatchAllNodeTypeDefinition().getConstructorDefinedInGrammar()
   }
 
   getFirstCellTypeId(): jTreeTypes.cellTypeId {

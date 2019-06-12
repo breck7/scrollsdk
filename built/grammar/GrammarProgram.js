@@ -128,7 +128,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             const part = parts[index];
             def = subject.getRunTimeFirstWordMapWithDefinitions()[part];
             if (!def)
-                def = subject._getCatchAllDefinition();
+                def = subject._getCatchAllNodeTypeDefinition();
             subject = def;
         }
         this._cachedDefinitions[firstWordPath] = def;

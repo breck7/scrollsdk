@@ -64,7 +64,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
 
   abstract getDefinition(): AbstractGrammarDefinitionNode
 
-  protected _getNodeTypeDefinitionByName(path: string) {
+  protected _getNodeTypeDefinitionByFirstWordPath(path: string) {
     // todo: do we need a relative to with this firstWord path?
     return this.getProgram()
       .getGrammarProgram()

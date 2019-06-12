@@ -29,7 +29,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
 
   getDefinition(): GrammarNodeTypeDefinitionNode {
     // todo: do we need a relative to with this firstWord path?
-    return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByName(this.getFirstWordPath())
+    return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath())
   }
 
   getConstantsObject() {

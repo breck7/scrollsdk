@@ -5,7 +5,7 @@ declare enum GrammarConstantsCompiler {
     openChildren = "openChildren",
     closeChildren = "closeChildren"
 }
-declare enum GrammarStandardCellTypes {
+declare enum GrammarStandardCellTypeIds {
     any = "any",
     anyFirstWord = "anyFirstWord",
     extraWord = "extraWord",
@@ -50,4 +50,4 @@ declare enum GrammarConstants {
     frequency = "frequency",
     highlightScope = "highlightScope"
 }
-export { GrammarConstants, GrammarConstantsCompiler, GrammarStandardCellTypes };
+export { GrammarConstants, GrammarConstantsCompiler, GrammarStandardCellTypeIds };

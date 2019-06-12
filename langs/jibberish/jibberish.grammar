@@ -64,7 +64,7 @@ nodeType xColumnName topLevel
   javascript
    class extends jtree.NonTerminalNode {
      getRunTimeEnumOptions(cell) {
-       return cell.getCellTypeName() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
+       return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
      }
    }
 nodeType lightbulbState topLevel

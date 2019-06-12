@@ -54,7 +54,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode_1.defa
             return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) + "." + cellTypeDefinition.getCellTypeId()}`;
         })
             .join("\n");
-        const cellTypesToRegex = (cellTypeNames) => cellTypeNames.map((cellTypeName) => `({{${cellTypeName}}})?`).join(" ?");
+        const cellTypesToRegex = (cellTypeIds) => cellTypeIds.map((cellTypeId) => `({{${cellTypeId}}})?`).join(" ?");
         return `${topHalf}
     push:
      - match: ${cellTypesToRegex(requiredCellTypeIds)}
@@ -77,18 +77,18 @@ ${captures}
     _initNodeTypeInheritanceCache() {
         if (this._cache_nodeTypeInheritanceSet)
             return undefined;
-        let nodeTypeNames = [];
+        let nodeTypeIds = [];
         const extendedNodeTypeId = this._getIdOfNodeTypeThatThisExtends();
         if (extendedNodeTypeId) {
             const defs = this._getProgramNodeTypeDefinitionCache();
             const parentDef = defs[extendedNodeTypeId];
             if (!parentDef)
                 throw new Error(`${extendedNodeTypeId} not found`);
-            nodeTypeNames = nodeTypeNames.concat(parentDef.getAncestorNodeTypeIdsArray());
+            nodeTypeIds = nodeTypeIds.concat(parentDef.getAncestorNodeTypeIdsArray());
         }
-        nodeTypeNames.push(this.getNodeTypeIdFromDefinition());
-        this._cache_nodeTypeInheritanceSet = new Set(nodeTypeNames);
-        this._cache_ancestorNodeTypeIdsArray = nodeTypeNames;
+        nodeTypeIds.push(this.getNodeTypeIdFromDefinition());
+        this._cache_nodeTypeInheritanceSet = new Set(nodeTypeIds);
+        this._cache_ancestorNodeTypeIdsArray = nodeTypeIds;
     }
     // todo: protected?
     _getProgramNodeTypeDefinitionCache() {

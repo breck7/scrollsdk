@@ -1,7 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
-import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
+import { GrammarConstants, GrammarStandardCellTypeIds } from "./GrammarConstants"
 import GrammarCustomConstructorsNode from "./GrammarCustomConstructorsNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
 import GrammarExampleNode from "./GrammarExampleNode"
@@ -24,7 +24,7 @@ class GrammarDefinitionErrorNode extends TreeNode {
   }
 
   getLineCellTypes() {
-    return [<string>GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarStandardCellTypes.any)).join(" ")
+    return [<string>GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarStandardCellTypeIds.any)).join(" ")
   }
 }
 
@@ -170,7 +170,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
 
   getGetters() {
     const requireds = this.getRequiredCellTypeIds().map(
-      (cellTypeName, index) => `get ${cellTypeName}() {
+      (cellTypeId, index) => `get ${cellTypeId}() {
       return this.getWord(${index + 1})
     }`
     )
@@ -270,7 +270,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
   }
 
   getFirstCellTypeId(): jTreeTypes.cellTypeId {
-    return this.get(GrammarConstants.firstCellType) || GrammarStandardCellTypes.anyFirstWord
+    return this.get(GrammarConstants.firstCellType) || GrammarStandardCellTypeIds.anyFirstWord
   }
 
   isDefined(nodeTypeId: string) {

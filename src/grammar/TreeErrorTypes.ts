@@ -238,13 +238,13 @@ class NodeTypeUsedMultipleTimesError extends AbstractTreeError {
 
 class UnknownCellTypeError extends AbstractCellError {
   getMessage(): string {
-    return super.getMessage() + ` No cellType "${this.getCell().getCellTypeName()}" found. Language grammar for "${this.getExtension()}" may need to be fixed.`
+    return super.getMessage() + ` No cellType "${this.getCell().getCellTypeId()}" found. Language grammar for "${this.getExtension()}" may need to be fixed.`
   }
 }
 
 class InvalidWordError extends AbstractCellError {
   getMessage(): string {
-    return super.getMessage() + ` "${this.getCell().getWord()}" does not fit in cellType "${this.getCell().getCellTypeName()}".`
+    return super.getMessage() + ` "${this.getCell().getWord()}" does not fit in cellType "${this.getCell().getCellTypeId()}".`
   }
 
   getSuggestionMessage() {
@@ -280,7 +280,7 @@ class MissingWordError extends AbstractCellError {
   // todo: autocomplete suggestion
 
   getMessage(): string {
-    return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeName()}".`
+    return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeId()}".`
   }
 
   isMissingWordError() {

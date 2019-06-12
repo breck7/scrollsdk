@@ -10,18 +10,18 @@ var GrammarConstantsCompiler;
     GrammarConstantsCompiler["closeChildren"] = "closeChildren";
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
 exports.GrammarConstantsCompiler = GrammarConstantsCompiler;
-var GrammarStandardCellTypes;
-(function (GrammarStandardCellTypes) {
-    GrammarStandardCellTypes["any"] = "any";
-    GrammarStandardCellTypes["anyFirstWord"] = "anyFirstWord";
-    GrammarStandardCellTypes["extraWord"] = "extraWord";
-    GrammarStandardCellTypes["float"] = "float";
-    GrammarStandardCellTypes["number"] = "number";
-    GrammarStandardCellTypes["bit"] = "bit";
-    GrammarStandardCellTypes["bool"] = "bool";
-    GrammarStandardCellTypes["int"] = "int";
-})(GrammarStandardCellTypes || (GrammarStandardCellTypes = {}));
-exports.GrammarStandardCellTypes = GrammarStandardCellTypes;
+var GrammarStandardCellTypeIds;
+(function (GrammarStandardCellTypeIds) {
+    GrammarStandardCellTypeIds["any"] = "any";
+    GrammarStandardCellTypeIds["anyFirstWord"] = "anyFirstWord";
+    GrammarStandardCellTypeIds["extraWord"] = "extraWord";
+    GrammarStandardCellTypeIds["float"] = "float";
+    GrammarStandardCellTypeIds["number"] = "number";
+    GrammarStandardCellTypeIds["bit"] = "bit";
+    GrammarStandardCellTypeIds["bool"] = "bool";
+    GrammarStandardCellTypeIds["int"] = "int";
+})(GrammarStandardCellTypeIds || (GrammarStandardCellTypeIds = {}));
+exports.GrammarStandardCellTypeIds = GrammarStandardCellTypeIds;
 var GrammarConstants;
 (function (GrammarConstants) {
     // node types

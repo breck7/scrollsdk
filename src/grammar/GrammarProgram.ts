@@ -173,7 +173,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // At present we only have global nodeType definitions (you cannot have scoped nodeType definitions right now).
-  private _cache_nodeTypeDefinitions: { [nodeTypeName: string]: GrammarNodeTypeDefinitionNode }
+  private _cache_nodeTypeDefinitions: { [nodeTypeId: string]: GrammarNodeTypeDefinitionNode }
 
   protected _initProgramNodeTypeDefinitionCache(): void {
     if (this._cache_nodeTypeDefinitions) return undefined
@@ -225,30 +225,30 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       : this.getExtensionName()
   }
 
-  toNodeJsJavascript(): jTreeTypes.javascriptCode {
-    return this._toJavascript()
+  toNodeJsJavascript(jtreePath = "jtree"): jTreeTypes.javascriptCode {
+    return this._toJavascript(jtreePath, true)
   }
 
   toBrowserJavascript(): jTreeTypes.javascriptCode {
-    return this._toJavascript()
+    return this._toJavascript("", false)
   }
 
   private _getRootClassName() {
     return this.getExtensionName() + "Program"
   }
 
-  private _toJavascript(forNodeJs = true): jTreeTypes.javascriptCode {
+  private _toJavascript(jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
     const nodeTypeClasses = this.getNodeTypeDefinitions()
       .map(def => def.toJavascript())
       .join("\n\n")
 
     const components = [this.getNodeConstructorToJavascript()].filter(code => code)
-    const rootClass = `class ${this._getRootClassName()} extends AbstractRuntimeProgram {
+    const rootClass = `class ${this._getRootClassName()} extends jtree.programRoot {
   getGrammarProgram() {}
   ${components.join("\n")}
     }`
 
-    return `${forNodeJs ? 'const jtree = require("jtree")' : ""}
+    return `${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
 
 ${nodeTypeClasses}
 

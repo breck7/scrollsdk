@@ -1,6 +1,6 @@
 import TreeUtils from "../base/TreeUtils"
 
-import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
+import { GrammarConstants, GrammarStandardCellTypeIds } from "./GrammarConstants"
 
 import AbstractRuntimeNode from "./AbstractRuntimeNode"
 import { AbstractGrammarBackedCell, GrammarUnknownCellTypeCell, GrammarExtraWordCellTypeCell } from "./GrammarBackedCell"
@@ -39,8 +39,8 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   // todo: improve layout (use bold?)
   getLineHints(): string {
     const def = this.getDefinition()
-    const catchAllCellTypeName = def.getCatchAllCellTypeId()
-    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`
+    const catchAllCellTypeId = def.getCatchAllCellTypeId()
+    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
 
   getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
@@ -90,17 +90,13 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     this._getGrammarBackedCellArray()
       .slice(1)
       .forEach(cell => {
-        if (!cell.isCatchAll()) cells[cell.getCellTypeName()] = cell.getParsed()
+        if (!cell.isCatchAll()) cells[cell.getCellTypeId()] = cell.getParsed()
         else {
-          if (!cells[cell.getCellTypeName()]) cells[cell.getCellTypeName()] = []
-          cells[cell.getCellTypeName()].push(cell.getParsed())
+          if (!cells[cell.getCellTypeId()]) cells[cell.getCellTypeId()] = []
+          cells[cell.getCellTypeId()].push(cell.getParsed())
         }
       })
     return cells
-  }
-
-  private _getExtraWordCellTypeName() {
-    return GrammarStandardCellTypes.extraWord
   }
 
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
@@ -131,7 +127,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
       else if (cellTypeId) cellConstructor = GrammarUnknownCellTypeCell
       else {
         cellConstructor = GrammarExtraWordCellTypeCell
-        cellTypeId = this._getExtraWordCellTypeName()
+        cellTypeId = GrammarStandardCellTypeIds.extraWord
         cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       }
 
@@ -143,7 +139,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getLineCellTypes() {
     return this._getGrammarBackedCellArray()
-      .map(slot => slot.getCellTypeName())
+      .map(slot => slot.getCellTypeId())
       .join(" ")
   }
 

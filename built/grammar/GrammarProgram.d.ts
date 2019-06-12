@@ -37,14 +37,14 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _cache_nodeTypeDefinitions;
     protected _initProgramNodeTypeDefinitionCache(): void;
     _getProgramNodeTypeDefinitionCache(): {
-        [nodeTypeName: string]: GrammarNodeTypeDefinitionNode;
+        [nodeTypeId: string]: GrammarNodeTypeDefinitionNode;
     };
     _getRunTimeCatchAllNodeTypeId(): string;
     protected _getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _getFileExtensions;
-    toNodeJsJavascript(): jTreeTypes.javascriptCode;
+    toNodeJsJavascript(jtreePath?: string): jTreeTypes.javascriptCode;
     toBrowserJavascript(): jTreeTypes.javascriptCode;
     private _getRootClassName;
     private _toJavascript;

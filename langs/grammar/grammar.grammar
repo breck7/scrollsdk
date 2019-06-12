@@ -22,8 +22,8 @@ cellType cellPropertyName
  highlightScope variable.parameter
 cellType cellTypeEnum
  enumFromGrammar cellType
-cellType cellTypeName
-cellType cellTypeNameConstant
+cellType cellTypeId
+cellType cellTypeIdConstant
  highlightScope variable.parameter
 cellType grammarTypes
  enum cellType nodeType abstract
@@ -51,9 +51,9 @@ cellType lowercaseWord
 cellType nodeTypeEnum
  highlightScope variable.parameter
  enumFromGrammar nodeType abstract
-cellType nodeTypeName
+cellType nodeTypeId
  highlightScope variable.parameter
-cellType nodeTypeNameConstant
+cellType nodeTypeIdConstant
  highlightScope variable.function
 cellType propertyName
  highlightScope constant.language
@@ -72,7 +72,7 @@ cellType tag
 cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
-cellType extendedCellType cellTypeName
+cellType extendedCellType cellTypeId
 cellType exampleWord string
  highlightScope comment
 abstract abstract.compilerRule
@@ -106,9 +106,9 @@ nodeType catchAll.exampleLine
  firstCellType exampleWord
  catchAllNodeType catchAll.exampleLine
 nodeType cellType
- cells cellTypeName
+ cells cellTypeId
  catchAllCellType extendedCellType
- firstCellType cellTypeNameConstant
+ firstCellType cellTypeIdConstant
  inScope highlightScope regex enumFromGrammar description enum
 nodeType enum
  catchAllCellType enumOption
@@ -126,7 +126,7 @@ nodeType grammar
  firstCellType propertyName
  inScope name description example extensions nodeTypeOrder inScope constructors compiler catchAllNodeType version
 nodeType group
- catchAllCellType nodeTypeName
+ catchAllCellType nodeTypeId
  firstCellType propertyName
  description Available on abstract nodes only. Use it to more concisely generate nodeTypes all extending from this abstract nodeType, if they have no special properties.
 nodeType highlightScope
@@ -142,17 +142,17 @@ nodeType name
  firstCellType propertyName
  description The name of your language. Also serves as the default file extension.
 nodeType nodeType
- cells nodeTypeName
+ cells nodeTypeId
  description Node types are a core unit of your language. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllCellType extendedNodeType
  catchAllNodeType catchAll.error
  constructors
   nodejs NonTerminalNode
   browser NonTerminalNode
- firstCellType nodeTypeNameConstant
+ firstCellType nodeTypeIdConstant
  inScope abstract.nodeTypeRule
 nodeType nodeTypeOrder
- catchAllCellType nodeTypeName
+ catchAllCellType nodeTypeId
  firstCellType propertyName
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
 nodeType regex

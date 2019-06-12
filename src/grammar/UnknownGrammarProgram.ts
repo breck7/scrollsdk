@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode"
 
-import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
+import { GrammarConstants, GrammarStandardCellTypeIds } from "./GrammarConstants"
 
 import jTreeTypes from "../jTreeTypes"
 
@@ -59,10 +59,9 @@ class UnknownGrammarProgram extends TreeNode {
       let cellTypes = []
       for (let index = 0; index < max; index++) {
         const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]))
-        if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeName))
-          globalCellTypeMap.set(cellType.cellTypeName, cellType.cellTypeDefinition)
+        if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
 
-        cellTypes.push(cellType.cellTypeName)
+        cellTypes.push(cellType.cellTypeId)
       }
       if (max > min) {
         //columns = columns.slice(0, min)
@@ -89,7 +88,7 @@ class UnknownGrammarProgram extends TreeNode {
     return [rootNode.toString(), cellTypes.join(yi), firstWords.join(yi)].filter(i => i).join("\n")
   }
 
-  private _getBestCellType(firstWord: string, allValues: any[]): { cellTypeName: string; cellTypeDefinition?: string } {
+  private _getBestCellType(firstWord: string, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)
     const xi = this.getXI()
     const values = Array.from(asSet).filter(c => c)
@@ -99,7 +98,7 @@ class UnknownGrammarProgram extends TreeNode {
       }
       return true
     }
-    if (all((str: string) => str === "0" || str === "1")) return { cellTypeName: GrammarStandardCellTypes.bit }
+    if (all((str: string) => str === "0" || str === "1")) return { cellTypeId: GrammarStandardCellTypeIds.bit }
 
     if (
       all((str: string) => {
@@ -108,24 +107,24 @@ class UnknownGrammarProgram extends TreeNode {
         return num.toString() === str
       })
     ) {
-      return { cellTypeName: GrammarStandardCellTypes.int }
+      return { cellTypeId: GrammarStandardCellTypeIds.int }
     }
 
-    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeName: GrammarStandardCellTypes.float }
+    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeId: GrammarStandardCellTypeIds.float }
 
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeName: GrammarStandardCellTypes.bool }
+    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeId: GrammarStandardCellTypeIds.bool }
 
     // If there are duplicate files and the set is less than enum
     const enumLimit = 30
     if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
       return {
-        cellTypeName: `${firstWord}Enum`,
+        cellTypeId: `${firstWord}Enum`,
         cellTypeDefinition: `cellType ${firstWord}Enum
  enum ${values.join(xi)}`
       }
 
-    return { cellTypeName: GrammarStandardCellTypes.any }
+    return { cellTypeId: GrammarStandardCellTypeIds.any }
   }
 }
 

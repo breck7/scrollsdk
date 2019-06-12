@@ -41,14 +41,14 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     isRequired(): boolean;
     _shouldBeJustOne(): boolean;
     _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId;
-    getNodeTypeDefinitionByNodeTypeId(firstWord: string): AbstractGrammarDefinitionNode;
+    getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode;
     _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): void;
     getFirstCellTypeId(): jTreeTypes.cellTypeId;
-    isDefined(firstWord: string): boolean;
+    isDefined(nodeTypeId: string): boolean;
     _getProgramNodeTypeDefinitionCache(): {
-        [firstWord: string]: GrammarNodeTypeDefinitionNode;
+        [nodeTypeId: string]: GrammarNodeTypeDefinitionNode;
     };
     getRunTimeCatchAllNodeConstructor(): Function;
 }

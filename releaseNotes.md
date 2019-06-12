@@ -17,6 +17,7 @@ edge / 2019-06-11
 - Breaking: getRequiredCellTypeNames is now getRequiredCellTypeIds
 - Breaking: getRunTimeNodeTypeNames is now getRunTimeNodeTypeIds
 - Breaking: getFirstCellType is now getFirstCellTypeId
+- Breaking: getCellTypeName is now getCellTypeId
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
 - Infra: test coverage

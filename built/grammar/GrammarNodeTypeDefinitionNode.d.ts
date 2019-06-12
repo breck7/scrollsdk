@@ -16,7 +16,7 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     getAncestorNodeTypeIdsArray(): jTreeTypes.nodeTypeId[];
     protected _initNodeTypeInheritanceCache(): void;
     _getProgramNodeTypeDefinitionCache(): {
-        [nodeTypeName: string]: GrammarNodeTypeDefinitionNode;
+        [nodeTypeId: string]: GrammarNodeTypeDefinitionNode;
     };
     getDoc(): string;
     private _getDefaultsNode;

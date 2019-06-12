@@ -178,25 +178,25 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
                 .join(",")
             : this.getExtensionName();
     }
-    toNodeJsJavascript() {
-        return this._toJavascript();
+    toNodeJsJavascript(jtreePath = "jtree") {
+        return this._toJavascript(jtreePath, true);
     }
     toBrowserJavascript() {
-        return this._toJavascript();
+        return this._toJavascript("", false);
     }
     _getRootClassName() {
         return this.getExtensionName() + "Program";
     }
-    _toJavascript(forNodeJs = true) {
+    _toJavascript(jtreePath, forNodeJs = true) {
         const nodeTypeClasses = this.getNodeTypeDefinitions()
             .map(def => def.toJavascript())
             .join("\n\n");
         const components = [this.getNodeConstructorToJavascript()].filter(code => code);
-        const rootClass = `class ${this._getRootClassName()} extends AbstractRuntimeProgram {
+        const rootClass = `class ${this._getRootClassName()} extends jtree.programRoot {
   getGrammarProgram() {}
   ${components.join("\n")}
     }`;
-        return `${forNodeJs ? 'const jtree = require("jtree")' : ""}
+        return `${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
 
 ${nodeTypeClasses}
 

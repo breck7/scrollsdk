@@ -8,7 +8,7 @@ enum GrammarConstantsCompiler {
   closeChildren = "closeChildren"
 }
 
-enum GrammarStandardCellTypes {
+enum GrammarStandardCellTypeIds {
   any = "any",
   anyFirstWord = "anyFirstWord", // todo: remove
   extraWord = "extraWord",
@@ -66,4 +66,4 @@ enum GrammarConstants {
   highlightScope = "highlightScope"
 }
 
-export { GrammarConstants, GrammarConstantsCompiler, GrammarStandardCellTypes }
+export { GrammarConstants, GrammarConstantsCompiler, GrammarStandardCellTypeIds }

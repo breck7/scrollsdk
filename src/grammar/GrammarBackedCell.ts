@@ -13,12 +13,12 @@ import { InvalidWordError, MissingWordError, ExtraWordError, UnknownCellTypeErro
 A cell contains a word but also the type information for that word.
 */
 abstract class AbstractGrammarBackedCell<T> {
-  constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeName: string, isCatchAll: boolean) {
+  constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean) {
     this._typeDef = typeDef
     this._node = node
     this._isCatchAll = isCatchAll
     this._index = index
-    this._cellTypeName = cellTypeName
+    this._cellTypeId = cellTypeId
 
     this._word = node.getWord(index)
   }
@@ -28,10 +28,10 @@ abstract class AbstractGrammarBackedCell<T> {
   protected _word: string
   private _typeDef: GrammarCellTypeDefinitionNode
   private _isCatchAll: boolean
-  private _cellTypeName: string
+  private _cellTypeId: string
 
-  getCellTypeName() {
-    return this._cellTypeName
+  getCellTypeId() {
+    return this._cellTypeId
   }
 
   getNode() {

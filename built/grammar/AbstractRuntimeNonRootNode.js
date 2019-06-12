@@ -25,8 +25,8 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     // todo: improve layout (use bold?)
     getLineHints() {
         const def = this.getDefinition();
-        const catchAllCellTypeName = def.getCatchAllCellTypeId();
-        return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`;
+        const catchAllCellTypeId = def.getCatchAllCellTypeId();
+        return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
     }
     getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
@@ -69,17 +69,14 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
             .slice(1)
             .forEach(cell => {
             if (!cell.isCatchAll())
-                cells[cell.getCellTypeName()] = cell.getParsed();
+                cells[cell.getCellTypeId()] = cell.getParsed();
             else {
-                if (!cells[cell.getCellTypeName()])
-                    cells[cell.getCellTypeName()] = [];
-                cells[cell.getCellTypeName()].push(cell.getParsed());
+                if (!cells[cell.getCellTypeId()])
+                    cells[cell.getCellTypeId()] = [];
+                cells[cell.getCellTypeId()].push(cell.getParsed());
             }
         });
         return cells;
-    }
-    _getExtraWordCellTypeName() {
-        return GrammarConstants_1.GrammarStandardCellTypes.extraWord;
     }
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();
@@ -108,7 +105,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
                 cellConstructor = GrammarBackedCell_1.GrammarUnknownCellTypeCell;
             else {
                 cellConstructor = GrammarBackedCell_1.GrammarExtraWordCellTypeCell;
-                cellTypeId = this._getExtraWordCellTypeName();
+                cellTypeId = GrammarConstants_1.GrammarStandardCellTypeIds.extraWord;
                 cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId);
             }
             cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll);
@@ -118,7 +115,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     // todo: just make a fn that computes proper spacing and then is given a node to print
     getLineCellTypes() {
         return this._getGrammarBackedCellArray()
-            .map(slot => slot.getCellTypeName())
+            .map(slot => slot.getCellTypeId())
             .join(" ");
     }
     getLineHighlightScopes(defaultScope = "source") {

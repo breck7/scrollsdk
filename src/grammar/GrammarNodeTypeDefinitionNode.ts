@@ -64,7 +64,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
       })
       .join("\n")
 
-    const cellTypesToRegex = (cellTypeNames: string[]) => cellTypeNames.map((cellTypeName: string) => `({{${cellTypeName}}})?`).join(" ?")
+    const cellTypesToRegex = (cellTypeIds: string[]) => cellTypeIds.map((cellTypeId: string) => `({{${cellTypeId}}})?`).join(" ?")
 
     return `${topHalf}
     push:
@@ -94,18 +94,18 @@ ${captures}
 
   protected _initNodeTypeInheritanceCache(): void {
     if (this._cache_nodeTypeInheritanceSet) return undefined
-    let nodeTypeNames: jTreeTypes.nodeTypeId[] = []
+    let nodeTypeIds: jTreeTypes.nodeTypeId[] = []
     const extendedNodeTypeId = this._getIdOfNodeTypeThatThisExtends()
     if (extendedNodeTypeId) {
       const defs = this._getProgramNodeTypeDefinitionCache()
       const parentDef = defs[extendedNodeTypeId]
       if (!parentDef) throw new Error(`${extendedNodeTypeId} not found`)
 
-      nodeTypeNames = nodeTypeNames.concat(parentDef.getAncestorNodeTypeIdsArray())
+      nodeTypeIds = nodeTypeIds.concat(parentDef.getAncestorNodeTypeIdsArray())
     }
-    nodeTypeNames.push(this.getNodeTypeIdFromDefinition())
-    this._cache_nodeTypeInheritanceSet = new Set(nodeTypeNames)
-    this._cache_ancestorNodeTypeIdsArray = nodeTypeNames
+    nodeTypeIds.push(this.getNodeTypeIdFromDefinition())
+    this._cache_nodeTypeInheritanceSet = new Set(nodeTypeIds)
+    this._cache_ancestorNodeTypeIdsArray = nodeTypeIds
   }
 
   // todo: protected?

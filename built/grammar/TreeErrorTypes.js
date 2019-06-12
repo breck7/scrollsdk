@@ -190,13 +190,13 @@ class NodeTypeUsedMultipleTimesError extends AbstractTreeError {
 exports.NodeTypeUsedMultipleTimesError = NodeTypeUsedMultipleTimesError;
 class UnknownCellTypeError extends AbstractCellError {
     getMessage() {
-        return super.getMessage() + ` No cellType "${this.getCell().getCellTypeName()}" found. Language grammar for "${this.getExtension()}" may need to be fixed.`;
+        return super.getMessage() + ` No cellType "${this.getCell().getCellTypeId()}" found. Language grammar for "${this.getExtension()}" may need to be fixed.`;
     }
 }
 exports.UnknownCellTypeError = UnknownCellTypeError;
 class InvalidWordError extends AbstractCellError {
     getMessage() {
-        return super.getMessage() + ` "${this.getCell().getWord()}" does not fit in cellType "${this.getCell().getCellTypeName()}".`;
+        return super.getMessage() + ` "${this.getCell().getWord()}" does not fit in cellType "${this.getCell().getCellTypeId()}".`;
     }
     getSuggestionMessage() {
         const suggestion = this._getWordSuggestion();
@@ -227,7 +227,7 @@ exports.ExtraWordError = ExtraWordError;
 class MissingWordError extends AbstractCellError {
     // todo: autocomplete suggestion
     getMessage() {
-        return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeName()}".`;
+        return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeId()}".`;
     }
     isMissingWordError() {
         return true;

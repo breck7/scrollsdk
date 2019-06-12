@@ -17,7 +17,6 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     compile(targetLanguage: jTreeTypes.targetLanguageId): string;
     getErrors(): jTreeTypes.TreeError[];
     readonly cells: jTreeTypes.stringMap;
-    private _getExtraWordCellTypeName;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getLineCellTypes(): string;
     getLineHighlightScopes(defaultScope?: string): string;

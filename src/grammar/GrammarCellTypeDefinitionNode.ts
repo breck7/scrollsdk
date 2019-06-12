@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
-import { GrammarConstants, GrammarStandardCellTypes } from "./GrammarConstants"
+import { GrammarConstants, GrammarStandardCellTypeIds } from "./GrammarConstants"
 import { GrammarIntCell, GrammarBitCell, GrammarFloatCell, GrammarBoolCell, GrammarAnyCell } from "./GrammarBackedCell"
 import jTreeTypes from "../jTreeTypes"
 
@@ -72,13 +72,13 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
   getCellConstructor() {
     const kinds: jTreeTypes.stringMap = {}
-    kinds[GrammarStandardCellTypes.any] = GrammarAnyCell
-    kinds[GrammarStandardCellTypes.anyFirstWord] = GrammarAnyCell
-    kinds[GrammarStandardCellTypes.float] = GrammarFloatCell
-    kinds[GrammarStandardCellTypes.number] = GrammarFloatCell
-    kinds[GrammarStandardCellTypes.bit] = GrammarBitCell
-    kinds[GrammarStandardCellTypes.bool] = GrammarBoolCell
-    kinds[GrammarStandardCellTypes.int] = GrammarIntCell
+    kinds[GrammarStandardCellTypeIds.any] = GrammarAnyCell
+    kinds[GrammarStandardCellTypeIds.anyFirstWord] = GrammarAnyCell
+    kinds[GrammarStandardCellTypeIds.float] = GrammarFloatCell
+    kinds[GrammarStandardCellTypeIds.number] = GrammarFloatCell
+    kinds[GrammarStandardCellTypeIds.bit] = GrammarBitCell
+    kinds[GrammarStandardCellTypeIds.bool] = GrammarBoolCell
+    kinds[GrammarStandardCellTypeIds.int] = GrammarIntCell
     return kinds[this.getWord(1)] || kinds[this.getWord(2)] || GrammarAnyCell
   }
 

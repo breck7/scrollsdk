@@ -16,7 +16,7 @@ class GrammarDefinitionErrorNode extends TreeNode_1.default {
         return [this.getFirstWord() ? new TreeErrorTypes_1.UnknownNodeTypeError(this) : new TreeErrorTypes_1.BlankLineError(this)];
     }
     getLineCellTypes() {
-        return [GrammarConstants_1.GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarConstants_1.GrammarStandardCellTypes.any)).join(" ");
+        return [GrammarConstants_1.GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarConstants_1.GrammarStandardCellTypeIds.any)).join(" ");
     }
 }
 class AbstractGrammarDefinitionNode extends TreeNode_1.default {
@@ -136,7 +136,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
         return parameters ? parameters.split(" ") : [];
     }
     getGetters() {
-        const requireds = this.getRequiredCellTypeIds().map((cellTypeName, index) => `get ${cellTypeName}() {
+        const requireds = this.getRequiredCellTypeIds().map((cellTypeId, index) => `get ${cellTypeId}() {
       return this.getWord(${index + 1})
     }`);
         const catchAllCellTypeId = this.getCatchAllCellTypeId();
@@ -198,9 +198,9 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     _getRunTimeCatchAllNodeTypeId() {
         return "";
     }
-    getNodeTypeDefinitionByNodeTypeId(firstWord) {
+    getNodeTypeDefinitionByNodeTypeId(nodeTypeId) {
         const definitions = this._getProgramNodeTypeDefinitionCache();
-        return definitions[firstWord] || this._getCatchAllNodeTypeDefinition(); // todo: this is where we might do some type of firstWord lookup for user defined fns.
+        return definitions[nodeTypeId] || this._getCatchAllNodeTypeDefinition(); // todo: this is where we might do some type of firstWord lookup for user defined fns.
     }
     _getCatchAllNodeTypeDefinition() {
         const catchAllNodeTypeId = this._getRunTimeCatchAllNodeTypeId();
@@ -220,10 +220,10 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
         this._cache_catchAllConstructor = this._getCatchAllNodeTypeDefinition().getConstructorDefinedInGrammar();
     }
     getFirstCellTypeId() {
-        return this.get(GrammarConstants_1.GrammarConstants.firstCellType) || GrammarConstants_1.GrammarStandardCellTypes.anyFirstWord;
+        return this.get(GrammarConstants_1.GrammarConstants.firstCellType) || GrammarConstants_1.GrammarStandardCellTypeIds.anyFirstWord;
     }
-    isDefined(firstWord) {
-        return !!this._getProgramNodeTypeDefinitionCache()[firstWord.toLowerCase()];
+    isDefined(nodeTypeId) {
+        return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()];
     }
     // todo: protected?
     _getProgramNodeTypeDefinitionCache() {

@@ -59,13 +59,13 @@ class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
     // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
     getCellConstructor() {
         const kinds = {};
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.any] = GrammarBackedCell_1.GrammarAnyCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.anyFirstWord] = GrammarBackedCell_1.GrammarAnyCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.float] = GrammarBackedCell_1.GrammarFloatCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.number] = GrammarBackedCell_1.GrammarFloatCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.bit] = GrammarBackedCell_1.GrammarBitCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.bool] = GrammarBackedCell_1.GrammarBoolCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.int] = GrammarBackedCell_1.GrammarIntCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.any] = GrammarBackedCell_1.GrammarAnyCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.anyFirstWord] = GrammarBackedCell_1.GrammarAnyCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.float] = GrammarBackedCell_1.GrammarFloatCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.number] = GrammarBackedCell_1.GrammarFloatCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.bit] = GrammarBackedCell_1.GrammarBitCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.bool] = GrammarBackedCell_1.GrammarBoolCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.int] = GrammarBackedCell_1.GrammarIntCell;
         return kinds[this.getWord(1)] || kinds[this.getWord(2)] || GrammarBackedCell_1.GrammarAnyCell;
     }
     getHighlightScope() {

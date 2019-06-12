@@ -156,6 +156,7 @@ class TreeUtils {
             };
         });
     }
+    // todo: add seed!
     static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")) {
         let str = "";
         while (length) {
@@ -164,6 +165,7 @@ class TreeUtils {
         }
         return str;
     }
+    // todo: add seed!
     static makeRandomTree(lines = 1000) {
         let str = "";
         let letters = " 123abc".split("");

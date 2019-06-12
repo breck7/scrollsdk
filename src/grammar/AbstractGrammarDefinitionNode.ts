@@ -154,8 +154,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return this._cache_runTimeFirstWordToNodeConstructorMap
   }
 
-  // todo: rename to getRunTimeNodeTypeIds?
-  getRunTimeNodeTypeNames(): jTreeTypes.nodeTypeId[] {
+  getRunTimeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     return Object.keys(this.getRunTimeFirstWordMap())
   }
 
@@ -164,30 +163,28 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return TreeUtils.mapValues<GrammarNodeTypeDefinitionNode>(this.getRunTimeFirstWordMap(), key => defs[key])
   }
 
-  // typeNames or TypeIds?
-  getRequiredCellTypeNames(): string[] {
+  getRequiredCellTypeIds(): jTreeTypes.cellTypeId[] {
     const parameters = this.get(GrammarConstants.cells)
     return parameters ? parameters.split(" ") : []
   }
 
   getGetters() {
-    const requireds = this.getRequiredCellTypeNames().map(
+    const requireds = this.getRequiredCellTypeIds().map(
       (cellTypeName, index) => `get ${cellTypeName}() {
       return this.getWord(${index + 1})
     }`
     )
 
-    const catchAllName = this.getCatchAllCellTypeName()
-    if (catchAllName)
-      requireds.push(`get ${catchAllName}() {
+    const catchAllCellTypeId = this.getCatchAllCellTypeId()
+    if (catchAllCellTypeId)
+      requireds.push(`get ${catchAllCellTypeId}() {
       return this.getWordsFrom(${requireds.length + 1})
     }`)
 
     return requireds
   }
 
-  // todo: rename to CellTypeId?
-  getCatchAllCellTypeName(): string | undefined {
+  getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined {
     return this.get(GrammarConstants.catchAllCellType)
   }
 
@@ -230,7 +227,6 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
   }
 
   isRequired(): boolean {
-    GrammarConstants
     return this.has(GrammarConstants.required)
   }
 
@@ -239,7 +235,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
   }
 
   // todo: protected?
-  _getRunTimeCatchAllNodeTypeId(): string {
+  _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId {
     return ""
   }
 
@@ -268,7 +264,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     this._cache_catchAllConstructor = this._getCatchAllDefinition().getConstructorDefinedInGrammar()
   }
 
-  getFirstCellType(): string {
+  getFirstCellTypeId(): jTreeTypes.cellTypeId {
     return this.get(GrammarConstants.firstCellType) || GrammarStandardCellTypes.anyFirstWord
   }
 

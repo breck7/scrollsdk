@@ -12,6 +12,11 @@ edge / 2019-06-02
 - Breaking: deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.
 - Breaking: removed getCompiledProgramName
 - Breaking: getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
+- Breaking: getCatchAllCellTypeName is now getCatchAllCellTypeId
+- Breaking: getRequiredCellTypeNames is now getRequiredCellTypeIds
+- Breaking: getRunTimeNodeTypeNames is now getRunTimeNodeTypeIds
+- Breaking: getFirstCellType is now getFirstCellTypeId
+- Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Infra: test coverage
 
 25.2.0 / 2019-05-30

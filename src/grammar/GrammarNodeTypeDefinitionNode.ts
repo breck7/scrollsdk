@@ -32,9 +32,9 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
 
   private _getFirstCellHighlightScope() {
     const program = this.getProgram()
-    const cellTypeDefinition = program.getCellTypeDefinition(this.getFirstCellType())
+    const cellTypeDefinition = program.getCellTypeDefinitionById(this.getFirstCellTypeId())
     // todo: standardize error/capture error at grammar time
-    if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${this.getFirstCellType()} found`)
+    if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${this.getFirstCellTypeId()} found`)
     return cellTypeDefinition.getHighlightScope()
   }
 
@@ -47,14 +47,14 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     const topHalf = ` '${this.getSublimeSyntaxContextId()}':
   - match: ${match}
     scope: ${firstWordHighlightScope}`
-    const requiredCellTypeNames = this.getRequiredCellTypeNames()
-    const catchAllCellTypeName = this.getCatchAllCellTypeName()
-    if (catchAllCellTypeName) requiredCellTypeNames.push(catchAllCellTypeName)
-    if (!requiredCellTypeNames.length) return topHalf
-    const captures = requiredCellTypeNames
-      .map((typeName, index) => {
-        const cellTypeDefinition = program.getCellTypeDefinition(typeName) // todo: cleanup
-        if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${typeName} found`) // todo: standardize error/capture error at grammar time
+    const requiredCellTypeIds = this.getRequiredCellTypeIds()
+    const catchAllCellTypeId = this.getCatchAllCellTypeId()
+    if (catchAllCellTypeId) requiredCellTypeIds.push(catchAllCellTypeId)
+    if (!requiredCellTypeIds.length) return topHalf
+    const captures = requiredCellTypeIds
+      .map((cellTypeId, index) => {
+        const cellTypeDefinition = program.getCellTypeDefinitionById(cellTypeId) // todo: cleanup
+        if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${cellTypeId} found`) // todo: standardize error/capture error at grammar time
         return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) + "." + cellTypeDefinition.getCellTypeId()}`
       })
       .join("\n")
@@ -63,7 +63,7 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
 
     return `${topHalf}
     push:
-     - match: ${cellTypesToRegex(requiredCellTypeNames)}
+     - match: ${cellTypesToRegex(requiredCellTypeIds)}
        captures:
 ${captures}
      - match: $

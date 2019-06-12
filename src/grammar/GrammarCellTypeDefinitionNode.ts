@@ -117,7 +117,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     )
   }
 
-  getCellTypeId() {
+  getCellTypeId(): jTreeTypes.cellTypeId {
     return this.getWord(1)
   }
 

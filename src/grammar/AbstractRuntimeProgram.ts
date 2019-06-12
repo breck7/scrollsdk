@@ -112,7 +112,7 @@ abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgram()
     grammarProgram.getNodeTypeDefinitions().forEach(def => {
-      usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeNames().join(" ")].join(" "))
+      usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
     })
     this.getTopDownArray().forEach((node, lineNumber) => {
       const stats = <TreeNode>usage.getNode(node.getNodeTypeId())

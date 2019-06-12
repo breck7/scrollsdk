@@ -95,11 +95,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._cache_cellTypes
   }
 
-  getCellTypeDefinition(word: string) {
-    const type = this.getCellTypeDefinitions()[word]
-    // todo: return unknownCellTypeDefinition
-
-    return type
+  getCellTypeDefinitionById(cellTypeId: jTreeTypes.cellTypeId) {
+    // todo: return unknownCellTypeDefinition? or is that handled somewhere else?
+    return this.getCellTypeDefinitions()[cellTypeId]
   }
 
   getNodeTypeFamilyTree() {

@@ -39,8 +39,8 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   // todo: improve layout (use bold?)
   getLineHints(): string {
     const def = this.getDefinition()
-    const catchAllCellTypeName = def.getCatchAllCellTypeName()
-    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeNames().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`
+    const catchAllCellTypeName = def.getCatchAllCellTypeId()
+    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeName ? ` ${catchAllCellTypeName}...` : ""}`
   }
 
   getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
@@ -70,15 +70,10 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   }
 
   getErrors() {
-    // Not enough parameters
-    // Too many parameters
-    // Incorrect parameter
-
     const errors = this._getGrammarBackedCellArray()
       .map(check => check.getErrorIfAny())
       .filter(i => i)
-    // More than one
-    let times
+
     const firstWord = this.getFirstWord()
     if (this.getDefinition()._shouldBeJustOne())
       this.getParent()
@@ -111,11 +106,11 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
     const definition = this.getDefinition()
     const grammarProgram = definition.getProgram()
-    const requiredCellTypesNames = definition.getRequiredCellTypeNames()
-    const firstCellTypeName = definition.getFirstCellType()
-    const numberOfRequiredCells = requiredCellTypesNames.length + 1 // todo: assuming here first cell is required.
+    const requiredCellTypeIds = definition.getRequiredCellTypeIds()
+    const firstCellTypeId = definition.getFirstCellTypeId()
+    const numberOfRequiredCells = requiredCellTypeIds.length + 1 // todo: assuming here first cell is required.
 
-    const catchAllCellTypeName = definition.getCatchAllCellTypeName()
+    const catchAllCellTypeId = definition.getCatchAllCellTypeId()
 
     const actualWordCountOrRequiredCellCount = Math.max(this.getWords().length, numberOfRequiredCells)
     const cells: AbstractGrammarBackedCell<any>[] = []
@@ -124,23 +119,23 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
       const isCatchAll = cellIndex >= numberOfRequiredCells
 
-      let cellTypeName
-      if (cellIndex === 0) cellTypeName = firstCellTypeName
-      else if (isCatchAll) cellTypeName = catchAllCellTypeName
-      else cellTypeName = requiredCellTypesNames[cellIndex - 1]
+      let cellTypeId
+      if (cellIndex === 0) cellTypeId = firstCellTypeId
+      else if (isCatchAll) cellTypeId = catchAllCellTypeId
+      else cellTypeId = requiredCellTypeIds[cellIndex - 1]
 
-      let cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
+      let cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
 
       let cellConstructor
       if (cellTypeDefinition) cellConstructor = cellTypeDefinition.getCellConstructor()
-      else if (cellTypeName) cellConstructor = GrammarUnknownCellTypeCell
+      else if (cellTypeId) cellConstructor = GrammarUnknownCellTypeCell
       else {
         cellConstructor = GrammarExtraWordCellTypeCell
-        cellTypeName = this._getExtraWordCellTypeName()
-        cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName)
+        cellTypeId = this._getExtraWordCellTypeName()
+        cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       }
 
-      cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeName, isCatchAll)
+      cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll)
     }
     return cells
   }

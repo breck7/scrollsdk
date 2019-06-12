@@ -2,10 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
-const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode");
-const GrammarBackedBlobNode_1 = require("./GrammarBackedBlobNode");
-const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
-const GrammarBackedErrorNode_1 = require("./GrammarBackedErrorNode");
+const GrammarBackedNodes_1 = require("./GrammarBackedNodes");
 const GrammarConstants_1 = require("./GrammarConstants");
 const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class AbstractCustomConstructorNode extends TreeNode_1.default {
@@ -27,10 +24,10 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
     }
     getBuiltIn() {
         const constructors = {
-            ErrorNode: GrammarBackedErrorNode_1.default,
-            TerminalNode: GrammarBackedTerminalNode_1.default,
-            NonTerminalNode: GrammarBackedNonTerminalNode_1.default,
-            BlobNode: GrammarBackedBlobNode_1.default
+            ErrorNode: GrammarBackedNodes_1.GrammarBackedErrorNode,
+            TerminalNode: GrammarBackedNodes_1.GrammarBackedTerminalNode,
+            NonTerminalNode: GrammarBackedNodes_1.GrammarBackedNonTerminalNode,
+            BlobNode: GrammarBackedNodes_1.GrammarBackedBlobNode
         };
         return constructors[this.getWord(1)];
     }
@@ -57,8 +54,8 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         const constructorName = this.getWord(1);
         const constructor = TreeUtils_1.default.resolveProperty(window, constructorName);
-        if (GrammarBackedNonTerminalNode_1.default.useAsBackupConstructor())
-            return GrammarBackedNonTerminalNode_1.default;
+        if (GrammarBackedNodes_1.GrammarBackedNonTerminalNode.useAsBackupConstructor())
+            return GrammarBackedNodes_1.GrammarBackedNonTerminalNode;
         if (!constructor)
             throw new Error(`constructor window.${constructorName} not found.`);
         return constructor;

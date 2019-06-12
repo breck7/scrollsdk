@@ -6,9 +6,7 @@ import GrammarCustomConstructorsNode from "./GrammarCustomConstructorsNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 
-import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
-import GrammarBackedBlobNode from "./GrammarBackedBlobNode"
-import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
+import { GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, GrammarBackedBlobNode } from "./GrammarBackedNodes"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
 /*FOR_TYPES_ONLY*/ import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode"

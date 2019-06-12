@@ -5,11 +5,8 @@ const TreeUtils_1 = require("../base/TreeUtils");
 const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarCustomConstructorsNode_1 = require("./GrammarCustomConstructorsNode");
 const GrammarCompilerNode_1 = require("./GrammarCompilerNode");
-const GrammarExampleNode_1 = require("./GrammarExampleNode");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
-const GrammarBackedNonTerminalNode_1 = require("./GrammarBackedNonTerminalNode");
-const GrammarBackedBlobNode_1 = require("./GrammarBackedBlobNode");
-const GrammarBackedTerminalNode_1 = require("./GrammarBackedTerminalNode");
+const GrammarBackedNodes_1 = require("./GrammarBackedNodes");
 const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class GrammarDefinitionErrorNode extends TreeNode_1.default {
     getErrors() {
@@ -18,6 +15,8 @@ class GrammarDefinitionErrorNode extends TreeNode_1.default {
     getLineCellTypes() {
         return [GrammarConstants_1.GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarConstants_1.GrammarStandardCellTypeIds.any)).join(" ");
     }
+}
+class GrammarExampleNode extends TreeNode_1.default {
 }
 class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getFirstWordMap() {
@@ -43,8 +42,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         map[GrammarConstants_1.GrammarConstants.constants] = GrammarConstantsNode_1.default;
         map[GrammarConstants_1.GrammarConstants.compilerNodeType] = GrammarCompilerNode_1.default;
         map[GrammarConstants_1.GrammarConstants.constructors] = GrammarCustomConstructorsNode_1.default;
-        map[GrammarConstants_1.GrammarConstants.example] = GrammarExampleNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.example] = GrammarExampleNode;
         return map;
+    }
+    getExamples() {
+        return this.getChildrenByNodeConstructor(GrammarExampleNode);
     }
     getNodeTypeIdFromDefinition() {
         return this.getWord(1);
@@ -91,8 +93,8 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     }
     _getDefaultNodeConstructor() {
         if (this._isBlobNode())
-            return GrammarBackedBlobNode_1.default;
-        return this._isNonTerminal() ? GrammarBackedNonTerminalNode_1.default : GrammarBackedTerminalNode_1.default;
+            return GrammarBackedNodes_1.GrammarBackedBlobNode;
+        return this._isNonTerminal() ? GrammarBackedNodes_1.GrammarBackedNonTerminalNode : GrammarBackedNodes_1.GrammarBackedTerminalNode;
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {

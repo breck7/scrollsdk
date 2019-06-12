@@ -1,4 +1,3 @@
-import GrammarExampleNode from "./GrammarExampleNode";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import jTreeTypes from "../jTreeTypes";
 declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
@@ -22,7 +21,6 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     private _getDefaultsNode;
     getDefaultFor(name: string): string;
     getDescription(): string;
-    getExamples(): GrammarExampleNode[];
     getFrequency(): number;
     private _getExtendedNodeTypeId;
     _toJavascript(): jTreeTypes.javascriptCode;

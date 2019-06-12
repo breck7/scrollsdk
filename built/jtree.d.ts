@@ -1,9 +1,7 @@
 import TreeUtils from "./base/TreeUtils";
 import TreeNode from "./base/TreeNode";
 import { AbstractRuntimeProgramRootNode } from "./grammar/AbstractRuntimeNodes";
-import GrammarBackedNonTerminalNode from "./grammar/GrammarBackedNonTerminalNode";
-import GrammarBackedTerminalNode from "./grammar/GrammarBackedTerminalNode";
-import GrammarBackedBlobNode from "./grammar/GrammarBackedBlobNode";
+import { GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, GrammarBackedBlobNode } from "./grammar/GrammarBackedNodes";
 import GrammarProgram from "./grammar/GrammarProgram";
 import UnknownGrammarProgram from "./grammar/UnknownGrammarProgram";
 import TreeNotationCodeMirrorMode from "./grammar/TreeNotationCodeMirrorMode";

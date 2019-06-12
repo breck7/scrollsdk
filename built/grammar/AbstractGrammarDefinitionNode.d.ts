@@ -7,8 +7,11 @@ declare class GrammarDefinitionErrorNode extends TreeNode {
     getErrors(): jTreeTypes.TreeError[];
     getLineCellTypes(): string;
 }
+declare class GrammarExampleNode extends TreeNode {
+}
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
+    getExamples(): GrammarExampleNode[];
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
     getGeneratedClassName(): string;
     getNodeConstructorToJavascript(): string;

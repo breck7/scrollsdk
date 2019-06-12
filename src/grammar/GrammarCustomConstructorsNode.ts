@@ -1,10 +1,7 @@
 import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
-import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
-import GrammarBackedBlobNode from "./GrammarBackedBlobNode"
-import GrammarBackedTerminalNode from "./GrammarBackedTerminalNode"
-import GrammarBackedErrorNode from "./GrammarBackedErrorNode"
+import { GrammarBackedTerminalNode, GrammarBackedErrorNode, GrammarBackedBlobNode, GrammarBackedNonTerminalNode } from "./GrammarBackedNodes"
 import { GrammarConstants } from "./GrammarConstants"
 
 import { InvalidConstructorPathError } from "./TreeErrorTypes"

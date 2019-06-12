@@ -26,14 +26,14 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getTargetExtension(): string;
     private _cache_runTimeFirstWordToNodeConstructorMap;
     getRunTimeFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getRunTimeNodeTypeIds(): jTreeTypes.nodeTypeId[];
+    getRunTimeFirstWordsInScope(): jTreeTypes.nodeTypeId[];
     getRunTimeFirstWordMapWithDefinitions(): {
         [key: string]: GrammarNodeTypeDefinitionNode;
     };
     getRequiredCellTypeIds(): jTreeTypes.cellTypeId[];
     getGetters(): string[];
     getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
-    protected _initRunTimeFirstWordToNodeConstructorMap(): void;
+    protected _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): jTreeTypes.firstWordToNodeConstructorMap;
     getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];
     protected _getParentDefinition(): AbstractGrammarDefinitionNode;
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];

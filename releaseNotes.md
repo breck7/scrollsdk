@@ -15,7 +15,7 @@ edge / 2019-06-11
 - Breaking: getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
 - Breaking: getCatchAllCellTypeName is now getCatchAllCellTypeId
 - Breaking: getRequiredCellTypeNames is now getRequiredCellTypeIds
-- Breaking: getRunTimeNodeTypeNames is now getRunTimeNodeTypeIds
+- Breaking: getRunTimeNodeTypeNames is now getRunTimeFirstWordsInScope
 - Breaking: getFirstCellType is now getFirstCellTypeId
 - Breaking: getCellTypeName is now getCellTypeId
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById

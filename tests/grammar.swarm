@@ -20,7 +20,7 @@ test stress test
     compiler txt
      sub to {word}
      closeChildren end
- getRunTimeNodeTypeIds
+ getRunTimeFirstWordsInScope
   lengthIs 3
  getNodeTypeDefinitionByNodeTypeId to
   typeIs object

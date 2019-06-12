@@ -189,7 +189,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     }
     _toJavascript(jtreePath, forNodeJs = true) {
         const nodeTypeClasses = this.getNodeTypeDefinitions()
-            .map(def => def.toJavascript())
+            .map(def => def._toJavascript())
             .join("\n\n");
         const components = [this.getNodeConstructorToJavascript()].filter(code => code);
         const rootClass = `class ${this._getRootClassName()} extends jtree.programRoot {

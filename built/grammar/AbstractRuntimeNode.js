@@ -8,6 +8,9 @@ class AbstractRuntimeNode extends TreeNode_1.default {
     getGrammarProgram() {
         return this.getProgram().getGrammarProgram();
     }
+    getNodeConstructor(line) {
+        return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line);
+    }
     getFirstWordMap() {
         return this.getDefinition().getRunTimeFirstWordMap();
     }

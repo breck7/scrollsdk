@@ -5,6 +5,7 @@ import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import jTreeTypes from "../jTreeTypes";
 declare abstract class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram(): GrammarProgram;
+    getNodeConstructor(line: string): Function;
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getCatchAllNodeConstructor(line: string): Function;
     getProgram(): AbstractRuntimeNode;

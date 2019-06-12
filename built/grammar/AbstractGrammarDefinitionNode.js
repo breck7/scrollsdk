@@ -50,9 +50,17 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this.getWord(1);
     }
     getGeneratedClassName() {
-        const id = this.getNodeTypeIdFromDefinition();
-        const safeId = id.replace(/\./g, "_");
-        return `${safeId}Node`;
+        let javascriptSyntaxSafeId = this.getNodeTypeIdFromDefinition();
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase());
+        // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang");
+        return `${javascriptSyntaxSafeId}Node`;
     }
     getNodeConstructorToJavascript() {
         const nodeMap = this.getRunTimeFirstWordMapWithDefinitions();
@@ -61,13 +69,10 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         // if THIS node defines a keyword map, use that first
         // IF IT DOES NOT, ADD NOTHING
         // CHECK PARENTS TOO
-        const firstWordMap = Object.keys(nodeMap)
-            .map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)
-            .join(",\n");
+        const firstWordMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getMyInScopeNodeTypeIds());
         if (firstWordMap)
-            return `getNodeConstructor(line) {
-return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
-  return {${firstWordMap}}
+            return `getFirstWordMap() {
+  return {${Object.keys(firstWordMap).map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)}}
   }`;
     }
     _isNonTerminal() {
@@ -121,10 +126,11 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
         return firstNode ? firstNode.getTargetExtension() : "";
     }
     getRunTimeFirstWordMap() {
-        this._initRunTimeFirstWordToNodeConstructorMap();
+        if (!this._cache_runTimeFirstWordToNodeConstructorMap)
+            this._cache_runTimeFirstWordToNodeConstructorMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getInScopeNodeTypeIds());
         return this._cache_runTimeFirstWordToNodeConstructorMap;
     }
-    getRunTimeNodeTypeIds() {
+    getRunTimeFirstWordsInScope() {
         return Object.keys(this.getRunTimeFirstWordMap());
     }
     getRunTimeFirstWordMapWithDefinitions() {
@@ -149,23 +155,18 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     getCatchAllCellTypeId() {
         return this.get(GrammarConstants_1.GrammarConstants.catchAllCellType);
     }
-    _initRunTimeFirstWordToNodeConstructorMap() {
-        if (this._cache_runTimeFirstWordToNodeConstructorMap)
-            return undefined;
-        // todo: make this handle extensions.
-        const nodeTypeIdsInScope = this._getInScopeNodeTypeIds();
-        this._cache_runTimeFirstWordToNodeConstructorMap = {};
-        // terminals dont have acceptable firstWords
+    _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope) {
         if (!nodeTypeIdsInScope.length)
-            return undefined;
+            return {};
+        const result = {};
         const allProgramNodeTypeDefinitionsMap = this._getProgramNodeTypeDefinitionCache();
-        const nodeTypeIds = Object.keys(allProgramNodeTypeDefinitionsMap);
-        nodeTypeIds
+        Object.keys(allProgramNodeTypeDefinitionsMap)
             .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypeIdsInScope))
             .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
             .forEach(nodeTypeId => {
-            this._cache_runTimeFirstWordToNodeConstructorMap[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar();
+            result[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar();
         });
+        return result;
     }
     getTopNodeTypeIds() {
         const definitions = this._getProgramNodeTypeDefinitionCache();

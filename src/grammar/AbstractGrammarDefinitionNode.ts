@@ -62,9 +62,17 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getGeneratedClassName() {
-    const id = this.getNodeTypeIdFromDefinition()
-    const safeId = id.replace(/\./g, "_")
-    return `${safeId}Node`
+    let javascriptSyntaxSafeId = this.getNodeTypeIdFromDefinition()
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase())
+    // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang")
+    return `${javascriptSyntaxSafeId}Node`
   }
 
   getNodeConstructorToJavascript(): string {
@@ -75,15 +83,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     // if THIS node defines a keyword map, use that first
     // IF IT DOES NOT, ADD NOTHING
     // CHECK PARENTS TOO
-
-    const firstWordMap = Object.keys(nodeMap)
-      .map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)
-      .join(",\n")
+    const firstWordMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getMyInScopeNodeTypeIds())
 
     if (firstWordMap)
-      return `getNodeConstructor(line) {
-return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
-  return {${firstWordMap}}
+      return `getFirstWordMap() {
+  return {${Object.keys(firstWordMap).map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)}}
   }`
   }
 
@@ -150,11 +154,12 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
   private _cache_runTimeFirstWordToNodeConstructorMap: jTreeTypes.firstWordToNodeConstructorMap
 
   getRunTimeFirstWordMap() {
-    this._initRunTimeFirstWordToNodeConstructorMap()
+    if (!this._cache_runTimeFirstWordToNodeConstructorMap)
+      this._cache_runTimeFirstWordToNodeConstructorMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getInScopeNodeTypeIds())
     return this._cache_runTimeFirstWordToNodeConstructorMap
   }
 
-  getRunTimeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  getRunTimeFirstWordsInScope(): jTreeTypes.nodeTypeId[] {
     return Object.keys(this.getRunTimeFirstWordMap())
   }
 
@@ -188,23 +193,19 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return this.get(GrammarConstants.catchAllCellType)
   }
 
-  protected _initRunTimeFirstWordToNodeConstructorMap(): void {
-    if (this._cache_runTimeFirstWordToNodeConstructorMap) return undefined
-    // todo: make this handle extensions.
-    const nodeTypeIdsInScope = this._getInScopeNodeTypeIds()
+  protected _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): jTreeTypes.firstWordToNodeConstructorMap {
+    if (!nodeTypeIdsInScope.length) return {}
 
-    this._cache_runTimeFirstWordToNodeConstructorMap = {}
-    // terminals dont have acceptable firstWords
-    if (!nodeTypeIdsInScope.length) return undefined
+    const result: jTreeTypes.firstWordToNodeConstructorMap = {}
 
     const allProgramNodeTypeDefinitionsMap = this._getProgramNodeTypeDefinitionCache()
-    const nodeTypeIds = Object.keys(allProgramNodeTypeDefinitionsMap)
-    nodeTypeIds
+    Object.keys(allProgramNodeTypeDefinitionsMap)
       .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypeIdsInScope))
       .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
       .forEach(nodeTypeId => {
-        this._cache_runTimeFirstWordToNodeConstructorMap[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar()
+        result[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar()
       })
+    return result
   }
 
   getTopNodeTypeIds(): jTreeTypes.nodeTypeId[] {

@@ -8,7 +8,8 @@ const jibberishRootDir = __dirname + "/../langs/jibberish/"
 const jibberishProgramRoot = require(jibberishRootDir + "jibberishProgramRoot.js")
 const jibberishNodes = require(jibberishRootDir + "jibberishNodes.js")
 
-const numbersGrammar = fs.readFileSync(__dirname + "/../langs/numbers/numbers.grammar", "utf8")
+const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
+const numbersGrammar = fs.readFileSync(numbersPath, "utf8")
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = fs.readFileSync(grammarGrammarPath, "utf8")
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"

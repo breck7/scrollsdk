@@ -120,7 +120,7 @@ ${captures}
         if (ancestorIds.length > 1)
             return ancestorIds[ancestorIds.length - 2];
     }
-    toJavascript() {
+    _toJavascript() {
         const ancestorIds = this.getAncestorNodeTypeIdsArray();
         const extendedNodeTypeId = this._getExtendedNodeTypeId();
         const extendsClass = extendedNodeTypeId ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId).getGeneratedClassName() : "jtree.NonTerminalNode";

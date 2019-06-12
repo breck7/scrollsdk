@@ -145,7 +145,7 @@ ${captures}
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
   }
 
-  toJavascript(): jTreeTypes.javascriptCode {
+  _toJavascript(): jTreeTypes.javascriptCode {
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
     const extendedNodeTypeId = this._getExtendedNodeTypeId()
     const extendsClass = extendedNodeTypeId ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId).getGeneratedClassName() : "jtree.NonTerminalNode"

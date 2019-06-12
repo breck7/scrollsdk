@@ -239,7 +239,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   private _toJavascript(jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
     const nodeTypeClasses = this.getNodeTypeDefinitions()
-      .map(def => def.toJavascript())
+      .map(def => def._toJavascript())
       .join("\n\n")
 
     const components = [this.getNodeConstructorToJavascript()].filter(code => code)

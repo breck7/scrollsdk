@@ -39,7 +39,7 @@ var GrammarConstants;
     GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
     GrammarConstants["enum"] = "enum";
     // parse time
-    GrammarConstants["nodeTypes"] = "nodeTypes";
+    GrammarConstants["inScope"] = "inScope";
     GrammarConstants["cells"] = "cells";
     GrammarConstants["catchAllCellType"] = "catchAllCellType";
     GrammarConstants["firstCellType"] = "firstCellType";

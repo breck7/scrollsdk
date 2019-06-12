@@ -32,8 +32,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         return cell ? cell.getAutoCompleteWords(partialWord) : [];
     }
     _getAutocompleteResultsForFirstWord(partialWord) {
-        const def = this.getDefinition();
-        let defs = Object.values(def.getRunTimeFirstWordMapWithDefinitions());
+        let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
         if (partialWord)
             defs = defs.filter(def => def.getNodeTypeIdFromDefinition().includes(partialWord));
         return defs.map(def => {
@@ -52,8 +51,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
             .getNodeTypeDefinitionByFirstWordPath(path);
     }
     _getRequiredNodeErrors(errors = []) {
-        const nodeDef = this.getDefinition();
-        const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions();
+        const firstWords = this.getDefinition().getRunTimeFirstWordMapWithDefinitions();
         Object.keys(firstWords).forEach(firstWord => {
             const def = firstWords[firstWord];
             if (def.isRequired() && !this.has(firstWord))

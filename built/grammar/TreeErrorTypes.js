@@ -38,7 +38,7 @@ class AbstractTreeError {
     }
     _getCodeMirrorLineWidgetElementCellTypeHints() {
         const el = document.createElement("div");
-        el.appendChild(document.createTextNode(this.getIndent() + this.getNode().getDefinition().getLineHints()));
+        el.appendChild(document.createTextNode(this.getIndent() + this.getNode().getLineHints()));
         el.className = "LintCellTypeHints";
         return el;
     }

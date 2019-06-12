@@ -28,7 +28,7 @@ declare enum GrammarConstants {
     regex = "regex",
     enumFromGrammar = "enumFromGrammar",
     enum = "enum",
-    nodeTypes = "nodeTypes",
+    inScope = "inScope",
     cells = "cells",
     catchAllCellType = "catchAllCellType",
     firstCellType = "firstCellType",

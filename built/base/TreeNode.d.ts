@@ -219,7 +219,7 @@ declare class TreeNode extends ImmutableNode {
     private _virtualParentTree;
     protected _setVirtualParentTree(tree: TreeNode): this;
     protected _getVirtualParentTreeNode(): TreeNode;
-    private _setVirtualAncestorNodesByInheritanceViaColumnIndices;
+    private _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand;
     private _isVirtualExpanded;
     private _isExpanding;
     protected _expandFromVirtualParentTree(): this;

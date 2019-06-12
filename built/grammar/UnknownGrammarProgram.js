@@ -10,7 +10,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
         const globalCellTypeMap = new Map();
         const xi = this.getXI();
         const yi = this.getYI();
-        this.getFirstWords().forEach(firstWord => rootNode.touchNode(`${GrammarConstants_1.GrammarConstants.grammar} ${GrammarConstants_1.GrammarConstants.nodeTypes} ${firstWord}`));
+        this.getFirstWords().forEach(firstWord => rootNode.touchNode(`${GrammarConstants_1.GrammarConstants.grammar} ${GrammarConstants_1.GrammarConstants.inScope} ${firstWord}`));
         const clone = this.clone();
         let allNodes = clone.getTopDownArrayIterator();
         let node;
@@ -40,7 +40,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             const childFirstWords = Object.keys(allChilds[firstWord]);
             if (childFirstWords.length) {
                 //defNode.touchNode(GrammarConstants.blob) // todo: remove?
-                childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants_1.GrammarConstants.nodeTypes} ${firstWord}`));
+                defNode.touchNode(GrammarConstants_1.GrammarConstants.inScope).setContent(childFirstWords.join(" "));
             }
             const allLines = allFirstWordNodes[firstWord];
             const cells = allLines

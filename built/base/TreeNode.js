@@ -1204,7 +1204,7 @@ class TreeNode extends ImmutableNode {
     _getVirtualParentTreeNode() {
         return this._virtualParentTree;
     }
-    _setVirtualAncestorNodesByInheritanceViaColumnIndices(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
+    _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
         const map = {};
         for (let node of nodes) {
             const nodeId = node.getWord(thisIdColumnNumber);
@@ -1246,7 +1246,7 @@ class TreeNode extends ImmutableNode {
     }
     // todo: solve issue related to whether extend should overwrite or append.
     _expandChildren(thisIdColumnNumber, extendsIdColumnNumber, childrenThatNeedExpanding = this.getChildren()) {
-        return this._setVirtualAncestorNodesByInheritanceViaColumnIndices(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber);
+        return this._setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber);
     }
     // todo: add more testing.
     // todo: solve issue with where extend should overwrite or append

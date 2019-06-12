@@ -1,11 +1,9 @@
 import jTreeTypes from "../jTreeTypes";
-import GrammarProgram from "./GrammarProgram";
 import AbstractRuntimeNonRootNode from "./AbstractRuntimeNonRootNode";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 declare abstract class AbstractGrammarBackedCell<T> {
     constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeName: string, isCatchAll: boolean);
     private _node;
-    protected _grammarProgram: GrammarProgram;
     protected _index: jTreeTypes.int;
     protected _word: string;
     private _typeDef;
@@ -27,7 +25,6 @@ declare abstract class AbstractGrammarBackedCell<T> {
     protected _getLineNumber(): any;
     protected _getFullLine(): any;
     protected _getErrorContext(): any;
-    protected _getExpectedLineCellTypes(): any;
     protected abstract _isValid(): boolean;
     isValid(): boolean;
     getErrorIfAny(): jTreeTypes.TreeError;

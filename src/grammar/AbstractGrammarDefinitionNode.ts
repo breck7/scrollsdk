@@ -220,7 +220,7 @@ return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeC
     return undefined
   }
 
-  private _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     // todo: allow multiple of these if we allow mixins?
     const nodeTypesNode = this.getNode(GrammarConstants.inScope)
     const ids = nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []

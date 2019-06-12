@@ -51,7 +51,7 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
 
   private _getCodeMirrorLineWidgetElementCellTypeHints() {
     const el = document.createElement("div")
-    el.appendChild(document.createTextNode(this.getIndent() + <AbstractRuntimeNonRootNode>this.getNode().getLineHints()))
+    el.appendChild(document.createTextNode(this.getIndent() + (<AbstractRuntimeNonRootNode>this.getNode()).getLineHints()))
     el.className = "LintCellTypeHints"
     return el
   }

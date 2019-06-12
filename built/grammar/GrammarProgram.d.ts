@@ -19,7 +19,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getCellTypeDefinitions(): {
         [name: string]: GrammarCellTypeDefinitionNode;
     };
-    getCellTypeDefinition(word: string): GrammarCellTypeDefinitionNode;
+    getCellTypeDefinitionById(cellTypeId: jTreeTypes.cellTypeId): GrammarCellTypeDefinitionNode;
     getNodeTypeFamilyTree(): TreeNode;
     protected _getCellTypeDefinitions(): {
         [typeName: string]: GrammarCellTypeDefinitionNode;
@@ -30,7 +30,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     protected _getGrammarRootNode(): GrammarRootNode;
     getExtensionName(): string;
     getGrammarName(): string | undefined;
-    protected _getNodeTypesNode(): TreeNode;
+    protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     private _cachedDefinitions;
     getNodeTypeDefinitionByFirstWordPath(firstWordPath: string): AbstractGrammarDefinitionNode;
     getDocs(): string;

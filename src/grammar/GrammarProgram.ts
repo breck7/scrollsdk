@@ -141,7 +141,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getGrammarRootNode().get(GrammarConstants.name)
   }
 
-  private _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }

@@ -10,7 +10,7 @@ declare class GrammarCellTypeDefinitionNode extends TreeNode {
     getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgram): string[];
     getRegexString(): string;
     isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram): boolean;
-    getCellTypeId(): string;
+    getCellTypeId(): jTreeTypes.cellTypeId;
     static types: any;
 }
 export default GrammarCellTypeDefinitionNode;

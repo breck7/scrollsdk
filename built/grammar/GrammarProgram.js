@@ -75,15 +75,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             this._cache_cellTypes = this._getCellTypeDefinitions();
         return this._cache_cellTypes;
     }
-    getCellTypeDefinition(word) {
-        const type = this.getCellTypeDefinitions()[word];
-        // todo: return unknownCellTypeDefinition
-        return type;
+    getCellTypeDefinitionById(cellTypeId) {
+        // todo: return unknownCellTypeDefinition? or is that handled somewhere else?
+        return this.getCellTypeDefinitions()[cellTypeId];
     }
     getNodeTypeFamilyTree() {
         const tree = new TreeNode_1.default();
         Object.values(this.getNodeTypeDefinitions()).forEach(node => {
-            const path = node.getAncestorNodeTypeNamesArray().join(" ");
+            const path = node.getAncestorNodeTypeIdsArray().join(" ");
             tree.touchNode(path);
         });
         return tree;
@@ -113,8 +112,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getGrammarName() {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.name);
     }
-    _getNodeTypesNode() {
-        return this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.nodeTypes);
+    _getInScopeNodeTypeIds() {
+        const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.inScope);
+        return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
     }
     getNodeTypeDefinitionByFirstWordPath(firstWordPath) {
         if (!this._cachedDefinitions)
@@ -253,6 +253,7 @@ ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
                 .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.nodeType}${xi}${word}${xi}${abstractName}`));
         });
         // todo: only expand certain types.
+        // inScope should be a set.
         return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.toolingDirective)), grammarPath);
     }
     async loadAllConstructorScripts(baseUrlPath) {

@@ -37,7 +37,6 @@ export declare namespace jTreeTypes {
     type pathVector = int[];
     type word = string;
     type firstWord = word;
-    type nodeTypeId = string;
     type triInt = int;
     type filepath = string;
     type globPattern = string;
@@ -56,6 +55,8 @@ export declare namespace jTreeTypes {
     };
     type typeScriptCode = string;
     type javascriptCode = string;
+    type nodeTypeId = string;
+    type cellTypeId = string;
     type semanticVersion = string;
     type absoluteFilePath = filepath;
     type asboluteFolderPath = absoluteFilePath;

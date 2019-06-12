@@ -9,7 +9,7 @@ declare class GrammarDefinitionErrorNode extends TreeNode {
 }
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getNodeTypeIdFromDefinition(): string;
+    getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
     getGeneratedClassName(): string;
     getNodeConstructorToJavascript(): string;
     protected _isNonTerminal(): boolean;
@@ -21,31 +21,30 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getDefinedNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getProgram(): GrammarProgram;
-    getLineHints(): string;
     getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
     private _cache_runTimeFirstWordToNodeConstructorMap;
     getRunTimeFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getRunTimeNodeTypeNames(): string[];
+    getRunTimeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     getRunTimeFirstWordMapWithDefinitions(): {
         [key: string]: GrammarNodeTypeDefinitionNode;
     };
-    getRequiredCellTypeNames(): string[];
+    getRequiredCellTypeIds(): jTreeTypes.cellTypeId[];
     getGetters(): string[];
-    getCatchAllCellTypeName(): string | undefined;
+    getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
     protected _initRunTimeFirstWordToNodeConstructorMap(): void;
-    _getNodeTypesInScope(): string[];
-    getTopNodeTypeIds(): string[];
-    protected _getNodeTypesNode(): TreeNode;
+    getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];
+    protected _getParentDefinition(): AbstractGrammarDefinitionNode;
+    protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     isRequired(): boolean;
-    isSingle(): boolean;
-    _getRunTimeCatchAllNodeTypeId(): string;
+    _shouldBeJustOne(): boolean;
+    _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId;
     getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode;
     _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): void;
-    getFirstCellType(): string;
+    getFirstCellTypeId(): jTreeTypes.cellTypeId;
     isDefined(firstWord: string): boolean;
     _getProgramNodeTypeDefinitionCache(): {
         [firstWord: string]: GrammarNodeTypeDefinitionNode;

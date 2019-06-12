@@ -6,7 +6,10 @@ import jTreeTypes from "../jTreeTypes";
 declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getProgram(): AbstractRuntimeNode;
     getGrammarProgram(): import("./GrammarProgram").default;
+    getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): GrammarNodeTypeDefinitionNode;
+    getConstantsObject(): jTreeTypes.stringMap;
+    getLineHints(): string;
     getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
     getParsedWords(): any[];
     getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;

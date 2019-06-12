@@ -58,7 +58,13 @@ testTree.numbers = equal => {
     equal(program.nodeAt(0).numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
 
-    // [] cell typings
+    // program errors
+    // autocomplete
+    // line hints
+    // syntax highlighting
+    // examples
+
+    // [~] cell typings
     // [] cell constants
     // [] cell defaults
     // [] cell improvs
@@ -68,9 +74,9 @@ testTree.numbers = equal => {
     // [] packaging for browser/node.js
     // [] swarm in browser
     // [] might eliminate need for constructor paths in grammar files
-    // [] easily have native javascript types
+    // [~] easily have native javascript types
     // [] easier to build new runtimes like golang, etc
-    // [] we can also hopefully do it without breaking much/anything existing
+    // [~] we can also hopefully do it without breaking much/anything existing
     // [] would perhaps make imports easier (because just done once at compile time)
   } catch (err) {
     console.error(err)

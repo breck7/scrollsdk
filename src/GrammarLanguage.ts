@@ -1438,6 +1438,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     // CHECK PARENTS TOO
     const firstWordMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getMyInScopeNodeTypeIds())
 
+    // todo: use constants in first word maps
     if (Object.keys(firstWordMap).length)
       return `getFirstWordMap() {
   return {${Object.keys(firstWordMap).map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)}}

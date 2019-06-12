@@ -313,6 +313,7 @@ ${GrammarConstants.cellType} anyWord`
     })
 
     // todo: only expand certain types.
+    // inScope should be a set.
     return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.toolingDirective)), grammarPath)
   }
 

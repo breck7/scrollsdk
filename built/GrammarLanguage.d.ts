@@ -54,7 +54,6 @@ declare abstract class CompiledLanguageRootNode extends TreeNode {
 }
 declare abstract class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram(): GrammarProgram;
-    getNodeConstructor(line: string): Function;
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getCatchAllNodeConstructor(line: string): Function;
     getProgram(): AbstractRuntimeNode;
@@ -301,6 +300,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     toBrowserJavascript(): jTreeTypes.javascriptCode;
     private _getProperName;
     private _getRootClassName;
+    private _getCatchAllNodeConstructorToJavascript;
     private _toJavascript;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;

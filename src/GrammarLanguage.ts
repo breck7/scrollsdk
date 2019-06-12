@@ -72,6 +72,11 @@ enum GrammarConstants {
   highlightScope = "highlightScope"
 }
 
+abstract class CompiledLanguageNode extends TreeNode {
+  getNodeConstructor(line: string) {
+    return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
+  }
+}
 abstract class CompiledLanguageNonRootNode extends TreeNode {}
 abstract class CompiledLanguageRootNode extends TreeNode {}
 
@@ -80,10 +85,6 @@ abstract class AbstractRuntimeNode extends TreeNode {
   // some of the magic that makes this all work. but maybe there's a better way.
   getGrammarProgram(): GrammarProgram {
     return this.getProgram().getGrammarProgram()
-  }
-
-  getNodeConstructor(line: string) {
-    return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
   }
 
   getFirstWordMap() {
@@ -1411,10 +1412,11 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     // CHECK PARENTS TOO
     const firstWordMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getMyInScopeNodeTypeIds())
 
-    if (firstWordMap)
+    if (Object.keys(firstWordMap).length)
       return `getFirstWordMap() {
   return {${Object.keys(firstWordMap).map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)}}
   }`
+    return ""
   }
 
   protected _isNonTerminal() {
@@ -1985,6 +1987,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getProperName() + "ProgramRoot"
   }
 
+  private _getCatchAllNodeConstructorToJavascript() {
+    const nodeTypeId = this._getRunTimeCatchAllNodeTypeId()
+    if (!nodeTypeId) return ""
+    const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId).getGeneratedClassName()
+    return `getCatchAllNodeConstructor() { return ${className}}`
+  }
+
   private _toJavascript(jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
     const defs = this.getNodeTypeDefinitions()
     const nodeTypeClasses = defs.map(def => def._toJavascript()).join("\n\n")
@@ -1993,28 +2002,28 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const nodeTypeConstants = defs
       .map(def => {
         const id = def.getNodeTypeIdFromDefinition()
-        return `${constantsName}.nodeTypes["${id}"] = "${id}"`
+        return `"${id}": "${id}"`
       })
-      .join("\n")
+      .join(",\n")
     const cellTypeConstants = Object.keys(this.getCellTypeDefinitions())
-      .map(id => {
-        return `${constantsName}.cellTypes["${id}"] = "${id}"`
-      })
-      .join("\n")
+      .map(id => `"${id}" : "${id}"`)
+      .join(",\n")
 
-    const components = [this.getNodeConstructorToJavascript()].filter(code => code)
+    const rootClassMethods = [this.getNodeConstructorToJavascript(), this._getCatchAllNodeConstructorToJavascript()].filter(code => code)
     const rootClass = `class ${this._getRootClassName()} extends jtree.CompiledLanguageRootNode {
-  getGrammarProgram() {}
-  ${components.join("\n")}
+  ${rootClassMethods.join("\n")}
     }`
 
     return `${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
 
-const ${constantsName} = {}
-${constantsName}.nodeTypes = {}
-${nodeTypeConstants}
-${constantsName}.cellTypes = {}
-${cellTypeConstants}
+const ${constantsName} = {
+  nodeTypes: {
+    ${nodeTypeConstants}
+  },
+  cellTypes: {
+    ${cellTypeConstants}
+  }
+}
 
 ${nodeTypeClasses}
 

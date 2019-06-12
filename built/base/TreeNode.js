@@ -577,8 +577,12 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     findNodes(firstWordPath) {
         // todo: can easily speed this up
+        const map = {};
+        if (!Array.isArray(firstWordPath))
+            firstWordPath = [firstWordPath];
+        firstWordPath.forEach(path => (map[path] = true));
         return this.getTopDownArray().filter(node => {
-            if (node._getFirstWordPath(this) === firstWordPath)
+            if (map[node._getFirstWordPath(this)])
                 return true;
             return false;
         });

@@ -4,6 +4,7 @@ edge / 2019-06-02
 - New: getFirstNode method
 - New: added support for "tooling" directives in Grammar language
 - New: getNodeTypeId on NonRootRunTime nodes
+- New: findNodes in base can now take an array of first words
 - Breaking: avoid getDefinition()--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
 - Breaking: removed getExpectedLineCellTypes--use getLineHints
 - Breaking: nodeTypes in grammar is now "inScope", and is one line instead of parent/children

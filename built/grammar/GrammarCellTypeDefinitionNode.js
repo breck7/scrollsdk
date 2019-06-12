@@ -16,18 +16,19 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
     _getEnumFromGrammar(runTimeGrammarBackedProgram) {
-        const nodeType = this.getWord(1);
+        const nodeTypes = this.getWordsFrom(1);
+        const enumGroup = nodeTypes.join(" ");
         // note: hack where we store it on the program. otherwise has global effects.
         if (!runTimeGrammarBackedProgram._enumMaps)
             runTimeGrammarBackedProgram._enumMaps = {};
-        if (runTimeGrammarBackedProgram._enumMaps[nodeType])
-            return runTimeGrammarBackedProgram._enumMaps[nodeType];
+        if (runTimeGrammarBackedProgram._enumMaps[enumGroup])
+            return runTimeGrammarBackedProgram._enumMaps[enumGroup];
         const wordIndex = 1;
         const map = {};
-        runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
+        runTimeGrammarBackedProgram.findNodes(nodeTypes).forEach(node => {
             map[node.getWord(wordIndex)] = true;
         });
-        runTimeGrammarBackedProgram._enumMaps[nodeType] = map;
+        runTimeGrammarBackedProgram._enumMaps[enumGroup] = map;
         return map;
     }
     // todo: remove

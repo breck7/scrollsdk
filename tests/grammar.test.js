@@ -240,7 +240,7 @@ nodeType faveNumber
  cells in`)
 
   // Act/Assert
-  equal(program.getAutocompleteResultsAt(8, 9).matches.length, 1)
+  equal(program.getAutocompleteResultsAt(7, 9).matches.length, 1)
 }
 
 testTree.autocompleteCustom = equal => {

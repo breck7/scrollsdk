@@ -29,9 +29,7 @@ testTree.consoleBasics = equal => {
 
 testTree.distribute = equal => {
   // Arrange
-  const paths = ["test-combined1.delete.css", "test-combined2.delete.js", "test-combined.combined"].map(
-    file => __dirname + "/" + file
-  )
+  const paths = ["test-combined1.delete.css", "test-combined2.delete.js", "test-combined.combined"].map(file => __dirname + "/" + file)
   const data = [
     "here is some data",
     `foobar

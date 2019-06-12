@@ -39,7 +39,7 @@ file test
   const types = new UnknownGrammarProgram(input).getPredictedGrammarFile("foobar")
 
   // Assert
-  equal(types, fs.readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"))
+  equal(types, fs.readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)

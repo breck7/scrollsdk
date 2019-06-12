@@ -121,7 +121,7 @@ declare class ImmutableNode extends AbstractNode {
     _toYamlAssociativeArrayElement(indentLevel: number): string;
     _childrenToYamlAssociativeArray(indentLevel: number): string[];
     toJsonSubset(): jTreeTypes.jsonSubset;
-    findNodes(firstWordPath: jTreeTypes.firstWordPath): TreeNode[];
+    findNodes(firstWordPath: jTreeTypes.firstWordPath | jTreeTypes.firstWordPath[]): TreeNode[];
     format(str: jTreeTypes.formatString): string;
     getColumn(path: word): string[];
     getFiltered(fn: jTreeTypes.filterFn): TreeNode;

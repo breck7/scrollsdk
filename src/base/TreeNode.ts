@@ -668,10 +668,13 @@ class ImmutableNode extends AbstractNode {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(firstWordPath: jTreeTypes.firstWordPath): TreeNode[] {
+  findNodes(firstWordPath: jTreeTypes.firstWordPath | jTreeTypes.firstWordPath[]): TreeNode[] {
     // todo: can easily speed this up
+    const map: any = {}
+    if (!Array.isArray(firstWordPath)) firstWordPath = [firstWordPath]
+    firstWordPath.forEach(path => (map[path] = true))
     return this.getTopDownArray().filter(node => {
-      if (node._getFirstWordPath(this) === firstWordPath) return true
+      if (map[node._getFirstWordPath(this)]) return true
       return false
     })
   }

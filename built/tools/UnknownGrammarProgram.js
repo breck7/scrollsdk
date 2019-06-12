@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
-const GrammarConstants_1 = require("../grammar/GrammarConstants");
+const GrammarLanguage_1 = require("../grammar/GrammarLanguage");
 class UnknownGrammarProgram extends TreeNode_1.default {
     getPredictedGrammarFile(grammarName) {
-        const rootNode = new TreeNode_1.default(`${GrammarConstants_1.GrammarConstants.grammar}
- ${GrammarConstants_1.GrammarConstants.name} ${grammarName}`);
+        const rootNode = new TreeNode_1.default(`${GrammarLanguage_1.GrammarConstants.grammar}
+ ${GrammarLanguage_1.GrammarConstants.name} ${grammarName}`);
         // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
         const globalCellTypeMap = new Map();
         const xi = this.getXI();
         const yi = this.getYI();
-        rootNode.touchNode(`${GrammarConstants_1.GrammarConstants.grammar} ${GrammarConstants_1.GrammarConstants.inScope}`).setWordsFrom(1, Array.from(new Set(this.getFirstWords())));
+        rootNode.touchNode(`${GrammarLanguage_1.GrammarConstants.grammar} ${GrammarLanguage_1.GrammarConstants.inScope}`).setWordsFrom(1, Array.from(new Set(this.getFirstWords())));
         const clone = this.clone();
         let allNodes = clone.getTopDownArrayIterator();
         let node;
@@ -36,11 +36,11 @@ class UnknownGrammarProgram extends TreeNode_1.default {
         }
         const lineCount = clone.getNumberOfLines();
         const firstWords = Object.keys(allChilds).map(firstWord => {
-            const defNode = new TreeNode_1.default(`${GrammarConstants_1.GrammarConstants.nodeType} ${firstWord}`).nodeAt(0);
+            const defNode = new TreeNode_1.default(`${GrammarLanguage_1.GrammarConstants.nodeType} ${firstWord}`).nodeAt(0);
             const childFirstWords = Object.keys(allChilds[firstWord]);
             if (childFirstWords.length) {
                 //defNode.touchNode(GrammarConstants.blob) // todo: remove?
-                defNode.touchNode(GrammarConstants_1.GrammarConstants.inScope).setWordsFrom(1, childFirstWords);
+                defNode.touchNode(GrammarLanguage_1.GrammarConstants.inScope).setWordsFrom(1, childFirstWords);
             }
             const allLines = allFirstWordNodes[firstWord];
             const cells = allLines
@@ -66,11 +66,11 @@ class UnknownGrammarProgram extends TreeNode_1.default {
                 }
             }
             if (catchAllCellType)
-                defNode.set(GrammarConstants_1.GrammarConstants.catchAllCellType, catchAllCellType);
+                defNode.set(GrammarLanguage_1.GrammarConstants.catchAllCellType, catchAllCellType);
             if (cellTypes.length > 1)
-                defNode.set(GrammarConstants_1.GrammarConstants.cells, cellTypes.join(xi));
+                defNode.set(GrammarLanguage_1.GrammarConstants.cells, cellTypes.join(xi));
             if (!catchAllCellType && cellTypes.length === 1)
-                defNode.set(GrammarConstants_1.GrammarConstants.cells, cellTypes[0]);
+                defNode.set(GrammarLanguage_1.GrammarConstants.cells, cellTypes[0]);
             // Todo: switch to conditional frequency
             //defNode.set(GrammarConstants.frequency, (allLines.length / lineCount).toFixed(3))
             return defNode.getParent().toString();
@@ -91,20 +91,20 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             return true;
         };
         if (all((str) => str === "0" || str === "1"))
-            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.bit };
+            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.bit };
         if (all((str) => {
             const num = parseInt(str);
             if (isNaN(num))
                 return false;
             return num.toString() === str;
         })) {
-            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.int };
+            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.int };
         }
         if (all((str) => !str.match(/[^\d\.\-]/)))
-            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.float };
+            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.float };
         const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
         if (all((str) => bools.has(str.toLowerCase())))
-            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.bool };
+            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.bool };
         // If there are duplicate files and the set is less than enum
         const enumLimit = 30;
         if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
@@ -113,7 +113,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
                 cellTypeDefinition: `cellType ${firstWord}Enum
  enum ${values.join(xi)}`
             };
-        return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.any };
+        return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.any };
     }
 }
 exports.default = UnknownGrammarProgram;

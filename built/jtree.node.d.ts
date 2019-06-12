@@ -1,5 +1,5 @@
 import jtree from "./jtree";
-import { AbstractRuntimeProgramRootNode } from "./grammar/AbstractRuntimeNodes";
+import { AbstractRuntimeProgramRootNode } from "./grammar/GrammarLanguage";
 import Upgrader from "./tools/Upgrader";
 declare class jtreeNode extends jtree {
     static Upgrader: typeof Upgrader;

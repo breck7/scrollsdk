@@ -1,4 +1,4 @@
-import { AbstractRuntimeProgramRootNode } from "./AbstractRuntimeNodes";
+import { AbstractRuntimeProgramRootNode } from "./GrammarLanguage";
 interface AbstractRuntimeProgramConstructorInterface {
     new (code: string): AbstractRuntimeProgramRootNode;
 }

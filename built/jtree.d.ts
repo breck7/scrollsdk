@@ -1,7 +1,6 @@
 import TreeUtils from "./base/TreeUtils";
 import TreeNode from "./base/TreeNode";
-import { AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, GrammarBackedBlobNode } from "./grammar/AbstractRuntimeNodes";
-import { GrammarProgram } from "./grammar/NodeDefinitionNodes";
+import { GrammarProgram, AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, GrammarBackedBlobNode } from "./grammar/GrammarLanguage";
 import UnknownGrammarProgram from "./tools/UnknownGrammarProgram";
 import TreeNotationCodeMirrorMode from "./codemirror/TreeNotationCodeMirrorMode";
 declare class jtree {

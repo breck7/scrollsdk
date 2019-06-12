@@ -2,8 +2,7 @@ const fs = require("fs")
 
 import jtree from "./jtree"
 import jTreeTypes from "./jTreeTypes"
-import { GrammarProgram } from "./grammar/NodeDefinitionNodes"
-import { AbstractRuntimeProgramRootNode } from "./grammar/AbstractRuntimeNodes"
+import { GrammarProgram, AbstractRuntimeProgramRootNode } from "./grammar/GrammarLanguage"
 import Upgrader from "./tools/Upgrader"
 
 class jtreeNode extends jtree {

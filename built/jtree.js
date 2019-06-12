@@ -4,8 +4,8 @@ const TreeUtils_1 = require("./base/TreeUtils");
 const TreeNode_1 = require("./base/TreeNode");
 const AbstractRuntimeNodes_1 = require("./grammar/AbstractRuntimeNodes");
 const NodeDefinitionNodes_1 = require("./grammar/NodeDefinitionNodes");
-const UnknownGrammarProgram_1 = require("./grammar/UnknownGrammarProgram");
-const TreeNotationCodeMirrorMode_1 = require("./grammar/TreeNotationCodeMirrorMode");
+const UnknownGrammarProgram_1 = require("./tools/UnknownGrammarProgram");
+const TreeNotationCodeMirrorMode_1 = require("./codemirror/TreeNotationCodeMirrorMode");
 class jtree {
 }
 jtree.programRoot = AbstractRuntimeNodes_1.AbstractRuntimeProgramRootNode;

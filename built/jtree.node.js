@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const jtree_1 = require("./jtree");
 const NodeDefinitionNodes_1 = require("./grammar/NodeDefinitionNodes");
-const Upgrader_1 = require("./grammar/Upgrader");
+const Upgrader_1 = require("./tools/Upgrader");
 class jtreeNode extends jtree_1.default {
 }
 jtreeNode.Upgrader = Upgrader_1.default;

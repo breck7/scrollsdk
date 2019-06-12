@@ -3,7 +3,7 @@
 // todo: make isomorphic
 
 const fs = require("fs")
-const UnknownGrammarProgram = require("../built/grammar/UnknownGrammarProgram.js").default
+const UnknownGrammarProgram = require("../built/tools/UnknownGrammarProgram.js").default
 
 const testTree = {}
 

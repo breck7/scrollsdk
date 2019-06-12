@@ -4,7 +4,7 @@ import jtree from "./jtree"
 import jTreeTypes from "./jTreeTypes"
 import { GrammarProgram } from "./grammar/NodeDefinitionNodes"
 import { AbstractRuntimeProgramRootNode } from "./grammar/AbstractRuntimeNodes"
-import Upgrader from "./grammar/Upgrader"
+import Upgrader from "./tools/Upgrader"
 
 class jtreeNode extends jtree {
   static Upgrader = Upgrader

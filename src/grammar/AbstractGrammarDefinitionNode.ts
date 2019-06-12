@@ -4,7 +4,6 @@ import TreeUtils from "../base/TreeUtils"
 import { GrammarConstants, GrammarStandardCellTypeIds } from "./GrammarConstants"
 import GrammarCustomConstructorsNode from "./GrammarCustomConstructorsNode"
 import GrammarCompilerNode from "./GrammarCompilerNode"
-import GrammarExampleNode from "./GrammarExampleNode"
 import GrammarConstantsNode from "./GrammarConstantsNode"
 
 import GrammarBackedNonTerminalNode from "./GrammarBackedNonTerminalNode"
@@ -27,6 +26,8 @@ class GrammarDefinitionErrorNode extends TreeNode {
     return [<string>GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarStandardCellTypeIds.any)).join(" ")
   }
 }
+
+class GrammarExampleNode extends TreeNode {}
 
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
   getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
@@ -55,6 +56,10 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     map[GrammarConstants.constructors] = GrammarCustomConstructorsNode
     map[GrammarConstants.example] = GrammarExampleNode
     return map
+  }
+
+  getExamples(): GrammarExampleNode[] {
+    return this.getChildrenByNodeConstructor(GrammarExampleNode)
   }
 
   getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId {

@@ -2,7 +2,6 @@ import TreeNode from "../base/TreeNode"
 import TreeUtils from "../base/TreeUtils"
 
 import { GrammarConstants } from "./GrammarConstants"
-import GrammarExampleNode from "./GrammarExampleNode"
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode"
 
 /*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
@@ -129,10 +128,6 @@ ${captures}
 
   getDescription(): string {
     return this.get(GrammarConstants.description) || ""
-  }
-
-  getExamples(): GrammarExampleNode[] {
-    return this.getChildrenByNodeConstructor(GrammarExampleNode)
   }
 
   getFrequency() {

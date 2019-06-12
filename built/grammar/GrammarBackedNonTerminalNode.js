@@ -7,11 +7,11 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode_1.default 
         return "\n";
     }
     compile(targetExtension) {
-        const compiler = this.getCompilerNode(targetExtension);
+        const compiler = this._getCompilerNode(targetExtension);
         const openChildrenString = compiler.getOpenChildrenString();
         const closeChildrenString = compiler.getCloseChildrenString();
-        const compiledLine = this.getCompiledLine(targetExtension);
-        const indent = this.getCompiledIndentation(targetExtension);
+        const compiledLine = this._getCompiledLine(targetExtension);
+        const indent = this._getCompiledIndentation(targetExtension);
         const compiledChildren = this.map(child => child.compile(targetExtension)).join(this._getNodeJoinCharacter());
         return `${indent}${compiledLine}${openChildrenString}
 ${compiledChildren}

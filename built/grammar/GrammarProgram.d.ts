@@ -1,9 +1,9 @@
 import TreeNode from "../base/TreeNode";
-import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode";
 import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode";
 import jTreeTypes from "../jTreeTypes";
+import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface";
 declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
     protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getProgram(): GrammarProgram;

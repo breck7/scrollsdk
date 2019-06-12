@@ -9,13 +9,13 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): GrammarNodeTypeDefinitionNode;
     getConstantsObject(): jTreeTypes.stringMap;
-    getLineHints(): string;
-    getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
-    getParsedWords(): any[];
-    getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
-    getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
+    protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
+    protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
+    protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
     compile(targetLanguage: jTreeTypes.targetLanguageId): string;
     getErrors(): jTreeTypes.TreeError[];
+    getLineHints(): string;
+    getParsedWords(): any[];
     readonly cells: jTreeTypes.stringMap;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getLineCellTypes(): string;

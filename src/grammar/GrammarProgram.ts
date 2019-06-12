@@ -10,9 +10,7 @@ import UnknownGrammarProgram from "./UnknownGrammarProgram"
 
 import jTreeTypes from "../jTreeTypes"
 
-interface AbstractRuntimeProgramConstructorInterface {
-  new (code: string): AbstractRuntimeProgram
-}
+import AbstractRuntimeProgramConstructorInterface from "./AbstractRuntimeProgramConstructorInterface"
 
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {

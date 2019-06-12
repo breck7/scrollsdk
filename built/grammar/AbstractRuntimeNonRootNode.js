@@ -22,32 +22,23 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     getConstantsObject() {
         return this.getDefinition().getConstantsObject();
     }
-    // todo: improve layout (use bold?)
-    getLineHints() {
-        const def = this.getDefinition();
-        const catchAllCellTypeId = def.getCatchAllCellTypeId();
-        return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
-    }
-    getCompilerNode(targetLanguage) {
+    _getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
     }
-    getParsedWords() {
-        return this._getGrammarBackedCellArray().map(word => word.getParsed());
-    }
-    getCompiledIndentation(targetLanguage) {
-        const compiler = this.getCompilerNode(targetLanguage);
+    _getCompiledIndentation(targetLanguage) {
+        const compiler = this._getCompilerNode(targetLanguage);
         const indentCharacter = compiler.getIndentCharacter();
         const indent = this.getIndentation();
         return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent;
     }
-    getCompiledLine(targetLanguage) {
-        const compiler = this.getCompilerNode(targetLanguage);
+    _getCompiledLine(targetLanguage) {
+        const compiler = this._getCompilerNode(targetLanguage);
         const listDelimiter = compiler.getListDelimiter();
         const str = compiler.getTransformation();
         return str ? TreeUtils_1.default.formatStr(str, listDelimiter, this.cells) : this.getLine();
     }
     compile(targetLanguage) {
-        return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage);
+        return this._getCompiledIndentation(targetLanguage) + this._getCompiledLine(targetLanguage);
     }
     getErrors() {
         const errors = this._getGrammarBackedCellArray()
@@ -62,6 +53,16 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
                     errors.push(new TreeErrorTypes_1.NodeTypeUsedMultipleTimesError(node));
             });
         return this._getRequiredNodeErrors(errors);
+    }
+    // todo: improve layout (use bold?)
+    getLineHints() {
+        const def = this.getDefinition();
+        const catchAllCellTypeId = def.getCatchAllCellTypeId();
+        return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
+    }
+    // todo: remove?
+    getParsedWords() {
+        return this._getGrammarBackedCellArray().map(word => word.getParsed());
     }
     get cells() {
         const cells = {};

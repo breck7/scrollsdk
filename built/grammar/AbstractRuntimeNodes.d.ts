@@ -1,9 +1,8 @@
 import TreeNode from "../base/TreeNode";
 import jTreeTypes from "../jTreeTypes";
 import { AbstractGrammarBackedCell } from "./GrammarBackedCell";
-import GrammarProgram from "./GrammarProgram";
-import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
-import GrammarNodeTypeDefinitionNode from "./GrammarNodeTypeDefinitionNode";
+import { UnknownNodeTypeError } from "./TreeErrorTypes";
+import { AbstractGrammarDefinitionNode, GrammarNodeTypeDefinitionNode, GrammarProgram } from "./NodeDefinitionNodes";
 import GrammarCompilerNode from "./GrammarCompilerNode";
 declare abstract class AbstractRuntimeNode extends TreeNode {
     getGrammarProgram(): GrammarProgram;
@@ -71,4 +70,22 @@ declare abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNod
     private _cache_typeTree;
     protected _initCellTypeCache(): void;
 }
-export { AbstractRuntimeNode, AbstractRuntimeProgramRootNode, AbstractRuntimeNonRootNode };
+declare class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
+}
+declare class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
+    getLineCellTypes(): string;
+    getErrors(): UnknownNodeTypeError[];
+}
+declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
+    protected _getNodeJoinCharacter(): string;
+    compile(targetExtension: jTreeTypes.targetLanguageId): string;
+    private static _backupConstructorEnabled;
+    static useAsBackupConstructor(): boolean;
+    static setAsBackupConstructor(value: boolean): typeof GrammarBackedNonTerminalNode;
+}
+declare class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
+    getFirstWordMap(): {};
+    getErrors(): jTreeTypes.TreeError[];
+    getCatchAllNodeConstructor(line: string): typeof GrammarBackedBlobNode;
+}
+export { AbstractRuntimeNode, AbstractRuntimeProgramRootNode, AbstractRuntimeNonRootNode, GrammarBackedTerminalNode, GrammarBackedErrorNode, GrammarBackedNonTerminalNode, GrammarBackedBlobNode };

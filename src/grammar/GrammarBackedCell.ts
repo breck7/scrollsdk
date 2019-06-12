@@ -2,7 +2,7 @@ import TreeNode from "../base/TreeNode"
 import { GrammarConstants } from "./GrammarConstants"
 import jTreeTypes from "../jTreeTypes"
 
-/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import { GrammarProgram } from "./NodeDefinitionNodes"
 /*FOR_TYPES_ONLY*/ import { AbstractRuntimeProgramRootNode, AbstractRuntimeNonRootNode } from "./AbstractRuntimeNodes"
 /*FOR_TYPES_ONLY*/ import GrammarCellTypeDefinitionNode from "./GrammarCellTypeDefinitionNode"
 

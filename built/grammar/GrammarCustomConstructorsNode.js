@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
 const TreeUtils_1 = require("../base/TreeUtils");
-const GrammarBackedNodes_1 = require("./GrammarBackedNodes");
+const AbstractRuntimeNodes_1 = require("./AbstractRuntimeNodes");
 const GrammarConstants_1 = require("./GrammarConstants");
 const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class AbstractCustomConstructorNode extends TreeNode_1.default {
@@ -24,10 +24,10 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
     }
     getBuiltIn() {
         const constructors = {
-            ErrorNode: GrammarBackedNodes_1.GrammarBackedErrorNode,
-            TerminalNode: GrammarBackedNodes_1.GrammarBackedTerminalNode,
-            NonTerminalNode: GrammarBackedNodes_1.GrammarBackedNonTerminalNode,
-            BlobNode: GrammarBackedNodes_1.GrammarBackedBlobNode
+            ErrorNode: AbstractRuntimeNodes_1.GrammarBackedErrorNode,
+            TerminalNode: AbstractRuntimeNodes_1.GrammarBackedTerminalNode,
+            NonTerminalNode: AbstractRuntimeNodes_1.GrammarBackedNonTerminalNode,
+            BlobNode: AbstractRuntimeNodes_1.GrammarBackedBlobNode
         };
         return constructors[this.getWord(1)];
     }
@@ -54,8 +54,8 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         const constructorName = this.getWord(1);
         const constructor = TreeUtils_1.default.resolveProperty(window, constructorName);
-        if (GrammarBackedNodes_1.GrammarBackedNonTerminalNode.useAsBackupConstructor())
-            return GrammarBackedNodes_1.GrammarBackedNonTerminalNode;
+        if (AbstractRuntimeNodes_1.GrammarBackedNonTerminalNode.useAsBackupConstructor())
+            return AbstractRuntimeNodes_1.GrammarBackedNonTerminalNode;
         if (!constructor)
             throw new Error(`constructor window.${constructorName} not found.`);
         return constructor;

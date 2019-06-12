@@ -6,7 +6,7 @@ const GrammarConstants_1 = require("./GrammarConstants");
 const GrammarCustomConstructorsNode_1 = require("./GrammarCustomConstructorsNode");
 const GrammarCompilerNode_1 = require("./GrammarCompilerNode");
 const GrammarConstantsNode_1 = require("./GrammarConstantsNode");
-const GrammarBackedNodes_1 = require("./GrammarBackedNodes");
+const AbstractRuntimeNodes_1 = require("./AbstractRuntimeNodes");
 const TreeErrorTypes_1 = require("./TreeErrorTypes");
 class GrammarDefinitionErrorNode extends TreeNode_1.default {
     getErrors() {
@@ -93,8 +93,8 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     }
     _getDefaultNodeConstructor() {
         if (this._isBlobNode())
-            return GrammarBackedNodes_1.GrammarBackedBlobNode;
-        return this._isNonTerminal() ? GrammarBackedNodes_1.GrammarBackedNonTerminalNode : GrammarBackedNodes_1.GrammarBackedTerminalNode;
+            return AbstractRuntimeNodes_1.GrammarBackedBlobNode;
+        return this._isNonTerminal() ? AbstractRuntimeNodes_1.GrammarBackedNonTerminalNode : AbstractRuntimeNodes_1.GrammarBackedTerminalNode;
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {

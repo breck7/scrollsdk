@@ -340,3 +340,53 @@ class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
     }
 }
 exports.AbstractRuntimeProgramRootNode = AbstractRuntimeProgramRootNode;
+class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
+}
+exports.GrammarBackedTerminalNode = GrammarBackedTerminalNode;
+class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
+    getLineCellTypes() {
+        return "error ".repeat(this.getWords().length).trim();
+    }
+    getErrors() {
+        return [this.getFirstWord() ? new TreeErrorTypes_1.UnknownNodeTypeError(this) : new TreeErrorTypes_1.BlankLineError(this)];
+    }
+}
+exports.GrammarBackedErrorNode = GrammarBackedErrorNode;
+class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
+    // todo: implement
+    _getNodeJoinCharacter() {
+        return "\n";
+    }
+    compile(targetExtension) {
+        const compiler = this._getCompilerNode(targetExtension);
+        const openChildrenString = compiler.getOpenChildrenString();
+        const closeChildrenString = compiler.getCloseChildrenString();
+        const compiledLine = this._getCompiledLine(targetExtension);
+        const indent = this._getCompiledIndentation(targetExtension);
+        const compiledChildren = this.map(child => child.compile(targetExtension)).join(this._getNodeJoinCharacter());
+        return `${indent}${compiledLine}${openChildrenString}
+${compiledChildren}
+${indent}${closeChildrenString}`;
+    }
+    static useAsBackupConstructor() {
+        return GrammarBackedNonTerminalNode._backupConstructorEnabled;
+    }
+    static setAsBackupConstructor(value) {
+        GrammarBackedNonTerminalNode._backupConstructorEnabled = value;
+        return GrammarBackedNonTerminalNode;
+    }
+}
+GrammarBackedNonTerminalNode._backupConstructorEnabled = false;
+exports.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode;
+class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
+    getFirstWordMap() {
+        return {};
+    }
+    getErrors() {
+        return [];
+    }
+    getCatchAllNodeConstructor(line) {
+        return GrammarBackedBlobNode;
+    }
+}
+exports.GrammarBackedBlobNode = GrammarBackedBlobNode;

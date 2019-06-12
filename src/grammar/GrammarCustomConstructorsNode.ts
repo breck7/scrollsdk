@@ -6,7 +6,7 @@ import { GrammarConstants } from "./GrammarConstants"
 
 import { InvalidConstructorPathError } from "./TreeErrorTypes"
 
-/*FOR_TYPES_ONLY*/ import GrammarProgram from "./GrammarProgram"
+/*FOR_TYPES_ONLY*/ import { GrammarProgram } from "./NodeDefinitionNodes"
 
 import jTreeTypes from "../jTreeTypes"
 

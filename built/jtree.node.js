@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
 const jtree_1 = require("./jtree");
-const GrammarProgram_1 = require("./grammar/GrammarProgram");
+const NodeDefinitionNodes_1 = require("./grammar/NodeDefinitionNodes");
 const Upgrader_1 = require("./grammar/Upgrader");
 class jtreeNode extends jtree_1.default {
 }
@@ -20,7 +20,7 @@ jtreeNode.makeProgram = (programPath, grammarPath) => {
 // returns GrammarBackedProgramClass
 jtreeNode.getProgramConstructor = (grammarPath) => {
     const grammarCode = fs.readFileSync(grammarPath, "utf8");
-    const grammarProgram = GrammarProgram_1.default.newFromCondensed(grammarCode, grammarPath);
+    const grammarProgram = NodeDefinitionNodes_1.GrammarProgram.newFromCondensed(grammarCode, grammarPath);
     return grammarProgram.getRootConstructor();
 };
 jtreeNode.combineFiles = (globPatterns) => {

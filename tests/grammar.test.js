@@ -3,7 +3,7 @@
 // todo: make isomorphic
 
 const fs = require("fs")
-const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
+const GrammarProgram = require("../built/grammar/NodeDefinitionNodes.js").GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 const jibberishProgramRoot = require(jibberishRootDir + "jibberishProgramRoot.js")
 const jibberishNodes = require(jibberishRootDir + "jibberishNodes.js")

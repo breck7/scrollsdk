@@ -1,10 +1,12 @@
 edge / 2019-06-11
 =================
+- New: ability to compile grammar files to Javascript
 - New: Upgrader class for making Tree Language upgrades easier
 - New: getFirstNode method
 - New: added support for "tooling" directives in Grammar language
 - New: getNodeTypeId on NonRootRunTime nodes
 - New: findNodes in base can now take an array of first words
+- New: "nodeType javascript" property
 - Breaking: avoid getDefinition()--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
 - Breaking: removed getExpectedLineCellTypes--use getLineHints
 - Breaking: nodeTypes in grammar is now "inScope", and is one line instead of parent/children
@@ -21,7 +23,7 @@ edge / 2019-06-11
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
 - Breaking: getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
-- Breaking: removed "constructors javascript" in GrammarLanguage
+- Breaking: removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
 - Infra: test coverage
 
 25.2.0 / 2019-05-30

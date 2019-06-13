@@ -4,7 +4,7 @@ grammar
  inScope #! arrangeTestSubject testBlock
  catchAllNodeType error
  constructors
-  nodejs ./SwarmProgramRoot.js
+  nodejs ./SwarmLang.js SwarmProgramRoot
 cellType anyFirstWord
 cellType anyWord
  highlightScope string
@@ -38,7 +38,7 @@ abstract terminal
 abstract testBlock
  catchAllCellType anyWord
  constructors
-  nodejs ./TestBlock.js
+  nodejs ./SwarmLang.js TestBlock
  inScope arrangeTestSubject
  catchAllNodeType commandNode
  firstCellType controlWord
@@ -49,18 +49,18 @@ nodeType #!
  firstCellType commentWord
 nodeType arrangeTestSubject
  constructors
-  nodejs ./TestSetupNode.js
+  nodejs ./SwarmLang.js TestSetupNode
  firstCellType arrangeWord
  inScope async require static constructWithBlockString
 nodeType blockStringParam
  firstCellType parameterWord
  description Pass in a multiline string as a command arg. #todo: rename
  constructors
-  nodejs ./CommandArgNode.js
+  nodejs ./SwarmLang.js CommandArgNode
  catchAllNodeType textBlock
 nodeType commandNode
  constructors
-  nodejs ./CommandNode.js
+  nodejs ./SwarmLang.js CommandNode
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyWord
  catchAllNodeType commandNode
@@ -68,7 +68,7 @@ nodeType commandNode
  inScope blockStringParam assertion
 nodeType constructWithBlockString
  constructors
-  nodejs ./SetupConstructorArgNode.js
+  nodejs ./SwarmLang.js SetupConstructorArgNode
  description Pass in a multiline string to setup constructor. #todo: rename
  catchAllNodeType textBlock
  firstCellType arrangeWord
@@ -84,32 +84,32 @@ nodeType blockStringIs assertion
  description When your expected value is a multiline string.
  catchAllNodeType textBlock
  constructors
-  nodejs ./AssertEqualBlockNode.js
+  nodejs ./SwarmLang.js AssertEqualBlockNode
 nodeType lengthIs assertion
  description Intake is an array, and checks if the length of array matches expected.
  cells int
  constructors
-  nodejs ./AssertLengthNode.js
+  nodejs ./SwarmLang.js AssertLengthNode
 nodeType stringExcludes assertion
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyWord
  constructors
-  nodejs ./AssertDoesNotIncludeNode.js
+  nodejs ./SwarmLang.js AssertDoesNotIncludeNode
 nodeType stringIncludes assertion
  catchAllCellType anyWord
  description Converts the input to string and see if the string contains the provided string
  constructors
-  nodejs ./AssertIncludesNode.js
+  nodejs ./SwarmLang.js AssertIncludesNode
 nodeType stringIs assertion
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllCellType anyWord
  constructors
-  nodejs ./AssertEqualNode.js
+  nodejs ./SwarmLang.js AssertEqualNode
 nodeType typeIs assertion
  description Assert result is one of Javascript's 6 typeof types.
  cells typeOfOption
  constructors
-  nodejs ./AssertTypeOfNode.js
+  nodejs ./SwarmLang.js AssertTypeOfNode
 nodeType async terminal
  description Set this in setup to test async methods.
 nodeType require terminal
@@ -120,10 +120,10 @@ nodeType static terminal
 nodeType skipTest testBlock
  description If you want to skip running a test.
  constructors
-  nodejs ./SkippedTestBlock.js
+  nodejs ./SwarmLang.js SkippedTestBlock
 nodeType test testBlock
  description Basic test block.
 nodeType testOnly testBlock
  description If set, only this test block will be run.
  constructors
-  nodejs ./SoloTestBlock.js
+  nodejs ./SwarmLang.js SoloTestBlock

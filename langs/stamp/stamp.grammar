@@ -56,4 +56,4 @@ nodeType prompt
   folder PROJECT_NAME
   file PROJECT_NAME/.gitignore
  constructors
-  nodejs ./StampLang.js PromptNode.js
+  nodejs ./StampLang.js PromptNode

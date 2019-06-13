@@ -1,30 +1,18 @@
 #! /usr/local/bin/node --use_strict
 
-const fs = require("fs")
 const jtree = require("../index.js")
-const TreeNode = jtree.TreeNode
-const GrammarProgram = jtree.GrammarProgram
 
 const testTree = {}
 
-const compileGrammar = pathToGrammar => {
-  const grammarCode = TreeNode.fromDisk(pathToGrammar)
-  let name = grammarCode.get("grammar name")
-  name = name[0].toUpperCase() + name.slice(1)
-  const pathToJtree = __dirname + "/../index.js"
-  const tempFilePath = __dirname + `/../ignore/vms/${name}Language.compiled.temp.js`
-  fs.writeFileSync(tempFilePath, new GrammarProgram(grammarCode.toString(), pathToGrammar).toNodeJsJavascriptPrettier(pathToJtree), "utf8")
-  // fs.writeFileSync(name + ".expanded.grammar", GrammarProgram._condensedToExpanded(pathToGrammar), "utf8")
-  return tempFilePath
-}
+// todo: setup: make vms dir. cleanup? delete grammar file when done?
 
-// todo: setup: make vms dir
+const outputDir = __dirname + `/../ignore/vms/`
 
 testTree.grammar = equal => {
   // Arrange
   const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
   try {
-    const tempFilePath = compileGrammar(grammarGrammarPath)
+    const tempFilePath = jtree.compileGrammar(grammarGrammarPath, outputDir)
 
     // Act
     const { GrammarProgramRoot } = require(tempFilePath)
@@ -34,7 +22,6 @@ testTree.grammar = equal => {
   } catch (err) {
     console.error(err)
   } finally {
-    // fs.unlinkSync(tempFilePath)
   }
 }
 
@@ -42,7 +29,7 @@ testTree.compileAll = equal => {
   // Arrange/Act
   ;["swarm", "stump", "hakon", "project", "jibberish", "fire", "stamp"].map(name => {
     try {
-      require(compileGrammar(__dirname + `/../langs/${name}/${name}.grammar`))
+      require(jtree.compileGrammar(__dirname + `/../langs/${name}/${name}.grammar`, outputDir))
       // Assert
       equal(true, true, `Expected to compile and include "${name}" without error.`)
     } catch (err) {
@@ -56,7 +43,7 @@ testTree.numbers = equal => {
   // Arrange
   const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"
   try {
-    const tempFilePath = compileGrammar(numbersGrammarPath)
+    const tempFilePath = jtree.compileGrammar(numbersGrammarPath, outputDir)
 
     // Act
     const { NumbersProgramRoot, NumbersConstants } = require(tempFilePath)
@@ -98,7 +85,6 @@ testTree.numbers = equal => {
   } catch (err) {
     console.error(err)
   } finally {
-    // fs.unlinkSync(tempFilePath)
   }
 }
 

@@ -5,6 +5,16 @@ const jtree_1 = require("./jtree");
 const GrammarLanguage_1 = require("./GrammarLanguage");
 const Upgrader_1 = require("./tools/Upgrader");
 class jtreeNode extends jtree_1.default {
+    static compileGrammar(pathToGrammar, outputFolder) {
+        const grammarCode = jtree_1.default.TreeNode.fromDisk(pathToGrammar);
+        let name = grammarCode.get("grammar name");
+        name = name[0].toUpperCase() + name.slice(1);
+        const pathToJtree = __dirname + "/../index.js";
+        const outputFilePath = outputFolder + `${name}Language.compiled.js`;
+        fs.writeFileSync(outputFilePath, new GrammarLanguage_1.GrammarProgram(grammarCode.toString(), pathToGrammar).toNodeJsJavascriptPrettier(pathToJtree), "utf8");
+        // fs.writeFileSync(name + ".expanded.grammar", GrammarProgram._condensedToExpanded(pathToGrammar), "utf8")
+        return outputFilePath;
+    }
 }
 jtreeNode.Upgrader = Upgrader_1.default;
 jtreeNode.executeFile = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath);

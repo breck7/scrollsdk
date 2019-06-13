@@ -24,6 +24,17 @@ class jtreeNode extends jtree {
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
+  static compileGrammar(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath) {
+    const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
+    let name = grammarCode.get("grammar name")
+    name = name[0].toUpperCase() + name.slice(1)
+    const pathToJtree = __dirname + "/../index.js"
+    const outputFilePath = outputFolder + `${name}Language.compiled.js`
+    fs.writeFileSync(outputFilePath, new GrammarProgram(grammarCode.toString(), pathToGrammar).toNodeJsJavascriptPrettier(pathToJtree), "utf8")
+    // fs.writeFileSync(name + ".expanded.grammar", GrammarProgram._condensedToExpanded(pathToGrammar), "utf8")
+    return outputFilePath
+  }
+
   // returns GrammarBackedProgramClass
   static getProgramConstructor = (grammarPath: jTreeTypes.filepath) => {
     const grammarCode = fs.readFileSync(grammarPath, "utf8")

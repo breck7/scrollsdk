@@ -1,25 +1,30 @@
 #! /usr/local/bin/node --use_strict
 
 const fs = require("fs")
-const GrammarProgram = require("../built/GrammarLanguage.js").GrammarProgram
-
-const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
-const grammarGrammar = fs.readFileSync(grammarGrammarPath, "utf8")
-
-const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
-const numbersGrammar = fs.readFileSync(numbersPath, "utf8")
+const jtree = require("../index.js")
+const TreeNode = jtree.TreeNode
+const GrammarProgram = jtree.GrammarProgram
 
 const testTree = {}
+
+const compileGrammar = pathToGrammar => {
+  const grammarCode = TreeNode.fromDisk(pathToGrammar)
+  let name = grammarCode.get("grammar name")
+  name = name[0].toUpperCase() + name.slice(1)
+  const pathToJtree = __dirname + "/../index.js"
+  const tempFilePath = __dirname + `/../ignore/vms/${name}Language.compiled.temp.js`
+  fs.writeFileSync(tempFilePath, new GrammarProgram(grammarCode.toString(), pathToGrammar).toNodeJsJavascriptPrettier(pathToJtree), "utf8")
+  // fs.writeFileSync(name + ".expanded.grammar", GrammarProgram._condensedToExpanded(pathToGrammar), "utf8")
+  return tempFilePath
+}
 
 // todo: setup: make vms dir
 
 testTree.grammar = equal => {
   // Arrange
-  const tempFilePath = __dirname + `/../ignore/vms/GrammarLanguage.compiled.temp.js`
-  const jtreePath = __dirname + "/../index.js"
+  const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
   try {
-    fs.writeFileSync(tempFilePath, new GrammarProgram(grammarGrammar, grammarGrammarPath).toNodeJsJavascriptPrettier(jtreePath), "utf8")
-    // fs.writeFileSync(tempFilePath + ".expanded.grammar", GrammarProgram._condensedToExpanded(grammarGrammar), "utf8")
+    const tempFilePath = compileGrammar(grammarGrammarPath)
 
     // Act
     const { GrammarProgramRoot } = require(tempFilePath)
@@ -35,11 +40,9 @@ testTree.grammar = equal => {
 
 testTree.numbers = equal => {
   // Arrange
-  const tempFilePath = __dirname + `/../ignore/vms/NumbersLanguage.compiled.temp.js`
-  const jtreePath = __dirname + "/../index.js"
+  const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"
   try {
-    fs.writeFileSync(tempFilePath, new GrammarProgram(numbersGrammar, numbersPath).toNodeJsJavascriptPrettier(jtreePath), "utf8")
-    // fs.writeFileSync(tempFilePath + ".expanded.grammar", GrammarProgram._condensedToExpanded(numbersGrammar), "utf8")
+    const tempFilePath = compileGrammar(numbersGrammarPath)
 
     // Act
     const { NumbersProgramRoot, NumbersConstants } = require(tempFilePath)

@@ -2,7 +2,7 @@ grammar
  name jibberish
  description A useless Tree Language built for testing Tree Notation code.
  constructors
-  nodejs ./jibberishProgramRoot.js
+  nodejs ./JibberishLang.js JibberishProgramRoot
  compiler txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass
@@ -35,15 +35,15 @@ nodeType error
 nodeType lineOfCode
  catchAllCellType word
  constructors
-  nodejs ./jibberishNodes.js LineOfCodeNode
-  browser LineOfCodeNode jibberishNodes.js
+  nodejs ./JibberishLang.js LineOfCodeNode
+  browser LineOfCodeNode JibberishLang.js
 nodeType text
  blob
 nodeType extendsAbstract someAbstractClass
  cells int
 nodeType add topLevel
  constructors
-  nodejs ./jibberishNodes.js additionNode
+  nodejs ./JibberishLang.js additionNode
 nodeType + add
  firstCellType opSymbol
  example Adding two numbers:
@@ -68,7 +68,7 @@ nodeType lightbulbState topLevel
  cells onoff
 nodeType nested topLevel
  constructors
-  nodejs ./jibberishNodes.js nested.someNestedNode
+  nodejs ./JibberishLang.js nested.someNestedNode
 nodeType nodeWithConsts topLevel
  constants
   greeting string hello world

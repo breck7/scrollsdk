@@ -2,7 +2,7 @@ grammar
  name project
  description A Tree Language for project dependency management.
  constructors
-  nodejs ./ProjectNodes.js ProjectProgramRoot
+  nodejs ./ProjectLang.js ProjectProgramRoot
  inScope file
  catchAllNodeType error
 cellType anyFirstWord
@@ -24,7 +24,7 @@ nodeType file
  firstCellType fileConstant
  inScope external absolute relative
  constructors
-  nodejs ./ProjectNodes.js FileNode
+  nodejs ./ProjectLang.js FileNode
 nodeType absolute term
 nodeType external term
 nodeType relative term

@@ -702,7 +702,7 @@ testTree.getNodeByColumns = equal => {
   const jib = new TreeNode(`jibberish
  description Test a root parser node
  constructors
-  nodejs ./jibberishProgramRoot.js
+  nodejs ./JibberishLang.js JibberishProgramRoot
  compiler txt
  inScope baseNode`)
 
@@ -1898,7 +1898,7 @@ testTree.isomorphicGrammarTests = equal => {
  name jibberish
  description Test a root parser node
  constructors
-  nodejs ./jibberishProgramRoot.js
+  nodejs JibberishLang.js JibberishProgramRoot
  compiler txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass
@@ -1923,7 +1923,7 @@ nodeType someCode topLevel
 nodeType lineOfCode
  catchAllCellType word
  constructors
-  nodejs ./jibberishNodes.js LineOfCodeNode
+  nodejs ./JibberishLang.js LineOfCodeNode
 nodeType block topLevel
  inScope topLevel
 nodeType foo topLevel
@@ -1934,7 +1934,7 @@ nodeType text
  blob
 nodeType add topLevel
  constructors
-  nodejs ./jibberishNodes.js additionNode
+  nodejs ./JibberishLang.js additionNode
 nodeType + add
  catchAllCellType int
 nodeType lightbulbState topLevel
@@ -1958,14 +1958,14 @@ someCode
 
   class additionNode extends jtreeBase.NonTerminalNode {}
   class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
-  class jibberishProgramRoot extends jtreeBase.programRoot {}
+  class JibberishProgramRoot extends jtreeBase.programRoot {}
 
-  const jibberishNodes = {}
-  jibberishNodes.additionNode = additionNode
-  jibberishNodes.LineOfCodeNode = LineOfCodeNode
+  const JibberishLang = {}
+  JibberishLang.additionNode = additionNode
+  JibberishLang.LineOfCodeNode = LineOfCodeNode
   let win = typeof window === "undefined" ? {} : window
-  win.jibberishNodes = jibberishNodes
-  win.jibberishProgramRoot = jibberishProgramRoot
+  win.JibberishLang = JibberishLang
+  win.JibberishProgramRoot = JibberishProgramRoot
   win.additionNode = additionNode
   win.LineOfCodeNode = LineOfCodeNode
 

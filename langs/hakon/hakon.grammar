@@ -4,8 +4,8 @@ grammar
  compiler css
  catchAllNodeType selectorNode
  constructors
-  nodejs ./HakonNodes.js HakonProgramRoot
-  browser HakonProgramRoot HakonNodes.js
+  nodejs ./HakonLang.js HakonProgramRoot
+  browser HakonProgramRoot HakonLang.js
 cellType extraWord
  highlightScope invalid
 cellType cssValueWord
@@ -22,8 +22,8 @@ abstract propertyNode
  catchAllNodeType errorNode
  firstCellType propertyName
  constructors
-  nodejs ./HakonNodes.js HakonPropertyNode
-  browser HakonPropertyNode HakonNodes.js
+  nodejs ./HakonLang.js HakonPropertyNode
+  browser HakonPropertyNode HakonLang.js
 nodeType errorNode
  catchAllNodeType errorNode
  catchAllCellType errorWord
@@ -36,5 +36,5 @@ nodeType selectorNode
  inScope propertyNode
  catchAllNodeType selectorNode
  constructors
-  nodejs ./HakonNodes.js HakonSelectorNode
-  browser HakonSelectorNode HakonNodes.js
+  nodejs ./HakonLang.js HakonSelectorNode
+  browser HakonSelectorNode HakonLang.js

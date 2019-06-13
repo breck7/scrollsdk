@@ -5,8 +5,8 @@ grammar
  inScope #! term nt
  catchAllNodeType error
  constructors
-  nodejs ./FireNodes.js FireProgramRoot
-  browser FireProgramRoot FireNodes.js
+  nodejs ./FireLang.js FireProgramRoot
+  browser FireProgramRoot FireLang.js
 cellType anyFirstWord
 cellType number
  regex \-?[0-9]*\.?[0-9]*

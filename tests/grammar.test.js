@@ -5,8 +5,7 @@
 const fs = require("fs")
 const GrammarProgram = require("../built/GrammarLanguage.js").GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
-const jibberishProgramRoot = require(jibberishRootDir + "jibberishProgramRoot.js")
-const jibberishNodes = require(jibberishRootDir + "jibberishNodes.js")
+const JibberishLang = require(jibberishRootDir + "JibberishLang.js")
 
 const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
 const numbersGrammar = fs.readFileSync(numbersPath, "utf8")
@@ -55,7 +54,7 @@ testTree.jibberish = equal => {
   const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
-  equal(program instanceof jibberishProgramRoot, true, "correct program class")
+  equal(program instanceof JibberishLang.JibberishProgramRoot, true, "correct program class")
   equal(program.getProgramErrors().length, 0, `${program.getProgramErrorMessages()}`)
 
   const defNode = program
@@ -90,10 +89,10 @@ testTree.jibberish = equal => {
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition instanceof jibberishNodes.additionNode, true)
+  equal(addition instanceof JibberishLang.additionNode, true)
 
   // Act/Assert
-  equal(program.getNode("someCode echo") instanceof jibberishNodes.LineOfCodeNode, true, "line of code class")
+  equal(program.getNode("someCode echo") instanceof JibberishLang.LineOfCodeNode, true, "line of code class")
 
   // Arrange
   const programWithBugs = makeJibberishProgram(`+ foo bar`)

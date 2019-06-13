@@ -1,5 +1,9 @@
 const jtree = require("../../index.js")
 
+const FireConstants = {}
+
+FireConstants.fileExtension = ".fire"
+
 class FireProgramRoot extends jtree.programRoot {
   async execute() {
     return this.executeSync()
@@ -22,4 +26,4 @@ class FireProgramRoot extends jtree.programRoot {
   }
 }
 
-module.exports = { FireProgramRoot }
+module.exports = { FireProgramRoot, FireConstants }

@@ -3,7 +3,7 @@ grammar
  description A Tree Language for creating distributable text template files that expand to folders and files.
  catchAllNodeType error
  constructors
-  nodejs ./StampProgramRoot.js
+  nodejs ./StampLang.js StampProgramRoot
  inScope #! prompt folder file
 cellType anyFirstWord
 cellType extraWord
@@ -40,13 +40,13 @@ nodeType file
  cells filepath
  firstCellType property
  constructors
-  nodejs ./FileNode.js
+  nodejs ./StampLang.js FileNode
  inScope data executable
 nodeType folder
  cells filepath
  firstCellType property
  constructors
-  nodejs ./FolderNode.js
+  nodejs ./StampLang.js FolderNode
 nodeType prompt
  cells varName inputType
  catchAllCellType promptWords
@@ -56,4 +56,4 @@ nodeType prompt
   folder PROJECT_NAME
   file PROJECT_NAME/.gitignore
  constructors
-  nodejs ./PromptNode.js
+  nodejs ./StampLang.js PromptNode.js

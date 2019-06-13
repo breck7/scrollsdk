@@ -15,14 +15,11 @@ cellType operator
  highlightScope keyword.operator.arithmetic
 abstract abstract.arithmetic
  catchAllCellType numbers
- constructors
-  javascript
-   class extends jtree.NonTerminalNode {
-     executeSync() {
-       return this.cells.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.cells.numbers[0])
-     }
-     async execute() { return this.executeSync() }
-   }
+ javascript
+  executeSync() {
+    return this.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.numbers[0])
+  }
+  async execute() { return this.executeSync() }
  firstCellType operator
  inScope abstract.arithmetic #
 nodeType #

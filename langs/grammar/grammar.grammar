@@ -134,9 +134,9 @@ nodeType highlightScope
  cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
-nodeType javascriptCodeLine
+nodeType catchAll.javascriptCodeLine
  catchAllCellType javascriptCodeWord
- catchAllNodeType javascriptCodeLine
+ catchAllNodeType catchAll.javascriptCodeLine
 nodeType name
  cells grammarName
  firstCellType propertyName
@@ -173,10 +173,6 @@ nodeType browser abstract.environment
  cells builtInConstructorOrConstructorName
  catchAllCellType scriptUrl
  description builtInConstructorOrConstructorName will be searched for on the window object.
-nodeType javascript abstract.environment
- catchAllCellType javascriptCodeWord
- catchAllNodeType javascriptCodeLine
- description Put in some code to eval.
 nodeType nodejs abstract.environment
  cells builtInConstructorOrFilePath
  catchAllCellType constructorName
@@ -201,6 +197,9 @@ nodeType defaults abstract.nodeTypeRule
  catchAllNodeType catchAll.defaultTuple
 nodeType description abstract.nodeTypeRule
  catchAllCellType string
+nodeType javascript abstract.nodeTypeRule
+ description Provide raw javascript code that will be inserted into a node type's class.
+ catchAllNodeType catchAll.javascriptCodeLine
 nodeType example abstract.nodeTypeRule
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleWord

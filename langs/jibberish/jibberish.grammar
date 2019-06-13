@@ -60,13 +60,10 @@ nodeType foo topLevel
 nodeType xColumnName topLevel
  description The name of the column to use for the x axis
  cells columnNameEnum
- constructors
-  javascript
-   class extends jtree.NonTerminalNode {
-     getRunTimeEnumOptions(cell) {
-       return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
-     }
-   }
+ javascript
+  getRunTimeEnumOptions(cell) {
+    return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
+  }
 nodeType lightbulbState topLevel
  cells onoff
 nodeType nested topLevel

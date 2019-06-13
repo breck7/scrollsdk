@@ -28,7 +28,8 @@ testTree.basics = equal => {
   const errs = grammarProgram.getProgramErrors()
 
   // Assert
-  equal(errs.length, 0, errs.map(JSON.stringify).join(" "))
+  if (errs.length) console.log(errs.map(err => err.getMessage()))
+  equal(errs.length, 0, "should be no errors")
 }
 
 const makeNumbersProgram = code => makeProgram(numbersGrammar, code)

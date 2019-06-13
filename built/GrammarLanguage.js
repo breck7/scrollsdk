@@ -51,11 +51,12 @@ var GrammarConstants;
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";
+    // code
+    GrammarConstants["javascript"] = "javascript";
     // parse and interpret time
     GrammarConstants["constructors"] = "constructors";
     GrammarConstants["constructorNodeJs"] = "nodejs";
     GrammarConstants["constructorBrowser"] = "browser";
-    GrammarConstants["constructorJavascript"] = "javascript";
     // compile time
     GrammarConstants["compilerNodeType"] = "compiler";
     // develop time
@@ -1084,13 +1085,13 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         return !this.isNodeJs();
     }
 }
-class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
+class CustomJavascriptNode extends TreeNode_1.default {
     _getNodeJsConstructor() {
         const jtreePath = __dirname + "/jtree.node.js";
         const code = `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`;
-        if (CustomJavascriptConstructorNode.cache[code])
-            return CustomJavascriptConstructorNode.cache[code];
+/* INDENT FOR BUILD REASONS */  module.exports = ${this._getCode()}`;
+        if (CustomJavascriptNode.cache[code])
+            return CustomJavascriptNode.cache[code];
         const constructorName = this.getParent()
             .getParent()
             .getWord(1) ||
@@ -1101,7 +1102,7 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
         const fs = require("fs");
         try {
             fs.writeFileSync(tempFilePath, code, "utf8");
-            CustomJavascriptConstructorNode.cache[code] = require(tempFilePath);
+            CustomJavascriptNode.cache[code] = require(tempFilePath);
         }
         catch (err) {
             console.error(err);
@@ -1109,38 +1110,41 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
         finally {
             fs.unlinkSync(tempFilePath);
         }
-        return CustomJavascriptConstructorNode.cache[code];
+        return CustomJavascriptNode.cache[code];
+    }
+    _getCode() {
+        const def = this.getParent();
+        return `class ${def.getGeneratedClassName()} extends jtree.NonTerminalNode {
+      ${def.getGetters()}
+      ${this.childrenToString()}
+}`;
     }
     _getBrowserConstructor() {
-        const definedCode = this.childrenToString();
+        const definedCode = this._getCode();
         const tempClassName = "tempConstructor" + TreeUtils_1.default.getRandomString(30);
-        if (CustomJavascriptConstructorNode.cache[definedCode])
-            return CustomJavascriptConstructorNode.cache[definedCode];
+        if (CustomJavascriptNode.cache[definedCode])
+            return CustomJavascriptNode.cache[definedCode];
         const script = document.createElement("script");
-        script.innerHTML = `window.${tempClassName} = ${this.childrenToString()}`;
+        script.innerHTML = `window.${tempClassName} = ${definedCode}`;
         document.head.appendChild(script);
-        CustomJavascriptConstructorNode.cache[definedCode] = window[tempClassName];
+        CustomJavascriptNode.cache[definedCode] = window[tempClassName];
     }
-    _getCustomConstructor() {
+    _getCustomJavascriptConstructor() {
         return this.isNodeJs() ? this._getNodeJsConstructor() : this._getBrowserConstructor();
     }
     getCatchAllNodeConstructor() {
         return TreeNode_1.default;
     }
 }
-CustomJavascriptConstructorNode.cache = {};
+CustomJavascriptNode.cache = {};
 class GrammarCustomConstructorsNode extends TreeNode_1.default {
     getFirstWordMap() {
         const map = {};
         map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode;
         map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode;
-        map[GrammarConstants.constructorJavascript] = CustomJavascriptConstructorNode;
         return map;
     }
     getConstructorForEnvironment() {
-        const jsConstructor = this.getNode(GrammarConstants.constructorJavascript);
-        if (jsConstructor)
-            return jsConstructor;
         return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser);
     }
 }
@@ -1169,6 +1173,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         map[GrammarConstants.compilerNodeType] = GrammarCompilerNode;
         map[GrammarConstants.constructors] = GrammarCustomConstructorsNode;
         map[GrammarConstants.example] = GrammarExampleNode;
+        map[GrammarConstants.javascript] = CustomJavascriptNode;
         return map;
     }
     getExamples() {
@@ -1198,6 +1203,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         // IF IT DOES NOT, ADD NOTHING
         // CHECK PARENTS TOO
         const firstWordMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getMyInScopeNodeTypeIds());
+        // todo: use constants in first word maps
         if (Object.keys(firstWordMap).length)
             return `getFirstWordMap() {
   return {${Object.keys(firstWordMap).map(firstWord => `"${firstWord}" : ${nodeMap[firstWord].getGeneratedClassName()}`)}}
@@ -1231,6 +1237,9 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             if (envConstructor)
                 return envConstructor.getTheDefinedConstructor();
         }
+        const customJavascriptNode = this.getNode(GrammarConstants.javascript);
+        if (customJavascriptNode)
+            return customJavascriptNode._getCustomJavascriptConstructor();
         return this._getDefaultNodeConstructor();
     }
     getCatchAllNodeConstructor(line) {
@@ -1277,7 +1286,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         const catchAllCellTypeId = this.getCatchAllCellTypeId();
         if (catchAllCellTypeId)
             requireds.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(requireds.length + 1));
-        return requireds;
+        return requireds.join("\n");
     }
     getCatchAllCellTypeId() {
         return this.get(GrammarConstants.catchAllCellType);
@@ -1478,7 +1487,8 @@ ${captures}
         const extendsClass = extendedNodeTypeId
             ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId).getGeneratedClassName()
             : "jtree.CompiledLanguageNonRootNode";
-        const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code);
+        const jsCode = this.getNode(GrammarConstants.javascript);
+        const components = [this.getNodeConstructorToJavascript(), this.getGetters(), jsCode ? jsCode.childrenToString() : ""].filter(code => code);
         return `class ${this.getGeneratedClassName()} extends ${extendsClass} {
       ${components.join("\n")}
     }`;

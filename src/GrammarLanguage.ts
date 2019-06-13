@@ -56,11 +56,13 @@ enum GrammarConstants {
   single = "single", // Have at most 1 of these
   tags = "tags",
 
+  // code
+  javascript = "javascript",
+
   // parse and interpret time
   constructors = "constructors",
   constructorNodeJs = "nodejs",
   constructorBrowser = "browser", // for browser
-  constructorJavascript = "javascript", // for eval
 
   // compile time
   compilerNodeType = "compiler",
@@ -1311,15 +1313,15 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
   }
 }
 
-class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
+class CustomJavascriptNode extends TreeNode {
   private _cached: any
   static cache: { [code: string]: jTreeTypes.RunTimeNodeConstructor } = {}
 
   private _getNodeJsConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const jtreePath = __dirname + "/jtree.node.js"
     const code = `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = ${this.childrenToString()}`
-    if (CustomJavascriptConstructorNode.cache[code]) return CustomJavascriptConstructorNode.cache[code]
+/* INDENT FOR BUILD REASONS */  module.exports = ${this._getCode()}`
+    if (CustomJavascriptNode.cache[code]) return CustomJavascriptNode.cache[code]
     const constructorName =
       this.getParent()
         .getParent()
@@ -1331,28 +1333,36 @@ class CustomJavascriptConstructorNode extends AbstractCustomConstructorNode {
     const fs = require("fs")
     try {
       fs.writeFileSync(tempFilePath, code, "utf8")
-      CustomJavascriptConstructorNode.cache[code] = require(tempFilePath)
+      CustomJavascriptNode.cache[code] = require(tempFilePath)
     } catch (err) {
       console.error(err)
     } finally {
       fs.unlinkSync(tempFilePath)
     }
 
-    return CustomJavascriptConstructorNode.cache[code]
+    return CustomJavascriptNode.cache[code]
+  }
+
+  private _getCode() {
+    const def = <GrammarNodeTypeDefinitionNode>this.getParent()
+    return `class ${def.getGeneratedClassName()} extends jtree.NonTerminalNode {
+      ${def.getGetters()}
+      ${this.childrenToString()}
+}`
   }
 
   private _getBrowserConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    const definedCode = this.childrenToString()
+    const definedCode = this._getCode()
     const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30)
-    if (CustomJavascriptConstructorNode.cache[definedCode]) return CustomJavascriptConstructorNode.cache[definedCode]
+    if (CustomJavascriptNode.cache[definedCode]) return CustomJavascriptNode.cache[definedCode]
 
     const script = document.createElement("script")
-    script.innerHTML = `window.${tempClassName} = ${this.childrenToString()}`
+    script.innerHTML = `window.${tempClassName} = ${definedCode}`
     document.head.appendChild(script)
-    CustomJavascriptConstructorNode.cache[definedCode] = (<any>window)[tempClassName]
+    CustomJavascriptNode.cache[definedCode] = (<any>window)[tempClassName]
   }
 
-  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
+  _getCustomJavascriptConstructor(): jTreeTypes.RunTimeNodeConstructor {
     return this.isNodeJs() ? this._getNodeJsConstructor() : this._getBrowserConstructor()
   }
 
@@ -1366,13 +1376,10 @@ class GrammarCustomConstructorsNode extends TreeNode {
     const map: jTreeTypes.firstWordToNodeConstructorMap = {}
     map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode
     map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode
-    map[GrammarConstants.constructorJavascript] = CustomJavascriptConstructorNode
     return map
   }
 
   getConstructorForEnvironment(): AbstractCustomConstructorNode {
-    const jsConstructor = this.getNode(GrammarConstants.constructorJavascript)
-    if (jsConstructor) return <AbstractCustomConstructorNode>jsConstructor
     return <AbstractCustomConstructorNode>this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser)
   }
 }
@@ -1403,6 +1410,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.constructors] = GrammarCustomConstructorsNode
     map[GrammarConstants.example] = GrammarExampleNode
+    map[GrammarConstants.javascript] = CustomJavascriptNode
     return map
   }
 
@@ -1478,6 +1486,9 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       const envConstructor = customConstructorsDefinition.getConstructorForEnvironment()
       if (envConstructor) return envConstructor.getTheDefinedConstructor()
     }
+    const customJavascriptNode = <CustomJavascriptNode>this.getNode(GrammarConstants.javascript)
+    if (customJavascriptNode) return customJavascriptNode._getCustomJavascriptConstructor()
+
     return this._getDefaultNodeConstructor()
   }
 
@@ -1536,7 +1547,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
     if (catchAllCellTypeId) requireds.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(requireds.length + 1))
 
-    return requireds
+    return requireds.join("\n")
   }
 
   getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined {
@@ -1772,7 +1783,9 @@ ${captures}
       ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId).getGeneratedClassName()
       : "jtree.CompiledLanguageNonRootNode"
 
-    const components = [this.getNodeConstructorToJavascript(), this.getGetters().join("\n")].filter(code => code)
+    const jsCode = this.getNode(GrammarConstants.javascript)
+
+    const components = [this.getNodeConstructorToJavascript(), this.getGetters(), jsCode ? jsCode.childrenToString() : ""].filter(code => code)
 
     return `class ${this.getGeneratedClassName()} extends ${extendsClass} {
       ${components.join("\n")}

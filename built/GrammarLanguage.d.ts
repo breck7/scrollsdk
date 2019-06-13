@@ -38,10 +38,10 @@ declare enum GrammarConstants {
     required = "required",
     single = "single",
     tags = "tags",
+    javascript = "javascript",
     constructors = "constructors",
     constructorNodeJs = "nodejs",
     constructorBrowser = "browser",
-    constructorJavascript = "javascript",
     compilerNodeType = "compiler",
     description = "description",
     example = "example",
@@ -214,7 +214,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
         [key: string]: GrammarNodeTypeDefinitionNode;
     };
     getRequiredCellTypeIds(): jTreeTypes.cellTypeId[];
-    getGetters(): string[];
+    getGetters(): string;
     getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
     protected _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): jTreeTypes.firstWordToNodeConstructorMap;
     getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];

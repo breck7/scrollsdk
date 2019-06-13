@@ -517,7 +517,7 @@ ${indent}${closeChildrenString}`
   }
 }
 
-class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
+class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
   getFirstWordMap() {
     return {}
   }
@@ -888,9 +888,7 @@ abstract class AbstractCellError extends AbstractTreeError {
   private _cell: AbstractGrammarBackedCell<any>
 }
 
-abstract class FirstWordError extends AbstractTreeError {}
-
-class UnknownNodeTypeError extends FirstWordError {
+class UnknownNodeTypeError extends AbstractTreeError {
   getMessage(): string {
     return super.getMessage() + ` Invalid nodeType "${this.getNode().getFirstWord()}".`
   }

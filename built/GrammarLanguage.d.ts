@@ -126,7 +126,7 @@ declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     static useAsBackupConstructor(): boolean;
     static setAsBackupConstructor(value: boolean): typeof GrammarBackedNonTerminalNode;
 }
-declare class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
+declare class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
     getFirstWordMap(): {};
     getErrors(): jTreeTypes.TreeError[];
     getCatchAllNodeConstructor(line: string): typeof GrammarBackedBlobNode;

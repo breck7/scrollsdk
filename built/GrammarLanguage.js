@@ -445,7 +445,7 @@ ${indent}${closeChildrenString}`;
 }
 GrammarBackedNonTerminalNode._backupConstructorEnabled = false;
 exports.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode;
-class GrammarBackedBlobNode extends GrammarBackedNonTerminalNode {
+class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
     getFirstWordMap() {
         return {};
     }
@@ -736,9 +736,7 @@ class AbstractCellError extends AbstractTreeError {
             .map(option => option.text));
     }
 }
-class FirstWordError extends AbstractTreeError {
-}
-class UnknownNodeTypeError extends FirstWordError {
+class UnknownNodeTypeError extends AbstractTreeError {
     getMessage() {
         return super.getMessage() + ` Invalid nodeType "${this.getNode().getFirstWord()}".`;
     }

@@ -38,6 +38,20 @@ testTree.grammar = equal => {
   }
 }
 
+testTree.compileAll = equal => {
+  // Arrange/Act
+  ;["swarm", "stump", "hakon", "project", "jibberish", "fire", "stamp"].map(name => {
+    try {
+      require(compileGrammar(__dirname + `/../langs/${name}/${name}.grammar`))
+      // Assert
+      equal(true, true, `Expected to compile and include "${name}" without error.`)
+    } catch (err) {
+      console.log(err)
+      equal(true, false, "Hit an error")
+    }
+  })
+}
+
 testTree.numbers = equal => {
   // Arrange
   const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"

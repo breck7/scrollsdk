@@ -1433,6 +1433,15 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult")
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash")
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang")
+
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket")
     return `${javascriptSyntaxSafeId}Node`
   }
 

@@ -16,9 +16,7 @@ abstract term
  catchAllCellType filepath
  firstCellType termWord
 nodeType error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
 nodeType file
  catchAllCellType filepath
  firstCellType fileConstant

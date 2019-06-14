@@ -22,9 +22,7 @@ nodeType #!
  compiler js
   sub // #! {any}
 nodeType error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
  compiler js
   sub // error
 nodeType nt

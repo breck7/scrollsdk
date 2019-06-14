@@ -32,9 +32,7 @@ nodeType data
  catchAllNodeType catchAll.anyLine
  firstCellType property
 nodeType error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
 nodeType executable
 nodeType file
  cells filepath

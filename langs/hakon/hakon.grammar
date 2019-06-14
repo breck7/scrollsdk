@@ -28,9 +28,7 @@ nodeType errorNode
  catchAllNodeType errorNode
  catchAllCellType errorWord
  firstCellType errorWord
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
 nodeType selectorNode
  firstCellType selector
  inScope propertyNode

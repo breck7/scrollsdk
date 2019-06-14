@@ -29,9 +29,7 @@ abstract color_properties topLevel
 nodeType error
  firstCellType errorWord
  catchAllCellType errorWord
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
 nodeType lineOfCode
  catchAllCellType word
  constructors
@@ -70,8 +68,10 @@ nodeType nested topLevel
  constructors
   nodejs ./JibberishLang.js nested.someNestedNode
 nodeType nodeWithConsts topLevel
- constants
-  greeting string hello world
+ string greeting hello world
+ int score1 28
+ float score2 3.01
+ boolean win true
 nodeType someCode topLevel
  catchAllNodeType lineOfCode
 nodeType type topLevel

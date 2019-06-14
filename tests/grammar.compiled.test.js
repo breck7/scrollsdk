@@ -62,6 +62,12 @@ testTree.numbers = equal => {
     equal(program.nodeAt(0).numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
 
+    //     const program2 = new NumbersProgramRoot(`+ 2 3
+    // pi`)
+    //     const res = program2.executeSync()
+    //     console.log(res)
+    //     equal(res[1], 3.14, "constants works")
+
     // program errors
     // autocomplete
     // line hints

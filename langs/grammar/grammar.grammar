@@ -38,11 +38,11 @@ cellType fileExtension
 cellType toolingDirectiveWord
  highlightScope comment
 cellType filepath
-cellType float
+cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
 cellType grammarName
  highlightScope constant
-cellType int
+cellType intCell
  regex \-?[0-9]+
  highlightScope constant.numeric
 cellType javascriptCodeWord
@@ -66,14 +66,14 @@ cellType scriptUrl
 cellType semanticVersion
  regex [0-9]+\.[0-9]+\.[0-9]+
  highlightScope constant.numeric
-cellType string
- highlightScope string
 cellType tag
+cellType stringCell
+ highlightScope string
 cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
 cellType extendedCellType cellTypeId
-cellType exampleWord string
+cellType exampleWord stringCell
  highlightScope comment
 abstract abstract.compilerRule
  catchAllCellType anyWord
@@ -88,19 +88,11 @@ nodeType tooling
  catchAllCellType toolingDirectiveWord
  firstCellType toolingDirectiveWord
  catchAllNodeType tooling
-nodeType catchAll.constantAny
- catchAllCellType anyWord
- catchAllNodeType catchAll.constantAny
-nodeType catchAll.constantDefinition
- catchAllCellType anyWord
- catchAllNodeType catchAll.constantAny
 nodeType catchAll.defaultTuple
  cells anyWord
  catchAllCellType anyWord
 nodeType catchAll.error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
 nodeType catchAll.exampleLine
  catchAllCellType exampleWord
  firstCellType exampleWord
@@ -179,6 +171,8 @@ nodeType nodejs abstract.environment
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
 nodeType blob abstract.nodeTypeRule
  description In rare cases with untyped content you can use a blob node, for now, to skip parsing for performance gains.
+nodeType errorNode abstract.nodeTypeRule
+ description The base error nodeType will report errors when parsed. Use this tag if you don't want to implement your own error nodeType.
 nodeType catchAllCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
@@ -191,12 +185,26 @@ nodeType cells abstract.nodeTypeRule
 nodeType compiler abstract.nodeTypeRule
  cells compilerTargetExtension
  inScope sub listDelimiter openChildren closeChildren indentCharacter
-nodeType constants abstract.nodeTypeRule
- catchAllNodeType catchAll.constantDefinition
+cellType constantIdentifier
+ regex [a-zA-Z]\w+
+ description A word that can be assigned to the node class in the target language.
+abstract abstract.constant abstract.nodeTypeRule
+ description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
+cellType booleanCell
+ enum true false
+nodeType string abstract.constant
+ cells constantIdentifier
+ catchAllCellType stringCell
+nodeType int abstract.constant
+ cells constantIdentifier intCell
+nodeType float abstract.constant
+ cells constantIdentifier floatCell
+nodeType boolean abstract.constant
+ cells constantIdentifier booleanCell
 nodeType defaults abstract.nodeTypeRule
  catchAllNodeType catchAll.defaultTuple
 nodeType description abstract.nodeTypeRule
- catchAllCellType string
+ catchAllCellType stringCell
 nodeType javascript abstract.nodeTypeRule
  description Provide raw javascript code that will be inserted into a node type's class.
  catchAllNodeType catchAll.javascriptCodeLine
@@ -208,7 +216,7 @@ nodeType firstCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If you have an any node, use this to correctly parse the first word.
 nodeType frequency abstract.nodeTypeRule
- cells float
+ cells floatCell
 nodeType required abstract.nodeTypeRule
  description If present, the parent node will have an error if one of these nodes is not provided.
 nodeType single abstract.nodeTypeRule

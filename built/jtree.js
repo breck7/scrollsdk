@@ -12,7 +12,6 @@ jtree.Utils = TreeUtils_1.default;
 jtree.TreeNode = TreeNode_1.default;
 jtree.NonTerminalNode = GrammarLanguage_1.GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarLanguage_1.GrammarBackedTerminalNode;
-jtree.BlobNode = GrammarLanguage_1.GrammarBackedBlobNode;
 jtree.GrammarProgram = GrammarLanguage_1.GrammarProgram;
 jtree.CompiledLanguageRootNode = GrammarLanguage_1.CompiledLanguageRootNode;
 jtree.CompiledLanguageNonRootNode = GrammarLanguage_1.CompiledLanguageNonRootNode;

@@ -73,9 +73,7 @@ nodeType constructWithBlockString
  catchAllNodeType textBlock
  firstCellType arrangeWord
 nodeType error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
 nodeType textBlock
  firstCellType anyWord
  catchAllCellType anyWord

@@ -24,6 +24,9 @@ edge / 2019-06-11
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
 - Breaking: getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
 - Breaking: removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
+- Breaking: no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
+- Breaking: in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
+- Breaking: no more "ErrorNode" or "BlobNode" built in constructors. BlobNode is no longer exported.
 - Infra: test coverage
 
 25.2.0 / 2019-05-30

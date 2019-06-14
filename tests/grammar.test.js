@@ -79,11 +79,11 @@ testTree.jibberish = equal => {
     "topLevel nodeWithConsts"
   )
 
-  // Act
-  const constObj = constNode.getConstantsObject()
-
   // Assert
-  equal(constObj.greeting, "hello world")
+  equal(constNode.greeting, "hello world", "constant strings should work")
+  equal(constNode.score1, 28, "constant insts should work")
+  equal(constNode.score2, 3.01, "constant floats should work")
+  equal(constNode.win, true, "constant booleans should work")
 
   // Act
   const addition = program.getNode("+")

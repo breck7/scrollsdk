@@ -25,6 +25,13 @@ enum GrammarStandardCellTypeIds {
   int = "int"
 }
 
+enum GrammarConstantsConstantTypes {
+  boolean = "boolean",
+  string = "string",
+  int = "int",
+  float = "float"
+}
+
 enum GrammarConstants {
   // node types
   grammar = "grammar",
@@ -51,7 +58,8 @@ enum GrammarConstants {
   defaults = "defaults",
   constants = "constants",
   group = "group",
-  blob = "blob",
+  blob = "blob", // todo: rename to blobNode?
+  errorNode = "errorNode",
   required = "required", // Require this nodeType to be present in a node or program
   single = "single", // Have at most 1 of these
   tags = "tags",
@@ -169,10 +177,6 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   getDefinition(): GrammarNodeTypeDefinitionNode {
     // todo: do we need a relative to with this firstWord path?
     return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath())
-  }
-
-  getConstantsObject() {
-    return this.getDefinition().getConstantsObject()
   }
 
   protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
@@ -475,6 +479,7 @@ abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
 class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {}
 
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
+  // todo: is this correct?
   getLineCellTypes() {
     return "error ".repeat(this.getWords().length).trim()
   }
@@ -1220,29 +1225,6 @@ class GrammarCompilerNode extends TreeNode {
   }
 }
 
-class GrammarConstNode extends TreeNode {
-  getValue() {
-    // todo: parse type
-    if (this.length) return this.childrenToString()
-    return this.getWordsFrom(2).join(" ")
-  }
-  getName() {
-    return this.getFirstWord()
-  }
-}
-
-class GrammarConstantsNode extends TreeNode {
-  getCatchAllNodeConstructor(line: string) {
-    return GrammarConstNode
-  }
-
-  getConstantsObj() {
-    const result: jTreeTypes.stringMap = {}
-    this.forEach(node => (result[node.getName()] = node.getValue()))
-    return result
-  }
-}
-
 abstract class AbstractCustomConstructorNode extends TreeNode {
   getTheDefinedConstructor(): jTreeTypes.RunTimeNodeConstructor {
     // todo: allow overriding if custom constructor not found.
@@ -1265,10 +1247,8 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
 
   getBuiltIn() {
     const constructors: jTreeTypes.stringMap = {
-      ErrorNode: GrammarBackedErrorNode,
       TerminalNode: GrammarBackedTerminalNode,
-      NonTerminalNode: GrammarBackedNonTerminalNode,
-      BlobNode: GrammarBackedBlobNode
+      NonTerminalNode: GrammarBackedNonTerminalNode
     }
     return constructors[this.getWord(1)]
   }
@@ -1382,6 +1362,13 @@ class GrammarCustomConstructorsNode extends TreeNode {
   }
 }
 
+abstract class GrammarNodeTypeConstant extends TreeNode {}
+
+class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {}
+class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {}
+class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {}
+class GrammarNodeTypeConstantBoolean extends GrammarNodeTypeConstant {}
+
 abstract class AbstractGrammarDefinitionNode extends TreeNode {
   getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
     const types = [
@@ -1395,6 +1382,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.defaults,
       GrammarConstants.tags,
       GrammarConstants.blob,
+      GrammarConstants.errorNode,
       GrammarConstants.group,
       GrammarConstants.required,
       GrammarConstants.single
@@ -1404,7 +1392,10 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     types.forEach(type => {
       map[type] = TreeNode
     })
-    map[GrammarConstants.constants] = GrammarConstantsNode
+    map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean
+    map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt
+    map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString
+    map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.constructors] = GrammarCustomConstructorsNode
     map[GrammarConstants.example] = GrammarExampleNode
@@ -1473,6 +1464,10 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this.has(GrammarConstants.blob)
   }
 
+  protected _isErrorNode() {
+    return this.has(GrammarConstants.errorNode)
+  }
+
   private _cache_definedNodeConstructor: jTreeTypes.RunTimeNodeConstructor
 
   getConstructorDefinedInGrammar() {
@@ -1482,6 +1477,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {
     if (this._isBlobNode()) return GrammarBackedBlobNode
+    if (this._isErrorNode()) return GrammarBackedErrorNode
 
     return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
@@ -1665,11 +1661,6 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
 
   getSublimeSyntaxContextId() {
     return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH") // # is not allowed in sublime context names
-  }
-
-  getConstantsObject() {
-    const constantsNode = this.getNode(GrammarConstants.constants)
-    return constantsNode ? (<GrammarConstantsNode>constantsNode).getConstantsObj() : {}
   }
 
   private _getFirstCellHighlightScope() {

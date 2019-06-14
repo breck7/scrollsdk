@@ -35,6 +35,7 @@ declare enum GrammarConstants {
     constants = "constants",
     group = "group",
     blob = "blob",
+    errorNode = "errorNode",
     required = "required",
     single = "single",
     tags = "tags",
@@ -74,7 +75,6 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getGrammarProgram(): GrammarProgram;
     getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): GrammarNodeTypeDefinitionNode;
-    getConstantsObject(): jTreeTypes.stringMap;
     protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
     protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
     protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
@@ -198,6 +198,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
     protected _isBlobNode(): boolean;
+    protected _isErrorNode(): boolean;
     private _cache_definedNodeConstructor;
     getConstructorDefinedInGrammar(): Function;
     protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
@@ -238,7 +239,6 @@ declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNod
     _getRunTimeCatchAllNodeTypeId(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
     getSublimeSyntaxContextId(): string;
-    getConstantsObject(): jTreeTypes.stringMap;
     private _getFirstCellHighlightScope;
     protected _getParentDefinition(): AbstractGrammarDefinitionNode;
     getMatchBlock(): string;

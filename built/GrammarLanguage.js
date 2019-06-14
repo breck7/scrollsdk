@@ -22,6 +22,13 @@ var GrammarStandardCellTypeIds;
     GrammarStandardCellTypeIds["int"] = "int";
 })(GrammarStandardCellTypeIds || (GrammarStandardCellTypeIds = {}));
 exports.GrammarStandardCellTypeIds = GrammarStandardCellTypeIds;
+var GrammarConstantsConstantTypes;
+(function (GrammarConstantsConstantTypes) {
+    GrammarConstantsConstantTypes["boolean"] = "boolean";
+    GrammarConstantsConstantTypes["string"] = "string";
+    GrammarConstantsConstantTypes["int"] = "int";
+    GrammarConstantsConstantTypes["float"] = "float";
+})(GrammarConstantsConstantTypes || (GrammarConstantsConstantTypes = {}));
 var GrammarConstants;
 (function (GrammarConstants) {
     // node types
@@ -48,6 +55,7 @@ var GrammarConstants;
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
     GrammarConstants["blob"] = "blob";
+    GrammarConstants["errorNode"] = "errorNode";
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";
@@ -149,9 +157,6 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getDefinition() {
         // todo: do we need a relative to with this firstWord path?
         return this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath());
-    }
-    getConstantsObject() {
-        return this.getDefinition().getConstantsObject();
     }
     _getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
@@ -412,6 +417,7 @@ class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
 }
 exports.GrammarBackedTerminalNode = GrammarBackedTerminalNode;
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
+    // todo: is this correct?
     getLineCellTypes() {
         return "error ".repeat(this.getWords().length).trim();
     }
@@ -1003,27 +1009,6 @@ class GrammarCompilerNode extends TreeNode_1.default {
         return this.get(GrammarConstantsCompiler.closeChildren) || "";
     }
 }
-class GrammarConstNode extends TreeNode_1.default {
-    getValue() {
-        // todo: parse type
-        if (this.length)
-            return this.childrenToString();
-        return this.getWordsFrom(2).join(" ");
-    }
-    getName() {
-        return this.getFirstWord();
-    }
-}
-class GrammarConstantsNode extends TreeNode_1.default {
-    getCatchAllNodeConstructor(line) {
-        return GrammarConstNode;
-    }
-    getConstantsObj() {
-        const result = {};
-        this.forEach(node => (result[node.getName()] = node.getValue()));
-        return result;
-    }
-}
 class AbstractCustomConstructorNode extends TreeNode_1.default {
     getTheDefinedConstructor() {
         // todo: allow overriding if custom constructor not found.
@@ -1043,10 +1028,8 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
     }
     getBuiltIn() {
         const constructors = {
-            ErrorNode: GrammarBackedErrorNode,
             TerminalNode: GrammarBackedTerminalNode,
-            NonTerminalNode: GrammarBackedNonTerminalNode,
-            BlobNode: GrammarBackedBlobNode
+            NonTerminalNode: GrammarBackedNonTerminalNode
         };
         return constructors[this.getWord(1)];
     }
@@ -1146,6 +1129,16 @@ class GrammarCustomConstructorsNode extends TreeNode_1.default {
         return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser);
     }
 }
+class GrammarNodeTypeConstant extends TreeNode_1.default {
+}
+class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {
+}
+class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
+}
+class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {
+}
+class GrammarNodeTypeConstantBoolean extends GrammarNodeTypeConstant {
+}
 class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     getFirstWordMap() {
         const types = [
@@ -1159,6 +1152,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants.defaults,
             GrammarConstants.tags,
             GrammarConstants.blob,
+            GrammarConstants.errorNode,
             GrammarConstants.group,
             GrammarConstants.required,
             GrammarConstants.single
@@ -1167,7 +1161,10 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         types.forEach(type => {
             map[type] = TreeNode_1.default;
         });
-        map[GrammarConstants.constants] = GrammarConstantsNode;
+        map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean;
+        map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt;
+        map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString;
+        map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat;
         map[GrammarConstants.compilerNodeType] = GrammarCompilerNode;
         map[GrammarConstants.constructors] = GrammarCustomConstructorsNode;
         map[GrammarConstants.example] = GrammarExampleNode;
@@ -1225,6 +1222,9 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _isBlobNode() {
         return this.has(GrammarConstants.blob);
     }
+    _isErrorNode() {
+        return this.has(GrammarConstants.errorNode);
+    }
     getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
@@ -1233,6 +1233,8 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _getDefaultNodeConstructor() {
         if (this._isBlobNode())
             return GrammarBackedBlobNode;
+        if (this._isErrorNode())
+            return GrammarBackedErrorNode;
         return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode;
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
@@ -1384,10 +1386,6 @@ class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     }
     getSublimeSyntaxContextId() {
         return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
-    }
-    getConstantsObject() {
-        const constantsNode = this.getNode(GrammarConstants.constants);
-        return constantsNode ? constantsNode.getConstantsObj() : {};
     }
     _getFirstCellHighlightScope() {
         const program = this.getProgram();

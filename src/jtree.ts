@@ -19,7 +19,6 @@ class jtree {
   static TreeNode = TreeNode
   static NonTerminalNode = GrammarBackedNonTerminalNode
   static TerminalNode = GrammarBackedTerminalNode
-  static BlobNode = GrammarBackedBlobNode
   static GrammarProgram = GrammarProgram
   static CompiledLanguageRootNode = CompiledLanguageRootNode
   static CompiledLanguageNonRootNode = CompiledLanguageNonRootNode

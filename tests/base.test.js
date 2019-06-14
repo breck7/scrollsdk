@@ -1908,9 +1908,7 @@ cellType anyFirstWord
 cellType onoff
  enum on off
 nodeType error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ errorNode
 abstract topLevel
 abstract someAbstractClass
 abstract color_properties topLevel
@@ -1928,8 +1926,7 @@ nodeType block topLevel
  inScope topLevel
 nodeType foo topLevel
 nodeType nodeWithConsts topLevel
- constants
-  greeting string hello world
+ string greeting hello world
 nodeType text
  blob
 nodeType add topLevel

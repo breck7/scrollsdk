@@ -16,7 +16,11 @@ cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
 cellType anyWord
-cellType constructorFilePath
+cellType baseNodeTypes
+ enum blobNode errorNode terminalNode nonTerminalNode
+ highlightScope variable.parameter
+cellType booleanCell
+ enum true false
 cellType cellPropertyName
  highlightScope variable.parameter
 cellType cellTypeEnum
@@ -24,30 +28,29 @@ cellType cellTypeEnum
 cellType cellTypeId
 cellType cellTypeIdConstant
  highlightScope variable.parameter
-cellType grammarTypes
- enum cellType nodeType abstract
 cellType compilerTargetExtension
  description The target extension of the compiler output such as "o" or "js" or "html"
+cellType constantIdentifier
+ regex [a-zA-Z]\w+
+ description A word that can be assigned to the node class in the target language.
+cellType constructorFilePath
 cellType constructorName
 cellType enumOption
 cellType extendedNodeType
 cellType extraWord
  highlightScope invalid
 cellType fileExtension
-cellType toolingDirectiveWord
- highlightScope comment
 cellType filepath
 cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
 cellType grammarName
  highlightScope constant
+cellType grammarTypes
+ enum cellType nodeType abstract
 cellType intCell
  regex \-?[0-9]+
  highlightScope constant.numeric
 cellType javascriptCodeWord
-cellType baseNodeTypes
- enum blobNode errorNode terminalNode nonTerminalNode
- highlightScope variable.parameter
 cellType lowercaseWord
  regex [a-z]+
 cellType nodeTypeEnum
@@ -68,9 +71,11 @@ cellType scriptUrl
 cellType semanticVersion
  regex [0-9]+\.[0-9]+\.[0-9]+
  highlightScope constant.numeric
-cellType tag
 cellType stringCell
  highlightScope string
+cellType tag
+cellType toolingDirectiveWord
+ highlightScope comment
 cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
@@ -84,12 +89,10 @@ abstract abstract.environment
 abstract abstract.nodeTypeRule
  firstCellType propertyName
  single
+abstract abstract.constant
+ description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
+ firstCellType propertyName
 abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
-nodeType tooling
- description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
- catchAllCellType toolingDirectiveWord
- firstCellType toolingDirectiveWord
- catchAllNodeType tooling
 nodeType catchAll.defaultTuple
  cells anyWord
  catchAllCellType anyWord
@@ -99,6 +102,9 @@ nodeType catchAll.exampleLine
  catchAllCellType exampleWord
  firstCellType exampleWord
  catchAllNodeType catchAll.exampleLine
+nodeType catchAll.javascriptCodeLine
+ catchAllCellType javascriptCodeWord
+ catchAllNodeType catchAll.javascriptCodeLine
 nodeType cellType
  cells cellTypeId
  catchAllCellType extendedCellType
@@ -128,9 +134,6 @@ nodeType highlightScope
  cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
-nodeType catchAll.javascriptCodeLine
- catchAllCellType javascriptCodeWord
- catchAllNodeType catchAll.javascriptCodeLine
 nodeType name
  cells grammarName
  firstCellType propertyName
@@ -142,7 +145,7 @@ nodeType nodeType
  catchAllNodeType catchAll.error
  baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
- inScope abstract.nodeTypeRule
+ inScope abstract.nodeTypeRule abstract.constant
 nodeType nodeTypeOrder
  catchAllCellType nodeTypeId
  firstCellType propertyName
@@ -152,6 +155,11 @@ nodeType regex
  description The word must match this pattern or it shall be marked as an error.
  firstCellType cellPropertyName
  single
+nodeType tooling
+ description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
+ catchAllCellType toolingDirectiveWord
+ firstCellType toolingDirectiveWord
+ catchAllNodeType tooling
 nodeType version
  cells semanticVersion
  firstCellType propertyName
@@ -161,6 +169,18 @@ nodeType indentCharacter abstract.compilerRule
 nodeType listDelimiter abstract.compilerRule
 nodeType openChildren abstract.compilerRule
 nodeType sub abstract.compilerRule
+nodeType boolean abstract.constant
+ cells constantIdentifier
+ catchAllCellType booleanCell
+nodeType float abstract.constant
+ cells constantIdentifier
+ catchAllCellType floatCell
+nodeType int abstract.constant
+ cells constantIdentifier
+ catchAllCellType intCell
+nodeType string abstract.constant
+ cells constantIdentifier
+ catchAllCellType stringCell
 nodeType browser abstract.environment
  cells constructorName
  catchAllCellType scriptUrl
@@ -184,29 +204,10 @@ nodeType cells abstract.nodeTypeRule
 nodeType compiler abstract.nodeTypeRule
  cells compilerTargetExtension
  inScope sub listDelimiter openChildren closeChildren indentCharacter
-cellType constantIdentifier
- regex [a-zA-Z]\w+
- description A word that can be assigned to the node class in the target language.
-abstract abstract.constant abstract.nodeTypeRule
- description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
-cellType booleanCell
- enum true false
-nodeType string abstract.constant
- cells constantIdentifier
- catchAllCellType stringCell
-nodeType int abstract.constant
- cells constantIdentifier intCell
-nodeType float abstract.constant
- cells constantIdentifier floatCell
-nodeType boolean abstract.constant
- cells constantIdentifier booleanCell
 nodeType defaults abstract.nodeTypeRule
  catchAllNodeType catchAll.defaultTuple
 nodeType description abstract.nodeTypeRule
  catchAllCellType stringCell
-nodeType javascript abstract.nodeTypeRule
- description Provide raw javascript code that will be inserted into a node type's class.
- catchAllNodeType catchAll.javascriptCodeLine
 nodeType example abstract.nodeTypeRule
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleWord
@@ -216,6 +217,12 @@ nodeType firstCellType abstract.nodeTypeRule
  description If you have an any node, use this to correctly parse the first word.
 nodeType frequency abstract.nodeTypeRule
  cells floatCell
+nodeType inScope abstract.nodeTypeRule
+ description A list of possible child nodeTypes for a node.
+ catchAllCellType nodeTypeEnum
+nodeType javascript abstract.nodeTypeRule
+ description Provide raw javascript code that will be inserted into a node type's class.
+ catchAllNodeType catchAll.javascriptCodeLine
 nodeType required abstract.nodeTypeRule
  description If present, the parent node will have an error if one of these nodes is not provided.
 nodeType single abstract.nodeTypeRule
@@ -225,9 +232,6 @@ nodeType tags abstract.nodeTypeRule
 nodeType constructors abstract.nonTerminalNodeTypeRule
  inScope abstract.environment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
-nodeType inScope abstract.nodeTypeRule
- description A list of possible child nodeTypes for a node.
- catchAllCellType nodeTypeEnum
 nodeType abstract nodeType
  firstCellType abstractConstant
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.

@@ -1501,6 +1501,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   protected _getDefinedCustomJSConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const customJavascriptNode = <CustomJavascriptNode>this.getNode(GrammarConstants.javascript)
+    // todo: this is not catching if we dont have that but we do have constants.
     if (customJavascriptNode) return customJavascriptNode._getCustomJavascriptConstructor(this)
   }
 

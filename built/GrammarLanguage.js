@@ -1246,6 +1246,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     }
     _getDefinedCustomJSConstructor() {
         const customJavascriptNode = this.getNode(GrammarConstants.javascript);
+        // todo: this is not catching if we dont have that but we do have constants.
         if (customJavascriptNode)
             return customJavascriptNode._getCustomJavascriptConstructor(this);
     }

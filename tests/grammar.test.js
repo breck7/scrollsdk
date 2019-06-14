@@ -46,7 +46,7 @@ const makeProgram = (grammarCode, code, grammarPath = undefined) => {
   return new rootProgramConstructor(code)
 }
 
-testTree.jibberish = equal => {
+testTree._jibberish = equal => {
   // Arrange
   const sampleJibberishCode = fs.readFileSync(jibberishRootDir + "sample.jibberish", "utf8")
 

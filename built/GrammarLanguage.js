@@ -1360,8 +1360,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this._cache_catchAllConstructor;
     }
 }
-// todo: rename to NonRootNodeDefinition?
-class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
+class NonGrammarProgram extends AbstractGrammarDefinitionNode {
     // todo: protected?
     _getRunTimeCatchAllNodeTypeId() {
         return this.get(GrammarConstants.catchAllNodeType) || this.getParent()._getRunTimeCatchAllNodeTypeId();
@@ -1520,20 +1519,19 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
         return map;
     }
 }
-class GrammarAbstractNodeTypeDefinitionNode extends GrammarNodeTypeDefinitionNode {
+class GrammarAbstractNodeTypeDefinitionNode extends NonGrammarProgram {
     _isAbstract() {
         return true;
     }
 }
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
-// todo: rename to RootNodeDefinition (?)
 class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap() {
         const map = {};
         map[GrammarConstants.grammar] = GrammarRootNode;
         map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode;
-        map[GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode;
+        map[GrammarConstants.nodeType] = NonGrammarProgram;
         map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
         map[GrammarConstants.javascript] = CustomJavascriptNode;
         map[GrammarConstants.toolingDirective] = TreeNode_1.default;
@@ -1603,7 +1601,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this;
     }
     getNodeTypeDefinitions() {
-        return this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode);
+        return this.getChildrenByNodeConstructor(NonGrammarProgram);
     }
     // todo: remove?
     getTheGrammarFilePath() {
@@ -1651,7 +1649,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         if (this._cache_nodeTypeDefinitions)
             return undefined;
         this._cache_nodeTypeDefinitions = {};
-        this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode).forEach(nodeTypeDefinitionNode => {
+        this.getChildrenByNodeConstructor(NonGrammarProgram).forEach(nodeTypeDefinitionNode => {
             this._cache_nodeTypeDefinitions[nodeTypeDefinitionNode.getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode;
         });
     }

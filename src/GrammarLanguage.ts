@@ -133,7 +133,7 @@ abstract class AbstractRuntimeNode extends TreeNode {
   }
 
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
-    let defs: GrammarNodeTypeDefinitionNode[] = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions())
+    let defs: NonGrammarProgram[] = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions())
 
     if (partialWord) defs = defs.filter(def => def.getNodeTypeIdFromDefinition().includes(partialWord))
 
@@ -179,9 +179,9 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     return this.getDefinition().getNodeTypeIdFromDefinition()
   }
 
-  getDefinition(): GrammarNodeTypeDefinitionNode {
+  getDefinition(): NonGrammarProgram {
     // todo: do we need a relative to with this firstWord path?
-    return <GrammarNodeTypeDefinitionNode>this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath())
+    return <NonGrammarProgram>this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath())
   }
 
   protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
@@ -1521,7 +1521,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   getRunTimeFirstWordMapWithDefinitions() {
     const defs = this._getProgramNodeTypeDefinitionCache()
-    return TreeUtils.mapValues<GrammarNodeTypeDefinitionNode>(this.getRunTimeFirstWordMap(), key => defs[key])
+    return TreeUtils.mapValues<NonGrammarProgram>(this.getRunTimeFirstWordMap(), key => defs[key])
   }
 
   getRequiredCellTypeIds(): jTreeTypes.cellTypeId[] {
@@ -1563,7 +1563,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     const definitions = this._getProgramNodeTypeDefinitionCache()
     const firstWords = this.getRunTimeFirstWordMap()
     const arr = Object.keys(firstWords).map(firstWord => definitions[firstWord])
-    arr.sort(TreeUtils.sortByAccessor((definition: GrammarNodeTypeDefinitionNode) => definition.getFrequency()))
+    arr.sort(TreeUtils.sortByAccessor((definition: NonGrammarProgram) => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
@@ -1625,7 +1625,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()]
   }
 
-  protected _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: GrammarNodeTypeDefinitionNode } {
+  protected _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: NonGrammarProgram } {
     return this.getProgram()._getProgramNodeTypeDefinitionCache()
   }
 
@@ -1635,8 +1635,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 }
 
-// todo: rename to NonRootNodeDefinition?
-class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
+class NonGrammarProgram extends AbstractGrammarDefinitionNode {
   // todo: protected?
   _getRunTimeCatchAllNodeTypeId(): string {
     return this.get(GrammarConstants.catchAllNodeType) || (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllNodeTypeId()
@@ -1819,7 +1818,7 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
   }
 }
 
-class GrammarAbstractNodeTypeDefinitionNode extends GrammarNodeTypeDefinitionNode {
+class GrammarAbstractNodeTypeDefinitionNode extends NonGrammarProgram {
   _isAbstract() {
     return true
   }
@@ -1827,13 +1826,12 @@ class GrammarAbstractNodeTypeDefinitionNode extends GrammarNodeTypeDefinitionNod
 
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
-// todo: rename to RootNodeDefinition (?)
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   getFirstWordMap() {
     const map: jTreeTypes.stringMap = {}
     map[GrammarConstants.grammar] = GrammarRootNode
     map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode
-    map[GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode
+    map[GrammarConstants.nodeType] = NonGrammarProgram
     map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode
     map[GrammarConstants.javascript] = CustomJavascriptNode
     map[GrammarConstants.toolingDirective] = TreeNode
@@ -1920,7 +1918,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getNodeTypeDefinitions() {
-    return <GrammarNodeTypeDefinitionNode[]>this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode)
+    return <NonGrammarProgram[]>this.getChildrenByNodeConstructor(NonGrammarProgram)
   }
 
   // todo: remove?
@@ -1977,15 +1975,15 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // At present we only have global nodeType definitions (you cannot have scoped nodeType definitions right now).
-  private _cache_nodeTypeDefinitions: { [nodeTypeId: string]: GrammarNodeTypeDefinitionNode }
+  private _cache_nodeTypeDefinitions: { [nodeTypeId: string]: NonGrammarProgram }
 
   protected _initProgramNodeTypeDefinitionCache(): void {
     if (this._cache_nodeTypeDefinitions) return undefined
 
     this._cache_nodeTypeDefinitions = {}
 
-    this.getChildrenByNodeConstructor(GrammarNodeTypeDefinitionNode).forEach(nodeTypeDefinitionNode => {
-      this._cache_nodeTypeDefinitions[(<GrammarNodeTypeDefinitionNode>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode
+    this.getChildrenByNodeConstructor(NonGrammarProgram).forEach(nodeTypeDefinitionNode => {
+      this._cache_nodeTypeDefinitions[(<NonGrammarProgram>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode
     })
   }
 

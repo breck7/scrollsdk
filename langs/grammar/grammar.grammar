@@ -47,6 +47,7 @@ cellType intCell
 cellType javascriptCodeWord
 cellType baseNodeTypes
  enum blobNode errorNode terminalNode nonTerminalNode
+ highlightScope variable.parameter
 cellType lowercaseWord
  regex [a-z]+
 cellType nodeTypeEnum

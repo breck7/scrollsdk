@@ -19,7 +19,10 @@ edge / 2019-06-11
 - Breaking: getCatchAllCellTypeName is now getCatchAllCellTypeId
 - Breaking: getRequiredCellTypeNames is now getRequiredCellTypeIds
 - Breaking: getRunTimeNodeTypeNames is now getRunTimeFirstWordsInScope
+- Breaking: removed getProgramErrorMessages. Use getAllErrors
 - Breaking: getFirstCellType is now getFirstCellTypeId
+- Breaking: getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
+- Breaking: getGrammarProgram is now getGrammarProgramRoot
 - Breaking: getCellTypeName is now getCellTypeId
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId

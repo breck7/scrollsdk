@@ -60,10 +60,10 @@ declare abstract class GrammarBackedNode extends TreeNode {
     }[];
     private _getAutocompleteResultsForFirstWord;
     private _getAutocompleteResultsForCell;
-    getGrammarProgram(): GrammarProgram;
+    getGrammarProgramRoot(): GrammarProgram;
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getCatchAllNodeConstructor(line: string): Function;
-    getProgram(): GrammarBackedNode;
+    getRootProgramNode(): GrammarBackedRootNode;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[];
     protected _getNodeTypeDefinitionByFirstWordPath(path: string): AbstractGrammarDefinitionNode;
@@ -72,22 +72,22 @@ declare abstract class GrammarBackedNode extends TreeNode {
 declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
 }
 declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
+    getLineHints(): string;
+    getNodeTypeId(): jTreeTypes.nodeTypeId;
+    getDefinition(): NonRootNodeTypeDefinition;
 }
 declare abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
 }
 declare abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {
 }
 declare abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
-    getProgram(): GrammarBackedNode;
-    getGrammarProgram(): GrammarProgram;
-    getNodeTypeId(): jTreeTypes.nodeTypeId;
+    getRootProgramNode(): GrammarBackedRootNode;
     getDefinition(): NonRootNodeTypeDefinition;
     protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
     protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
     protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
     compile(targetLanguage: jTreeTypes.targetLanguageId): string;
     getErrors(): jTreeTypes.TreeError[];
-    getLineHints(): string;
     getParsedWords(): any[];
     readonly cells: jTreeTypes.stringMap;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
@@ -109,7 +109,6 @@ declare abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootN
         }[];
     };
     getPrettified(): string;
-    getProgramErrorMessages(): string[];
     getDefinition(): GrammarProgram;
     getNodeTypeUsage(filepath?: string): TreeNode;
     getInPlaceCellTypeTree(): string;
@@ -142,9 +141,8 @@ declare abstract class AbstractGrammarBackedCell<T> {
     private _cellTypeId;
     getCellTypeId(): string;
     static parserFunctionName: string;
-    getNode(): any;
+    getNode(): AbstractRuntimeNonRootNode;
     getCellIndex(): number;
-    private _getProgram;
     isCatchAll(): boolean;
     abstract getParsed(): T;
     getHighlightScope(): string | undefined;
@@ -154,9 +152,9 @@ declare abstract class AbstractGrammarBackedCell<T> {
     }[];
     getWord(): string;
     protected _getCellTypeDefinition(): GrammarCellTypeDefinitionNode;
-    protected _getLineNumber(): any;
-    protected _getFullLine(): any;
-    protected _getErrorContext(): any;
+    protected _getLineNumber(): number;
+    protected _getFullLine(): string;
+    protected _getErrorContext(): string;
     protected abstract _isValid(): boolean;
     isValid(): boolean;
     getErrorIfAny(): jTreeTypes.TreeError;
@@ -169,9 +167,9 @@ declare class GrammarCellTypeDefinitionNode extends TreeNode {
     getHighlightScope(): string | undefined;
     private _getEnumOptions;
     private _getEnumFromGrammarOptions;
-    getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgramRootNode): string[];
+    getAutocompleteWordOptions(programRootNode: GrammarBackedRootNode): string[];
     getRegexString(): string;
-    isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode): boolean;
+    isValid(str: string, programRootNode: GrammarBackedRootNode): boolean;
     getCellTypeId(): jTreeTypes.cellTypeId;
     static types: any;
 }
@@ -183,12 +181,12 @@ declare class GrammarExampleNode extends TreeNode {
 }
 declare class GrammarCompilerNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getTargetExtension(): string;
-    getListDelimiter(): string;
-    getTransformation(): string;
-    getIndentCharacter(): string;
-    getOpenChildrenString(): string;
-    getCloseChildrenString(): string;
+    _getTargetExtension(): string;
+    _getListDelimiter(): string;
+    _getTransformation(): string;
+    _getIndentCharacter(): string;
+    _getOpenChildrenString(): string;
+    _getCloseChildrenString(): string;
 }
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
@@ -206,7 +204,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getDefinedNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     protected _getDefinedCustomJSConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
-    getProgram(): GrammarProgram;
+    getLanguageDefinitionProgram(): GrammarProgram;
     getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
@@ -268,7 +266,7 @@ declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
     protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     _nodeDefToJavascriptClass(): string;
     _getExtendsClassName(): string;
-    getProgram(): GrammarProgram;
+    getLanguageDefinitionProgram(): GrammarProgram;
     protected _getDefinedCustomJSConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
 }
@@ -288,7 +286,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     protected _getCellTypeDefinitions(): {
         [typeName: string]: GrammarCellTypeDefinitionNode;
     };
-    getProgram(): this;
+    getLanguageDefinitionProgram(): this;
     getNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
     getTheGrammarFilePath(): string;
     protected _getGrammarRootNode(): GrammarRootNode;
@@ -298,7 +296,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     private _cachedDefinitions;
     getNodeTypeDefinitionByFirstWordPath(firstWordPath: string): AbstractGrammarDefinitionNode;
-    getDocs(): string;
     private _cache_nodeTypeDefinitions;
     protected _initProgramNodeTypeDefinitionCache(): void;
     _getProgramNodeTypeDefinitionCache(): {

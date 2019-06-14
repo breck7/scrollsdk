@@ -80,10 +80,12 @@ testTree.numbers = equal => {
     // Act/Assert
     equal(NumbersConstants.cellTypes.float, "float", "constants generation works")
     equal(NumbersConstants.nodeTypes.comment, "comment", "constants generation works")
-    equal(program.nodeAt(0).numbers.length, 2, "cell getters work")
-    equal(program.nodeAt(0).numbers[0], 2, "typings work")
+    const firstNode = program.nodeAt(0)
+    equal(firstNode.numbers.length, 2, "cell getters work")
+    equal(firstNode.numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
+    equal(firstNode.getLineHints(), "int +", "line hints work")
 
     // Arrange/Act/Assert
     equal(new NumbersProgramRoot(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")

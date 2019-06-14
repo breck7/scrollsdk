@@ -55,10 +55,10 @@ testTree._jibberish = equal => {
 
   // Assert
   equal(program instanceof JibberishLang.JibberishProgramRoot, true, "correct program class")
-  equal(program.getAllErrors().length, 0, `${program.getProgramErrorMessages()}`)
+  equal(program.getAllErrors().length, 0, `should be 0 errors`)
 
   const defNode = program
-    .getGrammarProgram()
+    .getGrammarProgramRoot()
     .getNodeTypeFamilyTree()
     .getNode("topLevel nodeWithConsts")
 
@@ -98,7 +98,7 @@ testTree._jibberish = equal => {
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
 
   // Act/Assert
-  equal(programWithBugs.getProgramErrorMessages().length, 2)
+  equal(programWithBugs.getAllErrors().length, 2)
 
   // Act
   let count = 0
@@ -262,8 +262,7 @@ testTree.blobNodes = equal => {
  1+1`)
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages().join("\n")
-  equal(errors, "")
+  equal(anyProgram.getAllErrors().length, 0)
 
   // Act
   for (let err of anyProgram.getAllErrorsIterator()) {
@@ -292,8 +291,7 @@ nodeType baseNode`,
   )
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages()
-  equal(errors.length, 1)
+  equal(anyProgram.getAllErrors().length, 1)
 }
 
 testTree.minimumGrammar = equal => {
@@ -307,7 +305,7 @@ nodeType anyNode
 cellType any`
   ).getRootConstructor()
   const program = new programConstructor()
-  const grammarProgram = program.getGrammarProgram()
+  const grammarProgram = program.getGrammarProgramRoot()
 
   // Assert
   let errors = grammarProgram.getAllErrors()
@@ -346,8 +344,7 @@ testTree.duplicateNodeTypes = equal => {
 type bar`)
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages()
-  equal(errors.length, 2)
+  equal(anyProgram.getAllErrors().length, 2)
 }
 
 testTree.abstractNodeTypes = equal => {
@@ -356,8 +353,7 @@ testTree.abstractNodeTypes = equal => {
 extendsAbstract 2`)
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages()
-  equal(errors.length, 1)
+  equal(errors.getAllErrors().length, 1)
 }
 
 testTree.updateNodeTypeIds = equal => {

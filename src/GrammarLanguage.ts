@@ -117,8 +117,8 @@ abstract class GrammarBackedNode extends TreeNode {
 
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
-  getGrammarProgram(): GrammarProgram {
-    return this.getProgram().getGrammarProgram()
+  getGrammarProgramRoot() {
+    return this.getDefinition().getLanguageDefinitionProgram()
   }
 
   getFirstWordMap() {
@@ -130,7 +130,7 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   // todo: rename to something better?
-  getProgram(): GrammarBackedNode {
+  getRootProgramNode(): GrammarBackedRootNode {
     return this
   }
 
@@ -144,8 +144,8 @@ abstract class GrammarBackedNode extends TreeNode {
 
   protected _getNodeTypeDefinitionByFirstWordPath(path: string) {
     // todo: do we need a relative to with this firstWord path?
-    return this.getProgram()
-      .getGrammarProgram()
+    return this.getRootProgramNode()
+      .getGrammarProgramRoot()
       .getNodeTypeDefinitionByFirstWordPath(path)
   }
 
@@ -160,22 +160,31 @@ abstract class GrammarBackedNode extends TreeNode {
 }
 
 abstract class GrammarBackedRootNode extends GrammarBackedNode {}
-abstract class GrammarBackedNonRootNode extends GrammarBackedNode {}
-
-abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {}
-abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {}
-
-abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
-  getProgram() {
-    return (<AbstractRuntimeProgramRootNode>this.getParent()).getProgram()
-  }
-
-  getGrammarProgram() {
-    return this.getDefinition().getProgram()
+abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
+  // todo: improve layout (use bold?)
+  getLineHints(): string {
+    const def = this.getDefinition()
+    const catchAllCellTypeId = def.getCatchAllCellTypeId()
+    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
 
   getNodeTypeId(): jTreeTypes.nodeTypeId {
     return this.getDefinition().getNodeTypeIdFromDefinition()
+  }
+
+  getDefinition(): NonRootNodeTypeDefinition {
+    // todo: do we need a relative to with this firstWord path?
+    return <NonRootNodeTypeDefinition>this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath())
+  }
+}
+
+// todo: should this be abstract?
+abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {}
+abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {}
+
+abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
+  getRootProgramNode() {
+    return (<AbstractRuntimeProgramRootNode>this.getParent()).getRootProgramNode()
   }
 
   getDefinition(): NonRootNodeTypeDefinition {
@@ -221,13 +230,6 @@ abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
     return this._getRequiredNodeErrors(errors)
   }
 
-  // todo: improve layout (use bold?)
-  getLineHints(): string {
-    const def = this.getDefinition()
-    const catchAllCellTypeId = def.getCatchAllCellTypeId()
-    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
-  }
-
   // todo: remove?
   getParsedWords() {
     return this._getGrammarBackedCellArray().map(word => word.getParsed())
@@ -249,7 +251,7 @@ abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
 
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
     const definition = this.getDefinition()
-    const grammarProgram = definition.getProgram()
+    const grammarProgram = definition.getLanguageDefinitionProgram()
     const requiredCellTypeIds = definition.getRequiredCellTypeIds()
     const firstCellTypeId = definition.getFirstCellTypeId()
     const numberOfRequiredCells = requiredCellTypeIds.length + 1 // todo: assuming here first cell is required.
@@ -360,26 +362,22 @@ abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
   }
 
   getPrettified() {
-    const nodeTypeOrder = this.getGrammarProgram().getNodeTypeOrder()
+    const nodeTypeOrder = this.getGrammarProgramRoot().getNodeTypeOrder()
     const clone = this.clone()
-    const isCondensed = this.getGrammarProgram().getGrammarName() === "grammar" // todo: generalize?
+    const isCondensed = this.getGrammarProgramRoot().getGrammarName() === "grammar" // todo: generalize?
     clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined)
 
     return clone.toString()
   }
 
-  getProgramErrorMessages() {
-    return this.getAllErrors().map(err => err.getMessage())
-  }
-
   getDefinition(): GrammarProgram {
-    return this.getGrammarProgram()
+    return this.getGrammarProgramRoot()
   }
 
   getNodeTypeUsage(filepath = "") {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
-    const grammarProgram = this.getGrammarProgram()
+    const grammarProgram = this.getGrammarProgramRoot()
     grammarProgram.getNodeTypeDefinitions().forEach(def => {
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
     })
@@ -533,7 +531,7 @@ abstract class AbstractGrammarBackedCell<T> {
     this._word = node.getWord(index)
   }
 
-  private _node: any
+  private _node: AbstractRuntimeNonRootNode
   protected _index: jTreeTypes.int
   protected _word: string
   private _typeDef: GrammarCellTypeDefinitionNode
@@ -554,10 +552,6 @@ abstract class AbstractGrammarBackedCell<T> {
     return this._index
   }
 
-  private _getProgram() {
-    return <AbstractRuntimeProgramRootNode>this.getNode().getProgram()
-  }
-
   isCatchAll() {
     return this._isCatchAll
   }
@@ -571,7 +565,7 @@ abstract class AbstractGrammarBackedCell<T> {
 
   getAutoCompleteWords(partialWord: string = "") {
     const definition = this._getCellTypeDefinition()
-    let words = definition ? definition.getAutocompleteWordOptions(this._getProgram()) : []
+    let words = definition ? definition.getAutocompleteWordOptions(this.getNode().getRootProgramNode()) : []
 
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     if (runTimeOptions) words = runTimeOptions.concat(words)
@@ -610,7 +604,7 @@ abstract class AbstractGrammarBackedCell<T> {
   isValid(): boolean {
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     if (runTimeOptions) return runTimeOptions.includes(this._word)
-    return this._getCellTypeDefinition().isValid(this._word, this._getProgram()) && this._isValid()
+    return this._getCellTypeDefinition().isValid(this._word, this.getNode().getRootProgramNode()) && this._isValid()
   }
 
   getErrorIfAny(): jTreeTypes.TreeError {
@@ -809,7 +803,7 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
   }
 
   getExtension() {
-    return (<GrammarBackedNode>this.getNode()).getGrammarProgram().getExtensionName()
+    return (<GrammarBackedNode>this.getNode()).getGrammarProgramRoot().getExtensionName()
   }
 
   getNode() {
@@ -1019,7 +1013,7 @@ class MissingWordError extends AbstractCellError {
 // todo: add standard types, enum types, from disk types
 
 abstract class AbstractGrammarWordTestNode extends TreeNode {
-  abstract isValid(str: string, program?: any): boolean
+  abstract isValid(str: string, programRootNode?: GrammarBackedRootNode): boolean
 }
 
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
@@ -1033,25 +1027,25 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
-  _getEnumFromGrammar(runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode): jTreeTypes.stringMap {
+  _getEnumFromGrammar(programRootNode: GrammarBackedRootNode): jTreeTypes.stringMap {
     const nodeTypes = this.getWordsFrom(1)
     const enumGroup = nodeTypes.join(" ")
     // note: hack where we store it on the program. otherwise has global effects.
-    if (!(<any>runTimeGrammarBackedProgram)._enumMaps) (<any>runTimeGrammarBackedProgram)._enumMaps = {}
-    if ((<any>runTimeGrammarBackedProgram)._enumMaps[enumGroup]) return (<any>runTimeGrammarBackedProgram)._enumMaps[enumGroup]
+    if (!(<any>programRootNode)._enumMaps) (<any>programRootNode)._enumMaps = {}
+    if ((<any>programRootNode)._enumMaps[enumGroup]) return (<any>programRootNode)._enumMaps[enumGroup]
 
     const wordIndex = 1
     const map: jTreeTypes.stringMap = {}
-    runTimeGrammarBackedProgram.findNodes(nodeTypes).forEach(node => {
+    programRootNode.findNodes(nodeTypes).forEach(node => {
       map[node.getWord(wordIndex)] = true
     })
-    ;(<any>runTimeGrammarBackedProgram)._enumMaps[enumGroup] = map
+    ;(<any>programRootNode)._enumMaps[enumGroup] = map
     return map
   }
 
   // todo: remove
-  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode) {
-    return this._getEnumFromGrammar(runTimeGrammarBackedProgram)[str] === true
+  isValid(str: string, programRootNode: GrammarBackedRootNode) {
+    return this._getEnumFromGrammar(programRootNode)[str] === true
   }
 }
 
@@ -1127,13 +1121,13 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return options
   }
 
-  private _getEnumFromGrammarOptions(runTimeProgram: AbstractRuntimeProgramRootNode) {
+  private _getEnumFromGrammarOptions(programRootNode: GrammarBackedRootNode) {
     const node = <EnumFromGrammarTestNode>this.getNode(GrammarConstants.enumFromGrammar)
-    return node ? Object.keys(node._getEnumFromGrammar(runTimeProgram)) : undefined
+    return node ? Object.keys(node._getEnumFromGrammar(programRootNode)) : undefined
   }
 
-  getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgramRootNode): string[] {
-    return this._getEnumOptions() || this._getEnumFromGrammarOptions(runTimeProgram) || []
+  getAutocompleteWordOptions(programRootNode: GrammarBackedRootNode): string[] {
+    return this._getEnumOptions() || this._getEnumFromGrammarOptions(programRootNode) || []
   }
 
   getRegexString() {
@@ -1142,10 +1136,8 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     return this.get(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
 
-  isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode) {
-    return this.getChildrenByNodeConstructor(AbstractGrammarWordTestNode).every(node =>
-      (<AbstractGrammarWordTestNode>node).isValid(str, runTimeGrammarBackedProgram)
-    )
+  isValid(str: string, programRootNode: GrammarBackedRootNode) {
+    return this.getChildrenByNodeConstructor(AbstractGrammarWordTestNode).every(node => (<AbstractGrammarWordTestNode>node).isValid(str, programRootNode))
   }
 
   getCellTypeId(): jTreeTypes.cellTypeId {
@@ -1225,7 +1217,7 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
     const def = <AbstractGrammarDefinitionNode>this.getParent().getParent()
 
     if (def instanceof NonRootNodeTypeDefinition) return def
-    return def.getProgram()
+    return def.getLanguageDefinitionProgram()
   }
 }
 
@@ -1504,7 +1496,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return GrammarDefinitionErrorNode
   }
 
-  getProgram(): GrammarProgram {
+  getLanguageDefinitionProgram(): GrammarProgram {
     return <GrammarProgram>this.getParent()
   }
 
@@ -1553,7 +1545,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   _getGetters() {
     // todo: add cellType parsings
-    const grammarProgram = this.getProgram()
+    const grammarProgram = this.getLanguageDefinitionProgram()
     const getters = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1))
 
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
@@ -1634,7 +1626,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     if (def) return def
 
     // todo: implement contraints like a grammar file MUST have a catch all.
-    if (this.isRoot()) throw new Error(`This grammar language "${this.getProgram().getGrammarName()}" lacks a root catch all definition`)
+    if (this.isRoot()) throw new Error(`This grammar language "${this.getLanguageDefinitionProgram().getGrammarName()}" lacks a root catch all definition`)
     else return (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllNodeTypeDefinition()
   }
 
@@ -1655,7 +1647,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   protected _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: NonRootNodeTypeDefinition } {
-    return this.getProgram()._getProgramNodeTypeDefinitionCache()
+    return this.getLanguageDefinitionProgram()._getProgramNodeTypeDefinitionCache()
   }
 
   getRunTimeCatchAllNodeConstructor() {
@@ -1680,7 +1672,7 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
   }
 
   private _getFirstCellHighlightScope() {
-    const program = this.getProgram()
+    const program = this.getLanguageDefinitionProgram()
     const cellTypeDefinition = program.getCellTypeDefinitionById(this.getFirstCellTypeId())
     // todo: standardize error/capture error at grammar time
     if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${this.getFirstCellTypeId()} found`)
@@ -1694,7 +1686,7 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
 
   getMatchBlock() {
     const defaultHighlightScope = "source"
-    const program = this.getProgram()
+    const program = this.getLanguageDefinitionProgram()
     const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     const firstWordHighlightScope = (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`
@@ -1759,7 +1751,7 @@ ${captures}
 
   // todo: protected?
   _getProgramNodeTypeDefinitionCache() {
-    return this.getProgram()._getProgramNodeTypeDefinitionCache()
+    return this.getLanguageDefinitionProgram()._getProgramNodeTypeDefinitionCache()
   }
 
   getDoc() {
@@ -1831,13 +1823,13 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
     return ""
   }
 
-  getProgram() {
+  getLanguageDefinitionProgram() {
     return <GrammarProgram>this.getParent()
   }
 
   protected _getDefinedCustomJSConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const customJavascriptNode = <CustomJavascriptNode>this.getNode(GrammarConstants.javascript)
-    if (customJavascriptNode) return customJavascriptNode._getCustomJavascriptConstructor(this.getProgram())
+    if (customJavascriptNode) return customJavascriptNode._getCustomJavascriptConstructor(this.getLanguageDefinitionProgram())
   }
 
   getFirstWordMap() {
@@ -1932,7 +1924,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return types
   }
 
-  getProgram() {
+  getLanguageDefinitionProgram() {
     return this
   }
 
@@ -2018,7 +2010,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
     // new language.
     return <AbstractRuntimeProgramConstructorInterface>(<any>class extends extendedConstructor {
-      getGrammarProgram(): GrammarProgram {
+      getGrammarProgramRoot(): GrammarProgram {
         return grammarProgram
       }
     })

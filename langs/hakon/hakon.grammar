@@ -4,7 +4,7 @@ grammar
  compiler css
  catchAllNodeType selectorNode
  constructors
-  nodejs ./HakonLang.js HakonProgramRoot
+  nodejs ./HakonLang.js
   browser HakonProgramRoot HakonLang.js
 cellType extraWord
  highlightScope invalid

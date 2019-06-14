@@ -4,7 +4,7 @@ grammar
  catchAllNodeType errorNode
  inScope htmlTag
  constructors
-  nodejs ./StumpNodes.js StumpProgramRoot
+  nodejs ./StumpNodes.js
   browser StumpProgramRoot StumpNodes.js
 cellType anyFirstWord
 cellType extraWord

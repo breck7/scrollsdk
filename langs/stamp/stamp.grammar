@@ -3,7 +3,7 @@ grammar
  description A Tree Language for creating distributable text template files that expand to folders and files.
  catchAllNodeType error
  constructors
-  nodejs ./StampLang.js StampProgramRoot
+  nodejs ./StampLang.js
  inScope #! prompt folder file
 cellType anyFirstWord
 cellType extraWord

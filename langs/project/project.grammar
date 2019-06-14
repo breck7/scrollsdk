@@ -2,7 +2,7 @@ grammar
  name project
  description A Tree Language for project dependency management.
  constructors
-  nodejs ./ProjectLang.js ProjectProgramRoot
+  nodejs ./ProjectLang.js
  inScope file
  catchAllNodeType error
 cellType anyFirstWord

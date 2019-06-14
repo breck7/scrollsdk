@@ -1000,6 +1000,12 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
             return [];
         return [new InvalidConstructorPathError(this)];
     }
+    _getDef() {
+        const def = this.getParent().getParent();
+        if (def instanceof NonRootNodeTypeDefinition)
+            return def;
+        return def.getProgram();
+    }
 }
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
@@ -1008,8 +1014,11 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
         const basePath = TreeUtils_1.default.getPathWithoutFileName(rootPath) + "/";
         const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath;
         const theModule = require(fullPath);
-        const subModuleName = this.getWord(2);
-        return subModuleName ? TreeUtils_1.default.resolveProperty(theModule, subModuleName) : theModule;
+        const constructorSubModuleName = this._getSubModulePath();
+        return constructorSubModuleName ? TreeUtils_1.default.resolveProperty(theModule, constructorSubModuleName) : theModule;
+    }
+    _getSubModulePath() {
+        return this.getWord(2) || this._getDef()._getGeneratedClassName();
     }
     // todo: does this support spaces in filepaths?
     _getNodeConstructorFilePath() {
@@ -1021,13 +1030,17 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
 }
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
-        const constructorName = this.getWord(1);
-        const constructor = TreeUtils_1.default.resolveProperty(window, constructorName);
+        // todo: bad idea to have browser and node have reverse ordering for submodulename
+        const constructorSubModuleName = this._getSubModulePath();
+        const constructor = TreeUtils_1.default.resolveProperty(window, constructorSubModuleName);
         if (GrammarBackedNonTerminalNode.useAsBackupConstructor())
             return GrammarBackedNonTerminalNode;
         if (!constructor)
-            throw new Error(`constructor window.${constructorName} not found.`);
+            throw new Error(`constructor window.${constructorSubModuleName} not found.`);
         return constructor;
+    }
+    _getSubModulePath() {
+        return this.getWord(1) || this._getDef()._getGeneratedClassName();
     }
     isAppropriateEnvironment() {
         return !this.isNodeJs();
@@ -1051,8 +1064,7 @@ class CustomJavascriptNode extends TreeNode_1.default {
     _loadJavascriptCode(def, code) {
         if (CustomJavascriptNode.cache[code])
             return CustomJavascriptNode.cache[code];
-        const constructorName = def._getGeneratedClassName();
-        const tempFilePath = `${__dirname}/${constructorName}-${TreeUtils_1.default.getRandomString(30)}-temp.js`;
+        const tempFilePath = `${__dirname}/${def._getGeneratedClassName()}-${TreeUtils_1.default.getRandomString(30)}-temp.js`;
         const fs = require("fs");
         try {
             fs.writeFileSync(tempFilePath, code, "utf8");

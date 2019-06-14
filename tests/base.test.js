@@ -1898,7 +1898,7 @@ testTree.isomorphicGrammarTests = equal => {
  name jibberish
  description Test a root parser node
  constructors
-  nodejs JibberishLang.js JibberishProgramRoot
+  nodejs JibberishLang.js
  compiler txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass

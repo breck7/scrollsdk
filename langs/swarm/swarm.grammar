@@ -4,7 +4,7 @@ grammar
  inScope #! arrangeTestSubject testBlock
  catchAllNodeType error
  constructors
-  nodejs ./SwarmLang.js SwarmProgramRoot
+  nodejs ./SwarmLang.js
 cellType anyFirstWord
 cellType anyWord
  highlightScope string

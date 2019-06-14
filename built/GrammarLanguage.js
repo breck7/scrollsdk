@@ -265,33 +265,12 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     }
 }
 class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
-    *getProgramErrorsIterator() {
-        let line = 1;
-        for (let node of this.getTopDownArrayIterator()) {
-            node._cachedLineNumber = line;
-            const errs = node.getErrors();
-            delete node._cachedLineNumber;
-            if (errs.length)
-                yield errs;
-            line++;
-        }
-    }
-    getProgramErrors() {
-        const errors = [];
-        let line = 1;
-        for (let node of this.getTopDownArray()) {
-            node._cachedLineNumber = line;
-            const errs = node.getErrors();
-            errs.forEach(err => errors.push(err));
-            delete node._cachedLineNumber;
-            line++;
-        }
-        this._getRequiredNodeErrors(errors);
-        return errors;
+    getAllErrors() {
+        return this._getRequiredNodeErrors(super.getAllErrors());
     }
     // Helper method for selecting potential nodeTypes needed to update grammar file.
     getInvalidNodeTypes() {
-        return Array.from(new Set(this.getProgramErrors()
+        return Array.from(new Set(this.getAllErrors()
             .filter(err => err instanceof UnknownNodeTypeError)
             .map(err => err.getNode().getFirstWord())));
     }
@@ -344,7 +323,7 @@ class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
         return clone.toString();
     }
     getProgramErrorMessages() {
-        return this.getProgramErrors().map(err => err.getMessage());
+        return this.getAllErrors().map(err => err.getMessage());
     }
     getDefinition() {
         return this.getGrammarProgram();
@@ -1571,25 +1550,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const jsCode = this._getGrammarRootNode().getNode(GrammarConstants.javascript);
         return jsCode ? jsCode.childrenToString() : "";
     }
-    // todo: this code is largely duplicated in abstractruntimeprogram
-    getProgramErrors() {
-        const errors = [];
-        let line = 1;
-        for (let node of this.getTopDownArray()) {
-            node._cachedLineNumber = line;
-            const errs = node.getErrors();
-            errs.forEach(err => errors.push(err));
-            delete node._cachedLineNumber;
-            line++;
-        }
-        return errors;
-    }
     getErrorsInGrammarExamples() {
         const programConstructor = this.getRootConstructor();
         const errors = [];
         this.getNodeTypeDefinitions().forEach(def => def.getExamples().forEach(example => {
             const exampleProgram = new programConstructor(example.childrenToString());
-            exampleProgram.getProgramErrors().forEach(err => {
+            exampleProgram.getAllErrors().forEach(err => {
                 errors.push(err);
             });
         }));

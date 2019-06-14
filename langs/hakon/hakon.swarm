@@ -11,7 +11,7 @@ test basics hakon
     &:hover
      color blue
      font-size 17px
- getProgramErrors
+ getAllErrors
   lengthIs 0
  compile
   blockStringIs

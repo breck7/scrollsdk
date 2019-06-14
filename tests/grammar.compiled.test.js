@@ -83,6 +83,7 @@ testTree.numbers = equal => {
     equal(program.nodeAt(0).numbers.length, 2, "cell getters work")
     equal(program.nodeAt(0).numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
+    equal(program.getAllErrors().length, 0, "no errors found")
 
     //     const program2 = new NumbersProgramRoot(`+ 2 3
     // pi`)

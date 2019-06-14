@@ -9,7 +9,7 @@ testTree.all = equal => {
   const program = new FireProgram(`add ten 2 3 5`)
 
   // Act/Assert
-  equal(program.getProgramErrors().length, 0)
+  equal(program.getAllErrors().length, 0)
   equal(program.compile(), `const ten = [2, 3, 5].reduce((sum, num) => sum + num)`)
 }
 

@@ -8,7 +8,7 @@ test basics stamp
     data
      echo Hello world
     executable
- getProgramErrors
+ getAllErrors
   lengthIs 0
 skipTest staticReenableOncePathFix
  arrangeTestSubject

@@ -273,6 +273,29 @@ class ImmutableNode extends AbstractNode_node_1.default {
         });
         return spots[charIndex];
     }
+    getAllErrors() {
+        const errors = [];
+        let line = 1;
+        for (let node of this.getTopDownArray()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            errs.forEach(err => errors.push(err));
+            delete node._cachedLineNumber;
+            line++;
+        }
+        return errors;
+    }
+    *getAllErrorsIterator() {
+        let line = 1;
+        for (let node of this.getTopDownArrayIterator()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            delete node._cachedLineNumber;
+            if (errs.length)
+                yield errs;
+            line++;
+        }
+    }
     getFirstWord() {
         return this.getWords()[0];
     }

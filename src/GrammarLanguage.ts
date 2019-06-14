@@ -300,36 +300,15 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
 }
 
 abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
-  *getProgramErrorsIterator() {
-    let line = 1
-    for (let node of this.getTopDownArrayIterator()) {
-      node._cachedLineNumber = line
-      const errs = node.getErrors()
-      delete node._cachedLineNumber
-      if (errs.length) yield errs
-      line++
-    }
-  }
-
-  getProgramErrors(): jTreeTypes.TreeError[] {
-    const errors: jTreeTypes.TreeError[] = []
-    let line = 1
-    for (let node of this.getTopDownArray()) {
-      node._cachedLineNumber = line
-      const errs: jTreeTypes.TreeError[] = node.getErrors()
-      errs.forEach(err => errors.push(err))
-      delete node._cachedLineNumber
-      line++
-    }
-    this._getRequiredNodeErrors(errors)
-    return errors
+  getAllErrors(): jTreeTypes.TreeError[] {
+    return this._getRequiredNodeErrors(super.getAllErrors())
   }
 
   // Helper method for selecting potential nodeTypes needed to update grammar file.
   getInvalidNodeTypes() {
     return Array.from(
       new Set(
-        this.getProgramErrors()
+        this.getAllErrors()
           .filter(err => err instanceof UnknownNodeTypeError)
           .map(err => err.getNode().getFirstWord())
       )
@@ -391,7 +370,7 @@ abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
   }
 
   getProgramErrorMessages() {
-    return this.getProgramErrors().map(err => err.getMessage())
+    return this.getAllErrors().map(err => err.getMessage())
   }
 
   getDefinition(): GrammarProgram {
@@ -1885,27 +1864,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return jsCode ? jsCode.childrenToString() : ""
   }
 
-  // todo: this code is largely duplicated in abstractruntimeprogram
-  getProgramErrors(): jTreeTypes.TreeError[] {
-    const errors: jTreeTypes.TreeError[] = []
-    let line = 1
-    for (let node of this.getTopDownArray()) {
-      node._cachedLineNumber = line
-      const errs: jTreeTypes.TreeError[] = node.getErrors()
-      errs.forEach(err => errors.push(err))
-      delete node._cachedLineNumber
-      line++
-    }
-    return errors
-  }
-
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
     const errors: jTreeTypes.TreeError[] = []
     this.getNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
-        exampleProgram.getProgramErrors().forEach(err => {
+        exampleProgram.getAllErrors().forEach(err => {
           errors.push(err)
         })
       })

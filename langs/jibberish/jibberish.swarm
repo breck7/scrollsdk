@@ -13,5 +13,5 @@ test basics jibberish
    someCode
     echo hello world
    xColumnName gender
- getProgramErrors
+ getAllErrors
   lengthIs 0

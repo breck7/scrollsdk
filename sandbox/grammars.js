@@ -45,13 +45,13 @@ const main = async grammarSourceCode => {
     .register()
     .fromTextAreaWithAutocomplete(grammarConsole[0], { lineWrapping: true })
 
-  const getGrammarErrors = grammarCode => new GrammarConstructor(grammarCode).getProgramErrors()
+  const getGrammarErrors = grammarCode => new GrammarConstructor(grammarCode).getAllErrors()
 
   const grammarOnUpdate = () => {
     const grammarCode = grammarInstance.getValue()
     localStorage.setItem(localStorageKeys.grammarConsole, grammarCode)
     window.grammarProgram = new GrammarConstructor(grammarCode)
-    const errs = window.grammarProgram.getProgramErrors().map(err => err.toObject())
+    const errs = window.grammarProgram.getAllErrors().map(err => err.toObject())
     grammarErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
@@ -87,7 +87,7 @@ const main = async grammarSourceCode => {
     const programConstructor = getGrammarConstructor()
 
     window.program = new programConstructor(code)
-    const errs = window.program.getProgramErrors()
+    const errs = window.program.getAllErrors()
     codeErrorsConsole.html(errs.length ? new TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
 
     const cursor = codeInstance.getCursor()

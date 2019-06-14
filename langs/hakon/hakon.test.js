@@ -10,7 +10,7 @@ testTree.all = equal => {
  color red`)
 
   // Act/Assert
-  equal(program.getProgramErrors().length, 0)
+  equal(program.getAllErrors().length, 0)
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("../../tests/testTreeRunner.js")(testTree)

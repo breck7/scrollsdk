@@ -320,6 +320,30 @@ class ImmutableNode extends AbstractNode {
     return spots[charIndex]
   }
 
+  getAllErrors(): jTreeTypes.TreeError[] {
+    const errors: jTreeTypes.TreeError[] = []
+    let line = 1
+    for (let node of this.getTopDownArray()) {
+      node._cachedLineNumber = line
+      const errs: jTreeTypes.TreeError[] = node.getErrors()
+      errs.forEach(err => errors.push(err))
+      delete node._cachedLineNumber
+      line++
+    }
+    return errors
+  }
+
+  *getAllErrorsIterator() {
+    let line = 1
+    for (let node of this.getTopDownArrayIterator()) {
+      node._cachedLineNumber = line
+      const errs = node.getErrors()
+      delete node._cachedLineNumber
+      if (errs.length) yield errs
+      line++
+    }
+  }
+
   getFirstWord(): word {
     return this.getWords()[0]
   }

@@ -91,8 +91,7 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getLineHighlightScopes(defaultScope?: string): string;
 }
 declare abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
-    getProgramErrorsIterator(): IterableIterator<any>;
-    getProgramErrors(): jTreeTypes.TreeError[];
+    getAllErrors(): jTreeTypes.TreeError[];
     getInvalidNodeTypes(): any[];
     updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap): this;
     getAllSuggestions(): string;
@@ -273,7 +272,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap(): jTreeTypes.stringMap;
     _getExtendsClassName(isCompiled?: boolean): "jtree.CompiledLanguageRootNode" | "jtree.programRoot";
     private _getCustomJavascriptMethods;
-    getProgramErrors(): jTreeTypes.TreeError[];
     getErrorsInGrammarExamples(): jTreeTypes.TreeError[];
     getTargetExtension(): string;
     getNodeTypeOrder(): string;

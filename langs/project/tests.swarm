@@ -12,7 +12,7 @@ test basics
     absolute /foobar/bam.js
    file /foobar/after.js
     relative ./foobar.js
- getProgramErrors
+ getAllErrors
   lengthIs 0
  getOrderedDependenciesArray
   lengthIs 4
@@ -27,7 +27,7 @@ test spaces
    file /foobar/f oobar.js
    file /foobar/after.js
     relative ./f oobar.js
- getProgramErrors
+ getAllErrors
   lengthIs 0
  getOrderedDependenciesArray
   join
@@ -39,5 +39,5 @@ test error
  arrangeTestSubject
   constructWithBlockString
    relative foobar.js
- getProgramErrors
+ getAllErrors
   lengthIs 1

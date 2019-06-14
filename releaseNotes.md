@@ -23,6 +23,7 @@ edge / 2019-06-11
 - Breaking: getCellTypeName is now getCellTypeId
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
+- Breaking: getProgramErrors is now getAllErrors
 - Breaking: getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
 - Breaking: removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
 - Breaking: no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.

@@ -1973,7 +1973,7 @@ someCode
   )
   const ProgramConstructor = grammarProgram.getRootConstructor()
   const program = new ProgramConstructor(code)
-  const errs = program.getProgramErrors()
+  const errs = program.getAllErrors()
 
   // Assert
   equal(errs.length, 0, "no errors")

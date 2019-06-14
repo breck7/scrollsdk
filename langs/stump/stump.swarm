@@ -13,7 +13,7 @@ test basics
        Hello world
        This is some text
      span Hello more
- getProgramErrors
+ getAllErrors
   lengthIs 0
  toHtml
   blockStringIs

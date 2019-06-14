@@ -38,5 +38,5 @@ test stress test
   stringIs false
  isDefined to
   stringIs true
- getProgramErrors
+ getAllErrors
   lengthIs 1

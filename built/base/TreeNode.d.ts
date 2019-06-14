@@ -58,6 +58,8 @@ declare class ImmutableNode extends AbstractNode {
     getAllWordBoundaryCoordinates(): jTreeTypes.point[];
     getWordBoundaryIndices(): jTreeTypes.positiveInt[];
     getWordIndexAtCharacterIndex(charIndex: jTreeTypes.positiveInt): int;
+    getAllErrors(): jTreeTypes.TreeError[];
+    getAllErrorsIterator(): IterableIterator<any>;
     getFirstWord(): word;
     getContent(): string;
     getContentWithChildren(): string;

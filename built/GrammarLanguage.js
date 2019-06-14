@@ -1054,6 +1054,7 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         return !this.isNodeJs();
     }
 }
+// todo: this should be mutually exclusive with custom constructors (if we keep those?)
 class CustomJavascriptNode extends TreeNode_1.default {
     _getNodeJsConstructor(def, compiled) {
         const jtreePath = __dirname + "/jtree.node.js";
@@ -1378,7 +1379,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this._cache_catchAllConstructor;
     }
 }
-class NonGrammarProgram extends AbstractGrammarDefinitionNode {
+class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     // todo: protected?
     _getRunTimeCatchAllNodeTypeId() {
         return this.get(GrammarConstants.catchAllNodeType) || this.getParent()._getRunTimeCatchAllNodeTypeId();
@@ -1502,7 +1503,7 @@ ${captures}
                 ? "jtree.CompiledLanguageNonRootNode"
                 : "jtree.NonTerminalNode";
     }
-    _toJavascript() {
+    _nodeDefToJavascriptClass() {
         const ancestorIds = this.getAncestorNodeTypeIdsArray();
         const components = [this.getNodeConstructorToJavascript(), this._getGetters(), this._getCustomJavascriptMethods()].filter(code => code);
         return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(true)} {
@@ -1537,7 +1538,7 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
         return map;
     }
 }
-class GrammarAbstractNodeTypeDefinitionNode extends NonGrammarProgram {
+class GrammarAbstractNodeTypeDefinitionNode extends NonRootNodeTypeDefinition {
     _isAbstract() {
         return true;
     }
@@ -1549,7 +1550,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const map = {};
         map[GrammarConstants.grammar] = GrammarRootNode;
         map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode;
-        map[GrammarConstants.nodeType] = NonGrammarProgram;
+        map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition;
         map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
         map[GrammarConstants.javascript] = CustomJavascriptNode;
         map[GrammarConstants.toolingDirective] = TreeNode_1.default;
@@ -1619,7 +1620,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this;
     }
     getNodeTypeDefinitions() {
-        return this.getChildrenByNodeConstructor(NonGrammarProgram);
+        return this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition);
     }
     // todo: remove?
     getTheGrammarFilePath() {
@@ -1667,7 +1668,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         if (this._cache_nodeTypeDefinitions)
             return undefined;
         this._cache_nodeTypeDefinitions = {};
-        this.getChildrenByNodeConstructor(NonGrammarProgram).forEach(nodeTypeDefinitionNode => {
+        this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition).forEach(nodeTypeDefinitionNode => {
             this._cache_nodeTypeDefinitions[nodeTypeDefinitionNode.getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode;
         });
     }
@@ -1703,14 +1704,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             : this.getExtensionName();
     }
     toNodeJsJavascript(jtreePath = "jtree") {
-        return this._toJavascript(jtreePath, true);
+        return this._nodeDefToJavascriptClass(jtreePath, true);
     }
     // todo: have this here or not?
     toNodeJsJavascriptPrettier(jtreePath = "jtree") {
-        return require("prettier").format(this._toJavascript(jtreePath, true), { semi: false, parser: "babel" });
+        return require("prettier").format(this._nodeDefToJavascriptClass(jtreePath, true), { semi: false, parser: "babel" });
     }
     toBrowserJavascript() {
-        return this._toJavascript("", false);
+        return this._nodeDefToJavascriptClass("", false);
     }
     _getProperName() {
         const name = this.getExtensionName();
@@ -1726,9 +1727,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._getGeneratedClassName();
         return `getCatchAllNodeConstructor() { return ${className}}`;
     }
-    _toJavascript(jtreePath, forNodeJs = true) {
+    _nodeDefToJavascriptClass(jtreePath, forNodeJs = true) {
         const defs = this.getNodeTypeDefinitions();
-        const nodeTypeClasses = defs.map(def => def._toJavascript()).join("\n\n");
+        const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n");
         const constantsName = this._getProperName() + "Constants";
         const nodeTypeConstants = defs
             .map(def => {

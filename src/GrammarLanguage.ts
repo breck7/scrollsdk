@@ -2207,11 +2207,9 @@ export {
   GrammarConstants,
   GrammarStandardCellTypeIds,
   GrammarProgram,
-  AbstractRuntimeNode,
   AbstractRuntimeProgramRootNode,
   GrammarBackedTerminalNode,
   GrammarBackedNonTerminalNode,
   CompiledLanguageNonRootNode,
-  CompiledLanguageRootNode,
-  GrammarBackedBlobNode
+  CompiledLanguageRootNode
 }

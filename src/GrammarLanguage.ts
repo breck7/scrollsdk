@@ -1290,6 +1290,18 @@ class CustomJavascriptNode extends TreeNode {
     const jtreePath = __dirname + "/jtree.node.js"
     const code = `const jtree = require('${jtreePath}').default
 /* INDENT FOR BUILD REASONS */  module.exports = ${this._getCode(def, compiled)}`
+    return this._loadJavascriptCode(def, code)
+  }
+
+  // todo: can I ditch this? can I use the same code from the grammar definition?
+  private _getCode(def: AbstractGrammarDefinitionNode, compiled: boolean) {
+    return `class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(compiled)} {
+      ${def._getGetters()}
+      ${this.childrenToString()}
+}`
+  }
+
+  private _loadJavascriptCode(def: AbstractGrammarDefinitionNode, code: string): jTreeTypes.RunTimeNodeConstructor {
     if (CustomJavascriptNode.cache[code]) return CustomJavascriptNode.cache[code]
     const constructorName = def._getGeneratedClassName()
     const tempFilePath = `${__dirname}/${constructorName}-${TreeUtils.getRandomString(30)}-temp.js`
@@ -1304,13 +1316,6 @@ class CustomJavascriptNode extends TreeNode {
     }
 
     return CustomJavascriptNode.cache[code]
-  }
-
-  private _getCode(def: AbstractGrammarDefinitionNode, compiled: boolean) {
-    return `class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(compiled)} {
-      ${def._getGetters()}
-      ${this.childrenToString()}
-}`
   }
 
   private _getBrowserConstructor(def: AbstractGrammarDefinitionNode): jTreeTypes.RunTimeNodeConstructor {

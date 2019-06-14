@@ -22,7 +22,7 @@ nodeType file
  firstCellType fileConstant
  inScope external absolute relative
  constructors
-  nodejs ./ProjectLang.js FileNode
+  nodejs ./ProjectLang.js
 nodeType absolute term
 nodeType external term
 nodeType relative term

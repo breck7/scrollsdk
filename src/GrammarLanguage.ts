@@ -1431,6 +1431,8 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark")
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket")
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket")
+
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1)
     return `${javascriptSyntaxSafeId}Node`
   }
 

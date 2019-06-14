@@ -39,9 +39,7 @@ class ProjectProgramRoot extends jtree.programRoot {
         cloned.forEach(file => {
           console.log(`'${file.getLine()}' is missing '${file.getMissingDependencies(included).join(",")}'`)
         })
-        throw new Error(
-          `Circular dependency or other error detected with ${cloned.length} remaining. ${cloned.toString()}`
-        )
+        throw new Error(`Circular dependency or other error detected with ${cloned.length} remaining. ${cloned.toString()}`)
       }
       lastLength = cloned.length
       for (let index = 0; index < cloned.length; index++) {
@@ -90,10 +88,7 @@ class ProjectProgramRoot extends jtree.programRoot {
     files.forEach(child => {
       const line = child.getLine()
       const requiredFiles = this.getImports(fs.readFileSync(line, "utf8"))
-      requiredFileList.appendLineAndChildren(
-        `file ${line}`,
-        requiredFiles.length ? requiredFiles.join("\n") : undefined
-      )
+      requiredFileList.appendLineAndChildren(`file ${line}`, requiredFiles.length ? requiredFiles.join("\n") : undefined)
     })
     return requiredFileList.toString()
   }

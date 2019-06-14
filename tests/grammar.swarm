@@ -30,8 +30,6 @@ test stress test
   stringIs txt
  getExtensionName
   stringIs testlang
- getDocs
-  typeIs string
  toSublimeSyntaxFile
   typeIs string
  isDefined notDefined

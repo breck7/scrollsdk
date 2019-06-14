@@ -189,15 +189,15 @@ abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
 
   protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId) {
     const compiler = this._getCompilerNode(targetLanguage)
-    const indentCharacter = compiler.getIndentCharacter()
+    const indentCharacter = compiler._getIndentCharacter()
     const indent = this.getIndentation()
     return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
 
   protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId) {
     const compiler = this._getCompilerNode(targetLanguage)
-    const listDelimiter = compiler.getListDelimiter()
-    const str = compiler.getTransformation()
+    const listDelimiter = compiler._getListDelimiter()
+    const str = compiler._getTransformation()
     return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine()
   }
 
@@ -480,8 +480,8 @@ class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
 
   compile(targetExtension: jTreeTypes.targetLanguageId) {
     const compiler = this._getCompilerNode(targetExtension)
-    const openChildrenString = compiler.getOpenChildrenString()
-    const closeChildrenString = compiler.getCloseChildrenString()
+    const openChildrenString = compiler._getOpenChildrenString()
+    const closeChildrenString = compiler._getCloseChildrenString()
 
     const compiledLine = this._getCompiledLine(targetExtension)
     const indent = this._getCompiledIndentation(targetExtension)
@@ -1183,27 +1183,27 @@ class GrammarCompilerNode extends TreeNode {
     return map
   }
 
-  getTargetExtension() {
+  _getTargetExtension() {
     return this.getWord(1)
   }
 
-  getListDelimiter() {
+  _getListDelimiter() {
     return this.get(GrammarConstantsCompiler.listDelimiter)
   }
 
-  getTransformation() {
+  _getTransformation() {
     return this.get(GrammarConstantsCompiler.sub)
   }
 
-  getIndentCharacter() {
+  _getIndentCharacter() {
     return this.get(GrammarConstantsCompiler.indentCharacter)
   }
 
-  getOpenChildrenString() {
+  _getOpenChildrenString() {
     return this.get(GrammarConstantsCompiler.openChildren) || ""
   }
 
-  getCloseChildrenString() {
+  _getCloseChildrenString() {
     return this.get(GrammarConstantsCompiler.closeChildren) || ""
   }
 }
@@ -1509,7 +1509,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   }
 
   getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode) {
-    const compilerNode = this._getCompilerNodes().find(node => (<any>node).getTargetExtension() === targetLanguage)
+    const compilerNode = this._getCompilerNodes().find(node => (<GrammarCompilerNode>node)._getTargetExtension() === targetLanguage)
     if (!compilerNode) throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`)
     return compilerNode
   }
@@ -1522,7 +1522,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   // for now by convention first compiler is "target extension"
   getTargetExtension() {
     const firstNode = this._getCompilerNodes()[0]
-    return firstNode ? firstNode.getTargetExtension() : ""
+    return firstNode ? firstNode._getTargetExtension() : ""
   }
 
   private _cache_runTimeFirstWordToNodeConstructorMap: jTreeTypes.firstWordToNodeConstructorMap
@@ -1989,10 +1989,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return def
   }
 
-  getDocs() {
-    return this.toString()
-  }
-
   // At present we only have global nodeType definitions (you cannot have scoped nodeType definitions right now).
   private _cache_nodeTypeDefinitions: { [nodeTypeId: string]: NonRootNodeTypeDefinition }
 
@@ -2141,6 +2137,7 @@ ${nodeTypeContexts}`
   }
 
   // A language where anything goes.
+  // todo: can we remove? can we make the default language not require any grammar node?
   static getTheAnyLanguageRootConstructor() {
     return this.newFromCondensed(
       `${GrammarConstants.grammar}
@@ -2179,6 +2176,7 @@ ${GrammarConstants.cellType} anyWord`
     return new GrammarProgram(this._condensedToExpanded(grammarCode), grammarPath)
   }
 
+  // todo: we could probably remove once we switch to compiled
   async loadAllConstructorScripts(baseUrlPath: string): Promise<string[]> {
     if (!this.isBrowser()) return undefined
     const uniqueScriptsSet = new Set(

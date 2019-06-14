@@ -147,7 +147,6 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         return errors;
     }
 }
-exports.AbstractRuntimeNode = AbstractRuntimeNode;
 class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getProgram() {
         return this.getParent().getProgram();
@@ -466,7 +465,6 @@ class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
         return GrammarBackedBlobNode;
     }
 }
-exports.GrammarBackedBlobNode = GrammarBackedBlobNode;
 /*
 A cell contains a word but also the type information for that word.
 */
@@ -1080,7 +1078,7 @@ class CustomJavascriptNode extends TreeNode_1.default {
     }
     _getCode(def, compiled) {
         return `class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(compiled)} {
-      ${def.getGetters()}
+      ${def._getGetters()}
       ${this.childrenToString()}
 }`;
     }
@@ -1114,10 +1112,21 @@ class GrammarCustomConstructorsNode extends TreeNode_1.default {
     }
 }
 class GrammarNodeTypeConstant extends TreeNode_1.default {
+    getGetter() {
+        const identifier = this.getWord(1);
+        return `get ${identifier}() { return ${this._getValue()} }`;
+    }
+    _getValue() {
+        const words = this.getWordsFrom(2);
+        return words.length > 1 ? `[${words.join(",")}]` : words[0];
+    }
 }
 class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
+    _getValue() {
+        return `"${this.getWordsFrom(2).join(" ")}"`;
+    }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {
 }
@@ -1272,14 +1281,23 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         const parameters = this.get(GrammarConstants.cells);
         return parameters ? parameters.split(" ") : [];
     }
-    getGetters() {
+    _getDefNode() {
+        return this;
+    }
+    _getGetters() {
         // todo: add cellType parsings
         const grammarProgram = this.getProgram();
-        const requireds = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1));
+        const getters = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1));
         const catchAllCellTypeId = this.getCatchAllCellTypeId();
         if (catchAllCellTypeId)
-            requireds.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(requireds.length + 1));
-        return requireds.join("\n");
+            getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1));
+        // Constants
+        this._getDefNode()
+            .getChildrenByNodeConstructor(GrammarNodeTypeConstant)
+            .forEach(node => {
+            getters.push(node.getGetter());
+        });
+        return getters.join("\n");
     }
     getCatchAllCellTypeId() {
         return this.get(GrammarConstants.catchAllCellType);
@@ -1486,7 +1504,7 @@ ${captures}
     }
     _toJavascript() {
         const ancestorIds = this.getAncestorNodeTypeIdsArray();
-        const components = [this.getNodeConstructorToJavascript(), this.getGetters(), this._getCustomJavascriptMethods()].filter(code => code);
+        const components = [this.getNodeConstructorToJavascript(), this._getGetters(), this._getCustomJavascriptMethods()].filter(code => code);
         return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(true)} {
       ${components.join("\n")}
     }`;

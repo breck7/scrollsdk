@@ -129,11 +129,6 @@ declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     static useAsBackupConstructor(): boolean;
     static setAsBackupConstructor(value: boolean): typeof GrammarBackedNonTerminalNode;
 }
-declare class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
-    getFirstWordMap(): {};
-    getErrors(): jTreeTypes.TreeError[];
-    getCatchAllNodeConstructor(line: string): typeof GrammarBackedBlobNode;
-}
 declare abstract class AbstractGrammarBackedCell<T> {
     constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean);
     private _node;
@@ -218,7 +213,8 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
         [key: string]: NonGrammarProgram;
     };
     getRequiredCellTypeIds(): jTreeTypes.cellTypeId[];
-    getGetters(): string;
+    _getDefNode(): this;
+    _getGetters(): string;
     getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
     protected _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): jTreeTypes.firstWordToNodeConstructorMap;
     getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];
@@ -325,4 +321,4 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private static _appendScriptOnce;
     private static _appendScript;
 }
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, AbstractRuntimeNode, AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, CompiledLanguageNonRootNode, CompiledLanguageRootNode, GrammarBackedBlobNode };
+export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, CompiledLanguageNonRootNode, CompiledLanguageRootNode };

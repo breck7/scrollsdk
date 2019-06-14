@@ -39,6 +39,28 @@ testTree.compileAll = equal => {
   })
 }
 
+testTree.jibberish = equal => {
+  // Arrange
+  try {
+    const tempFilePath = jtree.compileGrammar(__dirname + "/../langs/jibberish/jibberish.grammar", outputDir)
+
+    // Act
+    const { JibberishProgramRoot } = require(tempFilePath)
+
+    // Assert
+    equal(!!new JibberishProgramRoot(), true, "it compiled")
+
+    // Arrange
+    const program = new JibberishProgramRoot(`nodeWithConsts`)
+
+    // Act/Assert
+    equal(program.nodeAt(0).score1, 28, "constants work")
+  } catch (err) {
+    console.error(err)
+  } finally {
+  }
+}
+
 testTree.numbers = equal => {
   // Arrange
   const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"

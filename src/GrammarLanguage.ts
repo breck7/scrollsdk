@@ -1307,7 +1307,7 @@ class CustomJavascriptNode extends TreeNode {
 
   private _getCode(def: AbstractGrammarDefinitionNode, compiled: boolean) {
     return `class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(compiled)} {
-      ${def.getGetters()}
+      ${def._getGetters()}
       ${this.childrenToString()}
 }`
   }
@@ -1345,10 +1345,24 @@ class GrammarCustomConstructorsNode extends TreeNode {
   }
 }
 
-abstract class GrammarNodeTypeConstant extends TreeNode {}
+abstract class GrammarNodeTypeConstant extends TreeNode {
+  getGetter() {
+    const identifier = this.getWord(1)
+    return `get ${identifier}() { return ${this._getValue()} }`
+  }
+
+  protected _getValue() {
+    const words = this.getWordsFrom(2)
+    return words.length > 1 ? `[${words.join(",")}]` : words[0]
+  }
+}
 
 class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {}
-class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {}
+class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
+  protected _getValue() {
+    return `"${this.getWordsFrom(2).join(" ")}"`
+  }
+}
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantBoolean extends GrammarNodeTypeConstant {}
 
@@ -1529,15 +1543,26 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return parameters ? parameters.split(" ") : []
   }
 
-  getGetters() {
+  _getDefNode() {
+    return this
+  }
+
+  _getGetters() {
     // todo: add cellType parsings
     const grammarProgram = this.getProgram()
-    const requireds = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1))
+    const getters = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1))
 
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
-    if (catchAllCellTypeId) requireds.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(requireds.length + 1))
+    if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1))
 
-    return requireds.join("\n")
+    // Constants
+    this._getDefNode()
+      .getChildrenByNodeConstructor(GrammarNodeTypeConstant)
+      .forEach(node => {
+        getters.push((<GrammarNodeTypeConstant>node).getGetter())
+      })
+
+    return getters.join("\n")
   }
 
   getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined {
@@ -1779,7 +1804,7 @@ ${captures}
   _toJavascript(): jTreeTypes.javascriptCode {
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
 
-    const components = [this.getNodeConstructorToJavascript(), this.getGetters(), this._getCustomJavascriptMethods()].filter(code => code)
+    const components = [this.getNodeConstructorToJavascript(), this._getGetters(), this._getCustomJavascriptMethods()].filter(code => code)
 
     return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(true)} {
       ${components.join("\n")}

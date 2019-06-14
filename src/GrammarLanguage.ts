@@ -1287,15 +1287,15 @@ class CustomJavascriptNode extends TreeNode {
   static cache: { [code: string]: jTreeTypes.RunTimeNodeConstructor } = {}
 
   private _getNodeJsConstructor(def: AbstractGrammarDefinitionNode, compiled: boolean): jTreeTypes.RunTimeNodeConstructor {
-    const jtreePath = __dirname + "/jtree.node.js"
-    const code = `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = ${this._getCode(def, compiled)}`
-    return this._loadJavascriptCode(def, code)
+    return this._loadJavascriptCode(def, this._getCode(def, compiled))
   }
 
   // todo: can I ditch this? can I use the same code from the grammar definition?
-  private _getCode(def: AbstractGrammarDefinitionNode, compiled: boolean) {
-    return `class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(compiled)} {
+  private _getCode(def: AbstractGrammarDefinitionNode, isCompiled: boolean) {
+    const jtreePath = __dirname + "/jtree.node.js"
+    //return def._nodeDefToJavascriptClass(isCompiled, jtreePath)
+    return `const jtree = require('${jtreePath}').default
+/* INDENT FOR BUILD REASONS */  module.exports = class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(isCompiled)} {
       ${def._getGetters()}
       ${this.childrenToString()}
 }`
@@ -1412,6 +1412,8 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId {
     return this.getWord(1)
   }
+
+  abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode
 
   abstract _getExtendsClassName(isCompiled: boolean): jTreeTypes.javascriptClassPath
 
@@ -1807,12 +1809,12 @@ ${captures}
       : "jtree.NonTerminalNode"
   }
 
-  _nodeDefToJavascriptClass(): jTreeTypes.javascriptCode {
+  _nodeDefToJavascriptClass(isCompiled = true): jTreeTypes.javascriptCode {
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
 
     const components = [this.getNodeConstructorToJavascript(), this._getGetters(), this._getCustomJavascriptMethods()].filter(code => code)
 
-    return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(true)} {
+    return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(isCompiled)} {
       ${components.join("\n")}
     }`
   }
@@ -1822,6 +1824,10 @@ ${captures}
 class GrammarRootNode extends AbstractGrammarDefinitionNode {
   protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {
     return undefined
+  }
+
+  _nodeDefToJavascriptClass() {
+    return ""
   }
 
   // todo: I think this may be a sign we dont want this class.
@@ -2057,16 +2063,16 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   toNodeJsJavascript(jtreePath = "jtree"): jTreeTypes.javascriptCode {
-    return this._nodeDefToJavascriptClass(jtreePath, true)
+    return this._nodeDefToJavascriptClass(true, jtreePath, true)
   }
 
   // todo: have this here or not?
   toNodeJsJavascriptPrettier(jtreePath = "jtree"): jTreeTypes.javascriptCode {
-    return require("prettier").format(this._nodeDefToJavascriptClass(jtreePath, true), { semi: false, parser: "babel" })
+    return require("prettier").format(this._nodeDefToJavascriptClass(true, jtreePath, true), { semi: false, parser: "babel" })
   }
 
   toBrowserJavascript(): jTreeTypes.javascriptCode {
-    return this._nodeDefToJavascriptClass("", false)
+    return this._nodeDefToJavascriptClass(true, "", false)
   }
 
   private _getProperName() {
@@ -2085,7 +2091,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return `getCatchAllNodeConstructor() { return ${className}}`
   }
 
-  _nodeDefToJavascriptClass(jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
+  _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
     const defs = this.getNodeTypeDefinitions()
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
 
@@ -2103,7 +2109,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const rootClassMethods = [this.getNodeConstructorToJavascript(), this._getCatchAllNodeConstructorToJavascript(), this._getCustomJavascriptMethods()].filter(
       code => code
     )
-    const rootClass = `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(true)} {
+    const rootClass = `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(isCompiled)} {
   ${rootClassMethods.join("\n")}
     }`
 

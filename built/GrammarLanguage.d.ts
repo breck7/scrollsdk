@@ -191,6 +191,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getExamples(): GrammarExampleNode[];
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
+    abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
     abstract _getExtendsClassName(isCompiled: boolean): jTreeTypes.javascriptClassPath;
     _getGeneratedClassName(): string;
     getNodeConstructorToJavascript(): string;
@@ -258,10 +259,11 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     private _getExtendedNodeTypeId;
     private _getCustomJavascriptMethods;
     _getExtendsClassName(isCompiled?: boolean): string;
-    _nodeDefToJavascriptClass(): jTreeTypes.javascriptCode;
+    _nodeDefToJavascriptClass(isCompiled?: boolean): jTreeTypes.javascriptCode;
 }
 declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
     protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
+    _nodeDefToJavascriptClass(): string;
     _getExtendsClassName(): string;
     getProgram(): GrammarProgram;
     protected _getDefinedCustomJSConstructor(): jTreeTypes.RunTimeNodeConstructor;
@@ -311,7 +313,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _getProperName;
     _getGeneratedClassName(): string;
     private _getCatchAllNodeConstructorToJavascript;
-    _nodeDefToJavascriptClass(jtreePath: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
+    _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static _condensedToExpanded(grammarCode: string): TreeNode;

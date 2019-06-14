@@ -85,6 +85,9 @@ testTree.numbers = equal => {
     equal(program.executeSync().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
 
+    // Arrange/Act/Assert
+    equal(new NumbersProgramRoot(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")
+
     //     const program2 = new NumbersProgramRoot(`+ 2 3
     // pi`)
     //     const res = program2.executeSync()

@@ -21,6 +21,7 @@ cellType baseNodeTypes
  highlightScope variable.parameter
 cellType booleanCell
  enum true false
+ highlightScope constant.numeric
 cellType cellPropertyName
  highlightScope variable.parameter
 cellType cellTypeEnum
@@ -43,6 +44,7 @@ cellType fileExtension
 cellType filepath
 cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
+ highlightScope constant.numeric
 cellType grammarName
  highlightScope constant
 cellType grammarTypes

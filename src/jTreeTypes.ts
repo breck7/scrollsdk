@@ -68,6 +68,8 @@ export namespace jTreeTypes {
   export declare type absoluteFilePath = filepath
   export declare type asboluteFolderPath = absoluteFilePath
 
+  export declare type javascriptClassPath = string // "jtree.Foo.Bar"
+
   export declare type children = string | Object | treeNode | any // todo: specify better.
 
   export declare type TreeNodeConstructor = Function // A constructor extending TreeNodeConstructor

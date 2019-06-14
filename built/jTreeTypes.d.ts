@@ -60,6 +60,7 @@ export declare namespace jTreeTypes {
     type semanticVersion = string;
     type absoluteFilePath = filepath;
     type asboluteFolderPath = absoluteFilePath;
+    type javascriptClassPath = string;
     type children = string | Object | treeNode | any;
     type TreeNodeConstructor = Function;
     type RunTimeNodeConstructor = Function;

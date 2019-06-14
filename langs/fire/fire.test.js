@@ -1,6 +1,6 @@
 #! /usr/local/bin/node --use_strict
 
-const FireProgram = require("./Fire.js")
+const FireProgram = require("./FireProgram.js")
 
 const testTree = {}
 

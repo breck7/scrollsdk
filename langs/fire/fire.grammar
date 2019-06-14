@@ -22,7 +22,7 @@ nodeType #!
  compiler js
   sub // #! {any}
 nodeType error
- errorNode
+ baseNodeType errorNode
  compiler js
   sub // error
 nodeType nt

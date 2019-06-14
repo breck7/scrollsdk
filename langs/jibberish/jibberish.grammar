@@ -29,14 +29,14 @@ abstract color_properties topLevel
 nodeType error
  firstCellType errorWord
  catchAllCellType errorWord
- errorNode
+ baseNodeType errorNode
 nodeType lineOfCode
  catchAllCellType word
  constructors
   nodejs ./JibberishLang.js LineOfCodeNode
   browser LineOfCodeNode JibberishLang.js
 nodeType text
- blob
+ baseNodeType blobNode
 nodeType extendsAbstract someAbstractClass
  cells int
 nodeType add topLevel

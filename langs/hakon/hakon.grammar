@@ -28,7 +28,7 @@ nodeType errorNode
  catchAllNodeType errorNode
  catchAllCellType errorWord
  firstCellType errorWord
- errorNode
+ baseNodeType errorNode
 nodeType selectorNode
  firstCellType selector
  inScope propertyNode

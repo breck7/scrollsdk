@@ -1908,7 +1908,7 @@ cellType anyFirstWord
 cellType onoff
  enum on off
 nodeType error
- errorNode
+ baseNodeType errorNode
 abstract topLevel
 abstract someAbstractClass
 abstract color_properties topLevel
@@ -1928,7 +1928,7 @@ nodeType foo topLevel
 nodeType nodeWithConsts topLevel
  string greeting hello world
 nodeType text
- blob
+ blobNode
 nodeType add topLevel
  constructors
   nodejs ./JibberishLang.js additionNode

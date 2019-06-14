@@ -38,10 +38,8 @@ class UnknownGrammarProgram extends TreeNode_1.default {
         const firstWords = Object.keys(allChilds).map(firstWord => {
             const defNode = new TreeNode_1.default(`${GrammarLanguage_1.GrammarConstants.nodeType} ${firstWord}`).nodeAt(0);
             const childFirstWords = Object.keys(allChilds[firstWord]);
-            if (childFirstWords.length) {
-                //defNode.touchNode(GrammarConstants.blob) // todo: remove?
+            if (childFirstWords.length)
                 defNode.touchNode(GrammarLanguage_1.GrammarConstants.inScope).setWordsFrom(1, childFirstWords);
-            }
             const allLines = allFirstWordNodes[firstWord];
             const cells = allLines
                 .map(line => line.getContent())

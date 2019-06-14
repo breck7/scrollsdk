@@ -26,6 +26,11 @@ declare enum GrammarConstants {
     regex = "regex",
     enumFromGrammar = "enumFromGrammar",
     enum = "enum",
+    baseNodeType = "baseNodeType",
+    blobNode = "blobNode",
+    errorNode = "errorNode",
+    terminalNode = "terminalNode",
+    nonTerminalNode = "nonTerminalNode",
     inScope = "inScope",
     cells = "cells",
     catchAllCellType = "catchAllCellType",
@@ -34,8 +39,6 @@ declare enum GrammarConstants {
     defaults = "defaults",
     constants = "constants",
     group = "group",
-    blob = "blob",
-    errorNode = "errorNode",
     required = "required",
     single = "single",
     tags = "tags",
@@ -195,12 +198,10 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
     getGeneratedClassName(): string;
     getNodeConstructorToJavascript(): string;
-    protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
-    protected _isBlobNode(): boolean;
-    protected _isErrorNode(): boolean;
     private _cache_definedNodeConstructor;
     getConstructorDefinedInGrammar(): Function;
+    private _getBaseNodeType;
     protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     protected _getDefinedNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;

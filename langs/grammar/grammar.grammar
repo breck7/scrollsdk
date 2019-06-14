@@ -9,15 +9,14 @@ grammar
    name latin
    catchAllNodeType anyNode
   nodeType anyNode
-   blob
+   baseNodeType blobNode
  version 1.2.0
  inScope grammar cellType abstract nodeType tooling
 cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
 cellType anyWord
-cellType builtInConstructorOrConstructorName
-cellType builtInConstructorOrFilePath
+cellType constructorFilePath
 cellType cellPropertyName
  highlightScope variable.parameter
 cellType cellTypeEnum
@@ -46,6 +45,8 @@ cellType intCell
  regex \-?[0-9]+
  highlightScope constant.numeric
 cellType javascriptCodeWord
+cellType baseNodeTypes
+ enum blobNode errorNode terminalNode nonTerminalNode
 cellType lowercaseWord
  regex [a-z]+
 cellType nodeTypeEnum
@@ -92,7 +93,7 @@ nodeType catchAll.defaultTuple
  cells anyWord
  catchAllCellType anyWord
 nodeType catchAll.error
- errorNode
+ baseNodeType errorNode
 nodeType catchAll.exampleLine
  catchAllCellType exampleWord
  firstCellType exampleWord
@@ -138,9 +139,7 @@ nodeType nodeType
  description Node types are a core unit of your language. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllCellType extendedNodeType
  catchAllNodeType catchAll.error
- constructors
-  nodejs NonTerminalNode
-  browser NonTerminalNode
+ baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
  inScope abstract.nodeTypeRule
 nodeType nodeTypeOrder
@@ -162,17 +161,16 @@ nodeType listDelimiter abstract.compilerRule
 nodeType openChildren abstract.compilerRule
 nodeType sub abstract.compilerRule
 nodeType browser abstract.environment
- cells builtInConstructorOrConstructorName
+ cells constructorName
  catchAllCellType scriptUrl
- description builtInConstructorOrConstructorName will be searched for on the window object.
+ description constructorName will be searched for on the window object.
 nodeType nodejs abstract.environment
- cells builtInConstructorOrFilePath
+ cells constructorFilePath
  catchAllCellType constructorName
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
-nodeType blob abstract.nodeTypeRule
- description In rare cases with untyped content you can use a blob node, for now, to skip parsing for performance gains.
-nodeType errorNode abstract.nodeTypeRule
- description The base error nodeType will report errors when parsed. Use this tag if you don't want to implement your own error nodeType.
+nodeType baseNodeType abstract.nodeTypeRule
+ cells baseNodeTypes
+ description In rare cases with untyped content you can use a blobNode, for now, to skip parsing for performance gains. The base errorNode will report errors when parsed. Use that if you don't want to implement your own error nodeType.
 nodeType catchAllCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.

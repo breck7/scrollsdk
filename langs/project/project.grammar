@@ -16,7 +16,7 @@ abstract term
  catchAllCellType filepath
  firstCellType termWord
 nodeType error
- errorNode
+ baseNodeType errorNode
 nodeType file
  catchAllCellType filepath
  firstCellType fileConstant

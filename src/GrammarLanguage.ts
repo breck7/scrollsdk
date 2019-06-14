@@ -49,6 +49,13 @@ enum GrammarConstants {
   enumFromGrammar = "enumFromGrammar", // temporary?
   enum = "enum", // temporary?
 
+  // baseNodeTypes
+  baseNodeType = "baseNodeType",
+  blobNode = "blobNode",
+  errorNode = "errorNode",
+  terminalNode = "terminalNode",
+  nonTerminalNode = "nonTerminalNode",
+
   // parse time
   inScope = "inScope",
   cells = "cells",
@@ -58,8 +65,6 @@ enum GrammarConstants {
   defaults = "defaults",
   constants = "constants",
   group = "group",
-  blob = "blob", // todo: rename to blobNode?
-  errorNode = "errorNode",
   required = "required", // Require this nodeType to be present in a node or program
   single = "single", // Have at most 1 of these
   tags = "tags",
@@ -1226,36 +1231,21 @@ class GrammarCompilerNode extends TreeNode {
 }
 
 abstract class AbstractCustomConstructorNode extends TreeNode {
-  getTheDefinedConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    // todo: allow overriding if custom constructor not found.
-    return this.getBuiltIn() || this._getCustomConstructor()
-  }
-
   protected isAppropriateEnvironment() {
     return true
   }
 
-  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    return undefined
-  }
+  abstract _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor
 
   getErrors(): InvalidConstructorPathError[] {
     // todo: should this be a try/catch?
-    if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor()) return []
+    if (!this.isAppropriateEnvironment() || this._getCustomConstructor()) return []
     return [new InvalidConstructorPathError(this)]
-  }
-
-  getBuiltIn() {
-    const constructors: jTreeTypes.stringMap = {
-      TerminalNode: GrammarBackedTerminalNode,
-      NonTerminalNode: GrammarBackedNonTerminalNode
-    }
-    return constructors[this.getWord(1)]
   }
 }
 
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
-  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
+  _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const filepath = this._getNodeConstructorFilePath()
     const rootPath = (<GrammarProgram>this.getRootNode()).getTheGrammarFilePath()
     const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
@@ -1277,7 +1267,7 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
 }
 
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
-  protected _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
+  _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     const constructorName = this.getWord(1)
     const constructor = TreeUtils.resolveProperty(window, constructorName)
     if (GrammarBackedNonTerminalNode.useAsBackupConstructor()) return GrammarBackedNonTerminalNode
@@ -1381,8 +1371,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.firstCellType,
       GrammarConstants.defaults,
       GrammarConstants.tags,
-      GrammarConstants.blob,
-      GrammarConstants.errorNode,
+      GrammarConstants.baseNodeType,
       GrammarConstants.group,
       GrammarConstants.required,
       GrammarConstants.single
@@ -1452,20 +1441,8 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return ""
   }
 
-  protected _isNonTerminal() {
-    return this._isBlobNode() || this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType)
-  }
-
   _isAbstract() {
     return false
-  }
-
-  protected _isBlobNode() {
-    return this.has(GrammarConstants.blob)
-  }
-
-  protected _isErrorNode() {
-    return this.has(GrammarConstants.errorNode)
   }
 
   private _cache_definedNodeConstructor: jTreeTypes.RunTimeNodeConstructor
@@ -1475,11 +1452,23 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_definedNodeConstructor
   }
 
-  protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    if (this._isBlobNode()) return GrammarBackedBlobNode
-    if (this._isErrorNode()) return GrammarBackedErrorNode
+  private _getBaseNodeType(): jTreeTypes.RunTimeNodeConstructor {
+    const baseTypes: any = {}
+    baseTypes[GrammarConstants.blobNode] = GrammarBackedBlobNode
+    baseTypes[GrammarConstants.errorNode] = GrammarBackedErrorNode
+    baseTypes[GrammarConstants.terminalNode] = GrammarBackedTerminalNode
+    baseTypes[GrammarConstants.nonTerminalNode] = GrammarBackedNonTerminalNode
+    return baseTypes[this.get(GrammarConstants.baseNodeType)]
+  }
 
-    return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
+  protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor {
+    const specifiedBaseNodeType = this._getBaseNodeType()
+    if (specifiedBaseNodeType) return specifiedBaseNodeType
+
+    // todo: I understand inScope but does catchAll logic checkout? Should we require specifying basetype?
+    const isNonTerminal = this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType)
+
+    return isNonTerminal ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
   }
 
   /* Node constructor is the actual JS class being initiated, different than the Node type. */
@@ -1487,7 +1476,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     const customConstructorsDefinition = <GrammarCustomConstructorsNode>this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0]
     if (customConstructorsDefinition) {
       const envConstructor = customConstructorsDefinition.getConstructorForEnvironment()
-      if (envConstructor) return envConstructor.getTheDefinedConstructor()
+      if (envConstructor) return envConstructor._getCustomConstructor()
     }
     const customJavascriptNode = <CustomJavascriptNode>this.getNode(GrammarConstants.javascript)
     if (customJavascriptNode) return customJavascriptNode._getCustomJavascriptConstructor()

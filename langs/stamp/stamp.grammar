@@ -32,7 +32,7 @@ nodeType data
  catchAllNodeType catchAll.anyLine
  firstCellType property
 nodeType error
- errorNode
+ baseNodeType errorNode
 nodeType executable
 nodeType file
  cells filepath

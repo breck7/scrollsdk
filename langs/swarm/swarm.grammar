@@ -73,7 +73,7 @@ nodeType constructWithBlockString
  catchAllNodeType textBlock
  firstCellType arrangeWord
 nodeType error
- errorNode
+ baseNodeType errorNode
 nodeType textBlock
  firstCellType anyWord
  catchAllCellType anyWord

@@ -30,7 +30,7 @@ nodeType #
  catchAllNodeType #
 nodeType error
  catchAllCellType errorWord
- errorNode
+ baseNodeType errorNode
  firstCellType errorWord
 nodeType #! #
 nodeType comment #

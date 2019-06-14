@@ -45,6 +45,12 @@ var GrammarConstants;
     GrammarConstants["regex"] = "regex";
     GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
     GrammarConstants["enum"] = "enum";
+    // baseNodeTypes
+    GrammarConstants["baseNodeType"] = "baseNodeType";
+    GrammarConstants["blobNode"] = "blobNode";
+    GrammarConstants["errorNode"] = "errorNode";
+    GrammarConstants["terminalNode"] = "terminalNode";
+    GrammarConstants["nonTerminalNode"] = "nonTerminalNode";
     // parse time
     GrammarConstants["inScope"] = "inScope";
     GrammarConstants["cells"] = "cells";
@@ -54,8 +60,6 @@ var GrammarConstants;
     GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
-    GrammarConstants["blob"] = "blob";
-    GrammarConstants["errorNode"] = "errorNode";
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";
@@ -1010,28 +1014,14 @@ class GrammarCompilerNode extends TreeNode_1.default {
     }
 }
 class AbstractCustomConstructorNode extends TreeNode_1.default {
-    getTheDefinedConstructor() {
-        // todo: allow overriding if custom constructor not found.
-        return this.getBuiltIn() || this._getCustomConstructor();
-    }
     isAppropriateEnvironment() {
         return true;
     }
-    _getCustomConstructor() {
-        return undefined;
-    }
     getErrors() {
         // todo: should this be a try/catch?
-        if (!this.isAppropriateEnvironment() || this.getTheDefinedConstructor())
+        if (!this.isAppropriateEnvironment() || this._getCustomConstructor())
             return [];
         return [new InvalidConstructorPathError(this)];
-    }
-    getBuiltIn() {
-        const constructors = {
-            TerminalNode: GrammarBackedTerminalNode,
-            NonTerminalNode: GrammarBackedNonTerminalNode
-        };
-        return constructors[this.getWord(1)];
     }
 }
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
@@ -1151,8 +1141,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants.firstCellType,
             GrammarConstants.defaults,
             GrammarConstants.tags,
-            GrammarConstants.blob,
-            GrammarConstants.errorNode,
+            GrammarConstants.baseNodeType,
             GrammarConstants.group,
             GrammarConstants.required,
             GrammarConstants.single
@@ -1213,29 +1202,29 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
   }`;
         return "";
     }
-    _isNonTerminal() {
-        return this._isBlobNode() || this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType);
-    }
     _isAbstract() {
         return false;
-    }
-    _isBlobNode() {
-        return this.has(GrammarConstants.blob);
-    }
-    _isErrorNode() {
-        return this.has(GrammarConstants.errorNode);
     }
     getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
         return this._cache_definedNodeConstructor;
     }
+    _getBaseNodeType() {
+        const baseTypes = {};
+        baseTypes[GrammarConstants.blobNode] = GrammarBackedBlobNode;
+        baseTypes[GrammarConstants.errorNode] = GrammarBackedErrorNode;
+        baseTypes[GrammarConstants.terminalNode] = GrammarBackedTerminalNode;
+        baseTypes[GrammarConstants.nonTerminalNode] = GrammarBackedNonTerminalNode;
+        return baseTypes[this.get(GrammarConstants.baseNodeType)];
+    }
     _getDefaultNodeConstructor() {
-        if (this._isBlobNode())
-            return GrammarBackedBlobNode;
-        if (this._isErrorNode())
-            return GrammarBackedErrorNode;
-        return this._isNonTerminal() ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode;
+        const specifiedBaseNodeType = this._getBaseNodeType();
+        if (specifiedBaseNodeType)
+            return specifiedBaseNodeType;
+        // todo: I understand inScope but does catchAll logic checkout? Should we require specifying basetype?
+        const isNonTerminal = this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType);
+        return isNonTerminal ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode;
     }
     /* Node constructor is the actual JS class being initiated, different than the Node type. */
     _getDefinedNodeConstructor() {
@@ -1243,7 +1232,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         if (customConstructorsDefinition) {
             const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
             if (envConstructor)
-                return envConstructor.getTheDefinedConstructor();
+                return envConstructor._getCustomConstructor();
         }
         const customJavascriptNode = this.getNode(GrammarConstants.javascript);
         if (customJavascriptNode)

@@ -52,29 +52,33 @@ declare enum GrammarConstants {
     frequency = "frequency",
     highlightScope = "highlightScope"
 }
-declare abstract class CompiledLanguageNonRootNode extends TreeNode {
-}
-declare abstract class CompiledLanguageRootNode extends TreeNode {
-}
-declare abstract class AbstractRuntimeNode extends TreeNode {
-    getGrammarProgram(): GrammarProgram;
-    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getCatchAllNodeConstructor(line: string): Function;
-    getProgram(): AbstractRuntimeNode;
+declare abstract class GrammarBackedNode extends TreeNode {
+    abstract getDefinition(): AbstractGrammarDefinitionNode;
     getAutocompleteResults(partialWord: string, cellIndex: jTreeTypes.positiveInt): {
         text: string;
         displayText: string;
     }[];
+    private _getAutocompleteResultsForFirstWord;
+    private _getAutocompleteResultsForCell;
+    getGrammarProgram(): GrammarProgram;
+    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
+    getCatchAllNodeConstructor(line: string): Function;
+    getProgram(): GrammarBackedNode;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[];
-    private _getAutocompleteResultsForCell;
-    private _getAutocompleteResultsForFirstWord;
-    abstract getDefinition(): AbstractGrammarDefinitionNode;
     protected _getNodeTypeDefinitionByFirstWordPath(path: string): AbstractGrammarDefinitionNode;
     protected _getRequiredNodeErrors(errors?: jTreeTypes.TreeError[]): jTreeTypes.TreeError[];
 }
-declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
-    getProgram(): AbstractRuntimeNode;
+declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
+}
+declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
+}
+declare abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
+}
+declare abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {
+}
+declare abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
+    getProgram(): GrammarBackedNode;
     getGrammarProgram(): GrammarProgram;
     getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): NonRootNodeTypeDefinition;
@@ -90,7 +94,7 @@ declare abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
     getLineCellTypes(): string;
     getLineHighlightScopes(defaultScope?: string): string;
 }
-declare abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
+declare abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
     getAllErrors(): jTreeTypes.TreeError[];
     getInvalidNodeTypes(): any[];
     updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap): this;

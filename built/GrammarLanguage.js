@@ -78,45 +78,9 @@ var GrammarConstants;
     GrammarConstants["highlightScope"] = "highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));
 exports.GrammarConstants = GrammarConstants;
-class CompiledLanguageNode extends TreeNode_1.default {
-    getNodeConstructor(line) {
-        return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line);
-    }
-}
-class CompiledLanguageNonRootNode extends TreeNode_1.default {
-}
-exports.CompiledLanguageNonRootNode = CompiledLanguageNonRootNode;
-class CompiledLanguageRootNode extends TreeNode_1.default {
-}
-exports.CompiledLanguageRootNode = CompiledLanguageRootNode;
-class AbstractRuntimeNode extends TreeNode_1.default {
-    // note: this is overwritten by the root node of a runtime grammar program.
-    // some of the magic that makes this all work. but maybe there's a better way.
-    getGrammarProgram() {
-        return this.getProgram().getGrammarProgram();
-    }
-    getFirstWordMap() {
-        return this.getDefinition().getRunTimeFirstWordMap();
-    }
-    getCatchAllNodeConstructor(line) {
-        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
-    }
-    getProgram() {
-        return this;
-    }
+class GrammarBackedNode extends TreeNode_1.default {
     getAutocompleteResults(partialWord, cellIndex) {
         return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
-    }
-    _getGrammarBackedCellArray() {
-        return [];
-    }
-    getRunTimeEnumOptions(cell) {
-        return undefined;
-    }
-    _getAutocompleteResultsForCell(partialWord, cellIndex) {
-        // todo: root should be [] correct?
-        const cell = this._getGrammarBackedCellArray()[cellIndex];
-        return cell ? cell.getAutoCompleteWords(partialWord) : [];
     }
     _getAutocompleteResultsForFirstWord(partialWord) {
         let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
@@ -130,6 +94,32 @@ class AbstractRuntimeNode extends TreeNode_1.default {
                 displayText: id + (description ? " " + description : "")
             };
         });
+    }
+    _getAutocompleteResultsForCell(partialWord, cellIndex) {
+        // todo: root should be [] correct?
+        const cell = this._getGrammarBackedCellArray()[cellIndex];
+        return cell ? cell.getAutoCompleteWords(partialWord) : [];
+    }
+    // note: this is overwritten by the root node of a runtime grammar program.
+    // some of the magic that makes this all work. but maybe there's a better way.
+    getGrammarProgram() {
+        return this.getProgram().getGrammarProgram();
+    }
+    getFirstWordMap() {
+        return this.getDefinition().getRunTimeFirstWordMap();
+    }
+    getCatchAllNodeConstructor(line) {
+        return this.getDefinition().getRunTimeCatchAllNodeConstructor();
+    }
+    // todo: rename to something better?
+    getProgram() {
+        return this;
+    }
+    _getGrammarBackedCellArray() {
+        return [];
+    }
+    getRunTimeEnumOptions(cell) {
+        return undefined;
     }
     _getNodeTypeDefinitionByFirstWordPath(path) {
         // todo: do we need a relative to with this firstWord path?
@@ -147,7 +137,17 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         return errors;
     }
 }
-class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
+class GrammarBackedRootNode extends GrammarBackedNode {
+}
+class GrammarBackedNonRootNode extends GrammarBackedNode {
+}
+class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
+}
+exports.CompiledLanguageNonRootNode = CompiledLanguageNonRootNode;
+class CompiledLanguageRootNode extends GrammarBackedRootNode {
+}
+exports.CompiledLanguageRootNode = CompiledLanguageRootNode;
+class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
     getProgram() {
         return this.getParent().getProgram();
     }
@@ -264,7 +264,7 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
             .join(" ");
     }
 }
-class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
+class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
     getAllErrors() {
         return this._getRequiredNodeErrors(super.getAllErrors());
     }

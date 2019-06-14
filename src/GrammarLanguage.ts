@@ -87,49 +87,11 @@ enum GrammarConstants {
   highlightScope = "highlightScope"
 }
 
-abstract class CompiledLanguageNode extends TreeNode {
-  getNodeConstructor(line: string) {
-    return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
-  }
-}
-abstract class CompiledLanguageNonRootNode extends TreeNode {}
-abstract class CompiledLanguageRootNode extends TreeNode {}
-
-abstract class AbstractRuntimeNode extends TreeNode {
-  // note: this is overwritten by the root node of a runtime grammar program.
-  // some of the magic that makes this all work. but maybe there's a better way.
-  getGrammarProgram(): GrammarProgram {
-    return this.getProgram().getGrammarProgram()
-  }
-
-  getFirstWordMap() {
-    return this.getDefinition().getRunTimeFirstWordMap()
-  }
-
-  getCatchAllNodeConstructor(line: string) {
-    return this.getDefinition().getRunTimeCatchAllNodeConstructor()
-  }
-
-  getProgram(): AbstractRuntimeNode {
-    return this
-  }
+abstract class GrammarBackedNode extends TreeNode {
+  abstract getDefinition(): AbstractGrammarDefinitionNode
 
   getAutocompleteResults(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
-  }
-
-  protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
-    return []
-  }
-
-  getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[] {
-    return undefined
-  }
-
-  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
-    // todo: root should be [] correct?
-    const cell = this._getGrammarBackedCellArray()[cellIndex]
-    return cell ? cell.getAutoCompleteWords(partialWord) : []
   }
 
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
@@ -147,7 +109,38 @@ abstract class AbstractRuntimeNode extends TreeNode {
     })
   }
 
-  abstract getDefinition(): AbstractGrammarDefinitionNode
+  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
+    // todo: root should be [] correct?
+    const cell = this._getGrammarBackedCellArray()[cellIndex]
+    return cell ? cell.getAutoCompleteWords(partialWord) : []
+  }
+
+  // note: this is overwritten by the root node of a runtime grammar program.
+  // some of the magic that makes this all work. but maybe there's a better way.
+  getGrammarProgram(): GrammarProgram {
+    return this.getProgram().getGrammarProgram()
+  }
+
+  getFirstWordMap() {
+    return this.getDefinition().getRunTimeFirstWordMap()
+  }
+
+  getCatchAllNodeConstructor(line: string) {
+    return this.getDefinition().getRunTimeCatchAllNodeConstructor()
+  }
+
+  // todo: rename to something better?
+  getProgram(): GrammarBackedNode {
+    return this
+  }
+
+  protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
+    return []
+  }
+
+  getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[] {
+    return undefined
+  }
 
   protected _getNodeTypeDefinitionByFirstWordPath(path: string) {
     // todo: do we need a relative to with this firstWord path?
@@ -166,9 +159,15 @@ abstract class AbstractRuntimeNode extends TreeNode {
   }
 }
 
-abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
+abstract class GrammarBackedRootNode extends GrammarBackedNode {}
+abstract class GrammarBackedNonRootNode extends GrammarBackedNode {}
+
+abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {}
+abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {}
+
+abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
   getProgram() {
-    return (<AbstractRuntimeNode>this.getParent()).getProgram()
+    return (<AbstractRuntimeProgramRootNode>this.getParent()).getProgram()
   }
 
   getGrammarProgram() {
@@ -299,7 +298,7 @@ abstract class AbstractRuntimeNonRootNode extends AbstractRuntimeNode {
   }
 }
 
-abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
+abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
   getAllErrors(): jTreeTypes.TreeError[] {
     return this._getRequiredNodeErrors(super.getAllErrors())
   }
@@ -344,7 +343,7 @@ abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
 
   getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt) {
     const lineNode = this.nodeAtLine(lineIndex) || this
-    const nodeInScope = <AbstractRuntimeNode>lineNode.getNodeInScopeAtCharIndex(charIndex)
+    const nodeInScope = <GrammarBackedNode>lineNode.getNodeInScopeAtCharIndex(charIndex)
 
     // todo: add more tests
     // todo: second param this.childrenToString()
@@ -411,7 +410,7 @@ abstract class AbstractRuntimeProgramRootNode extends AbstractRuntimeNode {
 
   // todo: refine and make public
   protected _getInPlaceCellTypeTreeHtml() {
-    const getColor = (child: AbstractRuntimeNode) => {
+    const getColor = (child: GrammarBackedNode) => {
       if (child.getLineCellTypes().includes("error")) return "red"
       return "black"
     }
@@ -738,10 +737,10 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
 }
 
 abstract class AbstractTreeError implements jTreeTypes.TreeError {
-  constructor(node: AbstractRuntimeNode | TreeNode) {
+  constructor(node: GrammarBackedNode | TreeNode) {
     this._node = node
   }
-  private _node: AbstractRuntimeNode | TreeNode
+  private _node: GrammarBackedNode | TreeNode
 
   getLineIndex(): jTreeTypes.positiveInt {
     return this.getLineNumber() - 1
@@ -810,7 +809,7 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
   }
 
   getExtension() {
-    return (<AbstractRuntimeNode>this.getNode()).getGrammarProgram().getExtensionName()
+    return (<GrammarBackedNode>this.getNode()).getGrammarProgram().getExtensionName()
   }
 
   getNode() {
@@ -885,7 +884,7 @@ class UnknownNodeTypeError extends AbstractTreeError {
   protected _getWordSuggestion() {
     const node = this.getNode()
     const parentNode = node.getParent()
-    return TreeUtils.didYouMean(node.getFirstWord(), (<AbstractRuntimeNode>parentNode).getAutocompleteResults("", 0).map(option => option.text))
+    return TreeUtils.didYouMean(node.getFirstWord(), (<GrammarBackedNode>parentNode).getAutocompleteResults("", 0).map(option => option.text))
   }
 
   getSuggestionMessage() {
@@ -931,7 +930,7 @@ class InvalidConstructorPathError extends AbstractTreeError {
 }
 
 class MissingRequiredNodeTypeError extends AbstractTreeError {
-  constructor(node: AbstractRuntimeNode | TreeNode, missingWord: jTreeTypes.firstWord) {
+  constructor(node: GrammarBackedNode | TreeNode, missingWord: jTreeTypes.firstWord) {
     super(node)
     this._missingWord = missingWord
   }

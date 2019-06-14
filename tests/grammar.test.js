@@ -89,7 +89,7 @@ testTree._jibberish = equal => {
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition instanceof JibberishLang.additionNode, true)
+  equal(addition instanceof JibberishLang.AdditionNode, true)
 
   // Act/Assert
   equal(program.getNode("someCode echo") instanceof JibberishLang.LineOfCodeNode, true, "line of code class")
@@ -140,13 +140,13 @@ opSymbol int int int`,
   equal(
     nodeTypes,
     `GrammarBackedTerminalNode topLevelProperty
-additionNode opSymbol int int int`,
+AdditionNode opSymbol int int int`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
     `GrammarBackedTerminalNode foo
-additionNode + 2 3 2`,
+AdditionNode + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )
 }

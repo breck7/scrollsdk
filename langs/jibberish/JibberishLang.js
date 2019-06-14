@@ -1,6 +1,6 @@
 const jtree = require("../../index.js")
 
-class additionNode extends jtree.NonTerminalNode {}
+class AdditionNode extends jtree.NonTerminalNode {}
 class LineOfCodeNode extends jtree.NonTerminalNode {}
 class SomeNestedNode extends jtree.NonTerminalNode {}
 
@@ -15,7 +15,7 @@ class JibberishProgramRoot extends jtree.programRoot {
 
 module.exports = {
   JibberishProgramRoot,
-  additionNode,
+  AdditionNode,
   LineOfCodeNode,
   nested
 }

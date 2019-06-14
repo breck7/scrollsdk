@@ -38,13 +38,13 @@ nodeType file
  cells filepath
  firstCellType property
  constructors
-  nodejs ./StampLang.js FileNode
+  nodejs ./StampLang.js
  inScope data executable
 nodeType folder
  cells filepath
  firstCellType property
  constructors
-  nodejs ./StampLang.js FolderNode
+  nodejs ./StampLang.js
 nodeType prompt
  cells varName inputType
  catchAllCellType promptWords
@@ -54,4 +54,4 @@ nodeType prompt
   folder PROJECT_NAME
   file PROJECT_NAME/.gitignore
  constructors
-  nodejs ./StampLang.js PromptNode
+  nodejs ./StampLang.js

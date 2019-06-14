@@ -33,7 +33,7 @@ nodeType error
 nodeType lineOfCode
  catchAllCellType word
  constructors
-  nodejs ./JibberishLang.js LineOfCodeNode
+  nodejs ./JibberishLang.js
   browser LineOfCodeNode JibberishLang.js
 nodeType text
  baseNodeType blobNode
@@ -41,7 +41,7 @@ nodeType extendsAbstract someAbstractClass
  cells int
 nodeType add topLevel
  constructors
-  nodejs ./JibberishLang.js additionNode
+  nodejs ./JibberishLang.js AdditionNode
 nodeType + add
  firstCellType opSymbol
  example Adding two numbers:

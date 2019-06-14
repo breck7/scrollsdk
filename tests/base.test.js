@@ -1931,7 +1931,7 @@ nodeType text
  blobNode
 nodeType add topLevel
  constructors
-  nodejs ./JibberishLang.js additionNode
+  nodejs ./JibberishLang.js AdditionNode
 nodeType + add
  catchAllCellType int
 nodeType lightbulbState topLevel
@@ -1953,17 +1953,17 @@ someCode
   // Allow running in both browser and nodejs:
   const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
 
-  class additionNode extends jtreeBase.NonTerminalNode {}
+  class AdditionNode extends jtreeBase.NonTerminalNode {}
   class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
   class JibberishProgramRoot extends jtreeBase.programRoot {}
 
   const JibberishLang = {}
-  JibberishLang.additionNode = additionNode
+  JibberishLang.AdditionNode = AdditionNode
   JibberishLang.LineOfCodeNode = LineOfCodeNode
   let win = typeof window === "undefined" ? {} : window
   win.JibberishLang = JibberishLang
   win.JibberishProgramRoot = JibberishProgramRoot
-  win.additionNode = additionNode
+  win.AdditionNode = AdditionNode
   win.LineOfCodeNode = LineOfCodeNode
 
   // Act

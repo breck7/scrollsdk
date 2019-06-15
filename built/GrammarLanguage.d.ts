@@ -70,31 +70,8 @@ declare abstract class GrammarBackedNode extends TreeNode {
 }
 declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode(): this;
-}
-declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
-    getRootProgramNode(): GrammarBackedRootNode;
-    getLineHints(): string;
-    getNodeTypeId(): jTreeTypes.nodeTypeId;
-    getDefinition(): NonRootNodeTypeDefinition;
-    getGrammarProgramRoot(): GrammarProgram;
-}
-declare abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
-}
-declare abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {
-}
-declare abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
-    protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
-    protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
-    protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
-    compile(targetLanguage: jTreeTypes.targetLanguageId): string;
-    getErrors(): jTreeTypes.TreeError[];
-    getParsedWords(): any[];
-    readonly cells: jTreeTypes.stringMap;
-    protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
-    getLineCellTypes(): string;
-    getLineHighlightScopes(defaultScope?: string): string;
-}
-declare abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
+    getDefinition(): GrammarProgram;
+    getInPlaceCellTypeTree(): string;
     getAllErrors(): jTreeTypes.TreeError[];
     getInvalidNodeTypes(): any[];
     updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap): this;
@@ -109,18 +86,35 @@ declare abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootN
         }[];
     };
     getPrettified(): string;
-    getDefinition(): GrammarProgram;
     getNodeTypeUsage(filepath?: string): TreeNode;
-    getInPlaceCellTypeTree(): string;
     getInPlaceHighlightScopeTree(): string;
     getInPlaceCellTypeTreeWithNodeConstructorNames(): string;
-    protected _getInPlaceCellTypeTreeHtml(): string;
     getTreeWithNodeTypes(): string;
     getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): jTreeTypes.highlightScope | undefined;
     private _cache_programCellTypeStringMTime;
     private _cache_highlightScopeTree;
     private _cache_typeTree;
     protected _initCellTypeCache(): void;
+}
+declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
+    getRootProgramNode(): GrammarBackedRootNode;
+    getLineHints(): string;
+    getNodeTypeId(): jTreeTypes.nodeTypeId;
+    getDefinition(): NonRootNodeTypeDefinition;
+    getGrammarProgramRoot(): GrammarProgram;
+    protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
+    getLineCellTypes(): string;
+    getLineHighlightScopes(defaultScope?: string): string;
+    getErrors(): jTreeTypes.TreeError[];
+}
+declare abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
+    protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
+    protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
+    protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
+    compile(targetLanguage: jTreeTypes.targetLanguageId): string;
+    readonly cells: jTreeTypes.stringMap;
+}
+declare abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
 }
 declare class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
 }
@@ -132,7 +126,7 @@ declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
     static setAsBackupConstructor(value: boolean): typeof GrammarBackedNonTerminalNode;
 }
 declare abstract class AbstractGrammarBackedCell<T> {
-    constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean);
+    constructor(node: GrammarBackedNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean);
     private _node;
     protected _index: jTreeTypes.int;
     protected _word: string;
@@ -141,7 +135,7 @@ declare abstract class AbstractGrammarBackedCell<T> {
     private _cellTypeId;
     getCellTypeId(): string;
     static parserFunctionName: string;
-    getNode(): AbstractRuntimeNonRootNode;
+    getNode(): GrammarBackedNonRootNode;
     getCellIndex(): number;
     isCatchAll(): boolean;
     abstract getParsed(): T;
@@ -322,5 +316,9 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private static _scriptLoadingPromises;
     private static _appendScriptOnce;
     private static _appendScript;
+}
+declare abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
+}
+declare abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {
 }
 export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, CompiledLanguageNonRootNode, CompiledLanguageRootNode };

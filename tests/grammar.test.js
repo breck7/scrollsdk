@@ -31,14 +31,14 @@ testTree.basics = equal => {
   equal(errs.length, 0, "should be no errors")
 }
 
-const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
-
 const makeGrammarProgram = code => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = code => {
   const grammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
   return makeProgram(grammarCode, code, jibberishGrammarPath)
 }
+
+const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
 const makeProgram = (grammarCode, code, grammarPath = undefined) => {
   const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
@@ -130,7 +130,6 @@ testTree.cellTypeTree = equal => {
 opSymbol int int int`,
     "word types should match"
   )
-  equal(someJibberishProgram.nodeAt(1).getParsedWords()[1], 2)
 
   // Act
   const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()

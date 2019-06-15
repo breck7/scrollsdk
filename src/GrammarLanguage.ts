@@ -152,7 +152,138 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
   getRootProgramNode() {
     return this
   }
+
+  getDefinition(): GrammarProgram {
+    return this.getGrammarProgramRoot()
+  }
+
+  getInPlaceCellTypeTree() {
+    return this.getTopDownArray()
+      .map(child => child.getIndentation() + child.getLineCellTypes())
+      .join("\n")
+  }
+
+  getAllErrors(): jTreeTypes.TreeError[] {
+    return this._getRequiredNodeErrors(super.getAllErrors())
+  }
+
+  // Helper method for selecting potential nodeTypes needed to update grammar file.
+  getInvalidNodeTypes() {
+    return Array.from(
+      new Set(
+        this.getAllErrors()
+          .filter(err => err instanceof UnknownNodeTypeError)
+          .map(err => err.getNode().getFirstWord())
+      )
+    )
+  }
+
+  updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap) {
+    if (typeof nodeTypeMap === "string") nodeTypeMap = new TreeNode(nodeTypeMap)
+    if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <jTreeTypes.nodeIdRenameMap>nodeTypeMap.toObject()
+    const renames = []
+    for (let node of this.getTopDownArrayIterator()) {
+      const nodeTypeId = (<GrammarBackedNonRootNode>node).getNodeTypeId()
+      const newId = nodeTypeMap[nodeTypeId]
+      if (newId) renames.push([node, newId])
+    }
+    renames.forEach(pair => pair[0].setFirstWord(pair[1]))
+    return this
+  }
+
+  getAllSuggestions() {
+    return new TreeNode(
+      this.getAllWordBoundaryCoordinates().map(coordinate => {
+        const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x)
+        return {
+          line: coordinate.y,
+          char: coordinate.x,
+          word: results.word,
+          suggestions: results.matches.map(m => m.text).join(" ")
+        }
+      })
+    ).toTable()
+  }
+
+  getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt) {
+    const lineNode = this.nodeAtLine(lineIndex) || this
+    const nodeInScope = <GrammarBackedNode>lineNode.getNodeInScopeAtCharIndex(charIndex)
+
+    // todo: add more tests
+    // todo: second param this.childrenToString()
+    // todo: change to getAutocomplete definitions
+
+    const wordIndex = lineNode.getWordIndexAtCharacterIndex(charIndex)
+    const wordProperties = lineNode.getWordProperties(wordIndex)
+    return {
+      startCharIndex: wordProperties.startCharIndex,
+      endCharIndex: wordProperties.endCharIndex,
+      word: wordProperties.word,
+      matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
+    }
+  }
+
+  getPrettified() {
+    const nodeTypeOrder = this.getGrammarProgramRoot().getNodeTypeOrder()
+    const clone = this.clone()
+    const isCondensed = this.getGrammarProgramRoot().getGrammarName() === "grammar" // todo: generalize?
+    clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined)
+
+    return clone.toString()
+  }
+
+  getNodeTypeUsage(filepath = "") {
+    // returns a report on what nodeTypes from its language the program uses
+    const usage = new TreeNode()
+    const grammarProgram = this.getGrammarProgramRoot()
+    grammarProgram.getNodeTypeDefinitions().forEach(def => {
+      usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
+    })
+    this.getTopDownArray().forEach((node, lineNumber) => {
+      const stats = <TreeNode>usage.getNode(node.getNodeTypeId())
+      stats.appendLine([filepath + "-" + lineNumber, node.getWords().join(" ")].join(" "))
+    })
+    return usage
+  }
+
+  getInPlaceHighlightScopeTree() {
+    return this.getTopDownArray()
+      .map(child => child.getIndentation() + child.getLineHighlightScopes())
+      .join("\n")
+  }
+
+  getInPlaceCellTypeTreeWithNodeConstructorNames() {
+    return this.getTopDownArray()
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
+      .join("\n")
+  }
+
+  getTreeWithNodeTypes() {
+    return this.getTopDownArray()
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
+      .join("\n")
+  }
+
+  getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): jTreeTypes.highlightScope | undefined {
+    this._initCellTypeCache()
+    const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
+    return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
+  }
+
+  private _cache_programCellTypeStringMTime: number
+  private _cache_highlightScopeTree: TreeNode
+  private _cache_typeTree: TreeNode
+
+  protected _initCellTypeCache(): void {
+    const treeMTime = this.getTreeMTime()
+    if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
+
+    this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())
+    this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
+    this._cache_programCellTypeStringMTime = treeMTime
+  }
 }
+
 abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
   getRootProgramNode() {
     return (<GrammarBackedNode>this.getParent()).getRootProgramNode()
@@ -177,69 +308,6 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
 
   getGrammarProgramRoot() {
     return this.getRootProgramNode().getGrammarProgramRoot()
-  }
-}
-
-// todo: should this be abstract?
-abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {}
-abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {}
-
-abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
-  protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
-    return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
-  }
-
-  protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId) {
-    const compiler = this._getCompilerNode(targetLanguage)
-    const indentCharacter = compiler._getIndentCharacter()
-    const indent = this.getIndentation()
-    return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
-  }
-
-  protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId) {
-    const compiler = this._getCompilerNode(targetLanguage)
-    const listDelimiter = compiler._getListDelimiter()
-    const str = compiler._getTransformation()
-    return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine()
-  }
-
-  compile(targetLanguage: jTreeTypes.targetLanguageId) {
-    return this._getCompiledIndentation(targetLanguage) + this._getCompiledLine(targetLanguage)
-  }
-
-  getErrors() {
-    const errors = this._getGrammarBackedCellArray()
-      .map(check => check.getErrorIfAny())
-      .filter(i => i)
-
-    const firstWord = this.getFirstWord()
-    if (this.getDefinition().has(GrammarConstants.single))
-      this.getParent()
-        .findNodes(firstWord)
-        .forEach((node, index) => {
-          if (index) errors.push(new NodeTypeUsedMultipleTimesError(node))
-        })
-
-    return this._getRequiredNodeErrors(errors)
-  }
-
-  // todo: remove?
-  getParsedWords() {
-    return this._getGrammarBackedCellArray().map(word => word.getParsed())
-  }
-
-  get cells() {
-    const cells: jTreeTypes.stringMap = {}
-    this._getGrammarBackedCellArray()
-      .slice(1)
-      .forEach(cell => {
-        if (!cell.isCatchAll()) cells[cell.getCellTypeId()] = cell.getParsed()
-        else {
-          if (!cells[cell.getCellTypeId()]) cells[cell.getCellTypeId()] = []
-          cells[cell.getCellTypeId()].push(cell.getParsed())
-        }
-      })
-    return cells
   }
 
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
@@ -291,171 +359,71 @@ abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
       .map(slot => slot.getHighlightScope() || defaultScope)
       .join(" ")
   }
+
+  getErrors() {
+    const errors = this._getGrammarBackedCellArray()
+      .map(check => check.getErrorIfAny())
+      .filter(i => i)
+
+    const firstWord = this.getFirstWord()
+    if (this.getDefinition().has(GrammarConstants.single))
+      this.getParent()
+        .findNodes(firstWord)
+        .forEach((node, index) => {
+          if (index) errors.push(new NodeTypeUsedMultipleTimesError(node))
+        })
+
+    return this._getRequiredNodeErrors(errors)
+  }
 }
 
-abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
-  getAllErrors(): jTreeTypes.TreeError[] {
-    return this._getRequiredNodeErrors(super.getAllErrors())
+abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
+  protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
+    return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
   }
 
-  // Helper method for selecting potential nodeTypes needed to update grammar file.
-  getInvalidNodeTypes() {
-    return Array.from(
-      new Set(
-        this.getAllErrors()
-          .filter(err => err instanceof UnknownNodeTypeError)
-          .map(err => err.getNode().getFirstWord())
-      )
-    )
+  protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId) {
+    const compiler = this._getCompilerNode(targetLanguage)
+    const indentCharacter = compiler._getIndentCharacter()
+    const indent = this.getIndentation()
+    return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
 
-  updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap) {
-    if (typeof nodeTypeMap === "string") nodeTypeMap = new TreeNode(nodeTypeMap)
-    if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <jTreeTypes.nodeIdRenameMap>nodeTypeMap.toObject()
-    const renames = []
-    for (let node of this.getTopDownArrayIterator()) {
-      const nodeTypeId = (<AbstractRuntimeNonRootNode>node).getNodeTypeId()
-      const newId = nodeTypeMap[nodeTypeId]
-      if (newId) renames.push([node, newId])
-    }
-    renames.forEach(pair => pair[0].setFirstWord(pair[1]))
-    return this
+  protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId) {
+    const compiler = this._getCompilerNode(targetLanguage)
+    const listDelimiter = compiler._getListDelimiter()
+    const str = compiler._getTransformation()
+    return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine()
   }
 
-  getAllSuggestions() {
-    return new TreeNode(
-      this.getAllWordBoundaryCoordinates().map(coordinate => {
-        const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x)
-        return {
-          line: coordinate.y,
-          char: coordinate.x,
-          word: results.word,
-          suggestions: results.matches.map(m => m.text).join(" ")
+  compile(targetLanguage: jTreeTypes.targetLanguageId) {
+    return this._getCompiledIndentation(targetLanguage) + this._getCompiledLine(targetLanguage)
+  }
+
+  // todo: remove
+  get cells() {
+    const cells: jTreeTypes.stringMap = {}
+    this._getGrammarBackedCellArray()
+      .slice(1)
+      .forEach(cell => {
+        if (!cell.isCatchAll()) cells[cell.getCellTypeId()] = cell.getParsed()
+        else {
+          if (!cells[cell.getCellTypeId()]) cells[cell.getCellTypeId()] = []
+          cells[cell.getCellTypeId()].push(cell.getParsed())
         }
       })
-    ).toTable()
-  }
-
-  getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt) {
-    const lineNode = this.nodeAtLine(lineIndex) || this
-    const nodeInScope = <GrammarBackedNode>lineNode.getNodeInScopeAtCharIndex(charIndex)
-
-    // todo: add more tests
-    // todo: second param this.childrenToString()
-    // todo: change to getAutocomplete definitions
-
-    const wordIndex = lineNode.getWordIndexAtCharacterIndex(charIndex)
-    const wordProperties = lineNode.getWordProperties(wordIndex)
-    return {
-      startCharIndex: wordProperties.startCharIndex,
-      endCharIndex: wordProperties.endCharIndex,
-      word: wordProperties.word,
-      matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
-    }
-  }
-
-  getPrettified() {
-    const nodeTypeOrder = this.getGrammarProgramRoot().getNodeTypeOrder()
-    const clone = this.clone()
-    const isCondensed = this.getGrammarProgramRoot().getGrammarName() === "grammar" // todo: generalize?
-    clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined)
-
-    return clone.toString()
-  }
-
-  getDefinition(): GrammarProgram {
-    return this.getGrammarProgramRoot()
-  }
-
-  getNodeTypeUsage(filepath = "") {
-    // returns a report on what nodeTypes from its language the program uses
-    const usage = new TreeNode()
-    const grammarProgram = this.getGrammarProgramRoot()
-    grammarProgram.getNodeTypeDefinitions().forEach(def => {
-      usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
-    })
-    this.getTopDownArray().forEach((node, lineNumber) => {
-      const stats = <TreeNode>usage.getNode(node.getNodeTypeId())
-      stats.appendLine([filepath + "-" + lineNumber, node.getWords().join(" ")].join(" "))
-    })
-    return usage
-  }
-
-  getInPlaceCellTypeTree() {
-    return this.getTopDownArray()
-      .map(child => child.getIndentation() + child.getLineCellTypes())
-      .join("\n")
-  }
-
-  getInPlaceHighlightScopeTree() {
-    return this.getTopDownArray()
-      .map(child => child.getIndentation() + child.getLineHighlightScopes())
-      .join("\n")
-  }
-
-  getInPlaceCellTypeTreeWithNodeConstructorNames() {
-    return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
-      .join("\n")
-  }
-
-  // todo: refine and make public
-  protected _getInPlaceCellTypeTreeHtml() {
-    const getColor = (child: GrammarBackedNode) => {
-      if (child.getLineCellTypes().includes("error")) return "red"
-      return "black"
-    }
-    const zip = (a1: string[], a2: string[]) => {
-      let last = a1.length > a2.length ? a1.length : a2.length
-      let parts = []
-      for (let index = 0; index < last; index++) {
-        parts.push(`${a1[index]}:${a2[index]}`)
-      }
-      return parts.join(" ")
-    }
-    return this.getTopDownArray()
-      .map(
-        child =>
-          `<div style="white-space: pre;">${child.constructor.name} ${this.getZI()} ${child.getIndentation()} <span style="color: ${getColor(child)};">${zip(
-            child.getLineCellTypes().split(" "),
-            child.getLine().split(" ")
-          )}</span></div>`
-      )
-      .join("")
-  }
-
-  getTreeWithNodeTypes() {
-    return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
-      .join("\n")
-  }
-
-  getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): jTreeTypes.highlightScope | undefined {
-    this._initCellTypeCache()
-    const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
-    return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
-  }
-
-  private _cache_programCellTypeStringMTime: number
-  private _cache_highlightScopeTree: TreeNode
-  private _cache_typeTree: TreeNode
-
-  protected _initCellTypeCache(): void {
-    const treeMTime = this.getTreeMTime()
-    if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
-
-    this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())
-    this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
-    this._cache_programCellTypeStringMTime = treeMTime
+    return cells
   }
 }
+
+abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {}
 
 class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {}
 
 class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
   // todo: is this correct?
   getLineCellTypes() {
-    return "error ".repeat(this.getWords().length).trim()
+    return "errorNodeAnyCellType ".repeat(this.getWords().length).trim()
   }
 
   getErrors(): UnknownNodeTypeError[] {
@@ -514,7 +482,7 @@ class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
 A cell contains a word but also the type information for that word.
 */
 abstract class AbstractGrammarBackedCell<T> {
-  constructor(node: AbstractRuntimeNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean) {
+  constructor(node: GrammarBackedNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean) {
     this._typeDef = typeDef
     this._node = node
     this._isCatchAll = isCatchAll
@@ -524,7 +492,7 @@ abstract class AbstractGrammarBackedCell<T> {
     this._word = node.getWord(index)
   }
 
-  private _node: AbstractRuntimeNonRootNode
+  private _node: GrammarBackedNonRootNode
   protected _index: jTreeTypes.int
   protected _word: string
   private _typeDef: GrammarCellTypeDefinitionNode
@@ -768,7 +736,7 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
 
   private _getCodeMirrorLineWidgetElementCellTypeHints() {
     const el = document.createElement("div")
-    el.appendChild(document.createTextNode(this.getIndent() + (<AbstractRuntimeNonRootNode>this.getNode()).getLineHints()))
+    el.appendChild(document.createTextNode(this.getIndent() + (<GrammarBackedNonRootNode>this.getNode()).getLineHints()))
     el.className = "LintCellTypeHints"
     return el
   }
@@ -2136,7 +2104,7 @@ ${nodeTypeContexts}`
   static getTheAnyLanguageRootConstructor() {
     return this.newFromCondensed(
       `${GrammarConstants.grammar}
- ${GrammarConstants.name} any
+ ${GrammarConstants.name} anyLanguage
  ${GrammarConstants.catchAllNodeType} anyNode
 ${GrammarConstants.nodeType} anyNode
  ${GrammarConstants.catchAllCellType} anyWord
@@ -2214,6 +2182,10 @@ ${GrammarConstants.cellType} anyWord`
     })
   }
 }
+
+// todo: should this be abstract?
+abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {}
+abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {}
 
 export {
   GrammarConstants,

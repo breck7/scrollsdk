@@ -41,7 +41,7 @@ class ImmutableNode extends AbstractNode {
 
   getLineCellTypes() {
     // todo: make this any a constant
-    return "any ".repeat(this.getWords().length).trim()
+    return "undefinedCellType ".repeat(this.getWords().length).trim()
   }
 
   executeSync(context: any) {

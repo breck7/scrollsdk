@@ -1,12 +1,19 @@
 #! /usr/local/bin/node --use_strict
 
 const jtree = require("../index.js")
+const fs = require("fs")
 
 const testTree = {}
 
 // todo: setup: make vms dir. cleanup? delete grammar file when done?
 
 const outputDir = __dirname + `/../ignore/vms/`
+
+const makeProgram = (grammarCode, code, grammarPath = undefined) => {
+  const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, grammarPath)
+  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  return new rootProgramConstructor(code)
+}
 
 testTree.grammar = equal => {
   // Arrange
@@ -64,6 +71,8 @@ testTree.jibberish = equal => {
 testTree.numbers = equal => {
   // Arrange
   const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"
+  const numbersGrammarCode = fs.readFileSync(numbersGrammarPath, "utf8")
+  const makeNumbersRunTimeProgram = code => makeProgram(numbersGrammarCode, code)
   try {
     const tempFilePath = jtree.compileGrammar(numbersGrammarPath, outputDir)
 
@@ -73,19 +82,22 @@ testTree.numbers = equal => {
     // Assert
     equal(!!new NumbersProgramRoot(), true, "it compiled")
 
-    // Arrange
-    const program = new NumbersProgramRoot(`+ 2 3
-* 2 3 10`)
+    // Arrange/Act
+    const code = `+ 2 3
+* 2 3 10`
+    const program = new NumbersProgramRoot(code)
+    const firstNode = program.nodeAt(0)
+    const runtimeProgram = makeNumbersRunTimeProgram(code)
 
-    // Act/Assert
+    // Assert
     equal(NumbersConstants.cellTypes.float, "float", "constants generation works")
     equal(NumbersConstants.nodeTypes.comment, "comment", "constants generation works")
-    const firstNode = program.nodeAt(0)
     equal(firstNode.numbers.length, 2, "cell getters work")
     equal(firstNode.numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
     equal(firstNode.getLineHints(), "+:  numbers...", "line hints work")
+    equal(program.getInPlaceCellTypeTree(), runtimeProgram.getInPlaceCellTypeTree(), "cell types worked")
 
     // Arrange/Act/Assert
     equal(new NumbersProgramRoot(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")

@@ -23,6 +23,7 @@ edge / 2019-06-11
 - Breaking: getFirstCellType is now getFirstCellTypeId
 - Breaking: getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
 - Breaking: getGrammarProgram is now getGrammarProgramRoot
+- Breaking: getParsedWords removed
 - Breaking: getCellTypeName is now getCellTypeId
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId

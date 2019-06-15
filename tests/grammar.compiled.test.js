@@ -85,7 +85,7 @@ testTree.numbers = equal => {
     equal(firstNode.numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
-    equal(firstNode.getLineHints(), "int +", "line hints work")
+    equal(firstNode.getLineHints(), "+:  numbers...", "line hints work")
 
     // Arrange/Act/Assert
     equal(new NumbersProgramRoot(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")

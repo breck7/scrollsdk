@@ -100,32 +100,17 @@ class GrammarBackedNode extends TreeNode_1.default {
         const cell = this._getGrammarBackedCellArray()[cellIndex];
         return cell ? cell.getAutoCompleteWords(partialWord) : [];
     }
-    // note: this is overwritten by the root node of a runtime grammar program.
-    // some of the magic that makes this all work. but maybe there's a better way.
-    getGrammarProgramRoot() {
-        return this.getDefinition().getLanguageDefinitionProgram();
-    }
     getFirstWordMap() {
         return this.getDefinition().getRunTimeFirstWordMap();
     }
     getCatchAllNodeConstructor(line) {
         return this.getDefinition().getRunTimeCatchAllNodeConstructor();
     }
-    // todo: rename to something better?
-    getRootProgramNode() {
-        return this;
-    }
     _getGrammarBackedCellArray() {
         return [];
     }
     getRunTimeEnumOptions(cell) {
         return undefined;
-    }
-    _getNodeTypeDefinitionByFirstWordPath(path) {
-        // todo: do we need a relative to with this firstWord path?
-        return this.getRootProgramNode()
-            .getGrammarProgramRoot()
-            .getNodeTypeDefinitionByFirstWordPath(path);
     }
     _getRequiredNodeErrors(errors = []) {
         const firstWords = this.getDefinition().getRunTimeFirstWordMapWithDefinitions();
@@ -138,8 +123,14 @@ class GrammarBackedNode extends TreeNode_1.default {
     }
 }
 class GrammarBackedRootNode extends GrammarBackedNode {
+    getRootProgramNode() {
+        return this;
+    }
 }
 class GrammarBackedNonRootNode extends GrammarBackedNode {
+    getRootProgramNode() {
+        return this.getParent().getRootProgramNode();
+    }
     // todo: improve layout (use bold?)
     getLineHints() {
         const def = this.getDefinition();
@@ -150,8 +141,12 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
         return this.getDefinition().getNodeTypeIdFromDefinition();
     }
     getDefinition() {
+        const grammarProgramRoot = this.getRootProgramNode().getGrammarProgramRoot();
         // todo: do we need a relative to with this firstWord path?
-        return this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath());
+        return grammarProgramRoot.getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath());
+    }
+    getGrammarProgramRoot() {
+        return this.getRootProgramNode().getGrammarProgramRoot();
     }
 }
 // todo: should this be abstract?
@@ -162,13 +157,6 @@ class CompiledLanguageRootNode extends GrammarBackedRootNode {
 }
 exports.CompiledLanguageRootNode = CompiledLanguageRootNode;
 class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
-    getRootProgramNode() {
-        return this.getParent().getRootProgramNode();
-    }
-    getDefinition() {
-        // todo: do we need a relative to with this firstWord path?
-        return this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath());
-    }
     _getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
     }
@@ -1688,7 +1676,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
     // todo: have this here or not?
     toNodeJsJavascriptPrettier(jtreePath = "jtree") {
-        return require("prettier").format(this._nodeDefToJavascriptClass(true, jtreePath, true), { semi: false, parser: "babel" });
+        return require("prettier").format(this._nodeDefToJavascriptClass(true, jtreePath, true), { semi: false, parser: "babel", printWidth: 160 });
     }
     toBrowserJavascript() {
         return this._nodeDefToJavascriptClass(true, "", false);
@@ -1707,6 +1695,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._getGeneratedClassName();
         return `getCatchAllNodeConstructor() { return ${className}}`;
     }
+    _escapeBackTicks(str) {
+        return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
+    }
     _nodeDefToJavascriptClass(isCompiled, jtreePath, forNodeJs = true) {
         const defs = this.getNodeTypeDefinitions();
         const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n");
@@ -1723,6 +1714,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const rootClassMethods = [this.getNodeConstructorToJavascript(), this._getCatchAllNodeConstructorToJavascript(), this._getCustomJavascriptMethods()].filter(code => code);
         const rootClass = `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(isCompiled)} {
   ${rootClassMethods.join("\n")}
+
+
+      getGrammarProgramRoot() {
+        return jtree.GrammarProgram.newFromCondensed(\`${this._escapeBackTicks(this.toString())}\`)
+      }
+
     }`;
         return `${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
 

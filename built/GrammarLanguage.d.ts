@@ -60,29 +60,29 @@ declare abstract class GrammarBackedNode extends TreeNode {
     }[];
     private _getAutocompleteResultsForFirstWord;
     private _getAutocompleteResultsForCell;
-    getGrammarProgramRoot(): GrammarProgram;
+    abstract getGrammarProgramRoot(): GrammarProgram;
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getCatchAllNodeConstructor(line: string): Function;
-    getRootProgramNode(): GrammarBackedRootNode;
+    abstract getRootProgramNode(): GrammarBackedRootNode;
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[];
-    protected _getNodeTypeDefinitionByFirstWordPath(path: string): AbstractGrammarDefinitionNode;
     protected _getRequiredNodeErrors(errors?: jTreeTypes.TreeError[]): jTreeTypes.TreeError[];
 }
 declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
+    getRootProgramNode(): this;
 }
 declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
+    getRootProgramNode(): GrammarBackedRootNode;
     getLineHints(): string;
     getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): NonRootNodeTypeDefinition;
+    getGrammarProgramRoot(): GrammarProgram;
 }
 declare abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
 }
 declare abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {
 }
 declare abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
-    getRootProgramNode(): GrammarBackedRootNode;
-    getDefinition(): NonRootNodeTypeDefinition;
     protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
     protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
     protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
@@ -312,6 +312,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _getProperName;
     _getGeneratedClassName(): string;
     private _getCatchAllNodeConstructorToJavascript;
+    _escapeBackTicks(str: string): string;
     _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;

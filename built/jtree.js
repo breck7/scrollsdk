@@ -7,14 +7,12 @@ const UnknownGrammarProgram_1 = require("./tools/UnknownGrammarProgram");
 const TreeNotationCodeMirrorMode_1 = require("./codemirror/TreeNotationCodeMirrorMode");
 class jtree {
 }
-jtree.programRoot = GrammarLanguage_1.AbstractRuntimeProgramRootNode;
+jtree.GrammarBackedRootNode = GrammarLanguage_1.GrammarBackedRootNode;
 jtree.Utils = TreeUtils_1.default;
 jtree.TreeNode = TreeNode_1.default;
 jtree.NonTerminalNode = GrammarLanguage_1.GrammarBackedNonTerminalNode;
 jtree.TerminalNode = GrammarLanguage_1.GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarLanguage_1.GrammarProgram;
-jtree.CompiledLanguageRootNode = GrammarLanguage_1.CompiledLanguageRootNode;
-jtree.CompiledLanguageNonRootNode = GrammarLanguage_1.CompiledLanguageNonRootNode;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram_1.default;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode_1.default;
 jtree.getVersion = () => "25.2.0";

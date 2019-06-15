@@ -68,7 +68,7 @@ class PromptNode extends jtree.TerminalNode {
 // todo: compile to bash, js, go, et cetera
 // not meant to be used in browser.
 
-class StampProgramRoot extends jtree.programRoot {
+class StampProgramRoot extends jtree.GrammarBackedRootNode {
   async executeSeries(context) {
     const length = this.length
     for (let index = 0; index < length; index++) {

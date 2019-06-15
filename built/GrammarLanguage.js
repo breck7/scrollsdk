@@ -233,6 +233,7 @@ class GrammarBackedRootNode extends GrammarBackedNode {
         this._cache_programCellTypeStringMTime = treeMTime;
     }
 }
+exports.GrammarBackedRootNode = GrammarBackedRootNode;
 class GrammarBackedNonRootNode extends GrammarBackedNode {
     getRootProgramNode() {
         return this.getParent().getRootProgramNode();
@@ -313,8 +314,6 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
             });
         return this._getRequiredNodeErrors(errors);
     }
-}
-class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
     _getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
     }
@@ -350,13 +349,10 @@ class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
         return cells;
     }
 }
-class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
-}
-exports.AbstractRuntimeProgramRootNode = AbstractRuntimeProgramRootNode;
-class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
+class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {
 }
 exports.GrammarBackedTerminalNode = GrammarBackedTerminalNode;
-class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
+class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
     // todo: is this correct?
     getLineCellTypes() {
         return "errorNodeAnyCellType ".repeat(this.getWords().length).trim();
@@ -365,7 +361,7 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
         return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)];
     }
 }
-class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
+class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     // todo: implement
     _getNodeJoinCharacter() {
         return "\n";
@@ -391,7 +387,7 @@ ${indent}${closeChildrenString}`;
 }
 GrammarBackedNonTerminalNode._backupConstructorEnabled = false;
 exports.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode;
-class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
+class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
     getFirstWordMap() {
         return {};
     }
@@ -1452,7 +1448,7 @@ ${captures}
         return extendedNodeTypeId
             ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId)._getGeneratedClassName()
             : isCompiled
-                ? "jtree.CompiledLanguageNonRootNode"
+                ? "jtree.TerminalNode"
                 : "jtree.NonTerminalNode";
     }
     _nodeDefToJavascriptClass(isCompiled = true) {
@@ -1512,7 +1508,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return map;
     }
     _getExtendsClassName(isCompiled = false) {
-        return isCompiled ? "jtree.CompiledLanguageRootNode" : "jtree.programRoot";
+        return "jtree.GrammarBackedRootNode";
     }
     _getCustomJavascriptMethods() {
         const jsCode = this._getGrammarRootNode().getNode(GrammarConstants.javascript);
@@ -1619,7 +1615,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._getGrammarRootNode().get(GrammarConstants.catchAllNodeType);
     }
     _getRootConstructor() {
-        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgramRootNode;
+        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || GrammarBackedRootNode;
         const grammarProgram = this;
         // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
         // new language.
@@ -1805,10 +1801,3 @@ ${GrammarConstants.cellType} anyWord`).getRootConstructor();
 }
 GrammarProgram._scriptLoadingPromises = {};
 exports.GrammarProgram = GrammarProgram;
-// todo: should this be abstract?
-class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
-}
-exports.CompiledLanguageNonRootNode = CompiledLanguageNonRootNode;
-class CompiledLanguageRootNode extends GrammarBackedRootNode {
-}
-exports.CompiledLanguageRootNode = CompiledLanguageRootNode;

@@ -3,7 +3,7 @@ import TreeUtils from "./base/TreeUtils"
 import jTreeTypes from "./jTreeTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {
-  new (code: string): AbstractRuntimeProgramRootNode
+  new (code: string): GrammarBackedRootNode
 }
 
 enum GrammarConstantsCompiler {
@@ -375,9 +375,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
 
     return this._getRequiredNodeErrors(errors)
   }
-}
 
-abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
   protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode {
     return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this)
   }
@@ -416,11 +414,9 @@ abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
   }
 }
 
-abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {}
+class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {}
 
-class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {}
-
-class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
+class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
   // todo: is this correct?
   getLineCellTypes() {
     return "errorNodeAnyCellType ".repeat(this.getWords().length).trim()
@@ -431,7 +427,7 @@ class GrammarBackedErrorNode extends AbstractRuntimeNonRootNode {
   }
 }
 
-class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
+class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
   // todo: implement
   protected _getNodeJoinCharacter() {
     return "\n"
@@ -464,7 +460,7 @@ ${indent}${closeChildrenString}`
   }
 }
 
-class GrammarBackedBlobNode extends AbstractRuntimeNonRootNode {
+class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
   getFirstWordMap() {
     return {}
   }
@@ -1754,7 +1750,7 @@ ${captures}
     return extendedNodeTypeId
       ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId)._getGeneratedClassName()
       : isCompiled
-      ? "jtree.CompiledLanguageNonRootNode"
+      ? "jtree.TerminalNode"
       : "jtree.NonTerminalNode"
   }
 
@@ -1825,7 +1821,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   _getExtendsClassName(isCompiled = false) {
-    return isCompiled ? "jtree.CompiledLanguageRootNode" : "jtree.programRoot"
+    return "jtree.GrammarBackedRootNode"
   }
 
   private _getCustomJavascriptMethods(): jTreeTypes.javascriptCode {
@@ -1965,7 +1961,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   private _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
-    const extendedConstructor: any = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgramRootNode
+    const extendedConstructor: any = this._getGrammarRootNode().getConstructorDefinedInGrammar() || GrammarBackedRootNode
     const grammarProgram = this
 
     // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
@@ -2183,17 +2179,4 @@ ${GrammarConstants.cellType} anyWord`
   }
 }
 
-// todo: should this be abstract?
-abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {}
-abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {}
-
-export {
-  GrammarConstants,
-  GrammarStandardCellTypeIds,
-  GrammarProgram,
-  AbstractRuntimeProgramRootNode,
-  GrammarBackedTerminalNode,
-  GrammarBackedNonTerminalNode,
-  CompiledLanguageNonRootNode,
-  CompiledLanguageRootNode
-}
+export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode }

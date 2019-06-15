@@ -126,7 +126,7 @@ class AssertDoesNotIncludeNode extends AssertIncludesNode {
   }
 }
 
-class SwarmProgramRoot extends jtree.programRoot {
+class SwarmProgramRoot extends jtree.GrammarBackedRootNode {
   getCommandParent(testSubject) {
     return testSubject
   }

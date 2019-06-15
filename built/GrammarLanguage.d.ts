@@ -1,7 +1,7 @@
 import TreeNode from "./base/TreeNode";
 import jTreeTypes from "./jTreeTypes";
 interface AbstractRuntimeProgramConstructorInterface {
-    new (code: string): AbstractRuntimeProgramRootNode;
+    new (code: string): GrammarBackedRootNode;
 }
 declare enum GrammarStandardCellTypeIds {
     any = "any",
@@ -106,19 +106,15 @@ declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     getLineCellTypes(): string;
     getLineHighlightScopes(defaultScope?: string): string;
     getErrors(): jTreeTypes.TreeError[];
-}
-declare abstract class AbstractRuntimeNonRootNode extends GrammarBackedNonRootNode {
     protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
     protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
     protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
     compile(targetLanguage: jTreeTypes.targetLanguageId): string;
     readonly cells: jTreeTypes.stringMap;
 }
-declare abstract class AbstractRuntimeProgramRootNode extends GrammarBackedRootNode {
+declare class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {
 }
-declare class GrammarBackedTerminalNode extends AbstractRuntimeNonRootNode {
-}
-declare class GrammarBackedNonTerminalNode extends AbstractRuntimeNonRootNode {
+declare class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     protected _getNodeJoinCharacter(): string;
     compile(targetExtension: jTreeTypes.targetLanguageId): string;
     private static _backupConstructorEnabled;
@@ -266,7 +262,7 @@ declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap(): jTreeTypes.stringMap;
-    _getExtendsClassName(isCompiled?: boolean): "jtree.CompiledLanguageRootNode" | "jtree.programRoot";
+    _getExtendsClassName(isCompiled?: boolean): string;
     private _getCustomJavascriptMethods;
     getErrorsInGrammarExamples(): jTreeTypes.TreeError[];
     getTargetExtension(): string;
@@ -317,8 +313,4 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private static _appendScriptOnce;
     private static _appendScript;
 }
-declare abstract class CompiledLanguageNonRootNode extends GrammarBackedNonRootNode {
-}
-declare abstract class CompiledLanguageRootNode extends GrammarBackedRootNode {
-}
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, AbstractRuntimeProgramRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, CompiledLanguageNonRootNode, CompiledLanguageRootNode };
+export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode };

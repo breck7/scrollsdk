@@ -7,7 +7,7 @@ class SomeNestedNode extends jtree.NonTerminalNode {}
 const nested = {}
 nested.someNestedNode = SomeNestedNode
 
-class JibberishProgramRoot extends jtree.programRoot {
+class JibberishProgramRoot extends jtree.GrammarBackedRootNode {
   executeSync() {
     return 42
   }

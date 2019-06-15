@@ -1955,7 +1955,7 @@ someCode
 
   class AdditionNode extends jtreeBase.NonTerminalNode {}
   class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
-  class JibberishProgramRoot extends jtreeBase.programRoot {}
+  class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
   const JibberishLang = {}
   JibberishLang.AdditionNode = AdditionNode

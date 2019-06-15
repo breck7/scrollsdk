@@ -233,7 +233,7 @@ class StumpNode extends jtree.NonTerminalNode {
   }
 }
 
-class StumpProgramRoot extends jtree.programRoot {
+class StumpProgramRoot extends jtree.GrammarBackedRootNode {
   compile() {
     return this.toHtml()
   }

@@ -28,7 +28,7 @@ ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
   }
 }
 
-class HakonProgramRoot extends jtree.programRoot {
+class HakonProgramRoot extends jtree.GrammarBackedRootNode {
   getSelector() {
     return ""
   }

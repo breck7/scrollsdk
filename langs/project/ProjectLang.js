@@ -28,7 +28,7 @@ class FileNode extends jtree.NonTerminalNode {
   }
 }
 
-class ProjectProgramRoot extends jtree.programRoot {
+class ProjectProgramRoot extends jtree.GrammarBackedRootNode {
   getOrderedDependenciesArray() {
     const cloned = this.clone()
     const sorted = []

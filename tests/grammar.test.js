@@ -80,6 +80,7 @@ testTree._jibberish = equal => {
   )
 
   // Assert
+  console.log(constNode.constructor.toString())
   equal(constNode.greeting, "hello world", "constant strings should work")
   equal(constNode.score1, 28, "constant insts should work")
   equal(constNode.score2, 3.01, "constant floats should work")
@@ -352,7 +353,7 @@ testTree.abstractNodeTypes = equal => {
 extendsAbstract 2`)
 
   // Assert
-  equal(errors.getAllErrors().length, 1)
+  equal(anyProgram.getAllErrors().length, 1)
 }
 
 testTree.updateNodeTypeIds = equal => {

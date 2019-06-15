@@ -1,5 +1,5 @@
 import jTreeTypes from "../jTreeTypes";
-import { AbstractRuntimeProgramRootNode } from "../GrammarLanguage";
+import { GrammarBackedRootNode } from "../GrammarLanguage";
 import * as CodeMirrorLib from "codemirror";
 interface treeNotationCodeMirrorState {
     cellIndex: number;
@@ -14,7 +14,7 @@ declare class TreeNotationCodeMirrorMode {
     private _cachedProgram;
     private _cmInstance;
     private _originalValue;
-    _getParsedProgram(): AbstractRuntimeProgramRootNode;
+    _getParsedProgram(): GrammarBackedRootNode;
     private _getExcludedIntelliSenseTriggerKeys;
     token(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string;
     fromTextAreaWithAutocomplete(area: HTMLTextAreaElement, options: any): CodeMirrorLib.EditorFromTextArea;

@@ -82,6 +82,29 @@ class GrammarBackedNode extends TreeNode_1.default {
     getAutocompleteResults(partialWord, cellIndex) {
         return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
+    static _getJavascriptClassNameFromNodeTypeId(nodeTypeId) {
+        let javascriptSyntaxSafeId = nodeTypeId;
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase());
+        // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\@/g, "at");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1);
+        return `${javascriptSyntaxSafeId}Node`;
+    }
     _getAutocompleteResultsForFirstWord(partialWord) {
         let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
         if (partialWord)
@@ -1069,26 +1092,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this.getWord(1);
     }
     _getGeneratedClassName() {
-        let javascriptSyntaxSafeId = this.getNodeTypeIdFromDefinition();
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase());
-        // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1);
-        return `${javascriptSyntaxSafeId}Node`;
+        return GrammarBackedNode._getJavascriptClassNameFromNodeTypeId(this.getNodeTypeIdFromDefinition());
     }
     getNodeConstructorToJavascript() {
         const nodeMap = this.getRunTimeFirstWordMapWithDefinitions();

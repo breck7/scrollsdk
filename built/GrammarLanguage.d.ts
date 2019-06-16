@@ -58,6 +58,7 @@ declare abstract class GrammarBackedNode extends TreeNode {
         text: string;
         displayText: string;
     }[];
+    static _getJavascriptClassNameFromNodeTypeId(nodeTypeId: string): string;
     private _getAutocompleteResultsForFirstWord;
     private _getAutocompleteResultsForCell;
     abstract getGrammarProgramRoot(): GrammarProgram;

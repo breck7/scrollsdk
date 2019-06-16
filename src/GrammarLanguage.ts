@@ -94,6 +94,32 @@ abstract class GrammarBackedNode extends TreeNode {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
+  static _getJavascriptClassNameFromNodeTypeId(nodeTypeId: string) {
+    let javascriptSyntaxSafeId = nodeTypeId
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase())
+    // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\@/g, "at")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang")
+
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket")
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket")
+
+    javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1)
+    return `${javascriptSyntaxSafeId}Node`
+  }
+
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
     let defs: NonRootNodeTypeDefinition[] = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions())
 
@@ -1302,28 +1328,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode
 
   _getGeneratedClassName() {
-    let javascriptSyntaxSafeId = this.getNodeTypeIdFromDefinition()
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase())
-    // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang")
-
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket")
-
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1)
-    return `${javascriptSyntaxSafeId}Node`
+    return GrammarBackedNode._getJavascriptClassNameFromNodeTypeId(this.getNodeTypeIdFromDefinition())
   }
 
   getNodeConstructorToJavascript(): string {

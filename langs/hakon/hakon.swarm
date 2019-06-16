@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test basics hakon
  arrangeTestSubject
-  require ./Hakon.js Program
+  require ./HakonProgram.js
   constructWithBlockString
    body
     font-size 12px

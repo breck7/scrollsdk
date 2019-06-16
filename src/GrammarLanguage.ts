@@ -62,7 +62,6 @@ enum GrammarConstants {
   catchAllCellType = "catchAllCellType",
   firstCellType = "firstCellType",
   catchAllNodeType = "catchAllNodeType",
-  defaults = "defaults",
   constants = "constants",
   group = "group",
   required = "required", // Require this nodeType to be present in a node or program
@@ -1294,7 +1293,6 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.catchAllNodeType,
       GrammarConstants.catchAllCellType,
       GrammarConstants.firstCellType,
-      GrammarConstants.defaults,
       GrammarConstants.tags,
       GrammarConstants.baseNodeType,
       GrammarConstants.group,
@@ -1480,6 +1478,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return parameters ? parameters.split(" ") : []
   }
 
+  // todo: what happens when you have a cell getter and constant with same name?
   _getCellGettersAndNodeTypeConstants() {
     // todo: add cellType parsings
     const grammarProgram = this.getLanguageDefinitionProgram()
@@ -1712,16 +1711,6 @@ ${captures}
 
   getDoc() {
     return this.getNodeTypeIdFromDefinition()
-  }
-
-  private _getDefaultsNode() {
-    return this.getNode(GrammarConstants.defaults)
-  }
-
-  // todo: deprecate?
-  getDefaultFor(name: string) {
-    const defaults = this._getDefaultsNode()
-    return defaults ? defaults.get(name) : undefined
   }
 
   getDescription(): string {

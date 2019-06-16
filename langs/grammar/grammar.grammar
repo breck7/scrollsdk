@@ -95,9 +95,6 @@ abstract abstract.constant
  description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
  firstCellType propertyName
 abstract abstract.nonTerminalNodeTypeRule abstract.nodeTypeRule
-nodeType catchAll.defaultTuple
- cells anyWord
- catchAllCellType anyWord
 nodeType catchAll.error
  baseNodeType errorNode
 nodeType catchAll.exampleLine
@@ -206,8 +203,6 @@ nodeType cells abstract.nodeTypeRule
 nodeType compiler abstract.nodeTypeRule
  cells compilerTargetExtension
  inScope sub listDelimiter openChildren closeChildren indentCharacter
-nodeType defaults abstract.nodeTypeRule
- catchAllNodeType catchAll.defaultTuple
 nodeType description abstract.nodeTypeRule
  catchAllCellType stringCell
 nodeType example abstract.nodeTypeRule

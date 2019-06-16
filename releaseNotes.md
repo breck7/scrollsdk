@@ -8,6 +8,7 @@ edge / 2019-06-11
 - New: findNodes in base can now take an array of first words
 - New: "nodeType javascript" property
 - New: add custom javascript to rootNodeTypes in grammar files
+- Breaking: removed "defaults" from grammar
 - Breaking: avoid getDefinition()--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
 - Breaking: removed getExpectedLineCellTypes--use getLineHints
 - Breaking: nodeTypes in grammar is now "inScope", and is one line instead of parent/children

@@ -2,7 +2,6 @@ const fs = require("fs")
 const mkdirp = require("mkdirp")
 const readline = require("readline")
 const recursiveReadSync = require("recursive-readdir-sync")
-const path = require("path")
 
 const jtree = require("../../index.js")
 

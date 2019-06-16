@@ -2,7 +2,7 @@
 
 const fs = require("fs")
 const path = require("path")
-const StampProgram = require("./StampProgram.js")
+const Stamp = require("./Stamp.js")
 
 const getAbsPath = input => (input.startsWith("/") ? input : path.resolve(pwd + "/" + input))
 
@@ -11,5 +11,5 @@ const output = process.argv[3]
 const pwd = process.env.PWD
 const providedPathWithoutEndingSlash = providedPath && providedPath.replace(/\/$/, "")
 const absPath = providedPath ? getAbsPath(providedPathWithoutEndingSlash) : pwd
-console.log(StampProgram.dirToStamp(absPath, output))
+console.log(Stamp.Program.dirToStamp(absPath, output))
 

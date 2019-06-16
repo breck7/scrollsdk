@@ -1146,10 +1146,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         document.head.appendChild(script);
         return window[tempClassName];
     }
-    // constructor
-    //  extends constructor (baseType)
-    //  getters/setters(?) (int/string/float/boolean)
-    //  custom code (javascript)
     // todo: always should return a custom constructor for each node type
     /* right now we have nodeType with "constructors nodejs/browser", nodetype with "javascript", nodetype with "baseType", "rootNodeType", node type with "catchAll OR inScope" */
     _initConstructorDefinedInGrammar() {
@@ -1168,10 +1164,13 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
       ${gettersAndConstants}
       ${customJavascriptNode ? customJavascriptNode.childrenToString() : ""}
 }`;
+            if (AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code])
+                return AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code];
             if (this.isNodeJs())
                 constructor = this._importNodeJsConstructor(this._getGeneratedClassName(), code);
             else
                 constructor = this._importBrowserConstructor(code);
+            AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code] = constructor;
         }
         return constructor;
     }
@@ -1304,6 +1303,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         return this._cache_catchAllConstructor;
     }
 }
+// constructor
+//  extends constructor (baseType)
+//  getters/setters(?) (int/string/float/boolean)
+//  custom code (javascript)
+AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode = {};
 class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     // todo: protected?
     _getRunTimeCatchAllNodeTypeId() {

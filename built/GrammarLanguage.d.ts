@@ -239,6 +239,9 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     private _importNodeJsConstructor;
     private _importBrowserConstructor;
     abstract _getExtendsClassName(isCompiled: boolean): string;
+    static _cachedNodeConstructorsFromCode: {
+        [code: string]: jTreeTypes.RunTimeNodeConstructor;
+    };
     _initConstructorDefinedInGrammar(): Function;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getLanguageDefinitionProgram(): GrammarProgram;

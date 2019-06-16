@@ -997,56 +997,6 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         return !this.isNodeJs();
     }
 }
-// todo: this should be mutually exclusive with custom constructors (if we keep those?)
-class CustomJavascriptNode extends TreeNode_1.default {
-    _getNodeJsConstructor(def, compiled) {
-        return this._loadJavascriptCode(def, this._getCode(def, compiled));
-    }
-    // todo: can I ditch this? can I use the same code from the grammar definition?
-    _getCode(def, isCompiled) {
-        const jtreePath = __dirname + "/jtree.node.js";
-        //return def._nodeDefToJavascriptClass(isCompiled, jtreePath)
-        return `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(isCompiled)} {
-      ${def._getGetters()}
-      ${this.childrenToString()}
-}`;
-    }
-    _loadJavascriptCode(def, code) {
-        if (CustomJavascriptNode.cache[code])
-            return CustomJavascriptNode.cache[code];
-        const tempFilePath = `${__dirname}/${def._getGeneratedClassName()}-${TreeUtils_1.default.getRandomString(30)}-temp.js`;
-        const fs = require("fs");
-        try {
-            fs.writeFileSync(tempFilePath, code, "utf8");
-            CustomJavascriptNode.cache[code] = require(tempFilePath);
-        }
-        catch (err) {
-            console.error(err);
-        }
-        finally {
-            fs.unlinkSync(tempFilePath);
-        }
-        return CustomJavascriptNode.cache[code];
-    }
-    _getBrowserConstructor(def) {
-        const definedCode = this._getCode(def, false);
-        const tempClassName = "tempConstructor" + TreeUtils_1.default.getRandomString(30);
-        if (CustomJavascriptNode.cache[definedCode])
-            return CustomJavascriptNode.cache[definedCode];
-        const script = document.createElement("script");
-        script.innerHTML = `window.${tempClassName} = ${definedCode}`;
-        document.head.appendChild(script);
-        CustomJavascriptNode.cache[definedCode] = window[tempClassName];
-    }
-    _getCustomJavascriptConstructor(def, compiled = false) {
-        return this.isNodeJs() ? this._getNodeJsConstructor(def, compiled) : this._getBrowserConstructor(def);
-    }
-    getCatchAllNodeConstructor() {
-        return TreeNode_1.default;
-    }
-}
-CustomJavascriptNode.cache = {};
 class GrammarCustomConstructorsNode extends TreeNode_1.default {
     getFirstWordMap() {
         const map = {};
@@ -1094,6 +1044,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants.baseNodeType,
             GrammarConstants.group,
             GrammarConstants.required,
+            GrammarConstants.javascript,
             GrammarConstants.single
         ];
         const map = {};
@@ -1107,7 +1058,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         map[GrammarConstants.compilerNodeType] = GrammarCompilerNode;
         map[GrammarConstants.constructors] = GrammarCustomConstructorsNode;
         map[GrammarConstants.example] = GrammarExampleNode;
-        map[GrammarConstants.javascript] = CustomJavascriptNode;
         return map;
     }
     getExamples() {
@@ -1156,11 +1106,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _isAbstract() {
         return false;
     }
-    getConstructorDefinedInGrammar() {
-        if (!this._cache_definedNodeConstructor)
-            this._cache_definedNodeConstructor = this._getDefinedNodeConstructor();
-        return this._cache_definedNodeConstructor;
-    }
     _getBaseNodeType() {
         const baseTypes = {};
         baseTypes[GrammarConstants.blobNode] = GrammarBackedBlobNode;
@@ -1169,29 +1114,74 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         baseTypes[GrammarConstants.nonTerminalNode] = GrammarBackedNonTerminalNode;
         return baseTypes[this.get(GrammarConstants.baseNodeType)];
     }
-    _getDefaultNodeConstructor() {
-        const specifiedBaseNodeType = this._getBaseNodeType();
-        if (specifiedBaseNodeType)
-            return specifiedBaseNodeType;
-        // todo: I understand inScope but does catchAll logic checkout? Should we require specifying basetype?
-        const isNonTerminal = this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType);
-        return isNonTerminal ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode;
-    }
-    /* Node constructor is the actual JS class being initiated, different than the Node type. */
-    _getDefinedNodeConstructor() {
+    _getConstructorFromOldConstructorsNode() {
+        // Get custom def node
+        // todo: can we ditch?
         const customConstructorsDefinition = this.getChildrenByNodeConstructor(GrammarCustomConstructorsNode)[0];
-        if (customConstructorsDefinition) {
-            const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
-            if (envConstructor)
-                return envConstructor._getCustomConstructor();
-        }
-        return this._getDefinedCustomJSConstructor() || this._getDefaultNodeConstructor();
+        if (!customConstructorsDefinition)
+            return undefined;
+        const envConstructor = customConstructorsDefinition.getConstructorForEnvironment();
+        if (envConstructor)
+            return envConstructor._getCustomConstructor();
     }
-    _getDefinedCustomJSConstructor() {
-        const customJavascriptNode = this.getNode(GrammarConstants.javascript);
-        // todo: this is not catching if we dont have that but we do have constants.
-        if (customJavascriptNode)
-            return customJavascriptNode._getCustomJavascriptConstructor(this);
+    _getConstructorDefinedInGrammar() {
+        if (!this._cache_definedNodeConstructor)
+            this._cache_definedNodeConstructor = this._initConstructorDefinedInGrammar();
+        return this._cache_definedNodeConstructor;
+    }
+    _loadJavascriptCode(className, code) {
+        const tempFilePath = `${__dirname}/${className}-${TreeUtils_1.default.getRandomString(30)}-temp.js`;
+        const fs = require("fs");
+        try {
+            fs.writeFileSync(tempFilePath, code, "utf8");
+            return require(tempFilePath);
+        }
+        catch (err) {
+            console.error(err);
+        }
+        finally {
+            fs.unlinkSync(tempFilePath);
+        }
+    }
+    _getBrowserConstructor(code) {
+        const tempClassName = "tempConstructor" + TreeUtils_1.default.getRandomString(30);
+        const script = document.createElement("script");
+        script.innerHTML = `window.${tempClassName} = ${code}`;
+        document.head.appendChild(script);
+        return window[tempClassName];
+    }
+    // constructor
+    //  extends constructor (baseType)
+    //  getters/setters(?) (int/string/float/boolean)
+    //  custom code (javascript)
+    // todo: always should return a custom constructor for each node type
+    /* right now we have nodeType with "constructors nodejs/browser", nodetype with "javascript", nodetype with "baseType", "rootNodeType", node type with "catchAll OR inScope" */
+    _initConstructorDefinedInGrammar() {
+        let constructor = this._getConstructorFromOldConstructorsNode();
+        if (!constructor) {
+            const customJavascriptNode = this.getNode(GrammarConstants.javascript);
+            // todo: this is not catching if we dont have that but we do have constants.
+            if (customJavascriptNode) {
+                const def = this instanceof GrammarDefinitionGrammarNode ? this.getLanguageDefinitionProgram() : this;
+                const jtreePath = __dirname + "/jtree.node.js";
+                // todo: reuse other code
+                //return def._nodeDefToJavascriptClass(isCompiled, jtreePath)
+                const code = `const jtree = require('${jtreePath}').default
+/* INDENT FOR BUILD REASONS */  module.exports = class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(false)} {
+      ${def._getGetters()}
+      ${customJavascriptNode.childrenToString()}
+}`;
+                if (this.isNodeJs())
+                    constructor = this._loadJavascriptCode(this._getGeneratedClassName(), code);
+                else
+                    constructor = this._getBrowserConstructor(code);
+            }
+        }
+        if (!constructor)
+            constructor = this._getBaseNodeType();
+        if (!constructor)
+            constructor = this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType) ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode;
+        return constructor;
     }
     getCatchAllNodeConstructor(line) {
         return GrammarDefinitionErrorNode;
@@ -1260,7 +1250,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypeIdsInScope))
             .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
             .forEach(nodeTypeId => {
-            result[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId].getConstructorDefinedInGrammar();
+            result[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId]._getConstructorDefinedInGrammar();
         });
         return result;
     }
@@ -1311,7 +1301,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _initCatchAllNodeConstructorCache() {
         if (this._cache_catchAllConstructor)
             return undefined;
-        this._cache_catchAllConstructor = this._getCatchAllNodeTypeDefinition().getConstructorDefinedInGrammar();
+        this._cache_catchAllConstructor = this._getCatchAllNodeTypeDefinition()._getConstructorDefinedInGrammar();
     }
     getFirstCellTypeId() {
         return this.get(GrammarConstants.firstCellType) || GrammarStandardCellTypeIds.anyFirstWord;
@@ -1460,12 +1450,15 @@ ${captures}
     }
 }
 // todo: is this extending the correct class? Should it just be extending TreeNode?
-class GrammarRootNode extends AbstractGrammarDefinitionNode {
-    _getDefaultNodeConstructor() {
-        return undefined;
-    }
+class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     _nodeDefToJavascriptClass() {
         return "";
+    }
+    _getBaseNodeType() {
+        return GrammarBackedRootNode;
+    }
+    _getGeneratedClassName() {
+        return this.getLanguageDefinitionProgram()._getGeneratedClassName();
     }
     // todo: I think this may be a sign we dont want this class.
     _getExtendsClassName() {
@@ -1473,11 +1466,6 @@ class GrammarRootNode extends AbstractGrammarDefinitionNode {
     }
     getLanguageDefinitionProgram() {
         return this.getParent();
-    }
-    _getDefinedCustomJSConstructor() {
-        const customJavascriptNode = this.getNode(GrammarConstants.javascript);
-        if (customJavascriptNode)
-            return customJavascriptNode._getCustomJavascriptConstructor(this.getLanguageDefinitionProgram());
     }
     getFirstWordMap() {
         // todo: this isn't quite correct. we are allowing too many firstWords.
@@ -1499,11 +1487,11 @@ class GrammarAbstractNodeTypeDefinitionNode extends NonRootNodeTypeDefinition {
 class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap() {
         const map = {};
-        map[GrammarConstants.grammar] = GrammarRootNode;
+        map[GrammarConstants.grammar] = GrammarDefinitionGrammarNode;
         map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode;
         map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition;
         map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
-        map[GrammarConstants.javascript] = CustomJavascriptNode;
+        map[GrammarConstants.javascript] = TreeNode_1.default;
         map[GrammarConstants.toolingDirective] = TreeNode_1.default;
         return map;
     }
@@ -1511,7 +1499,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return "jtree.GrammarBackedRootNode";
     }
     _getCustomJavascriptMethods() {
-        const jsCode = this._getGrammarRootNode().getNode(GrammarConstants.javascript);
+        const jsCode = this._getGrammarGrammarNode().getNode(GrammarConstants.javascript);
         return jsCode ? jsCode.childrenToString() : "";
     }
     getErrorsInGrammarExamples() {
@@ -1526,10 +1514,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return errors;
     }
     getTargetExtension() {
-        return this._getGrammarRootNode().getTargetExtension();
+        return this._getGrammarGrammarNode().getTargetExtension();
     }
     getNodeTypeOrder() {
-        return this._getGrammarRootNode().get(GrammarConstants.nodeTypeOrder);
+        return this._getGrammarGrammarNode().get(GrammarConstants.nodeTypeOrder);
     }
     getCellTypeDefinitions() {
         if (!this._cache_cellTypes)
@@ -1564,21 +1552,21 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     getTheGrammarFilePath() {
         return this.getLine();
     }
-    _getGrammarRootNode() {
-        return this.getNodeByType(GrammarRootNode);
+    _getGrammarGrammarNode() {
+        return this.getNodeByType(GrammarDefinitionGrammarNode);
     }
     getExtensionName() {
         return this.getGrammarName();
     }
     getGrammarName() {
-        return this._getGrammarRootNode().get(GrammarConstants.name);
+        return this._getGrammarGrammarNode().get(GrammarConstants.name);
     }
     _getMyInScopeNodeTypeIds() {
-        const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants.inScope);
+        const nodeTypesNode = this._getGrammarGrammarNode().getNode(GrammarConstants.inScope);
         return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
     }
     _getInScopeNodeTypeIds() {
-        const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants.inScope);
+        const nodeTypesNode = this._getGrammarGrammarNode().getNode(GrammarConstants.inScope);
         return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
     }
     getNodeTypeDefinitionByFirstWordPath(firstWordPath) {
@@ -1612,10 +1600,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._cache_nodeTypeDefinitions;
     }
     _getRunTimeCatchAllNodeTypeId() {
-        return this._getGrammarRootNode().get(GrammarConstants.catchAllNodeType);
+        return this._getGrammarGrammarNode().get(GrammarConstants.catchAllNodeType);
     }
     _getRootConstructor() {
-        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || GrammarBackedRootNode;
+        const extendedConstructor = this._getGrammarGrammarNode()._getConstructorDefinedInGrammar();
         const grammarProgram = this;
         // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
         // new language.
@@ -1631,8 +1619,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._cache_rootConstructorClass;
     }
     _getFileExtensions() {
-        return this._getGrammarRootNode().get(GrammarConstants.extensions)
-            ? this._getGrammarRootNode()
+        return this._getGrammarGrammarNode().get(GrammarConstants.extensions)
+            ? this._getGrammarGrammarNode()
                 .get(GrammarConstants.extensions)
                 .split(" ")
                 .join(",")

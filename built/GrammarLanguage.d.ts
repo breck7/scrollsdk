@@ -187,12 +187,13 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     _getGeneratedClassName(): string;
     getNodeConstructorToJavascript(): string;
     _isAbstract(): boolean;
+    protected _getBaseNodeType(): jTreeTypes.RunTimeNodeConstructor;
     private _cache_definedNodeConstructor;
-    getConstructorDefinedInGrammar(): Function;
-    private _getBaseNodeType;
-    protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
-    protected _getDefinedNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
-    protected _getDefinedCustomJSConstructor(): jTreeTypes.RunTimeNodeConstructor;
+    private _getConstructorFromOldConstructorsNode;
+    _getConstructorDefinedInGrammar(): Function;
+    _loadJavascriptCode(className: string, code: string): jTreeTypes.RunTimeNodeConstructor;
+    _getBrowserConstructor(code: string): jTreeTypes.RunTimeNodeConstructor;
+    _initConstructorDefinedInGrammar(): Function;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getLanguageDefinitionProgram(): GrammarProgram;
     getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode): GrammarCompilerNode;
@@ -252,12 +253,12 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getExtendsClassName(isCompiled?: boolean): string;
     _nodeDefToJavascriptClass(isCompiled?: boolean): jTreeTypes.javascriptCode;
 }
-declare class GrammarRootNode extends AbstractGrammarDefinitionNode {
-    protected _getDefaultNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
+declare class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     _nodeDefToJavascriptClass(): string;
+    protected _getBaseNodeType(): typeof GrammarBackedRootNode;
+    _getGeneratedClassName(): string;
     _getExtendsClassName(): string;
     getLanguageDefinitionProgram(): GrammarProgram;
-    protected _getDefinedCustomJSConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
@@ -279,7 +280,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getLanguageDefinitionProgram(): this;
     getNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
     getTheGrammarFilePath(): string;
-    protected _getGrammarRootNode(): GrammarRootNode;
+    protected _getGrammarGrammarNode(): GrammarDefinitionGrammarNode;
     getExtensionName(): string;
     getGrammarName(): string | undefined;
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];

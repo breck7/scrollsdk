@@ -1897,7 +1897,7 @@ testTree.isomorphicGrammarTests = equal => {
  name jibberish
  description Test a root parser node
  constructors
-  nodejs JibberishLang.js JibberishProgramRoot
+  nodejs JibberishLang.js
  compiler txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass
@@ -1907,7 +1907,7 @@ cellType anyFirstWord
 cellType onoff
  enum on off
 nodeType error
- errorNode
+ baseNodeType errorNode
 abstract topLevel
 abstract someAbstractClass
 abstract color_properties topLevel
@@ -1927,10 +1927,10 @@ nodeType foo topLevel
 nodeType nodeWithConsts topLevel
  string greeting hello world
 nodeType text
- blob
+ blobNode
 nodeType add topLevel
  constructors
-  nodejs ./JibberishLang.js additionNode
+  nodejs ./JibberishLang.js AdditionNode
 nodeType + add
  catchAllCellType int
 nodeType lightbulbState topLevel
@@ -1952,17 +1952,17 @@ someCode
   // Allow running in both browser and nodejs:
   const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
 
-  class additionNode extends jtreeBase.NonTerminalNode {}
+  class AdditionNode extends jtreeBase.NonTerminalNode {}
   class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
-  class JibberishProgramRoot extends jtreeBase.programRoot {}
+  class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
   const JibberishLang = {}
-  JibberishLang.additionNode = additionNode
+  JibberishLang.AdditionNode = AdditionNode
   JibberishLang.LineOfCodeNode = LineOfCodeNode
   let win = typeof window === "undefined" ? {} : window
   win.JibberishLang = JibberishLang
   win.JibberishProgramRoot = JibberishProgramRoot
-  win.additionNode = additionNode
+  win.AdditionNode = AdditionNode
   win.LineOfCodeNode = LineOfCodeNode
 
   // Act
@@ -1972,10 +1972,10 @@ someCode
   )
   const ProgramConstructor = grammarProgram.getRootConstructor()
   const program = new ProgramConstructor(code)
-  const errs = program.getProgramErrors()
+  const errs = program.getAllErrors()
 
   // Assert
-  equal(errs.length, 0, "no errors")
+  equal(errs.length, 0, "expected no errors")
 }
 
 testTree.expandChildren = equal => {
@@ -3612,7 +3612,7 @@ testTree.typeTests = equal => {
   const a = new TreeNode("text")
   // Assert
   equal(a.getErrors().length, 0)
-  equal(a.getLineCellTypes(), "any")
+  equal(a.getLineCellTypes(), "undefinedCellType") // todo: make this a constant
 }
 
 testTree.isBlank = equal => {

@@ -1976,7 +1976,7 @@ someCode
   const errs = program.getAllErrors()
 
   // Assert
-  equal(errs.length, 0, "no errors")
+  equal(errs.length, 0, "expected no errors")
 }
 
 testTree.expandChildren = equal => {

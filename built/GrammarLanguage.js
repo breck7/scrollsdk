@@ -1126,6 +1126,10 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _importNodeJsConstructor(className, code) {
         const tempFilePath = `${__dirname}/${className}-${TreeUtils_1.default.getRandomString(30)}-temp.js`;
         const fs = require("fs");
+        const jtreePath = __dirname + "/jtree.node.js";
+        code =
+            `const jtree = require('${jtreePath}').default
+/* INDENT FOR BUILD REASONS */  module.exports = ` + code;
         try {
             fs.writeFileSync(tempFilePath, code, "utf8");
             return require(tempFilePath);
@@ -1154,13 +1158,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             const customJavascriptNode = this.getNode(GrammarConstants.javascript);
             // todo: this is not catching if we dont have that but we do have constants.
             const def = this instanceof GrammarDefinitionGrammarNode ? this.getLanguageDefinitionProgram() : this;
-            const jtreePath = __dirname + "/jtree.node.js";
             // todo: reuse other code...load things into 1 file?
             const className = def._getGeneratedClassName();
             const extendsClassName = def._getExtendsClassName(false);
             const gettersAndConstants = this._getCellGettersAndNodeTypeConstants();
-            const code = `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = class ${className} extends ${extendsClassName} {
+            const code = `class ${className} extends ${extendsClassName} {
       ${gettersAndConstants}
       ${customJavascriptNode ? customJavascriptNode.childrenToString() : ""}
 }`;

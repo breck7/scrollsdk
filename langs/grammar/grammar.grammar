@@ -126,7 +126,7 @@ nodeType grammar
  required
  single
  firstCellType propertyName
- inScope name description example extensions nodeTypeOrder inScope constructors compiler catchAllNodeType version
+ inScope name description example extensions nodeTypeOrder inScope constructors compiler catchAllNodeType version abstract.constant
 nodeType group
  catchAllCellType nodeTypeId
  firstCellType propertyName

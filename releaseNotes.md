@@ -33,6 +33,7 @@ edge / 2019-06-11
 - Breaking: no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
 - Breaking: in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
 - Breaking: no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
+- Breaking: the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 - Infra: test coverage
 
 25.2.0 / 2019-05-30

@@ -114,12 +114,21 @@ declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
 }
 declare class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {
 }
+declare class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
+    getLineCellTypes(): string;
+    getErrors(): UnknownNodeTypeError[];
+}
 declare class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     protected _getNodeJoinCharacter(): string;
     compile(targetExtension: jTreeTypes.targetLanguageId): string;
     private static _backupConstructorEnabled;
     static useAsBackupConstructor(): boolean;
     static setAsBackupConstructor(value: boolean): typeof GrammarBackedNonTerminalNode;
+}
+declare class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
+    getFirstWordMap(): {};
+    getErrors(): jTreeTypes.TreeError[];
+    getCatchAllNodeConstructor(line: string): typeof GrammarBackedBlobNode;
 }
 declare abstract class AbstractGrammarBackedCell<T> {
     constructor(node: GrammarBackedNonRootNode, index: jTreeTypes.int, typeDef: GrammarCellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean);
@@ -148,6 +157,44 @@ declare abstract class AbstractGrammarBackedCell<T> {
     protected abstract _isValid(): boolean;
     isValid(): boolean;
     getErrorIfAny(): jTreeTypes.TreeError;
+}
+declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
+    constructor(node: GrammarBackedNode | TreeNode);
+    private _node;
+    getLineIndex(): jTreeTypes.positiveInt;
+    getLineNumber(): jTreeTypes.positiveInt;
+    isCursorOnWord(lineIndex: jTreeTypes.positiveInt, characterIndex: jTreeTypes.positiveInt): boolean;
+    private _doesCharacterIndexFallOnWord;
+    isBlankLineError(): boolean;
+    isMissingWordError(): boolean;
+    getIndent(): string;
+    getCodeMirrorLineWidgetElement(onApplySuggestionCallBack?: () => void): HTMLDivElement;
+    private _getCodeMirrorLineWidgetElementCellTypeHints;
+    private _getCodeMirrorLineWidgetElementWithoutSuggestion;
+    private _getCodeMirrorLineWidgetElementWithSuggestion;
+    getLine(): string;
+    getExtension(): string;
+    getNode(): TreeNode | GrammarBackedNode;
+    getErrorTypeName(): string;
+    getCellIndex(): number;
+    toObject(): {
+        type: string;
+        line: number;
+        cell: number;
+        suggestion: string;
+        path: string;
+        message: string;
+    };
+    hasSuggestion(): boolean;
+    getSuggestionMessage(): string;
+    applySuggestion(): void;
+    getMessage(): string;
+}
+declare class UnknownNodeTypeError extends AbstractTreeError {
+    getMessage(): string;
+    protected _getWordSuggestion(): string;
+    getSuggestionMessage(): string;
+    applySuggestion(): this;
 }
 declare class GrammarCellTypeDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.stringMap;
@@ -183,16 +230,15 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getExamples(): GrammarExampleNode[];
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
     abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
-    abstract _getExtendsClassName(isCompiled: boolean): jTreeTypes.javascriptClassPath;
     _getGeneratedClassName(): string;
     getNodeConstructorToJavascript(): string;
     _isAbstract(): boolean;
-    protected _getBaseNodeType(): jTreeTypes.RunTimeNodeConstructor;
     private _cache_definedNodeConstructor;
     private _getConstructorFromOldConstructorsNode;
     _getConstructorDefinedInGrammar(): Function;
-    _loadJavascriptCode(className: string, code: string): jTreeTypes.RunTimeNodeConstructor;
-    _getBrowserConstructor(code: string): jTreeTypes.RunTimeNodeConstructor;
+    private _importNodeJsConstructor;
+    private _importBrowserConstructor;
+    abstract _getExtendsClassName(isCompiled: boolean): string;
     _initConstructorDefinedInGrammar(): Function;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getLanguageDefinitionProgram(): GrammarProgram;
@@ -206,8 +252,7 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
         [key: string]: NonRootNodeTypeDefinition;
     };
     getRequiredCellTypeIds(): jTreeTypes.cellTypeId[];
-    _getDefNode(): this;
-    _getGetters(): string;
+    _getCellGettersAndNodeTypeConstants(): string;
     getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
     protected _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): jTreeTypes.firstWordToNodeConstructorMap;
     getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];
@@ -231,6 +276,7 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
     getSublimeSyntaxContextId(): string;
+    _getExtendsClassName(isCompiled?: boolean): jTreeTypes.javascriptClassPath;
     private _getFirstCellHighlightScope;
     protected _getParentDefinition(): AbstractGrammarDefinitionNode;
     getMatchBlock(): string;
@@ -250,12 +296,10 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     getFrequency(): number;
     private _getExtendedNodeTypeId;
     private _getCustomJavascriptMethods;
-    _getExtendsClassName(isCompiled?: boolean): string;
     _nodeDefToJavascriptClass(isCompiled?: boolean): jTreeTypes.javascriptCode;
 }
 declare class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     _nodeDefToJavascriptClass(): string;
-    protected _getBaseNodeType(): typeof GrammarBackedRootNode;
     _getGeneratedClassName(): string;
     _getExtendsClassName(): string;
     getLanguageDefinitionProgram(): GrammarProgram;
@@ -314,4 +358,4 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private static _appendScriptOnce;
     private static _appendScript;
 }
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode };
+export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedBlobNode, GrammarBackedErrorNode, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode };

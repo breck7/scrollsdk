@@ -1,6 +1,6 @@
 import TreeUtils from "./base/TreeUtils";
 import TreeNode from "./base/TreeNode";
-import { GrammarProgram, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode } from "./GrammarLanguage";
+import { GrammarProgram, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode, GrammarBackedBlobNode, GrammarBackedErrorNode } from "./GrammarLanguage";
 import UnknownGrammarProgram from "./tools/UnknownGrammarProgram";
 import TreeNotationCodeMirrorMode from "./codemirror/TreeNotationCodeMirrorMode";
 declare class jtree {
@@ -8,6 +8,8 @@ declare class jtree {
     static Utils: typeof TreeUtils;
     static TreeNode: typeof TreeNode;
     static NonTerminalNode: typeof GrammarBackedNonTerminalNode;
+    static BlobNode: typeof GrammarBackedBlobNode;
+    static ErrorNode: typeof GrammarBackedErrorNode;
     static TerminalNode: typeof GrammarBackedTerminalNode;
     static GrammarProgram: typeof GrammarProgram;
     static UnknownGrammarProgram: typeof UnknownGrammarProgram;

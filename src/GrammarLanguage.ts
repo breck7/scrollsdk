@@ -1301,8 +1301,6 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
 
   abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode
 
-  abstract _getExtendsClassName(isCompiled: boolean): jTreeTypes.javascriptClassPath
-
   _getGeneratedClassName() {
     let javascriptSyntaxSafeId = this.getNodeTypeIdFromDefinition()
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase())
@@ -1350,15 +1348,6 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return false
   }
 
-  protected _getBaseNodeType(): jTreeTypes.RunTimeNodeConstructor {
-    const baseTypes: any = {}
-    baseTypes[GrammarConstants.blobNode] = GrammarBackedBlobNode
-    baseTypes[GrammarConstants.errorNode] = GrammarBackedErrorNode
-    baseTypes[GrammarConstants.terminalNode] = GrammarBackedTerminalNode
-    baseTypes[GrammarConstants.nonTerminalNode] = GrammarBackedNonTerminalNode
-    return baseTypes[this.get(GrammarConstants.baseNodeType)]
-  }
-
   private _cache_definedNodeConstructor: jTreeTypes.RunTimeNodeConstructor
 
   private _getConstructorFromOldConstructorsNode() {
@@ -1375,7 +1364,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_definedNodeConstructor
   }
 
-  _loadJavascriptCode(className: string, code: string): jTreeTypes.RunTimeNodeConstructor {
+  private _importNodeJsConstructor(className: string, code: string): jTreeTypes.RunTimeNodeConstructor {
     const tempFilePath = `${__dirname}/${className}-${TreeUtils.getRandomString(30)}-temp.js`
     const fs = require("fs")
     try {
@@ -1383,18 +1372,22 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       return require(tempFilePath)
     } catch (err) {
       console.error(err)
+      console.log("CODE:")
+      console.log(code)
     } finally {
       fs.unlinkSync(tempFilePath)
     }
   }
 
-  _getBrowserConstructor(code: string): jTreeTypes.RunTimeNodeConstructor {
+  private _importBrowserConstructor(code: string): jTreeTypes.RunTimeNodeConstructor {
     const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30)
     const script = document.createElement("script")
     script.innerHTML = `window.${tempClassName} = ${code}`
     document.head.appendChild(script)
     return (<any>window)[tempClassName]
   }
+
+  abstract _getExtendsClassName(isCompiled: boolean): string
 
   // constructor
   //  extends constructor (baseType)
@@ -1409,26 +1402,22 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     if (!constructor) {
       const customJavascriptNode = this.getNode(GrammarConstants.javascript)
       // todo: this is not catching if we dont have that but we do have constants.
-      if (customJavascriptNode) {
-        const def = this instanceof GrammarDefinitionGrammarNode ? this.getLanguageDefinitionProgram() : this
+      const def = this instanceof GrammarDefinitionGrammarNode ? this.getLanguageDefinitionProgram() : this
 
-        const jtreePath = __dirname + "/jtree.node.js"
-        // todo: reuse other code
-        //return def._nodeDefToJavascriptClass(isCompiled, jtreePath)
-        const code = `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = class ${def._getGeneratedClassName()} extends ${def._getExtendsClassName(false)} {
-      ${def._getGetters()}
-      ${customJavascriptNode.childrenToString()}
+      const jtreePath = __dirname + "/jtree.node.js"
+      // todo: reuse other code...load things into 1 file?
+      const className = def._getGeneratedClassName()
+      const extendsClassName = def._getExtendsClassName(false)
+      const gettersAndConstants = this._getCellGettersAndNodeTypeConstants()
+
+      const code = `const jtree = require('${jtreePath}').default
+/* INDENT FOR BUILD REASONS */  module.exports = class ${className} extends ${extendsClassName} {
+      ${gettersAndConstants}
+      ${customJavascriptNode ? customJavascriptNode.childrenToString() : ""}
 }`
-        if (this.isNodeJs()) constructor = this._loadJavascriptCode(this._getGeneratedClassName(), code)
-        else constructor = this._getBrowserConstructor(code)
-      }
+      if (this.isNodeJs()) constructor = this._importNodeJsConstructor(this._getGeneratedClassName(), code)
+      else constructor = this._importBrowserConstructor(code)
     }
-
-    if (!constructor) constructor = this._getBaseNodeType()
-
-    if (!constructor)
-      constructor = this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType) ? GrammarBackedNonTerminalNode : GrammarBackedTerminalNode
 
     return constructor
   }
@@ -1480,11 +1469,7 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return parameters ? parameters.split(" ") : []
   }
 
-  _getDefNode() {
-    return this
-  }
-
-  _getGetters() {
+  _getCellGettersAndNodeTypeConstants() {
     // todo: add cellType parsings
     const grammarProgram = this.getLanguageDefinitionProgram()
     const getters = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1))
@@ -1493,11 +1478,9 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1))
 
     // Constants
-    this._getDefNode()
-      .getChildrenByNodeConstructor(GrammarNodeTypeConstant)
-      .forEach(node => {
-        getters.push((<GrammarNodeTypeConstant>node).getGetter())
-      })
+    this.getChildrenByNodeConstructor(GrammarNodeTypeConstant).forEach(node => {
+      getters.push((<GrammarNodeTypeConstant>node).getGetter())
+    })
 
     return getters.join("\n")
   }
@@ -1610,6 +1593,27 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
 
   getSublimeSyntaxContextId() {
     return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH") // # is not allowed in sublime context names
+  }
+
+  _getExtendsClassName(isCompiled = false): jTreeTypes.javascriptClassPath {
+    const baseTypeNames: any = {}
+    baseTypeNames[GrammarConstants.blobNode] = "BlobNode"
+    baseTypeNames[GrammarConstants.errorNode] = "ErrorNode"
+    baseTypeNames[GrammarConstants.terminalNode] = "TerminalNode"
+    baseTypeNames[GrammarConstants.nonTerminalNode] = "NonTerminalNode"
+    const baseNodeTypeName =
+      baseTypeNames[this.get(GrammarConstants.baseNodeType)] ||
+      (this.has(GrammarConstants.inScope) || this.has(GrammarConstants.catchAllNodeType) ? "NonTerminalNode" : "TerminalNode")
+
+    if (!isCompiled) {
+      return "jtree." + baseNodeTypeName // todo: this is incorrect but works for legacy stuff.
+    }
+    const extendedNodeTypeId = this._getExtendedNodeTypeId()
+    return extendedNodeTypeId
+      ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId)._getGeneratedClassName()
+      : isCompiled
+      ? "jtree.TerminalNode"
+      : "jtree.NonTerminalNode"
   }
 
   private _getFirstCellHighlightScope() {
@@ -1728,20 +1732,12 @@ ${captures}
     return jsCode ? jsCode.childrenToString() : ""
   }
 
-  _getExtendsClassName(isCompiled = false) {
-    if (!isCompiled) return "jtree.NonTerminalNode" // todo: this is incorrect but works for legacy stuff.
-    const extendedNodeTypeId = this._getExtendedNodeTypeId()
-    return extendedNodeTypeId
-      ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId)._getGeneratedClassName()
-      : isCompiled
-      ? "jtree.TerminalNode"
-      : "jtree.NonTerminalNode"
-  }
-
   _nodeDefToJavascriptClass(isCompiled = true): jTreeTypes.javascriptCode {
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
 
-    const components = [this.getNodeConstructorToJavascript(), this._getGetters(), this._getCustomJavascriptMethods()].filter(code => code)
+    const components = [this.getNodeConstructorToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(
+      code => code
+    )
 
     return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(isCompiled)} {
       ${components.join("\n")}
@@ -1755,17 +1751,13 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     return ""
   }
 
-  protected _getBaseNodeType() {
-    return GrammarBackedRootNode
-  }
-
   _getGeneratedClassName() {
     return this.getLanguageDefinitionProgram()._getGeneratedClassName()
   }
 
   // todo: I think this may be a sign we dont want this class.
   _getExtendsClassName() {
-    return ""
+    return "jtree.GrammarBackedRootNode"
   }
 
   getLanguageDefinitionProgram() {
@@ -1779,6 +1771,10 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.version] = TreeNode
     map[GrammarConstants.name] = TreeNode
     map[GrammarConstants.nodeTypeOrder] = TreeNode
+    map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean
+    map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt
+    map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString
+    map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat
     return map
   }
 }
@@ -2162,4 +2158,13 @@ ${GrammarConstants.cellType} anyWord`
   }
 }
 
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode }
+export {
+  GrammarConstants,
+  GrammarStandardCellTypeIds,
+  GrammarProgram,
+  GrammarBackedBlobNode,
+  GrammarBackedErrorNode,
+  GrammarBackedRootNode,
+  GrammarBackedTerminalNode,
+  GrammarBackedNonTerminalNode
+}

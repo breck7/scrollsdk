@@ -46,7 +46,7 @@ const makeProgram = (grammarCode, code, grammarPath = undefined) => {
   return new rootProgramConstructor(code)
 }
 
-testTree._jibberish = equal => {
+testTree.jibberish = equal => {
   // Arrange
   const sampleJibberishCode = fs.readFileSync(jibberishRootDir + "sample.jibberish", "utf8")
 
@@ -80,7 +80,6 @@ testTree._jibberish = equal => {
   )
 
   // Assert
-  console.log(constNode.constructor.toString())
   equal(constNode.greeting, "hello world", "constant strings should work")
   equal(constNode.score1, 28, "constant insts should work")
   equal(constNode.score2, 3.01, "constant floats should work")
@@ -139,13 +138,13 @@ opSymbol int int int`,
   // Assert
   equal(
     nodeTypes,
-    `GrammarBackedTerminalNode topLevelProperty
+    `FooNode topLevelProperty
 AdditionNode opSymbol int int int`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
-    `GrammarBackedTerminalNode foo
+    `FooNode foo
 AdditionNode + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )

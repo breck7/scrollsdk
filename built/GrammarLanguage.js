@@ -1467,6 +1467,7 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.version] = TreeNode_1.default;
         map[GrammarConstants.name] = TreeNode_1.default;
         map[GrammarConstants.nodeTypeOrder] = TreeNode_1.default;
+        map[GrammarConstants.javascript] = TreeNode_1.default;
         map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean;
         map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt;
         map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString;
@@ -1488,7 +1489,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode;
         map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition;
         map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
-        map[GrammarConstants.javascript] = TreeNode_1.default;
         map[GrammarConstants.toolingDirective] = TreeNode_1.default;
         return map;
     }

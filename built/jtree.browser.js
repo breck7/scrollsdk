@@ -299,10 +299,6 @@ TreeUtils.BrowserScript = class {
         this._str = this._str.replace(/(\n|^)import {[^\}]+} ?from ?"[^\"]+"/g, "$1");
         return this;
     }
-    removeImportsFinal() {
-        this._str = this._str.replace(/(\n|^)\/\*KEEP_UNTIL_BUILD\*\/ import .* from .*/g, "$1");
-        return this;
-    }
     removeExports() {
         this._str = this._str.replace(/(\n|^)export default .*/g, "$1");
         this._str = this._str.replace(/(\n|^)export {[^\}]+}/g, "$1");
@@ -4505,10 +4501,7 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "26.0.0";
-// todo: currently only works in nodejs
-
-
+jtree.getVersion = () => "26.0.1";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));
@@ -4518,6 +4511,7 @@ class Upgrader extends TreeNode {
         return this._upgradeMany(globPatterns, fromVersion, toVersion);
     }
     _upgradeMany(globPatterns, fromVersion, toVersion) {
+        const glob = require("glob");
         return globPatterns.map(pattern => glob.sync(pattern)).flat().map((path) => {
             return {
                 tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
@@ -4527,6 +4521,7 @@ class Upgrader extends TreeNode {
     }
     upgrade(code, fromVersion, toVersion) {
         const updateFromMap = this.getUpgradeFromMap();
+        const semver = require("semver");
         let fromMap;
         while ((fromMap = updateFromMap[fromVersion])) {
             const toNextVersion = Object.keys(fromMap)[0]; // todo: currently we just assume 1 step at a time

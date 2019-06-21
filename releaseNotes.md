@@ -1,3 +1,7 @@
+26.0.1 / 2019-06-21
+===================
+- Fix: fixed require bug
+
 26.0.0 / 2019-06-21
 ===================
 - Warning: this was a major refactor that may have introduced new bugs, so if using please be ready to ping me with bug reports

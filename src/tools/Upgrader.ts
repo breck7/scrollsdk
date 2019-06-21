@@ -3,9 +3,6 @@ import jTreeTypes from "../jTreeTypes"
 
 // todo: currently only works in nodejs
 
-/*KEEP_UNTIL_BUILD*/ import * as glob from "glob"
-/*KEEP_UNTIL_BUILD*/ import * as semver from "semver"
-
 interface updatedFile {
   tree: TreeNode
   path: jTreeTypes.absoluteFilePath
@@ -22,6 +19,7 @@ abstract class Upgrader extends TreeNode {
   }
 
   private _upgradeMany(globPatterns: jTreeTypes.globPattern[], fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): updatedFile[] {
+    const glob = require("glob")
     return (<any>globPatterns.map(pattern => glob.sync(pattern))).flat().map((path: jTreeTypes.absoluteFilePath) => {
       return {
         tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
@@ -34,6 +32,7 @@ abstract class Upgrader extends TreeNode {
 
   upgrade(code: TreeNode, fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): TreeNode {
     const updateFromMap = this.getUpgradeFromMap()
+    const semver = require("semver")
     let fromMap: jTreeTypes.upgradeToMap
     while ((fromMap = updateFromMap[fromVersion])) {
       const toNextVersion = Object.keys(fromMap)[0] // todo: currently we just assume 1 step at a time

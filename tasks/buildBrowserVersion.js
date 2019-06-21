@@ -43,7 +43,7 @@ exec("tsc -p tsconfig.browser.json", (err, stdout, stderr) => {
 
   // This solves the wierd TS insertin
   // todo: remove
-  const file = new BrowserScript(fs.readFileSync(outputJsFile, "utf8").replace("export var jTreeTypes", "var jTreeTypes")).removeImportsFinal()
+  const file = new BrowserScript(fs.readFileSync(outputJsFile, "utf8").replace("export var jTreeTypes", "var jTreeTypes"))
   fs.writeFileSync(outputJsFile, file.getString(), "utf8")
 })
 

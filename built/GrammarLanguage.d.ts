@@ -36,7 +36,6 @@ declare enum GrammarConstants {
     catchAllCellType = "catchAllCellType",
     firstCellType = "firstCellType",
     catchAllNodeType = "catchAllNodeType",
-    defaults = "defaults",
     constants = "constants",
     group = "group",
     required = "required",
@@ -294,8 +293,6 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
         [nodeTypeId: string]: NonRootNodeTypeDefinition;
     };
     getDoc(): string;
-    private _getDefaultsNode;
-    getDefaultFor(name: string): string;
     getDescription(): string;
     getFrequency(): number;
     private _getExtendedNodeTypeId;

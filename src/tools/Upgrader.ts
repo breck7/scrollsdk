@@ -3,8 +3,8 @@ import jTreeTypes from "../jTreeTypes"
 
 // todo: currently only works in nodejs
 
-const glob = require("glob")
-const semver = require("semver")
+/* Keep this line in combined ts file */ import * as glob from "glob"
+/* Keep this line in combined ts file */ import * as semver from "semver"
 
 interface updatedFile {
   tree: TreeNode
@@ -34,7 +34,7 @@ abstract class Upgrader extends TreeNode {
 
   upgrade(code: TreeNode, fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): TreeNode {
     const updateFromMap = this.getUpgradeFromMap()
-    let fromMap
+    let fromMap: jTreeTypes.upgradeToMap
     while ((fromMap = updateFromMap[fromVersion])) {
       const toNextVersion = Object.keys(fromMap)[0] // todo: currently we just assume 1 step at a time
       if (semver.lt(toVersion, toNextVersion)) break

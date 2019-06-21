@@ -57,7 +57,6 @@ var GrammarConstants;
     GrammarConstants["catchAllCellType"] = "catchAllCellType";
     GrammarConstants["firstCellType"] = "firstCellType";
     GrammarConstants["catchAllNodeType"] = "catchAllNodeType";
-    GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
     GrammarConstants["required"] = "required";
@@ -1064,7 +1063,6 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             GrammarConstants.catchAllNodeType,
             GrammarConstants.catchAllCellType,
             GrammarConstants.firstCellType,
-            GrammarConstants.defaults,
             GrammarConstants.tags,
             GrammarConstants.baseNodeType,
             GrammarConstants.group,
@@ -1217,6 +1215,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         const parameters = this.get(GrammarConstants.cells);
         return parameters ? parameters.split(" ") : [];
     }
+    // todo: what happens when you have a cell getter and constant with same name?
     _getCellGettersAndNodeTypeConstants() {
         // todo: add cellType parsings
         const grammarProgram = this.getLanguageDefinitionProgram();
@@ -1421,14 +1420,6 @@ ${captures}
     }
     getDoc() {
         return this.getNodeTypeIdFromDefinition();
-    }
-    _getDefaultsNode() {
-        return this.getNode(GrammarConstants.defaults);
-    }
-    // todo: deprecate?
-    getDefaultFor(name) {
-        const defaults = this._getDefaultsNode();
-        return defaults ? defaults.get(name) : undefined;
     }
     getDescription() {
         return this.get(GrammarConstants.description) || "";

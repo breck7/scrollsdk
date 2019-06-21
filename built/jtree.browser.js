@@ -2335,7 +2335,6 @@ var GrammarConstants;
     GrammarConstants["catchAllCellType"] = "catchAllCellType";
     GrammarConstants["firstCellType"] = "firstCellType";
     GrammarConstants["catchAllNodeType"] = "catchAllNodeType";
-    GrammarConstants["defaults"] = "defaults";
     GrammarConstants["constants"] = "constants";
     GrammarConstants["group"] = "group";
     GrammarConstants["required"] = "required";
@@ -2358,6 +2357,29 @@ var GrammarConstants;
 class GrammarBackedNode extends TreeNode {
     getAutocompleteResults(partialWord, cellIndex) {
         return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
+    }
+    static _getJavascriptClassNameFromNodeTypeId(nodeTypeId) {
+        let javascriptSyntaxSafeId = nodeTypeId;
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase());
+        // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\@/g, "at");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket");
+        javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1);
+        return `${javascriptSyntaxSafeId}Node`;
     }
     _getAutocompleteResultsForFirstWord(partialWord) {
         let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
@@ -3313,7 +3335,6 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             GrammarConstants.catchAllNodeType,
             GrammarConstants.catchAllCellType,
             GrammarConstants.firstCellType,
-            GrammarConstants.defaults,
             GrammarConstants.tags,
             GrammarConstants.baseNodeType,
             GrammarConstants.group,
@@ -3341,26 +3362,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return this.getWord(1);
     }
     _getGeneratedClassName() {
-        let javascriptSyntaxSafeId = this.getNodeTypeIdFromDefinition();
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase());
-        // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1);
-        return `${javascriptSyntaxSafeId}Node`;
+        return GrammarBackedNode._getJavascriptClassNameFromNodeTypeId(this.getNodeTypeIdFromDefinition());
     }
     getNodeConstructorToJavascript() {
         const nodeMap = this.getRunTimeFirstWordMapWithDefinitions();
@@ -3485,6 +3487,7 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         const parameters = this.get(GrammarConstants.cells);
         return parameters ? parameters.split(" ") : [];
     }
+    // todo: what happens when you have a cell getter and constant with same name?
     _getCellGettersAndNodeTypeConstants() {
         // todo: add cellType parsings
         const grammarProgram = this.getLanguageDefinitionProgram();
@@ -3689,14 +3692,6 @@ ${captures}
     }
     getDoc() {
         return this.getNodeTypeIdFromDefinition();
-    }
-    _getDefaultsNode() {
-        return this.getNode(GrammarConstants.defaults);
-    }
-    // todo: deprecate?
-    getDefaultFor(name) {
-        const defaults = this._getDefaultsNode();
-        return defaults ? defaults.get(name) : undefined;
     }
     getDescription() {
         return this.get(GrammarConstants.description) || "";
@@ -4519,6 +4514,9 @@ jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
 jtree.getVersion = () => "25.2.0";
+// todo: currently only works in nodejs
+/* Keep this line in combined ts file */ import * as glob from "glob";
+/* Keep this line in combined ts file */ import * as semver from "semver";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

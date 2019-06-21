@@ -1277,7 +1277,7 @@ abstract class GrammarNodeTypeConstant extends TreeNode {
 class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
   protected _getValue() {
-    return `"${this.getWordsFrom(2).join(" ")}"`
+    return "`" + TreeUtils.escapeBackTicks(this.getWordsFrom(2).join(" ")) + "`"
   }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {}
@@ -1370,10 +1370,16 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
   private _importNodeJsConstructor(className: string, code: string): jTreeTypes.RunTimeNodeConstructor {
     const vm = require("vm")
     const gb = <any>global
-    gb.jtree = require(__dirname + "/jtree.node.js").default
-    code = `global.${className} = ` + code
-    vm.runInThisContext(code)
-    return gb[className]
+    try {
+      gb.jtree = require(__dirname + "/jtree.node.js").default
+      code = `global.${className} = ` + code
+      vm.runInThisContext(code)
+      return gb[className]
+    } catch (err) {
+      console.log("Error in code:")
+      console.log(code)
+      throw err
+    }
   }
 
   private _importBrowserConstructor(code: string): jTreeTypes.RunTimeNodeConstructor {
@@ -1987,10 +1993,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return `getCatchAllNodeConstructor() { return ${className}}`
   }
 
-  _escapeBackTicks(str: string) {
-    return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${")
-  }
-
   _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
     const defs = this.getNodeTypeDefinitions()
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
@@ -2014,7 +2016,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
 
       getGrammarProgramRoot() {
-        return jtree.GrammarProgram.newFromCondensed(\`${this._escapeBackTicks(this.toString())}\`)
+        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString())}\`)
       }
 
     }`

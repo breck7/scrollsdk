@@ -11,7 +11,10 @@ class Upgrader extends TreeNode_1.default {
     }
     _upgradeMany(globPatterns, fromVersion, toVersion) {
         const glob = require("glob");
-        return globPatterns.map(pattern => glob.sync(pattern)).flat().map((path) => {
+        const files = globPatterns.map(pattern => glob.sync(pattern)).flat();
+        console.log(`${files.length} files to upgrade`);
+        return files.map((path) => {
+            console.log("Upgrading " + path);
             return {
                 tree: this.upgrade(TreeNode_1.default.fromDisk(path), fromVersion, toVersion),
                 path: path

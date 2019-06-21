@@ -1046,7 +1046,7 @@ class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
     _getValue() {
-        return `"${this.getWordsFrom(2).join(" ")}"`;
+        return "`" + TreeUtils_1.default.escapeBackTicks(this.getWordsFrom(2).join(" ")) + "`";
     }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {
@@ -1128,10 +1128,17 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _importNodeJsConstructor(className, code) {
         const vm = require("vm");
         const gb = global;
-        gb.jtree = require(__dirname + "/jtree.node.js").default;
-        code = `global.${className} = ` + code;
-        vm.runInThisContext(code);
-        return gb[className];
+        try {
+            gb.jtree = require(__dirname + "/jtree.node.js").default;
+            code = `global.${className} = ` + code;
+            vm.runInThisContext(code);
+            return gb[className];
+        }
+        catch (err) {
+            console.log("Error in code:");
+            console.log(code);
+            throw err;
+        }
     }
     _importBrowserConstructor(code) {
         const tempClassName = "tempConstructor" + TreeUtils_1.default.getRandomString(30);
@@ -1635,9 +1642,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._getGeneratedClassName();
         return `getCatchAllNodeConstructor() { return ${className}}`;
     }
-    _escapeBackTicks(str) {
-        return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
-    }
     _nodeDefToJavascriptClass(isCompiled, jtreePath, forNodeJs = true) {
         const defs = this.getNodeTypeDefinitions();
         const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n");
@@ -1657,7 +1661,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
 
       getGrammarProgramRoot() {
-        return jtree.GrammarProgram.newFromCondensed(\`${this._escapeBackTicks(this.toString())}\`)
+        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils_1.default.escapeBackTicks(this.toString())}\`)
       }
 
     }`;

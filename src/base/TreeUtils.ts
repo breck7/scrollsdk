@@ -14,6 +14,10 @@ class TreeUtils {
       .pop()
   }
 
+  static escapeBackTicks(str: string) {
+    return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${")
+  }
+
   // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
   static didYouMean(str: string = "", options: string[] = [], caseSensitive = false, threshold = 0.4, thresholdAbsolute = 20) {
     if (!caseSensitive) str = str.toLowerCase()

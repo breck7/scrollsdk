@@ -28,6 +28,9 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static escapeBackTicks(str) {
+        return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
+    }
     // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
     static didYouMean(str = "", options = [], caseSensitive = false, threshold = 0.4, thresholdAbsolute = 20) {
         if (!caseSensitive)
@@ -3318,7 +3321,7 @@ class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
     _getValue() {
-        return `"${this.getWordsFrom(2).join(" ")}"`;
+        return "`" + TreeUtils.escapeBackTicks(this.getWordsFrom(2).join(" ")) + "`";
     }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {
@@ -3400,10 +3403,17 @@ class AbstractGrammarDefinitionNode extends TreeNode {
     _importNodeJsConstructor(className, code) {
         const vm = require("vm");
         const gb = global;
-        gb.jtree = require(__dirname + "/jtree.node.js").default;
-        code = `global.${className} = ` + code;
-        vm.runInThisContext(code);
-        return gb[className];
+        try {
+            gb.jtree = require(__dirname + "/jtree.node.js").default;
+            code = `global.${className} = ` + code;
+            vm.runInThisContext(code);
+            return gb[className];
+        }
+        catch (err) {
+            console.log("Error in code:");
+            console.log(code);
+            throw err;
+        }
     }
     _importBrowserConstructor(code) {
         const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30);
@@ -3907,9 +3917,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._getGeneratedClassName();
         return `getCatchAllNodeConstructor() { return ${className}}`;
     }
-    _escapeBackTicks(str) {
-        return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
-    }
     _nodeDefToJavascriptClass(isCompiled, jtreePath, forNodeJs = true) {
         const defs = this.getNodeTypeDefinitions();
         const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n");
@@ -3929,7 +3936,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
 
       getGrammarProgramRoot() {
-        return jtree.GrammarProgram.newFromCondensed(\`${this._escapeBackTicks(this.toString())}\`)
+        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString())}\`)
       }
 
     }`;
@@ -4501,7 +4508,7 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "26.0.1";
+jtree.getVersion = () => "26.0.2";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));
@@ -4512,7 +4519,10 @@ class Upgrader extends TreeNode {
     }
     _upgradeMany(globPatterns, fromVersion, toVersion) {
         const glob = require("glob");
-        return globPatterns.map(pattern => glob.sync(pattern)).flat().map((path) => {
+        const files = globPatterns.map(pattern => glob.sync(pattern)).flat();
+        console.log(`${files.length} files to upgrade`);
+        return files.map((path) => {
+            console.log("Upgrading " + path);
             return {
                 tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
                 path: path

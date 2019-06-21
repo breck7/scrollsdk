@@ -20,7 +20,10 @@ abstract class Upgrader extends TreeNode {
 
   private _upgradeMany(globPatterns: jTreeTypes.globPattern[], fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): updatedFile[] {
     const glob = require("glob")
-    return (<any>globPatterns.map(pattern => glob.sync(pattern))).flat().map((path: jTreeTypes.absoluteFilePath) => {
+    const files = (<any>globPatterns.map(pattern => glob.sync(pattern))).flat()
+    console.log(`${files.length} files to upgrade`)
+    return files.map((path: jTreeTypes.absoluteFilePath) => {
+      console.log("Upgrading " + path)
       return {
         tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
         path: path

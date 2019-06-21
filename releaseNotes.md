@@ -1,3 +1,9 @@
+26.0.2 / 2019-06-21
+===================
+- Fix: backtick escaping in getter generation
+- Fix: migrate constants in grammar updater
+- New: dump generated code for more information when something goes wrong
+
 26.0.1 / 2019-06-21
 ===================
 - Fix: fixed require bug

@@ -348,7 +348,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _getProperName;
     _getGeneratedClassName(): string;
     private _getCatchAllNodeConstructorToJavascript;
-    _escapeBackTicks(str: string): string;
     _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;

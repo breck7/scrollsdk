@@ -2,6 +2,7 @@ import jTreeTypes from "../jTreeTypes";
 declare class TreeUtils {
     static getPathWithoutFileName(path: string): string;
     static getClassNameFromFilePath(filename: string): string;
+    static escapeBackTicks(str: string): string;
     static didYouMean(str?: string, options?: string[], caseSensitive?: boolean, threshold?: number, thresholdAbsolute?: number): string;
     private static MAX_INT;
     private static _getEditDistance;

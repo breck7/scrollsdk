@@ -17,6 +17,22 @@ class GrammarUpgrader extends jtree.Upgrader {
               types.deleteChildren()
             }
           })
+
+          // update constants
+          tree.forEach(node => {
+            const constants = node.getNode("constants")
+            if (constants) {
+              constants.forEach(constant => {
+                const words = constant.getWords()
+                // todo: words[1] was not cell checked before, so this may surface errors.
+                if (!constant.length) node.appendLine(`${words[1]} ${words[0]} ${words.slice(2).join(" ")}`)
+                else {
+                  node.appendLineAndChildren(`string ${words[0]}`, constant.childrenToString())
+                }
+              })
+              constants.destroy()
+            }
+          })
           return tree
         }
       }

@@ -12,6 +12,9 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static escapeBackTicks(str) {
+        return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
+    }
     // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
     static didYouMean(str = "", options = [], caseSensitive = false, threshold = 0.4, thresholdAbsolute = 20) {
         if (!caseSensitive)

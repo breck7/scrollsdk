@@ -1367,23 +1367,19 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_definedNodeConstructor
   }
 
+  // todo: refactor/remove
   private _importNodeJsConstructor(className: string, code: string): jTreeTypes.RunTimeNodeConstructor {
-    const tempFilePath = `${__dirname}/${className}-${TreeUtils.getRandomString(30)}-temp.js`
-    const fs = require("fs")
-    const jtreePath = __dirname + "/jtree.node.js"
-    code =
-      `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = ` + code
-    try {
-      fs.writeFileSync(tempFilePath, code, "utf8")
-      return require(tempFilePath)
-    } catch (err) {
-      console.error(err)
-      console.log("CODE:")
-      console.log(code)
-    } finally {
-      fs.unlinkSync(tempFilePath)
-    }
+    const vm = require("vm")
+    const gb = <any>global
+    gb.jtree = require(__dirname + "/jtree.node.js").default
+    gb.TerminalNode = TerminalNode
+    gb.NonTerminalNode = NonTerminalNode
+    gb.BlobNode = BlobNode
+    gb.ErrorNode = ErrorNode
+    gb.GrammarBackedRootNode = GrammarBackedRootNode
+    code = `global.${className} = ` + code
+    vm.runInThisContext(code)
+    return gb[className]
   }
 
   private _importBrowserConstructor(code: string): jTreeTypes.RunTimeNodeConstructor {

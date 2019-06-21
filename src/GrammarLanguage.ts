@@ -1367,16 +1367,10 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
     return this._cache_definedNodeConstructor
   }
 
-  // todo: refactor/remove
   private _importNodeJsConstructor(className: string, code: string): jTreeTypes.RunTimeNodeConstructor {
     const vm = require("vm")
     const gb = <any>global
     gb.jtree = require(__dirname + "/jtree.node.js").default
-    gb.TerminalNode = TerminalNode
-    gb.NonTerminalNode = NonTerminalNode
-    gb.BlobNode = BlobNode
-    gb.ErrorNode = ErrorNode
-    gb.GrammarBackedRootNode = GrammarBackedRootNode
     code = `global.${className} = ` + code
     vm.runInThisContext(code)
     return gb[className]

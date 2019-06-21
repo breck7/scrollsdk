@@ -3,7 +3,7 @@
 // todo: make isomorphic
 
 const fs = require("fs")
-const UnknownGrammarProgram = require("../built/grammar/UnknownGrammarProgram.js").default
+const UnknownGrammarProgram = require("../built/tools/UnknownGrammarProgram.js").default
 
 const testTree = {}
 
@@ -39,7 +39,7 @@ file test
   const types = new UnknownGrammarProgram(input).getPredictedGrammarFile("foobar")
 
   // Assert
-  equal(types, fs.readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"))
+  equal(types, fs.readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)

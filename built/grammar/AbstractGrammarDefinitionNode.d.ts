@@ -7,9 +7,14 @@ declare class GrammarDefinitionErrorNode extends TreeNode {
     getErrors(): jTreeTypes.TreeError[];
     getLineCellTypes(): string;
 }
+declare class GrammarExampleNode extends TreeNode {
+}
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getNodeTypeIdFromDefinition(): string;
+    getExamples(): GrammarExampleNode[];
+    getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
+    getGeneratedClassName(): string;
+    getNodeConstructorToJavascript(): string;
     protected _isNonTerminal(): boolean;
     _isAbstract(): boolean;
     protected _isBlobNode(): boolean;
@@ -19,33 +24,34 @@ declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     protected _getDefinedNodeConstructor(): jTreeTypes.RunTimeNodeConstructor;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getProgram(): GrammarProgram;
-    getLineHints(): string;
     getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode): GrammarCompilerNode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
     private _cache_runTimeFirstWordToNodeConstructorMap;
     getRunTimeFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getRunTimeNodeTypeNames(): string[];
+    getRunTimeFirstWordsInScope(): jTreeTypes.nodeTypeId[];
     getRunTimeFirstWordMapWithDefinitions(): {
         [key: string]: GrammarNodeTypeDefinitionNode;
     };
-    getRequiredCellTypeNames(): string[];
-    getCatchAllCellTypeName(): string | undefined;
-    protected _initRunTimeFirstWordToNodeConstructorMap(): void;
-    _getNodeTypesInScope(): string[];
-    getTopNodeTypeIds(): string[];
-    protected _getNodeTypesNode(): TreeNode;
+    getRequiredCellTypeIds(): jTreeTypes.cellTypeId[];
+    getGetters(): string[];
+    getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
+    protected _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): jTreeTypes.firstWordToNodeConstructorMap;
+    getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];
+    protected _getParentDefinition(): AbstractGrammarDefinitionNode;
+    protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
+    protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     isRequired(): boolean;
-    isSingle(): boolean;
-    _getRunTimeCatchAllNodeTypeId(): string;
-    getNodeTypeDefinitionByName(firstWord: string): AbstractGrammarDefinitionNode;
-    _getCatchAllDefinition(): AbstractGrammarDefinitionNode;
+    _shouldBeJustOne(): boolean;
+    _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId;
+    getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode;
+    _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
     protected _initCatchAllNodeConstructorCache(): void;
-    getFirstCellType(): string;
-    isDefined(firstWord: string): boolean;
+    getFirstCellTypeId(): jTreeTypes.cellTypeId;
+    isDefined(nodeTypeId: string): boolean;
     _getProgramNodeTypeDefinitionCache(): {
-        [firstWord: string]: GrammarNodeTypeDefinitionNode;
+        [nodeTypeId: string]: GrammarNodeTypeDefinitionNode;
     };
     getRunTimeCatchAllNodeConstructor(): Function;
 }

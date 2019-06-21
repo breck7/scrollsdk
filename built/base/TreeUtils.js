@@ -156,6 +156,7 @@ class TreeUtils {
             };
         });
     }
+    // todo: add seed!
     static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")) {
         let str = "";
         while (length) {
@@ -164,6 +165,7 @@ class TreeUtils {
         }
         return str;
     }
+    // todo: add seed!
     static makeRandomTree(lines = 1000) {
         let str = "";
         let letters = " 123abc".split("");
@@ -279,6 +281,10 @@ TreeUtils.BrowserScript = class {
         this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1");
         this._str = this._str.replace(/(\n|^)\/\*FOR_TYPES_ONLY\*\/ import .* from .*/g, "$1");
         this._str = this._str.replace(/(\n|^)import {[^\}]+} ?from ?"[^\"]+"/g, "$1");
+        return this;
+    }
+    removeImportsFinal() {
+        this._str = this._str.replace(/(\n|^)\/\*KEEP_UNTIL_BUILD\*\/ import .* from .*/g, "$1");
         return this;
     }
     removeExports() {

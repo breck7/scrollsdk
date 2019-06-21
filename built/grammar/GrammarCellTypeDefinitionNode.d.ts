@@ -1,16 +1,16 @@
 import TreeNode from "../base/TreeNode";
 import jTreeTypes from "../jTreeTypes";
-import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
+import { AbstractRuntimeProgramRootNode } from "./AbstractRuntimeNodes";
 declare class GrammarCellTypeDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.stringMap;
     getCellConstructor(): any;
     getHighlightScope(): string | undefined;
     private _getEnumOptions;
     private _getEnumFromGrammarOptions;
-    getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgram): string[];
+    getAutocompleteWordOptions(runTimeProgram: AbstractRuntimeProgramRootNode): string[];
     getRegexString(): string;
-    isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgram): boolean;
-    getCellTypeId(): string;
+    isValid(str: string, runTimeGrammarBackedProgram: AbstractRuntimeProgramRootNode): boolean;
+    getCellTypeId(): jTreeTypes.cellTypeId;
     static types: any;
 }
 export default GrammarCellTypeDefinitionNode;

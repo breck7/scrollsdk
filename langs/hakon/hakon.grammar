@@ -3,9 +3,14 @@ grammar
  description A Tree Language that compiles to CSS
  compiler css
  catchAllNodeType selectorNode
- constructors
-  nodejs ./HakonNodes.js HakonProgramRoot
-  browser HakonProgramRoot HakonNodes.js
+ javascript
+  getSelector() { return "" }
+  compile() {
+    return this.getTopDownArray()
+      .filter(node => node.isSelectorNode)
+      .map(child => child.compile())
+      .join("")
+  }
 cellType extraWord
  highlightScope invalid
 cellType cssValueWord
@@ -21,21 +26,35 @@ abstract propertyNode
  catchAllCellType cssValueWord
  catchAllNodeType errorNode
  firstCellType propertyName
- constructors
-  nodejs ./HakonNodes.js HakonPropertyNode
-  browser HakonPropertyNode HakonNodes.js
+ boolean isPropertyNode true
+ javascript
+  compile(spaces) { return `${spaces}${this.getFirstWord()}: ${this.getContent()};` }
 nodeType errorNode
  catchAllNodeType errorNode
  catchAllCellType errorWord
  firstCellType errorWord
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ baseNodeType errorNode
 nodeType selectorNode
  firstCellType selector
- nodeTypes
-  propertyNode
+ inScope propertyNode
  catchAllNodeType selectorNode
- constructors
-  nodejs ./HakonNodes.js HakonSelectorNode
-  browser HakonSelectorNode HakonNodes.js
+ boolean isSelectorNode true
+ javascript
+  getSelector() {
+    const parentSelector = this.getParent().getSelector()
+    return this.getFirstWord()
+      .split(",")
+      .map(part => {
+        if (part.startsWith("&")) return parentSelector + part.substr(1)
+        return parentSelector ? parentSelector + " " + part : part
+      })
+      .join(",")
+  }
+  compile() {
+    const propertyNodes = this.getChildren().filter(node => node.isPropertyNode)
+    if (!propertyNodes.length) return ""
+    const spaces = "  "
+    return `${this.getSelector()} {
+  ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
+  }\n`
+    }

@@ -5,17 +5,16 @@ const TreeErrorTypes_1 = require("./TreeErrorTypes");
 A cell contains a word but also the type information for that word.
 */
 class AbstractGrammarBackedCell {
-    constructor(node, index, typeDef, cellTypeName, isCatchAll) {
+    constructor(node, index, typeDef, cellTypeId, isCatchAll) {
         this._typeDef = typeDef;
         this._node = node;
         this._isCatchAll = isCatchAll;
         this._index = index;
-        this._cellTypeName = cellTypeName;
+        this._cellTypeId = cellTypeId;
         this._word = node.getWord(index);
-        this._grammarProgram = node.getDefinition().getProgram();
     }
-    getCellTypeName() {
-        return this._cellTypeName;
+    getCellTypeId() {
+        return this._cellTypeId;
     }
     getNode() {
         return this._node;
@@ -63,11 +62,6 @@ class AbstractGrammarBackedCell {
     }
     _getErrorContext() {
         return this._getFullLine().split(" ")[0]; // todo: XI
-    }
-    _getExpectedLineCellTypes() {
-        return this.getNode()
-            .getDefinition()
-            .getExpectedLineCellTypes();
     }
     isValid() {
         const runTimeOptions = this.getNode().getRunTimeEnumOptions(this);

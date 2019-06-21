@@ -16,18 +16,19 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
     _getEnumFromGrammar(runTimeGrammarBackedProgram) {
-        const nodeType = this.getWord(1);
+        const nodeTypes = this.getWordsFrom(1);
+        const enumGroup = nodeTypes.join(" ");
         // note: hack where we store it on the program. otherwise has global effects.
         if (!runTimeGrammarBackedProgram._enumMaps)
             runTimeGrammarBackedProgram._enumMaps = {};
-        if (runTimeGrammarBackedProgram._enumMaps[nodeType])
-            return runTimeGrammarBackedProgram._enumMaps[nodeType];
+        if (runTimeGrammarBackedProgram._enumMaps[enumGroup])
+            return runTimeGrammarBackedProgram._enumMaps[enumGroup];
         const wordIndex = 1;
         const map = {};
-        runTimeGrammarBackedProgram.findNodes(nodeType).forEach(node => {
+        runTimeGrammarBackedProgram.findNodes(nodeTypes).forEach(node => {
             map[node.getWord(wordIndex)] = true;
         });
-        runTimeGrammarBackedProgram._enumMaps[nodeType] = map;
+        runTimeGrammarBackedProgram._enumMaps[enumGroup] = map;
         return map;
     }
     // todo: remove
@@ -58,13 +59,13 @@ class GrammarCellTypeDefinitionNode extends TreeNode_1.default {
     // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
     getCellConstructor() {
         const kinds = {};
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.any] = GrammarBackedCell_1.GrammarAnyCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.anyFirstWord] = GrammarBackedCell_1.GrammarAnyCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.float] = GrammarBackedCell_1.GrammarFloatCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.number] = GrammarBackedCell_1.GrammarFloatCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.bit] = GrammarBackedCell_1.GrammarBitCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.bool] = GrammarBackedCell_1.GrammarBoolCell;
-        kinds[GrammarConstants_1.GrammarStandardCellTypes.int] = GrammarBackedCell_1.GrammarIntCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.any] = GrammarBackedCell_1.GrammarAnyCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.anyFirstWord] = GrammarBackedCell_1.GrammarAnyCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.float] = GrammarBackedCell_1.GrammarFloatCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.number] = GrammarBackedCell_1.GrammarFloatCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.bit] = GrammarBackedCell_1.GrammarBitCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.bool] = GrammarBackedCell_1.GrammarBoolCell;
+        kinds[GrammarConstants_1.GrammarStandardCellTypeIds.int] = GrammarBackedCell_1.GrammarIntCell;
         return kinds[this.getWord(1)] || kinds[this.getWord(2)] || GrammarBackedCell_1.GrammarAnyCell;
     }
     getHighlightScope() {

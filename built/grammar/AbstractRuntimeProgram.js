@@ -43,7 +43,7 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
             nodeTypeMap = nodeTypeMap.toObject();
         const renames = [];
         for (let node of this.getTopDownArrayIterator()) {
-            const nodeTypeId = node.getDefinition().getNodeTypeIdFromDefinition();
+            const nodeTypeId = node.getNodeTypeId();
             const newId = nodeTypeMap[nodeTypeId];
             if (newId)
                 renames.push([node, newId]);
@@ -87,9 +87,6 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
     getProgramErrorMessages() {
         return this.getProgramErrors().map(err => err.getMessage());
     }
-    getFirstWordMap() {
-        return this.getDefinition().getRunTimeFirstWordMap();
-    }
     getDefinition() {
         return this.getGrammarProgram();
     }
@@ -97,15 +94,12 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         // returns a report on what nodeTypes from its language the program uses
         const usage = new TreeNode_1.default();
         const grammarProgram = this.getGrammarProgram();
-        const nodeTypeDefinitions = grammarProgram.getNodeTypeDefinitions();
-        nodeTypeDefinitions.forEach(child => {
-            usage.appendLine([child.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants_1.GrammarConstants.nodeType, child.getRequiredCellTypeNames().join(" ")].join(" "));
+        grammarProgram.getNodeTypeDefinitions().forEach(def => {
+            usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants_1.GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "));
         });
-        const programNodes = this.getTopDownArray();
-        programNodes.forEach((programNode, lineNumber) => {
-            const def = programNode.getDefinition();
-            const stats = usage.getNode(def.getNodeTypeIdFromDefinition());
-            stats.appendLine([filepath + "-" + lineNumber, programNode.getWords().join(" ")].join(" "));
+        this.getTopDownArray().forEach((node, lineNumber) => {
+            const stats = usage.getNode(node.getNodeTypeId());
+            stats.appendLine([filepath + "-" + lineNumber, node.getWords().join(" ")].join(" "));
         });
         return usage;
     }
@@ -160,10 +154,6 @@ class AbstractRuntimeProgram extends AbstractRuntimeNode_1.default {
         this._cache_typeTree = new TreeNode_1.default(this.getInPlaceCellTypeTree());
         this._cache_highlightScopeTree = new TreeNode_1.default(this.getInPlaceHighlightScopeTree());
         this._cache_programCellTypeStringMTime = treeMTime;
-    }
-    getCompiledProgramName(programPath) {
-        const grammarProgram = this.getDefinition();
-        return programPath.replace(`.${grammarProgram.getExtensionName()}`, `.${grammarProgram.getTargetExtension()}`);
     }
 }
 exports.default = AbstractRuntimeProgram;

@@ -12,43 +12,40 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
     getGrammarProgram() {
         return this.getDefinition().getProgram();
     }
+    getNodeTypeId() {
+        return this.getDefinition().getNodeTypeIdFromDefinition();
+    }
     getDefinition() {
         // todo: do we need a relative to with this firstWord path?
-        return this._getNodeTypeDefinitionByName(this.getFirstWordPath());
+        return this._getNodeTypeDefinitionByFirstWordPath(this.getFirstWordPath());
     }
-    getCompilerNode(targetLanguage) {
+    getConstantsObject() {
+        return this.getDefinition().getConstantsObject();
+    }
+    _getCompilerNode(targetLanguage) {
         return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
     }
-    getParsedWords() {
-        return this._getGrammarBackedCellArray().map(word => word.getParsed());
-    }
-    getCompiledIndentation(targetLanguage) {
-        const compiler = this.getCompilerNode(targetLanguage);
+    _getCompiledIndentation(targetLanguage) {
+        const compiler = this._getCompilerNode(targetLanguage);
         const indentCharacter = compiler.getIndentCharacter();
         const indent = this.getIndentation();
         return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent;
     }
-    getCompiledLine(targetLanguage) {
-        const compiler = this.getCompilerNode(targetLanguage);
+    _getCompiledLine(targetLanguage) {
+        const compiler = this._getCompilerNode(targetLanguage);
         const listDelimiter = compiler.getListDelimiter();
         const str = compiler.getTransformation();
         return str ? TreeUtils_1.default.formatStr(str, listDelimiter, this.cells) : this.getLine();
     }
     compile(targetLanguage) {
-        return this.getCompiledIndentation(targetLanguage) + this.getCompiledLine(targetLanguage);
+        return this._getCompiledIndentation(targetLanguage) + this._getCompiledLine(targetLanguage);
     }
     getErrors() {
-        // Not enough parameters
-        // Too many parameters
-        // Incorrect parameter
         const errors = this._getGrammarBackedCellArray()
             .map(check => check.getErrorIfAny())
             .filter(i => i);
-        // More than one
-        const definition = this.getDefinition();
-        let times;
         const firstWord = this.getFirstWord();
-        if (definition.isSingle())
+        if (this.getDefinition()._shouldBeJustOne())
             this.getParent()
                 .findNodes(firstWord)
                 .forEach((node, index) => {
@@ -57,62 +54,69 @@ class AbstractRuntimeNonRootNode extends AbstractRuntimeNode_1.default {
             });
         return this._getRequiredNodeErrors(errors);
     }
+    // todo: improve layout (use bold?)
+    getLineHints() {
+        const def = this.getDefinition();
+        const catchAllCellTypeId = def.getCatchAllCellTypeId();
+        return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
+    }
+    // todo: remove?
+    getParsedWords() {
+        return this._getGrammarBackedCellArray().map(word => word.getParsed());
+    }
     get cells() {
         const cells = {};
         this._getGrammarBackedCellArray()
             .slice(1)
             .forEach(cell => {
             if (!cell.isCatchAll())
-                cells[cell.getCellTypeName()] = cell.getParsed();
+                cells[cell.getCellTypeId()] = cell.getParsed();
             else {
-                if (!cells[cell.getCellTypeName()])
-                    cells[cell.getCellTypeName()] = [];
-                cells[cell.getCellTypeName()].push(cell.getParsed());
+                if (!cells[cell.getCellTypeId()])
+                    cells[cell.getCellTypeId()] = [];
+                cells[cell.getCellTypeId()].push(cell.getParsed());
             }
         });
         return cells;
     }
-    _getExtraWordCellTypeName() {
-        return GrammarConstants_1.GrammarStandardCellTypes.extraWord;
-    }
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();
         const grammarProgram = definition.getProgram();
-        const requiredCellTypesNames = definition.getRequiredCellTypeNames();
-        const firstCellTypeName = definition.getFirstCellType();
-        const numberOfRequiredCells = requiredCellTypesNames.length + 1; // todo: assuming here first cell is required.
-        const catchAllCellTypeName = definition.getCatchAllCellTypeName();
+        const requiredCellTypeIds = definition.getRequiredCellTypeIds();
+        const firstCellTypeId = definition.getFirstCellTypeId();
+        const numberOfRequiredCells = requiredCellTypeIds.length + 1; // todo: assuming here first cell is required.
+        const catchAllCellTypeId = definition.getCatchAllCellTypeId();
         const actualWordCountOrRequiredCellCount = Math.max(this.getWords().length, numberOfRequiredCells);
         const cells = [];
         // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
         for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
             const isCatchAll = cellIndex >= numberOfRequiredCells;
-            let cellTypeName;
+            let cellTypeId;
             if (cellIndex === 0)
-                cellTypeName = firstCellTypeName;
+                cellTypeId = firstCellTypeId;
             else if (isCatchAll)
-                cellTypeName = catchAllCellTypeName;
+                cellTypeId = catchAllCellTypeId;
             else
-                cellTypeName = requiredCellTypesNames[cellIndex - 1];
-            let cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
+                cellTypeId = requiredCellTypeIds[cellIndex - 1];
+            let cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId);
             let cellConstructor;
             if (cellTypeDefinition)
                 cellConstructor = cellTypeDefinition.getCellConstructor();
-            else if (cellTypeName)
+            else if (cellTypeId)
                 cellConstructor = GrammarBackedCell_1.GrammarUnknownCellTypeCell;
             else {
                 cellConstructor = GrammarBackedCell_1.GrammarExtraWordCellTypeCell;
-                cellTypeName = this._getExtraWordCellTypeName();
-                cellTypeDefinition = grammarProgram.getCellTypeDefinition(cellTypeName);
+                cellTypeId = GrammarConstants_1.GrammarStandardCellTypeIds.extraWord;
+                cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId);
             }
-            cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeName, isCatchAll);
+            cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll);
         }
         return cells;
     }
     // todo: just make a fn that computes proper spacing and then is given a node to print
     getLineCellTypes() {
         return this._getGrammarBackedCellArray()
-            .map(slot => slot.getCellTypeName())
+            .map(slot => slot.getCellTypeId())
             .join(" ");
     }
     getLineHighlightScopes(defaultScope = "source") {

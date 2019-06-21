@@ -1,11 +1,42 @@
-edge / 2019-06-02
-=================
+26.0.0 / 2019-06-21
+===================
+- Warning: this was a major refactor that may have introduced new bugs, so if using please be ready to ping me with bug reports
+- New: ability to compile grammar files to Javascript
+- New: grammar sandbox now has "download bundle"
+- New: Upgrader class for making Tree Language upgrades easier
+- New: added support for "tooling" directives in Grammar language
 - New: getFirstNode method
-- New: added support for tool directives in Grammar language
+- New: getNodeTypeId on NonRootRunTime nodes
+- New: findNodes in base can now take an array of first words
+- New: "nodeType javascript" property
+- New: add custom javascript to rootNodeTypes in grammar files
+- Breaking: removed "defaults" from grammar
+- Breaking: avoid getDefinition() when possible--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
+- Breaking: removed getExpectedLineCellTypes--use getLineHints
+- Breaking: nodeTypes in grammar is now "inScope", and is one line instead of parent/children
 - Breaking: removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
 - Breaking: fromJson is now fromJsonSubset and toJson is now toJsonSubset
 - Breaking: deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.
-- Infra: test coverage
+- Breaking: removed getCompiledProgramName
+- Breaking: getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
+- Breaking: getCatchAllCellTypeName is now getCatchAllCellTypeId
+- Breaking: getRequiredCellTypeNames is now getRequiredCellTypeIds
+- Breaking: getRunTimeNodeTypeNames is now getRunTimeFirstWordsInScope
+- Breaking: removed getProgramErrorMessages. Use getAllErrors
+- Breaking: getFirstCellType is now getFirstCellTypeId
+- Breaking: getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
+- Breaking: getGrammarProgram is now getGrammarProgramRoot
+- Breaking: getParsedWords removed
+- Breaking: getCellTypeName is now getCellTypeId
+- Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
+- Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
+- Breaking: getProgramErrors is now getAllErrors
+- Breaking: getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
+- Breaking: removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
+- Breaking: no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
+- Breaking: in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
+- Breaking: no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
+- Breaking: the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 
 25.2.0 / 2019-05-30
 ===================

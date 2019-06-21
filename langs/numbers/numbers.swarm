@@ -7,5 +7,5 @@ test basics Numbers
    + 2 3
    # Should be 0:
    - 3 2 1
- getProgramErrors
+ getAllErrors
   lengthIs 0

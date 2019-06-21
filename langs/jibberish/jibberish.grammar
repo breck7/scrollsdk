@@ -2,13 +2,10 @@ grammar
  name jibberish
  description A useless Tree Language built for testing Tree Notation code.
  constructors
-  nodejs ./jibberishProgramRoot.js
+  nodejs ./JibberishLang.js
  compiler txt
  catchAllNodeType error
- nodeTypes
-  topLevel
-  text
-  someAbstractClass
+ inScope topLevel text someAbstractClass
 cellType anyFirstWord
 cellType columnNameEnum
 cellType columnName
@@ -32,29 +29,26 @@ abstract color_properties topLevel
 nodeType error
  firstCellType errorWord
  catchAllCellType errorWord
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ baseNodeType errorNode
 nodeType lineOfCode
  catchAllCellType word
  constructors
-  nodejs ./jibberishNodes.js LineOfCodeNode
-  browser LineOfCodeNode jibberishNodes.js
+  nodejs ./JibberishLang.js
+  browser LineOfCodeNode JibberishLang.js
 nodeType text
- blob
+ baseNodeType blobNode
 nodeType extendsAbstract someAbstractClass
  cells int
 nodeType add topLevel
  constructors
-  nodejs ./jibberishNodes.js additionNode
+  nodejs ./JibberishLang.js AdditionNode
 nodeType + add
  firstCellType opSymbol
  example Adding two numbers:
   + 1 2
  catchAllCellType int
 nodeType block topLevel
- nodeTypes
-  topLevel
+ inScope topLevel
 nodeType to block
  cells word
  compiler txt
@@ -64,21 +58,22 @@ nodeType foo topLevel
 nodeType xColumnName topLevel
  description The name of the column to use for the x axis
  cells columnNameEnum
- constructors
-  javascript
-   class extends jtree.NonTerminalNode {
-     getRunTimeEnumOptions(cell) {
-       return cell.getCellTypeName() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
-     }
-   }
+ javascript
+  getRunTimeEnumOptions(cell) {
+    return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
+  }
 nodeType lightbulbState topLevel
  cells onoff
 nodeType nested topLevel
  constructors
-  nodejs ./jibberishNodes.js nested.someNestedNode
+  nodejs ./JibberishLang.js nested.someNestedNode
 nodeType nodeWithConsts topLevel
- constants
-  greeting string hello world
+ string greeting hello world
+ string singleWord hello
+ int score1 28
+ int anArray 2 3 4
+ float score2 3.01
+ boolean win true
 nodeType someCode topLevel
  catchAllNodeType lineOfCode
 nodeType type topLevel

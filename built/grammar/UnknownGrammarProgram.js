@@ -10,7 +10,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
         const globalCellTypeMap = new Map();
         const xi = this.getXI();
         const yi = this.getYI();
-        this.getFirstWords().forEach(firstWord => rootNode.touchNode(`${GrammarConstants_1.GrammarConstants.grammar} ${GrammarConstants_1.GrammarConstants.nodeTypes} ${firstWord}`));
+        rootNode.touchNode(`${GrammarConstants_1.GrammarConstants.grammar} ${GrammarConstants_1.GrammarConstants.inScope}`).setWordsFrom(1, Array.from(new Set(this.getFirstWords())));
         const clone = this.clone();
         let allNodes = clone.getTopDownArrayIterator();
         let node;
@@ -40,7 +40,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             const childFirstWords = Object.keys(allChilds[firstWord]);
             if (childFirstWords.length) {
                 //defNode.touchNode(GrammarConstants.blob) // todo: remove?
-                childFirstWords.forEach(firstWord => defNode.touchNode(`${GrammarConstants_1.GrammarConstants.nodeTypes} ${firstWord}`));
+                defNode.touchNode(GrammarConstants_1.GrammarConstants.inScope).setWordsFrom(1, childFirstWords);
             }
             const allLines = allFirstWordNodes[firstWord];
             const cells = allLines
@@ -54,9 +54,9 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             let cellTypes = [];
             for (let index = 0; index < max; index++) {
                 const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]));
-                if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeName))
-                    globalCellTypeMap.set(cellType.cellTypeName, cellType.cellTypeDefinition);
-                cellTypes.push(cellType.cellTypeName);
+                if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeId))
+                    globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition);
+                cellTypes.push(cellType.cellTypeId);
             }
             if (max > min) {
                 //columns = columns.slice(0, min)
@@ -91,29 +91,29 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             return true;
         };
         if (all((str) => str === "0" || str === "1"))
-            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.bit };
+            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.bit };
         if (all((str) => {
             const num = parseInt(str);
             if (isNaN(num))
                 return false;
             return num.toString() === str;
         })) {
-            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.int };
+            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.int };
         }
         if (all((str) => !str.match(/[^\d\.\-]/)))
-            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.float };
+            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.float };
         const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
         if (all((str) => bools.has(str.toLowerCase())))
-            return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.bool };
+            return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.bool };
         // If there are duplicate files and the set is less than enum
         const enumLimit = 30;
         if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
             return {
-                cellTypeName: `${firstWord}Enum`,
+                cellTypeId: `${firstWord}Enum`,
                 cellTypeDefinition: `cellType ${firstWord}Enum
  enum ${values.join(xi)}`
             };
-        return { cellTypeName: GrammarConstants_1.GrammarStandardCellTypes.any };
+        return { cellTypeId: GrammarConstants_1.GrammarStandardCellTypeIds.any };
     }
 }
 exports.default = UnknownGrammarProgram;

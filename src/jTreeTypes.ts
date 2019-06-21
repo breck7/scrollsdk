@@ -43,7 +43,6 @@ export namespace jTreeTypes {
   export declare type pathVector = int[] // example: [0,1,1]
   export declare type word = string // string that cannot contain the YI, XI or ZI
   export declare type firstWord = word
-  export declare type nodeTypeId = string
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
   export declare type globPattern = string
@@ -58,6 +57,18 @@ export namespace jTreeTypes {
   export declare type nodeToStringFn = (node: treeNode) => string
   export declare type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string
   export declare type nodeIdRenameMap = { [oldNodeTypeId: string]: string }
+  export declare type typeScriptCode = string
+  export declare type javascriptCode = string
+
+  export declare type nodeTypeId = string // todo: add character restrictions.
+  export declare type cellTypeId = string // todo: add character restrictions.
+
+  export declare type semanticVersion = string
+
+  export declare type absoluteFilePath = filepath
+  export declare type asboluteFolderPath = absoluteFilePath
+
+  export declare type javascriptClassPath = string // "jtree.Foo.Bar"
 
   export declare type children = string | Object | treeNode | any // todo: specify better.
 
@@ -65,6 +76,10 @@ export namespace jTreeTypes {
   export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
   export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
+
+  export declare type upgradeFunction = (tree: treeNode) => treeNode
+  export declare type upgradeToMap = { [toVersion: string]: upgradeFunction }
+  export declare type upgradeFromMap = { [fromVersion: string]: upgradeToMap }
 
   export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
 }

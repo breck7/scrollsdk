@@ -40,18 +40,84 @@ const main = async grammarSourceCode => {
 
   await init()
 
+  const downloadBundle = () => {
+    const grammarCode = grammarInstance.getValue()
+    const grammarProgram = new jtree.GrammarProgram(grammarCode)
+    const languageName = grammarProgram.get("grammar name")
+    const extension = languageName
+
+    const zip = new JSZip()
+
+    const pack = {
+      name: languageName,
+      private: true,
+      dependencies: {
+        jtree: jtree.getVersion()
+      }
+    }
+
+    const nodePath = `${languageName}.node.js`
+    const samplePath = "sample." + extension
+    const sampleCode = codeInstance.getValue()
+    const browserPath = `${languageName}.browser.js`
+    const rootProgramClassName = grammarProgram._getGeneratedClassName()
+    zip.file("package.json", JSON.stringify(pack, null, 2))
+    zip.file(
+      "readme.md",
+      `# ${languageName} Readme
+
+### Installing
+
+    npm install .
+
+### Testing
+
+    node test.js`
+    )
+    const testCode = `const program = new ${rootProgramClassName}(sampleCode)
+const errors = program.getAllErrors()
+console.log("Sample program compiled with " + errors.length + " errors.")
+if (errors.length)
+ console.log(errors.map(error => error.getMessage()))`
+
+    zip.file(browserPath, grammarProgram.toBrowserJavascript())
+    zip.file(nodePath, grammarProgram.toNodeJsJavascript())
+    zip.file(`index.js`, `module.exports = require("./${nodePath}")`)
+    zip.file(
+      "index.html",
+      `<script src="node_modules/jtree/built/jtree.browser.js"></script>
+<script src="${browserPath}"></script>
+<script>
+const sampleCode = \`${sampleCode}\`
+${testCode}
+</script>`
+    )
+    zip.file(samplePath, sampleCode)
+    zip.file(
+      `test.js`,
+      `const {${rootProgramClassName}} = require("./index.js")
+/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
+${testCode}`
+    )
+
+    zip.generateAsync({ type: "blob" }).then(function(content) {
+      // see FileSaver.js
+      saveAs(content, languageName + ".zip")
+    })
+  }
+
   const GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
   const grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => GrammarConstructor, undefined, CodeMirror)
     .register()
     .fromTextAreaWithAutocomplete(grammarConsole[0], { lineWrapping: true })
 
-  const getGrammarErrors = grammarCode => new GrammarConstructor(grammarCode).getProgramErrors()
+  const getGrammarErrors = grammarCode => new GrammarConstructor(grammarCode).getAllErrors()
 
   const grammarOnUpdate = () => {
     const grammarCode = grammarInstance.getValue()
     localStorage.setItem(localStorageKeys.grammarConsole, grammarCode)
     window.grammarProgram = new GrammarConstructor(grammarCode)
-    const errs = window.grammarProgram.getProgramErrors().map(err => err.toObject())
+    const errs = window.grammarProgram.getAllErrors().map(err => err.toObject())
     grammarErrorsConsole.html(errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
@@ -87,7 +153,7 @@ const main = async grammarSourceCode => {
     const programConstructor = getGrammarConstructor()
 
     window.program = new programConstructor(code)
-    const errs = window.program.getProgramErrors()
+    const errs = window.program.getAllErrors()
     codeErrorsConsole.html(errs.length ? new TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
 
     const cursor = codeInstance.getCursor()
@@ -157,6 +223,8 @@ const main = async grammarSourceCode => {
     const grammarPath = el.attr("data-grammarPath") || `/langs/${name}/${name}.grammar`
     fetchGrammar(grammarPath, samplePath)
   })
+
+  $("#downloadBundle").on("click", downloadBundle)
 }
 
 $(document).ready(function() {

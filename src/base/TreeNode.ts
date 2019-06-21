@@ -41,7 +41,7 @@ class ImmutableNode extends AbstractNode {
 
   getLineCellTypes() {
     // todo: make this any a constant
-    return "any ".repeat(this.getWords().length).trim()
+    return "undefinedCellType ".repeat(this.getWords().length).trim()
   }
 
   executeSync(context: any) {
@@ -318,6 +318,30 @@ class ImmutableNode extends AbstractNode {
     })
 
     return spots[charIndex]
+  }
+
+  getAllErrors(): jTreeTypes.TreeError[] {
+    const errors: jTreeTypes.TreeError[] = []
+    let line = 1
+    for (let node of this.getTopDownArray()) {
+      node._cachedLineNumber = line
+      const errs: jTreeTypes.TreeError[] = node.getErrors()
+      errs.forEach(err => errors.push(err))
+      delete node._cachedLineNumber
+      line++
+    }
+    return errors
+  }
+
+  *getAllErrorsIterator() {
+    let line = 1
+    for (let node of this.getTopDownArrayIterator()) {
+      node._cachedLineNumber = line
+      const errs = node.getErrors()
+      delete node._cachedLineNumber
+      if (errs.length) yield errs
+      line++
+    }
   }
 
   getFirstWord(): word {
@@ -668,10 +692,13 @@ class ImmutableNode extends AbstractNode {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(firstWordPath: jTreeTypes.firstWordPath): TreeNode[] {
+  findNodes(firstWordPath: jTreeTypes.firstWordPath | jTreeTypes.firstWordPath[]): TreeNode[] {
     // todo: can easily speed this up
+    const map: any = {}
+    if (!Array.isArray(firstWordPath)) firstWordPath = [firstWordPath]
+    firstWordPath.forEach(path => (map[path] = true))
     return this.getTopDownArray().filter(node => {
-      if (node._getFirstWordPath(this) === firstWordPath) return true
+      if (map[node._getFirstWordPath(this)]) return true
       return false
     })
   }
@@ -1278,7 +1305,7 @@ class ImmutableNode extends AbstractNode {
   }
 
   getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
-    return undefined
+    return {}
   }
 
   getCatchAllNodeConstructor(line: string) {
@@ -1303,12 +1330,13 @@ class ImmutableNode extends AbstractNode {
     return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
   }
 
-  getNodeConstructor(line: string) {
-    const map = this.getFirstWordMap()
-    if (!map) return this.getCatchAllNodeConstructor(line)
+  protected _getFirstWord(line: string) {
     const firstBreak = line.indexOf(this.getZI())
-    const firstWord = line.substr(0, firstBreak > -1 ? firstBreak : undefined)
-    return map[firstWord] || this.getCatchAllNodeConstructor(line)
+    return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
+  }
+
+  getNodeConstructor(line: string) {
+    return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
   }
 
   private static _uniqueId: int
@@ -1379,7 +1407,7 @@ class TreeNode extends ImmutableNode {
     return this._virtualParentTree
   }
 
-  private _setVirtualAncestorNodesByInheritanceViaColumnIndices(nodes: TreeNode[], thisIdColumnNumber: int, extendsIdColumnNumber: int) {
+  private _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes: TreeNode[], thisIdColumnNumber: int, extendsIdColumnNumber: int) {
     const map: { [nodeId: string]: jTreeTypes.inheritanceInfo } = {}
     for (let node of nodes) {
       const nodeId = node.getWord(thisIdColumnNumber)
@@ -1425,7 +1453,7 @@ class TreeNode extends ImmutableNode {
 
   // todo: solve issue related to whether extend should overwrite or append.
   _expandChildren(thisIdColumnNumber: int, extendsIdColumnNumber: int, childrenThatNeedExpanding = this.getChildren()) {
-    return this._setVirtualAncestorNodesByInheritanceViaColumnIndices(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber)
+    return this._setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber)
   }
 
   // todo: add more testing.

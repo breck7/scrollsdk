@@ -8,6 +8,12 @@ class AbstractRuntimeNode extends TreeNode_1.default {
     getGrammarProgram() {
         return this.getProgram().getGrammarProgram();
     }
+    getNodeConstructor(line) {
+        return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line);
+    }
+    getFirstWordMap() {
+        return this.getDefinition().getRunTimeFirstWordMap();
+    }
     getCatchAllNodeConstructor(line) {
         return this.getDefinition().getRunTimeCatchAllNodeConstructor();
     }
@@ -29,8 +35,7 @@ class AbstractRuntimeNode extends TreeNode_1.default {
         return cell ? cell.getAutoCompleteWords(partialWord) : [];
     }
     _getAutocompleteResultsForFirstWord(partialWord) {
-        const def = this.getDefinition();
-        let defs = Object.values(def.getRunTimeFirstWordMapWithDefinitions());
+        let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
         if (partialWord)
             defs = defs.filter(def => def.getNodeTypeIdFromDefinition().includes(partialWord));
         return defs.map(def => {
@@ -42,15 +47,14 @@ class AbstractRuntimeNode extends TreeNode_1.default {
             };
         });
     }
-    _getNodeTypeDefinitionByName(path) {
+    _getNodeTypeDefinitionByFirstWordPath(path) {
         // todo: do we need a relative to with this firstWord path?
         return this.getProgram()
             .getGrammarProgram()
             .getNodeTypeDefinitionByFirstWordPath(path);
     }
     _getRequiredNodeErrors(errors = []) {
-        const nodeDef = this.getDefinition();
-        const firstWords = nodeDef.getRunTimeFirstWordMapWithDefinitions();
+        const firstWords = this.getDefinition().getRunTimeFirstWordMapWithDefinitions();
         Object.keys(firstWords).forEach(firstWord => {
             const def = firstWords[firstWord];
             if (def.isRequired() && !this.has(firstWord))

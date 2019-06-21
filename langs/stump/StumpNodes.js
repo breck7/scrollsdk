@@ -23,22 +23,6 @@ StumpConstants.inputTypes = ["input", "textarea"]
 
 // Note: do NOT support things like solo tags <br>. one way to do things.
 
-class StumpBernNode extends jtree.NonTerminalNode {
-  _toHtml() {
-    return this.childrenToString()
-  }
-}
-
-class StumpAttributeNode extends jtree.TerminalNode {
-  _toHtml() {
-    return ""
-  }
-
-  getAttribute() {
-    return ` ${this.getFirstWord()}="${this.getContent()}"`
-  }
-}
-
 // todo: make a stumpNode tile and separate stumpNode program
 class StumpNode extends jtree.NonTerminalNode {
   getTag() {
@@ -67,7 +51,7 @@ class StumpNode extends jtree.NonTerminalNode {
   _toHtml(indentCount, withSuid) {
     const tag = this.getTag()
     const children = this.map(child => child._toHtml(indentCount + 1, withSuid)).join("")
-    const attributesStr = this.getChildrenByNodeConstructor(StumpAttributeNode)
+    const attributesStr = this.filter(node => node.isAttributeNode)
       .map(child => child.getAttribute())
       .join("")
     const indent = " ".repeat(indentCount)
@@ -233,16 +217,7 @@ class StumpNode extends jtree.NonTerminalNode {
   }
 }
 
-class StumpProgramRoot extends jtree.programRoot {
-  compile() {
-    return this.toHtml()
-  }
-}
-
 module.exports = {
-  StumpBernNode,
-  StumpProgramRoot,
-  StumpAttributeNode,
   StumpConstants,
   StumpNode
 }

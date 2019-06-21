@@ -61,7 +61,7 @@ class CLI {
   // todo: improve or remove
   cases(folder, grammarName) {
     const files = recursiveReadSync(folder).filter(file => file.endsWith("." + grammarName))
-    const grammarProgram = this._getGrammarProgram(grammarName)
+    const grammarProgram = this._getGrammarProgramRoot(grammarName)
     const targetExtension = grammarProgram.getTargetExtension()
     files.map(filename => {
       const errors = this._check(filename)
@@ -126,7 +126,7 @@ ${grammars.toTable()}`
   _check(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    return program.getProgramErrorMessages()
+    return program.getAllErrors().map(err => err.getMessage())
   }
 
   _getGrammarPathOrThrow(programPath) {
@@ -159,7 +159,7 @@ ${grammars.toTable()}`
     return `Saved: ${sub}`
   }
 
-  _getGrammarProgram(grammarName) {
+  _getGrammarProgramRoot(grammarName) {
     const grammarPath = this._getGrammarPathByGrammarName(grammarName)
     return new GrammarProgram(this._read(grammarPath))
   }
@@ -168,7 +168,6 @@ ${grammars.toTable()}`
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    const path = program.getCompiledProgramName(programPath)
     const grammarProgram = new GrammarProgram(this._read(grammarPath))
     targetExtension = targetExtension || grammarProgram.getTargetExtension()
     const compiledCode = program.compile(targetExtension)

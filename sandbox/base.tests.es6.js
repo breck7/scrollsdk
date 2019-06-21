@@ -701,10 +701,9 @@ testTree.getNodeByColumns = equal => {
   const jib = new TreeNode(`jibberish
  description Test a root parser node
  constructors
-  nodejs ./jibberishProgramRoot.js
+  nodejs ./JibberishLang.js JibberishProgramRoot
  compiler txt
- nodeTypes
-  baseNode`)
+ inScope baseNode`)
 
   // Act
   const node2 = jib.getNode("jibberish constructors nodejs")
@@ -1898,22 +1897,17 @@ testTree.isomorphicGrammarTests = equal => {
  name jibberish
  description Test a root parser node
  constructors
-  nodejs ./jibberishProgramRoot.js
+  nodejs JibberishLang.js
  compiler txt
  catchAllNodeType error
- nodeTypes
-  topLevel
-  text
-  someAbstractClass
+ inScope topLevel text someAbstractClass
 cellType int
 cellType word
 cellType anyFirstWord
 cellType onoff
  enum on off
 nodeType error
- constructors
-  nodejs ErrorNode
-  browser ErrorNode
+ baseNodeType errorNode
 abstract topLevel
 abstract someAbstractClass
 abstract color_properties topLevel
@@ -1926,19 +1920,17 @@ nodeType someCode topLevel
 nodeType lineOfCode
  catchAllCellType word
  constructors
-  nodejs ./jibberishNodes.js LineOfCodeNode
+  nodejs ./JibberishLang.js LineOfCodeNode
 nodeType block topLevel
- nodeTypes
-  topLevel
+ inScope topLevel
 nodeType foo topLevel
 nodeType nodeWithConsts topLevel
- constants
-  greeting string hello world
+ string greeting hello world
 nodeType text
- blob
+ blobNode
 nodeType add topLevel
  constructors
-  nodejs ./jibberishNodes.js additionNode
+  nodejs ./JibberishLang.js AdditionNode
 nodeType + add
  catchAllCellType int
 nodeType lightbulbState topLevel
@@ -1960,17 +1952,17 @@ someCode
   // Allow running in both browser and nodejs:
   const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
 
-  class additionNode extends jtreeBase.NonTerminalNode {}
+  class AdditionNode extends jtreeBase.NonTerminalNode {}
   class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
-  class jibberishProgramRoot extends jtreeBase.programRoot {}
+  class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
-  const jibberishNodes = {}
-  jibberishNodes.additionNode = additionNode
-  jibberishNodes.LineOfCodeNode = LineOfCodeNode
+  const JibberishLang = {}
+  JibberishLang.AdditionNode = AdditionNode
+  JibberishLang.LineOfCodeNode = LineOfCodeNode
   let win = typeof window === "undefined" ? {} : window
-  win.jibberishNodes = jibberishNodes
-  win.jibberishProgramRoot = jibberishProgramRoot
-  win.additionNode = additionNode
+  win.JibberishLang = JibberishLang
+  win.JibberishProgramRoot = JibberishProgramRoot
+  win.AdditionNode = AdditionNode
   win.LineOfCodeNode = LineOfCodeNode
 
   // Act
@@ -1980,13 +1972,13 @@ someCode
   )
   const ProgramConstructor = grammarProgram.getRootConstructor()
   const program = new ProgramConstructor(code)
-  const errs = program.getProgramErrors()
+  const errs = program.getAllErrors()
 
   // Assert
-  equal(errs.length, 0, "no errors")
+  equal(errs.length, 0, "expected no errors")
 }
 
-testTree._expandChildren = equal => {
+testTree.expandChildren = equal => {
   // Arrange
   const tree = new TreeNode(
     `Thing
@@ -3620,7 +3612,7 @@ testTree.typeTests = equal => {
   const a = new TreeNode("text")
   // Assert
   equal(a.getErrors().length, 0)
-  equal(a.getLineCellTypes(), "any")
+  equal(a.getLineCellTypes(), "undefinedCellType") // todo: make this a constant
 }
 
 testTree.isBlank = equal => {

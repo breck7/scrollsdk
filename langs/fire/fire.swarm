@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test basics
  arrangeTestSubject
-  require ./Fire.js Program
+  require ./FireProgram.js
   constructWithBlockString
    add ten 2 3 5
    dump ten
@@ -9,5 +9,5 @@ test basics
   blockStringIs
    const ten = [2, 3, 5].reduce((sum, num) => sum + num)
    console.log(ten)
- getProgramErrors
+ getAllErrors
   lengthIs 0

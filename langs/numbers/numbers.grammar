@@ -1,10 +1,7 @@
 grammar
  name numbers
  description A useless Tree Language for testing Tree Notation features.
- nodeTypes
-  abstract.arithmetic
-  #
-  #!
+ inScope abstract.arithmeticReducer # #!
  catchAllNodeType error
 cellType float
 cellType commentWord
@@ -16,20 +13,16 @@ cellType number float
 cellType numbers number
 cellType operator
  highlightScope keyword.operator.arithmetic
-abstract abstract.arithmetic
+abstract abstract.arithmeticReducer
  catchAllCellType numbers
- constructors
-  javascript
-   class extends jtree.NonTerminalNode {
-     executeSync() {
-       return this.cells.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.cells.numbers[0])
-     }
-     async execute() { return this.executeSync() }
-   }
+ description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
+ javascript
+  executeSync() {
+    return this.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.numbers[0])
+  }
+  async execute() { return this.executeSync() }
  firstCellType operator
- nodeTypes
-  abstract.arithmetic
-  #
+ inScope abstract.arithmeticReducer #
 nodeType #
  description This is a line comment.
  firstCellType commentWord
@@ -37,14 +30,12 @@ nodeType #
  catchAllNodeType #
 nodeType error
  catchAllCellType errorWord
- constructors
-  browser ErrorNode
-  nodejs ErrorNode
+ baseNodeType errorNode
  firstCellType errorWord
 nodeType #! #
 nodeType comment #
-nodeType % abstract.arithmetic
-nodeType * abstract.arithmetic
-nodeType + abstract.arithmetic
-nodeType - abstract.arithmetic
-nodeType / abstract.arithmetic
+nodeType % abstract.arithmeticReducer
+nodeType * abstract.arithmeticReducer
+nodeType + abstract.arithmeticReducer
+nodeType - abstract.arithmeticReducer
+nodeType / abstract.arithmeticReducer

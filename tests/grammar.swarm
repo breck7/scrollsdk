@@ -1,30 +1,28 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test stress test
  arrangeTestSubject
-  require ../built/grammar/GrammarProgram.js default
+  require ../built/GrammarLanguage.js GrammarProgram
   constructWithBlockString
    grammar
     name testlang
     compiler txt
-    nodeTypes
-     baseNode
+    inScope baseNode
    cellType any
    foo
    cellType anyFirstWord
    cellType word any
    nodeType baseNode
    nodeType block baseNode
-    nodeTypes
-     baseNode
+    inScope baseNode
    nodeType to block
     cells word
     tags test
     compiler txt
      sub to {word}
      closeChildren end
- getRunTimeNodeTypeNames
+ getRunTimeFirstWordsInScope
   lengthIs 3
- getNodeTypeDefinitionByName to
+ getNodeTypeDefinitionByNodeTypeId to
   typeIs object
  getTopNodeTypeIds
   lengthIs 3
@@ -32,13 +30,11 @@ test stress test
   stringIs txt
  getExtensionName
   stringIs testlang
- getDocs
-  typeIs string
  toSublimeSyntaxFile
   typeIs string
  isDefined notDefined
   stringIs false
  isDefined to
   stringIs true
- getProgramErrors
+ getAllErrors
   lengthIs 1

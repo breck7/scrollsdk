@@ -23,7 +23,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     getLineCellTypes() {
         // todo: make this any a constant
-        return "any ".repeat(this.getWords().length).trim();
+        return "undefinedCellType ".repeat(this.getWords().length).trim();
     }
     executeSync(context) {
         return this.map(child => child.executeSync(context));
@@ -272,6 +272,29 @@ class ImmutableNode extends AbstractNode_node_1.default {
             spots.push(wordIndex);
         });
         return spots[charIndex];
+    }
+    getAllErrors() {
+        const errors = [];
+        let line = 1;
+        for (let node of this.getTopDownArray()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            errs.forEach(err => errors.push(err));
+            delete node._cachedLineNumber;
+            line++;
+        }
+        return errors;
+    }
+    *getAllErrorsIterator() {
+        let line = 1;
+        for (let node of this.getTopDownArrayIterator()) {
+            node._cachedLineNumber = line;
+            const errs = node.getErrors();
+            delete node._cachedLineNumber;
+            if (errs.length)
+                yield errs;
+            line++;
+        }
     }
     getFirstWord() {
         return this.getWords()[0];
@@ -577,8 +600,12 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     findNodes(firstWordPath) {
         // todo: can easily speed this up
+        const map = {};
+        if (!Array.isArray(firstWordPath))
+            firstWordPath = [firstWordPath];
+        firstWordPath.forEach(path => (map[path] = true));
         return this.getTopDownArray().filter(node => {
-            if (node._getFirstWordPath(this) === firstWordPath)
+            if (map[node._getFirstWordPath(this)])
                 return true;
             return false;
         });
@@ -1121,7 +1148,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return this.getChildren().slice(start, end);
     }
     getFirstWordMap() {
-        return undefined;
+        return {};
     }
     getCatchAllNodeConstructor(line) {
         return this.constructor;
@@ -1142,13 +1169,12 @@ class ImmutableNode extends AbstractNode_node_1.default {
     _getGrandParent() {
         return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent();
     }
-    getNodeConstructor(line) {
-        const map = this.getFirstWordMap();
-        if (!map)
-            return this.getCatchAllNodeConstructor(line);
+    _getFirstWord(line) {
         const firstBreak = line.indexOf(this.getZI());
-        const firstWord = line.substr(0, firstBreak > -1 ? firstBreak : undefined);
-        return map[firstWord] || this.getCatchAllNodeConstructor(line);
+        return line.substr(0, firstBreak > -1 ? firstBreak : undefined);
+    }
+    getNodeConstructor(line) {
+        return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line);
     }
     static _makeUniqueId() {
         if (this._uniqueId === undefined)
@@ -1205,7 +1231,7 @@ class TreeNode extends ImmutableNode {
     _getVirtualParentTreeNode() {
         return this._virtualParentTree;
     }
-    _setVirtualAncestorNodesByInheritanceViaColumnIndices(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
+    _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes, thisIdColumnNumber, extendsIdColumnNumber) {
         const map = {};
         for (let node of nodes) {
             const nodeId = node.getWord(thisIdColumnNumber);
@@ -1247,7 +1273,7 @@ class TreeNode extends ImmutableNode {
     }
     // todo: solve issue related to whether extend should overwrite or append.
     _expandChildren(thisIdColumnNumber, extendsIdColumnNumber, childrenThatNeedExpanding = this.getChildren()) {
-        return this._setVirtualAncestorNodesByInheritanceViaColumnIndices(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber);
+        return this._setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(childrenThatNeedExpanding, thisIdColumnNumber, extendsIdColumnNumber);
     }
     // todo: add more testing.
     // todo: solve issue with where extend should overwrite or append

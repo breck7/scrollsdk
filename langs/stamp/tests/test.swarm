@@ -1,18 +1,18 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test basics stamp
  arrangeTestSubject
-  require ../StampProgram.js
+  require ../Stamp.js Program
   constructWithBlockString
    folder testEx
    file testEx/hi.sh
     data
      echo Hello world
     executable
- getProgramErrors
+ getAllErrors
   lengthIs 0
 skipTest staticReenableOncePathFix
  arrangeTestSubject
-  require ../StampProgram.js
+  require ../Stamp.js Program
   static
  dirToStamp ./cases
   blockStringIs

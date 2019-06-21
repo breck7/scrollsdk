@@ -1,5 +1,5 @@
 import jTreeTypes from "../jTreeTypes";
-import AbstractRuntimeProgram from "./AbstractRuntimeProgram";
+import { AbstractRuntimeProgramRootNode } from "./AbstractRuntimeNodes";
 import * as CodeMirrorLib from "codemirror";
 interface treeNotationCodeMirrorState {
     cellIndex: number;
@@ -14,7 +14,7 @@ declare class TreeNotationCodeMirrorMode {
     private _cachedProgram;
     private _cmInstance;
     private _originalValue;
-    _getParsedProgram(): AbstractRuntimeProgram;
+    _getParsedProgram(): AbstractRuntimeProgramRootNode;
     private _getExcludedIntelliSenseTriggerKeys;
     token(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string;
     fromTextAreaWithAutocomplete(area: HTMLTextAreaElement, options: any): CodeMirrorLib.EditorFromTextArea;

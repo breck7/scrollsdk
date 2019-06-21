@@ -58,6 +58,8 @@ declare class ImmutableNode extends AbstractNode {
     getAllWordBoundaryCoordinates(): jTreeTypes.point[];
     getWordBoundaryIndices(): jTreeTypes.positiveInt[];
     getWordIndexAtCharacterIndex(charIndex: jTreeTypes.positiveInt): int;
+    getAllErrors(): jTreeTypes.TreeError[];
+    getAllErrorsIterator(): IterableIterator<any>;
     getFirstWord(): word;
     getContent(): string;
     getContentWithChildren(): string;
@@ -121,7 +123,7 @@ declare class ImmutableNode extends AbstractNode {
     _toYamlAssociativeArrayElement(indentLevel: number): string;
     _childrenToYamlAssociativeArray(indentLevel: number): string[];
     toJsonSubset(): jTreeTypes.jsonSubset;
-    findNodes(firstWordPath: jTreeTypes.firstWordPath): TreeNode[];
+    findNodes(firstWordPath: jTreeTypes.firstWordPath | jTreeTypes.firstWordPath[]): TreeNode[];
     format(str: jTreeTypes.formatString): string;
     getColumn(path: word): string[];
     getFiltered(fn: jTreeTypes.filterFn): TreeNode;
@@ -201,6 +203,7 @@ declare class ImmutableNode extends AbstractNode {
     getCatchAllNodeConstructor(line: string): Function;
     getInheritanceTree(): TreeNode;
     protected _getGrandParent(): ImmutableNode | undefined;
+    protected _getFirstWord(line: string): string;
     getNodeConstructor(line: string): Function;
     private static _uniqueId;
     static _makeUniqueId(): number;
@@ -218,7 +221,7 @@ declare class TreeNode extends ImmutableNode {
     private _virtualParentTree;
     protected _setVirtualParentTree(tree: TreeNode): this;
     protected _getVirtualParentTreeNode(): TreeNode;
-    private _setVirtualAncestorNodesByInheritanceViaColumnIndices;
+    private _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand;
     private _isVirtualExpanded;
     private _isExpanding;
     protected _expandFromVirtualParentTree(): this;

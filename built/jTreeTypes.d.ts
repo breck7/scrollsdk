@@ -37,7 +37,6 @@ export declare namespace jTreeTypes {
     type pathVector = int[];
     type word = string;
     type firstWord = word;
-    type nodeTypeId = string;
     type triInt = int;
     type filepath = string;
     type globPattern = string;
@@ -54,11 +53,26 @@ export declare namespace jTreeTypes {
     type nodeIdRenameMap = {
         [oldNodeTypeId: string]: string;
     };
+    type typeScriptCode = string;
+    type javascriptCode = string;
+    type nodeTypeId = string;
+    type cellTypeId = string;
+    type semanticVersion = string;
+    type absoluteFilePath = filepath;
+    type asboluteFolderPath = absoluteFilePath;
+    type javascriptClassPath = string;
     type children = string | Object | treeNode | any;
     type TreeNodeConstructor = Function;
     type RunTimeNodeConstructor = Function;
     type TreeProgramConstructor = Function;
     type treeProgram = treeNode;
+    type upgradeFunction = (tree: treeNode) => treeNode;
+    type upgradeToMap = {
+        [toVersion: string]: upgradeFunction;
+    };
+    type upgradeFromMap = {
+        [fromVersion: string]: upgradeToMap;
+    };
     type firstWordToNodeConstructorMap = {
         [firstWord: string]: TreeNodeConstructor;
     };

@@ -10,7 +10,7 @@ testTree.all = equal => {
 - 2 2`)
 
   // Act/Assert
-  equal(program.getProgramErrors().length, 0)
+  equal(program.getAllErrors().length, 0)
   equal(program.executeSync().join(" "), `7 0`)
 
   // A/A/A

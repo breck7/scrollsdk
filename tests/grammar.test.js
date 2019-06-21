@@ -3,12 +3,12 @@
 // todo: make isomorphic
 
 const fs = require("fs")
-const GrammarProgram = require("../built/grammar/GrammarProgram.js").default
+const GrammarProgram = require("../built/GrammarLanguage.js").GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
-const jibberishProgramRoot = require(jibberishRootDir + "jibberishProgramRoot.js")
-const jibberishNodes = require(jibberishRootDir + "jibberishNodes.js")
+const JibberishLang = require(jibberishRootDir + "JibberishLang.js")
 
-const numbersGrammar = fs.readFileSync(__dirname + "/../langs/numbers/numbers.grammar", "utf8")
+const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
+const numbersGrammar = fs.readFileSync(numbersPath, "utf8")
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = fs.readFileSync(grammarGrammarPath, "utf8")
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
@@ -24,13 +24,12 @@ testTree.basic = equal => {
 testTree.basics = equal => {
   // Arrange/Act
   const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
-  const errs = grammarProgram.getProgramErrors()
+  const errs = grammarProgram.getAllErrors()
 
   // Assert
-  equal(errs.length, 0, errs.map(JSON.stringify).join(" "))
+  if (errs.length) console.log(errs.map(err => err.getMessage()))
+  equal(errs.length, 0, "should be no errors")
 }
-
-const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
 const makeGrammarProgram = code => makeProgram(grammarGrammar, code)
 
@@ -38,6 +37,8 @@ const makeJibberishProgram = code => {
   const grammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
   return makeProgram(grammarCode, code, jibberishGrammarPath)
 }
+
+const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
 const makeProgram = (grammarCode, code, grammarPath = undefined) => {
   const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
@@ -53,11 +54,11 @@ testTree.jibberish = equal => {
   const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
-  equal(program instanceof jibberishProgramRoot, true, "correct program class")
-  equal(program.getProgramErrors().length, 0, `${program.getProgramErrorMessages()}`)
+  equal(program instanceof JibberishLang.JibberishProgramRoot, true, "correct program class")
+  equal(program.getAllErrors().length, 0, `should be 0 errors`)
 
   const defNode = program
-    .getGrammarProgram()
+    .getGrammarProgramRoot()
     .getNodeTypeFamilyTree()
     .getNode("topLevel nodeWithConsts")
 
@@ -65,39 +66,43 @@ testTree.jibberish = equal => {
 
   // Act
   const fooNode = program.getNode("foo")
-  const fooDef = fooNode.getDefinition()
   const constNode = program.getNode("nodeWithConsts")
-  const nodeDef = constNode.getDefinition()
 
   // Assert
-  equal(fooDef.getNodeTypeIdFromDefinition(), "foo")
-  equal(nodeDef.getNodeTypeIdFromDefinition(), "nodeWithConsts")
-  equal(nodeDef.getAncestorNodeTypeNamesArray().join(" "), "topLevel nodeWithConsts")
-
-  // Act
-  const constObj = nodeDef.getConstantsObject()
+  equal(fooNode.getNodeTypeId(), "foo")
+  equal(constNode.getNodeTypeId(), "nodeWithConsts")
+  equal(
+    constNode
+      .getDefinition()
+      .getAncestorNodeTypeIdsArray()
+      .join(" "),
+    "topLevel nodeWithConsts"
+  )
 
   // Assert
-  equal(constObj.greeting, "hello world")
+  equal(constNode.greeting, "hello world", "constant strings should work")
+  equal(constNode.score1, 28, "constant insts should work")
+  equal(constNode.score2, 3.01, "constant floats should work")
+  equal(constNode.win, true, "constant booleans should work")
 
   // Act
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition instanceof jibberishNodes.additionNode, true)
+  equal(addition instanceof JibberishLang.AdditionNode, true)
 
   // Act/Assert
-  equal(program.getNode("someCode echo") instanceof jibberishNodes.LineOfCodeNode, true, "line of code class")
+  equal(program.getNode("someCode echo") instanceof JibberishLang.LineOfCodeNode, true, "line of code class")
 
   // Arrange
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
 
   // Act/Assert
-  equal(programWithBugs.getProgramErrorMessages().length, 2)
+  equal(programWithBugs.getAllErrors().length, 2)
 
   // Act
   let count = 0
-  for (let err of programWithBugs.getProgramErrorsIterator()) {
+  for (let err of programWithBugs.getAllErrorsIterator()) {
     // 2 errors in 1 line
     equal(err.length, 2)
   }
@@ -125,7 +130,6 @@ testTree.cellTypeTree = equal => {
 opSymbol int int int`,
     "word types should match"
   )
-  equal(someJibberishProgram.nodeAt(1).getParsedWords()[1], 2)
 
   // Act
   const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()
@@ -134,14 +138,14 @@ opSymbol int int int`,
   // Assert
   equal(
     nodeTypes,
-    `GrammarBackedTerminalNode topLevelProperty
-additionNode opSymbol int int int`,
+    `FooNode topLevelProperty
+AdditionNode opSymbol int int int`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
-    `GrammarBackedTerminalNode foo
-additionNode + 2 3 2`,
+    `FooNode foo
+AdditionNode + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )
 }
@@ -176,7 +180,7 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
     `constant.language source
  invalid`
   )
-  equal(program.getProgramErrors().length, 1)
+  equal(program.getAllErrors().length, 1)
 }
 
 testTree.autocomplete = equal => {
@@ -211,7 +215,7 @@ testTree.extraWord = equal => {
   const program = makeGrammarProgram(`grammar foobar`)
 
   // Act/Assert
-  equal(program.getProgramErrors().length, 1)
+  equal(program.getAllErrors().length, 1)
   equal(program.getInPlaceCellTypeTree(), "propertyName extraWord")
 }
 
@@ -229,23 +233,22 @@ testTree.autocompleteAdvanced = equal => {
   const program = makeGrammarProgram(`grammar
  name latin
  catchAllNodeType any
- nodeTypes
-  faveNumber
+ inScope faveNumber
 cellType integer
 nodeType any
 nodeType faveNumber
  cells in`)
 
   // Act/Assert
-  equal(program.getAutocompleteResultsAt(8, 9).matches.length, 1)
+  equal(program.getAutocompleteResultsAt(7, 9).matches.length, 1)
 }
 
 testTree.autocompleteCustom = equal => {
   // Arrange/Act/Assert
   equal(makeJibberishProgram(`xColumnName `).getAutocompleteResultsAt(0, 12).matches.length, 3)
   equal(makeJibberishProgram(`xColumnName eight`).getAutocompleteResultsAt(0, 12).matches.length, 2)
-  equal(makeJibberishProgram(`xColumnName gender`).getProgramErrors().length, 0)
-  equal(makeJibberishProgram(`xColumnName genders`).getProgramErrors().length, 1, "should have 1 error. genders doesnt fit.")
+  equal(makeJibberishProgram(`xColumnName gender`).getAllErrors().length, 0)
+  equal(makeJibberishProgram(`xColumnName genders`).getAllErrors().length, 1, "should have 1 error. genders doesnt fit.")
 }
 
 testTree.blobNodes = equal => {
@@ -258,11 +261,10 @@ testTree.blobNodes = equal => {
  1+1`)
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages().join("\n")
-  equal(errors, "")
+  equal(anyProgram.getAllErrors().length, 0)
 
   // Act
-  for (let err of anyProgram.getProgramErrorsIterator()) {
+  for (let err of anyProgram.getAllErrorsIterator()) {
     // Should be no errors
     equal(true, false)
   }
@@ -288,8 +290,7 @@ nodeType baseNode`,
   )
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages()
-  equal(errors.length, 1)
+  equal(anyProgram.getAllErrors().length, 1)
 }
 
 testTree.minimumGrammar = equal => {
@@ -303,17 +304,17 @@ nodeType anyNode
 cellType any`
   ).getRootConstructor()
   const program = new programConstructor()
-  const grammarProgram = program.getGrammarProgram()
+  const grammarProgram = program.getGrammarProgramRoot()
 
   // Assert
-  let errors = grammarProgram.getProgramErrors()
+  let errors = grammarProgram.getAllErrors()
   equal(errors.length, 0)
-  errors = program.getProgramErrors()
+  errors = program.getAllErrors()
   equal(errors.length, 0)
 
   // Arrange/Act/Assert
   const constructor = GrammarProgram.getTheAnyLanguageRootConstructor()
-  const errs = new constructor("foobar").getProgramErrors()
+  const errs = new constructor("foobar").getAllErrors()
   equal(errs.length, 0)
 }
 
@@ -342,8 +343,7 @@ testTree.duplicateNodeTypes = equal => {
 type bar`)
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages()
-  equal(errors.length, 2)
+  equal(anyProgram.getAllErrors().length, 2)
 }
 
 testTree.abstractNodeTypes = equal => {
@@ -352,8 +352,7 @@ testTree.abstractNodeTypes = equal => {
 extendsAbstract 2`)
 
   // Assert
-  let errors = anyProgram.getProgramErrorMessages()
-  equal(errors.length, 1)
+  equal(anyProgram.getAllErrors().length, 1)
 }
 
 testTree.updateNodeTypeIds = equal => {
@@ -377,6 +376,15 @@ cellSpace foobar
   )
 }
 
+testTree.toNodeJsJavascript = equal => {
+  // Arrange
+  let program = GrammarProgram.newFromCondensed(grammarGrammar)
+  // Act
+  let compiledParser = program.toNodeJsJavascript()
+  // Assert
+  equal(typeof compiledParser, "string")
+}
+
 testTree.examples = equal => {
   // Arrange/Act
   const jibberishGrammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
@@ -389,8 +397,7 @@ testTree.examples = equal => {
   const badGrammarProgram = GrammarProgram.newFromCondensed(
     `grammar
  name bad
- nodeTypes
-  +
+ inScope +
 nodeType +
  catchAllCellType int
  example This is a bad example.

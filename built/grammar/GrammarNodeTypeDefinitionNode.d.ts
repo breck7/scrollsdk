@@ -1,28 +1,28 @@
-import GrammarExampleNode from "./GrammarExampleNode";
 import AbstractGrammarDefinitionNode from "./AbstractGrammarDefinitionNode";
 import jTreeTypes from "../jTreeTypes";
 declare class GrammarNodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId(): string;
-    getExpectedLineCellTypes(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
     getSublimeSyntaxContextId(): string;
+    getConstantsObject(): jTreeTypes.stringMap;
     private _getFirstCellHighlightScope;
+    protected _getParentDefinition(): AbstractGrammarDefinitionNode;
     getMatchBlock(): string;
     private _cache_nodeTypeInheritanceSet;
     private _cache_ancestorNodeTypeIdsArray;
     getNodeTypeInheritanceSet(): Set<string>;
     private _getIdOfNodeTypeThatThisExtends;
-    getAncestorNodeTypeNamesArray(): jTreeTypes.nodeTypeId[];
+    getAncestorNodeTypeIdsArray(): jTreeTypes.nodeTypeId[];
     protected _initNodeTypeInheritanceCache(): void;
     _getProgramNodeTypeDefinitionCache(): {
-        [nodeTypeName: string]: GrammarNodeTypeDefinitionNode;
+        [nodeTypeId: string]: GrammarNodeTypeDefinitionNode;
     };
     getDoc(): string;
     private _getDefaultsNode;
     getDefaultFor(name: string): string;
     getDescription(): string;
-    getExamples(): GrammarExampleNode[];
-    getConstantsObject(): jTreeTypes.stringMap;
     getFrequency(): number;
+    private _getExtendedNodeTypeId;
+    _toJavascript(): jTreeTypes.javascriptCode;
 }
 export default GrammarNodeTypeDefinitionNode;

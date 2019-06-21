@@ -1,10 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
-const GrammarConstNode_1 = require("./GrammarConstNode");
+class GrammarConstNode extends TreeNode_1.default {
+    getValue() {
+        // todo: parse type
+        if (this.length)
+            return this.childrenToString();
+        return this.getWordsFrom(2).join(" ");
+    }
+    getName() {
+        return this.getFirstWord();
+    }
+}
 class GrammarConstantsNode extends TreeNode_1.default {
     getCatchAllNodeConstructor(line) {
-        return GrammarConstNode_1.default;
+        return GrammarConstNode;
     }
     getConstantsObj() {
         const result = {};

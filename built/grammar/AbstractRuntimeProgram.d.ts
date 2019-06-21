@@ -19,7 +19,6 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     };
     getPrettified(): string;
     getProgramErrorMessages(): string[];
-    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getDefinition(): GrammarProgram;
     getNodeTypeUsage(filepath?: string): TreeNode;
     getInPlaceCellTypeTree(): string;
@@ -32,6 +31,5 @@ declare abstract class AbstractRuntimeProgram extends AbstractRuntimeNode {
     private _cache_highlightScopeTree;
     private _cache_typeTree;
     protected _initCellTypeCache(): void;
-    getCompiledProgramName(programPath: string): string;
 }
 export default AbstractRuntimeProgram;

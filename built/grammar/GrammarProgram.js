@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
-const AbstractRuntimeProgram_1 = require("./AbstractRuntimeProgram");
+const AbstractRuntimeNodes_1 = require("./AbstractRuntimeNodes");
 const GrammarConstants_1 = require("./GrammarConstants");
 const AbstractGrammarDefinitionNode_1 = require("./AbstractGrammarDefinitionNode");
 const GrammarNodeTypeDefinitionNode_1 = require("./GrammarNodeTypeDefinitionNode");
@@ -37,7 +37,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         map[GrammarConstants_1.GrammarConstants.cellType] = GrammarCellTypeDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.nodeType] = GrammarNodeTypeDefinitionNode_1.default;
         map[GrammarConstants_1.GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
-        map[GrammarConstants_1.GrammarConstants.fileDirective] = TreeNode_1.default;
+        map[GrammarConstants_1.GrammarConstants.toolingDirective] = TreeNode_1.default;
         return map;
     }
     // todo: this code is largely duplicated in abstractruntimeprogram
@@ -75,15 +75,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             this._cache_cellTypes = this._getCellTypeDefinitions();
         return this._cache_cellTypes;
     }
-    getCellTypeDefinition(word) {
-        const type = this.getCellTypeDefinitions()[word];
-        // todo: return unknownCellTypeDefinition
-        return type;
+    getCellTypeDefinitionById(cellTypeId) {
+        // todo: return unknownCellTypeDefinition? or is that handled somewhere else?
+        return this.getCellTypeDefinitions()[cellTypeId];
     }
     getNodeTypeFamilyTree() {
         const tree = new TreeNode_1.default();
         Object.values(this.getNodeTypeDefinitions()).forEach(node => {
-            const path = node.getAncestorNodeTypeNamesArray().join(" ");
+            const path = node.getAncestorNodeTypeIdsArray().join(" ");
             tree.touchNode(path);
         });
         return tree;
@@ -113,8 +112,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
     getGrammarName() {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.name);
     }
-    _getNodeTypesNode() {
-        return this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.nodeTypes);
+    _getInScopeNodeTypeIds() {
+        const nodeTypesNode = this._getGrammarRootNode().getNode(GrammarConstants_1.GrammarConstants.inScope);
+        return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
     }
     getNodeTypeDefinitionByFirstWordPath(firstWordPath) {
         if (!this._cachedDefinitions)
@@ -128,7 +128,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
             const part = parts[index];
             def = subject.getRunTimeFirstWordMapWithDefinitions()[part];
             if (!def)
-                def = subject._getCatchAllDefinition();
+                def = subject._getCatchAllNodeTypeDefinition();
             subject = def;
         }
         this._cachedDefinitions[firstWordPath] = def;
@@ -155,7 +155,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
         return this._getGrammarRootNode().get(GrammarConstants_1.GrammarConstants.catchAllNodeType);
     }
     _getRootConstructor() {
-        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeProgram_1.default;
+        const extendedConstructor = this._getGrammarRootNode().getConstructorDefinedInGrammar() || AbstractRuntimeNodes_1.AbstractRuntimeProgramRootNode;
         const grammarProgram = this;
         // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
         // new language.
@@ -177,6 +177,33 @@ class GrammarProgram extends AbstractGrammarDefinitionNode_1.default {
                 .split(" ")
                 .join(",")
             : this.getExtensionName();
+    }
+    toNodeJsJavascript(jtreePath = "jtree") {
+        return this._toJavascript(jtreePath, true);
+    }
+    toBrowserJavascript() {
+        return this._toJavascript("", false);
+    }
+    _getRootClassName() {
+        return this.getExtensionName() + "Program";
+    }
+    _toJavascript(jtreePath, forNodeJs = true) {
+        const nodeTypeClasses = this.getNodeTypeDefinitions()
+            .map(def => def._toJavascript())
+            .join("\n\n");
+        const components = [this.getNodeConstructorToJavascript()].filter(code => code);
+        const rootClass = `class ${this._getRootClassName()} extends jtree.programRoot {
+  getGrammarProgram() {}
+  ${components.join("\n")}
+    }`;
+        return `${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
+
+${nodeTypeClasses}
+
+${rootClass}
+
+${forNodeJs ? "module.exports = " + this._getRootClassName() : ""}
+`;
     }
     toSublimeSyntaxFile() {
         const types = this.getCellTypeDefinitions();
@@ -211,11 +238,12 @@ ${GrammarConstants_1.GrammarConstants.nodeType} anyNode
  ${GrammarConstants_1.GrammarConstants.firstCellType} anyWord
 ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
     }
-    static newFromCondensed(grammarCode, grammarPath) {
+    static _condensedToExpanded(grammarCode) {
         // todo: handle imports
         const tree = new TreeNode_1.default(grammarCode);
         // Expand groups
         // todo: rename? maybe change this to something like "makeNodeTypes"?
+        // todo: where is this used? if we had imports, would that be a better solution?
         const xi = tree.getXI();
         tree.findNodes(`${GrammarConstants_1.GrammarConstants.abstract}${xi}${GrammarConstants_1.GrammarConstants.group}`).forEach(group => {
             const abstractName = group.getParent().getWord(1);
@@ -225,7 +253,12 @@ ${GrammarConstants_1.GrammarConstants.cellType} anyWord`).getRootConstructor();
                 .forEach(word => tree.appendLine(`${GrammarConstants_1.GrammarConstants.nodeType}${xi}${word}${xi}${abstractName}`));
         });
         // todo: only expand certain types.
-        return new GrammarProgram(tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.fileDirective)), grammarPath);
+        // inScope should be a set.
+        tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants_1.GrammarConstants.toolingDirective));
+        return tree;
+    }
+    static newFromCondensed(grammarCode, grammarPath) {
+        return new GrammarProgram(this._condensedToExpanded(grammarCode), grammarPath);
     }
     async loadAllConstructorScripts(baseUrlPath) {
         if (!this.isBrowser())

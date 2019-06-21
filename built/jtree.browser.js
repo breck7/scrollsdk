@@ -3743,6 +3743,7 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.version] = TreeNode;
         map[GrammarConstants.name] = TreeNode;
         map[GrammarConstants.nodeTypeOrder] = TreeNode;
+        map[GrammarConstants.javascript] = TreeNode;
         map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean;
         map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt;
         map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString;
@@ -3764,7 +3765,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode;
         map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition;
         map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
-        map[GrammarConstants.javascript] = TreeNode;
         map[GrammarConstants.toolingDirective] = TreeNode;
         return map;
     }

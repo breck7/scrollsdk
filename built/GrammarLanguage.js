@@ -1125,11 +1125,11 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
             this._cache_definedNodeConstructor = this._initConstructorDefinedInGrammar();
         return this._cache_definedNodeConstructor;
     }
-    // todo: refactor/remove
     _importNodeJsConstructor(className, code) {
         const vm = require("vm");
         const gb = global;
-        gb.jtree = require(__dirname + "/jtree.node.js").default;
+        if (!gb.jtree)
+            gb.jtree = require(__dirname + "/jtree.node.js").default;
         code = `global.${className} = ` + code;
         vm.runInThisContext(code);
         return gb[className];

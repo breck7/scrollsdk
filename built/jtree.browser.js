@@ -3402,24 +3402,12 @@ class AbstractGrammarDefinitionNode extends TreeNode {
         return this._cache_definedNodeConstructor;
     }
     _importNodeJsConstructor(className, code) {
-        const tempFilePath = `${__dirname}/${className}-${TreeUtils.getRandomString(30)}-temp.js`;
-        const fs = require("fs");
-        const jtreePath = __dirname + "/jtree.node.js";
-        code =
-            `const jtree = require('${jtreePath}').default
-/* INDENT FOR BUILD REASONS */  module.exports = ` + code;
-        try {
-            fs.writeFileSync(tempFilePath, code, "utf8");
-            return require(tempFilePath);
-        }
-        catch (err) {
-            console.error(err);
-            console.log("CODE:");
-            console.log(code);
-        }
-        finally {
-            fs.unlinkSync(tempFilePath);
-        }
+        const vm = require("vm");
+        const gb = global;
+        gb.jtree = require(__dirname + "/jtree.node.js").default;
+        code = `global.${className} = ` + code;
+        vm.runInThisContext(code);
+        return gb[className];
     }
     _importBrowserConstructor(code) {
         const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30);

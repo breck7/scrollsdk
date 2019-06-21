@@ -50,6 +50,7 @@ const main = async grammarSourceCode => {
 
     const pack = {
       name: languageName,
+      private: true,
       dependencies: {
         jtree: jtree.getVersion()
       }
@@ -57,7 +58,9 @@ const main = async grammarSourceCode => {
 
     const nodePath = `${languageName}.node.js`
     const samplePath = "sample." + extension
+    const sampleCode = codeInstance.getValue()
     const browserPath = `${languageName}.browser.js`
+    const rootProgramClassName = grammarProgram._getGeneratedClassName()
     zip.file("package.json", JSON.stringify(pack, null, 2))
     zip.file(
       "readme.md",
@@ -71,24 +74,30 @@ const main = async grammarSourceCode => {
 
     node test.js`
     )
+    const testCode = `const program = new ${rootProgramClassName}(sampleCode)
+const errors = program.getAllErrors()
+console.log("Sample program compiled with " + errors.length + " errors.")
+if (errors.length)
+ console.log(errors.map(error => error.getMessage()))`
+
     zip.file(browserPath, grammarProgram.toBrowserJavascript())
     zip.file(nodePath, grammarProgram.toNodeJsJavascript())
     zip.file(`index.js`, `module.exports = require("./${nodePath}")`)
     zip.file(
       "index.html",
       `<script src="node_modules/jtree/built/jtree.browser.js"></script>
-<script src="${browserPath}">`
+<script src="${browserPath}"></script>
+<script>
+const sampleCode = \`${sampleCode}\`
+${testCode}
+</script>`
     )
-    zip.file(samplePath, codeInstance.getValue())
+    zip.file(samplePath, sampleCode)
     zip.file(
       `test.js`,
-      `const {${extension}ProgramRoot} = require("./index.js")
-const fs = require("fs")
-const program = new ${extension}ProgramRoot(fs.readFileSync("${samplePath}", "utf8"))
-const errors = program.getAllErrors()
-console.log("Sample program compiled with " + errors.length + " errors.")
-if (errors.length)
- console.log(errors.map(error => error.getMessage()))`
+      `const {${rootProgramClassName}} = require("./index.js")
+/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
+${testCode}`
     )
 
     zip.generateAsync({ type: "blob" }).then(function(content) {

@@ -1959,7 +1959,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   toNodeJsJavascript(jtreePath = "jtree"): jTreeTypes.javascriptCode {
-    return this._nodeDefToJavascriptClass(true, jtreePath, true)
+    return this._nodeDefToJavascriptClass(true, jtreePath, true).trim()
   }
 
   // todo: have this here or not?
@@ -1968,7 +1968,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   toBrowserJavascript(): jTreeTypes.javascriptCode {
-    return this._nodeDefToJavascriptClass(true, "", false)
+    return this._nodeDefToJavascriptClass(true, "", false).trim()
   }
 
   private _getProperName() {

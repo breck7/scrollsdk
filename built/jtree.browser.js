@@ -3888,14 +3888,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             : this.getExtensionName();
     }
     toNodeJsJavascript(jtreePath = "jtree") {
-        return this._nodeDefToJavascriptClass(true, jtreePath, true);
+        return this._nodeDefToJavascriptClass(true, jtreePath, true).trim();
     }
     // todo: have this here or not?
     toNodeJsJavascriptPrettier(jtreePath = "jtree") {
         return require("prettier").format(this._nodeDefToJavascriptClass(true, jtreePath, true), { semi: false, parser: "babel", printWidth: 160 });
     }
     toBrowserJavascript() {
-        return this._nodeDefToJavascriptClass(true, "", false);
+        return this._nodeDefToJavascriptClass(true, "", false).trim();
     }
     _getProperName() {
         const name = this.getExtensionName();

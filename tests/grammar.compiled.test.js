@@ -102,12 +102,6 @@ testTree.numbers = equal => {
     // Arrange/Act/Assert
     equal(new NumbersProgramRoot(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")
 
-    //     const program2 = new NumbersProgramRoot(`+ 2 3
-    // pi`)
-    //     const res = program2.executeSync()
-    //     console.log(res)
-    //     equal(res[1], 3.14, "constants works")
-
     // program errors
     // autocomplete
     // line hints

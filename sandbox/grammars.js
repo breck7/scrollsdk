@@ -40,6 +40,63 @@ const main = async grammarSourceCode => {
 
   await init()
 
+  const downloadBundle = () => {
+    const grammarCode = grammarInstance.getValue()
+    const grammarProgram = new jtree.GrammarProgram(grammarCode)
+    const languageName = grammarProgram.get("grammar name")
+    const extension = languageName
+
+    const zip = new JSZip()
+
+    const pack = {
+      name: languageName,
+      dependencies: {
+        jtree: jtree.getVersion()
+      }
+    }
+
+    const nodePath = `${languageName}.node.js`
+    const samplePath = "sample." + extension
+    const browserPath = `${languageName}.browser.js`
+    zip.file("package.json", JSON.stringify(pack, null, 2))
+    zip.file(
+      "readme.md",
+      `# ${languageName} Readme
+
+### Installing
+
+    npm install .
+
+### Testing
+
+    node test.js`
+    )
+    zip.file(browserPath, grammarProgram.toBrowserJavascript())
+    zip.file(nodePath, grammarProgram.toNodeJsJavascript())
+    zip.file(`index.js`, `module.exports = require("./${nodePath}")`)
+    zip.file(
+      "index.html",
+      `<script src="node_modules/jtree/built/jtree.browser.js"></script>
+<script src="${browserPath}">`
+    )
+    zip.file(samplePath, codeInstance.getValue())
+    zip.file(
+      `test.js`,
+      `const {${extension}ProgramRoot} = require("./index.js")
+const fs = require("fs")
+const program = new ${extension}ProgramRoot(fs.readFileSync("${samplePath}", "utf8"))
+const errors = program.getAllErrors()
+console.log("Sample program compiled with " + errors.length + " errors.")
+if (errors.length)
+ console.log(errors.map(error => error.getMessage()))`
+    )
+
+    zip.generateAsync({ type: "blob" }).then(function(content) {
+      // see FileSaver.js
+      saveAs(content, languageName + ".zip")
+    })
+  }
+
   const GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
   const grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => GrammarConstructor, undefined, CodeMirror)
     .register()
@@ -157,6 +214,8 @@ const main = async grammarSourceCode => {
     const grammarPath = el.attr("data-grammarPath") || `/langs/${name}/${name}.grammar`
     fetchGrammar(grammarPath, samplePath)
   })
+
+  $("#downloadBundle").on("click", downloadBundle)
 }
 
 $(document).ready(function() {

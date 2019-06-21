@@ -1128,8 +1128,7 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
     _importNodeJsConstructor(className, code) {
         const vm = require("vm");
         const gb = global;
-        if (!gb.jtree)
-            gb.jtree = require(__dirname + "/jtree.node.js").default;
+        gb.jtree = require(__dirname + "/jtree.node.js").default;
         code = `global.${className} = ` + code;
         vm.runInThisContext(code);
         return gb[className];
@@ -1613,14 +1612,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             : this.getExtensionName();
     }
     toNodeJsJavascript(jtreePath = "jtree") {
-        return this._nodeDefToJavascriptClass(true, jtreePath, true);
+        return this._nodeDefToJavascriptClass(true, jtreePath, true).trim();
     }
     // todo: have this here or not?
     toNodeJsJavascriptPrettier(jtreePath = "jtree") {
         return require("prettier").format(this._nodeDefToJavascriptClass(true, jtreePath, true), { semi: false, parser: "babel", printWidth: 160 });
     }
     toBrowserJavascript() {
-        return this._nodeDefToJavascriptClass(true, "", false);
+        return this._nodeDefToJavascriptClass(true, "", false).trim();
     }
     _getProperName() {
         const name = this.getExtensionName();

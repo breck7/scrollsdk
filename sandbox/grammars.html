@@ -8,6 +8,8 @@
     <script type="text/javascript" src="/sandbox/lib/show-hint.js"></script>
     <script type="text/javascript" src="/sandbox/lib/javascript.js"></script>
     <script type="text/javascript" src="/sandbox/lib/jquery.min.js"></script>
+    <script type="text/javascript" src="/sandbox/lib/FileSaver.min.js"></script>
+    <script type="text/javascript" src="/sandbox/lib/jszip.min.js"></script>
     <script type="text/javascript" src="/built/jtree.browser.js"></script>
     <script type="text/javascript" src="grammars.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
@@ -16,19 +18,17 @@
   <body>
     <h1>Tree Language Sandbox</h1>
     <p>
-      <a href="index.html">Basic Sandbox</a> | <a href="test.html">Tests</a> | <a href="perf.html">Perf</a> |
-      <a href="typePerf.html">Type Perf</a> | <a href="https://github.com/breck7/jtree">GitHub</a> |
-      <a href="http://treenotation.org">TreeNotation.org</a> |
+      <a href="index.html">Basic Sandbox</a> | <a href="test.html">Tests</a> | <a href="perf.html">Perf</a> | <a href="typePerf.html">Type Perf</a> |
+      <a href="https://github.com/breck7/jtree">GitHub</a> | <a href="http://treenotation.org">TreeNotation.org</a> |
       <span id="version"></span>
     </p>
     <p>
-      This is a simple console for exploring Tree Language Grammars. In dev tools, you can access the parsed trees below
-      as "window.grammarProgram" and program at "window.program".
+      This is a simple console for exploring Tree Language Grammars. In dev tools, you can access the parsed trees below as "window.grammarProgram" and program
+      at "window.program".
     </p>
     <p id="samples">
-      Example Languages: <a href="#">Hakon</a> | <a href="#">Swarm</a> | <a href="#">Project</a> |
-      <a href="#">Stamp</a> | <a href="#">Grammar</a> | <a href="#">Stump</a> | <a href="#">Jibberish</a> |
-      <a href="#">Fire</a> |
+      Example Languages: <a href="#">Hakon</a> | <a href="#">Swarm</a> | <a href="#">Project</a> | <a href="#">Stamp</a> | <a href="#">Grammar</a> |
+      <a href="#">Stump</a> | <a href="#">Jibberish</a> | <a href="#">Fire</a> |
       <a href="#">Numbers</a>
     </p>
     <table>
@@ -56,8 +56,8 @@
 
     <div>
       <div id="otherErrors"></div>
-      <a href="#" id="resetButton">Reset</a> | <a href="#" id="execButton">Execute</a> |
-      <a href="#" id="compileButton">Compile</a>
+      <a href="#" id="resetButton">Reset</a> | <a href="#" id="execButton">Execute</a> | <a href="#" id="compileButton">Compile</a> |
+      <a href="#" id="downloadBundle">Download Bundle</a>
       <br />
       <textarea id="execResults" placeholder="Results..."></textarea>
     </div>

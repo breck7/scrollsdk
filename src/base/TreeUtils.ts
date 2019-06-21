@@ -307,6 +307,12 @@ class TreeUtils {
       return this
     }
 
+    removeImportsFinal() {
+      this._str = this._str.replace(/(\n|^)\/\*KEEP_UNTIL_BUILD\*\/ import .* from .*/g, "$1")
+
+      return this
+    }
+
     removeExports() {
       this._str = this._str.replace(/(\n|^)export default .*/g, "$1")
       this._str = this._str.replace(/(\n|^)export {[^\}]+}/g, "$1")

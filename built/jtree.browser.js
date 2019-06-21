@@ -299,6 +299,10 @@ TreeUtils.BrowserScript = class {
         this._str = this._str.replace(/(\n|^)import {[^\}]+} ?from ?"[^\"]+"/g, "$1");
         return this;
     }
+    removeImportsFinal() {
+        this._str = this._str.replace(/(\n|^)\/\*KEEP_UNTIL_BUILD\*\/ import .* from .*/g, "$1");
+        return this;
+    }
     removeExports() {
         this._str = this._str.replace(/(\n|^)export default .*/g, "$1");
         this._str = this._str.replace(/(\n|^)export {[^\}]+}/g, "$1");
@@ -4515,8 +4519,8 @@ jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
 jtree.getVersion = () => "25.2.0";
 // todo: currently only works in nodejs
-/* Keep this line in combined ts file */ import * as glob from "glob";
-/* Keep this line in combined ts file */ import * as semver from "semver";
+
+
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

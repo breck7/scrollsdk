@@ -3,8 +3,8 @@ import jTreeTypes from "../jTreeTypes"
 
 // todo: currently only works in nodejs
 
-/* Keep this line in combined ts file */ import * as glob from "glob"
-/* Keep this line in combined ts file */ import * as semver from "semver"
+/*KEEP_UNTIL_BUILD*/ import * as glob from "glob"
+/*KEEP_UNTIL_BUILD*/ import * as semver from "semver"
 
 interface updatedFile {
   tree: TreeNode

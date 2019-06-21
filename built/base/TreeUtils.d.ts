@@ -32,6 +32,7 @@ declare class TreeUtils {
             removeNodeJsOnlyLines(): any;
             removeHashBang(): any;
             removeImports(): any;
+            removeImportsFinal(): any;
             removeExports(): any;
             changeDefaultExportsToWindowExports(): any;
             changeNodeExportsToWindowExports(): any;

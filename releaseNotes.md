@@ -1,15 +1,17 @@
-edge / 2019-06-11
-=================
+26.0.0 / 2019-06-21
+===================
+- Warning: this was a major refactor that may have introduced new bugs, so if using please be ready to ping me with bug reports
 - New: ability to compile grammar files to Javascript
+- New: grammar sandbox now has "download bundle"
 - New: Upgrader class for making Tree Language upgrades easier
-- New: getFirstNode method
 - New: added support for "tooling" directives in Grammar language
+- New: getFirstNode method
 - New: getNodeTypeId on NonRootRunTime nodes
 - New: findNodes in base can now take an array of first words
 - New: "nodeType javascript" property
 - New: add custom javascript to rootNodeTypes in grammar files
 - Breaking: removed "defaults" from grammar
-- Breaking: avoid getDefinition()--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
+- Breaking: avoid getDefinition() when possible--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
 - Breaking: removed getExpectedLineCellTypes--use getLineHints
 - Breaking: nodeTypes in grammar is now "inScope", and is one line instead of parent/children
 - Breaking: removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
@@ -35,7 +37,6 @@ edge / 2019-06-11
 - Breaking: in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
 - Breaking: no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
 - Breaking: the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
-- Infra: test coverage
 
 25.2.0 / 2019-05-30
 ===================

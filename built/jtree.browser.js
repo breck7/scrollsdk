@@ -4505,7 +4505,7 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "25.2.0";
+jtree.getVersion = () => "26.0.0";
 // todo: currently only works in nodejs
 
 

@@ -1,4 +1,5 @@
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits
+todo Change the extends syntax to just have an extend property, instead of the column position thing?
 grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
@@ -239,7 +240,7 @@ nodeType firstCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If you have an any node, use this to correctly parse the first word.
 nodeType frequency abstract.nodeTypeRule
- todo Remove this nodeType
+ todo Remove this nodeType. Switch to conditional frequencies.
  cells floatCell
 nodeType inScope abstract.nodeTypeRule
  description A list of possible child nodeTypes for a node.

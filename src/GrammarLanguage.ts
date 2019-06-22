@@ -1320,7 +1320,8 @@ abstract class AbstractGrammarDefinitionNode extends TreeNode {
       GrammarConstants.group,
       GrammarConstants.required,
       GrammarConstants.javascript,
-      GrammarConstants.single
+      GrammarConstants.single,
+      GrammarConstants.todoComment
     ]
 
     const map: jTreeTypes.firstWordToNodeConstructorMap = {}
@@ -1823,6 +1824,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition
     map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode
     map[GrammarConstants.toolingDirective] = TreeNode
+    map[GrammarConstants.todoComment] = TreeNode
     return map
   }
 

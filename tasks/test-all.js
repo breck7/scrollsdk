@@ -21,8 +21,8 @@ const checkGrammarFile = grammarPath => {
     const exampleErrors = program.getErrorsInGrammarExamples()
 
     //Assert
-    const message = errs.length ? errs : "no errors"
-    equal(errs.length, 0, message)
+    equal(errs.length, 0, "should be no errors")
+    if (errs.length) console.log(errs.join("\n"))
 
     if (exampleErrors.length) console.log(exampleErrors)
     equal(exampleErrors.length, 0, exampleErrors.length ? "examples errs: " + exampleErrors : "no example errors")
@@ -34,8 +34,9 @@ const checkGrammarFile = grammarPath => {
     const errs = program.getAllErrors()
 
     //Assert
-    const message = errs.length ? errs : "no errors"
-    equal(errs.length, 0, message)
+
+    equal(errs.length, 0, "should be no errors")
+    if (errs.length) console.log(errs.join("\n"))
   }
 
   runTestTree(testTree)

@@ -819,6 +819,10 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
     return ""
   }
 
+  toString() {
+    return this.getMessage()
+  }
+
   applySuggestion() {}
 
   getMessage(): string {

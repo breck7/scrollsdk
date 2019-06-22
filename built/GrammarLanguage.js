@@ -676,6 +676,9 @@ class AbstractTreeError {
     getSuggestionMessage() {
         return "";
     }
+    toString() {
+        return this.getMessage();
+    }
     applySuggestion() { }
     getMessage() {
         return `${this.getErrorTypeName()} at line ${this.getLineNumber()} cell ${this.getCellIndex()}.`;

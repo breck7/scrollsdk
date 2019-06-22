@@ -187,6 +187,7 @@ declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
     };
     hasSuggestion(): boolean;
     getSuggestionMessage(): string;
+    toString(): string;
     applySuggestion(): void;
     getMessage(): string;
 }

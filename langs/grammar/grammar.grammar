@@ -1,8 +1,9 @@
+todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits
 grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  catchAllNodeType catchAll.error
- nodeTypeOrder # grammar cellType abstract nodeType
+ nodeTypeOrder tooling todo grammar cellType abstract nodeType
  extensions grammar gram
  example A grammar that parses anything:
   grammar
@@ -11,7 +12,7 @@ grammar
   nodeType anyNode
    baseNodeType blobNode
  version 1.2.0
- inScope grammar cellType abstract nodeType tooling
+ inScope tooling todo grammar cellType abstract nodeType
 cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
@@ -154,7 +155,9 @@ nodeType nodeType
  firstCellType nodeTypeIdConstant
  inScope abstract.nodeTypeRule abstract.constant todo
 nodeType nodeTypeOrder
+ todo Should we just reuse inScope order? And have a property that indicates order is not important?
  todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?
+ todo This isnt properly cell checked. It should reference inScope.
  catchAllCellType nodeTypeId
  firstCellType propertyName
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
@@ -226,6 +229,7 @@ nodeType compiler abstract.nodeTypeRule
  inScope sub listDelimiter openChildren closeChildren indentCharacter
 nodeType description abstract.nodeTypeRule
  catchAllCellType stringCell
+ todo Should we make this multiline?
 nodeType example abstract.nodeTypeRule
  todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.

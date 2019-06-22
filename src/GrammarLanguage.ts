@@ -37,6 +37,7 @@ enum GrammarConstants {
   grammar = "grammar",
   extensions = "extensions",
   toolingDirective = "tooling",
+  todoComment = "todo",
   version = "version",
   name = "name",
   nodeTypeOrder = "nodeTypeOrder",
@@ -1056,6 +1057,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
     types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
+    types[GrammarConstants.todoComment] = TreeNode
     return types
   }
 
@@ -1796,6 +1798,7 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.name] = TreeNode
     map[GrammarConstants.nodeTypeOrder] = TreeNode
     map[GrammarConstants.javascript] = TreeNode
+    map[GrammarConstants.todoComment] = TreeNode
     map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean
     map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt
     map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString
@@ -2108,6 +2111,7 @@ ${GrammarConstants.cellType} anyWord`
     ).getRootConstructor()
   }
 
+  // todo: remove this. dont expand.
   static _condensedToExpanded(grammarCode: string) {
     // todo: handle imports
     const tree = new TreeNode(grammarCode)
@@ -2126,7 +2130,10 @@ ${GrammarConstants.cellType} anyWord`
 
     // todo: only expand certain types.
     // inScope should be a set.
-    tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.toolingDirective))
+    const skip: any = {}
+    skip[GrammarConstants.toolingDirective] = true
+    skip[GrammarConstants.todoComment] = true
+    tree._expandChildren(1, 2, tree.filter(node => !skip[node.getFirstWord()]))
     return tree
   }
 

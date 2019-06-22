@@ -27,6 +27,7 @@ cellType cellPropertyName
 cellType cellTypeEnum
  enumFromGrammar cellType
 cellType cellTypeId
+ todo Put restrictions on allowed characters for now?
 cellType cellTypeIdConstant
  highlightScope variable.parameter
 cellType compilerTargetExtension
@@ -37,16 +38,19 @@ cellType constantIdentifier
 cellType constructorFilePath
 cellType constructorName
 cellType enumOption
+ todo Add an enumOption top level type, so we can add data to an enum option such as a description.
 cellType extendedNodeType
 cellType extraWord
  highlightScope invalid
 cellType fileExtension
+ todo Put restrictions on allowed characters for now?
 cellType filepath
 cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
  highlightScope constant.numeric
 cellType grammarName
  highlightScope constant
+ todo Put restrictions on allowed characters for now? All lowercase?
 cellType grammarTypes
  enum cellType nodeType abstract
 cellType intCell
@@ -78,6 +82,8 @@ cellType stringCell
 cellType tag
 cellType toolingDirectiveWord
  highlightScope comment
+cellType todoWord
+ highlightScope comment
 cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
@@ -108,7 +114,7 @@ nodeType cellType
  cells cellTypeId
  catchAllCellType extendedCellType
  firstCellType cellTypeIdConstant
- inScope highlightScope regex enumFromGrammar description enum
+ inScope highlightScope regex enumFromGrammar description enum todo
 nodeType enum
  catchAllCellType enumOption
  firstCellType cellPropertyName
@@ -118,13 +124,15 @@ nodeType enumFromGrammar
 nodeType extensions
  catchAllCellType fileExtension
  firstCellType propertyName
- description File extensions of your language.
+ description File extensions of your language. Sometimes your language might have multiple extensions. If you don't add this, your language name will be used as extension.
 nodeType grammar
+ todo Should this really be required?
  required
  single
  firstCellType propertyName
  inScope name description example extensions nodeTypeOrder inScope constructors compiler catchAllNodeType version abstract.constant javascript
 nodeType group
+ todo Remove this once we have imports?
  catchAllCellType nodeTypeId
  firstCellType propertyName
  description Available on abstract nodes only. Use it to more concisely generate nodeTypes all extending from this abstract nodeType, if they have no special properties.
@@ -144,8 +152,9 @@ nodeType nodeType
  catchAllNodeType catchAll.error
  baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
- inScope abstract.nodeTypeRule abstract.constant
+ inScope abstract.nodeTypeRule abstract.constant todo
 nodeType nodeTypeOrder
+ todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?
  catchAllCellType nodeTypeId
  firstCellType propertyName
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
@@ -159,6 +168,11 @@ nodeType tooling
  catchAllCellType toolingDirectiveWord
  firstCellType toolingDirectiveWord
  catchAllNodeType tooling
+nodeType todo
+ description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
+ catchAllCellType todoWord
+ firstCellType todoWord
+ catchAllNodeType todo
 nodeType version
  cells semanticVersion
  firstCellType propertyName
@@ -207,11 +221,13 @@ nodeType cells abstract.nodeTypeRule
  catchAllCellType cellTypeEnum
  description Describes the word type of each word in the line.
 nodeType compiler abstract.nodeTypeRule
+ todo Remove this and its children?
  cells compilerTargetExtension
  inScope sub listDelimiter openChildren closeChildren indentCharacter
 nodeType description abstract.nodeTypeRule
  catchAllCellType stringCell
 nodeType example abstract.nodeTypeRule
+ todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleWord
  catchAllNodeType catchAll.exampleLine
@@ -219,6 +235,7 @@ nodeType firstCellType abstract.nodeTypeRule
  cells cellTypeEnum
  description If you have an any node, use this to correctly parse the first word.
 nodeType frequency abstract.nodeTypeRule
+ todo Remove this nodeType
  cells floatCell
 nodeType inScope abstract.nodeTypeRule
  description A list of possible child nodeTypes for a node.
@@ -233,6 +250,7 @@ nodeType single abstract.nodeTypeRule
 nodeType tags abstract.nodeTypeRule
  catchAllCellType tag
 nodeType constructors abstract.nonTerminalNodeTypeRule
+ todo Remove/refactor this
  inScope abstract.environment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
 nodeType abstract nodeType

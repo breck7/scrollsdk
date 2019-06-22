@@ -1,3 +1,7 @@
+edge / 2019-06-22
+=================
+- New: added "todo" nodeType to grammar language
+
 26.1.1 / 2019-06-21
 ===================
 - Fix: support for mutliline strings in getConstantsObject
@@ -48,13 +52,14 @@
 - Breaking: getCellTypeName is now getCellTypeId
 - Breaking: getCellTypeDefinition is now getCellTypeDefinitionById
 - Breaking: getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
-- Breaking: getProgramErrors is now getAllErrors
+- Breaking: getProgramErrors is now getAllErrors, getProgramErrorsIterator is now getAllErrorsIterator
 - Breaking: getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
 - Breaking: removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
 - Breaking: no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
 - Breaking: in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
 - Breaking: no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
 - Breaking: the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
+- Regex for finding breaks in untyped code: \b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getGrammarProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
 
 25.2.0 / 2019-05-30
 ===================

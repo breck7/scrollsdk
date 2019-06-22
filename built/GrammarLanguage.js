@@ -975,6 +975,9 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
             return [];
         return [new InvalidConstructorPathError(this)];
     }
+    getGrammarProgramRoot() {
+        return this._getDef().getLanguageDefinitionProgram();
+    }
     _getDef() {
         const def = this.getParent().getParent();
         if (def instanceof NonRootNodeTypeDefinition)
@@ -983,6 +986,7 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
     }
 }
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
+    // todo: if we keep this, we need to surface better error messaging with the submodule convention bit.
     _getCustomConstructor() {
         const filepath = this._getNodeConstructorFilePath();
         const rootPath = this.getRootNode().getTheGrammarFilePath();
@@ -1034,19 +1038,27 @@ class GrammarCustomConstructorsNode extends TreeNode_1.default {
 }
 class GrammarNodeTypeConstant extends TreeNode_1.default {
     getGetter() {
-        const identifier = this.getWord(1);
-        return `get ${identifier}() { return ${this._getValue()} }`;
+        return `get ${this.getIdentifier()}() { return ${this.getConstantValueAsJsText()} }`;
     }
-    _getValue() {
+    getIdentifier() {
+        return this.getWord(1);
+    }
+    getConstantValueAsJsText() {
         const words = this.getWordsFrom(2);
         return words.length > 1 ? `[${words.join(",")}]` : words[0];
+    }
+    getConstantValue() {
+        return JSON.parse(this.getConstantValueAsJsText());
     }
 }
 class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
-    _getValue() {
+    getConstantValueAsJsText() {
         return "`" + TreeUtils_1.default.escapeBackTicks(this.getWordsFrom(2).join(" ")) + "`";
+    }
+    getConstantValue() {
+        return this.getWordsFrom(2).join(" ");
     }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {
@@ -1082,6 +1094,13 @@ class AbstractGrammarDefinitionNode extends TreeNode_1.default {
         map[GrammarConstants.constructors] = GrammarCustomConstructorsNode;
         map[GrammarConstants.example] = GrammarExampleNode;
         return map;
+    }
+    getConstantsObject() {
+        const obj = {};
+        this.getChildrenByNodeConstructor(GrammarNodeTypeConstant).forEach((node) => {
+            obj[node.getIdentifier()] = node.getConstantValue();
+        });
+        return obj;
     }
     getExamples() {
         return this.getChildrenByNodeConstructor(GrammarExampleNode);

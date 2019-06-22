@@ -227,6 +227,7 @@ declare class GrammarCompilerNode extends TreeNode {
 }
 declare abstract class AbstractGrammarDefinitionNode extends TreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
+    getConstantsObject(): any;
     getExamples(): GrammarExampleNode[];
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
     abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;

@@ -1,3 +1,7 @@
+26.1.0 / 2019-06-21
+===================
+- New: restored getConstantsObject on definition nodes
+
 26.0.2 / 2019-06-21
 ===================
 - Fix: backtick escaping in getter generation

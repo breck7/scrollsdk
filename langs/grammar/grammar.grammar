@@ -177,9 +177,15 @@ nodeType float abstract.constant
 nodeType int abstract.constant
  cells constantIdentifier
  catchAllCellType intCell
+nodeType catchAll.multilineStringConstant
+ description String constants can span multiple lines.
+ catchAllCellType stringCell
+ firstCellType stringCell
+ catchAllNodeType catchAll.multilineStringConstant
 nodeType string abstract.constant
  cells constantIdentifier
  catchAllCellType stringCell
+ catchAllNodeType catchAll.multilineStringConstant
 nodeType browser abstract.environment
  cells constructorName
  catchAllCellType scriptUrl

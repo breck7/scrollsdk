@@ -3330,10 +3330,10 @@ class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
     getConstantValueAsJsText() {
-        return "`" + TreeUtils.escapeBackTicks(this.getWordsFrom(2).join(" ")) + "`";
+        return "`" + TreeUtils.escapeBackTicks(this.getConstantValue()) + "`";
     }
     getConstantValue() {
-        return this.getWordsFrom(2).join(" ");
+        return this.length ? this.childrenToString() : this.getWordsFrom(2).join(" ");
     }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {
@@ -4527,7 +4527,7 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "26.1.0";
+jtree.getVersion = () => "26.1.1";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

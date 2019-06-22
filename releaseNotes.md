@@ -1,3 +1,7 @@
+26.1.1 / 2019-06-21
+===================
+- Fix: support for mutliline strings in getConstantsObject
+
 26.1.0 / 2019-06-21
 ===================
 - New: restored getConstantsObject on definition nodes

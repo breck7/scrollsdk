@@ -1289,11 +1289,11 @@ abstract class GrammarNodeTypeConstant extends TreeNode {
 class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
   getConstantValueAsJsText() {
-    return "`" + TreeUtils.escapeBackTicks(this.getWordsFrom(2).join(" ")) + "`"
+    return "`" + TreeUtils.escapeBackTicks(this.getConstantValue()) + "`"
   }
 
   getConstantValue() {
-    return this.getWordsFrom(2).join(" ")
+    return this.length ? this.childrenToString() : this.getWordsFrom(2).join(" ")
   }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {}

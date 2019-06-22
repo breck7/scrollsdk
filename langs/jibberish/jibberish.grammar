@@ -71,6 +71,9 @@ nodeType nodeWithConsts topLevel
  string greeting hello world
  string singleWord hello
  string thisHasQuotes "'`
+ string longText
+  hello
+  world
  int score1 28
  int anArray 2 3 4
  float score2 3.01

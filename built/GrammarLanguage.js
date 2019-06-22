@@ -1055,10 +1055,10 @@ class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
     getConstantValueAsJsText() {
-        return "`" + TreeUtils_1.default.escapeBackTicks(this.getWordsFrom(2).join(" ")) + "`";
+        return "`" + TreeUtils_1.default.escapeBackTicks(this.getConstantValue()) + "`";
     }
     getConstantValue() {
-        return this.getWordsFrom(2).join(" ");
+        return this.length ? this.childrenToString() : this.getWordsFrom(2).join(" ");
     }
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {

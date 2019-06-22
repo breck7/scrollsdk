@@ -89,6 +89,12 @@ testTree.jibberish = equal => {
   equal(obj.score2, 3.01, "constants floats works")
   equal(obj.win, true, "constants bool works")
   equal(obj.greeting, "hello world", "constants string works")
+  equal(
+    obj.longText,
+    `hello
+world`,
+    "constants multiline string works"
+  )
 
   // Act
   const addition = program.getNode("+")

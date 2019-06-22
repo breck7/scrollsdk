@@ -5,6 +5,19 @@ const jtree = require("../../index.js")
 class GrammarUpgrader extends jtree.Upgrader {
   getUpgradeFromMap() {
     return {
+      "1.2.0": {
+        "2.0.0": tree => {
+          const moveExtend = node => {
+            const extendsId = node.getWord(2)
+            if (extendsId) {
+              node.appendLine(`extends ` + extendsId)
+              node.deleteWordAt(2)
+            }
+          }
+          tree.findNodes("nodeType").forEach(moveExtend)
+          tree.findNodes("cellType").forEach(moveExtend)
+        }
+      },
       "1.1.0": {
         "1.2.0": tree => {
           // update nodeTypes
@@ -43,5 +56,5 @@ class GrammarUpgrader extends jtree.Upgrader {
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent)
-  new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "1.1.0", "1.2.0").forEach(item => console.log(item.path, item.tree.toString()))
+  new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "1.2.0", "2.0.0").forEach(item => console.log(item.path, item.tree.toString()))
 module.exports = GrammarUpgrader

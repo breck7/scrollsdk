@@ -316,13 +316,6 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     return (<GrammarBackedNode>this.getParent()).getRootProgramNode()
   }
 
-  // todo: improve layout (use bold?)
-  getLineHints(): string {
-    const def = this.getDefinition()
-    const catchAllCellTypeId = def.getCatchAllCellTypeId()
-    return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
-  }
-
   getNodeTypeId(): jTreeTypes.nodeTypeId {
     return this.getDefinition().getNodeTypeIdFromDefinition()
   }
@@ -759,7 +752,7 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
 
   private _getCodeMirrorLineWidgetElementCellTypeHints() {
     const el = document.createElement("div")
-    el.appendChild(document.createTextNode(this.getIndent() + (<GrammarBackedNonRootNode>this.getNode()).getLineHints()))
+    el.appendChild(document.createTextNode(this.getIndent() + (<GrammarBackedNonRootNode>this.getNode()).getDefinition().getLineHints()))
     el.className = "LintCellTypeHints"
     return el
   }
@@ -1705,6 +1698,12 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
   // todo: protected?
   _getRunTimeCatchAllNodeTypeId(): string {
     return this._getFromExtended(GrammarConstants.catchAllNodeType) || (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllNodeTypeId()
+  }
+
+  // todo: improve layout (use bold?)
+  getLineHints(): string {
+    const catchAllCellTypeId = this.getCatchAllCellTypeId()
+    return `${this.getNodeTypeIdFromDefinition()}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
 
   isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean {

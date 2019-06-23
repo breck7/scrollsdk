@@ -1,3 +1,7 @@
+26.4.0 / 2019-06-23
+===================
+- Breaking/Fix: moved getLineHints back to definition node
+
 26.3.0 / 2019-06-23
 ===================
 - Fix: extension bug in classes with more than 1 ancestor
@@ -40,6 +44,7 @@
 - New: findNodes in base can now take an array of first words
 - New: "nodeType javascript" property
 - New: add custom javascript to rootNodeTypes in grammar files
+- Breaking: stamp.js script is now stamp.cli.js
 - Breaking: removed "defaults" from grammar
 - Breaking: avoid getDefinition() when possible--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
 - Breaking: removed getExpectedLineCellTypes--use getLineHints

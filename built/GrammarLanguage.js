@@ -262,12 +262,6 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     getRootProgramNode() {
         return this.getParent().getRootProgramNode();
     }
-    // todo: improve layout (use bold?)
-    getLineHints() {
-        const def = this.getDefinition();
-        const catchAllCellTypeId = def.getCatchAllCellTypeId();
-        return `${this.getNodeTypeId()}: ${def.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
-    }
     getNodeTypeId() {
         return this.getDefinition().getNodeTypeIdFromDefinition();
     }
@@ -627,7 +621,7 @@ class AbstractTreeError {
     }
     _getCodeMirrorLineWidgetElementCellTypeHints() {
         const el = document.createElement("div");
-        el.appendChild(document.createTextNode(this.getIndent() + this.getNode().getLineHints()));
+        el.appendChild(document.createTextNode(this.getIndent() + this.getNode().getDefinition().getLineHints()));
         el.className = "LintCellTypeHints";
         return el;
     }
@@ -1404,6 +1398,11 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     // todo: protected?
     _getRunTimeCatchAllNodeTypeId() {
         return this._getFromExtended(GrammarConstants.catchAllNodeType) || this.getParent()._getRunTimeCatchAllNodeTypeId();
+    }
+    // todo: improve layout (use bold?)
+    getLineHints() {
+        const catchAllCellTypeId = this.getCatchAllCellTypeId();
+        return `${this.getNodeTypeIdFromDefinition()}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
     }
     isOrExtendsANodeTypeInScope(firstWordsInScope) {
         const chain = this._getNodeTypeInheritanceSet();

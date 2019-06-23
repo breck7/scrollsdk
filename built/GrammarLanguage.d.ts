@@ -100,7 +100,6 @@ declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
 }
 declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     getRootProgramNode(): GrammarBackedRootNode;
-    getLineHints(): string;
     getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): NonRootNodeTypeDefinition;
     getGrammarProgramRoot(): GrammarProgram;
@@ -314,6 +313,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
 }
 declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId(): string;
+    getLineHints(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
     getSublimeSyntaxContextId(): string;
     _getExtendsClassName(isCompiled?: boolean): jTreeTypes.javascriptClassPath;

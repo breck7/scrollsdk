@@ -1,5 +1,6 @@
-edge / 2019-06-22
-=================
+26.2.0 / 2019-06-22
+===================
+- Fix: extends now works correctly
 - New: added "todo" nodeType to grammar language
 - New: added "extends" keyword in place of previous one line method
 - Breaking: instead of "nodeType/cellType foo extendsFoo" now do "nodeType foo\n extends extendsFoo"

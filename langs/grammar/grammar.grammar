@@ -166,6 +166,7 @@ nodeType extends
  description NodeTypes/abstractNodeType, and cellTypes definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
  cells extendedId
+ extends abstract.nodeTypeRule
 nodeType nodeTypeOrder
  todo Should we just reuse inScope order? And have a property that indicates order is not important?
  todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?

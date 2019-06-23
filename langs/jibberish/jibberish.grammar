@@ -23,9 +23,10 @@ cellType opSymbol
 abstract someAbstractClass
 abstract topLevel
  firstCellType topLevelProperty
-abstract color_properties topLevel
+abstract color_properties
  group hue saturation constrast
  cells int
+ extends topLevel
 nodeType error
  firstCellType errorWord
  catchAllCellType errorWord
@@ -37,37 +38,46 @@ nodeType lineOfCode
   browser LineOfCodeNode JibberishLang.js
 nodeType text
  baseNodeType blobNode
-nodeType extendsAbstract someAbstractClass
+nodeType extendsAbstract
  cells int
-nodeType add topLevel
+ extends someAbstractClass
+nodeType add
  constructors
   nodejs ./JibberishLang.js AdditionNode
-nodeType + add
+ extends topLevel
+nodeType +
  firstCellType opSymbol
  example Adding two numbers:
   + 1 2
  catchAllCellType int
-nodeType block topLevel
+ extends add
+nodeType block
  inScope topLevel
-nodeType to block
+ extends topLevel
+nodeType to
  cells word
  compiler txt
   sub to {word}
   closeChildren end
-nodeType foo topLevel
-nodeType xColumnName topLevel
+ extends block
+nodeType foo
+ extends topLevel
+nodeType xColumnName
  description The name of the column to use for the x axis
  cells columnNameEnum
  javascript
   getRunTimeEnumOptions(cell) {
     return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
   }
-nodeType lightbulbState topLevel
+ extends topLevel
+nodeType lightbulbState
  cells onoff
-nodeType nested topLevel
+ extends topLevel
+nodeType nested
  constructors
   nodejs ./JibberishLang.js nested.someNestedNode
-nodeType nodeWithConsts topLevel
+ extends topLevel
+nodeType nodeWithConsts
  string greeting hello world
  string singleWord hello
  string thisHasQuotes "'`
@@ -78,8 +88,14 @@ nodeType nodeWithConsts topLevel
  int anArray 2 3 4
  float score2 3.01
  boolean win true
-nodeType someCode topLevel
+ extends topLevel
+nodeType nodeExpandsConsts
+ string greeting hola
+ extends nodeWithConsts
+nodeType someCode
  catchAllNodeType lineOfCode
-nodeType type topLevel
+ extends topLevel
+nodeType type
  cells word
  single
+ extends topLevel

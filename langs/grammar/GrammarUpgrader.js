@@ -16,6 +16,8 @@ class GrammarUpgrader extends jtree.Upgrader {
           }
           tree.findNodes("nodeType").forEach(moveExtend)
           tree.findNodes("cellType").forEach(moveExtend)
+          tree.findNodes("abstract").forEach(moveExtend)
+          return tree
         }
       },
       "1.1.0": {

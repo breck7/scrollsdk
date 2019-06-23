@@ -23,7 +23,8 @@ cellType number
  regex \-?[0-9]*\.?[0-9]*
 cellType identifier
  regex [$A-Za-z_][0-9a-zA-Z_$]*
-cellType identifiers identifier
+cellType identifiers
+ extends identifier
 cellType any
 cellType boolean
  regex (false|true)
@@ -39,51 +40,59 @@ nodeType error
 nodeType nt
  inScope term nt
 nodeType term
-nodeType assignment term
-nodeType dump term
+nodeType assignment
+ extends term
+nodeType dump
  description Dump variable(s) to console
  catchAllCellType identifier
  compiler js
   sub console.log({identifier})
   listDelimiter , 
  frequency .5
-nodeType print term
+ extends term
+nodeType print
  description Print string to console
  catchAllCellType any
  compiler js
   sub console.log("{any}")
-nodeType require term
+ extends term
+nodeType require
  description Require Something
  cells identifier filepath
  compiler js
   sub const {identifier} = require("{filepath}")
  frequency .1
-nodeType export term
+ extends term
+nodeType export
  description Export This
  cells identifier
  compiler js
   sub module.exports = {identifier}
  frequency .1
-nodeType set# assignment
+ extends term
+nodeType set#
  description Number Assignment
  cells identifier number
  compiler js
   sub const {identifier} = {number}
  frequency .3
-nodeType set? assignment
+ extends assignment
+nodeType set?
  description Boolean Assignment
  cells identifier boolean
  compiler js
   sub const {identifier} = {boolean}
  frequency .04
-nodeType set$ assignment
+ extends assignment
+nodeType set$
  description String Assignment
  cells identifier
  catchAllCellType any
  compiler js
   sub const {identifier} = "{any}"
  frequency .2
-nodeType join assignment
+ extends assignment
+nodeType join
  description Join strings to form new string
  cells identifier
  catchAllCellType identifiers
@@ -91,7 +100,8 @@ nodeType join assignment
   sub const {identifier} = [{identifiers}].join("")
   listDelimiter , 
  frequency .2
-nodeType add assignment
+ extends assignment
+nodeType add
  description Add items and store result
  cells identifier
  catchAllCellType any
@@ -99,70 +109,83 @@ nodeType add assignment
   sub const {identifier} = [{any}].reduce((sum, num) => sum + num)
   listDelimiter , 
  frequency .1
-nodeType set?< set?
+ extends assignment
+nodeType set?<
  description Less than test
  cells identifier any any
  compiler js
   sub const {identifier} = {any} < {any}
  frequency .1
-nodeType set?<= set?
+ extends set?
+nodeType set?<=
  description Less than or equal to test
  cells identifier any any
  compiler js
   sub const {identifier} = {any} <= {any}
  frequency .1
-nodeType set?> set?
+ extends set?
+nodeType set?>
  description Greater than test
  cells identifier number number
  compiler js
   sub const {identifier} = {number} > {number}
  frequency .1
-nodeType set?>= set?
+ extends set?
+nodeType set?>=
  description Greater than or equal to test
  cells identifier number number
  compiler js
   sub const {identifier} = {number} >= {number}
  frequency .1
-nodeType set## assignment
+ extends set?
+nodeType set##
  cells identifier
  catchAllCellType any
  compiler js
   sub const {identifier} = {any}
  frequency .2
-nodeType set#- set##
+ extends assignment
+nodeType set#-
  description Subtract Numbers
  compiler js
   listDelimiter  - 
-nodeType set#/ set##
+ extends set##
+nodeType set#/
  description Divide Numbers
  compiler js
   listDelimiter  / 
-nodeType set#% set##
+ extends set##
+nodeType set#%
  description Modulo Numbers
  compiler js
   listDelimiter %
-nodeType set#* set##
+ extends set##
+nodeType set#*
  description Multiply Numbers
  compiler js
   listDelimiter  * 
-nodeType set#~ assignment
+ extends set##
+nodeType set#~
  description Mutable Number Assignment
  cells identifier number
  compiler js
   sub let {identifier} = {number}
-nodeType -- term
+ extends assignment
+nodeType --
  description Decrement
  cells identifier
  compiler js
   sub {identifier}--
  frequency .1
-nodeType ++ term
+ extends term
+nodeType ++
  description Increment
  frequency .3
  cells identifier
  compiler js
   sub {identifier}++
-nodeType set#[] assignment
+ extends term
+nodeType set#[]
  description Number Array Assignment
  cells identifier
  catchAllCellType number
@@ -170,7 +193,8 @@ nodeType set#[] assignment
  compiler js
   sub const {identifier} = [{number}]
   listDelimiter , 
-nodeType set*>> assignment
+ extends assignment
+nodeType set*>>
  description Function Call
  frequency .5
  cells identifier identifier
@@ -178,7 +202,8 @@ nodeType set*>> assignment
  compiler js
   sub const {identifier} = {identifier}({any})
   listDelimiter , 
-nodeType >> term
+ extends assignment
+nodeType >>
  description Function call ignore result.
  frequency .1
  cells identifier
@@ -186,7 +211,8 @@ nodeType >> term
  compiler js
   sub {identifier}({any})
   listDelimiter , 
-nodeType set.>> assignment
+ extends term
+nodeType set.>>
  description Method Call
  frequency .5
  cells identifier identifier identifier
@@ -194,16 +220,19 @@ nodeType set.>> assignment
  compiler js
   sub const {identifier} = {identifier}.{identifier}({any})
   listDelimiter , 
-nodeType return term
+ extends assignment
+nodeType return
  cells any
  compiler js
   sub return {any}
  frequency .1
-nodeType jsblock nt
+ extends term
+nodeType jsblock
  compiler js
   openChildren  {
   closeChildren }
-nodeType setfn jsblock
+ extends nt
+nodeType setfn
  description Function Assignment
  cells identifier
  catchAllCellType any
@@ -211,20 +240,24 @@ nodeType setfn jsblock
   sub const {identifier} = ({any}) =>
   listDelimiter , 
  frequency .1
-nodeType block jsblock
+ extends jsblock
+nodeType block
  description block of code
  frequency .2
  compiler js
   sub /* {identifier} */
-nodeType if jsblock
+ extends jsblock
+nodeType if
  description If tile
  cells identifier
  frequency .2
  compiler js
   sub if ({identifier})
-nodeType while jsblock
+ extends jsblock
+nodeType while
  description While tile
  cells identifier
  frequency .1
  compiler js
   sub while ({identifier})
+ extends jsblock

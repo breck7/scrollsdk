@@ -8,9 +8,11 @@ cellType commentWord
  highlightScope comment
 cellType errorWord
  highlightScope invalid
-cellType number float
+cellType number
  highlightScope constant.numeric
-cellType numbers number
+ extends float
+cellType numbers
+ extends number
 cellType operator
  highlightScope keyword.operator.arithmetic
 abstract abstract.arithmeticReducer
@@ -32,10 +34,17 @@ nodeType error
  catchAllCellType errorWord
  baseNodeType errorNode
  firstCellType errorWord
-nodeType #! #
-nodeType comment #
-nodeType % abstract.arithmeticReducer
-nodeType * abstract.arithmeticReducer
-nodeType + abstract.arithmeticReducer
-nodeType - abstract.arithmeticReducer
-nodeType / abstract.arithmeticReducer
+nodeType #!
+ extends #
+nodeType comment
+ extends #
+nodeType %
+ extends abstract.arithmeticReducer
+nodeType *
+ extends abstract.arithmeticReducer
+nodeType +
+ extends abstract.arithmeticReducer
+nodeType -
+ extends abstract.arithmeticReducer
+nodeType /
+ extends abstract.arithmeticReducer

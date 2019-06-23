@@ -23,6 +23,9 @@ nodeType file
  inScope external absolute relative
  constructors
   nodejs ./ProjectLang.js
-nodeType absolute term
-nodeType external term
-nodeType relative term
+nodeType absolute
+ extends term
+nodeType external
+ extends term
+nodeType relative
+ extends term

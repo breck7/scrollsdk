@@ -96,6 +96,8 @@ testTree.numbers = equal => {
     equal(firstNode.numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
+    if (program.getAllErrors().length) console.log(program.getAllErrors())
+
     equal(firstNode.getLineHints(), "+:  numbers...", "line hints work")
     equal(program.getInPlaceCellTypeTree(), runtimeProgram.getInPlaceCellTypeTree(), "cell types worked")
 

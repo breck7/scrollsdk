@@ -78,50 +78,62 @@ nodeType textBlock
  firstCellType anyWord
  catchAllCellType anyWord
  catchAllNodeType textBlock
-nodeType blockStringIs assertion
+nodeType blockStringIs
  description When your expected value is a multiline string.
  catchAllNodeType textBlock
  constructors
   nodejs ./SwarmLang.js AssertEqualBlockNode
-nodeType lengthIs assertion
+ extends assertion
+nodeType lengthIs
  description Intake is an array, and checks if the length of array matches expected.
  cells int
  constructors
   nodejs ./SwarmLang.js AssertLengthNode
-nodeType stringExcludes assertion
+ extends assertion
+nodeType stringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyWord
  constructors
   nodejs ./SwarmLang.js AssertDoesNotIncludeNode
-nodeType stringIncludes assertion
+ extends assertion
+nodeType stringIncludes
  catchAllCellType anyWord
  description Converts the input to string and see if the string contains the provided string
  constructors
   nodejs ./SwarmLang.js AssertIncludesNode
-nodeType stringIs assertion
+ extends assertion
+nodeType stringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllCellType anyWord
  constructors
   nodejs ./SwarmLang.js AssertEqualNode
-nodeType typeIs assertion
+ extends assertion
+nodeType typeIs
  description Assert result is one of Javascript's 6 typeof types.
  cells typeOfOption
  constructors
   nodejs ./SwarmLang.js AssertTypeOfNode
-nodeType async terminal
+ extends assertion
+nodeType async
  description Set this in setup to test async methods.
-nodeType require terminal
+ extends terminal
+nodeType require
  cells filepath
  catchAllCellType anyWord
-nodeType static terminal
+ extends terminal
+nodeType static
  description Add this to setup node to import class directly without initiating it, for static method testing.
-nodeType skipTest testBlock
+ extends terminal
+nodeType skipTest
  description If you want to skip running a test.
  constructors
   nodejs ./SwarmLang.js SkippedTestBlock
-nodeType test testBlock
+ extends testBlock
+nodeType test
  description Basic test block.
-nodeType testOnly testBlock
+ extends testBlock
+nodeType testOnly
  description If set, only this test block will be run.
  constructors
   nodejs ./SwarmLang.js SoloTestBlock
+ extends testBlock

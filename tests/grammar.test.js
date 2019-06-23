@@ -67,6 +67,7 @@ testTree.jibberish = equal => {
   // Act
   const fooNode = program.getNode("foo")
   const constNode = program.getNode("nodeWithConsts")
+  const nodeExpandsConsts = program.getNode("nodeExpandsConsts")
 
   // Assert
   equal(fooNode.getNodeTypeId(), "foo")
@@ -95,6 +96,11 @@ testTree.jibberish = equal => {
 world`,
     "constants multiline string works"
   )
+  const obj2 = nodeExpandsConsts.getDefinition().getConstantsObject()
+  // console.log(nodeExpandsConsts.getDefinition().toString())
+  // console.log(obj2)
+  equal(obj2.greeting, "hola", "expanding constants works and last wins")
+  equal(obj2.win, true, "expanding constants works")
 
   // Act
   const addition = program.getNode("+")

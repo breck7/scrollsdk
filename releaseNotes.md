@@ -1,6 +1,8 @@
 edge / 2019-06-22
 =================
 - New: added "todo" nodeType to grammar language
+- New: added "extends" keyword in place of previous one line method
+- Breaking: instead of "nodeType/cellType foo extendsFoo" now do "nodeType foo\n extends extendsFoo"
 
 26.1.1 / 2019-06-21
 ===================

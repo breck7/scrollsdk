@@ -2316,6 +2316,7 @@ var GrammarConstants;
     GrammarConstants["grammar"] = "grammar";
     GrammarConstants["extensions"] = "extensions";
     GrammarConstants["toolingDirective"] = "tooling";
+    GrammarConstants["todoComment"] = "todo";
     GrammarConstants["version"] = "version";
     GrammarConstants["name"] = "name";
     GrammarConstants["nodeTypeOrder"] = "nodeTypeOrder";
@@ -2951,6 +2952,9 @@ class AbstractTreeError {
     getSuggestionMessage() {
         return "";
     }
+    toString() {
+        return this.getMessage();
+    }
     applySuggestion() { }
     getMessage() {
         return `${this.getErrorTypeName()} at line ${this.getLineNumber()} cell ${this.getCellIndex()}.`;
@@ -3136,6 +3140,7 @@ class GrammarCellTypeDefinitionNode extends TreeNode {
         types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode;
         types[GrammarConstants.enum] = GrammarEnumTestNode;
         types[GrammarConstants.highlightScope] = TreeNode;
+        types[GrammarConstants.todoComment] = TreeNode;
         return types;
     }
     getGetter(wordIndex) {
@@ -3355,7 +3360,8 @@ class AbstractGrammarDefinitionNode extends TreeNode {
             GrammarConstants.group,
             GrammarConstants.required,
             GrammarConstants.javascript,
-            GrammarConstants.single
+            GrammarConstants.single,
+            GrammarConstants.todoComment
         ];
         const map = {};
         types.forEach(type => {
@@ -3757,6 +3763,7 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.name] = TreeNode;
         map[GrammarConstants.nodeTypeOrder] = TreeNode;
         map[GrammarConstants.javascript] = TreeNode;
+        map[GrammarConstants.todoComment] = TreeNode;
         map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean;
         map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt;
         map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString;
@@ -3779,6 +3786,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition;
         map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
         map[GrammarConstants.toolingDirective] = TreeNode;
+        map[GrammarConstants.todoComment] = TreeNode;
         return map;
     }
     _getExtendsClassName(isCompiled = false) {
@@ -4011,6 +4019,7 @@ ${GrammarConstants.nodeType} anyNode
  ${GrammarConstants.firstCellType} anyWord
 ${GrammarConstants.cellType} anyWord`).getRootConstructor();
     }
+    // todo: remove this. dont expand.
     static _condensedToExpanded(grammarCode) {
         // todo: handle imports
         const tree = new TreeNode(grammarCode);
@@ -4027,7 +4036,10 @@ ${GrammarConstants.cellType} anyWord`).getRootConstructor();
         });
         // todo: only expand certain types.
         // inScope should be a set.
-        tree._expandChildren(1, 2, tree.filter(node => node.getFirstWord() !== GrammarConstants.toolingDirective));
+        const skip = {};
+        skip[GrammarConstants.toolingDirective] = true;
+        skip[GrammarConstants.todoComment] = true;
+        tree._expandChildren(1, 2, tree.filter(node => !skip[node.getFirstWord()]));
         return tree;
     }
     static newFromCondensed(grammarCode, grammarPath) {

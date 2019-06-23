@@ -1894,7 +1894,7 @@ foo`
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
-  const grammarCode = `grammar
+  const jibberishGrammarCode = `grammar
  name jibberish
  description Test a root parser node
  constructors
@@ -1911,32 +1911,42 @@ nodeType error
  baseNodeType errorNode
 abstract topLevel
 abstract someAbstractClass
-abstract color_properties topLevel
+abstract color_properties
+ extends topLevel
  group hue saturation constrast
  cells int
-nodeType extendsAbstract someAbstractClass
+nodeType extendsAbstract
+ extends someAbstractClass
  cells int
-nodeType someCode topLevel
+nodeType someCode
+ extends topLevel
  catchAllNodeType lineOfCode
 nodeType lineOfCode
  catchAllCellType word
  constructors
   nodejs ./JibberishLang.js LineOfCodeNode
-nodeType block topLevel
+nodeType block
+ extends topLevel
  inScope topLevel
-nodeType foo topLevel
-nodeType nodeWithConsts topLevel
+nodeType foo
+ extends topLevel
+nodeType nodeWithConsts
+ extends topLevel
  string greeting hello world
 nodeType text
  blobNode
-nodeType add topLevel
+nodeType add
+ extends topLevel
  constructors
   nodejs ./JibberishLang.js AdditionNode
-nodeType + add
+nodeType +
+ extends add
  catchAllCellType int
-nodeType lightbulbState topLevel
+nodeType lightbulbState
+ extends topLevel
  cells onoff
-nodeType to block
+nodeType to
+ extends block
  cells word
  compiler txt
   sub to {word}
@@ -1968,7 +1978,7 @@ someCode
 
   // Act
   const grammarProgram = jtreeBase.GrammarProgram.newFromCondensed(
-    grammarCode,
+    jibberishGrammarCode,
     (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
   )
   const ProgramConstructor = grammarProgram.getRootConstructor()
@@ -1977,6 +1987,7 @@ someCode
 
   // Assert
   equal(errs.length, 0, "expected no errors")
+  if (errs.length) console.log(errs.join("\n"))
 }
 
 testTree.expandChildren = equal => {

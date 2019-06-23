@@ -11,6 +11,12 @@ testTree.all = equal => {
 
   // Act/Assert
   equal(program.getAllErrors().length, 0)
+  equal(
+    program.compile(),
+    `body {
+ color: red;
+}`
+  )
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("../../tests/testTreeRunner.js")(testTree)

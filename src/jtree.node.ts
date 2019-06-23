@@ -31,7 +31,6 @@ class jtreeNode extends jtree {
     const pathToJtree = __dirname + "/../index.js"
     const outputFilePath = outputFolder + `${name}Language.compiled.js`
     fs.writeFileSync(outputFilePath, new GrammarProgram(grammarCode.toString(), pathToGrammar).toNodeJsJavascriptPrettier(pathToJtree), "utf8")
-    // fs.writeFileSync(name + ".expanded.grammar", GrammarProgram._condensedToExpanded(pathToGrammar), "utf8")
     return outputFilePath
   }
 

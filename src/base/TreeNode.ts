@@ -1608,6 +1608,7 @@ class TreeNode extends ImmutableNode {
     return this._setChildren(tuple[1])
   }
 
+  // todo: throw error if line contains a \n
   appendLine(line: string) {
     return this._setLineAndChildren(line)
   }

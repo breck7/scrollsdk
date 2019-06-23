@@ -97,8 +97,6 @@ world`,
     "constants multiline string works"
   )
   const obj2 = nodeExpandsConsts.getDefinition().getConstantsObject()
-  // console.log(nodeExpandsConsts.getDefinition().toString())
-  // console.log(obj2)
   equal(obj2.greeting, "hola", "expanding constants works and last wins")
   equal(obj2.win, true, "expanding constants works")
 
@@ -139,6 +137,8 @@ testTree.cellTypeTree = equal => {
   // Act
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
+
+  const a = someJibberishProgram.nodeAt(1).getDefinition()
 
   // Assert
   equal(
@@ -301,7 +301,8 @@ testTree.requiredNodeTypes = equal => {
   const path = grammarGrammarPath
   const anyProgram = makeProgram(
     fs.readFileSync(path, "utf8"),
-    `cellType word any
+    `cellType word
+ extends any
 nodeType baseNode`,
     path
   )
@@ -342,12 +343,17 @@ testTree.grammarWithLoop = equal => {
       `grammar
  name any
  catchAllNodeType nodeA
-nodeType nodeA nodeC
+nodeType nodeA
+ extends nodeC
  catchAllCellType any
-nodeType nodeB nodeA
-nodeType nodeC nodeB
+nodeType nodeB
+ extends nodeA
+nodeType nodeC
+ extends nodeB
 cellType any`
     ).getRootConstructor()
+
+    new programConstructor("nodeA")
     equal(false, true, "Should have thrown error")
   } catch (err) {
     equal(err.toString().includes("Loop"), true, `Expected correct error thrown when grammar. Got: ${err.toString()}`)

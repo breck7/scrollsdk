@@ -201,14 +201,16 @@ declare class UnknownNodeTypeError extends AbstractTreeError {
 }
 declare abstract class AbstractExtendibleTreeNode extends TreeNode {
     _getFromExtended(firstWordPath: jTreeTypes.firstWordPath): string;
+    _getChildrenByNodeConstructorInExtended(constructor: Function): TreeNode[];
+    _hasFromExtended(firstWordPath: jTreeTypes.firstWordPath): boolean;
     _getNodeFromExtended(firstWordPath: jTreeTypes.firstWordPath): AbstractExtendibleTreeNode;
     private _cache_ancestorsArray;
-    _getAncestorsArray(): AbstractExtendibleTreeNode[];
+    _getAncestorsArray(cannotContainNodes?: AbstractExtendibleTreeNode[]): AbstractExtendibleTreeNode[];
     private _getIdThatThisExtends;
     abstract _getIdToNodeMap(): {
         [id: string]: AbstractExtendibleTreeNode;
     };
-    protected _initAncestorsArrayCache(): void;
+    protected _initAncestorsArrayCache(cannotContainNodes?: AbstractExtendibleTreeNode[]): void;
 }
 declare class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     getFirstWordMap(): jTreeTypes.stringMap;
@@ -244,9 +246,20 @@ declare class GrammarCompilerNode extends TreeNode {
     _getOpenChildrenString(): string;
     _getCloseChildrenString(): string;
 }
+declare abstract class GrammarNodeTypeConstant extends TreeNode {
+    getGetter(): string;
+    getIdentifier(): string;
+    getConstantValueAsJsText(): string;
+    getConstantValue(): any;
+}
 declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getConstantsObject(): any;
+    getConstantsObject(): {
+        [key: string]: GrammarNodeTypeConstant;
+    };
+    _getUniqueConstantNodes(): {
+        [key: string]: GrammarNodeTypeConstant;
+    };
     getExamples(): GrammarExampleNode[];
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
     abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
@@ -266,6 +279,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getLanguageDefinitionProgram(): GrammarProgram;
     getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode): GrammarCompilerNode;
+    protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
     protected _getCompilerNodes(): GrammarCompilerNode[];
     getTargetExtension(): string;
     private _cache_runTimeFirstWordToNodeConstructorMap;
@@ -308,7 +322,7 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     getMatchBlock(): string;
     private _cache_nodeTypeInheritanceSet;
     private _cache_ancestorNodeTypeIdsArray;
-    getNodeTypeInheritanceSet(): Set<string>;
+    _getNodeTypeInheritanceSet(): Set<string>;
     getAncestorNodeTypeIdsArray(): jTreeTypes.nodeTypeId[];
     _getProgramNodeTypeDefinitionCache(): {
         [nodeTypeId: string]: NonRootNodeTypeDefinition;
@@ -317,7 +331,7 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     getDescription(): string;
     getFrequency(): number;
     private _getExtendedNodeTypeId;
-    private _getCustomJavascriptMethods;
+    protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
     _nodeDefToJavascriptClass(isCompiled?: boolean): jTreeTypes.javascriptCode;
 }
 declare class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
@@ -330,7 +344,7 @@ declare class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap(): jTreeTypes.stringMap;
     _getExtendsClassName(isCompiled?: boolean): string;
-    private _getCustomJavascriptMethods;
+    protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
     getErrorsInGrammarExamples(): jTreeTypes.TreeError[];
     getTargetExtension(): string;
     getNodeTypeOrder(): string;
@@ -372,7 +386,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
-    static _condensedToExpanded(grammarCode: string): TreeNode;
+    static _expandGroups(grammarCode: string): TreeNode;
     static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath): GrammarProgram;
     loadAllConstructorScripts(baseUrlPath: string): Promise<string[]>;
     private static _scriptLoadingPromises;

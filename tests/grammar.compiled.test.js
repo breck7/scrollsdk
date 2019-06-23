@@ -110,6 +110,8 @@ testTree.numbers = equal => {
     // syntax highlighting
     // examples
 
+    // [] todo: test that groups work in compiled
+
     // [~] cell typings
     // [] cell constants
     // [] cell defaults

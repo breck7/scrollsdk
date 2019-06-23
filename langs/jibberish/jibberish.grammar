@@ -46,11 +46,11 @@ nodeType add
   nodejs ./JibberishLang.js AdditionNode
  extends topLevel
 nodeType +
+ extends add
  firstCellType opSymbol
  example Adding two numbers:
   + 1 2
  catchAllCellType int
- extends add
 nodeType block
  inScope topLevel
  extends topLevel

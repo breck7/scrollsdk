@@ -9,11 +9,14 @@ test stress test
     inScope baseNode
    cellType any
    foo
-   cellType word any
+   cellType word
+    extends any
    nodeType baseNode
-   nodeType block baseNode
+   nodeType block
+    extends baseNode
     inScope baseNode
-   nodeType to block
+   nodeType to
+    extends block
     cells word
     tags test
     compiler txt

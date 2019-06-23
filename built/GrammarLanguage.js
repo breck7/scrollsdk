@@ -103,7 +103,7 @@ class GrammarBackedNode extends TreeNode_1.default {
         javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark");
         javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket");
         javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1);
+        javascriptSyntaxSafeId = TreeUtils_1.default.ucfirst(javascriptSyntaxSafeId);
         return `${javascriptSyntaxSafeId}Node`;
     }
     _getAutocompleteResultsForFirstWord(partialWord) {
@@ -1697,8 +1697,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._nodeDefToJavascriptClass(true, "", false).trim();
     }
     _getProperName() {
-        const name = this.getExtensionName();
-        return name.substr(0, 1).toUpperCase() + name.substr(1);
+        return TreeUtils_1.default.ucfirst(this.getExtensionName());
     }
     _getGeneratedClassName() {
         return this._getProperName() + "ProgramRoot";
@@ -1729,7 +1728,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
 
       getGrammarProgramRoot() {
-        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils_1.default.escapeBackTicks(this.toString())}\`)
+        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils_1.default.escapeBackTicks(this.toString().replace(/\\/g, "\\\\"))}\`)
       }
 
     }`;

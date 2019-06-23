@@ -2,6 +2,7 @@
 test basics hakon
  arrangeTestSubject
   require ./HakonProgram.js
+  todo Have a way to get the first root example instead of duplicating it here.
   constructWithBlockString
    body
     font-size 12px

@@ -117,7 +117,7 @@ abstract class GrammarBackedNode extends TreeNode {
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket")
     javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket")
 
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1)
+    javascriptSyntaxSafeId = TreeUtils.ucfirst(javascriptSyntaxSafeId)
     return `${javascriptSyntaxSafeId}Node`
   }
 
@@ -2064,8 +2064,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   private _getProperName() {
-    const name = this.getExtensionName()
-    return name.substr(0, 1).toUpperCase() + name.substr(1)
+    return TreeUtils.ucfirst(this.getExtensionName())
   }
 
   _getGeneratedClassName() {
@@ -2102,7 +2101,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
 
       getGrammarProgramRoot() {
-        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString())}\`)
+        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString().replace(/\\/g, "\\\\"))}\`)
       }
 
     }`

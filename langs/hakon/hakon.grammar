@@ -11,6 +11,15 @@ grammar
       .map(child => child.compile())
       .join("")
   }
+ example A basic example
+  body
+   font-size 12px
+   h1,h2
+    color red
+  a
+   &:hover
+    color blue
+    font-size 17px
 cellType extraWord
  highlightScope invalid
 cellType cssValueWord

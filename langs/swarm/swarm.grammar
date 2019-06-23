@@ -1,3 +1,5 @@
+todo Make run in browser
+todo Add comments?
 grammar
  name swarm
  description A Tree Language for unit testing.
@@ -14,7 +16,7 @@ cellType assertWord
  highlightScope keyword.operator
 cellType commandWord
  highlightScope variable.function
-cellType commentWord
+cellType hashBangWord
  highlightScope comment
 cellType controlWord
  highlightScope keyword.control
@@ -42,16 +44,23 @@ abstract testBlock
  inScope arrangeTestSubject
  catchAllNodeType commandNode
  firstCellType controlWord
+cellType todoWord
+ highlightScope comment
+nodeType todo
+ description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
+ catchAllCellType todoWord
+ firstCellType todoWord
+ catchAllNodeType todo
 nodeType #!
  description Standard bash hashbang line.
- cells commentWord
- catchAllCellType commentWord
- firstCellType commentWord
+ cells hashBangWord
+ catchAllCellType hashBangWord
+ firstCellType hashBangWord
 nodeType arrangeTestSubject
  constructors
   nodejs ./SwarmLang.js TestSetupNode
  firstCellType arrangeWord
- inScope async require static constructWithBlockString
+ inScope async require static constructWithBlockString todo
 nodeType blockStringParam
  firstCellType parameterWord
  description Pass in a multiline string as a command arg. #todo: rename

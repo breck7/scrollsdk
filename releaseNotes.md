@@ -1,3 +1,7 @@
+edge / 2019-06-23
+===================
+- Fix: escaping backslash fix for compiled files
+
 26.4.0 / 2019-06-23
 ===================
 - Breaking/Fix: moved getLineHints back to definition node

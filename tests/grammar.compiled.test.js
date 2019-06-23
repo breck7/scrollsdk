@@ -34,11 +34,25 @@ testTree.grammar = equal => {
 
 testTree.compileAll = equal => {
   // Arrange/Act
-  ;["swarm", "stump", "hakon", "project", "jibberish", "fire", "stamp"].map(name => {
+  ;["hakon", "swarm", "stump", "project", "jibberish", "fire", "stamp"].map(name => {
     try {
-      require(jtree.compileGrammar(__dirname + `/../langs/${name}/${name}.grammar`, outputDir))
+      // Act
+      const path = __dirname + `/../langs/${name}/${name}.grammar`
+      const grammarCode = jtree.TreeNode.fromDisk(path)
+      const tempFilePath = jtree.compileGrammar(path, outputDir)
+      const tempExports = require(tempFilePath)
+
       // Assert
       equal(true, true, `Expected to compile and include "${name}" without error.`)
+
+      // Act
+      const rootClass = tempExports[jtree.Utils.ucfirst(name) + "ProgramRoot"]
+      const exampleProgram = grammarCode.getNode("grammar example")
+      if (exampleProgram) {
+        const testProgram = new rootClass(exampleProgram.childrenToString())
+        // Assert
+        equal(testProgram.getAllErrors().length, 0, `no errors in test ${name} program`)
+      }
     } catch (err) {
       console.log(err)
       equal(true, false, "Hit an error")

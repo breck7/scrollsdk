@@ -15,6 +15,9 @@ class TreeUtils {
     static escapeBackTicks(str) {
         return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
     }
+    static ucfirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
     // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
     static didYouMean(str = "", options = [], caseSensitive = false, threshold = 0.4, thresholdAbsolute = 20) {
         if (!caseSensitive)

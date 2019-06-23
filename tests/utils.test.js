@@ -29,6 +29,10 @@ testTree.getUniqueWordsArray = equal => {
   equal(jtree.Utils.getUniqueWordsArray(`hi hi hey`).length, 2)
 }
 
+testTree.ucfirst = equal => {
+  equal(jtree.Utils.ucfirst(`hi`), "Hi")
+}
+
 testTree.getLineIndexAtCharacterPosition = equal => {
   // Arrange/Act/Assert
   const Utils = jtree.Utils

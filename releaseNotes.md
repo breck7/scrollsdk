@@ -1,6 +1,8 @@
-edge / 2019-06-23
+26.5.0 / 2019-06-23
 ===================
+- New: todos in swarm
 - Fix: escaping backslash fix for compiled files
+- Infra: more testing of compiled code
 
 26.4.0 / 2019-06-23
 ===================

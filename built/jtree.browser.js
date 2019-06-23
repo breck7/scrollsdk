@@ -31,6 +31,9 @@ class TreeUtils {
     static escapeBackTicks(str) {
         return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
     }
+    static ucfirst(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
     // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
     static didYouMean(str = "", options = [], caseSensitive = false, threshold = 0.4, thresholdAbsolute = 20) {
         if (!caseSensitive)
@@ -2384,7 +2387,7 @@ class GrammarBackedNode extends TreeNode {
         javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark");
         javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket");
         javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.substr(0, 1).toUpperCase() + javascriptSyntaxSafeId.substr(1);
+        javascriptSyntaxSafeId = TreeUtils.ucfirst(javascriptSyntaxSafeId);
         return `${javascriptSyntaxSafeId}Node`;
     }
     _getAutocompleteResultsForFirstWord(partialWord) {
@@ -3973,8 +3976,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._nodeDefToJavascriptClass(true, "", false).trim();
     }
     _getProperName() {
-        const name = this.getExtensionName();
-        return name.substr(0, 1).toUpperCase() + name.substr(1);
+        return TreeUtils.ucfirst(this.getExtensionName());
     }
     _getGeneratedClassName() {
         return this._getProperName() + "ProgramRoot";
@@ -4005,7 +4007,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
 
       getGrammarProgramRoot() {
-        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString())}\`)
+        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString().replace(/\\/g, "\\\\"))}\`)
       }
 
     }`;
@@ -4572,7 +4574,7 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "26.4.0";
+jtree.getVersion = () => "26.5.0";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

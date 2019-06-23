@@ -1,6 +1,7 @@
 
 
 
+
 const testStrings = {}
 
 const testTree = {}
@@ -3283,11 +3284,9 @@ event lala2018
 |Lala 2018|11/02/2018 - 11/03/2018|San Fran|http://www.blah.com|foo|`
   const tree = new TreeNode(test)
 
-  const ucfirst = str => str.charAt(0).toUpperCase() + str.slice(1)
-
   // Act
   const simple = tree.toMarkdownTable()
-  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) => (row ? value : ucfirst(value)))
+  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) => (row ? value : jtree.Utils.ucfirst(value)))
 
   // Assert
   equal(table, expected, "markdown ok")

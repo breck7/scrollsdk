@@ -50,6 +50,8 @@ testTree.compileAll = equal => {
       const exampleProgram = grammarCode.getNode("grammar example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
+        // todo: should we then execute it? compile it?
+
         // Assert
         equal(testProgram.getAllErrors().length, 0, `no errors in test ${name} program`)
       }

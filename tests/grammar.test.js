@@ -60,9 +60,9 @@ testTree.jibberish = equal => {
   const defNode = program
     .getGrammarProgramRoot()
     .getNodeTypeFamilyTree()
-    .getNode("topLevel nodeWithConsts")
+    .getNode("topLevel nodeWithConsts nodeExpandsConsts")
 
-  equal(defNode.toString(), "nodeWithConsts", "family tree works")
+  equal(defNode.toString(), "nodeExpandsConsts", "family tree works")
 
   // Act
   const fooNode = program.getNode("foo")
@@ -131,6 +131,19 @@ missing2 true`)
 
   // Assert
   equal(programWithNodeTypeBugs.getInvalidNodeTypes().length, 2)
+
+  // Grandchild inheritance
+  // Arrange
+  const def = program.getNode("html.h1").getDefinition()
+
+  // Act/Assert
+  equal(
+    def
+      ._getAncestorsArray()
+      .map(def => def.getNodeTypeIdFromDefinition())
+      .join(" "),
+    "html.h1 abstract.html topLevel"
+  )
 }
 
 testTree.cellTypeTree = equal => {

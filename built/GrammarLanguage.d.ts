@@ -202,6 +202,7 @@ declare class UnknownNodeTypeError extends AbstractTreeError {
 declare abstract class AbstractExtendibleTreeNode extends TreeNode {
     _getFromExtended(firstWordPath: jTreeTypes.firstWordPath): string;
     _getChildrenByNodeConstructorInExtended(constructor: Function): TreeNode[];
+    _getExtendedParent(): AbstractExtendibleTreeNode;
     _hasFromExtended(firstWordPath: jTreeTypes.firstWordPath): boolean;
     _getNodeFromExtended(firstWordPath: jTreeTypes.firstWordPath): AbstractExtendibleTreeNode;
     private _cache_ancestorsArray;
@@ -293,7 +294,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
     protected _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): jTreeTypes.firstWordToNodeConstructorMap;
     getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];
-    protected _getParentDefinition(): AbstractGrammarDefinitionNode;
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     isRequired(): boolean;
@@ -318,7 +318,6 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     getSublimeSyntaxContextId(): string;
     _getExtendsClassName(isCompiled?: boolean): jTreeTypes.javascriptClassPath;
     private _getFirstCellHighlightScope;
-    protected _getParentDefinition(): AbstractGrammarDefinitionNode;
     getMatchBlock(): string;
     private _cache_nodeTypeInheritanceSet;
     private _cache_ancestorNodeTypeIdsArray;
@@ -358,7 +357,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
         [typeName: string]: GrammarCellTypeDefinitionNode;
     };
     getLanguageDefinitionProgram(): this;
-    getNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
+    getConcreteAndAbstractNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
     getTheGrammarFilePath(): string;
     protected _getGrammarGrammarNode(): GrammarDefinitionGrammarNode;
     getExtensionName(): string;

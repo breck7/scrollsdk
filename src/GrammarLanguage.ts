@@ -263,7 +263,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgramRoot()
-    grammarProgram.getNodeTypeDefinitions().forEach(def => {
+    grammarProgram.getConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
     })
     this.getTopDownArray().forEach((node, lineNumber) => {
@@ -1062,6 +1062,10 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     return (<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor))).flat()
   }
 
+  _getExtendedParent() {
+    return this._getAncestorsArray()[1]
+  }
+
   _hasFromExtended(firstWordPath: jTreeTypes.firstWordPath) {
     return !!this._getNodeFromExtended(firstWordPath)
   }
@@ -1072,6 +1076,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
 
+  // Note: the order is: [this, parent, grandParent, ...]
   _getAncestorsArray(cannotContainNodes?: AbstractExtendibleTreeNode[]) {
     this._initAncestorsArrayCache(cannotContainNodes)
     return this._cache_ancestorsArray
@@ -1087,7 +1092,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     if (this._cache_ancestorsArray) return undefined
     if (cannotContainNodes && cannotContainNodes.includes(this)) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
     cannotContainNodes = cannotContainNodes || [this]
-    let ancestors: AbstractExtendibleTreeNode[] = []
+    let ancestors: AbstractExtendibleTreeNode[] = [this]
     const extendedId = this._getIdThatThisExtends()
     if (extendedId) {
       const parentNode = this._getIdToNodeMap()[extendedId]
@@ -1095,8 +1100,6 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
       ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes))
     }
-    ancestors.push(this)
-    ancestors.reverse()
     this._cache_ancestorsArray = ancestors
   }
 }
@@ -1631,10 +1634,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
 
-  protected _getParentDefinition(): AbstractGrammarDefinitionNode {
-    return undefined
-  }
-
   protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const nodeTypesNode = this.getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
@@ -1643,8 +1642,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     // todo: allow multiple of these if we allow mixins?
     const ids = this._getMyInScopeNodeTypeIds()
-    const parentDef = this._getParentDefinition()
-    return parentDef ? ids.concat(parentDef._getInScopeNodeTypeIds()) : ids
+    const parentDef = this._getExtendedParent()
+    return parentDef ? ids.concat((<AbstractGrammarDefinitionNode>parentDef)._getInScopeNodeTypeIds()) : ids
   }
 
   isRequired(): boolean {
@@ -1723,19 +1722,13 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     baseTypeNames[GrammarConstants.errorNode] = "ErrorNode"
     baseTypeNames[GrammarConstants.terminalNode] = "TerminalNode"
     baseTypeNames[GrammarConstants.nonTerminalNode] = "NonTerminalNode"
-    const baseNodeTypeName =
-      baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] ||
-      (this._getFromExtended(GrammarConstants.inScope) || this._getFromExtended(GrammarConstants.catchAllNodeType) ? "NonTerminalNode" : "TerminalNode")
+    const isNonTerminal = this._getFromExtended(GrammarConstants.inScope) || this._getFromExtended(GrammarConstants.catchAllNodeType)
+    const baseNodeTypeName = baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] || (isNonTerminal ? "NonTerminalNode" : "TerminalNode")
 
-    if (!isCompiled) {
-      return "jtree." + baseNodeTypeName // todo: this is incorrect but works for legacy stuff.
-    }
-    const extendedNodeTypeId = this._getExtendedNodeTypeId()
-    return extendedNodeTypeId
-      ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId)._getGeneratedClassName()
-      : isCompiled
-      ? "jtree.TerminalNode"
-      : "jtree.NonTerminalNode"
+    if (!isCompiled) return "jtree." + baseNodeTypeName // todo: this is incorrect but works for legacy stuff.
+
+    const extendedDef = <AbstractGrammarDefinitionNode>this._getExtendedParent()
+    return extendedDef ? extendedDef._getGeneratedClassName() : isCompiled ? "jtree.TerminalNode" : "jtree.NonTerminalNode"
   }
 
   private _getFirstCellHighlightScope() {
@@ -1744,11 +1737,6 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     // todo: standardize error/capture error at grammar time
     if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${this.getFirstCellTypeId()} found`)
     return cellTypeDefinition.getHighlightScope()
-  }
-
-  protected _getParentDefinition(): AbstractGrammarDefinitionNode {
-    const extendsId = this._getExtendedNodeTypeId()
-    return extendsId ? this.getNodeTypeDefinitionByNodeTypeId(extendsId) : undefined
   }
 
   getMatchBlock() {
@@ -1828,8 +1816,6 @@ ${captures}
   }
 
   _nodeDefToJavascriptClass(isCompiled = true): jTreeTypes.javascriptCode {
-    const ancestorIds = this.getAncestorNodeTypeIdsArray()
-
     const components = [this.getNodeConstructorToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(
       code => code
     )
@@ -1908,7 +1894,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
     const errors: jTreeTypes.TreeError[] = []
-    this.getNodeTypeDefinitions().forEach(def =>
+    this.getConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
         exampleProgram.getAllErrors().forEach(err => {
@@ -1943,7 +1929,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   getNodeTypeFamilyTree() {
     const tree = new TreeNode()
-    Object.values(this.getNodeTypeDefinitions()).forEach(node => {
+    Object.values(this.getConcreteAndAbstractNodeTypeDefinitions()).forEach(node => {
       const path = node.getAncestorNodeTypeIdsArray().join(" ")
       tree.touchNode(path)
     })
@@ -1961,7 +1947,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
-  getNodeTypeDefinitions() {
+  getConcreteAndAbstractNodeTypeDefinitions() {
     return <NonRootNodeTypeDefinition[]>this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition)
   }
 
@@ -2095,7 +2081,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
-    const defs = this.getNodeTypeDefinitions()
+    const defs = this.getConcreteAndAbstractNodeTypeDefinitions()
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
 
     const constantsName = this._getProperName() + "Constants"
@@ -2147,7 +2133,7 @@ ${forNodeJs ? `module.exports = {${constantsName}, ` + this._getGeneratedClassNa
       .map(name => ` ${name}: '${cellTypeDefs[name].getRegexString()}'`)
       .join("\n")
 
-    const defs = this.getNodeTypeDefinitions().filter(kw => !kw._isAbstract())
+    const defs = this.getConcreteAndAbstractNodeTypeDefinitions().filter(kw => !kw._isAbstract())
     const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n")
     const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSublimeSyntaxContextId()}'`).join("\n")
 

@@ -27,6 +27,11 @@ abstract color_properties
  group hue saturation constrast
  cells int
  extends topLevel
+abstract abstract.html
+ inScope content
+ extends topLevel
+nodeType content
+ baseNodeType blobNode
 nodeType error
  firstCellType errorWord
  catchAllCellType errorWord
@@ -92,6 +97,8 @@ nodeType nodeWithConsts
 nodeType nodeExpandsConsts
  string greeting hola
  extends nodeWithConsts
+nodeType html.h1
+ extends abstract.html
 nodeType someCode
  catchAllNodeType lineOfCode
  extends topLevel

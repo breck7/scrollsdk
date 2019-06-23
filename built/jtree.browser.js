@@ -2500,7 +2500,7 @@ class GrammarBackedRootNode extends GrammarBackedNode {
         // returns a report on what nodeTypes from its language the program uses
         const usage = new TreeNode();
         const grammarProgram = this.getGrammarProgramRoot();
-        grammarProgram.getNodeTypeDefinitions().forEach(def => {
+        grammarProgram.getConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
             usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "));
         });
         this.getTopDownArray().forEach((node, lineNumber) => {
@@ -3144,12 +3144,16 @@ class AbstractExtendibleTreeNode extends TreeNode {
     _getChildrenByNodeConstructorInExtended(constructor) {
         return this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)).flat();
     }
+    _getExtendedParent() {
+        return this._getAncestorsArray()[1];
+    }
     _hasFromExtended(firstWordPath) {
         return !!this._getNodeFromExtended(firstWordPath);
     }
     _getNodeFromExtended(firstWordPath) {
         return this._getAncestorsArray().find(node => node.has(firstWordPath));
     }
+    // Note: the order is: [this, parent, grandParent, ...]
     _getAncestorsArray(cannotContainNodes) {
         this._initAncestorsArrayCache(cannotContainNodes);
         return this._cache_ancestorsArray;
@@ -3163,7 +3167,7 @@ class AbstractExtendibleTreeNode extends TreeNode {
         if (cannotContainNodes && cannotContainNodes.includes(this))
             throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`);
         cannotContainNodes = cannotContainNodes || [this];
-        let ancestors = [];
+        let ancestors = [this];
         const extendedId = this._getIdThatThisExtends();
         if (extendedId) {
             const parentNode = this._getIdToNodeMap()[extendedId];
@@ -3171,8 +3175,6 @@ class AbstractExtendibleTreeNode extends TreeNode {
                 throw new Error(`${extendedId} not found`);
             ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes));
         }
-        ancestors.push(this);
-        ancestors.reverse();
         this._cache_ancestorsArray = ancestors;
     }
 }
@@ -3614,9 +3616,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         arr.reverse();
         return arr.map(definition => definition.getNodeTypeIdFromDefinition());
     }
-    _getParentDefinition() {
-        return undefined;
-    }
     _getMyInScopeNodeTypeIds() {
         const nodeTypesNode = this.getNode(GrammarConstants.inScope);
         return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
@@ -3624,7 +3623,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     _getInScopeNodeTypeIds() {
         // todo: allow multiple of these if we allow mixins?
         const ids = this._getMyInScopeNodeTypeIds();
-        const parentDef = this._getParentDefinition();
+        const parentDef = this._getExtendedParent();
         return parentDef ? ids.concat(parentDef._getInScopeNodeTypeIds()) : ids;
     }
     isRequired() {
@@ -3695,17 +3694,12 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
         baseTypeNames[GrammarConstants.errorNode] = "ErrorNode";
         baseTypeNames[GrammarConstants.terminalNode] = "TerminalNode";
         baseTypeNames[GrammarConstants.nonTerminalNode] = "NonTerminalNode";
-        const baseNodeTypeName = baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] ||
-            (this._getFromExtended(GrammarConstants.inScope) || this._getFromExtended(GrammarConstants.catchAllNodeType) ? "NonTerminalNode" : "TerminalNode");
-        if (!isCompiled) {
+        const isNonTerminal = this._getFromExtended(GrammarConstants.inScope) || this._getFromExtended(GrammarConstants.catchAllNodeType);
+        const baseNodeTypeName = baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] || (isNonTerminal ? "NonTerminalNode" : "TerminalNode");
+        if (!isCompiled)
             return "jtree." + baseNodeTypeName; // todo: this is incorrect but works for legacy stuff.
-        }
-        const extendedNodeTypeId = this._getExtendedNodeTypeId();
-        return extendedNodeTypeId
-            ? this.getNodeTypeDefinitionByNodeTypeId(extendedNodeTypeId)._getGeneratedClassName()
-            : isCompiled
-                ? "jtree.TerminalNode"
-                : "jtree.NonTerminalNode";
+        const extendedDef = this._getExtendedParent();
+        return extendedDef ? extendedDef._getGeneratedClassName() : isCompiled ? "jtree.TerminalNode" : "jtree.NonTerminalNode";
     }
     _getFirstCellHighlightScope() {
         const program = this.getLanguageDefinitionProgram();
@@ -3714,10 +3708,6 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
         if (!cellTypeDefinition)
             throw new Error(`No ${GrammarConstants.cellType} ${this.getFirstCellTypeId()} found`);
         return cellTypeDefinition.getHighlightScope();
-    }
-    _getParentDefinition() {
-        const extendsId = this._getExtendedNodeTypeId();
-        return extendsId ? this.getNodeTypeDefinitionByNodeTypeId(extendsId) : undefined;
     }
     getMatchBlock() {
         const defaultHighlightScope = "source";
@@ -3787,7 +3777,6 @@ ${captures}
         return jsCode ? jsCode.getNode(GrammarConstants.javascript).childrenToString() : "";
     }
     _nodeDefToJavascriptClass(isCompiled = true) {
-        const ancestorIds = this.getAncestorNodeTypeIdsArray();
         const components = [this.getNodeConstructorToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(code => code);
         return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName(isCompiled)} {
       ${components.join("\n")}
@@ -3853,7 +3842,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     getErrorsInGrammarExamples() {
         const programConstructor = this.getRootConstructor();
         const errors = [];
-        this.getNodeTypeDefinitions().forEach(def => def.getExamples().forEach(example => {
+        this.getConcreteAndAbstractNodeTypeDefinitions().forEach(def => def.getExamples().forEach(example => {
             const exampleProgram = new programConstructor(example.childrenToString());
             exampleProgram.getAllErrors().forEach(err => {
                 errors.push(err);
@@ -3878,7 +3867,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
     getNodeTypeFamilyTree() {
         const tree = new TreeNode();
-        Object.values(this.getNodeTypeDefinitions()).forEach(node => {
+        Object.values(this.getConcreteAndAbstractNodeTypeDefinitions()).forEach(node => {
             const path = node.getAncestorNodeTypeIdsArray().join(" ");
             tree.touchNode(path);
         });
@@ -3893,7 +3882,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     getLanguageDefinitionProgram() {
         return this;
     }
-    getNodeTypeDefinitions() {
+    getConcreteAndAbstractNodeTypeDefinitions() {
         return this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition);
     }
     // todo: remove?
@@ -3999,7 +3988,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return `getCatchAllNodeConstructor() { return ${className}}`;
     }
     _nodeDefToJavascriptClass(isCompiled, jtreePath, forNodeJs = true) {
-        const defs = this.getNodeTypeDefinitions();
+        const defs = this.getConcreteAndAbstractNodeTypeDefinitions();
         const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n");
         const constantsName = this._getProperName() + "Constants";
         const nodeTypeConstants = defs
@@ -4044,7 +4033,7 @@ ${forNodeJs ? `module.exports = {${constantsName}, ` + this._getGeneratedClassNa
         const variables = Object.keys(cellTypeDefs)
             .map(name => ` ${name}: '${cellTypeDefs[name].getRegexString()}'`)
             .join("\n");
-        const defs = this.getNodeTypeDefinitions().filter(kw => !kw._isAbstract());
+        const defs = this.getConcreteAndAbstractNodeTypeDefinitions().filter(kw => !kw._isAbstract());
         const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n");
         const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSublimeSyntaxContextId()}'`).join("\n");
         return `%YAML 1.2
@@ -4584,7 +4573,7 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "26.2.0";
+jtree.getVersion = () => "26.3.0";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

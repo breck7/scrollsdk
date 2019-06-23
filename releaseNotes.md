@@ -1,3 +1,8 @@
+26.3.0 / 2019-06-23
+===================
+- Fix: extension bug in classes with more than 1 ancestor
+- Breaking: getNodeTypeDefintions is now getConcreteAndAbstractNodeTypeDefinitions
+
 26.2.0 / 2019-06-22
 ===================
 - Fix: extends now works correctly

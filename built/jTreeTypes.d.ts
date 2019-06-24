@@ -55,6 +55,8 @@ export declare namespace jTreeTypes {
     };
     type typeScriptCode = string;
     type javascriptCode = string;
+    type id = string;
+    type idAccessorFunction = (tree: treeNode) => id;
     type nodeTypeId = string;
     type cellTypeId = string;
     type semanticVersion = string;

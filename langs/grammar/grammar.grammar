@@ -201,7 +201,7 @@ nodeType listDelimiter
  extends abstract.compilerRule
 nodeType openChildren
  extends abstract.compilerRule
-nodeType sub
+nodeType stringTemplate
  extends abstract.compilerRule
 nodeType boolean
  cells constantIdentifier
@@ -254,7 +254,7 @@ nodeType cells
 nodeType compiler
  todo Remove this and its children?
  cells compilerTargetExtension
- inScope sub listDelimiter openChildren closeChildren indentCharacter
+ inScope stringTemplate listDelimiter openChildren closeChildren indentCharacter
  extends abstract.nodeTypeRule
 nodeType description
  catchAllCellType stringCell

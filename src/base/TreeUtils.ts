@@ -234,13 +234,13 @@ class TreeUtils {
     }
   }
 
-  static makeGraphSortFunction(thisColumnIndex: number, extendsColumnIndex: number) {
+  static _makeGraphSortFunction(idAccessor: jTreeTypes.idAccessorFunction, extendsIdAccessor: jTreeTypes.idAccessorFunction) {
     return (nodeA: jTreeTypes.treeNode, nodeB: jTreeTypes.treeNode) => {
       // -1 === a before b
-      const nodeAUniqueId = nodeA.getWord(thisColumnIndex)
-      const nodeAExtends = nodeA.getWord(extendsColumnIndex)
-      const nodeBUniqueId = nodeB.getWord(thisColumnIndex)
-      const nodeBExtends = nodeB.getWord(extendsColumnIndex)
+      const nodeAUniqueId = idAccessor(nodeA)
+      const nodeAExtends = extendsIdAccessor(nodeA)
+      const nodeBUniqueId = idAccessor(nodeB)
+      const nodeBExtends = extendsIdAccessor(nodeB)
       const nodeAExtendsNodeB = nodeAExtends && nodeAExtends === nodeBUniqueId
       const nodeBExtendsNodeA = nodeBExtends && nodeBExtends === nodeAUniqueId
 

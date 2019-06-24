@@ -1,8 +1,10 @@
+todo Explore best ways to add polymorphism
+todo Explore non-firstWord node type detection
 grammar
  name fire
  description A useless Tree Language for testing Tree Notation features.
  compiler js
- inScope #! term nt
+ inScope #! abstract.terminal abstract.nonTerminal
  catchAllNodeType error
  javascript
   async execute() { return this.executeSync() }
@@ -19,245 +21,280 @@ grammar
     return outputLines
   }
 cellType anyFirstWord
-cellType number
- regex \-?[0-9]*\.?[0-9]*
-cellType identifier
- regex [$A-Za-z_][0-9a-zA-Z_$]*
-cellType identifiers
- extends identifier
-cellType any
+cellType anyWord
 cellType boolean
  regex (false|true)
 cellType filepath
-nodeType #!
- catchAllCellType any
+cellType identifier
+ regex [$A-Za-z_][0-9a-zA-Z_$]*
+ highlightScope variable
+cellType numberCell
+ regex \-?[0-9]*\.?[0-9]*
+ highlightScope constant.numeric
+cellType numberIdentifier
+ extends identifier
+cellType hashBangWord
+ highlightScope comment
+cellType stringCell
+ highlightScope string
+cellType booleanIdentifier
+ extends identifier
+cellType functionIdentifier
+ extends identifier
+cellType identifiers
+ extends identifier
+cellType instanceIdentifier
+ extends identifier
+cellType methodIdentifier
+ extends identifier
+cellType resultIdentifier
+ extends identifier
+cellType keywordCell
+ highlightScope keyword
+cellType stringIdentifier
+ extends identifier
+cellType stringCells
+ extends stringCell
+abstract abstract.nonTerminal
+ inScope abstract.terminal abstract.nonTerminal
+ firstCellType keywordCell
+abstract abstract.terminal
+ firstCellType keywordCell
+abstract abstract.assignment
+ extends abstract.terminal
+abstract abstract.arithmetic
+ cells identifier
+ catchAllCellType anyWord
  compiler js
-  sub // #! {any}
+  stringTemplate const {identifier} = {anyWord}
+ frequency .2
+ extends abstract.assignment
+abstract abstract.jsblock
+ compiler js
+  openChildren  {
+  closeChildren }
+ extends abstract.nonTerminal
+abstract abstract.booleanOperator
+ description Runs a boolean test and saves result.
+ extends abstract.assignment
+nodeType #!
+ description Standard bash hashbang line.
+ catchAllCellType hashBangWord
+ firstCellType hashBangWord
+ compiler js
+  stringTemplate // #! {hashBangWord}
 nodeType error
  baseNodeType errorNode
  compiler js
-  sub // error
-nodeType nt
- inScope term nt
-nodeType term
-nodeType assignment
- extends term
-nodeType dump
- description Dump variable(s) to console
- catchAllCellType identifier
+  stringTemplate // error
+nodeType divide
+ description Divide Numbers
  compiler js
-  sub console.log({identifier})
+  listDelimiter  / 
+ extends abstract.arithmetic
+nodeType modulo
+ description Modulo Numbers
+ compiler js
+  listDelimiter %
+ extends abstract.arithmetic
+nodeType multiply
+ description Multiply Numbers
+ compiler js
+  listDelimiter  * 
+ extends abstract.arithmetic
+nodeType substract
+ description Subtract Numbers
+ compiler js
+  listDelimiter  - 
+ extends abstract.arithmetic
+nodeType add
+ description Add numbers and store result
+ cells numberIdentifier
+ catchAllCellType numberCell
+ compiler js
+  stringTemplate const {numberIdentifier} = [{numberCell}].reduce((sum, num) => sum + num)
   listDelimiter , 
- frequency .5
- extends term
-nodeType print
- description Print string to console
- catchAllCellType any
- compiler js
-  sub console.log("{any}")
- extends term
-nodeType require
- description Require Something
- cells identifier filepath
- compiler js
-  sub const {identifier} = require("{filepath}")
  frequency .1
- extends term
-nodeType export
- description Export This
- cells identifier
- compiler js
-  sub module.exports = {identifier}
- frequency .1
- extends term
-nodeType set#
- description Number Assignment
- cells identifier number
- compiler js
-  sub const {identifier} = {number}
- frequency .3
- extends assignment
-nodeType set?
+ extends abstract.assignment
+nodeType boolean
  description Boolean Assignment
- cells identifier boolean
+ cells booleanIdentifier boolean
  compiler js
-  sub const {identifier} = {boolean}
- frequency .04
- extends assignment
-nodeType set$
- description String Assignment
- cells identifier
- catchAllCellType any
+  stringTemplate const {booleanIdentifier} = {boolean}
+ extends abstract.assignment
+nodeType callFunctionAndSet
+ description Function Call
+ frequency .5
+ cells resultIdentifier functionIdentifier
+ catchAllCellType anyWord
  compiler js
-  sub const {identifier} = "{any}"
- frequency .2
- extends assignment
+  stringTemplate const {resultIdentifier} = {functionIdentifier}({anyWord})
+  listDelimiter , 
+ extends abstract.assignment
+nodeType callMethodAndSet
+ description Method Call
+ frequency .5
+ cells resultIdentifier instanceIdentifier methodIdentifier
+ catchAllCellType anyWord
+ compiler js
+  stringTemplate const {resultIdentifier} = {instanceIdentifier}.{methodIdentifier}({anyWord})
+  listDelimiter , 
+ extends abstract.assignment
 nodeType join
  description Join strings to form new string
  cells identifier
  catchAllCellType identifiers
  compiler js
-  sub const {identifier} = [{identifiers}].join("")
+  stringTemplate const {identifier} = [{identifiers}].join("")
   listDelimiter , 
  frequency .2
- extends assignment
-nodeType add
- description Add items and store result
- cells identifier
- catchAllCellType any
- compiler js
-  sub const {identifier} = [{any}].reduce((sum, num) => sum + num)
-  listDelimiter , 
- frequency .1
- extends assignment
-nodeType set?<
- description Less than test
- cells identifier any any
- compiler js
-  sub const {identifier} = {any} < {any}
- frequency .1
- extends set?
-nodeType set?<=
- description Less than or equal to test
- cells identifier any any
- compiler js
-  sub const {identifier} = {any} <= {any}
- frequency .1
- extends set?
-nodeType set?>
- description Greater than test
- cells identifier number number
- compiler js
-  sub const {identifier} = {number} > {number}
- frequency .1
- extends set?
-nodeType set?>=
- description Greater than or equal to test
- cells identifier number number
- compiler js
-  sub const {identifier} = {number} >= {number}
- frequency .1
- extends set?
-nodeType set##
- cells identifier
- catchAllCellType any
- compiler js
-  sub const {identifier} = {any}
- frequency .2
- extends assignment
-nodeType set#-
- description Subtract Numbers
- compiler js
-  listDelimiter  - 
- extends set##
-nodeType set#/
- description Divide Numbers
- compiler js
-  listDelimiter  / 
- extends set##
-nodeType set#%
- description Modulo Numbers
- compiler js
-  listDelimiter %
- extends set##
-nodeType set#*
- description Multiply Numbers
- compiler js
-  listDelimiter  * 
- extends set##
-nodeType set#~
+ extends abstract.assignment
+nodeType mutableNumber
  description Mutable Number Assignment
- cells identifier number
+ cells identifier numberCell
  compiler js
-  sub let {identifier} = {number}
- extends assignment
-nodeType --
- description Decrement
- cells identifier
+  stringTemplate let {identifier} = {numberCell}
+ extends abstract.assignment
+nodeType number
+ description Number Assignment
+ cells identifier numberCell
  compiler js
-  sub {identifier}--
- frequency .1
- extends term
-nodeType ++
- description Increment
+  stringTemplate const {identifier} = {numberCell}
  frequency .3
- cells identifier
- compiler js
-  sub {identifier}++
- extends term
-nodeType set#[]
+ extends abstract.assignment
+nodeType numbers
  description Number Array Assignment
  cells identifier
- catchAllCellType number
+ catchAllCellType numberCell
  frequency .4
  compiler js
-  sub const {identifier} = [{number}]
+  stringTemplate const {identifier} = [{numberCell}]
   listDelimiter , 
- extends assignment
-nodeType set*>>
- description Function Call
- frequency .5
- cells identifier identifier
- catchAllCellType any
+ extends abstract.assignment
+nodeType string
+ description String Assignment
+ cells stringIdentifier
+ catchAllCellType anyWord
  compiler js
-  sub const {identifier} = {identifier}({any})
-  listDelimiter , 
- extends assignment
-nodeType >>
- description Function call ignore result.
+  stringTemplate const {stringIdentifier} = "{anyWord}"
+ frequency .2
+ extends abstract.assignment
+nodeType greaterThan
+ description Greater than test
+ cells identifier numberCell numberCell
+ compiler js
+  stringTemplate const {identifier} = {numberCell} > {numberCell}
  frequency .1
- cells identifier
- catchAllCellType any
+ extends abstract.booleanOperator
+nodeType greaterThanOrEqual
+ description Greater than or equal to test
+ cells identifier numberCell numberCell
  compiler js
-  sub {identifier}({any})
-  listDelimiter , 
- extends term
-nodeType set.>>
- description Method Call
- frequency .5
- cells identifier identifier identifier
- catchAllCellType any
- compiler js
-  sub const {identifier} = {identifier}.{identifier}({any})
-  listDelimiter , 
- extends assignment
-nodeType return
- cells any
- compiler js
-  sub return {any}
+  stringTemplate const {identifier} = {numberCell} >= {numberCell}
  frequency .1
- extends term
-nodeType jsblock
+ extends abstract.booleanOperator
+nodeType lessThan
+ description Less than test
+ cells identifier anyWord anyWord
  compiler js
-  openChildren  {
-  closeChildren }
- extends nt
-nodeType setfn
- description Function Assignment
- cells identifier
- catchAllCellType any
- compiler js
-  sub const {identifier} = ({any}) =>
-  listDelimiter , 
+  stringTemplate const {identifier} = {anyWord} < {anyWord}
  frequency .1
- extends jsblock
+ extends abstract.booleanOperator
+nodeType lessThanOrEqual
+ description Less than or equal to test
+ cells identifier anyWord anyWord
+ compiler js
+  stringTemplate const {identifier} = {anyWord} <= {anyWord}
+ frequency .1
+ extends abstract.booleanOperator
 nodeType block
  description block of code
  frequency .2
  compiler js
-  sub /* {identifier} */
- extends jsblock
+  stringTemplate /* {identifier} */
+ extends abstract.jsblock
+nodeType function
+ description Function Assignment
+ cells functionIdentifier
+ catchAllCellType anyWord
+ compiler js
+  stringTemplate const {functionIdentifier} = ({anyWord}) =>
+  listDelimiter , 
+ frequency .1
+ extends abstract.jsblock
 nodeType if
  description If tile
  cells identifier
  frequency .2
  compiler js
-  sub if ({identifier})
- extends jsblock
+  stringTemplate if ({identifier})
+ extends abstract.jsblock
 nodeType while
  description While tile
  cells identifier
  frequency .1
  compiler js
-  sub while ({identifier})
- extends jsblock
+  stringTemplate while ({identifier})
+ extends abstract.jsblock
+nodeType callFunction
+ description Function call ignore result.
+ frequency .1
+ cells functionIdentifier
+ catchAllCellType anyWord
+ compiler js
+  stringTemplate {functionIdentifier}({anyWord})
+  listDelimiter , 
+ extends abstract.terminal
+nodeType decrement
+ description Decrement
+ cells numberIdentifier
+ compiler js
+  stringTemplate {numberIdentifier}--
+ frequency .1
+ extends abstract.terminal
+nodeType dumpIdentifier
+ description Dump variable(s) to console
+ catchAllCellType identifier
+ compiler js
+  stringTemplate console.log({identifier})
+  listDelimiter , 
+ frequency .5
+ extends abstract.terminal
+nodeType export
+ description Export This
+ cells identifier
+ compiler js
+  stringTemplate module.exports = {identifier}
+ frequency .1
+ extends abstract.terminal
+nodeType increment
+ description Increment
+ frequency .3
+ cells numberIdentifier
+ compiler js
+  stringTemplate {numberIdentifier}++
+ extends abstract.terminal
+nodeType printNumber
+ extends abstract.terminal
+ catchAllCellType numberIdentifier
+ compiler js
+  stringTemplate console.log(numberCell)
+nodeType printString
+ todo Allow printing of multiline strings
+ extends abstract.terminal
+ catchAllCellType stringCells
+ compiler js
+  stringTemplate console.log("{stringCells}")
+nodeType require
+ description Require Something
+ cells identifier filepath
+ compiler js
+  stringTemplate const {identifier} = require("{filepath}")
+ frequency .1
+ extends abstract.terminal
+nodeType return
+ cells anyWord
+ compiler js
+  stringTemplate return {anyWord}
+ frequency .1
+ extends abstract.terminal

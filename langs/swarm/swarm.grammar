@@ -1,5 +1,5 @@
-todo Make run in browser
 todo Add comments?
+todo Make run in browser
 grammar
  name swarm
  description A Tree Language for unit testing.
@@ -16,19 +16,21 @@ cellType assertWord
  highlightScope keyword.operator
 cellType commandWord
  highlightScope variable.function
-cellType hashBangWord
- highlightScope comment
 cellType controlWord
  highlightScope keyword.control
 cellType extraWord
  highlightScope invalid
 cellType filepath
  highlightScope string
+cellType hashBangWord
+ highlightScope comment
 cellType int
  regex \-?[0-9]+
  highlightScope constant.numeric.integer
 cellType parameterWord
  highlightScope variable.parameter
+cellType todoWord
+ highlightScope comment
 cellType typeOfOption
  description The 6 possible results for Javascript's typeof.
  highlightScope constant.language
@@ -44,13 +46,6 @@ abstract testBlock
  inScope arrangeTestSubject
  catchAllNodeType commandNode
  firstCellType controlWord
-cellType todoWord
- highlightScope comment
-nodeType todo
- description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
- catchAllCellType todoWord
- firstCellType todoWord
- catchAllNodeType todo
 nodeType #!
  description Standard bash hashbang line.
  cells hashBangWord
@@ -61,6 +56,15 @@ nodeType arrangeTestSubject
   nodejs ./SwarmLang.js TestSetupNode
  firstCellType arrangeWord
  inScope async require static constructWithBlockString todo
+nodeType async
+ description Set this in setup to test async methods.
+ extends terminal
+nodeType blockStringIs
+ description When your expected value is a multiline string.
+ catchAllNodeType textBlock
+ constructors
+  nodejs ./SwarmLang.js AssertEqualBlockNode
+ extends assertion
 nodeType blockStringParam
  firstCellType parameterWord
  description Pass in a multiline string as a command arg. #todo: rename
@@ -83,22 +87,24 @@ nodeType constructWithBlockString
  firstCellType arrangeWord
 nodeType error
  baseNodeType errorNode
-nodeType textBlock
- firstCellType anyWord
- catchAllCellType anyWord
- catchAllNodeType textBlock
-nodeType blockStringIs
- description When your expected value is a multiline string.
- catchAllNodeType textBlock
- constructors
-  nodejs ./SwarmLang.js AssertEqualBlockNode
- extends assertion
 nodeType lengthIs
  description Intake is an array, and checks if the length of array matches expected.
  cells int
  constructors
   nodejs ./SwarmLang.js AssertLengthNode
  extends assertion
+nodeType require
+ cells filepath
+ catchAllCellType anyWord
+ extends terminal
+nodeType skipTest
+ description If you want to skip running a test.
+ constructors
+  nodejs ./SwarmLang.js SkippedTestBlock
+ extends testBlock
+nodeType static
+ description Add this to setup node to import class directly without initiating it, for static method testing.
+ extends terminal
 nodeType stringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyWord
@@ -117,27 +123,6 @@ nodeType stringIs
  constructors
   nodejs ./SwarmLang.js AssertEqualNode
  extends assertion
-nodeType typeIs
- description Assert result is one of Javascript's 6 typeof types.
- cells typeOfOption
- constructors
-  nodejs ./SwarmLang.js AssertTypeOfNode
- extends assertion
-nodeType async
- description Set this in setup to test async methods.
- extends terminal
-nodeType require
- cells filepath
- catchAllCellType anyWord
- extends terminal
-nodeType static
- description Add this to setup node to import class directly without initiating it, for static method testing.
- extends terminal
-nodeType skipTest
- description If you want to skip running a test.
- constructors
-  nodejs ./SwarmLang.js SkippedTestBlock
- extends testBlock
 nodeType test
  description Basic test block.
  extends testBlock
@@ -146,3 +131,18 @@ nodeType testOnly
  constructors
   nodejs ./SwarmLang.js SoloTestBlock
  extends testBlock
+nodeType textBlock
+ firstCellType anyWord
+ catchAllCellType anyWord
+ catchAllNodeType textBlock
+nodeType todo
+ description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
+ catchAllCellType todoWord
+ firstCellType todoWord
+ catchAllNodeType todo
+nodeType typeIs
+ description Assert result is one of Javascript's 6 typeof types.
+ cells typeOfOption
+ constructors
+  nodejs ./SwarmLang.js AssertTypeOfNode
+ extends assertion

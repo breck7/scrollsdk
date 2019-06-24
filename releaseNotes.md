@@ -1,3 +1,11 @@
+edge / 2019-06-23
+===================
+- New: perf fix for compiled languages
+- New: refactored Fire language
+- Breaking: "sub" compiler property is now "templateString"
+- Breaking: Fire experimental language changed a lot
+- Breaking: for internal use only makeGraphSortFunction util function is now _makeGraphSortFunction and method signature changed
+
 26.5.0 / 2019-06-23
 ===================
 - New: todos in swarm

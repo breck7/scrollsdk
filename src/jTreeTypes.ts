@@ -59,6 +59,9 @@ export namespace jTreeTypes {
   export declare type nodeIdRenameMap = { [oldNodeTypeId: string]: string }
   export declare type typeScriptCode = string
   export declare type javascriptCode = string
+  export declare type id = string
+
+  export declare type idAccessorFunction = (tree: treeNode) => id
 
   export declare type nodeTypeId = string // todo: add character restrictions.
   export declare type cellTypeId = string // todo: add character restrictions.

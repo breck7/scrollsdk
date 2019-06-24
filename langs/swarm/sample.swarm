@@ -20,7 +20,7 @@ test stress test
     cells word
     tags test
     compiler txt
-     sub to {word}
+     stringTemplate to {word}
      closeChildren end
  getRunTimeFirstWordsInScope
   lengthIs 3

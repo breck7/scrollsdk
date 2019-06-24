@@ -4,7 +4,7 @@ test basics
   require ./FireProgram.js
   constructWithBlockString
    add ten 2 3 5
-   dump ten
+   dumpIdentifier ten
  compile
   blockStringIs
    const ten = [2, 3, 5].reduce((sum, num) => sum + num)

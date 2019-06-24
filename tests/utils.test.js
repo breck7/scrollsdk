@@ -51,7 +51,7 @@ retriever dog
 car
 cat animal
 house`)
-  a.sort(jtree.Utils.makeGraphSortFunction(0, 1))
+  a.sort(jtree.Utils._makeGraphSortFunction(node => node.getWord(0), node => node.getWord(1)))
 
   // Assert
   equal(

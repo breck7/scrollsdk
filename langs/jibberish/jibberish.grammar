@@ -62,7 +62,7 @@ nodeType block
 nodeType to
  cells word
  compiler txt
-  sub to {word}
+  stringTemplate to {word}
   closeChildren end
  extends block
 nodeType foo

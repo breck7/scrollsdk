@@ -1950,7 +1950,7 @@ nodeType to
  extends block
  cells word
  compiler txt
-  sub to {word}
+  stringTemplate to {word}
   closeChildren end`
   const code = `foo
 nodeWithConsts

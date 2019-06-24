@@ -7,7 +7,7 @@ interface AbstractRuntimeProgramConstructorInterface {
 }
 
 enum GrammarConstantsCompiler {
-  sub = "sub", // replacement instructions
+  stringTemplate = "stringTemplate", // replacement instructions
   indentCharacter = "indentCharacter",
   listDelimiter = "listDelimiter",
   openChildren = "openChildren",
@@ -254,7 +254,10 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     const nodeTypeOrder = this.getGrammarProgramRoot().getNodeTypeOrder()
     const clone = this.clone()
     const isCondensed = this.getGrammarProgramRoot().getGrammarName() === "grammar" // todo: generalize?
-    clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils.makeGraphSortFunction(1, 2) : undefined)
+    clone._firstWordSort(
+      nodeTypeOrder.split(" "),
+      isCondensed ? TreeUtils._makeGraphSortFunction(node => node.getWord(1), node => node.get(GrammarConstants.extends)) : undefined
+    )
 
     return clone.toString()
   }
@@ -457,6 +460,7 @@ class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     const compiler = this._getCompilerNode(targetExtension)
     const openChildrenString = compiler._getOpenChildrenString()
     const closeChildrenString = compiler._getCloseChildrenString()
+    console.log("open:", openChildrenString, compiler.childrenToString())
 
     const compiledLine = this._getCompiledLine(targetExtension)
     const indent = this._getCompiledIndentation(targetExtension)
@@ -1212,7 +1216,7 @@ class GrammarExampleNode extends TreeNode {}
 class GrammarCompilerNode extends TreeNode {
   getFirstWordMap() {
     const types = [
-      GrammarConstantsCompiler.sub,
+      GrammarConstantsCompiler.stringTemplate,
       GrammarConstantsCompiler.indentCharacter,
       GrammarConstantsCompiler.listDelimiter,
       GrammarConstantsCompiler.openChildren,
@@ -1234,7 +1238,7 @@ class GrammarCompilerNode extends TreeNode {
   }
 
   _getTransformation() {
-    return this.get(GrammarConstantsCompiler.sub)
+    return this.get(GrammarConstantsCompiler.stringTemplate)
   }
 
   _getIndentCharacter() {
@@ -2101,12 +2105,16 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
 
       getGrammarProgramRoot() {
-        return jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString().replace(/\\/g, "\\\\"))}\`)
+        if (!this._cachedGrammarProgramRoot)
+          this._cachedGrammarProgramRoot = jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString().replace(/\\/g, "\\\\"))}\`)
+        return this._cachedGrammarProgramRoot
       }
 
     }`
 
-    return `${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
+    return `"use strict";
+
+${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
 
 const ${constantsName} = {
   nodeTypes: {

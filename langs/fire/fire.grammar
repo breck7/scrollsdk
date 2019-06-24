@@ -178,32 +178,36 @@ nodeType string
   stringTemplate const {stringIdentifier} = "{anyWord}"
  frequency .2
  extends abstract.assignment
+cellType leftNumberCell
+ extends numberCell
+cellType leftAnyWord
+ extends anyWord
 nodeType greaterThan
  description Greater than test
- cells identifier numberCell numberCell
+ cells identifier leftNumberCell numberCell
  compiler
-  stringTemplate const {identifier} = {numberCell} > {numberCell}
+  stringTemplate const {identifier} = {leftNumberCell} > {numberCell}
  frequency .1
  extends abstract.booleanOperator
 nodeType greaterThanOrEqual
  description Greater than or equal to test
- cells identifier numberCell numberCell
+ cells identifier leftNumberCell numberCell
  compiler
-  stringTemplate const {identifier} = {numberCell} >= {numberCell}
+  stringTemplate const {identifier} = {leftNumberCell} >= {numberCell}
  frequency .1
  extends abstract.booleanOperator
 nodeType lessThan
  description Less than test
- cells identifier anyWord anyWord
+ cells identifier leftAnyWord anyWord
  compiler
-  stringTemplate const {identifier} = {anyWord} < {anyWord}
+  stringTemplate const {identifier} = {leftAnyWord} < {anyWord}
  frequency .1
  extends abstract.booleanOperator
 nodeType lessThanOrEqual
  description Less than or equal to test
- cells identifier anyWord anyWord
+ cells identifier leftAnyWord anyWord
  compiler
-  stringTemplate const {identifier} = {anyWord} <= {anyWord}
+  stringTemplate const {identifier} = {leftAnyWord} <= {anyWord}
  frequency .1
  extends abstract.booleanOperator
 nodeType block

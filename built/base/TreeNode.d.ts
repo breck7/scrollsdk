@@ -110,7 +110,7 @@ declare class ImmutableNode extends AbstractNode {
     protected _childrenToString(indentCount?: int, language?: this): string;
     childrenToString(): string;
     protected _getNodeJoinCharacter(): string;
-    compile(targetExtension: jTreeTypes.fileExtension): string;
+    compile(): string;
     toXml(): jTreeTypes.xmlString;
     toDisk(path: string): this;
     _lineToYaml(indentLevel: number, listTag?: string): string;

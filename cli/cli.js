@@ -62,14 +62,13 @@ class CLI {
   cases(folder, grammarName) {
     const files = recursiveReadSync(folder).filter(file => file.endsWith("." + grammarName))
     const grammarProgram = this._getGrammarProgramRoot(grammarName)
-    const targetExtension = grammarProgram.getTargetExtension()
     files.map(filename => {
       const errors = this._check(filename)
       if (errors.length) {
         throw new Error(`Type check errors ${errors}`)
       }
-      const actual = this.compile(filename, targetExtension)
-      const expectedPath = filename.replace("." + grammarName, "." + targetExtension)
+      const actual = this.compile(filename)
+      const expectedPath = filename.replace("." + grammarName, ".compiled")
       const expected = this._read(expectedPath)
       if (expected !== actual) {
         const errorTree = new TreeNode()
@@ -164,14 +163,12 @@ ${grammars.toTable()}`
     return new GrammarProgram(this._read(grammarPath))
   }
 
-  compile(programPath, targetExtension) {
+  compile(programPath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
     const grammarProgram = new GrammarProgram(this._read(grammarPath))
-    targetExtension = targetExtension || grammarProgram.getTargetExtension()
-    const compiledCode = program.compile(targetExtension)
-    return compiledCode
+    return program.compile()
   }
 
   _getLogFilePath() {

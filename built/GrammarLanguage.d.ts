@@ -48,6 +48,7 @@ declare enum GrammarConstants {
     constructorNodeJs = "nodejs",
     constructorBrowser = "browser",
     compilerNodeType = "compiler",
+    compilesTo = "compilesTo",
     description = "description",
     example = "example",
     frequency = "frequency",
@@ -107,10 +108,9 @@ declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     getLineCellTypes(): string;
     getLineHighlightScopes(defaultScope?: string): string;
     getErrors(): jTreeTypes.TreeError[];
-    protected _getCompilerNode(targetLanguage: jTreeTypes.targetLanguageId): GrammarCompilerNode;
-    protected _getCompiledIndentation(targetLanguage: jTreeTypes.targetLanguageId): string;
-    protected _getCompiledLine(targetLanguage: jTreeTypes.targetLanguageId): string;
-    compile(targetLanguage: jTreeTypes.targetLanguageId): string;
+    protected _getCompiledIndentation(): any;
+    protected _getCompiledLine(): string;
+    compile(): string;
     readonly cells: jTreeTypes.stringMap;
 }
 declare class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {
@@ -121,7 +121,7 @@ declare class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
 }
 declare class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     protected _getNodeJoinCharacter(): string;
-    compile(targetExtension: jTreeTypes.targetLanguageId): string;
+    compile(): string;
     private static _backupConstructorEnabled;
     static useAsBackupConstructor(): boolean;
     static setAsBackupConstructor(value: boolean): typeof GrammarBackedNonTerminalNode;
@@ -237,15 +237,6 @@ declare class GrammarDefinitionErrorNode extends TreeNode {
 }
 declare class GrammarExampleNode extends TreeNode {
 }
-declare class GrammarCompilerNode extends TreeNode {
-    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    _getTargetExtension(): string;
-    _getListDelimiter(): string;
-    _getTransformation(): string;
-    _getIndentCharacter(): string;
-    _getOpenChildrenString(): string;
-    _getCloseChildrenString(): string;
-}
 declare abstract class GrammarNodeTypeConstant extends TreeNode {
     getGetter(): string;
     getIdentifier(): string;
@@ -278,10 +269,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     _initConstructorDefinedInGrammar(): Function;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getLanguageDefinitionProgram(): GrammarProgram;
-    getDefinitionCompilerNode(targetLanguage: jTreeTypes.targetLanguageId, node: TreeNode): GrammarCompilerNode;
     protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
-    protected _getCompilerNodes(): GrammarCompilerNode[];
-    getTargetExtension(): string;
     private _cache_runTimeFirstWordToNodeConstructorMap;
     getRunTimeFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
     getRunTimeFirstWordsInScope(): jTreeTypes.nodeTypeId[];
@@ -313,6 +301,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
 }
 declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId(): string;
+    _getCompilerObject(): jTreeTypes.stringMap;
     getLineHints(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
     getSublimeSyntaxContextId(): string;
@@ -336,6 +325,7 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
 declare class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     _nodeDefToJavascriptClass(): string;
     _getGeneratedClassName(): string;
+    getTargetExtension(): string;
     _getExtendsClassName(): string;
     getLanguageDefinitionProgram(): GrammarProgram;
     getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;

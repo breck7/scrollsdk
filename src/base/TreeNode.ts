@@ -617,8 +617,8 @@ class ImmutableNode extends AbstractNode {
     return "\n"
   }
 
-  compile(targetExtension: jTreeTypes.fileExtension): string {
-    return this.map(child => child.compile(targetExtension)).join(this._getNodeJoinCharacter())
+  compile(): string {
+    return this.map(child => child.compile()).join(this._getNodeJoinCharacter())
   }
 
   toXml(): jTreeTypes.xmlString {

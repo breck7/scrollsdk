@@ -1,7 +1,12 @@
-edge / 2019-06-23
+27.0.0 / 2019-06-23
 ===================
-- New: perf fix for compiled languages
+- New: simplified compile method to take 0 params
 - New: refactored Fire language
+- New: compilesTo property on grammar node in GrammarLanguage
+- New: perf fix for compiled languages
+- Fix: fire grammar fixes
+- Fix: compilation open and close children fixes
+- Breaking: you can now only have 1 target compilation language per grammar. If you want multiple targets just extend the grammar.
 - Breaking: "sub" compiler property is now "templateString"
 - Breaking: Fire experimental language changed a lot
 - Breaking: for internal use only makeGraphSortFunction util function is now _makeGraphSortFunction and method signature changed

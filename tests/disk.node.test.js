@@ -11,7 +11,7 @@ testTree.combineTests = equal => {
   const combined = jtree.combineFiles([__dirname + "/*.swarm"])
 
   // Act/Assert
-  equal(combined.toString().includes("getTargetExtension"), true, "Included something from a swarm file")
+  equal(combined.toString().includes("constructWithBlockString"), true, "Included something from a swarm file")
 }
 
 testTree.diskTests = equal => {

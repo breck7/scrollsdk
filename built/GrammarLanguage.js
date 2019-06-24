@@ -72,6 +72,7 @@ var GrammarConstants;
     GrammarConstants["constructorBrowser"] = "browser";
     // compile time
     GrammarConstants["compilerNodeType"] = "compiler";
+    GrammarConstants["compilesTo"] = "compilesTo";
     // develop time
     GrammarConstants["description"] = "description";
     GrammarConstants["example"] = "example";
@@ -332,23 +333,19 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
             });
         return this._getRequiredNodeErrors(errors);
     }
-    _getCompilerNode(targetLanguage) {
-        return this.getDefinition().getDefinitionCompilerNode(targetLanguage, this);
-    }
-    _getCompiledIndentation(targetLanguage) {
-        const compiler = this._getCompilerNode(targetLanguage);
-        const indentCharacter = compiler._getIndentCharacter();
+    _getCompiledIndentation() {
+        const indentCharacter = this.getDefinition()._getCompilerObject()[GrammarConstantsCompiler.indentCharacter];
         const indent = this.getIndentation();
         return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent;
     }
-    _getCompiledLine(targetLanguage) {
-        const compiler = this._getCompilerNode(targetLanguage);
-        const listDelimiter = compiler._getListDelimiter();
-        const str = compiler._getTransformation();
+    _getCompiledLine() {
+        const compiler = this.getDefinition()._getCompilerObject();
+        const listDelimiter = compiler[GrammarConstantsCompiler.listDelimiter];
+        const str = compiler[GrammarConstantsCompiler.stringTemplate];
         return str ? TreeUtils_1.default.formatStr(str, listDelimiter, this.cells) : this.getLine();
     }
-    compile(targetLanguage) {
-        return this._getCompiledIndentation(targetLanguage) + this._getCompiledLine(targetLanguage);
+    compile() {
+        return this._getCompiledIndentation() + this._getCompiledLine();
     }
     // todo: remove
     get cells() {
@@ -385,14 +382,13 @@ class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     _getNodeJoinCharacter() {
         return "\n";
     }
-    compile(targetExtension) {
-        const compiler = this._getCompilerNode(targetExtension);
-        const openChildrenString = compiler._getOpenChildrenString();
-        const closeChildrenString = compiler._getCloseChildrenString();
-        console.log("open:", openChildrenString, compiler.childrenToString());
-        const compiledLine = this._getCompiledLine(targetExtension);
-        const indent = this._getCompiledIndentation(targetExtension);
-        const compiledChildren = this.map(child => child.compile(targetExtension)).join(this._getNodeJoinCharacter());
+    compile() {
+        const compiler = this.getDefinition()._getCompilerObject();
+        const openChildrenString = compiler[GrammarConstantsCompiler.openChildren] || "";
+        const closeChildrenString = compiler[GrammarConstantsCompiler.closeChildren] || "";
+        const compiledLine = this._getCompiledLine();
+        const indent = this._getCompiledIndentation();
+        const compiledChildren = this.map(child => child.compile()).join(this._getNodeJoinCharacter());
         return `${indent}${compiledLine}${openChildrenString}
 ${compiledChildren}
 ${indent}${closeChildrenString}`;
@@ -1000,24 +996,6 @@ class GrammarCompilerNode extends TreeNode_1.default {
         });
         return map;
     }
-    _getTargetExtension() {
-        return this.getWord(1);
-    }
-    _getListDelimiter() {
-        return this.get(GrammarConstantsCompiler.listDelimiter);
-    }
-    _getTransformation() {
-        return this.get(GrammarConstantsCompiler.stringTemplate);
-    }
-    _getIndentCharacter() {
-        return this.get(GrammarConstantsCompiler.indentCharacter);
-    }
-    _getOpenChildrenString() {
-        return this.get(GrammarConstantsCompiler.openChildren) || "";
-    }
-    _getCloseChildrenString() {
-        return this.get(GrammarConstantsCompiler.closeChildren) || "";
-    }
 }
 class AbstractCustomConstructorNode extends TreeNode_1.default {
     isAppropriateEnvironment() {
@@ -1121,6 +1099,7 @@ class GrammarNodeTypeConstantBoolean extends GrammarNodeTypeConstant {
 }
 class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     getFirstWordMap() {
+        // todo: some of these should just be on nonRootNodes
         const types = [
             GrammarConstants.frequency,
             GrammarConstants.inScope,
@@ -1263,23 +1242,8 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     getLanguageDefinitionProgram() {
         return this.getParent();
     }
-    getDefinitionCompilerNode(targetLanguage, node) {
-        const compilerNode = this._getCompilerNodes().find(node => node._getTargetExtension() === targetLanguage);
-        if (!compilerNode)
-            throw new Error(`No compiler for language "${targetLanguage}" for line "${node.getLine()}"`);
-        return compilerNode;
-    }
     _getCustomJavascriptMethods() {
         return "";
-    }
-    _getCompilerNodes() {
-        return this._getChildrenByNodeConstructorInExtended(GrammarCompilerNode) || [];
-    }
-    // todo: remove?
-    // for now by convention first compiler is "target extension"
-    getTargetExtension() {
-        const firstNode = this._getCompilerNodes()[0];
-        return firstNode ? firstNode._getTargetExtension() : "";
     }
     getRunTimeFirstWordMap() {
         if (!this._cache_runTimeFirstWordToNodeConstructorMap)
@@ -1400,6 +1364,15 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId() {
         return this._getFromExtended(GrammarConstants.catchAllNodeType) || this.getParent()._getRunTimeCatchAllNodeTypeId();
     }
+    _getCompilerObject() {
+        let obj = {};
+        const items = this._getChildrenByNodeConstructorInExtended(GrammarCompilerNode);
+        items.reverse(); // Last definition wins.
+        items.forEach((node) => {
+            obj = Object.assign(obj, node.toObject()); // todo: what about multiline strings?
+        });
+        return obj;
+    }
     // todo: improve layout (use bold?)
     getLineHints() {
         const catchAllCellTypeId = this.getCatchAllCellTypeId();
@@ -1515,6 +1488,9 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     _getGeneratedClassName() {
         return this.getLanguageDefinitionProgram()._getGeneratedClassName();
     }
+    getTargetExtension() {
+        return this.get(GrammarConstants.compilesTo);
+    }
     // todo: I think this may be a sign we dont want this class.
     _getExtendsClassName() {
         return "jtree.GrammarBackedRootNode";
@@ -1527,6 +1503,7 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
         const map = super.getFirstWordMap();
         map[GrammarConstants.extensions] = TreeNode_1.default;
         map[GrammarConstants.version] = TreeNode_1.default;
+        map[GrammarConstants.compilesTo] = TreeNode_1.default;
         map[GrammarConstants.name] = TreeNode_1.default;
         map[GrammarConstants.nodeTypeOrder] = TreeNode_1.default;
         map[GrammarConstants.javascript] = TreeNode_1.default;

@@ -1,0 +1,6 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+mutableNumber countdown 10
+while countdown
+ printNumber countdown
+ decrement countdown
+printString Happy new year!

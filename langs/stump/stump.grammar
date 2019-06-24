@@ -3,6 +3,7 @@ grammar
  description A Tree Language that compiles to HTML.
  catchAllNodeType errorNode
  inScope htmlTag
+ compilesTo html
  javascript
   compile() { return this.toHtml() }
 cellType anyFirstWord

@@ -5,7 +5,7 @@ test stress test
   constructWithBlockString
    grammar
     name testlang
-    compiler txt
+    compilesTo txt
     inScope baseNode
    cellType any
    foo
@@ -19,7 +19,7 @@ test stress test
     extends block
     cells word
     tags test
-    compiler txt
+    compiler
      stringTemplate to {word}
      closeChildren end
  getRunTimeFirstWordsInScope

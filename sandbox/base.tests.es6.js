@@ -703,7 +703,7 @@ testTree.getNodeByColumns = equal => {
  description Test a root parser node
  constructors
   nodejs ./JibberishLang.js JibberishProgramRoot
- compiler txt
+ compiler
  inScope baseNode`)
 
   // Act
@@ -1899,7 +1899,7 @@ testTree.isomorphicGrammarTests = equal => {
  description Test a root parser node
  constructors
   nodejs JibberishLang.js
- compiler txt
+ compilesTo txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass
 cellType int
@@ -1948,8 +1948,8 @@ nodeType lightbulbState
 nodeType to
  extends block
  cells word
- compiler txt
-  sub to {word}
+ compiler
+  stringTemplate to {word}
   closeChildren end`
   const code = `foo
 nodeWithConsts

@@ -3,7 +3,7 @@ grammar
  description A useless Tree Language built for testing Tree Notation code.
  constructors
   nodejs ./JibberishLang.js
- compiler txt
+ compilesTo txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass
 cellType anyFirstWord
@@ -61,7 +61,7 @@ nodeType block
  extends topLevel
 nodeType to
  cells word
- compiler txt
+ compiler
   stringTemplate to {word}
   closeChildren end
  extends block

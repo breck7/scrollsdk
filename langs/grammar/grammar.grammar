@@ -32,8 +32,6 @@ cellType cellTypeId
  todo Put restrictions on allowed characters for now?
 cellType cellTypeIdConstant
  highlightScope variable.parameter
-cellType compilerTargetExtension
- description The target extension of the compiler output such as "o" or "js" or "html"
 cellType constantIdentifier
  regex [a-zA-Z]\w+
  description A word that can be assigned to the node class in the target language.
@@ -138,7 +136,7 @@ nodeType grammar
  required
  single
  firstCellType propertyName
- inScope name description example extensions nodeTypeOrder inScope constructors compiler catchAllNodeType version abstract.constant javascript
+ inScope name description example extensions nodeTypeOrder inScope constructors catchAllNodeType version abstract.constant javascript compilesTo
 nodeType group
  todo Remove this once we have imports?
  catchAllCellType nodeTypeId
@@ -193,6 +191,10 @@ nodeType version
  cells semanticVersion
  firstCellType propertyName
  description Version number of your language.
+nodeType compilesTo
+ cells fileExtension
+ firstCellType propertyName
+ description Optionally specify a file extension that will be used when compiling your language.
 nodeType closeChildren
  extends abstract.compilerRule
 nodeType indentCharacter
@@ -253,7 +255,6 @@ nodeType cells
  extends abstract.nodeTypeRule
 nodeType compiler
  todo Remove this and its children?
- cells compilerTargetExtension
  inScope stringTemplate listDelimiter openChildren closeChildren indentCharacter
  extends abstract.nodeTypeRule
 nodeType description

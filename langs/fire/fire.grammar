@@ -2,13 +2,12 @@ todo Explore best ways to add polymorphism
 todo Explore non-firstWord node type detection
 grammar
  name fire
- description A useless Tree Language for testing Tree Notation features.
- compiler js
+ description A useless Tree Language that compiles to Javascript for testing Tree Notation features.
+ compilesTo js
  inScope #! abstract.terminal abstract.nonTerminal
  catchAllNodeType error
  javascript
   async execute() { return this.executeSync() }
-  compile() { return super.compile("js")}
   executeSync() {
     let outputLines = []
     const _originalConsoleLog = console.log
@@ -65,12 +64,12 @@ abstract abstract.assignment
 abstract abstract.arithmetic
  cells identifier
  catchAllCellType anyWord
- compiler js
+ compiler
   stringTemplate const {identifier} = {anyWord}
  frequency .2
  extends abstract.assignment
 abstract abstract.jsblock
- compiler js
+ compiler
   openChildren  {
   closeChildren }
  extends abstract.nonTerminal
@@ -81,37 +80,37 @@ nodeType #!
  description Standard bash hashbang line.
  catchAllCellType hashBangWord
  firstCellType hashBangWord
- compiler js
+ compiler
   stringTemplate // #! {hashBangWord}
 nodeType error
  baseNodeType errorNode
- compiler js
+ compiler
   stringTemplate // error
 nodeType divide
  description Divide Numbers
- compiler js
+ compiler
   listDelimiter  / 
  extends abstract.arithmetic
 nodeType modulo
  description Modulo Numbers
- compiler js
+ compiler
   listDelimiter %
  extends abstract.arithmetic
 nodeType multiply
  description Multiply Numbers
- compiler js
+ compiler
   listDelimiter  * 
  extends abstract.arithmetic
 nodeType substract
  description Subtract Numbers
- compiler js
+ compiler
   listDelimiter  - 
  extends abstract.arithmetic
 nodeType add
  description Add numbers and store result
  cells numberIdentifier
  catchAllCellType numberCell
- compiler js
+ compiler
   stringTemplate const {numberIdentifier} = [{numberCell}].reduce((sum, num) => sum + num)
   listDelimiter , 
  frequency .1
@@ -119,7 +118,7 @@ nodeType add
 nodeType boolean
  description Boolean Assignment
  cells booleanIdentifier boolean
- compiler js
+ compiler
   stringTemplate const {booleanIdentifier} = {boolean}
  extends abstract.assignment
 nodeType callFunctionAndSet
@@ -127,7 +126,7 @@ nodeType callFunctionAndSet
  frequency .5
  cells resultIdentifier functionIdentifier
  catchAllCellType anyWord
- compiler js
+ compiler
   stringTemplate const {resultIdentifier} = {functionIdentifier}({anyWord})
   listDelimiter , 
  extends abstract.assignment
@@ -136,7 +135,7 @@ nodeType callMethodAndSet
  frequency .5
  cells resultIdentifier instanceIdentifier methodIdentifier
  catchAllCellType anyWord
- compiler js
+ compiler
   stringTemplate const {resultIdentifier} = {instanceIdentifier}.{methodIdentifier}({anyWord})
   listDelimiter , 
  extends abstract.assignment
@@ -144,7 +143,7 @@ nodeType join
  description Join strings to form new string
  cells identifier
  catchAllCellType identifiers
- compiler js
+ compiler
   stringTemplate const {identifier} = [{identifiers}].join("")
   listDelimiter , 
  frequency .2
@@ -152,13 +151,13 @@ nodeType join
 nodeType mutableNumber
  description Mutable Number Assignment
  cells identifier numberCell
- compiler js
+ compiler
   stringTemplate let {identifier} = {numberCell}
  extends abstract.assignment
 nodeType number
  description Number Assignment
  cells identifier numberCell
- compiler js
+ compiler
   stringTemplate const {identifier} = {numberCell}
  frequency .3
  extends abstract.assignment
@@ -167,7 +166,7 @@ nodeType numbers
  cells identifier
  catchAllCellType numberCell
  frequency .4
- compiler js
+ compiler
   stringTemplate const {identifier} = [{numberCell}]
   listDelimiter , 
  extends abstract.assignment
@@ -175,49 +174,49 @@ nodeType string
  description String Assignment
  cells stringIdentifier
  catchAllCellType anyWord
- compiler js
+ compiler
   stringTemplate const {stringIdentifier} = "{anyWord}"
  frequency .2
  extends abstract.assignment
 nodeType greaterThan
  description Greater than test
  cells identifier numberCell numberCell
- compiler js
+ compiler
   stringTemplate const {identifier} = {numberCell} > {numberCell}
  frequency .1
  extends abstract.booleanOperator
 nodeType greaterThanOrEqual
  description Greater than or equal to test
  cells identifier numberCell numberCell
- compiler js
+ compiler
   stringTemplate const {identifier} = {numberCell} >= {numberCell}
  frequency .1
  extends abstract.booleanOperator
 nodeType lessThan
  description Less than test
  cells identifier anyWord anyWord
- compiler js
+ compiler
   stringTemplate const {identifier} = {anyWord} < {anyWord}
  frequency .1
  extends abstract.booleanOperator
 nodeType lessThanOrEqual
  description Less than or equal to test
  cells identifier anyWord anyWord
- compiler js
+ compiler
   stringTemplate const {identifier} = {anyWord} <= {anyWord}
  frequency .1
  extends abstract.booleanOperator
 nodeType block
  description block of code
  frequency .2
- compiler js
+ compiler
   stringTemplate /* {identifier} */
  extends abstract.jsblock
 nodeType function
  description Function Assignment
  cells functionIdentifier
  catchAllCellType anyWord
- compiler js
+ compiler
   stringTemplate const {functionIdentifier} = ({anyWord}) =>
   listDelimiter , 
  frequency .1
@@ -226,14 +225,14 @@ nodeType if
  description If tile
  cells identifier
  frequency .2
- compiler js
+ compiler
   stringTemplate if ({identifier})
  extends abstract.jsblock
 nodeType while
  description While tile
  cells identifier
  frequency .1
- compiler js
+ compiler
   stringTemplate while ({identifier})
  extends abstract.jsblock
 nodeType callFunction
@@ -241,21 +240,21 @@ nodeType callFunction
  frequency .1
  cells functionIdentifier
  catchAllCellType anyWord
- compiler js
+ compiler
   stringTemplate {functionIdentifier}({anyWord})
   listDelimiter , 
  extends abstract.terminal
 nodeType decrement
  description Decrement
  cells numberIdentifier
- compiler js
+ compiler
   stringTemplate {numberIdentifier}--
  frequency .1
  extends abstract.terminal
 nodeType dumpIdentifier
  description Dump variable(s) to console
  catchAllCellType identifier
- compiler js
+ compiler
   stringTemplate console.log({identifier})
   listDelimiter , 
  frequency .5
@@ -263,7 +262,7 @@ nodeType dumpIdentifier
 nodeType export
  description Export This
  cells identifier
- compiler js
+ compiler
   stringTemplate module.exports = {identifier}
  frequency .1
  extends abstract.terminal
@@ -271,30 +270,30 @@ nodeType increment
  description Increment
  frequency .3
  cells numberIdentifier
- compiler js
+ compiler
   stringTemplate {numberIdentifier}++
  extends abstract.terminal
 nodeType printNumber
  extends abstract.terminal
  catchAllCellType numberIdentifier
- compiler js
-  stringTemplate console.log(numberCell)
+ compiler
+  stringTemplate console.log({numberIdentifier})
 nodeType printString
  todo Allow printing of multiline strings
  extends abstract.terminal
  catchAllCellType stringCells
- compiler js
+ compiler
   stringTemplate console.log("{stringCells}")
 nodeType require
  description Require Something
  cells identifier filepath
- compiler js
+ compiler
   stringTemplate const {identifier} = require("{filepath}")
  frequency .1
  extends abstract.terminal
 nodeType return
  cells anyWord
- compiler js
+ compiler
   stringTemplate return {anyWord}
  frequency .1
  extends abstract.terminal

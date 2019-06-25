@@ -6,6 +6,7 @@ body {
 
 table {
   width: 100%;
+  table-layout: fixed;
 }
 
 td {
@@ -19,7 +20,6 @@ td {
 }
 
 pre {
-  max-width: 600px;
   overflow: scroll;
   padding-bottom: 30px;
 }

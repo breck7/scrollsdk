@@ -18,7 +18,7 @@ class GrammarIDEApp {
     await this._fetchJTreeStandardGrammar(hash.substr(1))
   }
 
-  public languages = "hakon swarm project stamp grammar stump jibberish fire numbers".split(" ")
+  public languages = "new hakon swarm project stamp grammar stump jibberish fire numbers".split(" ")
 
   async start() {
     this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))

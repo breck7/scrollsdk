@@ -1,0 +1,15 @@
+grammar
+ name new
+ description This is the basic template for your new language!
+ catchAllNodeType catchAll.error
+ inScope hello
+cellType name
+ description A person's name
+ highlightScope string
+cellType keyword
+ highlightScope keyword
+nodeType hello
+ catchAllCellType name
+ firstCellType keyword
+nodeType catchAll.error
+ baseNodeType errorNode

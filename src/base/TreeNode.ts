@@ -14,6 +14,21 @@ enum FileFormat {
   tree = "tree"
 }
 
+enum WhereOperators {
+  equal = "=",
+  notEqual = "!=",
+  lessThan = "<",
+  lessThanOrEqual = "<=",
+  greaterThan = ">",
+  greaterThanOrEqual = ">=",
+  includes = "includes",
+  doesNotInclude = "doesNotInclude",
+  in = "in",
+  notIn = "notIn",
+  empty = "empty",
+  notEmpty = "notEmpty"
+}
+
 class ImmutableNode extends AbstractNode {
   constructor(children?: jTreeTypes.children, line?: string, parent?: ImmutableNode) {
     super()
@@ -507,6 +522,72 @@ class ImmutableNode extends AbstractNode {
 
   protected _getNodesByColumn(index: int, name: word): ImmutableNode[] {
     return this.filter(node => node.getWord(index) === name)
+  }
+
+  select(columnNames: string[] | string) {
+    columnNames = Array.isArray(columnNames) ? columnNames : [columnNames]
+    const result = new TreeNode()
+    this.forEach(node => {
+      const tree = result.appendLine(node.getLine())
+      ;(<string[]>columnNames).forEach((name: string) => {
+        const valueNode = node.getNode(name)
+        if (valueNode) tree.appendNode(valueNode)
+      })
+    })
+    return result
+  }
+
+  // Note: this is for debugging select chains
+  print(message = "") {
+    if (message) console.log(message)
+    console.log(this.toString())
+    return this
+  }
+
+  where(columnName: string, operator: WhereOperators, fixedValue?: string | number | string[] | number[]) {
+    const isArray = Array.isArray(fixedValue)
+    const valueType = isArray ? typeof (<Array<string | number>>fixedValue)[0] : typeof fixedValue
+    let parser: Function
+    if (valueType === "number") parser = parseFloat
+    const fn = (node: TreeNode) => {
+      const cell = node.get(columnName)
+      const typedCell = parser ? parser(cell) : cell
+      if (operator === WhereOperators.equal) return fixedValue === typedCell
+      else if (operator === WhereOperators.notEqual) return fixedValue !== typedCell
+      else if (operator === WhereOperators.includes) return typedCell !== undefined && typedCell.includes(fixedValue)
+      else if (operator === WhereOperators.doesNotInclude) return typedCell === undefined || !typedCell.includes(fixedValue)
+      else if (operator === WhereOperators.greaterThan) return typedCell > fixedValue
+      else if (operator === WhereOperators.lessThan) return typedCell < fixedValue
+      else if (operator === WhereOperators.greaterThanOrEqual) return typedCell >= fixedValue
+      else if (operator === WhereOperators.lessThanOrEqual) return typedCell <= fixedValue
+      else if (operator === WhereOperators.empty) return !node.has(columnName)
+      else if (operator === WhereOperators.notEmpty) return node.has(columnName)
+      else if (operator === WhereOperators.in && isArray) return (<Array<string | number>>fixedValue).includes(typedCell)
+      else if (operator === WhereOperators.notIn && isArray) return !(<Array<string | number>>fixedValue).includes(typedCell)
+    }
+    const result = new TreeNode()
+    this.filter(fn).forEach(node => {
+      result.appendNode(node)
+    })
+    return result
+  }
+
+  first(quantity = 1) {
+    return this.limit(quantity, 0)
+  }
+
+  last(quantity = 1) {
+    return this.limit(quantity, this.length - quantity)
+  }
+
+  limit(quantity: int, offset = 0): TreeNode {
+    const result = new TreeNode()
+    this.getChildren()
+      .slice(offset, quantity + offset)
+      .forEach(node => {
+        result.appendNode(node)
+      })
+    return result
   }
 
   getChildrenFirstArray() {
@@ -1842,6 +1923,10 @@ class TreeNode extends ImmutableNode {
 
   touchNode(str: jTreeTypes.firstWordPath) {
     return this._touchNodeByString(str)
+  }
+
+  appendNode(node: TreeNode) {
+    return this.appendLineAndChildren(node.getLine(), node.childrenToString())
   }
 
   hasLine(line: jTreeTypes.line) {

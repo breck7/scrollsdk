@@ -8,6 +8,21 @@ var FileFormat;
     FileFormat["tsv"] = "tsv";
     FileFormat["tree"] = "tree";
 })(FileFormat || (FileFormat = {}));
+var WhereOperators;
+(function (WhereOperators) {
+    WhereOperators["equal"] = "=";
+    WhereOperators["notEqual"] = "!=";
+    WhereOperators["lessThan"] = "<";
+    WhereOperators["lessThanOrEqual"] = "<=";
+    WhereOperators["greaterThan"] = ">";
+    WhereOperators["greaterThanOrEqual"] = ">=";
+    WhereOperators["includes"] = "includes";
+    WhereOperators["doesNotInclude"] = "doesNotInclude";
+    WhereOperators["in"] = "in";
+    WhereOperators["notIn"] = "notIn";
+    WhereOperators["empty"] = "empty";
+    WhereOperators["notEmpty"] = "notEmpty";
+})(WhereOperators || (WhereOperators = {}));
 class ImmutableNode extends AbstractNode_node_1.default {
     constructor(children, line, parent) {
         super();
@@ -436,6 +451,81 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     _getNodesByColumn(index, name) {
         return this.filter(node => node.getWord(index) === name);
+    }
+    select(columnNames) {
+        columnNames = Array.isArray(columnNames) ? columnNames : [columnNames];
+        const result = new TreeNode();
+        this.forEach(node => {
+            const tree = result.appendLine(node.getLine());
+            columnNames.forEach((name) => {
+                const valueNode = node.getNode(name);
+                if (valueNode)
+                    tree.appendNode(valueNode);
+            });
+        });
+        return result;
+    }
+    // Note: this is for debugging select chains
+    print(message = "") {
+        if (message)
+            console.log(message);
+        console.log(this.toString());
+        return this;
+    }
+    where(columnName, operator, fixedValue) {
+        const isArray = Array.isArray(fixedValue);
+        const valueType = isArray ? typeof fixedValue[0] : typeof fixedValue;
+        let parser;
+        if (valueType === "number")
+            parser = parseFloat;
+        const fn = (node) => {
+            const cell = node.get(columnName);
+            const typedCell = parser ? parser(cell) : cell;
+            if (operator === WhereOperators.equal)
+                return fixedValue === typedCell;
+            else if (operator === WhereOperators.notEqual)
+                return fixedValue !== typedCell;
+            else if (operator === WhereOperators.includes)
+                return typedCell !== undefined && typedCell.includes(fixedValue);
+            else if (operator === WhereOperators.doesNotInclude)
+                return typedCell === undefined || !typedCell.includes(fixedValue);
+            else if (operator === WhereOperators.greaterThan)
+                return typedCell > fixedValue;
+            else if (operator === WhereOperators.lessThan)
+                return typedCell < fixedValue;
+            else if (operator === WhereOperators.greaterThanOrEqual)
+                return typedCell >= fixedValue;
+            else if (operator === WhereOperators.lessThanOrEqual)
+                return typedCell <= fixedValue;
+            else if (operator === WhereOperators.empty)
+                return !node.has(columnName);
+            else if (operator === WhereOperators.notEmpty)
+                return node.has(columnName);
+            else if (operator === WhereOperators.in && isArray)
+                return fixedValue.includes(typedCell);
+            else if (operator === WhereOperators.notIn && isArray)
+                return !fixedValue.includes(typedCell);
+        };
+        const result = new TreeNode();
+        this.filter(fn).forEach(node => {
+            result.appendNode(node);
+        });
+        return result;
+    }
+    first(quantity = 1) {
+        return this.limit(quantity, 0);
+    }
+    last(quantity = 1) {
+        return this.limit(quantity, this.length - quantity);
+    }
+    limit(quantity, offset = 0) {
+        const result = new TreeNode();
+        this.getChildren()
+            .slice(offset, quantity + offset)
+            .forEach(node => {
+            result.appendNode(node);
+        });
+        return result;
     }
     getChildrenFirstArray() {
         const arr = [];
@@ -1622,6 +1712,9 @@ class TreeNode extends ImmutableNode {
     }
     touchNode(str) {
         return this._touchNodeByString(str);
+    }
+    appendNode(node) {
+        return this.appendLineAndChildren(node.getLine(), node.childrenToString());
     }
     hasLine(line) {
         return this.getChildren().some(node => node.getLine() === line);

@@ -1,3 +1,7 @@
+27.1.0 / 2019-06-25
+===================
+- New: appendNode, select, where, limit, first, last, and print methods
+
 27.0.0 / 2019-06-23
 ===================
 - New: simplified compile method to take 0 params

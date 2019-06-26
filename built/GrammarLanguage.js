@@ -1190,15 +1190,14 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     }
     _importNodeJsConstructor(className, code) {
         const vm = require("vm");
-        const gb = global;
         try {
-            gb.jtree = require(__dirname + "/jtree.node.js").default;
-            // todo: can we do this without polluting global namespace? https://github.com/nodejs/node/issues/14160#issuecomment-504648655
+            ;
+            global.jtree = require(__dirname + "/jtree.node.js").default;
+            // Todo: do we want to add new classes to global namespace?
             return vm.runInThisContext(`{
  ${code}
  ${className}
 }`);
-            return gb[className];
         }
         catch (err) {
             console.log("Error in code:");

@@ -4,6 +4,20 @@ declare type int = jTreeTypes.int;
 declare type word = jTreeTypes.word;
 declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any;
 declare type mapFn = (value: any, index: int, array: any[]) => any;
+declare enum WhereOperators {
+    equal = "=",
+    notEqual = "!=",
+    lessThan = "<",
+    lessThanOrEqual = "<=",
+    greaterThan = ">",
+    greaterThanOrEqual = ">=",
+    includes = "includes",
+    doesNotInclude = "doesNotInclude",
+    in = "in",
+    notIn = "notIn",
+    empty = "empty",
+    notEmpty = "notEmpty"
+}
 declare class ImmutableNode extends AbstractNode {
     constructor(children?: jTreeTypes.children, line?: string, parent?: ImmutableNode);
     private _uid;
@@ -89,6 +103,12 @@ declare class ImmutableNode extends AbstractNode {
     getNodeByColumns(...columns: string[]): ImmutableNode;
     getNodeByColumn(index: int, name: string): ImmutableNode;
     protected _getNodesByColumn(index: int, name: word): ImmutableNode[];
+    select(columnNames: string[] | string): TreeNode;
+    print(message?: string): this;
+    where(columnName: string, operator: WhereOperators, fixedValue?: string | number | string[] | number[]): TreeNode;
+    first(quantity?: number): TreeNode;
+    last(quantity?: number): TreeNode;
+    limit(quantity: int, offset?: number): TreeNode;
     getChildrenFirstArray(): ImmutableNode[];
     protected _getChildrenFirstArray(arr: ImmutableNode[]): void;
     protected _getXCoordinate(relativeTo: ImmutableNode): number;
@@ -277,6 +297,7 @@ declare class TreeNode extends ImmutableNode {
     protected _touchNode(firstWordPathArray: jTreeTypes.word[]): this;
     protected _touchNodeByString(str: string): this;
     touchNode(str: jTreeTypes.firstWordPath): this;
+    appendNode(node: TreeNode): any;
     hasLine(line: jTreeTypes.line): boolean;
     getNodesByLine(line: jTreeTypes.line): any[];
     toggleLine(line: jTreeTypes.line): TreeNode;

@@ -3708,6 +3708,47 @@ testTree.mTimeNotIncrementingRegressionTest = equal => {
   }
 }
 
+testTree.queryMethods = equal => {
+  // Arrange
+  const tree = TreeNode.fromCsv(TreeNode.iris)
+
+  // Act/Assert
+  let result = tree.select(["sepal_width", "species"]).where("sepal_width", ">", 3.7)
+  equal(result.length, 1)
+  equal(result.nodeAt(0).get("species"), "virginica")
+
+  // Act/Assert
+  equal(tree.select(["sepal_width"]).length, 10)
+  equal(tree.where("sepal_width", "<", 3.7).length, 8)
+  equal(tree.where("sepal_width", ">=", 3.7).length, 2)
+  equal(tree.where("sepal_width", "<=", 3.7).length, 9)
+  equal(tree.where("sepal_width", "=", 3.7).length, 1)
+  equal(tree.where("sepal_width", "!=", 3.7).length, 9)
+  equal(tree.where("species", "=", "setosa").length, 3)
+  equal(tree.where("sepal_width", "in", [3.7, 3.8]).length, 2, "in test")
+  equal(tree.where("sepal_width", "notIn", [3.7, 3.8]).length, 8, "not in test")
+  equal(tree.where("species", "includes", "vers").length, 1)
+  equal(tree.where("species", "doesNotInclude", "vers").length, 9, "does not include")
+  equal(tree.where("species", "notEmpty").length, 10)
+  equal(tree.where("species", "empty").length, 0)
+  equal(tree.where("foobar", "empty").limit(10).length, 10)
+  equal(tree.where("foobar", "empty").limit(20).length, 10)
+  equal(tree.where("foobar", "empty").where("species", "includes", "vers").length, 1, "nesting works")
+
+  equal(
+    tree
+      .where("sepal_width", "!=", 3.7)
+      .first(3)
+      .select("species")
+      .last(1)
+      .sortBy("species")
+      .nodeAt(0)
+      .get("species"),
+    "virginica",
+    "last and first work"
+  )
+}
+
 
 window.testTree
  = testTree

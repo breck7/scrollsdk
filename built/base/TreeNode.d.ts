@@ -170,7 +170,7 @@ declare class ImmutableNode extends AbstractNode {
     };
     protected _toDelimited(delimiter: jTreeTypes.delimiter, header: string[], cellFn: cellFn): string;
     toTable(): string;
-    toFormattedTable(maxWidth: number, alignRight: boolean): string;
+    toFormattedTable(maxWidth: number, alignRight?: boolean): string;
     protected _toTable(maxWidth: number, alignRight?: boolean): string;
     toSsv(): string;
     toOutline(): string;

@@ -1,19 +1,20 @@
 //onsave /usr/local/bin/tsc -p /Users/breck/jtree/sandbox/build/
 class GrammarIDEApp {
     constructor(grammarSourceCode) {
-        this.codeErrorsConsole = jQuery("#codeErrorsConsole");
-        this.codeConsole = jQuery("#codeConsole");
-        this.grammarConsole = jQuery("#grammarConsole");
-        this.grammarErrorsConsole = jQuery("#grammarErrorsConsole");
-        this.resetButton = jQuery("#resetButton");
-        this.execButton = jQuery("#execButton");
-        this.execResultsTextArea = jQuery("#execResultsTextArea");
-        this.compileButton = jQuery("#compileButton");
-        this.downloadButton = jQuery("#downloadButton");
-        this.samplesButtons = jQuery("#samplesButtons");
-        this.otherErrorsDiv = jQuery("#otherErrorsDiv");
-        this.versionSpan = jQuery("#versionSpan");
-        this.localStorageKeys = {
+        this.languages = "hakon swarm project stamp grammar stump jibberish fire numbers".split(" ");
+        this._codeErrorsConsole = jQuery("#codeErrorsConsole");
+        this._codeConsole = jQuery("#codeConsole");
+        this._grammarConsole = jQuery("#grammarConsole");
+        this._grammarErrorsConsole = jQuery("#grammarErrorsConsole");
+        this._resetButton = jQuery("#resetButton");
+        this._execButton = jQuery("#execButton");
+        this._execResultsTextArea = jQuery("#execResultsTextArea");
+        this._compileButton = jQuery("#compileButton");
+        this._downloadButton = jQuery("#downloadButton");
+        this._samplesButtons = jQuery("#samplesButtons");
+        this._otherErrorsDiv = jQuery("#otherErrorsDiv");
+        this._versionSpan = jQuery("#versionSpan");
+        this._localStorageKeys = {
             grammarConsole: "grammarConsole",
             codeConsole: "codeConsole",
             grammarPath: "grammarPath"
@@ -21,53 +22,85 @@ class GrammarIDEApp {
         this.codeWidgets = [];
         this.GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor();
     }
-    resetCommand() {
-        Object.values(this.localStorageKeys).forEach(val => localStorage.removeItem(val));
+    async _loadFromDeepLink() {
+        const hash = location.hash;
+        if (hash.length < 2)
+            return "";
+        await this._fetchJTreeStandardGrammar(hash.substr(1));
     }
-    bindListeners() {
-        this.resetButton.on("click", () => {
+    async start() {
+        this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "));
+        this._bindListeners();
+        this._versionSpan.html("Version: " + jtree.getVersion());
+        const wasRestoredFromLocalStorage = await this._restoreFromLocalStorage();
+        this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
+            .register()
+            .fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true });
+        this.grammarInstance.on("keyup", () => this._grammarDidUpdate());
+        this.grammarInstance.on("keyup", () => {
+            this._codeDidUpdate();
+            // Hack to break CM cache:
+            if (true) {
+                const val = this.codeInstance.getValue();
+                this.codeInstance.setValue("\n" + val);
+                this.codeInstance.setValue(val);
+            }
+        });
+        this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
+            .register()
+            .fromTextAreaWithAutocomplete(this._codeConsole[0], { lineWrapping: true });
+        this.codeInstance.on("keyup", () => this._codeDidUpdate());
+        this._grammarDidUpdate();
+        this._codeDidUpdate();
+        // loadFromURL
+        if (!wasRestoredFromLocalStorage)
+            await this._loadFromDeepLink();
+    }
+    resetCommand() {
+        Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val));
+    }
+    _bindListeners() {
+        this._resetButton.on("click", () => {
             this.resetCommand();
             console.log("reset...");
             window.location.reload();
         });
-        this.execButton.on("click", () => {
+        this._execButton.on("click", () => {
             if (this.program)
-                this.execResultsTextArea.val(this.program.executeSync());
+                this._execResultsTextArea.val(this.program.executeSync());
             else
-                this.execResultsTextArea.val("Program failed to execute");
+                this._execResultsTextArea.val("Program failed to execute");
         });
-        this.compileButton.on("click", () => {
+        this._compileButton.on("click", () => {
             if (this.program)
-                this.execResultsTextArea.val(this.program.compile());
+                this._execResultsTextArea.val(this.program.compile());
             else
-                this.execResultsTextArea.val("Program failed to compile");
+                this._execResultsTextArea.val("Program failed to compile");
         });
         const that = this;
-        this.samplesButtons.on("click", "a", function () {
-            const el = jQuery(this);
-            const name = el.text().toLowerCase();
-            const samplePath = el.attr("data-samplePath") || `/langs/${name}/sample.${name}`;
-            const grammarPath = el.attr("data-grammarPath") || `/langs/${name}/${name}.grammar`;
-            that.fetchGrammar(grammarPath, samplePath);
+        this._samplesButtons.on("click", "a", function () {
+            that._fetchJTreeStandardGrammar(jQuery(this)
+                .text()
+                .toLowerCase());
         });
-        this.downloadButton.on("click", () => this.downloadBundle());
+        this._downloadButton.on("click", () => this._downloadBundleCommand());
     }
-    async loadScripts(grammarCode, grammarPath) {
+    async _loadScripts(grammarCode, grammarPath) {
         if (!grammarCode || !grammarPath)
             return undefined;
-        jtree.NonTerminalNode.setAsBackupConstructor(true);
+        jtree.NonTerminalNode.setAsBackupConstructor(true); // todo: remove?
         try {
             const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "");
             const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/");
             console.log(`Loaded scripts ${loadedScripts.join(", ")}...`);
-            this.otherErrorsDiv.html("");
+            this._otherErrorsDiv.html("");
         }
         catch (err) {
             console.error(err);
-            this.otherErrorsDiv.html(err);
+            this._otherErrorsDiv.html(err);
         }
     }
-    async downloadBundle() {
+    async _downloadBundleCommand() {
         const grammarCode = this.grammarInstance.getValue();
         const grammarProgram = new jtree.GrammarProgram(grammarCode);
         const languageName = grammarProgram.get("grammar name");
@@ -118,43 +151,21 @@ ${testCode}`);
             saveAs(content, languageName + ".zip");
         });
     }
-    async start() {
-        this.bindListeners();
-        this.versionSpan.html("Version: " + jtree.getVersion());
-        const gram = localStorage.getItem(this.localStorageKeys.grammarConsole);
-        console.log("Loading grammar...");
-        if (gram)
-            await this.loadScripts(gram, localStorage.getItem(this.localStorageKeys.grammarPath));
-        const code = localStorage.getItem(this.localStorageKeys.codeConsole);
-        console.log("Loading code...");
-        if (localStorage.getItem(this.localStorageKeys.grammarConsole))
-            this.grammarConsole.val(gram);
+    async _restoreFromLocalStorage() {
+        const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole);
+        if (grammarCode)
+            await this._loadScripts(grammarCode, localStorage.getItem(this._localStorageKeys.grammarPath));
+        const code = localStorage.getItem(this._localStorageKeys.codeConsole);
+        if (localStorage.getItem(this._localStorageKeys.grammarConsole))
+            this._grammarConsole.val(grammarCode);
         if (code)
-            this.codeConsole.val(code);
-        this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
-            .register()
-            .fromTextAreaWithAutocomplete(this.grammarConsole[0], { lineWrapping: true });
-        this.grammarInstance.on("keyup", () => this.grammarDidUpdate());
-        this.grammarInstance.on("keyup", () => {
-            this.codeDidUpdate();
-            // Hack to break CM cache:
-            if (true) {
-                const val = this.codeInstance.getValue();
-                this.codeInstance.setValue("\n" + val);
-                this.codeInstance.setValue(val);
-            }
-        });
-        this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this.getGrammarConstructor(), undefined, CodeMirror)
-            .register()
-            .fromTextAreaWithAutocomplete(this.codeConsole[0], { lineWrapping: true });
-        this.codeInstance.on("keyup", () => this.codeDidUpdate());
-        this.grammarDidUpdate();
-        this.codeDidUpdate();
+            this._codeConsole.val(code);
+        return grammarCode || code;
     }
     _getGrammarErrors(grammarCode) {
         return new this.GrammarConstructor(grammarCode).getAllErrors();
     }
-    getGrammarConstructor() {
+    _getGrammarConstructor() {
         let currentGrammarCode = this.grammarInstance.getValue();
         // todo: for custom constructors, if they are not there, replace?
         if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
@@ -167,29 +178,29 @@ ${testCode}`);
                 else
                     this._grammarConstructor = grammarProgram.getRootConstructor();
                 this._cachedGrammarCode = currentGrammarCode;
-                this.otherErrorsDiv.html("");
+                this._otherErrorsDiv.html("");
             }
             catch (err) {
                 console.error(err);
-                this.otherErrorsDiv.html(err);
+                this._otherErrorsDiv.html(err);
             }
         }
         return this._grammarConstructor;
     }
-    grammarDidUpdate() {
+    _grammarDidUpdate() {
         const grammarCode = this.grammarInstance.getValue();
-        localStorage.setItem(this.localStorageKeys.grammarConsole, grammarCode);
+        localStorage.setItem(this._localStorageKeys.grammarConsole, grammarCode);
         this.grammarProgram = new this.GrammarConstructor(grammarCode);
         const errs = this.grammarProgram.getAllErrors().map(err => err.toObject());
-        this.grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors");
+        this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors");
     }
-    codeDidUpdate() {
+    _codeDidUpdate() {
         const code = this.codeInstance.getValue();
-        localStorage.setItem(this.localStorageKeys.codeConsole, code);
-        const programConstructor = this.getGrammarConstructor();
+        localStorage.setItem(this._localStorageKeys.codeConsole, code);
+        const programConstructor = this._getGrammarConstructor();
         this.program = new programConstructor(code);
         const errs = this.program.getAllErrors();
-        this.codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors");
+        this._codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors");
         const cursor = this.codeInstance.getCursor();
         // todo: what if 2 errors?
         this.codeInstance.operation(() => {
@@ -202,7 +213,7 @@ ${testCode}`);
                 .forEach(err => {
                 const el = err.getCodeMirrorLineWidgetElement(() => {
                     this.codeInstance.setValue(this.program.toString());
-                    this.codeDidUpdate();
+                    this._codeDidUpdate();
                 });
                 this.codeWidgets.push(this.codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }));
             });
@@ -212,15 +223,17 @@ ${testCode}`);
                 this.codeInstance.scrollTo(null, after - info.clientHeight + 3);
         });
     }
-    async fetchGrammar(grammarPath, samplePath) {
+    async _fetchJTreeStandardGrammar(name) {
+        const samplePath = `/langs/${name}/sample.${name}`;
+        const grammarPath = `/langs/${name}/${name}.grammar`;
         const grammar = await jQuery.get(grammarPath);
         const sample = await jQuery.get(samplePath);
-        await this.loadScripts(grammar, grammarPath);
-        localStorage.setItem(this.localStorageKeys.grammarPath, grammarPath);
+        await this._loadScripts(grammar, grammarPath);
+        localStorage.setItem(this._localStorageKeys.grammarPath, grammarPath);
         this.grammarInstance.setValue(grammar);
-        this.grammarDidUpdate();
+        this._grammarDidUpdate();
         this.codeInstance.setValue(sample);
-        this.codeDidUpdate();
+        this._codeDidUpdate();
     }
 }
 jQuery(document).ready(function () {

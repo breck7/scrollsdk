@@ -11,78 +11,123 @@ class GrammarIDEApp {
     this.GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
   }
 
-  private codeErrorsConsole = jQuery("#codeErrorsConsole")
-  private codeConsole = jQuery("#codeConsole")
-  private grammarConsole = jQuery("#grammarConsole")
-  private grammarErrorsConsole = jQuery("#grammarErrorsConsole")
-  private resetButton = jQuery("#resetButton")
-  private execButton = jQuery("#execButton")
-  private execResultsTextArea = jQuery("#execResultsTextArea")
-  private compileButton = jQuery("#compileButton")
-  private downloadButton = jQuery("#downloadButton")
-  private samplesButtons = jQuery("#samplesButtons")
-  private otherErrorsDiv = jQuery("#otherErrorsDiv")
-  private versionSpan = jQuery("#versionSpan")
+  private async _loadFromDeepLink() {
+    const hash = location.hash
+    if (hash.length < 2) return ""
+
+    await this._fetchJTreeStandardGrammar(hash.substr(1))
+  }
+
+  public languages = "hakon swarm project stamp grammar stump jibberish fire numbers".split(" ")
+
+  async start() {
+    this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))
+
+    this._bindListeners()
+
+    this._versionSpan.html("Version: " + jtree.getVersion())
+
+    const wasRestoredFromLocalStorage = await this._restoreFromLocalStorage()
+
+    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
+      .register()
+      .fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
+
+    this.grammarInstance.on("keyup", () => this._grammarDidUpdate())
+    this.grammarInstance.on("keyup", () => {
+      this._codeDidUpdate()
+      // Hack to break CM cache:
+      if (true) {
+        const val = this.codeInstance.getValue()
+        this.codeInstance.setValue("\n" + val)
+        this.codeInstance.setValue(val)
+      }
+    })
+
+    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
+      .register()
+      .fromTextAreaWithAutocomplete(<any>this._codeConsole[0], { lineWrapping: true })
+
+    this.codeInstance.on("keyup", () => this._codeDidUpdate())
+
+    this._grammarDidUpdate()
+    this._codeDidUpdate()
+
+    // loadFromURL
+    if (!wasRestoredFromLocalStorage) await this._loadFromDeepLink()
+  }
 
   resetCommand() {
-    Object.values(this.localStorageKeys).forEach(val => localStorage.removeItem(val))
-  }
-
-  bindListeners() {
-    this.resetButton.on("click", () => {
-      this.resetCommand()
-      console.log("reset...")
-      window.location.reload()
-    })
-    this.execButton.on("click", () => {
-      if (this.program) this.execResultsTextArea.val(this.program.executeSync())
-      else this.execResultsTextArea.val("Program failed to execute")
-    })
-    this.compileButton.on("click", () => {
-      if (this.program) this.execResultsTextArea.val(this.program.compile())
-      else this.execResultsTextArea.val("Program failed to compile")
-    })
-    const that = this
-    this.samplesButtons.on("click", "a", function() {
-      const el = jQuery(this)
-      const name = el.text().toLowerCase()
-
-      const samplePath = el.attr("data-samplePath") || `/langs/${name}/sample.${name}`
-      const grammarPath = el.attr("data-grammarPath") || `/langs/${name}/${name}.grammar`
-      that.fetchGrammar(grammarPath, samplePath)
-    })
-
-    this.downloadButton.on("click", () => this.downloadBundle())
-  }
-
-  public localStorageKeys = {
-    grammarConsole: "grammarConsole",
-    codeConsole: "codeConsole",
-    grammarPath: "grammarPath"
+    Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
   }
 
   public program: any
   public grammarProgram: any
 
+  private _codeErrorsConsole = jQuery("#codeErrorsConsole")
+  private _codeConsole = jQuery("#codeConsole")
+  private _grammarConsole = jQuery("#grammarConsole")
+  private _grammarErrorsConsole = jQuery("#grammarErrorsConsole")
+  private _resetButton = jQuery("#resetButton")
+  private _execButton = jQuery("#execButton")
+  private _execResultsTextArea = jQuery("#execResultsTextArea")
+  private _compileButton = jQuery("#compileButton")
+  private _downloadButton = jQuery("#downloadButton")
+  private _samplesButtons = jQuery("#samplesButtons")
+  private _otherErrorsDiv = jQuery("#otherErrorsDiv")
+  private _versionSpan = jQuery("#versionSpan")
+
+  private _bindListeners() {
+    this._resetButton.on("click", () => {
+      this.resetCommand()
+      console.log("reset...")
+      window.location.reload()
+    })
+    this._execButton.on("click", () => {
+      if (this.program) this._execResultsTextArea.val(this.program.executeSync())
+      else this._execResultsTextArea.val("Program failed to execute")
+    })
+    this._compileButton.on("click", () => {
+      if (this.program) this._execResultsTextArea.val(this.program.compile())
+      else this._execResultsTextArea.val("Program failed to compile")
+    })
+    const that = this
+    this._samplesButtons.on("click", "a", function() {
+      that._fetchJTreeStandardGrammar(
+        jQuery(this)
+          .text()
+          .toLowerCase()
+      )
+    })
+
+    this._downloadButton.on("click", () => this._downloadBundleCommand())
+  }
+
+  private _localStorageKeys = {
+    grammarConsole: "grammarConsole",
+    codeConsole: "codeConsole",
+    grammarPath: "grammarPath"
+  }
+
   private GrammarConstructor: any
   private grammarInstance: any
   private codeInstance: any
 
-  async loadScripts(grammarCode: string, grammarPath: string) {
+  private async _loadScripts(grammarCode: string, grammarPath: string) {
     if (!grammarCode || !grammarPath) return undefined
-    jtree.NonTerminalNode.setAsBackupConstructor(true)
+    jtree.NonTerminalNode.setAsBackupConstructor(true) // todo: remove?
     try {
       const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "")
       const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/")
       console.log(`Loaded scripts ${loadedScripts.join(", ")}...`)
-      this.otherErrorsDiv.html("")
+      this._otherErrorsDiv.html("")
     } catch (err) {
       console.error(err)
-      this.otherErrorsDiv.html(err)
+      this._otherErrorsDiv.html(err)
     }
   }
 
-  async downloadBundle() {
+  private async _downloadBundleCommand() {
     const grammarCode = this.grammarInstance.getValue()
     const grammarProgram = new jtree.GrammarProgram(grammarCode)
     const languageName = grammarProgram.get("grammar name")
@@ -148,43 +193,14 @@ ${testCode}`
     })
   }
 
-  async start() {
-    this.bindListeners()
+  private async _restoreFromLocalStorage() {
+    const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole)
+    if (grammarCode) await this._loadScripts(grammarCode, localStorage.getItem(this._localStorageKeys.grammarPath))
 
-    this.versionSpan.html("Version: " + jtree.getVersion())
-
-    const gram = localStorage.getItem(this.localStorageKeys.grammarConsole)
-    console.log("Loading grammar...")
-    if (gram) await this.loadScripts(gram, localStorage.getItem(this.localStorageKeys.grammarPath))
-
-    const code = localStorage.getItem(this.localStorageKeys.codeConsole)
-    console.log("Loading code...")
-    if (localStorage.getItem(this.localStorageKeys.grammarConsole)) this.grammarConsole.val(gram)
-    if (code) this.codeConsole.val(code)
-
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(<any>this.grammarConsole[0], { lineWrapping: true })
-
-    this.grammarInstance.on("keyup", () => this.grammarDidUpdate())
-    this.grammarInstance.on("keyup", () => {
-      this.codeDidUpdate()
-      // Hack to break CM cache:
-      if (true) {
-        const val = this.codeInstance.getValue()
-        this.codeInstance.setValue("\n" + val)
-        this.codeInstance.setValue(val)
-      }
-    })
-
-    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this.getGrammarConstructor(), undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(<any>this.codeConsole[0], { lineWrapping: true })
-
-    this.codeInstance.on("keyup", () => this.codeDidUpdate())
-
-    this.grammarDidUpdate()
-    this.codeDidUpdate()
+    const code = localStorage.getItem(this._localStorageKeys.codeConsole)
+    if (localStorage.getItem(this._localStorageKeys.grammarConsole)) this._grammarConsole.val(grammarCode)
+    if (code) this._codeConsole.val(code)
+    return grammarCode || code
   }
 
   private _grammarConstructor: any
@@ -194,7 +210,7 @@ ${testCode}`
     return new this.GrammarConstructor(grammarCode).getAllErrors()
   }
 
-  getGrammarConstructor() {
+  private _getGrammarConstructor() {
     let currentGrammarCode = this.grammarInstance.getValue()
 
     // todo: for custom constructors, if they are not there, replace?
@@ -207,33 +223,33 @@ ${testCode}`
           this._grammarConstructor = jtree.GrammarProgram.getTheAnyLanguageRootConstructor()
         } else this._grammarConstructor = grammarProgram.getRootConstructor()
         this._cachedGrammarCode = currentGrammarCode
-        this.otherErrorsDiv.html("")
+        this._otherErrorsDiv.html("")
       } catch (err) {
         console.error(err)
-        this.otherErrorsDiv.html(err)
+        this._otherErrorsDiv.html(err)
       }
     }
     return this._grammarConstructor
   }
 
-  grammarDidUpdate() {
+  private _grammarDidUpdate() {
     const grammarCode = this.grammarInstance.getValue()
-    localStorage.setItem(this.localStorageKeys.grammarConsole, grammarCode)
+    localStorage.setItem(this._localStorageKeys.grammarConsole, grammarCode)
     this.grammarProgram = new this.GrammarConstructor(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
-    this.grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
+    this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
   private codeWidgets: any[] = []
 
-  codeDidUpdate() {
+  private _codeDidUpdate() {
     const code = this.codeInstance.getValue()
-    localStorage.setItem(this.localStorageKeys.codeConsole, code)
-    const programConstructor = this.getGrammarConstructor()
+    localStorage.setItem(this._localStorageKeys.codeConsole, code)
+    const programConstructor = this._getGrammarConstructor()
 
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
-    this.codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
+    this._codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
 
     const cursor = this.codeInstance.getCursor()
 
@@ -249,7 +265,7 @@ ${testCode}`
         .forEach(err => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
             this.codeInstance.setValue(this.program.toString())
-            this.codeDidUpdate()
+            this._codeDidUpdate()
           })
           this.codeWidgets.push(this.codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
         })
@@ -259,17 +275,19 @@ ${testCode}`
     })
   }
 
-  async fetchGrammar(grammarPath, samplePath) {
+  private async _fetchJTreeStandardGrammar(name) {
+    const samplePath = `/langs/${name}/sample.${name}`
+    const grammarPath = `/langs/${name}/${name}.grammar`
     const grammar = await jQuery.get(grammarPath)
     const sample = await jQuery.get(samplePath)
 
-    await this.loadScripts(grammar, grammarPath)
-    localStorage.setItem(this.localStorageKeys.grammarPath, grammarPath)
+    await this._loadScripts(grammar, grammarPath)
+    localStorage.setItem(this._localStorageKeys.grammarPath, grammarPath)
 
     this.grammarInstance.setValue(grammar)
-    this.grammarDidUpdate()
+    this._grammarDidUpdate()
     this.codeInstance.setValue(sample)
-    this.codeDidUpdate()
+    this._codeDidUpdate()
   }
 }
 

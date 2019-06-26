@@ -452,6 +452,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     _getNodesByColumn(index, name) {
         return this.filter(node => node.getWord(index) === name);
     }
+    // todo: preserve subclasses!
     select(columnNames) {
         columnNames = Array.isArray(columnNames) ? columnNames : [columnNames];
         const result = new TreeNode();
@@ -472,6 +473,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         console.log(this.toString());
         return this;
     }
+    // todo: preserve subclasses!
     where(columnName, operator, fixedValue) {
         const isArray = Array.isArray(fixedValue);
         const valueType = isArray ? typeof fixedValue[0] : typeof fixedValue;
@@ -518,6 +520,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     last(quantity = 1) {
         return this.limit(quantity, this.length - quantity);
     }
+    // todo: preserve subclasses!
     limit(quantity, offset = 0) {
         const result = new TreeNode();
         this.getChildren()
@@ -895,7 +898,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         // Output a table for printing
         return this._toTable(100, false);
     }
-    toFormattedTable(maxWidth, alignRight) {
+    toFormattedTable(maxWidth, alignRight = false) {
         // Output a table with padding up to maxWidth in each cell
         return this._toTable(maxWidth, alignRight);
     }

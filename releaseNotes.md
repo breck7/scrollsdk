@@ -1,3 +1,11 @@
+27.2.0 / 2019-06-26
+===================
+- New: /sandbox/build/ => refactored Tree Language IDE
+- New: added "New" simple grammar language template
+- New: added deep linking to /sandbox/build/
+- Breaking: removed undocumented BackupConstructor feature as IDE should no longer need it
+- Fix: stump compile fix
+
 27.1.0 / 2019-06-25
 ===================
 - New: appendNode, select, where, limit, first, last, and print methods

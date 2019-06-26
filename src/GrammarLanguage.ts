@@ -466,17 +466,6 @@ class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
 ${compiledChildren}
 ${indent}${closeChildrenString}`
   }
-
-  private static _backupConstructorEnabled = false
-
-  public static useAsBackupConstructor() {
-    return GrammarBackedNonTerminalNode._backupConstructorEnabled
-  }
-
-  public static setAsBackupConstructor(value: boolean) {
-    GrammarBackedNonTerminalNode._backupConstructorEnabled = value
-    return GrammarBackedNonTerminalNode
-  }
 }
 
 class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
@@ -1282,7 +1271,6 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     // todo: bad idea to have browser and node have reverse ordering for submodulename
     const constructorSubModuleName = this._getSubModulePath()
     const constructor = TreeUtils.resolveProperty(window, constructorSubModuleName)
-    if (GrammarBackedNonTerminalNode.useAsBackupConstructor()) return GrammarBackedNonTerminalNode
     if (!constructor) throw new Error(`constructor window.${constructorSubModuleName} not found.`)
 
     return constructor

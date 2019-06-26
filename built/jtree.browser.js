@@ -792,6 +792,7 @@ class ImmutableNode extends AbstractNode {
     _getNodesByColumn(index, name) {
         return this.filter(node => node.getWord(index) === name);
     }
+    // todo: preserve subclasses!
     select(columnNames) {
         columnNames = Array.isArray(columnNames) ? columnNames : [columnNames];
         const result = new TreeNode();
@@ -812,6 +813,7 @@ class ImmutableNode extends AbstractNode {
         console.log(this.toString());
         return this;
     }
+    // todo: preserve subclasses!
     where(columnName, operator, fixedValue) {
         const isArray = Array.isArray(fixedValue);
         const valueType = isArray ? typeof fixedValue[0] : typeof fixedValue;
@@ -858,6 +860,7 @@ class ImmutableNode extends AbstractNode {
     last(quantity = 1) {
         return this.limit(quantity, this.length - quantity);
     }
+    // todo: preserve subclasses!
     limit(quantity, offset = 0) {
         const result = new TreeNode();
         this.getChildren()
@@ -1235,7 +1238,7 @@ class ImmutableNode extends AbstractNode {
         // Output a table for printing
         return this._toTable(100, false);
     }
-    toFormattedTable(maxWidth, alignRight) {
+    toFormattedTable(maxWidth, alignRight = false) {
         // Output a table with padding up to maxWidth in each cell
         return this._toTable(maxWidth, alignRight);
     }
@@ -2767,15 +2770,7 @@ class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
 ${compiledChildren}
 ${indent}${closeChildrenString}`;
     }
-    static useAsBackupConstructor() {
-        return GrammarBackedNonTerminalNode._backupConstructorEnabled;
-    }
-    static setAsBackupConstructor(value) {
-        GrammarBackedNonTerminalNode._backupConstructorEnabled = value;
-        return GrammarBackedNonTerminalNode;
-    }
 }
-GrammarBackedNonTerminalNode._backupConstructorEnabled = false;
 class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
     getFirstWordMap() {
         return {};
@@ -3416,8 +3411,6 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         // todo: bad idea to have browser and node have reverse ordering for submodulename
         const constructorSubModuleName = this._getSubModulePath();
         const constructor = TreeUtils.resolveProperty(window, constructorSubModuleName);
-        if (GrammarBackedNonTerminalNode.useAsBackupConstructor())
-            return GrammarBackedNonTerminalNode;
         if (!constructor)
             throw new Error(`constructor window.${constructorSubModuleName} not found.`);
         return constructor;
@@ -4650,7 +4643,7 @@ jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "27.1.0";
+jtree.getVersion = () => "27.2.0";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

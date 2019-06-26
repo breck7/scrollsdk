@@ -122,9 +122,6 @@ declare class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
 declare class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     protected _getNodeJoinCharacter(): string;
     compile(): string;
-    private static _backupConstructorEnabled;
-    static useAsBackupConstructor(): boolean;
-    static setAsBackupConstructor(value: boolean): typeof GrammarBackedNonTerminalNode;
 }
 declare class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
     getFirstWordMap(): {};

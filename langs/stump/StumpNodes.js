@@ -24,7 +24,7 @@ StumpConstants.inputTypes = ["input", "textarea"]
 // Note: do NOT support things like solo tags <br>. one way to do things.
 
 // todo: make a stumpNode tile and separate stumpNode program
-class StumpNode extends jtree.NonTerminalNode {
+class HtmlTagNode extends jtree.NonTerminalNode {
   getTag() {
     // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
     const firstWord = this.getFirstWord()
@@ -56,7 +56,7 @@ class StumpNode extends jtree.NonTerminalNode {
       .join("")
     const indent = " ".repeat(indentCount)
     const collapse = this.shouldCollapse()
-    const indentForChildNodes = !collapse && this.getChildrenByNodeConstructor(StumpNode).length > 0
+    const indentForChildNodes = !collapse && this.getChildrenByNodeConstructor(HtmlTagNode).length > 0
     const suid = withSuid ? ` ${StumpConstants.uidAttribute}="${this._getUid()}"` : ""
     const oneLiner = this._getOneLiner()
     return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
@@ -148,7 +148,7 @@ class StumpNode extends jtree.NonTerminalNode {
   }
 
   _findStumpNodesByBase(firstWord) {
-    return this.getTopDownArray().filter(node => node instanceof StumpNode && node.getFirstWord() === firstWord)
+    return this.getTopDownArray().filter(node => node instanceof HtmlTagNode && node.getFirstWord() === firstWord)
   }
 
   hasLine(line) {
@@ -156,13 +156,13 @@ class StumpNode extends jtree.NonTerminalNode {
   }
 
   findStumpNodesByChild(line) {
-    return this.getTopDownArray().filter(node => node instanceof StumpNode && node.hasLine(line))
+    return this.getTopDownArray().filter(node => node instanceof HtmlTagNode && node.hasLine(line))
   }
 
   findStumpNodesWithClass(className) {
     return this.getTopDownArray().filter(
       node =>
-        node instanceof StumpNode &&
+        node instanceof HtmlTagNode &&
         node.has(StumpConstants.class) &&
         node
           .getNode(StumpConstants.class)
@@ -219,5 +219,5 @@ class StumpNode extends jtree.NonTerminalNode {
 
 module.exports = {
   StumpConstants,
-  StumpNode
+  HtmlTagNode
 }

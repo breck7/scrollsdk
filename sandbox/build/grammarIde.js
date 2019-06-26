@@ -88,7 +88,6 @@ class GrammarIDEApp {
     async _loadScripts(grammarCode, grammarPath) {
         if (!grammarCode || !grammarPath)
             return undefined;
-        jtree.NonTerminalNode.setAsBackupConstructor(true); // todo: remove?
         try {
             const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "");
             const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/");

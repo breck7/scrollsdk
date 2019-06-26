@@ -393,15 +393,7 @@ class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
 ${compiledChildren}
 ${indent}${closeChildrenString}`;
     }
-    static useAsBackupConstructor() {
-        return GrammarBackedNonTerminalNode._backupConstructorEnabled;
-    }
-    static setAsBackupConstructor(value) {
-        GrammarBackedNonTerminalNode._backupConstructorEnabled = value;
-        return GrammarBackedNonTerminalNode;
-    }
 }
-GrammarBackedNonTerminalNode._backupConstructorEnabled = false;
 exports.GrammarBackedNonTerminalNode = GrammarBackedNonTerminalNode;
 class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
     getFirstWordMap() {
@@ -1044,8 +1036,6 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         // todo: bad idea to have browser and node have reverse ordering for submodulename
         const constructorSubModuleName = this._getSubModulePath();
         const constructor = TreeUtils_1.default.resolveProperty(window, constructorSubModuleName);
-        if (GrammarBackedNonTerminalNode.useAsBackupConstructor())
-            return GrammarBackedNonTerminalNode;
         if (!constructor)
             throw new Error(`constructor window.${constructorSubModuleName} not found.`);
         return constructor;

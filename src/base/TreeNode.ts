@@ -524,6 +524,7 @@ class ImmutableNode extends AbstractNode {
     return this.filter(node => node.getWord(index) === name)
   }
 
+  // todo: preserve subclasses!
   select(columnNames: string[] | string) {
     columnNames = Array.isArray(columnNames) ? columnNames : [columnNames]
     const result = new TreeNode()
@@ -544,6 +545,7 @@ class ImmutableNode extends AbstractNode {
     return this
   }
 
+  // todo: preserve subclasses!
   where(columnName: string, operator: WhereOperators, fixedValue?: string | number | string[] | number[]) {
     const isArray = Array.isArray(fixedValue)
     const valueType = isArray ? typeof (<Array<string | number>>fixedValue)[0] : typeof fixedValue
@@ -580,6 +582,7 @@ class ImmutableNode extends AbstractNode {
     return this.limit(quantity, this.length - quantity)
   }
 
+  // todo: preserve subclasses!
   limit(quantity: int, offset = 0): TreeNode {
     const result = new TreeNode()
     this.getChildren()

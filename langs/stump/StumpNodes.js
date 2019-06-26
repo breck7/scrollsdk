@@ -1,4 +1,4 @@
-const jtree = require("../../index.js")
+if (typeof jtree === "undefined") jtree = require("../../index.js")
 
 const StumpConstants = {}
 StumpConstants.titleTag = "titleTag"
@@ -217,7 +217,11 @@ class HtmlTagNode extends jtree.NonTerminalNode {
   }
 }
 
-module.exports = {
-  StumpConstants,
-  HtmlTagNode
+if (typeof module !== "undefined")
+  module.exports = {
+    StumpConstants,
+    HtmlTagNode
+  }
+else {
+  window.HtmlTagNode = HtmlTagNode
 }

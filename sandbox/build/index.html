@@ -11,22 +11,23 @@
     <script type="text/javascript" src="/sandbox/lib/FileSaver.min.js"></script>
     <script type="text/javascript" src="/sandbox/lib/jszip.min.js"></script>
     <script type="text/javascript" src="/built/jtree.browser.js"></script>
-    <script type="text/javascript" src="grammars.js"></script>
+    <script type="text/javascript" src="grammarIde.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-    <link rel="stylesheet" type="text/css" href="grammars.css" />
+    <link rel="stylesheet" type="text/css" href="grammarIde.css" />
   </head>
   <body>
-    <h1>Tree Language Sandbox</h1>
+    <h1>Build a Tree Language</h1>
     <p>
-      <a href="index.html">Basic Sandbox</a> | <a href="test.html">Tests</a> | <a href="perf.html">Perf</a> | <a href="typePerf.html">Type Perf</a> |
-      <a href="https://github.com/breck7/jtree">GitHub</a> | <a href="http://treenotation.org">TreeNotation.org</a> |
-      <span id="version"></span>
+      <a href="/sandbox/">Tree Notation Sandbox</a> | <a href="/sandbox/test.html">Tests</a> | <a href="/sandbox/perf.html">Perf</a> |
+      <a href="/sandbox/typePerf.html">Type Perf</a> | <a href="https://github.com/breck7/jtree">GitHub</a> |
+      <a href="http://treenotation.org">TreeNotation.org</a> |
+      <span id="versionSpan"></span>
     </p>
     <p>
-      This is a simple console for exploring Tree Language Grammars. In dev tools, you can access the parsed trees below as "window.grammarProgram" and program
-      at "window.program".
+      This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write a Tree Language Grammar. In dev tools, you can
+      access the parsed trees below as "app.grammarProgram" and program at "app.program".
     </p>
-    <p id="samples">
+    <p id="samplesButtons">
       Example Languages: <a href="#">Hakon</a> | <a href="#">Swarm</a> | <a href="#">Project</a> | <a href="#">Stamp</a> | <a href="#">Grammar</a> |
       <a href="#">Stump</a> | <a href="#">Jibberish</a> | <a href="#">Fire</a> |
       <a href="#">Numbers</a>
@@ -55,11 +56,11 @@
     </table>
 
     <div>
-      <div id="otherErrors"></div>
+      <div id="otherErrorsDiv"></div>
       <a href="#" id="resetButton">Reset</a> | <a href="#" id="execButton">Execute</a> | <a href="#" id="compileButton">Compile</a> |
-      <a href="#" id="downloadBundle">Download Bundle</a>
+      <a href="#" id="downloadButton">Download Bundle</a>
       <br />
-      <textarea id="execResults" placeholder="Results..."></textarea>
+      <textarea id="execResultsTextArea" placeholder="Results..."></textarea>
     </div>
   </body>
 </html>

@@ -1006,7 +1006,7 @@ class ImmutableNode extends AbstractNode {
     return this._toTable(100, false)
   }
 
-  toFormattedTable(maxWidth: number, alignRight: boolean): string {
+  toFormattedTable(maxWidth: number, alignRight = false): string {
     // Output a table with padding up to maxWidth in each cell
     return this._toTable(maxWidth, alignRight)
   }

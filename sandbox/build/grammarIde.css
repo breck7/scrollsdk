@@ -15,7 +15,7 @@ td {
   border: 1px solid gray;
 }
 
-#otherErrors {
+#otherErrorsDiv {
   color: red;
 }
 
@@ -28,7 +28,7 @@ a {
   cursor: pointer;
 }
 
-#execResults {
+#execResultsTextArea {
   border: 0;
   width: 100%;
   height: 400px;

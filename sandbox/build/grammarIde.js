@@ -14,10 +14,10 @@ class GrammarIDEApp {
         this._samplesButtons = jQuery("#samplesButtons");
         this._otherErrorsDiv = jQuery("#otherErrorsDiv");
         this._versionSpan = jQuery("#versionSpan");
+        this._shareLink = jQuery("#shareLink");
         this._localStorageKeys = {
             grammarConsole: "grammarConsole",
-            codeConsole: "codeConsole",
-            grammarPath: "grammarPath"
+            codeConsole: "codeConsole"
         };
         this.codeWidgets = [];
         this.GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor();
@@ -25,19 +25,37 @@ class GrammarIDEApp {
     async _loadFromDeepLink() {
         const hash = location.hash;
         if (hash.length < 2)
-            return "";
-        await this._fetchJTreeStandardGrammar(hash.substr(1));
+            return false;
+        const deepLink = new jtree.TreeNode(decodeURIComponent(hash.substr(1)));
+        const standard = deepLink.get("standard");
+        if (standard) {
+            console.log("Loading standard from deep link....");
+            await this._fetchJTreeStandardGrammar(standard);
+            return true;
+        }
+        else {
+            const grammarCode = deepLink.getNode("grammar");
+            const sampleCode = deepLink.getNode("sample");
+            if (grammarCode && sampleCode) {
+                console.log("Loading custom from deep link....");
+                this._setGrammarAndCode(grammarCode.childrenToString(), sampleCode.childrenToString());
+                return true;
+            }
+        }
+        return false;
+    }
+    _clearHash() {
+        history.replaceState(null, null, " ");
     }
     async start() {
-        this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "));
+        this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "));
         this._bindListeners();
         this._versionSpan.html("Version: " + jtree.getVersion());
-        const wasRestoredFromLocalStorage = await this._restoreFromLocalStorage();
         this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
             .register()
             .fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true });
-        this.grammarInstance.on("keyup", () => this._grammarDidUpdate());
         this.grammarInstance.on("keyup", () => {
+            this._grammarDidUpdate();
             this._codeDidUpdate();
             // Hack to break CM cache:
             if (true) {
@@ -50,11 +68,10 @@ class GrammarIDEApp {
             .register()
             .fromTextAreaWithAutocomplete(this._codeConsole[0], { lineWrapping: true });
         this.codeInstance.on("keyup", () => this._codeDidUpdate());
-        this._grammarDidUpdate();
-        this._codeDidUpdate();
         // loadFromURL
-        if (!wasRestoredFromLocalStorage)
-            await this._loadFromDeepLink();
+        const wasLoadedFromDeepLink = await this._loadFromDeepLink();
+        if (!wasLoadedFromDeepLink)
+            await this._restoreFromLocalStorage();
     }
     resetCommand() {
         Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val));
@@ -85,12 +102,13 @@ class GrammarIDEApp {
         });
         this._downloadButton.on("click", () => this._downloadBundleCommand());
     }
-    async _loadScripts(grammarCode, grammarPath) {
-        if (!grammarCode || !grammarPath)
+    async _loadScriptsForStandardLanguage(grammarCode) {
+        if (!grammarCode)
             return undefined;
         try {
             const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "");
-            const loadedScripts = await grammarProgram.loadAllConstructorScripts(jtree.Utils.getPathWithoutFileName(grammarPath) + "/");
+            const grammarName = new jtree.TreeNode(grammarCode).get("grammar name");
+            const loadedScripts = await grammarProgram.loadAllConstructorScripts(`/langs/${grammarName}/`);
             console.log(`Loaded scripts ${loadedScripts.join(", ")}...`);
             this._otherErrorsDiv.html("");
         }
@@ -151,15 +169,20 @@ ${testCode}`);
         });
     }
     async _restoreFromLocalStorage() {
+        console.log("Restoring from local storage....");
         const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole);
         if (grammarCode)
-            await this._loadScripts(grammarCode, localStorage.getItem(this._localStorageKeys.grammarPath));
+            await this._loadScriptsForStandardLanguage(grammarCode); // todo: remove?
         const code = localStorage.getItem(this._localStorageKeys.codeConsole);
-        if (localStorage.getItem(this._localStorageKeys.grammarConsole))
-            this._grammarConsole.val(grammarCode);
-        if (code)
-            this._codeConsole.val(code);
+        if (grammarCode !== undefined && code !== undefined)
+            this._setGrammarAndCode(grammarCode, code);
         return grammarCode || code;
+    }
+    _updateLocalStorage() {
+        localStorage.setItem(this._localStorageKeys.grammarConsole, this.grammarInstance.getValue());
+        localStorage.setItem(this._localStorageKeys.codeConsole, this.codeInstance.getValue());
+        this._updateShareLink(); // todo: where to put this?
+        console.log("Local storage updated...");
     }
     _getGrammarErrors(grammarCode) {
         return new this.GrammarConstructor(grammarCode).getAllErrors();
@@ -188,14 +211,22 @@ ${testCode}`);
     }
     _grammarDidUpdate() {
         const grammarCode = this.grammarInstance.getValue();
-        localStorage.setItem(this._localStorageKeys.grammarConsole, grammarCode);
+        this._updateLocalStorage();
         this.grammarProgram = new this.GrammarConstructor(grammarCode);
         const errs = this.grammarProgram.getAllErrors().map(err => err.toObject());
         this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors");
     }
+    _updateShareLink() {
+        const tree = new jtree.TreeNode();
+        tree.appendLineAndChildren("grammar", this.grammarInstance.getValue());
+        tree.appendLineAndChildren("sample", this.codeInstance.getValue());
+        const hash = "#" + encodeURIComponent(tree.toString());
+        const link = location.href.replace(location.hash, "") + hash;
+        this._shareLink.val(link);
+    }
     _codeDidUpdate() {
         const code = this.codeInstance.getValue();
-        localStorage.setItem(this._localStorageKeys.codeConsole, code);
+        this._updateLocalStorage();
         const programConstructor = this._getGrammarConstructor();
         this.program = new programConstructor(code);
         const errs = this.program.getAllErrors();
@@ -222,17 +253,20 @@ ${testCode}`);
                 this.codeInstance.scrollTo(null, after - info.clientHeight + 3);
         });
     }
+    _setGrammarAndCode(grammar, code) {
+        this.grammarInstance.setValue(grammar);
+        this.codeInstance.setValue(code);
+        this._clearHash();
+        this._grammarDidUpdate();
+        this._codeDidUpdate();
+    }
     async _fetchJTreeStandardGrammar(name) {
         const samplePath = `/langs/${name}/sample.${name}`;
         const grammarPath = `/langs/${name}/${name}.grammar`;
         const grammar = await jQuery.get(grammarPath);
         const sample = await jQuery.get(samplePath);
-        await this._loadScripts(grammar, grammarPath);
-        localStorage.setItem(this._localStorageKeys.grammarPath, grammarPath);
-        this.grammarInstance.setValue(grammar);
-        this._grammarDidUpdate();
-        this.codeInstance.setValue(sample);
-        this._codeDidUpdate();
+        await this._loadScriptsForStandardLanguage(grammar);
+        this._setGrammarAndCode(grammar, sample);
     }
 }
 jQuery(document).ready(function () {

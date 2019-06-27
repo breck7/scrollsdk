@@ -43,6 +43,7 @@ nodeType lineOfHtmlContent
  catchAllCellType anyHtmlContent
  firstCellType anyHtmlContent
 nodeType bern
+ todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
  firstCellType contentHolderName
  catchAllNodeType lineOfHtmlContent

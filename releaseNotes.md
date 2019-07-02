@@ -1,3 +1,12 @@
+28.0.0 / 2019-06-26
+===================
+- New: "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
+- Breaking: compileGrammar method is now compileGrammarForNodeJs and compileGrammarForBrowser
+- Breaking: nodeTypeId's now can only be alphanumeric
+- Breaking: nodeTypeId's are (todo: now identical to the generated Javascript class names)
+- Breaking: removed "group" property on abstract nodeTypes. You can acheive the same affect with a build script.
+- Breaking: "constructors" now no longer take a class name. The class name must be identical to nodeTypeId.
+
 27.2.0 / 2019-06-26
 ===================
 - New: /sandbox/build/ => refactored Tree Language IDE

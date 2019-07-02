@@ -1,7 +1,7 @@
 grammar
  name numbers
  description A useless Tree Language for testing Tree Notation features.
- inScope abstract.arithmeticReducer # #!
+ inScope abstractArithmeticReducer commentNode hashBangNode
  catchAllNodeType error
 cellType float
 cellType commentWord
@@ -15,7 +15,7 @@ cellType numbers
  extends number
 cellType operator
  highlightScope keyword.operator.arithmetic
-abstract abstract.arithmeticReducer
+abstract abstractArithmeticReducer
  catchAllCellType numbers
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
@@ -24,27 +24,34 @@ abstract abstract.arithmeticReducer
   }
   async execute() { return this.executeSync() }
  firstCellType operator
- inScope abstract.arithmeticReducer #
-nodeType #
+ inScope abstractArithmeticReducer commentNode
+nodeType commentNode
+ match #
  description This is a line comment.
  firstCellType commentWord
  catchAllCellType commentWord
- catchAllNodeType #
+ catchAllNodeType commentNode
 nodeType error
  catchAllCellType errorWord
  baseNodeType errorNode
  firstCellType errorWord
-nodeType #!
- extends #
+nodeType hashBangNode
+ match #!
+ extends commentNode
 nodeType comment
- extends #
-nodeType %
- extends abstract.arithmeticReducer
-nodeType *
- extends abstract.arithmeticReducer
-nodeType +
- extends abstract.arithmeticReducer
-nodeType -
- extends abstract.arithmeticReducer
-nodeType /
- extends abstract.arithmeticReducer
+ extends commentNode
+nodeType modNode
+ match %
+ extends abstractArithmeticReducer
+nodeType timesNode
+ match *
+ extends abstractArithmeticReducer
+nodeType addNode
+ match +
+ extends abstractArithmeticReducer
+nodeType substractNode
+ match -
+ extends abstractArithmeticReducer
+nodeType divideNode
+ match /
+ extends abstractArithmeticReducer

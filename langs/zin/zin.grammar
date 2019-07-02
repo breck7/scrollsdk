@@ -1,7 +1,7 @@
 grammar
  name zin
  description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-tree programming languages into one tree language.
- catchAllNodeType catchAll.error
+ catchAllNodeType catchAllError
  inScope aloha
 cellType name
  description A person's name
@@ -12,5 +12,5 @@ nodeType aloha
  description Say aloha to a person.
  catchAllCellType name
  firstCellType keyword
-nodeType catchAll.error
+nodeType catchAllError
  baseNodeType errorNode

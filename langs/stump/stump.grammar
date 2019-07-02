@@ -2,7 +2,7 @@ grammar
  name stump
  description A Tree Language that compiles to HTML.
  catchAllNodeType errorNode
- inScope htmlTag
+ inScope abstractHtmlTag
  compilesTo html
  javascript
   compile() { return this.toHtml() }
@@ -19,19 +19,17 @@ cellType htmlAttributeName
  highlightScope entity.name.type
 cellType contentHolderName
  highlightScope keyword
-abstract htmlTag
- group a abbr address area article aside b base bdi bdo blockquote body br button canvas caption code col colgroup datalist dd del details dfn dialog div dl dt em embed fieldset figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param pre progress q rb rp rt rtc ruby s samp script section select small source span strong styleTag sub summary sup table tbody td template textarea tfoot th thead time titleTag tr track u ul var video wbr
+abstract abstractHtmlTag
  firstCellType htmlTagName
- inScope bern htmlTag htmlAttribute
+ inScope bern abstractHtmlTag abstractHtmlAttribute
  catchAllCellType anyHtmlContent
  constructors
   nodejs ./StumpNodes.js
   browser StumpNodes.js
 nodeType errorNode
  baseNodeType errorNode
-abstract htmlAttribute
+abstract abstractHtmlAttribute
  firstCellType htmlAttributeName
- group accept accept-charset accesskey action align alt async autocomplete autofocus autoplay bgcolor border charset checked class color cols colspan content contenteditable controls coords datetime default defer dir dirname disabled download draggable dropzone enctype for formaction headers height hidden high href hreflang http-equiv id ismap kind lang list loop low max maxlength media method min multiple muted name novalidate onabort onafterprint onbeforeprint onbeforeunload onblur oncanplay oncanplaythrough onchange onclick oncontextmenu oncopy oncuechange oncut ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange onemptied onended onerror onfocus onhashchange oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmousedown onmousemove onmouseout onmouseover onmouseup onmousewheel onoffline ononline onpagehide onpageshow onpaste onpause onplay onplaying onpopstate onprogress onratechange onreset onresize onscroll onsearch onseeked onseeking onselect onstalled onstorage onsubmit onsuspend ontimeupdate ontoggle onunload onvolumechange onwaiting onwheel open optimum pattern placeholder poster preload readonly rel required reversed rows rowspan sandbox scope selected shape size sizes spellcheck src srcdoc srclang srcset start step style tabindex target title translate type usemap value width wrap
  javascript
   _toHtml() { return "" }
   getAttribute() { return ` ${this.getFirstWord()}="${this.getContent()}"` }
@@ -49,3 +47,549 @@ nodeType bern
  catchAllNodeType lineOfHtmlContent
  javascript
   _toHtml() { return this.childrenToString() }
+nodeType a
+ extends abstractHtmlTag
+nodeType abbr
+ extends abstractHtmlTag
+nodeType address
+ extends abstractHtmlTag
+nodeType area
+ extends abstractHtmlTag
+nodeType article
+ extends abstractHtmlTag
+nodeType aside
+ extends abstractHtmlTag
+nodeType b
+ extends abstractHtmlTag
+nodeType base
+ extends abstractHtmlTag
+nodeType bdi
+ extends abstractHtmlTag
+nodeType bdo
+ extends abstractHtmlTag
+nodeType blockquote
+ extends abstractHtmlTag
+nodeType body
+ extends abstractHtmlTag
+nodeType br
+ extends abstractHtmlTag
+nodeType button
+ extends abstractHtmlTag
+nodeType canvas
+ extends abstractHtmlTag
+nodeType caption
+ extends abstractHtmlTag
+nodeType code
+ extends abstractHtmlTag
+nodeType col
+ extends abstractHtmlTag
+nodeType colgroup
+ extends abstractHtmlTag
+nodeType datalist
+ extends abstractHtmlTag
+nodeType dd
+ extends abstractHtmlTag
+nodeType del
+ extends abstractHtmlTag
+nodeType details
+ extends abstractHtmlTag
+nodeType dfn
+ extends abstractHtmlTag
+nodeType dialog
+ extends abstractHtmlTag
+nodeType div
+ extends abstractHtmlTag
+nodeType dl
+ extends abstractHtmlTag
+nodeType dt
+ extends abstractHtmlTag
+nodeType em
+ extends abstractHtmlTag
+nodeType embed
+ extends abstractHtmlTag
+nodeType fieldset
+ extends abstractHtmlTag
+nodeType figure
+ extends abstractHtmlTag
+nodeType footer
+ extends abstractHtmlTag
+nodeType form
+ extends abstractHtmlTag
+nodeType h1
+ extends abstractHtmlTag
+nodeType h2
+ extends abstractHtmlTag
+nodeType h3
+ extends abstractHtmlTag
+nodeType h4
+ extends abstractHtmlTag
+nodeType h5
+ extends abstractHtmlTag
+nodeType h6
+ extends abstractHtmlTag
+nodeType head
+ extends abstractHtmlTag
+nodeType header
+ extends abstractHtmlTag
+nodeType hgroup
+ extends abstractHtmlTag
+nodeType hr
+ extends abstractHtmlTag
+nodeType html
+ extends abstractHtmlTag
+nodeType i
+ extends abstractHtmlTag
+nodeType iframe
+ extends abstractHtmlTag
+nodeType img
+ extends abstractHtmlTag
+nodeType input
+ extends abstractHtmlTag
+nodeType ins
+ extends abstractHtmlTag
+nodeType kbd
+ extends abstractHtmlTag
+nodeType keygen
+ extends abstractHtmlTag
+nodeType label
+ extends abstractHtmlTag
+nodeType legend
+ extends abstractHtmlTag
+nodeType li
+ extends abstractHtmlTag
+nodeType link
+ extends abstractHtmlTag
+nodeType main
+ extends abstractHtmlTag
+nodeType map
+ extends abstractHtmlTag
+nodeType mark
+ extends abstractHtmlTag
+nodeType menu
+ extends abstractHtmlTag
+nodeType menuitem
+ extends abstractHtmlTag
+nodeType meta
+ extends abstractHtmlTag
+nodeType meter
+ extends abstractHtmlTag
+nodeType nav
+ extends abstractHtmlTag
+nodeType noscript
+ extends abstractHtmlTag
+nodeType object
+ extends abstractHtmlTag
+nodeType ol
+ extends abstractHtmlTag
+nodeType optgroup
+ extends abstractHtmlTag
+nodeType option
+ extends abstractHtmlTag
+nodeType output
+ extends abstractHtmlTag
+nodeType p
+ extends abstractHtmlTag
+nodeType param
+ extends abstractHtmlTag
+nodeType pre
+ extends abstractHtmlTag
+nodeType progress
+ extends abstractHtmlTag
+nodeType q
+ extends abstractHtmlTag
+nodeType rb
+ extends abstractHtmlTag
+nodeType rp
+ extends abstractHtmlTag
+nodeType rt
+ extends abstractHtmlTag
+nodeType rtc
+ extends abstractHtmlTag
+nodeType ruby
+ extends abstractHtmlTag
+nodeType s
+ extends abstractHtmlTag
+nodeType samp
+ extends abstractHtmlTag
+nodeType script
+ extends abstractHtmlTag
+nodeType section
+ extends abstractHtmlTag
+nodeType select
+ extends abstractHtmlTag
+nodeType small
+ extends abstractHtmlTag
+nodeType source
+ extends abstractHtmlTag
+nodeType span
+ extends abstractHtmlTag
+nodeType strong
+ extends abstractHtmlTag
+nodeType styleTag
+ extends abstractHtmlTag
+nodeType sub
+ extends abstractHtmlTag
+nodeType summary
+ extends abstractHtmlTag
+nodeType sup
+ extends abstractHtmlTag
+nodeType table
+ extends abstractHtmlTag
+nodeType tbody
+ extends abstractHtmlTag
+nodeType td
+ extends abstractHtmlTag
+nodeType template
+ extends abstractHtmlTag
+nodeType textarea
+ extends abstractHtmlTag
+nodeType tfoot
+ extends abstractHtmlTag
+nodeType th
+ extends abstractHtmlTag
+nodeType thead
+ extends abstractHtmlTag
+nodeType time
+ extends abstractHtmlTag
+nodeType titleTag
+ extends abstractHtmlTag
+nodeType tr
+ extends abstractHtmlTag
+nodeType track
+ extends abstractHtmlTag
+nodeType u
+ extends abstractHtmlTag
+nodeType ul
+ extends abstractHtmlTag
+nodeType var
+ extends abstractHtmlTag
+nodeType video
+ extends abstractHtmlTag
+nodeType wbr
+ extends abstractHtmlTag
+nodeType accept
+ extends abstractHtmlAttribute
+nodeType accesskey
+ extends abstractHtmlAttribute
+nodeType action
+ extends abstractHtmlAttribute
+nodeType align
+ extends abstractHtmlAttribute
+nodeType alt
+ extends abstractHtmlAttribute
+nodeType async
+ extends abstractHtmlAttribute
+nodeType autocomplete
+ extends abstractHtmlAttribute
+nodeType autofocus
+ extends abstractHtmlAttribute
+nodeType autoplay
+ extends abstractHtmlAttribute
+nodeType bgcolor
+ extends abstractHtmlAttribute
+nodeType border
+ extends abstractHtmlAttribute
+nodeType charset
+ extends abstractHtmlAttribute
+nodeType checked
+ extends abstractHtmlAttribute
+nodeType class
+ extends abstractHtmlAttribute
+nodeType color
+ extends abstractHtmlAttribute
+nodeType cols
+ extends abstractHtmlAttribute
+nodeType colspan
+ extends abstractHtmlAttribute
+nodeType content
+ extends abstractHtmlAttribute
+nodeType contenteditable
+ extends abstractHtmlAttribute
+nodeType controls
+ extends abstractHtmlAttribute
+nodeType coords
+ extends abstractHtmlAttribute
+nodeType datetime
+ extends abstractHtmlAttribute
+nodeType default
+ extends abstractHtmlAttribute
+nodeType defer
+ extends abstractHtmlAttribute
+nodeType dir
+ extends abstractHtmlAttribute
+nodeType dirname
+ extends abstractHtmlAttribute
+nodeType disabled
+ extends abstractHtmlAttribute
+nodeType download
+ extends abstractHtmlAttribute
+nodeType draggable
+ extends abstractHtmlAttribute
+nodeType dropzone
+ extends abstractHtmlAttribute
+nodeType enctype
+ extends abstractHtmlAttribute
+nodeType for
+ extends abstractHtmlAttribute
+nodeType formaction
+ extends abstractHtmlAttribute
+nodeType headers
+ extends abstractHtmlAttribute
+nodeType height
+ extends abstractHtmlAttribute
+nodeType hidden
+ extends abstractHtmlAttribute
+nodeType high
+ extends abstractHtmlAttribute
+nodeType href
+ extends abstractHtmlAttribute
+nodeType hreflang
+ extends abstractHtmlAttribute
+nodeType id
+ extends abstractHtmlAttribute
+nodeType ismap
+ extends abstractHtmlAttribute
+nodeType kind
+ extends abstractHtmlAttribute
+nodeType lang
+ extends abstractHtmlAttribute
+nodeType list
+ extends abstractHtmlAttribute
+nodeType loop
+ extends abstractHtmlAttribute
+nodeType low
+ extends abstractHtmlAttribute
+nodeType max
+ extends abstractHtmlAttribute
+nodeType maxlength
+ extends abstractHtmlAttribute
+nodeType media
+ extends abstractHtmlAttribute
+nodeType method
+ extends abstractHtmlAttribute
+nodeType min
+ extends abstractHtmlAttribute
+nodeType multiple
+ extends abstractHtmlAttribute
+nodeType muted
+ extends abstractHtmlAttribute
+nodeType name
+ extends abstractHtmlAttribute
+nodeType novalidate
+ extends abstractHtmlAttribute
+nodeType onabort
+ extends abstractHtmlAttribute
+nodeType onafterprint
+ extends abstractHtmlAttribute
+nodeType onbeforeprint
+ extends abstractHtmlAttribute
+nodeType onbeforeunload
+ extends abstractHtmlAttribute
+nodeType onblur
+ extends abstractHtmlAttribute
+nodeType oncanplay
+ extends abstractHtmlAttribute
+nodeType oncanplaythrough
+ extends abstractHtmlAttribute
+nodeType onchange
+ extends abstractHtmlAttribute
+nodeType onclick
+ extends abstractHtmlAttribute
+nodeType oncontextmenu
+ extends abstractHtmlAttribute
+nodeType oncopy
+ extends abstractHtmlAttribute
+nodeType oncuechange
+ extends abstractHtmlAttribute
+nodeType oncut
+ extends abstractHtmlAttribute
+nodeType ondblclick
+ extends abstractHtmlAttribute
+nodeType ondrag
+ extends abstractHtmlAttribute
+nodeType ondragend
+ extends abstractHtmlAttribute
+nodeType ondragenter
+ extends abstractHtmlAttribute
+nodeType ondragleave
+ extends abstractHtmlAttribute
+nodeType ondragover
+ extends abstractHtmlAttribute
+nodeType ondragstart
+ extends abstractHtmlAttribute
+nodeType ondrop
+ extends abstractHtmlAttribute
+nodeType ondurationchange
+ extends abstractHtmlAttribute
+nodeType onemptied
+ extends abstractHtmlAttribute
+nodeType onended
+ extends abstractHtmlAttribute
+nodeType onerror
+ extends abstractHtmlAttribute
+nodeType onfocus
+ extends abstractHtmlAttribute
+nodeType onhashchange
+ extends abstractHtmlAttribute
+nodeType oninput
+ extends abstractHtmlAttribute
+nodeType oninvalid
+ extends abstractHtmlAttribute
+nodeType onkeydown
+ extends abstractHtmlAttribute
+nodeType onkeypress
+ extends abstractHtmlAttribute
+nodeType onkeyup
+ extends abstractHtmlAttribute
+nodeType onload
+ extends abstractHtmlAttribute
+nodeType onloadeddata
+ extends abstractHtmlAttribute
+nodeType onloadedmetadata
+ extends abstractHtmlAttribute
+nodeType onloadstart
+ extends abstractHtmlAttribute
+nodeType onmousedown
+ extends abstractHtmlAttribute
+nodeType onmousemove
+ extends abstractHtmlAttribute
+nodeType onmouseout
+ extends abstractHtmlAttribute
+nodeType onmouseover
+ extends abstractHtmlAttribute
+nodeType onmouseup
+ extends abstractHtmlAttribute
+nodeType onmousewheel
+ extends abstractHtmlAttribute
+nodeType onoffline
+ extends abstractHtmlAttribute
+nodeType ononline
+ extends abstractHtmlAttribute
+nodeType onpagehide
+ extends abstractHtmlAttribute
+nodeType onpageshow
+ extends abstractHtmlAttribute
+nodeType onpaste
+ extends abstractHtmlAttribute
+nodeType onpause
+ extends abstractHtmlAttribute
+nodeType onplay
+ extends abstractHtmlAttribute
+nodeType onplaying
+ extends abstractHtmlAttribute
+nodeType onpopstate
+ extends abstractHtmlAttribute
+nodeType onprogress
+ extends abstractHtmlAttribute
+nodeType onratechange
+ extends abstractHtmlAttribute
+nodeType onreset
+ extends abstractHtmlAttribute
+nodeType onresize
+ extends abstractHtmlAttribute
+nodeType onscroll
+ extends abstractHtmlAttribute
+nodeType onsearch
+ extends abstractHtmlAttribute
+nodeType onseeked
+ extends abstractHtmlAttribute
+nodeType onseeking
+ extends abstractHtmlAttribute
+nodeType onselect
+ extends abstractHtmlAttribute
+nodeType onstalled
+ extends abstractHtmlAttribute
+nodeType onstorage
+ extends abstractHtmlAttribute
+nodeType onsubmit
+ extends abstractHtmlAttribute
+nodeType onsuspend
+ extends abstractHtmlAttribute
+nodeType ontimeupdate
+ extends abstractHtmlAttribute
+nodeType ontoggle
+ extends abstractHtmlAttribute
+nodeType onunload
+ extends abstractHtmlAttribute
+nodeType onvolumechange
+ extends abstractHtmlAttribute
+nodeType onwaiting
+ extends abstractHtmlAttribute
+nodeType onwheel
+ extends abstractHtmlAttribute
+nodeType open
+ extends abstractHtmlAttribute
+nodeType optimum
+ extends abstractHtmlAttribute
+nodeType pattern
+ extends abstractHtmlAttribute
+nodeType placeholder
+ extends abstractHtmlAttribute
+nodeType poster
+ extends abstractHtmlAttribute
+nodeType preload
+ extends abstractHtmlAttribute
+nodeType readonly
+ extends abstractHtmlAttribute
+nodeType rel
+ extends abstractHtmlAttribute
+nodeType required
+ extends abstractHtmlAttribute
+nodeType reversed
+ extends abstractHtmlAttribute
+nodeType rows
+ extends abstractHtmlAttribute
+nodeType rowspan
+ extends abstractHtmlAttribute
+nodeType sandbox
+ extends abstractHtmlAttribute
+nodeType scope
+ extends abstractHtmlAttribute
+nodeType selected
+ extends abstractHtmlAttribute
+nodeType shape
+ extends abstractHtmlAttribute
+nodeType size
+ extends abstractHtmlAttribute
+nodeType sizes
+ extends abstractHtmlAttribute
+nodeType spellcheck
+ extends abstractHtmlAttribute
+nodeType src
+ extends abstractHtmlAttribute
+nodeType srcdoc
+ extends abstractHtmlAttribute
+nodeType srclang
+ extends abstractHtmlAttribute
+nodeType srcset
+ extends abstractHtmlAttribute
+nodeType start
+ extends abstractHtmlAttribute
+nodeType step
+ extends abstractHtmlAttribute
+nodeType acceptCharset
+ match accept-charset
+ extends abstractHtmlAttribute
+nodeType httpEquiv
+ match http-equiv
+ extends abstractHtmlAttribute
+nodeType style
+ extends abstractHtmlAttribute
+nodeType tabindex
+ extends abstractHtmlAttribute
+nodeType target
+ extends abstractHtmlAttribute
+nodeType title
+ extends abstractHtmlAttribute
+nodeType translate
+ extends abstractHtmlAttribute
+nodeType type
+ extends abstractHtmlAttribute
+nodeType usemap
+ extends abstractHtmlAttribute
+nodeType value
+ extends abstractHtmlAttribute
+nodeType width
+ extends abstractHtmlAttribute
+nodeType wrap
+ extends abstractHtmlAttribute

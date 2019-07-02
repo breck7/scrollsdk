@@ -3,7 +3,7 @@ todo Change the extends syntax to just have an extend property, instead of the c
 grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
- catchAllNodeType catchAll.error
+ catchAllNodeType catchAllError
  nodeTypeOrder tooling todo grammar cellType abstract nodeType
  extensions grammar gram
  example A grammar that parses anything:
@@ -66,6 +66,7 @@ cellType nodeTypeId
  todo Should this be abstractNodeTypeIdOrNodeTypeId?
  description This doubles as the class name in Javascript.
  highlightScope variable.parameter
+ regex [a-zA-Z0-9]+
 cellType nodeTypeIdConstant
  highlightScope variable.function
 cellType propertyName
@@ -94,28 +95,28 @@ cellType extendedCellType
 cellType exampleWord
  highlightScope comment
  extends stringCell
-abstract abstract.compilerRule
+abstract abstractCompilerRule
  todo Remove if we remove compiler stuff?
  catchAllCellType anyWord
  firstCellType propertyName
-abstract abstract.environment
-abstract abstract.nodeTypeRule
+abstract abstractEnvironment
+abstract abstractNodeTypeRule
  firstCellType propertyName
  single
-abstract abstract.constant
+abstract abstractConstant
  description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
  firstCellType propertyName
-abstract abstract.nonTerminalNodeTypeRule
- extends abstract.nodeTypeRule
-nodeType catchAll.error
+abstract abstractNonTerminalNodeTypeRule
+ extends abstractNodeTypeRule
+nodeType catchAllError
  baseNodeType errorNode
-nodeType catchAll.exampleLine
+nodeType catchAllExampleLine
  catchAllCellType exampleWord
  firstCellType exampleWord
- catchAllNodeType catchAll.exampleLine
-nodeType catchAll.javascriptCodeLine
+ catchAllNodeType catchAllExampleLine
+nodeType catchAllJavascriptCodeLine
  catchAllCellType javascriptCodeWord
- catchAllNodeType catchAll.javascriptCodeLine
+ catchAllNodeType catchAllJavascriptCodeLine
 nodeType cellType
  cells cellTypeId
  firstCellType cellTypeIdConstant
@@ -135,12 +136,7 @@ nodeType grammar
  required
  single
  firstCellType propertyName
- inScope name description example extensions nodeTypeOrder inScope constructors catchAllNodeType version abstract.constant javascript compilesTo
-nodeType group
- todo Remove this once we have imports?
- catchAllCellType nodeTypeId
- firstCellType propertyName
- description Available on abstract nodes only. Use it to more concisely generate nodeTypes all extending from this abstract nodeType, if they have no special properties.
+ inScope name description example extensions nodeTypeOrder inScope constructors catchAllNodeType version abstractConstant javascript compilesTo
 nodeType highlightScope
  firstCellType propertyName
  cells scopeName
@@ -155,15 +151,15 @@ nodeType nodeType
  todo Add multiple dispatch?
  cells nodeTypeId
  description Node types are a core unit of your language. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
- catchAllNodeType catchAll.error
+ catchAllNodeType catchAllError
  baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
- inScope abstract.nodeTypeRule abstract.constant todo extends
+ inScope abstractNodeTypeRule abstractConstant todo extends
 nodeType extends
  description NodeTypes/abstractNodeType, and cellTypes definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
  cells extendedId
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType nodeTypeOrder
  todo Should we just reuse inScope order? And have a property that indicates order is not important?
  todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?
@@ -195,108 +191,111 @@ nodeType compilesTo
  firstCellType propertyName
  description Optionally specify a file extension that will be used when compiling your language.
 nodeType closeChildren
- extends abstract.compilerRule
+ extends abstractCompilerRule
 nodeType indentCharacter
- extends abstract.compilerRule
+ extends abstractCompilerRule
 nodeType listDelimiter
- extends abstract.compilerRule
+ extends abstractCompilerRule
 nodeType openChildren
- extends abstract.compilerRule
+ extends abstractCompilerRule
 nodeType stringTemplate
- extends abstract.compilerRule
+ extends abstractCompilerRule
 nodeType boolean
  cells constantIdentifier
  catchAllCellType booleanCell
- extends abstract.constant
+ extends abstractConstant
 nodeType float
  cells constantIdentifier
  catchAllCellType floatCell
- extends abstract.constant
+ extends abstractConstant
 nodeType int
  cells constantIdentifier
  catchAllCellType intCell
- extends abstract.constant
-nodeType catchAll.multilineStringConstant
+ extends abstractConstant
+nodeType catchAllMultilineStringConstant
  description String constants can span multiple lines.
  catchAllCellType stringCell
  firstCellType stringCell
- catchAllNodeType catchAll.multilineStringConstant
+ catchAllNodeType catchAllMultilineStringConstant
 nodeType string
  cells constantIdentifier
  catchAllCellType stringCell
- catchAllNodeType catchAll.multilineStringConstant
- extends abstract.constant
+ catchAllNodeType catchAllMultilineStringConstant
+ extends abstractConstant
 nodeType browser
  cells scriptUrl
  description Script will be loaded and nodeType class will be searched for on the window object.
- extends abstract.environment
+ extends abstractEnvironment
 nodeType nodejs
  cells constructorFilePath
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
- extends abstract.environment
+ extends abstractEnvironment
 nodeType baseNodeType
  cells baseNodeTypes
  description In rare cases with untyped content you can use a blobNode, for now, to skip parsing for performance gains. The base errorNode will report errors when parsed. Use that if you don't want to implement your own error nodeType.
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType catchAllCellType
  cells cellTypeEnum
  description If there are extra words in the node's line, parse these words as this type.
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType catchAllNodeType
  description If a nodeType is not found in the inScope list, instantiate this type of node instead.
  cells nodeTypeEnum
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType cells
  catchAllCellType cellTypeEnum
  description Describes the word type of each word in the line.
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType compiler
  todo Remove this and its children?
  inScope stringTemplate listDelimiter openChildren closeChildren indentCharacter
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType description
  catchAllCellType stringCell
  todo Should we make this multiline?
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType example
  todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleWord
- catchAllNodeType catchAll.exampleLine
- extends abstract.nodeTypeRule
+ catchAllNodeType catchAllExampleLine
+ extends abstractNodeTypeRule
 nodeType firstCellType
  cells cellTypeEnum
  description If you have an any node, use this to correctly parse the first word.
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType frequency
  todo Remove this nodeType. Switch to conditional frequencies.
  cells floatCell
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType inScope
  description A list of possible child nodeTypes for a node.
  catchAllCellType nodeTypeEnum
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType javascript
  description Provide raw javascript code that will be inserted into a node type's class.
- catchAllNodeType catchAll.javascriptCodeLine
- extends abstract.nodeTypeRule
+ catchAllNodeType catchAllJavascriptCodeLine
+ extends abstractNodeTypeRule
 nodeType required
  description If present, the parent node will have an error if one of these nodes is not provided.
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
+nodeType match
+ cells anyWord
+ description If present, this word will be used as the first word instead of the nodeTypeId.
+ extends abstractNodeTypeRule
 nodeType single
  description If present and their are more than 1 of these nodes on the parent, an error will be present.
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType tags
  catchAllCellType tag
- extends abstract.nodeTypeRule
+ extends abstractNodeTypeRule
 nodeType constructors
  todo Remove/refactor this
- inScope abstract.environment
+ inScope abstractEnvironment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
- extends abstract.nonTerminalNodeTypeRule
+ extends abstractNonTerminalNodeTypeRule
 nodeType abstract
- todo Rename to abstractNodeType?
+ todo Remove this root level nodeType and make it a child node under cellType and nodeType.
  firstCellType abstractConstant
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
- inScope group
  extends nodeType

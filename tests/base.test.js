@@ -1912,10 +1912,15 @@ nodeType error
  baseNodeType errorNode
 abstract topLevel
 abstract someAbstractClass
-abstract color_properties
+abstract colorProperties
  extends topLevel
- group hue saturation constrast
  cells int
+nodeType hue
+ extends colorProperties
+nodeType saturation
+ extends colorProperties
+nodeType constrast
+ extends colorProperties
 nodeType extendsAbstract
  extends someAbstractClass
  cells int

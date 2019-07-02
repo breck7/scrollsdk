@@ -23,11 +23,16 @@ cellType opSymbol
 abstract someAbstractClass
 abstract topLevel
  firstCellType topLevelProperty
-abstract color_properties
- group hue saturation constrast
+abstract colorProperties
  cells int
  extends topLevel
-abstract abstract.html
+nodeType hue
+ extends colorProperties
+nodeType saturation
+ extends colorProperties
+nodeType constrast
+ extends colorProperties
+abstract abstractHtml
  inScope content
  extends topLevel
 nodeType content
@@ -50,7 +55,8 @@ nodeType add
  constructors
   nodejs ./JibberishLang.js
  extends topLevel
-nodeType +
+nodeType plus
+ match +
  extends add
  firstCellType opSymbol
  example Adding two numbers:
@@ -97,8 +103,9 @@ nodeType nodeWithConsts
 nodeType nodeExpandsConsts
  string greeting hola
  extends nodeWithConsts
-nodeType html.h1
- extends abstract.html
+nodeType h1Node
+ match html.h1
+ extends abstractHtml
 nodeType someCode
  catchAllNodeType lineOfCode
  extends topLevel

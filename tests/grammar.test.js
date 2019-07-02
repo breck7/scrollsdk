@@ -142,7 +142,7 @@ missing2 true`)
       ._getAncestorsArray()
       .map(def => def.getNodeTypeIdFromDefinition())
       .join(" "),
-    "html.h1 abstract.html topLevel"
+    "h1Node abstractHtml topLevel"
   )
 }
 

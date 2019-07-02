@@ -4,7 +4,7 @@ grammar
  catchAllNodeType error
  constructors
   nodejs ./StampLang.js
- inScope #! prompt folder file
+ inScope hashbangNode prompt folder file
 cellType anyFirstWord
 cellType extraWord
  highlightScope invalid
@@ -21,15 +21,16 @@ cellType inputType
  regex (string|int|any|lowercase)
 cellType property
  highlightScope keyword.control
-nodeType #!
+nodeType hashbangNode
+ match #!
  catchAllCellType commentWord
  firstCellType commentWord
-nodeType catchAll.anyLine
+nodeType catchAllAnyLine
  catchAllCellType anyWord
- catchAllNodeType catchAll.anyLine
+ catchAllNodeType catchAllAnyLine
  firstCellType anyWord
 nodeType data
- catchAllNodeType catchAll.anyLine
+ catchAllNodeType catchAllAnyLine
  firstCellType property
 nodeType error
  baseNodeType errorNode

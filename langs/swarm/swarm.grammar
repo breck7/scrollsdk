@@ -3,7 +3,7 @@ todo Make run in browser
 grammar
  name swarm
  description A Tree Language for unit testing.
- inScope #! arrangeTestSubject testBlock
+ inScope hashbangNode arrangeTestSubject testBlock
  catchAllNodeType error
  constructors
   nodejs ./SwarmLang.js
@@ -46,7 +46,8 @@ abstract testBlock
  inScope arrangeTestSubject
  catchAllNodeType command
  firstCellType controlWord
-nodeType #!
+nodeType hashbangNode
+ match #!
  description Standard bash hashbang line.
  cells hashBangWord
  catchAllCellType hashBangWord

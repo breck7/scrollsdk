@@ -1911,10 +1911,15 @@ nodeType error
  baseNodeType errorNode
 abstract topLevel
 abstract someAbstractClass
-abstract color_properties
+abstract colorProperties
  extends topLevel
- group hue saturation constrast
  cells int
+nodeType hue
+ extends colorProperties
+nodeType saturation
+ extends colorProperties
+nodeType constrast
+ extends colorProperties
 nodeType extendsAbstract
  extends someAbstractClass
  cells int
@@ -1924,7 +1929,7 @@ nodeType someCode
 nodeType lineOfCode
  catchAllCellType word
  constructors
-  nodejs ./JibberishLang.js LineOfCodeNode
+  nodejs ./JibberishLang.js
 nodeType block
  extends topLevel
  inScope topLevel
@@ -1938,8 +1943,9 @@ nodeType text
 nodeType add
  extends topLevel
  constructors
-  nodejs ./JibberishLang.js AdditionNode
-nodeType +
+  nodejs ./JibberishLang.js
+nodeType addNode
+ match +
  extends add
  catchAllCellType int
 nodeType lightbulbState
@@ -1963,18 +1969,18 @@ someCode
   // Allow running in both browser and nodejs:
   const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
 
-  class AdditionNode extends jtreeBase.NonTerminalNode {}
-  class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
+  class add extends jtreeBase.NonTerminalNode {}
+  class lineOfCode extends jtreeBase.NonTerminalNode {}
   class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
   const JibberishLang = {}
-  JibberishLang.AdditionNode = AdditionNode
-  JibberishLang.LineOfCodeNode = LineOfCodeNode
+  JibberishLang.add = add
+  JibberishLang.lineOfCode = lineOfCode
   let win = typeof window === "undefined" ? {} : window
   win.JibberishLang = JibberishLang
   win.JibberishProgramRoot = JibberishProgramRoot
-  win.AdditionNode = AdditionNode
-  win.LineOfCodeNode = LineOfCodeNode
+  win.add = add
+  win.lineOfCode = lineOfCode
 
   // Act
   const grammarProgram = jtreeBase.GrammarProgram.newFromCondensed(

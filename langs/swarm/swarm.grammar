@@ -56,7 +56,7 @@ nodeType arrangeTestSubject
  constructors
   nodejs ./SwarmLang.js
  firstCellType arrangeWord
- inScope async require static constructWithBlockString todo
+ inScope async requireNode staticNode constructWithBlockString todo
 nodeType async
  description Set this in setup to test async methods.
  extends terminal
@@ -94,7 +94,8 @@ nodeType lengthIs
  constructors
   nodejs ./SwarmLang.js
  extends assertion
-nodeType require
+nodeType requireNode
+ match require
  cells filepath
  catchAllCellType anyWord
  extends terminal
@@ -103,7 +104,8 @@ nodeType skipTest
  constructors
   nodejs ./SwarmLang.js
  extends testBlock
-nodeType static
+nodeType staticNode
+ match static
  description Add this to setup node to import class directly without initiating it, for static method testing.
  extends terminal
 nodeType stringExcludes

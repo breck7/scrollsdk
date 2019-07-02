@@ -217,7 +217,8 @@ nodeType block
  compiler
   stringTemplate /* {identifier} */
  extends abstractJsblock
-nodeType function
+nodeType functionNode
+ match function
  description Function Assignment
  cells functionIdentifier
  catchAllCellType anyWord
@@ -226,14 +227,16 @@ nodeType function
   listDelimiter , 
  frequency .1
  extends abstractJsblock
-nodeType if
+nodeType ifNode
+ match if
  description If tile
  cells identifier
  frequency .2
  compiler
   stringTemplate if ({identifier})
  extends abstractJsblock
-nodeType while
+nodeType whileNode
+ match while
  description While tile
  cells identifier
  frequency .1
@@ -264,7 +267,8 @@ nodeType dumpIdentifier
   listDelimiter , 
  frequency .5
  extends abstractTerminal
-nodeType export
+nodeType exportNode
+ match export
  description Export This
  cells identifier
  compiler
@@ -289,14 +293,16 @@ nodeType printString
  catchAllCellType stringCells
  compiler
   stringTemplate console.log("{stringCells}")
-nodeType require
+nodeType requireNode
+ match require
  description Require Something
  cells identifier filepath
  compiler
   stringTemplate const {identifier} = require("{filepath}")
  frequency .1
  extends abstractTerminal
-nodeType return
+nodeType returnNode
+ match return
  cells anyWord
  compiler
   stringTemplate return {anyWord}

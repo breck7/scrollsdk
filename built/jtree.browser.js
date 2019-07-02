@@ -2423,8 +2423,10 @@ var GrammarConstants;
     GrammarConstants["nodeType"] = "nodeType";
     GrammarConstants["cellType"] = "cellType";
     GrammarConstants["abstract"] = "abstract";
+    GrammarConstants["match"] = "match";
     // error check time
     GrammarConstants["regex"] = "regex";
+    GrammarConstants["reservedWords"] = "reservedWords";
     GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
     GrammarConstants["enum"] = "enum";
     // baseNodeTypes
@@ -2441,7 +2443,6 @@ var GrammarConstants;
     GrammarConstants["firstCellType"] = "firstCellType";
     GrammarConstants["catchAllNodeType"] = "catchAllNodeType";
     GrammarConstants["constants"] = "constants";
-    GrammarConstants["group"] = "group";
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";
@@ -2464,35 +2465,12 @@ class GrammarBackedNode extends TreeNode {
     getAutocompleteResults(partialWord, cellIndex) {
         return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
-    static _getJavascriptClassNameFromNodeTypeId(nodeTypeId) {
-        let javascriptSyntaxSafeId = nodeTypeId;
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase());
-        // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\@/g, "at");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket");
-        javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket");
-        javascriptSyntaxSafeId = TreeUtils.ucfirst(javascriptSyntaxSafeId);
-        return `${javascriptSyntaxSafeId}Node`;
-    }
     _getAutocompleteResultsForFirstWord(partialWord) {
         let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
         if (partialWord)
-            defs = defs.filter(def => def.getNodeTypeIdFromDefinition().includes(partialWord));
+            defs = defs.filter(def => def._getFirstWordMatch().includes(partialWord));
         return defs.map(def => {
-            const id = def.getNodeTypeIdFromDefinition();
+            const id = def._getFirstWordMatch();
             const description = def.getDescription();
             return {
                 text: id,
@@ -2518,11 +2496,12 @@ class GrammarBackedNode extends TreeNode {
         return undefined;
     }
     _getRequiredNodeErrors(errors = []) {
-        const firstWords = this.getDefinition().getRunTimeFirstWordMapWithDefinitions();
-        Object.keys(firstWords).forEach(firstWord => {
-            const def = firstWords[firstWord];
-            if (def.isRequired() && !this.has(firstWord))
-                errors.push(new MissingRequiredNodeTypeError(this, firstWord));
+        Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions()).forEach(def => {
+            if (def.isRequired()) {
+                const firstWord = def._getFirstWordMatch();
+                if (!this.has(firstWord))
+                    errors.push(new MissingRequiredNodeTypeError(this, firstWord));
+            }
         });
         return errors;
     }
@@ -3086,7 +3065,7 @@ class UnknownNodeTypeError extends AbstractTreeError {
 }
 class BlankLineError extends UnknownNodeTypeError {
     getMessage() {
-        return super.getMessage() + ` Blank lines are errors.`;
+        return super.getMessage() + ` Line: "${this.getNode().getLine()}". Blank lines are errors.`;
     }
     // convenience method
     isBlankLineError() {
@@ -3183,6 +3162,13 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
         return !!str.match(this._regex);
     }
 }
+class GrammarReservedWordsTestNode extends AbstractGrammarWordTestNode {
+    isValid(str) {
+        if (!this._set)
+            this._set = new Set(this.getContent().split(" "));
+        return !this._set.has(str);
+    }
+}
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
     _getEnumFromGrammar(programRootNode) {
@@ -3235,6 +3221,11 @@ class AbstractExtendibleTreeNode extends TreeNode {
     _getNodeFromExtended(firstWordPath) {
         return this._getAncestorsArray().find(node => node.has(firstWordPath));
     }
+    doesExtend(className) {
+        if (!this._cache_ancestorSet)
+            this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()));
+        return this._cache_ancestorSet.has(className);
+    }
     // Note: the order is: [this, parent, grandParent, ...]
     _getAncestorsArray(cannotContainNodes) {
         this._initAncestorsArrayCache(cannotContainNodes);
@@ -3264,6 +3255,7 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     getFirstWordMap() {
         const types = {};
         types[GrammarConstants.regex] = GrammarRegexTestNode;
+        types[GrammarConstants.reservedWords] = GrammarReservedWordsTestNode;
         types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode;
         types[GrammarConstants.enum] = GrammarEnumTestNode;
         types[GrammarConstants.highlightScope] = TreeNode;
@@ -3337,6 +3329,9 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     getCellTypeId() {
         return this.getWord(1);
     }
+    _getId() {
+        return this.getCellTypeId();
+    }
 }
 class GrammarDefinitionErrorNode extends TreeNode {
     getErrors() {
@@ -3369,10 +3364,17 @@ class AbstractCustomConstructorNode extends TreeNode {
         return true;
     }
     getErrors() {
-        // todo: should this be a try/catch?
-        if (!this.isAppropriateEnvironment() || this._getCustomConstructor())
+        if (!this.isAppropriateEnvironment())
             return [];
-        return [new InvalidConstructorPathError(this)];
+        try {
+            // Attempt to load the custom constructor
+            this._getCustomConstructor();
+            return [];
+        }
+        catch (err) {
+            console.log(err);
+            return [new InvalidConstructorPathError(this)];
+        }
     }
     getGrammarProgramRoot() {
         return this._getDef().getLanguageDefinitionProgram();
@@ -3387,20 +3389,16 @@ class AbstractCustomConstructorNode extends TreeNode {
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
     // todo: if we keep this, we need to surface better error messaging with the submodule convention bit.
     _getCustomConstructor() {
-        const filepath = this._getNodeConstructorFilePath();
+        const filepath = this.getContent();
         const rootPath = this.getRootNode().getTheGrammarFilePath();
         const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/";
         const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath;
         const theModule = require(fullPath);
-        const constructorSubModuleName = this._getSubModulePath();
-        return constructorSubModuleName ? TreeUtils.resolveProperty(theModule, constructorSubModuleName) : theModule;
-    }
-    _getSubModulePath() {
-        return this.getWord(2) || this._getDef()._getGeneratedClassName();
-    }
-    // todo: does this support spaces in filepaths?
-    _getNodeConstructorFilePath() {
-        return this.getWord(1);
+        const constructorName = this._getDef()._getGeneratedClassName();
+        const constructor = TreeUtils.resolveProperty(theModule, constructorName);
+        if (!constructor)
+            throw new Error(`constructor "${constructorName}" not found in "${fullPath}".`);
+        return constructor;
     }
     isAppropriateEnvironment() {
         return this.isNodeJs();
@@ -3409,14 +3407,11 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         // todo: bad idea to have browser and node have reverse ordering for submodulename
-        const constructorSubModuleName = this._getSubModulePath();
-        const constructor = TreeUtils.resolveProperty(window, constructorSubModuleName);
+        const constructorName = this._getDef()._getGeneratedClassName();
+        const constructor = TreeUtils.resolveProperty(window, constructorName);
         if (!constructor)
-            throw new Error(`constructor window.${constructorSubModuleName} not found.`);
+            throw new Error(`constructor window.${constructorName} not found.`);
         return constructor;
-    }
-    _getSubModulePath() {
-        return this.getWord(1) || this._getDef()._getGeneratedClassName();
     }
     isAppropriateEnvironment() {
         return !this.isNodeJs();
@@ -3475,8 +3470,8 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             GrammarConstants.catchAllCellType,
             GrammarConstants.firstCellType,
             GrammarConstants.tags,
+            GrammarConstants.match,
             GrammarConstants.baseNodeType,
-            GrammarConstants.group,
             GrammarConstants.required,
             GrammarConstants.javascript,
             GrammarConstants.single,
@@ -3517,8 +3512,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     getNodeTypeIdFromDefinition() {
         return this.getWord(1);
     }
+    // todo: remove. just reused nodeTypeId
     _getGeneratedClassName() {
-        return GrammarBackedNode._getJavascriptClassNameFromNodeTypeId(this.getNodeTypeIdFromDefinition());
+        return this.getNodeTypeIdFromDefinition();
     }
     getNodeConstructorToJavascript() {
         const nodeMap = this.getRunTimeFirstWordMapWithDefinitions();
@@ -3531,7 +3527,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         // todo: use constants in first word maps
         if (Object.keys(firstWordMap).length)
             return `getFirstWordMap() {
-  return {${Object.keys(firstWordMap).map(firstWord => `"${firstWord}" : ${nodeMap[firstWord]._getGeneratedClassName()}`)}}
+  return {${Object.keys(firstWordMap)
+                .map(firstWord => `"${firstWord}" : ${nodeMap[firstWord]._getGeneratedClassName()}`)
+                .join(",\n")}}
   }`;
         return "";
     }
@@ -3552,6 +3550,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._initConstructorDefinedInGrammar();
         return this._cache_definedNodeConstructor;
+    }
+    _getFirstWordMatch() {
+        return this.get(GrammarConstants.match) || this.getNodeTypeIdFromDefinition();
     }
     _importNodeJsConstructor(className, code) {
         const vm = require("vm");
@@ -3616,12 +3617,13 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             this._cache_runTimeFirstWordToNodeConstructorMap = this._createRunTimeFirstWordToNodeConstructorMap(this._getInScopeNodeTypeIds());
         return this._cache_runTimeFirstWordToNodeConstructorMap;
     }
+    getRunTimeFirstWordMapWithDefinitions() {
+        if (!this._cache_runTimeFirstWordToNodeDefMap)
+            this._cache_runTimeFirstWordToNodeDefMap = this._createRunTimeFirstWordToNodeDefMap(this._getInScopeNodeTypeIds());
+        return this._cache_runTimeFirstWordToNodeDefMap;
+    }
     getRunTimeFirstWordsInScope() {
         return Object.keys(this.getRunTimeFirstWordMap());
-    }
-    getRunTimeFirstWordMapWithDefinitions() {
-        const defs = this._getProgramNodeTypeDefinitionCache();
-        return TreeUtils.mapValues(this.getRunTimeFirstWordMap(), key => defs[key]);
     }
     getRequiredCellTypeIds() {
         const parameters = this._getFromExtended(GrammarConstants.cells);
@@ -3645,6 +3647,14 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return this._getFromExtended(GrammarConstants.catchAllCellType);
     }
     _createRunTimeFirstWordToNodeConstructorMap(nodeTypeIdsInScope) {
+        const map = this._createRunTimeFirstWordToNodeDefMap(nodeTypeIdsInScope);
+        const result = {};
+        Object.keys(map).forEach(firstWord => {
+            result[firstWord] = map[firstWord]._getConstructorDefinedInGrammar();
+        });
+        return result;
+    }
+    _createRunTimeFirstWordToNodeDefMap(nodeTypeIdsInScope) {
         if (!nodeTypeIdsInScope.length)
             return {};
         const result = {};
@@ -3653,10 +3663,12 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypeIdsInScope))
             .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
             .forEach(nodeTypeId => {
-            result[nodeTypeId] = allProgramNodeTypeDefinitionsMap[nodeTypeId]._getConstructorDefinedInGrammar();
+            const def = allProgramNodeTypeDefinitionsMap[nodeTypeId];
+            result[def._getFirstWordMatch()] = def;
         });
         return result;
     }
+    // todo: update to better reflect _getFirstWordMatch?
     getTopNodeTypeIds() {
         const definitions = this._getProgramNodeTypeDefinitionCache();
         const firstWords = this.getRunTimeFirstWordMap();
@@ -3730,6 +3742,9 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getRunTimeCatchAllNodeTypeId() {
         return this._getFromExtended(GrammarConstants.catchAllNodeType) || this.getParent()._getRunTimeCatchAllNodeTypeId();
     }
+    _getId() {
+        return this.getWord(1);
+    }
     _getCompilerObject() {
         let obj = {};
         const items = this._getChildrenByNodeConstructorInExtended(GrammarCompilerNode);
@@ -3742,14 +3757,11 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     // todo: improve layout (use bold?)
     getLineHints() {
         const catchAllCellTypeId = this.getCatchAllCellTypeId();
-        return `${this.getNodeTypeIdFromDefinition()}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
+        return `${this._getFirstWordMatch()}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`;
     }
     isOrExtendsANodeTypeInScope(firstWordsInScope) {
         const chain = this._getNodeTypeInheritanceSet();
         return firstWordsInScope.some(firstWord => chain.has(firstWord));
-    }
-    getSublimeSyntaxContextId() {
-        return this.getNodeTypeIdFromDefinition().replace(/\#/g, "HASH"); // # is not allowed in sublime context names
     }
     _getExtendsClassName(isCompiled = false) {
         const baseTypeNames = {};
@@ -3777,8 +3789,8 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
         const program = this.getLanguageDefinitionProgram();
         const escapeRegExp = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         const firstWordHighlightScope = (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition();
-        const match = `'^ *${escapeRegExp(this.getNodeTypeIdFromDefinition())}(?: |$)'`;
-        const topHalf = ` '${this.getSublimeSyntaxContextId()}':
+        const match = `'^ *${escapeRegExp(this._getFirstWordMatch())}(?: |$)'`;
+        const topHalf = ` '${this.getNodeTypeIdFromDefinition()}':
   - match: ${match}
     scope: ${firstWordHighlightScope}`;
         const requiredCellTypeIds = this.getRequiredCellTypeIds();
@@ -3820,6 +3832,7 @@ ${captures}
     _getProgramNodeTypeDefinitionCache() {
         return this.getLanguageDefinitionProgram()._getProgramNodeTypeDefinitionCache();
     }
+    // todo: remove
     getDoc() {
         return this.getNodeTypeIdFromDefinition();
     }
@@ -3849,6 +3862,10 @@ ${captures}
 // todo: is this extending the correct class? Should it just be extending TreeNode?
 class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
     _nodeDefToJavascriptClass() {
+        return "";
+    }
+    // todo: this shouldnt be here?
+    _getId() {
         return "";
     }
     _getGeneratedClassName() {
@@ -3898,6 +3915,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.toolingDirective] = TreeNode;
         map[GrammarConstants.todoComment] = TreeNode;
         return map;
+    }
+    // todo: this shouldnt be here?
+    _getId() {
+        return "";
     }
     _getExtendsClassName(isCompiled = false) {
         return "jtree.GrammarBackedRootNode";
@@ -4035,10 +4056,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
     // todo: have this here or not?
     toNodeJsJavascriptPrettier(jtreePath = "jtree") {
-        return require("prettier").format(this._nodeDefToJavascriptClass(true, jtreePath, true), { semi: false, parser: "babel", printWidth: 160 });
+        return require("prettier").format(this.toNodeJsJavascript(jtreePath), { semi: false, parser: "babel", printWidth: 160 });
     }
     toBrowserJavascript() {
         return this._nodeDefToJavascriptClass(true, "", false).trim();
+    }
+    toBrowserJavascriptPrettier() {
+        return require("prettier").format(this.toBrowserJavascript(), { semi: false, parser: "babel", printWidth: 160 });
     }
     _getProperName() {
         return TreeUtils.ucfirst(this.getExtensionName());
@@ -4105,7 +4129,7 @@ ${forNodeJs ? `module.exports = {${constantsName}, ` + this._getGeneratedClassNa
             .join("\n");
         const defs = this.getConcreteAndAbstractNodeTypeDefinitions().filter(kw => !kw._isAbstract());
         const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n");
-        const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getSublimeSyntaxContextId()}'`).join("\n");
+        const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getNodeTypeIdFromDefinition()}'`).join("\n");
         return `%YAML 1.2
 ---
 name: ${this.getExtensionName()}
@@ -4132,22 +4156,8 @@ ${GrammarConstants.nodeType} anyNode
  ${GrammarConstants.firstCellType} anyWord
 ${GrammarConstants.cellType} anyWord`).getRootConstructor();
     }
-    // todo: remove this. dont expand.
-    static _expandGroups(grammarCode) {
-        // todo: handle imports
-        const tree = new TreeNode(grammarCode);
-        const xi = tree.getXI();
-        tree.findNodes(`${GrammarConstants.abstract}${xi}${GrammarConstants.group}`).forEach(group => {
-            const abstractName = group.getParent().getWord(1);
-            group
-                .getContent()
-                .split(xi)
-                .forEach(word => tree.appendLineAndChildren(`${GrammarConstants.nodeType}${xi}${word}`, `${GrammarConstants.extends}${xi}${abstractName}`));
-        });
-        return tree;
-    }
     static newFromCondensed(grammarCode, grammarPath) {
-        return new GrammarProgram(this._expandGroups(grammarCode), grammarPath);
+        return new GrammarProgram(grammarCode, grammarPath);
     }
     // todo: we could probably remove once we switch to compiled
     async loadAllConstructorScripts(baseUrlPath) {

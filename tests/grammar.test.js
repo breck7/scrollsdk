@@ -104,10 +104,10 @@ world`,
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition instanceof JibberishLang.AddNode, true)
+  equal(addition instanceof JibberishLang.add, true)
 
   // Act/Assert
-  equal(program.getNode("someCode echo") instanceof JibberishLang.LineOfCodeNode, true, "line of code class")
+  equal(program.getNode("someCode echo") instanceof JibberishLang.lineOfCode, true, "line of code class")
 
   // Arrange
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
@@ -168,14 +168,14 @@ opSymbol int int int`,
   // Assert
   equal(
     nodeTypes,
-    `FooNode topLevelProperty
-AddNode opSymbol int int int`,
+    `foo topLevelProperty
+add opSymbol int int int`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
-    `FooNode foo
-AddNode + 2 3 2`,
+    `foo foo
+add + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )
 }
@@ -433,8 +433,9 @@ testTree.examples = equal => {
   const badGrammarProgram = GrammarProgram.newFromCondensed(
     `grammar
  name bad
- inScope +
-nodeType +
+ inScope addNode
+nodeType addNode
+ match +
  catchAllCellType int
  example This is a bad example.
   + 1 B

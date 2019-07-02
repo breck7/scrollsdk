@@ -1945,7 +1945,8 @@ nodeType add
  extends topLevel
  constructors
   nodejs ./JibberishLang.js
-nodeType +
+nodeType addNode
+ match +
  extends add
  catchAllCellType int
 nodeType lightbulbState
@@ -1969,18 +1970,18 @@ someCode
   // Allow running in both browser and nodejs:
   const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
 
-  class AddNode extends jtreeBase.NonTerminalNode {}
-  class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
+  class add extends jtreeBase.NonTerminalNode {}
+  class lineOfCode extends jtreeBase.NonTerminalNode {}
   class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
   const JibberishLang = {}
-  JibberishLang.AddNode = AddNode
-  JibberishLang.LineOfCodeNode = LineOfCodeNode
+  JibberishLang.add = add
+  JibberishLang.lineOfCode = lineOfCode
   let win = typeof window === "undefined" ? {} : window
   win.JibberishLang = JibberishLang
   win.JibberishProgramRoot = JibberishProgramRoot
-  win.AddNode = AddNode
-  win.LineOfCodeNode = LineOfCodeNode
+  win.add = add
+  win.lineOfCode = lineOfCode
 
   // Act
   const grammarProgram = jtreeBase.GrammarProgram.newFromCondensed(

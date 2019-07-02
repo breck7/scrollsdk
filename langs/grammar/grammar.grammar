@@ -67,6 +67,7 @@ cellType nodeTypeId
  description This doubles as the class name in Javascript.
  highlightScope variable.parameter
  regex [a-zA-Z0-9]+
+ reservedWords enum extends function static if while export return class for default require var let const
 cellType nodeTypeIdConstant
  highlightScope variable.function
 cellType propertyName
@@ -120,8 +121,9 @@ nodeType catchAllJavascriptCodeLine
 nodeType cellType
  cells cellTypeId
  firstCellType cellTypeIdConstant
- inScope highlightScope regex enumFromGrammar description enum todo extends
-nodeType enum
+ inScope highlightScope regex reservedWords enumFromGrammar description enumNode todo extendsNode
+nodeType enumNode
+ match enum
  catchAllCellType enumOption
  firstCellType cellPropertyName
 nodeType enumFromGrammar
@@ -154,8 +156,9 @@ nodeType nodeType
  catchAllNodeType catchAllError
  baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
- inScope abstractNodeTypeRule abstractConstant todo extends
-nodeType extends
+ inScope abstractNodeTypeRule abstractConstant todo extendsNode
+nodeType extendsNode
+ match extends
  description NodeTypes/abstractNodeType, and cellTypes definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
  cells extendedId
@@ -167,11 +170,19 @@ nodeType nodeTypeOrder
  catchAllCellType nodeTypeId
  firstCellType propertyName
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
+cellType reservedWord
+ description A word that a cell cannot contain.
+ highlightScope string
 nodeType regex
  catchAllCellType regexWord
  description The word must match this pattern or it shall be marked as an error.
  firstCellType cellPropertyName
  single
+nodeType reservedWords
+ single
+ description A list of words that a cell cannot contain.
+ catchAllCellType reservedWord
+ firstCellType cellPropertyName
 nodeType tooling
  description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
  catchAllCellType toolingDirectiveWord

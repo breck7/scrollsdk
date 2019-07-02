@@ -24,7 +24,7 @@ StumpConstants.inputTypes = ["input", "textarea"]
 // Note: do NOT support things like solo tags <br>. one way to do things.
 
 // todo: make a stumpNode tile and separate stumpNode program
-class AbstractHtmlTagNode extends jtree.NonTerminalNode {
+class abstractHtmlTag extends jtree.NonTerminalNode {
   getTag() {
     // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
     const firstWord = this.getFirstWord()
@@ -56,7 +56,7 @@ class AbstractHtmlTagNode extends jtree.NonTerminalNode {
       .join("")
     const indent = " ".repeat(indentCount)
     const collapse = this.shouldCollapse()
-    const indentForChildNodes = !collapse && this.getChildrenByNodeConstructor(AbstractHtmlTagNode).length > 0
+    const indentForChildNodes = !collapse && this.getChildrenByNodeConstructor(abstractHtmlTag).length > 0
     const suid = withSuid ? ` ${StumpConstants.uidAttribute}="${this._getUid()}"` : ""
     const oneLiner = this._getOneLiner()
     return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
@@ -148,7 +148,7 @@ class AbstractHtmlTagNode extends jtree.NonTerminalNode {
   }
 
   _findStumpNodesByBase(firstWord) {
-    return this.getTopDownArray().filter(node => node instanceof AbstractHtmlTagNode && node.getFirstWord() === firstWord)
+    return this.getTopDownArray().filter(node => node instanceof abstractHtmlTag && node.getFirstWord() === firstWord)
   }
 
   hasLine(line) {
@@ -156,13 +156,13 @@ class AbstractHtmlTagNode extends jtree.NonTerminalNode {
   }
 
   findStumpNodesByChild(line) {
-    return this.getTopDownArray().filter(node => node instanceof AbstractHtmlTagNode && node.hasLine(line))
+    return this.getTopDownArray().filter(node => node instanceof abstractHtmlTag && node.hasLine(line))
   }
 
   findStumpNodesWithClass(className) {
     return this.getTopDownArray().filter(
       node =>
-        node instanceof AbstractHtmlTagNode &&
+        node instanceof abstractHtmlTag &&
         node.has(StumpConstants.class) &&
         node
           .getNode(StumpConstants.class)
@@ -220,8 +220,8 @@ class AbstractHtmlTagNode extends jtree.NonTerminalNode {
 if (typeof module !== "undefined")
   module.exports = {
     StumpConstants,
-    AbstractHtmlTagNode
+    abstractHtmlTag
   }
 else {
-  window.AbstractHtmlTagNode = AbstractHtmlTagNode
+  window.abstractHtmlTag = abstractHtmlTag
 }

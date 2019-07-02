@@ -76,7 +76,7 @@ class AbstractAssertNode extends jtree.NonTerminalNode {
   }
 }
 
-class BlockStringIsNode extends AbstractAssertNode {
+class blockStringIs extends AbstractAssertNode {
   getExpected() {
     return this.childrenToString()
   }
@@ -86,9 +86,9 @@ class BlockStringIsNode extends AbstractAssertNode {
   }
 }
 
-class StringIsNode extends AbstractAssertNode {}
+class stringIs extends AbstractAssertNode {}
 
-class StringIncludesNode extends AbstractAssertNode {
+class stringIncludes extends AbstractAssertNode {
   getTestResult(actualAsString, expected, message) {
     const result = actualAsString.includes(expected)
     this.equal(result, true, message)
@@ -96,7 +96,7 @@ class StringIncludesNode extends AbstractAssertNode {
   }
 }
 
-class LengthIsNode extends AbstractAssertNode {
+class lengthIs extends AbstractAssertNode {
   parseActual(actual) {
     return actual.length
   }
@@ -107,13 +107,13 @@ class LengthIsNode extends AbstractAssertNode {
   }
 }
 
-class TypeIsNode extends AbstractAssertNode {
+class typeIs extends AbstractAssertNode {
   parseActual(actual) {
     return typeof actual
   }
 }
 
-class StringExcludesNode extends StringIncludesNode {
+class stringExcludes extends stringIncludes {
   getTestResult(actualAsString, expected, message) {
     const result = !actualAsString.includes(expected)
     if (!result) {
@@ -132,7 +132,7 @@ class SwarmProgramRoot extends jtree.GrammarBackedRootNode {
   }
 
   getTestSetupNode() {
-    return this.getChildrenByNodeConstructor(ArrangeTestSubjectNode)[0]
+    return this.getChildrenByNodeConstructor(arrangeTestSubject)[0]
   }
 
   execute(filepath) {
@@ -142,19 +142,19 @@ class SwarmProgramRoot extends jtree.GrammarBackedRootNode {
   }
 
   getTestsToRun() {
-    const solos = this.getChildrenByNodeConstructor(TestOnlyNode)
-    const testsToRun = solos.length ? solos : this.getChildrenByNodeConstructor(TestBlockNode).filter(test => !(test instanceof SkipTestNode))
+    const solos = this.getChildrenByNodeConstructor(testOnly)
+    const testsToRun = solos.length ? solos : this.getChildrenByNodeConstructor(testBlock).filter(test => !(test instanceof skipTest))
     return testsToRun
   }
 }
 
-class CommandArgNode extends jtree.NonTerminalNode {
+class commandArg extends jtree.NonTerminalNode {
   executeSync() {}
 }
 
-class BlockStringParamNode extends CommandArgNode {}
+class blockStringParam extends commandArg {}
 
-class CommandNode extends jtree.NonTerminalNode {
+class command extends jtree.NonTerminalNode {
   getTestBlock() {
     return this.getParent()
   }
@@ -164,7 +164,7 @@ class CommandNode extends jtree.NonTerminalNode {
   }
 
   _getArgs() {
-    const argNodes = this.getChildrenByNodeConstructor(CommandArgNode)
+    const argNodes = this.getChildrenByNodeConstructor(commandArg)
     if (argNodes.length) return argNodes.map(arg => arg.childrenToString())
     return this.getWordsFrom(1)
   }
@@ -188,7 +188,7 @@ class CommandNode extends jtree.NonTerminalNode {
   }
 }
 
-class TestBlockNode extends jtree.NonTerminalNode {
+class testBlock extends jtree.NonTerminalNode {
   getTestSetupNode() {
     return this.getNode(SwarmConstants.setup) || this.getParent().getTestSetupNode()
   }
@@ -258,22 +258,22 @@ class TestBlockNode extends jtree.NonTerminalNode {
   }
 }
 
-class TestOnlyNode extends TestBlockNode {}
+class testOnly extends testBlock {}
 
-class SkipTestNode extends TestBlockNode {
+class skipTest extends testBlock {
   async execute() {
     console.log(`Skipped test ${this.getLine()}`)
   }
 }
 
-class ConstructWithBlockStringNode extends jtree.NonTerminalNode {
+class constructWithBlockString extends jtree.NonTerminalNode {
   executeSync() {}
 }
 
-class ArrangeTestSubjectNode extends jtree.NonTerminalNode {
+class arrangeTestSubject extends jtree.NonTerminalNode {
   getTestSubject(programFilepath) {
     const requiredClass = this._getRequiredClass(programFilepath)
-    const constructorArgNode = this.getChildrenByNodeConstructor(ConstructWithBlockStringNode)[0]
+    const constructorArgNode = this.getChildrenByNodeConstructor(constructWithBlockString)[0]
     const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
     return this.has(SwarmConstants.static) ? requiredClass : new requiredClass(param)
   }
@@ -304,19 +304,19 @@ class ArrangeTestSubjectNode extends jtree.NonTerminalNode {
 
 module.exports = {
   SwarmProgramRoot,
-  TestBlockNode,
-  ArrangeTestSubjectNode,
-  CommandArgNode,
-  BlockStringParamNode,
-  CommandNode,
-  ConstructWithBlockStringNode,
-  BlockStringIsNode,
-  LengthIsNode,
-  StringExcludesNode,
-  StringIncludesNode,
-  StringIsNode,
-  TypeIsNode,
-  SkipTestNode,
-  TestOnlyNode,
+  testBlock,
+  arrangeTestSubject,
+  commandArg,
+  blockStringParam,
+  command,
+  constructWithBlockString,
+  blockStringIs,
+  lengthIs,
+  stringExcludes,
+  stringIncludes,
+  stringIs,
+  typeIs,
+  skipTest,
+  testOnly,
   SwarmConstants
 }

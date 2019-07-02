@@ -5,7 +5,7 @@ const recursiveReadSync = require("recursive-readdir-sync")
 
 const jtree = require("../../index.js")
 
-class FileNode extends jtree.NonTerminalNode {
+class file extends jtree.NonTerminalNode {
   compileToBash(parentDir) {
     const filePath = this.getAbsolutePath()
     return `touch ${filePath}
@@ -27,7 +27,7 @@ echo -e "${this.childrenToString()}" >> ${filePath}`
   }
 }
 
-class FolderNode extends jtree.TerminalNode {
+class folder extends jtree.TerminalNode {
   compileToBash(parentDir) {
     return `mkdir ${this.getAbsolutePath()}`
   }
@@ -43,7 +43,7 @@ class FolderNode extends jtree.TerminalNode {
   }
 }
 
-class PromptNode extends jtree.TerminalNode {
+class prompt extends jtree.TerminalNode {
   execute() {
     return new Promise((res, rej) => {
       const rl = readline.createInterface({
@@ -117,4 +117,4 @@ class StampProgramRoot extends jtree.GrammarBackedRootNode {
   }
 }
 
-module.exports = { PromptNode, FolderNode, FileNode, StampProgramRoot }
+module.exports = { prompt, folder, file, StampProgramRoot }

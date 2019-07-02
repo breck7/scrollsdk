@@ -26,6 +26,7 @@ declare enum GrammarConstants {
     abstract = "abstract",
     match = "match",
     regex = "regex",
+    reservedWords = "reservedWords",
     enumFromGrammar = "enumFromGrammar",
     enum = "enum",
     baseNodeType = "baseNodeType",
@@ -60,7 +61,6 @@ declare abstract class GrammarBackedNode extends TreeNode {
         text: string;
         displayText: string;
     }[];
-    static _getJavascriptClassNameFromNodeTypeId(nodeTypeId: string): string;
     private _getAutocompleteResultsForFirstWord;
     private _getAutocompleteResultsForCell;
     abstract getGrammarProgramRoot(): GrammarProgram;

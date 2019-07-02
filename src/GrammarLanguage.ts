@@ -48,6 +48,7 @@ enum GrammarConstants {
 
   // error check time
   regex = "regex", // temporary?
+  reservedWords = "reservedWords", // temporary?
   enumFromGrammar = "enumFromGrammar", // temporary?
   enum = "enum", // temporary?
 
@@ -94,32 +95,6 @@ abstract class GrammarBackedNode extends TreeNode {
 
   getAutocompleteResults(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
-  }
-
-  static _getJavascriptClassNameFromNodeTypeId(nodeTypeId: string) {
-    let javascriptSyntaxSafeId = nodeTypeId
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase())
-    // todo: remove this? switch to allowing nodeTypeDefs to have a match attribute or something?
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\+/g, "plus")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\-/g, "minus")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\%/g, "mod")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\//g, "div")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\*/g, "mult")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\#/g, "hash")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\@/g, "at")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\!/g, "bang")
-
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\~/g, "tilda")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\=/g, "equal")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\$/g, "dollar")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\</g, "lt")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\>/g, "gt")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "questionMark")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\[/g, "openBracket")
-    javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\]/g, "closeBracket")
-
-    javascriptSyntaxSafeId = TreeUtils.ucfirst(javascriptSyntaxSafeId)
-    return `${javascriptSyntaxSafeId}Node`
   }
 
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
@@ -269,7 +244,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgramRoot()
     grammarProgram.getConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
-      usage.appendLine([def._getFirstWordMatch(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
+      usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
     })
     this.getTopDownArray().forEach((node, lineNumber) => {
       const stats = <TreeNode>usage.getNode(node.getNodeTypeId())
@@ -995,6 +970,15 @@ class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
   }
 }
 
+class GrammarReservedWordsTestNode extends AbstractGrammarWordTestNode {
+  private _set: Set<string>
+
+  isValid(str: string) {
+    if (!this._set) this._set = new Set(this.getContent().split(" "))
+    return !this._set.has(str)
+  }
+}
+
 // todo: remove in favor of custom word type constructors
 class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
   _getEnumFromGrammar(programRootNode: GrammarBackedRootNode): jTreeTypes.stringMap {
@@ -1098,6 +1082,7 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   getFirstWordMap() {
     const types: jTreeTypes.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
+    types[GrammarConstants.reservedWords] = GrammarReservedWordsTestNode
     types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
@@ -1404,7 +1389,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
   // todo: remove. just reused nodeTypeId
   _getGeneratedClassName() {
-    return GrammarBackedNode._getJavascriptClassNameFromNodeTypeId(this.getNodeTypeIdFromDefinition())
+    return this.getNodeTypeIdFromDefinition()
   }
 
   getNodeConstructorToJavascript(): string {
@@ -1420,7 +1405,9 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     // todo: use constants in first word maps
     if (Object.keys(firstWordMap).length)
       return `getFirstWordMap() {
-  return {${Object.keys(firstWordMap).map(firstWord => `"${firstWord}" : ${nodeMap[firstWord]._getGeneratedClassName()}`)}}
+  return {${Object.keys(firstWordMap)
+    .map(firstWord => `"${firstWord}" : ${nodeMap[firstWord]._getGeneratedClassName()}`)
+    .join(",\n")}}
   }`
     return ""
   }

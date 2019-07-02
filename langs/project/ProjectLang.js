@@ -3,7 +3,7 @@ const jtree = require("../../index.js")
 const TreeNode = jtree.TreeNode
 const path = require("path")
 
-class FileNode extends jtree.NonTerminalNode {
+class file extends jtree.NonTerminalNode {
   getFilePath() {
     return this.cells.filepath.join(" ")
   }
@@ -94,4 +94,4 @@ class ProjectProgramRoot extends jtree.GrammarBackedRootNode {
   }
 }
 
-module.exports = { ProjectProgramRoot, FileNode }
+module.exports = { ProjectProgramRoot, file }

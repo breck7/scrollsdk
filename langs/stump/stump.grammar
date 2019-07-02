@@ -261,7 +261,8 @@ nodeType u
  extends abstractHtmlTag
 nodeType ul
  extends abstractHtmlTag
-nodeType var
+nodeType varNode
+ match var
  extends abstractHtmlTag
 nodeType video
  extends abstractHtmlTag
@@ -293,7 +294,8 @@ nodeType charset
  extends abstractHtmlAttribute
 nodeType checked
  extends abstractHtmlAttribute
-nodeType class
+nodeType classNode
+ match class
  extends abstractHtmlAttribute
 nodeType color
  extends abstractHtmlAttribute
@@ -311,7 +313,8 @@ nodeType coords
  extends abstractHtmlAttribute
 nodeType datetime
  extends abstractHtmlAttribute
-nodeType default
+nodeType defaultNode
+ match default
  extends abstractHtmlAttribute
 nodeType defer
  extends abstractHtmlAttribute
@@ -329,7 +332,8 @@ nodeType dropzone
  extends abstractHtmlAttribute
 nodeType enctype
  extends abstractHtmlAttribute
-nodeType for
+nodeType forNode
+ match for
  extends abstractHtmlAttribute
 nodeType formaction
  extends abstractHtmlAttribute

@@ -15,7 +15,7 @@ cellType numbers
  extends number
 cellType operator
  highlightScope keyword.operator.arithmetic
-abstract abstractArithmeticReducer
+nodeType abstractArithmeticReducer
  catchAllCellType numbers
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
@@ -25,6 +25,7 @@ abstract abstractArithmeticReducer
   async execute() { return this.executeSync() }
  firstCellType operator
  inScope abstractArithmeticReducer commentNode
+ abstract
 nodeType commentNode
  match #
  description This is a line comment.

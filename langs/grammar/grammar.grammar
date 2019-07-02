@@ -1,5 +1,4 @@
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits
-todo Change the extends syntax to just have an extend property, instead of the column position thing?
 grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
@@ -16,6 +15,9 @@ grammar
  inScope tooling todo grammar cellType nodeType
 cellType abstractConstant
  highlightScope entity.name.tag
+cellType javascriptSafeAlphaNumericIdentifier
+ regex [a-zA-Z0-9]+
+ reservedWords enum extends function static if while export return class for default require var let const
 cellType anyFirstWord
 cellType anyWord
 cellType baseNodeTypes
@@ -29,21 +31,20 @@ cellType cellPropertyName
 cellType cellTypeEnum
  enumFromGrammar cellType
 cellType cellTypeId
- todo Put restrictions on allowed characters for now?
+ extends javascriptSafeAlphaNumericIdentifier
 cellType cellTypeIdConstant
  highlightScope variable.parameter
 cellType constantIdentifier
+ todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\w+
  description A word that can be assigned to the node class in the target language.
 cellType constructorFilePath
 cellType enumOption
  todo Add an enumOption top level type, so we can add data to an enum option such as a description.
-cellType extendedId
- todo Add cell checking. Also need to have a separate one for nodeTypes and cellTypes?
 cellType extraWord
  highlightScope invalid
 cellType fileExtension
- todo Put restrictions on allowed characters for now?
+ regex [a-zA-Z0-9]+
 cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
  highlightScope constant.numeric
@@ -65,14 +66,16 @@ cellType nodeTypeId
  todo Cell type checking.
  description This doubles as the class name in Javascript.
  highlightScope variable.parameter
- regex [a-zA-Z0-9]+
- reservedWords enum extends function static if while export return class for default require var let const
+ extends javascriptSafeAlphaNumericIdentifier
 cellType nodeTypeIdConstant
  highlightScope variable.function
 cellType propertyName
  highlightScope constant.language
 cellType regexWord
  highlightScope string.regexp
+cellType reservedWord
+ description A word that a cell cannot contain.
+ highlightScope string
 cellType scopeName
  enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
  highlightScope string
@@ -83,9 +86,9 @@ cellType semanticVersion
 cellType stringCell
  highlightScope string
 cellType tag
-cellType toolingDirectiveWord
- highlightScope comment
 cellType todoWord
+ highlightScope comment
+cellType toolingDirectiveWord
  highlightScope comment
 cellType word
  regex [a-zA-Z]+
@@ -100,19 +103,16 @@ nodeType abstractCompilerRule
  todo Remove if we remove compiler stuff?
  catchAllCellType anyWord
  firstCellType propertyName
+nodeType abstractConstant
+ abstract
+ description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
+ firstCellType propertyName
 nodeType abstractEnvironment
  abstract
 nodeType abstractNodeTypeRule
  abstract
  firstCellType propertyName
  single
-nodeType abstractConstant
- abstract
- description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
- firstCellType propertyName
-nodeType abstractNonTerminalNodeTypeRule
- abstract
- extends abstractNodeTypeRule
 nodeType catchAllError
  baseNodeType errorNode
 nodeType catchAllExampleLine
@@ -122,16 +122,27 @@ nodeType catchAllExampleLine
 nodeType catchAllJavascriptCodeLine
  catchAllCellType javascriptCodeWord
  catchAllNodeType catchAllJavascriptCodeLine
+nodeType catchAllMultilineStringConstant
+ description String constants can span multiple lines.
+ catchAllCellType stringCell
+ firstCellType stringCell
+ catchAllNodeType catchAllMultilineStringConstant
 nodeType cellType
+ todo Generate a class for each cell type?
+ todo Allow abstract cell types?
  cells cellTypeId
  firstCellType cellTypeIdConstant
- inScope highlightScope regex reservedWords enumFromGrammar description enumNode todo extendsNode
+ inScope highlightScope regex reservedWords enumFromGrammar description enumNode todo extendsCellTypeNode
+nodeType compilesTo
+ cells fileExtension
+ firstCellType propertyName
+ description Optionally specify a file extension that will be used when compiling your language.
+nodeType enumFromGrammar
+ catchAllCellType grammarTypes
+ firstCellType cellPropertyName
 nodeType enumNode
  match enum
  catchAllCellType enumOption
- firstCellType cellPropertyName
-nodeType enumFromGrammar
- catchAllCellType grammarTypes
  firstCellType cellPropertyName
 nodeType extensions
  catchAllCellType fileExtension
@@ -160,13 +171,7 @@ nodeType nodeType
  catchAllNodeType catchAllError
  baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
- inScope abstractNodeTypeRule abstractConstant todo extendsNode
-nodeType extendsNode
- match extends
- description NodeTypes/abstractNodeType, and cellTypes definitions can extend others.
- todo Add mixin support in addition to/in place of extends?
- cells extendedId
- extends abstractNodeTypeRule
+ inScope abstractNodeTypeRule abstractConstant todo extendsNodeTypeNode
 nodeType nodeTypeOrder
  todo Should we just reuse inScope order? And have a property that indicates order is not important?
  todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?
@@ -174,9 +179,6 @@ nodeType nodeTypeOrder
  catchAllCellType nodeTypeId
  firstCellType propertyName
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
-cellType reservedWord
- description A word that a cell cannot contain.
- highlightScope string
 nodeType regex
  catchAllCellType regexWord
  description The word must match this pattern or it shall be marked as an error.
@@ -187,24 +189,20 @@ nodeType reservedWords
  description A list of words that a cell cannot contain.
  catchAllCellType reservedWord
  firstCellType cellPropertyName
-nodeType tooling
- description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
- catchAllCellType toolingDirectiveWord
- firstCellType toolingDirectiveWord
- catchAllNodeType tooling
 nodeType todo
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
  catchAllCellType todoWord
  firstCellType todoWord
  catchAllNodeType todo
+nodeType tooling
+ description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
+ catchAllCellType toolingDirectiveWord
+ firstCellType toolingDirectiveWord
+ catchAllNodeType tooling
 nodeType version
  cells semanticVersion
  firstCellType propertyName
  description Version number of your language.
-nodeType compilesTo
- cells fileExtension
- firstCellType propertyName
- description Optionally specify a file extension that will be used when compiling your language.
 nodeType closeChildren
  extends abstractCompilerRule
 nodeType indentCharacter
@@ -227,11 +225,6 @@ nodeType int
  cells constantIdentifier
  catchAllCellType intCell
  extends abstractConstant
-nodeType catchAllMultilineStringConstant
- description String constants can span multiple lines.
- catchAllCellType stringCell
- firstCellType stringCell
- catchAllNodeType catchAllMultilineStringConstant
 nodeType string
  cells constantIdentifier
  catchAllCellType stringCell
@@ -245,6 +238,12 @@ nodeType nodejs
  cells constructorFilePath
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
  extends abstractEnvironment
+nodeType abstract
+ description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
+ extends abstractNodeTypeRule
+nodeType abstractNonTerminalNodeTypeRule
+ abstract
+ extends abstractNodeTypeRule
 nodeType baseNodeType
  cells baseNodeTypes
  description In rare cases with untyped content you can use a blobNode, for now, to skip parsing for performance gains. The base errorNode will report errors when parsed. Use that if you don't want to implement your own error nodeType.
@@ -275,6 +274,19 @@ nodeType example
  catchAllCellType exampleWord
  catchAllNodeType catchAllExampleLine
  extends abstractNodeTypeRule
+nodeType extendsNodeTypeNode
+ match extends
+ description nodeType definitions can extend others.
+ todo Add mixin support in addition to/in place of extends?
+ cells nodeTypeEnum
+ extends abstractNodeTypeRule
+nodeType extendsCellTypeNode
+ match extends
+ description cellType definitions can extend others.
+ todo Add mixin support in addition to/in place of extends?
+ cells cellTypeEnum
+ firstCellType propertyName
+ single
 nodeType firstCellType
  cells cellTypeEnum
  description If you have an any node, use this to correctly parse the first word.
@@ -291,12 +303,12 @@ nodeType javascript
  description Provide raw javascript code that will be inserted into a node type's class.
  catchAllNodeType catchAllJavascriptCodeLine
  extends abstractNodeTypeRule
-nodeType required
- description If present, the parent node will have an error if one of these nodes is not provided.
- extends abstractNodeTypeRule
 nodeType match
  cells anyWord
  description If present, this word will be used as the first word instead of the nodeTypeId.
+ extends abstractNodeTypeRule
+nodeType required
+ description If present, the parent node will have an error if one of these nodes is not provided.
  extends abstractNodeTypeRule
 nodeType single
  description If present and their are more than 1 of these nodes on the parent, an error will be present.
@@ -309,6 +321,3 @@ nodeType constructors
  inScope abstractEnvironment
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
  extends abstractNonTerminalNodeTypeRule
-nodeType abstract
- description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
- extends abstractNodeTypeRule

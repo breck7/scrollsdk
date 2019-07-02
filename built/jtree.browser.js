@@ -2422,8 +2422,6 @@ var GrammarConstants;
     GrammarConstants["nodeTypeOrder"] = "nodeTypeOrder";
     GrammarConstants["nodeType"] = "nodeType";
     GrammarConstants["cellType"] = "cellType";
-    GrammarConstants["abstract"] = "abstract";
-    GrammarConstants["match"] = "match";
     // error check time
     GrammarConstants["regex"] = "regex";
     GrammarConstants["reservedWords"] = "reservedWords";
@@ -2437,6 +2435,8 @@ var GrammarConstants;
     GrammarConstants["nonTerminalNode"] = "nonTerminalNode";
     // parse time
     GrammarConstants["extends"] = "extends";
+    GrammarConstants["abstract"] = "abstract";
+    GrammarConstants["match"] = "match";
     GrammarConstants["inScope"] = "inScope";
     GrammarConstants["cells"] = "cells";
     GrammarConstants["catchAllCellType"] = "catchAllCellType";
@@ -3090,7 +3090,7 @@ class MissingRequiredNodeTypeError extends AbstractTreeError {
         this._missingWord = missingWord;
     }
     getMessage() {
-        return super.getMessage() + ` Missing "${this._missingWord}" found.`;
+        return super.getMessage() + ` Missing required node "${this._missingWord}".`;
     }
     getSuggestionMessage() {
         return `Insert "${this._missingWord}" on line ${this.getLineNumber() + 1}`;
@@ -3473,6 +3473,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             GrammarConstants.match,
             GrammarConstants.baseNodeType,
             GrammarConstants.required,
+            GrammarConstants.abstract,
             GrammarConstants.javascript,
             GrammarConstants.single,
             GrammarConstants.todoComment
@@ -3534,7 +3535,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return "";
     }
     _isAbstract() {
-        return false;
+        return this.has(GrammarConstants.abstract);
     }
     _getConstructorFromOldConstructorsNode() {
         // Get custom def node
@@ -3898,11 +3899,6 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
         return map;
     }
 }
-class GrammarAbstractNodeTypeDefinitionNode extends NonRootNodeTypeDefinition {
-    _isAbstract() {
-        return true;
-    }
-}
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
@@ -3911,7 +3907,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.grammar] = GrammarDefinitionGrammarNode;
         map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode;
         map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition;
-        map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode;
         map[GrammarConstants.toolingDirective] = TreeNode;
         map[GrammarConstants.todoComment] = TreeNode;
         return map;

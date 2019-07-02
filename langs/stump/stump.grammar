@@ -19,16 +19,17 @@ cellType htmlAttributeName
  highlightScope entity.name.type
 cellType contentHolderName
  highlightScope keyword
-abstract abstractHtmlTag
+nodeType abstractHtmlTag
  firstCellType htmlTagName
  inScope bern abstractHtmlTag abstractHtmlAttribute
  catchAllCellType anyHtmlContent
  constructors
   nodejs ./StumpNodes.js
   browser StumpNodes.js
+ abstract
 nodeType errorNode
  baseNodeType errorNode
-abstract abstractHtmlAttribute
+nodeType abstractHtmlAttribute
  firstCellType htmlAttributeName
  javascript
   _toHtml() { return "" }
@@ -36,6 +37,7 @@ abstract abstractHtmlAttribute
  boolean isAttributeNode true
  catchAllNodeType errorNode
  catchAllCellType attributeValue
+ abstract
 nodeType lineOfHtmlContent
  catchAllNodeType lineOfHtmlContent
  catchAllCellType anyHtmlContent

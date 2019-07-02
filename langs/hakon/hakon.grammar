@@ -30,12 +30,13 @@ cellType propertyName
  highlightScope variable.function
 cellType errorWord
  highlightScope invalid
-abstract abstractPropertyNode
+nodeType abstractPropertyNode
  catchAllCellType cssValueWord
  catchAllNodeType errorNode
  firstCellType propertyName
  javascript
   compile(spaces) { return `${spaces}${this.getFirstWord()}: ${this.getContent()};` }
+ abstract
 nodeType errorNode
  catchAllNodeType errorNode
  catchAllCellType errorWord

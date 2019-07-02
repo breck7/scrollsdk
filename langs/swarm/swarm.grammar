@@ -35,17 +35,20 @@ cellType typeOfOption
  description The 6 possible results for Javascript's typeof.
  highlightScope constant.language
  enum object boolean function number string undefined
-abstract assertion
+nodeType assertion
  firstCellType assertWord
-abstract terminal
+ abstract
+nodeType terminal
  firstCellType arrangeWord
-abstract testBlock
+ abstract
+nodeType testBlock
  catchAllCellType anyWord
  constructors
   nodejs ./SwarmLang.js
  inScope arrangeTestSubject
  catchAllNodeType command
  firstCellType controlWord
+ abstract
 nodeType hashbangNode
  match #!
  description Standard bash hashbang line.

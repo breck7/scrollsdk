@@ -2,10 +2,12 @@
 ===================
 - New: "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
 - New: "reservedWords" attribute on cellTypes in Grammar Language
-- Breaking: (todo: removed "abstract" nodeType in Grammar Language. now its a property of cellType and nodeType)
+- Breaking: removed "abstract" nodeType in Grammar Language. now its a property of nodeType
 - Breaking: compileGrammar method is now compileGrammarForNodeJs and compileGrammarForBrowser
 - Breaking: nodeTypeId's now can only be alphanumeric
 - Breaking: nodeTypeId's are now identical to the generated Javascript class names. Some nodeTypeIds are now reserved and those now require using a "match" node
+- Breaking: cellTypeId's now can only be alphanumeric
+- Breaking: constants in Grammar Language alphanumeric
 - Breaking: removed "group" property on abstract nodeTypes. To achieve the same affect use a build script.
 - Breaking: "constructors" now no longer take a class name. The class name must be identical to nodeTypeId.
 

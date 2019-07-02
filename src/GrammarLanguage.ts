@@ -43,8 +43,6 @@ enum GrammarConstants {
   nodeTypeOrder = "nodeTypeOrder",
   nodeType = "nodeType",
   cellType = "cellType",
-  abstract = "abstract",
-  match = "match",
 
   // error check time
   regex = "regex", // temporary?
@@ -61,6 +59,8 @@ enum GrammarConstants {
 
   // parse time
   extends = "extends",
+  abstract = "abstract",
+  match = "match",
   inScope = "inScope",
   cells = "cells",
   catchAllCellType = "catchAllCellType",
@@ -875,7 +875,7 @@ class MissingRequiredNodeTypeError extends AbstractTreeError {
   }
 
   getMessage(): string {
-    return super.getMessage() + ` Missing "${this._missingWord}" found.`
+    return super.getMessage() + ` Missing required node "${this._missingWord}".`
   }
 
   getSuggestionMessage() {
@@ -1340,6 +1340,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.match,
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
+      GrammarConstants.abstract,
       GrammarConstants.javascript,
       GrammarConstants.single,
       GrammarConstants.todoComment
@@ -1413,7 +1414,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   _isAbstract() {
-    return false
+    return this.has(GrammarConstants.abstract)
   }
 
   private _cache_definedNodeConstructor: jTreeTypes.RunTimeNodeConstructor
@@ -1843,12 +1844,6 @@ class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
   }
 }
 
-class GrammarAbstractNodeTypeDefinitionNode extends NonRootNodeTypeDefinition {
-  _isAbstract() {
-    return true
-  }
-}
-
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
@@ -1857,7 +1852,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.grammar] = GrammarDefinitionGrammarNode
     map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode
     map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition
-    map[GrammarConstants.abstract] = GrammarAbstractNodeTypeDefinitionNode
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
     return map

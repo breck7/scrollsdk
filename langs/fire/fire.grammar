@@ -54,28 +54,34 @@ cellType stringIdentifier
  extends identifier
 cellType stringCells
  extends stringCell
-abstract abstractNonTerminal
+nodeType abstractNonTerminal
  inScope abstractTerminal abstractNonTerminal
  firstCellType keywordCell
-abstract abstractTerminal
+ abstract
+nodeType abstractTerminal
  firstCellType keywordCell
-abstract abstractAssignment
+ abstract
+nodeType abstractAssignment
  extends abstractTerminal
-abstract abstractArithmetic
+ abstract
+nodeType abstractArithmetic
  cells identifier
  catchAllCellType anyWord
  compiler
   stringTemplate const {identifier} = {anyWord}
  frequency .2
  extends abstractAssignment
-abstract abstractJsblock
+ abstract
+nodeType abstractJsblock
  compiler
   openChildren  {
   closeChildren }
  extends abstractNonTerminal
-abstract abstractBooleanOperator
+ abstract
+nodeType abstractBooleanOperator
  description Runs a boolean test and saves result.
  extends abstractAssignment
+ abstract
 nodeType hashbang
  match #!
  description Standard bash hashbang line.

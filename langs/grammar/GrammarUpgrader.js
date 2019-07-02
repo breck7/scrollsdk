@@ -67,5 +67,5 @@ class GrammarUpgrader extends jtree.Upgrader {
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent)
-  new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "1.2.0", "2.0.0").forEach(item => console.log(item.path, item.tree.toString()))
+  new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "2.0.0", "3.0.0").forEach(item => console.log(item.path, item.tree.toString()))
 module.exports = GrammarUpgrader

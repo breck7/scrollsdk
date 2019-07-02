@@ -12,9 +12,10 @@ cellType termWord
  highlightScope variable.parameter
 cellType fileConstant
  highlightScope keyword.control
-abstract term
+nodeType term
  catchAllCellType filepath
  firstCellType termWord
+ abstract
 nodeType error
  baseNodeType errorNode
 nodeType file

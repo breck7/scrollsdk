@@ -315,13 +315,13 @@ testTree.requiredNodeTypes = equal => {
   const anyProgram = makeProgram(
     fs.readFileSync(path, "utf8"),
     `cellType word
- extends any
 nodeType baseNode`,
     path
   )
 
   // Assert
-  equal(anyProgram.getAllErrors().length, 1)
+  const errs = anyProgram.getAllErrors()
+  equal(errs.length, 1)
 }
 
 testTree.minimumGrammar = equal => {

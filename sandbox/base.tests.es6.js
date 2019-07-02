@@ -1909,9 +1909,12 @@ cellType onoff
  enum on off
 nodeType error
  baseNodeType errorNode
-abstract topLevel
-abstract someAbstractClass
-abstract colorProperties
+nodeType topLevel
+ abstract
+nodeType someAbstractClass
+ abstract
+nodeType colorProperties
+ abstract
  extends topLevel
  cells int
 nodeType hue

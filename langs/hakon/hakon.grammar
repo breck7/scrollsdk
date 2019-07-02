@@ -20,6 +20,7 @@ grammar
    &:hover
     color blue
     font-size 17px
+cellType anyFirstWord
 cellType extraWord
  highlightScope invalid
 cellType cssValueWord

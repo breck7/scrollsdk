@@ -1925,7 +1925,7 @@ nodeType someCode
 nodeType lineOfCode
  catchAllCellType word
  constructors
-  nodejs ./JibberishLang.js LineOfCodeNode
+  nodejs ./JibberishLang.js
 nodeType block
  extends topLevel
  inScope topLevel
@@ -1939,7 +1939,7 @@ nodeType text
 nodeType add
  extends topLevel
  constructors
-  nodejs ./JibberishLang.js AdditionNode
+  nodejs ./JibberishLang.js
 nodeType +
  extends add
  catchAllCellType int
@@ -1964,17 +1964,17 @@ someCode
   // Allow running in both browser and nodejs:
   const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
 
-  class AdditionNode extends jtreeBase.NonTerminalNode {}
+  class AddNode extends jtreeBase.NonTerminalNode {}
   class LineOfCodeNode extends jtreeBase.NonTerminalNode {}
   class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
   const JibberishLang = {}
-  JibberishLang.AdditionNode = AdditionNode
+  JibberishLang.AddNode = AddNode
   JibberishLang.LineOfCodeNode = LineOfCodeNode
   let win = typeof window === "undefined" ? {} : window
   win.JibberishLang = JibberishLang
   win.JibberishProgramRoot = JibberishProgramRoot
-  win.AdditionNode = AdditionNode
+  win.AddNode = AddNode
   win.LineOfCodeNode = LineOfCodeNode
 
   // Act

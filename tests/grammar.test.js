@@ -104,7 +104,7 @@ world`,
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition instanceof JibberishLang.AdditionNode, true)
+  equal(addition instanceof JibberishLang.AddNode, true)
 
   // Act/Assert
   equal(program.getNode("someCode echo") instanceof JibberishLang.LineOfCodeNode, true, "line of code class")
@@ -169,13 +169,13 @@ opSymbol int int int`,
   equal(
     nodeTypes,
     `FooNode topLevelProperty
-AdditionNode opSymbol int int int`,
+AddNode opSymbol int int int`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
     `FooNode foo
-AdditionNode + 2 3 2`,
+AddNode + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )
 }

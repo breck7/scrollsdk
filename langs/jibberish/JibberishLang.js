@@ -1,11 +1,8 @@
 if (typeof jtree === "undefined") jtree = require("../../index.js")
 
-class AdditionNode extends jtree.NonTerminalNode {}
+class AddNode extends jtree.NonTerminalNode {}
 class LineOfCodeNode extends jtree.NonTerminalNode {}
-class SomeNestedNode extends jtree.NonTerminalNode {}
-
-const nested = {}
-nested.someNestedNode = SomeNestedNode
+class NestedNode extends jtree.NonTerminalNode {}
 
 class JibberishProgramRoot extends jtree.GrammarBackedRootNode {
   executeSync() {
@@ -16,13 +13,13 @@ class JibberishProgramRoot extends jtree.GrammarBackedRootNode {
 if (typeof module !== "undefined")
   module.exports = {
     JibberishProgramRoot,
-    AdditionNode,
+    AddNode,
     LineOfCodeNode,
-    nested
+    NestedNode
   }
 else {
   window.JibberishProgramRoot = JibberishProgramRoot
-  window.AdditionNode = AdditionNode
+  window.AddNode = AddNode
   window.LineOfCodeNode = LineOfCodeNode
-  window.nested = nested
+  window.NestedNode = NestedNode
 }

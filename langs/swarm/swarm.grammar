@@ -42,9 +42,9 @@ abstract terminal
 abstract testBlock
  catchAllCellType anyWord
  constructors
-  nodejs ./SwarmLang.js TestBlock
+  nodejs ./SwarmLang.js
  inScope arrangeTestSubject
- catchAllNodeType commandNode
+ catchAllNodeType command
  firstCellType controlWord
 nodeType #!
  description Standard bash hashbang line.
@@ -53,7 +53,7 @@ nodeType #!
  firstCellType hashBangWord
 nodeType arrangeTestSubject
  constructors
-  nodejs ./SwarmLang.js TestSetupNode
+  nodejs ./SwarmLang.js
  firstCellType arrangeWord
  inScope async require static constructWithBlockString todo
 nodeType async
@@ -63,25 +63,25 @@ nodeType blockStringIs
  description When your expected value is a multiline string.
  catchAllNodeType textBlock
  constructors
-  nodejs ./SwarmLang.js AssertEqualBlockNode
+  nodejs ./SwarmLang.js
  extends assertion
 nodeType blockStringParam
  firstCellType parameterWord
  description Pass in a multiline string as a command arg. #todo: rename
  constructors
-  nodejs ./SwarmLang.js CommandArgNode
+  nodejs ./SwarmLang.js
  catchAllNodeType textBlock
-nodeType commandNode
+nodeType command
  constructors
-  nodejs ./SwarmLang.js CommandNode
+  nodejs ./SwarmLang.js
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyWord
- catchAllNodeType commandNode
+ catchAllNodeType command
  firstCellType commandWord
  inScope blockStringParam assertion
 nodeType constructWithBlockString
  constructors
-  nodejs ./SwarmLang.js SetupConstructorArgNode
+  nodejs ./SwarmLang.js
  description Pass in a multiline string to setup constructor. #todo: rename
  catchAllNodeType textBlock
  firstCellType arrangeWord
@@ -91,7 +91,7 @@ nodeType lengthIs
  description Intake is an array, and checks if the length of array matches expected.
  cells int
  constructors
-  nodejs ./SwarmLang.js AssertLengthNode
+  nodejs ./SwarmLang.js
  extends assertion
 nodeType require
  cells filepath
@@ -100,7 +100,7 @@ nodeType require
 nodeType skipTest
  description If you want to skip running a test.
  constructors
-  nodejs ./SwarmLang.js SkippedTestBlock
+  nodejs ./SwarmLang.js
  extends testBlock
 nodeType static
  description Add this to setup node to import class directly without initiating it, for static method testing.
@@ -109,19 +109,19 @@ nodeType stringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyWord
  constructors
-  nodejs ./SwarmLang.js AssertDoesNotIncludeNode
+  nodejs ./SwarmLang.js
  extends assertion
 nodeType stringIncludes
  catchAllCellType anyWord
  description Converts the input to string and see if the string contains the provided string
  constructors
-  nodejs ./SwarmLang.js AssertIncludesNode
+  nodejs ./SwarmLang.js
  extends assertion
 nodeType stringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllCellType anyWord
  constructors
-  nodejs ./SwarmLang.js AssertEqualNode
+  nodejs ./SwarmLang.js
  extends assertion
 nodeType test
  description Basic test block.
@@ -129,7 +129,7 @@ nodeType test
 nodeType testOnly
  description If set, only this test block will be run.
  constructors
-  nodejs ./SwarmLang.js SoloTestBlock
+  nodejs ./SwarmLang.js
  extends testBlock
 nodeType textBlock
  firstCellType anyWord
@@ -144,5 +144,5 @@ nodeType typeIs
  description Assert result is one of Javascript's 6 typeof types.
  cells typeOfOption
  constructors
-  nodejs ./SwarmLang.js AssertTypeOfNode
+  nodejs ./SwarmLang.js
  extends assertion

@@ -25,8 +25,8 @@ abstract htmlTag
  inScope bern htmlTag htmlAttribute
  catchAllCellType anyHtmlContent
  constructors
-  nodejs ./StumpNodes.js HtmlTagNode
-  browser HtmlTagNode StumpNodes.js
+  nodejs ./StumpNodes.js
+  browser StumpNodes.js
 nodeType errorNode
  baseNodeType errorNode
 abstract htmlAttribute

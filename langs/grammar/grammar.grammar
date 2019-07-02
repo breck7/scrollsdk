@@ -36,7 +36,6 @@ cellType constantIdentifier
  regex [a-zA-Z]\w+
  description A word that can be assigned to the node class in the target language.
 cellType constructorFilePath
-cellType constructorName
 cellType enumOption
  todo Add an enumOption top level type, so we can add data to an enum option such as a description.
 cellType extendedId
@@ -45,7 +44,6 @@ cellType extraWord
  highlightScope invalid
 cellType fileExtension
  todo Put restrictions on allowed characters for now?
-cellType filepath
 cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
  highlightScope constant.numeric
@@ -66,6 +64,7 @@ cellType nodeTypeEnum
 cellType nodeTypeId
  todo Cell type checking.
  todo Should this be abstractNodeTypeIdOrNodeTypeId?
+ description This doubles as the class name in Javascript.
  highlightScope variable.parameter
 cellType nodeTypeIdConstant
  highlightScope variable.function
@@ -228,13 +227,11 @@ nodeType string
  catchAllNodeType catchAll.multilineStringConstant
  extends abstract.constant
 nodeType browser
- cells constructorName
- catchAllCellType scriptUrl
- description constructorName will be searched for on the window object.
+ cells scriptUrl
+ description Script will be loaded and nodeType class will be searched for on the window object.
  extends abstract.environment
 nodeType nodejs
  cells constructorFilePath
- catchAllCellType constructorName
  description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
  extends abstract.environment
 nodeType baseNodeType

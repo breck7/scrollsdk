@@ -994,10 +994,17 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
         return true;
     }
     getErrors() {
-        // todo: should this be a try/catch?
-        if (!this.isAppropriateEnvironment() || this._getCustomConstructor())
+        if (!this.isAppropriateEnvironment())
             return [];
-        return [new InvalidConstructorPathError(this)];
+        try {
+            // Attempt to load the custom constructor
+            this._getCustomConstructor();
+            return [];
+        }
+        catch (err) {
+            console.log(err);
+            return [new InvalidConstructorPathError(this)];
+        }
     }
     getGrammarProgramRoot() {
         return this._getDef().getLanguageDefinitionProgram();
@@ -1012,20 +1019,16 @@ class AbstractCustomConstructorNode extends TreeNode_1.default {
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
     // todo: if we keep this, we need to surface better error messaging with the submodule convention bit.
     _getCustomConstructor() {
-        const filepath = this._getNodeConstructorFilePath();
+        const filepath = this.getContent();
         const rootPath = this.getRootNode().getTheGrammarFilePath();
         const basePath = TreeUtils_1.default.getPathWithoutFileName(rootPath) + "/";
         const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath;
         const theModule = require(fullPath);
-        const constructorSubModuleName = this._getSubModulePath();
-        return constructorSubModuleName ? TreeUtils_1.default.resolveProperty(theModule, constructorSubModuleName) : theModule;
-    }
-    _getSubModulePath() {
-        return this.getWord(2) || this._getDef()._getGeneratedClassName();
-    }
-    // todo: does this support spaces in filepaths?
-    _getNodeConstructorFilePath() {
-        return this.getWord(1);
+        const constructorName = this._getDef()._getGeneratedClassName();
+        const constructor = TreeUtils_1.default.resolveProperty(theModule, constructorName);
+        if (!constructor)
+            throw new Error(`constructor "${constructorName}" not found in "${fullPath}".`);
+        return constructor;
     }
     isAppropriateEnvironment() {
         return this.isNodeJs();
@@ -1034,14 +1037,11 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
     _getCustomConstructor() {
         // todo: bad idea to have browser and node have reverse ordering for submodulename
-        const constructorSubModuleName = this._getSubModulePath();
-        const constructor = TreeUtils_1.default.resolveProperty(window, constructorSubModuleName);
+        const constructorName = this._getDef()._getGeneratedClassName();
+        const constructor = TreeUtils_1.default.resolveProperty(window, constructorName);
         if (!constructor)
-            throw new Error(`constructor window.${constructorSubModuleName} not found.`);
+            throw new Error(`constructor window.${constructorName} not found.`);
         return constructor;
-    }
-    _getSubModulePath() {
-        return this.getWord(1) || this._getDef()._getGeneratedClassName();
     }
     isAppropriateEnvironment() {
         return !this.isNodeJs();

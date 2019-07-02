@@ -76,7 +76,7 @@ class AbstractAssertNode extends jtree.NonTerminalNode {
   }
 }
 
-class AssertEqualBlockNode extends AbstractAssertNode {
+class BlockStringIsNode extends AbstractAssertNode {
   getExpected() {
     return this.childrenToString()
   }
@@ -86,9 +86,9 @@ class AssertEqualBlockNode extends AbstractAssertNode {
   }
 }
 
-class AssertEqualNode extends AbstractAssertNode {}
+class StringIsNode extends AbstractAssertNode {}
 
-class AssertIncludesNode extends AbstractAssertNode {
+class StringIncludesNode extends AbstractAssertNode {
   getTestResult(actualAsString, expected, message) {
     const result = actualAsString.includes(expected)
     this.equal(result, true, message)
@@ -96,7 +96,7 @@ class AssertIncludesNode extends AbstractAssertNode {
   }
 }
 
-class AssertLengthNode extends AbstractAssertNode {
+class LengthIsNode extends AbstractAssertNode {
   parseActual(actual) {
     return actual.length
   }
@@ -107,13 +107,13 @@ class AssertLengthNode extends AbstractAssertNode {
   }
 }
 
-class AssertTypeOfNode extends AbstractAssertNode {
+class TypeIsNode extends AbstractAssertNode {
   parseActual(actual) {
     return typeof actual
   }
 }
 
-class AssertDoesNotIncludeNode extends AssertIncludesNode {
+class StringExcludesNode extends StringIncludesNode {
   getTestResult(actualAsString, expected, message) {
     const result = !actualAsString.includes(expected)
     if (!result) {
@@ -132,7 +132,7 @@ class SwarmProgramRoot extends jtree.GrammarBackedRootNode {
   }
 
   getTestSetupNode() {
-    return this.getChildrenByNodeConstructor(TestSetupNode)[0]
+    return this.getChildrenByNodeConstructor(ArrangeTestSubjectNode)[0]
   }
 
   execute(filepath) {
@@ -142,8 +142,8 @@ class SwarmProgramRoot extends jtree.GrammarBackedRootNode {
   }
 
   getTestsToRun() {
-    const solos = this.getChildrenByNodeConstructor(SoloTestBlock)
-    const testsToRun = solos.length ? solos : this.getChildrenByNodeConstructor(TestBlock).filter(test => !(test instanceof SkippedTestBlock))
+    const solos = this.getChildrenByNodeConstructor(TestOnlyNode)
+    const testsToRun = solos.length ? solos : this.getChildrenByNodeConstructor(TestBlockNode).filter(test => !(test instanceof SkipTestNode))
     return testsToRun
   }
 }
@@ -151,6 +151,8 @@ class SwarmProgramRoot extends jtree.GrammarBackedRootNode {
 class CommandArgNode extends jtree.NonTerminalNode {
   executeSync() {}
 }
+
+class BlockStringParamNode extends CommandArgNode {}
 
 class CommandNode extends jtree.NonTerminalNode {
   getTestBlock() {
@@ -186,7 +188,7 @@ class CommandNode extends jtree.NonTerminalNode {
   }
 }
 
-class TestBlock extends jtree.NonTerminalNode {
+class TestBlockNode extends jtree.NonTerminalNode {
   getTestSetupNode() {
     return this.getNode(SwarmConstants.setup) || this.getParent().getTestSetupNode()
   }
@@ -256,22 +258,22 @@ class TestBlock extends jtree.NonTerminalNode {
   }
 }
 
-class SoloTestBlock extends TestBlock {}
+class TestOnlyNode extends TestBlockNode {}
 
-class SkippedTestBlock extends TestBlock {
+class SkipTestNode extends TestBlockNode {
   async execute() {
     console.log(`Skipped test ${this.getLine()}`)
   }
 }
 
-class SetupConstructorArgNode extends jtree.NonTerminalNode {
+class ConstructWithBlockStringNode extends jtree.NonTerminalNode {
   executeSync() {}
 }
 
-class TestSetupNode extends jtree.NonTerminalNode {
+class ArrangeTestSubjectNode extends jtree.NonTerminalNode {
   getTestSubject(programFilepath) {
     const requiredClass = this._getRequiredClass(programFilepath)
-    const constructorArgNode = this.getChildrenByNodeConstructor(SetupConstructorArgNode)[0]
+    const constructorArgNode = this.getChildrenByNodeConstructor(ConstructWithBlockStringNode)[0]
     const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
     return this.has(SwarmConstants.static) ? requiredClass : new requiredClass(param)
   }
@@ -302,18 +304,19 @@ class TestSetupNode extends jtree.NonTerminalNode {
 
 module.exports = {
   SwarmProgramRoot,
-  TestBlock,
-  TestSetupNode,
+  TestBlockNode,
+  ArrangeTestSubjectNode,
   CommandArgNode,
+  BlockStringParamNode,
   CommandNode,
-  SetupConstructorArgNode,
-  AssertEqualBlockNode,
-  AssertLengthNode,
-  AssertDoesNotIncludeNode,
-  AssertIncludesNode,
-  AssertEqualNode,
-  AssertTypeOfNode,
-  SkippedTestBlock,
-  SoloTestBlock,
+  ConstructWithBlockStringNode,
+  BlockStringIsNode,
+  LengthIsNode,
+  StringExcludesNode,
+  StringIncludesNode,
+  StringIsNode,
+  TypeIsNode,
+  SkipTestNode,
+  TestOnlyNode,
   SwarmConstants
 }

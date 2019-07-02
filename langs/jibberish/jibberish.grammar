@@ -40,7 +40,7 @@ nodeType lineOfCode
  catchAllCellType word
  constructors
   nodejs ./JibberishLang.js
-  browser LineOfCodeNode JibberishLang.js
+  browser JibberishLang.js
 nodeType text
  baseNodeType blobNode
 nodeType extendsAbstract
@@ -48,7 +48,7 @@ nodeType extendsAbstract
  extends someAbstractClass
 nodeType add
  constructors
-  nodejs ./JibberishLang.js AdditionNode
+  nodejs ./JibberishLang.js
  extends topLevel
 nodeType +
  extends add
@@ -80,7 +80,7 @@ nodeType lightbulbState
  extends topLevel
 nodeType nested
  constructors
-  nodejs ./JibberishLang.js nested.someNestedNode
+  nodejs ./JibberishLang.js
  extends topLevel
 nodeType nodeWithConsts
  string greeting hello world

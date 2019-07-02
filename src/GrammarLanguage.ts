@@ -1222,9 +1222,16 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
   abstract _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor
 
   getErrors(): InvalidConstructorPathError[] {
-    // todo: should this be a try/catch?
-    if (!this.isAppropriateEnvironment() || this._getCustomConstructor()) return []
-    return [new InvalidConstructorPathError(this)]
+    if (!this.isAppropriateEnvironment()) return []
+
+    try {
+      // Attempt to load the custom constructor
+      this._getCustomConstructor()
+      return []
+    } catch (err) {
+      console.log(err)
+      return [new InvalidConstructorPathError(this)]
+    }
   }
 
   getGrammarProgramRoot() {
@@ -1242,23 +1249,16 @@ abstract class AbstractCustomConstructorNode extends TreeNode {
 class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
   // todo: if we keep this, we need to surface better error messaging with the submodule convention bit.
   _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    const filepath = this._getNodeConstructorFilePath()
+    const filepath = this.getContent()
     const rootPath = (<GrammarProgram>this.getRootNode()).getTheGrammarFilePath()
     const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
     const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
 
     const theModule = require(fullPath)
-    const constructorSubModuleName = this._getSubModulePath()
-    return constructorSubModuleName ? TreeUtils.resolveProperty(theModule, constructorSubModuleName) : theModule
-  }
-
-  _getSubModulePath() {
-    return this.getWord(2) || this._getDef()._getGeneratedClassName()
-  }
-
-  // todo: does this support spaces in filepaths?
-  private _getNodeConstructorFilePath() {
-    return this.getWord(1)
+    const constructorName = this._getDef()._getGeneratedClassName()
+    const constructor = TreeUtils.resolveProperty(theModule, constructorName)
+    if (!constructor) throw new Error(`constructor "${constructorName}" not found in "${fullPath}".`)
+    return constructor
   }
 
   protected isAppropriateEnvironment() {
@@ -1269,15 +1269,11 @@ class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
 class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
   _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
     // todo: bad idea to have browser and node have reverse ordering for submodulename
-    const constructorSubModuleName = this._getSubModulePath()
-    const constructor = TreeUtils.resolveProperty(window, constructorSubModuleName)
-    if (!constructor) throw new Error(`constructor window.${constructorSubModuleName} not found.`)
+    const constructorName = this._getDef()._getGeneratedClassName()
+    const constructor = TreeUtils.resolveProperty(window, constructorName)
+    if (!constructor) throw new Error(`constructor window.${constructorName} not found.`)
 
     return constructor
-  }
-
-  _getSubModulePath() {
-    return this.getWord(1) || this._getDef()._getGeneratedClassName()
   }
 
   protected isAppropriateEnvironment() {

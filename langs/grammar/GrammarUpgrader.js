@@ -7,9 +7,36 @@ class GrammarUpgrader extends jtree.Upgrader {
     return {
       "2.0.0": {
         "3.0.0": tree => {
+          // Nest abstract nodes
           tree.findNodes("abstract").forEach(node => {
             node.appendLine("abstract")
             node.setWord(0, "nodeType")
+          })
+
+          // Expand out and remove group nodes
+          tree.findNodes("nodeType").forEach(node => {
+            const groupNode = node.getNode("group")
+            if (groupNode) {
+              const parentNodeId = node.getWord(1)
+              groupNode.getWordsFrom(1).forEach(groupWord => {
+                tree.appendLineAndChildren(`nodeType ${groupWord}`, `extends ${parentNodeId}`)
+              })
+              groupNode.destroy()
+            }
+          })
+
+          // Attempt to rename nodeTypeIds that are no longer valid, moving the original to a match subnode
+          tree.findNodes("nodeType").forEach(node => {
+            const id = node.getWord(1)
+            let javascriptSyntaxSafeId = id
+            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase())
+            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\_.)/g, letter => letter[1].toUpperCase())
+            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\-.)/g, letter => letter[1].toUpperCase())
+            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "")
+            if (id.match(/[\_\.\-\?]/)) {
+              node.appendLine(`match ${id}`)
+              node.setWord(1, javascriptSyntaxSafeId)
+            }
           })
           return tree
         }

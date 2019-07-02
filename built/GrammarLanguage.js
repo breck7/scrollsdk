@@ -1660,10 +1660,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
     // todo: have this here or not?
     toNodeJsJavascriptPrettier(jtreePath = "jtree") {
-        return require("prettier").format(this._nodeDefToJavascriptClass(true, jtreePath, true), { semi: false, parser: "babel", printWidth: 160 });
+        return require("prettier").format(this.toNodeJsJavascript(jtreePath), { semi: false, parser: "babel", printWidth: 160 });
     }
     toBrowserJavascript() {
         return this._nodeDefToJavascriptClass(true, "", false).trim();
+    }
+    toBrowserJavascriptPrettier() {
+        return require("prettier").format(this.toBrowserJavascript(), { semi: false, parser: "babel", printWidth: 160 });
     }
     _getProperName() {
         return TreeUtils_1.default.ucfirst(this.getExtensionName());

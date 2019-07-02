@@ -4,14 +4,27 @@ const fs = require("fs");
 const jtree_1 = require("./jtree");
 const GrammarLanguage_1 = require("./GrammarLanguage");
 const Upgrader_1 = require("./tools/Upgrader");
+var CompileTarget;
+(function (CompileTarget) {
+    CompileTarget["nodejs"] = "nodejs";
+    CompileTarget["browser"] = "browser";
+})(CompileTarget || (CompileTarget = {}));
 class jtreeNode extends jtree_1.default {
-    static compileGrammar(pathToGrammar, outputFolder) {
+    static compileGrammarForNodeJs(pathToGrammar, outputFolder) {
+        return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs);
+    }
+    static _compileGrammar(pathToGrammar, outputFolder, target) {
         const grammarCode = jtree_1.default.TreeNode.fromDisk(pathToGrammar);
         let name = jtree_1.default.Utils.ucfirst(grammarCode.get("grammar name"));
         const pathToJtree = __dirname + "/../index.js";
-        const outputFilePath = outputFolder + `${name}Language.compiled.js`;
-        fs.writeFileSync(outputFilePath, new GrammarLanguage_1.GrammarProgram(grammarCode.toString(), pathToGrammar).toNodeJsJavascriptPrettier(pathToJtree), "utf8");
+        const outputFilePath = outputFolder + `${name}Language.${target}.js`;
+        const program = new GrammarLanguage_1.GrammarProgram(grammarCode.toString(), pathToGrammar);
+        const result = target === CompileTarget.nodejs ? program.toNodeJsJavascriptPrettier(pathToJtree) : program.toBrowserJavascriptPrettier();
+        fs.writeFileSync(outputFilePath, result, "utf8");
         return outputFilePath;
+    }
+    static compileGrammarForBrowser(pathToGrammar, outputFolder) {
+        return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser);
     }
 }
 jtreeNode.Upgrader = Upgrader_1.default;

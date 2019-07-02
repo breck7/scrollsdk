@@ -366,6 +366,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     toNodeJsJavascript(jtreePath?: string): jTreeTypes.javascriptCode;
     toNodeJsJavascriptPrettier(jtreePath?: string): jTreeTypes.javascriptCode;
     toBrowserJavascript(): jTreeTypes.javascriptCode;
+    toBrowserJavascriptPrettier(): jTreeTypes.javascriptCode;
     private _getProperName;
     _getGeneratedClassName(): string;
     private _getCatchAllNodeConstructorToJavascript;

@@ -5,6 +5,11 @@ import jTreeTypes from "./jTreeTypes"
 import { GrammarProgram, GrammarBackedRootNode } from "./GrammarLanguage"
 import Upgrader from "./tools/Upgrader"
 
+enum CompileTarget {
+  nodejs = "nodejs",
+  browser = "browser"
+}
+
 class jtreeNode extends jtree {
   static Upgrader = Upgrader
 
@@ -24,13 +29,24 @@ class jtreeNode extends jtree {
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileGrammar(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath) {
+  static compileGrammarForNodeJs(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath) {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs)
+  }
+
+  private static _compileGrammar(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath, target: CompileTarget) {
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     let name = jtree.Utils.ucfirst(grammarCode.get("grammar name"))
     const pathToJtree = __dirname + "/../index.js"
-    const outputFilePath = outputFolder + `${name}Language.compiled.js`
-    fs.writeFileSync(outputFilePath, new GrammarProgram(grammarCode.toString(), pathToGrammar).toNodeJsJavascriptPrettier(pathToJtree), "utf8")
+    const outputFilePath = outputFolder + `${name}Language.${target}.js`
+    const program = new GrammarProgram(grammarCode.toString(), pathToGrammar)
+    const result = target === CompileTarget.nodejs ? program.toNodeJsJavascriptPrettier(pathToJtree) : program.toBrowserJavascriptPrettier()
+
+    fs.writeFileSync(outputFilePath, result, "utf8")
     return outputFilePath
+  }
+
+  static compileGrammarForBrowser(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath) {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser)
   }
 
   // returns GrammarBackedProgramClass

@@ -4,7 +4,7 @@ grammar
  name grammar
  description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
  catchAllNodeType catchAllError
- nodeTypeOrder tooling todo grammar cellType abstract nodeType
+ nodeTypeOrder tooling todo grammar cellType nodeType
  extensions grammar gram
  example A grammar that parses anything:
   grammar
@@ -12,8 +12,8 @@ grammar
    catchAllNodeType anyNode
   nodeType anyNode
    baseNodeType blobNode
- version 2.0.0
- inScope tooling todo grammar cellType abstract nodeType
+ version 3.0.0
+ inScope tooling todo grammar cellType nodeType
 cellType abstractConstant
  highlightScope entity.name.tag
 cellType anyFirstWord
@@ -51,7 +51,7 @@ cellType grammarName
  highlightScope constant
  todo Put restrictions on allowed characters for now? All lowercase?
 cellType grammarTypes
- enum cellType nodeType abstract
+ enum cellType nodeType
 cellType intCell
  regex \-?[0-9]+
  highlightScope constant.numeric
@@ -60,10 +60,9 @@ cellType lowercaseWord
  regex [a-z]+
 cellType nodeTypeEnum
  highlightScope variable.parameter
- enumFromGrammar nodeType abstract
+ enumFromGrammar nodeType
 cellType nodeTypeId
  todo Cell type checking.
- todo Should this be abstractNodeTypeIdOrNodeTypeId?
  description This doubles as the class name in Javascript.
  highlightScope variable.parameter
  regex [a-zA-Z0-9]+
@@ -96,18 +95,23 @@ cellType extendedCellType
 cellType exampleWord
  highlightScope comment
  extends stringCell
-abstract abstractCompilerRule
+nodeType abstractCompilerRule
+ abstract
  todo Remove if we remove compiler stuff?
  catchAllCellType anyWord
  firstCellType propertyName
-abstract abstractEnvironment
-abstract abstractNodeTypeRule
+nodeType abstractEnvironment
+ abstract
+nodeType abstractNodeTypeRule
+ abstract
  firstCellType propertyName
  single
-abstract abstractConstant
+nodeType abstractConstant
+ abstract
  description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
  firstCellType propertyName
-abstract abstractNonTerminalNodeTypeRule
+nodeType abstractNonTerminalNodeTypeRule
+ abstract
  extends abstractNodeTypeRule
 nodeType catchAllError
  baseNodeType errorNode
@@ -306,7 +310,5 @@ nodeType constructors
  description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
  extends abstractNonTerminalNodeTypeRule
 nodeType abstract
- todo Remove this root level nodeType and make it a child node under cellType and nodeType.
- firstCellType abstractConstant
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
- extends nodeType
+ extends abstractNodeTypeRule

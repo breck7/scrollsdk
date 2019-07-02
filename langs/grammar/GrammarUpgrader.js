@@ -5,6 +5,15 @@ const jtree = require("../../index.js")
 class GrammarUpgrader extends jtree.Upgrader {
   getUpgradeFromMap() {
     return {
+      "2.0.0": {
+        "3.0.0": tree => {
+          tree.findNodes("abstract").forEach(node => {
+            node.appendLine("abstract")
+            node.setWord(0, "nodeType")
+          })
+          return tree
+        }
+      },
       "1.2.0": {
         "2.0.0": tree => {
           const moveExtend = node => {

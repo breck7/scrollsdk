@@ -454,6 +454,7 @@ class AbstractGrammarBackedCell {
     getErrorIfAny() {
         if (this._word !== undefined && this.isValid())
             return undefined;
+        // todo: refactor invalidwordError. We want better error messages.
         return this._word === undefined ? new MissingWordError(this) : new InvalidWordError(this);
     }
 }

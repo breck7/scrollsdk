@@ -39,6 +39,8 @@ package.json:
       }
     }
 
+Note: the JSON example above works correctly, but JSON and Tree Notation are not isomorphic by default. If you want JSON features such as keys with spaces, numbers, or arrays, you'll need to use a higher level Tree Language that has a 1-to-1 relationship to JSON.
+
 ### For programming languages:
 
 In the example below, Tree Notation is used as a base for a math language where traditionally S-Expressions/Lisp might be used.

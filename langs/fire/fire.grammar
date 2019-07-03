@@ -1,7 +1,7 @@
 todo Explore best ways to add polymorphism
 todo Explore non-firstWord node type detection
-grammar
- name fire
+nodeType fire
+ root
  description A useless Tree Language that compiles to Javascript for testing Tree Notation features.
  compilesTo js
  inScope hashbang abstractTerminal abstractNonTerminal

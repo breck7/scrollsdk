@@ -1,5 +1,5 @@
-grammar
- name hakon
+nodeType hakon
+ root
  description A Tree Language that compiles to CSS
  compilesTo css
  catchAllNodeType selectorNode

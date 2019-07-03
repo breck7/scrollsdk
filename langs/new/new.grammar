@@ -1,6 +1,6 @@
-grammar
- name new
- description This is the basic template for your new language!
+nodeType new
+ root
+ description This is the basic root node for your new language!
  catchAllNodeType catchAllError
  inScope hello
 cellType name

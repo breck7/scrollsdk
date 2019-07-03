@@ -1,5 +1,5 @@
-grammar
- name stump
+nodeType stump
+ root
  description A Tree Language that compiles to HTML.
  catchAllNodeType errorNode
  inScope abstractHtmlTag

@@ -1878,11 +1878,11 @@ foo`
 }
 
 // todo: just make grammar tests compile in browser and ditch this duplicative code.
-testTree.isomorphicGrammarTests = equal => {
+testTree._isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
-  const jibberishGrammarCode = `grammar
- name jibberish
+  const jibberishGrammarCode = `nodeType jibberish
+ root
  description Test a root parser node
  javascript
   executeSync() { return 42 }

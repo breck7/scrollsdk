@@ -32,12 +32,10 @@ var GrammarConstantsConstantTypes;
 var GrammarConstants;
 (function (GrammarConstants) {
     // node types
-    GrammarConstants["grammar"] = "grammar";
     GrammarConstants["extensions"] = "extensions";
     GrammarConstants["toolingDirective"] = "tooling";
     GrammarConstants["todoComment"] = "todo";
     GrammarConstants["version"] = "version";
-    GrammarConstants["name"] = "name";
     GrammarConstants["nodeTypeOrder"] = "nodeTypeOrder";
     GrammarConstants["nodeType"] = "nodeType";
     GrammarConstants["cellType"] = "cellType";
@@ -55,6 +53,7 @@ var GrammarConstants;
     // parse time
     GrammarConstants["extends"] = "extends";
     GrammarConstants["abstract"] = "abstract";
+    GrammarConstants["root"] = "root";
     GrammarConstants["match"] = "match";
     GrammarConstants["inScope"] = "inScope";
     GrammarConstants["cells"] = "cells";
@@ -1190,14 +1189,13 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     _initConstructorDefinedInGrammar() {
         let constructor;
         // todo: this is not catching if we dont have that but we do have constants.
-        const def = (this instanceof GrammarDefinitionGrammarNode ? this.getLanguageDefinitionProgram() : this);
         // todo: reuse other code...load things into 1 file?
-        const className = def._getGeneratedClassName();
-        const extendsClassName = def._getExtendsClassName(false);
-        const gettersAndConstants = def._getCellGettersAndNodeTypeConstants();
+        const className = this._getGeneratedClassName();
+        const extendsClassName = this._getExtendsClassName(false);
+        const gettersAndConstants = this._getCellGettersAndNodeTypeConstants();
         const code = `class ${className} extends ${extendsClassName} {
       ${gettersAndConstants}
-      ${def._getCustomJavascriptMethods()}
+      ${this._getCustomJavascriptMethods()}
 }`;
         if (AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code])
             return AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code];
@@ -1464,51 +1462,11 @@ ${captures}
     }`;
     }
 }
-// todo: is this extending the correct class? Should it just be extending TreeNode?
-class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
-    _nodeDefToJavascriptClass() {
-        return "";
-    }
-    // todo: this shouldnt be here?
-    _getId() {
-        return "";
-    }
-    _getGeneratedClassName() {
-        return this.getLanguageDefinitionProgram()._getGeneratedClassName();
-    }
-    getTargetExtension() {
-        return this.get(GrammarConstants.compilesTo);
-    }
-    // todo: I think this may be a sign we dont want this class.
-    _getExtendsClassName() {
-        return "jtree.GrammarBackedRootNode";
-    }
-    getLanguageDefinitionProgram() {
-        return this.getParent();
-    }
-    getFirstWordMap() {
-        // todo: this isn't quite correct. we are allowing too many firstWords.
-        const map = super.getFirstWordMap();
-        map[GrammarConstants.extensions] = TreeNode_1.default;
-        map[GrammarConstants.version] = TreeNode_1.default;
-        map[GrammarConstants.compilesTo] = TreeNode_1.default;
-        map[GrammarConstants.name] = TreeNode_1.default;
-        map[GrammarConstants.nodeTypeOrder] = TreeNode_1.default;
-        map[GrammarConstants.javascript] = TreeNode_1.default;
-        map[GrammarConstants.todoComment] = TreeNode_1.default;
-        map[GrammarConstantsConstantTypes.boolean] = GrammarNodeTypeConstantBoolean;
-        map[GrammarConstantsConstantTypes.int] = GrammarNodeTypeConstantInt;
-        map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString;
-        map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat;
-        return map;
-    }
-}
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap() {
         const map = {};
-        map[GrammarConstants.grammar] = GrammarDefinitionGrammarNode;
         map[GrammarConstants.cellType] = GrammarCellTypeDefinitionNode;
         map[GrammarConstants.nodeType] = NonRootNodeTypeDefinition;
         map[GrammarConstants.toolingDirective] = TreeNode_1.default;
@@ -1523,7 +1481,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return "jtree.GrammarBackedRootNode";
     }
     _getCustomJavascriptMethods() {
-        const jsCode = this._getGrammarGrammarNode().getNode(GrammarConstants.javascript);
+        const jsCode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.javascript);
         return jsCode ? jsCode.childrenToString() : "";
     }
     getErrorsInGrammarExamples() {
@@ -1538,10 +1496,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return errors;
     }
     getTargetExtension() {
-        return this._getGrammarGrammarNode().getTargetExtension();
+        return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo);
     }
     getNodeTypeOrder() {
-        return this._getGrammarGrammarNode().get(GrammarConstants.nodeTypeOrder);
+        return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.nodeTypeOrder);
     }
     getCellTypeDefinitions() {
         if (!this._cache_cellTypes)
@@ -1576,21 +1534,27 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     getTheGrammarFilePath() {
         return this.getLine();
     }
-    _getGrammarGrammarNode() {
-        return this.getNodeByType(GrammarDefinitionGrammarNode);
+    _getRootNodeTypeDefinitionNode() {
+        if (!this._cache_rootNodeTypeNode) {
+            this.forEach(def => {
+                if (def.has(GrammarConstants.root))
+                    this._cache_rootNodeTypeNode = def;
+            });
+        }
+        return this._cache_rootNodeTypeNode;
     }
     getExtensionName() {
         return this.getGrammarName();
     }
     getGrammarName() {
-        return this._getGrammarGrammarNode().get(GrammarConstants.name);
+        return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition();
     }
     _getMyInScopeNodeTypeIds() {
-        const nodeTypesNode = this._getGrammarGrammarNode().getNode(GrammarConstants.inScope);
+        const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope);
         return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
     }
     _getInScopeNodeTypeIds() {
-        const nodeTypesNode = this._getGrammarGrammarNode().getNode(GrammarConstants.inScope);
+        const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope);
         return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : [];
     }
     getNodeTypeDefinitionByFirstWordPath(firstWordPath) {
@@ -1624,10 +1588,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._cache_nodeTypeDefinitions;
     }
     _getRunTimeCatchAllNodeTypeId() {
-        return this._getGrammarGrammarNode().get(GrammarConstants.catchAllNodeType);
+        return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.catchAllNodeType);
     }
     _getRootConstructor() {
-        const extendedConstructor = this._getGrammarGrammarNode()._getConstructorDefinedInGrammar();
+        const extendedConstructor = this._getRootNodeTypeDefinitionNode()._getConstructorDefinedInGrammar();
         const grammarProgram = this;
         // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
         // new language.
@@ -1643,8 +1607,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._cache_rootConstructorClass;
     }
     _getFileExtensions() {
-        return this._getGrammarGrammarNode().get(GrammarConstants.extensions)
-            ? this._getGrammarGrammarNode()
+        return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.extensions)
+            ? this._getRootNodeTypeDefinitionNode()
                 .get(GrammarConstants.extensions)
                 .split(" ")
                 .join(",")
@@ -1747,8 +1711,8 @@ ${nodeTypeContexts}`;
     // A language where anything goes.
     // todo: can we remove? can we make the default language not require any grammar node?
     static getTheAnyLanguageRootConstructor() {
-        return this.newFromCondensed(`${GrammarConstants.grammar}
- ${GrammarConstants.name} anyLanguage
+        return this.newFromCondensed(`${GrammarConstants.nodeType} anyLanguage
+ ${GrammarConstants.root}
  ${GrammarConstants.catchAllNodeType} anyNode
 ${GrammarConstants.nodeType} anyNode
  ${GrammarConstants.catchAllCellType} anyWord

@@ -1867,6 +1867,8 @@ class TreeNode extends ImmutableNode {
     return this
   }
 
+  // todo: add "globalReplace" method? Which runs a global regex or string replace on the Tree doc as a string?
+
   firstWordSort(firstWordOrder: jTreeTypes.word[]): this {
     return this._firstWordSort(firstWordOrder)
   }

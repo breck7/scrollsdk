@@ -14,12 +14,10 @@ declare enum GrammarStandardCellTypeIds {
     int = "int"
 }
 declare enum GrammarConstants {
-    grammar = "grammar",
     extensions = "extensions",
     toolingDirective = "tooling",
     todoComment = "todo",
     version = "version",
-    name = "name",
     nodeTypeOrder = "nodeTypeOrder",
     nodeType = "nodeType",
     cellType = "cellType",
@@ -34,6 +32,7 @@ declare enum GrammarConstants {
     nonTerminalNode = "nonTerminalNode",
     extends = "extends",
     abstract = "abstract",
+    root = "root",
     match = "match",
     inScope = "inScope",
     cells = "cells",
@@ -326,15 +325,6 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
     _nodeDefToJavascriptClass(isCompiled?: boolean): jTreeTypes.javascriptCode;
 }
-declare class GrammarDefinitionGrammarNode extends AbstractGrammarDefinitionNode {
-    _nodeDefToJavascriptClass(): string;
-    _getId(): string;
-    _getGeneratedClassName(): string;
-    getTargetExtension(): string;
-    _getExtendsClassName(): string;
-    getLanguageDefinitionProgram(): GrammarProgram;
-    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-}
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap(): jTreeTypes.stringMap;
     _getId(): string;
@@ -355,7 +345,8 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getLanguageDefinitionProgram(): this;
     getConcreteAndAbstractNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
     getTheGrammarFilePath(): string;
-    protected _getGrammarGrammarNode(): GrammarDefinitionGrammarNode;
+    private _cache_rootNodeTypeNode;
+    protected _getRootNodeTypeDefinitionNode(): NonRootNodeTypeDefinition;
     getExtensionName(): string;
     getGrammarName(): string | undefined;
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];

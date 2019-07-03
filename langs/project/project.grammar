@@ -1,5 +1,5 @@
-grammar
- name project
+nodeType project
+ root
  description A Tree Language for project dependency management.
  javascript
   getOrderedDependenciesArray() {

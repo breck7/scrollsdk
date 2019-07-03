@@ -1,5 +1,5 @@
-grammar
- name foobar
+nodeType foobar
+ root
  inScope file
 nodeType file
  inScope size digits open temp description edits account

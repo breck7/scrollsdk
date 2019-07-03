@@ -1,14 +1,12 @@
 todo Add comments?
 todo Make run in browser
-grammar
- name swarm
+nodeType swarm
+ root
  description A Tree Language for unit testing.
  inScope hashbangNode arrangeTestSubject testBlock
  catchAllNodeType error
  javascript
-  getCommandParent(testSubject) {
-    return testSubject
-  }
+  getCommandParent(testSubject) { return testSubject }
   getTestSetupNode() {
     return this.getChildInstancesOfNodeTypeId("arrangeTestSubject")[0]
   }
@@ -179,12 +177,12 @@ nodeType hashbangNode
  firstCellType hashBangWord
 nodeType arrangeTestSubject
  javascript
-   getTestSubject(programFilepath) {
+  getTestSubject(programFilepath) {
     const requiredClass = this._getRequiredClass(programFilepath)
     const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithBlockString")[0]
     const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
     return this.has("static") ? requiredClass : new requiredClass(param)
-  }
+   }
   _getRequiredClass(programFilepath) {
     let requiredClass =
       this.get("require") ||
@@ -200,7 +198,7 @@ nodeType arrangeTestSubject
     if (!theClass)
       throw new Error(`Required class '${requiredClass}${requiredClassParts[1] ? " (" + requiredClassParts[1] + ")" : ""}' not found for ${this.toString()}`)
     return theClass
-  }
+   }
   executeSync() {}
  firstCellType arrangeWord
  inScope async requireNode staticNode constructWithBlockString todo

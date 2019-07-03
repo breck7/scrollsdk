@@ -1,7 +1,7 @@
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits
-grammar
- name grammar
- description This file is just used for type checking and documenting grammar files. The actual tree grammar parser is hard coded.
+nodeType grammar
+ root
+ description The Grammar Language is currently just used for type checking and documenting grammar files. The actual tree Grammar Language is still hard coded. Someday it may bootstrap itself from this file.
  catchAllNodeType catchAllError
  nodeTypeOrder tooling todo grammar cellType nodeType
  extensions grammar gram
@@ -48,9 +48,6 @@ cellType fileExtension
 cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
  highlightScope constant.numeric
-cellType grammarName
- highlightScope constant
- todo Put restrictions on allowed characters for now? All lowercase?
 cellType grammarTypes
  enum cellType nodeType
 cellType intCell
@@ -133,8 +130,8 @@ nodeType cellType
  inScope highlightScope regex reservedWords enumFromGrammar description enumNode todo extendsCellTypeNode
 nodeType compilesTo
  cells fileExtension
- firstCellType propertyName
- description Optionally specify a file extension that will be used when compiling your language.
+ extends abstractNodeTypeRule
+ description Optionally specify a file extension that will be used when compiling your language to a file. Generally used on nodeTypes marked root.
 nodeType enumFromGrammar
  catchAllCellType grammarTypes
  firstCellType cellPropertyName
@@ -143,39 +140,31 @@ nodeType enumNode
  catchAllCellType enumOption
  firstCellType cellPropertyName
 nodeType extensions
+ extends abstractNodeTypeRule
  catchAllCellType fileExtension
- firstCellType propertyName
- description File extensions of your language. Sometimes your language might have multiple extensions. If you don't add this, your language name will be used as extension.
-nodeType grammar
- todo Should this really be required?
- required
- single
- firstCellType propertyName
- inScope name description example extensions nodeTypeOrder inScope catchAllNodeType version abstractConstant javascript compilesTo
+ description File extensions of your language. Generally used for nodeTypes marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's nodeTypeId will be used as the default file extension.
 nodeType highlightScope
  firstCellType propertyName
  cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
-nodeType name
- cells grammarName
+nodeType root
  firstCellType propertyName
- description The name of your language. Also serves as the default file extension.
+ description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
 nodeType nodeType
- todo Add a way to have the nodeTypeId != first word.
  todo Add multiple dispatch?
  cells nodeTypeId
- description Node types are a core unit of your language. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
+ description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllError
  baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
- inScope abstractNodeTypeRule abstractConstant todo extendsNodeTypeNode
+ inScope root abstractNodeTypeRule abstractConstant todo extendsNodeTypeNode
 nodeType nodeTypeOrder
  todo Should we just reuse inScope order? And have a property that indicates order is not important?
  todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?
  todo This isnt properly cell checked. It should reference inScope.
  catchAllCellType nodeTypeId
- firstCellType propertyName
+ extends abstractNodeTypeRule
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
 nodeType regex
  catchAllCellType regexWord
@@ -199,8 +188,8 @@ nodeType tooling
  catchAllNodeType tooling
 nodeType version
  cells semanticVersion
- firstCellType propertyName
- description Version number of your language.
+ description Version number of your language. Generally used on nodeTypes marked root.
+ extends abstractNodeTypeRule
 nodeType closeChildren
  extends abstractCompilerRule
 nodeType indentCharacter

@@ -1664,6 +1664,7 @@ class TreeNode extends ImmutableNode {
             .forEach(node => node.destroy());
         return this;
     }
+    // todo: add "globalReplace" method? Which runs a global regex or string replace on the Tree doc as a string?
     firstWordSort(firstWordOrder) {
         return this._firstWordSort(firstWordOrder);
     }

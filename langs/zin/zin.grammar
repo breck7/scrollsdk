@@ -1,5 +1,5 @@
-grammar
- name zin
+nodeType zin
+ root
  description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-tree programming languages into one tree language.
  catchAllNodeType catchAllError
  inScope aloha

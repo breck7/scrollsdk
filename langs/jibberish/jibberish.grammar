@@ -1,5 +1,5 @@
-grammar
- name jibberish
+nodeType jibberish
+ root
  description A useless Tree Language built for testing Tree Notation code.
  javascript
   executeSync() { return 42 }

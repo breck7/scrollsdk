@@ -1,5 +1,5 @@
-grammar
- name numbers
+nodeType numbers
+ root
  description A useless Tree Language for testing Tree Notation features.
  inScope abstractArithmeticReducer commentNode hashBangNode
  catchAllNodeType error

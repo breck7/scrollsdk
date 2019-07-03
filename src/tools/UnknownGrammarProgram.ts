@@ -6,15 +6,14 @@ import jTreeTypes from "../jTreeTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   getPredictedGrammarFile(grammarName: string): string {
-    const rootNode = new TreeNode(`${GrammarConstants.grammar}
- ${GrammarConstants.name} ${grammarName}`)
+    const rootNode = new TreeNode(`${GrammarConstants.nodeType} ${grammarName}
+ ${GrammarConstants.root}`)
 
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
     const globalCellTypeMap = new Map()
     const xi = this.getXI()
     const yi = this.getYI()
-
-    rootNode.touchNode(`${GrammarConstants.grammar} ${GrammarConstants.inScope}`).setWordsFrom(1, Array.from(new Set(this.getFirstWords())))
+    ;(<TreeNode>rootNode.nodeAt(0)).touchNode(GrammarConstants.inScope).setWordsFrom(1, Array.from(new Set(this.getFirstWords())))
 
     const clone = <UnknownGrammarProgram>this.clone()
     let allNodes = clone.getTopDownArrayIterator()

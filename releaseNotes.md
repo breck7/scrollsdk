@@ -1,7 +1,9 @@
-28.1.0 / 2019-07-02
+29.0.0 / 2019-07-02
 ===================
 - New: doesExtend and getChildInstancesOfNodeTypeId methods on Extendible nodes
 - New: GrammarUpgrader additions
+- Infra: refactor of Swarm/Stamp/Project/Jibberish/Stump to be 1 file.
+- Breaking: no more "constructors" node for nodeTypes or root programs.
 
 28.0.0 / 2019-07-02
 ===================

@@ -5,6 +5,8 @@ const fs = require("fs")
 
 const testTree = {}
 
+// todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
+
 // todo: setup: make vms dir. cleanup? delete grammar file when done?
 
 const outputDir = __dirname + `/../ignore/vms/`

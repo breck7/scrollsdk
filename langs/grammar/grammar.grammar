@@ -300,6 +300,7 @@ nodeType inScope
  catchAllCellType nodeTypeEnum
  extends abstractNodeTypeRule
 nodeType javascript
+ todo Urgently need to get submode syntax highlighting running! (And eventually LSP)
  description Provide raw javascript code that will be inserted into a node type's class.
  catchAllNodeType catchAllJavascriptCodeLine
  extends abstractNodeTypeRule

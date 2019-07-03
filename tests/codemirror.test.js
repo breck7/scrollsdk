@@ -4,7 +4,7 @@
 
 const fs = require("fs")
 const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
-const StampProgram = require("../langs/stamp/Stamp.js").Program
+const StampProgram = require("../langs/stamp/StampProgram.js")
 const TreeNotationCodeMirrorMode = require("../built/codemirror/TreeNotationCodeMirrorMode.js").default
 const TreeUtils = require("../built/base/TreeUtils.js").default
 

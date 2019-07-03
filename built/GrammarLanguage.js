@@ -85,6 +85,9 @@ class GrammarBackedNode extends TreeNode_1.default {
     getAutocompleteResults(partialWord, cellIndex) {
         return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
+    getChildInstancesOfNodeTypeId(nodeTypeId) {
+        return this.filter(node => node.getDefinition().doesExtend(nodeTypeId));
+    }
     _getAutocompleteResultsForFirstWord(partialWord) {
         let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
         if (partialWord)
@@ -847,10 +850,10 @@ class AbstractExtendibleTreeNode extends TreeNode_1.default {
     _getNodeFromExtended(firstWordPath) {
         return this._getAncestorsArray().find(node => node.has(firstWordPath));
     }
-    doesExtend(className) {
+    doesExtend(nodeTypeId) {
         if (!this._cache_ancestorSet)
             this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()));
-        return this._cache_ancestorSet.has(className);
+        return this._cache_ancestorSet.has(nodeTypeId);
     }
     // Note: the order is: [this, parent, grandParent, ...]
     _getAncestorsArray(cannotContainNodes) {
@@ -1186,6 +1189,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         try {
             ;
             global.jtree = require(__dirname + "/jtree.node.js").default;
+            global.require = require;
             // Todo: do we want to add new classes to global namespace?
             return vm.runInThisContext(`{
  ${code}

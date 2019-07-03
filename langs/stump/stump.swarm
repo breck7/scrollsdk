@@ -46,7 +46,7 @@ test uids
  getFirstNode
   toHtmlWithSuids
    typeIs string
-   stringIncludes uid
+   stringIncludes stumpUid
   isStumpNodeCheckbox
    stringIs false
   toHtml

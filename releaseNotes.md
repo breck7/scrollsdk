@@ -1,4 +1,9 @@
-28.0.0 / 2019-06-26
+28.1.0 / 2019-07-02
+===================
+- New: doesExtend and getChildInstancesOfNodeTypeId methods on Extendible nodes
+- New: GrammarUpgrader additions
+
+28.0.0 / 2019-07-02
 ===================
 - New: "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
 - New: "reservedWords" attribute on cellTypes in Grammar Language

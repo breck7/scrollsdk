@@ -97,6 +97,10 @@ abstract class GrammarBackedNode extends TreeNode {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
+  getChildInstancesOfNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): GrammarBackedNode[] {
+    return this.filter(node => node.getDefinition().doesExtend(nodeTypeId))
+  }
+
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
     let defs: NonRootNodeTypeDefinition[] = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions())
 
@@ -1041,9 +1045,9 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
   }
 
-  doesExtend(className: string) {
+  doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
     if (!this._cache_ancestorSet) this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()))
-    return this._cache_ancestorSet.has(className)
+    return this._cache_ancestorSet.has(nodeTypeId)
   }
 
   abstract _getId(): string
@@ -1442,6 +1446,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const vm = require("vm")
     try {
       ;(<any>global).jtree = require(__dirname + "/jtree.node.js").default
+      ;(<any>global).require = require
       // Todo: do we want to add new classes to global namespace?
       return vm.runInThisContext(`{
  ${code}

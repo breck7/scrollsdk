@@ -128,20 +128,6 @@ class GrammarIDEApp {
   private grammarInstance: any
   private codeInstance: any
 
-  private async _loadScriptsForStandardLanguage(grammarCode: string) {
-    if (!grammarCode) return undefined
-    try {
-      const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, "")
-      const grammarName = new jtree.TreeNode(grammarCode).get("grammar name")
-      const loadedScripts = await grammarProgram.loadAllConstructorScripts(`/langs/${grammarName}/`)
-      console.log(`Loaded scripts ${loadedScripts.join(", ")}...`)
-      this._otherErrorsDiv.html("")
-    } catch (err) {
-      console.error(err)
-      this._otherErrorsDiv.html(err)
-    }
-  }
-
   private async _downloadBundleCommand() {
     const grammarCode = this.grammarInstance.getValue()
     const grammarProgram = new jtree.GrammarProgram(grammarCode)
@@ -211,7 +197,6 @@ ${testCode}`
   private async _restoreFromLocalStorage() {
     console.log("Restoring from local storage....")
     const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole)
-    if (grammarCode) await this._loadScriptsForStandardLanguage(grammarCode) // todo: remove?
 
     const code = localStorage.getItem(this._localStorageKeys.codeConsole)
     if (grammarCode !== undefined && code !== undefined) this._setGrammarAndCode(grammarCode, code)
@@ -235,8 +220,6 @@ ${testCode}`
 
   private _getGrammarConstructor() {
     let currentGrammarCode = this.grammarInstance.getValue()
-
-    // todo: for custom constructors, if they are not there, replace?
 
     if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
       try {
@@ -320,8 +303,6 @@ ${testCode}`
     const grammarPath = `/langs/${name}/${name}.grammar`
     const grammar = await jQuery.get(grammarPath)
     const sample = await jQuery.get(samplePath)
-
-    await this._loadScriptsForStandardLanguage(grammar)
 
     this._setGrammarAndCode(grammar, sample)
   }

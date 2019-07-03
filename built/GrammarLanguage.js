@@ -67,10 +67,6 @@ var GrammarConstants;
     GrammarConstants["tags"] = "tags";
     // code
     GrammarConstants["javascript"] = "javascript";
-    // parse and interpret time
-    GrammarConstants["constructors"] = "constructors";
-    GrammarConstants["constructorNodeJs"] = "nodejs";
-    GrammarConstants["constructorBrowser"] = "browser";
     // compile time
     GrammarConstants["compilerNodeType"] = "compiler";
     GrammarConstants["compilesTo"] = "compilesTo";
@@ -1049,17 +1045,6 @@ class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
         return !this.isNodeJs();
     }
 }
-class GrammarCustomConstructorsNode extends TreeNode_1.default {
-    getFirstWordMap() {
-        const map = {};
-        map[GrammarConstants.constructorNodeJs] = CustomNodeJsConstructorNode;
-        map[GrammarConstants.constructorBrowser] = CustomBrowserConstructorNode;
-        return map;
-    }
-    getConstructorForEnvironment() {
-        return this.getNode(this.isNodeJs() ? GrammarConstants.constructorNodeJs : GrammarConstants.constructorBrowser);
-    }
-}
 class GrammarNodeTypeConstant extends TreeNode_1.default {
     getGetter() {
         return `get ${this.getIdentifier()}() { return ${this.getConstantValueAsJsText()} }`;
@@ -1119,7 +1104,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         map[GrammarConstantsConstantTypes.string] = GrammarNodeTypeConstantString;
         map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat;
         map[GrammarConstants.compilerNodeType] = GrammarCompilerNode;
-        map[GrammarConstants.constructors] = GrammarCustomConstructorsNode;
         map[GrammarConstants.example] = GrammarExampleNode;
         return map;
     }
@@ -1169,16 +1153,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     _isAbstract() {
         return this.has(GrammarConstants.abstract);
     }
-    _getConstructorFromOldConstructorsNode() {
-        // Get custom def node
-        // todo: can we ditch?
-        const customConstructorsDefinition = this._getNodeFromExtended(GrammarConstants.constructors);
-        if (!customConstructorsDefinition)
-            return undefined;
-        const envConstructor = customConstructorsDefinition.getNode(GrammarConstants.constructors).getConstructorForEnvironment();
-        if (envConstructor)
-            return envConstructor._getCustomConstructor();
-    }
     _getConstructorDefinedInGrammar() {
         if (!this._cache_definedNodeConstructor)
             this._cache_definedNodeConstructor = this._initConstructorDefinedInGrammar();
@@ -1213,28 +1187,25 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return window[tempClassName];
     }
     // todo: always should return a custom constructor for each node type
-    /* right now we have nodeType with "constructors nodejs/browser", nodetype with "javascript", nodetype with "baseType", "rootNodeType", node type with "catchAll OR inScope" */
     _initConstructorDefinedInGrammar() {
-        let constructor = this._getConstructorFromOldConstructorsNode();
-        if (!constructor) {
-            // todo: this is not catching if we dont have that but we do have constants.
-            const def = (this instanceof GrammarDefinitionGrammarNode ? this.getLanguageDefinitionProgram() : this);
-            // todo: reuse other code...load things into 1 file?
-            const className = def._getGeneratedClassName();
-            const extendsClassName = def._getExtendsClassName(false);
-            const gettersAndConstants = def._getCellGettersAndNodeTypeConstants();
-            const code = `class ${className} extends ${extendsClassName} {
+        let constructor;
+        // todo: this is not catching if we dont have that but we do have constants.
+        const def = (this instanceof GrammarDefinitionGrammarNode ? this.getLanguageDefinitionProgram() : this);
+        // todo: reuse other code...load things into 1 file?
+        const className = def._getGeneratedClassName();
+        const extendsClassName = def._getExtendsClassName(false);
+        const gettersAndConstants = def._getCellGettersAndNodeTypeConstants();
+        const code = `class ${className} extends ${extendsClassName} {
       ${gettersAndConstants}
       ${def._getCustomJavascriptMethods()}
 }`;
-            if (AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code])
-                return AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code];
-            if (this.isNodeJs())
-                constructor = this._importNodeJsConstructor(this._getGeneratedClassName(), code);
-            else
-                constructor = this._importBrowserConstructor(code);
-            AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code] = constructor;
-        }
+        if (AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code])
+            return AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code];
+        if (this.isNodeJs())
+            constructor = this._importNodeJsConstructor(this._getGeneratedClassName(), code);
+        else
+            constructor = this._importBrowserConstructor(code);
+        AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code] = constructor;
         return constructor;
     }
     getCatchAllNodeConstructor(line) {
@@ -1787,42 +1758,5 @@ ${GrammarConstants.cellType} anyWord`).getRootConstructor();
     static newFromCondensed(grammarCode, grammarPath) {
         return new GrammarProgram(grammarCode, grammarPath);
     }
-    // todo: we could probably remove once we switch to compiled
-    async loadAllConstructorScripts(baseUrlPath) {
-        if (!this.isBrowser())
-            return undefined;
-        const uniqueScriptsSet = new Set(this.getNodesByGlobPath(`* ${GrammarConstants.constructors} ${GrammarConstants.constructorBrowser}`)
-            .filter(node => node.getWord(2))
-            .map(node => baseUrlPath + node.getWord(2)));
-        return Promise.all(Array.from(uniqueScriptsSet).map(script => GrammarProgram._appendScriptOnce(script)));
-    }
-    static async _appendScriptOnce(url) {
-        // if (this.isNodeJs()) return undefined
-        if (!url)
-            return undefined;
-        if (this._scriptLoadingPromises[url])
-            return this._scriptLoadingPromises[url];
-        this._scriptLoadingPromises[url] = this._appendScript(url);
-        return this._scriptLoadingPromises[url];
-    }
-    static _appendScript(url) {
-        //https://bradb.net/blog/promise-based-js-script-loader/
-        return new Promise(function (resolve, reject) {
-            let resolved = false;
-            const scriptEl = document.createElement("script");
-            scriptEl.type = "text/javascript";
-            scriptEl.src = url;
-            scriptEl.async = true;
-            scriptEl.onload = scriptEl.onreadystatechange = function () {
-                if (!resolved && (!this.readyState || this.readyState == "complete")) {
-                    resolved = true;
-                    resolve(url);
-                }
-            };
-            scriptEl.onerror = scriptEl.onabort = reject;
-            document.head.appendChild(scriptEl);
-        });
-    }
 }
-GrammarProgram._scriptLoadingPromises = {};
 exports.GrammarProgram = GrammarProgram;

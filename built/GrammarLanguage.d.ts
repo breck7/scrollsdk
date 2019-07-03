@@ -45,9 +45,6 @@ declare enum GrammarConstants {
     single = "single",
     tags = "tags",
     javascript = "javascript",
-    constructors = "constructors",
-    constructorNodeJs = "nodejs",
-    constructorBrowser = "browser",
     compilerNodeType = "compiler",
     compilesTo = "compilesTo",
     description = "description",
@@ -261,7 +258,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     getNodeConstructorToJavascript(): string;
     _isAbstract(): boolean;
     private _cache_definedNodeConstructor;
-    private _getConstructorFromOldConstructorsNode;
     _getConstructorDefinedInGrammar(): Function;
     _getFirstWordMatch(): string;
     private _importNodeJsConstructor;
@@ -387,9 +383,5 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath): GrammarProgram;
-    loadAllConstructorScripts(baseUrlPath: string): Promise<string[]>;
-    private static _scriptLoadingPromises;
-    private static _appendScriptOnce;
-    private static _appendScript;
 }
 export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedBlobNode, GrammarBackedErrorNode, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode };

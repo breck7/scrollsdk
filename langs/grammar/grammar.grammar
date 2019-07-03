@@ -107,8 +107,6 @@ nodeType abstractConstant
  abstract
  description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
  firstCellType propertyName
-nodeType abstractEnvironment
- abstract
 nodeType abstractNodeTypeRule
  abstract
  firstCellType propertyName
@@ -153,7 +151,7 @@ nodeType grammar
  required
  single
  firstCellType propertyName
- inScope name description example extensions nodeTypeOrder inScope constructors catchAllNodeType version abstractConstant javascript compilesTo
+ inScope name description example extensions nodeTypeOrder inScope catchAllNodeType version abstractConstant javascript compilesTo
 nodeType highlightScope
  firstCellType propertyName
  cells scopeName
@@ -230,14 +228,6 @@ nodeType string
  catchAllCellType stringCell
  catchAllNodeType catchAllMultilineStringConstant
  extends abstractConstant
-nodeType browser
- cells scriptUrl
- description Script will be loaded and nodeType class will be searched for on the window object.
- extends abstractEnvironment
-nodeType nodejs
- cells constructorFilePath
- description For nodejs constructors, if specified, the existence of this constructor will be checked when the grammar file is checked for errors.
- extends abstractEnvironment
 nodeType abstract
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
  extends abstractNodeTypeRule
@@ -317,8 +307,3 @@ nodeType single
 nodeType tags
  catchAllCellType tag
  extends abstractNodeTypeRule
-nodeType constructors
- todo Remove/refactor this
- inScope abstractEnvironment
- description A map of language/environment to filepaths and constructor classes to instantiate nodes with.
- extends abstractNonTerminalNodeTypeRule

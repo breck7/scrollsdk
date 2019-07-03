@@ -2023,7 +2023,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
       getGrammarProgramRoot() {
         if (!this._cachedGrammarProgramRoot)
-          this._cachedGrammarProgramRoot = jtree.GrammarProgram.newFromCondensed(\`${TreeUtils.escapeBackTicks(this.toString().replace(/\\/g, "\\\\"))}\`)
+          this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(this.toString().replace(/\\/g, "\\\\"))}\`)
         return this._cachedGrammarProgramRoot
       }
 
@@ -2079,7 +2079,7 @@ ${nodeTypeContexts}`
   // A language where anything goes.
   // todo: can we remove? can we make the default language not require any grammar node?
   static getTheAnyLanguageRootConstructor() {
-    return this.newFromCondensed(
+    return new GrammarProgram(
       `${GrammarConstants.nodeType} anyLanguage
  ${GrammarConstants.root}
  ${GrammarConstants.catchAllNodeType} anyNode
@@ -2088,10 +2088,6 @@ ${GrammarConstants.nodeType} anyNode
  ${GrammarConstants.firstCellType} anyWord
 ${GrammarConstants.cellType} anyWord`
     ).getRootConstructor()
-  }
-
-  static newFromCondensed(grammarCode: string, grammarPath?: jTreeTypes.filepath) {
-    return new GrammarProgram(grammarCode, grammarPath)
   }
 }
 

@@ -1969,12 +1969,12 @@ someCode
   win.lineOfCode = lineOfCode
 
   // Act
-  const grammarProgram = jtreeBase.GrammarProgram.newFromCondensed(
+  const grammarProgram = new jtreeBase.GrammarProgram(
     jibberishGrammarCode,
     (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
   )
   const ProgramConstructor = grammarProgram.getRootConstructor()
-  const program = new ProgramConstructor(code)
+  const program = new ProgramConstructor(code) // error here
   const errs = program.getAllErrors()
 
   // Assert

@@ -52,7 +52,7 @@ class jtreeNode extends jtree {
   // returns GrammarBackedProgramClass
   static getProgramConstructor = (grammarPath: jTreeTypes.filepath) => {
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
-    const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
+    const grammarProgram = new GrammarProgram(grammarCode, grammarPath)
     return <any>grammarProgram.getRootConstructor()
   }
 

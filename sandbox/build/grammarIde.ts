@@ -8,7 +8,7 @@ declare var JSZip: any
 
 class GrammarIDEApp {
   constructor(grammarSourceCode: string) {
-    this.GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor()
+    this.GrammarConstructor = new jtree.GrammarProgram(grammarSourceCode, "").getRootConstructor()
   }
 
   private async _loadFromDeepLink() {
@@ -223,7 +223,7 @@ ${testCode}`
 
     if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
       try {
-        const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, "")
+        const grammarProgram = new jtree.GrammarProgram(currentGrammarCode, "")
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
         if (grammarErrors.length) {
           this._grammarConstructor = jtree.GrammarProgram.getTheAnyLanguageRootConstructor()

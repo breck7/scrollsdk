@@ -22,7 +22,7 @@ testTree.basic = equal => {
 
 testTree.basics = equal => {
   // Arrange/Act
-  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
+  const grammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
   const errs = grammarProgram.getAllErrors()
 
   // Assert
@@ -40,7 +40,7 @@ const makeJibberishProgram = code => {
 const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
 const makeProgram = (grammarCode, code, grammarPath = undefined) => {
-  const grammarProgram = GrammarProgram.newFromCondensed(grammarCode, grammarPath)
+  const grammarProgram = new GrammarProgram(grammarCode, grammarPath)
   const rootProgramConstructor = grammarProgram.getRootConstructor()
   return new rootProgramConstructor(code)
 }
@@ -301,7 +301,7 @@ testTree.blobNodes = equal => {
 
 testTree.sublimeSyntaxFile = equal => {
   // Arrange/Act
-  const grammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
+  const grammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
   const code = grammarProgram.toSublimeSyntaxFile()
 
   // Assert
@@ -325,9 +325,9 @@ nodeType baseNode`,
 
 testTree.minimumGrammar = equal => {
   // Arrange/Act
-  const programConstructor = GrammarProgram.newFromCondensed(
-    `grammar
- name any
+  const programConstructor = new GrammarProgram(
+    `nodeType any
+ root
  catchAllNodeType anyNode
 nodeType anyNode
  catchAllCellType any
@@ -351,7 +351,7 @@ cellType any`
 testTree.grammarWithLoop = equal => {
   // Arrange/Act/Assert
   try {
-    const programConstructor = GrammarProgram.newFromCondensed(
+    const programConstructor = new GrammarProgram(
       `grammar
  name any
  catchAllNodeType nodeA
@@ -413,7 +413,7 @@ cellSpace foobar
 
 testTree.toNodeJsJavascript = equal => {
   // Arrange
-  let program = GrammarProgram.newFromCondensed(grammarGrammar)
+  let program = new GrammarProgram(grammarGrammar)
   // Act
   let compiledParser = program.toNodeJsJavascript()
   // Assert
@@ -422,14 +422,14 @@ testTree.toNodeJsJavascript = equal => {
 
 testTree.examples = equal => {
   // Arrange/Act
-  const jibberishGrammarProgram = GrammarProgram.newFromCondensed(jibberishGrammarCode, jibberishGrammarPath)
+  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
 
   // Assert
   let errors = jibberishGrammarProgram.getErrorsInGrammarExamples()
   equal(errors.length, 0)
 
   // Arrange/Act
-  const badGrammarProgram = GrammarProgram.newFromCondensed(
+  const badGrammarProgram = new GrammarProgram(
     `grammar
  name bad
  inScope addNode

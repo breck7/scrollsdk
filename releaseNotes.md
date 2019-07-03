@@ -1,3 +1,8 @@
+30.0.0 / 2019-07-03
+===================
+- Breaking: removed newFromCondensed method, which became a noOp. Use new GrammarProgram(grammarCode, grammarPath) instead
+- Breaking: removed "grammar" root node type in GrammarLanguage. Add a "root" property to a nodeType for the new root node.
+
 29.0.0 / 2019-07-02
 ===================
 - New: doesExtend and getChildInstancesOfNodeTypeId methods on Extendible nodes

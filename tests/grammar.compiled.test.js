@@ -12,7 +12,7 @@ const testTree = {}
 const outputDir = __dirname + `/../ignore/vms/`
 
 const makeProgram = (grammarCode, code, grammarPath = undefined) => {
-  const grammarProgram = jtree.GrammarProgram.newFromCondensed(grammarCode, grammarPath)
+  const grammarProgram = new jtree.GrammarProgram(grammarCode, grammarPath)
   const rootProgramConstructor = grammarProgram.getRootConstructor()
   return new rootProgramConstructor(code)
 }

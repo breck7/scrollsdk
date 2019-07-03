@@ -20,7 +20,7 @@ class GrammarIDEApp {
             codeConsole: "codeConsole"
         };
         this.codeWidgets = [];
-        this.GrammarConstructor = jtree.GrammarProgram.newFromCondensed(grammarSourceCode, "").getRootConstructor();
+        this.GrammarConstructor = new jtree.GrammarProgram(grammarSourceCode, "").getRootConstructor();
     }
     async _loadFromDeepLink() {
         const hash = location.hash;
@@ -174,7 +174,7 @@ ${testCode}`);
         let currentGrammarCode = this.grammarInstance.getValue();
         if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
             try {
-                const grammarProgram = jtree.GrammarProgram.newFromCondensed(currentGrammarCode, "");
+                const grammarProgram = new jtree.GrammarProgram(currentGrammarCode, "");
                 const grammarErrors = this._getGrammarErrors(currentGrammarCode);
                 if (grammarErrors.length) {
                     this._grammarConstructor = jtree.GrammarProgram.getTheAnyLanguageRootConstructor();

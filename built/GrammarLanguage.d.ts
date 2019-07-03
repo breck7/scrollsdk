@@ -62,6 +62,7 @@ declare abstract class GrammarBackedNode extends TreeNode {
         displayText: string;
     }[];
     getChildInstancesOfNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): GrammarBackedNode[];
+    doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
     private _getAutocompleteResultsForFirstWord;
     private _getAutocompleteResultsForCell;
     abstract getGrammarProgramRoot(): GrammarProgram;
@@ -202,7 +203,7 @@ declare abstract class AbstractExtendibleTreeNode extends TreeNode {
     _getExtendedParent(): AbstractExtendibleTreeNode;
     _hasFromExtended(firstWordPath: jTreeTypes.firstWordPath): boolean;
     _getNodeFromExtended(firstWordPath: jTreeTypes.firstWordPath): AbstractExtendibleTreeNode;
-    doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
+    _doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
     abstract _getId(): string;
     private _cache_ancestorSet;
     private _cache_ancestorsArray;

@@ -19,7 +19,7 @@ grammar
   }
   getTestsToRun() {
     const solos = this.getChildInstancesOfNodeTypeId("testOnly")
-    return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlock").filter(test => !(test.getDefinition().doesExtend("skipTest")))
+    return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlock").filter(test => !(test.doesExtend("skipTest")))
   }
 cellType anyFirstWord
 cellType anyWord

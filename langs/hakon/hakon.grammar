@@ -60,7 +60,7 @@ nodeType selectorNode
       .join(",")
   }
   compile() {
-    const propertyNodes = this.getChildren().filter(node => node.getDefinition().doesExtend("abstractPropertyNode"))
+    const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
     if (!propertyNodes.length) return ""
     const spaces = "  "
     return `${this.getSelector()} {

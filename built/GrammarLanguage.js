@@ -86,7 +86,10 @@ class GrammarBackedNode extends TreeNode_1.default {
         return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);
     }
     getChildInstancesOfNodeTypeId(nodeTypeId) {
-        return this.filter(node => node.getDefinition().doesExtend(nodeTypeId));
+        return this.filter(node => node.doesExtend(nodeTypeId));
+    }
+    doesExtend(nodeTypeId) {
+        return this.getDefinition()._doesExtend(nodeTypeId);
     }
     _getAutocompleteResultsForFirstWord(partialWord) {
         let defs = Object.values(this.getDefinition().getRunTimeFirstWordMapWithDefinitions());
@@ -850,7 +853,7 @@ class AbstractExtendibleTreeNode extends TreeNode_1.default {
     _getNodeFromExtended(firstWordPath) {
         return this._getAncestorsArray().find(node => node.has(firstWordPath));
     }
-    doesExtend(nodeTypeId) {
+    _doesExtend(nodeTypeId) {
         if (!this._cache_ancestorSet)
             this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()));
         return this._cache_ancestorSet.has(nodeTypeId);

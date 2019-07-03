@@ -98,7 +98,11 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   getChildInstancesOfNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): GrammarBackedNode[] {
-    return this.filter(node => node.getDefinition().doesExtend(nodeTypeId))
+    return this.filter(node => node.doesExtend(nodeTypeId))
+  }
+
+  doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
+    return this.getDefinition()._doesExtend(nodeTypeId)
   }
 
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
@@ -1045,7 +1049,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
   }
 
-  doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
+  _doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
     if (!this._cache_ancestorSet) this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()))
     return this._cache_ancestorSet.has(nodeTypeId)
   }

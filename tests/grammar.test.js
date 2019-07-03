@@ -5,7 +5,6 @@
 const fs = require("fs")
 const GrammarProgram = require("../built/GrammarLanguage.js").GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
-const JibberishLang = require(jibberishRootDir + "JibberishLang.js")
 
 const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
 const numbersGrammar = fs.readFileSync(numbersPath, "utf8")
@@ -54,7 +53,7 @@ testTree.jibberish = equal => {
   const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
-  equal(program instanceof JibberishLang.JibberishProgramRoot, true, "correct program class")
+  equal(program.constructor.name, "JibberishProgramRoot", "correct program class")
   equal(program.getAllErrors().length, 0, `should be 0 errors`)
 
   const defNode = program
@@ -104,10 +103,10 @@ world`,
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition instanceof JibberishLang.add, true)
+  equal(addition.constructor.name, "plus", "correct constructor name")
 
   // Act/Assert
-  equal(program.getNode("someCode echo") instanceof JibberishLang.lineOfCode, true, "line of code class")
+  equal(program.getNode("someCode echo").constructor.name, "lineOfCode", "line of code class")
 
   // Arrange
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
@@ -169,13 +168,13 @@ opSymbol int int int`,
   equal(
     nodeTypes,
     `foo topLevelProperty
-add opSymbol int int int`,
+plus opSymbol int int int`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
     `foo foo
-add + 2 3 2`,
+plus + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )
 }

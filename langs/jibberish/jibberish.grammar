@@ -1,8 +1,8 @@
 grammar
  name jibberish
  description A useless Tree Language built for testing Tree Notation code.
- constructors
-  nodejs ./JibberishLang.js
+ javascript
+  executeSync() { return 42 }
  compilesTo txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass
@@ -47,17 +47,12 @@ nodeType error
  baseNodeType errorNode
 nodeType lineOfCode
  catchAllCellType word
- constructors
-  nodejs ./JibberishLang.js
-  browser JibberishLang.js
 nodeType text
  baseNodeType blobNode
 nodeType extendsAbstract
  cells int
  extends someAbstractClass
 nodeType add
- constructors
-  nodejs ./JibberishLang.js
  extends topLevel
 nodeType plus
  match +
@@ -89,8 +84,6 @@ nodeType lightbulbState
  cells onoff
  extends topLevel
 nodeType nested
- constructors
-  nodejs ./JibberishLang.js
  extends topLevel
 nodeType nodeWithConsts
  string greeting hello world

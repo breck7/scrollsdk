@@ -82,7 +82,6 @@ class GrammarUpgrader extends jtree.Upgrader {
           })
 
           // todo: blob to baseNodeType blob, constructors js errorNode
-
           // update constants
           tree.forEach(node => {
             const constants = node.getNode("constants")

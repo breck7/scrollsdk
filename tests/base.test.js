@@ -698,20 +698,6 @@ testTree.getNodeByColumns = equal => {
 
   // Assert
   equal(node.getParent().get("key"), "b")
-
-  // Arrange
-  const jib = new TreeNode(`jibberish
- description Test a root parser node
- constructors
-  nodejs ./JibberishLang.js JibberishProgramRoot
- compiler
- inScope baseNode`)
-
-  // Act
-  const node2 = jib.getNode("jibberish constructors nodejs")
-
-  // Assert
-  equal(node2.getFirstWord(), "nodejs")
 }
 
 testTree.delete = equal => {
@@ -1898,8 +1884,8 @@ testTree.isomorphicGrammarTests = equal => {
   const jibberishGrammarCode = `grammar
  name jibberish
  description Test a root parser node
- constructors
-  nodejs JibberishLang.js
+ javascript
+  executeSync() { return 42 }
  compilesTo txt
  catchAllNodeType error
  inScope topLevel text someAbstractClass
@@ -1932,8 +1918,6 @@ nodeType someCode
  catchAllNodeType lineOfCode
 nodeType lineOfCode
  catchAllCellType word
- constructors
-  nodejs ./JibberishLang.js
 nodeType block
  extends topLevel
  inScope topLevel
@@ -1946,8 +1930,6 @@ nodeType text
  blobNode
 nodeType add
  extends topLevel
- constructors
-  nodejs ./JibberishLang.js
 nodeType addNode
  match +
  extends add

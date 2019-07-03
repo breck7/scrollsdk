@@ -2,7 +2,6 @@
 
 const jtree = require("../index.js")
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
-const JibberishLang = require(jibberishRootDir + "JibberishLang.js")
 
 const testTree = {}
 
@@ -16,7 +15,7 @@ testTree.makeProgram = equal => {
   const result = program.executeSync()
 
   // Assert
-  equal(program instanceof JibberishLang.JibberishProgramRoot, true, "parent program class parsed correctly")
+  equal(program.constructor.name, "JibberishProgramRoot", "parent program class parsed correctly")
   equal(result, 42)
 
   // jtree.getProgramClassFromGrammarFile

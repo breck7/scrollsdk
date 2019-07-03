@@ -1880,8 +1880,8 @@ foo`
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
-  const jibberishGrammarCode = `grammar
- name jibberish
+  const jibberishGrammarCode = `nodeType jibberish
+ root
  description Test a root parser node
  javascript
   executeSync() { return 42 }
@@ -1968,12 +1968,12 @@ someCode
   win.lineOfCode = lineOfCode
 
   // Act
-  const grammarProgram = jtreeBase.GrammarProgram.newFromCondensed(
+  const grammarProgram = new jtreeBase.GrammarProgram(
     jibberishGrammarCode,
     (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
   )
-  const ProgramConstructor = grammarProgram.getRootConstructor()
-  const program = new ProgramConstructor(code)
+  const JibberishProgram = grammarProgram.getRootConstructor()
+  const program = new JibberishProgram(code) // error here
   const errs = program.getAllErrors()
 
   // Assert

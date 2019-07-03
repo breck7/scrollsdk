@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test basics jibberish
  arrangeTestSubject
-  require ./JibberishProgram.js
+  require ./jibberish.js
   constructWithBlockString
    foo
    nodeWithConsts

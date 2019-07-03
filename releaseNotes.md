@@ -1,7 +1,10 @@
 30.0.0 / 2019-07-03
 ===================
+- New: much easier way to do Grammar Composition => simple concatenate strings & define a new nodeType as root!
 - Breaking: removed newFromCondensed method, which became a noOp. Use new GrammarProgram(grammarCode, grammarPath) instead
 - Breaking: removed "grammar" root node type in GrammarLanguage. Add a "root" property to a nodeType for the new root node.
+- Breaking: instead of "{grammarName}ProgramRoot" as the root class, the root class is now just "grammarName"
+- Breaking: paths to shipped language program constructors are now like "fire.js" instead of "FireProgram.js"
 
 29.0.0 / 2019-07-02
 ===================

@@ -35,10 +35,10 @@ class jtreeNode extends jtree {
 
   private static _compileGrammar(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath, target: CompileTarget) {
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
-    let name = jtree.Utils.ucfirst(grammarCode.get("grammar name"))
+    const program = new GrammarProgram(grammarCode.toString(), pathToGrammar)
+    let name = program.getGrammarName()
     const pathToJtree = __dirname + "/../index.js"
     const outputFilePath = outputFolder + `${name}Language.${target}.js`
-    const program = new GrammarProgram(grammarCode.toString(), pathToGrammar)
     const result = target === CompileTarget.nodejs ? program.toNodeJsJavascriptPrettier(pathToJtree) : program.toBrowserJavascriptPrettier()
 
     fs.writeFileSync(outputFilePath, result, "utf8")

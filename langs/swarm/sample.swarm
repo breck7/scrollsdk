@@ -3,8 +3,8 @@ test stress test
  arrangeTestSubject
   require ../../built/GrammarLanguage.js GrammarProgram
   constructWithBlockString
-   grammar
-    name testlang
+   nodeType testlang
+    root
     compilesTo txt
     inScope baseNode
    cellType any

@@ -251,10 +251,14 @@ ${grammars.toTable()}`
     const programConstructor = jtree.getProgramConstructor(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
-      const code = this._read(path)
-      const program = new programConstructor(code)
-      const usage = program.getNodeTypeUsage(path)
-      report.extend(usage.toString())
+      try {
+        const code = this._read(path)
+        const program = new programConstructor(code)
+        const usage = program.getNodeTypeUsage(path)
+        report.extend(usage.toString())
+      } catch (err) {
+        // console.log(`Error getting usage stats for program ` + path)
+      }
     })
     const folderName = grammarName
     const stampFile = new TreeNode(`folder ${folderName}`)

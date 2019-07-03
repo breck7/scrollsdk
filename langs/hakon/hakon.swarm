@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test basics hakon
  arrangeTestSubject
-  require ./HakonProgram.js
+  require ./hakon.js
   todo Have a way to get the first root example instead of duplicating it here.
   constructWithBlockString
    body

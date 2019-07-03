@@ -15,10 +15,10 @@ class jtreeNode extends jtree_1.default {
     }
     static _compileGrammar(pathToGrammar, outputFolder, target) {
         const grammarCode = jtree_1.default.TreeNode.fromDisk(pathToGrammar);
-        let name = jtree_1.default.Utils.ucfirst(grammarCode.get("grammar name"));
+        const program = new GrammarLanguage_1.GrammarProgram(grammarCode.toString(), pathToGrammar);
+        let name = program.getGrammarName();
         const pathToJtree = __dirname + "/../index.js";
         const outputFilePath = outputFolder + `${name}Language.${target}.js`;
-        const program = new GrammarLanguage_1.GrammarProgram(grammarCode.toString(), pathToGrammar);
         const result = target === CompileTarget.nodejs ? program.toNodeJsJavascriptPrettier(pathToJtree) : program.toBrowserJavascriptPrettier();
         fs.writeFileSync(outputFilePath, result, "utf8");
         return outputFilePath;
@@ -41,7 +41,7 @@ jtreeNode.makeProgram = (programPath, grammarPath) => {
 // returns GrammarBackedProgramClass
 jtreeNode.getProgramConstructor = (grammarPath) => {
     const grammarCode = fs.readFileSync(grammarPath, "utf8");
-    const grammarProgram = GrammarLanguage_1.GrammarProgram.newFromCondensed(grammarCode, grammarPath);
+    const grammarProgram = new GrammarLanguage_1.GrammarProgram(grammarCode, grammarPath);
     return grammarProgram.getRootConstructor();
 };
 jtreeNode.combineFiles = (globPatterns) => {

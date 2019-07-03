@@ -8,7 +8,7 @@ const TreeNode = jtree.TreeNode
 
 exec("tsc")
 
-const ProjectProgram = require("../langs/project/ProjectProgram.js")
+const project = require("../langs/project/project.js")
 
 const BrowserScript = jtree.Utils.BrowserScript
 
@@ -16,13 +16,13 @@ const outputTsFile = __dirname + `/../ignore/jtree.browser.ts`
 const outputJsFile = __dirname + `/../built/jtree.browser.js`
 
 const files = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".ts"))
-const projectCode = new TreeNode(ProjectProgram.getProjectProgram(files))
+const projectCode = new TreeNode(project.getProjectProgram(files))
 projectCode
   .getTopDownArray()
   .filter(n => n.getFirstWord() === "relative")
   .forEach(node => node.setLine(node.getLine() + ".ts"))
 fs.writeFileSync(__dirname + "/../ignore/jtree.project", projectCode.toString(), "utf8")
-const projectProgram = new ProjectProgram(projectCode.toString())
+const projectProgram = new project(projectCode.toString())
 const typeScriptScripts = projectProgram.getOrderedDependenciesArray().filter(file => !file.includes(".node."))
 
 const combinedTypeScriptScript = typeScriptScripts

@@ -1878,7 +1878,7 @@ foo`
 }
 
 // todo: just make grammar tests compile in browser and ditch this duplicative code.
-testTree._isomorphicGrammarTests = equal => {
+testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
   const jibberishGrammarCode = `nodeType jibberish
@@ -1973,8 +1973,8 @@ someCode
     jibberishGrammarCode,
     (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
   )
-  const ProgramConstructor = grammarProgram.getRootConstructor()
-  const program = new ProgramConstructor(code) // error here
+  const JibberishProgram = grammarProgram.getRootConstructor()
+  const program = new JibberishProgram(code) // error here
   const errs = program.getAllErrors()
 
   // Assert

@@ -53,7 +53,7 @@ testTree.jibberish = equal => {
   const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
-  equal(program.constructor.name, "JibberishProgramRoot", "correct program class")
+  equal(program.constructor.name, "jibberish", "correct program class")
   equal(program.getAllErrors().length, 0, `should be 0 errors`)
 
   const defNode = program
@@ -241,11 +241,16 @@ com
 
 testTree.extraWord = equal => {
   // Arrange
-  const program = makeGrammarProgram(`grammar foobar`)
+  const program = makeGrammarProgram(`nodeType foobar foo2
+ root`)
 
   // Act/Assert
   equal(program.getAllErrors().length, 1)
-  equal(program.getInPlaceCellTypeTree(), "propertyName extraWord")
+  equal(
+    program.getInPlaceCellTypeTree(),
+    `nodeTypeIdConstant nodeTypeId extraWord
+ propertyName`
+  )
 }
 
 testTree.autocompleteAdditionalWords = equal => {
@@ -259,8 +264,8 @@ testTree.autocompleteAdditionalWords = equal => {
 
 testTree.autocompleteAdvanced = equal => {
   // Arrange
-  const program = makeGrammarProgram(`grammar
- name latin
+  const program = makeGrammarProgram(`nodeType latin
+ root
  catchAllNodeType any
  inScope faveNumber
 cellType integer
@@ -308,20 +313,21 @@ testTree.sublimeSyntaxFile = equal => {
   equal(code.includes("scope:"), true)
 }
 
-testTree.requiredNodeTypes = equal => {
-  // Arrange/Act
-  const path = grammarGrammarPath
-  const anyProgram = makeProgram(
-    fs.readFileSync(path, "utf8"),
-    `cellType word
-nodeType baseNode`,
-    path
-  )
+// todo: reenable once we have the requirement of at least 1 root node
+// testTree.requiredNodeTypes = equal => {
+//   // Arrange/Act
+//   const path = grammarGrammarPath
+//   const anyProgram = makeProgram(
+//     fs.readFileSync(path, "utf8"),
+//     `cellType word
+// nodeType baseNode`,
+//     path
+//   )
 
-  // Assert
-  const errs = anyProgram.getAllErrors()
-  equal(errs.length, 1)
-}
+//   // Assert
+//   const errs = anyProgram.getAllErrors()
+//   equal(errs.length, 1)
+// }
 
 testTree.minimumGrammar = equal => {
   // Arrange/Act
@@ -352,8 +358,8 @@ testTree.grammarWithLoop = equal => {
   // Arrange/Act/Assert
   try {
     const programConstructor = new GrammarProgram(
-      `grammar
- name any
+      `nodeType any
+ root
  catchAllNodeType nodeA
 nodeType nodeA
  extends nodeC
@@ -392,21 +398,19 @@ extendsAbstract 2`)
 
 testTree.updateNodeTypeIds = equal => {
   // Arrange/Act
-  const anyProgram = makeGrammarProgram(`grammar
- name someLang
+  const anyProgram = makeGrammarProgram(`nodeType someLang
+ root
 cellType foobar
  regex test`)
 
   // Assert
-  let errors = anyProgram.updateNodeTypeIds(`grammar language
-name grammarName
-cellType cellSpace
+  let errors = anyProgram.updateNodeTypeIds(`nodeType fooType
 regex regexString`)
   equal(
     anyProgram.toString(),
-    `language
- grammarName someLang
-cellSpace foobar
+    `fooType someLang
+ root
+cellType foobar
  regexString test`
   )
 }
@@ -430,8 +434,8 @@ testTree.examples = equal => {
 
   // Arrange/Act
   const badGrammarProgram = new GrammarProgram(
-    `grammar
- name bad
+    `nodeType bad
+ root
  inScope addNode
 nodeType addNode
  match +

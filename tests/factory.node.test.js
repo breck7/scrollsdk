@@ -15,7 +15,7 @@ testTree.makeProgram = equal => {
   const result = program.executeSync()
 
   // Assert
-  equal(program.constructor.name, "JibberishProgramRoot", "parent program class parsed correctly")
+  equal(program.constructor.name, "jibberish", "parent program class parsed correctly")
   equal(result, 42)
 
   // jtree.getProgramClassFromGrammarFile

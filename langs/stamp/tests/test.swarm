@@ -1,7 +1,7 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
 test basics stamp
  arrangeTestSubject
-  require ../StampProgram.js
+  require ../stamp.js
   constructWithBlockString
    folder testEx
    file testEx/hi.sh
@@ -12,7 +12,7 @@ test basics stamp
   lengthIs 0
 skipTest staticReenableOncePathFix
  arrangeTestSubject
-  require ../StampProgram.js
+  require ../stamp.js
   static
  dirToStamp ./cases
   blockStringIs

@@ -1,5 +1,1 @@
-const jtree = require("../../index.js")
-
-module.exports = {
-  Program: jtree.getProgramConstructor(__dirname + "/numbers.grammar")
-}
+module.exports = require("../../index.js").getProgramConstructor(__dirname + "/numbers.grammar")

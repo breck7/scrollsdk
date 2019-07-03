@@ -3,21 +3,21 @@ nodeType grammar
  root
  description The Grammar Language is currently just used for type checking and documenting grammar files. The actual tree Grammar Language is still hard coded. Someday it may bootstrap itself from this file.
  catchAllNodeType catchAllError
- nodeTypeOrder tooling todo grammar cellType nodeType
+ nodeTypeOrder tooling todo cellType nodeType
  extensions grammar gram
  example A grammar that parses anything:
-  grammar
-   name latin
+  nodeType latin
+   root
    catchAllNodeType anyNode
   nodeType anyNode
    baseNodeType blobNode
  version 3.0.0
- inScope tooling todo grammar cellType nodeType
+ inScope tooling todo cellType nodeType
 cellType abstractConstant
  highlightScope entity.name.tag
 cellType javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z0-9]+
- reservedWords enum extends function static if while export return class for default require var let const
+ reservedWords enum extends function static if while export return class for default require var let const new
 cellType anyFirstWord
 cellType anyWord
 cellType baseNodeTypes

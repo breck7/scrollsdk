@@ -24,10 +24,10 @@ testTree.grammar = equal => {
     const tempFilePath = jtree.compileGrammarForNodeJs(grammarGrammarPath, outputDir)
 
     // Act
-    const { GrammarProgramRoot } = require(tempFilePath)
+    const { grammar } = require(tempFilePath)
 
     // Assert
-    equal(!!new GrammarProgramRoot(), true, "it compiled")
+    equal(!!new grammar(), true, "it compiled")
   } catch (err) {
     console.error(err)
   } finally {
@@ -36,7 +36,7 @@ testTree.grammar = equal => {
 
 testTree.compileAll = equal => {
   // Arrange/Act
-  ;["hakon", "swarm", "stump", "project", "jibberish", "fire", "stamp"].map(name => {
+  ;["hakon", "swarm", "stump", "project", "jibberish", "fire", "stamp", "zin", "newlang"].map(name => {
     try {
       // Act
       const path = __dirname + `/../langs/${name}/${name}.grammar`
@@ -48,7 +48,7 @@ testTree.compileAll = equal => {
       equal(true, true, `Expected to compile and include "${name}" without error.`)
 
       // Act
-      const rootClass = tempExports[jtree.Utils.ucfirst(name) + "ProgramRoot"]
+      const rootClass = tempExports[name]
       const exampleProgram = grammarCode.getNode("grammar example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
@@ -70,13 +70,13 @@ testTree.jibberish = equal => {
     const tempFilePath = jtree.compileGrammarForNodeJs(__dirname + "/../langs/jibberish/jibberish.grammar", outputDir)
 
     // Act
-    const { JibberishProgramRoot } = require(tempFilePath)
+    const { jibberish } = require(tempFilePath)
 
     // Assert
-    equal(!!new JibberishProgramRoot(), true, "it compiled")
+    equal(!!new jibberish(), true, "it compiled")
 
     // Arrange
-    const program = new JibberishProgramRoot(`nodeWithConsts`)
+    const program = new jibberish(`nodeWithConsts`)
 
     // Act/Assert
     equal(program.nodeAt(0).score1, 28, "constants work")
@@ -95,15 +95,15 @@ testTree.numbers = equal => {
     const tempFilePath = jtree.compileGrammarForNodeJs(numbersGrammarPath, outputDir)
 
     // Act
-    const { NumbersProgramRoot, NumbersConstants } = require(tempFilePath)
+    const { numbers, NumbersConstants } = require(tempFilePath)
 
     // Assert
-    equal(!!new NumbersProgramRoot(), true, "it compiled")
+    equal(!!new numbers(), true, "it compiled")
 
     // Arrange/Act
     const code = `+ 2 3
 * 2 3 10`
-    const program = new NumbersProgramRoot(code)
+    const program = new numbers(code)
     const firstNode = program.nodeAt(0)
     const runtimeProgram = makeNumbersRunTimeProgram(code)
 
@@ -120,7 +120,7 @@ testTree.numbers = equal => {
     equal(program.getInPlaceCellTypeTree(), runtimeProgram.getInPlaceCellTypeTree(), "cell types worked")
 
     // Arrange/Act/Assert
-    equal(new NumbersProgramRoot(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")
+    equal(new numbers(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")
 
     // program errors
     // autocomplete

@@ -1,12 +1,12 @@
 #! /usr/local/bin/node --use_strict
 
-const HakonProgram = require("./HakonProgram.js")
+const hakon = require("./hakon.js")
 
 const testTree = {}
 
 testTree.all = equal => {
   // Arrange
-  const program = new HakonProgram(`body
+  const program = new hakon(`body
  color red`)
 
   // Act/Assert

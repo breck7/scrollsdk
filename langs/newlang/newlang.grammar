@@ -1,4 +1,4 @@
-nodeType new
+nodeType newlang
  root
  description This is the basic root node for your new language!
  catchAllNodeType catchAllError

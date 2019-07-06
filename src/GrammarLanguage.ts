@@ -413,10 +413,11 @@ ${indent}${closeChildrenString}`
   get cells() {
     const cells: jTreeTypes.stringMap = {}
     this._getGrammarBackedCellArray().forEach(cell => {
-      if (!cell.isCatchAll()) cells[cell.getCellTypeId()] = cell.getParsed()
+      const cellTypeId = cell.getCellTypeId()
+      if (!cell.isCatchAll()) cells[cellTypeId] = cell.getParsed()
       else {
-        if (!cells[cell.getCellTypeId()]) cells[cell.getCellTypeId()] = []
-        cells[cell.getCellTypeId()].push(cell.getParsed())
+        if (!cells[cellTypeId]) cells[cellTypeId] = []
+        cells[cellTypeId].push(cell.getParsed())
       }
     })
     return cells
@@ -1412,30 +1413,39 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this.get(GrammarConstants.match) || this.getNodeTypeIdFromDefinition()
   }
 
-  private _importNodeJsConstructor(className: string, code: string): jTreeTypes.RunTimeNodeConstructor {
+  _getModulePath(langName: string, className?: string) {
+    // todo: cleanup!!!
+    return (this.isNodeJs() ? "global.jtree.GrammarProgram." : "window.") + `_nodeTypes.${langName}${className ? "." + className : ""}`
+  }
+
+  private _importNodeJsConstructor(className: string, code: string, langName: string): jTreeTypes.RunTimeNodeConstructor {
     const vm = require("vm")
+    // todo: cleanup up
+    const fullCode = `{
+ ${code}
+ ${this._getModulePath(langName, className)} = ${className}
+}`
     try {
       ;(<any>global).jtree = require(__dirname + "/jtree.node.js").default
       ;(<any>global).require = require
       // Todo: do we want to add new classes to global namespace?
-      return vm.runInThisContext(`{
- ${code}
- global.${className} = ${className}
-}`)
+      return vm.runInThisContext(fullCode)
     } catch (err) {
       console.log("Error in code:")
-      console.log(code)
+      console.log(fullCode)
       throw err
     }
   }
 
-  private _importBrowserConstructor(code: string): jTreeTypes.RunTimeNodeConstructor {
-    const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30)
+  private _importBrowserConstructor(code: string, langName: string, className: string): jTreeTypes.RunTimeNodeConstructor {
     const script = document.createElement("script")
     // todo: should we namespace things under 1 grammar?
-    script.innerHTML = `window.${tempClassName} = ${code}`
+    const win = <any>window
+    if (!win._nodeTypes) win._nodeTypes = {}
+    if (!win._nodeTypes[langName]) win._nodeTypes[langName] = {}
+    script.innerHTML = this._getModulePath(langName, className) + ` = ${code}`
     document.head.appendChild(script)
-    return (<any>window)[tempClassName]
+    return win._nodeTypes[langName][className]
   }
 
   // constructor
@@ -1457,16 +1467,27 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
     const langProgram = this.getLanguageDefinitionProgram()
     const rootNode = langProgram._getRootNodeTypeDefinitionNode()
+    const grammarProgramRoot = rootNode.getLanguageDefinitionProgram()
+    const langName = rootNode.getNodeTypeIdFromDefinition()
     const amIRoot = rootNode === <any>this
 
+    // warm up cache
+    // todo: clean this up!!!
+    // todo: check for namespace conflicts!
+    if (!GrammarProgram._languages[langName]) {
+      GrammarProgram._languages[langName] = grammarProgramRoot
+      GrammarProgram._nodeTypes[langName] = {}
+    }
+
     const code = `class ${className} extends ${extendsClassName} {
-      ${amIRoot ? `getGrammarProgramRoot() {return jtree.GrammarProgram._languages.${rootNode.getNodeTypeIdFromDefinition()} }` : ""}
+      ${amIRoot ? `getGrammarProgramRoot() {return jtree.GrammarProgram._languages.${langName} }` : ""}
       ${gettersAndConstants}
       ${this._getCustomJavascriptMethods()}
 }`
     if (AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code]) return AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code]
-    if (this.isNodeJs()) constructor = this._importNodeJsConstructor(this._getGeneratedClassName(), code)
-    else constructor = this._importBrowserConstructor(code)
+
+    if (this.isNodeJs()) constructor = this._importNodeJsConstructor(className, code, langName)
+    else constructor = this._importBrowserConstructor(code, langName, className)
     AbstractGrammarDefinitionNode._cachedNodeConstructorsFromCode[code] = constructor
 
     return constructor
@@ -1645,8 +1666,12 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
   private _cache_isRoot: boolean
 
   _amIRoot() {
-    if (this._cache_isRoot === undefined) this._cache_isRoot = (<GrammarProgram>this.getParent())._getRootNodeTypeDefinitionNode() === this
+    if (this._cache_isRoot === undefined) this._cache_isRoot = this._getLanguageRootNode() === this
     return this._cache_isRoot
+  }
+
+  private _getLanguageRootNode() {
+    return (<GrammarProgram>this.getParent())._getRootNodeTypeDefinitionNode()
   }
 
   _getCatchAllNodeConstructorToJavascript() {
@@ -1692,7 +1717,11 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
       if (extendedDef) {
         // init parent first
         extendedDef._getConstructorDefinedInGrammar()
-        return `global.${extendedDef._getGeneratedClassName()}`
+        const rootNode = this._getLanguageRootNode()
+        const langName = rootNode.getNodeTypeIdFromDefinition()
+
+        // todo: cleanup
+        return this._getModulePath(langName, extendedDef._getGeneratedClassName())
       }
 
       const baseTypeNames: any = {}
@@ -1971,12 +2000,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   static _languages: any = {}
+  static _nodeTypes: any = {}
 
   private _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
     const def = this._getRootNodeTypeDefinitionNode()
-    const langName = def.getNodeTypeIdFromDefinition()
-    // todo: check for namespace conflicts!
-    if (!GrammarProgram._languages[langName]) GrammarProgram._languages[langName] = this
     return <AbstractRuntimeProgramConstructorInterface>def._getConstructorDefinedInGrammar()
   }
 

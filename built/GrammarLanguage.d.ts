@@ -252,6 +252,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     private _cache_definedNodeConstructor;
     _getConstructorDefinedInGrammar(): Function;
     _getFirstWordMatch(): string;
+    _getModulePath(langName: string, className?: string): string;
     private _importNodeJsConstructor;
     private _importBrowserConstructor;
     static _cachedNodeConstructorsFromCode: {
@@ -299,6 +300,7 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getId(): string;
     private _cache_isRoot;
     _amIRoot(): boolean;
+    private _getLanguageRootNode;
     _getCatchAllNodeConstructorToJavascript(): string;
     _getCompilerObject(): jTreeTypes.stringMap;
     getLineHints(): string;
@@ -354,6 +356,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     };
     _getRunTimeCatchAllNodeTypeId(): string;
     static _languages: any;
+    static _nodeTypes: any;
     private _getRootConstructor;
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;

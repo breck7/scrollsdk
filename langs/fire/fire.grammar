@@ -34,6 +34,8 @@ cellType numberIdentifier
  extends identifier
 cellType hashBangWord
  highlightScope comment
+cellType hashBangKeyWord
+ highlightScope comment
 cellType stringCell
  highlightScope string
 cellType booleanIdentifier
@@ -86,7 +88,7 @@ nodeType hashbang
  match #!
  description Standard bash hashbang line.
  catchAllCellType hashBangWord
- firstCellType hashBangWord
+ firstCellType hashBangKeyWord
  compiler
   stringTemplate // #! {hashBangWord}
 nodeType error

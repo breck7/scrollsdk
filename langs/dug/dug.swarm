@@ -1,4 +1,5 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+todo Make it easier in swarm to pass in commmon input/expected pairs
 test compileToJSON
  arrangeTestSubject
   require ./dug.js

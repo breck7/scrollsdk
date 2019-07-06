@@ -8,7 +8,6 @@ test stress test
     compilesTo txt
     inScope baseNode
    cellType any
-   foo
    cellType word
     extends any
    nodeType baseNode
@@ -22,6 +21,8 @@ test stress test
     compiler
      stringTemplate to {word}
      closeChildren end
+ getAllErrors
+  lengthIs 0
  getRunTimeFirstWordsInScope
   lengthIs 3
  getNodeTypeDefinitionByNodeTypeId to

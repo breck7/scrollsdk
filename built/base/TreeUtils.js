@@ -136,12 +136,12 @@ class TreeUtils {
         const properties = Array.isArray(path) ? path : path.split(separator);
         return properties.reduce((prev, curr) => prev && prev[curr], obj);
     }
-    static formatStr(str, listDelimiter = " ", parameterMap) {
+    static formatStr(str, catchAllCellDelimiter = " ", parameterMap) {
         return str.replace(/{([^\}]+)}/g, (match, path) => {
             const val = parameterMap[path];
             if (!val)
                 return "";
-            return Array.isArray(val) ? val.join(listDelimiter) : val;
+            return Array.isArray(val) ? val.join(catchAllCellDelimiter) : val;
         });
     }
     static stripHtml(text) {

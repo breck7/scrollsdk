@@ -1,0 +1,17 @@
+object
+ name
+  string jtree
+ version
+  string 30.0.0
+ description
+  string Simplify your code with Tree Notation. This jtree package includes a Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages, as well as sample languages, implemented in TypeScript.
+ prettier
+  object
+   useTabs
+    boolean false
+   tabWidth
+    number 2
+   semi
+    boolean false
+   printWidth
+    number 160

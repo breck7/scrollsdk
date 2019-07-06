@@ -1,3 +1,12 @@
+31.0.0 / 2019-07-05
+===================
+- New: added "joinChildrenWith" word to compiler nodeTypes in grammar language
+- New: added "dug" language which compiles to JSON
+- New: improved documentation for grammar compiler nodeTypes
+- New: in compiler nodes, and generated classes, you can now access the firstCellType in this.cells just like other cells
+- Breaking: rarely used listDelimiter compiler property in Grammar Language is now "catchAllCellDelimiter"
+- Fix: fixed bug in runtime extended nodeType constructor loading
+
 30.0.0 / 2019-07-03
 ===================
 - New: much easier way to do Grammar Composition => simple concatenate strings & define a new nodeType as root!

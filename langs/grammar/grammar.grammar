@@ -192,13 +192,21 @@ nodeType version
  extends abstractNodeTypeRule
 nodeType closeChildren
  extends abstractCompilerRule
+ description When compiling a parent node to a string, this string is appended to the compiled and joined children. Default is blank.
 nodeType indentCharacter
  extends abstractCompilerRule
-nodeType listDelimiter
+ description You can change the indent character for compiled children. Default is a space.
+nodeType catchAllCellDelimiter
+ description If a node has a catchAllCell, this is the string delimiter that will be used to join those cells. Default is comma.
  extends abstractCompilerRule
 nodeType openChildren
  extends abstractCompilerRule
+ description When compiling a parent node to a string, this string is prepended to the compiled and joined children. Default is blank.
 nodeType stringTemplate
+ extends abstractCompilerRule
+ description This template string is used to compile this line, and accepts strings of the format: const var = {someCellId}
+nodeType joinChildrenWith
+ description When compiling a parent node to a string, child nodes are compiled to strings and joined by this character. Default is a newline.
  extends abstractCompilerRule
 nodeType boolean
  cells constantIdentifier
@@ -241,7 +249,7 @@ nodeType cells
  extends abstractNodeTypeRule
 nodeType compiler
  todo Remove this and its children?
- inScope stringTemplate listDelimiter openChildren closeChildren indentCharacter
+ inScope stringTemplate catchAllCellDelimiter openChildren closeChildren indentCharacter joinChildrenWith
  extends abstractNodeTypeRule
 nodeType description
  catchAllCellType stringCell

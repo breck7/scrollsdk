@@ -36,7 +36,7 @@ testTree.grammar = equal => {
 
 testTree.compileAll = equal => {
   // Arrange/Act
-  ;["hakon", "swarm", "stump", "project", "jibberish", "fire", "stamp", "zin", "newlang"].map(name => {
+  ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "fire", "stamp", "zin", "newlang"].map(name => {
     try {
       // Act
       const path = __dirname + `/../langs/${name}/${name}.grammar`

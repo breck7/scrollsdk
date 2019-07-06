@@ -96,30 +96,35 @@ nodeType error
 nodeType divide
  description Divide Numbers
  compiler
-  listDelimiter  / 
+  catchAllCellDelimiter  / 
  extends abstractArithmetic
 nodeType modulo
  description Modulo Numbers
  compiler
-  listDelimiter %
+  catchAllCellDelimiter %
  extends abstractArithmetic
 nodeType multiply
  description Multiply Numbers
  compiler
-  listDelimiter  * 
+  catchAllCellDelimiter  * 
  extends abstractArithmetic
 nodeType substract
  description Subtract Numbers
  compiler
-  listDelimiter  - 
+  catchAllCellDelimiter  - 
  extends abstractArithmetic
 nodeType add
+ description Add numbers and store result
+ compiler
+  catchAllCellDelimiter  + 
+ extends abstractArithmetic
+nodeType sum
  description Add numbers and store result
  cells numberIdentifier
  catchAllCellType numberCell
  compiler
   stringTemplate const {numberIdentifier} = [{numberCell}].reduce((sum, num) => sum + num)
-  listDelimiter , 
+  catchAllCellDelimiter , 
  frequency .1
  extends abstractAssignment
 nodeType boolean
@@ -135,7 +140,7 @@ nodeType callFunctionAndSet
  catchAllCellType anyWord
  compiler
   stringTemplate const {resultIdentifier} = {functionIdentifier}({anyWord})
-  listDelimiter , 
+  catchAllCellDelimiter , 
  extends abstractAssignment
 nodeType callMethodAndSet
  description Method Call
@@ -144,7 +149,7 @@ nodeType callMethodAndSet
  catchAllCellType anyWord
  compiler
   stringTemplate const {resultIdentifier} = {instanceIdentifier}.{methodIdentifier}({anyWord})
-  listDelimiter , 
+  catchAllCellDelimiter , 
  extends abstractAssignment
 nodeType join
  description Join strings to form new string
@@ -152,7 +157,7 @@ nodeType join
  catchAllCellType identifiers
  compiler
   stringTemplate const {identifier} = [{identifiers}].join("")
-  listDelimiter , 
+  catchAllCellDelimiter , 
  frequency .2
  extends abstractAssignment
 nodeType mutableNumber
@@ -175,7 +180,7 @@ nodeType numbers
  frequency .4
  compiler
   stringTemplate const {identifier} = [{numberCell}]
-  listDelimiter , 
+  catchAllCellDelimiter , 
  extends abstractAssignment
 nodeType string
  description String Assignment
@@ -230,7 +235,7 @@ nodeType functionNode
  catchAllCellType anyWord
  compiler
   stringTemplate const {functionIdentifier} = ({anyWord}) =>
-  listDelimiter , 
+  catchAllCellDelimiter , 
  frequency .1
  extends abstractJsblock
 nodeType ifNode
@@ -256,7 +261,7 @@ nodeType callFunction
  catchAllCellType anyWord
  compiler
   stringTemplate {functionIdentifier}({anyWord})
-  listDelimiter , 
+  catchAllCellDelimiter , 
  extends abstractTerminal
 nodeType decrement
  description Decrement
@@ -270,7 +275,7 @@ nodeType dumpIdentifier
  catchAllCellType identifier
  compiler
   stringTemplate console.log({identifier})
-  listDelimiter , 
+  catchAllCellDelimiter , 
  frequency .5
  extends abstractTerminal
 nodeType exportNode

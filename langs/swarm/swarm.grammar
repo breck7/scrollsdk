@@ -1,5 +1,6 @@
 todo Add comments?
 todo Make run in browser
+todo Add print or tracer type of intermediate element. debugger?
 nodeType swarm
  root
  description A Tree Language for unit testing.
@@ -10,9 +11,9 @@ nodeType swarm
   getTestSetupNode() {
     return this.getChildInstancesOfNodeTypeId("arrangeTestSubject")[0]
   }
-  execute(filepath) {
+  async execute(filepath) {
     const tests = this.getTestsToRun()
-    tests.map(test => test.execute(filepath))
+    await Promise.all(tests.map(test => test.execute(filepath)))
     return `${tests.length} tests started.`
   }
   getTestsToRun() {
@@ -82,7 +83,7 @@ nodeType abstractAssertion
   parseActual(actual) {
     return actual
   }
-  async executeSync(result) {
+  executeSync(result) {
     const expected = this.getSyncExpected()
     const actual = this.parseActual(result)
     const actualIsUndefined = actual === undefined
@@ -127,7 +128,7 @@ nodeType testBlock
   getEqualFn() {
     return this._equal
   }
-  _executeNode(programFilepath) {
+  async _executeNode(programFilepath) {
     const testSubject = this.getTestSetupNode().getTestSubject(programFilepath)
     const isAsync = this.isAsync()
     const executeMethod = isAsync ? "execute" : "executeSync"
@@ -136,8 +137,8 @@ nodeType testBlock
       const testName = this.getLine()
       tap.test(testName, async childTest => {
         this.setEqualMethod(childTest.equal)
-        const promises = this.map(child => {
-          const result = child[executeMethod](testSubject)
+        const promises = this.map(async child => {
+          const result = await child[executeMethod](testSubject)
           return isAsync ? Promise.resolve(result) : result
         })
         await Promise.all(promises)
@@ -162,11 +163,12 @@ nodeType testBlock
     })
     await Promise.all(promises)
   }
-  execute(programFilepath) {
-    return this.isNodeJs() ? this._executeNode(programFilepath) : this._executeBrowser()
+  async execute(programFilepath) {
+    const res = await this.isNodeJs() ? this._executeNode(programFilepath) : this._executeBrowser()
+    return res
   }
  inScope arrangeTestSubject
- catchAllNodeType command
+ catchAllNodeType commandNode
  firstCellType controlWord
  abstract
 nodeType hashbangNode
@@ -221,7 +223,7 @@ nodeType blockStringParam
  description Pass in a multiline string as a command arg. #todo: rename
  extends abstractCommandArg
  catchAllNodeType textBlock
-nodeType command
+nodeType commandNode
  javascript
   getTestBlock() {
     return this.getParent()
@@ -235,10 +237,10 @@ nodeType command
     return this.getWordsFrom(1)
   }
   _executeSwarmCommand(testSubject) {
-    const command = this.getFirstWord()
+    const commandName = this.getFirstWord()
     const commandParent = this.getRootNode().getCommandParent(testSubject) // todo: hacky.
-    const commandFn = commandParent[command]
-    if (!commandFn) throw new Error(`No function "${command}" on "${commandParent.constructor.name}`)
+    const commandFn = commandParent[commandName]
+    if (!commandFn) throw new Error(`No function "${commandName}" on "${commandParent.constructor.name}`)
     return commandFn.apply(commandParent, this._getArgs())
   }
   async execute(testSubject) {
@@ -247,11 +249,11 @@ nodeType command
   }
   executeSync(testSubject) {
     const newTestSubject = this._executeSwarmCommand(testSubject)
-    this.map(child => child.executeSync(newTestSubject))
+    return this.map(child => child.executeSync(newTestSubject))
   }
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyWord
- catchAllNodeType command
+ catchAllNodeType commandNode
  firstCellType commandWord
  inScope blockStringParam abstractAssertion
 nodeType constructWithBlockString
@@ -277,11 +279,6 @@ nodeType requireNode
  cells filepath
  catchAllCellType anyWord
  extends terminal
-nodeType skipTest
- description If you want to skip running a test.
- javascript
-  async execute() { console.log(`Skipped test ${this.getLine()}`) }
- extends testBlock
 nodeType staticNode
  match static
  description Add this to setup node to import class directly without initiating it, for static method testing.
@@ -320,6 +317,11 @@ nodeType test
  extends testBlock
 nodeType testOnly
  description If set, only this test block will be run.
+ extends testBlock
+nodeType skipTest
+ description If you want to skip running a test.
+ javascript
+  async execute() { console.log(`Skipped test ${this.getLine()}`) }
  extends testBlock
 nodeType textBlock
  firstCellType anyWord

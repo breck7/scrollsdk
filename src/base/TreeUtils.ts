@@ -151,11 +151,11 @@ class TreeUtils {
     return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
   }
 
-  static formatStr(str: string, listDelimiter = " ", parameterMap: jTreeTypes.stringMap) {
+  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: jTreeTypes.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
-      return Array.isArray(val) ? val.join(listDelimiter) : val
+      return Array.isArray(val) ? val.join(catchAllCellDelimiter) : val
     })
   }
 

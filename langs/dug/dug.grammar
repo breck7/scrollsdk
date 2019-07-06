@@ -1,0 +1,72 @@
+todo Add swarm tests for top scenarios, including the scalar at root level scenario.
+todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
+nodeType dug
+ root
+ description A demonstration language that compiles to JSON.
+ inScope valueNode
+ catchAllNodeType errorNode
+ javascript
+  compile() {
+    const res = super.compile()
+    return JSON.stringify(JSON.parse(res), null, 2)
+  }
+cellType anyFirstWord
+cellType typeNameCell
+ highlightScope keyword
+cellType stringWord
+ highlightScope string
+cellType booleanCell
+ enum true false
+ highlightScope constant.numeric
+cellType numberCell
+ highlightScope constant.numeric
+nodeType valueNode
+ firstCellType typeNameCell
+nodeType nullNode
+ compiler
+  stringTemplate null
+ extends valueNode
+ match null
+nodeType numberNode
+ match number
+ extends valueNode
+ cells numberCell
+ compiler
+  stringTemplate {numberCell}
+nodeType stringNode
+ match string
+ catchAllCellType stringWord
+ compiler
+  stringTemplate "{stringWord}"
+ extends valueNode
+nodeType booleanNode
+ match boolean
+ extends valueNode
+ cells booleanCell
+ compiler
+  stringTemplate {booleanCell}
+nodeType memberNode
+ firstCellType stringWord
+ inScope valueNode
+ compiler
+  stringTemplate "{stringWord}" :
+nodeType objectNode
+ match object
+ catchAllNodeType memberNode
+ extends valueNode
+ compiler
+  stringTemplate  
+  joinChildrenWith , 
+  openChildren {
+  closeChildren }
+nodeType arrayNode
+ match array
+ extends valueNode
+ inScope valueNode
+ compiler
+  stringTemplate  
+  joinChildrenWith , 
+  openChildren [
+  closeChildren ]
+nodeType errorNode
+ baseNodeType errorNode

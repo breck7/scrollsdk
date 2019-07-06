@@ -152,12 +152,12 @@ class TreeUtils {
         const properties = Array.isArray(path) ? path : path.split(separator);
         return properties.reduce((prev, curr) => prev && prev[curr], obj);
     }
-    static formatStr(str, listDelimiter = " ", parameterMap) {
+    static formatStr(str, catchAllCellDelimiter = " ", parameterMap) {
         return str.replace(/{([^\}]+)}/g, (match, path) => {
             const val = parameterMap[path];
             if (!val)
                 return "";
-            return Array.isArray(val) ? val.join(listDelimiter) : val;
+            return Array.isArray(val) ? val.join(catchAllCellDelimiter) : val;
         });
     }
     static stripHtml(text) {
@@ -960,11 +960,11 @@ class ImmutableNode extends AbstractNode {
         return this._childrenToString();
     }
     // todo: implement
-    _getNodeJoinCharacter() {
+    _getChildJoinCharacter() {
         return "\n";
     }
     compile() {
-        return this.map(child => child.compile()).join(this._getNodeJoinCharacter());
+        return this.map(child => child.compile()).join(this._getChildJoinCharacter());
     }
     toXml() {
         return this._childrenToXml(0);
@@ -2389,8 +2389,9 @@ var GrammarConstantsCompiler;
 (function (GrammarConstantsCompiler) {
     GrammarConstantsCompiler["stringTemplate"] = "stringTemplate";
     GrammarConstantsCompiler["indentCharacter"] = "indentCharacter";
-    GrammarConstantsCompiler["listDelimiter"] = "listDelimiter";
+    GrammarConstantsCompiler["catchAllCellDelimiter"] = "catchAllCellDelimiter";
     GrammarConstantsCompiler["openChildren"] = "openChildren";
+    GrammarConstantsCompiler["joinChildrenWith"] = "joinChildrenWith";
     GrammarConstantsCompiler["closeChildren"] = "closeChildren";
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
 var GrammarStandardCellTypeIds;
@@ -2700,9 +2701,9 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     }
     _getCompiledLine() {
         const compiler = this.getDefinition()._getCompilerObject();
-        const listDelimiter = compiler[GrammarConstantsCompiler.listDelimiter];
+        const catchAllCellDelimiter = compiler[GrammarConstantsCompiler.catchAllCellDelimiter];
         const str = compiler[GrammarConstantsCompiler.stringTemplate];
-        return str ? TreeUtils.formatStr(str, listDelimiter, this.cells) : this.getLine();
+        return str ? TreeUtils.formatStr(str, catchAllCellDelimiter, this.cells) : this.getLine();
     }
     compile() {
         return this._getCompiledIndentation() + this._getCompiledLine();
@@ -2710,9 +2711,7 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     // todo: remove
     get cells() {
         const cells = {};
-        this._getGrammarBackedCellArray()
-            .slice(1)
-            .forEach(cell => {
+        this._getGrammarBackedCellArray().forEach(cell => {
             if (!cell.isCatchAll())
                 cells[cell.getCellTypeId()] = cell.getParsed();
             else {
@@ -2737,16 +2736,17 @@ class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
 }
 class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
     // todo: implement
-    _getNodeJoinCharacter() {
+    _getChildJoinCharacter() {
         return "\n";
     }
     compile() {
         const compiler = this.getDefinition()._getCompilerObject();
         const openChildrenString = compiler[GrammarConstantsCompiler.openChildren] || "";
         const closeChildrenString = compiler[GrammarConstantsCompiler.closeChildren] || "";
+        const childJoinCharacter = compiler[GrammarConstantsCompiler.joinChildrenWith] || "\n";
         const compiledLine = this._getCompiledLine();
         const indent = this._getCompiledIndentation();
-        const compiledChildren = this.map(child => child.compile()).join(this._getNodeJoinCharacter());
+        const compiledChildren = this.map(child => child.compile()).join(childJoinCharacter);
         return `${indent}${compiledLine}${openChildrenString}
 ${compiledChildren}
 ${indent}${closeChildrenString}`;
@@ -3351,7 +3351,7 @@ class GrammarCompilerNode extends TreeNode {
         const types = [
             GrammarConstantsCompiler.stringTemplate,
             GrammarConstantsCompiler.indentCharacter,
-            GrammarConstantsCompiler.listDelimiter,
+            GrammarConstantsCompiler.catchAllCellDelimiter,
             GrammarConstantsCompiler.openChildren,
             GrammarConstantsCompiler.closeChildren
         ];

@@ -118,7 +118,7 @@ declare class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
     getErrors(): UnknownNodeTypeError[];
 }
 declare class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
-    protected _getNodeJoinCharacter(): string;
+    protected _getChildJoinCharacter(): string;
     compile(): string;
 }
 declare class GrammarBackedBlobNode extends GrammarBackedNonRootNode {

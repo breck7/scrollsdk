@@ -620,11 +620,11 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return this._childrenToString();
     }
     // todo: implement
-    _getNodeJoinCharacter() {
+    _getChildJoinCharacter() {
         return "\n";
     }
     compile() {
-        return this.map(child => child.compile()).join(this._getNodeJoinCharacter());
+        return this.map(child => child.compile()).join(this._getChildJoinCharacter());
     }
     toXml() {
         return this._childrenToXml(0);

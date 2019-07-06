@@ -1,0 +1,41 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+test compileToJSON
+ arrangeTestSubject
+  require ./dug.js
+  constructWithBlockString
+   object
+    name
+     string jtree
+    version
+     string 30
+    prettier
+     object
+      useTabs
+       boolean false
+      tabWidth
+       number 2
+      semi
+       boolean false
+      printWidth
+       number 160
+ compile
+  blockStringIs
+   {
+     "name": "jtree",
+     "version": "30",
+     "prettier": {
+       "useTabs": false,
+       "tabWidth": 2,
+       "semi": false,
+       "printWidth": 160
+     }
+   }
+ getAllErrors
+  lengthIs 0
+test testErrors
+ arrangeTestSubject
+  require ./dug.js
+  constructWithBlockString
+   strin foo
+ getAllErrors
+  lengthIs 1

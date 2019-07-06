@@ -697,12 +697,12 @@ class ImmutableNode extends AbstractNode {
   }
 
   // todo: implement
-  protected _getNodeJoinCharacter() {
+  protected _getChildJoinCharacter() {
     return "\n"
   }
 
   compile(): string {
-    return this.map(child => child.compile()).join(this._getNodeJoinCharacter())
+    return this.map(child => child.compile()).join(this._getChildJoinCharacter())
   }
 
   toXml(): jTreeTypes.xmlString {

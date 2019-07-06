@@ -1,7 +1,7 @@
 //onsave /usr/local/bin/tsc -p /Users/breck/jtree/sandbox/build/
 class GrammarIDEApp {
     constructor(grammarSourceCode) {
-        this.languages = "newlang hakon swarm project stamp grammar stump jibberish fire numbers".split(" ");
+        this.languages = "newlang hakon stump dug fire swarm project stamp grammar jibberish numbers".split(" ");
         this._codeErrorsConsole = jQuery("#codeErrorsConsole");
         this._codeConsole = jQuery("#codeConsole");
         this._grammarConsole = jQuery("#grammarConsole");

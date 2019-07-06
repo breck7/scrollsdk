@@ -37,7 +37,7 @@ class GrammarIDEApp {
     history.replaceState(null, null, " ")
   }
 
-  public languages = "newlang hakon swarm project stamp grammar stump jibberish fire numbers".split(" ")
+  public languages = "newlang hakon stump dug fire swarm project stamp grammar jibberish numbers".split(" ")
 
   async start() {
     this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))

@@ -1,13 +1,15 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-test basics
+test compileFire
  arrangeTestSubject
   require ./fire.js
   constructWithBlockString
-   add ten 2 3 5
+   sum ten 2 3 5
+   add ten2 2 3 5
    dumpIdentifier ten
  compile
   blockStringIs
    const ten = [2, 3, 5].reduce((sum, num) => sum + num)
+   const ten2 = 2 + 3 + 5
    console.log(ten)
  getAllErrors
   lengthIs 0

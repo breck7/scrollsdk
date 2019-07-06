@@ -11,7 +11,7 @@ declare class TreeUtils {
     static resolvePath(filePath: string, programFilepath: string): any;
     static getFileExtension(url?: string): string;
     static resolveProperty(obj: Object, path: string | string[], separator?: string): any;
-    static formatStr(str: string, listDelimiter: string, parameterMap: jTreeTypes.stringMap): string;
+    static formatStr(str: string, catchAllCellDelimiter: string, parameterMap: jTreeTypes.stringMap): string;
     static stripHtml(text: string): string;
     static getUniqueWordsArray(allWords: string): {
         word: string;

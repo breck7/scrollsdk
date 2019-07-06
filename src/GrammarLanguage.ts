@@ -53,8 +53,6 @@ enum GrammarConstants {
   baseNodeType = "baseNodeType",
   blobNode = "blobNode",
   errorNode = "errorNode",
-  terminalNode = "terminalNode",
-  nonTerminalNode = "nonTerminalNode",
 
   // parse time
   extends = "extends",
@@ -393,7 +391,22 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
   }
 
   compile() {
-    return this._getCompiledIndentation() + this._getCompiledLine()
+    const def = this.getDefinition()
+    if (def.isTerminalNodeType()) return this._getCompiledIndentation() + this._getCompiledLine()
+
+    const compiler = def._getCompilerObject()
+    const openChildrenString = compiler[GrammarConstantsCompiler.openChildren] || ""
+    const closeChildrenString = compiler[GrammarConstantsCompiler.closeChildren] || ""
+    const childJoinCharacter = compiler[GrammarConstantsCompiler.joinChildrenWith] || "\n"
+
+    const compiledLine = this._getCompiledLine()
+    const indent = this._getCompiledIndentation()
+
+    const compiledChildren = this.map(child => child.compile()).join(childJoinCharacter)
+
+    return `${indent}${compiledLine}${openChildrenString}
+${compiledChildren}
+${indent}${closeChildrenString}`
   }
 
   // todo: remove
@@ -410,8 +423,6 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
   }
 }
 
-class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {}
-
 class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
   // todo: is this correct?
   getLineCellTypes() {
@@ -420,29 +431,6 @@ class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
 
   getErrors(): UnknownNodeTypeError[] {
     return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
-  }
-}
-
-class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
-  // todo: implement
-  protected _getChildJoinCharacter() {
-    return "\n"
-  }
-
-  compile() {
-    const compiler = this.getDefinition()._getCompilerObject()
-    const openChildrenString = compiler[GrammarConstantsCompiler.openChildren] || ""
-    const closeChildrenString = compiler[GrammarConstantsCompiler.closeChildren] || ""
-    const childJoinCharacter = compiler[GrammarConstantsCompiler.joinChildrenWith] || "\n"
-
-    const compiledLine = this._getCompiledLine()
-    const indent = this._getCompiledIndentation()
-
-    const compiledChildren = this.map(child => child.compile()).join(childJoinCharacter)
-
-    return `${indent}${compiledLine}${openChildrenString}
-${compiledChildren}
-${indent}${closeChildrenString}`
   }
 }
 
@@ -1467,7 +1455,12 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const extendsClassName = this._getExtendsClassName(false)
     const gettersAndConstants = this._getCellGettersAndNodeTypeConstants()
 
+    const langProgram = this.getLanguageDefinitionProgram()
+    const rootNode = langProgram._getRootNodeTypeDefinitionNode()
+    const amIRoot = rootNode === <any>this
+
     const code = `class ${className} extends ${extendsClassName} {
+      ${amIRoot ? `getGrammarProgramRoot() {return jtree.GrammarProgram._languages.${rootNode.getNodeTypeIdFromDefinition()} }` : ""}
       ${gettersAndConstants}
       ${this._getCustomJavascriptMethods()}
 }`
@@ -1684,10 +1677,14 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     return firstWordsInScope.some(firstWord => chain.has(firstWord))
   }
 
+  isTerminalNodeType() {
+    return !this._getFromExtended(GrammarConstants.inScope) && !this._getFromExtended(GrammarConstants.catchAllNodeType)
+  }
+
   _getExtendsClassName(isCompiled = false): jTreeTypes.javascriptClassPath {
     if (this._amIRoot()) return "jtree.GrammarBackedRootNode"
 
-    const isNonTerminal = this._getFromExtended(GrammarConstants.inScope) || this._getFromExtended(GrammarConstants.catchAllNodeType)
+    const isNonTerminal = !this.isTerminalNodeType()
     const extendedDef = <AbstractGrammarDefinitionNode>this._getExtendedParent()
 
     // todo: this is broken for runtime stuff.
@@ -1701,13 +1698,11 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
       const baseTypeNames: any = {}
       baseTypeNames[GrammarConstants.blobNode] = "BlobNode"
       baseTypeNames[GrammarConstants.errorNode] = "ErrorNode"
-      baseTypeNames[GrammarConstants.terminalNode] = "TerminalNode"
-      baseTypeNames[GrammarConstants.nonTerminalNode] = "NonTerminalNode"
-      const baseNodeTypeName = baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] || (isNonTerminal ? "NonTerminalNode" : "TerminalNode")
+      const baseNodeTypeName = baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] || "GrammarBackedNonRootNode"
       return `jtree.` + baseNodeTypeName // todo: this is incorrect but works for legacy stuff.
     }
 
-    return extendedDef ? extendedDef._getGeneratedClassName() : isNonTerminal ? "jtree.TerminalNode" : "jtree.NonTerminalNode"
+    return extendedDef ? extendedDef._getGeneratedClassName() : "jtree.GrammarBackedNonRootNode"
   }
 
   private _getFirstCellHighlightScope() {
@@ -1975,17 +1970,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.catchAllNodeType)
   }
 
-  private _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
-    const extendedConstructor: any = this._getRootNodeTypeDefinitionNode()._getConstructorDefinedInGrammar()
-    const grammarProgram = this
+  static _languages: any = {}
 
-    // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
-    // new language.
-    return <AbstractRuntimeProgramConstructorInterface>(<any>class extends extendedConstructor {
-      getGrammarProgramRoot(): GrammarProgram {
-        return grammarProgram
-      }
-    })
+  private _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
+    const def = this._getRootNodeTypeDefinitionNode()
+    const langName = def.getNodeTypeIdFromDefinition()
+    // todo: check for namespace conflicts!
+    if (!GrammarProgram._languages[langName]) GrammarProgram._languages[langName] = this
+    return <AbstractRuntimeProgramConstructorInterface>def._getConstructorDefinedInGrammar()
   }
 
   private _cache_rootConstructorClass: AbstractRuntimeProgramConstructorInterface
@@ -2109,6 +2101,5 @@ export {
   GrammarBackedBlobNode,
   GrammarBackedErrorNode,
   GrammarBackedRootNode,
-  GrammarBackedTerminalNode,
-  GrammarBackedNonTerminalNode
+  GrammarBackedNonRootNode
 }

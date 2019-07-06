@@ -8,14 +8,13 @@ const TreeNotationCodeMirrorMode_1 = require("./codemirror/TreeNotationCodeMirro
 class jtree {
 }
 jtree.GrammarBackedRootNode = GrammarLanguage_1.GrammarBackedRootNode;
+jtree.GrammarBackedNonRootNode = GrammarLanguage_1.GrammarBackedNonRootNode;
 jtree.Utils = TreeUtils_1.default;
 jtree.TreeNode = TreeNode_1.default;
-jtree.NonTerminalNode = GrammarLanguage_1.GrammarBackedNonTerminalNode;
 jtree.BlobNode = GrammarLanguage_1.GrammarBackedBlobNode;
 jtree.ErrorNode = GrammarLanguage_1.GrammarBackedErrorNode;
-jtree.TerminalNode = GrammarLanguage_1.GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarLanguage_1.GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram_1.default;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode_1.default;
-jtree.getVersion = () => "30.0.0";
+jtree.getVersion = () => "31.0.0";
 exports.default = jtree;

@@ -2431,8 +2431,6 @@ var GrammarConstants;
     GrammarConstants["baseNodeType"] = "baseNodeType";
     GrammarConstants["blobNode"] = "blobNode";
     GrammarConstants["errorNode"] = "errorNode";
-    GrammarConstants["terminalNode"] = "terminalNode";
-    GrammarConstants["nonTerminalNode"] = "nonTerminalNode";
     // parse time
     GrammarConstants["extends"] = "extends";
     GrammarConstants["abstract"] = "abstract";
@@ -2706,7 +2704,19 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
         return str ? TreeUtils.formatStr(str, catchAllCellDelimiter, this.cells) : this.getLine();
     }
     compile() {
-        return this._getCompiledIndentation() + this._getCompiledLine();
+        const def = this.getDefinition();
+        if (def.isTerminalNodeType())
+            return this._getCompiledIndentation() + this._getCompiledLine();
+        const compiler = def._getCompilerObject();
+        const openChildrenString = compiler[GrammarConstantsCompiler.openChildren] || "";
+        const closeChildrenString = compiler[GrammarConstantsCompiler.closeChildren] || "";
+        const childJoinCharacter = compiler[GrammarConstantsCompiler.joinChildrenWith] || "\n";
+        const compiledLine = this._getCompiledLine();
+        const indent = this._getCompiledIndentation();
+        const compiledChildren = this.map(child => child.compile()).join(childJoinCharacter);
+        return `${indent}${compiledLine}${openChildrenString}
+${compiledChildren}
+${indent}${closeChildrenString}`;
     }
     // todo: remove
     get cells() {
@@ -2723,8 +2733,6 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
         return cells;
     }
 }
-class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {
-}
 class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
     // todo: is this correct?
     getLineCellTypes() {
@@ -2732,24 +2740,6 @@ class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
     }
     getErrors() {
         return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)];
-    }
-}
-class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
-    // todo: implement
-    _getChildJoinCharacter() {
-        return "\n";
-    }
-    compile() {
-        const compiler = this.getDefinition()._getCompilerObject();
-        const openChildrenString = compiler[GrammarConstantsCompiler.openChildren] || "";
-        const closeChildrenString = compiler[GrammarConstantsCompiler.closeChildren] || "";
-        const childJoinCharacter = compiler[GrammarConstantsCompiler.joinChildrenWith] || "\n";
-        const compiledLine = this._getCompiledLine();
-        const indent = this._getCompiledIndentation();
-        const compiledChildren = this.map(child => child.compile()).join(childJoinCharacter);
-        return `${indent}${compiledLine}${openChildrenString}
-${compiledChildren}
-${indent}${closeChildrenString}`;
     }
 }
 class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
@@ -3550,7 +3540,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             // Todo: do we want to add new classes to global namespace?
             return vm.runInThisContext(`{
  ${code}
- ${className}
+ global.${className} = ${className}
 }`);
         }
         catch (err) {
@@ -3562,6 +3552,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     _importBrowserConstructor(code) {
         const tempClassName = "tempConstructor" + TreeUtils.getRandomString(30);
         const script = document.createElement("script");
+        // todo: should we namespace things under 1 grammar?
         script.innerHTML = `window.${tempClassName} = ${code}`;
         document.head.appendChild(script);
         return window[tempClassName];
@@ -3574,7 +3565,11 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         const className = this._getGeneratedClassName();
         const extendsClassName = this._getExtendsClassName(false);
         const gettersAndConstants = this._getCellGettersAndNodeTypeConstants();
+        const langProgram = this.getLanguageDefinitionProgram();
+        const rootNode = langProgram._getRootNodeTypeDefinitionNode();
+        const amIRoot = rootNode === this;
         const code = `class ${className} extends ${extendsClassName} {
+      ${amIRoot ? `getGrammarProgramRoot() {return jtree.GrammarProgram._languages.${rootNode.getNodeTypeIdFromDefinition()} }` : ""}
       ${gettersAndConstants}
       ${this._getCustomJavascriptMethods()}
 }`;
@@ -3760,20 +3755,28 @@ class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
         const chain = this._getNodeTypeInheritanceSet();
         return firstWordsInScope.some(firstWord => chain.has(firstWord));
     }
+    isTerminalNodeType() {
+        return !this._getFromExtended(GrammarConstants.inScope) && !this._getFromExtended(GrammarConstants.catchAllNodeType);
+    }
     _getExtendsClassName(isCompiled = false) {
         if (this._amIRoot())
             return "jtree.GrammarBackedRootNode";
-        const baseTypeNames = {};
-        baseTypeNames[GrammarConstants.blobNode] = "BlobNode";
-        baseTypeNames[GrammarConstants.errorNode] = "ErrorNode";
-        baseTypeNames[GrammarConstants.terminalNode] = "TerminalNode";
-        baseTypeNames[GrammarConstants.nonTerminalNode] = "NonTerminalNode";
-        const isNonTerminal = this._getFromExtended(GrammarConstants.inScope) || this._getFromExtended(GrammarConstants.catchAllNodeType);
-        const baseNodeTypeName = baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] || (isNonTerminal ? "NonTerminalNode" : "TerminalNode");
-        if (!isCompiled)
-            return "jtree." + baseNodeTypeName; // todo: this is incorrect but works for legacy stuff.
+        const isNonTerminal = !this.isTerminalNodeType();
         const extendedDef = this._getExtendedParent();
-        return extendedDef ? extendedDef._getGeneratedClassName() : isCompiled ? "jtree.TerminalNode" : "jtree.NonTerminalNode";
+        // todo: this is broken for runtime stuff.
+        if (!isCompiled) {
+            if (extendedDef) {
+                // init parent first
+                extendedDef._getConstructorDefinedInGrammar();
+                return `global.${extendedDef._getGeneratedClassName()}`;
+            }
+            const baseTypeNames = {};
+            baseTypeNames[GrammarConstants.blobNode] = "BlobNode";
+            baseTypeNames[GrammarConstants.errorNode] = "ErrorNode";
+            const baseNodeTypeName = baseTypeNames[this._getFromExtended(GrammarConstants.baseNodeType)] || "GrammarBackedNonRootNode";
+            return `jtree.` + baseNodeTypeName; // todo: this is incorrect but works for legacy stuff.
+        }
+        return extendedDef ? extendedDef._getGeneratedClassName() : "jtree.GrammarBackedNonRootNode";
     }
     _getFirstCellHighlightScope() {
         const program = this.getLanguageDefinitionProgram();
@@ -3993,15 +3996,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.catchAllNodeType);
     }
     _getRootConstructor() {
-        const extendedConstructor = this._getRootNodeTypeDefinitionNode()._getConstructorDefinedInGrammar();
-        const grammarProgram = this;
-        // Note: this is some of the most unorthodox code in this repo. We create a class on the fly for your
-        // new language.
-        return class extends extendedConstructor {
-            getGrammarProgramRoot() {
-                return grammarProgram;
-            }
-        };
+        const def = this._getRootNodeTypeDefinitionNode();
+        const langName = def.getNodeTypeIdFromDefinition();
+        // todo: check for namespace conflicts!
+        if (!GrammarProgram._languages[langName])
+            GrammarProgram._languages[langName] = this;
+        return def._getConstructorDefinedInGrammar();
     }
     getRootConstructor() {
         if (!this._cache_rootConstructorClass)
@@ -4100,6 +4100,7 @@ ${GrammarConstants.nodeType} anyNode
 ${GrammarConstants.cellType} anyWord`).getRootConstructor();
     }
 }
+GrammarProgram._languages = {};
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 var CmToken;
 (function (CmToken) {
@@ -4547,16 +4548,15 @@ class UnknownGrammarProgram extends TreeNode {
 class jtree {
 }
 jtree.GrammarBackedRootNode = GrammarBackedRootNode;
+jtree.GrammarBackedNonRootNode = GrammarBackedNonRootNode;
 jtree.Utils = TreeUtils;
 jtree.TreeNode = TreeNode;
-jtree.NonTerminalNode = GrammarBackedNonTerminalNode;
 jtree.BlobNode = GrammarBackedBlobNode;
 jtree.ErrorNode = GrammarBackedErrorNode;
-jtree.TerminalNode = GrammarBackedTerminalNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "30.0.0";
+jtree.getVersion = () => "31.0.0";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

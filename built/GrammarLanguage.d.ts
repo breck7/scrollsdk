@@ -28,8 +28,6 @@ declare enum GrammarConstants {
     baseNodeType = "baseNodeType",
     blobNode = "blobNode",
     errorNode = "errorNode",
-    terminalNode = "terminalNode",
-    nonTerminalNode = "nonTerminalNode",
     extends = "extends",
     abstract = "abstract",
     root = "root",
@@ -111,15 +109,9 @@ declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     compile(): string;
     readonly cells: jTreeTypes.stringMap;
 }
-declare class GrammarBackedTerminalNode extends GrammarBackedNonRootNode {
-}
 declare class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
     getLineCellTypes(): string;
     getErrors(): UnknownNodeTypeError[];
-}
-declare class GrammarBackedNonTerminalNode extends GrammarBackedNonRootNode {
-    protected _getChildJoinCharacter(): string;
-    compile(): string;
 }
 declare class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
     getFirstWordMap(): {};
@@ -311,6 +303,7 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
     _getCompilerObject(): jTreeTypes.stringMap;
     getLineHints(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
+    isTerminalNodeType(): boolean;
     _getExtendsClassName(isCompiled?: boolean): jTreeTypes.javascriptClassPath;
     private _getFirstCellHighlightScope;
     getMatchBlock(): string;
@@ -360,6 +353,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
         [nodeTypeId: string]: NonRootNodeTypeDefinition;
     };
     _getRunTimeCatchAllNodeTypeId(): string;
+    static _languages: any;
     private _getRootConstructor;
     private _cache_rootConstructorClass;
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
@@ -373,4 +367,4 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
 }
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedBlobNode, GrammarBackedErrorNode, GrammarBackedRootNode, GrammarBackedTerminalNode, GrammarBackedNonTerminalNode };
+export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedBlobNode, GrammarBackedErrorNode, GrammarBackedRootNode, GrammarBackedNonRootNode };

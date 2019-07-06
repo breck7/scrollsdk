@@ -4,8 +4,9 @@
 - New: added "dug" language which compiles to JSON
 - New: improved documentation for grammar compiler nodeTypes
 - New: in compiler nodes, and generated classes, you can now access the firstCellType in this.cells just like other cells
+- Fix: fixed bugs in runtime extended nodeType constructor loading
 - Breaking: rarely used listDelimiter compiler property in Grammar Language is now "catchAllCellDelimiter"
-- Fix: fixed bug in runtime extended nodeType constructor loading
+- Breaking: Terminal vs NonTerminal nodeTypes are now determined by duck typing. Use GrammarBackedNonRootNode in place of those now.
 
 30.0.0 / 2019-07-03
 ===================

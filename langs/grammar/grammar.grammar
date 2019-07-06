@@ -21,7 +21,7 @@ cellType javascriptSafeAlphaNumericIdentifier
 cellType anyFirstWord
 cellType anyWord
 cellType baseNodeTypes
- enum blobNode errorNode terminalNode nonTerminalNode
+ enum blobNode errorNode nonRootNode
  highlightScope variable.parameter
 cellType booleanCell
  enum true false
@@ -148,7 +148,8 @@ nodeType highlightScope
  cells scopeName
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
-nodeType root
+nodeType rootNode
+ match root
  firstCellType propertyName
  description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
 nodeType nodeType
@@ -156,9 +157,8 @@ nodeType nodeType
  cells nodeTypeId
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllError
- baseNodeType nonTerminalNode
  firstCellType nodeTypeIdConstant
- inScope root abstractNodeTypeRule abstractConstant todo extendsNodeTypeNode
+ inScope rootNode abstractNodeTypeRule abstractConstant todo extendsNodeTypeNode
 nodeType nodeTypeOrder
  todo Should we just reuse inScope order? And have a property that indicates order is not important?
  todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?

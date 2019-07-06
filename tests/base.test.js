@@ -1955,8 +1955,8 @@ someCode
   // Allow running in both browser and nodejs:
   const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
 
-  class add extends jtreeBase.NonTerminalNode {}
-  class lineOfCode extends jtreeBase.NonTerminalNode {}
+  class add extends jtreeBase.GrammarBackedNonRootNode {}
+  class lineOfCode extends jtreeBase.GrammarBackedNonRootNode {}
   class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
   const JibberishLang = {}

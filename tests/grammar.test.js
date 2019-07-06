@@ -358,17 +358,17 @@ testTree.grammarWithLoop = equal => {
   // Arrange/Act/Assert
   try {
     const programConstructor = new GrammarProgram(
-      `nodeType any
+      `nodeType langWithLoop
  root
  catchAllNodeType nodeA
 nodeType nodeA
  extends nodeC
- catchAllCellType any
+ catchAllCellType anyCell
 nodeType nodeB
  extends nodeA
 nodeType nodeC
  extends nodeB
-cellType any`
+cellType anyCell`
     ).getRootConstructor()
 
     new programConstructor("nodeA")

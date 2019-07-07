@@ -15,7 +15,7 @@ const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
 
 const testTree = {}
 
-testTree.basic = equal => {
+testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
   const program = new GrammarProgram()
 }
@@ -54,7 +54,9 @@ testTree.jibberish = equal => {
 
   // Assert
   equal(program.constructor.name, "jibberish", "correct program class")
-  equal(program.getAllErrors().length, 0, `should be 0 errors`)
+  const errs = program.getAllErrors()
+  equal(errs.length, 0, `should be 0 errors`)
+  if (errs.length) console.log(errs.map(err => err.getMessage()))
 
   const defNode = program
     .getGrammarProgramRoot()

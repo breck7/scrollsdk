@@ -3177,7 +3177,7 @@ testTree.toTable = equal => {
   // Arrange
   const b = TreeNode.fromCsv("name\njoe\nfrankenstein")
   // Act/Assert
-  equal(b.toFormattedTable(1, false), "n\nj\nf", "Expected max width to be enforced")
+  equal(b.toFormattedTable(1, false), "n...\nj...\nf...", "Expected max width to be enforced")
 }
 
 testTree.nest = equal => {

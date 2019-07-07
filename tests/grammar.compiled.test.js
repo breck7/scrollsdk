@@ -21,7 +21,7 @@ testTree.grammar = equal => {
   // Arrange
   const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
   try {
-    const tempFilePath = jtree.compileGrammarForNodeJs(grammarGrammarPath, outputDir)
+    const tempFilePath = jtree.compileGrammarForNodeJs(grammarGrammarPath, outputDir, false)
 
     // Act
     const { grammar } = require(tempFilePath)
@@ -41,7 +41,7 @@ testTree.compileAll = equal => {
       // Act
       const path = __dirname + `/../langs/${name}/${name}.grammar`
       const grammarCode = jtree.TreeNode.fromDisk(path)
-      const tempFilePath = jtree.compileGrammarForNodeJs(path, outputDir)
+      const tempFilePath = jtree.compileGrammarForNodeJs(path, outputDir, false)
       const tempExports = require(tempFilePath)
 
       // Assert
@@ -67,7 +67,7 @@ testTree.compileAll = equal => {
 testTree.jibberish = equal => {
   // Arrange
   try {
-    const tempFilePath = jtree.compileGrammarForNodeJs(__dirname + "/../langs/jibberish/jibberish.grammar", outputDir)
+    const tempFilePath = jtree.compileGrammarForNodeJs(__dirname + "/../langs/jibberish/jibberish.grammar", outputDir, false)
 
     // Act
     const { jibberish } = require(tempFilePath)
@@ -92,7 +92,7 @@ testTree.numbers = equal => {
   const numbersGrammarCode = fs.readFileSync(numbersGrammarPath, "utf8")
   const makeNumbersRunTimeProgram = code => makeProgram(numbersGrammarCode, code)
   try {
-    const tempFilePath = jtree.compileGrammarForNodeJs(numbersGrammarPath, outputDir)
+    const tempFilePath = jtree.compileGrammarForNodeJs(numbersGrammarPath, outputDir, false)
 
     // Act
     const { numbers, NumbersConstants } = require(tempFilePath)

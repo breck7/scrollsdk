@@ -10,6 +10,7 @@ distribute combinedFilePath  Distribute a 'combined' file into multiple destinat
 gen grammarName outputPath Generate sublime syntax highlighting files
 help   Show this help
 list   List installed Grammars
+parse programPath  Parse and print the nodeTypes and cellTypes in a program.
 prettify programPath  Prettify a tree program in place
 programs grammarName  List all files for a grammar ever parsed with this cli tool
 register grammarPath  Register a new grammar

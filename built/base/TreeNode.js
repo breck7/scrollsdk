@@ -898,13 +898,14 @@ class ImmutableNode extends AbstractNode_node_1.default {
         // Output a table for printing
         return this._toTable(100, false);
     }
-    toFormattedTable(maxWidth, alignRight = false) {
-        // Output a table with padding up to maxWidth in each cell
-        return this._toTable(maxWidth, alignRight);
+    toFormattedTable(maxCharactersPerColumn, alignRight = false) {
+        return this._toTable(maxCharactersPerColumn, alignRight);
     }
-    _toTable(maxWidth, alignRight = false) {
+    _toTable(maxCharactersPerColumn, alignRight = false) {
         const header = this._getUnionNames();
-        const widths = header.map(col => (col.length > maxWidth ? maxWidth : col.length));
+        // Set initial column widths
+        const widths = header.map(col => (col.length > maxCharactersPerColumn ? maxCharactersPerColumn : col.length));
+        // Expand column widths if needed
         this.forEach(node => {
             if (!node.length)
                 return true;
@@ -914,7 +915,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
                     return true;
                 const length = cellValue.toString().length;
                 if (length > widths[index])
-                    widths[index] = length > maxWidth ? maxWidth : length;
+                    widths[index] = length > maxCharactersPerColumn ? maxCharactersPerColumn : length;
             });
         });
         const cellFn = (cellText, row, col) => {
@@ -922,9 +923,8 @@ class ImmutableNode extends AbstractNode_node_1.default {
             // Strip newlines in fixedWidth output
             const cellValue = cellText.toString().replace(/\n/g, "\\n");
             const cellLength = cellValue.length;
-            if (cellLength > width) {
-                return cellValue.substr(0, width);
-            }
+            if (cellLength > width)
+                return cellValue.substr(0, width) + "...";
             const padding = " ".repeat(width - cellLength);
             return alignRight ? padding + cellValue : cellValue + padding;
         };

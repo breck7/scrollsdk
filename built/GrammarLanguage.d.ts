@@ -57,6 +57,8 @@ declare abstract class GrammarBackedNode extends TreeNode {
     }[];
     getChildInstancesOfNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): GrammarBackedNode[];
     doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
+    _getErrorNodeErrors(): UnknownNodeTypeError[];
+    _getBlobNodeCatchAllNodeType(): typeof GrammarBackedBlobNode;
     private _getAutocompleteResultsForFirstWord;
     private _getAutocompleteResultsForCell;
     abstract getGrammarProgramRoot(): GrammarProgram;
@@ -71,7 +73,8 @@ declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode(): this;
     getDefinition(): GrammarProgram;
     getInPlaceCellTypeTree(): string;
-    getAllErrors(): jTreeTypes.TreeError[];
+    getParseTable(maxColumnWidth?: number): string;
+    getErrors(): jTreeTypes.TreeError[];
     getInvalidNodeTypes(): any[];
     updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap): this;
     getAllSuggestions(): string;
@@ -108,10 +111,6 @@ declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     protected _getCompiledLine(): string;
     compile(): string;
     readonly cells: jTreeTypes.stringMap;
-}
-declare class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
-    getLineCellTypes(): string;
-    getErrors(): UnknownNodeTypeError[];
 }
 declare class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
     getFirstWordMap(): {};
@@ -239,26 +238,19 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     getConstantsObject(): {
         [key: string]: GrammarNodeTypeConstant;
     };
-    abstract _getExtendsClassName(isCompiled?: boolean): string;
     _getUniqueConstantNodes(): {
         [key: string]: GrammarNodeTypeConstant;
     };
     getExamples(): GrammarExampleNode[];
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
-    abstract _nodeDefToJavascriptClass(isCompiled: boolean, jTreePath?: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
     _getGeneratedClassName(): string;
-    getNodeConstructorToJavascript(): string;
     _isAbstract(): boolean;
     private _cache_definedNodeConstructor;
     _getConstructorDefinedInGrammar(): Function;
     _getFirstWordMatch(): string;
-    _getModulePath(langName: string, className?: string): string;
+    _getModulePath(langName: string): string;
     private _importNodeJsConstructor;
     private _importBrowserConstructor;
-    static _cachedNodeConstructorsFromCode: {
-        [code: string]: jTreeTypes.RunTimeNodeConstructor;
-    };
-    _initConstructorDefinedInGrammar(): Function;
     getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getLanguageDefinitionProgram(): GrammarProgram;
     protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
@@ -280,7 +272,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     isRequired(): boolean;
-    _getRunTimeCatchAllNodeTypeId(): jTreeTypes.nodeTypeId;
     getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode;
     _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode;
     private _cache_catchAllConstructor;
@@ -290,42 +281,43 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     _getIdToNodeMap(): {
         [nodeTypeId: string]: NonRootNodeTypeDefinition;
     };
-    protected _getProgramNodeTypeDefinitionCache(): {
-        [nodeTypeId: string]: NonRootNodeTypeDefinition;
-    };
     getRunTimeCatchAllNodeConstructor(): Function;
-}
-declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
+    private _cache_isRoot;
+    private _amIRoot;
+    private _getLanguageRootNode;
+    private _isErrorNodeType;
+    private _isBlobNodeType;
+    private _getErrorMethodToJavascript;
+    private _getParserToJavascript;
+    private _getCatchAllNodeConstructorToJavascript;
+    _nodeDefToJavascriptClass(): jTreeTypes.javascriptCode;
     _getRunTimeCatchAllNodeTypeId(): string;
     _getId(): string;
-    private _cache_isRoot;
-    _amIRoot(): boolean;
-    private _getLanguageRootNode;
-    _getCatchAllNodeConstructorToJavascript(): string;
+    static _cachedNodeConstructorsFromCode: {
+        [code: string]: jTreeTypes.RunTimeNodeConstructor;
+    };
+    _initConstructorDefinedInGrammar(): Function;
     _getCompilerObject(): jTreeTypes.stringMap;
     getLineHints(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;
     isTerminalNodeType(): boolean;
-    _getExtendsClassName(isCompiled?: boolean): jTreeTypes.javascriptClassPath;
     private _getFirstCellHighlightScope;
     getMatchBlock(): string;
     private _cache_nodeTypeInheritanceSet;
     private _cache_ancestorNodeTypeIdsArray;
     _getNodeTypeInheritanceSet(): Set<string>;
     getAncestorNodeTypeIdsArray(): jTreeTypes.nodeTypeId[];
-    _getProgramNodeTypeDefinitionCache(): {
+    protected _getProgramNodeTypeDefinitionCache(): {
         [nodeTypeId: string]: NonRootNodeTypeDefinition;
     };
-    getDoc(): string;
     getDescription(): string;
     getFrequency(): number;
     private _getExtendedNodeTypeId;
-    _nodeDefToJavascriptClass(isCompiled?: boolean): jTreeTypes.javascriptCode;
+}
+declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getFirstWordMap(): jTreeTypes.stringMap;
-    _getExtendsClassName(): string;
-    _getId(): string;
     getErrorsInGrammarExamples(): jTreeTypes.TreeError[];
     getTargetExtension(): string;
     getNodeTypeOrder(): string;
@@ -362,12 +354,10 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getRootConstructor(): AbstractRuntimeProgramConstructorInterface;
     private _getFileExtensions;
     toNodeJsJavascript(jtreePath?: string): jTreeTypes.javascriptCode;
-    toNodeJsJavascriptPrettier(jtreePath?: string): jTreeTypes.javascriptCode;
     toBrowserJavascript(): jTreeTypes.javascriptCode;
-    toBrowserJavascriptPrettier(): jTreeTypes.javascriptCode;
     private _getProperName;
-    _nodeDefToJavascriptClass(isCompiled: boolean, jtreePath: string, forNodeJs?: boolean): jTreeTypes.javascriptCode;
+    private _rootNodeDefToJavascriptClass;
     toSublimeSyntaxFile(): string;
     static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
 }
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedBlobNode, GrammarBackedErrorNode, GrammarBackedRootNode, GrammarBackedNonRootNode };
+export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode };

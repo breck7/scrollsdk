@@ -1,6 +1,5 @@
 #! /usr/bin/env node --use_strict
 
-const fs = require("fs")
 const path = require("path")
 const stamp = require("./stamp.js")
 

@@ -149,6 +149,12 @@ ${grammars.toTable()}`
     return original === pretty ? "No change" : "File updated"
   }
 
+  parse(programPath) {
+    const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
+    const program = new programConstructor(this._read(programPath))
+    return program.getParseTable(35)
+  }
+
   gen(grammarName, outputDirectory = ".") {
     const grammarPath = this._getGrammarPathByGrammarName(grammarName)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"), grammarPath)

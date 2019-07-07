@@ -10,21 +10,23 @@ var CompileTarget;
     CompileTarget["browser"] = "browser";
 })(CompileTarget || (CompileTarget = {}));
 class jtreeNode extends jtree_1.default {
-    static compileGrammarForNodeJs(pathToGrammar, outputFolder) {
-        return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs);
+    static compileGrammarForNodeJs(pathToGrammar, outputFolder, usePrettier = true) {
+        return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier);
     }
-    static _compileGrammar(pathToGrammar, outputFolder, target) {
+    static _compileGrammar(pathToGrammar, outputFolder, target, usePrettier) {
         const grammarCode = jtree_1.default.TreeNode.fromDisk(pathToGrammar);
         const program = new GrammarLanguage_1.GrammarProgram(grammarCode.toString(), pathToGrammar);
         let name = program.getGrammarName();
         const pathToJtree = __dirname + "/../index.js";
         const outputFilePath = outputFolder + `${name}Language.${target}.js`;
-        const result = target === CompileTarget.nodejs ? program.toNodeJsJavascriptPrettier(pathToJtree) : program.toBrowserJavascriptPrettier();
+        let result = target === CompileTarget.nodejs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript();
+        if (usePrettier)
+            result = require("prettier").format(result, { semi: false, parser: "babel", printWidth: 160 });
         fs.writeFileSync(outputFilePath, result, "utf8");
         return outputFilePath;
     }
-    static compileGrammarForBrowser(pathToGrammar, outputFolder) {
-        return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser);
+    static compileGrammarForBrowser(pathToGrammar, outputFolder, usePrettier = true) {
+        return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser, usePrettier);
     }
 }
 jtreeNode.Upgrader = Upgrader_1.default;

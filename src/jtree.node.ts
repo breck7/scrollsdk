@@ -29,24 +29,32 @@ class jtreeNode extends jtree {
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileGrammarForNodeJs(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath) {
-    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs)
+  static compileGrammarForNodeJs(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath, usePrettier = true) {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
   }
 
-  private static _compileGrammar(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath, target: CompileTarget) {
+  private static _compileGrammar(
+    pathToGrammar: jTreeTypes.absoluteFilePath,
+    outputFolder: jTreeTypes.asboluteFolderPath,
+    target: CompileTarget,
+    usePrettier: boolean
+  ) {
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new GrammarProgram(grammarCode.toString(), pathToGrammar)
     let name = program.getGrammarName()
     const pathToJtree = __dirname + "/../index.js"
     const outputFilePath = outputFolder + `${name}Language.${target}.js`
-    const result = target === CompileTarget.nodejs ? program.toNodeJsJavascriptPrettier(pathToJtree) : program.toBrowserJavascriptPrettier()
+
+    let result = target === CompileTarget.nodejs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
+
+    if (usePrettier) result = require("prettier").format(result, { semi: false, parser: "babel", printWidth: 160 })
 
     fs.writeFileSync(outputFilePath, result, "utf8")
     return outputFilePath
   }
 
-  static compileGrammarForBrowser(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath) {
-    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser)
+  static compileGrammarForBrowser(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath, usePrettier = true) {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser, usePrettier)
   }
 
   // returns GrammarBackedProgramClass

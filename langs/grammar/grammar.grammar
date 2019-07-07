@@ -1,5 +1,6 @@
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
+todo Add enumOption root level type?
 nodeType grammar
  root
  description The Grammar Language is currently just used for type checking and documenting grammar files. The actual tree Grammar Language is still hard coded. Someday it may bootstrap itself from this file.
@@ -22,7 +23,9 @@ cellType javascriptSafeAlphaNumericIdentifier
 cellType anyFirstWord
 cellType anyWord
 cellType baseNodeTypes
- enum blobNode errorNode nonRootNode
+ description There are a few classes of special nodeTypes. BlobNodes don't have their children parsed. Error nodes always report an error.
+ todo Remove?
+ enum blobNode errorNode
  highlightScope variable.parameter
 cellType booleanCell
  enum true false

@@ -1006,22 +1006,23 @@ class ImmutableNode extends AbstractNode {
     return this._toTable(100, false)
   }
 
-  toFormattedTable(maxWidth: number, alignRight = false): string {
-    // Output a table with padding up to maxWidth in each cell
-    return this._toTable(maxWidth, alignRight)
+  toFormattedTable(maxCharactersPerColumn: number, alignRight = false): string {
+    return this._toTable(maxCharactersPerColumn, alignRight)
   }
 
-  protected _toTable(maxWidth: number, alignRight = false) {
+  protected _toTable(maxCharactersPerColumn: number, alignRight = false) {
     const header = this._getUnionNames()
-    const widths = header.map(col => (col.length > maxWidth ? maxWidth : col.length))
+    // Set initial column widths
+    const widths = header.map(col => (col.length > maxCharactersPerColumn ? maxCharactersPerColumn : col.length))
 
+    // Expand column widths if needed
     this.forEach(node => {
       if (!node.length) return true
       header.forEach((col, index) => {
         const cellValue = node.get(col)
         if (!cellValue) return true
         const length = cellValue.toString().length
-        if (length > widths[index]) widths[index] = length > maxWidth ? maxWidth : length
+        if (length > widths[index]) widths[index] = length > maxCharactersPerColumn ? maxCharactersPerColumn : length
       })
     })
 
@@ -1030,9 +1031,8 @@ class ImmutableNode extends AbstractNode {
       // Strip newlines in fixedWidth output
       const cellValue = cellText.toString().replace(/\n/g, "\\n")
       const cellLength = cellValue.length
-      if (cellLength > width) {
-        return cellValue.substr(0, width)
-      }
+      if (cellLength > width) return cellValue.substr(0, width) + "..."
+
       const padding = " ".repeat(width - cellLength)
       return alignRight ? padding + cellValue : cellValue + padding
     }

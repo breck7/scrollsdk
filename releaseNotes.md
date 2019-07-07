@@ -1,3 +1,14 @@
+32.0.0 / 2019-07-07
+===================
+- New: getParseTable method on Grammar backed programs
+- New: CLI "parse" command
+- Fix: fixed blobNode and errorNode regressions
+- Breaking: removed getDoc
+- Breaking: no longer export BlobNode or ErrorNode
+- Breaking: toFormattedTable now adds ellipsis ("...") when columns overrun limit
+- Breaking: removed toNodeJsJavascriptPrettier and toBrowserJavascriptPrettier. Use compileGrammarForNodeJs and compileGrammarForBrowser w/prettier param instead.
+- Infra: fixed 2.5x test speed regression and got them back down to 2s
+
 31.0.0 / 2019-07-05
 ===================
 - New: added "joinChildrenWith" word to compiler nodeTypes in grammar language

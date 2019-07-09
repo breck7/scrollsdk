@@ -7,9 +7,12 @@ test stress test
     root
     compilesTo txt
     inScope baseNode
+    catchAllNodeType errorNode
    cellType any
    cellType word
     extends any
+   nodeType errorNode
+    baseNodeType errorNode
    nodeType baseNode
    nodeType block
     extends baseNode
@@ -24,7 +27,7 @@ test stress test
  getAllErrors
   lengthIs 0
  getRunTimeFirstWordsInScope
-  lengthIs 3
+  lengthIs 4
  getNodeTypeDefinitionByNodeTypeId to
   typeIs object
  getTopNodeTypeIds

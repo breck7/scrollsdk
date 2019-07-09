@@ -24,7 +24,7 @@ test stress test
      stringTemplate to {word}
      closeChildren end
  getRunTimeFirstWordsInScope
-  lengthIs 3
+  lengthIs 4
  getNodeTypeDefinitionByNodeTypeId to
   typeIs object
  getTopNodeTypeIds

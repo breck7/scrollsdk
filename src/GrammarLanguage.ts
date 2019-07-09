@@ -1758,8 +1758,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       // Todo: do we want to add new classes to global namespace?
       return vm.runInThisContext(fullCode)
     } catch (err) {
-      console.log("Error in code:")
-      console.log(fullCode)
+      console.log(`Error in compiled grammar code for language "${this.getGrammarName()}":`)
+      console.log(
+        fullCode
+          .split("\n")
+          .map((line, index) => index + 1 + " " + line)
+          .join("\n")
+      )
       console.log(err)
       throw err
     }

@@ -1,3 +1,8 @@
+edge / 2019-07-07
+===================
+- Breaking: RunTimeFirstWord
+
+
 32.0.0 / 2019-07-07
 ===================
 - New: getParseTable method on Grammar backed programs

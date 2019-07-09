@@ -109,7 +109,7 @@ nodeType abstractHtmlTag
   insertChildNode(text, index) {
     const singleNode = new jtree.TreeNode(text).getChildren()[0]
     const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-    const stumpNodeIndex = this.getChildrenByNodeConstructor(StumpNode).indexOf(newNode)
+    const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("abstractHtmlTag").indexOf(newNode)
     this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
     return newNode
   }

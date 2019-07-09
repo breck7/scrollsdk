@@ -209,11 +209,29 @@ class GrammarBackedRootNode extends GrammarBackedNode {
             matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
+    // todo: cleanup!
     getPrettified() {
-        const nodeTypeOrder = this.getGrammarProgramRoot().getNodeTypeOrder();
-        const clone = this.clone();
-        const isCondensed = this.getGrammarProgramRoot().getGrammarName() === "grammar"; // todo: generalize?
-        clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils_1.default._makeGraphSortFunction(node => node.getWord(1), node => node.get(GrammarConstants.extends)) : undefined);
+        const grammarProgram = this.getGrammarProgramRoot();
+        const nodeTypeOrder = grammarProgram.getNodeTypeOrder();
+        const isGrammarLanguage = grammarProgram.getGrammarName() === "grammar"; // todo: generalize?
+        const clone = new ExtendibleTreeNode(this.clone());
+        if (isGrammarLanguage) {
+            const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree();
+            const rank = {};
+            familyTree.getTopDownArray().forEach((node, index) => {
+                rank[node.getWord(0)] = index;
+            });
+            const nodeAFirst = -1;
+            const nodeBFirst = 1;
+            clone._firstWordSort(nodeTypeOrder.split(" "), (nodeA, nodeB) => {
+                const nodeARank = rank[nodeA.getWord(1)];
+                const nodeBRank = rank[nodeB.getWord(1)];
+                return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst;
+            });
+        }
+        else {
+            clone._firstWordSort(nodeTypeOrder.split(" "));
+        }
         return clone.toString();
     }
     getNodeTypeUsage(filepath = "") {
@@ -849,9 +867,15 @@ class AbstractExtendibleTreeNode extends TreeNode_1.default {
         return this._getAncestorsArray().find(node => node.has(firstWordPath));
     }
     _doesExtend(nodeTypeId) {
+        return this._getAncestorSet().has(nodeTypeId);
+    }
+    _getAncestorSet() {
         if (!this._cache_ancestorSet)
             this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()));
-        return this._cache_ancestorSet.has(nodeTypeId);
+        return this._cache_ancestorSet;
+    }
+    _getId() {
+        return this.getWord(1);
     }
     // Note: the order is: [this, parent, grandParent, ...]
     _getAncestorsArray(cannotContainNodes) {
@@ -876,6 +900,17 @@ class AbstractExtendibleTreeNode extends TreeNode_1.default {
             ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes));
         }
         this._cache_ancestorsArray = ancestors;
+    }
+}
+class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
+    _getIdToNodeMap() {
+        if (!this._nodeMapCache) {
+            this._nodeMapCache = {};
+            this.forEach(child => {
+                this._nodeMapCache[child.getWord(1)] = child;
+            });
+        }
+        return this._nodeMapCache;
     }
 }
 class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
@@ -955,9 +990,6 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     }
     getCellTypeId() {
         return this.getWord(1);
-    }
-    _getId() {
-        return this.getCellTypeId();
     }
 }
 class GrammarDefinitionErrorNode extends TreeNode_1.default {
@@ -1299,9 +1331,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return `class ${this._getGeneratedClassName()} extends ${extendsClassName} {
       ${components.join("\n")}
     }`;
-    }
-    _getId() {
-        return this.getWord(1);
     }
     _getCompilerObject() {
         let obj = {};

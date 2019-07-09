@@ -1899,6 +1899,8 @@ class TreeNode extends ImmutableNode {
   }
 
   _firstWordSort(firstWordOrder: jTreeTypes.word[], secondarySortFn?: jTreeTypes.sortFn): this {
+    const nodeAFirst = -1
+    const nodeBFirst = 1
     const map: { [firstWord: string]: int } = {}
     firstWordOrder.forEach((word, index) => {
       map[word] = index
@@ -1906,8 +1908,8 @@ class TreeNode extends ImmutableNode {
     this.sort((nodeA, nodeB) => {
       const valA = map[nodeA.getFirstWord()]
       const valB = map[nodeB.getFirstWord()]
-      if (valA > valB) return 1
-      if (valA < valB) return -1 // A comes first
+      if (valA > valB) return nodeBFirst
+      if (valA < valB) return nodeAFirst
       return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0
     })
     return this

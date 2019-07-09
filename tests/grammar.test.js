@@ -181,6 +181,32 @@ plus + 2 3 2`,
   )
 }
 
+testTree.prettify = equal => {
+  // Arrange
+  const normalCode = `nodeType someLang
+ root
+nodeType topLevel
+ abstract
+nodeType abstractHtml
+ extends topLevel
+ abstract
+nodeType h1Node
+ match html.h1
+ extends abstractHtml
+nodeType colorProperties
+ extends topLevel
+ abstract
+nodeType constrast
+ extends colorProperties
+nodeType hue
+ extends colorProperties
+nodeType saturation
+ extends colorProperties`
+  const grammarProgram = makeGrammarProgram(normalCode)
+  const pretty = grammarProgram.getPrettified()
+  equal(pretty, normalCode, "code is already in pretty form")
+}
+
 testTree.highlightScopes = equal => {
   // Arrange
   const someJibberishProgram = makeJibberishProgram(`foo

@@ -1688,6 +1688,8 @@ class TreeNode extends ImmutableNode {
         return this.setWords(words);
     }
     _firstWordSort(firstWordOrder, secondarySortFn) {
+        const nodeAFirst = -1;
+        const nodeBFirst = 1;
         const map = {};
         firstWordOrder.forEach((word, index) => {
             map[word] = index;
@@ -1696,9 +1698,9 @@ class TreeNode extends ImmutableNode {
             const valA = map[nodeA.getFirstWord()];
             const valB = map[nodeB.getFirstWord()];
             if (valA > valB)
-                return 1;
+                return nodeBFirst;
             if (valA < valB)
-                return -1; // A comes first
+                return nodeAFirst;
             return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0;
         });
         return this;

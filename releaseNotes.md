@@ -1,7 +1,9 @@
 edge / 2019-07-07
 ===================
-- Breaking: RunTimeFirstWord
-
+- Fix: prettify grammar files multiple inheritance sort fix and added regression test
+- Infra: compiled grammars are now much less code and rely on native JS class tree
+- Infra: compiled grammar vs runtime code paths are largely merged
+- Breaking: removed RunTimeFirstWord
 
 32.0.0 / 2019-07-07
 ===================

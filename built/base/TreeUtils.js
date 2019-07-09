@@ -213,6 +213,31 @@ class TreeUtils {
             return result;
         };
     }
+    static _makeGraphSortFunctionFromGraph(idAccessor, graph) {
+        return (nodeA, nodeB) => {
+            const nodeAFirst = -1;
+            const nodeBFirst = 1;
+            const nodeAUniqueId = idAccessor(nodeA);
+            const nodeBUniqueId = idAccessor(nodeB);
+            const nodeAExtendsNodeB = graph[nodeAUniqueId].has(nodeBUniqueId);
+            const nodeBExtendsNodeA = graph[nodeBUniqueId].has(nodeAUniqueId);
+            if (nodeAExtendsNodeB)
+                return nodeBFirst;
+            else if (nodeBExtendsNodeA)
+                return nodeAFirst;
+            const nodeAExtendsSomething = graph[nodeAUniqueId].size > 1;
+            const nodeBExtendsSomething = graph[nodeBUniqueId].size > 1;
+            if (!nodeAExtendsSomething && nodeBExtendsSomething)
+                return nodeAFirst;
+            else if (!nodeBExtendsSomething && nodeAExtendsSomething)
+                return nodeBFirst;
+            if (nodeAUniqueId > nodeBUniqueId)
+                return nodeBFirst;
+            else if (nodeAUniqueId < nodeBUniqueId)
+                return nodeAFirst;
+            return 0;
+        };
+    }
     static _makeGraphSortFunction(idAccessor, extendsIdAccessor) {
         return (nodeA, nodeB) => {
             // -1 === a before b
@@ -220,36 +245,38 @@ class TreeUtils {
             const nodeAExtends = extendsIdAccessor(nodeA);
             const nodeBUniqueId = idAccessor(nodeB);
             const nodeBExtends = extendsIdAccessor(nodeB);
-            const nodeAExtendsNodeB = nodeAExtends && nodeAExtends === nodeBUniqueId;
-            const nodeBExtendsNodeA = nodeBExtends && nodeBExtends === nodeAUniqueId;
+            const nodeAExtendsNodeB = nodeAExtends === nodeBUniqueId;
+            const nodeBExtendsNodeA = nodeBExtends === nodeAUniqueId;
+            const nodeAFirst = -1;
+            const nodeBFirst = 1;
             if (!nodeAExtends && !nodeBExtends) {
                 // If neither extends, sort by firstWord
                 if (nodeAUniqueId > nodeBUniqueId)
-                    return 1;
+                    return nodeBFirst;
                 else if (nodeAUniqueId < nodeBUniqueId)
-                    return -1;
+                    return nodeAFirst;
                 return 0;
             }
             // If only one extends, the other comes first
             else if (!nodeAExtends)
-                return -1;
+                return nodeAFirst;
             else if (!nodeBExtends)
-                return 1;
+                return nodeBFirst;
             // If A extends B, B should come first
             if (nodeAExtendsNodeB)
-                return 1;
+                return nodeBFirst;
             else if (nodeBExtendsNodeA)
-                return -1;
+                return nodeAFirst;
             // Sort by what they extend
             if (nodeAExtends > nodeBExtends)
-                return 1;
+                return nodeBFirst;
             else if (nodeAExtends < nodeBExtends)
-                return -1;
+                return nodeAFirst;
             // Finally sort by firstWord
             if (nodeAUniqueId > nodeBUniqueId)
-                return 1;
+                return nodeBFirst;
             else if (nodeAUniqueId < nodeBUniqueId)
-                return -1;
+                return nodeAFirst;
             // Should never hit this, unless we have a duplicate line.
             return 0;
         };

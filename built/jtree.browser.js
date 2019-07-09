@@ -229,6 +229,31 @@ class TreeUtils {
             return result;
         };
     }
+    static _makeGraphSortFunctionFromGraph(idAccessor, graph) {
+        return (nodeA, nodeB) => {
+            const nodeAFirst = -1;
+            const nodeBFirst = 1;
+            const nodeAUniqueId = idAccessor(nodeA);
+            const nodeBUniqueId = idAccessor(nodeB);
+            const nodeAExtendsNodeB = graph[nodeAUniqueId].has(nodeBUniqueId);
+            const nodeBExtendsNodeA = graph[nodeBUniqueId].has(nodeAUniqueId);
+            if (nodeAExtendsNodeB)
+                return nodeBFirst;
+            else if (nodeBExtendsNodeA)
+                return nodeAFirst;
+            const nodeAExtendsSomething = graph[nodeAUniqueId].size > 1;
+            const nodeBExtendsSomething = graph[nodeBUniqueId].size > 1;
+            if (!nodeAExtendsSomething && nodeBExtendsSomething)
+                return nodeAFirst;
+            else if (!nodeBExtendsSomething && nodeAExtendsSomething)
+                return nodeBFirst;
+            if (nodeAUniqueId > nodeBUniqueId)
+                return nodeBFirst;
+            else if (nodeAUniqueId < nodeBUniqueId)
+                return nodeAFirst;
+            return 0;
+        };
+    }
     static _makeGraphSortFunction(idAccessor, extendsIdAccessor) {
         return (nodeA, nodeB) => {
             // -1 === a before b
@@ -236,36 +261,38 @@ class TreeUtils {
             const nodeAExtends = extendsIdAccessor(nodeA);
             const nodeBUniqueId = idAccessor(nodeB);
             const nodeBExtends = extendsIdAccessor(nodeB);
-            const nodeAExtendsNodeB = nodeAExtends && nodeAExtends === nodeBUniqueId;
-            const nodeBExtendsNodeA = nodeBExtends && nodeBExtends === nodeAUniqueId;
+            const nodeAExtendsNodeB = nodeAExtends === nodeBUniqueId;
+            const nodeBExtendsNodeA = nodeBExtends === nodeAUniqueId;
+            const nodeAFirst = -1;
+            const nodeBFirst = 1;
             if (!nodeAExtends && !nodeBExtends) {
                 // If neither extends, sort by firstWord
                 if (nodeAUniqueId > nodeBUniqueId)
-                    return 1;
+                    return nodeBFirst;
                 else if (nodeAUniqueId < nodeBUniqueId)
-                    return -1;
+                    return nodeAFirst;
                 return 0;
             }
             // If only one extends, the other comes first
             else if (!nodeAExtends)
-                return -1;
+                return nodeAFirst;
             else if (!nodeBExtends)
-                return 1;
+                return nodeBFirst;
             // If A extends B, B should come first
             if (nodeAExtendsNodeB)
-                return 1;
+                return nodeBFirst;
             else if (nodeBExtendsNodeA)
-                return -1;
+                return nodeAFirst;
             // Sort by what they extend
             if (nodeAExtends > nodeBExtends)
-                return 1;
+                return nodeBFirst;
             else if (nodeAExtends < nodeBExtends)
-                return -1;
+                return nodeAFirst;
             // Finally sort by firstWord
             if (nodeAUniqueId > nodeBUniqueId)
-                return 1;
+                return nodeBFirst;
             else if (nodeAUniqueId < nodeBUniqueId)
-                return -1;
+                return nodeAFirst;
             // Should never hit this, unless we have a duplicate line.
             return 0;
         };
@@ -2028,6 +2055,8 @@ class TreeNode extends ImmutableNode {
         return this.setWords(words);
     }
     _firstWordSort(firstWordOrder, secondarySortFn) {
+        const nodeAFirst = -1;
+        const nodeBFirst = 1;
         const map = {};
         firstWordOrder.forEach((word, index) => {
             map[word] = index;
@@ -2036,9 +2065,9 @@ class TreeNode extends ImmutableNode {
             const valA = map[nodeA.getFirstWord()];
             const valB = map[nodeB.getFirstWord()];
             if (valA > valB)
-                return 1;
+                return nodeBFirst;
             if (valA < valB)
-                return -1; // A comes first
+                return nodeAFirst;
             return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0;
         });
         return this;
@@ -2590,11 +2619,29 @@ class GrammarBackedRootNode extends GrammarBackedNode {
             matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
+    // todo: cleanup!
     getPrettified() {
-        const nodeTypeOrder = this.getGrammarProgramRoot().getNodeTypeOrder();
-        const clone = this.clone();
-        const isCondensed = this.getGrammarProgramRoot().getGrammarName() === "grammar"; // todo: generalize?
-        clone._firstWordSort(nodeTypeOrder.split(" "), isCondensed ? TreeUtils._makeGraphSortFunction(node => node.getWord(1), node => node.get(GrammarConstants.extends)) : undefined);
+        const grammarProgram = this.getGrammarProgramRoot();
+        const nodeTypeOrder = grammarProgram.getNodeTypeOrder();
+        const isGrammarLanguage = grammarProgram.getGrammarName() === "grammar"; // todo: generalize?
+        const clone = new ExtendibleTreeNode(this.clone());
+        if (isGrammarLanguage) {
+            const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree();
+            const rank = {};
+            familyTree.getTopDownArray().forEach((node, index) => {
+                rank[node.getWord(0)] = index;
+            });
+            const nodeAFirst = -1;
+            const nodeBFirst = 1;
+            clone._firstWordSort(nodeTypeOrder.split(" "), (nodeA, nodeB) => {
+                const nodeARank = rank[nodeA.getWord(1)];
+                const nodeBRank = rank[nodeB.getWord(1)];
+                return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst;
+            });
+        }
+        else {
+            clone._firstWordSort(nodeTypeOrder.split(" "));
+        }
         return clone.toString();
     }
     getNodeTypeUsage(filepath = "") {
@@ -3228,9 +3275,15 @@ class AbstractExtendibleTreeNode extends TreeNode {
         return this._getAncestorsArray().find(node => node.has(firstWordPath));
     }
     _doesExtend(nodeTypeId) {
+        return this._getAncestorSet().has(nodeTypeId);
+    }
+    _getAncestorSet() {
         if (!this._cache_ancestorSet)
             this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()));
-        return this._cache_ancestorSet.has(nodeTypeId);
+        return this._cache_ancestorSet;
+    }
+    _getId() {
+        return this.getWord(1);
     }
     // Note: the order is: [this, parent, grandParent, ...]
     _getAncestorsArray(cannotContainNodes) {
@@ -3255,6 +3308,17 @@ class AbstractExtendibleTreeNode extends TreeNode {
             ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes));
         }
         this._cache_ancestorsArray = ancestors;
+    }
+}
+class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
+    _getIdToNodeMap() {
+        if (!this._nodeMapCache) {
+            this._nodeMapCache = {};
+            this.forEach(child => {
+                this._nodeMapCache[child.getWord(1)] = child;
+            });
+        }
+        return this._nodeMapCache;
     }
 }
 class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
@@ -3334,9 +3398,6 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     }
     getCellTypeId() {
         return this.getWord(1);
-    }
-    _getId() {
-        return this.getCellTypeId();
     }
 }
 class GrammarDefinitionErrorNode extends TreeNode {
@@ -3678,9 +3739,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return `class ${this._getGeneratedClassName()} extends ${extendsClassName} {
       ${components.join("\n")}
     }`;
-    }
-    _getId() {
-        return this.getWord(1);
     }
     _getCompilerObject() {
         let obj = {};

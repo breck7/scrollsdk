@@ -24,6 +24,9 @@ declare class TreeUtils {
         [key: string]: T;
     };
     static sortByAccessor(accessor: Function): (objectA: Object, objectB: Object) => number;
+    static _makeGraphSortFunctionFromGraph(idAccessor: jTreeTypes.idAccessorFunction, graph: {
+        [id: string]: Set<string>;
+    }): (nodeA: any, nodeB: any) => 1 | 0 | -1;
     static _makeGraphSortFunction(idAccessor: jTreeTypes.idAccessorFunction, extendsIdAccessor: jTreeTypes.idAccessorFunction): (nodeA: any, nodeB: any) => 1 | 0 | -1;
     static BrowserScript: {
         new (fileStr: string): {

@@ -190,7 +190,8 @@ declare abstract class AbstractExtendibleTreeNode extends TreeNode {
     _hasFromExtended(firstWordPath: jTreeTypes.firstWordPath): boolean;
     _getNodeFromExtended(firstWordPath: jTreeTypes.firstWordPath): AbstractExtendibleTreeNode;
     _doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
-    abstract _getId(): string;
+    _getAncestorSet(): Set<string>;
+    _getId(): string;
     private _cache_ancestorSet;
     private _cache_ancestorsArray;
     _getAncestorsArray(cannotContainNodes?: AbstractExtendibleTreeNode[]): AbstractExtendibleTreeNode[];
@@ -217,7 +218,6 @@ declare class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     getRegexString(): string;
     isValid(str: string, programRootNode: GrammarBackedRootNode): boolean;
     getCellTypeId(): jTreeTypes.cellTypeId;
-    _getId(): string;
     static types: any;
 }
 declare class GrammarExampleNode extends TreeNode {
@@ -275,7 +275,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     private _getParserToJavascript;
     private _getCatchAllNodeConstructorToJavascript;
     _nodeDefToJavascriptClass(): jTreeTypes.javascriptCode;
-    _getId(): string;
     _getCompilerObject(): jTreeTypes.stringMap;
     getLineHints(): string;
     isOrExtendsANodeTypeInScope(firstWordsInScope: string[]): boolean;

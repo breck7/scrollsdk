@@ -1118,9 +1118,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         });
         return obj;
     }
-    _getUniqueConstantNodes() {
+    _getUniqueConstantNodes(extended = true) {
         const obj = {};
-        const items = this._getChildrenByNodeConstructorInExtended(GrammarNodeTypeConstant);
+        const items = extended ? this._getChildrenByNodeConstructorInExtended(GrammarNodeTypeConstant) : this.getChildrenByNodeConstructor(GrammarNodeTypeConstant);
         items.reverse(); // Last definition wins.
         items.forEach((node) => {
             obj[node.getIdentifier()] = node;
@@ -1152,8 +1152,8 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return this.getParent();
     }
     _getCustomJavascriptMethods() {
-        const jsCode = this._getNodeFromExtended(GrammarConstants.javascript);
-        return jsCode ? jsCode.getNode(GrammarConstants.javascript).childrenToString() : "";
+        const hasJsCode = this.has(GrammarConstants.javascript);
+        return hasJsCode ? this.getNode(GrammarConstants.javascript).childrenToString() : "";
     }
     getFirstWordMapWithDefinitions() {
         if (!this._cache_firstWordToNodeDefMap)
@@ -1171,12 +1171,13 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     _getCellGettersAndNodeTypeConstants() {
         // todo: add cellType parsings
         const grammarProgram = this.getLanguageDefinitionProgram();
-        const getters = this.getRequiredCellTypeIds().map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1));
-        const catchAllCellTypeId = this.getCatchAllCellTypeId();
+        const requiredCells = this.get(GrammarConstants.cells);
+        const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1));
+        const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType);
         if (catchAllCellTypeId)
             getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1));
         // Constants
-        Object.values(this._getUniqueConstantNodes()).forEach(node => {
+        Object.values(this._getUniqueConstantNodes(false)).forEach(node => {
             getters.push(node.getGetter());
         });
         return getters.join("\n");

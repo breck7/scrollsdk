@@ -233,7 +233,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     getConstantsObject(): {
         [key: string]: GrammarNodeTypeConstant;
     };
-    _getUniqueConstantNodes(): {
+    _getUniqueConstantNodes(extended?: boolean): {
         [key: string]: GrammarNodeTypeConstant;
     };
     getExamples(): GrammarExampleNode[];

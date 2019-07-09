@@ -56,6 +56,7 @@ declare abstract class GrammarBackedNode extends TreeNode {
         displayText: string;
     }[];
     getChildInstancesOfNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): GrammarBackedNode[];
+    getCatchAllNodeConstructor(line: string): Function;
     doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
     _getErrorNodeErrors(): UnknownNodeTypeError[];
     _getBlobNodeCatchAllNodeType(): typeof GrammarBackedBlobNode;
@@ -219,10 +220,6 @@ declare class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     _getId(): string;
     static types: any;
 }
-declare class GrammarDefinitionErrorNode extends TreeNode {
-    getErrors(): jTreeTypes.TreeError[];
-    getLineCellTypes(): string;
-}
 declare class GrammarExampleNode extends TreeNode {
 }
 declare abstract class GrammarNodeTypeConstant extends TreeNode {
@@ -246,7 +243,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     private _cache_definedNodeConstructor;
     _getConstructorDefinedInGrammar(): Function;
     _getFirstWordMatch(): string;
-    getCatchAllNodeConstructor(line: string): typeof GrammarDefinitionErrorNode;
     getLanguageDefinitionProgram(): GrammarProgram;
     protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
     private _cache_firstWordToNodeDefMap;
@@ -265,7 +261,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     isRequired(): boolean;
     getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode;
-    _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode;
     getFirstCellTypeId(): jTreeTypes.cellTypeId;
     isDefined(nodeTypeId: string): boolean;
     _getIdToNodeMap(): {
@@ -280,7 +275,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     private _getParserToJavascript;
     private _getCatchAllNodeConstructorToJavascript;
     _nodeDefToJavascriptClass(): jTreeTypes.javascriptCode;
-    _getRunTimeCatchAllNodeTypeId(): string;
     _getId(): string;
     _getCompilerObject(): jTreeTypes.stringMap;
     getLineHints(): string;
@@ -335,7 +329,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     _getProgramNodeTypeDefinitionCache(): {
         [nodeTypeId: string]: NonRootNodeTypeDefinition;
     };
-    _getRunTimeCatchAllNodeTypeId(): string;
     static _languages: any;
     static _nodeTypes: any;
     private _getRootConstructor;

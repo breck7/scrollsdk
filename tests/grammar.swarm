@@ -1,5 +1,5 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-test stress test
+test grammarSample
  arrangeTestSubject
   require ../built/GrammarLanguage.js GrammarProgram
   constructWithBlockString
@@ -38,4 +38,4 @@ test stress test
  isDefined to
   stringIs true
  getAllErrors
-  lengthIs 1
+  lengthIs 0

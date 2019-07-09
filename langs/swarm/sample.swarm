@@ -1,5 +1,5 @@
 #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-test stress test
+test swarmSample
  arrangeTestSubject
   require ../../built/GrammarLanguage.js GrammarProgram
   constructWithBlockString

@@ -94,6 +94,10 @@ abstract class GrammarBackedNode extends TreeNode {
     return this.filter(node => node.doesExtend(nodeTypeId))
   }
 
+  getCatchAllNodeConstructor(line: string): Function {
+    return this.getRootNode().getCatchAllNodeConstructor(line)
+  }
+
   doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
     return this.getDefinition()._doesExtend(nodeTypeId)
   }
@@ -441,17 +445,6 @@ ${indent}${closeChildrenString}`
       }
     })
     return cells
-  }
-}
-
-class GrammarBackedErrorNode extends GrammarBackedNonRootNode {
-  // todo: is this correct?
-  getLineCellTypes() {
-    return "errorNodeAnyCellType ".repeat(this.getWords().length).trim()
-  }
-
-  getErrors(): UnknownNodeTypeError[] {
-    return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
   }
 }
 
@@ -1410,10 +1403,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this.get(GrammarConstants.match) || this.getNodeTypeIdFromDefinition()
   }
 
-  getCatchAllNodeConstructor(line: string) {
-    return GrammarDefinitionErrorNode
-  }
-
   getLanguageDefinitionProgram(): GrammarProgram {
     return <GrammarProgram>this.getParent()
   }
@@ -1501,19 +1490,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode {
-    const definitions = this._getProgramNodeTypeDefinitionCache()
-    return definitions[nodeTypeId] || this._getCatchAllNodeTypeDefinition() // todo: this is where we might do some type of firstWord lookup for user defined fns.
-  }
-
-  _getCatchAllNodeTypeDefinition(): AbstractGrammarDefinitionNode {
-    const catchAllNodeTypeId = this._getRunTimeCatchAllNodeTypeId()
-    const definitions = this._getProgramNodeTypeDefinitionCache()
-    const def = definitions[catchAllNodeTypeId]
-    if (def) return def
-
-    // todo: implement contraints like a grammar file MUST have a catch all.
-    if (this.isRoot()) throw new Error(`This grammar language "${this.getLanguageDefinitionProgram().getGrammarName()}" lacks a root catch all definition`)
-    else return (<AbstractGrammarDefinitionNode>this.getParent())._getCatchAllNodeTypeDefinition()
+    // todo: return catch all?
+    return this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
   }
 
   getFirstCellTypeId(): jTreeTypes.cellTypeId {
@@ -1558,13 +1536,13 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (this._isBlobNodeType())
       // todo: do we need this?
       return "getFirstWordMap() { return {} }"
-    const firstWordMap = this.getFirstWordMapWithDefinitions()
+    const myFirstWordMap = this._createFirstWordToNodeDefMap(this._getMyInScopeNodeTypeIds())
 
     // todo: use constants in first word maps
-    if (Object.keys(firstWordMap).length)
+    if (Object.keys(myFirstWordMap).length)
       return `getFirstWordMap() {
-  return {${Object.keys(firstWordMap)
-    .map(firstWord => `"${firstWord}" : ${firstWordMap[firstWord].getNodeTypeIdFromDefinition()}`)
+  return {${Object.keys(myFirstWordMap)
+    .map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`)
     .join(",\n")}}
   }`
     return ""
@@ -1572,7 +1550,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
   private _getCatchAllNodeConstructorToJavascript(): jTreeTypes.javascriptCode {
     if (this._isBlobNodeType()) return "getCatchAllNodeConstructor() { return this._getBlobNodeCatchAllNodeType() }"
-    const nodeTypeId = this._getRunTimeCatchAllNodeTypeId()
+    const nodeTypeId = this.get(GrammarConstants.catchAllNodeType)
     if (!nodeTypeId) return ""
     const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._getGeneratedClassName()
     return `getCatchAllNodeConstructor() { return ${className}}`
@@ -1606,11 +1584,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return `class ${this._getGeneratedClassName()} extends ${extendsClassName} {
       ${components.join("\n")}
     }`
-  }
-
-  // todo: protected?
-  _getRunTimeCatchAllNodeTypeId(): string {
-    return this._getFromExtended(GrammarConstants.catchAllNodeType) || (<AbstractGrammarDefinitionNode>this.getParent())._getRunTimeCatchAllNodeTypeId()
   }
 
   _getId() {
@@ -1892,10 +1865,6 @@ window._nodeTypeMaps[${id}] = nodeTypeMap}`
   _getProgramNodeTypeDefinitionCache() {
     this._initProgramNodeTypeDefinitionCache()
     return this._cache_nodeTypeDefinitions
-  }
-
-  _getRunTimeCatchAllNodeTypeId(): string {
-    return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.catchAllNodeType)
   }
 
   static _languages: any = {}

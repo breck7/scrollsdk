@@ -299,8 +299,8 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     _getCompiledLoadedNodeTypes(): {
         [nodeTypeId: string]: Function;
     };
-    private _importNodeJsNodeTypeMap;
-    private _importBrowserNodeTypeMap;
+    private _importNodeJsRootNodeTypeConstructor;
+    private _importBrowserRootNodeTypeConstructor;
     getErrorsInGrammarExamples(): jTreeTypes.TreeError[];
     getTargetExtension(): string;
     getNodeTypeOrder(): string;

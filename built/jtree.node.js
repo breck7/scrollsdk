@@ -18,7 +18,7 @@ class jtreeNode extends jtree_1.default {
         const program = new GrammarLanguage_1.GrammarProgram(grammarCode.toString(), pathToGrammar);
         let name = program.getGrammarName();
         const pathToJtree = __dirname + "/../index.js";
-        const outputFilePath = outputFolder + `${name}Language.${target}.js`;
+        const outputFilePath = outputFolder + `${name}.${target}.js`;
         let result = target === CompileTarget.nodejs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript();
         if (usePrettier)
             result = require("prettier").format(result, { semi: false, parser: "babel", printWidth: 160 });

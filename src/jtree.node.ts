@@ -43,7 +43,7 @@ class jtreeNode extends jtree {
     const program = new GrammarProgram(grammarCode.toString(), pathToGrammar)
     let name = program.getGrammarName()
     const pathToJtree = __dirname + "/../index.js"
-    const outputFilePath = outputFolder + `${name}Language.${target}.js`
+    const outputFilePath = outputFolder + `${name}.${target}.js`
 
     let result = target === CompileTarget.nodejs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
 

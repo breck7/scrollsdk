@@ -53,7 +53,7 @@ nodeType abstractAssertion
  abstract
  javascript
   async execute(testSubject) {
-    const finalParts = AbstractAssertNode._getMethodFromDotPath(testSubject, this.getWord(1))
+    const finalParts = abstractAssertion._getMethodFromDotPath(testSubject, this.getWord(1))
     const subject = finalParts[0]
     const command = finalParts[1]
     const actual = subject[command]()

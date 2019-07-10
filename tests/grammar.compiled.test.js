@@ -24,7 +24,7 @@ testTree.grammar = equal => {
     const tempFilePath = jtree.compileGrammarForNodeJs(grammarGrammarPath, outputDir, false)
 
     // Act
-    const { grammar } = require(tempFilePath)
+    const grammar = require(tempFilePath)
 
     // Assert
     equal(!!new grammar(), true, "it compiled")
@@ -42,13 +42,12 @@ testTree.compileAll = equal => {
       const path = __dirname + `/../langs/${name}/${name}.grammar`
       const grammarCode = jtree.TreeNode.fromDisk(path)
       const tempFilePath = jtree.compileGrammarForNodeJs(path, outputDir, false)
-      const tempExports = require(tempFilePath)
+      const rootClass = require(tempFilePath)
 
       // Assert
       equal(true, true, `Expected to compile and include "${name}" without error.`)
 
       // Act
-      const rootClass = tempExports[name]
       const exampleProgram = grammarCode.getNode("grammar example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
@@ -70,7 +69,7 @@ testTree.jibberish = equal => {
     const tempFilePath = jtree.compileGrammarForNodeJs(__dirname + "/../langs/jibberish/jibberish.grammar", outputDir, false)
 
     // Act
-    const { jibberish } = require(tempFilePath)
+    const jibberish = require(tempFilePath)
 
     // Assert
     equal(!!new jibberish(), true, "it compiled")
@@ -95,7 +94,7 @@ testTree.numbers = equal => {
     const tempFilePath = jtree.compileGrammarForNodeJs(numbersGrammarPath, outputDir, false)
 
     // Act
-    const { numbers, NumbersConstants } = require(tempFilePath)
+    const numbers = require(tempFilePath)
 
     // Assert
     equal(!!new numbers(), true, "it compiled")
@@ -108,8 +107,6 @@ testTree.numbers = equal => {
     const runtimeProgram = makeNumbersRunTimeProgram(code)
 
     // Assert
-    equal(NumbersConstants.cellTypes.float, "float", "constants generation works")
-    equal(NumbersConstants.nodeTypes.comment, "comment", "constants generation works")
     equal(firstNode.numbers.length, 2, "cell getters work")
     equal(firstNode.numbers[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")

@@ -1223,8 +1223,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             return "getFirstWordMap() { return {} }";
         const myFirstWordMap = this._createFirstWordToNodeDefMap(this._getMyInScopeNodeTypeIds());
         // todo: use constants in first word maps?
-        // todo: extend super.
-        // todo: cache?
+        // todo: cache the super extending?
         if (Object.keys(myFirstWordMap).length)
             return `getFirstWordMap() {
         const map = Object.assign({}, super.getFirstWordMap())
@@ -1254,7 +1253,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         const isRoot = this._amIRoot();
         const extendedDef = this._getExtendedParent();
         const extendsClassName = isRoot ? "jtree.GrammarBackedRootNode" : extendedDef ? extendedDef._getGeneratedClassName() : "jtree.GrammarBackedNonRootNode";
-        if (isRoot)
+        if (isRoot) {
             components.push(`getGrammarProgramRoot() {
         if (!this._cachedGrammarProgramRoot)
           this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils_1.default.escapeBackTicks(this.getParent()
@@ -1262,6 +1261,15 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
                 .replace(/\\/g, "\\\\"))}\`)
         return this._cachedGrammarProgramRoot
       }`);
+            const defs = this.getLanguageDefinitionProgram().getConcreteAndAbstractNodeTypeDefinitions();
+            const nodeTypeMap = defs
+                .map(def => {
+                const id = def.getNodeTypeIdFromDefinition();
+                return `"${id}": ${id}`;
+            })
+                .join(",\n");
+            components.push(`static getNodeTypeMap() { return {${nodeTypeMap} }}`);
+        }
         return `class ${this._getGeneratedClassName()} extends ${extendsClassName} {
       ${components.join("\n")}
     }`;
@@ -1373,31 +1381,27 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         if (!this._cache_compiledLoadedNodeTypes) {
             if (this.isNodeJs()) {
                 const code = this.toNodeJsJavascript(__dirname + "/../index.js");
-                this._cache_compiledLoadedNodeTypes = this._importNodeJsNodeTypeMap(code);
+                const rootNode = this._importNodeJsRootNodeTypeConstructor(code);
+                this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap();
             }
             else
-                this._cache_compiledLoadedNodeTypes = this._importBrowserNodeTypeMap(this.toBrowserJavascript());
+                this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getGrammarName()).getNodeTypeMap();
         }
         return this._cache_compiledLoadedNodeTypes;
     }
-    _importNodeJsNodeTypeMap(code) {
+    _importNodeJsRootNodeTypeConstructor(code) {
         const vm = require("vm");
         // todo: cleanup up
-        const fullCode = `{
- ${code}
- nodeTypeMap
-}`;
         try {
             ;
             global.jtree = require(__dirname + "/../index.js").default;
             global.require = require;
             global.module = {};
-            // Todo: do we want to add new classes to global namespace?
-            return vm.runInThisContext(fullCode);
+            return vm.runInThisContext(code);
         }
         catch (err) {
             console.log(`Error in compiled grammar code for language "${this.getGrammarName()}":`);
-            console.log(fullCode
+            console.log(code
                 .split("\n")
                 .map((line, index) => index + 1 + " " + line)
                 .join("\n"));
@@ -1405,17 +1409,11 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             throw err;
         }
     }
-    _importBrowserNodeTypeMap(code) {
+    _importBrowserRootNodeTypeConstructor(code, name) {
         const script = document.createElement("script");
-        // todo: should we namespace things under 1 grammar?
-        const win = window;
-        if (!win._nodeTypeMaps)
-            win._nodeTypeMaps = {};
-        const id = Object.keys(win._nodeTypeMaps).length;
-        script.innerHTML = `{${code}
-window._nodeTypeMaps[${id}] = nodeTypeMap}`;
+        script.innerHTML = code;
         document.head.appendChild(script);
-        return win._nodeTypeMaps[id];
+        return window[name];
     }
     // todo: better formalize the source maps pattern somewhat used here by getAllErrors
     getErrorsInGrammarExamples() {
@@ -1517,53 +1515,38 @@ window._nodeTypeMaps[${id}] = nodeTypeMap}`;
             : this.getExtensionName();
     }
     toNodeJsJavascript(jtreePath = "jtree") {
-        return this._rootNodeDefToJavascriptClass(true, jtreePath, true).trim();
+        return this._rootNodeDefToJavascriptClass(jtreePath, true).trim();
     }
     toBrowserJavascript() {
-        return this._rootNodeDefToJavascriptClass(true, "", false).trim();
+        return this._rootNodeDefToJavascriptClass("", false).trim();
     }
     _getProperName() {
         return TreeUtils_1.default.ucfirst(this.getExtensionName());
     }
-    _rootNodeDefToJavascriptClass(isCompiled, jtreePath, forNodeJs = true) {
+    _rootNodeDefToJavascriptClass(jtreePath, forNodeJs = true) {
         const defs = this.getConcreteAndAbstractNodeTypeDefinitions();
         // todo: throw if there is no root node defined
         const rootNode = this._getRootNodeTypeDefinitionNode();
         const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n");
-        const constantsName = this._getProperName() + "Constants";
-        const nodeTypeConstants = defs
-            .map(def => {
-            const id = def.getNodeTypeIdFromDefinition();
-            return `"${id}": "${id}"`;
-        })
-            .join(",\n");
-        const cellTypeConstants = Object.keys(this.getCellTypeDefinitions())
-            .map(id => `"${id}" : "${id}"`)
-            .join(",\n");
-        const nodeTypeMap = defs
-            .map(def => {
-            const id = def.getNodeTypeIdFromDefinition();
-            return `"${id}": ${id}`;
-        })
-            .join(",\n");
-        return `"use strict";
+        const rootName = rootNode._getGeneratedClassName();
+        let exportScript = "";
+        if (forNodeJs) {
+            exportScript = `module.exports = ${rootName};
+${rootName}`;
+        }
+        else {
+            exportScript = `window.${rootName} = ${rootName}`;
+        }
+        // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
+        return `{
+"use strict";
 
 ${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
 
-const ${constantsName} = {
-  nodeTypes: {
-    ${nodeTypeConstants}
-  },
-  cellTypes: {
-    ${cellTypeConstants}
-  }
-}
-
 ${nodeTypeClasses}
 
-const nodeTypeMap = {${nodeTypeMap}}
-
-${forNodeJs ? `module.exports = {${constantsName}, nodeTypeMap, ` + rootNode._getGeneratedClassName() + "}" : ""}
+${exportScript}
+}
 `;
     }
     toSublimeSyntaxFile() {

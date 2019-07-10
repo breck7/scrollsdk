@@ -6,8 +6,10 @@ edge / 2019-07-07
 - Infra: removed dead code
 - Infra: compiled grammars are now much less code and rely on native JS class tree
 - Infra: compiled grammar vs runtime code paths are largely merged
+- Breaking: no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can access the others via that.
 - Breaking: removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.
 - Breaking: removed unused getTheGrammarFilePath method
+- Breaking: compile to node/browser now saves a lang named "foo" to "foo.browser.js" instead of "fooLanguage"
 
 32.0.0 / 2019-07-07
 ===================

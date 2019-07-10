@@ -156,9 +156,11 @@ class ImmutableNode extends AbstractNode {
     return lineCount
   }
 
-  protected _getLineNumber(target: ImmutableNode) {
+  protected _cachedLineNumber: int
+  _getLineNumber(target: ImmutableNode = this) {
+    if (this._cachedLineNumber) return this._cachedLineNumber
     let lineNumber = 1
-    for (let node of this.getTopDownArrayIterator()) {
+    for (let node of this.getRootNode().getTopDownArrayIterator()) {
       if (node === target) return lineNumber
       lineNumber++
     }
@@ -177,10 +179,7 @@ class ImmutableNode extends AbstractNode {
     return !this.length && !this.getContent()
   }
 
-  protected _cachedLineNumber: int
-
   protected _getYCoordinate(relativeTo?: ImmutableNode) {
-    if (this._cachedLineNumber) return this._cachedLineNumber
     if (this.isRoot(relativeTo)) return 0
     const start = relativeTo || this.getRootNode()
     return start._getLineNumber(this)
@@ -335,15 +334,14 @@ class ImmutableNode extends AbstractNode {
     return spots[charIndex]
   }
 
-  getAllErrors(): jTreeTypes.TreeError[] {
+  getAllErrors(lineStartsAt = 1): jTreeTypes.TreeError[] {
     const errors: jTreeTypes.TreeError[] = []
-    let line = 1
     for (let node of this.getTopDownArray()) {
-      node._cachedLineNumber = line
+      node._cachedLineNumber = lineStartsAt // todo: cleanup
       const errs: jTreeTypes.TreeError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
-      delete node._cachedLineNumber
-      line++
+      // delete node._cachedLineNumber
+      lineStartsAt++
     }
     return errors
   }
@@ -353,7 +351,7 @@ class ImmutableNode extends AbstractNode {
     for (let node of this.getTopDownArrayIterator()) {
       node._cachedLineNumber = line
       const errs = node.getErrors()
-      delete node._cachedLineNumber
+      // delete node._cachedLineNumber
       if (errs.length) yield errs
       line++
     }

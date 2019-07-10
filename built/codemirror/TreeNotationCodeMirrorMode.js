@@ -111,7 +111,7 @@ class TreeNotationCodeMirrorMode {
     }
     _advanceStreamAndReturnTokenType(stream, state) {
         let nextCharacter = stream.next();
-        const lineNumber = this._getLineNumber(stream, state);
+        const lineNumber = stream.lineOracle.line + 1; // state.lineIndex
         while (typeof nextCharacter === "string") {
             const peek = stream.peek();
             if (nextCharacter === " ") {
@@ -131,10 +131,6 @@ class TreeNotationCodeMirrorMode {
         const style = this._getCellStyle(lineNumber, state.cellIndex);
         this._incrementLine(state);
         return style;
-    }
-    _getLineNumber(stream, state) {
-        const num = stream.lineOracle.line + 1; // state.lineIndex
-        return num;
     }
     _getCellStyle(lineIndex, cellIndex) {
         const program = this._getParsedProgram();

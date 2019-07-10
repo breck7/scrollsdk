@@ -47,11 +47,11 @@ declare class ImmutableNode extends AbstractNode {
     getTopDownArrayIterator(): IterableIterator<jTreeTypes.treeNode>;
     nodeAtLine(lineNumber: jTreeTypes.positiveInt): TreeNode | undefined;
     getNumberOfLines(): int;
-    protected _getLineNumber(target: ImmutableNode): number;
+    protected _cachedLineNumber: int;
+    _getLineNumber(target?: ImmutableNode): number;
     isBlankLine(): boolean;
     hasDuplicateFirstWords(): boolean;
     isEmpty(): boolean;
-    protected _cachedLineNumber: int;
     protected _getYCoordinate(relativeTo?: ImmutableNode): number;
     isRoot(relativeTo?: ImmutableNode): boolean;
     getRootNode(): ImmutableNode | this;
@@ -72,7 +72,7 @@ declare class ImmutableNode extends AbstractNode {
     getAllWordBoundaryCoordinates(): jTreeTypes.point[];
     getWordBoundaryIndices(): jTreeTypes.positiveInt[];
     getWordIndexAtCharacterIndex(charIndex: jTreeTypes.positiveInt): int;
-    getAllErrors(): jTreeTypes.TreeError[];
+    getAllErrors(lineStartsAt?: number): jTreeTypes.TreeError[];
     getAllErrorsIterator(): IterableIterator<any>;
     getFirstWord(): word;
     getContent(): string;

@@ -1,9 +1,12 @@
 edge / 2019-07-07
 ===================
 - Fix: prettify grammar files multiple inheritance sort fix and added regression test
+- Fix: getErrorsInGrammarExamples now prints correct source line where errors occur
+- Infra: removed dead code
 - Infra: compiled grammars are now much less code and rely on native JS class tree
 - Infra: compiled grammar vs runtime code paths are largely merged
-- Breaking: removed RunTimeFirstWord
+- Breaking: removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.
+- Breaking: removed unused getTheGrammarFilePath method
 
 32.0.0 / 2019-07-07
 ===================

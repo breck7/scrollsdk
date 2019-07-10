@@ -30,7 +30,6 @@ declare class TreeNotationCodeMirrorMode {
     }>;
     register(): this;
     private _advanceStreamAndReturnTokenType;
-    private _getLineNumber;
     private _getCellStyle;
     startState(): treeNotationCodeMirrorState;
     _incrementLine(state: treeNotationCodeMirrorState): void;

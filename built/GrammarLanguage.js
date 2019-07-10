@@ -455,9 +455,6 @@ class AbstractGrammarBackedCell {
     _getCellTypeDefinition() {
         return this._typeDef;
     }
-    _getLineNumber() {
-        return this.getNode().getPoint().y;
-    }
     _getFullLine() {
         return this.getNode().getLine();
     }
@@ -580,7 +577,7 @@ class AbstractTreeError {
         return this.getLineNumber() - 1;
     }
     getLineNumber() {
-        return this.getNode().getPoint().y;
+        return this.getNode()._getLineNumber(); // todo: handle sourcemaps
     }
     isCursorOnWord(lineIndex, characterIndex) {
         return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex);
@@ -633,7 +630,9 @@ class AbstractTreeError {
         return this.getNode().getLine();
     }
     getExtension() {
-        return this.getNode().getGrammarProgramRoot().getExtensionName();
+        return this.getNode()
+            .getGrammarProgramRoot()
+            .getExtensionName();
     }
     getNode() {
         return this._node;
@@ -722,11 +721,6 @@ class BlankLineError extends UnknownNodeTypeError {
     applySuggestion() {
         this.getNode().destroy();
         return this;
-    }
-}
-class InvalidConstructorPathError extends AbstractTreeError {
-    getMessage() {
-        return super.getMessage() + ` No constructor "${this.getLine()}" found. Language grammar "${this.getExtension()}" may need to be fixed.`;
     }
 }
 class MissingRequiredNodeTypeError extends AbstractTreeError {
@@ -992,14 +986,6 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
         return this.getWord(1);
     }
 }
-class GrammarDefinitionErrorNode extends TreeNode_1.default {
-    getErrors() {
-        return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)];
-    }
-    getLineCellTypes() {
-        return [GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarStandardCellTypeIds.any)).join(" ");
-    }
-}
 class GrammarExampleNode extends TreeNode_1.default {
 }
 class GrammarCompilerNode extends TreeNode_1.default {
@@ -1016,64 +1002,6 @@ class GrammarCompilerNode extends TreeNode_1.default {
             map[type] = TreeNode_1.default;
         });
         return map;
-    }
-}
-class AbstractCustomConstructorNode extends TreeNode_1.default {
-    isAppropriateEnvironment() {
-        return true;
-    }
-    getErrors() {
-        if (!this.isAppropriateEnvironment())
-            return [];
-        try {
-            // Attempt to load the custom constructor
-            this._getCustomConstructor();
-            return [];
-        }
-        catch (err) {
-            console.log(err);
-            return [new InvalidConstructorPathError(this)];
-        }
-    }
-    getGrammarProgramRoot() {
-        return this._getDef().getLanguageDefinitionProgram();
-    }
-    _getDef() {
-        const def = this.getParent().getParent();
-        if (def instanceof NonRootNodeTypeDefinition)
-            return def;
-        return def.getLanguageDefinitionProgram();
-    }
-}
-class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
-    // todo: if we keep this, we need to surface better error messaging with the submodule convention bit.
-    _getCustomConstructor() {
-        const filepath = this.getContent();
-        const rootPath = this.getRootNode().getTheGrammarFilePath();
-        const basePath = TreeUtils_1.default.getPathWithoutFileName(rootPath) + "/";
-        const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath;
-        const theModule = require(fullPath);
-        const constructorName = this._getDef()._getGeneratedClassName();
-        const constructor = TreeUtils_1.default.resolveProperty(theModule, constructorName);
-        if (!constructor)
-            throw new Error(`constructor "${constructorName}" not found in "${fullPath}".`);
-        return constructor;
-    }
-    isAppropriateEnvironment() {
-        return this.isNodeJs();
-    }
-}
-class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
-    _getCustomConstructor() {
-        // todo: bad idea to have browser and node have reverse ordering for submodulename
-        const constructorName = this._getDef()._getGeneratedClassName();
-        const constructor = TreeUtils_1.default.resolveProperty(window, constructorName);
-        if (!constructor)
-            throw new Error(`constructor window.${constructorName} not found.`);
-        return constructor;
-    }
-    isAppropriateEnvironment() {
-        return !this.isNodeJs();
     }
 }
 class GrammarNodeTypeConstant extends TreeNode_1.default {
@@ -1483,12 +1411,13 @@ window._nodeTypeMaps[${id}] = nodeTypeMap}`;
         document.head.appendChild(script);
         return win._nodeTypeMaps[id];
     }
+    // todo: use source maps?
     getErrorsInGrammarExamples() {
         const programConstructor = this.getRootConstructor();
         const errors = [];
         this.getConcreteAndAbstractNodeTypeDefinitions().forEach(def => def.getExamples().forEach(example => {
             const exampleProgram = new programConstructor(example.childrenToString());
-            exampleProgram.getAllErrors().forEach(err => {
+            exampleProgram.getAllErrors(example._getLineNumber() + 1).forEach(err => {
                 errors.push(err);
             });
         }));
@@ -1528,10 +1457,6 @@ window._nodeTypeMaps[${id}] = nodeTypeMap}`;
     }
     getConcreteAndAbstractNodeTypeDefinitions() {
         return this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition);
-    }
-    // todo: remove?
-    getTheGrammarFilePath() {
-        return this.getLine();
     }
     _getRootNodeTypeDefinitionNode() {
         if (!this._cache_rootNodeTypeNode) {

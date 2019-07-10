@@ -137,7 +137,6 @@ declare abstract class AbstractGrammarBackedCell<T> {
     }[];
     getWord(): string;
     protected _getCellTypeDefinition(): GrammarCellTypeDefinitionNode;
-    protected _getLineNumber(): number;
     protected _getFullLine(): string;
     protected _getErrorContext(): string;
     protected abstract _isValid(): boolean;
@@ -145,7 +144,7 @@ declare abstract class AbstractGrammarBackedCell<T> {
     getErrorIfAny(): jTreeTypes.TreeError;
 }
 declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
-    constructor(node: GrammarBackedNode | TreeNode);
+    constructor(node: GrammarBackedNode);
     private _node;
     getLineIndex(): jTreeTypes.positiveInt;
     getLineNumber(): jTreeTypes.positiveInt;
@@ -160,7 +159,7 @@ declare abstract class AbstractTreeError implements jTreeTypes.TreeError {
     private _getCodeMirrorLineWidgetElementWithSuggestion;
     getLine(): string;
     getExtension(): string;
-    getNode(): TreeNode | GrammarBackedNode;
+    getNode(): GrammarBackedNode;
     getErrorTypeName(): string;
     getCellIndex(): number;
     toObject(): {
@@ -316,7 +315,6 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     };
     getLanguageDefinitionProgram(): this;
     getConcreteAndAbstractNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
-    getTheGrammarFilePath(): string;
     private _cache_rootNodeTypeNode;
     _getRootNodeTypeDefinitionNode(): NonRootNodeTypeDefinition;
     getExtensionName(): string;

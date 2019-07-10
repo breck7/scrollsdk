@@ -124,9 +124,11 @@ class ImmutableNode extends AbstractNode_node_1.default {
         }
         return lineCount;
     }
-    _getLineNumber(target) {
+    _getLineNumber(target = this) {
+        if (this._cachedLineNumber)
+            return this._cachedLineNumber;
         let lineNumber = 1;
-        for (let node of this.getTopDownArrayIterator()) {
+        for (let node of this.getRootNode().getTopDownArrayIterator()) {
             if (node === target)
                 return lineNumber;
             lineNumber++;
@@ -143,8 +145,6 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return !this.length && !this.getContent();
     }
     _getYCoordinate(relativeTo) {
-        if (this._cachedLineNumber)
-            return this._cachedLineNumber;
         if (this.isRoot(relativeTo))
             return 0;
         const start = relativeTo || this.getRootNode();
@@ -288,15 +288,14 @@ class ImmutableNode extends AbstractNode_node_1.default {
         });
         return spots[charIndex];
     }
-    getAllErrors() {
+    getAllErrors(lineStartsAt = 1) {
         const errors = [];
-        let line = 1;
         for (let node of this.getTopDownArray()) {
-            node._cachedLineNumber = line;
+            node._cachedLineNumber = lineStartsAt; // todo: cleanup
             const errs = node.getErrors();
             errs.forEach(err => errors.push(err));
-            delete node._cachedLineNumber;
-            line++;
+            // delete node._cachedLineNumber
+            lineStartsAt++;
         }
         return errors;
     }
@@ -305,7 +304,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         for (let node of this.getTopDownArrayIterator()) {
             node._cachedLineNumber = line;
             const errs = node.getErrors();
-            delete node._cachedLineNumber;
+            // delete node._cachedLineNumber
             if (errs.length)
                 yield errs;
             line++;

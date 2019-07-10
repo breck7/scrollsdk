@@ -409,7 +409,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
       this.getParent()
         .findNodes(firstWord)
         .forEach((node, index) => {
-          if (index) errors.push(new NodeTypeUsedMultipleTimesError(node))
+          if (index) errors.push(new NodeTypeUsedMultipleTimesError(<GrammarBackedNode>node))
         })
 
     return this._getRequiredNodeErrors(errors)
@@ -544,10 +544,6 @@ abstract class AbstractGrammarBackedCell<T> {
 
   protected _getCellTypeDefinition() {
     return this._typeDef
-  }
-
-  protected _getLineNumber() {
-    return this.getNode().getPoint().y
   }
 
   protected _getFullLine() {
@@ -691,17 +687,17 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
 }
 
 abstract class AbstractTreeError implements jTreeTypes.TreeError {
-  constructor(node: GrammarBackedNode | TreeNode) {
+  constructor(node: GrammarBackedNode) {
     this._node = node
   }
-  private _node: GrammarBackedNode | TreeNode
+  private _node: GrammarBackedNode // todo: would it ever be a TreeNode?
 
   getLineIndex(): jTreeTypes.positiveInt {
     return this.getLineNumber() - 1
   }
 
   getLineNumber(): jTreeTypes.positiveInt {
-    return this.getNode().getPoint().y
+    return this.getNode()._getLineNumber() // todo: handle sourcemaps
   }
 
   isCursorOnWord(lineIndex: jTreeTypes.positiveInt, characterIndex: jTreeTypes.positiveInt) {
@@ -763,7 +759,9 @@ abstract class AbstractTreeError implements jTreeTypes.TreeError {
   }
 
   getExtension() {
-    return (<GrammarBackedNode>this.getNode()).getGrammarProgramRoot().getExtensionName()
+    return this.getNode()
+      .getGrammarProgramRoot()
+      .getExtensionName()
   }
 
   getNode() {
@@ -881,14 +879,8 @@ class BlankLineError extends UnknownNodeTypeError {
   }
 }
 
-class InvalidConstructorPathError extends AbstractTreeError {
-  getMessage(): string {
-    return super.getMessage() + ` No constructor "${this.getLine()}" found. Language grammar "${this.getExtension()}" may need to be fixed.`
-  }
-}
-
 class MissingRequiredNodeTypeError extends AbstractTreeError {
-  constructor(node: GrammarBackedNode | TreeNode, missingWord: jTreeTypes.firstWord) {
+  constructor(node: GrammarBackedNode, missingWord: jTreeTypes.firstWord) {
     super(node)
     this._missingWord = missingWord
   }
@@ -1217,16 +1209,6 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   public static types: any
 }
 
-class GrammarDefinitionErrorNode extends TreeNode {
-  getErrors(): jTreeTypes.TreeError[] {
-    return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
-  }
-
-  getLineCellTypes() {
-    return [<string>GrammarConstants.nodeType].concat(this.getWordsFrom(1).map(word => GrammarStandardCellTypeIds.any)).join(" ")
-  }
-}
-
 class GrammarExampleNode extends TreeNode {}
 
 class GrammarCompilerNode extends TreeNode {
@@ -1243,73 +1225,6 @@ class GrammarCompilerNode extends TreeNode {
       map[type] = TreeNode
     })
     return map
-  }
-}
-
-abstract class AbstractCustomConstructorNode extends TreeNode {
-  protected isAppropriateEnvironment() {
-    return true
-  }
-
-  abstract _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor
-
-  getErrors(): InvalidConstructorPathError[] {
-    if (!this.isAppropriateEnvironment()) return []
-
-    try {
-      // Attempt to load the custom constructor
-      this._getCustomConstructor()
-      return []
-    } catch (err) {
-      console.log(err)
-      return [new InvalidConstructorPathError(this)]
-    }
-  }
-
-  getGrammarProgramRoot() {
-    return this._getDef().getLanguageDefinitionProgram()
-  }
-
-  _getDef() {
-    const def = <AbstractGrammarDefinitionNode>this.getParent().getParent()
-
-    if (def instanceof NonRootNodeTypeDefinition) return def
-    return def.getLanguageDefinitionProgram()
-  }
-}
-
-class CustomNodeJsConstructorNode extends AbstractCustomConstructorNode {
-  // todo: if we keep this, we need to surface better error messaging with the submodule convention bit.
-  _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    const filepath = this.getContent()
-    const rootPath = (<GrammarProgram>this.getRootNode()).getTheGrammarFilePath()
-    const basePath = TreeUtils.getPathWithoutFileName(rootPath) + "/"
-    const fullPath = filepath.startsWith("/") ? filepath : basePath + filepath
-
-    const theModule = require(fullPath)
-    const constructorName = this._getDef()._getGeneratedClassName()
-    const constructor = TreeUtils.resolveProperty(theModule, constructorName)
-    if (!constructor) throw new Error(`constructor "${constructorName}" not found in "${fullPath}".`)
-    return constructor
-  }
-
-  protected isAppropriateEnvironment() {
-    return this.isNodeJs()
-  }
-}
-
-class CustomBrowserConstructorNode extends AbstractCustomConstructorNode {
-  _getCustomConstructor(): jTreeTypes.RunTimeNodeConstructor {
-    // todo: bad idea to have browser and node have reverse ordering for submodulename
-    const constructorName = this._getDef()._getGeneratedClassName()
-    const constructor = TreeUtils.resolveProperty(window, constructorName)
-    if (!constructor) throw new Error(`constructor window.${constructorName} not found.`)
-
-    return constructor
-  }
-
-  protected isAppropriateEnvironment() {
-    return !this.isNodeJs()
   }
 }
 
@@ -1783,13 +1698,14 @@ window._nodeTypeMaps[${id}] = nodeTypeMap}`
     return win._nodeTypeMaps[id]
   }
 
+  // todo: better formalize the source maps pattern somewhat used here by getAllErrors
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
     const errors: jTreeTypes.TreeError[] = []
     this.getConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
-        exampleProgram.getAllErrors().forEach(err => {
+        exampleProgram.getAllErrors(example._getLineNumber() + 1).forEach(err => {
           errors.push(err)
         })
       })
@@ -1841,11 +1757,6 @@ window._nodeTypeMaps[${id}] = nodeTypeMap}`
 
   getConcreteAndAbstractNodeTypeDefinitions() {
     return <NonRootNodeTypeDefinition[]>this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition)
-  }
-
-  // todo: remove?
-  getTheGrammarFilePath() {
-    return this.getLine()
   }
 
   private _cache_rootNodeTypeNode: NonRootNodeTypeDefinition

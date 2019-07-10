@@ -144,7 +144,7 @@ class TreeNotationCodeMirrorMode {
 
   private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string {
     let nextCharacter = stream.next()
-    const lineNumber = this._getLineNumber(stream, state)
+    const lineNumber = (<any>stream).lineOracle.line + 1 // state.lineIndex
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
       if (nextCharacter === " ") {
@@ -166,11 +166,6 @@ class TreeNotationCodeMirrorMode {
 
     this._incrementLine(state)
     return style
-  }
-
-  private _getLineNumber(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): jTreeTypes.int {
-    const num = (<any>stream).lineOracle.line + 1 // state.lineIndex
-    return num
   }
 
   private _getCellStyle(lineIndex: jTreeTypes.int, cellIndex: jTreeTypes.int): string {

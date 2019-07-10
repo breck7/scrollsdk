@@ -2,6 +2,7 @@ edge / 2019-07-07
 ===================
 - Fix: prettify grammar files multiple inheritance sort fix and added regression test
 - Fix: getErrorsInGrammarExamples now prints correct source line where errors occur
+- Fix: fixed bug and added test where inScope was not extending correctly
 - Infra: removed dead code
 - Infra: compiled grammars are now much less code and rely on native JS class tree
 - Infra: compiled grammar vs runtime code paths are largely merged

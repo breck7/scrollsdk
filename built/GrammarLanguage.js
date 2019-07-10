@@ -686,7 +686,10 @@ class AbstractCellError extends AbstractTreeError {
 }
 class UnknownNodeTypeError extends AbstractTreeError {
     getMessage() {
-        return super.getMessage() + ` Invalid nodeType "${this.getNode().getFirstWord()}".`;
+        const node = this.getNode();
+        const parentNode = node.getParent();
+        const options = Object.keys(parentNode.getFirstWordMap());
+        return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid options are: "${options}"`;
     }
     _getWordSuggestion() {
         const node = this.getNode();
@@ -1219,12 +1222,15 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             // todo: do we need this?
             return "getFirstWordMap() { return {} }";
         const myFirstWordMap = this._createFirstWordToNodeDefMap(this._getMyInScopeNodeTypeIds());
-        // todo: use constants in first word maps
+        // todo: use constants in first word maps?
+        // todo: extend super.
+        // todo: cache?
         if (Object.keys(myFirstWordMap).length)
             return `getFirstWordMap() {
-  return {${Object.keys(myFirstWordMap)
+        const map = Object.assign({}, super.getFirstWordMap())
+  return Object.assign(map, {${Object.keys(myFirstWordMap)
                 .map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`)
-                .join(",\n")}}
+                .join(",\n")}})
   }`;
         return "";
     }
@@ -1411,7 +1417,7 @@ window._nodeTypeMaps[${id}] = nodeTypeMap}`;
         document.head.appendChild(script);
         return win._nodeTypeMaps[id];
     }
-    // todo: use source maps?
+    // todo: better formalize the source maps pattern somewhat used here by getAllErrors
     getErrorsInGrammarExamples() {
         const programConstructor = this.getRootConstructor();
         const errors = [];

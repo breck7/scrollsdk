@@ -11,3 +11,8 @@ xColumnName gender
 nodeExpandsConsts
 html.h1
  content hello world
+block
+ scoreBlock
+  scores 2 3 2 12
+  scoreBlock
+   scores 31

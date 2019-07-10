@@ -834,7 +834,10 @@ abstract class AbstractCellError extends AbstractTreeError {
 
 class UnknownNodeTypeError extends AbstractTreeError {
   getMessage(): string {
-    return super.getMessage() + ` Invalid nodeType "${this.getNode().getFirstWord()}".`
+    const node = this.getNode()
+    const parentNode = node.getParent()
+    const options = Object.keys(parentNode.getFirstWordMap())
+    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid options are: "${options}"`
   }
 
   protected _getWordSuggestion() {
@@ -1485,12 +1488,14 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       return "getFirstWordMap() { return {} }"
     const myFirstWordMap = this._createFirstWordToNodeDefMap(this._getMyInScopeNodeTypeIds())
 
-    // todo: use constants in first word maps
+    // todo: use constants in first word maps?
+    // todo: cache the super extending?
     if (Object.keys(myFirstWordMap).length)
       return `getFirstWordMap() {
-  return {${Object.keys(myFirstWordMap)
+        const map = Object.assign({}, super.getFirstWordMap())
+  return Object.assign(map, {${Object.keys(myFirstWordMap)
     .map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`)
-    .join(",\n")}}
+    .join(",\n")}})
   }`
     return ""
   }

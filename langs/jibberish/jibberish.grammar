@@ -62,8 +62,14 @@ nodeType plus
   + 1 2
  catchAllCellType int
 nodeType block
- inScope topLevel
+ inScope topLevel scoreBlock
  extends topLevel
+nodeType scoreBlock
+ description Test that inscope extends and does not overwrite.
+ extends block
+ inScope scores
+nodeType scores
+ catchAllCellType int
 nodeType to
  cells word
  compiler

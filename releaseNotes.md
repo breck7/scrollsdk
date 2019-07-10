@@ -1,15 +1,15 @@
-edge / 2019-07-07
+33.0.0 / 2019-07-10
 ===================
+- Breaking: no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can still access the others via that.
+- Breaking: removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.
+- Breaking: removed unused getTheGrammarFilePath method
+- Breaking: compile to node/browser now saves a lang named "foo" to "foo.browser.js" instead of "fooLanguage"
 - Fix: prettify grammar files multiple inheritance sort fix and added regression test
 - Fix: getErrorsInGrammarExamples now prints correct source line where errors occur
 - Fix: fixed bug and added test where inScope was not extending correctly
 - Infra: removed dead code
 - Infra: compiled grammars are now much less code and rely on native JS class tree
 - Infra: compiled grammar vs runtime code paths are largely merged
-- Breaking: no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can access the others via that.
-- Breaking: removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.
-- Breaking: removed unused getTheGrammarFilePath method
-- Breaking: compile to node/browser now saves a lang named "foo" to "foo.browser.js" instead of "fooLanguage"
 
 32.0.0 / 2019-07-07
 ===================

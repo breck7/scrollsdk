@@ -4442,7 +4442,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "32.0.0";
+jtree.getVersion = () => "33.0.0";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));

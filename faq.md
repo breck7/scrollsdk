@@ -113,11 +113,11 @@ By creating 1 file in Grammar, you get a new programming language with autocompl
 
 #### All of the demo languages currently use prefix notation. Can I use infix notation, postfix notation, or pattern matching?
 
-Yes! Although the Grammar Language currently supports mainly prefix, we are working on a few iterations to allow more styles of nodeType parsing, as well as more polymorphism. New versions in the next few months should have robust implementations of those patterns.
+Yes! Although the Grammar Language currently supports mainly prefix notation, we are working on a few iterations to allow more styles of nodeType parsing, as well as more polymorphism. New versions in the next few months should have robust implementations of those patterns.
 
 #### Can I do inline Trees?
 
-Yes! While not supported at the base Tree Notation level, your individual nodes can certainly have inline trees. Often your Tree Languages will have nodes that contain content written in traditional languages like Javascript, Lisp, or Python. Or you could even have inline trees written in Tree Notation, except using something like the pipe character "|" as YI instead of "\n".
+Yes! While not supported at the base Tree Notation level, your individual nodes can certainly have inline trees. Often your Tree Languages will have nodes that contain content written in traditional languages like Javascript, Lisp, or Python. Or you could even have inline trees written in Tree Notation, except using something like the pipe character as YI instead of the newline character.
 
 ## Lisp Related Questions
 

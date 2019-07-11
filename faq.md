@@ -31,6 +31,14 @@ A good place to start is with our simple <a href="http://treenotation.org/sandbo
 
 Everywhere! Anywhere you use programming languages or encodings, you can use Tree Notation. In the early days of the Tree ecosystem, it will require more work, and you likely will have to build your own Tree Language, but we are here to help.
 
+#### What are some examples of Tree Languages?
+
+There are a dozen <a href="https://github.com/breck7/jtree/tree/master/langs">example languages</a>a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a language that is growing into a <a href="http://treenotation.org/sandbox/build/#standard%20project">replacement for Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
+
+#### Language that add numbers or compile to HTML are cute, but what is the most advanced Tree Language out there?
+
+Currently the most advanced Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="http://treenotation.org/sandbox/build/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
+
 ## Structure
 
 #### What are the data structures in Tree Notation?

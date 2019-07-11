@@ -101,6 +101,10 @@ Sort of! Tree Notation is ready for early adopters. If you use Tree Notation tod
 
 If you'd prefer to wait until most of the details are settled, 2020 is probably a better time to start using it.
 
+#### How can I help?
+
+Thank you for asking! We need a lot of volunteers. Particularly important needs now are someone with project management skills to help organize and lead the team, someone to do community organizing/evangelism, dev leads to make libraries in various languages, testers to do cross platform testing, and more! Get in touch if you want to help.
+
 ## Lisp Related Questions
 
 #### How is this different from S-Expressions?
@@ -128,3 +132,9 @@ We came up with Tree Notation circa 2012. However, it turns out in 2003 Egil Mö
 #### Why didn't I-Expressions catch on?
 
 Not sure. We think it's because perhaps it was pitched as a different way to write Lisp, and that was it. With Tree Notation, coming up with an improved way to write Lisp was never a primary goal. Our primary goals have been to enable visual programming, simpler APIs, cleaner code and program synthesis, for which Tree Notation is an ideal tool.
+
+## Other
+
+#### Did you know that if you think this could grow to rival the web you are an idiot?
+
+Thank you for reminding us the web was not built in a day!

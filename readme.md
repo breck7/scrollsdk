@@ -7,12 +7,14 @@ On top of Tree Notation, you can design "Tree Languages". Tree Languages can do 
 
 [Try it out](http://treenotation.org/sandbox/)
 
+[FAQ](http://treenotation.org/faq.html)
+
 [TypeScript Implementation on GitHub](https://github.com/breck7/jtree)
 
 Quick Examples
 --------------
 
-### For file formats:
+#### For file formats:
 
 Tree Notation makes a great base for formats where you traditionally might use JSON or XML.
 
@@ -41,7 +43,7 @@ package.json:
 
 Note: the JSON example above works correctly, but JSON and Tree Notation are not isomorphic by default. If you want JSON features such as keys with spaces, numbers, or arrays, you'll need to use a higher level Tree Language that has a 1-to-1 relationship to JSON.
 
-### For programming languages:
+#### For programming languages:
 
 In the example below, Tree Notation is used as a base for a math language where traditionally S-Expressions/Lisp might be used.
 

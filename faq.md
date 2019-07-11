@@ -1,35 +1,35 @@
 Tree Notation Frequently Asked Questions
 ========================================
 
-Below is a list of questions that commonly come up with people who are just hearing about <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here, file an issue, send a pull request, or send an email to byunits@cc.hawaii.edu.
+Below is a list of questions that commonly come up with people who are just hearing about <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or sending an email to byunits@cc.hawaii.edu.
 
 ## Overview
 
-#### There are already over 10,000 programming languages and over 1,000 syntax systems, why create another one?
+#### There are already over 10,000 programming languages and over 1,000 syntax systems like JSON, XML and BNF, why create another one?
 
 There is only 1 binary. Tree Notation is more like binary than it is like a programming language. Tree Notation is a basic building block that you can build higher level languages on top of.
 
-The benefits of Tree Notation is that if you are building tools for your Tree Language for automating train schedules, and I am building tools for my Tree Language for doing cancer research faster, even though our 2 domains are very different, we can share a lot of the tools and code. The Tree Notation network effects will be huge.
+Tree Notation will have strong network effects. If you are building a Tree Language and tools for automating train schedules, and I am building a Tree Language and tools for doing cancer research, even though our 2 domains are very different, we can share a lot of the tools and code.
 
 Currently languages look like this:
 
 1 Binary => 1,000+ Syntaxes => 10,000+ languages
 
-In the future it may look like this:
+In the future we think it may look like this:
 
 1 Binary => 1 Tree Notation => 10,000+ languages
 
 #### What's the difference between Tree Notation and Tree Languages?
 
-Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful.
+Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. Anyone can make a new language by simply creating 1 file in a language called Grammar, which is itself a Tree Language.
 
 #### How can I build a new Tree Language?
 
-One place to try is using our simple <a href="http://treenotation.org/sandbox/build/">Tree Language Web IDE</a>.
+A good place to start is with our simple <a href="http://treenotation.org/sandbox/build/">Tree Language Builder</a>.
 
 #### Where can I use Tree Notation?
 
-Everywhere! Anywhere you use programming languages or encodings, you can use Tree Notation. In the early days of the Tree ecosystem, it will require more work, but we are here to help.
+Everywhere! Anywhere you use programming languages or encodings, you can use Tree Notation. In the early days of the Tree ecosystem, it will require more work, and you likely will have to build your own Tree Language, but we are here to help.
 
 ## Structure
 
@@ -97,7 +97,7 @@ If you'd prefer to wait until most of the details are settled, 2020 is probably 
 
 #### How is this different from S-Expressions?
 
-It is largely accurate to say Tree Notation is S-Expressions without parenthesis. It turns out, that matters a lot!
+It is largely accurate to say Tree Notation is S-Expressions without parenthesis. But this makes them almost completely different! Tree Notation gives you fewer chances to make errors, easier program concatenation and ad hoc parser writing, easier program synthesis, easier visual programming, easier code analysis, and more.
 
 #### Is Tree Notation just Lisp?
 
@@ -107,11 +107,11 @@ No. It is largely accurate to say Tree Notation is Lisp without parenthesis. How
 
 #### How was Tree Notation discovered?
 
-From Breck Yunits: `It was 2012 and Ben and I were building a visual web page editor called <a href="https://www.youtube.com/watch?v=ZWthAz839Og">NudgePad</a> in the "piano office" in San Francisco. Users could drag, drop and edit their web pages without touching any code. I made the program read and write the language HAML under the hood, which I had learned at my previous job at <a href="https://labzero.com/">Lab Zero</a>. The problem was I had to write my own HAML parser and code generator, and because we were a broke startup, I kept trying to cut syntax from the language to save time and money. Each day I would remove some syntax character from the language and still somehow get everything in the appp to work. Eventually the language was just spaces, newlines, and colons. There really was an "aha!" moment. I remember I was walking to work, going over the code in my head, and had just reached the <a href="https://goo.gl/maps/4cTV2CcpQcX8NPC16">101 overpass</a> when realized I could drop the colons! I went straight to my desk, told Ben I had an idea, and a couple hours later had removed the colons and everything still worked. I remember at the time thinking that was potentially a profound idea but I *assumed* someone had built it already. I thought there was no chance it hadn't been invented yet because it was so simple. For years I'd ping folks in industry, post on message boards, and do a lot of Google searches. It took me years of searching for it before I thought maybe no had noticed and leveraged this idea before. It took 5 years before I wrote a paper about it, and over 7 years before it started to get good.`
+From Breck Yunits: "It was 2012 and Ben and I were building a visual web page editor called <a href="https://www.youtube.com/watch?v=ZWthAz839Og">NudgePad</a> in the "piano office" in San Francisco. Users could drag, drop and edit their web pages without touching any code. I made the program read and write the language HAML under the hood, which I had learned at my previous job at <a href="https://labzero.com/">Lab Zero</a>. The problem was I had to write my own HAML parser and code generator, and because we were a broke startup, I kept trying to cut syntax from the language to save time and money. Each day I would remove some syntax character from the language and still somehow get everything in the appp to work. Eventually the language was just spaces, newlines, and colons. There really was an "aha!" moment. I remember I was walking to work, going over the code in my head, and had just reached the <a href="https://goo.gl/maps/4cTV2CcpQcX8NPC16">101 overpass</a> when realized I could drop the colons! I went straight to my desk, told Ben I had an idea, and a couple hours later had removed the colons and everything still worked. I remember at the time thinking that was potentially a profound idea but I *assumed* someone had built it already. I thought there was no chance it hadn't been invented yet because it was so simple. For years I'd ping folks in industry, post on message boards, and do a lot of Google searches. It took me years of searching for it before I thought maybe no had noticed and leveraged this idea before. It took 5 years before I wrote a paper about it, and over 7 years before it started to get good."
 
 #### Which language influenced Tree Notation the most?
 
-Syntactically there's no doubt--it was <a href="http://haml.info/">HAML</a>. See story about how Tree Notation was discovered. Semantically there's been a lot of incluences from thousands of languages. As for particularly influential ones--Lisp, Haskell, Racket, TypeScript, Python, Scheme, Javascript, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL all come to mind.
+Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story for why. Semantically there's been a lot of incluences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, TypeScript, Python, Scheme, Javascript, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.
 
 #### Who is the first person to discover Tree Notation?
 

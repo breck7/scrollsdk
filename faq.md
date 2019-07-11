@@ -1,7 +1,7 @@
 Tree Notation Frequently Asked Questions
 ========================================
 
-Below is a list of questions that commonly come up with people who are just hearing about <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or sending an email to byunits@cc.hawaii.edu.
+Below is a list of questions that are commonly asked by people who are new to <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or sending an email to byunits@cc.hawaii.edu.
 
 ## Overview
 

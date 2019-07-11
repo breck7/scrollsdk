@@ -33,11 +33,11 @@ Everywhere! Anywhere you use programming languages or encodings, you can use Tre
 
 #### What are some examples of Tree Languages?
 
-There are a dozen <a href="https://github.com/breck7/jtree/tree/master/langs">example languages</a>a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a language that is growing into a <a href="http://treenotation.org/sandbox/build/#standard%20project">replacement for Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
+There are a dozen <a href="https://github.com/breck7/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a <a href="http://treenotation.org/sandbox/build/#standard%20project">language similar to Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
 
-#### Language that add numbers or compile to HTML are cute, but what is the most advanced Tree Language out there?
+#### Language that add numbers or compile to HTML are cute, but are there any advanced Tree Language?
 
-Currently the most advanced Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="http://treenotation.org/sandbox/build/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
+Currently the most advanced non-experimental Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="http://treenotation.org/sandbox/build/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
 
 ## Structure
 
@@ -71,21 +71,21 @@ Tree Notation supports all encodings. This is perfectly valid Tree Notation:
      body
       div おはようございます
 
-In fact, there is no such thing as an invalid Tree Notation document, at the base level, just as there is no such thing as an "invalid binary sequence".
+In fact, there is no such thing as an invalid Tree Notation document at the base level, just as there is no such thing as an "invalid binary sequence".
 
 Usually when using Tree Notation you use a higher level grammar, called a Tree Language, and so you can still have invalid programs in that language (because of typos, for example) even though your Tree Notation is valid.
 
 #### How do I escape characters?
 
-In Tree Notation you never need to escape characters. If your node spans across multiple lines, simply indent the child lines by one space more than their parent, and leave the rest of the line as is.
+In Tree Notation you never need to escape characters. If your node spans across multiple lines, simply indent the child lines by one space more than their parent, and leave the rest of the line as is. Some Tree Languages might have the notion of escape characters in certain places, but there's no such thing at the Tree Notation base layer.
 
 #### Does Tree Notation directly map to XML or JSON?
 
 No. A subset of Tree Notation does, but for perfect one-to-one matching you'll want to use a Tree Language specifically designed for that language.
 
-#### Can I use Tree Notation with some other programming language?
+#### Can I use Tree Notation with any programming language?
 
-Yes! We hope that there will eventually be Tree Notation and Tree Grammar libraries in all programming languages, similar to how most languages nowadays have JSON libraries.
+Yes! The <a href="https://github.com/breck7/jtree">JTree library</a> provides Tree Notation support for TypeScript and Javascript, but we hope that there will eventually be Tree Notation and Tree Grammar libraries in all programming languages, similar to how most languages nowadays have JSON libraries. We currently have C++, Python, and GoLang libraries in development, but hopefully others will create those before we release ours.
 
 If you want to build a Tree Notation library for your language, let us know how we can help!
 
@@ -93,7 +93,7 @@ If you want to build a Tree Notation library for your language, let us know how 
 
 #### Who makes Tree Notation, and is it open source?
 
-Tree Notation is open source, free, and made by volunteers. The Tree Notation Lab, a research group in Oahu, is currently behind a lot of the infrastructure projects building out Tree Notation. We are building infrastructure needed so that we can build better tools for cancer researchers, clinicians, and patients, but the faster we can get the broader Tree Notation ecosystem growing, the easier our work will become.
+Tree Notation is open source, free, and made by volunteers. The Tree Notation Lab, a research group in Oahu, is currently behind a lot of the core Tree Notation infrastructure projects. We are building the infrastructure needed so that we can build better tools for cancer researchers, clinicians, and patients, but the faster we can get the broader Tree Notation ecosystem growing, the easier our work will become.
 
 #### Is Tree Notation ready for production use?
 
@@ -115,11 +115,11 @@ No. It is largely accurate to say Tree Notation is Lisp without parenthesis. How
 
 #### How was Tree Notation discovered?
 
-From Breck Yunits: "It was 2012 and Ben and I were building a visual web page editor called <a href="https://www.youtube.com/watch?v=ZWthAz839Og">NudgePad</a> in the "piano office" in San Francisco. Users could drag, drop and edit their web pages without touching any code. I made the program read and write the language HAML under the hood, which I had learned at my previous job at <a href="https://labzero.com/">Lab Zero</a>. The problem was I had to write my own HAML parser and code generator, and because we were a broke startup, I kept trying to cut syntax from the language to save time and money. Each day I would remove some syntax character from the language and still somehow get everything in the appp to work. Eventually the language was just spaces, newlines, and colons. There really was an "aha!" moment. I remember I was walking to work, going over the code in my head, and had just reached the <a href="https://goo.gl/maps/4cTV2CcpQcX8NPC16">101 overpass</a> when realized I could drop the colons! I went straight to my desk, told Ben I had an idea, and a couple hours later had removed the colons and everything still worked. I remember at the time thinking that was potentially a profound idea but I *assumed* someone had built it already. I thought there was no chance it hadn't been invented yet because it was so simple. For years I'd ping folks in industry, post on message boards, and do a lot of Google searches. It took me years of searching for it before I thought maybe no had noticed and leveraged this idea before. It took 5 years before I wrote a paper about it, and over 7 years before it started to get good."
+From Breck Yunits: "It was 2012 and Ben and I were building a visual web page editor called <a href="https://www.youtube.com/watch?v=ZWthAz839Og">NudgePad</a> in the "piano office" in San Francisco. Users could drag, drop and edit their web pages without touching any code. I made the program read and write the language HAML under the hood, which I had learned at my previous job at <a href="https://labzero.com/">Lab Zero</a>. The problem was I had to write my own HAML parser and code generator, and because we were a broke startup, I kept trying to cut syntax from the language to save time and money. Each day I would remove some syntax character from the language and still somehow get everything in the appp to work. Eventually the language was just spaces, newlines, and colons. There really was an "aha!" moment. I remember I was walking to work, going over the code in my head, and had just reached the <a href="https://goo.gl/maps/4cTV2CcpQcX8NPC16">101 overpass</a> when I realized I could drop the colons! I went straight to my desk, told Ben I had an idea, and a couple hours later had removed the colons and everything still worked. I remember at the time thinking that was potentially a profound idea but I *assumed* someone had built it already. I thought there was no chance it hadn't been invented yet because it was so simple. For years I'd ping folks in industry, post on message boards, and do a lot of Google searches. It took me years of searching for it before I thought maybe no had noticed and leveraged this idea before. It took 5 years before I wrote a paper about it, and over 7 years before it started to get good."
 
 #### Which language influenced Tree Notation the most?
 
-Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story for why. Semantically there's been a lot of incluences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, TypeScript, Python, Scheme, Javascript, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.
+Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story for why. Semantically there's been a lot of influences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, TypeScript, Python, Scheme, Javascript, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.
 
 #### Who is the first person to discover Tree Notation?
 

@@ -1,7 +1,7 @@
 Tree Notation Frequently Asked Questions
 ========================================
 
-Below is a list of questions that are commonly asked by people who are new to <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or sending an email to byunits@cc.hawaii.edu.
+Below is a list of questions that are commonly asked by people who are new to <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or sending an email to breck7@gmail.com.
 
 ## Overview
 
@@ -104,6 +104,20 @@ If you'd prefer to wait until most of the details are settled, 2020 is probably 
 #### How can I help?
 
 Thank you for asking! We need a lot of volunteers. Particularly important needs now are someone with project management skills to help organize and lead the team, someone to do community organizing/evangelism, dev leads to make libraries in various languages, testers to do cross platform testing, and more! Get in touch if you want to help.
+
+## For Advanced Tree Language Creators
+
+#### What are the benefits to writing a "Grammar" file to create my Tree Language?
+
+By creating 1 file in Grammar, you get a new programming language with autocomplete, syntax highlighting, type-checking, help, integration tests, compiling, and more. The goal of Grammar is to help you create a new, robust, well tested language as easily as possible.
+
+#### All of the demo languages currently use prefix notation. Can I use infix notation, postfix notation, or pattern matching?
+
+Yes! Although the Grammar Language currently supports mainly prefix, we are working on a few iterations to allow more styles of nodeType parsing, as well as more polymorphism. New versions in the next few months should have robust implementations of those patterns.
+
+#### Can I do inline Trees?
+
+Yes! While not supported at the base Tree Notation level, your individual nodes can certainly have inline trees. Often your Tree Languages will have nodes that contain content written in traditional languages like Javascript, Lisp, or Python. Or you could even have inline trees written in Tree Notation, except using something like the pipe character "|" as YI instead of "\n".
 
 ## Lisp Related Questions
 

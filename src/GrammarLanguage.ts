@@ -83,6 +83,7 @@ enum GrammarConstants {
   highlightScope = "highlightScope"
 }
 
+// todo: can we merge these methods into base TreeNode and ditch this class?
 abstract class GrammarBackedNode extends TreeNode {
   abstract getDefinition(): AbstractGrammarDefinitionNode
 

@@ -137,7 +137,7 @@ From Breck Yunits: "It was 2012 and Ben and I were building a visual web page ed
 
 #### Which language influenced Tree Notation the most?
 
-Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story for why. Semantically there's been a lot of influences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, TypeScript, Python, Scheme, Javascript, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.
+Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story for why. Semantically there's been a lot of influences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, TypeScript, Python, Scheme, Javascript, Rebol, Red-Lang, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.
 
 #### Who is the first person to discover Tree Notation?
 

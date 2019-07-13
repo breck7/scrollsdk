@@ -13,3 +13,5 @@ jtree.browser.ts
 tasks/syntax.sh
 src/*/*.js
 src/*.js
+*.map
+*.d.ts

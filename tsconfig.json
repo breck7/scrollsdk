@@ -4,9 +4,10 @@
     "types": ["node"],
     "lib": ["es2017", "dom"],
     "noImplicitAny": true,
-    //"allowJs": true,
+    "composite": true,
     "declaration": true,
     "target": "es2017",
+    "rootDir": "./src",
     "module": "commonjs"
   },
   "include": ["./src/**/*"]

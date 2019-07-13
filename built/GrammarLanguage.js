@@ -75,6 +75,7 @@ var GrammarConstants;
     GrammarConstants["highlightScope"] = "highlightScope";
 })(GrammarConstants || (GrammarConstants = {}));
 exports.GrammarConstants = GrammarConstants;
+// todo: can we merge these methods into base TreeNode and ditch this class?
 class GrammarBackedNode extends TreeNode_1.default {
     getAutocompleteResults(partialWord, cellIndex) {
         return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex);

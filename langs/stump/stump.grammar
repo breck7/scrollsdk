@@ -161,12 +161,12 @@ nodeType abstractHtmlTag
       .join("\n")
   }
   // todo: should not be here
-  getStumpNodeChisel() {
-    return this._chisel || this.getParent().getStumpNodeChisel()
+  getStumpNodeTreeComponent() {
+    return this._treeComponent || this.getParent().getStumpNodeTreeComponent()
   }
   // todo: should not be here
-  setStumpNodeChisel(chisel) {
-    this._chisel = chisel
+  setStumpNodeTreeComponent(treeComponent) {
+    this._treeComponent = treeComponent
     return this
   }
   setStumpNodeCss(css) {
@@ -759,3 +759,27 @@ nodeType width
  extends abstractHtmlAttribute
 nodeType wrap
  extends abstractHtmlAttribute
+nodeType stumpExtendedAttribute
+ abstract
+ description Node types not present in HTML but included in stump.
+ extends abstractHtmlAttribute
+nodeType stumpNoOp
+ extends stumpExtendedAttribute
+nodeType stumpStyleFor
+ extends stumpExtendedAttribute
+nodeType stumpOnBlurCommand
+ extends stumpExtendedAttribute
+nodeType stumpOnLineClick
+ extends stumpExtendedAttribute
+nodeType stumpOnLineShiftClick
+ extends stumpExtendedAttribute
+nodeType stumpOnClickCommand
+ extends stumpExtendedAttribute
+nodeType stumpOnContextMenuCommand
+ extends stumpExtendedAttribute
+nodeType stumpOnChangeCommand
+ extends stumpExtendedAttribute
+nodeType stumpOnDblClickCommand
+ extends stumpExtendedAttribute
+nodeType stumpCollapseNode
+ extends stumpExtendedAttribute

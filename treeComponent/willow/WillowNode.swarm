@@ -1,0 +1,28 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+arrangeTestSubject
+test basics
+ arrangeTestSubject
+  require ./WillowNode.js WillowProgram
+  constructWithBlockString
+   http://localhost:8000/
+ someInputHasFocus
+  stringIs false
+ isNodeJs
+  stringIs true
+ getPageHtml
+  stringIncludes <body
+ getWindowTitle
+  stringIs 
+ setWindowTitle
+  blockStringParam
+   new page title
+ getWindowTitle
+  stringIs new page title
+ isExternalLink /
+  stringIs false
+ isExternalLink https://cnn.com/
+  stringIs true
+ isExternalLink http://localhost:8000/foobar
+  stringIs false
+ isExternalLink http://localhot:8000/
+  stringIs true

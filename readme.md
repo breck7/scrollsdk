@@ -11,6 +11,8 @@ On top of Tree Notation, you can design "Tree Languages". Tree Languages can do 
 
 [TypeScript Implementation on GitHub](https://github.com/breck7/jtree)
 
+[Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)
+
 Quick Examples
 --------------
 

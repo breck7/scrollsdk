@@ -1,0 +1,36 @@
+nodeType chexApp
+ root
+ description ChexApp is a demonstration ToDo App built using the TreeComponent Framework.
+ catchAllNodeType catchAllError
+ inScope rootNode
+cellType keywordCell
+ highlightScope keyword
+cellType stringCell
+ highlightScope string
+cellType statusCell
+ enum Done Pending
+ highlightScope constant.numeric.integer
+nodeType rootNode
+ firstCellType keywordCell
+nodeType todoList
+ extends rootNode
+ inScope todoItem
+nodeType todoItem
+ firstCellType keywordCell
+ inScope title status
+nodeType status
+ firstCellType keywordCell
+ cells statusCell
+nodeType title
+ firstCellType keywordCell
+ catchAllCellType stringCell
+nodeType navBar
+ extends rootNode
+ inScope item
+nodeType item
+ firstCellType keywordCell
+ catchAllCellType stringCell
+nodeType footer
+ extends rootNode
+nodeType catchAllError
+ baseNodeType errorNode

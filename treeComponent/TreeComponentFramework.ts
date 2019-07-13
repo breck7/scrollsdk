@@ -1,6 +1,10 @@
 import jtree from "../src/jtree"
 import jTreeTypes from "../src/jTreeTypes"
 
+const stump = require("../langs/stump/stump.js")
+const hakon = require("../langs/hakon/hakon.js")
+// const { AbstractWillowProgram } = require("./willow/Willow.js")
+
 abstract class AbstractCommander {
   private _target: any
   constructor(target: AbstractTreeComponent) {
@@ -20,13 +24,7 @@ abstract class AbstractTheme {
   }
 }
 
-// todo: get this from hakon
-declare class hakon extends jtree.GrammarBackedRootNode {
-  // todo: remove this?
-  getGrammarProgramRoot() {
-    return new jtree.GrammarProgram()
-  }
-}
+class DefaultTheme extends AbstractTheme {}
 
 // todo: cleanup
 interface reasonForUpdatingOrNot {
@@ -107,8 +105,8 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
       .reduce((sum, num) => sum + num)
   }
 
-  getRootNode() {
-    return <AbstractTreeComponent>super.getRootNode()
+  getRootNode(): AbstractTreeComponentRootNode {
+    return <AbstractTreeComponentRootNode>super.getRootNode()
   }
 
   getCommander() {
@@ -123,7 +121,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     return ""
   }
 
-  getTheme() {
+  getTheme(): AbstractTheme {
     return this.getRootNode().getTheme()
   }
 
@@ -132,7 +130,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     return this._commandsBuffer
   }
 
-  addToCommandLog(command) {
+  addToCommandLog(command: string) {
     this.getCommandsBuffer().push({
       command: command,
       time: this._getProcessTimeInMilliseconds()
@@ -423,7 +421,24 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     this.treeComponentDidMount()
   }
 
-  renderAndGetRenderResult(stumpNode: abstractHtmlTag, index: number) {
+  compile() {
+    const name = this.constructor.name
+    const pathToJTreeBrowserLib = "../../built/jtree.browser.js"
+    const pathToTreeComponentBrowserLib = "../TreeComponentFramework.js"
+    return new stump(`html
+ head
+  titleTag ${name}
+ body
+  script
+   src ${pathToJTreeBrowserLib}
+  script
+   src ${pathToTreeComponentBrowserLib}
+  script
+   bern
+    WillowBrowserProgram.startApp(${name})`).compile()
+  }
+
+  renderAndGetRenderResult(stumpNode?: abstractHtmlTag, index?: number) {
     const isUpdateOp = this.isMounted()
     let treeComponentUpdateResult = {
       treeComponentDidUpdate: false
@@ -460,4 +475,26 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   }
 }
 
-module.exports = { AbstractTreeComponent, AbstractCommander }
+class AbstractTreeComponentRootNode extends AbstractTreeComponent {
+  private _willowProgram: any
+  private _theme: AbstractTheme
+
+  getTheme(): AbstractTheme {
+    if (!this._theme) this._theme = new DefaultTheme()
+    return this._theme
+  }
+
+  getWillowProgram() {
+    if (!this._willowProgram) {
+      if (this.isNodeJs()) {
+        const { WillowProgram } = require("./willow/WillowNode.js")
+        this._willowProgram = new WillowProgram("http://localhost:8000/")
+      } else {
+        new (<any>window).WillowBrowserProgram(window.location.href)
+      }
+    }
+    return this._willowProgram
+  }
+}
+
+module.exports = { AbstractTreeComponentRootNode, AbstractCommander }

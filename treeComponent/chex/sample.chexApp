@@ -1,0 +1,10 @@
+navBar
+ item Chex
+todoList
+ todoItem
+  title Buy some milk
+  status Pending
+ todoItem
+  title Buy ticket
+  status Done
+footer

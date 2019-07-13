@@ -1,11 +1,10 @@
 {
   "compilerOptions": {
-    "types": ["node"],
     "lib": ["es2017", "dom"],
     "noImplicitAny": true,
-    "declaration": true,
-    "target": "es2017",
-    "module": "commonjs"
+    "declaration": false,
+    "moduleResolution": "node",
+    "target": "es2017"
   },
   "references": [{ "path": "../tsconfig.json" }],
   "include": ["./TreeComponentFramework.ts"]

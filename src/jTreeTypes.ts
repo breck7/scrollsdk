@@ -28,6 +28,7 @@ export namespace jTreeTypes {
   export declare type int = number
   export declare type positiveInt = number
   export declare type stringMap = { [firstWord: string]: any }
+  export declare type queryStringMap = { [firstWord: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string
   export declare type dataTable = (any[])[]

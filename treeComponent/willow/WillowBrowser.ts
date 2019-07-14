@@ -1,4 +1,4 @@
-const { AbstractWillowProgram, AbstractWillowShadow, WillowConstants } = require("./Willow.js")
+import { AbstractWillowProgram, AbstractWillowShadow, WillowConstants } from "./Willow"
 
 class WillowBrowserShadow extends AbstractWillowShadow {
   static _shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
@@ -7,6 +7,8 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     if (!this._cachedEl) this._cachedEl = jQuery(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
     return this._cachedEl
   }
+
+  private _cachedEl: any // todo: add typings.
 
   getShadowElement() {
     return this._getJQElement()[0]
@@ -221,11 +223,11 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   }
 
   toggleFullScreen() {
-    const doc = document
+    const doc = <any>document
     if ((doc.fullScreenElement && doc.fullScreenElement !== null) || (!doc.mozFullScreen && !doc.webkitIsFullScreen)) {
       if (doc.documentElement.requestFullScreen) doc.documentElement.requestFullScreen()
       else if (doc.documentElement.mozRequestFullScreen) doc.documentElement.mozRequestFullScreen()
-      else if (doc.documentElement.webkitRequestFullScreen) doc.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
+      else if (doc.documentElement.webkitRequestFullScreen) doc.documentElement.webkitRequestFullScreen((<any>Element).ALLOW_KEYBOARD_INPUT)
     } else {
       if (doc.cancelFullScreen) doc.cancelFullScreen()
       else if (doc.mozCancelFullScreen) doc.mozCancelFullScreen()
@@ -241,18 +243,18 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   }
 
   getMousetrap() {
-    return Mousetrap
+    return (<any>window).Mousetrap
   }
 
   copyTextToClipboard(text) {
     // http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
     const textArea = document.createElement("textarea")
     textArea.style.position = "fixed"
-    textArea.style.top = 0
-    textArea.style.left = 0
+    textArea.style.top = "0"
+    textArea.style.left = "0"
     textArea.style.width = "2em"
     textArea.style.height = "2em"
-    textArea.style.padding = 0
+    textArea.style.padding = "0"
     textArea.style.border = "none"
     textArea.style.outline = "none"
     textArea.style.boxShadow = "none"
@@ -267,7 +269,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   }
 
   getStore() {
-    return store
+    return (<any>window).store
   }
 
   getHost() {
@@ -277,6 +279,8 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   _getHostname() {
     return location.hostname
   }
+
+  private _loadingPromises: any
 
   async appendScript(url) {
     if (!url) return undefined
@@ -298,7 +302,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       scriptEl.type = "text/javascript"
       scriptEl.src = url
       scriptEl.async = true
-      scriptEl.onload = scriptEl.onreadystatechange = function() {
+      scriptEl.onload = (<any>scriptEl).onreadystatechange = function() {
         if (!resolved && (!this.readyState || this.readyState == "complete")) {
           resolved = true
           resolve(this)
@@ -338,7 +342,8 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   }
 
   getStumpNodeFromElement(el) {
-    return this.getHtmlStumpNode().getNodeByGuid(parseInt(jQuery(el).attr(WillowConstants.uidAttribute)))
+    const jqEl: any = jQuery(el)
+    return this.getHtmlStumpNode().getNodeByGuid(parseInt(jqEl.attr(WillowConstants.uidAttribute)))
   }
 
   forceRepaint() {
@@ -376,7 +381,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   // todo: denote the side effect
   blurFocusedInput() {
     // todo: test against browser.
-    document.activeElement.blur()
+    ;(<any>document.activeElement).blur()
   }
 
   setLoadedDroppedFileHandler(callback, helpText = "") {
@@ -449,7 +454,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   _handleDroppedEntry(item, path = "") {
     // http://stackoverflow.com/questions/3590058/does-html5-allow-drag-drop-upload-of-folders-or-a-folder-tree
     // http://stackoverflow.com/questions/6756583/prevent-browser-from-loading-a-drag-and-dropped-file
-    return item.isFile ? this._handleDroppedFile(item) : _handleDroppedDirectory(item, path)
+    return item.isFile ? this._handleDroppedFile(item) : this._handleDroppedDirectory(item, path)
   }
 
   _handleDroppedDirectory(item, path) {
@@ -472,7 +477,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       file.file(data => {
         const reader = new FileReader()
         reader.onload = evt => {
-          resolve({ data: evt.target.result, filename: data.name })
+          resolve({ data: (<any>evt.target).result, filename: data.name })
         }
         reader.onerror = err => reject(err)
         reader.readAsText(data)
@@ -489,9 +494,10 @@ class WillowBrowserProgram extends AbstractWillowProgram {
     document.addEventListener(
       "DOMContentLoaded",
       () => {
-        if (!window.app) {
-          window.app = new appClass()
-          window.app.renderApp()
+        const win = <any>window
+        if (!win.app) {
+          win.app = new appClass()
+          win.app.renderApp()
         }
       },
       false
@@ -499,4 +505,4 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   }
 }
 
-module.exports = { WillowBrowserProgram }
+export { WillowBrowserProgram }

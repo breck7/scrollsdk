@@ -27,6 +27,9 @@ export declare namespace jTreeTypes {
     type stringMap = {
         [firstWord: string]: any;
     };
+    type queryStringMap = {
+        [firstWord: string]: any;
+    };
     type htmlString = string;
     type xmlString = string;
     type dataTable = (any[])[];

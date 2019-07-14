@@ -1,9 +1,12 @@
 const superagent = require("superagent")
 const miuri = require("miuri.js")
-const jtree = require("../../index.js")
+
+import jtree from "../../src/jtree"
+import jTreeTypes from "../../src/jTreeTypes"
+
 const stump = require("../../langs/stump/stump.js")
 
-const WillowConstants = {}
+const WillowConstants: jTreeTypes.stringMap = {}
 WillowConstants.ShadowEvents = {}
 WillowConstants.ShadowEvents.click = "click"
 WillowConstants.ShadowEvents.change = "change"
@@ -49,14 +52,23 @@ WillowConstants.checkedSelector = ":checked"
 WillowConstants.contenteditable = "contenteditable"
 WillowConstants.inputTypes = ["input", "textarea"]
 
+enum CacheType {
+  inBrowserMemory = "inBrowserMemory"
+}
+
 class WillowHTTPResponse {
-  constructor(superAgentResponse) {
+  constructor(superAgentResponse?: any) {
     this._superAgentResponse = superAgentResponse
     this._mimeType = superAgentResponse && superAgentResponse.type
-    this._fromCache = false
-    this._cacheTime = Date.now()
-    this._cacheType = "inBrowserMemory"
   }
+
+  private _superAgentResponse: any
+  private _mimeType: any
+  protected _cacheType = CacheType.inBrowserMemory
+  private _fromCache = false
+  protected _text: string
+  protected _cacheTime = Date.now()
+  protected _proxyServerResponse: any
 
   // todo: ServerMemoryCacheTime and ServerMemoryDiskCacheTime
   get cacheTime() {
@@ -112,6 +124,9 @@ class AbstractWillowShadow {
     this._stumpNode = stumpNode
   }
 
+  private _stumpNode: any // todo: add stump type
+  private _val: string
+
   getShadowStumpNode() {
     return this._stumpNode
   }
@@ -154,13 +169,13 @@ class AbstractWillowShadow {
     return ""
   }
 
-  makeResizable() {
+  makeResizable(options: any) {
     return this
   }
-  makeDraggable() {
+  makeDraggable(options: any) {
     return this
   }
-  makeSelectable() {
+  makeSelectable(options: any) {
     return this
   }
 
@@ -198,16 +213,18 @@ class AbstractWillowShadow {
 
   toggleShadow() {}
 
-  addClassToShadow() {}
+  addClassToShadow(className: string) {}
 
-  removeClassFromShadow() {}
+  removeClassFromShadow(className: string) {
+    return this
+  }
 
-  onShadowEvent() {
+  onShadowEvent(event: any, selector?: any, fn?: any) {
     // todo:
     return this
   }
 
-  offShadowEvent() {
+  offShadowEvent(event: any, fn: any) {
     // todo:
     return this
   }
@@ -231,15 +248,15 @@ class AbstractWillowShadow {
     return 11
   }
 
-  getShadowCss() {
+  getShadowCss(property: string) {
     return ""
   }
 
-  setShadowCss() {
+  setShadowCss(css: any) {
     return this
   }
 
-  insertHtmlNode() {}
+  insertHtmlNode(childNode: any, index?: number) {}
 
   getShadowElement() {}
 }
@@ -250,6 +267,8 @@ class WillowStore {
   constructor() {
     this._values = {}
   }
+  private _values: jTreeTypes.stringMap
+
   get(key) {
     return this._values[key]
   }
@@ -274,30 +293,38 @@ class WillowMousetrap {
   constructor() {
     this.prototype = {}
   }
+  private prototype: jTreeTypes.stringMap
   bind() {}
 }
 
 // this one should have no document, window, $, et cetera.
 class AbstractWillowProgram extends stump {
-  constructor(baseUrl) {
+  constructor(baseUrl: string) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
  ${WillowConstants.tags.body}`)
     this._htmlStumpNode = this.nodeAt(0)
     this._headStumpNode = this.nodeAt(0).nodeAt(0)
     this._bodyStumpNode = this.nodeAt(0).nodeAt(1)
-    this._offlineMode = false
     this.addSuidsToHtmlHeadAndBodyShadows()
     const baseUrlWithoutTrailingSlash = baseUrl.replace(/\/$/, "")
     this._baseUrl = baseUrlWithoutTrailingSlash
     const uri = new miuri(baseUrl)
-    this.location = {}
     this.location.port = uri.port()
     this.location.protocol = uri.protocol()
     this.location.hostname = uri.hostname()
     this.location.host = uri.host()
-    this._httpGetResponseCache = {}
   }
+
+  private _htmlStumpNode
+  private _headStumpNode
+  private _bodyStumpNode
+  protected _offlineMode = false
+  private _baseUrl: string
+  private _httpGetResponseCache: any = {}
+  public location: any = {}
+  private _mousetrap: any
+  private _store: any
 
   getUrlWithoutPath() {
     return this.location.protocol + "://" + this.location.hostname + this._getPort()
@@ -386,7 +413,7 @@ class AbstractWillowProgram extends stump {
     return stumpNode && stumpNode.isInputType()
   }
 
-  copyTextToClipboard() {}
+  copyTextToClipboard(text: string) {}
 
   setCopyData(evt, str) {}
 
@@ -421,11 +448,11 @@ class AbstractWillowProgram extends stump {
     return this
   }
 
-  async httpGetUrlFromCache(url, queryStringObject, responseClass) {
-    const cacheKey = url + JSON.stringify(queryStringObject)
+  async httpGetUrlFromCache(url, queryStringMap: jTreeTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
+    const cacheKey = url + JSON.stringify(queryStringMap)
     const cacheHit = this._getFromResponseCache(cacheKey)
     if (!cacheHit) {
-      const res = await this.httpGetUrl(url, queryStringObject, responseClass)
+      const res = await this.httpGetUrl(url, queryStringMap, responseClass)
       this._setInResponseCache(cacheKey, res)
       return res
     }
@@ -434,10 +461,10 @@ class AbstractWillowProgram extends stump {
 
   async httpGetUrlFromProxyCache(url) {
     if (!this.isDesktopVersion()) return this.httpGetUrlFromCache(url)
-    const queryStringObject = {}
-    queryStringObject.url = url
-    queryStringObject.cacheOnServer = "true"
-    return await this.httpGetUrlFromCache("/proxy", queryStringObject, WillowHTTPProxyCacheResponse)
+    const queryStringMap: jTreeTypes.queryStringMap = {}
+    queryStringMap.url = url
+    queryStringMap.cacheOnServer = "true"
+    return await this.httpGetUrlFromCache("/proxy", queryStringMap, WillowHTTPProxyCacheResponse)
   }
 
   async httpPostUrl(url, data) {
@@ -548,4 +575,4 @@ class AbstractWillowProgram extends stump {
   blurFocusedInput() {}
 }
 
-module.exports = { AbstractWillowProgram, AbstractWillowShadow, WillowConstants }
+export { AbstractWillowProgram, AbstractWillowShadow, WillowConstants }

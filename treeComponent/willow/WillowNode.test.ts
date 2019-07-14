@@ -1,9 +1,10 @@
-#! /usr/local/bin/node --use_strict
+#!/usr/bin/env ts-node
 
-const { WillowProgram } = require("./WillowNode.js")
-const testTree = {}
+import { WillowProgram } from "./WillowNode"
 
-testTree.all = equal => {
+const testTree: any = {}
+
+testTree.all = (equal: any) => {
   // Arrange
   const willow2 = new WillowProgram("http://localhost:8000/")
 

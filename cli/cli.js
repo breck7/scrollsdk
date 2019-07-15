@@ -96,6 +96,10 @@ class CLI {
 ${grammars.toTable()}`
   }
 
+  isInstalled(grammarName) {
+    return this.getGrammars().where("name", "=", grammarName).length === 1
+  }
+
   _getGrammarPathByGrammarName(grammarName) {
     const node = this.getGrammars().getNodeByColumns("name", grammarName)
 

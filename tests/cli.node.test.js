@@ -6,6 +6,7 @@ const CLI = require("../cli/cli.js")
 const testTree = {}
 
 testTree.consoleBasics = equal => {
+  const grammarPath = __dirname + "/../langs/grammar/grammar.grammar"
   // Arrange
   const app = new CLI()
 
@@ -16,10 +17,15 @@ testTree.consoleBasics = equal => {
   equal(typeof app.programs("grammar"), "string")
   equal(typeof app.list(), "string", "list works")
   equal(typeof app.version(), "string", "version ok")
+
+  // Arrange/Act
+  if (!app.isInstalled("grammar")) app.register(grammarPath)
+
+  // Assert
   equal(typeof app.usage("grammar"), "string", "usage")
 
   // Act
-  const grammarErrors = app.check(__dirname + "/../langs/grammar/grammar.grammar")
+  const grammarErrors = app.check(grammarPath)
   const jibErrors = app.check(__dirname + "/../langs/jibberish/jibberish.grammar")
 
   // Assert

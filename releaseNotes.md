@@ -1,3 +1,7 @@
+33.0.1 / 2019-07-15
+===================
+- Fix: changed browser target to es2016 to fix the "flat" bug in Linux Chrome
+
 33.0.0 / 2019-07-10
 ===================
 - Breaking: no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can still access the others via that.

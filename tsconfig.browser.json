@@ -5,7 +5,7 @@
     "allowJs": true,
     "moduleResolution": "node",
     "declaration": false,
-    "target": "es2017"
+    "target": "es2016"
   },
   "include": ["./ignore/jtree.browser.ts"]
 }

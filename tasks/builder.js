@@ -42,10 +42,16 @@ class Builder {
     this.write(__dirname + `/../ignore/jtree.browser.ts`, `"use strict"\n` + combinedTypeScriptScript)
   }
 
-  buildBrowserVersion() {
+  _buildNodeVersion() {
     const execOptions = { cwd: __dirname + "/../" }
     // Compile regular version to make sure no errors:
     exec("tsc", execOptions)
+  }
+
+  buildBrowserVersion() {
+    const execOptions = { cwd: __dirname + "/../" }
+    // Compile regular version to make sure no errors:
+    this._buildNodeVersion()
 
     this._bundleBrowserTypeScriptFilesIntoOne()
 
@@ -71,6 +77,33 @@ class Builder {
       .getString()
 
     this.write(__dirname + "/../sandbox/base.tests.es6.js", testFile)
+  }
+
+  readJson(path) {
+    return JSON.parse(this.read(path))
+  }
+
+  writeJson(path, obj) {
+    this.write(path, JSON.stringify(obj, null, 2))
+  }
+
+  _updatePackageJson(packagePath, newVersion) {
+    const packageJson = this.readJson(packagePath)
+    packageJson.version = newVersion
+    this.writeJson(packagePath, packageJson)
+    console.log(`Updated ${packagePath} to ${newVersion}`)
+  }
+
+  updateVersion(newVersion) {
+    this._updatePackageJson(__dirname + "/../package.json", newVersion)
+    this._updatePackageJson(__dirname + "/../package-lock.json", newVersion)
+
+    const codePath = __dirname + "/../src/jtree.ts"
+    const code = this.read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
+    this.write(codePath, code)
+    console.log(`Updated ${codePath} to version ${newVersion}`)
+    this.buildBrowserVersion()
+    console.log("Don't forget to update releaseNotes.md!")
   }
 
   read(path) {

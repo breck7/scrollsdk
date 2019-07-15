@@ -190,6 +190,7 @@ ${grammars.toTable()}`
   }
 
   _getHistoryFile() {
+    this._initFile(this._getLogFilePath(), "command paramOne paramTwo timestamp\n")
     return this._read(this._getLogFilePath())
   }
 

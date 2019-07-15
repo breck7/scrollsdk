@@ -10,8 +10,12 @@ class CLI {
   constructor(grammarsPath = os.homedir() + "/grammars.ssv") {
     this._grammarsPath = grammarsPath
     this._initFile(grammarsPath)
-    const grammarsSsv = this._read(grammarsPath)
-    this._grammarsTree = TreeNode.fromSsv(grammarsSsv) // todo: index on name, or build a Tree Grammar lang
+    this._reload() // todo: cleanup
+  }
+
+  // todo: cleanup.
+  _reload() {
+    this._grammarsTree = TreeNode.fromSsv(this._read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
   }
 
   combine(grammarName) {
@@ -226,6 +230,7 @@ ${grammars.toTable()}`
     const grammarProgram = new GrammarProgram(this._read(grammarPath))
     const extension = grammarProgram.getExtensionName()
     fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${grammarPath}`, "utf8")
+    this._reload()
     return `Registered ${extension}`
   }
 

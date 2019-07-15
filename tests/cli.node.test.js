@@ -10,6 +10,9 @@ testTree.consoleBasics = equal => {
   // Arrange
   const app = new CLI()
 
+  // Arrange/Act
+  if (!app.isInstalled("grammar")) app.register(grammarPath)
+
   // Act/Assert
   equal(typeof app.getGrammars().toString(), "string")
   equal(typeof app.help(), "string")
@@ -17,9 +20,6 @@ testTree.consoleBasics = equal => {
   equal(typeof app.programs("grammar"), "string")
   equal(typeof app.list(), "string", "list works")
   equal(typeof app.version(), "string", "version ok")
-
-  // Arrange/Act
-  if (!app.isInstalled("grammar")) app.register(grammarPath)
 
   // Assert
   equal(typeof app.usage("grammar"), "string", "usage")

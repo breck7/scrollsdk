@@ -14,7 +14,7 @@
     "jtree": "./cli/cli.js"
   },
   "scripts": {
-    "test": "./tasks/test.js",
+    "test": "node ./tasks/test.js",
     "cover": "./tasks/cover.sh",
     "start": "./sandbox.express.js"
   },

@@ -258,6 +258,7 @@ ${grammars.toTable()}`
 
   usage(grammarName) {
     const files = this._history(grammarName)
+    if (!files.length) return ""
     const grammarPath = this._getGrammarPathOrThrow(files[0])
     const programConstructor = jtree.getProgramConstructor(grammarPath)
     const report = new TreeNode()

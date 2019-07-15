@@ -9,8 +9,12 @@ const recursiveReadSync = require("recursive-readdir-sync")
 class CLI {
   constructor(grammarsPath = os.homedir() + "/grammars.ssv") {
     this._grammarsPath = grammarsPath
-    this._initFile(grammarsPath)
+    this._initFile(grammarsPath, "name filepath")
     this._reload() // todo: cleanup
+  }
+
+  _getRegistryPath() {
+    return this._grammarsPath
   }
 
   // todo: cleanup.
@@ -23,7 +27,7 @@ class CLI {
       .split(" ")
       .map(path => {
         const distributeLine = true ? `#file ${path}\n` : ""
-        return distributeLine + " " + fs.readFileSync(path, "utf8").replace(/\n/g, "\n ")
+        return distributeLine + " " + this._read(path).replace(/\n/g, "\n ")
       })
       .join("\n")
 
@@ -32,7 +36,7 @@ class CLI {
 
   distribute(combinedFilePath) {
     if (!combinedFilePath) throw new Error(`No combinedFilePath provided`)
-    const masterFile = new TreeNode(fs.readFileSync(combinedFilePath, "utf8"))
+    const masterFile = new TreeNode(this._read(combinedFilePath, "utf8"))
     return masterFile.split("#file").map(file => {
       const firstLine = file.nodeAt(0)
       if (firstLine.getFirstWord() !== "#file") return undefined
@@ -48,10 +52,6 @@ class CLI {
 
   _initFile(path, initialString = "") {
     if (!fs.existsSync(path)) this._write(path, initialString)
-  }
-
-  _getRegistryPath() {
-    return this._grammarsPath
   }
 
   _write(path, content) {
@@ -100,7 +100,7 @@ class CLI {
 ${grammars.toTable()}`
   }
 
-  isInstalled(grammarName) {
+  isRegistered(grammarName) {
     return this.getGrammars().where("name", "=", grammarName).length === 1
   }
 
@@ -170,7 +170,7 @@ ${grammars.toTable()}`
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"), grammarPath)
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
 
-    fs.writeFileSync(outputPath, grammarProgram.toSublimeSyntaxFile(), "utf8")
+    this._write(outputPath, grammarProgram.toSublimeSyntaxFile())
     return `Saved: ${outputPath}`
   }
 
@@ -226,12 +226,17 @@ ${grammars.toTable()}`
   }
 
   register(grammarPath) {
+    const extension = this._register(grammarPath)
+    return `Registered ${extension}`
+  }
+
+  _register(grammarPath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
     const grammarProgram = new GrammarProgram(this._read(grammarPath))
     const extension = grammarProgram.getExtensionName()
     fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${grammarPath}`, "utf8")
     this._reload()
-    return `Registered ${extension}`
+    return extension
   }
 
   addToHistory(one, two, three) {

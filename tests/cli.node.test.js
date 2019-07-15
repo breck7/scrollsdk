@@ -5,13 +5,18 @@ const CLI = require("../cli/cli.js")
 
 const testTree = {}
 
+const cliTempHome = __dirname + `/../ignore/cliTempHome/`
+const cliTempRegistryFile = cliTempHome + "grammars.ssv"
+
+const mkdirp = require("mkdirp")
+mkdirp.sync(cliTempHome)
+
 testTree.consoleBasics = equal => {
   const grammarPath = __dirname + "/../langs/grammar/grammar.grammar"
   // Arrange
-  const app = new CLI()
+  const app = new CLI(cliTempRegistryFile)
 
-  // Arrange/Act
-  if (!app.isInstalled("grammar")) app.register(grammarPath)
+  if (!app.isRegistered("grammar")) app.register(grammarPath)
 
   // Act/Assert
   equal(typeof app.getGrammars().toString(), "string")
@@ -56,7 +61,7 @@ ${data[1]}`
 
   // Act
   fs.writeFileSync(paths[2], combinedFile, "utf8")
-  const app = new CLI()
+  const app = new CLI(cliTempRegistryFile)
   const createdFilePaths = app.distribute(paths[2])
 
   // Assert

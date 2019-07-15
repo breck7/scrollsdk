@@ -100,16 +100,16 @@ ${grammars.toTable()}`
     return this.getGrammars().where("name", "=", grammarName).length === 1
   }
 
-  _getGrammarPathByGrammarName(grammarName) {
+  _getGrammarPathByGrammarNameOrThrow(grammarName) {
     const node = this.getGrammars().getNodeByColumns("name", grammarName)
 
-    if (!node) return false
+    if (!node) throw new Error(`No registered grammar named '${grammarName}'. Registered grammars are ${this._getRegisteredGrammarNames().join(",")}`)
 
     return node.getParent().get("filepath")
   }
 
   create() {
-    jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarName("stamp"))
+    jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarNameOrThrow("stamp"))
   }
 
   check(programPath) {
@@ -132,11 +132,13 @@ ${grammars.toTable()}`
     return program.getAllErrors().map(err => err.getMessage())
   }
 
+  _getRegisteredGrammarNames() {
+    return this.getGrammars().getColumn("name")
+  }
+
   _getGrammarPathOrThrow(programPath) {
     const extension = Utils.getFileExtension(programPath)
-    const grammarPath = this._getGrammarPathByGrammarName(extension)
-    if (!grammarPath) throw new Error(`No installed grammar for file '${programPath}' with extension '${extension}'`)
-    return grammarPath
+    return this._getGrammarPathByGrammarNameOrThrow(extension)
   }
 
   sandbox(port = 3333) {
@@ -160,7 +162,7 @@ ${grammars.toTable()}`
   }
 
   gen(grammarName, outputDirectory = ".") {
-    const grammarPath = this._getGrammarPathByGrammarName(grammarName)
+    const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"), grammarPath)
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
 
@@ -169,7 +171,7 @@ ${grammars.toTable()}`
   }
 
   _getGrammarProgramRoot(grammarName) {
-    const grammarPath = this._getGrammarPathByGrammarName(grammarName)
+    const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     return new GrammarProgram(this._read(grammarPath))
   }
 
@@ -199,6 +201,7 @@ ${grammars.toTable()}`
   }
 
   _history(grammarName) {
+    this._getGrammarPathByGrammarNameOrThrow(grammarName)
     // todo: store history of all commands
     // todo: build language for cli history
     // todo: refactor this

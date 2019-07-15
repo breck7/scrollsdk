@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - "11.15"
+  - "12.3"
+matrix:
+  include:
+    - node_js: "13"
+      env: "NVM_NODEJS_ORG_MIRROR=https://nodejs.org/download/nightly"
+  allow_failures:
+    # Allow the nightly installs to fail
+    - env: "NVM_NODEJS_ORG_MIRROR=https://nodejs.org/download/nightly"
+sudo: false
+cache:
+  directories:
+    - node_modules
+script:
+  - npm run test

@@ -31,6 +31,7 @@
     "@types/semver": "^6.0.1",
     "express": "*",
     "glob": "^7.1.4",
+    "mkdirp": "^0.5.1",
     "prettier": "^1.18.2",
     "recursive-readdir-sync": "*",
     "semver": "^6.1.1",

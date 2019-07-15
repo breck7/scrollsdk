@@ -1,6 +1,8 @@
 Tree Notation
 =============
 
+[![Build Status](https://travis-ci.org/breck7/jtree.svg?branch=master)](https://travis-ci.org/breck7/jtree)
+
 Tree Notation is a metalanguage like JSON, XML, YAML or S-expressions.
 
 On top of Tree Notation, you can design "Tree Languages". Tree Languages can do lots of things. They can be simple file formats. They can even be general purpose programming languages, as powerful as any traditional programming language.

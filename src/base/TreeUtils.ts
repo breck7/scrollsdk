@@ -14,6 +14,11 @@ class TreeUtils {
       .pop()
   }
 
+  static flatten(arr: any) {
+    if (arr.flat) return arr.flat()
+    return arr.reduce((acc: any, val: any) => acc.concat(val), [])
+  }
+
   static escapeBackTicks(str: string) {
     return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${")
   }

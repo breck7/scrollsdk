@@ -853,7 +853,7 @@ class AbstractExtendibleTreeNode extends TreeNode_1.default {
     }
     // todo: be more specific with the param
     _getChildrenByNodeConstructorInExtended(constructor) {
-        return this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)).flat();
+        return TreeUtils_1.default.flatten(this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)));
     }
     _getExtendedParent() {
         return this._getAncestorsArray()[1];

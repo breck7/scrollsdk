@@ -12,6 +12,11 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static flatten(arr) {
+        if (arr.flat)
+            return arr.flat();
+        return arr.reduce((acc, val) => acc.concat(val), []);
+    }
     static escapeBackTicks(str) {
         return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
     }

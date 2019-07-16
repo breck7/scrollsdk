@@ -1040,7 +1040,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   // todo: be more specific with the param
   _getChildrenByNodeConstructorInExtended(constructor: Function): TreeNode[] {
-    return (<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor))).flat()
+    return TreeUtils.flatten(<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
   }
 
   _getExtendedParent() {

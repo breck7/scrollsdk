@@ -48,7 +48,7 @@ jtreeNode.getProgramConstructor = (grammarPath) => {
 };
 jtreeNode.combineFiles = (globPatterns) => {
     const glob = require("glob");
-    const files = globPatterns.map(pattern => glob.sync(pattern)).flat();
+    const files = jtree_1.default.Utils.flatten(globPatterns.map(pattern => glob.sync(pattern)));
     const content = files.map((path) => fs.readFileSync(path, "utf8")).join("\n");
     return new jtree_1.default.TreeNode(content);
 };

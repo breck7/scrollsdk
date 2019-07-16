@@ -1,5 +1,6 @@
 import TreeNode from "../base/TreeNode"
 import jTreeTypes from "../jTreeTypes"
+import TreeUtils from "../base/TreeUtils"
 
 // todo: currently only works in nodejs
 
@@ -20,7 +21,7 @@ abstract class Upgrader extends TreeNode {
 
   private _upgradeMany(globPatterns: jTreeTypes.globPattern[], fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): updatedFile[] {
     const glob = require("glob")
-    const files = (<any>globPatterns.map(pattern => glob.sync(pattern))).flat()
+    const files = TreeUtils.flatten(<any>globPatterns.map(pattern => glob.sync(pattern)))
     console.log(`${files.length} files to upgrade`)
     return files.map((path: jTreeTypes.absoluteFilePath) => {
       console.log("Upgrading " + path)

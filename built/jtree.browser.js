@@ -36,6 +36,11 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static flatten(arr) {
+        if (arr.flat)
+            return arr.flat();
+        return arr.reduce((acc, val) => acc.concat(val), []);
+    }
     static escapeBackTicks(str) {
         return str.replace(/\`/g, "\\`").replace(/\$\{/g, "\\${");
     }
@@ -3268,7 +3273,7 @@ class AbstractExtendibleTreeNode extends TreeNode {
     }
     // todo: be more specific with the param
     _getChildrenByNodeConstructorInExtended(constructor) {
-        return this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)).flat();
+        return TreeUtils.flatten(this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)));
     }
     _getExtendedParent() {
         return this._getAncestorsArray()[1];
@@ -4453,7 +4458,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "33.0.1";
+jtree.getVersion = () => "33.0.2";
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));
@@ -4464,7 +4469,7 @@ class Upgrader extends TreeNode {
     }
     _upgradeMany(globPatterns, fromVersion, toVersion) {
         const glob = require("glob");
-        const files = globPatterns.map(pattern => glob.sync(pattern)).flat();
+        const files = TreeUtils.flatten(globPatterns.map(pattern => glob.sync(pattern)));
         console.log(`${files.length} files to upgrade`);
         return files.map((path) => {
             console.log("Upgrading " + path);

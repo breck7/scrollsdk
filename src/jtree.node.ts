@@ -66,7 +66,7 @@ class jtreeNode extends jtree {
 
   static combineFiles = (globPatterns: jTreeTypes.globPattern[]) => {
     const glob = require("glob")
-    const files = (<any>globPatterns.map(pattern => glob.sync(pattern))).flat()
+    const files = jtree.Utils.flatten(<any>globPatterns.map(pattern => glob.sync(pattern)))
     const content = files.map((path: jTreeTypes.filepath) => fs.readFileSync(path, "utf8")).join("\n")
 
     return new jtree.TreeNode(content)

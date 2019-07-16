@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../base/TreeNode");
+const TreeUtils_1 = require("../base/TreeUtils");
 class Upgrader extends TreeNode_1.default {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));
@@ -11,7 +12,7 @@ class Upgrader extends TreeNode_1.default {
     }
     _upgradeMany(globPatterns, fromVersion, toVersion) {
         const glob = require("glob");
-        const files = globPatterns.map(pattern => glob.sync(pattern)).flat();
+        const files = TreeUtils_1.default.flatten(globPatterns.map(pattern => glob.sync(pattern)));
         console.log(`${files.length} files to upgrade`);
         return files.map((path) => {
             console.log("Upgrading " + path);

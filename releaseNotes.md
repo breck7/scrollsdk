@@ -1,3 +1,10 @@
+33.0.2 / 2019-07-15
+===================
+- New: added "infer" button to Grammar Builder
+- Fix: polyfill flat method
+- Fix: CLI fixes
+- Infra: upgrade version script
+
 33.0.1 / 2019-07-15
 ===================
 - Fix: changed browser target to es2016 to fix the "flat" bug in Linux Chrome

@@ -92,6 +92,7 @@ class GrammarIDEApp {
   private _otherErrorsDiv = jQuery("#otherErrorsDiv")
   private _versionSpan = jQuery("#versionSpan")
   private _shareLink = jQuery("#shareLink")
+  private _inferButton = jQuery("#inferButton")
 
   private _bindListeners() {
     this._resetButton.on("click", () => {
@@ -114,6 +115,10 @@ class GrammarIDEApp {
           .text()
           .toLowerCase()
       )
+    })
+
+    this._inferButton.on("click", () => {
+      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).getPredictedGrammarFile("guess"))
     })
 
     this._downloadButton.on("click", () => this._downloadBundleCommand())

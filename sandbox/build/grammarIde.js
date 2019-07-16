@@ -15,6 +15,7 @@ class GrammarIDEApp {
         this._otherErrorsDiv = jQuery("#otherErrorsDiv");
         this._versionSpan = jQuery("#versionSpan");
         this._shareLink = jQuery("#shareLink");
+        this._inferButton = jQuery("#inferButton");
         this._localStorageKeys = {
             grammarConsole: "grammarConsole",
             codeConsole: "codeConsole"
@@ -99,6 +100,9 @@ class GrammarIDEApp {
             that._fetchJTreeStandardGrammar(jQuery(this)
                 .text()
                 .toLowerCase());
+        });
+        this._inferButton.on("click", () => {
+            this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).getPredictedGrammarFile("guess"));
         });
         this._downloadButton.on("click", () => this._downloadBundleCommand());
     }

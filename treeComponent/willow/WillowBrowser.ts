@@ -490,14 +490,14 @@ class WillowBrowserProgram extends AbstractWillowProgram {
     return stumpNode && stumpNode.getShadow()
   }
 
-  static startApp(appClass) {
+  static startApp(appClass, startState?: string) {
     document.addEventListener(
       "DOMContentLoaded",
       () => {
         const win = <any>window
         if (!win.app) {
-          win.app = new appClass()
-          win.app.renderApp()
+          win.app = new appClass(startState)
+          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
         }
       },
       false

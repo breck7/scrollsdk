@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
+    "outDir": "../built",
     "lib": ["es2017", "dom"],
-    "outFile": "./TreeComponentFramework.browser.js",
-    //"noImplicitAny": true,
     "declaration": false,
+    "allowJs": true,
     "moduleResolution": "node",
     "target": "es2017"
   },
   "references": [{ "path": "../tsconfig.json" }],
-  "include": ["./TreeComponentFramework.ts", "./willow/WillowBrowser.ts"]
+  "include": ["../ignore/treeComponentFramework.browser.ts"]
 }

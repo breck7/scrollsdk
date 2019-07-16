@@ -1,6 +1,6 @@
-import jtree from "../src/jtree"
 import jTreeTypes from "../src/jTreeTypes"
 
+const jtree = require("../index.js")
 const stump = require("../langs/stump/stump.js")
 const hakon = require("../langs/hakon/hakon.js")
 // const { AbstractWillowProgram } = require("./willow/Willow.js")
@@ -423,19 +423,26 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
 
   compile() {
     const name = this.constructor.name
-    const pathToJTreeBrowserLib = "../../built/jtree.browser.js"
-    const pathToTreeComponentBrowserLib = "../TreeComponentFramework.js"
+    const libPath = "../../built/"
+    const libs = ["jtree.browser.js", "stump.browser.js", "hakon.browser.js", "treeComponentFramework.browser.js", this.constructor.name + ".browser.js"]
+      .map(
+        path =>
+          `  script
+   src ${libPath}${path}`
+      )
+      .join("\n")
     return new stump(`html
  head
   titleTag ${name}
  body
   script
-   src ${pathToJTreeBrowserLib}
+   src ../../sandbox/lib/jquery.min.js
   script
-   src ${pathToTreeComponentBrowserLib}
+   src ../../node_modules/miuri.js/lib/miuri.min.js
+${libs}
   script
    bern
-    WillowBrowserProgram.startApp(${name})`).compile()
+    WillowBrowserProgram.startApp(${name}, "footer")`).compile()
   }
 
   renderAndGetRenderResult(stumpNode?: abstractHtmlTag, index?: number) {
@@ -490,11 +497,11 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
         const { WillowProgram } = require("./willow/WillowNode.js")
         this._willowProgram = new WillowProgram("http://localhost:8000/")
       } else {
-        new (<any>window).WillowBrowserProgram(window.location.href)
+        this._willowProgram = new (<any>window).WillowBrowserProgram(window.location.href)
       }
     }
     return this._willowProgram
   }
 }
 
-module.exports = { AbstractTreeComponentRootNode, AbstractCommander }
+export { AbstractTreeComponentRootNode, AbstractCommander }

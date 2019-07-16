@@ -13,33 +13,72 @@ class Builder {
     const execOptions = { cwd: __dirname + "/../treeComponent/" }
     exec("tsc", execOptions)
 
-    // Now
+    this.write(
+      __dirname + `/../ignore/treeComponentFramework.browser.ts`,
+      `"use strict"\n` +
+        this._combineTypeScriptFiles([
+          __dirname + "/../treeComponent/TreeComponentFramework.ts",
+          __dirname + "/../treeComponent/willow/Willow.ts",
+          __dirname + "/../treeComponent/willow/WillowBrowser.ts"
+        ])
+    )
+
+    jtree.compileGrammarForBrowser(__dirname + "/../langs/stump/stump.grammar", __dirname + "/../built/", true)
+    jtree.compileGrammarForBrowser(__dirname + "/../langs/hakon/hakon.grammar", __dirname + "/../built/", true)
+
+    const outputJsFile = __dirname + `/../built/treeComponentFramework.browser.js`
+    exec("tsc -p tsconfig.browser.json", execOptions, (err, stdout, stderr) => {
+      if (stderr || err) return console.error(err, stdout, stderr)
+
+      // This solves the wierd TS insertin
+      // todo: remove
+      const file = new BrowserScript(this.read(outputJsFile))
+      this.write(outputJsFile, file.getString())
+    })
+  }
+
+  buildChex() {
+    const chexDir = __dirname + "/../treeComponent/chex/"
+    const chexPath = chexDir + "ChexTreeComponent.js"
+    this.write(chexDir + "index.html", new (require(chexPath))().compile())
+    this.write(
+      __dirname + "/../built/ChexTreeComponent.browser.js",
+      new BrowserScript(this.read(chexPath))
+        .removeRequires()
+        .changeNodeExportsToWindowExports()
+        .getString()
+    )
   }
 
   _bundleTreeComponentTypeScriptFilesIntoOne() {}
 
-  _bundleBrowserTypeScriptFilesIntoOne() {
-    const typeScriptSrcFiles = recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".ts"))
+  _bundleBrowserTypeScriptFilesIntoOne(typeScriptSrcFiles, outputFilePath) {
     const projectCode = new jtree.TreeNode(project.getProjectProgram(typeScriptSrcFiles))
     projectCode
       .getTopDownArray()
       .filter(node => node.getFirstWord() === "relative")
       .forEach(node => node.setLine(node.getLine() + ".ts"))
-    this.write(__dirname + "/../ignore/jtree.project", projectCode.toString())
+    const projectFilePath = outputFilePath + ".project"
+    this.write(projectFilePath, projectCode.toString()) // Write to disk to inspect if something goes wrong.
     const typeScriptScriptsInOrderBrowserOnly = new project(projectCode.toString()).getOrderedDependenciesArray().filter(file => !file.includes(".node."))
 
-    const combinedTypeScriptScript = typeScriptScriptsInOrderBrowserOnly
+    const combinedTypeScriptScript = this._combineTypeScriptFiles(typeScriptScriptsInOrderBrowserOnly)
+
+    this.write(outputFilePath, `"use strict"\n` + combinedTypeScriptScript)
+  }
+
+  _combineTypeScriptFiles(typeScriptScriptsInOrderBrowserOnly) {
+    return typeScriptScriptsInOrderBrowserOnly
       .map(src => this.read(src))
       .map(content =>
         new BrowserScript(content)
           .removeRequires()
           .removeImports()
+          .changeDefaultExportsToWindowExports()
           .removeExports()
           .getString()
       )
       .join("\n")
-
-    this.write(__dirname + `/../ignore/jtree.browser.ts`, `"use strict"\n` + combinedTypeScriptScript)
   }
 
   _buildNodeVersion() {
@@ -53,7 +92,10 @@ class Builder {
     // Compile regular version to make sure no errors:
     this._buildNodeVersion()
 
-    this._bundleBrowserTypeScriptFilesIntoOne()
+    this._bundleBrowserTypeScriptFilesIntoOne(
+      recursiveReadSync(__dirname + "/../src").filter(file => file.includes(".ts")),
+      __dirname + `/../ignore/jtree.browser.ts`
+    )
 
     const outputJsFile = __dirname + `/../built/jtree.browser.js`
     exec("tsc -p tsconfig.browser.json", execOptions, (err, stdout, stderr) => {
@@ -61,7 +103,7 @@ class Builder {
 
       // This solves the wierd TS insertin
       // todo: remove
-      const file = new BrowserScript(this.read(outputJsFile).replace("export var jTreeTypes", "var jTreeTypes"))
+      const file = new BrowserScript(this.read(outputJsFile).replace(/[^\n]*jTreeTypes[^\n]*/g, ""))
       this.write(outputJsFile, file.getString())
     })
 

@@ -362,12 +362,14 @@ class TreeUtils {
       // todo: should we just switch to some bundler?
       const matches = this._str.match(/\nexport { [^\}]+ }/g)
       if (matches)
-        this._str.replace(
+        this._str = this._str.replace(
           /\nexport { ([^\}]+) }/g,
           matches[0]
             .replace("export {", "")
             .replace("}", "")
+            .trim()
             .split(/ /g)
+            .map(name => name.replace(",", "").trim())
             .map(mod => `\nwindow.${mod} = ${mod}`)
             .join("\n")
         )

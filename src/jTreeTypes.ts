@@ -88,4 +88,4 @@ export namespace jTreeTypes {
   export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
 }
 
-export default jTreeTypes
+/*TSC_HACK*/ export default jTreeTypes

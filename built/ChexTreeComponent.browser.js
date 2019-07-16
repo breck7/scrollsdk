@@ -1,4 +1,4 @@
-const { AbstractTreeComponentRootNode } = require("../TreeComponentFramework.js")
+
 
 class ChexTreeComponent extends AbstractTreeComponentRootNode {
   getBuiltPath() {
@@ -18,4 +18,5 @@ class footer extends AbstractTreeComponentRootNode {
   }
 }
 
-module.exports = ChexTreeComponent
+window.ChexTreeComponent
+ = ChexTreeComponent

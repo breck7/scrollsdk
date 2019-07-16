@@ -1,12 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 let _jtreeLatestTime = 0;
 let _jtreeMinTimeIncrement = 0.000000000001;
 class AbstractNode {
@@ -355,10 +347,12 @@ TreeUtils.BrowserScript = class {
         // todo: should we just switch to some bundler?
         const matches = this._str.match(/\nexport { [^\}]+ }/g);
         if (matches)
-            this._str.replace(/\nexport { ([^\}]+) }/g, matches[0]
+            this._str = this._str.replace(/\nexport { ([^\}]+) }/g, matches[0]
                 .replace("export {", "")
                 .replace("}", "")
+                .trim()
                 .split(/ /g)
+                .map(name => name.replace(",", "").trim())
                 .map(mod => `\nwindow.${mod} = ${mod}`)
                 .join("\n"));
         return this;
@@ -382,6 +376,8 @@ TreeUtils.BrowserScript = class {
         return this._str;
     }
 };
+window.TreeUtils
+    = TreeUtils;
 var FileFormat;
 (function (FileFormat) {
     FileFormat["csv"] = "csv";
@@ -2426,6 +2422,8 @@ class TreeNode extends ImmutableNode {
         return methods[format](content);
     }
 }
+window.TreeNode
+    = TreeNode;
 var GrammarConstantsCompiler;
 (function (GrammarConstantsCompiler) {
     GrammarConstantsCompiler["stringTemplate"] = "stringTemplate";
@@ -4007,6 +4005,11 @@ ${GrammarConstants.cellType} anyWord`).getRootConstructor();
 }
 GrammarProgram._languages = {};
 GrammarProgram._nodeTypes = {};
+window.GrammarConstants = GrammarConstants;
+window.GrammarStandardCellTypeIds = GrammarStandardCellTypeIds;
+window.GrammarProgram = GrammarProgram;
+window.GrammarBackedRootNode = GrammarBackedRootNode;
+window.GrammarBackedNonRootNode = GrammarBackedNonRootNode;
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 var CmToken;
 (function (CmToken) {
@@ -4187,6 +4190,8 @@ const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
     const matchingBranch = styleTree[scopeSegments.shift()];
     return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null;
 };
+window.textMateScopeToCodeMirrorStyle
+    = textMateScopeToCodeMirrorStyle;
 class TreeNotationCodeMirrorMode {
     constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
         this._name = name;
@@ -4274,22 +4279,20 @@ class TreeNotationCodeMirrorMode {
     _getCodeMirrorLib() {
         return this._codeMirrorLib;
     }
-    codeMirrorAutocomplete(cmInstance, options) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const cursor = cmInstance.getDoc().getCursor();
-            const codeMirrorLib = this._getCodeMirrorLib();
-            const result = yield this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
-            // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
-            if (result.matches.length === 1 && result.matches[0].text === result.word)
-                return null;
-            return result.matches.length
-                ? {
-                    list: result.matches,
-                    from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
-                    to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
-                }
-                : null;
-        });
+    async codeMirrorAutocomplete(cmInstance, options) {
+        const cursor = cmInstance.getDoc().getCursor();
+        const codeMirrorLib = this._getCodeMirrorLib();
+        const result = await this._getParsedProgram().getAutocompleteResultsAt(cursor.line, cursor.ch);
+        // It seems to be better UX if there's only 1 result, and its the word the user entered, to close autocomplete
+        if (result.matches.length === 1 && result.matches[0].text === result.word)
+            return null;
+        return result.matches.length
+            ? {
+                list: result.matches,
+                from: codeMirrorLib.Pos(cursor.line, result.startCharIndex),
+                to: codeMirrorLib.Pos(cursor.line, result.endCharIndex)
+            }
+            : null;
     }
     register() {
         const codeMirrorLib = this._getCodeMirrorLib();
@@ -4337,6 +4340,8 @@ class TreeNotationCodeMirrorMode {
         state.cellIndex = 0;
     }
 }
+window.TreeNotationCodeMirrorMode
+    = TreeNotationCodeMirrorMode;
 class UnknownGrammarProgram extends TreeNode {
     getPredictedGrammarFile(grammarName) {
         const rootNode = new TreeNode(`${GrammarConstants.nodeType} ${grammarName}
@@ -4449,6 +4454,8 @@ class UnknownGrammarProgram extends TreeNode {
         return { cellTypeId: GrammarStandardCellTypeIds.any };
     }
 }
+window.UnknownGrammarProgram
+    = UnknownGrammarProgram;
 class jtree {
 }
 jtree.GrammarBackedRootNode = GrammarBackedRootNode;
@@ -4459,6 +4466,8 @@ jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
 jtree.getVersion = () => "33.0.2";
+window.jtree
+    = jtree;
 class Upgrader extends TreeNode {
     upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
         this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path));
@@ -4494,3 +4503,5 @@ class Upgrader extends TreeNode {
         return code;
     }
 }
+window.Upgrader
+    = Upgrader;

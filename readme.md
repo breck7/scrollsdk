@@ -6,11 +6,11 @@ Tree Notation
 Links
 -----
 
-🌴 [Try Tree Notation](http://treenotation.org/sandbox/)
-🌴 [FAQ](http://treenotation.org/faq.html)
-🌴 [TypeScript Implementation on GitHub](https://github.com/breck7/jtree)
-🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)
-🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/breck7/ohayo)
+🌴 [Try Tree Notation](http://treenotation.org/sandbox/)  
+🌴 [FAQ](http://treenotation.org/faq.html)  
+🌴 [TypeScript Implementation on GitHub](https://github.com/breck7/jtree)  
+🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
+🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/breck7/ohayo)  
 
 What is Tree Notation?
 ----------------------

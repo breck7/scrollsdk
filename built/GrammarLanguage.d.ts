@@ -89,6 +89,7 @@ declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
     getPrettified(): string;
     getNodeTypeUsage(filepath?: string): TreeNode;
     getInPlaceHighlightScopeTree(): string;
+    getCatchAllNodeConstructor(line: string): typeof GrammarBackedBlobNode;
     getInPlaceCellTypeTreeWithNodeConstructorNames(): string;
     getTreeWithNodeTypes(): string;
     getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): jTreeTypes.highlightScope | undefined;
@@ -238,6 +239,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     getExamples(): GrammarExampleNode[];
     getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId;
     _getGeneratedClassName(): string;
+    _hasValidNodeTypeId(): boolean;
     _isAbstract(): boolean;
     private _cache_definedNodeConstructor;
     _getConstructorDefinedInGrammar(): Function;
@@ -314,7 +316,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
         [typeName: string]: GrammarCellTypeDefinitionNode;
     };
     getLanguageDefinitionProgram(): this;
-    getConcreteAndAbstractNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
+    getValidConcreteAndAbstractNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
     private _cache_rootNodeTypeNode;
     _getRootNodeTypeDefinitionNode(): NonRootNodeTypeDefinition;
     getExtensionName(): string;
@@ -337,6 +339,5 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _getProperName;
     private _rootNodeDefToJavascriptClass;
     toSublimeSyntaxFile(): string;
-    static getTheAnyLanguageRootConstructor(): AbstractRuntimeProgramConstructorInterface;
 }
 export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode };

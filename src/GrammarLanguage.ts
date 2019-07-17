@@ -283,7 +283,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
     const grammarProgram = this.getGrammarProgramRoot()
-    grammarProgram.getConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
+    grammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", GrammarConstants.nodeType, def.getRequiredCellTypeIds().join(" ")].join(" "))
     })
     this.getTopDownArray().forEach((node, lineNumber) => {
@@ -297,6 +297,10 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     return this.getTopDownArray()
       .map(child => child.getIndentation() + child.getLineHighlightScopes())
       .join("\n")
+  }
+
+  getCatchAllNodeConstructor(line: string) {
+    return GrammarBackedBlobNode
   }
 
   getInPlaceCellTypeTreeWithNodeConstructorNames() {
@@ -1330,9 +1334,13 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this.getWord(1)
   }
 
-  // todo: remove. just reused nodeTypeId
+  // todo: remove? just reused nodeTypeId
   _getGeneratedClassName() {
     return this.getNodeTypeIdFromDefinition()
+  }
+
+  _hasValidNodeTypeId() {
+    return !!this._getGeneratedClassName()
   }
 
   _isAbstract() {
@@ -1533,9 +1541,9 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
           )}\`)
         return this._cachedGrammarProgramRoot
       }`)
-      const defs = this.getLanguageDefinitionProgram().getConcreteAndAbstractNodeTypeDefinitions()
 
-      const nodeTypeMap = defs
+      const nodeTypeMap = this.getLanguageDefinitionProgram()
+        .getValidConcreteAndAbstractNodeTypeDefinitions()
         .map(def => {
           const id = def.getNodeTypeIdFromDefinition()
           return `"${id}": ${id}`
@@ -1711,7 +1719,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
     const errors: jTreeTypes.TreeError[] = []
-    this.getConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
+    this.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
         exampleProgram.getAllErrors(example._getLineNumber() + 1).forEach(err => {
@@ -1746,7 +1754,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   getNodeTypeFamilyTree() {
     const tree = new TreeNode()
-    Object.values(this.getConcreteAndAbstractNodeTypeDefinitions()).forEach(node => {
+    Object.values(this.getValidConcreteAndAbstractNodeTypeDefinitions()).forEach(node => {
       const path = node.getAncestorNodeTypeIdsArray().join(" ")
       tree.touchNode(path)
     })
@@ -1764,8 +1772,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
-  getConcreteAndAbstractNodeTypeDefinitions() {
-    return <NonRootNodeTypeDefinition[]>this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition)
+  getValidConcreteAndAbstractNodeTypeDefinitions() {
+    return <NonRootNodeTypeDefinition[]>(
+      this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition).filter((node: NonRootNodeTypeDefinition) => node._hasValidNodeTypeId())
+    )
   }
 
   private _cache_rootNodeTypeNode: NonRootNodeTypeDefinition
@@ -1773,9 +1783,15 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   _getRootNodeTypeDefinitionNode() {
     if (!this._cache_rootNodeTypeNode) {
       this.forEach(def => {
-        if (def.has(GrammarConstants.root)) this._cache_rootNodeTypeNode = def
+        if (def.has(GrammarConstants.root) && def._hasValidNodeTypeId()) this._cache_rootNodeTypeNode = def
       })
     }
+    // By default, have a very permissive basic root node.
+    if (!this._cache_rootNodeTypeNode) this._cache_rootNodeTypeNode = <NonRootNodeTypeDefinition>this.concat(`${GrammarConstants.nodeType} defaultNodeType
+ ${GrammarConstants.root}
+ ${GrammarConstants.catchAllNodeType} GrammarBackedBlobNode
+${GrammarConstants.nodeType} GrammarBackedBlobNode
+ ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`)[0]
     return this._cache_rootNodeTypeNode
   }
 
@@ -1852,11 +1868,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   private _rootNodeDefToJavascriptClass(jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
-    const defs = this.getConcreteAndAbstractNodeTypeDefinitions()
+    const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     // todo: throw if there is no root node defined
-    const rootNode = this._getRootNodeTypeDefinitionNode()
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
-    const rootName = rootNode._getGeneratedClassName()
+    const rootName = this._getRootNodeTypeDefinitionNode()._getGeneratedClassName()
 
     let exportScript = ""
     if (forNodeJs) {
@@ -1885,7 +1900,7 @@ ${exportScript}
       .map(name => ` ${name}: '${cellTypeDefs[name].getRegexString()}'`)
       .join("\n")
 
-    const defs = this.getConcreteAndAbstractNodeTypeDefinitions().filter(kw => !kw._isAbstract())
+    const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions().filter(kw => !kw._isAbstract())
     const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n")
     const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getNodeTypeIdFromDefinition()}'`).join("\n")
 
@@ -1903,20 +1918,6 @@ contexts:
 ${includes}
 
 ${nodeTypeContexts}`
-  }
-
-  // A language where anything goes.
-  // todo: can we remove? can we make the default language not require any grammar node?
-  static getTheAnyLanguageRootConstructor() {
-    return new GrammarProgram(
-      `${GrammarConstants.nodeType} anyLanguage
- ${GrammarConstants.root}
- ${GrammarConstants.catchAllNodeType} anyNode
-${GrammarConstants.nodeType} anyNode
- ${GrammarConstants.catchAllCellType} anyWord
- ${GrammarConstants.firstCellType} anyWord
-${GrammarConstants.cellType} anyWord`
-    ).getRootConstructor()
   }
 }
 

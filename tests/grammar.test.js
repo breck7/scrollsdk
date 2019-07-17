@@ -377,9 +377,36 @@ cellType any`
   equal(errors.length, 0)
 
   // Arrange/Act/Assert
-  const constructor = GrammarProgram.getTheAnyLanguageRootConstructor()
+  const constructor = new GrammarProgram().getRootConstructor()
   const errs = new constructor("foobar").getAllErrors()
   equal(errs.length, 0)
+}
+
+testTree.rootCatchAllNode = equal => {
+  // Arrange
+  const abcLang = new GrammarProgram(`nodeType abc
+ root`).getRootConstructor()
+
+  // Act/Assert
+  equal(new abcLang("foobar").getAllErrors().length, 0)
+
+  // Arrange
+  const abcLangWithErrors = new GrammarProgram(`nodeType abc
+ root
+ catchAllNodeType errorNode
+nodeType errorNode
+ baseNodeType errorNode`).getRootConstructor()
+
+  // Act/Assert
+  equal(new abcLangWithErrors("foobar").getAllErrors().length, 1)
+}
+
+testTree.blankNodeId = equal => {
+  // Arrange
+  const abcLang = new GrammarProgram(`nodeType `).getRootConstructor()
+
+  // Act/Assert
+  equal(new abcLang("foobar").getAllErrors().length, 0)
 }
 
 testTree.grammarWithLoop = equal => {

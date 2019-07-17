@@ -106,11 +106,12 @@ class GrammarIDEApp {
         });
         this._downloadButton.on("click", () => this._downloadBundleCommand());
     }
+    // TODO: ADD TESTS!!!!!
     async _downloadBundleCommand() {
         const grammarCode = this.grammarInstance.getValue();
         const grammarProgram = new jtree.GrammarProgram(grammarCode);
-        const languageName = grammarProgram.get("grammar name");
-        const extension = languageName;
+        const languageName = grammarProgram.getGrammarName();
+        const extension = grammarProgram.getExtensionName();
         const zip = new JSZip();
         const pack = {
             name: languageName,
@@ -123,7 +124,7 @@ class GrammarIDEApp {
         const samplePath = "sample." + extension;
         const sampleCode = this.codeInstance.getValue();
         const browserPath = `${languageName}.browser.js`;
-        const rootProgramClassName = grammarProgram._getGeneratedClassName();
+        const rootProgramClassName = languageName;
         zip.file("package.json", JSON.stringify(pack, null, 2));
         zip.file("readme.md", `# ${languageName} Readme
 
@@ -149,7 +150,7 @@ const sampleCode = \`${sampleCode}\`
 ${testCode}
 </script>`);
         zip.file(samplePath, sampleCode);
-        zip.file(`test.js`, `const {${rootProgramClassName}} = require("./index.js")
+        zip.file(`test.js`, `const ${rootProgramClassName} = require("./index.js")
 /*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
 ${testCode}`);
         zip.generateAsync({ type: "blob" }).then(function (content) {
@@ -161,7 +162,7 @@ ${testCode}`);
         console.log("Restoring from local storage....");
         const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole);
         const code = localStorage.getItem(this._localStorageKeys.codeConsole);
-        if (grammarCode !== undefined && code !== undefined)
+        if (typeof grammarCode === "string" && typeof code === "string")
             this._setGrammarAndCode(grammarCode, code);
         return grammarCode || code;
     }
@@ -178,13 +179,8 @@ ${testCode}`);
         let currentGrammarCode = this.grammarInstance.getValue();
         if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
             try {
-                const grammarProgram = new jtree.GrammarProgram(currentGrammarCode, "");
                 const grammarErrors = this._getGrammarErrors(currentGrammarCode);
-                if (grammarErrors.length) {
-                    this._grammarConstructor = jtree.GrammarProgram.getTheAnyLanguageRootConstructor();
-                }
-                else
-                    this._grammarConstructor = grammarProgram.getRootConstructor();
+                this._grammarConstructor = new jtree.GrammarProgram(currentGrammarCode, "").getRootConstructor();
                 this._cachedGrammarCode = currentGrammarCode;
                 this._otherErrorsDiv.html("");
             }

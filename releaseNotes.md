@@ -1,3 +1,15 @@
+34.0.0 / 2019-07-16
+===================
+- New: the empty Grammar "" is now a valid Grammar and works properly
+- New: the default catch all node for Grammar Backed Languages is now Blob Node, and not Error Node
+- Fix: now the empty Grammar language returns a forgiving grammar by default.
+- Fix: now an empty nodeTypeId won't break the grammar parser
+- Fix: fixes for Download Bundle command
+- Breaking: getConcreteAndAbstractNodeTypeDefinitions is now getValidConcreteAndAbstractNodeTypeDefinitions
+- Breaking: the empty Grammar is now valid. Should not break anything but could allow for code removal.
+- Breaking: removed getTheAnyLanguageRootConstructor(). Just use the empty grammar now.
+- Breaking: the default catch all node is now Blob node, not error node.
+
 33.0.2 / 2019-07-15
 ===================
 - New: added "infer" button to Grammar Builder

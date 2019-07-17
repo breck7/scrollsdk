@@ -3,20 +3,41 @@ Tree Notation
 
 [![Build Status](https://travis-ci.org/breck7/jtree.svg?branch=master)](https://travis-ci.org/breck7/jtree)
 
-Tree Notation is a metalanguage like JSON, XML, YAML or S-expressions.
+Links
+-----
 
-On top of Tree Notation, you can design "Tree Languages". Tree Languages can do lots of things. They can be simple file formats. They can even be general purpose programming languages, as powerful as any traditional programming language.
+[Try it out](http://treenotation.org/sandbox/) 🌴 [FAQ](http://treenotation.org/faq.html) 🌴 [TypeScript Implementation on GitHub](https://github.com/breck7/jtree) 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/) 🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://ohayo.computer/)
 
-[Try it out](http://treenotation.org/sandbox/)
+What is Tree Notation?
+----------------------
 
-[FAQ](http://treenotation.org/faq.html)
+Tree Notation is a new tiny notation with big aspirations. Tree Notation is more akin to binary notation than it is like other programming languages. Currently the stack of computer languages look like this:
 
-[TypeScript Implementation on GitHub](https://github.com/breck7/jtree)
+1 Binary => 1,000+ Syntaxes => 10,000+ languages
 
-[Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)
+In the future we think the stack may look like this:
 
-Quick Examples
---------------
+1 Binary => 1 Tree Notation => 10,000+ languages
+
+This would eliminate an enormous amount of unnecessary complexity in programming and computing. We think this will happen as more people join the Tree Notation ecosystem leading to significant network effects.
+
+What is so special about Tree Notation?
+---------------------------------------
+
+When looked at in relation to notations like JSON, XML, YAML or S-expressions, you could make the case that Tree Notation is *mildly better* than those, simply because it is simpler and offers easier concatentation and ad hoc parser writing. However, our position is that Tree Notation is actually substantially different, and will cause a *major improvement* in computing, for a number of reasons, particularly these 3:
+
+1. Program synthesis. Deep Learning models are only as good as the data you train it on. Tree Notation code is noiseless, clean data, which we posit will enable at least a 10x improvement in the performance of programs that write code and/or assist users in writing code.
+2. Clean data. In data science, it is a rule of thumb that 20% of your time will go toward doing data science, and 80% of your time goes toward getting, cleaning, and organizing your data. Tree Notation offers a number of breakthroughs that will solve that 80% dilemma once and for all.
+3. Visual programming. Tree Notation is the first notation where a visual design tool can generate code as good as someone can write by hand. The languages listed above have a critical flaw--there are infinite ways to represent any given structure. In Tree Notation there is only 1 way to represent 1 structure. This simplification is one of the main reasons why Tree Notation is solving the Visual Programming problem.
+
+We are building the data science app [Ohayo](https://ohayo.computer/) in part to demonstrate and prove these 3 advantages of Tree Notation.
+
+Simpler Examples
+----------------
+
+Check out the [Ohayo](https://github.com/breck7/ohayo) project or the [Tree Language Builder](http://treenotation.org/sandbox/build/) for advanced examples of Tree Notation in action.
+
+Below are some very simple examples to explain some of the very basics.
 
 #### For file formats:
 
@@ -81,7 +102,7 @@ Grammar files add the additional concept of "cells", which can be thought of as 
 Grammar Files
 -------------
 
-This library contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language.
+This library contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. This library also includes a simple web [Tree Language Builder](http://treenotation.org/sandbox/build/).
 
 To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. This jtree library lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript.
 
@@ -92,6 +113,8 @@ Who this Library is For
 -----------------------
 
 This library is for people who want to design Tree Languages or make Tree editing tools.
+
+You can think of this library as similar to the Java Development Kit, except for Tree Notation instead of Java.
 
 Using this Library
 -----------------
@@ -114,7 +137,7 @@ If you want to make your own Tree Language, launch the jtree sandbox and play ar
     jtree sandbox 3333
     # Open http://localhost:3333/sandbox/grammars.html
 
-More instructions coming soon! If you need help creating your language, shoot me an email and I can help you until we have more documentation.
+More instructions coming soon! If you need help creating your language, try the [Tree Language Builder](http://treenotation.org/sandbox/build/). For help, file an issue, post to the [TreeNotation subreddit](https://www.reddit.com/r/treenotation/), or email breck7@gmail.com.
 
 Development Status
 ------------------

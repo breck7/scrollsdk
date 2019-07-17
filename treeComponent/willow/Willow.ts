@@ -307,8 +307,8 @@ class AbstractWillowProgram extends stump {
     this._headStumpNode = this.nodeAt(0).nodeAt(0)
     this._bodyStumpNode = this.nodeAt(0).nodeAt(1)
     this.addSuidsToHtmlHeadAndBodyShadows()
-    const baseUrlWithoutTrailingSlash = baseUrl.replace(/\/$/, "")
-    this._baseUrl = baseUrlWithoutTrailingSlash
+    const baseUrlWithoutTrailingPath = baseUrl.replace(/\/[^\/]*$/, "/")
+    this._baseUrl = baseUrlWithoutTrailingPath
     const uri = new miuri(baseUrl)
     this.location.port = uri.port()
     this.location.protocol = uri.protocol()
@@ -325,10 +325,6 @@ class AbstractWillowProgram extends stump {
   public location: any = {}
   private _mousetrap: any
   private _store: any
-
-  getUrlWithoutPath() {
-    return this.location.protocol + "://" + this.location.hostname + this._getPort()
-  }
 
   _getPort() {
     return this.location.port ? ":" + this.location.port : ""
@@ -423,7 +419,7 @@ class AbstractWillowProgram extends stump {
 
   _makeRelativeUrlAbsolute(url) {
     if (url.startsWith("http://") || url.startsWith("https://")) return url
-    return this.getUrlWithoutPath() + url
+    return this.getBaseUrl() + url
   }
 
   async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
@@ -543,6 +539,7 @@ class AbstractWillowProgram extends stump {
     return value
   }
 
+  // todo: refactor. should be able to override this.
   isDesktopVersion() {
     return this._getHostname() === "localhost"
   }

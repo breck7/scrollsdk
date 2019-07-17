@@ -69,6 +69,10 @@ enum GrammarConstants {
   single = "single", // Have at most 1 of these
   tags = "tags",
 
+  // default catchAll nodeType
+  GrammarBackedBlobNode = "GrammarBackedBlobNode",
+  defaultRootNodeTypeId = "defaultRootNodeTypeId",
+
   // code
   javascript = "javascript",
 
@@ -1450,6 +1454,10 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
   getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode {
     // todo: return catch all?
+    const def = this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
+    if (def) return def
+    // todo: cleanup
+    this.getLanguageDefinitionProgram()._addDefaultCatchAllBlobNode()
     return this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
   }
 
@@ -1787,12 +1795,21 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       })
     }
     // By default, have a very permissive basic root node.
-    if (!this._cache_rootNodeTypeNode) this._cache_rootNodeTypeNode = <NonRootNodeTypeDefinition>this.concat(`${GrammarConstants.nodeType} defaultNodeType
+    // todo: whats the best design pattern to use for this sort of thing?
+    if (!this._cache_rootNodeTypeNode) {
+      this._cache_rootNodeTypeNode = <NonRootNodeTypeDefinition>this.concat(`${GrammarConstants.nodeType} ${GrammarConstants.defaultRootNodeTypeId}
  ${GrammarConstants.root}
- ${GrammarConstants.catchAllNodeType} GrammarBackedBlobNode
-${GrammarConstants.nodeType} GrammarBackedBlobNode
- ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`)[0]
+ ${GrammarConstants.catchAllNodeType} ${GrammarConstants.GrammarBackedBlobNode}`)[0]
+      this._addDefaultCatchAllBlobNode()
+    }
     return this._cache_rootNodeTypeNode
+  }
+
+  // todo: whats the best design pattern to use for this sort of thing?
+  _addDefaultCatchAllBlobNode() {
+    delete this._cache_nodeTypeDefinitions
+    this.concat(`${GrammarConstants.nodeType} ${GrammarConstants.GrammarBackedBlobNode}
+ ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`)
   }
 
   getExtensionName() {

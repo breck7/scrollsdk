@@ -63,6 +63,9 @@ var GrammarConstants;
     GrammarConstants["required"] = "required";
     GrammarConstants["single"] = "single";
     GrammarConstants["tags"] = "tags";
+    // default catchAll nodeType
+    GrammarConstants["GrammarBackedBlobNode"] = "GrammarBackedBlobNode";
+    GrammarConstants["defaultRootNodeTypeId"] = "defaultRootNodeTypeId";
     // code
     GrammarConstants["javascript"] = "javascript";
     // compile time
@@ -1191,6 +1194,11 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     }
     getNodeTypeDefinitionByNodeTypeId(nodeTypeId) {
         // todo: return catch all?
+        const def = this._getProgramNodeTypeDefinitionCache()[nodeTypeId];
+        if (def)
+            return def;
+        // todo: cleanup
+        this.getLanguageDefinitionProgram()._addDefaultCatchAllBlobNode();
         return this._getProgramNodeTypeDefinitionCache()[nodeTypeId];
     }
     getFirstCellTypeId() {
@@ -1477,13 +1485,20 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
             });
         }
         // By default, have a very permissive basic root node.
-        if (!this._cache_rootNodeTypeNode)
-            this._cache_rootNodeTypeNode = this.concat(`${GrammarConstants.nodeType} defaultNodeType
+        // todo: whats the best design pattern to use for this sort of thing?
+        if (!this._cache_rootNodeTypeNode) {
+            this._cache_rootNodeTypeNode = this.concat(`${GrammarConstants.nodeType} ${GrammarConstants.defaultRootNodeTypeId}
  ${GrammarConstants.root}
- ${GrammarConstants.catchAllNodeType} GrammarBackedBlobNode
-${GrammarConstants.nodeType} GrammarBackedBlobNode
- ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`)[0];
+ ${GrammarConstants.catchAllNodeType} ${GrammarConstants.GrammarBackedBlobNode}`)[0];
+            this._addDefaultCatchAllBlobNode();
+        }
         return this._cache_rootNodeTypeNode;
+    }
+    // todo: whats the best design pattern to use for this sort of thing?
+    _addDefaultCatchAllBlobNode() {
+        delete this._cache_nodeTypeDefinitions;
+        this.concat(`${GrammarConstants.nodeType} ${GrammarConstants.GrammarBackedBlobNode}
+ ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`);
     }
     getExtensionName() {
         return this.getGrammarName();

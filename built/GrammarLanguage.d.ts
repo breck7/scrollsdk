@@ -41,6 +41,8 @@ declare enum GrammarConstants {
     required = "required",
     single = "single",
     tags = "tags",
+    GrammarBackedBlobNode = "GrammarBackedBlobNode",
+    defaultRootNodeTypeId = "defaultRootNodeTypeId",
     javascript = "javascript",
     compilerNodeType = "compiler",
     compilesTo = "compilesTo",
@@ -319,6 +321,7 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     getValidConcreteAndAbstractNodeTypeDefinitions(): NonRootNodeTypeDefinition[];
     private _cache_rootNodeTypeNode;
     _getRootNodeTypeDefinitionNode(): NonRootNodeTypeDefinition;
+    _addDefaultCatchAllBlobNode(): void;
     getExtensionName(): string;
     getGrammarName(): string | undefined;
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];

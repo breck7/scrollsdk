@@ -388,7 +388,9 @@ testTree.rootCatchAllNode = equal => {
  root`).getRootConstructor()
 
   // Act/Assert
-  equal(new abcLang("foobar").getAllErrors().length, 0)
+  const program = new abcLang("foobar")
+  equal(program.getAllErrors().length, 0)
+  equal(program.getInPlaceCellTypeTree(), "anyFirstWord")
 
   // Arrange
   const abcLangWithErrors = new GrammarProgram(`nodeType abc

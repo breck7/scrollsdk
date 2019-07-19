@@ -105,6 +105,16 @@ If you'd prefer to wait until most of the details are settled, 2020 is probably 
 
 Thank you for asking! We need a lot of volunteers. Particularly important needs now are someone with project management skills to help organize and lead the team, someone to do community organizing/evangelism, dev leads to make libraries in various languages, testers to do cross platform testing, and more! Get in touch if you want to help.
 
+## Editing Tips
+
+#### How can I copy and paste code in Tree Notation and have the editor ensure correct indentation?
+
+Look for a "Paste and indent" command. For example, in Sublime Text you can click Edit->Paste and Indent, or press Cmd+Shift+v.
+
+#### Do I have to count the spaces?
+
+No. We strongly recommend using an editor that supports Tree Notation with syntax highlighting, indentation help and more (if we don't have support for your favorite editor yet, please help us add it!). If you are finding it difficult to use Tree Notation, that's just because the editor support is in the early stages. Please let us know what problems you are having so we can get them fixed.
+
 ## For Advanced Tree Language Creators
 
 #### What are the benefits to writing a "Grammar" file to create my Tree Language?
@@ -128,6 +138,14 @@ It is largely accurate to say Tree Notation is S-Expressions without parenthesis
 #### Is Tree Notation just Lisp?
 
 No. It is largely accurate to say Tree Notation is Lisp without parenthesis. However, that distinction ends up making a chasmic difference which will become more important over time, and we think the Tree Notation ecosystem will grow to dwarf the Lisp ecosystem.
+
+#### What's an example of "ad hoc" parsing that you can do with Tree Notation that you cannot do with Lisp?
+
+If I have a Tree Language with a root nodeType named "folder", and I want to rename the keyword of that nodeType to "project", I can easily do it with an ad-hoc regex: s/^folder/project/. This would be type safe, even if I started parsing in the middle of the document. I cannot do that with S-Expressions, as I'd have to first parse the document into a Tree data structure, and could not operate on it as a string.
+
+#### What's something else you can do with Tree Notation that you can't do with Lisp?
+
+Easy program concatenation. For example, in Tree Notation you can create valid new programs simply by appending strings, whereas in Lisp you might first have to do some parantheses removing and inserting.
 
 ## History
 

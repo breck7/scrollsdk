@@ -1,0 +1,11 @@
+tooling onsave ../../tasks/buildJibJab.js
+nodeType jibjab
+ root
+ description Adds a comment node to Jibberish
+ extends jibberish
+cellType commentCell
+ highlightScope comment
+nodeType comment
+ extends topLevel
+ catchAllCellType commentCell
+ catchAllNodeType comment

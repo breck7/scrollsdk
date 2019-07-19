@@ -1534,12 +1534,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       this._getCustomJavascriptMethods()
     ].filter(code => code)
 
-    const isRoot = this._amIRoot()
-
     const extendedDef = <AbstractGrammarDefinitionNode>this._getExtendedParent()
-    const extendsClassName = isRoot ? "jtree.GrammarBackedRootNode" : extendedDef ? extendedDef._getGeneratedClassName() : "jtree.GrammarBackedNonRootNode"
+    const hasRoot = this.has(GrammarConstants.root)
+    const extendsClassName = extendedDef ? extendedDef._getGeneratedClassName() : hasRoot ? "jtree.GrammarBackedRootNode" : "jtree.GrammarBackedNonRootNode"
 
-    if (isRoot) {
+    if (this._amIRoot()) {
       components.push(`getGrammarProgramRoot() {
         if (!this._cachedGrammarProgramRoot)
           this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(

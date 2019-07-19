@@ -1,3 +1,7 @@
+34.1.0 / 2019-07-19
+===================
+- New: root nodes can now extend other root nodes for easier grammar combinations and extensions
+
 34.0.0 / 2019-07-16
 ===================
 - New: the empty Grammar "" is now a valid Grammar and works properly

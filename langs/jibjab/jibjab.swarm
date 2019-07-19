@@ -1,0 +1,19 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+test jibjab
+ arrangeTestSubject
+  require ./jibjab.js
+  constructWithBlockString
+   foo
+   nodeWithConsts
+   nested
+   comment Hello world. this is a comment.
+ getAllErrors
+  lengthIs 0
+test errors
+ arrangeTestSubject
+  require ./jibjab.js
+  constructWithBlockString
+   ERRRORRRRR
+   comment Hello world. this is a comment.
+ getAllErrors
+  lengthIs 1

@@ -109,6 +109,11 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     return <AbstractTreeComponentRootNode>super.getRootNode()
   }
 
+  require(moduleName: string, filePath?: string): any {
+    if (this.isNodeJs()) return require(filePath || moduleName)
+    return (<any>window)[moduleName]
+  }
+
   getCommander() {
     return new TreeComponentCommander(this)
   }
@@ -504,4 +509,4 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   }
 }
 
-export { AbstractTreeComponentRootNode, AbstractCommander }
+export { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander }

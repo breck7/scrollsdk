@@ -1,0 +1,128 @@
+cellType anyFirstWord
+cellType columnNameEnum
+cellType columnName
+cellType errorWord
+ highlightScope invalid
+cellType int
+ highlightScope constant.numeric
+cellType onoff
+ enum on off
+cellType word
+cellType topLevelProperty
+ highlightScope constant.language
+cellType opSymbol
+ highlightScope keyword.operator.arithmetic
+cellType commentCell
+ highlightScope comment
+nodeType jibberish
+ root
+ description A useless Tree Language built for testing Tree Notation code.
+ javascript
+  executeSync() { return 42 }
+ compilesTo txt
+ catchAllNodeType error
+ inScope topLevel text someAbstractClass
+nodeType jibjab
+ root
+ description Adds a comment node to Jibberish
+ extends jibberish
+nodeType someAbstractClass
+ abstract
+nodeType extendsAbstract
+ cells int
+ extends someAbstractClass
+nodeType topLevel
+ firstCellType topLevelProperty
+ abstract
+nodeType colorProperties
+ cells int
+ extends topLevel
+ abstract
+nodeType hue
+ extends colorProperties
+nodeType saturation
+ extends colorProperties
+nodeType constrast
+ extends colorProperties
+nodeType abstractHtml
+ inScope content
+ extends topLevel
+ abstract
+nodeType h1Node
+ match html.h1
+ extends abstractHtml
+nodeType add
+ extends topLevel
+nodeType plus
+ match +
+ extends add
+ firstCellType opSymbol
+ example Adding two numbers:
+  + 1 2
+ catchAllCellType int
+nodeType block
+ inScope topLevel scoreBlock
+ extends topLevel
+nodeType scoreBlock
+ description Test that inscope extends and does not overwrite.
+ extends block
+ inScope scores
+nodeType to
+ cells word
+ compiler
+  stringTemplate to {word}
+  closeChildren end
+ extends block
+nodeType foo
+ extends topLevel
+nodeType xColumnName
+ description The name of the column to use for the x axis
+ cells columnNameEnum
+ javascript
+  getRunTimeEnumOptions(cell) {
+    return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
+  }
+ extends topLevel
+nodeType lightbulbState
+ cells onoff
+ extends topLevel
+nodeType nested
+ extends topLevel
+nodeType nodeWithConsts
+ string greeting hello world
+ string singleWord hello
+ string thisHasQuotes "'`
+ string longText
+  hello
+  world
+ int score1 28
+ int anArray 2 3 4
+ float score2 3.01
+ boolean win true
+ extends topLevel
+nodeType nodeExpandsConsts
+ string greeting hola
+ extends nodeWithConsts
+nodeType someCode
+ catchAllNodeType lineOfCode
+ extends topLevel
+nodeType type
+ cells word
+ single
+ extends topLevel
+nodeType comment
+ extends topLevel
+ catchAllCellType commentCell
+ catchAllNodeType comment
+nodeType content
+ baseNodeType blobNode
+nodeType error
+ firstCellType errorWord
+ catchAllCellType errorWord
+ baseNodeType errorNode
+nodeType lineOfCode
+ catchAllCellType word
+nodeType text
+ baseNodeType blobNode
+nodeType scores
+ catchAllCellType int

@@ -239,6 +239,15 @@ class ImmutableNode extends AbstractNode {
     return this._getWords(0)
   }
 
+  doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
+    return false
+  }
+
+  require(moduleName: string, filePath?: string): any {
+    if (this.isNodeJs()) return require(filePath || moduleName)
+    return (<any>window)[moduleName]
+  }
+
   getWordsFrom(startFrom: int) {
     return this._getWords(startFrom)
   }

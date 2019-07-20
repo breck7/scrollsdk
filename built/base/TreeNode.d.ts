@@ -61,6 +61,8 @@ declare class ImmutableNode extends AbstractNode {
     protected _toHtml(indentCount: int): string;
     protected _getWords(startFrom: int): string[];
     getWords(): word[];
+    doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
+    require(moduleName: string, filePath?: string): any;
     getWordsFrom(startFrom: int): string[];
     private _getWordIndexCharacterStartPosition;
     getNodeInScopeAtCharIndex(charIndex: jTreeTypes.positiveInt): ImmutableNode;

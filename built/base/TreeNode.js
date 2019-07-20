@@ -197,6 +197,14 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getWords() {
         return this._getWords(0);
     }
+    doesExtend(nodeTypeId) {
+        return false;
+    }
+    require(moduleName, filePath) {
+        if (this.isNodeJs())
+            return require(filePath || moduleName);
+        return window[moduleName];
+    }
     getWordsFrom(startFrom) {
         return this._getWords(startFrom);
     }

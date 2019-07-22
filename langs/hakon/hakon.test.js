@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict
+#! /usr/local/bin/node
 
 const hakon = require("./hakon.js")
 
@@ -14,8 +14,9 @@ testTree.all = equal => {
   equal(
     program.compile(),
     `body {
- color: red;
-}`
+  color: red;
+}
+`
   )
 }
 

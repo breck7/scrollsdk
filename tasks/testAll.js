@@ -46,4 +46,6 @@ const allLangFiles = recursiveReadSync(__dirname + "/../langs/")
 
 allLangFiles.filter(file => file.endsWith(".grammar")).forEach(checkGrammarFile)
 
+allLangFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
+
 allLangFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/../langs/swarm/swarm.grammar"))

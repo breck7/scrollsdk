@@ -1,4 +1,4 @@
-#! /usr/local/bin/node
+#! /usr/bin/env node
 
 const jtree = require("../index.js")
 const fs = require("fs")

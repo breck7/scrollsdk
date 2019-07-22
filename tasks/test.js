@@ -1,4 +1,4 @@
-#! /usr/local/bin/node
+#! /usr/bin/env node
 const reporter = require("tap-mocha-reporter")
 const exec = require("child_process").exec
 

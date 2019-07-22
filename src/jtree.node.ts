@@ -39,17 +39,31 @@ class jtreeNode extends jtree {
     target: CompileTarget,
     usePrettier: boolean
   ) {
+    const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new GrammarProgram(grammarCode.toString(), pathToGrammar)
     let name = program.getGrammarName()
     const pathToJtree = __dirname + "/../index.js"
     const outputFilePath = outputFolder + `${name}.${target}.js`
 
-    let result = target === CompileTarget.nodejs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
+    let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
+
+    if (isNodeJs)
+      result =
+        "#! /usr/bin/env node\n" +
+        result.replace(
+          /}\s*$/,
+          `
+if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+}
+`
+        )
 
     if (usePrettier) result = require("prettier").format(result, { semi: false, parser: "babel", printWidth: 160 })
 
     fs.writeFileSync(outputFilePath, result, "utf8")
+
+    if (isNodeJs) fs.chmodSync(outputFilePath, 0o755)
     return outputFilePath
   }
 

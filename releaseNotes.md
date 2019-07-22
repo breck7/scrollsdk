@@ -1,3 +1,8 @@
+34.2.0 / 2019-07-21
+===================
+- New: compiled nodejs grammar files are now executables and accept an input filepath
+- Fix: switched all hashbangs to "#! /usr/bin/env node" for better cross platform support
+
 34.1.0 / 2019-07-19
 ===================
 - New: root nodes can now extend other root nodes for easier grammar combinations and extensions

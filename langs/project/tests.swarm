@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#! /usr/bin/env node /usr/local/bin/jtree
 arrangeTestSubject
  require ./project.js
 test basics

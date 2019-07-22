@@ -1,4 +1,4 @@
-#! /usr/bin/env node --use_strict
+#! /usr/bin/env node
 
 const jtree = require("../index.js")
 const { TreeNode, GrammarProgram, Utils } = jtree

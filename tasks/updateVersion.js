@@ -1,3 +1,3 @@
-#! /usr/local/bin/node --use_strict
+#! /usr/bin/env node
 new (require("./builder.js"))().updateVersion(process.argv[2])
 

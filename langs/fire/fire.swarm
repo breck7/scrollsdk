@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#! /usr/bin/env node /usr/local/bin/jtree
 test compileFire
  arrangeTestSubject
   require ./fire.js
@@ -17,7 +17,7 @@ test compileRegression
  arrangeTestSubject
   require ./fire.js
   constructWithBlockString
-   #! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+   #! /usr/bin/env node /usr/local/bin/jtree
  compile
  getAllErrors
   lengthIs 0

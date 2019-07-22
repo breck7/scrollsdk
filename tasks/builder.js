@@ -1,4 +1,4 @@
-#! /usr/local/bin/node
+#! /usr/bin/env node
 
 const fs = require("fs")
 const exec = require("child_process").exec

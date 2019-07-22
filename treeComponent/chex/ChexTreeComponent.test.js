@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict
+#! /usr/bin/env node
 
 const ChexTreeComponent = require("./ChexTreeComponent.js")
 

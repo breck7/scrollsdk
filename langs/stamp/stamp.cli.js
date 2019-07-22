@@ -1,4 +1,4 @@
-#! /usr/bin/env node --use_strict
+#! /usr/bin/env node
 
 const path = require("path")
 const stamp = require("./stamp.js")

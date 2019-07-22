@@ -1521,7 +1521,9 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (this._isBlobNodeType()) return "getCatchAllNodeConstructor() { return this._getBlobNodeCatchAllNodeType() }"
     const nodeTypeId = this.get(GrammarConstants.catchAllNodeType)
     if (!nodeTypeId) return ""
-    const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._getGeneratedClassName()
+    const nodeDef = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
+    if (!nodeDef) throw new Error(`No definition found for nodeType id "${nodeTypeId}"`)
+    const className = nodeDef._getGeneratedClassName()
     return `getCatchAllNodeConstructor() { return ${className}}`
   }
 

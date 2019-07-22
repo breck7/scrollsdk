@@ -573,6 +573,14 @@ class ImmutableNode extends AbstractNode {
     getWords() {
         return this._getWords(0);
     }
+    doesExtend(nodeTypeId) {
+        return false;
+    }
+    require(moduleName, filePath) {
+        if (this.isNodeJs())
+            return require(filePath || moduleName);
+        return window[moduleName];
+    }
     getWordsFrom(startFrom) {
         return this._getWords(startFrom);
     }
@@ -3672,7 +3680,10 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         const nodeTypeId = this.get(GrammarConstants.catchAllNodeType);
         if (!nodeTypeId)
             return "";
-        const className = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._getGeneratedClassName();
+        const nodeDef = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId);
+        if (!nodeDef)
+            throw new Error(`No definition found for nodeType id "${nodeTypeId}"`);
+        const className = nodeDef._getGeneratedClassName();
         return `getCatchAllNodeConstructor() { return ${className}}`;
     }
     _nodeDefToJavascriptClass() {
@@ -4481,7 +4492,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "34.1.0";
+jtree.getVersion = () => "34.2.0";
 window.jtree
     = jtree;
 class Upgrader extends TreeNode {

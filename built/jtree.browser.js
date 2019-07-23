@@ -2561,9 +2561,34 @@ class GrammarBackedNode extends TreeNode {
         return errors;
     }
 }
+class TypedWord {
+    constructor(node, cellIndex, type) {
+        this._node = node;
+        this._cellIndex = cellIndex;
+        this._type = type;
+    }
+    replace(newWord) {
+        this._node.setWord(this._cellIndex, newWord);
+    }
+    get word() {
+        return this._node.getWord(this._cellIndex);
+    }
+    get type() {
+        return this._type;
+    }
+}
 class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode() {
         return this;
+    }
+    getAllTypedWords() {
+        const words = [];
+        this.getTopDownArray().forEach((node) => {
+            node.getWordTypes().forEach((cell, index) => {
+                new TypedWord(node, index, cell.getCellTypeId());
+            });
+        });
+        return words;
     }
     getDefinition() {
         return this.getGrammarProgramRoot();
@@ -2725,6 +2750,9 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     }
     getGrammarProgramRoot() {
         return this.getRootProgramNode().getGrammarProgramRoot();
+    }
+    getWordTypes() {
+        return this._getGrammarBackedCellArray().filter(cell => cell.getWord() !== undefined);
     }
     _getGrammarBackedCellArray() {
         const definition = this.getDefinition();

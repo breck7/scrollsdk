@@ -16,7 +16,7 @@ const checkGrammarFile = grammarPath => {
   const testTree = {}
   testTree[`hardCodedGrammarCheckOf${grammarPath}`] = equal => {
     // Arrange/Act
-    const program = new jtree.GrammarProgram(fs.readFileSync(grammarPath, "utf8"), grammarPath)
+    const program = new jtree.GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const errs = program.getAllErrors()
     const exampleErrors = program.getErrorsInGrammarExamples()
 

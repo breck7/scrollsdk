@@ -14,8 +14,8 @@ const outputDir = __dirname + `/../ignore/vms/`
 const mkdirp = require("mkdirp")
 mkdirp.sync(outputDir)
 
-const makeProgram = (grammarCode, code, grammarPath = undefined) => {
-  const grammarProgram = new jtree.GrammarProgram(grammarCode, grammarPath)
+const makeProgram = (grammarCode, code) => {
+  const grammarProgram = new jtree.GrammarProgram(grammarCode)
   const rootProgramConstructor = grammarProgram.getRootConstructor()
   return new rootProgramConstructor(code)
 }

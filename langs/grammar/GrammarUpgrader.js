@@ -15,7 +15,9 @@ class GrammarUpgrader extends jtree.Upgrader {
           //  find all cells having type cellTypeId
           //   apply makeNewId
           // saveFile
-          const program = new jtree.GrammarProgram(tree)
+          //const grammarProgram = new jtree.GrammarProgram(grammarCode)
+          //const rootProgramConstructor = grammarProgram.getRootConstructor()
+          const program = new jtree.GrammarProgram(tree.toString())
           program.getAllTypedWords().forEach(typedWord => {
             if (typedWord.type === "nodeTypeId") typedWord.replace(makeNewId(typedWord.word, "Node"))
             if (typedWord.type === "cellTypeId") typedWord.replace(makeNewId(typedWord.word, "Cell"))
@@ -124,5 +126,5 @@ class GrammarUpgrader extends jtree.Upgrader {
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent)
-  new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "2.0.0", "3.0.0").forEach(item => console.log(item.path, item.tree.toString()))
+  new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "3.0.0", "4.0.0").forEach(item => console.log(item.path, item.tree.toString()))
 module.exports = GrammarUpgrader

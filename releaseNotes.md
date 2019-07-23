@@ -1,3 +1,8 @@
+Edge / 2019-07-23
+===================
+- Fix: removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
+- Breaking: cellTypes that ended in "Word" now end in "Cell".
+
 34.2.0 / 2019-07-21
 ===================
 - New: compiled nodejs grammar files are now executables and accept an input filepath

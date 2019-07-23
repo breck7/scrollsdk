@@ -43,7 +43,7 @@ var GrammarConstants;
     // error check time
     GrammarConstants["regex"] = "regex";
     GrammarConstants["reservedWords"] = "reservedWords";
-    GrammarConstants["enumFromGrammar"] = "enumFromGrammar";
+    GrammarConstants["enumFromCellTypes"] = "enumFromCellTypes";
     GrammarConstants["enum"] = "enum";
     // baseNodeTypes
     GrammarConstants["baseNodeType"] = "baseNodeType";
@@ -148,6 +148,9 @@ class TypedWord {
     get type() {
         return this._type;
     }
+    toString() {
+        return this.word + ":" + this.type;
+    }
 }
 class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode() {
@@ -157,7 +160,7 @@ class GrammarBackedRootNode extends GrammarBackedNode {
         const words = [];
         this.getTopDownArray().forEach((node) => {
             node.getWordTypes().forEach((cell, index) => {
-                new TypedWord(node, index, cell.getCellTypeId());
+                words.push(new TypedWord(node, index, cell.getCellTypeId()));
             });
         });
         return words;
@@ -847,10 +850,10 @@ class GrammarReservedWordsTestNode extends AbstractGrammarWordTestNode {
     }
 }
 // todo: remove in favor of custom word type constructors
-class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
-    _getEnumFromGrammar(programRootNode) {
-        const nodeTypes = this.getWordsFrom(1);
-        const enumGroup = nodeTypes.join(" ");
+class EnumFromCellTypesTestNode extends AbstractGrammarWordTestNode {
+    _getEnumFromCellTypes(programRootNode) {
+        const cellTypeIds = this.getWordsFrom(1);
+        const enumGroup = cellTypeIds.join(" ");
         // note: hack where we store it on the program. otherwise has global effects.
         if (!programRootNode._enumMaps)
             programRootNode._enumMaps = {};
@@ -858,15 +861,20 @@ class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
             return programRootNode._enumMaps[enumGroup];
         const wordIndex = 1;
         const map = {};
-        programRootNode.findNodes(nodeTypes).forEach(node => {
-            map[node.getWord(wordIndex)] = true;
+        const cellTypeMap = {};
+        cellTypeIds.forEach(typeId => (cellTypeMap[typeId] = true));
+        programRootNode
+            .getAllTypedWords()
+            .filter((typedWord) => cellTypeMap[typedWord.type])
+            .forEach(typedWord => {
+            map[typedWord.word] = true;
         });
         programRootNode._enumMaps[enumGroup] = map;
         return map;
     }
     // todo: remove
     isValid(str, programRootNode) {
-        return this._getEnumFromGrammar(programRootNode)[str] === true;
+        return this._getEnumFromCellTypes(programRootNode)[str] === true;
     }
 }
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
@@ -950,7 +958,7 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
         const types = {};
         types[GrammarConstants.regex] = GrammarRegexTestNode;
         types[GrammarConstants.reservedWords] = GrammarReservedWordsTestNode;
-        types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode;
+        types[GrammarConstants.enumFromCellTypes] = EnumFromCellTypesTestNode;
         types[GrammarConstants.enum] = GrammarEnumTestNode;
         types[GrammarConstants.highlightScope] = TreeNode_1.default;
         types[GrammarConstants.todoComment] = TreeNode_1.default;
@@ -1002,15 +1010,15 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
         options.sort((a, b) => b.length - a.length);
         return options;
     }
-    _getEnumFromGrammarOptions(program) {
-        const node = this._getNodeFromExtended(GrammarConstants.enumFromGrammar);
-        return node ? Object.keys(node.getNode(GrammarConstants.enumFromGrammar)._getEnumFromGrammar(program)) : undefined;
+    _getEnumFromCellTypeOptions(program) {
+        const node = this._getNodeFromExtended(GrammarConstants.enumFromCellTypes);
+        return node ? Object.keys(node.getNode(GrammarConstants.enumFromCellTypes)._getEnumFromCellTypes(program)) : undefined;
     }
     _getRootProgramNode() {
         return this.getParent();
     }
     _getAutocompleteWordOptions(program) {
-        return this._getEnumOptions() || this._getEnumFromGrammarOptions(program) || [];
+        return this._getEnumOptions() || this._getEnumFromCellTypeOptions(program) || [];
     }
     getRegexString() {
         // todo: enum

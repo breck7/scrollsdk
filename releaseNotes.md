@@ -1,6 +1,9 @@
 Edge / 2019-07-23
 ===================
+- New: polymorphism and symbol tables via enumFromCellTypes
+- New: support for any type of "fix" notation: prefix, postfix, anyfix.
 - Fix: removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
+- Breaking: enumFromGrammar is now enumFromCellTypes and accepts any cellTypeId
 - Breaking: cellTypes that ended in "Word" now end in "Cell".
 
 34.2.0 / 2019-07-21

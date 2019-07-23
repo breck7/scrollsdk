@@ -23,7 +23,7 @@ declare enum GrammarConstants {
     cellType = "cellType",
     regex = "regex",
     reservedWords = "reservedWords",
-    enumFromGrammar = "enumFromGrammar",
+    enumFromCellTypes = "enumFromCellTypes",
     enum = "enum",
     baseNodeType = "baseNodeType",
     blobNode = "blobNode",
@@ -78,6 +78,7 @@ declare class TypedWord {
     replace(newWord: string): void;
     readonly word: string;
     readonly type: string;
+    toString(): string;
 }
 declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode(): this;
@@ -225,7 +226,7 @@ declare class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     private _getExtendedCellTypeId;
     getHighlightScope(): string | undefined;
     private _getEnumOptions;
-    private _getEnumFromGrammarOptions;
+    private _getEnumFromCellTypeOptions;
     _getRootProgramNode(): GrammarProgram;
     _getAutocompleteWordOptions(program: GrammarBackedRootNode): string[];
     getRegexString(): string;

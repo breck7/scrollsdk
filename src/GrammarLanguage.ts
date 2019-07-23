@@ -46,7 +46,7 @@ enum GrammarConstants {
   // error check time
   regex = "regex", // temporary?
   reservedWords = "reservedWords", // temporary?
-  enumFromGrammar = "enumFromGrammar", // temporary?
+  enumFromCellTypes = "enumFromCellTypes", // temporary?
   enum = "enum", // temporary?
 
   // baseNodeTypes
@@ -181,6 +181,10 @@ class TypedWord {
   get type() {
     return this._type
   }
+
+  toString() {
+    return this.word + ":" + this.type
+  }
 }
 
 abstract class GrammarBackedRootNode extends GrammarBackedNode {
@@ -192,7 +196,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     const words: TypedWord[] = []
     this.getTopDownArray().forEach((node: GrammarBackedNonRootNode) => {
       node.getWordTypes().forEach((cell, index) => {
-        new TypedWord(node, index, cell.getCellTypeId())
+        words.push(new TypedWord(node, index, cell.getCellTypeId()))
       })
     })
     return words
@@ -1038,26 +1042,31 @@ class GrammarReservedWordsTestNode extends AbstractGrammarWordTestNode {
 }
 
 // todo: remove in favor of custom word type constructors
-class EnumFromGrammarTestNode extends AbstractGrammarWordTestNode {
-  _getEnumFromGrammar(programRootNode: GrammarBackedRootNode): jTreeTypes.stringMap {
-    const nodeTypes = this.getWordsFrom(1)
-    const enumGroup = nodeTypes.join(" ")
+class EnumFromCellTypesTestNode extends AbstractGrammarWordTestNode {
+  _getEnumFromCellTypes(programRootNode: GrammarBackedRootNode): jTreeTypes.stringMap {
+    const cellTypeIds = this.getWordsFrom(1)
+    const enumGroup = cellTypeIds.join(" ")
     // note: hack where we store it on the program. otherwise has global effects.
     if (!(<any>programRootNode)._enumMaps) (<any>programRootNode)._enumMaps = {}
     if ((<any>programRootNode)._enumMaps[enumGroup]) return (<any>programRootNode)._enumMaps[enumGroup]
 
     const wordIndex = 1
     const map: jTreeTypes.stringMap = {}
-    programRootNode.findNodes(nodeTypes).forEach(node => {
-      map[node.getWord(wordIndex)] = true
-    })
+    const cellTypeMap: jTreeTypes.stringMap = {}
+    cellTypeIds.forEach(typeId => (cellTypeMap[typeId] = true))
+    programRootNode
+      .getAllTypedWords()
+      .filter((typedWord: TypedWord) => cellTypeMap[typedWord.type])
+      .forEach(typedWord => {
+        map[typedWord.word] = true
+      })
     ;(<any>programRootNode)._enumMaps[enumGroup] = map
     return map
   }
 
   // todo: remove
   isValid(str: string, programRootNode: GrammarBackedRootNode) {
-    return this._getEnumFromGrammar(programRootNode)[str] === true
+    return this._getEnumFromCellTypes(programRootNode)[str] === true
   }
 }
 
@@ -1160,7 +1169,7 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     const types: jTreeTypes.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
     types[GrammarConstants.reservedWords] = GrammarReservedWordsTestNode
-    types[GrammarConstants.enumFromGrammar] = EnumFromGrammarTestNode
+    types[GrammarConstants.enumFromCellTypes] = EnumFromCellTypesTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
     types[GrammarConstants.todoComment] = TreeNode
@@ -1224,9 +1233,9 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     return options
   }
 
-  private _getEnumFromGrammarOptions(program: GrammarBackedRootNode) {
-    const node = this._getNodeFromExtended(GrammarConstants.enumFromGrammar)
-    return node ? Object.keys((<EnumFromGrammarTestNode>node.getNode(GrammarConstants.enumFromGrammar))._getEnumFromGrammar(program)) : undefined
+  private _getEnumFromCellTypeOptions(program: GrammarBackedRootNode) {
+    const node = this._getNodeFromExtended(GrammarConstants.enumFromCellTypes)
+    return node ? Object.keys((<EnumFromCellTypesTestNode>node.getNode(GrammarConstants.enumFromCellTypes))._getEnumFromCellTypes(program)) : undefined
   }
 
   _getRootProgramNode(): GrammarProgram {
@@ -1234,7 +1243,7 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   }
 
   _getAutocompleteWordOptions(program: GrammarBackedRootNode): string[] {
-    return this._getEnumOptions() || this._getEnumFromGrammarOptions(program) || []
+    return this._getEnumOptions() || this._getEnumFromCellTypeOptions(program) || []
   }
 
   getRegexString() {

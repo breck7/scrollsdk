@@ -34,7 +34,7 @@ cellType booleanCell
 cellType cellPropertyName
  highlightScope variable.parameter
 cellType cellTypeEnum
- enumFromGrammar cellType
+ enumFromCellTypes cellTypeId
 cellType cellTypeId
  extends javascriptSafeAlphaNumericIdentifier
 cellType cellTypeIdConstant
@@ -53,8 +53,6 @@ cellType fileExtension
 cellType floatCell
  regex \-?[0-9]*\.?[0-9]*
  highlightScope constant.numeric
-cellType grammarTypes
- enum cellType nodeType
 cellType intCell
  regex \-?[0-9]+
  highlightScope constant.numeric
@@ -63,7 +61,7 @@ cellType lowercaseCell
  regex [a-z]+
 cellType nodeTypeEnum
  highlightScope variable.parameter
- enumFromGrammar nodeType
+ enumFromCellTypes nodeTypeId
 cellType nodeTypeId
  todo Cell type checking.
  description This doubles as the class name in Javascript.
@@ -130,13 +128,13 @@ nodeType cellType
  todo Allow abstract cell types?
  cells cellTypeId
  firstCellType cellTypeIdConstant
- inScope highlightScope regex reservedWords enumFromGrammar description enumNode todo extendsCellTypeNode
+ inScope highlightScope regex reservedWords enumFromCellTypes description enumNode todo extendsCellTypeNode
 nodeType compilesTo
  cells fileExtension
  extends abstractNodeTypeRule
  description Optionally specify a file extension that will be used when compiling your language to a file. Generally used on nodeTypes marked root.
-nodeType enumFromGrammar
- catchAllCellType grammarTypes
+nodeType enumFromCellTypes
+ catchAllCellType cellTypeId
  firstCellType cellPropertyName
 nodeType enumNode
  match enum

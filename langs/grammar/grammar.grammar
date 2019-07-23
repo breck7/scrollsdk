@@ -75,7 +75,7 @@ cellType propertyName
  highlightScope constant.language
 cellType regexCell
  highlightScope string.regexp
-cellType reservedCell
+cellType reservedWordCell
  description A word that a cell cannot contain.
  highlightScope string
 cellType scopeName
@@ -177,7 +177,7 @@ nodeType regex
 nodeType reservedWords
  single
  description A list of words that a cell cannot contain.
- catchAllCellType reservedCell
+ catchAllCellType reservedWordCell
  firstCellType cellPropertyName
 nodeType todo
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.

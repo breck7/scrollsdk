@@ -20,19 +20,19 @@ nodeType hakon
    &:hover
     color blue
     font-size 17px
-cellType anyFirstWord
-cellType extraWord
+cellType anyFirstCell
+cellType extraCell
  highlightScope invalid
-cellType cssValueWord
+cellType cssValueCell
  highlightScope constant.numeric
 cellType selector
  highlightScope keyword.control
 cellType propertyName
  highlightScope variable.function
-cellType errorWord
+cellType errorCell
  highlightScope invalid
 nodeType abstractPropertyNode
- catchAllCellType cssValueWord
+ catchAllCellType cssValueCell
  catchAllNodeType errorNode
  firstCellType propertyName
  javascript
@@ -40,8 +40,8 @@ nodeType abstractPropertyNode
  abstract
 nodeType errorNode
  catchAllNodeType errorNode
- catchAllCellType errorWord
- firstCellType errorWord
+ catchAllCellType errorCell
+ firstCellType errorCell
  baseNodeType errorNode
 nodeType selectorNode
  firstCellType selector

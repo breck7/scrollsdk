@@ -1,7 +1,7 @@
-cellType anyFirstWord
+cellType anyFirstCell
 cellType columnNameEnum
 cellType columnName
-cellType errorWord
+cellType errorCell
  highlightScope invalid
 cellType int
  highlightScope constant.numeric
@@ -90,7 +90,7 @@ nodeType nested
  extends topLevel
 nodeType nodeWithConsts
  string greeting hello world
- string singleWord hello
+ string singleCell hello
  string thisHasQuotes "'`
  string longText
   hello
@@ -117,8 +117,8 @@ nodeType comment
 nodeType content
  baseNodeType blobNode
 nodeType error
- firstCellType errorWord
- catchAllCellType errorWord
+ firstCellType errorCell
+ catchAllCellType errorCell
  baseNodeType errorNode
 nodeType lineOfCode
  catchAllCellType word

@@ -5,7 +5,7 @@ interface AbstractRuntimeProgramConstructorInterface {
 }
 declare enum GrammarStandardCellTypeIds {
     any = "any",
-    anyFirstWord = "anyFirstWord",
+    anyFirstCell = "anyFirstCell",
     extraWord = "extraWord",
     float = "float",
     number = "number",

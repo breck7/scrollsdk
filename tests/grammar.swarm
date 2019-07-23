@@ -9,7 +9,7 @@ test grammarSample
     inScope baseNode
    cellType any
    foo
-   cellType anyFirstWord
+   cellType anyFirstCell
    cellType word
     extends any
    nodeType baseNode

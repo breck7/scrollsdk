@@ -6,8 +6,8 @@ nodeType stump
  compilesTo html
  javascript
   compile() { return this.toHtml() }
-cellType anyFirstWord
-cellType extraWord
+cellType anyFirstCell
+cellType extraCell
  highlightScope invalid
 cellType anyHtmlContent
  highlightScope string

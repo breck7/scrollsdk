@@ -5,6 +5,20 @@ const jtree = require("../../index.js")
 class GrammarUpgrader extends jtree.Upgrader {
   getUpgradeFromMap() {
     return {
+      "3.0.0": {
+        "4.0.0": tree => {
+          const makeNewId = (currentId, suffix) => currentId.replace(new RegExp(suffix + "$"), "") + suffix
+
+          // extends, inScope
+          tree.findNodes("nodeType").forEach(node => {
+            node.setLine(makeNewId(node.getWord(1), "Node"))
+          })
+          tree.findNodes("cellType").forEach(node => {
+            node.setLine(makeNewId(node.getWord(1), "Cell"))
+          })
+          return tree
+        }
+      },
       "2.0.0": {
         "3.0.0": tree => {
           // Nest abstract nodes

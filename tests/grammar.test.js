@@ -390,7 +390,7 @@ testTree.rootCatchAllNode = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.getInPlaceCellTypeTree(), "anyFirstWord")
+  equal(program.getInPlaceCellTypeTree(), "anyFirstCell")
 
   // Arrange
   const abcLangWithErrors = new GrammarProgram(`nodeType abc
@@ -499,7 +499,7 @@ nodeType addNode
  catchAllCellType int
  example This is a bad example.
   + 1 B
-cellType anyFirstWord
+cellType anyFirstCell
 cellType int`
   )
 

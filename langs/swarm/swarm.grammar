@@ -20,36 +20,36 @@ nodeType swarm
     const solos = this.getChildInstancesOfNodeTypeId("testOnly")
     return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlock").filter(test => !(test.doesExtend("skipTest")))
   }
-cellType anyFirstWord
-cellType anyWord
+cellType anyFirstCell
+cellType anyCell
  highlightScope string
-cellType arrangeWord
+cellType arrangeCell
  highlightScope constant.language
-cellType assertWord
+cellType assertCell
  highlightScope keyword.operator
-cellType commandWord
+cellType commandCell
  highlightScope variable.function
-cellType controlWord
+cellType controlCell
  highlightScope keyword.control
-cellType extraWord
+cellType extraCell
  highlightScope invalid
 cellType filepath
  highlightScope string
-cellType hashBangWord
+cellType hashBangCell
  highlightScope comment
 cellType int
  regex \-?[0-9]+
  highlightScope constant.numeric.integer
-cellType parameterWord
+cellType parameterCell
  highlightScope variable.parameter
-cellType todoWord
+cellType todoCell
  highlightScope comment
 cellType typeOfOption
  description The 6 possible results for Javascript's typeof.
  highlightScope constant.language
  enum object boolean function number string undefined
 nodeType abstractAssertion
- firstCellType assertWord
+ firstCellType assertCell
  abstract
  javascript
   async execute(testSubject) {
@@ -109,10 +109,10 @@ nodeType abstractAssertion
     return [context, final]
   }
 nodeType terminal
- firstCellType arrangeWord
+ firstCellType arrangeCell
  abstract
 nodeType testBlock
- catchAllCellType anyWord
+ catchAllCellType anyCell
  javascript
   getTestSetupNode() {
     return this.getNode("arrangeTestSubject") || this.getParent().getTestSetupNode()
@@ -169,14 +169,14 @@ nodeType testBlock
   }
  inScope arrangeTestSubject
  catchAllNodeType commandNode
- firstCellType controlWord
+ firstCellType controlCell
  abstract
 nodeType hashbangNode
  match #!
  description Standard bash hashbang line.
- cells hashBangWord
- catchAllCellType hashBangWord
- firstCellType hashBangWord
+ cells hashBangCell
+ catchAllCellType hashBangCell
+ firstCellType hashBangCell
 nodeType arrangeTestSubject
  javascript
   getTestSubject(programFilepath) {
@@ -202,7 +202,7 @@ nodeType arrangeTestSubject
     return theClass
    }
   executeSync() {}
- firstCellType arrangeWord
+ firstCellType arrangeCell
  inScope async requireNode staticNode constructWithBlockString todo
 nodeType async
  description Set this in setup to test async methods.
@@ -219,7 +219,7 @@ nodeType abstractCommandArg
  javascript
   executeSync() {}
 nodeType blockStringParam
- firstCellType parameterWord
+ firstCellType parameterCell
  description Pass in a multiline string as a command arg. #todo: rename
  extends abstractCommandArg
  catchAllNodeType textBlock
@@ -252,16 +252,16 @@ nodeType commandNode
     return this.map(child => child.executeSync(newTestSubject))
   }
  description Input is an object, and calls some method with an optional array of string args.
- catchAllCellType anyWord
+ catchAllCellType anyCell
  catchAllNodeType commandNode
- firstCellType commandWord
+ firstCellType commandCell
  inScope blockStringParam abstractAssertion
 nodeType constructWithBlockString
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
  catchAllNodeType textBlock
- firstCellType arrangeWord
+ firstCellType arrangeCell
 nodeType error
  baseNodeType errorNode
 nodeType lengthIs
@@ -277,7 +277,7 @@ nodeType lengthIs
 nodeType requireNode
  match require
  cells filepath
- catchAllCellType anyWord
+ catchAllCellType anyCell
  extends terminal
 nodeType staticNode
  match static
@@ -285,7 +285,7 @@ nodeType staticNode
  extends terminal
 nodeType stringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
- catchAllCellType anyWord
+ catchAllCellType anyCell
  javascript
    getTestResult(actualAsString, expected, message) {
     const result = !actualAsString.includes(expected)
@@ -299,7 +299,7 @@ nodeType stringExcludes
   }
  extends abstractAssertion
 nodeType stringIncludes
- catchAllCellType anyWord
+ catchAllCellType anyCell
  description Converts the input to string and see if the string contains the provided string
  javascript
    getTestResult(actualAsString, expected, message) {
@@ -310,7 +310,7 @@ nodeType stringIncludes
  extends abstractAssertion
 nodeType stringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
- catchAllCellType anyWord
+ catchAllCellType anyCell
  extends abstractAssertion
 nodeType test
  description Basic test block.
@@ -324,13 +324,13 @@ nodeType skipTest
   async execute() { console.log(`Skipped test ${this.getLine()}`) }
  extends testBlock
 nodeType textBlock
- firstCellType anyWord
- catchAllCellType anyWord
+ firstCellType anyCell
+ catchAllCellType anyCell
  catchAllNodeType textBlock
 nodeType todo
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
- catchAllCellType todoWord
- firstCellType todoWord
+ catchAllCellType todoCell
+ firstCellType todoCell
  catchAllNodeType todo
 nodeType typeIs
  description Assert result is one of Javascript's 6 typeof types.

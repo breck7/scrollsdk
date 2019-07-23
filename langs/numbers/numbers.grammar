@@ -4,9 +4,9 @@ nodeType numbers
  inScope abstractArithmeticReducer commentNode hashBangNode
  catchAllNodeType error
 cellType float
-cellType commentWord
+cellType commentCell
  highlightScope comment
-cellType errorWord
+cellType errorCell
  highlightScope invalid
 cellType number
  highlightScope constant.numeric
@@ -29,13 +29,13 @@ nodeType abstractArithmeticReducer
 nodeType commentNode
  match #
  description This is a line comment.
- firstCellType commentWord
- catchAllCellType commentWord
+ firstCellType commentCell
+ catchAllCellType commentCell
  catchAllNodeType commentNode
 nodeType error
- catchAllCellType errorWord
+ catchAllCellType errorCell
  baseNodeType errorNode
- firstCellType errorWord
+ firstCellType errorCell
 nodeType hashBangNode
  match #!
  extends commentNode

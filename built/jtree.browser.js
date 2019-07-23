@@ -2444,7 +2444,7 @@ var GrammarConstantsCompiler;
 var GrammarStandardCellTypeIds;
 (function (GrammarStandardCellTypeIds) {
     GrammarStandardCellTypeIds["any"] = "any";
-    GrammarStandardCellTypeIds["anyFirstWord"] = "anyFirstWord";
+    GrammarStandardCellTypeIds["anyFirstCell"] = "anyFirstCell";
     GrammarStandardCellTypeIds["extraWord"] = "extraWord";
     GrammarStandardCellTypeIds["float"] = "float";
     GrammarStandardCellTypeIds["number"] = "number";
@@ -3377,7 +3377,7 @@ class GrammarCellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     getCellConstructor() {
         const kinds = {};
         kinds[GrammarStandardCellTypeIds.any] = GrammarAnyCell;
-        kinds[GrammarStandardCellTypeIds.anyFirstWord] = GrammarAnyCell;
+        kinds[GrammarStandardCellTypeIds.anyFirstCell] = GrammarAnyCell;
         kinds[GrammarStandardCellTypeIds.float] = GrammarFloatCell;
         kinds[GrammarStandardCellTypeIds.number] = GrammarFloatCell;
         kinds[GrammarStandardCellTypeIds.bit] = GrammarBitCell;
@@ -3628,7 +3628,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return this._getProgramNodeTypeDefinitionCache()[nodeTypeId];
     }
     getFirstCellTypeId() {
-        return this._getFromExtended(GrammarConstants.firstCellType) || GrammarStandardCellTypeIds.anyFirstWord;
+        return this._getFromExtended(GrammarConstants.firstCellType) || GrammarStandardCellTypeIds.anyFirstCell;
     }
     isDefined(nodeTypeId) {
         return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()];

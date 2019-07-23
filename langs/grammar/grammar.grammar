@@ -21,8 +21,8 @@ cellType abstractConstant
 cellType javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z0-9]+
  reservedWords enum extends function static if while export return class for default require var let const new
-cellType anyFirstWord
-cellType anyWord
+cellType anyFirstCell
+cellType anyCell
 cellType baseNodeTypes
  description There are a few classes of special nodeTypes. BlobNodes don't have their children parsed. Error nodes always report an error.
  todo Remove?
@@ -46,7 +46,7 @@ cellType constantIdentifier
 cellType constructorFilePath
 cellType enumOption
  todo Add an enumOption top level type, so we can add data to an enum option such as a description.
-cellType extraWord
+cellType extraCell
  highlightScope invalid
 cellType fileExtension
  regex [a-zA-Z0-9]+
@@ -58,8 +58,8 @@ cellType grammarTypes
 cellType intCell
  regex \-?[0-9]+
  highlightScope constant.numeric
-cellType javascriptCodeWord
-cellType lowercaseWord
+cellType javascriptCodeCell
+cellType lowercaseCell
  regex [a-z]+
 cellType nodeTypeEnum
  highlightScope variable.parameter
@@ -73,9 +73,9 @@ cellType nodeTypeIdConstant
  highlightScope variable.function
 cellType propertyName
  highlightScope constant.language
-cellType regexWord
+cellType regexCell
  highlightScope string.regexp
-cellType reservedWord
+cellType reservedCell
  description A word that a cell cannot contain.
  highlightScope string
 cellType scopeName
@@ -88,22 +88,20 @@ cellType semanticVersion
 cellType stringCell
  highlightScope string
 cellType tag
-cellType todoWord
+cellType todoCell
  highlightScope comment
-cellType toolingDirectiveWord
+cellType toolingDirectiveCell
  highlightScope comment
 cellType word
  regex [a-zA-Z]+
  highlightScope variable.parameter
-cellType extendedCellType
- extends cellTypeId
-cellType exampleWord
+cellType exampleCell
  highlightScope comment
  extends stringCell
 nodeType abstractCompilerRule
  abstract
  todo Remove if we remove compiler stuff?
- catchAllCellType anyWord
+ catchAllCellType anyCell
  firstCellType propertyName
 nodeType abstractConstant
  abstract
@@ -116,11 +114,11 @@ nodeType abstractNodeTypeRule
 nodeType catchAllError
  baseNodeType errorNode
 nodeType catchAllExampleLine
- catchAllCellType exampleWord
- firstCellType exampleWord
+ catchAllCellType exampleCell
+ firstCellType exampleCell
  catchAllNodeType catchAllExampleLine
 nodeType catchAllJavascriptCodeLine
- catchAllCellType javascriptCodeWord
+ catchAllCellType javascriptCodeCell
  catchAllNodeType catchAllJavascriptCodeLine
 nodeType catchAllMultilineStringConstant
  description String constants can span multiple lines.
@@ -172,24 +170,24 @@ nodeType nodeTypeOrder
  extends abstractNodeTypeRule
  description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
 nodeType regex
- catchAllCellType regexWord
+ catchAllCellType regexCell
  description The word must match this pattern or it shall be marked as an error.
  firstCellType cellPropertyName
  single
 nodeType reservedWords
  single
  description A list of words that a cell cannot contain.
- catchAllCellType reservedWord
+ catchAllCellType reservedCell
  firstCellType cellPropertyName
 nodeType todo
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
- catchAllCellType todoWord
- firstCellType todoWord
+ catchAllCellType todoCell
+ firstCellType todoCell
  catchAllNodeType todo
 nodeType tooling
  description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
- catchAllCellType toolingDirectiveWord
- firstCellType toolingDirectiveWord
+ catchAllCellType toolingDirectiveCell
+ firstCellType toolingDirectiveCell
  catchAllNodeType tooling
 nodeType version
  cells semanticVersion
@@ -263,7 +261,7 @@ nodeType description
 nodeType example
  todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.
- catchAllCellType exampleWord
+ catchAllCellType exampleCell
  catchAllNodeType catchAllExampleLine
  extends abstractNodeTypeRule
 nodeType extendsNodeTypeNode
@@ -297,7 +295,7 @@ nodeType javascript
  catchAllNodeType catchAllJavascriptCodeLine
  extends abstractNodeTypeRule
 nodeType match
- cells anyWord
+ cells anyCell
  description If present, this word will be used as the first word instead of the nodeTypeId.
  extends abstractNodeTypeRule
 nodeType required

@@ -10,10 +10,10 @@ nodeType dug
     const res = super.compile()
     return JSON.stringify(JSON.parse(res), null, 2)
   }
-cellType anyFirstWord
+cellType anyFirstCell
 cellType typeNameCell
  highlightScope keyword
-cellType stringWord
+cellType stringCell
  highlightScope string
 cellType booleanCell
  enum true false
@@ -35,9 +35,9 @@ nodeType numberNode
   stringTemplate {numberCell}
 nodeType stringNode
  match string
- catchAllCellType stringWord
+ catchAllCellType stringCell
  compiler
-  stringTemplate "{stringWord}"
+  stringTemplate "{stringCell}"
  extends valueNode
 nodeType booleanNode
  match boolean
@@ -46,10 +46,10 @@ nodeType booleanNode
  compiler
   stringTemplate {booleanCell}
 nodeType memberNode
- firstCellType stringWord
+ firstCellType stringCell
  inScope valueNode
  compiler
-  stringTemplate "{stringWord}" :
+  stringTemplate "{stringCell}" :
 nodeType objectNode
  match object
  catchAllNodeType memberNode

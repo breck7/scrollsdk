@@ -63,16 +63,16 @@ nodeType project
   }
  inScope file
  catchAllNodeType error
-cellType anyFirstWord
+cellType anyFirstCell
 cellType filepath
  highlightScope string
-cellType termWord
+cellType termCell
  highlightScope variable.parameter
 cellType fileConstant
  highlightScope keyword.control
 nodeType term
  catchAllCellType filepath
- firstCellType termWord
+ firstCellType termCell
  abstract
 nodeType error
  baseNodeType errorNode

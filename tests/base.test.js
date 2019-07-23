@@ -1891,7 +1891,7 @@ testTree.isomorphicGrammarTests = equal => {
  inScope topLevel text someAbstractClass
 cellType int
 cellType word
-cellType anyFirstWord
+cellType anyFirstCell
 cellType onoff
  enum on off
 nodeType error

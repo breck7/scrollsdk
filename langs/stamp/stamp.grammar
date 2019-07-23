@@ -49,17 +49,17 @@ nodeType stamp
     return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
   }
  inScope hashbangNode prompt folder file
-cellType anyFirstWord
-cellType extraWord
+cellType anyFirstCell
+cellType extraCell
  highlightScope invalid
-cellType anyWord
+cellType anyCell
  highlightScope string
 cellType promptWords
  highlightScope string
 cellType filepath
 cellType varName
  highlightScope string
-cellType commentWord
+cellType commentCell
  highlightScope comment
 cellType inputType
  regex (string|int|any|lowercase)
@@ -67,12 +67,12 @@ cellType property
  highlightScope keyword.control
 nodeType hashbangNode
  match #!
- catchAllCellType commentWord
- firstCellType commentWord
+ catchAllCellType commentCell
+ firstCellType commentCell
 nodeType catchAllAnyLine
- catchAllCellType anyWord
+ catchAllCellType anyCell
  catchAllNodeType catchAllAnyLine
- firstCellType anyWord
+ firstCellType anyCell
 nodeType data
  catchAllNodeType catchAllAnyLine
  firstCellType property

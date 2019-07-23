@@ -1,5 +1,5 @@
 todo Explore best ways to add polymorphism
-todo Explore non-firstWord node type detection
+todo Explore non-firstCell node type detection
 nodeType fire
  root
  description A useless Tree Language that compiles to Javascript for testing Tree Notation features.
@@ -19,8 +19,8 @@ nodeType fire
     console.log(outputLines.join("\n"))
     return outputLines
   }
-cellType anyFirstWord
-cellType anyWord
+cellType anyFirstCell
+cellType anyCell
 cellType boolean
  regex (false|true)
 cellType filepath
@@ -32,9 +32,9 @@ cellType numberCell
  highlightScope constant.numeric
 cellType numberIdentifier
  extends identifier
-cellType hashBangWord
+cellType hashBangCell
  highlightScope comment
-cellType hashBangKeyWord
+cellType hashBangKeyword
  highlightScope comment
 cellType stringCell
  highlightScope string
@@ -68,9 +68,9 @@ nodeType abstractAssignment
  abstract
 nodeType abstractArithmetic
  cells identifier
- catchAllCellType anyWord
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {identifier} = {anyWord}
+  stringTemplate const {identifier} = {anyCell}
  frequency .2
  extends abstractAssignment
  abstract
@@ -87,10 +87,10 @@ nodeType abstractBooleanOperator
 nodeType hashbang
  match #!
  description Standard bash hashbang line.
- catchAllCellType hashBangWord
- firstCellType hashBangKeyWord
+ catchAllCellType hashBangCell
+ firstCellType hashBangKeyword
  compiler
-  stringTemplate // #! {hashBangWord}
+  stringTemplate // #! {hashBangCell}
 nodeType error
  baseNodeType errorNode
  compiler
@@ -139,18 +139,18 @@ nodeType callFunctionAndSet
  description Function Call
  frequency .5
  cells resultIdentifier functionIdentifier
- catchAllCellType anyWord
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {resultIdentifier} = {functionIdentifier}({anyWord})
+  stringTemplate const {resultIdentifier} = {functionIdentifier}({anyCell})
   catchAllCellDelimiter , 
  extends abstractAssignment
 nodeType callMethodAndSet
  description Method Call
  frequency .5
  cells resultIdentifier instanceIdentifier methodIdentifier
- catchAllCellType anyWord
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {resultIdentifier} = {instanceIdentifier}.{methodIdentifier}({anyWord})
+  stringTemplate const {resultIdentifier} = {instanceIdentifier}.{methodIdentifier}({anyCell})
   catchAllCellDelimiter , 
  extends abstractAssignment
 nodeType join
@@ -187,15 +187,15 @@ nodeType numbers
 nodeType string
  description String Assignment
  cells stringIdentifier
- catchAllCellType anyWord
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {stringIdentifier} = "{anyWord}"
+  stringTemplate const {stringIdentifier} = "{anyCell}"
  frequency .2
  extends abstractAssignment
 cellType leftNumberCell
  extends numberCell
-cellType leftAnyWord
- extends anyWord
+cellType leftAnyCell
+ extends anyCell
 nodeType greaterThan
  description Greater than test
  cells identifier leftNumberCell numberCell
@@ -212,16 +212,16 @@ nodeType greaterThanOrEqual
  extends abstractBooleanOperator
 nodeType lessThan
  description Less than test
- cells identifier leftAnyWord anyWord
+ cells identifier leftAnyCell anyCell
  compiler
-  stringTemplate const {identifier} = {leftAnyWord} < {anyWord}
+  stringTemplate const {identifier} = {leftAnyCell} < {anyCell}
  frequency .1
  extends abstractBooleanOperator
 nodeType lessThanOrEqual
  description Less than or equal to test
- cells identifier leftAnyWord anyWord
+ cells identifier leftAnyCell anyCell
  compiler
-  stringTemplate const {identifier} = {leftAnyWord} <= {anyWord}
+  stringTemplate const {identifier} = {leftAnyCell} <= {anyCell}
  frequency .1
  extends abstractBooleanOperator
 nodeType block
@@ -234,9 +234,9 @@ nodeType functionNode
  match function
  description Function Assignment
  cells functionIdentifier
- catchAllCellType anyWord
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {functionIdentifier} = ({anyWord}) =>
+  stringTemplate const {functionIdentifier} = ({anyCell}) =>
   catchAllCellDelimiter , 
  frequency .1
  extends abstractJsblock
@@ -260,9 +260,9 @@ nodeType callFunction
  description Function call ignore result.
  frequency .1
  cells functionIdentifier
- catchAllCellType anyWord
+ catchAllCellType anyCell
  compiler
-  stringTemplate {functionIdentifier}({anyWord})
+  stringTemplate {functionIdentifier}({anyCell})
   catchAllCellDelimiter , 
  extends abstractTerminal
 nodeType decrement
@@ -316,8 +316,8 @@ nodeType requireNode
  extends abstractTerminal
 nodeType returnNode
  match return
- cells anyWord
+ cells anyCell
  compiler
-  stringTemplate return {anyWord}
+  stringTemplate return {anyCell}
  frequency .1
  extends abstractTerminal

@@ -162,9 +162,40 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 }
 
+class TypedWord {
+  private _node: TreeNode
+  private _cellIndex: number
+  private _type: string
+  constructor(node: TreeNode, cellIndex: number, type: string) {
+    this._node = node
+    this._cellIndex = cellIndex
+    this._type = type
+  }
+  replace(newWord: string) {
+    this._node.setWord(this._cellIndex, newWord)
+  }
+  get word() {
+    return this._node.getWord(this._cellIndex)
+  }
+
+  get type() {
+    return this._type
+  }
+}
+
 abstract class GrammarBackedRootNode extends GrammarBackedNode {
   getRootProgramNode() {
     return this
+  }
+
+  getAllTypedWords() {
+    const words: TypedWord[] = []
+    this.getTopDownArray().forEach((node: GrammarBackedNonRootNode) => {
+      node.getWordTypes().forEach((cell, index) => {
+        new TypedWord(node, index, cell.getCellTypeId())
+      })
+    })
+    return words
   }
 
   getDefinition(): GrammarProgram {
@@ -356,6 +387,10 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
 
   getGrammarProgramRoot() {
     return this.getRootProgramNode().getGrammarProgramRoot()
+  }
+
+  getWordTypes() {
+    return this._getGrammarBackedCellArray().filter(cell => cell.getWord() !== undefined)
   }
 
   protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {

@@ -9,14 +9,19 @@ class GrammarUpgrader extends jtree.Upgrader {
         "4.0.0": tree => {
           const makeNewId = (currentId, suffix) => currentId.replace(new RegExp(suffix + "$"), "") + suffix
 
-          // extends, inScope
-          tree.findNodes("nodeType").forEach(node => {
-            node.setLine(makeNewId(node.getWord(1), "Node"))
+          // For all grammar files
+          //  find all cells having type nodeTypeId
+          //   apply makeNewId
+          //  find all cells having type cellTypeId
+          //   apply makeNewId
+          // saveFile
+          const program = new jtree.GrammarProgram(tree)
+          program.getAllTypedWords().forEach(typedWord => {
+            if (typedWord.type === "nodeTypeId") typedWord.replace(makeNewId(typedWord.word, "Node"))
+            if (typedWord.type === "cellTypeId") typedWord.replace(makeNewId(typedWord.word, "Cell"))
           })
-          tree.findNodes("cellType").forEach(node => {
-            node.setLine(makeNewId(node.getWord(1), "Cell"))
-          })
-          return tree
+
+          return program
         }
       },
       "2.0.0": {

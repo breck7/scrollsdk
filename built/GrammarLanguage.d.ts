@@ -70,8 +70,18 @@ declare abstract class GrammarBackedNode extends TreeNode {
     getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[];
     protected _getRequiredNodeErrors(errors?: jTreeTypes.TreeError[]): jTreeTypes.TreeError[];
 }
+declare class TypedWord {
+    private _node;
+    private _cellIndex;
+    private _type;
+    constructor(node: TreeNode, cellIndex: number, type: string);
+    replace(newWord: string): void;
+    readonly word: string;
+    readonly type: string;
+}
 declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode(): this;
+    getAllTypedWords(): TypedWord[];
     getDefinition(): GrammarProgram;
     getInPlaceCellTypeTree(): string;
     getParseTable(maxColumnWidth?: number): string;
@@ -105,6 +115,7 @@ declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): NonRootNodeTypeDefinition;
     getGrammarProgramRoot(): GrammarProgram;
+    getWordTypes(): AbstractGrammarBackedCell<any>[];
     protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[];
     getLineCellTypes(): string;
     getLineHighlightScopes(defaultScope?: string): string;

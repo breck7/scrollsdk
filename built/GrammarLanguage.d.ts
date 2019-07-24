@@ -3,6 +3,12 @@ import jTreeTypes from "./jTreeTypes";
 interface AbstractRuntimeProgramConstructorInterface {
     new (code: string): GrammarBackedRootNode;
 }
+declare type parserInfo = {
+    firstWordMap: {
+        [firstWord: string]: NonRootNodeTypeDefinition;
+    };
+    regexTests: jTreeTypes.regexTestDef[];
+};
 declare enum GrammarStandardCellTypeIds {
     any = "any",
     anyFirstCell = "anyFirstCell",
@@ -259,6 +265,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     private _cache_definedNodeConstructor;
     _getConstructorDefinedInGrammar(): Function;
     _getFirstWordMatch(): string;
+    _getNodeTypeIdWithoutSuffix(): string;
     _getRegexMatch(): string;
     getLanguageDefinitionProgram(): GrammarProgram;
     protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
@@ -270,9 +277,7 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     getRequiredCellTypeIds(): jTreeTypes.cellTypeId[];
     _getCellGettersAndNodeTypeConstants(): string;
     getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined;
-    protected _createFirstWordToNodeDefMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): {
-        [firstWord: string]: NonRootNodeTypeDefinition;
-    };
+    protected _createParserInfo(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): parserInfo;
     getTopNodeTypeIds(): jTreeTypes.nodeTypeId[];
     protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];
     protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[];

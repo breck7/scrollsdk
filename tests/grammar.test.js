@@ -18,6 +18,11 @@ const testTree = {}
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
   const program = new GrammarProgram()
+  const errs = program.getAllErrors()
+
+  // Assert
+  if (errs.length) console.log(errs.map(err => err.getMessage()))
+  equal(errs.length, 0, "should be no errors")
 }
 
 testTree.basics = equal => {
@@ -61,9 +66,9 @@ testTree.jibberish = equal => {
   const defNode = program
     .getGrammarProgramRoot()
     .getNodeTypeFamilyTree()
-    .getNode("topLevel nodeWithConsts nodeExpandsConsts")
+    .getNode("topLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
-  equal(defNode.toString(), "nodeExpandsConsts", "family tree works")
+  equal(defNode.toString(), "nodeExpandsConstsNode", "family tree works")
 
   // Act
   const fooNode = program.getNode("foo")
@@ -71,14 +76,14 @@ testTree.jibberish = equal => {
   const nodeExpandsConsts = program.getNode("nodeExpandsConsts")
 
   // Assert
-  equal(fooNode.getNodeTypeId(), "foo")
-  equal(constNode.getNodeTypeId(), "nodeWithConsts")
+  equal(fooNode.getNodeTypeId(), "fooNode")
+  equal(constNode.getNodeTypeId(), "nodeWithConstsNode")
   equal(
     constNode
       .getDefinition()
       .getAncestorNodeTypeIdsArray()
       .join(" "),
-    "topLevel nodeWithConsts"
+    "topLevelNode nodeWithConstsNode"
   )
 
   // Assert
@@ -105,16 +110,16 @@ world`,
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition.constructor.name, "plus", "correct constructor name")
+  equal(addition.constructor.name, "plusNode", "correct constructor name")
 
   // Act/Assert
-  equal(program.getNode("someCode echo").constructor.name, "lineOfCode", "line of code class")
+  equal(program.getNode("someCode echo").constructor.name, "lineOfCodeNode", "line of code class")
 
   // Arrange
   const programWithBugs = makeJibberishProgram(`+ foo bar`)
 
   // Act/Assert
-  equal(programWithBugs.getAllErrors().length, 2)
+  equal(programWithBugs.getAllErrors().length, 2, "2 errors")
 
   // Act
   let count = 0
@@ -143,7 +148,7 @@ missing2 true`)
       ._getAncestorsArray()
       .map(def => def.getNodeTypeIdFromDefinition())
       .join(" "),
-    "h1Node abstractHtml topLevel"
+    "h1Node abstractHtmlNode topLevelNode"
   )
 }
 

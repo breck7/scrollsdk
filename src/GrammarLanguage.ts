@@ -6,6 +6,8 @@ interface AbstractRuntimeProgramConstructorInterface {
   new (code: string): GrammarBackedRootNode
 }
 
+declare type parserInfo = { firstWordMap: { [firstWord: string]: NonRootNodeTypeDefinition }; regexTests: jTreeTypes.regexTestDef[] }
+
 enum GrammarConstantsCompiler {
   stringTemplate = "stringTemplate", // replacement instructions
   indentCharacter = "indentCharacter",
@@ -1405,7 +1407,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (this._getRegexMatch())
       // todo: enforce firstWordMatch and regexMatch as being XOR
       return undefined
-    return this.get(GrammarConstants.match) || this.getNodeTypeIdFromDefinition()
+    return this.get(GrammarConstants.match) || this._getNodeTypeIdWithoutSuffix()
+  }
+
+  _getNodeTypeIdWithoutSuffix() {
+    return this.getNodeTypeIdFromDefinition().replace(/Node$/, "")
   }
 
   _getRegexMatch() {
@@ -1424,7 +1430,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   private _cache_firstWordToNodeDefMap: { [firstWord: string]: NonRootNodeTypeDefinition }
 
   getFirstWordMapWithDefinitions() {
-    if (!this._cache_firstWordToNodeDefMap) this._cache_firstWordToNodeDefMap = this._createFirstWordToNodeDefMap(this._getInScopeNodeTypeIds())
+    if (!this._cache_firstWordToNodeDefMap) this._cache_firstWordToNodeDefMap = this._createParserInfo(this._getInScopeNodeTypeIds()).firstWordMap
     return this._cache_firstWordToNodeDefMap
   }
 
@@ -1462,10 +1468,13 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this._getFromExtended(GrammarConstants.catchAllCellType)
   }
 
-  protected _createFirstWordToNodeDefMap(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): { [firstWord: string]: NonRootNodeTypeDefinition } {
-    if (!nodeTypeIdsInScope.length) return {}
+  protected _createParserInfo(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): parserInfo {
+    const result: parserInfo = {
+      firstWordMap: {},
+      regexTests: []
+    }
 
-    const result: { [firstWord: string]: NonRootNodeTypeDefinition } = {}
+    if (!nodeTypeIdsInScope.length) return result
 
     const allProgramNodeTypeDefinitionsMap = this._getProgramNodeTypeDefinitionCache()
     Object.keys(allProgramNodeTypeDefinitionsMap)
@@ -1473,8 +1482,10 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
       .forEach(nodeTypeId => {
         const def = allProgramNodeTypeDefinitionsMap[nodeTypeId]
+        const regex = def._getRegexMatch()
         const firstWord = def._getFirstWordMatch()
-        if (firstWord) result[firstWord] = def
+        if (regex) result.regexTests.push({ regex: regex, nodeConstructor: def.getNodeTypeIdFromDefinition() })
+        else result.firstWordMap[firstWord] = def
       })
     return result
   }
@@ -1553,24 +1564,40 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (this._isBlobNodeType())
       // todo: do we need this?
       return "createParser() { return new jtree.TreeNode.Parser(this)}"
-    const myFirstWordMap = this._createFirstWordToNodeDefMap(this._getMyInScopeNodeTypeIds())
+    const parserInfo = this._createParserInfo(this._getMyInScopeNodeTypeIds())
+    const myFirstWordMap = parserInfo.firstWordMap
+    const regexRules = parserInfo.regexTests
 
     // todo: use constants in first word maps?
     // todo: cache the super extending?
-    if (Object.keys(myFirstWordMap).length)
-      return `createParser() {
-        const map = super.createParser()._getFirstWordMap()
-  return new jtree.TreeNode.Parser(${this._getCatchAllNodeConstructorToJavascript()}, Object.assign(map, {${Object.keys(myFirstWordMap)
-        .map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`)
-        .join(",\n")}}))
+    const firstWords = Object.keys(myFirstWordMap)
+    const hasFirstWords = firstWords.length
+    const catchAllConstructor = this._getCatchAllNodeConstructorToJavascript()
+    if (!hasFirstWords && !catchAllConstructor && !regexRules.length) return ""
+
+    const firstWordsStr = hasFirstWords
+      ? `Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {` +
+        firstWords.map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`).join(",\n") +
+        "})"
+      : "undefined"
+
+    const regexStr = regexRules.length
+      ? `[${regexRules
+          .map(rule => {
+            return `{regex: /${rule.regex}/, nodeConstructor: ${rule.nodeConstructor}}`
+          })
+          .join(",")}]`
+      : "undefined"
+
+    return `createParser() {
+  return new jtree.TreeNode.Parser(${catchAllConstructor || "this.constructor"}, ${firstWordsStr}, ${regexStr})
   }`
-    return ""
   }
 
   private _getCatchAllNodeConstructorToJavascript(): jTreeTypes.javascriptCode {
     if (this._isBlobNodeType()) return "this._getBlobNodeCatchAllNodeType()"
     const nodeTypeId = this.get(GrammarConstants.catchAllNodeType)
-    if (!nodeTypeId) return "this.constructor"
+    if (!nodeTypeId) return ""
     const nodeDef = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
     if (!nodeDef) throw new Error(`No definition found for nodeType id "${nodeTypeId}"`)
     return nodeDef._getGeneratedClassName()

@@ -36,8 +36,6 @@ cellPropertyNameCell
 cellTypeIdCell
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes cellTypeIdCell
-cellTypeIdConstantCell
- highlightScope variable.parameter
 constantIdentifierCell
  todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\w+
@@ -64,8 +62,6 @@ nodeTypeIdCell
  highlightScope variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes nodeTypeIdCell
-nodeTypeIdConstantCell
- highlightScope variable.function
 propertyNameCell
  highlightScope constant.language
 regexCell
@@ -124,8 +120,7 @@ cellTypeNode
  todo Generate a class for each cell type?
  todo Allow abstract cell types?
  pattern Cell$
- cells cellTypeIdCell
- firstCellType cellTypeIdConstantCell
+ firstCellType cellTypeIdCell
  inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode
 compilesToNode
  cells fileExtensionCell
@@ -154,10 +149,9 @@ rootNode
 nodeTypeNode
  todo Add multiple dispatch?
  pattern Node$
- cells nodeTypeIdCell
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
- firstCellType nodeTypeIdConstantCell
+ firstCellType nodeTypeIdCell
  inScope rootNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
 nodeTypeOrderNode
  todo Should we just reuse inScope order? And have a property that indicates order is not important?

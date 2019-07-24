@@ -24,6 +24,10 @@ export declare namespace jTreeTypes {
         regex: RegExp;
         nodeConstructor: TreeNodeConstructor;
     }
+    interface regexTestDef {
+        regex: string;
+        nodeConstructor: string;
+    }
     type treeNode = any;
     type line = string;
     type int = number;

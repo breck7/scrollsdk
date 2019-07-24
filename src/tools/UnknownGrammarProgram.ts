@@ -1,6 +1,6 @@
 import TreeNode from "../base/TreeNode"
 
-import { GrammarConstants, GrammarStandardCellTypeIds } from "../GrammarLanguage"
+import { GrammarConstants, PreludeCellTypeIds } from "../GrammarLanguage"
 
 import jTreeTypes from "../jTreeTypes"
 
@@ -96,7 +96,7 @@ class UnknownGrammarProgram extends TreeNode {
       }
       return true
     }
-    if (all((str: string) => str === "0" || str === "1")) return { cellTypeId: GrammarStandardCellTypeIds.bit }
+    if (all((str: string) => str === "0" || str === "1")) return { cellTypeId: PreludeCellTypeIds.bitCell }
 
     if (
       all((str: string) => {
@@ -105,13 +105,13 @@ class UnknownGrammarProgram extends TreeNode {
         return num.toString() === str
       })
     ) {
-      return { cellTypeId: GrammarStandardCellTypeIds.int }
+      return { cellTypeId: PreludeCellTypeIds.intCell }
     }
 
-    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeId: GrammarStandardCellTypeIds.float }
+    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeId: PreludeCellTypeIds.floatCell }
 
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeId: GrammarStandardCellTypeIds.bool }
+    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeId: PreludeCellTypeIds.boolCell }
 
     // If there are duplicate files and the set is less than enum
     const enumLimit = 30
@@ -122,7 +122,7 @@ class UnknownGrammarProgram extends TreeNode {
  enum ${values.join(xi)}`
       }
 
-    return { cellTypeId: GrammarStandardCellTypeIds.any }
+    return { cellTypeId: PreludeCellTypeIds.anyCell }
   }
 }
 

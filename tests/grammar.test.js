@@ -275,21 +275,21 @@ com
 
 testTree.extraWord = equal => {
   // Arrange
-  const program = makeGrammarProgram(`nodeType foobar foo2
- root`)
+  const program = makeGrammarProgram(`foobarNode
+ root foo2`)
 
   // Act/Assert
   equal(program.getAllErrors().length, 1)
   equal(
     program.getInPlaceCellTypeTree(),
-    `nodeTypeIdConstant nodeTypeId extraWord
- propertyName`
+    `nodeTypeIdCell
+ propertyNameCell extraWordCell`
   )
 }
 
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
-  const program = makeGrammarProgram(`cellType foo
+  const program = makeGrammarProgram(`fooCell
  highlightScope comme`)
 
   // Act/Assert
@@ -298,13 +298,13 @@ testTree.autocompleteAdditionalWords = equal => {
 
 testTree.autocompleteAdvanced = equal => {
   // Arrange
-  const program = makeGrammarProgram(`nodeType latin
+  const program = makeGrammarProgram(`latinNode
  root
- catchAllNodeType any
- inScope faveNumber
-cellType integer
-nodeType any
-nodeType faveNumber
+ catchAllNodeType anyNode
+ inScope faveNumberNode
+integerCell
+anyNode
+faveNumberNode
  cells in`)
 
   // Act/Assert
@@ -366,12 +366,12 @@ testTree.sublimeSyntaxFile = equal => {
 testTree.minimumGrammar = equal => {
   // Arrange/Act
   const programConstructor = new GrammarProgram(
-    `nodeType any
+    `anyLangNode
  root
  catchAllNodeType anyNode
-nodeType anyNode
- catchAllCellType any
-cellType any`
+anyNode
+ catchAllCellType anyCell
+anyCell`
   ).getRootConstructor()
   const program = new programConstructor()
   const grammarProgram = program.getGrammarProgramRoot()
@@ -390,7 +390,7 @@ cellType any`
 
 testTree.rootCatchAllNode = equal => {
   // Arrange
-  const abcLang = new GrammarProgram(`nodeType abc
+  const abcLang = new GrammarProgram(`abcNode
  root`).getRootConstructor()
 
   // Act/Assert
@@ -399,10 +399,10 @@ testTree.rootCatchAllNode = equal => {
   equal(program.getInPlaceCellTypeTree(), "anyFirstCell")
 
   // Arrange
-  const abcLangWithErrors = new GrammarProgram(`nodeType abc
+  const abcLangWithErrors = new GrammarProgram(`abcNode
  root
  catchAllNodeType errorNode
-nodeType errorNode
+errorNode
  baseNodeType errorNode`).getRootConstructor()
 
   // Act/Assert
@@ -421,17 +421,17 @@ testTree.grammarWithLoop = equal => {
   // Arrange/Act/Assert
   try {
     const programConstructor = new GrammarProgram(
-      `nodeType langWithLoop
+      `langWithLoopNode
  root
- catchAllNodeType nodeA
-nodeType nodeA
- extends nodeC
+ catchAllNodeType nodeANode
+nodeANode
+ extends nodeCNode
  catchAllCellType anyCell
-nodeType nodeB
- extends nodeA
-nodeType nodeC
- extends nodeB
-cellType anyCell`
+nodeBNode
+ extends nodeANode
+nodeCNode
+ extends nodeBNode
+anyCell`
     ).getRootConstructor()
 
     new programConstructor("nodeA")
@@ -461,19 +461,20 @@ extendsAbstract 2`)
 
 testTree.updateNodeTypeIds = equal => {
   // Arrange/Act
-  const anyProgram = makeGrammarProgram(`nodeType someLang
+  const anyProgram = makeGrammarProgram(`someLangNode
  root
-cellType foobar
+foobarCell
  regex test`)
 
   // Assert
-  let errors = anyProgram.updateNodeTypeIds(`nodeType fooType
-regex regexString`)
+  anyProgram.findAllNodesWithNodeType("regexNode").forEach(node => {
+    node.setWord(0, "regexString")
+  })
   equal(
     anyProgram.toString(),
-    `fooType someLang
+    `someLangNode
  root
-cellType foobar
+foobarCell
  regexString test`
   )
 }

@@ -17,15 +17,15 @@ enum GrammarConstantsCompiler {
   closeChildren = "closeChildren"
 }
 
-enum GrammarStandardCellTypeIds {
-  any = "any",
+enum PreludeCellTypeIds {
+  anyCell = "anyCell",
   anyFirstCell = "anyFirstCell", // todo: remove
-  extraWord = "extraWord",
-  float = "float",
-  number = "number",
-  bit = "bit",
-  bool = "bool",
-  int = "int"
+  extraWordCell = "extraWordCell",
+  floatCell = "floatCell",
+  numberCell = "numberCell",
+  bitCell = "bitCell",
+  boolCell = "boolCell",
+  intCell = "intCell"
 }
 
 enum GrammarConstantsConstantTypes {
@@ -195,8 +195,8 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     return this
   }
 
-  getCatchAllNodeConstructor(line: string) {
-    return GrammarBackedBlobNode
+  createParser() {
+    return new TreeNode.Parser(GrammarBackedBlobNode)
   }
 
   getAllTypedWords() {
@@ -211,6 +211,10 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
 
   findAllWordsWithCellType(cellTypeId: jTreeTypes.cellTypeId) {
     return this.getAllTypedWords().filter(typedWord => typedWord.type === cellTypeId)
+  }
+
+  findAllNodesWithNodeType(nodeTypeId: jTreeTypes.nodeTypeId) {
+    return this.getTopDownArray().filter((node: GrammarBackedNonRootNode) => node.getDefinition().getNodeTypeIdFromDefinition() === nodeTypeId)
   }
 
   getDefinition(): GrammarProgram {
@@ -256,19 +260,6 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
           .map(err => err.getNode().getFirstWord())
       )
     )
-  }
-
-  updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap) {
-    if (typeof nodeTypeMap === "string") nodeTypeMap = new TreeNode(nodeTypeMap)
-    if (nodeTypeMap instanceof TreeNode) nodeTypeMap = <jTreeTypes.nodeIdRenameMap>nodeTypeMap.toObject()
-    const renames = []
-    for (let node of this.getTopDownArrayIterator()) {
-      const nodeTypeId = (<GrammarBackedNonRootNode>node).getNodeTypeId()
-      const newId = nodeTypeMap[nodeTypeId]
-      if (newId) renames.push([node, newId])
-    }
-    renames.forEach(pair => pair[0].setFirstWord(pair[1]))
-    return this
   }
 
   getAllSuggestions() {
@@ -432,7 +423,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
       else if (cellTypeId) cellConstructor = GrammarUnknownCellTypeCell
       else {
         cellConstructor = GrammarExtraWordCellTypeCell
-        cellTypeId = GrammarStandardCellTypeIds.extraWord
+        cellTypeId = PreludeCellTypeIds.extraWordCell
         cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       }
 
@@ -1203,13 +1194,13 @@ class CellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
   getCellConstructor(): typeof AbstractGrammarBackedCell {
     const kinds: jTreeTypes.stringMap = {}
-    kinds[GrammarStandardCellTypeIds.any] = GrammarAnyCell
-    kinds[GrammarStandardCellTypeIds.anyFirstCell] = GrammarAnyCell
-    kinds[GrammarStandardCellTypeIds.float] = GrammarFloatCell
-    kinds[GrammarStandardCellTypeIds.number] = GrammarFloatCell
-    kinds[GrammarStandardCellTypeIds.bit] = GrammarBitCell
-    kinds[GrammarStandardCellTypeIds.bool] = GrammarBoolCell
-    kinds[GrammarStandardCellTypeIds.int] = GrammarIntCell
+    kinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell
+    kinds[PreludeCellTypeIds.anyFirstCell] = GrammarAnyCell
+    kinds[PreludeCellTypeIds.floatCell] = GrammarFloatCell
+    kinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell
+    kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
+    kinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
+    kinds[PreludeCellTypeIds.intCell] = GrammarIntCell
     return kinds[this.getWord(1)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell
   }
 
@@ -1523,7 +1514,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   getFirstCellTypeId(): jTreeTypes.cellTypeId {
-    return this._getFromExtended(GrammarConstants.firstCellType) || GrammarStandardCellTypeIds.anyFirstCell
+    return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyFirstCell
   }
 
   isDefined(nodeTypeId: string) {
@@ -1588,6 +1579,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
           })
           .join(",")}]`
       : "undefined"
+
+    const constructorStr = catchAllConstructor || "this.constructor"
 
     return `createParser() {
   return new jtree.TreeNode.Parser(${catchAllConstructor || "this.constructor"}, ${firstWordsStr}, ${regexStr})
@@ -2025,4 +2018,4 @@ ${nodeTypeContexts}`
   }
 }
 
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode }
+export { GrammarConstants, PreludeCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode }

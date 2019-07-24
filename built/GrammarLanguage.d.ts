@@ -9,15 +9,15 @@ declare type parserInfo = {
     };
     regexTests: jTreeTypes.regexTestDef[];
 };
-declare enum GrammarStandardCellTypeIds {
-    any = "any",
+declare enum PreludeCellTypeIds {
+    anyCell = "anyCell",
     anyFirstCell = "anyFirstCell",
-    extraWord = "extraWord",
-    float = "float",
-    number = "number",
-    bit = "bit",
-    bool = "bool",
-    int = "int"
+    extraWordCell = "extraWordCell",
+    floatCell = "floatCell",
+    numberCell = "numberCell",
+    bitCell = "bitCell",
+    boolCell = "boolCell",
+    intCell = "intCell"
 }
 declare enum GrammarConstants {
     extensions = "extensions",
@@ -88,15 +88,15 @@ declare class TypedWord {
 }
 declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode(): this;
-    getCatchAllNodeConstructor(line: string): typeof GrammarBackedBlobNode;
+    createParser(): import("./base/Parser").default;
     getAllTypedWords(): TypedWord[];
     findAllWordsWithCellType(cellTypeId: jTreeTypes.cellTypeId): TypedWord[];
+    findAllNodesWithNodeType(nodeTypeId: jTreeTypes.nodeTypeId): any[];
     getDefinition(): GrammarProgram;
     getInPlaceCellTypeTree(): string;
     getParseTable(maxColumnWidth?: number): string;
     getErrors(): jTreeTypes.TreeError[];
     getInvalidNodeTypes(): any[];
-    updateNodeTypeIds(nodeTypeMap: TreeNode | string | jTreeTypes.nodeIdRenameMap): this;
     getAllSuggestions(): string;
     getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt): {
         startCharIndex: number;
@@ -362,4 +362,4 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     private _rootNodeDefToJavascriptClass;
     toSublimeSyntaxFile(): string;
 }
-export { GrammarConstants, GrammarStandardCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode };
+export { GrammarConstants, PreludeCellTypeIds, GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode };

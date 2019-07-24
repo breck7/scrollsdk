@@ -11,18 +11,18 @@ var GrammarConstantsCompiler;
     GrammarConstantsCompiler["joinChildrenWith"] = "joinChildrenWith";
     GrammarConstantsCompiler["closeChildren"] = "closeChildren";
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}));
-var GrammarStandardCellTypeIds;
-(function (GrammarStandardCellTypeIds) {
-    GrammarStandardCellTypeIds["any"] = "any";
-    GrammarStandardCellTypeIds["anyFirstCell"] = "anyFirstCell";
-    GrammarStandardCellTypeIds["extraWord"] = "extraWord";
-    GrammarStandardCellTypeIds["float"] = "float";
-    GrammarStandardCellTypeIds["number"] = "number";
-    GrammarStandardCellTypeIds["bit"] = "bit";
-    GrammarStandardCellTypeIds["bool"] = "bool";
-    GrammarStandardCellTypeIds["int"] = "int";
-})(GrammarStandardCellTypeIds || (GrammarStandardCellTypeIds = {}));
-exports.GrammarStandardCellTypeIds = GrammarStandardCellTypeIds;
+var PreludeCellTypeIds;
+(function (PreludeCellTypeIds) {
+    PreludeCellTypeIds["anyCell"] = "anyCell";
+    PreludeCellTypeIds["anyFirstCell"] = "anyFirstCell";
+    PreludeCellTypeIds["extraWordCell"] = "extraWordCell";
+    PreludeCellTypeIds["floatCell"] = "floatCell";
+    PreludeCellTypeIds["numberCell"] = "numberCell";
+    PreludeCellTypeIds["bitCell"] = "bitCell";
+    PreludeCellTypeIds["boolCell"] = "boolCell";
+    PreludeCellTypeIds["intCell"] = "intCell";
+})(PreludeCellTypeIds || (PreludeCellTypeIds = {}));
+exports.PreludeCellTypeIds = PreludeCellTypeIds;
 var GrammarConstantsConstantTypes;
 (function (GrammarConstantsConstantTypes) {
     GrammarConstantsConstantTypes["boolean"] = "boolean";
@@ -156,8 +156,8 @@ class GrammarBackedRootNode extends GrammarBackedNode {
     getRootProgramNode() {
         return this;
     }
-    getCatchAllNodeConstructor(line) {
-        return GrammarBackedBlobNode;
+    createParser() {
+        return new TreeNode_1.default.Parser(GrammarBackedBlobNode);
     }
     getAllTypedWords() {
         const words = [];
@@ -170,6 +170,9 @@ class GrammarBackedRootNode extends GrammarBackedNode {
     }
     findAllWordsWithCellType(cellTypeId) {
         return this.getAllTypedWords().filter(typedWord => typedWord.type === cellTypeId);
+    }
+    findAllNodesWithNodeType(nodeTypeId) {
+        return this.getTopDownArray().filter((node) => node.getDefinition().getNodeTypeIdFromDefinition() === nodeTypeId);
     }
     getDefinition() {
         return this.getGrammarProgramRoot();
@@ -205,21 +208,6 @@ class GrammarBackedRootNode extends GrammarBackedNode {
         return Array.from(new Set(this.getAllErrors()
             .filter(err => err instanceof UnknownNodeTypeError)
             .map(err => err.getNode().getFirstWord())));
-    }
-    updateNodeTypeIds(nodeTypeMap) {
-        if (typeof nodeTypeMap === "string")
-            nodeTypeMap = new TreeNode_1.default(nodeTypeMap);
-        if (nodeTypeMap instanceof TreeNode_1.default)
-            nodeTypeMap = nodeTypeMap.toObject();
-        const renames = [];
-        for (let node of this.getTopDownArrayIterator()) {
-            const nodeTypeId = node.getNodeTypeId();
-            const newId = nodeTypeMap[nodeTypeId];
-            if (newId)
-                renames.push([node, newId]);
-        }
-        renames.forEach(pair => pair[0].setFirstWord(pair[1]));
-        return this;
     }
     getAllSuggestions() {
         return new TreeNode_1.default(this.getAllWordBoundaryCoordinates().map(coordinate => {
@@ -360,7 +348,7 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
                 cellConstructor = GrammarUnknownCellTypeCell;
             else {
                 cellConstructor = GrammarExtraWordCellTypeCell;
-                cellTypeId = GrammarStandardCellTypeIds.extraWord;
+                cellTypeId = PreludeCellTypeIds.extraWordCell;
                 cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId);
             }
             cells[cellIndex] = new cellConstructor(this, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll);
@@ -983,13 +971,13 @@ class CellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
     getCellConstructor() {
         const kinds = {};
-        kinds[GrammarStandardCellTypeIds.any] = GrammarAnyCell;
-        kinds[GrammarStandardCellTypeIds.anyFirstCell] = GrammarAnyCell;
-        kinds[GrammarStandardCellTypeIds.float] = GrammarFloatCell;
-        kinds[GrammarStandardCellTypeIds.number] = GrammarFloatCell;
-        kinds[GrammarStandardCellTypeIds.bit] = GrammarBitCell;
-        kinds[GrammarStandardCellTypeIds.bool] = GrammarBoolCell;
-        kinds[GrammarStandardCellTypeIds.int] = GrammarIntCell;
+        kinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell;
+        kinds[PreludeCellTypeIds.anyFirstCell] = GrammarAnyCell;
+        kinds[PreludeCellTypeIds.floatCell] = GrammarFloatCell;
+        kinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell;
+        kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell;
+        kinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell;
+        kinds[PreludeCellTypeIds.intCell] = GrammarIntCell;
         return kinds[this.getWord(1)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell;
     }
     _getExtendedCellTypeId() {
@@ -1253,7 +1241,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return this._getProgramNodeTypeDefinitionCache()[nodeTypeId];
     }
     getFirstCellTypeId() {
-        return this._getFromExtended(GrammarConstants.firstCellType) || GrammarStandardCellTypeIds.anyFirstCell;
+        return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyFirstCell;
     }
     isDefined(nodeTypeId) {
         return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()];
@@ -1309,6 +1297,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             })
                 .join(",")}]`
             : "undefined";
+        const constructorStr = catchAllConstructor || "this.constructor";
         return `createParser() {
   return new jtree.TreeNode.Parser(${catchAllConstructor || "this.constructor"}, ${firstWordsStr}, ${regexStr})
   }`;

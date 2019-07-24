@@ -90,20 +90,20 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             return true;
         };
         if (all((str) => str === "0" || str === "1"))
-            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.bit };
+            return { cellTypeId: GrammarLanguage_1.PreludeCellTypeIds.bitCell };
         if (all((str) => {
             const num = parseInt(str);
             if (isNaN(num))
                 return false;
             return num.toString() === str;
         })) {
-            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.int };
+            return { cellTypeId: GrammarLanguage_1.PreludeCellTypeIds.intCell };
         }
         if (all((str) => !str.match(/[^\d\.\-]/)))
-            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.float };
+            return { cellTypeId: GrammarLanguage_1.PreludeCellTypeIds.floatCell };
         const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"]);
         if (all((str) => bools.has(str.toLowerCase())))
-            return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.bool };
+            return { cellTypeId: GrammarLanguage_1.PreludeCellTypeIds.boolCell };
         // If there are duplicate files and the set is less than enum
         const enumLimit = 30;
         if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
@@ -112,7 +112,7 @@ class UnknownGrammarProgram extends TreeNode_1.default {
                 cellTypeDefinition: `cellType ${firstWord}Enum
  enum ${values.join(xi)}`
             };
-        return { cellTypeId: GrammarLanguage_1.GrammarStandardCellTypeIds.any };
+        return { cellTypeId: GrammarLanguage_1.PreludeCellTypeIds.anyCell };
     }
 }
 exports.default = UnknownGrammarProgram;

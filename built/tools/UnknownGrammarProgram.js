@@ -4,26 +4,25 @@ const TreeNode_1 = require("../base/TreeNode");
 const GrammarLanguage_1 = require("../GrammarLanguage");
 class UnknownGrammarProgram extends TreeNode_1.default {
     getPredictedGrammarFile(grammarName) {
+        grammarName = GrammarLanguage_1.GrammarProgram.makeNodeTypeId(grammarName);
         const rootNode = new TreeNode_1.default(`${grammarName}
  ${GrammarLanguage_1.GrammarConstants.root}`);
         // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
-        const globalCellTypeMap = new Map();
-        const xi = this.getXI();
-        const yi = this.getYI();
-        rootNode.nodeAt(0).touchNode(GrammarLanguage_1.GrammarConstants.inScope).setWordsFrom(1, Array.from(new Set(this.getFirstWords())));
+        const rootNodeNames = this.getFirstWords().map(word => GrammarLanguage_1.GrammarProgram.makeNodeTypeId(word));
+        rootNode.nodeAt(0).touchNode(GrammarLanguage_1.GrammarConstants.inScope).setWordsFrom(1, Array.from(new Set(rootNodeNames)));
         const clone = this.clone();
-        let allNodes = clone.getTopDownArrayIterator();
         let node;
-        for (node of allNodes) {
+        for (node of clone.getTopDownArrayIterator()) {
             const firstWord = node.getFirstWord();
             const asInt = parseInt(firstWord);
-            if (!isNaN(asInt) && asInt.toString() === firstWord && node.getParent().getFirstWord())
-                node.setFirstWord(node.getParent().getFirstWord() + "Child");
+            const isANumber = !isNaN(asInt);
+            const parentFirstWord = node.getParent().getFirstWord();
+            if (isANumber && asInt.toString() === firstWord && parentFirstWord)
+                node.setFirstWord(GrammarLanguage_1.GrammarProgram.makeNodeTypeId(parentFirstWord + "Child"));
         }
-        allNodes = clone.getTopDownArrayIterator();
         const allChilds = {};
         const allFirstWordNodes = {};
-        for (let node of allNodes) {
+        for (let node of clone.getTopDownArrayIterator()) {
             const firstWord = node.getFirstWord();
             if (!allChilds[firstWord])
                 allChilds[firstWord] = {};
@@ -34,13 +33,15 @@ class UnknownGrammarProgram extends TreeNode_1.default {
                 allChilds[firstWord][child.getFirstWord()] = true;
             });
         }
-        const lineCount = clone.getNumberOfLines();
-        // todo: use match and Node$
+        const globalCellTypeMap = new Map();
+        const xi = this.getXI();
+        const yi = this.getYI();
         const firstWords = Object.keys(allChilds).map(firstWord => {
-            const defNode = new TreeNode_1.default(`${firstWord}`).nodeAt(0);
-            const childFirstWords = Object.keys(allChilds[firstWord]);
+            const nodeTypeId = GrammarLanguage_1.GrammarProgram.makeNodeTypeId(firstWord);
+            const nodeDefNode = new TreeNode_1.default(nodeTypeId).nodeAt(0);
+            const childFirstWords = Object.keys(allChilds[firstWord]).map(word => GrammarLanguage_1.GrammarProgram.makeNodeTypeId(word));
             if (childFirstWords.length)
-                defNode.touchNode(GrammarLanguage_1.GrammarConstants.inScope).setWordsFrom(1, childFirstWords);
+                nodeDefNode.touchNode(GrammarLanguage_1.GrammarConstants.inScope).setWordsFrom(1, childFirstWords);
             const allLines = allFirstWordNodes[firstWord];
             const cells = allLines
                 .map(line => line.getContent())
@@ -65,14 +66,13 @@ class UnknownGrammarProgram extends TreeNode_1.default {
                 }
             }
             if (catchAllCellType)
-                defNode.set(GrammarLanguage_1.GrammarConstants.catchAllCellType, catchAllCellType);
+                nodeDefNode.set(GrammarLanguage_1.GrammarConstants.catchAllCellType, catchAllCellType);
             if (cellTypes.length > 1)
-                defNode.set(GrammarLanguage_1.GrammarConstants.cells, cellTypes.join(xi));
+                nodeDefNode.set(GrammarLanguage_1.GrammarConstants.cells, cellTypes.join(xi));
             if (!catchAllCellType && cellTypes.length === 1)
-                defNode.set(GrammarLanguage_1.GrammarConstants.cells, cellTypes[0]);
-            // Todo: switch to conditional frequency
-            //defNode.set(GrammarConstants.frequency, (allLines.length / lineCount).toFixed(3))
-            return defNode.getParent().toString();
+                nodeDefNode.set(GrammarLanguage_1.GrammarConstants.cells, cellTypes[0]);
+            // Todo: add conditional frequencies
+            return nodeDefNode.getParent().toString();
         });
         const cellTypes = [];
         globalCellTypeMap.forEach(def => cellTypes.push(def));
@@ -105,11 +105,11 @@ class UnknownGrammarProgram extends TreeNode_1.default {
         if (all((str) => bools.has(str.toLowerCase())))
             return { cellTypeId: GrammarLanguage_1.PreludeCellTypeIds.boolCell };
         // If there are duplicate files and the set is less than enum
-        const enumLimit = 30;
+        const enumLimit = 10;
         if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
             return {
-                cellTypeId: `${firstWord}Enum`,
-                cellTypeDefinition: `cellType ${firstWord}Enum
+                cellTypeId: GrammarLanguage_1.GrammarProgram.makeCellTypeId(firstWord),
+                cellTypeDefinition: `${GrammarLanguage_1.GrammarProgram.makeCellTypeId(firstWord)}
  enum ${values.join(xi)}`
             };
         return { cellTypeId: GrammarLanguage_1.PreludeCellTypeIds.anyCell };

@@ -39,8 +39,6 @@ errorNode
 hashBangNode
  match #!
  extends commentNode
-commentNode
- extends commentNode
 modNode
  match %
  extends abstractArithmeticReducerNode

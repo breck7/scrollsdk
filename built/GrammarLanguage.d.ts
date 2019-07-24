@@ -27,6 +27,8 @@ declare enum GrammarConstants {
     nodeTypeOrder = "nodeTypeOrder",
     nodeType = "nodeType",
     cellType = "cellType",
+    nodeTypeSuffix = "Node",
+    cellTypeSuffix = "Cell",
     regex = "regex",
     reservedWords = "reservedWords",
     enumFromCellTypes = "enumFromCellTypes",
@@ -265,7 +267,6 @@ declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleT
     private _cache_definedNodeConstructor;
     _getConstructorDefinedInGrammar(): Function;
     _getFirstWordMatch(): string;
-    _getNodeTypeIdWithoutSuffix(): string;
     _getRegexMatch(): string;
     getLanguageDefinitionProgram(): GrammarProgram;
     protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode;
@@ -318,6 +319,10 @@ declare class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {
 }
 declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     createParser(): import("./base/Parser").default;
+    static makeNodeTypeId: (str: string) => string;
+    static makeCellTypeId: (str: string) => string;
+    static nodeTypeSuffixRegex: RegExp;
+    static cellTypeSuffixRegex: RegExp;
     private _cache_compiledLoadedNodeTypes;
     _getCompiledLoadedNodeTypes(): {
         [nodeTypeId: string]: Function;

@@ -1,30 +1,30 @@
-nodeType foobar
+foobarNode
  root
- inScope file
-nodeType file
- inScope size digits open temp description edits account
- cells any
-nodeType size
- cells int
-nodeType digits
- cells int int
-nodeType open
- cells bool
-nodeType temp
- cells float
-nodeType description
- catchAllCellType any
-nodeType edits
- inScope editsChild
-nodeType editsChild
- inScope data
-nodeType data
- cells any
-nodeType account
- inScope balance transactions source
-nodeType balance
- cells float
-nodeType transactions
- cells int
-nodeType source
- cells bool any int
+ inScope fileNode
+fileNode
+ inScope sizeNode digitsNode openNode tempNode descriptionNode editsNode accountNode
+ cells anyCell
+sizeNode
+ cells intCell
+digitsNode
+ cells intCell intCell
+openNode
+ cells boolCell
+tempNode
+ cells floatCell
+descriptionNode
+ catchAllCellType anyCell
+editsNode
+ inScope editsChildNode
+editsChildNode
+ inScope dataNode
+dataNode
+ cells anyCell
+accountNode
+ inScope balanceNode transactionsNode sourceNode
+balanceNode
+ cells floatCell
+transactionsNode
+ cells intCell
+sourceNode
+ cells boolCell anyCell intCell

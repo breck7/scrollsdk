@@ -40,6 +40,8 @@ var GrammarConstants;
     GrammarConstants["nodeTypeOrder"] = "nodeTypeOrder";
     GrammarConstants["nodeType"] = "nodeType";
     GrammarConstants["cellType"] = "cellType";
+    GrammarConstants["nodeTypeSuffix"] = "Node";
+    GrammarConstants["cellTypeSuffix"] = "Cell";
     // error check time
     GrammarConstants["regex"] = "regex";
     GrammarConstants["reservedWords"] = "reservedWords";
@@ -1144,10 +1146,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         if (this._getRegexMatch())
             // todo: enforce firstWordMatch and regexMatch as being XOR
             return undefined;
-        return this.get(GrammarConstants.match) || this._getNodeTypeIdWithoutSuffix();
-    }
-    _getNodeTypeIdWithoutSuffix() {
-        return this.getNodeTypeIdFromDefinition().replace(/Node$/, "");
+        return this.get(GrammarConstants.match) || GrammarProgram.makeNodeTypeId(this.getNodeTypeIdFromDefinition());
     }
     _getRegexMatch() {
         return this.get(GrammarConstants.pattern);
@@ -1446,8 +1445,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.toolingDirective] = TreeNode_1.default;
         map[GrammarConstants.todoComment] = TreeNode_1.default;
         return new TreeNode_1.default.Parser(this.constructor, map, [
-            { regex: /Node$/, nodeConstructor: NonRootNodeTypeDefinition },
-            { regex: /Cell$/, nodeConstructor: CellTypeDefinitionNode }
+            { regex: GrammarProgram.nodeTypeSuffixRegex, nodeConstructor: NonRootNodeTypeDefinition },
+            { regex: GrammarProgram.cellTypeSuffixRegex, nodeConstructor: CellTypeDefinitionNode }
         ]);
     }
     _getCompiledLoadedNodeTypes() {
@@ -1668,6 +1667,10 @@ ${includes}
 ${nodeTypeContexts}`;
     }
 }
+GrammarProgram.makeNodeTypeId = (str) => str.replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix;
+GrammarProgram.makeCellTypeId = (str) => str.replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix;
+GrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$");
+GrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$");
 GrammarProgram._languages = {};
 GrammarProgram._nodeTypes = {};
 exports.GrammarProgram = GrammarProgram;

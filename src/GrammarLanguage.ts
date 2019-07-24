@@ -45,6 +45,9 @@ enum GrammarConstants {
   nodeType = "nodeType",
   cellType = "cellType",
 
+  nodeTypeSuffix = "Node",
+  cellTypeSuffix = "Cell",
+
   // error check time
   regex = "regex", // temporary?
   reservedWords = "reservedWords", // temporary?
@@ -1398,11 +1401,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (this._getRegexMatch())
       // todo: enforce firstWordMatch and regexMatch as being XOR
       return undefined
-    return this.get(GrammarConstants.match) || this._getNodeTypeIdWithoutSuffix()
-  }
-
-  _getNodeTypeIdWithoutSuffix() {
-    return this.getNodeTypeIdFromDefinition().replace(/Node$/, "")
+    return this.get(GrammarConstants.match) || GrammarProgram.makeNodeTypeId(this.getNodeTypeIdFromDefinition())
   }
 
   _getRegexMatch() {
@@ -1748,10 +1747,16 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
     return new TreeNode.Parser(this.constructor, map, [
-      { regex: /Node$/, nodeConstructor: NonRootNodeTypeDefinition },
-      { regex: /Cell$/, nodeConstructor: CellTypeDefinitionNode }
+      { regex: GrammarProgram.nodeTypeSuffixRegex, nodeConstructor: NonRootNodeTypeDefinition },
+      { regex: GrammarProgram.cellTypeSuffixRegex, nodeConstructor: CellTypeDefinitionNode }
     ])
   }
+
+  static makeNodeTypeId = (str: string) => str.replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+  static makeCellTypeId = (str: string) => str.replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+
+  static nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
+  static cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
 
   private _cache_compiledLoadedNodeTypes: { [nodeTypeId: string]: Function }
 

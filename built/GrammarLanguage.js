@@ -957,6 +957,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
         types[GrammarConstants.enum] = GrammarEnumTestNode;
         types[GrammarConstants.highlightScope] = TreeNode_1.default;
         types[GrammarConstants.todoComment] = TreeNode_1.default;
+        types[GrammarConstants.description] = TreeNode_1.default;
         types[GrammarConstants.extends] = TreeNode_1.default;
         return new TreeNode_1.default.Parser(undefined, types);
     }

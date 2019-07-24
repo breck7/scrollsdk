@@ -54,7 +54,7 @@ abstractHtmlTagNode
       .join("")
     const indent = " ".repeat(indentCount)
     const collapse = this.shouldCollapse()
-    const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("abstractHtmlTag").length > 0
+    const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").length > 0
     const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
     const oneLiner = this._getOneLiner()
     return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
@@ -109,7 +109,7 @@ abstractHtmlTagNode
   insertChildNode(text, index) {
     const singleNode = new jtree.TreeNode(text).getChildren()[0]
     const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-    const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("abstractHtmlTag").indexOf(newNode)
+    const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").indexOf(newNode)
     this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
     return newNode
   }
@@ -131,18 +131,18 @@ abstractHtmlTagNode
     return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-    return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTag") && node.getFirstWord() === firstWord)
+    return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.getFirstWord() === firstWord)
   }
   hasLine(line) {
     return this.getChildren().some(node => node.getLine() === line)
   }
   findStumpNodesByChild(line) {
-    return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTag") && node.hasLine(line))
+    return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.hasLine(line))
   }
   findStumpNodesWithClass(className) {
     return this.getTopDownArray().filter(
       node =>
-        node.doesExtend("abstractHtmlTag") &&
+        node.doesExtend("abstractHtmlTagNode") &&
         node.has("class") &&
         node
           .getNode("class")

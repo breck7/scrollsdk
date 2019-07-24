@@ -20,7 +20,7 @@ abstractArithmeticReducerNode
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   executeSync() {
-    return this.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.numbers[0])
+    return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.numbersCell[0])
   }
   async execute() { return this.executeSync() }
  firstCellType operatorCell
@@ -32,6 +32,9 @@ commentNode
  firstCellType commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
+simpleCommentNode
+ match comment
+ extends commentNode
 errorNode
  catchAllCellType errorCell
  baseNodeType errorNode

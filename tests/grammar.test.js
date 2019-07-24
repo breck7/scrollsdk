@@ -246,14 +246,14 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   equal(program.getAllErrors().length, 1)
 }
 
-testTree.autocomplete = equal => {
+testTree._autocomplete = equal => {
   // Arrange
   let program = makeNumbersProgram(`+ 2 3
 com
 `)
 
   // Act/Assert
-  equal(program.getAutocompleteResultsAt(1, 0).matches.length, 1)
+  equal(program.getAutocompleteResultsAt(1, 0).matches.length, 1, "should be 1 match")
   equal(program.getAutocompleteResultsAt(1, 2).matches.length, 1, "should complete comment")
   equal(program.getAutocompleteResultsAt(1, 3).matches.length, 1, "should complete comment")
   equal(program.getAutocompleteResultsAt(2, 0).matches.length, 8, "all nodes")

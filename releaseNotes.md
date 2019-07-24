@@ -6,6 +6,8 @@ Edge / 2019-07-23
 - New: findAllWordsWithCellType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
 - New: getAllTypedWords method in Grammar Programs
 - Fix: removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
+- Breaking: Javascript code and compiler nodes that previously referred to cellTypes that have been renamed, must be updated manually
+- Breaking: Javascript code that previously referred to nodeTypeIds that have been renamed, must be updated manually (check uses of getChildInstancesOfNodeTypeId and doesExtend)
 - Breaking: enumFromGrammar is now enumFromCellTypes and accepts any cellTypeId
 - Breaking: cellTypes that ended in "Word" now end in "Cell".
 - Breaking: removed public "getFirstWordMap" method.

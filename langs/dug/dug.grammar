@@ -1,6 +1,6 @@
 todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
-nodeType dug
+dugNode
  root
  description A demonstration language that compiles to JSON.
  inScope valueNode
@@ -10,47 +10,47 @@ nodeType dug
     const res = super.compile()
     return JSON.stringify(JSON.parse(res), null, 2)
   }
-cellType anyFirstCell
-cellType typeNameCell
+anyFirstCell
+typeNameCell
  highlightScope keyword
-cellType stringCell
+stringCell
  highlightScope string
-cellType booleanCell
+booleanCell
  enum true false
  highlightScope constant.numeric
-cellType numberCell
+numberCell
  highlightScope constant.numeric
-nodeType valueNode
+valueNode
  firstCellType typeNameCell
-nodeType nullNode
+nullNode
  compiler
   stringTemplate null
  extends valueNode
  match null
-nodeType numberNode
+numberNode
  match number
  extends valueNode
  cells numberCell
  compiler
   stringTemplate {numberCell}
-nodeType stringNode
+stringNode
  match string
  catchAllCellType stringCell
  compiler
   stringTemplate "{stringCell}"
  extends valueNode
-nodeType booleanNode
+booleanNode
  match boolean
  extends valueNode
  cells booleanCell
  compiler
   stringTemplate {booleanCell}
-nodeType memberNode
+memberNode
  firstCellType stringCell
  inScope valueNode
  compiler
   stringTemplate "{stringCell}" :
-nodeType objectNode
+objectNode
  match object
  catchAllNodeType memberNode
  extends valueNode
@@ -59,7 +59,7 @@ nodeType objectNode
   joinChildrenWith , 
   openChildren {
   closeChildren }
-nodeType arrayNode
+arrayNode
  match array
  extends valueNode
  inScope valueNode
@@ -68,5 +68,5 @@ nodeType arrayNode
   joinChildrenWith , 
   openChildren [
   closeChildren ]
-nodeType errorNode
+errorNode
  baseNodeType errorNode

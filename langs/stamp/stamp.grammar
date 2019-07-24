@@ -1,8 +1,8 @@
 todo File permissions
-nodeType stamp
+stampNode
  root
  description A Tree Language for creating distributable text template files that expand to folders and files.
- catchAllNodeType error
+ catchAllNodeType errorNode
  javascript
   async executeSeries(context) {
     const length = this.length
@@ -48,40 +48,40 @@ nodeType stamp
     const pathStartIndex = rootFolderPath.length + 1
     return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
   }
- inScope hashbangNode prompt folder file
-cellType anyFirstCell
-cellType extraCell
+ inScope hashbangNode promptNode folderNode fileNode
+anyFirstCell
+extraCell
  highlightScope invalid
-cellType anyCell
+anyCell
  highlightScope string
-cellType promptWords
+promptWordsCell
  highlightScope string
-cellType filepath
-cellType varName
+filepathCell
+varNameCell
  highlightScope string
-cellType commentCell
+commentCell
  highlightScope comment
-cellType inputType
+inputTypeCell
  regex (string|int|any|lowercase)
-cellType property
+propertyCell
  highlightScope keyword.control
-nodeType hashbangNode
+hashbangNode
  match #!
  catchAllCellType commentCell
  firstCellType commentCell
-nodeType catchAllAnyLine
+catchAllAnyLineNode
  catchAllCellType anyCell
- catchAllNodeType catchAllAnyLine
+ catchAllNodeType catchAllAnyLineNode
  firstCellType anyCell
-nodeType data
- catchAllNodeType catchAllAnyLine
- firstCellType property
-nodeType error
+dataNode
+ catchAllNodeType catchAllAnyLineNode
+ firstCellType propertyCell
+errorNode
  baseNodeType errorNode
-nodeType executable
-nodeType file
- cells filepath
- firstCellType property
+executableNode
+fileNode
+ cells filepathCell
+ firstCellType propertyCell
  javascript
   compileToBash(parentDir) {
     const filePath = this.getAbsolutePath()
@@ -100,10 +100,10 @@ nodeType file
     const isExecutable = this.has("executable") // todo: allow for all file permissions?
     if (isExecutable) fs.chmodSync(path, "755")
   }
- inScope data executable
-nodeType folder
- cells filepath
- firstCellType property
+ inScope dataNode executableNode
+folderNode
+ cells filepathCell
+ firstCellType propertyCell
  javascript
   compileToBash(parentDir) {
     return `mkdir ${this.getAbsolutePath()}`
@@ -116,10 +116,10 @@ nodeType folder
     console.log(`Creating folder ${path}`)
     require("mkdirp").sync(path)
   }
-nodeType prompt
- cells varName inputType
- catchAllCellType promptWords
- firstCellType property
+promptNode
+ cells varNameCell inputTypeCell
+ catchAllCellType promptWordsCell
+ firstCellType propertyCell
  example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project
   folder PROJECT_NAME

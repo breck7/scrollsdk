@@ -1,58 +1,58 @@
-nodeType numbers
+numbersNode
  root
  description A useless Tree Language for testing Tree Notation features.
- inScope abstractArithmeticReducer commentNode hashBangNode
- catchAllNodeType error
-cellType float
-cellType commentCell
+ inScope abstractArithmeticReducerNode commentNode hashBangNode
+ catchAllNodeType errorNode
+floatCell
+commentCell
  highlightScope comment
-cellType errorCell
+errorCell
  highlightScope invalid
-cellType number
+numberCell
  highlightScope constant.numeric
- extends float
-cellType numbers
- extends number
-cellType operator
+ extends floatCell
+numbersCell
+ extends numberCell
+operatorCell
  highlightScope keyword.operator.arithmetic
-nodeType abstractArithmeticReducer
- catchAllCellType numbers
+abstractArithmeticReducerNode
+ catchAllCellType numbersCell
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   executeSync() {
     return this.numbers.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.numbers[0])
   }
   async execute() { return this.executeSync() }
- firstCellType operator
- inScope abstractArithmeticReducer commentNode
+ firstCellType operatorCell
+ inScope abstractArithmeticReducerNode commentNode
  abstract
-nodeType commentNode
+commentNode
  match #
  description This is a line comment.
  firstCellType commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
-nodeType error
+errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
  firstCellType errorCell
-nodeType hashBangNode
+hashBangNode
  match #!
  extends commentNode
-nodeType comment
+commentNode
  extends commentNode
-nodeType modNode
+modNode
  match %
- extends abstractArithmeticReducer
-nodeType timesNode
+ extends abstractArithmeticReducerNode
+timesNode
  match *
- extends abstractArithmeticReducer
-nodeType addNode
+ extends abstractArithmeticReducerNode
+addNode
  match +
- extends abstractArithmeticReducer
-nodeType substractNode
+ extends abstractArithmeticReducerNode
+substractNode
  match -
- extends abstractArithmeticReducer
-nodeType divideNode
+ extends abstractArithmeticReducerNode
+divideNode
  match /
- extends abstractArithmeticReducer
+ extends abstractArithmeticReducerNode

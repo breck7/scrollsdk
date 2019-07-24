@@ -1,11 +1,11 @@
 todo Add comments?
 todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
-nodeType swarm
+swarmNode
  root
  description A Tree Language for unit testing.
- inScope hashbangNode arrangeTestSubject testBlock
- catchAllNodeType error
+ inScope hashbangNode arrangeTestSubjectNode testBlockNode
+ catchAllNodeType errorNode
  javascript
   getCommandParent(testSubject) { return testSubject }
   getTestSetupNode() {
@@ -20,35 +20,35 @@ nodeType swarm
     const solos = this.getChildInstancesOfNodeTypeId("testOnly")
     return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlock").filter(test => !(test.doesExtend("skipTest")))
   }
-cellType anyFirstCell
-cellType anyCell
+anyFirstCell
+anyCell
  highlightScope string
-cellType arrangeCell
+arrangeCell
  highlightScope constant.language
-cellType assertCell
+assertCell
  highlightScope keyword.operator
-cellType commandCell
+commandCell
  highlightScope variable.function
-cellType controlCell
+controlCell
  highlightScope keyword.control
-cellType extraCell
+extraCell
  highlightScope invalid
-cellType filepath
+filepathCell
  highlightScope string
-cellType hashBangCell
+hashBangCell
  highlightScope comment
-cellType int
+intCell
  regex \-?[0-9]+
  highlightScope constant.numeric.integer
-cellType parameterCell
+parameterCell
  highlightScope variable.parameter
-cellType todoCell
+todoCell
  highlightScope comment
-cellType typeOfOption
+typeOfOptionCell
  description The 6 possible results for Javascript's typeof.
  highlightScope constant.language
  enum object boolean function number string undefined
-nodeType abstractAssertion
+abstractAssertionNode
  firstCellType assertCell
  abstract
  javascript
@@ -108,10 +108,10 @@ nodeType abstractAssertion
     const final = methodParts.shift()
     return [context, final]
   }
-nodeType terminal
+terminalNode
  firstCellType arrangeCell
  abstract
-nodeType testBlock
+testBlockNode
  catchAllCellType anyCell
  javascript
   getTestSetupNode() {
@@ -167,17 +167,17 @@ nodeType testBlock
     const res = await this.isNodeJs() ? this._executeNode(programFilepath) : this._executeBrowser()
     return res
   }
- inScope arrangeTestSubject
+ inScope arrangeTestSubjectNode
  catchAllNodeType commandNode
  firstCellType controlCell
  abstract
-nodeType hashbangNode
+hashbangNode
  match #!
  description Standard bash hashbang line.
  cells hashBangCell
  catchAllCellType hashBangCell
  firstCellType hashBangCell
-nodeType arrangeTestSubject
+arrangeTestSubjectNode
  javascript
   getTestSubject(programFilepath) {
     const requiredClass = this._getRequiredClass(programFilepath)
@@ -203,27 +203,27 @@ nodeType arrangeTestSubject
    }
   executeSync() {}
  firstCellType arrangeCell
- inScope async requireNode staticNode constructWithBlockString todo
-nodeType async
+ inScope asyncNode requireNode staticNode constructWithBlockStringNode todoNode
+asyncNode
  description Set this in setup to test async methods.
- extends terminal
-nodeType blockStringIs
+ extends terminalNode
+blockStringIsNode
  description When your expected value is a multiline string.
- catchAllNodeType textBlock
+ catchAllNodeType textBlockNode
  javascript
   getExpected() { return this.childrenToString() }
   getSyncExpected() { return this.childrenToString() }
- extends abstractAssertion
-nodeType abstractCommandArg
+ extends abstractAssertionNode
+abstractCommandArgNode
  abstract
  javascript
   executeSync() {}
-nodeType blockStringParam
+blockStringParamNode
  firstCellType parameterCell
  description Pass in a multiline string as a command arg. #todo: rename
- extends abstractCommandArg
- catchAllNodeType textBlock
-nodeType commandNode
+ extends abstractCommandArgNode
+ catchAllNodeType textBlockNode
+commandNode
  javascript
   getTestBlock() {
     return this.getParent()
@@ -255,35 +255,35 @@ nodeType commandNode
  catchAllCellType anyCell
  catchAllNodeType commandNode
  firstCellType commandCell
- inScope blockStringParam abstractAssertion
-nodeType constructWithBlockString
+ inScope blockStringParamNode abstractAssertionNode
+constructWithBlockStringNode
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
- catchAllNodeType textBlock
+ catchAllNodeType textBlockNode
  firstCellType arrangeCell
-nodeType error
+errorNode
  baseNodeType errorNode
-nodeType lengthIs
+lengthIsNode
  description Intake is an array, and checks if the length of array matches expected.
- cells int
+ cells intCell
  javascript
   parseActual(actual) { return actual.length }
   printFailureMessage(actual) {
     super.printFailureMessage()
     console.log(actual.join("\n"))
   }
- extends abstractAssertion
-nodeType requireNode
+ extends abstractAssertionNode
+requireNode
  match require
- cells filepath
+ cells filepathCell
  catchAllCellType anyCell
- extends terminal
-nodeType staticNode
+ extends terminalNode
+staticNode
  match static
  description Add this to setup node to import class directly without initiating it, for static method testing.
- extends terminal
-nodeType stringExcludes
+ extends terminalNode
+stringExcludesNode
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyCell
  javascript
@@ -297,8 +297,8 @@ nodeType stringExcludes
     this.equal(result, true, message)
     return result
   }
- extends abstractAssertion
-nodeType stringIncludes
+ extends abstractAssertionNode
+stringIncludesNode
  catchAllCellType anyCell
  description Converts the input to string and see if the string contains the provided string
  javascript
@@ -307,34 +307,34 @@ nodeType stringIncludes
     this.equal(result, true, message)
     return result
   }
- extends abstractAssertion
-nodeType stringIs
+ extends abstractAssertionNode
+stringIsNode
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllCellType anyCell
- extends abstractAssertion
-nodeType test
+ extends abstractAssertionNode
+testNode
  description Basic test block.
- extends testBlock
-nodeType testOnly
+ extends testBlockNode
+testOnlyNode
  description If set, only this test block will be run.
- extends testBlock
-nodeType skipTest
+ extends testBlockNode
+skipTestNode
  description If you want to skip running a test.
  javascript
   async execute() { console.log(`Skipped test ${this.getLine()}`) }
- extends testBlock
-nodeType textBlock
+ extends testBlockNode
+textBlockNode
  firstCellType anyCell
  catchAllCellType anyCell
- catchAllNodeType textBlock
-nodeType todo
+ catchAllNodeType textBlockNode
+todoNode
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
  catchAllCellType todoCell
  firstCellType todoCell
- catchAllNodeType todo
-nodeType typeIs
+ catchAllNodeType todoNode
+typeIsNode
  description Assert result is one of Javascript's 6 typeof types.
- cells typeOfOption
+ cells typeOfOptionCell
  javascript
   parseActual(actual) { return typeof actual }
- extends abstractAssertion
+ extends abstractAssertionNode

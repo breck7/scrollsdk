@@ -110,13 +110,13 @@ testTree.numbers = equal => {
     const runtimeProgram = makeNumbersRunTimeProgram(code)
 
     // Assert
-    equal(firstNode.numbers.length, 2, "cell getters work")
-    equal(firstNode.numbers[0], 2, "typings work")
+    equal(firstNode.numbersCell.length, 2, "cell getters work")
+    equal(firstNode.numbersCell[0], 2, "typings work")
     equal(program.executeSync().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 
-    equal(firstNode.getDefinition().getLineHints(), "+:  numbers...", "line hints work")
+    equal(firstNode.getDefinition().getLineHints(), "addNode:  numbersCell...", "line hints work")
     equal(program.getInPlaceCellTypeTree(), runtimeProgram.getInPlaceCellTypeTree(), "cell types worked")
 
     // Arrange/Act/Assert

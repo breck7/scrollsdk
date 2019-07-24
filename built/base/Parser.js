@@ -21,7 +21,7 @@ class Parser {
             contextNode
                 .getParent()
                 ._getParser()
-                ._getCatchAllNodeConstructor());
+                ._getCatchAllNodeConstructor(contextNode.getParent()));
     }
     _getConstructorFromRegexTests(line) {
         if (!this._regexTests)

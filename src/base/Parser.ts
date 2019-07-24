@@ -34,7 +34,7 @@ class Parser {
       contextNode
         .getParent()
         ._getParser()
-        ._getCatchAllNodeConstructor()
+        ._getCatchAllNodeConstructor(contextNode.getParent())
     )
   }
 

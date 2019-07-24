@@ -122,6 +122,7 @@ declare abstract class GrammarBackedRootNode extends GrammarBackedNode {
 }
 declare abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     getRootProgramNode(): GrammarBackedRootNode;
+    createParser(): import("./base/Parser").default;
     getNodeTypeId(): jTreeTypes.nodeTypeId;
     getDefinition(): nodeTypeDefinitionNode;
     getGrammarProgramRoot(): GrammarProgram;

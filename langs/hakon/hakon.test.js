@@ -10,8 +10,6 @@ testTree.all = equal => {
  color red`)
 
   // Act/Assert
-  console.log(program.getInPlaceCellTypeTreeWithNodeConstructorNames())
-  console.log(program.compile())
   equal(program.getAllErrors().length, 0)
   equal(
     program.compile(),

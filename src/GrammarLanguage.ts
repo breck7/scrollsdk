@@ -380,6 +380,15 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     return (<GrammarBackedNode>this.getParent()).getRootProgramNode()
   }
 
+  createParser() {
+    return new TreeNode.Parser(
+      this.getRootProgramNode()
+        ._getParser()
+        ._getCatchAllNodeConstructor(this),
+      {}
+    )
+  }
+
   getNodeTypeId(): jTreeTypes.nodeTypeId {
     return this.getDefinition().getNodeTypeIdFromDefinition()
   }
@@ -513,7 +522,7 @@ ${indent}${closeChildrenString}`
 
 class BlobNode extends GrammarBackedNonRootNode {
   createParser() {
-    return new TreeNode.Parser(this.constructor, {})
+    return new TreeNode.Parser(BlobNode, {})
   }
 
   getErrors(): jTreeTypes.TreeError[] {
@@ -523,7 +532,7 @@ class BlobNode extends GrammarBackedNonRootNode {
 
 class UnknownNodeTypeNode extends GrammarBackedNonRootNode {
   createParser() {
-    return new TreeNode.Parser(this.constructor, {})
+    return new TreeNode.Parser(UnknownNodeTypeNode, {})
   }
 
   getErrors(): jTreeTypes.TreeError[] {
@@ -1221,7 +1230,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
     kinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
     kinds[PreludeCellTypeIds.intCell] = GrammarIntCell
-    return kinds[this.getWord(1)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell
+    return kinds[this.getWord(0)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell
   }
 
   private _getExtendedCellTypeId() {
@@ -1283,6 +1292,7 @@ class GrammarCompilerNode extends TreeNode {
       GrammarConstantsCompiler.stringTemplate,
       GrammarConstantsCompiler.indentCharacter,
       GrammarConstantsCompiler.catchAllCellDelimiter,
+      GrammarConstantsCompiler.joinChildrenWith,
       GrammarConstantsCompiler.openChildren,
       GrammarConstantsCompiler.closeChildren
     ]
@@ -1578,7 +1588,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   private _getParserToJavascript(): jTreeTypes.javascriptCode {
     if (this._isBlobNodeType())
       // todo: do we need this?
-      return "createParser() { return new jtree.TreeNode.Parser(this)}"
+      return "createParser() { return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType())}"
     const parserInfo = this._createParserInfo(this._getMyInScopeNodeTypeIds())
     const myFirstWordMap = parserInfo.firstWordMap
     const regexRules = parserInfo.regexTests

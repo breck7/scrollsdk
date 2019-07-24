@@ -115,22 +115,6 @@ world`,
   // Act/Assert
   equal(program.getNode("someCode echo").constructor.name, "lineOfCodeNode", "line of code class")
 
-  // Arrange
-  const programWithBugs = makeJibberishProgram(`+ foo bar`)
-
-  // Act/Assert
-  equal(programWithBugs.getAllErrors().length, 2, "2 errors")
-
-  // Act
-  let count = 0
-  for (let err of programWithBugs.getAllErrorsIterator()) {
-    // 2 errors in 1 line
-    equal(err.length, 2)
-  }
-
-  // Act/Asssert
-  equal(programWithBugs.getInvalidNodeTypes().length, 0)
-
   // Act
   const programWithNodeTypeBugs = makeJibberishProgram(`missing 1 2
 missing2 true`)
@@ -152,6 +136,24 @@ missing2 true`)
   )
 }
 
+testTree.jibberishErrors = equal => {
+  // Arrange
+  const programWithBugs = makeJibberishProgram(`+ foo bar`)
+
+  // Act/Assert
+  equal(programWithBugs.getAllErrors().length, 2, "2 errors")
+
+  // Act
+  let count = 0
+  for (let err of programWithBugs.getAllErrorsIterator()) {
+    // 2 errors in 1 line
+    equal(err.length, 2)
+  }
+
+  // Act/Asssert
+  equal(programWithBugs.getInvalidNodeTypes().length, 0)
+}
+
 testTree.cellTypeTree = equal => {
   // Act
   const someJibberishProgram = makeJibberishProgram(`foo
@@ -162,8 +164,8 @@ testTree.cellTypeTree = equal => {
   // Assert
   equal(
     someJibberishProgram.getInPlaceCellTypeTree(),
-    `topLevelProperty
-opSymbol int int int`,
+    `topLevelPropertyCell
+opSymbolCell intCell intCell intCell`,
     "word types should match"
   )
   equal(someJibberishProgram.findAllWordsWithCellType("intCell").length, 3)
@@ -175,45 +177,45 @@ opSymbol int int int`,
   // Assert
   equal(
     nodeTypes,
-    `foo topLevelProperty
-plus opSymbol int int int`,
+    `fooNode topLevelPropertyCell
+plusNode opSymbolCell intCell intCell intCell`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
-    `foo foo
-plus + 2 3 2`,
+    `fooNode foo
+plusNode + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )
 }
 
 testTree.prettify = equal => {
   // Arrange
-  const normalCode = `nodeType someLang
+  const normalCode = `someLangNode
  root
-nodeType topLevel
+topLevelNode
  abstract
-nodeType abstractHtml
- extends topLevel
+abstractHtmlNode
+ extends topLevelNode
  abstract
-nodeType h1Node
+h1Node
  match html.h1
- extends abstractHtml
-nodeType colorProperties
- extends topLevel
+ extends abstractHtmlNode
+colorPropertiesNode
+ extends topLevelNode
  abstract
-nodeType constrast
- extends colorProperties
-nodeType hue
- extends colorProperties
-nodeType saturation
- extends colorProperties`
+constrastNode
+ extends colorPropertiesNode
+hueNode
+ extends colorPropertiesNode
+saturationNode
+ extends colorPropertiesNode`
   const grammarProgram = makeGrammarProgram(normalCode)
   const pretty = grammarProgram.getPrettified()
   equal(pretty, normalCode, "code is already in pretty form")
 }
 
-testTree.highlightScopes = equal => {
+testTree._highlightScopes = equal => {
   // Arrange
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)

@@ -83,7 +83,7 @@ xColumnNameNode
  cells columnNameEnumCell
  javascript
   getRunTimeEnumOptions(cell) {
-    return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
+    return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
  extends topLevelNode
 lightbulbStateNode

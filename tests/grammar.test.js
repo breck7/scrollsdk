@@ -246,7 +246,7 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   equal(program.getAllErrors().length, 1)
 }
 
-testTree._autocomplete = equal => {
+testTree.autocomplete = equal => {
   // Arrange
   let program = makeNumbersProgram(`+ 2 3
 com

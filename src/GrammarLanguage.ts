@@ -1119,9 +1119,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     return this._cache_ancestorSet
   }
 
-  _getId(): string {
-    return this.getWord(1)
-  }
+  abstract _getId(): string
 
   private _cache_ancestorSet: Set<jTreeTypes.nodeTypeId>
   private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
@@ -1165,6 +1163,10 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
     }
     return this._nodeMapCache
   }
+
+  _getId() {
+    return this.getWord(1)
+  }
 }
 
 class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
@@ -1179,6 +1181,10 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.description] = TreeNode
     types[GrammarConstants.extends] = TreeNode
     return new TreeNode.Parser(undefined, types)
+  }
+
+  _getId() {
+    return this.getWord(0)
   }
 
   _getIdToNodeMap() {
@@ -1361,6 +1367,10 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return new TreeNode.Parser(undefined, map)
   }
 
+  _getId() {
+    return this.getWord(0)
+  }
+
   getConstantsObject() {
     const obj = this._getUniqueConstantNodes()
     Object.keys(obj).forEach(key => {
@@ -1532,7 +1542,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   isDefined(nodeTypeId: string) {
-    return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()]
+    return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
   }
 
   _getIdToNodeMap() {
@@ -1909,7 +1919,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getExtensionName() {
-    return this.getGrammarName()
+    return this.getGrammarName().replace(GrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   getGrammarName(): string | undefined {

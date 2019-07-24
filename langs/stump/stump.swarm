@@ -64,6 +64,6 @@ test syntax
      Hello world
  getInPlaceCellTypeTree
   blockStringIs
-   htmlTagName
-    contentHolderName
-     anyHtmlContent anyHtmlContent
+   htmlTagNameCell
+    contentHolderNameCell
+     anyHtmlContentCell anyHtmlContentCell

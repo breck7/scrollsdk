@@ -27,8 +27,8 @@ test swarmSample
  getAllErrors
   lengthIs 0
  getRunTimeFirstWordsInScope
-  lengthIs 4
- getNodeTypeDefinitionByNodeTypeId to
+  lengthIs 2
+ getNodeTypeDefinitionByNodeTypeId toNode
   typeIs object
  getTopNodeTypeIds
   lengthIs 3

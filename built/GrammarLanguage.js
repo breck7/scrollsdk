@@ -909,9 +909,6 @@ class AbstractExtendibleTreeNode extends TreeNode_1.default {
             this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()));
         return this._cache_ancestorSet;
     }
-    _getId() {
-        return this.getWord(1);
-    }
     // Note: the order is: [this, parent, grandParent, ...]
     _getAncestorsArray(cannotContainNodes) {
         this._initAncestorsArrayCache(cannotContainNodes);
@@ -947,6 +944,9 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
         }
         return this._nodeMapCache;
     }
+    _getId() {
+        return this.getWord(1);
+    }
 }
 class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     createParser() {
@@ -960,6 +960,9 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
         types[GrammarConstants.description] = TreeNode_1.default;
         types[GrammarConstants.extends] = TreeNode_1.default;
         return new TreeNode_1.default.Parser(undefined, types);
+    }
+    _getId() {
+        return this.getWord(0);
     }
     _getIdToNodeMap() {
         return this._getRootProgramNode().getCellTypeDefinitions();
@@ -1114,6 +1117,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         map[GrammarConstants.example] = GrammarExampleNode;
         return new TreeNode_1.default.Parser(undefined, map);
     }
+    _getId() {
+        return this.getWord(0);
+    }
     getConstantsObject() {
         const obj = this._getUniqueConstantNodes();
         Object.keys(obj).forEach(key => {
@@ -1255,7 +1261,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyFirstCell;
     }
     isDefined(nodeTypeId) {
-        return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId.toLowerCase()];
+        return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId];
     }
     _getIdToNodeMap() {
         return this._getProgramNodeTypeDefinitionCache();
@@ -1576,7 +1582,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
  ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`);
     }
     getExtensionName() {
-        return this.getGrammarName();
+        return this.getGrammarName().replace(GrammarProgram.nodeTypeSuffixRegex, "");
     }
     getGrammarName() {
         return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition();

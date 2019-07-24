@@ -214,7 +214,7 @@ declare abstract class AbstractExtendibleTreeNode extends TreeNode {
     _getNodeFromExtended(firstWordPath: jTreeTypes.firstWordPath): AbstractExtendibleTreeNode;
     _doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
     _getAncestorSet(): Set<string>;
-    _getId(): string;
+    abstract _getId(): string;
     private _cache_ancestorSet;
     private _cache_ancestorsArray;
     _getAncestorsArray(cannotContainNodes?: AbstractExtendibleTreeNode[]): AbstractExtendibleTreeNode[];
@@ -226,6 +226,7 @@ declare abstract class AbstractExtendibleTreeNode extends TreeNode {
 }
 declare class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     createParser(): import("./base/Parser").default;
+    _getId(): string;
     _getIdToNodeMap(): {
         [name: string]: cellTypeDefinitionNode;
     };
@@ -253,6 +254,7 @@ declare abstract class GrammarNodeTypeConstant extends TreeNode {
 }
 declare abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     createParser(): import("./base/Parser").default;
+    _getId(): string;
     getConstantsObject(): {
         [key: string]: GrammarNodeTypeConstant;
     };

@@ -9,10 +9,10 @@ grammarNode
  nodeTypeOrder toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
  extensions grammar gram
  example A grammar that parses anything:
-  nodeType latin
+  latinNode
    root
    catchAllNodeType anyNode
-  nodeType anyNode
+  anyNode
    baseNodeType blobNode
  version 3.0.0
  inScope toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode

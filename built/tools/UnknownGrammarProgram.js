@@ -4,7 +4,7 @@ const TreeNode_1 = require("../base/TreeNode");
 const GrammarLanguage_1 = require("../GrammarLanguage");
 class UnknownGrammarProgram extends TreeNode_1.default {
     getPredictedGrammarFile(grammarName) {
-        const rootNode = new TreeNode_1.default(`${GrammarLanguage_1.GrammarConstants.nodeType} ${grammarName}
+        const rootNode = new TreeNode_1.default(`${grammarName}
  ${GrammarLanguage_1.GrammarConstants.root}`);
         // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
         const globalCellTypeMap = new Map();
@@ -35,8 +35,9 @@ class UnknownGrammarProgram extends TreeNode_1.default {
             });
         }
         const lineCount = clone.getNumberOfLines();
+        // todo: use match and Node$
         const firstWords = Object.keys(allChilds).map(firstWord => {
-            const defNode = new TreeNode_1.default(`${GrammarLanguage_1.GrammarConstants.nodeType} ${firstWord}`).nodeAt(0);
+            const defNode = new TreeNode_1.default(`${firstWord}`).nodeAt(0);
             const childFirstWords = Object.keys(allChilds[firstWord]);
             if (childFirstWords.length)
                 defNode.touchNode(GrammarLanguage_1.GrammarConstants.inScope).setWordsFrom(1, childFirstWords);

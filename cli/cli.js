@@ -167,7 +167,7 @@ ${grammars.toTable()}`
 
   gen(grammarName, outputDirectory = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"), grammarPath)
+    const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
 
     this._write(outputPath, grammarProgram.toSublimeSyntaxFile())

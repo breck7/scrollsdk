@@ -5,10 +5,10 @@ class ChexTreeComponent extends AbstractTreeComponentRootNode {
     return ""
   }
 
-  getFirstWordMap() {
-    const map = {}
-    map.footer = footer
-    return map
+  createParser() {
+    return new TreeNode.Parser(this.constructor, {
+      footer: footer
+    })
   }
 }
 

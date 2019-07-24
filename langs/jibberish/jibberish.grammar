@@ -33,6 +33,7 @@ hueNode
  extends colorPropertiesNode
 saturationNode
  extends colorPropertiesNode
+ match saturation
 constrastNode
  extends colorPropertiesNode
 abstractHtmlNode
@@ -62,13 +63,16 @@ plusNode
   + 1 2
  catchAllCellType intCell
 blockNode
+ match block
  inScope topLevelNode scoreBlockNode
  extends topLevelNode
 scoreBlockNode
+ match scoreBlock
  description Test that inscope extends and does not overwrite.
  extends blockNode
  inScope scoresNode
 scoresNode
+ match scores
  catchAllCellType intCell
 toNode
  cells wordCell
@@ -78,6 +82,7 @@ toNode
  extends blockNode
 fooNode
  extends topLevelNode
+ match foo
 xColumnNameNode
  description The name of the column to use for the x axis
  cells columnNameEnumCell
@@ -86,12 +91,16 @@ xColumnNameNode
     return cell.getCellTypeId() === "columnNameEnum" ? ["gender", "height", "weight"] : undefined
   }
  extends topLevelNode
+ match xColumnName
 lightbulbStateNode
  cells onoffCell
  extends topLevelNode
+ match lightbulbState
 nestedNode
+ match nested
  extends topLevelNode
 nodeWithConstsNode
+ match nodeWithConsts
  string greeting hello world
  string singleCell hello
  string thisHasQuotes "'`
@@ -105,11 +114,13 @@ nodeWithConstsNode
  extends topLevelNode
 nodeExpandsConstsNode
  string greeting hola
+ match nodeExpandsConsts
  extends nodeWithConstsNode
 h1Node
  match html.h1
  extends abstractHtmlNode
 someCodeNode
+ match someCode
  catchAllNodeType lineOfCodeNode
  extends topLevelNode
 typeNode

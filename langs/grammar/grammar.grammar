@@ -123,6 +123,7 @@ catchAllMultilineStringConstantNode
 cellTypeNode
  todo Generate a class for each cell type?
  todo Allow abstract cell types?
+ pattern Cell$
  cells cellTypeIdCell
  firstCellType cellTypeIdConstantCell
  inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode
@@ -152,6 +153,7 @@ rootNode
  description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
 nodeTypeNode
  todo Add multiple dispatch?
+ pattern Node$
  cells nodeTypeIdCell
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
@@ -292,6 +294,10 @@ javascriptNode
 matchNode
  cells anyCell
  description If present, this word will be used as the first word instead of the nodeTypeId.
+ extends abstractNodeTypeRuleNode
+patternNode
+ catchAllCellType regexCell
+ description If present, this regex will be used to determine the nodeType instead of the nodeTypeId or matchNode.
  extends abstractNodeTypeRuleNode
 requiredNode
  description If present, the parent node will have an error if one of these nodes is not provided.

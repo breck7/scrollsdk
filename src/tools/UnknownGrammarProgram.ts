@@ -6,7 +6,7 @@ import jTreeTypes from "../jTreeTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   getPredictedGrammarFile(grammarName: string): string {
-    const rootNode = new TreeNode(`${GrammarConstants.nodeType} ${grammarName}
+    const rootNode = new TreeNode(`${grammarName}
  ${GrammarConstants.root}`)
 
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
@@ -38,8 +38,10 @@ class UnknownGrammarProgram extends TreeNode {
 
     const lineCount = clone.getNumberOfLines()
 
+    // todo: use match and Node$
+
     const firstWords = Object.keys(allChilds).map(firstWord => {
-      const defNode = <TreeNode>new TreeNode(`${GrammarConstants.nodeType} ${firstWord}`).nodeAt(0)
+      const defNode = <TreeNode>new TreeNode(`${firstWord}`).nodeAt(0)
       const childFirstWords = Object.keys(allChilds[firstWord])
       if (childFirstWords.length) defNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childFirstWords)
 

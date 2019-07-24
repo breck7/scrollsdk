@@ -1533,8 +1533,8 @@ testTree.simpleTreeLanguage = equal => {
   // Arrange
   class MathProgram extends TreeNode {
     // Look! You created a top down parser!
-    getFirstWordMap() {
-      return { "+": AdditionNode, "-": SubstractionNode }
+    createParser() {
+      return new TreeNode.Parser(this.constructor, { "+": AdditionNode, "-": SubstractionNode })
     }
   }
 
@@ -2411,15 +2411,14 @@ testTree.setWord = equal => {
 testTree.treeLanguageDependingOnParent = equal => {
   // Arrange
   class ReverseEtnNode extends TreeNode {
-    getNodeConstructor(line) {
-      this.getParent().getLine()
-      return TreeNode
+    createParser() {
+      return new TreeNode.Parser(TreeNode, {})
     }
   }
 
   class TestLanguage extends TreeNode {
-    getNodeConstructor() {
-      return ReverseEtnNode
+    createParser() {
+      return new TreeNode.Parser(ReverseEtnNode, {})
     }
   }
 
@@ -2516,16 +2515,13 @@ testTree.parseNode = equal => {
   // Arrange
   class LeafNode extends TreeNode {}
   class SubNode extends TreeNode {
-    getNodeConstructor(line) {
-      if (line.startsWith("leaf")) return LeafNode
-      return SubNode
+    createParser() {
+      return new TreeNode.Parser(SubNode, {}, [{ regex: /^leaf/, nodeConstructor: LeafNode }])
     }
   }
   class TestLanguageNode extends TreeNode {
-    getNodeConstructor(line) {
-      if (line.startsWith("tree")) return TreeNode
-      if (line.startsWith("sub")) return SubNode
-      return TestLanguageNode
+    createParser() {
+      return new TreeNode.Parser(TestLanguageNode, {}, [{ regex: /^tree/, nodeConstructor: TreeNode }, { regex: /^sub/, nodeConstructor: SubNode }])
     }
   }
 

@@ -41,7 +41,7 @@ class jtreeNode extends jtree {
   ) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
-    const program = new GrammarProgram(grammarCode.toString(), pathToGrammar)
+    const program = new GrammarProgram(grammarCode.toString())
     let name = program.getGrammarName()
     const pathToJtree = __dirname + "/../index.js"
     const outputFilePath = outputFolder + `${name}.${target}.js`
@@ -74,7 +74,7 @@ if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toStrin
   // returns GrammarBackedProgramClass
   static getProgramConstructor = (grammarPath: jTreeTypes.filepath) => {
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
-    const grammarProgram = new GrammarProgram(grammarCode, grammarPath)
+    const grammarProgram = new GrammarProgram(grammarCode)
     return <any>grammarProgram.getRootConstructor()
   }
 

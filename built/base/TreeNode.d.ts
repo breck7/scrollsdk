@@ -1,4 +1,5 @@
 import AbstractNode from "./AbstractNode.node";
+import Parser from "./Parser";
 import jTreeTypes from "../jTreeTypes";
 declare type int = jTreeTypes.int;
 declare type word = jTreeTypes.word;
@@ -221,15 +222,15 @@ declare class ImmutableNode extends AbstractNode {
     forEach(fn: jTreeTypes.forEachFn): this;
     _clearIndex(): void;
     slice(start: int, end?: int): ImmutableNode[];
-    getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap;
-    getCatchAllNodeConstructor(line: string): Function;
     getInheritanceTree(): TreeNode;
     protected _getGrandParent(): ImmutableNode | undefined;
-    protected _getFirstWord(line: string): string;
-    getNodeConstructor(line: string): Function;
+    private _parser;
+    _getParser(): Parser;
+    createParser(): Parser;
     private static _uniqueId;
     static _makeUniqueId(): number;
     protected static _getFileFormat(path: string): string;
+    static Parser: typeof Parser;
     static iris: string;
 }
 declare class TreeNode extends ImmutableNode {

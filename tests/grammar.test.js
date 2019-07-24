@@ -22,7 +22,7 @@ testTree.emptyProgram = equal => {
 
 testTree.basics = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
+  const grammarProgram = new GrammarProgram(jibberishGrammarCode)
   const errs = grammarProgram.getAllErrors()
 
   // Assert
@@ -34,13 +34,13 @@ const makeGrammarProgram = code => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = code => {
   const grammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
-  return makeProgram(grammarCode, code, jibberishGrammarPath)
+  return makeProgram(grammarCode, code)
 }
 
 const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
-const makeProgram = (grammarCode, code, grammarPath = undefined) => {
-  const grammarProgram = new GrammarProgram(grammarCode, grammarPath)
+const makeProgram = (grammarCode, code) => {
+  const grammarProgram = new GrammarProgram(grammarCode)
   const rootProgramConstructor = grammarProgram.getRootConstructor()
   return new rootProgramConstructor(code)
 }
@@ -53,7 +53,7 @@ testTree.jibberish = equal => {
   const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
-  equal(program.constructor.name, "jibberish", "correct program class")
+  equal(program.constructor.name, "jibberishNode", "correct program class")
   const errs = program.getAllErrors()
   equal(errs.length, 0, `should be 0 errors`)
   if (errs.length) console.log(errs.map(err => err.getMessage()))
@@ -161,6 +161,7 @@ testTree.cellTypeTree = equal => {
 opSymbol int int int`,
     "word types should match"
   )
+  equal(someJibberishProgram.findAllWordsWithCellType("intCell").length, 3)
 
   // Act
   const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()
@@ -334,7 +335,7 @@ testTree.blobNodes = equal => {
 
 testTree.sublimeSyntaxFile = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
+  const grammarProgram = new GrammarProgram(jibberishGrammarCode)
   const code = grammarProgram.toSublimeSyntaxFile()
 
   // Assert
@@ -483,7 +484,7 @@ testTree.toNodeJsJavascript = equal => {
 
 testTree.examples = equal => {
   // Arrange/Act
-  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
+  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode)
 
   // Assert
   let errors = jibberishGrammarProgram.getErrorsInGrammarExamples()

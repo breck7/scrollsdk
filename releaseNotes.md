@@ -1,10 +1,14 @@
 Edge / 2019-07-23
 ===================
+- New: "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, anyfix.
 - New: polymorphism and symbol tables via enumFromCellTypes
-- New: support for any type of "fix" notation: prefix, postfix, anyfix.
+- New: in Grammar Language instead of `nodeType person` now do `personNode` and instead of `cellType int` do `intCell`
+- New: findAllWordsWithCellType method in Grammar Programs which is our version of "findAllReferences"
+- New: getAllTypedWords method in Grammar Programs
 - Fix: removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
 - Breaking: enumFromGrammar is now enumFromCellTypes and accepts any cellTypeId
 - Breaking: cellTypes that ended in "Word" now end in "Cell".
+- Breaking: removed public "getFirstWordMap" method.
 
 34.2.0 / 2019-07-21
 ===================

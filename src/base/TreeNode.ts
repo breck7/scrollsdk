@@ -1240,7 +1240,7 @@ class ImmutableNode extends AbstractNode {
 
   // todo: protected?
   _setLineAndChildren(line: string, children?: jTreeTypes.children, index = this.length) {
-    const nodeConstructor: any = this._getParser()._getNodeConstructor(line)
+    const nodeConstructor: any = this._getParser()._getNodeConstructor(line, this)
     const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
@@ -1269,7 +1269,7 @@ class ImmutableNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const nodeConstructor: any = parent._getParser()._getNodeConstructor(lineContent)
+      const nodeConstructor: any = parent._getParser()._getNodeConstructor(lineContent, parent)
       lastNode = new nodeConstructor(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })

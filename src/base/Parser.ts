@@ -24,8 +24,18 @@ class Parser {
     return this._firstWordMap
   }
 
-  _getNodeConstructor(line: string, zi = " "): jTreeTypes.TreeNodeConstructor {
-    return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._catchAllNodeConstructor
+  _getNodeConstructor(line: string, contextNode: jTreeTypes.treeNode, zi = " "): jTreeTypes.TreeNodeConstructor {
+    return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
+  }
+
+  _getCatchAllNodeConstructor(contextNode: jTreeTypes.treeNode) {
+    return (
+      this._catchAllNodeConstructor ||
+      contextNode
+        .getParent()
+        ._getParser()
+        ._getCatchAllNodeConstructor()
+    )
   }
 
   private _getConstructorFromRegexTests(line: string): jTreeTypes.TreeNodeConstructor {

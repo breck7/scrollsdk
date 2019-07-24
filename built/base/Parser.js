@@ -13,8 +13,15 @@ class Parser {
     _getFirstWordMap() {
         return this._firstWordMap;
     }
-    _getNodeConstructor(line, zi = " ") {
-        return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._catchAllNodeConstructor;
+    _getNodeConstructor(line, contextNode, zi = " ") {
+        return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode);
+    }
+    _getCatchAllNodeConstructor(contextNode) {
+        return (this._catchAllNodeConstructor ||
+            contextNode
+                .getParent()
+                ._getParser()
+                ._getCatchAllNodeConstructor());
     }
     _getConstructorFromRegexTests(line) {
         if (!this._regexTests)

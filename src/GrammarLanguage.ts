@@ -6,7 +6,7 @@ interface AbstractRuntimeProgramConstructorInterface {
   new (code: string): GrammarBackedRootNode
 }
 
-declare type parserInfo = { firstWordMap: { [firstWord: string]: NonRootNodeTypeDefinition }; regexTests: jTreeTypes.regexTestDef[] }
+declare type parserInfo = { firstWordMap: { [firstWord: string]: nodeTypeDefinitionNode }; regexTests: jTreeTypes.regexTestDef[] }
 
 enum GrammarConstantsCompiler {
   stringTemplate = "stringTemplate", // replacement instructions
@@ -76,7 +76,7 @@ enum GrammarConstants {
   tags = "tags",
 
   // default catchAll nodeType
-  GrammarBackedBlobNode = "GrammarBackedBlobNode",
+  BlobNode = "BlobNode",
   defaultRootNode = "defaultRootNode",
 
   // code
@@ -114,11 +114,11 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   _getBlobNodeCatchAllNodeType() {
-    return GrammarBackedBlobNode
+    return BlobNode
   }
 
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
-    let defs: NonRootNodeTypeDefinition[] = Object.values(this.getDefinition().getFirstWordMapWithDefinitions())
+    let defs: nodeTypeDefinitionNode[] = Object.values(this.getDefinition().getFirstWordMapWithDefinitions())
 
     if (partialWord)
       defs = defs.filter(def => {
@@ -199,7 +199,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
   }
 
   createParser() {
-    return new TreeNode.Parser(GrammarBackedBlobNode)
+    return new TreeNode.Parser(BlobNode)
   }
 
   getAllTypedWords() {
@@ -384,7 +384,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     return this.getDefinition().getNodeTypeIdFromDefinition()
   }
 
-  getDefinition(): NonRootNodeTypeDefinition {
+  getDefinition(): nodeTypeDefinitionNode {
     return this.getRootProgramNode()
       .getGrammarProgramRoot()
       .getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
@@ -511,7 +511,7 @@ ${indent}${closeChildrenString}`
   }
 }
 
-class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
+class BlobNode extends GrammarBackedNonRootNode {
   createParser() {
     return new TreeNode.Parser(this.constructor, {})
   }
@@ -521,11 +521,21 @@ class GrammarBackedBlobNode extends GrammarBackedNonRootNode {
   }
 }
 
+class UnknownNodeTypeNode extends GrammarBackedNonRootNode {
+  createParser() {
+    return new TreeNode.Parser(this.constructor, {})
+  }
+
+  getErrors(): jTreeTypes.TreeError[] {
+    return [new UnknownNodeTypeError(this)]
+  }
+}
+
 /*
 A cell contains a word but also the type information for that word.
 */
 abstract class AbstractGrammarBackedCell<T> {
-  constructor(node: GrammarBackedNonRootNode, index: jTreeTypes.int, typeDef: CellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean) {
+  constructor(node: GrammarBackedNonRootNode, index: jTreeTypes.int, typeDef: cellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean) {
     this._typeDef = typeDef
     this._node = node
     this._isCatchAll = isCatchAll
@@ -538,7 +548,7 @@ abstract class AbstractGrammarBackedCell<T> {
   private _node: GrammarBackedNonRootNode
   protected _index: jTreeTypes.int
   protected _word: string
-  private _typeDef: CellTypeDefinitionNode
+  private _typeDef: cellTypeDefinitionNode
   private _isCatchAll: boolean
   private _cellTypeId: string
 
@@ -1157,7 +1167,7 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   }
 }
 
-class CellTypeDefinitionNode extends AbstractExtendibleTreeNode {
+class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   createParser() {
     const types: jTreeTypes.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
@@ -1167,7 +1177,7 @@ class CellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.highlightScope] = TreeNode
     types[GrammarConstants.todoComment] = TreeNode
     types[GrammarConstants.extends] = TreeNode
-    return new TreeNode.Parser(this.constructor, types)
+    return new TreeNode.Parser(undefined, types)
   }
 
   _getIdToNodeMap() {
@@ -1273,7 +1283,7 @@ class GrammarCompilerNode extends TreeNode {
     types.forEach(type => {
       map[type] = TreeNode
     })
-    return new TreeNode.Parser(this.constructor, map)
+    return new TreeNode.Parser(undefined, map)
   }
 }
 
@@ -1347,7 +1357,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.example] = GrammarExampleNode
-    return new TreeNode.Parser(this.constructor, map)
+    return new TreeNode.Parser(undefined, map)
   }
 
   getConstantsObject() {
@@ -1401,7 +1411,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (this._getRegexMatch())
       // todo: enforce firstWordMatch and regexMatch as being XOR
       return undefined
-    return this.get(GrammarConstants.match) || GrammarProgram.makeNodeTypeId(this.getNodeTypeIdFromDefinition())
+    return this.get(GrammarConstants.match) || this._getNodeTypeIdWithoutNodeTypeSuffix()
+  }
+
+  private _getNodeTypeIdWithoutNodeTypeSuffix() {
+    return this.getNodeTypeIdFromDefinition().replace(GrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   _getRegexMatch() {
@@ -1417,7 +1431,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return hasJsCode ? this.getNode(GrammarConstants.javascript).childrenToString() : ""
   }
 
-  private _cache_firstWordToNodeDefMap: { [firstWord: string]: NonRootNodeTypeDefinition }
+  private _cache_firstWordToNodeDefMap: { [firstWord: string]: nodeTypeDefinitionNode }
 
   getFirstWordMapWithDefinitions() {
     if (!this._cache_firstWordToNodeDefMap) this._cache_firstWordToNodeDefMap = this._createParserInfo(this._getInScopeNodeTypeIds()).firstWordMap
@@ -1482,7 +1496,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
   getTopNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
-    arr.sort(TreeUtils.sortByAccessor((definition: NonRootNodeTypeDefinition) => definition.getFrequency()))
+    arr.sort(TreeUtils.sortByAccessor((definition: nodeTypeDefinitionNode) => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
@@ -1579,10 +1593,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
           .join(",")}]`
       : "undefined"
 
-    const constructorStr = catchAllConstructor || "this.constructor"
-
     return `createParser() {
-  return new jtree.TreeNode.Parser(${catchAllConstructor || "this.constructor"}, ${firstWordsStr}, ${regexStr})
+  return new jtree.TreeNode.Parser(${catchAllConstructor || "undefined"}, ${firstWordsStr}, ${regexStr})
   }`
   }
 
@@ -1717,7 +1729,7 @@ ${captures}
     return this._cache_ancestorNodeTypeIdsArray
   }
 
-  protected _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: NonRootNodeTypeDefinition } {
+  protected _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: nodeTypeDefinitionNode } {
     return this.getLanguageDefinitionProgram()._getProgramNodeTypeDefinitionCache()
   }
 
@@ -1737,7 +1749,7 @@ ${captures}
 }
 
 // todo: remove?
-class NonRootNodeTypeDefinition extends AbstractGrammarDefinitionNode {}
+class nodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {}
 
 // GrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
@@ -1746,9 +1758,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const map: jTreeTypes.stringMap = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
-    return new TreeNode.Parser(this.constructor, map, [
-      { regex: GrammarProgram.nodeTypeSuffixRegex, nodeConstructor: NonRootNodeTypeDefinition },
-      { regex: GrammarProgram.cellTypeSuffixRegex, nodeConstructor: CellTypeDefinitionNode }
+    return new TreeNode.Parser(UnknownNodeTypeNode, map, [
+      { regex: GrammarProgram.nodeTypeSuffixRegex, nodeConstructor: nodeTypeDefinitionNode },
+      { regex: GrammarProgram.cellTypeSuffixRegex, nodeConstructor: cellTypeDefinitionNode }
     ])
   }
 
@@ -1830,7 +1842,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   private _cache_cellTypes: {
-    [name: string]: CellTypeDefinitionNode
+    [name: string]: cellTypeDefinitionNode
   }
 
   getCellTypeDefinitions() {
@@ -1853,9 +1865,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   protected _getCellTypeDefinitions() {
-    const types: { [typeName: string]: CellTypeDefinitionNode } = {}
+    const types: { [typeName: string]: cellTypeDefinitionNode } = {}
     // todo: add built in word types?
-    this.getChildrenByNodeConstructor(CellTypeDefinitionNode).forEach(type => (types[(<CellTypeDefinitionNode>type).getCellTypeId()] = type))
+    this.getChildrenByNodeConstructor(cellTypeDefinitionNode).forEach(type => (types[(<cellTypeDefinitionNode>type).getCellTypeId()] = type))
     return types
   }
 
@@ -1864,12 +1876,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   getValidConcreteAndAbstractNodeTypeDefinitions() {
-    return <NonRootNodeTypeDefinition[]>(
-      this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition).filter((node: NonRootNodeTypeDefinition) => node._hasValidNodeTypeId())
+    return <nodeTypeDefinitionNode[]>(
+      this.getChildrenByNodeConstructor(nodeTypeDefinitionNode).filter((node: nodeTypeDefinitionNode) => node._hasValidNodeTypeId())
     )
   }
 
-  private _cache_rootNodeTypeNode: NonRootNodeTypeDefinition
+  private _cache_rootNodeTypeNode: nodeTypeDefinitionNode
 
   _getRootNodeTypeDefinitionNode() {
     if (!this._cache_rootNodeTypeNode) {
@@ -1880,9 +1892,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     // By default, have a very permissive basic root node.
     // todo: whats the best design pattern to use for this sort of thing?
     if (!this._cache_rootNodeTypeNode) {
-      this._cache_rootNodeTypeNode = <NonRootNodeTypeDefinition>this.concat(`${GrammarConstants.defaultRootNode}
+      this._cache_rootNodeTypeNode = <nodeTypeDefinitionNode>this.concat(`${GrammarConstants.defaultRootNode}
  ${GrammarConstants.root}
- ${GrammarConstants.catchAllNodeType} ${GrammarConstants.GrammarBackedBlobNode}`)[0]
+ ${GrammarConstants.catchAllNodeType} ${GrammarConstants.BlobNode}`)[0]
       this._addDefaultCatchAllBlobNode()
     }
     return this._cache_rootNodeTypeNode
@@ -1891,7 +1903,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   // todo: whats the best design pattern to use for this sort of thing?
   _addDefaultCatchAllBlobNode() {
     delete this._cache_nodeTypeDefinitions
-    this.concat(`${GrammarConstants.GrammarBackedBlobNode}
+    this.concat(`${GrammarConstants.BlobNode}
  ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`)
   }
 
@@ -1914,15 +1926,15 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // At present we only have global nodeType definitions (you cannot have scoped nodeType definitions right now).
-  private _cache_nodeTypeDefinitions: { [nodeTypeId: string]: NonRootNodeTypeDefinition }
+  private _cache_nodeTypeDefinitions: { [nodeTypeId: string]: nodeTypeDefinitionNode }
 
   protected _initProgramNodeTypeDefinitionCache(): void {
     if (this._cache_nodeTypeDefinitions) return undefined
 
     this._cache_nodeTypeDefinitions = {}
 
-    this.getChildrenByNodeConstructor(NonRootNodeTypeDefinition).forEach(nodeTypeDefinitionNode => {
-      this._cache_nodeTypeDefinitions[(<NonRootNodeTypeDefinition>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode
+    this.getChildrenByNodeConstructor(nodeTypeDefinitionNode).forEach(nodeTypeDefinitionNode => {
+      this._cache_nodeTypeDefinitions[(<nodeTypeDefinitionNode>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode
     })
   }
 

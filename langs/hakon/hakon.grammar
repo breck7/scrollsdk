@@ -27,14 +27,14 @@ cssValueCell
  highlightScope constant.numeric
 selectorCell
  highlightScope keyword.control
-propertyNameCell
+propertyKeywordCell
  highlightScope variable.function
 errorCell
  highlightScope invalid
 abstractPropertyNode
  catchAllCellType cssValueCell
  catchAllNodeType errorNode
- firstCellType propertyNameCell
+ firstCellType propertyKeywordCell
  javascript
   compile(spaces) { return `${spaces}${this.getFirstWord()}: ${this.getContent()};` }
  abstract

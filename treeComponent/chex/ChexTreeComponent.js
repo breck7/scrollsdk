@@ -6,7 +6,7 @@ class ChexTreeComponent extends AbstractTreeComponentRootNode {
   }
 
   createParser() {
-    return new TreeNode.Parser(this.constructor, {
+    return new TreeNode.Parser(undefined, {
       footer: footer
     })
   }

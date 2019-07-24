@@ -1534,7 +1534,7 @@ testTree.simpleTreeLanguage = equal => {
   class MathProgram extends TreeNode {
     // Look! You created a top down parser!
     createParser() {
-      return new TreeNode.Parser(this.constructor, { "+": AdditionNode, "-": SubstractionNode })
+      return new TreeNode.Parser(undefined, { "+": AdditionNode, "-": SubstractionNode })
     }
   }
 
@@ -1881,67 +1881,65 @@ foo`
 testTree.isomorphicGrammarTests = equal => {
   // Run some basic grammar tests in the browser and node
   // Arrange
-  const jibberishGrammarCode = `nodeType jibberish
+  const jibberishGrammarCode = `jibberishNode
  root
  description Test a root parser node
  javascript
   executeSync() { return 42 }
  compilesTo txt
- catchAllNodeType error
- inScope topLevel text someAbstractClass
-cellType int
-cellType word
-cellType anyFirstCell
-cellType onoff
+ catchAllNodeType errorNode
+ inScope topLevelNode textNode someAbstractClassNode
+intCell
+wordCell
+anyFirstCell
+onoffCell
  enum on off
-nodeType error
+errorNode
  baseNodeType errorNode
-nodeType topLevel
+topLevelNode
  abstract
-nodeType someAbstractClass
+someAbstractClassNode
  abstract
-nodeType colorProperties
+colorPropertiesNode
  abstract
- extends topLevel
- cells int
-nodeType hue
- extends colorProperties
-nodeType saturation
- extends colorProperties
-nodeType constrast
- extends colorProperties
-nodeType extendsAbstract
- extends someAbstractClass
- cells int
-nodeType someCode
- extends topLevel
- catchAllNodeType lineOfCode
-nodeType lineOfCode
- catchAllCellType word
-nodeType block
- extends topLevel
- inScope topLevel
-nodeType foo
- extends topLevel
-nodeType nodeWithConsts
- extends topLevel
+ extends topLevelNode
+ cells intCell
+hueNode
+ extends colorPropertiesNode
+saturationNode
+ extends colorPropertiesNode
+constrastNode
+ extends colorPropertiesNode
+extendsAbstractNode
+ extends someAbstractClassNode
+ cells intCell
+someCodeNode
+ extends topLevelNode
+ catchAllNodeType lineOfCodeNode
+lineOfCodeNode
+ catchAllCellType wordCell
+blockNode
+ extends topLevelNode
+ inScope topLevelNode
+fooNode
+ extends topLevelNode
+nodeWithConstsNode
+ extends topLevelNode
  string greeting hello world
-nodeType text
+textNode
  blobNode
-nodeType add
- extends topLevel
-nodeType addNode
+addNode
+ extends topLevelNode
  match +
- extends add
- catchAllCellType int
-nodeType lightbulbState
- extends topLevel
- cells onoff
-nodeType to
- extends block
- cells word
+ catchAllCellType intCell
+lightbulbStateNode
+ extends topLevelNode
+ cells onoffCell
+toNode
+ extends blockNode
+ cells wordCell
  compiler
-  stringTemplate to {word}
+  stringTemplate to {wordCell}
   closeChildren end`
   const code = `foo
 nodeWithConsts

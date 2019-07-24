@@ -283,7 +283,7 @@ testTree.extraWord = equal => {
   equal(
     program.getInPlaceCellTypeTree(),
     `nodeTypeIdCell
- propertyNameCell extraWordCell`
+ propertyKeywordCell extraWordCell`
   )
 }
 

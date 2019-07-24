@@ -6,7 +6,7 @@ grammarNode
  root
  description The Grammar Language is currently just used for type checking and documenting grammar files. The actual tree Grammar Language is still hard coded. Someday it may bootstrap itself from this file.
  catchAllNodeType catchAllErrorNode
- nodeTypeOrder toolingNode todoNode cellTypeNode nodeTypeNode
+ nodeTypeOrder toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
  extensions grammar gram
  example A grammar that parses anything:
   nodeType latin
@@ -15,7 +15,7 @@ grammarNode
   nodeType anyNode
    baseNodeType blobNode
  version 3.0.0
- inScope toolingNode todoNode cellTypeNode nodeTypeNode
+ inScope toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
 abstractConstantCell
  highlightScope entity.name.tag
 javascriptSafeAlphaNumericIdentifierCell
@@ -62,7 +62,7 @@ nodeTypeIdCell
  highlightScope variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes nodeTypeIdCell
-propertyNameCell
+propertyKeywordCell
  highlightScope constant.language
 regexCell
  highlightScope string.regexp
@@ -93,14 +93,14 @@ abstractCompilerRuleNode
  abstract
  todo Remove if we remove compiler stuff?
  catchAllCellType anyCell
- firstCellType propertyNameCell
+ firstCellType propertyKeywordCell
 abstractConstantNode
  abstract
  description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
- firstCellType propertyNameCell
+ firstCellType propertyKeywordCell
 abstractNodeTypeRuleNode
  abstract
- firstCellType propertyNameCell
+ firstCellType propertyKeywordCell
  single
 catchAllErrorNode
  baseNodeType errorNode
@@ -116,7 +116,7 @@ catchAllMultilineStringConstantNode
  catchAllCellType stringCell
  firstCellType stringCell
  catchAllNodeType catchAllMultilineStringConstantNode
-cellTypeNode
+cellTypeDefinitionNode
  todo Generate a class for each cell type?
  todo Allow abstract cell types?
  pattern Cell$
@@ -138,21 +138,21 @@ extensionsNode
  catchAllCellType fileExtensionCell
  description File extensions of your language. Generally used for nodeTypes marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's nodeTypeId will be used as the default file extension.
 highlightScopeNode
- firstCellType propertyNameCell
+ firstCellType propertyKeywordCell
  cells scopeNameCell
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
-rootNode
+rootFlagNode
  match root
- firstCellType propertyNameCell
+ firstCellType propertyKeywordCell
  description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
-nodeTypeNode
+nodeTypeDefinitionNode
  todo Add multiple dispatch?
  pattern Node$
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
  firstCellType nodeTypeIdCell
- inScope rootNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
+ inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
 nodeTypeOrderNode
  todo Should we just reuse inScope order? And have a property that indicates order is not important?
  todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?
@@ -266,7 +266,7 @@ extendsCellTypeNode
  description cellType definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
  cells cellTypeIdCell
- firstCellType propertyNameCell
+ firstCellType propertyKeywordCell
  single
 firstCellTypeNode
  cells cellTypeIdCell

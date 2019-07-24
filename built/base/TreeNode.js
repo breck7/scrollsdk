@@ -1115,7 +1115,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     // todo: protected?
     _setLineAndChildren(line, children, index = this.length) {
-        const nodeConstructor = this._getParser()._getNodeConstructor(line);
+        const nodeConstructor = this._getParser()._getNodeConstructor(line, this);
         const newNode = new nodeConstructor(children, line, this);
         const adjustedIndex = index < 0 ? this.length + index : index;
         this._getChildrenArray().splice(adjustedIndex, 0, newNode);
@@ -1143,7 +1143,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
             }
             const lineContent = line.substr(currentIndentCount);
             const parent = parentStack[parentStack.length - 1];
-            const nodeConstructor = parent._getParser()._getNodeConstructor(lineContent);
+            const nodeConstructor = parent._getParser()._getNodeConstructor(lineContent, parent);
             lastNode = new nodeConstructor(undefined, lineContent, parent);
             parent._getChildrenArray().push(lastNode);
         });

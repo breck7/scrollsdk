@@ -3864,7 +3864,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         const firstWordHighlightScope = (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition();
         const regexMatch = this._getRegexMatch();
         const firstWordMatch = this._getFirstWordMatch();
-        const match = regexMatch ? `'^ *${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`;
+        const match = regexMatch ? `'${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`;
         const topHalf = ` '${this.getNodeTypeIdFromDefinition()}':
   - match: ${match}
     scope: ${firstWordHighlightScope}`;
@@ -3930,8 +3930,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         map[GrammarConstants.toolingDirective] = TreeNode;
         map[GrammarConstants.todoComment] = TreeNode;
         return new TreeNode.Parser(UnknownNodeTypeNode, map, [
-            { regex: GrammarProgram.nodeTypeSuffixRegex, nodeConstructor: nodeTypeDefinitionNode },
-            { regex: GrammarProgram.cellTypeSuffixRegex, nodeConstructor: cellTypeDefinitionNode }
+            { regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
+            { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
         ]);
     }
     _getCompiledLoadedNodeTypes() {
@@ -4029,7 +4029,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     _getRootNodeTypeDefinitionNode() {
         if (!this._cache_rootNodeTypeNode) {
             this.forEach(def => {
-                if (def.has(GrammarConstants.root) && def._hasValidNodeTypeId())
+                if (def instanceof AbstractGrammarDefinitionNode && def.has(GrammarConstants.root) && def._hasValidNodeTypeId())
                     this._cache_rootNodeTypeNode = def;
             });
         }
@@ -4155,7 +4155,9 @@ ${nodeTypeContexts}`;
 GrammarProgram.makeNodeTypeId = (str) => str.replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix;
 GrammarProgram.makeCellTypeId = (str) => str.replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix;
 GrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$");
+GrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.nodeTypeSuffix + "$");
 GrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$");
+GrammarProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.cellTypeSuffix + "$");
 GrammarProgram._languages = {};
 GrammarProgram._nodeTypes = {};
 window.GrammarConstants = GrammarConstants;
@@ -4619,7 +4621,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "35.0.0";
+jtree.getVersion = () => "35.0.1";
 window.jtree
     = jtree;
 class Upgrader extends TreeNode {

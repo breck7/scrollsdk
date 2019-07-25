@@ -1709,7 +1709,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const firstWordHighlightScope = (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const regexMatch = this._getRegexMatch()
     const firstWordMatch = this._getFirstWordMatch()
-    const match = regexMatch ? `'^ *${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`
+    const match = regexMatch ? `'${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`
     const topHalf = ` '${this.getNodeTypeIdFromDefinition()}':
   - match: ${match}
     scope: ${firstWordHighlightScope}`
@@ -1782,8 +1782,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [
-      { regex: GrammarProgram.nodeTypeSuffixRegex, nodeConstructor: nodeTypeDefinitionNode },
-      { regex: GrammarProgram.cellTypeSuffixRegex, nodeConstructor: cellTypeDefinitionNode }
+      { regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
+      { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
     ])
   }
 
@@ -1791,7 +1791,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   static makeCellTypeId = (str: string) => str.replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 
   static nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
+  static nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.nodeTypeSuffix + "$")
+
   static cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
+  static cellTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.cellTypeSuffix + "$")
 
   private _cache_compiledLoadedNodeTypes: { [nodeTypeId: string]: Function }
 
@@ -1909,7 +1912,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   _getRootNodeTypeDefinitionNode() {
     if (!this._cache_rootNodeTypeNode) {
       this.forEach(def => {
-        if (def.has(GrammarConstants.root) && def._hasValidNodeTypeId()) this._cache_rootNodeTypeNode = def
+        if (def instanceof AbstractGrammarDefinitionNode && def.has(GrammarConstants.root) && def._hasValidNodeTypeId()) this._cache_rootNodeTypeNode = def
       })
     }
     // By default, have a very permissive basic root node.

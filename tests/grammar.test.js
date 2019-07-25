@@ -510,6 +510,16 @@ testTree.toNodeJsJavascript = equal => {
   equal(typeof compiledParser, "string")
 }
 
+testTree.invalidGrammarRegression = equal => {
+  // Arrange
+  let program = new GrammarProgram(`oldStyle something
+ root`)
+  // Act
+  let compiledParser = program.toNodeJsJavascript()
+  // Assert
+  equal(typeof compiledParser, "string")
+}
+
 testTree.examples = equal => {
   // Arrange/Act
   const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode)

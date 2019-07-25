@@ -13,7 +13,7 @@ class jtree {
   static GrammarProgram = GrammarProgram
   static UnknownGrammarProgram = UnknownGrammarProgram
   static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
-  static getVersion = () => "35.0.0"
+  static getVersion = () => "35.0.1"
 }
 
 export default jtree

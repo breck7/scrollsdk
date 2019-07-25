@@ -326,7 +326,9 @@ declare class GrammarProgram extends AbstractGrammarDefinitionNode {
     static makeNodeTypeId: (str: string) => string;
     static makeCellTypeId: (str: string) => string;
     static nodeTypeSuffixRegex: RegExp;
+    static nodeTypeFullRegex: RegExp;
     static cellTypeSuffixRegex: RegExp;
+    static cellTypeFullRegex: RegExp;
     private _cache_compiledLoadedNodeTypes;
     _getCompiledLoadedNodeTypes(): {
         [nodeTypeId: string]: Function;

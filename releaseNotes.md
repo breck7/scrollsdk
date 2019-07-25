@@ -1,3 +1,9 @@
+35.0.1 / 2019-07-25
+===================
+- Fix: fixed uncaught error when an old grammar is used with a "root" subnode
+- Fix: more precise pattern matching in Grammar Language
+- Fix: improved highlight scopes for Grammar Language
+
 35.0.0 / 2019-07-24
 ===================
 - New: "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.
@@ -14,6 +20,7 @@
 - Breaking: cellTypes that ended in "Word" now end in "Cell".
 - Breaking: removed public "getFirstWordMap" method.
 - Breaking: removed "updateNodeTypeIds" method. Use findAllWordsWithCellType and findAllNodesWithNodeType
+- Breaking: use createParser() instead of getNodeConstructor
 
 34.2.0 / 2019-07-21
 ===================

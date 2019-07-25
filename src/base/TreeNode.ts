@@ -1,5 +1,6 @@
 import AbstractNode from "./AbstractNode.node"
 import TreeUtils from "./TreeUtils"
+import Parser from "./Parser"
 import jTreeTypes from "../jTreeTypes"
 
 declare type int = jTreeTypes.int
@@ -1239,7 +1240,7 @@ class ImmutableNode extends AbstractNode {
 
   // todo: protected?
   _setLineAndChildren(line: string, children?: jTreeTypes.children, index = this.length) {
-    const nodeConstructor: any = this.getNodeConstructor(line)
+    const nodeConstructor: any = this._getParser()._getNodeConstructor(line, this)
     const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
@@ -1268,7 +1269,7 @@ class ImmutableNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const nodeConstructor: any = parent.getNodeConstructor(lineContent)
+      const nodeConstructor: any = parent._getParser()._getNodeConstructor(lineContent, parent)
       lastNode = new nodeConstructor(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })
@@ -1395,14 +1396,6 @@ class ImmutableNode extends AbstractNode {
     return this.getChildren().slice(start, end)
   }
 
-  getFirstWordMap(): jTreeTypes.firstWordToNodeConstructorMap {
-    return {}
-  }
-
-  getCatchAllNodeConstructor(line: string) {
-    return this.constructor
-  }
-
   // todo: make 0 and 1 a param
   getInheritanceTree() {
     const paths: jTreeTypes.stringMap = {}
@@ -1421,13 +1414,15 @@ class ImmutableNode extends AbstractNode {
     return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
   }
 
-  protected _getFirstWord(line: string) {
-    const firstBreak = line.indexOf(this.getZI())
-    return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
+  private _parser: Parser
+
+  _getParser() {
+    if (!this._parser) this._parser = this.createParser()
+    return this._parser
   }
 
-  getNodeConstructor(line: string) {
-    return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line)
+  createParser(): Parser {
+    return new Parser(this.constructor)
   }
 
   private static _uniqueId: int
@@ -1442,6 +1437,8 @@ class ImmutableNode extends AbstractNode {
     const format = path.split(".").pop()
     return FileFormat[<any>format] ? format : FileFormat.tree
   }
+
+  static Parser = Parser
 
   static iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica

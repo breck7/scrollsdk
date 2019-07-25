@@ -21,7 +21,7 @@ class GrammarIDEApp {
             codeConsole: "codeConsole"
         };
         this.codeWidgets = [];
-        this.GrammarConstructor = new jtree.GrammarProgram(grammarSourceCode, "").getRootConstructor();
+        this.GrammarConstructor = new jtree.GrammarProgram(grammarSourceCode).getRootConstructor();
     }
     async _loadFromDeepLink() {
         const hash = location.hash;
@@ -180,7 +180,7 @@ ${testCode}`);
         if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
             try {
                 const grammarErrors = this._getGrammarErrors(currentGrammarCode);
-                this._grammarConstructor = new jtree.GrammarProgram(currentGrammarCode, "").getRootConstructor();
+                this._grammarConstructor = new jtree.GrammarProgram(currentGrammarCode).getRootConstructor();
                 this._cachedGrammarCode = currentGrammarCode;
                 this._otherErrorsDiv.html("");
             }

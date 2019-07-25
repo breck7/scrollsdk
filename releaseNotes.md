@@ -1,3 +1,20 @@
+35.0.0 / 2019-07-24
+===================
+- New: "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.
+- New: polymorphism and symbol tables via enumFromCellTypes
+- New: Grammar Language now uses suffix notation instead of prefix notation for root node types.
+- New: in Grammar Language instead of `nodeType person` now do `personNode` and instead of `cellType int` do `intCell`
+- New: findAllWordsWithCellType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
+- New: getAllTypedWords method in Grammar Programs
+- Fix: removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
+- Breaking: Javascript code and compiler nodes that previously referred to cellTypes that have been renamed, must be updated manually
+- Breaking: Javascript code that previously referred to nodeTypeIds that have been renamed, must be updated manually (check uses of getChildInstancesOfNodeTypeId and doesExtend)
+- Breaking: lineHints string is different
+- Breaking: enumFromGrammar is now enumFromCellTypes and accepts any cellTypeId
+- Breaking: cellTypes that ended in "Word" now end in "Cell".
+- Breaking: removed public "getFirstWordMap" method.
+- Breaking: removed "updateNodeTypeIds" method. Use findAllWordsWithCellType and findAllNodesWithNodeType
+
 34.2.0 / 2019-07-21
 ===================
 - New: compiled nodejs grammar files are now executables and accept an input filepath

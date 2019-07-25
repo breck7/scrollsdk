@@ -1,4 +1,4 @@
-nodeType project
+projectNode
  root
  description A Tree Language for project dependency management.
  javascript
@@ -61,34 +61,34 @@ nodeType project
     })
     return requiredFileList.toString()
   }
- inScope file
- catchAllNodeType error
-cellType anyFirstWord
-cellType filepath
+ inScope fileNode
+ catchAllNodeType errorNode
+anyFirstCell
+filepathCell
  highlightScope string
-cellType termWord
+termCell
  highlightScope variable.parameter
-cellType fileConstant
+fileConstantCell
  highlightScope keyword.control
-nodeType term
- catchAllCellType filepath
- firstCellType termWord
+termNode
+ catchAllCellType filepathCell
+ firstCellType termCell
  abstract
-nodeType error
+errorNode
  baseNodeType errorNode
-nodeType file
- catchAllCellType filepath
- firstCellType fileConstant
- inScope external absolute relative
+fileNode
+ catchAllCellType filepathCell
+ firstCellType fileConstantCell
+ inScope externalNode absoluteNode relativeNode
  javascript
   getFilePath() {
-    return this.cells.filepath.join(" ")
+    return this.filepathCell.join(" ")
   }
   _getDependencies() {
     return this.getChildren()
       .map(child => {
         const firstWord = child.getFirstWord()
-        const childFilePath = child.cells.filepath.join(" ")
+        const childFilePath = child.filepathCell.join(" ")
         if (firstWord === "external") return ""
         if (firstWord === "absolute") return childFilePath
         const link = childFilePath
@@ -101,9 +101,9 @@ nodeType file
   getMissingDependencies(includedMap) {
     return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
-nodeType absolute
- extends term
-nodeType external
- extends term
-nodeType relative
- extends term
+absoluteNode
+ extends termNode
+externalNode
+ extends termNode
+relativeNode
+ extends termNode

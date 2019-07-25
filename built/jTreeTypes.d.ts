@@ -20,6 +20,14 @@ export declare namespace jTreeTypes {
         applySuggestion(): void;
         getMessage(): string;
     }
+    interface regexTest {
+        regex: RegExp;
+        nodeConstructor: TreeNodeConstructor;
+    }
+    interface regexTestDef {
+        regex: string;
+        nodeConstructor: string;
+    }
     type treeNode = any;
     type line = string;
     type int = number;

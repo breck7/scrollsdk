@@ -23,6 +23,16 @@ export namespace jTreeTypes {
     getMessage(): string
   }
 
+  export interface regexTest {
+    regex: RegExp
+    nodeConstructor: TreeNodeConstructor
+  }
+
+  export interface regexTestDef {
+    regex: string
+    nodeConstructor: string
+  }
+
   export declare type treeNode = any
   export declare type line = string // no YI (\n)
   export declare type int = number

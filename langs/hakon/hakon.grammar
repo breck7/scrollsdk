@@ -1,4 +1,4 @@
-nodeType hakon
+hakonNode
  root
  description A Tree Language that compiles to CSS
  compilesTo css
@@ -20,31 +20,31 @@ nodeType hakon
    &:hover
     color blue
     font-size 17px
-cellType anyFirstWord
-cellType extraWord
+anyFirstCell
+extraCell
  highlightScope invalid
-cellType cssValueWord
+cssValueCell
  highlightScope constant.numeric
-cellType selector
+selectorCell
  highlightScope keyword.control
-cellType propertyName
+propertyKeywordCell
  highlightScope variable.function
-cellType errorWord
+errorCell
  highlightScope invalid
-nodeType abstractPropertyNode
- catchAllCellType cssValueWord
+abstractPropertyNode
+ catchAllCellType cssValueCell
  catchAllNodeType errorNode
- firstCellType propertyName
+ firstCellType propertyKeywordCell
  javascript
   compile(spaces) { return `${spaces}${this.getFirstWord()}: ${this.getContent()};` }
  abstract
-nodeType errorNode
+errorNode
  catchAllNodeType errorNode
- catchAllCellType errorWord
- firstCellType errorWord
+ catchAllCellType errorCell
+ firstCellType errorCell
  baseNodeType errorNode
-nodeType selectorNode
- firstCellType selector
+selectorNode
+ firstCellType selectorCell
  inScope abstractPropertyNode
  catchAllNodeType selectorNode
  boolean isSelectorNode true
@@ -67,536 +67,536 @@ nodeType selectorNode
   ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
   }\n`
     }
-nodeType alignContent
+alignContentNode
  match align-content
  extends abstractPropertyNode
-nodeType alignItems
+alignItemsNode
  match align-items
  extends abstractPropertyNode
-nodeType alignSelf
+alignSelfNode
  match align-self
  extends abstractPropertyNode
-nodeType all
+allNode
  extends abstractPropertyNode
-nodeType animation
+animationNode
  extends abstractPropertyNode
-nodeType animationDelay
+animationDelayNode
  match animation-delay
  extends abstractPropertyNode
-nodeType animationDirection
+animationDirectionNode
  match animation-direction
  extends abstractPropertyNode
-nodeType animationDuration
+animationDurationNode
  match animation-duration
  extends abstractPropertyNode
-nodeType animationFillMode
+animationFillModeNode
  match animation-fill-mode
  extends abstractPropertyNode
-nodeType animationIterationCount
+animationIterationCountNode
  match animation-iteration-count
  extends abstractPropertyNode
-nodeType animationName
+animationNameNode
  match animation-name
  extends abstractPropertyNode
-nodeType animationPlayState
+animationPlayStateNode
  match animation-play-state
  extends abstractPropertyNode
-nodeType animationTimingFunction
+animationTimingFunctionNode
  match animation-timing-function
  extends abstractPropertyNode
-nodeType backfaceVisibility
+backfaceVisibilityNode
  match backface-visibility
  extends abstractPropertyNode
-nodeType background
+backgroundNode
  extends abstractPropertyNode
-nodeType backgroundAttachment
+backgroundAttachmentNode
  match background-attachment
  extends abstractPropertyNode
-nodeType backgroundBlendMode
+backgroundBlendModeNode
  match background-blend-mode
  extends abstractPropertyNode
-nodeType backgroundClip
+backgroundClipNode
  match background-clip
  extends abstractPropertyNode
-nodeType backgroundColor
+backgroundColorNode
  match background-color
  extends abstractPropertyNode
-nodeType backgroundImage
+backgroundImageNode
  match background-image
  extends abstractPropertyNode
-nodeType backgroundOrigin
+backgroundOriginNode
  match background-origin
  extends abstractPropertyNode
-nodeType backgroundPosition
+backgroundPositionNode
  match background-position
  extends abstractPropertyNode
-nodeType backgroundRepeat
+backgroundRepeatNode
  match background-repeat
  extends abstractPropertyNode
-nodeType backgroundSize
+backgroundSizeNode
  match background-size
  extends abstractPropertyNode
-nodeType border
+borderNode
  extends abstractPropertyNode
-nodeType borderBottom
+borderBottomNode
  match border-bottom
  extends abstractPropertyNode
-nodeType borderBottomColor
+borderBottomColorNode
  match border-bottom-color
  extends abstractPropertyNode
-nodeType borderBottomLeftRadius
+borderBottomLeftRadiusNode
  match border-bottom-left-radius
  extends abstractPropertyNode
-nodeType borderBottomRightRadius
+borderBottomRightRadiusNode
  match border-bottom-right-radius
  extends abstractPropertyNode
-nodeType borderBottomStyle
+borderBottomStyleNode
  match border-bottom-style
  extends abstractPropertyNode
-nodeType borderBottomWidth
+borderBottomWidthNode
  match border-bottom-width
  extends abstractPropertyNode
-nodeType borderCollapse
+borderCollapseNode
  match border-collapse
  extends abstractPropertyNode
-nodeType borderColor
+borderColorNode
  match border-color
  extends abstractPropertyNode
-nodeType borderImage
+borderImageNode
  match border-image
  extends abstractPropertyNode
-nodeType borderImageOutset
+borderImageOutsetNode
  match border-image-outset
  extends abstractPropertyNode
-nodeType borderImageRepeat
+borderImageRepeatNode
  match border-image-repeat
  extends abstractPropertyNode
-nodeType borderImageSlice
+borderImageSliceNode
  match border-image-slice
  extends abstractPropertyNode
-nodeType borderImageSource
+borderImageSourceNode
  match border-image-source
  extends abstractPropertyNode
-nodeType borderImageWidth
+borderImageWidthNode
  match border-image-width
  extends abstractPropertyNode
-nodeType borderLeft
+borderLeftNode
  match border-left
  extends abstractPropertyNode
-nodeType borderLeftColor
+borderLeftColorNode
  match border-left-color
  extends abstractPropertyNode
-nodeType borderLeftStyle
+borderLeftStyleNode
  match border-left-style
  extends abstractPropertyNode
-nodeType borderLeftWidth
+borderLeftWidthNode
  match border-left-width
  extends abstractPropertyNode
-nodeType borderRadius
+borderRadiusNode
  match border-radius
  extends abstractPropertyNode
-nodeType borderRight
+borderRightNode
  match border-right
  extends abstractPropertyNode
-nodeType borderRightColor
+borderRightColorNode
  match border-right-color
  extends abstractPropertyNode
-nodeType borderRightStyle
+borderRightStyleNode
  match border-right-style
  extends abstractPropertyNode
-nodeType borderRightWidth
+borderRightWidthNode
  match border-right-width
  extends abstractPropertyNode
-nodeType borderSpacing
+borderSpacingNode
  match border-spacing
  extends abstractPropertyNode
-nodeType borderStyle
+borderStyleNode
  match border-style
  extends abstractPropertyNode
-nodeType borderTop
+borderTopNode
  match border-top
  extends abstractPropertyNode
-nodeType borderTopColor
+borderTopColorNode
  match border-top-color
  extends abstractPropertyNode
-nodeType borderTopLeftRadius
+borderTopLeftRadiusNode
  match border-top-left-radius
  extends abstractPropertyNode
-nodeType borderTopRightRadius
+borderTopRightRadiusNode
  match border-top-right-radius
  extends abstractPropertyNode
-nodeType borderTopStyle
+borderTopStyleNode
  match border-top-style
  extends abstractPropertyNode
-nodeType borderTopWidth
+borderTopWidthNode
  match border-top-width
  extends abstractPropertyNode
-nodeType borderWidth
+borderWidthNode
  match border-width
  extends abstractPropertyNode
-nodeType bottom
+bottomNode
  extends abstractPropertyNode
-nodeType boxShadow
+boxShadowNode
  match box-shadow
  extends abstractPropertyNode
-nodeType boxSizing
+boxSizingNode
  match box-sizing
  extends abstractPropertyNode
-nodeType captionSide
+captionSideNode
  match caption-side
  extends abstractPropertyNode
-nodeType clear
+clearNode
  extends abstractPropertyNode
-nodeType clip
+clipNode
  extends abstractPropertyNode
-nodeType color
+colorNode
  extends abstractPropertyNode
-nodeType columnCount
+columnCountNode
  match column-count
  extends abstractPropertyNode
-nodeType columnFill
+columnFillNode
  match column-fill
  extends abstractPropertyNode
-nodeType columnGap
+columnGapNode
  match column-gap
  extends abstractPropertyNode
-nodeType columnRule
+columnRuleNode
  match column-rule
  extends abstractPropertyNode
-nodeType columnRuleColor
+columnRuleColorNode
  match column-rule-color
  extends abstractPropertyNode
-nodeType columnRuleStyle
+columnRuleStyleNode
  match column-rule-style
  extends abstractPropertyNode
-nodeType columnRuleWidth
+columnRuleWidthNode
  match column-rule-width
  extends abstractPropertyNode
-nodeType columnSpan
+columnSpanNode
  match column-span
  extends abstractPropertyNode
-nodeType columnWidth
+columnWidthNode
  match column-width
  extends abstractPropertyNode
-nodeType columns
+columnsNode
  extends abstractPropertyNode
-nodeType content
+contentNode
  extends abstractPropertyNode
-nodeType counterIncrement
+counterIncrementNode
  match counter-increment
  extends abstractPropertyNode
-nodeType counterReset
+counterResetNode
  match counter-reset
  extends abstractPropertyNode
-nodeType cursor
+cursorNode
  extends abstractPropertyNode
-nodeType direction
+directionNode
  extends abstractPropertyNode
-nodeType display
+displayNode
  extends abstractPropertyNode
-nodeType emptyCells
+emptyCellsNode
  match empty-cells
  extends abstractPropertyNode
-nodeType fill
+fillNode
  extends abstractPropertyNode
-nodeType filter
+filterNode
  extends abstractPropertyNode
-nodeType flex
+flexNode
  extends abstractPropertyNode
-nodeType flexBasis
+flexBasisNode
  match flex-basis
  extends abstractPropertyNode
-nodeType flexDirection
+flexDirectionNode
  match flex-direction
  extends abstractPropertyNode
-nodeType flexFlow
+flexFlowNode
  match flex-flow
  extends abstractPropertyNode
-nodeType flexGrow
+flexGrowNode
  match flex-grow
  extends abstractPropertyNode
-nodeType flexShrink
+flexShrinkNode
  match flex-shrink
  extends abstractPropertyNode
-nodeType flexWrap
+flexWrapNode
  match flex-wrap
  extends abstractPropertyNode
-nodeType float
+floatNode
  extends abstractPropertyNode
-nodeType font
+fontNode
  extends abstractPropertyNode
-nodeType fontFace
+fontFaceNode
  match @font-face
  extends abstractPropertyNode
-nodeType fontFamily
+fontFamilyNode
  match font-family
  extends abstractPropertyNode
-nodeType fontSize
+fontSizeNode
  match font-size
  extends abstractPropertyNode
-nodeType fontSizeAdjust
+fontSizeAdjustNode
  match font-size-adjust
  extends abstractPropertyNode
-nodeType fontStretch
+fontStretchNode
  match font-stretch
  extends abstractPropertyNode
-nodeType fontStyle
+fontStyleNode
  match font-style
  extends abstractPropertyNode
-nodeType fontVariant
+fontVariantNode
  match font-variant
  extends abstractPropertyNode
-nodeType fontWeight
+fontWeightNode
  match font-weight
  extends abstractPropertyNode
-nodeType hangingPunctuation
+hangingPunctuationNode
  match hanging-punctuation
  extends abstractPropertyNode
-nodeType height
+heightNode
  extends abstractPropertyNode
-nodeType justifyContent
+justifyContentNode
  match justify-content
  extends abstractPropertyNode
-nodeType keyframes
+keyframesNode
  match @keyframes
  extends abstractPropertyNode
-nodeType left
+leftNode
  extends abstractPropertyNode
-nodeType letterSpacing
+letterSpacingNode
  match letter-spacing
  extends abstractPropertyNode
-nodeType lineHeight
+lineHeightNode
  match line-height
  extends abstractPropertyNode
-nodeType listStyle
+listStyleNode
  match list-style
  extends abstractPropertyNode
-nodeType listStyleImage
+listStyleImageNode
  match list-style-image
  extends abstractPropertyNode
-nodeType listStylePosition
+listStylePositionNode
  match list-style-position
  extends abstractPropertyNode
-nodeType listStyleType
+listStyleTypeNode
  match list-style-type
  extends abstractPropertyNode
-nodeType margin
+marginNode
  extends abstractPropertyNode
-nodeType marginBottom
+marginBottomNode
  match margin-bottom
  extends abstractPropertyNode
-nodeType marginLeft
+marginLeftNode
  match margin-left
  extends abstractPropertyNode
-nodeType marginRight
+marginRightNode
  match margin-right
  extends abstractPropertyNode
-nodeType marginTop
+marginTopNode
  match margin-top
  extends abstractPropertyNode
-nodeType maxHeight
+maxHeightNode
  match max-height
  extends abstractPropertyNode
-nodeType maxWidth
+maxWidthNode
  match max-width
  extends abstractPropertyNode
-nodeType media
+mediaNode
  match @media
  extends abstractPropertyNode
-nodeType minHeight
+minHeightNode
  match min-height
  extends abstractPropertyNode
-nodeType minWidth
+minWidthNode
  match min-width
  extends abstractPropertyNode
-nodeType navDown
+navDownNode
  match nav-down
  extends abstractPropertyNode
-nodeType navIndex
+navIndexNode
  match nav-index
  extends abstractPropertyNode
-nodeType navLeft
+navLeftNode
  match nav-left
  extends abstractPropertyNode
-nodeType navRight
+navRightNode
  match nav-right
  extends abstractPropertyNode
-nodeType navUp
+navUpNode
  match nav-up
  extends abstractPropertyNode
-nodeType opacity
+opacityNode
  extends abstractPropertyNode
-nodeType order
+orderNode
  extends abstractPropertyNode
-nodeType outline
+outlineNode
  extends abstractPropertyNode
-nodeType outlineColor
+outlineColorNode
  match outline-color
  extends abstractPropertyNode
-nodeType outlineOffset
+outlineOffsetNode
  match outline-offset
  extends abstractPropertyNode
-nodeType outlineStyle
+outlineStyleNode
  match outline-style
  extends abstractPropertyNode
-nodeType outlineWidth
+outlineWidthNode
  match outline-width
  extends abstractPropertyNode
-nodeType overflow
+overflowNode
  extends abstractPropertyNode
-nodeType overflowX
+overflowXNode
  match overflow-x
  extends abstractPropertyNode
-nodeType overflowY
+overflowYNode
  match overflow-y
  extends abstractPropertyNode
-nodeType padding
+paddingNode
  extends abstractPropertyNode
-nodeType paddingBottom
+paddingBottomNode
  match padding-bottom
  extends abstractPropertyNode
-nodeType paddingLeft
+paddingLeftNode
  match padding-left
  extends abstractPropertyNode
-nodeType paddingRight
+paddingRightNode
  match padding-right
  extends abstractPropertyNode
-nodeType paddingTop
+paddingTopNode
  match padding-top
  extends abstractPropertyNode
-nodeType pageBreakAfter
+pageBreakAfterNode
  match page-break-after
  extends abstractPropertyNode
-nodeType pageBreakBefore
+pageBreakBeforeNode
  match page-break-before
  extends abstractPropertyNode
-nodeType pageBreakInside
+pageBreakInsideNode
  match page-break-inside
  extends abstractPropertyNode
-nodeType perspective
+perspectiveNode
  extends abstractPropertyNode
-nodeType perspectiveOrigin
+perspectiveOriginNode
  match perspective-origin
  extends abstractPropertyNode
-nodeType position
+positionNode
  extends abstractPropertyNode
-nodeType quotes
+quotesNode
  extends abstractPropertyNode
-nodeType resize
+resizeNode
  extends abstractPropertyNode
-nodeType right
+rightNode
  extends abstractPropertyNode
-nodeType tabSize
+tabSizeNode
  match tab-size
  extends abstractPropertyNode
-nodeType tableLayout
+tableLayoutNode
  match table-layout
  extends abstractPropertyNode
-nodeType textAlign
+textAlignNode
  match text-align
  extends abstractPropertyNode
-nodeType textAlignLast
+textAlignLastNode
  match text-align-last
  extends abstractPropertyNode
-nodeType textDecoration
+textDecorationNode
  match text-decoration
  extends abstractPropertyNode
-nodeType textDecorationColor
+textDecorationColorNode
  match text-decoration-color
  extends abstractPropertyNode
-nodeType textDecorationLine
+textDecorationLineNode
  match text-decoration-line
  extends abstractPropertyNode
-nodeType textDecorationStyle
+textDecorationStyleNode
  match text-decoration-style
  extends abstractPropertyNode
-nodeType textIndent
+textIndentNode
  match text-indent
  extends abstractPropertyNode
-nodeType textJustify
+textJustifyNode
  match text-justify
  extends abstractPropertyNode
-nodeType textOverflow
+textOverflowNode
  match text-overflow
  extends abstractPropertyNode
-nodeType textShadow
+textShadowNode
  match text-shadow
  extends abstractPropertyNode
-nodeType textTransform
+textTransformNode
  match text-transform
  extends abstractPropertyNode
-nodeType top
+topNode
  extends abstractPropertyNode
-nodeType transform
+transformNode
  extends abstractPropertyNode
-nodeType transformOrigin
+transformOriginNode
  match transform-origin
  extends abstractPropertyNode
-nodeType transformStyle
+transformStyleNode
  match transform-style
  extends abstractPropertyNode
-nodeType transition
+transitionNode
  extends abstractPropertyNode
-nodeType transitionDelay
+transitionDelayNode
  match transition-delay
  extends abstractPropertyNode
-nodeType transitionDuration
+transitionDurationNode
  match transition-duration
  extends abstractPropertyNode
-nodeType transitionProperty
+transitionPropertyNode
  match transition-property
  extends abstractPropertyNode
-nodeType transitionTimingFunction
+transitionTimingFunctionNode
  match transition-timing-function
  extends abstractPropertyNode
-nodeType unicodeBidi
+unicodeBidiNode
  match unicode-bidi
  extends abstractPropertyNode
-nodeType verticalAlign
+verticalAlignNode
  match vertical-align
  extends abstractPropertyNode
-nodeType visibility
+visibilityNode
  extends abstractPropertyNode
-nodeType whiteSpace
+whiteSpaceNode
  match white-space
  extends abstractPropertyNode
-nodeType width
+widthNode
  extends abstractPropertyNode
-nodeType wordBreak
+wordBreakNode
  match word-break
  extends abstractPropertyNode
-nodeType wordSpacing
+wordSpacingNode
  match word-spacing
  extends abstractPropertyNode
-nodeType wordWrap
+wordWrapNode
  match word-wrap
  extends abstractPropertyNode
-nodeType zIndex
+zIndexNode
  match z-index
  extends abstractPropertyNode
-nodeType overscrollBehaviorX
+overscrollBehaviorXNode
  match overscroll-behavior-x
  extends abstractPropertyNode
-nodeType userSelect
+userSelectNode
  match user-select
  extends abstractPropertyNode
-nodeType MsTouchAction
+MsTouchActionNode
  match -ms-touch-action
  extends abstractPropertyNode
-nodeType WebkitUserSelect
+WebkitUserSelectNode
  match -webkit-user-select
  extends abstractPropertyNode
-nodeType WebkitTouchCallout
+WebkitTouchCalloutNode
  match -webkit-touch-callout
  extends abstractPropertyNode
-nodeType MozUserSelect
+MozUserSelectNode
  match -moz-user-select
  extends abstractPropertyNode
-nodeType touchAction
+touchActionNode
  match touch-action
  extends abstractPropertyNode
-nodeType MsUserSelect
+MsUserSelectNode
  match -ms-user-select
  extends abstractPropertyNode
-nodeType KhtmlUserSelect
+KhtmlUserSelectNode
  match -khtml-user-select

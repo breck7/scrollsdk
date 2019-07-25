@@ -1,5 +1,5 @@
-nodeType latin
+latinNode
  root
- catchAllNodeType any
-nodeType any
+ catchAllNodeType anyNode
+anyNode
  baseNodeType blobNode

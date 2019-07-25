@@ -1,11 +1,11 @@
 todo Explore best ways to add polymorphism
-todo Explore non-firstWord node type detection
-nodeType fire
+todo Explore non-firstCell node type detection
+fireNode
  root
  description A useless Tree Language that compiles to Javascript for testing Tree Notation features.
  compilesTo js
- inScope hashbang abstractTerminal abstractNonTerminal
- catchAllNodeType error
+ inScope hashbangNode abstractTerminalNode abstractNonTerminalNode
+ catchAllNodeType errorNode
  javascript
   async execute() { return this.executeSync() }
   executeSync() {
@@ -19,305 +19,305 @@ nodeType fire
     console.log(outputLines.join("\n"))
     return outputLines
   }
-cellType anyFirstWord
-cellType anyWord
-cellType boolean
+anyFirstCell
+anyCell
+booleanCell
  regex (false|true)
-cellType filepath
-cellType identifier
+filepathCell
+identifierCell
  regex [$A-Za-z_][0-9a-zA-Z_$]*
  highlightScope variable
-cellType numberCell
+numberCell
  regex \-?[0-9]*\.?[0-9]*
  highlightScope constant.numeric
-cellType numberIdentifier
- extends identifier
-cellType hashBangWord
+numberIdentifierCell
+ extends identifierCell
+hashBangCell
  highlightScope comment
-cellType hashBangKeyWord
+hashBangKeywordCell
  highlightScope comment
-cellType stringCell
+stringCell
  highlightScope string
-cellType booleanIdentifier
- extends identifier
-cellType functionIdentifier
- extends identifier
-cellType identifiers
- extends identifier
-cellType instanceIdentifier
- extends identifier
-cellType methodIdentifier
- extends identifier
-cellType resultIdentifier
- extends identifier
-cellType keywordCell
+booleanIdentifierCell
+ extends identifierCell
+functionIdentifierCell
+ extends identifierCell
+identifiersCell
+ extends identifierCell
+instanceIdentifierCell
+ extends identifierCell
+methodIdentifierCell
+ extends identifierCell
+resultIdentifierCell
+ extends identifierCell
+keywordCell
  highlightScope keyword
-cellType stringIdentifier
- extends identifier
-cellType stringCells
+stringIdentifierCell
+ extends identifierCell
+stringCellsCell
  extends stringCell
-nodeType abstractNonTerminal
- inScope abstractTerminal abstractNonTerminal
+abstractNonTerminalNode
+ inScope abstractTerminalNode abstractNonTerminalNode
  firstCellType keywordCell
  abstract
-nodeType abstractTerminal
+abstractTerminalNode
  firstCellType keywordCell
  abstract
-nodeType abstractAssignment
- extends abstractTerminal
+abstractAssignmentNode
+ extends abstractTerminalNode
  abstract
-nodeType abstractArithmetic
- cells identifier
- catchAllCellType anyWord
+abstractArithmeticNode
+ cells identifierCell
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {identifier} = {anyWord}
+  stringTemplate const {identifierCell} = {anyCell}
  frequency .2
- extends abstractAssignment
+ extends abstractAssignmentNode
  abstract
-nodeType abstractJsblock
+abstractJsblockNode
  compiler
   openChildren  {
   closeChildren }
- extends abstractNonTerminal
+ extends abstractNonTerminalNode
  abstract
-nodeType abstractBooleanOperator
+abstractBooleanOperatorNode
  description Runs a boolean test and saves result.
- extends abstractAssignment
+ extends abstractAssignmentNode
  abstract
-nodeType hashbang
+hashbangNode
  match #!
  description Standard bash hashbang line.
- catchAllCellType hashBangWord
- firstCellType hashBangKeyWord
+ catchAllCellType hashBangCell
+ firstCellType hashBangKeywordCell
  compiler
-  stringTemplate // #! {hashBangWord}
-nodeType error
+  stringTemplate // #! {hashBangCell}
+errorNode
  baseNodeType errorNode
  compiler
   stringTemplate // error
-nodeType divide
+divideNode
  description Divide Numbers
  compiler
   catchAllCellDelimiter  / 
- extends abstractArithmetic
-nodeType modulo
+ extends abstractArithmeticNode
+moduloNode
  description Modulo Numbers
  compiler
   catchAllCellDelimiter %
- extends abstractArithmetic
-nodeType multiply
+ extends abstractArithmeticNode
+multiplyNode
  description Multiply Numbers
  compiler
   catchAllCellDelimiter  * 
- extends abstractArithmetic
-nodeType substract
+ extends abstractArithmeticNode
+substractNode
  description Subtract Numbers
  compiler
   catchAllCellDelimiter  - 
- extends abstractArithmetic
-nodeType add
+ extends abstractArithmeticNode
+addNode
  description Add numbers and store result
  compiler
   catchAllCellDelimiter  + 
- extends abstractArithmetic
-nodeType sum
+ extends abstractArithmeticNode
+sumNode
  description Add numbers and store result
- cells numberIdentifier
+ cells numberIdentifierCell
  catchAllCellType numberCell
  compiler
-  stringTemplate const {numberIdentifier} = [{numberCell}].reduce((sum, num) => sum + num)
+  stringTemplate const {numberIdentifierCell} = [{numberCell}].reduce((sum, num) => sum + num)
   catchAllCellDelimiter , 
  frequency .1
- extends abstractAssignment
-nodeType boolean
+ extends abstractAssignmentNode
+booleanNode
  description Boolean Assignment
- cells booleanIdentifier boolean
+ cells booleanIdentifierCell booleanCell
  compiler
-  stringTemplate const {booleanIdentifier} = {boolean}
- extends abstractAssignment
-nodeType callFunctionAndSet
+  stringTemplate const {booleanIdentifierCell} = {booleanCell}
+ extends abstractAssignmentNode
+callFunctionAndSetNode
  description Function Call
  frequency .5
- cells resultIdentifier functionIdentifier
- catchAllCellType anyWord
+ cells resultIdentifierCell functionIdentifierCell
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {resultIdentifier} = {functionIdentifier}({anyWord})
+  stringTemplate const {resultIdentifierCell} = {functionIdentifierCell}({anyCell})
   catchAllCellDelimiter , 
- extends abstractAssignment
-nodeType callMethodAndSet
+ extends abstractAssignmentNode
+callMethodAndSetNode
  description Method Call
  frequency .5
- cells resultIdentifier instanceIdentifier methodIdentifier
- catchAllCellType anyWord
+ cells resultIdentifierCell instanceIdentifierCell methodIdentifierCell
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {resultIdentifier} = {instanceIdentifier}.{methodIdentifier}({anyWord})
+  stringTemplate const {resultIdentifierCell} = {instanceIdentifierCell}.{methodIdentifierCell}({anyCell})
   catchAllCellDelimiter , 
- extends abstractAssignment
-nodeType join
+ extends abstractAssignmentNode
+joinNode
  description Join strings to form new string
- cells identifier
- catchAllCellType identifiers
+ cells identifierCell
+ catchAllCellType identifiersCell
  compiler
-  stringTemplate const {identifier} = [{identifiers}].join("")
+  stringTemplate const {identifierCell} = [{identifiersCell}].join("")
   catchAllCellDelimiter , 
  frequency .2
- extends abstractAssignment
-nodeType mutableNumber
+ extends abstractAssignmentNode
+mutableNumberNode
  description Mutable Number Assignment
- cells identifier numberCell
+ cells identifierCell numberCell
  compiler
-  stringTemplate let {identifier} = {numberCell}
- extends abstractAssignment
-nodeType number
+  stringTemplate let {identifierCell} = {numberCell}
+ extends abstractAssignmentNode
+numberNode
  description Number Assignment
- cells identifier numberCell
+ cells identifierCell numberCell
  compiler
-  stringTemplate const {identifier} = {numberCell}
+  stringTemplate const {identifierCell} = {numberCell}
  frequency .3
- extends abstractAssignment
-nodeType numbers
+ extends abstractAssignmentNode
+numbersNode
  description Number Array Assignment
- cells identifier
+ cells identifierCell
  catchAllCellType numberCell
  frequency .4
  compiler
-  stringTemplate const {identifier} = [{numberCell}]
+  stringTemplate const {identifierCell} = [{numberCell}]
   catchAllCellDelimiter , 
- extends abstractAssignment
-nodeType string
+ extends abstractAssignmentNode
+stringNode
  description String Assignment
- cells stringIdentifier
- catchAllCellType anyWord
+ cells stringIdentifierCell
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {stringIdentifier} = "{anyWord}"
+  stringTemplate const {stringIdentifierCell} = "{anyCell}"
  frequency .2
- extends abstractAssignment
-cellType leftNumberCell
+ extends abstractAssignmentNode
+leftNumberCell
  extends numberCell
-cellType leftAnyWord
- extends anyWord
-nodeType greaterThan
+leftAnyCell
+ extends anyCell
+greaterThanNode
  description Greater than test
- cells identifier leftNumberCell numberCell
+ cells identifierCell leftNumberCell numberCell
  compiler
-  stringTemplate const {identifier} = {leftNumberCell} > {numberCell}
+  stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
  frequency .1
- extends abstractBooleanOperator
-nodeType greaterThanOrEqual
+ extends abstractBooleanOperatorNode
+greaterThanOrEqualNode
  description Greater than or equal to test
- cells identifier leftNumberCell numberCell
+ cells identifierCell leftNumberCell numberCell
  compiler
-  stringTemplate const {identifier} = {leftNumberCell} >= {numberCell}
+  stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
  frequency .1
- extends abstractBooleanOperator
-nodeType lessThan
+ extends abstractBooleanOperatorNode
+lessThanNode
  description Less than test
- cells identifier leftAnyWord anyWord
+ cells identifierCell leftAnyCell anyCell
  compiler
-  stringTemplate const {identifier} = {leftAnyWord} < {anyWord}
+  stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
  frequency .1
- extends abstractBooleanOperator
-nodeType lessThanOrEqual
+ extends abstractBooleanOperatorNode
+lessThanOrEqualNode
  description Less than or equal to test
- cells identifier leftAnyWord anyWord
+ cells identifierCell leftAnyCell anyCell
  compiler
-  stringTemplate const {identifier} = {leftAnyWord} <= {anyWord}
+  stringTemplate const {identifierCell} = {leftAnyCell} <= {anyCell}
  frequency .1
- extends abstractBooleanOperator
-nodeType block
+ extends abstractBooleanOperatorNode
+blockNode
  description block of code
  frequency .2
  compiler
-  stringTemplate /* {identifier} */
- extends abstractJsblock
-nodeType functionNode
+  stringTemplate /* {identifierCell} */
+ extends abstractJsblockNode
+functionNode
  match function
  description Function Assignment
- cells functionIdentifier
- catchAllCellType anyWord
+ cells functionIdentifierCell
+ catchAllCellType anyCell
  compiler
-  stringTemplate const {functionIdentifier} = ({anyWord}) =>
+  stringTemplate const {functionIdentifierCell} = ({anyCell}) =>
   catchAllCellDelimiter , 
  frequency .1
- extends abstractJsblock
-nodeType ifNode
+ extends abstractJsblockNode
+ifNode
  match if
  description If tile
- cells identifier
+ cells identifierCell
  frequency .2
  compiler
-  stringTemplate if ({identifier})
- extends abstractJsblock
-nodeType whileNode
+  stringTemplate if ({identifierCell})
+ extends abstractJsblockNode
+whileNode
  match while
  description While tile
- cells identifier
+ cells identifierCell
  frequency .1
  compiler
-  stringTemplate while ({identifier})
- extends abstractJsblock
-nodeType callFunction
+  stringTemplate while ({identifierCell})
+ extends abstractJsblockNode
+callFunctionNode
  description Function call ignore result.
  frequency .1
- cells functionIdentifier
- catchAllCellType anyWord
+ cells functionIdentifierCell
+ catchAllCellType anyCell
  compiler
-  stringTemplate {functionIdentifier}({anyWord})
+  stringTemplate {functionIdentifierCell}({anyCell})
   catchAllCellDelimiter , 
- extends abstractTerminal
-nodeType decrement
+ extends abstractTerminalNode
+decrementNode
  description Decrement
- cells numberIdentifier
+ cells numberIdentifierCell
  compiler
-  stringTemplate {numberIdentifier}--
+  stringTemplate {numberIdentifierCell}--
  frequency .1
- extends abstractTerminal
-nodeType dumpIdentifier
+ extends abstractTerminalNode
+dumpIdentifierNode
  description Dump variable(s) to console
- catchAllCellType identifier
+ catchAllCellType identifierCell
  compiler
-  stringTemplate console.log({identifier})
+  stringTemplate console.log({identifierCell})
   catchAllCellDelimiter , 
  frequency .5
- extends abstractTerminal
-nodeType exportNode
+ extends abstractTerminalNode
+exportNode
  match export
  description Export This
- cells identifier
+ cells identifierCell
  compiler
-  stringTemplate module.exports = {identifier}
+  stringTemplate module.exports = {identifierCell}
  frequency .1
- extends abstractTerminal
-nodeType increment
+ extends abstractTerminalNode
+incrementNode
  description Increment
  frequency .3
- cells numberIdentifier
+ cells numberIdentifierCell
  compiler
-  stringTemplate {numberIdentifier}++
- extends abstractTerminal
-nodeType printNumber
- extends abstractTerminal
- catchAllCellType numberIdentifier
+  stringTemplate {numberIdentifierCell}++
+ extends abstractTerminalNode
+printNumberNode
+ extends abstractTerminalNode
+ catchAllCellType numberIdentifierCell
  compiler
-  stringTemplate console.log({numberIdentifier})
-nodeType printString
+  stringTemplate console.log({numberIdentifierCell})
+printStringNode
  todo Allow printing of multiline strings
- extends abstractTerminal
- catchAllCellType stringCells
+ extends abstractTerminalNode
+ catchAllCellType stringCellsCell
  compiler
   stringTemplate console.log("{stringCells}")
-nodeType requireNode
+requireNode
  match require
  description Require Something
- cells identifier filepath
+ cells identifierCell filepathCell
  compiler
-  stringTemplate const {identifier} = require("{filepath}")
+  stringTemplate const {identifierCell} = require("{filepathCell}")
  frequency .1
- extends abstractTerminal
-nodeType returnNode
+ extends abstractTerminalNode
+returnNode
  match return
- cells anyWord
+ cells anyCell
  compiler
-  stringTemplate return {anyWord}
+  stringTemplate return {anyCell}
  frequency .1
- extends abstractTerminal
+ extends abstractTerminalNode

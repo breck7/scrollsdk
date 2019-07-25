@@ -18,11 +18,16 @@ const testTree = {}
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
   const program = new GrammarProgram()
+  const errs = program.getAllErrors()
+
+  // Assert
+  if (errs.length) console.log(errs.map(err => err.getMessage()))
+  equal(errs.length, 0, "should be no errors")
 }
 
 testTree.basics = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
+  const grammarProgram = new GrammarProgram(jibberishGrammarCode)
   const errs = grammarProgram.getAllErrors()
 
   // Assert
@@ -34,13 +39,13 @@ const makeGrammarProgram = code => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = code => {
   const grammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
-  return makeProgram(grammarCode, code, jibberishGrammarPath)
+  return makeProgram(grammarCode, code)
 }
 
 const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
 
-const makeProgram = (grammarCode, code, grammarPath = undefined) => {
-  const grammarProgram = new GrammarProgram(grammarCode, grammarPath)
+const makeProgram = (grammarCode, code) => {
+  const grammarProgram = new GrammarProgram(grammarCode)
   const rootProgramConstructor = grammarProgram.getRootConstructor()
   return new rootProgramConstructor(code)
 }
@@ -53,7 +58,7 @@ testTree.jibberish = equal => {
   const program = makeJibberishProgram(sampleJibberishCode)
 
   // Assert
-  equal(program.constructor.name, "jibberish", "correct program class")
+  equal(program.constructor.name, "jibberishNode", "correct program class")
   const errs = program.getAllErrors()
   equal(errs.length, 0, `should be 0 errors`)
   if (errs.length) console.log(errs.map(err => err.getMessage()))
@@ -61,9 +66,9 @@ testTree.jibberish = equal => {
   const defNode = program
     .getGrammarProgramRoot()
     .getNodeTypeFamilyTree()
-    .getNode("topLevel nodeWithConsts nodeExpandsConsts")
+    .getNode("topLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
-  equal(defNode.toString(), "nodeExpandsConsts", "family tree works")
+  equal(defNode.toString(), "nodeExpandsConstsNode", "family tree works")
 
   // Act
   const fooNode = program.getNode("foo")
@@ -71,14 +76,14 @@ testTree.jibberish = equal => {
   const nodeExpandsConsts = program.getNode("nodeExpandsConsts")
 
   // Assert
-  equal(fooNode.getNodeTypeId(), "foo")
-  equal(constNode.getNodeTypeId(), "nodeWithConsts")
+  equal(fooNode.getNodeTypeId(), "fooNode")
+  equal(constNode.getNodeTypeId(), "nodeWithConstsNode")
   equal(
     constNode
       .getDefinition()
       .getAncestorNodeTypeIdsArray()
       .join(" "),
-    "topLevel nodeWithConsts"
+    "topLevelNode nodeWithConstsNode"
   )
 
   // Assert
@@ -105,26 +110,10 @@ world`,
   const addition = program.getNode("+")
 
   // Assert
-  equal(addition.constructor.name, "plus", "correct constructor name")
+  equal(addition.constructor.name, "plusNode", "correct constructor name")
 
   // Act/Assert
-  equal(program.getNode("someCode echo").constructor.name, "lineOfCode", "line of code class")
-
-  // Arrange
-  const programWithBugs = makeJibberishProgram(`+ foo bar`)
-
-  // Act/Assert
-  equal(programWithBugs.getAllErrors().length, 2)
-
-  // Act
-  let count = 0
-  for (let err of programWithBugs.getAllErrorsIterator()) {
-    // 2 errors in 1 line
-    equal(err.length, 2)
-  }
-
-  // Act/Asssert
-  equal(programWithBugs.getInvalidNodeTypes().length, 0)
+  equal(program.getNode("someCode echo").constructor.name, "lineOfCodeNode", "line of code class")
 
   // Act
   const programWithNodeTypeBugs = makeJibberishProgram(`missing 1 2
@@ -143,8 +132,26 @@ missing2 true`)
       ._getAncestorsArray()
       .map(def => def.getNodeTypeIdFromDefinition())
       .join(" "),
-    "h1Node abstractHtml topLevel"
+    "h1Node abstractHtmlNode topLevelNode"
   )
+}
+
+testTree.jibberishErrors = equal => {
+  // Arrange
+  const programWithBugs = makeJibberishProgram(`+ foo bar`)
+
+  // Act/Assert
+  equal(programWithBugs.getAllErrors().length, 2, "2 errors")
+
+  // Act
+  let count = 0
+  for (let err of programWithBugs.getAllErrorsIterator()) {
+    // 2 errors in 1 line
+    equal(err.length, 2)
+  }
+
+  // Act/Asssert
+  equal(programWithBugs.getInvalidNodeTypes().length, 0)
 }
 
 testTree.cellTypeTree = equal => {
@@ -157,10 +164,11 @@ testTree.cellTypeTree = equal => {
   // Assert
   equal(
     someJibberishProgram.getInPlaceCellTypeTree(),
-    `topLevelProperty
-opSymbol int int int`,
+    `topLevelPropertyCell
+opSymbolCell intCell intCell intCell`,
     "word types should match"
   )
+  equal(someJibberishProgram.findAllWordsWithCellType("intCell").length, 3)
 
   // Act
   const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()
@@ -169,42 +177,62 @@ opSymbol int int int`,
   // Assert
   equal(
     nodeTypes,
-    `foo topLevelProperty
-plus opSymbol int int int`,
+    `fooNode topLevelPropertyCell
+plusNode opSymbolCell intCell intCell intCell`,
     "nodeTypes word types should match"
   )
   equal(
     treeWithNodeTypes,
-    `foo foo
-plus + 2 3 2`,
+    `fooNode foo
+plusNode + 2 3 2`,
     "treeWithNodeTypes word types should match"
   )
 }
 
 testTree.prettify = equal => {
   // Arrange
-  const normalCode = `nodeType someLang
+  const normalCode = `someLangNode
  root
-nodeType topLevel
+topLevelNode
  abstract
-nodeType abstractHtml
- extends topLevel
+abstractHtmlNode
+ extends topLevelNode
  abstract
-nodeType h1Node
+h1Node
  match html.h1
- extends abstractHtml
-nodeType colorProperties
- extends topLevel
+ extends abstractHtmlNode
+colorPropertiesNode
+ extends topLevelNode
  abstract
-nodeType constrast
- extends colorProperties
-nodeType hue
- extends colorProperties
-nodeType saturation
- extends colorProperties`
+constrastNode
+ extends colorPropertiesNode
+hueNode
+ extends colorPropertiesNode
+saturationNode
+ extends colorPropertiesNode`
   const grammarProgram = makeGrammarProgram(normalCode)
   const pretty = grammarProgram.getPrettified()
   equal(pretty, normalCode, "code is already in pretty form")
+}
+
+testTree.cokeRegression = equal => {
+  // Arrange
+  const lang = `cokeNode
+ root
+ inScope cokesNode
+intCell
+ highlightScope constant.numeric.integer
+cokesNode
+ catchAllCellType intCell`
+  const code = `
+cokes 22 11`
+
+  // Act
+  const program = makeGrammarProgram(lang, code)
+
+  // Assert
+  equal(program.getAllErrors().length, 0)
+  equal(typeof program.getInPlaceHighlightScopeTree(), "string")
 }
 
 testTree.highlightScopes = equal => {
@@ -247,7 +275,7 @@ com
 `)
 
   // Act/Assert
-  equal(program.getAutocompleteResultsAt(1, 0).matches.length, 1)
+  equal(program.getAutocompleteResultsAt(1, 0).matches.length, 1, "should be 1 match")
   equal(program.getAutocompleteResultsAt(1, 2).matches.length, 1, "should complete comment")
   equal(program.getAutocompleteResultsAt(1, 3).matches.length, 1, "should complete comment")
   equal(program.getAutocompleteResultsAt(2, 0).matches.length, 8, "all nodes")
@@ -269,21 +297,21 @@ com
 
 testTree.extraWord = equal => {
   // Arrange
-  const program = makeGrammarProgram(`nodeType foobar foo2
- root`)
+  const program = makeGrammarProgram(`foobarNode
+ root foo2`)
 
   // Act/Assert
   equal(program.getAllErrors().length, 1)
   equal(
     program.getInPlaceCellTypeTree(),
-    `nodeTypeIdConstant nodeTypeId extraWord
- propertyName`
+    `nodeTypeIdCell
+ propertyKeywordCell extraWordCell`
   )
 }
 
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
-  const program = makeGrammarProgram(`cellType foo
+  const program = makeGrammarProgram(`fooCell
  highlightScope comme`)
 
   // Act/Assert
@@ -292,17 +320,17 @@ testTree.autocompleteAdditionalWords = equal => {
 
 testTree.autocompleteAdvanced = equal => {
   // Arrange
-  const program = makeGrammarProgram(`nodeType latin
+  const program = makeGrammarProgram(`latinNode
  root
- catchAllNodeType any
- inScope faveNumber
-cellType integer
-nodeType any
-nodeType faveNumber
+ catchAllNodeType anyNode
+ inScope faveNumberNode
+integerCell
+anyNode
+faveNumberNode
  cells in`)
 
   // Act/Assert
-  equal(program.getAutocompleteResultsAt(7, 9).matches.length, 1)
+  equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)
 }
 
 testTree.autocompleteCustom = equal => {
@@ -334,7 +362,7 @@ testTree.blobNodes = equal => {
 
 testTree.sublimeSyntaxFile = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
+  const grammarProgram = new GrammarProgram(jibberishGrammarCode)
   const code = grammarProgram.toSublimeSyntaxFile()
 
   // Assert
@@ -360,12 +388,12 @@ testTree.sublimeSyntaxFile = equal => {
 testTree.minimumGrammar = equal => {
   // Arrange/Act
   const programConstructor = new GrammarProgram(
-    `nodeType any
+    `anyLangNode
  root
  catchAllNodeType anyNode
-nodeType anyNode
- catchAllCellType any
-cellType any`
+anyNode
+ catchAllCellType anyCell
+anyCell`
   ).getRootConstructor()
   const program = new programConstructor()
   const grammarProgram = program.getGrammarProgramRoot()
@@ -384,19 +412,19 @@ cellType any`
 
 testTree.rootCatchAllNode = equal => {
   // Arrange
-  const abcLang = new GrammarProgram(`nodeType abc
+  const abcLang = new GrammarProgram(`abcNode
  root`).getRootConstructor()
 
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.getInPlaceCellTypeTree(), "anyFirstWord")
+  equal(program.getInPlaceCellTypeTree(), "anyFirstCell")
 
   // Arrange
-  const abcLangWithErrors = new GrammarProgram(`nodeType abc
+  const abcLangWithErrors = new GrammarProgram(`abcNode
  root
  catchAllNodeType errorNode
-nodeType errorNode
+errorNode
  baseNodeType errorNode`).getRootConstructor()
 
   // Act/Assert
@@ -415,17 +443,17 @@ testTree.grammarWithLoop = equal => {
   // Arrange/Act/Assert
   try {
     const programConstructor = new GrammarProgram(
-      `nodeType langWithLoop
+      `langWithLoopNode
  root
- catchAllNodeType nodeA
-nodeType nodeA
- extends nodeC
+ catchAllNodeType nodeANode
+nodeANode
+ extends nodeCNode
  catchAllCellType anyCell
-nodeType nodeB
- extends nodeA
-nodeType nodeC
- extends nodeB
-cellType anyCell`
+nodeBNode
+ extends nodeANode
+nodeCNode
+ extends nodeBNode
+anyCell`
     ).getRootConstructor()
 
     new programConstructor("nodeA")
@@ -455,19 +483,20 @@ extendsAbstract 2`)
 
 testTree.updateNodeTypeIds = equal => {
   // Arrange/Act
-  const anyProgram = makeGrammarProgram(`nodeType someLang
+  const anyProgram = makeGrammarProgram(`someLangNode
  root
-cellType foobar
+foobarCell
  regex test`)
 
   // Assert
-  let errors = anyProgram.updateNodeTypeIds(`nodeType fooType
-regex regexString`)
+  anyProgram.findAllNodesWithNodeType("regexNode").forEach(node => {
+    node.setWord(0, "regexString")
+  })
   equal(
     anyProgram.toString(),
-    `fooType someLang
+    `someLangNode
  root
-cellType foobar
+foobarCell
  regexString test`
   )
 }
@@ -483,7 +512,7 @@ testTree.toNodeJsJavascript = equal => {
 
 testTree.examples = equal => {
   // Arrange/Act
-  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode, jibberishGrammarPath)
+  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode)
 
   // Assert
   let errors = jibberishGrammarProgram.getErrorsInGrammarExamples()
@@ -491,16 +520,16 @@ testTree.examples = equal => {
 
   // Arrange/Act
   const badGrammarProgram = new GrammarProgram(
-    `nodeType bad
+    `badNode
  root
  inScope addNode
-nodeType addNode
+addNode
  match +
- catchAllCellType int
+ catchAllCellType intCell
  example This is a bad example.
   + 1 B
-cellType anyFirstWord
-cellType int`
+anyFirstCell
+intCell`
   )
 
   // Assert

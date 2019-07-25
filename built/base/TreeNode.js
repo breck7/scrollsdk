@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractNode_node_1 = require("./AbstractNode.node");
 const TreeUtils_1 = require("./TreeUtils");
+const Parser_1 = require("./Parser");
 var FileFormat;
 (function (FileFormat) {
     FileFormat["csv"] = "csv";
@@ -1114,7 +1115,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
     }
     // todo: protected?
     _setLineAndChildren(line, children, index = this.length) {
-        const nodeConstructor = this.getNodeConstructor(line);
+        const nodeConstructor = this._getParser()._getNodeConstructor(line, this);
         const newNode = new nodeConstructor(children, line, this);
         const adjustedIndex = index < 0 ? this.length + index : index;
         this._getChildrenArray().splice(adjustedIndex, 0, newNode);
@@ -1142,7 +1143,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
             }
             const lineContent = line.substr(currentIndentCount);
             const parent = parentStack[parentStack.length - 1];
-            const nodeConstructor = parent.getNodeConstructor(lineContent);
+            const nodeConstructor = parent._getParser()._getNodeConstructor(lineContent, parent);
             lastNode = new nodeConstructor(undefined, lineContent, parent);
             parent._getChildrenArray().push(lastNode);
         });
@@ -1247,12 +1248,6 @@ class ImmutableNode extends AbstractNode_node_1.default {
     slice(start, end) {
         return this.getChildren().slice(start, end);
     }
-    getFirstWordMap() {
-        return {};
-    }
-    getCatchAllNodeConstructor(line) {
-        return this.constructor;
-    }
     // todo: make 0 and 1 a param
     getInheritanceTree() {
         const paths = {};
@@ -1269,12 +1264,13 @@ class ImmutableNode extends AbstractNode_node_1.default {
     _getGrandParent() {
         return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent();
     }
-    _getFirstWord(line) {
-        const firstBreak = line.indexOf(this.getZI());
-        return line.substr(0, firstBreak > -1 ? firstBreak : undefined);
+    _getParser() {
+        if (!this._parser)
+            this._parser = this.createParser();
+        return this._parser;
     }
-    getNodeConstructor(line) {
-        return this.getFirstWordMap()[this._getFirstWord(line)] || this.getCatchAllNodeConstructor(line);
+    createParser() {
+        return new Parser_1.default(this.constructor);
     }
     static _makeUniqueId() {
         if (this._uniqueId === undefined)
@@ -1287,6 +1283,7 @@ class ImmutableNode extends AbstractNode_node_1.default {
         return FileFormat[format] ? format : FileFormat.tree;
     }
 }
+ImmutableNode.Parser = Parser_1.default;
 ImmutableNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
 5.6,2.7,4.2,1.3,versicolor

@@ -1,16 +1,16 @@
-nodeType zin
+zinNode
  root
  description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-tree programming languages into one tree language.
- catchAllNodeType catchAllError
- inScope aloha
-cellType name
+ catchAllNodeType catchAllErrorNode
+ inScope alohaNode
+nameCell
  description A person's name
  highlightScope string
-cellType keyword
+keywordCell
  highlightScope keyword
-nodeType aloha
+alohaNode
  description Say aloha to a person.
- catchAllCellType name
- firstCellType keyword
-nodeType catchAllError
+ catchAllCellType nameCell
+ firstCellType keywordCell
+catchAllErrorNode
  baseNodeType errorNode

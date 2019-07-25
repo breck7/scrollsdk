@@ -3,32 +3,32 @@ test swarmSample
  arrangeTestSubject
   require ../../built/GrammarLanguage.js GrammarProgram
   constructWithBlockString
-   nodeType testlang
+   testlangNode
     root
     compilesTo txt
     inScope baseNode
     catchAllNodeType errorNode
-   cellType any
-   cellType word
-    extends any
-   nodeType errorNode
+   anyCell
+   wordCell
+    extends anyCell
+   errorNode
     baseNodeType errorNode
-   nodeType baseNode
-   nodeType block
+   baseNode
+   blockNode
     extends baseNode
     inScope baseNode
-   nodeType to
-    extends block
-    cells word
+   toNode
+    extends blockNode
+    cells wordCell
     tags test
     compiler
-     stringTemplate to {word}
+     stringTemplate to {wordCell}
      closeChildren end
  getAllErrors
   lengthIs 0
  getRunTimeFirstWordsInScope
-  lengthIs 4
- getNodeTypeDefinitionByNodeTypeId to
+  lengthIs 2
+ getNodeTypeDefinitionByNodeTypeId toNode
   typeIs object
  getTopNodeTypeIds
   lengthIs 3

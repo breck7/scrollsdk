@@ -1,15 +1,15 @@
 todo Add comments?
 todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
-nodeType swarm
+swarmNode
  root
  description A Tree Language for unit testing.
- inScope hashbangNode arrangeTestSubject testBlock
- catchAllNodeType error
+ inScope hashbangNode arrangeTestSubjectNode testBlockNode
+ catchAllNodeType errorNode
  javascript
   getCommandParent(testSubject) { return testSubject }
   getTestSetupNode() {
-    return this.getChildInstancesOfNodeTypeId("arrangeTestSubject")[0]
+    return this.getChildInstancesOfNodeTypeId("arrangeTestSubjectNode")[0]
   }
   async execute(filepath) {
     const tests = this.getTestsToRun()
@@ -17,39 +17,39 @@ nodeType swarm
     return `${tests.length} tests started.`
   }
   getTestsToRun() {
-    const solos = this.getChildInstancesOfNodeTypeId("testOnly")
-    return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlock").filter(test => !(test.doesExtend("skipTest")))
+    const solos = this.getChildInstancesOfNodeTypeId("testOnlyNode")
+    return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlockNode").filter(test => !(test.doesExtend("skipTestNode")))
   }
-cellType anyFirstWord
-cellType anyWord
+anyFirstCell
+anyCell
  highlightScope string
-cellType arrangeWord
+arrangeCell
  highlightScope constant.language
-cellType assertWord
+assertCell
  highlightScope keyword.operator
-cellType commandWord
+commandCell
  highlightScope variable.function
-cellType controlWord
+controlCell
  highlightScope keyword.control
-cellType extraWord
+extraCell
  highlightScope invalid
-cellType filepath
+filepathCell
  highlightScope string
-cellType hashBangWord
+hashBangCell
  highlightScope comment
-cellType int
+intCell
  regex \-?[0-9]+
  highlightScope constant.numeric.integer
-cellType parameterWord
+parameterCell
  highlightScope variable.parameter
-cellType todoWord
+todoCell
  highlightScope comment
-cellType typeOfOption
+typeOfOptionCell
  description The 6 possible results for Javascript's typeof.
  highlightScope constant.language
  enum object boolean function number string undefined
-nodeType abstractAssertion
- firstCellType assertWord
+abstractAssertionNode
+ firstCellType assertCell
  abstract
  javascript
   async execute(testSubject) {
@@ -108,11 +108,11 @@ nodeType abstractAssertion
     const final = methodParts.shift()
     return [context, final]
   }
-nodeType terminal
- firstCellType arrangeWord
+terminalNode
+ firstCellType arrangeCell
  abstract
-nodeType testBlock
- catchAllCellType anyWord
+testBlockNode
+ catchAllCellType anyCell
  javascript
   getTestSetupNode() {
     return this.getNode("arrangeTestSubject") || this.getParent().getTestSetupNode()
@@ -167,21 +167,21 @@ nodeType testBlock
     const res = await this.isNodeJs() ? this._executeNode(programFilepath) : this._executeBrowser()
     return res
   }
- inScope arrangeTestSubject
+ inScope arrangeTestSubjectNode
  catchAllNodeType commandNode
- firstCellType controlWord
+ firstCellType controlCell
  abstract
-nodeType hashbangNode
+hashbangNode
  match #!
  description Standard bash hashbang line.
- cells hashBangWord
- catchAllCellType hashBangWord
- firstCellType hashBangWord
-nodeType arrangeTestSubject
+ cells hashBangCell
+ catchAllCellType hashBangCell
+ firstCellType hashBangCell
+arrangeTestSubjectNode
  javascript
   getTestSubject(programFilepath) {
     const requiredClass = this._getRequiredClass(programFilepath)
-    const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithBlockString")[0]
+    const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithBlockStringNode")[0]
     const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
     return this.has("static") ? requiredClass : new requiredClass(param)
    }
@@ -202,28 +202,28 @@ nodeType arrangeTestSubject
     return theClass
    }
   executeSync() {}
- firstCellType arrangeWord
- inScope async requireNode staticNode constructWithBlockString todo
-nodeType async
+ firstCellType arrangeCell
+ inScope asyncNode requireNode staticNode constructWithBlockStringNode todoNode
+asyncNode
  description Set this in setup to test async methods.
- extends terminal
-nodeType blockStringIs
+ extends terminalNode
+blockStringIsNode
  description When your expected value is a multiline string.
- catchAllNodeType textBlock
+ catchAllNodeType textBlockNode
  javascript
   getExpected() { return this.childrenToString() }
   getSyncExpected() { return this.childrenToString() }
- extends abstractAssertion
-nodeType abstractCommandArg
+ extends abstractAssertionNode
+abstractCommandArgNode
  abstract
  javascript
   executeSync() {}
-nodeType blockStringParam
- firstCellType parameterWord
+blockStringParamNode
+ firstCellType parameterCell
  description Pass in a multiline string as a command arg. #todo: rename
- extends abstractCommandArg
- catchAllNodeType textBlock
-nodeType commandNode
+ extends abstractCommandArgNode
+ catchAllNodeType textBlockNode
+commandNode
  javascript
   getTestBlock() {
     return this.getParent()
@@ -232,7 +232,7 @@ nodeType commandNode
     return this.getTestBlock().getEqualFn()
   }
   _getArgs() {
-    const argNodes = this.getChildInstancesOfNodeTypeId("abstractCommandArg")
+    const argNodes = this.getChildInstancesOfNodeTypeId("abstractCommandArgNode")
     if (argNodes.length) return argNodes.map(arg => arg.childrenToString())
     return this.getWordsFrom(1)
   }
@@ -252,40 +252,40 @@ nodeType commandNode
     return this.map(child => child.executeSync(newTestSubject))
   }
  description Input is an object, and calls some method with an optional array of string args.
- catchAllCellType anyWord
+ catchAllCellType anyCell
  catchAllNodeType commandNode
- firstCellType commandWord
- inScope blockStringParam abstractAssertion
-nodeType constructWithBlockString
+ firstCellType commandCell
+ inScope blockStringParamNode abstractAssertionNode
+constructWithBlockStringNode
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
- catchAllNodeType textBlock
- firstCellType arrangeWord
-nodeType error
+ catchAllNodeType textBlockNode
+ firstCellType arrangeCell
+errorNode
  baseNodeType errorNode
-nodeType lengthIs
+lengthIsNode
  description Intake is an array, and checks if the length of array matches expected.
- cells int
+ cells intCell
  javascript
   parseActual(actual) { return actual.length }
   printFailureMessage(actual) {
     super.printFailureMessage()
     console.log(actual.join("\n"))
   }
- extends abstractAssertion
-nodeType requireNode
+ extends abstractAssertionNode
+requireNode
  match require
- cells filepath
- catchAllCellType anyWord
- extends terminal
-nodeType staticNode
+ cells filepathCell
+ catchAllCellType anyCell
+ extends terminalNode
+staticNode
  match static
  description Add this to setup node to import class directly without initiating it, for static method testing.
- extends terminal
-nodeType stringExcludes
+ extends terminalNode
+stringExcludesNode
  description Converts the input to string and ensure the string does NOT contain the provided string
- catchAllCellType anyWord
+ catchAllCellType anyCell
  javascript
    getTestResult(actualAsString, expected, message) {
     const result = !actualAsString.includes(expected)
@@ -297,9 +297,9 @@ nodeType stringExcludes
     this.equal(result, true, message)
     return result
   }
- extends abstractAssertion
-nodeType stringIncludes
- catchAllCellType anyWord
+ extends abstractAssertionNode
+stringIncludesNode
+ catchAllCellType anyCell
  description Converts the input to string and see if the string contains the provided string
  javascript
    getTestResult(actualAsString, expected, message) {
@@ -307,34 +307,34 @@ nodeType stringIncludes
     this.equal(result, true, message)
     return result
   }
- extends abstractAssertion
-nodeType stringIs
+ extends abstractAssertionNode
+stringIsNode
  description Intake is anything with a toString method, and compares that to provided expected value.
- catchAllCellType anyWord
- extends abstractAssertion
-nodeType test
+ catchAllCellType anyCell
+ extends abstractAssertionNode
+testNode
  description Basic test block.
- extends testBlock
-nodeType testOnly
+ extends testBlockNode
+testOnlyNode
  description If set, only this test block will be run.
- extends testBlock
-nodeType skipTest
+ extends testBlockNode
+skipTestNode
  description If you want to skip running a test.
  javascript
   async execute() { console.log(`Skipped test ${this.getLine()}`) }
- extends testBlock
-nodeType textBlock
- firstCellType anyWord
- catchAllCellType anyWord
- catchAllNodeType textBlock
-nodeType todo
+ extends testBlockNode
+textBlockNode
+ firstCellType anyCell
+ catchAllCellType anyCell
+ catchAllNodeType textBlockNode
+todoNode
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
- catchAllCellType todoWord
- firstCellType todoWord
- catchAllNodeType todo
-nodeType typeIs
+ catchAllCellType todoCell
+ firstCellType todoCell
+ catchAllNodeType todoNode
+typeIsNode
  description Assert result is one of Javascript's 6 typeof types.
- cells typeOfOption
+ cells typeOfOptionCell
  javascript
   parseActual(actual) { return typeof actual }
- extends abstractAssertion
+ extends abstractAssertionNode

@@ -382,9 +382,9 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
 
   createParser() {
     return new TreeNode.Parser(
-      this.getRootProgramNode()
+      this.getParent()
         ._getParser()
-        ._getCatchAllNodeConstructor(this),
+        ._getCatchAllNodeConstructor(this.getParent()),
       {}
     )
   }
@@ -1614,8 +1614,10 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
           .join(",")}]`
       : "undefined"
 
+    const catchAllStr = catchAllConstructor ? catchAllConstructor : this._amIRoot() ? `this._getBlobNodeCatchAllNodeType()` : "undefined"
+
     return `createParser() {
-  return new jtree.TreeNode.Parser(${catchAllConstructor || "undefined"}, ${firstWordsStr}, ${regexStr})
+  return new jtree.TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
   }`
   }
 

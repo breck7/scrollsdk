@@ -17,11 +17,12 @@ class Parser {
         return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode);
     }
     _getCatchAllNodeConstructor(contextNode) {
-        return (this._catchAllNodeConstructor ||
-            contextNode
-                .getParent()
-                ._getParser()
-                ._getCatchAllNodeConstructor(contextNode.getParent()));
+        if (this._catchAllNodeConstructor)
+            return this._catchAllNodeConstructor;
+        const parent = contextNode.getParent();
+        if (parent)
+            return parent._getParser()._getCatchAllNodeConstructor(parent);
+        return contextNode.constructor;
     }
     _getConstructorFromRegexTests(line) {
         if (!this._regexTests)

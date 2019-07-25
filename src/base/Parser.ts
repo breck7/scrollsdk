@@ -29,13 +29,13 @@ class Parser {
   }
 
   _getCatchAllNodeConstructor(contextNode: jTreeTypes.treeNode) {
-    return (
-      this._catchAllNodeConstructor ||
-      contextNode
-        .getParent()
-        ._getParser()
-        ._getCatchAllNodeConstructor(contextNode.getParent())
-    )
+    if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
+
+    const parent = contextNode.getParent()
+
+    if (parent) return parent._getParser()._getCatchAllNodeConstructor(parent)
+
+    return contextNode.constructor
   }
 
   private _getConstructorFromRegexTests(line: string): jTreeTypes.TreeNodeConstructor {

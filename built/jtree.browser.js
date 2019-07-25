@@ -33,11 +33,12 @@ class Parser {
         return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode);
     }
     _getCatchAllNodeConstructor(contextNode) {
-        return (this._catchAllNodeConstructor ||
-            contextNode
-                .getParent()
-                ._getParser()
-                ._getCatchAllNodeConstructor());
+        if (this._catchAllNodeConstructor)
+            return this._catchAllNodeConstructor;
+        const parent = contextNode.getParent();
+        if (parent)
+            return parent._getParser()._getCatchAllNodeConstructor(parent);
+        return contextNode.constructor;
     }
     _getConstructorFromRegexTests(line) {
         if (!this._regexTests)
@@ -2770,6 +2771,11 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     getRootProgramNode() {
         return this.getParent().getRootProgramNode();
     }
+    createParser() {
+        return new TreeNode.Parser(this.getParent()
+            ._getParser()
+            ._getCatchAllNodeConstructor(this.getParent()), {});
+    }
     getNodeTypeId() {
         return this.getDefinition().getNodeTypeIdFromDefinition();
     }
@@ -2887,7 +2893,7 @@ ${indent}${closeChildrenString}`;
 }
 class BlobNode extends GrammarBackedNonRootNode {
     createParser() {
-        return new TreeNode.Parser(this.constructor, {});
+        return new TreeNode.Parser(BlobNode, {});
     }
     getErrors() {
         return [];
@@ -2895,7 +2901,7 @@ class BlobNode extends GrammarBackedNonRootNode {
 }
 class UnknownNodeTypeNode extends GrammarBackedNonRootNode {
     createParser() {
-        return new TreeNode.Parser(this.constructor, {});
+        return new TreeNode.Parser(UnknownNodeTypeNode, {});
     }
     getErrors() {
         return [new UnknownNodeTypeError(this)];
@@ -3452,7 +3458,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
         kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell;
         kinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell;
         kinds[PreludeCellTypeIds.intCell] = GrammarIntCell;
-        return kinds[this.getWord(1)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell;
+        return kinds[this.getWord(0)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell;
     }
     _getExtendedCellTypeId() {
         return this.get(GrammarConstants.extends);
@@ -3499,6 +3505,7 @@ class GrammarCompilerNode extends TreeNode {
             GrammarConstantsCompiler.stringTemplate,
             GrammarConstantsCompiler.indentCharacter,
             GrammarConstantsCompiler.catchAllCellDelimiter,
+            GrammarConstantsCompiler.joinChildrenWith,
             GrammarConstantsCompiler.openChildren,
             GrammarConstantsCompiler.closeChildren
         ];
@@ -3751,7 +3758,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     _getParserToJavascript() {
         if (this._isBlobNodeType())
             // todo: do we need this?
-            return "createParser() { return new jtree.TreeNode.Parser(this)}";
+            return "createParser() { return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType())}";
         const parserInfo = this._createParserInfo(this._getMyInScopeNodeTypeIds());
         const myFirstWordMap = parserInfo.firstWordMap;
         const regexRules = parserInfo.regexTests;
@@ -3774,8 +3781,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             })
                 .join(",")}]`
             : "undefined";
+        const catchAllStr = catchAllConstructor ? catchAllConstructor : this._amIRoot() ? `this._getBlobNodeCatchAllNodeType()` : "undefined";
         return `createParser() {
-  return new jtree.TreeNode.Parser(${catchAllConstructor || "undefined"}, ${firstWordsStr}, ${regexStr})
+  return new jtree.TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
   }`;
     }
     _getCatchAllNodeConstructorToJavascript() {
@@ -4611,7 +4619,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "34.2.0";
+jtree.getVersion = () => "35.0.0";
 window.jtree
     = jtree;
 class Upgrader extends TreeNode {

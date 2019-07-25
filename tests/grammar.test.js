@@ -215,7 +215,27 @@ saturationNode
   equal(pretty, normalCode, "code is already in pretty form")
 }
 
-testTree._highlightScopes = equal => {
+testTree.cokeRegression = equal => {
+  // Arrange
+  const lang = `cokeNode
+ root
+ inScope cokesNode
+intCell
+ highlightScope constant.numeric.integer
+cokesNode
+ catchAllCellType intCell`
+  const code = `
+cokes 22 11`
+
+  // Act
+  const program = makeGrammarProgram(lang, code)
+
+  // Assert
+  equal(program.getAllErrors().length, 0)
+  equal(typeof program.getInPlaceHighlightScopeTree(), "string")
+}
+
+testTree.highlightScopes = equal => {
   // Arrange
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
@@ -500,16 +520,16 @@ testTree.examples = equal => {
 
   // Arrange/Act
   const badGrammarProgram = new GrammarProgram(
-    `nodeType bad
+    `badNode
  root
  inScope addNode
-nodeType addNode
+addNode
  match +
- catchAllCellType int
+ catchAllCellType intCell
  example This is a bad example.
   + 1 B
-cellType anyFirstCell
-cellType int`
+anyFirstCell
+intCell`
   )
 
   // Assert

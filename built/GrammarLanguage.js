@@ -310,9 +310,9 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
         return this.getParent().getRootProgramNode();
     }
     createParser() {
-        return new TreeNode_1.default.Parser(this.getRootProgramNode()
+        return new TreeNode_1.default.Parser(this.getParent()
             ._getParser()
-            ._getCatchAllNodeConstructor(this), {});
+            ._getCatchAllNodeConstructor(this.getParent()), {});
     }
     getNodeTypeId() {
         return this.getDefinition().getNodeTypeIdFromDefinition();
@@ -1320,8 +1320,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             })
                 .join(",")}]`
             : "undefined";
+        const catchAllStr = catchAllConstructor ? catchAllConstructor : this._amIRoot() ? `this._getBlobNodeCatchAllNodeType()` : "undefined";
         return `createParser() {
-  return new jtree.TreeNode.Parser(${catchAllConstructor || "undefined"}, ${firstWordsStr}, ${regexStr})
+  return new jtree.TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
   }`;
     }
     _getCatchAllNodeConstructorToJavascript() {

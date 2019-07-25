@@ -125,7 +125,7 @@ Using this Library
 
 This library ships with a command line utility:
 
-    npm install jtree
+    npm install -g jtree
     jtree help
 
 To use it in an npm project:
@@ -139,7 +139,7 @@ If you want to make your own Tree Language, launch the jtree sandbox and play ar
 
     npm install -g jtree
     jtree sandbox 3333
-    # Open http://localhost:3333/sandbox/grammars.html
+    # Open http://localhost:3333/sandbox/build/
 
 Monorepo
 --------

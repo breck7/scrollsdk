@@ -33,10 +33,9 @@ cellType booleanCell
  highlightScope constant.numeric
 cellType cellPropertyName
  highlightScope variable.parameter
-cellType cellTypeEnum
- enumFromCellTypes cellTypeId
 cellType cellTypeId
  extends javascriptSafeAlphaNumericIdentifier
+ enumFromCellTypes cellTypeId
 cellType cellTypeIdConstant
  highlightScope variable.parameter
 cellType constantIdentifier
@@ -59,14 +58,12 @@ cellType intCell
 cellType javascriptCodeCell
 cellType lowercaseCell
  regex [a-z]+
-cellType nodeTypeEnum
- highlightScope variable.parameter
- enumFromCellTypes nodeTypeId
 cellType nodeTypeId
  todo Cell type checking.
  description This doubles as the class name in Javascript.
  highlightScope variable.parameter
  extends javascriptSafeAlphaNumericIdentifier
+ enumFromCellTypes nodeTypeId
 cellType nodeTypeIdConstant
  highlightScope variable.function
 cellType propertyName
@@ -237,15 +234,15 @@ nodeType baseNodeType
  description In rare cases with untyped content you can use a blobNode, for now, to skip parsing for performance gains. The base errorNode will report errors when parsed. Use that if you don't want to implement your own error nodeType.
  extends abstractNodeTypeRule
 nodeType catchAllCellType
- cells cellTypeEnum
+ cells cellTypeId
  description If there are extra words in the node's line, parse these words as this type.
  extends abstractNodeTypeRule
 nodeType catchAllNodeType
  description If a nodeType is not found in the inScope list, instantiate this type of node instead.
- cells nodeTypeEnum
+ cells nodeTypeId
  extends abstractNodeTypeRule
 nodeType cells
- catchAllCellType cellTypeEnum
+ catchAllCellType cellTypeId
  description Describes the word type of each word in the line.
  extends abstractNodeTypeRule
 nodeType compiler
@@ -266,17 +263,17 @@ nodeType extendsNodeTypeNode
  match extends
  description nodeType definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
- cells nodeTypeEnum
+ cells nodeTypeId
  extends abstractNodeTypeRule
 nodeType extendsCellTypeNode
  match extends
  description cellType definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
- cells cellTypeEnum
+ cells cellTypeId
  firstCellType propertyName
  single
 nodeType firstCellType
- cells cellTypeEnum
+ cells cellTypeId
  description If you have an any node, use this to correctly parse the first word.
  extends abstractNodeTypeRule
 nodeType frequency
@@ -285,7 +282,7 @@ nodeType frequency
  extends abstractNodeTypeRule
 nodeType inScope
  description A list of possible child nodeTypes for a node.
- catchAllCellType nodeTypeEnum
+ catchAllCellType nodeTypeId
  extends abstractNodeTypeRule
 nodeType javascript
  todo Urgently need to get submode syntax highlighting running! (And eventually LSP)

@@ -29,8 +29,6 @@ class GrammarUpgrader extends jtree.Upgrader {
           program.findNodes("nodeType").forEach(removeTypeWord)
           program.findNodes("cellType").forEach(removeTypeWord)
 
-          console.log(program.getAllTypedWords().join("\n"))
-          return tree
           return program
         }
       },

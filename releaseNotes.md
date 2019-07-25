@@ -1,3 +1,8 @@
+35.1.0 / 2019-07-25
+===================
+- New: printLinesFrom and printLinesWithLineNumbersFrom methods
+- Fix: fix for npm install -g dependency issues
+
 35.0.1 / 2019-07-25
 ===================
 - Fix: fixed uncaught error when an old grammar is used with a "root" subnode

@@ -58,6 +58,9 @@ declare class ImmutableNode extends AbstractNode {
     getRootNode(): ImmutableNode | this;
     protected _getRootNode(relativeTo?: ImmutableNode): ImmutableNode | this;
     toString(indentCount?: number, language?: this): string;
+    printLinesFrom(start: jTreeTypes.int, quantity: jTreeTypes.int): this;
+    printLinesWithLineNumbersFrom(start: jTreeTypes.int, quantity: jTreeTypes.int): this;
+    private _printLinesFrom;
     getWord(index: int): word;
     protected _toHtml(indentCount: int): string;
     protected _getWords(startFrom: int): string[];

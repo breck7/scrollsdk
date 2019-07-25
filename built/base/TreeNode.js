@@ -167,6 +167,26 @@ class ImmutableNode extends AbstractNode_node_1.default {
             return this._childrenToString(indentCount, language);
         return (language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : ""));
     }
+    printLinesFrom(start, quantity) {
+        return this._printLinesFrom(start, quantity, false);
+    }
+    printLinesWithLineNumbersFrom(start, quantity) {
+        return this._printLinesFrom(start, quantity, true);
+    }
+    _printLinesFrom(start, quantity, printLineNumbers) {
+        // todo: use iterator for better perf?
+        const end = start + quantity;
+        this.toString()
+            .split("\n")
+            .slice(start, end)
+            .forEach((line, index) => {
+            if (printLineNumbers)
+                console.log(`${start + index} ${line}`);
+            else
+                console.log(line);
+        });
+        return this;
+    }
     getWord(index) {
         const words = this._getLine().split(this.getZI());
         if (index < 0)

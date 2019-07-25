@@ -581,6 +581,26 @@ class ImmutableNode extends AbstractNode {
             return this._childrenToString(indentCount, language);
         return (language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : ""));
     }
+    printLinesFrom(start, quantity) {
+        return this._printLinesFrom(start, quantity, false);
+    }
+    printLinesWithLineNumbersFrom(start, quantity) {
+        return this._printLinesFrom(start, quantity, true);
+    }
+    _printLinesFrom(start, quantity, printLineNumbers) {
+        // todo: use iterator for better perf?
+        const end = start + quantity;
+        this.toString()
+            .split("\n")
+            .slice(start, end)
+            .forEach((line, index) => {
+            if (printLineNumbers)
+                console.log(`${start + index} ${line}`);
+            else
+                console.log(line);
+        });
+        return this;
+    }
     getWord(index) {
         const words = this._getLine().split(this.getZI());
         if (index < 0)
@@ -3941,6 +3961,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
                 try {
                     const rootNode = this._importNodeJsRootNodeTypeConstructor(code);
                     this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap();
+                    if (!this._cache_compiledLoadedNodeTypes)
+                        throw new Error(`Failed to getNodeTypeMap`);
                 }
                 catch (err) {
                     console.log(err);
@@ -4621,7 +4643,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "35.0.1";
+jtree.getVersion = () => "35.1.0";
 window.jtree
     = jtree;
 class Upgrader extends TreeNode {

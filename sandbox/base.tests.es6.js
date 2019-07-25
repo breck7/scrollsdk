@@ -3610,6 +3610,25 @@ testTree.typeTests = equal => {
   equal(a.getLineCellTypes(), "undefinedCellType") // todo: make this a constant
 }
 
+testTree.printLines = equal => {
+  // Arrange
+  let lastLogMessage = ""
+  const orig = console.log
+  console.log = msg => (lastLogMessage += msg + "\n")
+  const a = new TreeNode(`text\n hello`)
+  // Act/Assert
+  a.printLinesFrom(0, 1)
+  equal(lastLogMessage, "text\n")
+
+  // Arrange
+  lastLogMessage = ""
+  // Act
+  a.printLinesWithLineNumbersFrom(0, 2)
+  equal(lastLogMessage, "0 text\n1  hello\n")
+  // Cleanup
+  console.log = orig
+}
+
 testTree.isBlank = equal => {
   // Arrange
   const a = new TreeNode("text\n\ntest \ntest2  ")

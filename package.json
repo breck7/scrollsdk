@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "35.0.1",
+  "version": "35.1.0",
   "description": "Simplify your code with Tree Notation. This jtree package includes a Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages, as well as sample languages, implemented in TypeScript.",
   "main": "index.js",
   "types": "./built/jtree.node.d.ts",
@@ -23,19 +23,21 @@
     "url": "git://github.com/breck7/jtree"
   },
   "keywords": "jtree",
+  "dependencies": {
+    "express": "*",
+    "glob": "^7.1.4",
+    "miuri.js": "0.0.6",
+    "semver": "^6.1.1",
+    "mkdirp": "^0.5.1",
+    "prettier": "^1.18.2",
+    "recursive-readdir-sync": "*"
+  },
   "devDependencies": {
     "@types/codemirror": "0.0.74",
     "@types/glob": "^7.1.1",
     "@types/jquery": "^3.3.30",
     "@types/node": "^11.13.12",
     "@types/semver": "^6.0.1",
-    "express": "*",
-    "glob": "^7.1.4",
-    "miuri.js": "0.0.6",
-    "mkdirp": "^0.5.1",
-    "prettier": "^1.18.2",
-    "recursive-readdir-sync": "*",
-    "semver": "^6.1.1",
     "tap": "^14.2.0",
     "tap-mocha-reporter": "^4.0.1"
   },

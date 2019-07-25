@@ -206,6 +206,27 @@ class ImmutableNode extends AbstractNode {
     )
   }
 
+  printLinesFrom(start: jTreeTypes.int, quantity: jTreeTypes.int) {
+    return this._printLinesFrom(start, quantity, false)
+  }
+
+  printLinesWithLineNumbersFrom(start: jTreeTypes.int, quantity: jTreeTypes.int) {
+    return this._printLinesFrom(start, quantity, true)
+  }
+
+  private _printLinesFrom(start: jTreeTypes.int, quantity: jTreeTypes.int, printLineNumbers: boolean) {
+    // todo: use iterator for better perf?
+    const end = start + quantity
+    this.toString()
+      .split("\n")
+      .slice(start, end)
+      .forEach((line, index) => {
+        if (printLineNumbers) console.log(`${start + index} ${line}`)
+        else console.log(line)
+      })
+    return this
+  }
+
   getWord(index: int): word {
     const words = this._getLine().split(this.getZI())
     if (index < 0) index = words.length + index

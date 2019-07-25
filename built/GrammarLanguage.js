@@ -1480,6 +1480,8 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
                 try {
                     const rootNode = this._importNodeJsRootNodeTypeConstructor(code);
                     this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap();
+                    if (!this._cache_compiledLoadedNodeTypes)
+                        throw new Error(`Failed to getNodeTypeMap`);
                 }
                 catch (err) {
                     console.log(err);

@@ -141,7 +141,12 @@ If you want to make your own Tree Language, launch the jtree sandbox and play ar
     jtree sandbox 3333
     # Open http://localhost:3333/sandbox/grammars.html
 
-More instructions coming soon! If you need help creating your language, try the [Tree Language Builder](http://treenotation.org/sandbox/build/). For help, file an issue, post to the [TreeNotation subreddit](https://www.reddit.com/r/treenotation/), or email breck7@gmail.com.
+Monorepo
+--------
+
+This library is a [monorepo](https://en.wikipedia.org/wiki/Monorepo). With on average over 1 major version released each month for the past 2.5 years, it would take a lot of overhead to constantly be updating 10+ different repositories and modules every month. Once we're more confident in the theory and best practices, it might make sense to break this repo into independent modules.
+
+That being said, we despise unnecessary dependencies as much as anyone. If anyone wants to create some automated submodules built from the projects in this monorepo, to allow for consuming of a smaller subset of the code and dependencies in this module, feel free to do so.
 
 Who is working on Tree Notation?
 --------------------------------
@@ -158,9 +163,9 @@ Tree Notation Libraries in Other Languages
 
 If you build a Tree Notation library in another language, let us know and we'll add a link.
 
-Building a Tree Notation implementation in other languages is not too hard. You can use this repo as a reference.
-
 Besides this TypeScript/Javascript implementation, we have implementations written in Python and C++. Due to time constraints we would prefer to link to other people's implementations!
+
+If you are working on a Tree Notation library in a new host language, feel free to post an issue or ask for help in the [TreeNotation subreddit](https://www.reddit.com/r/treenotation/).
 
 Research
 --------

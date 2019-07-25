@@ -1,7 +1,7 @@
 Tree Notation Frequently Asked Questions
 ========================================
 
-Below is a list of questions that are commonly asked by people who are new to <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or sending an email to breck7@gmail.com.
+Below is a list of questions that are commonly asked by people who are new to <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or posting a message to the [TreeNotation Subreddit](https://www.reddit.com/r/treenotation/).
 
 ## Overview
 
@@ -149,13 +149,9 @@ Easy program concatenation. For example, in Tree Notation you can create valid n
 
 ## History
 
-#### How was Tree Notation discovered?
-
-From Breck Yunits: "It was 2012 and Ben and I were building a visual web page editor called <a href="https://www.youtube.com/watch?v=ZWthAz839Og">NudgePad</a> in the "piano office" in San Francisco. Users could drag, drop and edit their web pages without touching any code. I made the program read and write the language HAML under the hood, which I had learned at my previous job at <a href="https://labzero.com/">Lab Zero</a>. The problem was I had to write my own HAML parser and code generator, and because we were a broke startup, I kept trying to cut syntax from the language to save time and money. Each day I would remove some syntax character from the language and still somehow get everything in the appp to work. Eventually the language was just spaces, newlines, and colons. There really was an "aha!" moment. I remember I was walking to work, going over the code in my head, and had just reached the <a href="https://goo.gl/maps/4cTV2CcpQcX8NPC16">101 overpass</a> when I realized I could drop the colons! I went straight to my desk, told Ben I had an idea, and a couple hours later had removed the colons and everything still worked. I remember at the time thinking that was potentially a profound idea but I *assumed* someone had built it already. I thought there was no chance it hadn't been invented yet because it was so simple. For years I'd ping folks in industry, post on message boards, and do a lot of Google searches. It took me years of searching for it before I thought maybe no had noticed and leveraged this idea before. It took 5 years before I wrote a paper about it, and over 7 years before it started to get good."
-
 #### Which language influenced Tree Notation the most?
 
-Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story for why. Semantically there's been a lot of influences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, ANTLR, TypeScript, C#, Python, Scheme, Javascript, COBOL, Rebol, Mathematica, APL, R, Red-Lang, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.
+Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story below if you are curious why. Semantically there's been a lot of influences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, ANTLR, TypeScript, C#, Python, Scheme, Javascript, COBOL, Rebol, Mathematica, APL, R, Red-Lang, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.
 
 #### Who is the first person to discover Tree Notation?
 
@@ -164,6 +160,28 @@ We came up with Tree Notation circa 2012. However, it turns out in 2003 Egil Mö
 #### Why didn't I-Expressions catch on?
 
 Not sure. We think it's because perhaps it was pitched as a different way to write Lisp, and that was it. With Tree Notation, coming up with an improved way to write Lisp was never a primary goal. Our primary goals have been to enable visual programming, simpler APIs, cleaner code and program synthesis, for which Tree Notation is an ideal tool.
+
+#### How was Tree Notation discovered?
+
+Below is a transcript of Breck telling the origin story. This is taken from the upcoming E! True Hollywood Story 'Tree Notation: the Drugs, Sex, and Fights in the days before it had 84 stars.`
+
+"The year was 2012. Barack Hussein Obama was president, Prettier hadn't been released yet, and humans talked to other humans more than Alexa.
+
+Our startup <a href="https://www.youtube.com/watch?v=ZWthAz839Og">NudgePad</a> was building a visual web page editor in our office in San Francisco, which was located in the backroom of a warehouse that built wooden pianos by hand. In comparison to Nudge Inc., the wooden piano business was *booming*.
+
+With NudgePad, users could drag, drop and edit their web pages without touching any code. It worked awesome, at least 1 percent of the time. As the user was editing their pages visually, we coded NudgePad to read and write the language HAML, which I had learned at my previous job at <a href="https://labzero.com/">Lab Zero</a>.
+
+I ended up needing to write my own HAML parser and code generator for reasons long since forgotten. Because we were a broke startup, I kept trying to cut syntax from the language to save time and money. This also saved me from talking to users, a key strategy behind any great business (\s).
+
+Every now and then I would remove some syntax character from our HAML clone and still somehow get everything in NudgePad to work. Eventually the language was just spaces, newlines, and colons.
+
+And then there was an "aha!" moment. I remember I was walking to work, going over the code in my head, and had just reached the <a href="https://goo.gl/maps/4cTV2CcpQcX8NPC16">101 overpass</a> when I realized I could dump the colons! I went straight to my desk, opened up my editor, and a couple hours later had removed the colons and everything still worked. I remember at the time thinking that was potentially a profound idea but I *was positive* someone had built it already. I thought there was no chance it hadn't been invented yet because it was so simple. By Kevin's Law, It had probably appeared on Shark Tank before.
+
+But for years I'd ping folks in industry, post on message boards, and do a lot of Google searches. It took me years of searching for it before I thought maybe no had noticed and leveraged this idea before.
+
+5 years later I had another "aha" moment when I realized it would also be a good base notation for *any* type of computer language, and wrote a paper about it. Which went on to be cited over (editor's note: it says "zero" here, is that correct?) times.
+
+It was over 7 years before the first "aha" moment that Tree Notation started to get good."
 
 ## Other
 

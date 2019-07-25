@@ -10,14 +10,14 @@ If you are using your own editor, create a new file with the name "{yourLanguage
 - [ ] Create a root nodeType. This will be the root node for your language. It should like this:
 
 ```
-nodeType {yourLanguageNameGoesHere}
+{yourLanguageNameGoesHere}Node
  root
 ```
 
 - [ ] Add a description line to your new root nodeType. This should describe what the purpose of your language is:
 
 ```
-nodeType {yourLanguageNameGoesHere}
+{yourLanguageNameGoesHere}Node
  root
  description {thisIsALangageToHelpYouDoX}
 ```
@@ -25,21 +25,21 @@ nodeType {yourLanguageNameGoesHere}
 - [ ] Add a top level nodeType to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" nodeType.
 
 ```
-nodeType birthdays
+birthdaysNode
  root
  description A language for storing your friend's birthdays.
-nodeType friend
+friendNode
  description Store information about a friend.
 ```
 
 - [ ] Now let's add an inScope line to the root node so that the friend node is in scope:
 
 ```
-nodeType birthdays
+birthdaysNode
  root
  description A language for storing your friend's birthdays.
- inScope friend
-nodeType friend
+ inScope friendNode
+friendNode
  description Store information about a friend.
 ```
 
@@ -55,10 +55,10 @@ friend
 
 ```
 ...
-nodeType friend
+friendNode
  description Store information about a friend.
- inScope name
-nodeType name
+ inScope nameNode
+nameNode
 ```
 
 - [ ] Now the following is a valid program in your language:
@@ -74,7 +74,7 @@ friend
 - [ ] Now let's add a "cellType", which let's us start getting things like type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the cellTypes at the top of our grammar file.
 
 ```
-cellType nameCell
+nameCell
  highlightScope string
 ...
 ```
@@ -83,7 +83,7 @@ cellType nameCell
 
 ```
 ...
-nodeType name
+nameNode
  catchAllCellType nameCell
 ```
 
@@ -99,12 +99,12 @@ friend
 - [ ] Now let's add an error nodeType, and link it to the rootNode, to catch errors:
 
 ```
-nodeType birthdays
+birthdaysNode
  root
  description A language for storing your friend's birthdays.
- inScope friend
+ inScope friendNode
  catchAllNodeType errorNode
-nodeType errorNode
+errorNode
  baseNodeType errorNode
 ```
 

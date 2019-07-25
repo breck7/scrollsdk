@@ -15,22 +15,22 @@ Links
 What is Tree Notation?
 ----------------------
 
-Tree Notation is a tiny new notation with big ambitions. Tree Notation is more similar to binary notation than it is to other programming languages. Currently our stack of computer languages look like this:
+Tree Notation is a tiny new notation with big ambitions. Tree Notation is an error-free base notation like binary. Currently our stack of computer languages look like this:
 
 1 Binary => 1,000+ Syntaxes => 10,000+ languages
 
-In the future I think the stack may look like this:
+In the future we think the stack may look like this:
 
-1 Binary => 1 Tree Notation => 10,000+ languages
+1 Binary => 1 Tree Notation => 10,000+ Tree Languages
 
-This would eliminate an enormous amount of unnecessary complexity in programming and computing. I think this will happen as more people join the Tree Notation ecosystem leading to significant network effects.
+This would eliminate a lot of unnecessary complexity in programming and computing. We think this will happen as more people join the Tree Notation ecosystem leading to significant network effects.
 
 What is so special about Tree Notation?
 ---------------------------------------
 
-When looked at in relation to notations like JSON, XML, YAML or S-expressions, you could make the case that Tree Notation is *mildly better* than those, simply because it is simpler and offers easier concatentation and ad hoc parser writing. However, my position is that Tree Notation is actually substantially different, and will cause a *major improvement* in computing, for a number of reasons, particularly these 3:
+Compared to notations like JSON, XML, YAML or S-expressions, Tree Notation may seem very similar. However, Tree Notation is the most minimal, and the concept of syntax errors does not exist. Our bet is that this makes Tree Notation substantially different and will cause a *major improvement* in computing, for a number of reasons, particularly these 3:
 
-1. Program synthesis. Deep Learning models are only as good as the data you train it on. Tree Notation code is noiseless, clean data, which I posit will enable at least a 10x improvement in the performance of programs that write code and/or assist users in writing code.
+1. Program synthesis. Deep Learning models are only as good as the data you train it on. Tree Notation code is noiseless, clean data, which we posit will enable at least a 10x improvement in the performance of programs that write code and/or assist users in writing code.
 2. Clean data. In data science, it is a rule of thumb that 20% of your time will go toward doing data science, and 80% of your time will go toward getting, cleaning, and organizing your data. Tree Notation offers a number of breakthroughs that will solve that 80% dilemma once and for all.
 3. Visual programming. Tree Notation is the first notation where a visual design tool can generate code as good as someone can write by hand. The languages listed above have a critical flaw--there are infinite ways to represent any given structure. In Tree Notation there is only 1 way to represent 1 structure. This simplification is one of the main reasons why Tree Notation is solving the Visual Programming problem.
 
@@ -110,7 +110,7 @@ This library contains a Tree Language called "Grammar". You can write new Gramma
 
 To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. This jtree library lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript.
 
-Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. I also have a PyTree library and CTree library which let you create new languages using just Tree Notation + Python or Tree Notation + C++. Those libraries are behind this one due to time constraints, and I'm hoping someone else will create those implementations and/or implementations in other languages.
+Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We also have a PyTree library and CTree library which let you create new languages using just Tree Notation + Python or Tree Notation + C++. Those libraries are behind this one due to time constraints, and we're hoping someone else will create those implementations and/or implementations in other languages.
 
 
 Who this Library is For
@@ -143,24 +143,29 @@ If you want to make your own Tree Language, launch the jtree sandbox and play ar
 
 More instructions coming soon! If you need help creating your language, try the [Tree Language Builder](http://treenotation.org/sandbox/build/). For help, file an issue, post to the [TreeNotation subreddit](https://www.reddit.com/r/treenotation/), or email breck7@gmail.com.
 
+Who is working on Tree Notation?
+--------------------------------
+
+The Tree Notation Lab at the University of Hawaii Cancer Center is focused entirely on building and supporting the Tree Notation ecosystem, with a special focus on building data science applications that leverage Tree Notation to advance cancer research.
+
 Development Status
 ------------------
 
-All breaking changes are mentioned in releaseNotes.md. I follow semantic versioning, so breaking changes should not happen if you stay on the same major version.
+All breaking changes are mentioned in releaseNotes.md. We follow semantic versioning, so breaking changes should not happen if you stay on the same major version.
 
 Tree Notation Libraries in Other Languages
 ------------------------------------------
 
-If you build a Tree Notation library in another language, let me know and I'll add a link.
+If you build a Tree Notation library in another language, let us know and we'll add a link.
 
 Building a Tree Notation implementation in other languages is not too hard. You can use this repo as a reference.
 
-Besides this TypeScript/Javascript implementation, I have implementations written in Python and C++. I may release those at some point, but due to time constraints would prefer to link to other people's implementations!
+Besides this TypeScript/Javascript implementation, we have implementations written in Python and C++. Due to time constraints we would prefer to link to other people's implementations!
 
 Research
 --------
 
-You can read my half-baked [papers about Tree Notation](https://github.com/breck7/jtree/tree/master/papers).
+You can read the half-baked [papers about Tree Notation](https://github.com/breck7/jtree/tree/master/papers).
 
 The basic gist of the theory is that all structures are trees, Tree Notation is all you need to represent trees, and by building things up from Tree Notation we might be able to make things simpler *AND better*.
 

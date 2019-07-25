@@ -9,7 +9,7 @@ Below is a list of questions that are commonly asked by people who are new to <a
 
 There is only 1 binary. Tree Notation is more like binary than it is like a programming language. Tree Notation is a basic building block that you can build higher level languages on top of.
 
-Tree Notation will have strong network effects. If you are building a Tree Language and tools for automating train schedules, and I am building a Tree Language and tools for doing cancer research, even though our 2 domains are very different, we can share a lot of the tools and code.
+Tree Notation will have strong network effects. If Jane is building a Tree Language and tools for automating train schedules, and John is building a Tree Language and tools for doing cancer research, even though our 2 domains are very different, we can share a lot of the tools and code.
 
 Currently languages look like this:
 
@@ -93,7 +93,7 @@ If you want to build a Tree Notation library for your language, let us know how 
 
 #### Who makes Tree Notation, and is it open source?
 
-Tree Notation is open source, free, and made by volunteers. The Tree Notation Lab, a research group in Oahu, is currently behind a lot of the core Tree Notation infrastructure projects. We are building the infrastructure needed so that we can build better tools for cancer researchers, clinicians, and patients, but the faster we can get the broader Tree Notation ecosystem growing, the easier our work will become.
+Tree Notation is open source, free, and made by volunteers. The Tree Notation Lab, a research group at the University of Hawaii Cancer Center in Oahu, is currently behind a lot of the core Tree Notation infrastructure projects. We are building the infrastructure needed so that we can build better tools for cancer researchers, clinicians, and patients, but the faster we can get the broader Tree Notation ecosystem growing, the easier our work will become.
 
 #### Is Tree Notation ready for production use?
 
@@ -121,9 +121,9 @@ No. We strongly recommend using an editor that supports Tree Notation with synta
 
 By creating 1 file in Grammar, you get a new programming language with autocomplete, syntax highlighting, type-checking, help, integration tests, compiling, and more. The goal of Grammar is to help you create a new, robust, well tested language as easily as possible.
 
-#### All of the demo languages currently use prefix notation. Can I use infix notation, postfix notation, or pattern matching?
+#### Can I use infix notation, postfix notation, or pattern matching?
 
-Yes! Although the Grammar Language currently supports mainly prefix notation, we are working on a few iterations to allow more styles of nodeType parsing, as well as more polymorphism. New versions in the next few months should have robust implementations of those patterns.
+Yes! As of JTree 35, the Grammar Language that ships with Jtree now supports other notations. Originally only prefix notation was supported without writing a decent amount of target code.
 
 #### Can I do inline Trees?
 
@@ -141,7 +141,7 @@ No. It is largely accurate to say Tree Notation is Lisp without parenthesis. How
 
 #### What's an example of "ad hoc" parsing that you can do with Tree Notation that you cannot do with Lisp?
 
-If I have a Tree Language with a root nodeType named "folder", and I want to rename the keyword of that nodeType to "project", I can easily do it with an ad-hoc regex: s/^folder/project/. This would be type safe, even if I started parsing in the middle of the document. I cannot do that with S-Expressions, as I'd have to first parse the document into a Tree data structure, and could not operate on it as a string.
+If you have a Tree Language with a root nodeType named "folder", and you want to rename the keyword of that nodeType to "project", you can easily do it with an ad-hoc regex: s/^folder/project/. This would be type safe, even if you started parsing in the middle of the document. You cannot do that with S-Expressions, as you'd have to first parse the document into a Tree data structure, and could not operate on it as a string.
 
 #### What's something else you can do with Tree Notation that you can't do with Lisp?
 

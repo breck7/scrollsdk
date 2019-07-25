@@ -40,6 +40,7 @@ cellTypeIdCell
 constantIdentifierCell
  todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\w+
+ highlightScope constant.other
  description A word that can be assigned to the node class in the target language.
 constructorFilePathCell
 enumOptionCell
@@ -82,6 +83,7 @@ semanticVersionCell
 stringCell
  highlightScope string
 tagCell
+ highlightScope string
 todoCell
  highlightScope comment
 toolingDirectiveCell

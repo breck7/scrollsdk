@@ -1,0 +1,22 @@
+{
+  "name": "treebase",
+  "version": "1.0.0",
+  "description": "A software-less database system for community knowledge bases.",
+  "main": "TreeBase.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/breck7/jtree.git"
+  },
+  "keywords": [
+    "database"
+  ],
+  "author": "Breck Yunits",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/breck7/jtree/issues"
+  },
+  "homepage": "https://github.com/breck7/jtree#readme"
+}

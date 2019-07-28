@@ -8,6 +8,7 @@ import TreeNode from "../src/base/TreeNode"
 import TreeUtils from "../src/base/TreeUtils"
 import { Disk } from "./Disk"
 import jtree from "../src/jtree.node"
+import jTreeTypes from "../src/jTreeTypes"
 
 const lodash = require("lodash")
 
@@ -140,43 +141,6 @@ class TreeBaseCollection extends TreeNode {
     if (arr.length === 1) return arr[0].getType()
   }
 
-  getXgbCsv() {
-    let clone = this._getProgram()
-    // todo: cellCheck, only contniue if no errors
-    const gp = clone.getGrammarProgramRoot()
-    const map = gp.getRunTimeFirstWordMapWithDefinitions()["file"].getRunTimeFirstWordMap()
-    const keywords = Object.keys(map)
-    const colNames = clone.getColumnNames()
-    const words = lodash.intersection(colNames, keywords)
-    clone.forEach(node => {
-      words.forEach(col => {
-        // parse types
-        const def = map[col]
-        const val = node.getNode(col)
-
-        // Any type
-        if (def instanceof jtree.AnyNode) {
-          const has = val && !val.isEmpty()
-          if (val) val.deleteChildren()
-          node.set(col, has ? "1" : "0")
-        }
-        // Enum type
-        console.log(this.getDataCellTypeIfApplicable(node))
-
-        // Int and float types
-
-        // Any types
-
-        //node.set(col, parsed)
-      })
-    })
-
-    //clone = clone.getOneHot("type")
-
-    // clone.forEach(clone => clone.parseAll())
-    //return clone.toCsv()
-  }
-
   private _grammarPath: string
   getGrammarPath() {
     return this._grammarPath
@@ -215,9 +179,11 @@ class TreeBaseCollection extends TreeNode {
     const str = clone.toString()
     tick("end toString...")
     const grammarPath = this.getGrammarPath()
-    jtree.compileGrammarForNodeJs(grammarPath, "/codelani/ignore/", true)
     const programConstructor = jtree.getProgramConstructor(grammarPath)
     const program = new programConstructor(str)
+
+    return program.getAllErrors().join("\n")
+
     let lines = this.getNumberOfLines()
     let lps = lines / (tick("End parser") / 1000)
     console.log(`Parsed ${lines} line program at ${lps} lines per second`)
@@ -263,32 +229,12 @@ class TreeBaseCollection extends TreeNode {
     return this
   }
 
-  getAllWithout(prop) {
-    return this.filter(node => !node.has(prop))
-  }
-
-  fetchAllWith(props) {
-    if (typeof props === "string") props = [props]
-    return this.getAll().filter(node => props.every(prop => node.has(prop)))
-  }
-
-  fetchAllWithout(prop) {
-    return this.getAll().filter(node => !node.has(prop))
-  }
-
   createParser() {
     return new TreeNode.Parser(TreeBaseFile)
   }
 
   getFromContent(path, content) {
     return this.findNodes(path).find(node => node.getContent() === content)
-  }
-
-  getAllWhereNot(path, content) {
-    content = content.substr ? [content] : content
-    const map = TreeUtils.arrayToMap(content)
-
-    return this.filter(n => !map[n.get(path)])
   }
 }
 
@@ -431,7 +377,7 @@ class TreeBase {
     const tree = this.getNode(id)
     if (!tree.has(property)) tree.touchNode(property)
 
-    const node = tree.getNode(property)
+    const node = <TreeNode>tree.getNode(property)
     if (!node.length) node.appendLine(header)
 
     // todo: this looks brittle
@@ -485,7 +431,7 @@ class TreeBase {
   }
 
   getAll(): TreeBaseFile[] {
-    return this.getCollection().getChildren()
+    return <TreeBaseFile[]>this.getCollection().getChildren()
   }
 
   makeIndexBy(tree, prop) {
@@ -561,7 +507,7 @@ class TreeBase {
 
   getTable(columns) {
     const rows = this.toTree().map(node => {
-      const obj = {}
+      const obj: jTreeTypes.stringMap = {}
       columns.forEach(col => {
         if (!col.substr) obj[col[0]] = col[1](node)
         else obj[col] = node.get(col)
@@ -588,19 +534,19 @@ class TreeBase {
     fs.watch(this.getDir(), (event, filename) => {
       const collection = this.getCollection()
       const id = Disk.getFileName(filename)
-      const node = collection.getNode(id)
+      const node = <TreeNode>collection.getNode(id)
       const data = Disk.read(this.getDir() + filename)
       if (!node) collection.appendLineAndChildren(id, data)
       else node.setChildren(data)
     })
     const app = this.getApp()
 
-    // this.getCollection().cellCheck(10)
-    app.post("/eval", (req, res) => {
-      if (!req.body.q) return res.send("req.body.q was empty")
+    // // this.getCollection().cellCheck(10)
+    // app.post("/eval", (req, res) => {
+    //   if (!req.body.q) return res.send("req.body.q was empty")
 
-      res.send(JSON.stringify(eval(req.body.q)))
-    })
+    //   res.send(JSON.stringify(eval(req.body.q)))
+    // })
 
     app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
@@ -613,15 +559,15 @@ class TreeBase {
   private _getStatusMessage() {
     const paths = this.getApp()
       ._router.stack // registered routes
-      .filter(r => r.route) // take out all the middleware
-      .map(r => r.route.path) // get all the paths
+      .filter(r => r.route && r.route.path.length > 1) // take out all the middleware
+      .map(r => `<a href="${r.route.path}">${r.route.path}</a>`) // get all the paths
 
-    return `TreeBase server running:
+    return `<div style="white-space:pre;">TreeBase server running:
 -- Folder: '${this.getDir()}'
 -- Grammar: '${this.getGrammarPath()}'
 -- Files: ${this.getCollection().length}
 -- Size: ${this.getSize()}
--- Routes: ${paths.join("\n ")}`
+-- Routes: ${paths.join("\n ")}</div>`
   }
 
   private _makeApp() {
@@ -640,21 +586,36 @@ class TreeBase {
       next()
     })
 
+    app.get("/list", (req, res) => {
+      res.send(
+        this.getCollection()
+          .map(node => `<a href="${node.getWord(0)}">${node.getWord(0)}</a>`)
+          .join("<br>")
+      )
+    })
+
     app.get("/", (req, res) => {
-      const dir = this.getDir()
-      const files = Disk.dir(dir)
-      const links = "" // files.map(f => `<a href="${f}">${f}</a>`).join("<br>")
-      res.send(`<pre>${this._getStatusMessage()}</pre>
-<div>${links}</div>`)
+      res.send(this._getStatusMessage())
     })
 
     app.use(
       express.static(this.getDir(), {
         setHeaders: (res, requestPath) => {
-          if (path.extname(requestPath) === "tree") res.setHeader("Content-Type", "text/plain")
+          res.setHeader("Content-Type", "text/plain")
         }
       })
     )
+
+    app.get("/cellCheck", (req, res) => {
+      const collection = this.getCollection()
+
+      let end = tick("Loaded collection....")
+      let lines = collection.getNumberOfLines()
+      let lps = lines / (end / 1000)
+      const errors = collection.cellCheck(100)
+      res.setHeader("Content-Type", "text/plain")
+      res.send(`Total errors: ${errors.length}\n${errors}`)
+    })
 
     return app
   }

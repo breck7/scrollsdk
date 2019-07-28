@@ -3,7 +3,6 @@ const fs = require("fs")
 import jtree from "../src/jtree.node"
 const TreeNode = jtree.TreeNode
 const recursiveReadSync = require("recursive-readdir-sync")
-const superagent = require("superagent")
 const mkdirp = require("mkdirp")
 
 class Disk {
@@ -112,6 +111,7 @@ class Disk {
     return res.body || res.text || ""
   }
   static getUrl = async url => {
+    const superagent = require("superagent")
     const agent = superagent.agent()
     const res = await agent.get(url)
     return res

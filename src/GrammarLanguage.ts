@@ -41,7 +41,6 @@ enum GrammarConstants {
   toolingDirective = "tooling",
   todoComment = "todo",
   version = "version",
-  nodeTypeOrder = "nodeTypeOrder", // todo: do we need this? may be better to use inScope and a flag to indicate whether order is important.
   nodeType = "nodeType",
   cellType = "cellType",
 
@@ -155,6 +154,21 @@ abstract class GrammarBackedNode extends TreeNode {
 
   getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[] {
     return undefined
+  }
+
+  sortNodesByInScopeOrder() {
+    const nodeTypeOrder = this.getDefinition()._getMyInScopeNodeTypeIds()
+    if (!nodeTypeOrder.length) return this
+    const orderMap: jTreeTypes.stringMap = {}
+    nodeTypeOrder.forEach((word, index) => {
+      orderMap[word] = index
+    })
+    this.sort(
+      TreeUtils.sortByAccessor((runtimeNode: GrammarBackedNonRootNode) => {
+        return orderMap[runtimeNode.getDefinition().getNodeTypeIdFromDefinition()]
+      })
+    )
+    return this
   }
 
   protected _getRequiredNodeErrors(errors: jTreeTypes.TreeError[] = []) {
@@ -297,30 +311,22 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     }
   }
 
-  // todo: cleanup!
-  getPrettified() {
-    const grammarProgram = this.getGrammarProgramRoot()
-    const nodeTypeOrder = grammarProgram.getNodeTypeOrder()
-    const isGrammarLanguage = grammarProgram.getGrammarName() === "grammarNode" // todo: generalize?
+  getSortedByInheritance() {
     const clone = new ExtendibleTreeNode(this.clone())
-    if (isGrammarLanguage) {
-      const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree()
-      const rank: { [id: string]: number } = {}
-      familyTree.getTopDownArray().forEach((node, index) => {
-        rank[node.getWord(0)] = index
-      })
-      const nodeAFirst = -1
-      const nodeBFirst = 1
-      clone._firstWordSort(nodeTypeOrder.split(" "), (nodeA, nodeB) => {
-        const nodeARank = rank[nodeA.getWord(1)]
-        const nodeBRank = rank[nodeB.getWord(1)]
-        return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst
-      })
-    } else {
-      clone._firstWordSort(nodeTypeOrder.split(" "))
-    }
+    const familyTree = new GrammarProgram(clone.toString()).getNodeTypeFamilyTree()
+    const rank: jTreeTypes.stringMap = {}
+    familyTree.getTopDownArray().forEach((node, index) => {
+      rank[node.getWord(0)] = index
+    })
+    const nodeAFirst = -1
+    const nodeBFirst = 1
+    clone.sort((nodeA, nodeB) => {
+      const nodeARank = rank[nodeA.getWord(0)]
+      const nodeBRank = rank[nodeB.getWord(0)]
+      return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst
+    })
 
-    return clone.toString()
+    return clone
   }
 
   getNodeTypeUsage(filepath = "") {
@@ -1351,7 +1357,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.extensions,
       GrammarConstants.version,
       GrammarConstants.tags,
-      GrammarConstants.nodeTypeOrder,
       GrammarConstants.match,
       GrammarConstants.pattern,
       GrammarConstants.baseNodeType,
@@ -1474,9 +1479,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     // todo: add cellType parsings
     const grammarProgram = this.getLanguageDefinitionProgram()
     const requiredCells = this.get(GrammarConstants.cells)
-    const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) =>
-      grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1)
-    )
+    const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) => {
+      const cellTypeDef = grammarProgram.getCellTypeDefinitionById(cellTypeId)
+      if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
+      return cellTypeDef.getGetter(index + 1)
+    })
 
     const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType)
     if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1))
@@ -1522,7 +1529,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
 
-  protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const nodeTypesNode = this.getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
@@ -1864,10 +1871,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo)
   }
 
-  getNodeTypeOrder() {
-    return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.nodeTypeOrder)
-  }
-
   private _cache_cellTypes: {
     [name: string]: cellTypeDefinitionNode
   }
@@ -1942,7 +1945,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
   }
 
-  protected _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
     const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }

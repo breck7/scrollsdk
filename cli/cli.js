@@ -154,7 +154,7 @@ ${grammars.toTable()}`
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
     const program = new programConstructor(this._read(programPath))
     const original = program.toString()
-    const pretty = program.getPrettified()
+    const pretty = program.sortNodesByInScopeOrder().getSortedByInheritance()
     this._write(programPath, pretty)
     return original === pretty ? "No change" : "File updated"
   }

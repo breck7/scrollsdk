@@ -228,13 +228,17 @@ class TreeUtils {
     return result
   }
 
+  // todo: rename
   static sortByAccessor(accessor: Function) {
     return (objectA: Object, objectB: Object) => {
+      const nodeAFirst = -1
+      const nodeBFirst = 1
+
       const av = accessor(objectA)
       const bv = accessor(objectB)
-      let result = av < bv ? -1 : av > bv ? 1 : 0
-      if (av === undefined && bv !== undefined) result = -1
-      else if (bv === undefined && av !== undefined) result = 1
+      let result = av < bv ? nodeAFirst : av > bv ? nodeBFirst : 0
+      if (av === undefined && bv !== undefined) result = nodeAFirst
+      else if (bv === undefined && av !== undefined) result = nodeBFirst
       return result
     }
   }

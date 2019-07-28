@@ -261,15 +261,18 @@ class TreeUtils {
         });
         return result;
     }
+    // todo: rename
     static sortByAccessor(accessor) {
         return (objectA, objectB) => {
+            const nodeAFirst = -1;
+            const nodeBFirst = 1;
             const av = accessor(objectA);
             const bv = accessor(objectB);
-            let result = av < bv ? -1 : av > bv ? 1 : 0;
+            let result = av < bv ? nodeAFirst : av > bv ? nodeBFirst : 0;
             if (av === undefined && bv !== undefined)
-                result = -1;
+                result = nodeAFirst;
             else if (bv === undefined && av !== undefined)
-                result = 1;
+                result = nodeBFirst;
             return result;
         };
     }
@@ -2521,7 +2524,6 @@ var GrammarConstants;
     GrammarConstants["toolingDirective"] = "tooling";
     GrammarConstants["todoComment"] = "todo";
     GrammarConstants["version"] = "version";
-    GrammarConstants["nodeTypeOrder"] = "nodeTypeOrder";
     GrammarConstants["nodeType"] = "nodeType";
     GrammarConstants["cellType"] = "cellType";
     GrammarConstants["nodeTypeSuffix"] = "Node";
@@ -2607,6 +2609,19 @@ class GrammarBackedNode extends TreeNode {
     }
     getRunTimeEnumOptions(cell) {
         return undefined;
+    }
+    sortNodesByInScopeOrder() {
+        const nodeTypeOrder = this.getDefinition()._getMyInScopeNodeTypeIds();
+        if (!nodeTypeOrder.length)
+            return this;
+        const orderMap = {};
+        nodeTypeOrder.forEach((word, index) => {
+            orderMap[word] = index;
+        });
+        this.sort(TreeUtils.sortByAccessor((runtimeNode) => {
+            return orderMap[runtimeNode.getDefinition().getNodeTypeIdFromDefinition()];
+        }));
+        return this;
     }
     _getRequiredNodeErrors(errors = []) {
         Object.values(this.getDefinition().getFirstWordMapWithDefinitions()).forEach(def => {
@@ -2720,30 +2735,21 @@ class GrammarBackedRootNode extends GrammarBackedNode {
             matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
         };
     }
-    // todo: cleanup!
-    getPrettified() {
-        const grammarProgram = this.getGrammarProgramRoot();
-        const nodeTypeOrder = grammarProgram.getNodeTypeOrder();
-        const isGrammarLanguage = grammarProgram.getGrammarName() === "grammarNode"; // todo: generalize?
+    getSortedByInheritance() {
         const clone = new ExtendibleTreeNode(this.clone());
-        if (isGrammarLanguage) {
-            const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree();
-            const rank = {};
-            familyTree.getTopDownArray().forEach((node, index) => {
-                rank[node.getWord(0)] = index;
-            });
-            const nodeAFirst = -1;
-            const nodeBFirst = 1;
-            clone._firstWordSort(nodeTypeOrder.split(" "), (nodeA, nodeB) => {
-                const nodeARank = rank[nodeA.getWord(1)];
-                const nodeBRank = rank[nodeB.getWord(1)];
-                return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst;
-            });
-        }
-        else {
-            clone._firstWordSort(nodeTypeOrder.split(" "));
-        }
-        return clone.toString();
+        const familyTree = new GrammarProgram(clone.toString()).getNodeTypeFamilyTree();
+        const rank = {};
+        familyTree.getTopDownArray().forEach((node, index) => {
+            rank[node.getWord(0)] = index;
+        });
+        const nodeAFirst = -1;
+        const nodeBFirst = 1;
+        clone.sort((nodeA, nodeB) => {
+            const nodeARank = rank[nodeA.getWord(0)];
+            const nodeBRank = rank[nodeB.getWord(0)];
+            return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst;
+        });
+        return clone;
     }
     getNodeTypeUsage(filepath = "") {
         // returns a report on what nodeTypes from its language the program uses
@@ -3580,7 +3586,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             GrammarConstants.extensions,
             GrammarConstants.version,
             GrammarConstants.tags,
-            GrammarConstants.nodeTypeOrder,
             GrammarConstants.match,
             GrammarConstants.pattern,
             GrammarConstants.baseNodeType,
@@ -3681,7 +3686,12 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
         // todo: add cellType parsings
         const grammarProgram = this.getLanguageDefinitionProgram();
         const requiredCells = this.get(GrammarConstants.cells);
-        const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) => grammarProgram.getCellTypeDefinitionById(cellTypeId).getGetter(index + 1));
+        const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) => {
+            const cellTypeDef = grammarProgram.getCellTypeDefinitionById(cellTypeId);
+            if (!cellTypeDef)
+                throw new Error(`No cellType "${cellTypeId}" found`);
+            return cellTypeDef.getGetter(index + 1);
+        });
         const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType);
         if (catchAllCellTypeId)
             getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1));
@@ -4015,9 +4025,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
     getTargetExtension() {
         return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo);
-    }
-    getNodeTypeOrder() {
-        return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.nodeTypeOrder);
     }
     getCellTypeDefinitions() {
         if (!this._cache_cellTypes)

@@ -1,3 +1,8 @@
+edge /
+===================
+- Breaking: removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
+- Breaking: getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
+
 35.1.0 / 2019-07-25
 ===================
 - New: printLinesFrom and printLinesWithLineNumbersFrom methods

@@ -6,7 +6,6 @@ grammarNode
  root
  description The Grammar Language is currently just used for type checking and documenting grammar files. The actual tree Grammar Language is still hard coded. Someday it may bootstrap itself from this file.
  catchAllNodeType catchAllErrorNode
- nodeTypeOrder toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
  extensions grammar gram
  example A grammar that parses anything:
   latinNode
@@ -158,13 +157,6 @@ nodeTypeDefinitionNode
  catchAllNodeType catchAllErrorNode
  firstCellType nodeTypeIdCell
  inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
-nodeTypeOrderNode
- todo Should we just reuse inScope order? And have a property that indicates order is not important?
- todo Add more docs/testing around this. How would it handle things with mixed-order sensitivity such as todo comments?
- todo This isnt properly cell checked. It should reference inScope.
- catchAllCellType nodeTypeIdCell
- extends abstractNodeTypeRuleNode
- description Optionally specify what order nodeTypes should be sorted in when prettifying a file.
 regexNode
  catchAllCellType regexCell
  description The word must match this pattern or it shall be marked as an error.

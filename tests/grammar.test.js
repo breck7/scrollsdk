@@ -211,8 +211,48 @@ hueNode
 saturationNode
  extends colorPropertiesNode`
   const grammarProgram = makeGrammarProgram(normalCode)
-  const pretty = grammarProgram.getPrettified()
+  const pretty = grammarProgram
+    .sortNodesByInScopeOrder()
+    .getSortedByInheritance()
+    .toString()
   equal(pretty, normalCode, "code is already in pretty form")
+}
+
+testTree.prettifyDo = equal => {
+  // Arrange
+  const unsortedCode = `someLangNode
+ root
+ inScope topLevelNode
+topLevelNode
+ abstract
+h1Node
+ match html.h1
+ extends abstractHtmlNode
+abstractHtmlNode
+ extends topLevelNode
+ abstract
+intCell`
+  const sortedCode = `intCell
+someLangNode
+ root
+ inScope topLevelNode
+topLevelNode
+ abstract
+abstractHtmlNode
+ extends topLevelNode
+ abstract
+h1Node
+ match html.h1
+ extends abstractHtmlNode`
+  // Act/Assert
+  equal(
+    makeGrammarProgram(unsortedCode)
+      .sortNodesByInScopeOrder()
+      .getSortedByInheritance()
+      .toString(),
+    sortedCode,
+    "code was fixed"
+  )
 }
 
 testTree.cokeRegression = equal => {

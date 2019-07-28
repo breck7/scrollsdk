@@ -2067,7 +2067,7 @@ class TreeNode extends ImmutableNode {
     return this.fromDelimited(str, "\t", '"')
   }
 
-  static fromDelimited(str: string, delimiter: string, quoteChar: string) {
+  static fromDelimited(str: string, delimiter: string, quoteChar: string = '"') {
     const rows = this._getEscapedRows(str, delimiter, quoteChar)
     return this._rowsToTreeNode(rows, delimiter, true)
   }

@@ -1,0 +1,28 @@
+planetNode
+ root
+ inScope abstractIntPropertyNode abstractFloatPropertyNode
+ catchAllNodeType errorNode
+errorNode
+ baseNodeType errorNode
+intCell
+ highlightScope constant.numeric.integer
+floatCell
+ highlightScope constant.numeric.float
+keywordCell
+ highlightScope keyword
+abstractIntPropertyNode
+ cells intCell
+ firstCellType keywordCell
+ abstract
+abstractFloatPropertyNode
+ cells floatCell
+ firstCellType keywordCell
+ abstract
+surfaceGravityNode
+ extends abstractIntPropertyNode
+diameterNode
+ extends abstractIntPropertyNode
+moonsNode
+ extends abstractIntPropertyNode
+yearsToOrbitSunNode
+ extends abstractFloatPropertyNode

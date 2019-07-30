@@ -4,10 +4,12 @@ TreeBase BETA
 What is TreeBase?
 -----------------
 
-TreeBase is the software-less database system for community knowledge bases.
+TreeBase is the software-less database system for community knowledge bases. You can also think of it as Wikipedia for clean, strongly typed data<sup>1</sup>.
 
 Try It
 ------
+
+This will launch a TreeBase server on port 4444 using the included example "planets" database.
 
     npm install -g jtree
     jtree base
@@ -16,7 +18,7 @@ Try It
 How does it work?
 -----------------
 
-TreeBase stores data in plain text files using Tree Notation. Instead of storing an item's data in a row, you store the item's data in a file.
+TreeBase stores data in plain text files using [Tree Notation](http://treenotation.org). Instead of storing data in rows in a compressed binary format, you store data in regular files.
 
 So a database of planets might look like this:
 
@@ -39,7 +41,7 @@ For example, the file `mars.planet` might look like this:
     yearsToOrbitSun 1.881
     moons 2
 
-The Grammar file (aka Schema), for this file would be this:
+The Grammar file (TreeBase's version of "Schemas"), for this file would be this:
 
     planetNode
      root
@@ -97,3 +99,7 @@ Similar Projects
 
 - [Forest 1.0](https://www.cs.princeton.edu/research/techreps/TR-904-11)
 
+Footnotes
+---------
+
+1. To be precise, TreeBase is more like [MediaWiki](https://www.mediawiki.org/wiki/MediaWiki) than Wikipedia.

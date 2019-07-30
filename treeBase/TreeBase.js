@@ -2,7 +2,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Disk_1 = require("./Disk");
-const jtree_node_1 = require("../src/jtree.node");
+const jtree_node_1 = require("../built/jtree.node");
 const GrammarProgram = jtree_node_1.default.GrammarProgram;
 const TreeUtils = jtree_node_1.default.Utils;
 const TreeNode = jtree_node_1.default.TreeNode;

@@ -6,7 +6,7 @@
 
 import jTreeTypes from "../src/jTreeTypes"
 import { Disk } from "./Disk"
-import jtree from "../src/jtree.node"
+import jtree from "../built/jtree.node"
 
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils

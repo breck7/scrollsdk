@@ -17,11 +17,19 @@ Currently languages look like this:
 
 In the future we think it may look like this:
 
-1 Binary => 1 Tree Notation => 10,000+ languages
+1 Binary => 1 Tree Notation => 10,000+ Tree Languages
 
 #### What's the difference between Tree Notation and Tree Languages?
 
 Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. Anyone can make a new language by simply creating 1 file in a language called Grammar, which is itself a Tree Language.
+
+#### What major problems in computer science does Tree Notation solve?
+
+1. Program synthesis. Tree Notation makes it easier for AI programs to write code. Deep Learning models are only as good as the data you train it on. Tree Notation code is noiseless, clean data, which we posit will enable at least a 10x improvement in the performance of programs that write code and/or assist users in writing code.
+2. Clean data. In data science, it is a rule of thumb that 20% of your time will go toward doing data science, and 80% of your time will go toward getting, cleaning, and organizing your data. Tree Notation offers a number of breakthroughs that will solve that 80% dilemma once and for all.
+3. Visual programming. Tree Notation is the first notation where a visual design tool can generate code as good as someone can write by hand. The languages listed above have a critical flaw--there are infinite ways to represent any given structure. In Tree Notation there is only 1 way to represent 1 structure. This simplification is one of the main reasons why Tree Notation is solving the Visual Programming problem.
+
+We are building the data science app [Ohayo](https://github.com/breck7/ohayo) in part to demonstrate these 3 advantages of Tree Notation.
 
 #### How can I build a new Tree Language?
 

@@ -8,6 +8,7 @@ Links
 
 🌴 [Try Tree Notation](http://treenotation.org/sandbox/)  
 🌴 [FAQ](http://treenotation.org/faq.html)  
+🌴 [TreeBase](http://treenotation.org/treeBase/)  
 🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
 🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/breck7/ohayo)  
@@ -15,7 +16,7 @@ Links
 What is Tree Notation?
 ----------------------
 
-Tree Notation is a tiny new notation with big ambitions. Tree Notation is an error-free base notation like binary. Currently our stack of computer languages look like this:
+Tree Notation is a simpler way to write code. Tree Notation is an error-free base notation like binary. This is our current stack of computer languages:
 
 1 Binary => 1,000+ Syntaxes => 10,000+ languages
 
@@ -23,23 +24,20 @@ In the future we think the stack may look like this:
 
 1 Binary => 1 Tree Notation => 10,000+ Tree Languages
 
-This would eliminate a lot of unnecessary complexity in programming and computing. We think this will happen as more people join the Tree Notation ecosystem leading to significant network effects.
+We all use software tools to build our software. Tree Notation makes writing such tools much easier, and as more people join the Tree Notation ecosystem there will be significant network effects.
 
 What is so special about Tree Notation?
 ---------------------------------------
 
-Compared to notations like JSON, XML, YAML or S-expressions, Tree Notation may seem very similar. However, Tree Notation is the most minimal, and the concept of syntax errors does not exist. Our bet is that this makes Tree Notation substantially different and will cause a *major improvement* in computing, for a number of reasons, particularly these 3:
+Tree Notation may seem similar to notations like JSON, XML, YAML or S-expressions. However, Tree Notation is the most minimal, is grounded in 3-dimensional geometry, and the concept of syntax errors does not exist. We think this makes Tree Notation substantially different and will cause a *major improvement* in computing. Read the [FAQ](http://treenotation.org/faq.html) to find out what major problems in computer science Tree Notation solves.
 
-1. Program synthesis. Deep Learning models are only as good as the data you train it on. Tree Notation code is noiseless, clean data, which we posit will enable at least a 10x improvement in the performance of programs that write code and/or assist users in writing code.
-2. Clean data. In data science, it is a rule of thumb that 20% of your time will go toward doing data science, and 80% of your time will go toward getting, cleaning, and organizing your data. Tree Notation offers a number of breakthroughs that will solve that 80% dilemma once and for all.
-3. Visual programming. Tree Notation is the first notation where a visual design tool can generate code as good as someone can write by hand. The languages listed above have a critical flaw--there are infinite ways to represent any given structure. In Tree Notation there is only 1 way to represent 1 structure. This simplification is one of the main reasons why Tree Notation is solving the Visual Programming problem.
-
-We are building the data science app [Ohayo](https://github.com/breck7/ohayo) in part to demonstrate these 3 advantages of Tree Notation.
-
-Simpler Examples
-----------------
+Advanced Examples
+-----------------
 
 Check out the [Ohayo](https://github.com/breck7/ohayo) project or the [Tree Language Builder](http://treenotation.org/sandbox/build/) for advanced examples of Tree Notation in action.
+
+Basic Boring Examples
+---------------------
 
 Below are some very simple examples to explain some of the very basics.
 
@@ -110,13 +108,12 @@ This library contains a Tree Language called "Grammar". You can write new Gramma
 
 To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. This jtree library lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript.
 
-Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We also have a PyTree library and CTree library which let you create new languages using just Tree Notation + Python or Tree Notation + C++. Those libraries are behind this one due to time constraints, and we're hoping someone else will create those implementations and/or implementations in other languages.
-
+Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. Many more Tree Notation libraries are in the works for many different host languages.
 
 Who this Library is For
 -----------------------
 
-This library is for people who want to design Tree Languages or make Tree editing tools.
+This library is for people who want to design Tree Languages, make Tree editing tools, use TreeBase, or use the Tree Component Web Framework.
 
 You can think of this library as similar to the Java Development Kit, except for Tree Notation instead of Java.
 
@@ -162,8 +159,6 @@ Tree Notation Libraries in Other Languages
 ------------------------------------------
 
 If you build a Tree Notation library in another language, let us know and we'll add a link.
-
-Besides this TypeScript/Javascript implementation, we have implementations written in Python and C++. Due to time constraints we would prefer to link to other people's implementations!
 
 If you are working on a Tree Notation library in a new host language, feel free to post an issue or ask for help in the [TreeNotation subreddit](https://www.reddit.com/r/treenotation/).
 

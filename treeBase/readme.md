@@ -92,3 +92,8 @@ Does TreeBase scale?
 
 Yes. We have been using TreeBase for over 2 years in systems with millions of rows and dozens of collaborators. While we don't recommend TreeBase for mission critical applications yet, there is no reason to think it will not scale to that as well, as the community grows and improves the core libraries in different host languages.
 
+Similar Projects
+----------------
+
+- [Forest 1.0](https://www.cs.princeton.edu/research/techreps/TR-904-11)
+

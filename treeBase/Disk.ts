@@ -1,6 +1,6 @@
 const fs = require("fs")
 
-import jtree from "../src/jtree.node"
+import jtree from "../built/jtree.node"
 const TreeNode = jtree.TreeNode
 const recursiveReadSync = require("recursive-readdir-sync")
 const mkdirp = require("mkdirp")

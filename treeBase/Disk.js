@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
-const jtree_node_1 = require("../src/jtree.node");
+const jtree_node_1 = require("../built/jtree.node");
 const TreeNode = jtree_node_1.default.TreeNode;
 const recursiveReadSync = require("recursive-readdir-sync");
 const mkdirp = require("mkdirp");

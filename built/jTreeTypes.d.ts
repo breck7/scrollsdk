@@ -50,6 +50,7 @@ export declare namespace jTreeTypes {
     type firstWord = word;
     type triInt = int;
     type filepath = string;
+    type fileName = string;
     type globPattern = string;
     type highlightScope = string;
     type fileExtension = string;

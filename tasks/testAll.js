@@ -5,12 +5,6 @@ const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 const runTestTree = require("../tests/testTreeRunner.js")
 
-const allFiles = recursiveReadSync(__dirname + "/../tests/")
-
-allFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
-
-allFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/../langs/swarm/swarm.grammar"))
-
 // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
 const checkGrammarFile = grammarPath => {
   const testTree = {}
@@ -43,9 +37,18 @@ const checkGrammarFile = grammarPath => {
 }
 
 const allLangFiles = recursiveReadSync(__dirname + "/../langs/")
-
 allLangFiles.filter(file => file.endsWith(".grammar")).forEach(checkGrammarFile)
-
 allLangFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
-
 allLangFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/../langs/swarm/swarm.grammar"))
+
+const allTestFiles = recursiveReadSync(__dirname + "/../tests/")
+allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
+allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/../langs/swarm/swarm.grammar"))
+
+recursiveReadSync(__dirname + "/../treeBase/")
+  .filter(file => file.endsWith(".test.js"))
+  .forEach(file => runTestTree(require(file)))
+
+recursiveReadSync(__dirname + "/../treeComponent/")
+  .filter(file => file.endsWith(".test.js"))
+  .forEach(file => runTestTree(require(file)))

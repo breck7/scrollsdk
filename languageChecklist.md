@@ -1,7 +1,7 @@
 A checklist for creating a new Tree Language from Scratch
 =========================================================
 
-- [ ] Know where to get help. [GitHub issues](https://github.com/breck7/jtree/issues), [Tree Notation subreddit](https://reddit.com/r/treenotation), [Google Groups](mailto:treenotation@googlegroups.com), or [email Breck](mailto:breck7@gmail.com).
+- [ ] Know where to get help. [GitHub issues](https://github.com/treenotation/jtree/issues), [Tree Notation subreddit](https://reddit.com/r/treenotation), [Google Groups](mailto:treenotation@googlegroups.com), or [email Breck](mailto:breck7@gmail.com).
 - [ ] Take a look at some of the sample languages in the simple web [Tree Language builder](http://treenotation.org/sandbox/build/). You might be able to use these as a reference if you get stuck.
 - [ ] Open the [Tree Language builder](http://treenotation.org/sandbox/build/) or use your own editor (note: only [Sublime Text 3](https://www.sublimetext.com/) currently has syntax highlighting for Grammar Languages).
 - [ ] Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.

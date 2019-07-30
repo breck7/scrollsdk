@@ -14,5 +14,5 @@ jtree.TreeNode = TreeNode_1.default;
 jtree.GrammarProgram = GrammarLanguage_1.GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram_1.default;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode_1.default;
-jtree.getVersion = () => "35.1.0";
+jtree.getVersion = () => "36.0.0";
 exports.default = jtree;

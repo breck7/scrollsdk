@@ -33,7 +33,7 @@ Everywhere! Anywhere you use programming languages or encodings, you can use Tre
 
 #### What are some examples of Tree Languages?
 
-There are a dozen <a href="https://github.com/breck7/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a <a href="http://treenotation.org/sandbox/build/#standard%20project">language similar to Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
+There are a dozen <a href="https://github.com/treenotation/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a <a href="http://treenotation.org/sandbox/build/#standard%20project">language similar to Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
 
 #### Language that add numbers or compile to HTML are cute, but are there any advanced Tree Language?
 
@@ -85,7 +85,7 @@ No. A subset of Tree Notation does, but for perfect one-to-one matching you'll w
 
 #### Can I use Tree Notation with any programming language?
 
-Yes! The <a href="https://github.com/breck7/jtree">JTree library</a> provides Tree Notation support for TypeScript and Javascript, but we hope that there will eventually be Tree Notation and Tree Grammar libraries in all programming languages, similar to how most languages nowadays have JSON libraries. We currently have C++, Python, and GoLang libraries in development, but hopefully others will create those before we release ours.
+Yes! The <a href="https://github.com/treenotation/jtree">JTree library</a> provides Tree Notation support for TypeScript and Javascript, but we hope that there will eventually be Tree Notation and Tree Grammar libraries in all programming languages, similar to how most languages nowadays have JSON libraries. We currently have C++, Python, and GoLang libraries in development, but hopefully others will create those before we release ours.
 
 If you want to build a Tree Notation library for your language, let us know how we can help!
 

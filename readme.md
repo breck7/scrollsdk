@@ -1,14 +1,14 @@
 Tree Notation
 =============
 
-[![Build Status](https://travis-ci.org/breck7/jtree.svg?branch=master)](https://travis-ci.org/breck7/jtree)
+[![Build Status](https://travis-ci.org/treenotation/jtree.svg?branch=master)](https://travis-ci.org/treenotation/jtree)
 
 Links
 -----
 
 🌴 [Try Tree Notation](http://treenotation.org/sandbox/)  
 🌴 [FAQ](http://treenotation.org/faq.html)  
-🌴 [TypeScript Implementation on GitHub](https://github.com/breck7/jtree)  
+🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
 🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/breck7/ohayo)  
 
@@ -170,7 +170,7 @@ If you are working on a Tree Notation library in a new host language, feel free 
 Research
 --------
 
-You can read the half-baked [papers about Tree Notation](https://github.com/breck7/jtree/tree/master/papers).
+You can read the half-baked [papers about Tree Notation](https://github.com/treenotation/jtree/tree/master/papers).
 
 The basic gist of the theory is that all structures are trees, Tree Notation is all you need to represent trees, and by building things up from Tree Notation we might be able to make things simpler *AND better*.
 

@@ -44,6 +44,8 @@ enum GrammarConstants {
   nodeType = "nodeType",
   cellType = "cellType",
 
+  grammarFileExtension = "grammar",
+
   nodeTypeSuffix = "Node",
   cellTypeSuffix = "Cell",
 
@@ -1646,10 +1648,17 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     ].filter(code => code)
 
     const extendedDef = <AbstractGrammarDefinitionNode>this._getExtendedParent()
-    const hasRoot = this.has(GrammarConstants.root)
-    const extendsClassName = extendedDef ? extendedDef._getGeneratedClassName() : hasRoot ? "jtree.GrammarBackedRootNode" : "jtree.GrammarBackedNonRootNode"
+    const rootNode = this._getLanguageRootNode()
+    const amIRoot = this._amIRoot()
+    // todo: cleanup? If we have 2 roots, and the latter extends the first, the first should extent GBRootNode. Otherwise, the first should not extend RBRootNode.
+    const doesRootExtendMe = this.has(GrammarConstants.root) && rootNode._getAncestorSet().has(this._getGeneratedClassName())
+    const extendsClassName = extendedDef
+      ? extendedDef._getGeneratedClassName()
+      : amIRoot || doesRootExtendMe
+      ? "jtree.GrammarBackedRootNode"
+      : "jtree.GrammarBackedNonRootNode"
 
-    if (this._amIRoot()) {
+    if (amIRoot) {
       components.push(`getGrammarProgramRoot() {
         if (!this._cachedGrammarProgramRoot)
           this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(

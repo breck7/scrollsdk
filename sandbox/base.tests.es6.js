@@ -3610,6 +3610,47 @@ testTree.typeTests = equal => {
   equal(a.getLineCellTypes(), "undefinedCellType") // todo: make this a constant
 }
 
+testTree.setTests = equal => {
+  let base = new TreeNode(`foo bar`).nodeAt(0)
+  equal(base.getWordsAsSet().has("bar"), true)
+  equal(base.getWordsAsSet().has("bar2"), false)
+  equal(base.appendWordIfMissing("bar").toString(), `foo bar`)
+  equal(
+    base
+      .appendWordIfMissing("bam")
+      .getWordsAsSet()
+      .has("bam"),
+    true,
+    "word should be appended"
+  )
+}
+
+testTree.getBiDirectionalMaps = equal => {
+  const csv = TreeNode.fromCsv(TreeNode.iris)
+  const maps = csv.getBiDirectionalMaps("species", "sepal_length")
+  equal(maps[0]["versicolor"][0], "5.6")
+  equal(maps[1]["5.6"][0], "versicolor")
+}
+
+testTree.delimitedTests = equal => {
+  let base = new TreeNode(`foo.csv`).nodeAt(0)
+  equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).toString(), `foo.csv\n name,age\n Joe,100`)
+
+  base = new TreeNode(`foo.csv`).nodeAt(0)
+  equal(base.setChildrenAsDelimited(`person\n name Joe\n age 100`).toString(), `foo.csv\n name,age\n Joe,100`)
+
+  let template = `foo.csv\n person\n  name Joe\n  age 100`
+
+  base = new TreeNode(template).nodeAt(0)
+  equal(base.convertChildrenToDelimited().toString(), `foo.csv\n name,age\n Joe,100`, "convert children to delimited works")
+
+  base = new TreeNode(template).nodeAt(0)
+  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited([`name,age`], [`Frank,100`]).length, 3)
+
+  base = new TreeNode(template).nodeAt(0)
+  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited([`name,age`], [`Joe,100`]).length, 2)
+}
+
 testTree.printLines = equal => {
   // Arrange
   let lastLogMessage = ""

@@ -68,6 +68,10 @@ declare class ImmutableNode extends AbstractNode {
     doesExtend(nodeTypeId: jTreeTypes.nodeTypeId): boolean;
     require(moduleName: string, filePath?: string): any;
     getWordsFrom(startFrom: int): string[];
+    getSparsity(): number;
+    getBiDirectionalMaps(propertyNameOrFn: mapFn | string, propertyNameOrFn2?: mapFn | string): {
+        [key: string]: string[];
+    }[];
     private _getWordIndexCharacterStartPosition;
     getNodeInScopeAtCharIndex(charIndex: jTreeTypes.positiveInt): ImmutableNode;
     getWordProperties(wordIndex: int): {
@@ -112,6 +116,7 @@ declare class ImmutableNode extends AbstractNode {
     select(columnNames: string[] | string): TreeNode;
     print(message?: string): this;
     where(columnName: string, operator: WhereOperators, fixedValue?: string | number | string[] | number[]): TreeNode;
+    with(firstWord: string): any[];
     first(quantity?: number): TreeNode;
     last(quantity?: number): TreeNode;
     limit(quantity: int, offset?: number): TreeNode;
@@ -308,6 +313,12 @@ declare class TreeNode extends ImmutableNode {
     getNodesByLine(line: jTreeTypes.line): any[];
     toggleLine(line: jTreeTypes.line): TreeNode;
     sortByColumns(indexOrIndices: int | int[]): this;
+    getWordsAsSet(): Set<string>;
+    appendWordIfMissing(word: string): this;
+    addObjectsAsDelimited(arrayOfObjects: Object[], delimiter?: string): this;
+    setChildrenAsDelimited(tree: TreeNode | string, delimiter?: string): this;
+    convertChildrenToDelimited(delimiter?: string): this;
+    addUniqueRowsToNestedDelimited(header: string, rowsAsStrings: string[]): this;
     shiftLeft(): TreeNode;
     shiftRight(): TreeNode;
     shiftYoungerSibsRight(): TreeNode;
@@ -316,7 +327,7 @@ declare class TreeNode extends ImmutableNode {
     static fromJsonSubset(str: jTreeTypes.jsonSubset): TreeNode;
     static fromSsv(str: string): TreeNode;
     static fromTsv(str: string): TreeNode;
-    static fromDelimited(str: string, delimiter: string, quoteChar: string): TreeNode;
+    static fromDelimited(str: string, delimiter: string, quoteChar?: string): TreeNode;
     static _getEscapedRows(str: string, delimiter: string, quoteChar: string): string[][];
     static fromDelimitedNoHeaders(str: string, delimiter: string, quoteChar: string): TreeNode;
     static _strToRows(str: string, delimiter: string, quoteChar: string, newLineChar?: string): string[][];

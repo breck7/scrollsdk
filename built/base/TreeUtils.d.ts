@@ -2,6 +2,7 @@ import jTreeTypes from "../jTreeTypes";
 declare class TreeUtils {
     static getPathWithoutFileName(path: string): string;
     static getClassNameFromFilePath(filename: string): string;
+    static _chooseDelimiter(str: string): string;
     static flatten(arr: any): any;
     static escapeBackTicks(str: string): string;
     static ucfirst(str: string): string;
@@ -20,6 +21,10 @@ declare class TreeUtils {
     }[];
     static getRandomString(length?: number, letters?: string[]): string;
     static makeRandomTree(lines?: number): string;
+    static _getPRNG(seed: number): () => number;
+    private static _tickTime;
+    static _tick(msg: string, verbose?: boolean): number;
+    static _sampleWithoutReplacement(population: any[], quantity: number, seed: number): any[];
     static arrayToMap(arr: Array<any>): jTreeTypes.stringMap;
     static mapValues<T>(object: Object, fn: (key: string) => T): {
         [key: string]: T;

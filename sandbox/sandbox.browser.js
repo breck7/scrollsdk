@@ -18,7 +18,7 @@ samples.json = `{
  },
  "repository": {
   "type": "git",
-  "url": "git://github.com/breck7/jtree"
+  "url": "git://github.com/treenotation/jtree"
  },
  "keywords": "jtree",
  "devDependencies": {

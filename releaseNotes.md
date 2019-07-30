@@ -1,7 +1,12 @@
-edge /
+36.0.0 / 2019-07-30
 ===================
+- New: added TreeBase and "base" command to CLI
+- New: added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setChildrenAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
+- Fix: fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
 - Breaking: removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
 - Breaking: getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
+- Infra: added basic tests for treeBase and made sure treeComponent framework test getting run
+- Infra: moved repo from breck7/jtree to treenotation/jtree
 
 35.1.0 / 2019-07-25
 ===================

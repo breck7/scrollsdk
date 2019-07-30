@@ -229,6 +229,41 @@ class ImmutableNode extends AbstractNode_node_1.default {
     getWordsFrom(startFrom) {
         return this._getWords(startFrom);
     }
+    getSparsity() {
+        const nodes = this.getChildren();
+        const fields = this._getUnionNames();
+        let count = 0;
+        this.getChildren().forEach(node => {
+            fields.forEach(field => {
+                if (node.has(field))
+                    count++;
+            });
+        });
+        return 1 - count / (nodes.length * fields.length);
+    }
+    // todo: rename. what is the proper term from set/cat theory?
+    getBiDirectionalMaps(propertyNameOrFn, propertyNameOrFn2 = node => node.getWord(0)) {
+        const oneToTwo = {};
+        const twoToOne = {};
+        const is1Str = typeof propertyNameOrFn === "string";
+        const is2Str = typeof propertyNameOrFn2 === "string";
+        const children = this.getChildren();
+        this.forEach((node, index) => {
+            const value1 = is1Str ? node.get(propertyNameOrFn) : propertyNameOrFn(node, index, children);
+            const value2 = is2Str ? node.get(propertyNameOrFn2) : propertyNameOrFn2(node, index, children);
+            if (value1 !== undefined) {
+                if (!oneToTwo[value1])
+                    oneToTwo[value1] = [];
+                oneToTwo[value1].push(value2);
+            }
+            if (value2 !== undefined) {
+                if (!twoToOne[value2])
+                    twoToOne[value2] = [];
+                twoToOne[value2].push(value1);
+            }
+        });
+        return [oneToTwo, twoToOne];
+    }
     _getWordIndexCharacterStartPosition(wordIndex) {
         const xiLength = this.getXI().length;
         const numIndents = this._getXCoordinate(undefined) - 1;
@@ -541,6 +576,9 @@ class ImmutableNode extends AbstractNode_node_1.default {
             result.appendNode(node);
         });
         return result;
+    }
+    with(firstWord) {
+        return this.filter(node => node.has(firstWord));
     }
     first(quantity = 1) {
         return this.limit(quantity, 0);
@@ -1784,6 +1822,42 @@ class TreeNode extends ImmutableNode {
         });
         return this;
     }
+    getWordsAsSet() {
+        return new Set(this.getWordsFrom(1));
+    }
+    appendWordIfMissing(word) {
+        if (this.getWordsAsSet().has(word))
+            return this;
+        return this.appendWord(word);
+    }
+    // todo: check to ensure identical objects
+    addObjectsAsDelimited(arrayOfObjects, delimiter = TreeUtils_1.default._chooseDelimiter(new TreeNode(arrayOfObjects).toString())) {
+        const header = Object.keys(arrayOfObjects[0])
+            .join(delimiter)
+            .replace(/[\n\r]/g, "");
+        const rows = arrayOfObjects.map(item => Object.values(item)
+            .join(delimiter)
+            .replace(/[\n\r]/g, ""));
+        return this.addUniqueRowsToNestedDelimited(header, rows);
+    }
+    setChildrenAsDelimited(tree, delimiter = TreeUtils_1.default._chooseDelimiter(tree.toString())) {
+        tree = tree instanceof TreeNode ? tree : new TreeNode(tree);
+        return this.setChildren(tree.toDelimited(delimiter));
+    }
+    convertChildrenToDelimited(delimiter = TreeUtils_1.default._chooseDelimiter(this.childrenToString())) {
+        // todo: handle newlines!!!
+        return this.setChildren(this.toDelimited(delimiter));
+    }
+    addUniqueRowsToNestedDelimited(header, rowsAsStrings) {
+        if (!this.length)
+            this.appendLine(header);
+        // todo: this looks brittle
+        rowsAsStrings.forEach(row => {
+            if (!this.toString().includes(row))
+                this.appendLine(row);
+        });
+        return this;
+    }
     shiftLeft() {
         const grandParent = this._getGrandParent();
         if (!grandParent)
@@ -1841,7 +1915,7 @@ class TreeNode extends ImmutableNode {
     static fromTsv(str) {
         return this.fromDelimited(str, "\t", '"');
     }
-    static fromDelimited(str, delimiter, quoteChar) {
+    static fromDelimited(str, delimiter, quoteChar = '"') {
         const rows = this._getEscapedRows(str, delimiter, quoteChar);
         return this._rowsToTreeNode(rows, delimiter, true);
     }

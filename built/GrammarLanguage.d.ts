@@ -26,6 +26,7 @@ declare enum GrammarConstants {
     version = "version",
     nodeType = "nodeType",
     cellType = "cellType",
+    grammarFileExtension = "grammar",
     nodeTypeSuffix = "Node",
     cellTypeSuffix = "Cell",
     regex = "regex",

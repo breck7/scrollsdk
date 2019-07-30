@@ -60,13 +60,6 @@ class Disk {
     // todo: add more robust. align with choose delimiter
     return TreeNode.fromSsv(str)
   }
-  // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
-  // todo: move to tree base class
-  static chooseDelimiter = str => {
-    const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea))
-    if (!del) throw new Error("Could not find a delimiter")
-    return del
-  }
   static deleteDuplicates = (node, prop1, prop2, reverse = false) => {
     const map = {}
     Disk.getAllOf(node, prop1).forEach(n => {
@@ -80,15 +73,8 @@ class Disk {
       } else map[val] = n
     })
   }
-  static setChildrenAsDelimited = (node, tree, delimiter = Disk.chooseDelimiter(tree.toString())) => {
-    node.setChildren(tree.toDelimited(delimiter))
-  }
-  static convertChildrenToDelimited = (node, delimiter = Disk.chooseDelimiter(node.childrenToString())) => {
-    // todo: handle newlines!!!
-    node.setChildren(node.toDelimited(delimiter))
-  }
   static getLastFolderName = path => {
-    const parts = path.split("/")
+    const parts = path.replace(/\/$/, "").split("/")
     const last = parts.pop()
     return fs.statSync(path).isDirectory() ? last : parts.pop()
   }

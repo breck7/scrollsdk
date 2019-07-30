@@ -93,6 +93,15 @@ class CLI {
     return TreeNode.fromSsv(help).toTable()
   }
 
+  base(folderPath = undefined, port = 4444) {
+    const { TreeBaseFolder } = require("../treeBase/TreeBase.js")
+    if (!folderPath) {
+      folderPath = require("path").resolve(__dirname + "/../treeBase/planets/")
+      console.log(`No path to a TreeBase folder provided. Defaulting to '${folderPath}'`)
+    }
+    new TreeBaseFolder(undefined, folderPath).startExpressApp(port)
+  }
+
   list() {
     const grammars = this.getGrammars().clone()
     grammars.sortBy("name")

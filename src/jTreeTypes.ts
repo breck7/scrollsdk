@@ -56,6 +56,7 @@ export namespace jTreeTypes {
   export declare type firstWord = word
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
+  export declare type fileName = string
   export declare type globPattern = string
   export declare type highlightScope = string
   export declare type fileExtension = string

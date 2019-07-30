@@ -67,6 +67,13 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
+    static _chooseDelimiter(str) {
+        const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea));
+        if (!del)
+            throw new Error("Could not find a delimiter");
+        return del;
+    }
     static flatten(arr) {
         if (arr.flat)
             return arr.flat();
@@ -248,6 +255,40 @@ class TreeUtils {
             lines--;
         }
         return str;
+    }
+    // adapted from https://gist.github.com/blixt/f17b47c62508be59987b
+    // 1993 Park-Miller LCG
+    static _getPRNG(seed) {
+        return function () {
+            seed = Math.imul(48271, seed) | 0 % 2147483647;
+            return (seed & 2147483647) / 2147483648;
+        };
+    }
+    // todo: clean up verbose/console log
+    static _tick(msg, verbose = true) {
+        if (this._tickTime === undefined)
+            this._tickTime = Date.now() - 1000 * process.uptime();
+        const elapsed = Date.now() - this._tickTime;
+        if (verbose)
+            console.log(`${elapsed}ms ${msg}`);
+        this._tickTime = Date.now();
+        return elapsed;
+    }
+    static _sampleWithoutReplacement(population, quantity, seed) {
+        const prng = this._getPRNG(seed);
+        const sampled = {};
+        const populationSize = population.length;
+        const picked = [];
+        if (quantity >= populationSize)
+            quantity = populationSize;
+        while (picked.length < quantity) {
+            const index = Math.floor(prng() * populationSize);
+            if (sampled[index])
+                continue;
+            sampled[index] = true;
+            picked.push(population[index]);
+        }
+        return picked;
     }
     static arrayToMap(arr) {
         const map = {};
@@ -646,6 +687,41 @@ class ImmutableNode extends AbstractNode {
     getWordsFrom(startFrom) {
         return this._getWords(startFrom);
     }
+    getSparsity() {
+        const nodes = this.getChildren();
+        const fields = this._getUnionNames();
+        let count = 0;
+        this.getChildren().forEach(node => {
+            fields.forEach(field => {
+                if (node.has(field))
+                    count++;
+            });
+        });
+        return 1 - count / (nodes.length * fields.length);
+    }
+    // todo: rename. what is the proper term from set/cat theory?
+    getBiDirectionalMaps(propertyNameOrFn, propertyNameOrFn2 = node => node.getWord(0)) {
+        const oneToTwo = {};
+        const twoToOne = {};
+        const is1Str = typeof propertyNameOrFn === "string";
+        const is2Str = typeof propertyNameOrFn2 === "string";
+        const children = this.getChildren();
+        this.forEach((node, index) => {
+            const value1 = is1Str ? node.get(propertyNameOrFn) : propertyNameOrFn(node, index, children);
+            const value2 = is2Str ? node.get(propertyNameOrFn2) : propertyNameOrFn2(node, index, children);
+            if (value1 !== undefined) {
+                if (!oneToTwo[value1])
+                    oneToTwo[value1] = [];
+                oneToTwo[value1].push(value2);
+            }
+            if (value2 !== undefined) {
+                if (!twoToOne[value2])
+                    twoToOne[value2] = [];
+                twoToOne[value2].push(value1);
+            }
+        });
+        return [oneToTwo, twoToOne];
+    }
     _getWordIndexCharacterStartPosition(wordIndex) {
         const xiLength = this.getXI().length;
         const numIndents = this._getXCoordinate(undefined) - 1;
@@ -958,6 +1034,9 @@ class ImmutableNode extends AbstractNode {
             result.appendNode(node);
         });
         return result;
+    }
+    with(firstWord) {
+        return this.filter(node => node.has(firstWord));
     }
     first(quantity = 1) {
         return this.limit(quantity, 0);
@@ -2201,6 +2280,42 @@ class TreeNode extends ImmutableNode {
         });
         return this;
     }
+    getWordsAsSet() {
+        return new Set(this.getWordsFrom(1));
+    }
+    appendWordIfMissing(word) {
+        if (this.getWordsAsSet().has(word))
+            return this;
+        return this.appendWord(word);
+    }
+    // todo: check to ensure identical objects
+    addObjectsAsDelimited(arrayOfObjects, delimiter = TreeUtils._chooseDelimiter(new TreeNode(arrayOfObjects).toString())) {
+        const header = Object.keys(arrayOfObjects[0])
+            .join(delimiter)
+            .replace(/[\n\r]/g, "");
+        const rows = arrayOfObjects.map(item => Object.values(item)
+            .join(delimiter)
+            .replace(/[\n\r]/g, ""));
+        return this.addUniqueRowsToNestedDelimited(header, rows);
+    }
+    setChildrenAsDelimited(tree, delimiter = TreeUtils._chooseDelimiter(tree.toString())) {
+        tree = tree instanceof TreeNode ? tree : new TreeNode(tree);
+        return this.setChildren(tree.toDelimited(delimiter));
+    }
+    convertChildrenToDelimited(delimiter = TreeUtils._chooseDelimiter(this.childrenToString())) {
+        // todo: handle newlines!!!
+        return this.setChildren(this.toDelimited(delimiter));
+    }
+    addUniqueRowsToNestedDelimited(header, rowsAsStrings) {
+        if (!this.length)
+            this.appendLine(header);
+        // todo: this looks brittle
+        rowsAsStrings.forEach(row => {
+            if (!this.toString().includes(row))
+                this.appendLine(row);
+        });
+        return this;
+    }
     shiftLeft() {
         const grandParent = this._getGrandParent();
         if (!grandParent)
@@ -2258,7 +2373,7 @@ class TreeNode extends ImmutableNode {
     static fromTsv(str) {
         return this.fromDelimited(str, "\t", '"');
     }
-    static fromDelimited(str, delimiter, quoteChar) {
+    static fromDelimited(str, delimiter, quoteChar = '"') {
         const rows = this._getEscapedRows(str, delimiter, quoteChar);
         return this._rowsToTreeNode(rows, delimiter, true);
     }
@@ -2526,6 +2641,7 @@ var GrammarConstants;
     GrammarConstants["version"] = "version";
     GrammarConstants["nodeType"] = "nodeType";
     GrammarConstants["cellType"] = "cellType";
+    GrammarConstants["grammarFileExtension"] = "grammar";
     GrammarConstants["nodeTypeSuffix"] = "Node";
     GrammarConstants["cellTypeSuffix"] = "Cell";
     // error check time
@@ -3835,9 +3951,16 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
             this._getCustomJavascriptMethods()
         ].filter(code => code);
         const extendedDef = this._getExtendedParent();
-        const hasRoot = this.has(GrammarConstants.root);
-        const extendsClassName = extendedDef ? extendedDef._getGeneratedClassName() : hasRoot ? "jtree.GrammarBackedRootNode" : "jtree.GrammarBackedNonRootNode";
-        if (this._amIRoot()) {
+        const rootNode = this._getLanguageRootNode();
+        const amIRoot = this._amIRoot();
+        // todo: cleanup? If we have 2 roots, and the latter extends the first, the first should extent GBRootNode. Otherwise, the first should not extend RBRootNode.
+        const doesRootExtendMe = this.has(GrammarConstants.root) && rootNode._getAncestorSet().has(this._getGeneratedClassName());
+        const extendsClassName = extendedDef
+            ? extendedDef._getGeneratedClassName()
+            : amIRoot || doesRootExtendMe
+                ? "jtree.GrammarBackedRootNode"
+                : "jtree.GrammarBackedNonRootNode";
+        if (amIRoot) {
             components.push(`getGrammarProgramRoot() {
         if (!this._cachedGrammarProgramRoot)
           this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(this.getParent()
@@ -4650,7 +4773,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "35.1.0";
+jtree.getVersion = () => "36.0.0";
 window.jtree
     = jtree;
 class Upgrader extends TreeNode {

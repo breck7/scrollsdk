@@ -274,6 +274,41 @@ class ImmutableNode extends AbstractNode {
     return this._getWords(startFrom)
   }
 
+  getSparsity() {
+    const nodes = this.getChildren()
+    const fields = this._getUnionNames()
+    let count = 0
+    this.getChildren().forEach(node => {
+      fields.forEach(field => {
+        if (node.has(field)) count++
+      })
+    })
+
+    return 1 - count / (nodes.length * fields.length)
+  }
+
+  // todo: rename. what is the proper term from set/cat theory?
+  getBiDirectionalMaps(propertyNameOrFn: mapFn | string, propertyNameOrFn2: mapFn | string = node => node.getWord(0)) {
+    const oneToTwo: { [key: string]: string[] } = {}
+    const twoToOne: { [key: string]: string[] } = {}
+    const is1Str = typeof propertyNameOrFn === "string"
+    const is2Str = typeof propertyNameOrFn2 === "string"
+    const children = this.getChildren()
+    this.forEach((node, index) => {
+      const value1 = is1Str ? node.get(propertyNameOrFn) : (<mapFn>propertyNameOrFn)(node, index, children)
+      const value2 = is2Str ? node.get(propertyNameOrFn2) : (<mapFn>propertyNameOrFn2)(node, index, children)
+      if (value1 !== undefined) {
+        if (!oneToTwo[value1]) oneToTwo[value1] = []
+        oneToTwo[value1].push(value2)
+      }
+      if (value2 !== undefined) {
+        if (!twoToOne[value2]) twoToOne[value2] = []
+        twoToOne[value2].push(value1)
+      }
+    })
+    return [oneToTwo, twoToOne]
+  }
+
   private _getWordIndexCharacterStartPosition(wordIndex: int): jTreeTypes.positiveInt {
     const xiLength = this.getXI().length
     const numIndents = this._getXCoordinate(undefined) - 1
@@ -601,6 +636,10 @@ class ImmutableNode extends AbstractNode {
       result.appendNode(node)
     })
     return result
+  }
+
+  with(firstWord: string) {
+    return this.filter(node => node.has(firstWord))
   }
 
   first(quantity = 1) {
@@ -2001,6 +2040,49 @@ class TreeNode extends ImmutableNode {
       }
       return 0
     })
+    return this
+  }
+
+  getWordsAsSet() {
+    return new Set(this.getWordsFrom(1))
+  }
+
+  appendWordIfMissing(word: string) {
+    if (this.getWordsAsSet().has(word)) return this
+    return this.appendWord(word)
+  }
+
+  // todo: check to ensure identical objects
+  addObjectsAsDelimited(arrayOfObjects: Object[], delimiter = TreeUtils._chooseDelimiter(new TreeNode(arrayOfObjects).toString())) {
+    const header = Object.keys(arrayOfObjects[0])
+      .join(delimiter)
+      .replace(/[\n\r]/g, "")
+    const rows = arrayOfObjects.map(item =>
+      Object.values(item)
+        .join(delimiter)
+        .replace(/[\n\r]/g, "")
+    )
+    return this.addUniqueRowsToNestedDelimited(header, rows)
+  }
+
+  setChildrenAsDelimited(tree: TreeNode | string, delimiter = TreeUtils._chooseDelimiter(tree.toString())) {
+    tree = tree instanceof TreeNode ? tree : new TreeNode(tree)
+    return this.setChildren(tree.toDelimited(delimiter))
+  }
+
+  convertChildrenToDelimited(delimiter = TreeUtils._chooseDelimiter(this.childrenToString())) {
+    // todo: handle newlines!!!
+    return this.setChildren(this.toDelimited(delimiter))
+  }
+
+  addUniqueRowsToNestedDelimited(header: string, rowsAsStrings: string[]) {
+    if (!this.length) this.appendLine(header)
+
+    // todo: this looks brittle
+    rowsAsStrings.forEach(row => {
+      if (!this.toString().includes(row)) this.appendLine(row)
+    })
+
     return this
   }
 

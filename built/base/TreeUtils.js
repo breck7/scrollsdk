@@ -12,6 +12,13 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
+    static _chooseDelimiter(str) {
+        const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea));
+        if (!del)
+            throw new Error("Could not find a delimiter");
+        return del;
+    }
     static flatten(arr) {
         if (arr.flat)
             return arr.flat();
@@ -193,6 +200,40 @@ class TreeUtils {
             lines--;
         }
         return str;
+    }
+    // adapted from https://gist.github.com/blixt/f17b47c62508be59987b
+    // 1993 Park-Miller LCG
+    static _getPRNG(seed) {
+        return function () {
+            seed = Math.imul(48271, seed) | 0 % 2147483647;
+            return (seed & 2147483647) / 2147483648;
+        };
+    }
+    // todo: clean up verbose/console log
+    static _tick(msg, verbose = true) {
+        if (this._tickTime === undefined)
+            this._tickTime = Date.now() - 1000 * process.uptime();
+        const elapsed = Date.now() - this._tickTime;
+        if (verbose)
+            console.log(`${elapsed}ms ${msg}`);
+        this._tickTime = Date.now();
+        return elapsed;
+    }
+    static _sampleWithoutReplacement(population, quantity, seed) {
+        const prng = this._getPRNG(seed);
+        const sampled = {};
+        const populationSize = population.length;
+        const picked = [];
+        if (quantity >= populationSize)
+            quantity = populationSize;
+        while (picked.length < quantity) {
+            const index = Math.floor(prng() * populationSize);
+            if (sampled[index])
+                continue;
+            sampled[index] = true;
+            picked.push(population[index]);
+        }
+        return picked;
     }
     static arrayToMap(arr) {
         const map = {};

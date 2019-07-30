@@ -1,5 +1,6 @@
 command paramOne paramTwo description
 allHistory   List all parse times and filepaths for this cli tool
+base folderPath port=4444 Start a TreeBase server for the given folder
 check programPath  Check a file for grammar errors
 checkAll grammarName  Check all 'grammarName' programs for grammar errors
 combine grammarName  Dump all 'grammarName' programs into 1 'combined' output
@@ -10,7 +11,7 @@ distribute combinedFilePath  Distribute a 'combined' file into multiple destinat
 gen grammarName outputPath Generate sublime syntax highlighting files
 help   Show this help
 list   List installed Grammars
-parse programPath  Parse and print the nodeTypes and cellTypes in a program.
+parse programPath  Parse and print the nodeTypes and cellTypes in a program
 prettify programPath  Prettify a tree program in place
 programs grammarName  List all files for a grammar ever parsed with this cli tool
 register grammarPath  Register a new grammar

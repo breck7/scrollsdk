@@ -123,6 +123,7 @@ catchAllMultilineStringConstantNode
 cellTypeDefinitionNode
  todo Generate a class for each cell type?
  todo Allow abstract cell types?
+ todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9]+Cell$
  firstCellType cellTypeIdCell
  inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode
@@ -134,6 +135,7 @@ enumFromCellTypesNode
  catchAllCellType cellTypeIdCell
  firstCellType cellPropertyNameCell
 enumNode
+ todo Change match to prefix.
  match enum
  catchAllCellType enumOptionCell
  firstCellType cellPropertyNameCell

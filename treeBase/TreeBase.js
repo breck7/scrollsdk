@@ -2,17 +2,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const TreeNode_1 = require("../src/base/TreeNode");
+const GrammarLanguage_1 = require("../src/GrammarLanguage");
 const TreeUtils_1 = require("../src/base/TreeUtils");
 const Disk_1 = require("./Disk");
 const jtree_node_1 = require("../src/jtree.node");
-const lodash = require("lodash");
-let tickTime = Date.now() - 1000 * process.uptime();
-const tick = msg => {
-    const elapsed = Date.now() - tickTime;
-    console.log(`${elapsed}ms ${msg}`);
-    tickTime = Date.now();
-    return elapsed;
-};
 class TreeBaseFile extends TreeNode_1.default {
     setDiskVersion() {
         this._diskVersion = this.childrenToString();
@@ -21,13 +14,13 @@ class TreeBaseFile extends TreeNode_1.default {
     getDiskVersion() {
         return this._diskVersion;
     }
-    _getProgram(grammarPath) {
+    _getAsProgram(grammarPath) {
         const tree = new TreeNode_1.default();
-        tree.appendLineAndChildren(this.getId(), this.childrenToString());
+        tree.appendLineAndChildren(this._getFilePath(), this.childrenToString());
         return new (jtree_node_1.default.getProgramConstructor(grammarPath))(tree.toString());
     }
     cellCheck(grammarPath) {
-        return this._getProgram(grammarPath).getAllErrors();
+        return this._getAsProgram(grammarPath).getAllErrors();
     }
     getOneOf(keys) {
         for (let i = 0; i < keys.length; i++) {
@@ -43,7 +36,7 @@ class TreeBaseFile extends TreeNode_1.default {
     getDoc(terms) {
         return terms
             .map(term => {
-            const nodes = this.findNodes(this.getId() + " " + term);
+            const nodes = this.findNodes(this._getFilePath() + " " + term);
             return nodes.map(node => node.childrenToString()).join("\n");
         })
             .filter(a => a)
@@ -84,9 +77,7 @@ class TreeBaseFile extends TreeNode_1.default {
         const str = this.childrenToString();
         if (this.getDiskVersion() === str)
             return this;
-        //console.log(this.getDiskVersion())
-        //console.log("saving " + this.getFilePath())
-        Disk_1.Disk.write(this.getFilePath(), str);
+        Disk_1.Disk.write(this._getFilePath(), str);
         this.setDiskVersion();
         return this;
     }
@@ -97,65 +88,52 @@ class TreeBaseFile extends TreeNode_1.default {
         const prefix = !file || file.endsWith("\n") ? "" : "\n";
         return this.appendLine(prefix + line + "\n");
     }
-    getId() {
+    _getFilePath() {
         return this.getWord(0);
     }
-    getCollection() {
-        return this.getRootNode();
-    }
-    getFilePath() {
-        return this.getCollection().getDir() + this.getId();
+    getFileName() {
+        return Disk_1.Disk.getFileName(this._getFilePath());
     }
     createParser() {
         return new TreeNode_1.default.Parser(TreeNode_1.default);
     }
 }
 exports.TreeBaseFile = TreeBaseFile;
-class TreeBaseCollection extends TreeNode_1.default {
-    getDir() {
-        return this._dir;
+class TreeBaseFolder extends TreeNode_1.default {
+    constructor() {
+        super(...arguments);
+        this._isLoaded = false;
     }
-    getDataCellTypeIfApplicable(node) {
-        const arr = node._getGrammarBackedCellArray();
-        if (arr.length === 1)
-            return arr[0].getType();
+    touch(filename) {
+        // todo: throw if its a folder path, has wrong file extension, or other invalid
+        return Disk_1.Disk.touch(this._getDir() + filename);
     }
-    getGrammarPath() {
-        return this._grammarPath;
+    createParser() {
+        return new TreeNode_1.default.Parser(TreeBaseFile);
     }
-    setGrammarPath(grammarPath) {
-        this._grammarPath = grammarPath;
+    // todo: RAII?
+    loadFolder(files = undefined, sampleSize = undefined, seed = Date.now()) {
+        if (this._isLoaded)
+            return this;
+        files = files || this._getAndFilterFilesFromFolder();
+        if (sampleSize !== undefined)
+            files = TreeUtils_1.default._sampleWithoutReplacement(files, sampleSize, seed);
+        this.setChildren(this._readFiles(files));
+        this._setDiskVersions();
+        this._isLoaded = true;
         return this;
     }
-    setDir(dir) {
-        this._dir = dir;
+    startExpressApp(port = 8887) {
+        this.loadFolder();
+        this._startListeningForFileChanges();
+        this._getExpressApp().listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`));
         return this;
     }
-    getDimensions() {
-        return this._getUnionNames();
-    }
-    _getProgram() {
-        let str = this.clone();
-        str.forEach(child => child.setLine(child.getLine()));
-        return new (jtree_node_1.default.getProgramConstructor(this.getGrammarPath()))(str.toString());
-    }
-    cellCheckToTree() {
-        return new TreeNode_1.default(this._getProgram().getAllErrors());
-    }
-    cellCheck(printLimit = 100) {
-        tick("start toString...");
-        // this.printLinesWithLineNumbersFrom(0, 100)
-        // return
-        const clone = this.clone();
-        clone.forEach(child => child.setLine(child.getLine()));
-        const str = clone.toString();
-        tick("end toString...");
-        const grammarPath = this.getGrammarPath();
-        const programConstructor = jtree_node_1.default.getProgramConstructor(grammarPath);
-        const program = new programConstructor(str);
-        return program.getAllErrors().join("\n");
+    cellCheckWithProgressBar(printLimit = 100) {
+        TreeUtils_1.default._tick("start...");
+        const program = this._getAsProgram();
         let lines = this.getNumberOfLines();
-        let lps = lines / (tick("End parser") / 1000);
+        let lps = lines / (TreeUtils_1.default._tick("End parser") / 1000);
         console.log(`Parsed ${lines} line program at ${lps} lines per second`);
         const ProgressBar = require("progress");
         const bar = new ProgressBar(":bar", { total: lines, width: 50 });
@@ -185,308 +163,56 @@ class TreeBaseCollection extends TreeNode_1.default {
         }
         return totalErrors;
     }
-    setDiskVersions() {
+    _getDir() {
+        // todo: cache?
+        return this.getWord(0).replace(/\/$/, "") + "/";
+    }
+    _getGrammarPaths() {
+        return Disk_1.Disk.getFiles(this._getDir()).filter(file => file.endsWith(GrammarLanguage_1.GrammarConstants.grammarFileExtension));
+    }
+    _setDiskVersions() {
         this.forEach(node => {
-            if (!node.setDiskVersion)
-                console.log(node);
             node.setDiskVersion();
         });
         return this;
     }
-    createParser() {
-        return new TreeNode_1.default.Parser(TreeBaseFile);
+    _getAndFilterFilesFromFolder() {
+        return this._filterFiles(Disk_1.Disk.getFiles(this._getDir()));
     }
-    getFromContent(path, content) {
-        return this.findNodes(path).find(node => node.getContent() === content);
+    // todo: cleanup the filtering here.
+    _filterFiles(files) {
+        return files.filter(file => !file.endsWith(GrammarLanguage_1.GrammarConstants.grammarFileExtension));
     }
-}
-exports.TreeBaseCollection = TreeBaseCollection;
-class TreeBase {
-    // Because we can assume filesystem is a map, that makes things different.
-    // this is NOT an extension of tree
-    constructor(storagePath, grammarPath) {
-        this._dir = storagePath.replace(/\/$/, "") + "/";
-        this._grammarPath = grammarPath;
-    }
-    getCollectionClass() {
-        return TreeBaseCollection;
-    }
-    getSample(number) {
-        const collectionClass = this.getCollectionClass();
-        return number === undefined
-            ? this.getAll()
-            : new collectionClass(this.toString(number))
-                .setDir(this.getDir())
-                .setGrammarPath(this.getGrammarPath())
-                .setDiskVersions()
-                .getChildren();
-    }
-    deleteFromAll(prop) {
-        this.getAllWith(prop).forEach(node => {
-            node.delete(prop);
-            this.saveNode(node);
-        });
-    }
-    getCollection(files = undefined) {
-        if (!this._collection) {
-            const collectionClass = this.getCollectionClass();
-            this._collection = new collectionClass(this.toString(undefined, files))
-                .setGrammarPath(this.getGrammarPath())
-                .setDir(this.getDir())
-                .setDiskVersions();
-        }
-        return this._collection;
-    }
-    getFilePath(id) {
-        return this.getDir() + id;
-    }
-    touch(id) {
-        return Disk_1.Disk.touch(this.getFilePath(id));
-    }
-    appendUniqueLine(id, line) {
-        throw new Error("move to node");
-        return Disk_1.Disk.appendUniqueLine(this.getFilePath(id), line);
-    }
-    saveNode(node) {
-        throw new Error("move to node");
-        return Disk_1.Disk.write(this.getFilePath(node.getWord(0)), node.childrenToString());
-    }
-    getProperty(id, prop) {
-        throw new Error("move to node");
-        return this.getNode(id).get(prop);
-    }
-    setProperties(id, propMap) {
-        return this.getNode(id)
-            .setProperties(propMap)
-            .save();
-    }
-    setProperty(id, prop, value) {
-        throw new Error("move to node");
-        if (value === "undefined" || value === "null" || value === "")
-            return console.log(`not setting undefined or null or blank: ${value}`);
-        const tree = this.getNode(id);
-        if (tree.get(prop) === value.toString())
-            return true;
-        tree.touchNode(prop).setContent(value);
-        return Disk_1.Disk.write(this.getFilePath(id), tree.toString());
-    }
-    appendLines(id, lines) {
-        throw new Error("move to node");
-        const path = this.getFilePath(id);
-        const file = Disk_1.Disk.read(path);
-        const prefix = !file || file.endsWith("\n") ? "" : "\n";
-        return Disk_1.Disk.append(path, prefix + lines + "\n");
-    }
-    deleteProperties(id, props) {
-        throw new Error("move to node");
-        props = typeof props === "string" ? [props] : props;
-        const tree = Disk_1.Disk.readTree(this.getFilePath(id));
-        props.forEach(p => tree.delete(p));
-        return Disk_1.Disk.write(this.getFilePath(id), tree.toString());
-    }
-    appendUniqueTree(id, line, text) {
-        throw new Error("move to node");
-        return Disk_1.Disk.hasLine(this.getFilePath(id), line) ? true : this.appendTreeToLang(id, line, text);
-    }
-    appendKeyToProperty(id, prop, value) {
-        throw new Error("move to node");
-        const current = this.getProperty(id, prop);
-        if (current)
-            value = lodash.uniq((current + " " + value).split(" ").filter(a => a)).join(" ");
-        this.setProperty(id, prop, value);
-    }
-    // todo: check to ensure identical objects
-    addDelimited(id, property, arrayOfObjects, delimiter = undefined) {
-        throw new Error("move to node");
-        delimiter = delimiter || Disk_1.Disk.chooseDelimiter(new TreeNode_1.default(arrayOfObjects).toString());
-        const header = Object.keys(arrayOfObjects[0])
-            .join(delimiter)
-            .replace(/[\n\r]/g, "");
-        const rows = arrayOfObjects.map(item => Object.values(item)
-            .join(delimiter)
-            .replace(/[\n\r]/g, ""));
-        return this.addUniqueRowsToNestedDelimited(id, property, header, rows);
-    }
-    deleteAfter(id, property) {
-        throw new Error("move to node");
-        const node = this.getNode(id);
-        if (!node.has(property))
-            return 1;
-        const newnode = node.getSlice(0, node.indexOf(property));
-        return Disk_1.Disk.write(this.getFilePath(id), newnode.toString());
-    }
-    addUniqueRowsToNestedDelimited(id, property, header, rowsAsStrings) {
-        throw new Error("move to node");
-        const tree = this.getNode(id);
-        if (!tree.has(property))
-            tree.touchNode(property);
-        const node = tree.getNode(property);
-        if (!node.length)
-            node.appendLine(header);
-        // todo: this looks brittle
-        rowsAsStrings.forEach(row => {
-            if (!node.toString().includes(row))
-                node.appendLine(row);
-        });
-        return Disk_1.Disk.write(this.getFilePath(id), tree.toString());
-    }
-    // todo: remove
-    getOne(path) {
-        const base = this.getCollection([path]);
-        return base.nodeAt(0);
-    }
-    getFile(id) {
-        return Disk_1.Disk.read(this.getFilePath(id));
-    }
-    appendTreeToLang(id, line, text) {
-        throw new Error("move to node");
-        const path = this.getFilePath(id);
-        const file = Disk_1.Disk.read(path);
-        const prefix = !file || file.endsWith("\n") ? "" : "\n";
-        return Disk_1.Disk.append(path, prefix + line + TreeNode_1.default.nest(text, 1) + "\n");
-    }
-    appendLine(id, line) {
-        throw new Error("move to node");
-        const path = this.getFilePath(id);
-        const file = Disk_1.Disk.read(path);
-        const prefix = !file || file.endsWith("\n") ? "" : "\n";
-        return Disk_1.Disk.append(path, prefix + line + "\n");
-    }
-    getNode(key) {
-        return this.getCollection().getNode(key);
-    }
-    exists(id) {
-        return Disk_1.Disk.exists(this.getFilePath(id));
-    }
-    find(prop) {
-        return this.getAllWith(prop).map(n => n.getNode(prop));
-    }
-    getNames() {
-        return this.getCollection().map(item => item.getWord(0));
-    }
-    getAll() {
-        return this.getCollection().getChildren();
-    }
-    makeIndexBy(tree, prop) {
-        const map = {};
-        tree.forEach((child, index) => {
-            const key = child.get(prop);
-            if (map[key])
-                throw new Error(`Attempting to set index with ${prop}, but node ${map[key].getIndex()} has key ${key} but node ${map[key]} already has that key.`);
-            map[key] = child;
-        });
-        return map;
-    }
-    getDir() {
-        return this._dir;
-    }
-    getGrammarPath() {
-        return this._grammarPath;
-    }
-    getSparsity() {
-        const nodes = this.getAll();
-        const fields = this.getCollection().getDimensions();
-        let count = 0;
-        nodes.forEach(node => {
-            fields.forEach(field => {
-                if (node.has(field))
-                    count++;
-            });
-        });
-        return Number(1 - count / (nodes.length * fields.length)).toFixed(2);
-    }
-    getMapTuple(propertyName) {
-        // todo: should be instance method on tree?
-        return this._getMapTuple(this.toTree(), propertyName, node => node.getWord(0));
-    }
-    getNamesWithout(prop) {
-        return this.getAll()
-            .filter(node => !node.has(prop))
-            .map(node => node.getWord(0))
-            .join("\n");
-    }
-    getAllWith(props) {
-        if (typeof props === "string")
-            props = [props];
-        return this.getAll().filter(node => props.every(prop => node.has(prop)));
-    }
-    extractObject(tree, fieldsArr) {
-        // todo: should be instance method on tree
-        const obj = {};
-        fieldsArr.forEach(field => (obj[field] = tree.get(field)));
-        return obj;
-    }
-    _getMapTuple(tree, propertyNameOrFn, propertyNameOrFn2) {
-        const oneToTwo = {};
-        const twoToOne = {};
-        const is1Str = typeof propertyNameOrFn === "string";
-        const is2Str = typeof propertyNameOrFn2 === "string";
-        tree.forEach(node => {
-            const value1 = is1Str ? node.get(propertyNameOrFn) : propertyNameOrFn(node);
-            if (!value1)
-                return undefined;
-            const value2 = is2Str ? node.get(propertyNameOrFn2) : propertyNameOrFn2(node);
-            oneToTwo[value1] = value2;
-            twoToOne[value2] = value1;
-        });
-        return [oneToTwo, twoToOne];
-    }
-    getTable(columns) {
-        const rows = this.toTree().map(node => {
-            const obj = {};
-            columns.forEach(col => {
-                if (!col.substr)
-                    obj[col[0]] = col[1](node);
-                else
-                    obj[col] = node.get(col);
-            });
-            obj.id = node.getWord(0);
-            return obj;
-        });
-        return new TreeNode_1.default(rows);
-    }
-    toTree() {
-        return new TreeNode_1.default(this.toString());
-    }
-    getApp() {
+    _getExpressApp() {
         if (!this._app)
             this._app = this._makeApp();
         return this._app;
     }
-    startApp(port = 8887) {
+    _startListeningForFileChanges() {
         const fs = require("fs");
-        fs.watch(this.getDir(), (event, filename) => {
-            const collection = this.getCollection();
-            const id = Disk_1.Disk.getFileName(filename);
-            const node = collection.getNode(id);
-            const data = Disk_1.Disk.read(this.getDir() + filename);
+        fs.watch(this._getDir(), (event, filename) => {
+            let fullPath = this._getDir() + filename;
+            fullPath = this._filterFiles([fullPath])[0];
+            if (!fullPath)
+                return true;
+            const data = Disk_1.Disk.read(fullPath);
+            const node = this.getNode(fullPath);
             if (!node)
-                collection.appendLineAndChildren(id, data);
+                this.appendLineAndChildren(fullPath, data);
             else
                 node.setChildren(data);
         });
-        const app = this.getApp();
-        // // this.getCollection().cellCheck(10)
-        // app.post("/eval", (req, res) => {
-        //   if (!req.body.q) return res.send("req.body.q was empty")
-        //   res.send(JSON.stringify(eval(req.body.q)))
-        // })
-        app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`));
-        return this;
-    }
-    getSize() {
-        return this.toString().length;
     }
     _getStatusMessage() {
-        const paths = this.getApp()
+        const paths = this._getExpressApp()
             ._router.stack // registered routes
-            .filter(r => r.route && r.route.path.length > 1) // take out all the middleware
-            .map(r => `<a href="${r.route.path}">${r.route.path}</a>`); // get all the paths
+            .filter(route => route.route && route.route.path.length > 1) // take out all the middleware
+            .map(route => `<a href="${route.route.path}">${route.route.path}</a>`); // get all the paths
         return `<div style="white-space:pre;">TreeBase server running:
--- Folder: '${this.getDir()}'
--- Grammar: '${this.getGrammarPath()}'
--- Files: ${this.getCollection().length}
--- Size: ${this.getSize()}
+-- Folder: '${this._getDir()}'
+-- Grammars: '${this._getGrammarPaths().join(",")}'
+-- Files: ${this.length}
+-- Bytes: ${this.toString().length}
 -- Routes: ${paths.join("\n ")}</div>`;
     }
     _makeApp() {
@@ -504,48 +230,56 @@ class TreeBase {
             next();
         });
         app.get("/list", (req, res) => {
-            res.send(this.getCollection()
-                .map(node => `<a href="${node.getWord(0)}">${node.getWord(0)}</a>`)
-                .join("<br>"));
+            res.send(this.map(node => `<a href="${node.getFileName()}">${node.getFileName()}</a>`).join("<br>"));
         });
         app.get("/", (req, res) => {
             res.send(this._getStatusMessage());
         });
-        app.use(express.static(this.getDir(), {
+        app.use(express.static(this._getDir(), {
             setHeaders: (res, requestPath) => {
                 res.setHeader("Content-Type", "text/plain");
             }
         }));
         app.get("/cellCheck", (req, res) => {
-            const collection = this.getCollection();
-            let end = tick("Loaded collection....");
-            let lines = collection.getNumberOfLines();
+            let end = TreeUtils_1.default._tick("Loaded collection....");
+            let lines = this.getNumberOfLines();
             let lps = lines / (end / 1000);
-            const errors = collection.cellCheck(100);
+            const errors = this._getAsProgram().getAllErrors();
             res.setHeader("Content-Type", "text/plain");
-            res.send(`Total errors: ${errors.length}\n${errors}`);
+            res.send(`Total errors: ${errors.length}\n${errors.join("\n")}`);
         });
         return app;
     }
-    _getProgram() {
-        return new (jtree_node_1.default.getProgramConstructor(this._grammarPath))().getGrammarProgramRoot();
+    _getTreeBaseGrammarCode() {
+        const code = new TreeNode_1.default(this._getGrammarPaths()
+            .map(Disk_1.Disk.read)
+            .join("\n"));
+        const rootNodes = code.with("root");
+        return (code +
+            "\n" +
+            `treeBaseFolderNode
+ ${GrammarLanguage_1.GrammarConstants.root}
+ ${GrammarLanguage_1.GrammarConstants.inScope} ${rootNodes.map(node => node.getWord(0)).join(" ")}
+ ${GrammarLanguage_1.GrammarConstants.catchAllNodeType} treeBaseErrorNode
+treeBaseErrorNode
+ ${GrammarLanguage_1.GrammarConstants.baseNodeType} ${GrammarLanguage_1.GrammarConstants.errorNode}`);
+    }
+    _getAsProgram() {
+        this.loadFolder();
+        const grammarProgram = new jtree_node_1.default.GrammarProgram(this._getTreeBaseGrammarCode());
+        const programConstructor = grammarProgram.getRootConstructor();
+        return new programConstructor(this.toString());
     }
     _readFiles(files) {
         return files
-            .map(file => {
-            const filename = Disk_1.Disk.getFileName(file);
-            const content = Disk_1.Disk.read(file);
+            .map(fullPath => {
+            const filename = Disk_1.Disk.getFileName(fullPath);
+            const content = Disk_1.Disk.read(fullPath);
             if (content.match(/\r/))
-                throw new Error("bad \\r in " + file);
-            return content ? filename + "\n " + content.trim().replace(/\n/g, "\n ") : filename;
+                throw new Error("bad \\r in " + fullPath);
+            return content ? fullPath + "\n " + content.trim().replace(/\n/g, "\n ") : fullPath;
         })
             .join("\n");
     }
-    toString(sampleSize = undefined, files = undefined) {
-        files = files || Disk_1.Disk.getFiles(this.getDir());
-        if (sampleSize !== undefined)
-            files = lodash.sampleSize(files, sampleSize);
-        return this._readFiles(files);
-    }
 }
-exports.TreeBase = TreeBase;
+exports.TreeBaseFolder = TreeBaseFolder;

@@ -6,6 +6,13 @@ What is TreeBase?
 
 TreeBase is the software-less database system for community knowledge bases.
 
+Try It
+------
+
+    npm install -g jtree
+    jtree base
+
+
 How does it work?
 -----------------
 

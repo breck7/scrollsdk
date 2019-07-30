@@ -21,15 +21,15 @@ In the future we think it may look like this:
 
 #### What's the difference between Tree Notation and Tree Languages?
 
-Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. Anyone can make a new language by simply creating 1 file in a language called Grammar, which is itself a Tree Language.
+Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. We are building a Tree Language called [Grammar](http://treenotation.org/sandbox/build/#standard%20grammar) to make it easier to build Tree Languages.
 
-#### What major problems in computer science does Tree Notation solve?
+#### What major problems in computer science does help Tree Notation solve?
 
-1. Program synthesis. Tree Notation makes it easier for AI programs to write code. Deep Learning models are only as good as the data you train it on. Tree Notation code is noiseless, clean data, which we posit will enable at least a 10x improvement in the performance of programs that write code and/or assist users in writing code.
-2. Clean data. In data science, it is a rule of thumb that 20% of your time will go toward doing data science, and 80% of your time will go toward getting, cleaning, and organizing your data. Tree Notation offers a number of breakthroughs that will solve that 80% dilemma once and for all.
-3. Visual programming. Tree Notation is the first notation where a visual design tool can generate code as good as someone can write by hand. The languages listed above have a critical flaw--there are infinite ways to represent any given structure. In Tree Notation there is only 1 way to represent 1 structure. This simplification is one of the main reasons why Tree Notation is solving the Visual Programming problem.
+1. Program synthesis. Tree Notation makes it easier to train AI models to write great code. Deep Learning models are only as good as the data you train it on. Tree Notation code is noiseless, clean data, which we posit will enable a 10x+ improvement over the state-of-the-art of AI programs that write code and/or assist users in writing code.
+2. Clean data. In data science a rule of thumb is that 20% of your time will go toward doing data science, and 80% of your time will go toward getting, cleaning, and organizing data. Tree Notation offers a number of techniques that, coupled with network effects, will greatly reduce time wasted on cleaning data.
+3. Visual programming. Tree Notation is the first notation where a visual design tool can generate code as good as someone can write by hand. Traditional languages have a critical flaw--there are infinite ways to represent any given structure. In Tree Notation there is only 1 way to represent 1 structure. This simplification is one of a few core reasons why Tree Notation is helping solve the Visual Programming problem.
 
-We are building the data science app [Ohayo](https://github.com/breck7/ohayo) in part to demonstrate these 3 advantages of Tree Notation.
+We are building the data science app [Ohayo](https://github.com/treenotation/ohayo) in part to demonstrate these 3 advantages of Tree Notation.
 
 #### How can I build a new Tree Language?
 
@@ -37,13 +37,13 @@ A good place to start is with our simple <a href="http://treenotation.org/sandbo
 
 #### Where can I use Tree Notation?
 
-Everywhere! Anywhere you use programming languages or encodings, you can use Tree Notation. In the early days of the Tree ecosystem, it will require more work, and you likely will have to build your own Tree Language, but we are here to help.
+Everywhere! Anywhere you use programming languages or encodings, you can use Tree Notation. In the early days of the Tree Notation Ecosystem, it will require more work but we are here to help.
 
 #### What are some examples of Tree Languages?
 
-There are a dozen <a href="https://github.com/treenotation/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a <a href="http://treenotation.org/sandbox/build/#standard%20project">language similar to Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
+There are over a dozen <a href="https://github.com/treenotation/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a <a href="http://treenotation.org/sandbox/build/#standard%20project">language similar to Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
 
-#### Language that add numbers or compile to HTML are cute, but are there any advanced Tree Language?
+#### Languages that add numbers or compile to HTML are cute, but are there any advanced Tree Language?
 
 Currently the most advanced non-experimental Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="http://treenotation.org/sandbox/build/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
 
@@ -93,7 +93,7 @@ No. A subset of Tree Notation does, but for perfect one-to-one matching you'll w
 
 #### Can I use Tree Notation with any programming language?
 
-Yes! The <a href="https://github.com/treenotation/jtree">JTree library</a> provides Tree Notation support for TypeScript and Javascript, but we hope that there will eventually be Tree Notation and Tree Grammar libraries in all programming languages, similar to how most languages nowadays have JSON libraries. We currently have C++, Python, and GoLang libraries in development, but hopefully others will create those before we release ours.
+Yes! The <a href="https://github.com/treenotation/jtree">JTree library</a> provides Tree Notation support for TypeScript and Javascript, but we hope that there will eventually be Tree Notation and Tree Grammar libraries in all programming languages, similar to how most languages nowadays have JSON libraries.
 
 If you want to build a Tree Notation library for your language, let us know how we can help!
 
@@ -101,7 +101,7 @@ If you want to build a Tree Notation library for your language, let us know how 
 
 #### Who makes Tree Notation, and is it open source?
 
-Tree Notation is open source, free, and made by volunteers. The Tree Notation Lab, a research group at the University of Hawaii Cancer Center in Oahu, is currently behind a lot of the core Tree Notation infrastructure projects. We are building the infrastructure needed so that we can build better tools for cancer researchers, clinicians, and patients, but the faster we can get the broader Tree Notation ecosystem growing, the easier our work will become.
+Tree Notation is free and open source. The Tree Notation Lab, a research group at the University of Hawaii Cancer Center in Oahu, is currently behind a lot of the core Tree Notation infrastructure projects. We are building the infrastructure needed so that we can build better tools for cancer researchers, clinicians, and patients, but the faster we can get the broader Tree Notation ecosystem growing, the easier our work will become.
 
 #### Is Tree Notation ready for production use?
 
@@ -154,6 +154,10 @@ If you have a Tree Language with a root nodeType named "folder", and you want to
 #### What's something else you can do with Tree Notation that you can't do with Lisp?
 
 Easy program concatenation. For example, in Tree Notation you can create valid new programs simply by appending strings, whereas in Lisp you might first have to do some parantheses removing and inserting.
+
+#### What's something else that is worse in Lisp?
+
+In Lisp you have to escape certain characters. In Tree Notation, you never need to escape characters. (Note: although you are 100% free to design Tree Languages that implement escape characters, that is almost never necessary).
 
 ## History
 

@@ -1,9 +1,10 @@
 import jtree from "./jtree";
 import jTreeTypes from "./jTreeTypes";
-import { GrammarBackedRootNode } from "./GrammarLanguage";
+import { GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage";
 import Upgrader from "./tools/Upgrader";
 declare class jtreeNode extends jtree {
     static Upgrader: typeof Upgrader;
+    static GrammarConstants: typeof GrammarConstants;
     static executeFile: (programPath: string, grammarPath: string) => Promise<any>;
     static executeFiles: (programPaths: string[], grammarPath: string) => Promise<any>[];
     static executeFileSync: (programPath: string, grammarPath: string) => any;

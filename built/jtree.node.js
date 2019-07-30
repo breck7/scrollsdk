@@ -40,6 +40,7 @@ if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toStrin
     }
 }
 jtreeNode.Upgrader = Upgrader_1.default;
+jtreeNode.GrammarConstants = GrammarLanguage_1.GrammarConstants;
 jtreeNode.executeFile = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath);
 jtreeNode.executeFiles = (programPaths, grammarPath) => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath);

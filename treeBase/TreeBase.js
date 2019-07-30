@@ -1,26 +1,19 @@
 #! /usr/local/bin/node
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const TreeNode_1 = require("../src/base/TreeNode");
-const GrammarLanguage_1 = require("../src/GrammarLanguage");
-const TreeUtils_1 = require("../src/base/TreeUtils");
 const Disk_1 = require("./Disk");
 const jtree_node_1 = require("../src/jtree.node");
-class TreeBaseFile extends TreeNode_1.default {
+const GrammarProgram = jtree_node_1.default.GrammarProgram;
+const TreeUtils = jtree_node_1.default.Utils;
+const TreeNode = jtree_node_1.default.TreeNode;
+const GrammarConstants = jtree_node_1.default.GrammarConstants;
+class TreeBaseFile extends TreeNode {
     setDiskVersion() {
         this._diskVersion = this.childrenToString();
         return this;
     }
     getDiskVersion() {
         return this._diskVersion;
-    }
-    _getAsProgram(grammarPath) {
-        const tree = new TreeNode_1.default();
-        tree.appendLineAndChildren(this._getFilePath(), this.childrenToString());
-        return new (jtree_node_1.default.getProgramConstructor(grammarPath))(tree.toString());
-    }
-    cellCheck(grammarPath) {
-        return this._getAsProgram(grammarPath).getAllErrors();
     }
     getOneOf(keys) {
         for (let i = 0; i < keys.length; i++) {
@@ -65,8 +58,8 @@ class TreeBaseFile extends TreeNode_1.default {
         return this;
     }
     extract(fields) {
-        const newTree = new TreeNode_1.default(this.toString()); // todo: why not clone?
-        const map = TreeUtils_1.default.arrayToMap(fields);
+        const newTree = new TreeNode(this.toString()); // todo: why not clone?
+        const map = TreeUtils.arrayToMap(fields);
         newTree.nodeAt(0).forEach(node => {
             if (!map[node.getWord(0)])
                 node.destroy();
@@ -95,11 +88,11 @@ class TreeBaseFile extends TreeNode_1.default {
         return Disk_1.Disk.getFileName(this._getFilePath());
     }
     createParser() {
-        return new TreeNode_1.default.Parser(TreeNode_1.default);
+        return new TreeNode.Parser(TreeNode);
     }
 }
 exports.TreeBaseFile = TreeBaseFile;
-class TreeBaseFolder extends TreeNode_1.default {
+class TreeBaseFolder extends TreeNode {
     constructor() {
         super(...arguments);
         this._isLoaded = false;
@@ -109,7 +102,7 @@ class TreeBaseFolder extends TreeNode_1.default {
         return Disk_1.Disk.touch(this._getDir() + filename);
     }
     createParser() {
-        return new TreeNode_1.default.Parser(TreeBaseFile);
+        return new TreeNode.Parser(TreeBaseFile);
     }
     // todo: RAII?
     loadFolder(files = undefined, sampleSize = undefined, seed = Date.now()) {
@@ -117,7 +110,7 @@ class TreeBaseFolder extends TreeNode_1.default {
             return this;
         files = files || this._getAndFilterFilesFromFolder();
         if (sampleSize !== undefined)
-            files = TreeUtils_1.default._sampleWithoutReplacement(files, sampleSize, seed);
+            files = TreeUtils._sampleWithoutReplacement(files, sampleSize, seed);
         this.setChildren(this._readFiles(files));
         this._setDiskVersions();
         this._isLoaded = true;
@@ -130,10 +123,10 @@ class TreeBaseFolder extends TreeNode_1.default {
         return this;
     }
     cellCheckWithProgressBar(printLimit = 100) {
-        TreeUtils_1.default._tick("start...");
+        TreeUtils._tick("start...");
         const program = this._getAsProgram();
         let lines = this.getNumberOfLines();
-        let lps = lines / (TreeUtils_1.default._tick("End parser") / 1000);
+        let lps = lines / (TreeUtils._tick("End parser") / 1000);
         console.log(`Parsed ${lines} line program at ${lps} lines per second`);
         const ProgressBar = require("progress");
         const bar = new ProgressBar(":bar", { total: lines, width: 50 });
@@ -168,7 +161,7 @@ class TreeBaseFolder extends TreeNode_1.default {
         return this.getWord(0).replace(/\/$/, "") + "/";
     }
     _getGrammarPaths() {
-        return Disk_1.Disk.getFiles(this._getDir()).filter(file => file.endsWith(GrammarLanguage_1.GrammarConstants.grammarFileExtension));
+        return Disk_1.Disk.getFiles(this._getDir()).filter(file => file.endsWith(GrammarConstants.grammarFileExtension));
     }
     _setDiskVersions() {
         this.forEach(node => {
@@ -181,7 +174,7 @@ class TreeBaseFolder extends TreeNode_1.default {
     }
     // todo: cleanup the filtering here.
     _filterFiles(files) {
-        return files.filter(file => !file.endsWith(GrammarLanguage_1.GrammarConstants.grammarFileExtension));
+        return files.filter(file => !file.endsWith(GrammarConstants.grammarFileExtension));
     }
     _getExpressApp() {
         if (!this._app)
@@ -241,7 +234,7 @@ class TreeBaseFolder extends TreeNode_1.default {
             }
         }));
         app.get("/cellCheck", (req, res) => {
-            let end = TreeUtils_1.default._tick("Loaded collection....");
+            let end = TreeUtils._tick("Loaded collection....");
             let lines = this.getNumberOfLines();
             let lps = lines / (end / 1000);
             const errors = this._getAsProgram().getAllErrors();
@@ -251,22 +244,22 @@ class TreeBaseFolder extends TreeNode_1.default {
         return app;
     }
     _getTreeBaseGrammarCode() {
-        const code = new TreeNode_1.default(this._getGrammarPaths()
+        const code = new TreeNode(this._getGrammarPaths()
             .map(Disk_1.Disk.read)
             .join("\n"));
         const rootNodes = code.with("root");
         return (code +
             "\n" +
             `treeBaseFolderNode
- ${GrammarLanguage_1.GrammarConstants.root}
- ${GrammarLanguage_1.GrammarConstants.inScope} ${rootNodes.map(node => node.getWord(0)).join(" ")}
- ${GrammarLanguage_1.GrammarConstants.catchAllNodeType} treeBaseErrorNode
+ ${GrammarConstants.root}
+ ${GrammarConstants.inScope} ${rootNodes.map(node => node.getWord(0)).join(" ")}
+ ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
 treeBaseErrorNode
- ${GrammarLanguage_1.GrammarConstants.baseNodeType} ${GrammarLanguage_1.GrammarConstants.errorNode}`);
+ ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`);
     }
     _getAsProgram() {
         this.loadFolder();
-        const grammarProgram = new jtree_node_1.default.GrammarProgram(this._getTreeBaseGrammarCode());
+        const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode());
         const programConstructor = grammarProgram.getRootConstructor();
         return new programConstructor(this.toString());
     }

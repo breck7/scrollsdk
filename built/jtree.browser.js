@@ -4773,7 +4773,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "36.0.0";
+jtree.getVersion = () => "36.0.1";
 window.jtree
     = jtree;
 class Upgrader extends TreeNode {

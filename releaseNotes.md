@@ -1,3 +1,7 @@
+36.0.1 / 2019-07-30
+===================
+- Fix: TreeBase path fix
+
 36.0.0 / 2019-07-30
 ===================
 - New: added TreeBase and "base" command to CLI

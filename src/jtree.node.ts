@@ -2,7 +2,7 @@ const fs = require("fs")
 
 import jtree from "./jtree"
 import jTreeTypes from "./jTreeTypes"
-import { GrammarProgram, GrammarBackedRootNode } from "./GrammarLanguage"
+import { GrammarProgram, GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage"
 import Upgrader from "./tools/Upgrader"
 
 enum CompileTarget {
@@ -12,6 +12,7 @@ enum CompileTarget {
 
 class jtreeNode extends jtree {
   static Upgrader = Upgrader
+  static GrammarConstants = GrammarConstants
 
   static executeFile = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): Promise<any> =>
     jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)

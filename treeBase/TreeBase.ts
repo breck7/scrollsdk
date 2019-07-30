@@ -4,12 +4,14 @@
 
 // TODO: toSQL, sql storage backend. sqlite as well?
 
-import TreeNode from "../src/base/TreeNode"
-import { GrammarConstants } from "../src/GrammarLanguage"
-import TreeUtils from "../src/base/TreeUtils"
+import jTreeTypes from "../src/jTreeTypes"
 import { Disk } from "./Disk"
 import jtree from "../src/jtree.node"
-import jTreeTypes from "../src/jTreeTypes"
+
+const GrammarProgram = jtree.GrammarProgram
+const TreeUtils = jtree.Utils
+const TreeNode = jtree.TreeNode
+const GrammarConstants = jtree.GrammarConstants
 
 class TreeBaseFile extends TreeNode {
   private _diskVersion: string
@@ -19,16 +21,6 @@ class TreeBaseFile extends TreeNode {
   }
   getDiskVersion() {
     return this._diskVersion
-  }
-
-  private _getAsProgram(grammarPath) {
-    const tree = new TreeNode()
-    tree.appendLineAndChildren(this._getFilePath(), this.childrenToString())
-    return new (jtree.getProgramConstructor(grammarPath))(tree.toString())
-  }
-
-  cellCheck(grammarPath) {
-    return this._getAsProgram(grammarPath).getAllErrors()
   }
 
   getOneOf(keys) {
@@ -226,7 +218,7 @@ class TreeBaseFolder extends TreeNode {
       fullPath = this._filterFiles([fullPath])[0]
       if (!fullPath) return true
       const data = Disk.read(fullPath)
-      const node = <TreeNode>this.getNode(fullPath)
+      const node = <any>this.getNode(fullPath)
       if (!node) this.appendLineAndChildren(fullPath, data)
       else node.setChildren(data)
     })
@@ -311,7 +303,7 @@ treeBaseErrorNode
 
   _getAsProgram() {
     this.loadFolder()
-    const grammarProgram = new jtree.GrammarProgram(this._getTreeBaseGrammarCode())
+    const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
     const programConstructor = <any>grammarProgram.getRootConstructor()
     return new programConstructor(this.toString())
   }

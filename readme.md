@@ -11,7 +11,7 @@ Links
 🌴 [TreeBase](http://treenotation.org/treeBase/)  
 🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
-🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/breck7/ohayo)  
+🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  
 
 What is Tree Notation?
 ----------------------
@@ -34,7 +34,7 @@ Tree Notation may seem similar to notations like JSON, XML, YAML or S-expression
 Advanced Examples
 -----------------
 
-Check out the [Ohayo](https://github.com/breck7/ohayo) project or the [Tree Language Builder](http://treenotation.org/sandbox/build/) for advanced examples of Tree Notation in action.
+Check out the [Ohayo](https://github.com/treenotation/ohayo) project or the [Tree Language Builder](http://treenotation.org/sandbox/build/) for advanced examples of Tree Notation in action.
 
 Basic Boring Examples
 ---------------------

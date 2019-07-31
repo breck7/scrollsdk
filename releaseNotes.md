@@ -1,3 +1,11 @@
+edge / 2019-07-31
+===================
+- Infra: improved error messaging for invalid nodeType.
+
+36.0.2 / 2019-07-30
+===================
+- Fix: TreeBase Disk path fix
+
 36.0.1 / 2019-07-30
 ===================
 - Fix: TreeBase path fix

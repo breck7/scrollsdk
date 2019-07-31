@@ -913,7 +913,7 @@ class UnknownNodeTypeError extends AbstractTreeError {
     const node = this.getNode()
     const parentNode = node.getParent()
     const options = parentNode._getParser().getFirstWordOptions()
-    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid options are: "${options}"`
+    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid nodeTypes are: ${TreeUtils._listToEnglishText(options, 7)}.`
   }
 
   protected _getWordSuggestion() {
@@ -1862,6 +1862,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   // todo: better formalize the source maps pattern somewhat used here by getAllErrors
+  // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
     const errors: jTreeTypes.TreeError[] = []

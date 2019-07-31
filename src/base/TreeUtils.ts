@@ -14,6 +14,16 @@ class TreeUtils {
       .pop()
   }
 
+  static _listToEnglishText(list: string[], limit = 5) {
+    const len = list.length
+    if (!len) return ""
+    if (len === 1) return `'${list[0]}'`
+    const clone = list.slice(0, limit).map(item => `'${item}'`)
+    const last = clone.pop()
+    if (len <= limit) return clone.join(", ") + ` and ${last}`
+    return clone.join(", ") + ` and ${len - limit} more`
+  }
+
   // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
   static _chooseDelimiter(str: string) {
     const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea))

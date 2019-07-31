@@ -2,6 +2,7 @@ import jTreeTypes from "../jTreeTypes";
 declare class TreeUtils {
     static getPathWithoutFileName(path: string): string;
     static getClassNameFromFilePath(filename: string): string;
+    static _listToEnglishText(list: string[], limit?: number): string;
     static _chooseDelimiter(str: string): string;
     static flatten(arr: any): any;
     static escapeBackTicks(str: string): string;

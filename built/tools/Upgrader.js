@@ -11,7 +11,7 @@ class Upgrader extends TreeNode_1.default {
         return this._upgradeMany(globPatterns, fromVersion, toVersion);
     }
     _upgradeMany(globPatterns, fromVersion, toVersion) {
-        const glob = require("glob");
+        const glob = this.require("glob");
         const files = TreeUtils_1.default.flatten(globPatterns.map(pattern => glob.sync(pattern)));
         console.log(`${files.length} files to upgrade`);
         return files.map((path) => {
@@ -24,7 +24,7 @@ class Upgrader extends TreeNode_1.default {
     }
     upgrade(code, fromVersion, toVersion) {
         const updateFromMap = this.getUpgradeFromMap();
-        const semver = require("semver");
+        const semver = this.require("semver");
         let fromMap;
         while ((fromMap = updateFromMap[fromVersion])) {
             const toNextVersion = Object.keys(fromMap)[0]; // todo: currently we just assume 1 step at a time

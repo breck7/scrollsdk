@@ -67,6 +67,18 @@ class TreeUtils {
             .split("/")
             .pop();
     }
+    static _listToEnglishText(list, limit = 5) {
+        const len = list.length;
+        if (!len)
+            return "";
+        if (len === 1)
+            return `'${list[0]}'`;
+        const clone = list.slice(0, limit).map(item => `'${item}'`);
+        const last = clone.pop();
+        if (len <= limit)
+            return clone.join(", ") + ` and ${last}`;
+        return clone.join(", ") + ` and ${len - limit} more`;
+    }
     // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
     static _chooseDelimiter(str) {
         const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea));
@@ -1162,7 +1174,7 @@ class ImmutableNode extends AbstractNode {
             csv: (tree) => tree.toCsv(),
             tsv: (tree) => tree.toTsv()
         };
-        require("fs").writeFileSync(path, formats[format](this), "utf8");
+        this.require("fs").writeFileSync(path, formats[format](this), "utf8");
         return this;
     }
     _lineToYaml(indentLevel, listTag = "") {
@@ -2594,7 +2606,7 @@ class TreeNode extends ImmutableNode {
     }
     static fromDisk(path) {
         const format = this._getFileFormat(path);
-        const content = require("fs").readFileSync(path, "utf8");
+        const content = this.require("fs").readFileSync(path, "utf8");
         const methods = {
             tree: (content) => new TreeNode(content),
             csv: (content) => this.fromCsv(content),
@@ -3336,7 +3348,7 @@ class UnknownNodeTypeError extends AbstractTreeError {
         const node = this.getNode();
         const parentNode = node.getParent();
         const options = parentNode._getParser().getFirstWordOptions();
-        return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid options are: "${options}"`;
+        return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid nodeTypes are: ${TreeUtils._listToEnglishText(options, 7)}.`;
     }
     _getWordSuggestion() {
         const node = this.getNode();
@@ -4135,6 +4147,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
         return window[name];
     }
     // todo: better formalize the source maps pattern somewhat used here by getAllErrors
+    // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
     getErrorsInGrammarExamples() {
         const programConstructor = this.getRootConstructor();
         const errors = [];
@@ -4785,7 +4798,7 @@ class Upgrader extends TreeNode {
         return this._upgradeMany(globPatterns, fromVersion, toVersion);
     }
     _upgradeMany(globPatterns, fromVersion, toVersion) {
-        const glob = require("glob");
+        const glob = this.require("glob");
         const files = TreeUtils.flatten(globPatterns.map(pattern => glob.sync(pattern)));
         console.log(`${files.length} files to upgrade`);
         return files.map((path) => {
@@ -4798,7 +4811,7 @@ class Upgrader extends TreeNode {
     }
     upgrade(code, fromVersion, toVersion) {
         const updateFromMap = this.getUpgradeFromMap();
-        const semver = require("semver");
+        const semver = this.require("semver");
         let fromMap;
         while ((fromMap = updateFromMap[fromVersion])) {
             const toNextVersion = Object.keys(fromMap)[0]; // todo: currently we just assume 1 step at a time

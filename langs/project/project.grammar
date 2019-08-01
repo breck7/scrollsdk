@@ -1,8 +1,9 @@
 projectNode
  root
- description A Tree Language for project dependency management.
+ version 2.0.0
+ description A Tree Language for project dependency management in Javascript and Typescript.
  javascript
-  getOrderedDependenciesArray() {
+  getScriptPathsInCorrectDependencyOrder() {
     const cloned = this.clone()
     const sorted = []
     const included = {}
@@ -41,7 +42,7 @@ projectNode
   static _getImportsTypescript(sourceCode) {
     return this._extractImports(sourceCode, /(\n|^)import .* from "([^"]+)"/g)
   }
-  static getImports(sourceCode) {
+  static getTypeScriptAndJavaScriptImportsFromSourceCode(sourceCode) {
     const files = this._getImportsCommonJs(sourceCode).concat(this._getImportsTypescript(sourceCode))
     return files.map(file => {
       let type = "external"
@@ -50,13 +51,13 @@ projectNode
       return `${type} ${file}`
     })
   }
-  static getProjectProgram(arrayOfScriptPaths) {
+  static makeProjectProgramFromArrayOfScripts(arrayOfScriptPaths) {
     const fs = require("fs")
     const files = new jtree.TreeNode(arrayOfScriptPaths.join("\n"))
     const requiredFileList = new jtree.TreeNode()
     files.forEach(child => {
       const line = child.getLine()
-      const requiredFiles = this.getImports(fs.readFileSync(line, "utf8"))
+      const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
       requiredFileList.appendLineAndChildren(`file ${line}`, requiredFiles.length ? requiredFiles.join("\n") : undefined)
     })
     return requiredFileList.toString()

@@ -7,10 +7,11 @@ const os = require("os")
 const recursiveReadSync = require("recursive-readdir-sync")
 
 class CLI {
-  constructor(grammarsPath = os.homedir() + "/grammars.ssv") {
+  constructor(grammarsPath = os.homedir() + "/grammars.ssv", cwd = process.cwd()) {
     this._grammarsPath = grammarsPath
     this._initFile(grammarsPath, "name filepath")
     this._reload() // todo: cleanup
+    this._cwd = cwd
   }
 
   _getRegistryPath() {
@@ -20,6 +21,19 @@ class CLI {
   // todo: cleanup.
   _reload() {
     this._grammarsTree = TreeNode.fromSsv(this._read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
+  }
+
+  build(commandName, argument) {
+    const cwd = this._cwd
+    const filePath = cwd + "/jbuild.js"
+    if (!fs.existsSync(filePath)) throw new Error(`No '${filePath}' found.`)
+    const jBuildConstructor = require(filePath)
+    const builder = new jBuildConstructor()
+    if (commandName) return builder[commandName](argument)
+    else
+      return Object.getOwnPropertyNames(Object.getPrototypeOf(builder))
+        .filter(word => !word.startsWith("_") && word !== "constructor")
+        .join("\n")
   }
 
   combine(grammarName) {

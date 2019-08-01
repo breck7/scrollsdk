@@ -20,7 +20,7 @@ abstract class Upgrader extends TreeNode {
   }
 
   private _upgradeMany(globPatterns: jTreeTypes.globPattern[], fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): updatedFile[] {
-    const glob = require("glob")
+    const glob = this.require("glob")
     const files = TreeUtils.flatten(<any>globPatterns.map(pattern => glob.sync(pattern)))
     console.log(`${files.length} files to upgrade`)
     return files.map((path: jTreeTypes.absoluteFilePath) => {
@@ -36,7 +36,7 @@ abstract class Upgrader extends TreeNode {
 
   upgrade(code: TreeNode, fromVersion: jTreeTypes.semanticVersion, toVersion?: jTreeTypes.semanticVersion): TreeNode {
     const updateFromMap = this.getUpgradeFromMap()
-    const semver = require("semver")
+    const semver = this.require("semver")
     let fromMap: jTreeTypes.upgradeToMap
     while ((fromMap = updateFromMap[fromVersion])) {
       const toNextVersion = Object.keys(fromMap)[0] // todo: currently we just assume 1 step at a time

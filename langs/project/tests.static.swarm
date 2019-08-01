@@ -3,11 +3,11 @@ arrangeTestSubject
  require ./project.js
  static
 test _getImportsTypescript
- getImports
+ getTypeScriptAndJavaScriptImportsFromSourceCode
   blockStringParam
    foobar
   lengthIs 0
- getImports
+ getTypeScriptAndJavaScriptImportsFromSourceCode
   blockStringParam
    const Foobar = require("foobar")
    import FamBam from "../fambam.js"

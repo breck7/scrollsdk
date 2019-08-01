@@ -14,7 +14,7 @@ test basics
     relative ./foobar.js
  getAllErrors
   lengthIs 0
- getOrderedDependenciesArray
+ getScriptPathsInCorrectDependencyOrder
   lengthIs 4
   join
    blockStringParam
@@ -29,7 +29,7 @@ test spaces
     relative ./f oobar.js
  getAllErrors
   lengthIs 0
- getOrderedDependenciesArray
+ getScriptPathsInCorrectDependencyOrder
   join
    blockStringParam
      

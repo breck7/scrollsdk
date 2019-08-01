@@ -785,7 +785,7 @@ class ImmutableNode extends AbstractNode {
       csv: (tree: TreeNode) => tree.toCsv(),
       tsv: (tree: TreeNode) => tree.toTsv()
     }
-    require("fs").writeFileSync(path, <string>(<any>formats)[format](this), "utf8")
+    this.require("fs").writeFileSync(path, <string>(<any>formats)[format](this), "utf8")
     return this
   }
 
@@ -2381,7 +2381,7 @@ class TreeNode extends ImmutableNode {
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
-    const content = require("fs").readFileSync(path, "utf8")
+    const content = this.require("fs").readFileSync(path, "utf8")
     const methods: { [kind: string]: (content: string) => TreeNode } = {
       tree: (content: string) => new TreeNode(content),
       csv: (content: string) => this.fromCsv(content),

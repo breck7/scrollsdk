@@ -404,6 +404,23 @@ class TreeUtils {
       return this
     }
 
+    removeUseStrict() {
+      const strict = `"use strict";\n`
+      this._str = this._str.replace(strict, "")
+      return this
+    }
+
+    addUseStrictIfNotPresent() {
+      const str = `"use strict"`
+      this._str = this._str.startsWith(str) ? this._str : str + ";\n" + this._str
+      return this
+    }
+
+    removeNodeJsOnly() {
+      this._str = this._str.replace(/\/\*NODE_JS_ONLY\*\/[^\n]+\n/g, "\n")
+      return this
+    }
+
     removeImports() {
       // todo: what if this spans multiple lines?
       this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1")
@@ -438,6 +455,19 @@ class TreeUtils {
             .join("\n")
         )
       return this
+    }
+
+    static treeToJs(filepath: string, file: string) {
+      const filename = Util.getFileName(filepath)
+      const baseName = Util.removeFileExtension(filename)
+      const extension = Util.getFileExtension(filename)
+      const varName = baseName + extension.charAt(0).toUpperCase() + extension.substr(1)
+      const basePath = Util.getPathWithoutFileName(filepath)
+      // const newPath = basePath + "/" + varName + ".compiled.js"
+      const lines = file.split(/\n/)
+      const jsCode = `"use strict";
+window.${varName} = \`${jtree.Utils.escapeBackTicks(lines.join("\n"))}\``
+      return jsCode
     }
 
     changeNodeExportsToWindowExports() {

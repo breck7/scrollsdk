@@ -1,3 +1,7 @@
+36.2.0 / 2019-08-01
+===================
+- Breaking: builder refactor. Instead "jbuild.js" now do "builder.js".
+
 36.1.0 / 2019-07-31
 ===================
 - Infra: jBuild

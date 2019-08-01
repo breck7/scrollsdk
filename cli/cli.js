@@ -27,19 +27,15 @@ class CLI {
     let dir = Utils._removeLastSlash(this._cwd) + "/"
     let filePath = ""
     while (dir !== "/") {
-      filePath = dir + "jbuild.js"
+      filePath = dir + "builder.js"
       if (fs.existsSync(filePath)) break
       dir = Utils._getParentFolder(dir)
     }
     if (!fs.existsSync(filePath)) throw new Error(`No '${filePath}' found.`)
-    const jBuildConstructor = require(filePath)
-    const builder = new jBuildConstructor()
+    const builderConstructor = require(filePath)
+    const builder = new builderConstructor()
     if (commandName) return builder[commandName](argument)
-    else {
-      const commands = Object.getOwnPropertyNames(Object.getPrototypeOf(builder)).filter(word => !word.startsWith("_") && word !== "constructor")
-
-      return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
-    }
+    else return builder._help(filePath)
   }
 
   combine(grammarName) {

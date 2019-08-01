@@ -75,6 +75,6 @@ ${data[1]}`
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../jbuild/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
 
 module.exports = testTree

@@ -36,6 +36,6 @@ testTree.diskTests = equal => {
   equal(fs.existsSync(path), false, "file does not exist")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../jbuild/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
 
 module.exports = testTree

@@ -1,9 +1,9 @@
 #! /usr/bin/env node
 
-const abstractJBuild = require("./jbuild/abstractJBuild.js")
+const AbstractBuilder = require("./builder/AbstractBuilder.js")
 const jtree = require("./index.js")
 
-class jbuild extends abstractJBuild {
+class Builder extends AbstractBuilder {
   buildTreeComponentFramework() {
     const exec = this.require("exec")
     const execOptions = { cwd: __dirname + "/treeComponent/" }
@@ -28,7 +28,7 @@ class jbuild extends abstractJBuild {
 
       // This solves the wierd TS insertin
       // todo: remove
-      const file = new abstractJBuild.BrowserScript(this._read(outputJsFile))
+      const file = new AbstractBuilder.BrowserScript(this._read(outputJsFile))
       this._write(outputJsFile, file.getString())
     })
   }
@@ -39,7 +39,7 @@ class jbuild extends abstractJBuild {
     this._write(chexDir + "index.html", new (require(chexPath))().compile())
     this._write(
       __dirname + "/built/ChexTreeComponent.browser.js",
-      new abstractJBuild.BrowserScript(this._read(chexPath))
+      new AbstractBuilder.BrowserScript(this._read(chexPath))
         .removeRequires()
         .changeNodeExportsToWindowExports()
         .getString()
@@ -76,7 +76,7 @@ class jbuild extends abstractJBuild {
 
       // This solves the wierd TS insertin
       // todo: remove
-      const file = new abstractJBuild.BrowserScript(this._read(outputJsFile).replace(/[^\n]*jTreeTypes[^\n]*/g, ""))
+      const file = new AbstractBuilder.BrowserScript(this._read(outputJsFile).replace(/[^\n]*jTreeTypes[^\n]*/g, ""))
       this._write(outputJsFile, file.getString())
     })
 
@@ -91,7 +91,7 @@ class jbuild extends abstractJBuild {
   }
 
   _buildBrowserTestFile() {
-    const testFile = new abstractJBuild.BrowserScript(this._read(__dirname + "/tests/base.test.js"))
+    const testFile = new AbstractBuilder.BrowserScript(this._read(__dirname + "/tests/base.test.js"))
       .removeRequires()
       .removeHashBang()
       .removeNodeJsOnlyLines()
@@ -122,7 +122,7 @@ class jbuild extends abstractJBuild {
     const reporter = require("tap-mocha-reporter")
     const exec = require("child_process").exec
 
-    const proc = exec("node " + __dirname + "/jbuild.js _test")
+    const proc = exec("node " + __dirname + "/builder.js _test")
 
     proc.stdout.pipe(reporter("dot"))
     proc.stderr.on("data", data => console.error("stderr: " + data.toString()))
@@ -132,7 +132,7 @@ class jbuild extends abstractJBuild {
     const jtree = require("./index.js")
     const fs = require("fs")
     const recursiveReadSync = require("recursive-readdir-sync")
-    const runTestTree = require("./jbuild/testTreeRunner.js")
+    const runTestTree = require("./builder/testTreeRunner.js")
 
     // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
     const checkGrammarFile = grammarPath => {
@@ -184,11 +184,6 @@ class jbuild extends abstractJBuild {
   }
 }
 
-module.exports = jbuild
+module.exports = Builder
 
-if (!module.parent) {
-  const builder = new jbuild()
-  const command = process.argv[2]
-  if (!builder[command]) throw new Error(`Command '${command}' not found`)
-  builder[command](process.argv[3])
-}
+if (!module.parent) new Builder()._main()

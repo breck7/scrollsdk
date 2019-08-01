@@ -45,12 +45,16 @@ declare class TreeUtils {
             _removeAllLinesStartingWith(prefix: string): any;
             removeNodeJsOnlyLines(): any;
             removeHashBang(): any;
+            removeUseStrict(): any;
+            addUseStrictIfNotPresent(): any;
+            removeNodeJsOnly(): any;
             removeImports(): any;
             removeExports(): any;
             changeDefaultExportsToWindowExports(): any;
             changeNodeExportsToWindowExports(): any;
             getString(): string;
         };
+        treeToJs(filepath: string, file: string): string;
     };
 }
 export default TreeUtils;

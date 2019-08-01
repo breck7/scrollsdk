@@ -61,6 +61,14 @@ class TreeUtils {
         parts.pop();
         return parts.join("/");
     }
+    static _getParentFolder(path) {
+        if (path.endsWith("/"))
+            path = this._removeLastSlash(path);
+        return path.replace(/\/[^\/]*$/, "") + "/";
+    }
+    static _removeLastSlash(path) {
+        return path.replace(/\/$/, "");
+    }
     static getClassNameFromFilePath(filename) {
         return filename
             .replace(/\.[^\.]+$/, "")
@@ -2606,7 +2614,7 @@ class TreeNode extends ImmutableNode {
     }
     static fromDisk(path) {
         const format = this._getFileFormat(path);
-        const content = this.require("fs").readFileSync(path, "utf8");
+        const content = require("fs").readFileSync(path, "utf8");
         const methods = {
             tree: (content) => new TreeNode(content),
             csv: (content) => this.fromCsv(content),
@@ -4786,7 +4794,7 @@ jtree.TreeNode = TreeNode;
 jtree.GrammarProgram = GrammarProgram;
 jtree.UnknownGrammarProgram = UnknownGrammarProgram;
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode;
-jtree.getVersion = () => "36.0.2";
+jtree.getVersion = () => "36.1.0";
 window.jtree
     = jtree;
 class Upgrader extends TreeNode {

@@ -10,7 +10,7 @@ debugger.js
 jtree.project
 notes.txt
 jtree.browser.ts
-tasks/syntax.sh
+syntax.sh
 src/*/*.js
 src/*.js
 *.map

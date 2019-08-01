@@ -24,16 +24,22 @@ class CLI {
   }
 
   build(commandName, argument) {
-    const cwd = this._cwd
-    const filePath = cwd + "/jbuild.js"
+    let dir = Utils._removeLastSlash(this._cwd) + "/"
+    let filePath = ""
+    while (dir !== "/") {
+      filePath = dir + "jbuild.js"
+      if (fs.existsSync(filePath)) break
+      dir = Utils._getParentFolder(dir)
+    }
     if (!fs.existsSync(filePath)) throw new Error(`No '${filePath}' found.`)
     const jBuildConstructor = require(filePath)
     const builder = new jBuildConstructor()
     if (commandName) return builder[commandName](argument)
-    else
-      return Object.getOwnPropertyNames(Object.getPrototypeOf(builder))
-        .filter(word => !word.startsWith("_") && word !== "constructor")
-        .join("\n")
+    else {
+      const commands = Object.getOwnPropertyNames(Object.getPrototypeOf(builder)).filter(word => !word.startsWith("_") && word !== "constructor")
+
+      return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
+    }
   }
 
   combine(grammarName) {
@@ -331,7 +337,8 @@ ${grammars.toTable()}`
 
     if (app[action]) {
       app.addToHistory(action, paramOne, paramTwo)
-      print(app[action](paramOne, paramTwo))
+      const result = app[action](paramOne, paramTwo)
+      if (result !== undefined) print(result)
     } else if (!action) {
       app.addToHistory()
       print(app.help())

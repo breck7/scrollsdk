@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 const abstractJBuild = require("./jbuild/abstractJBuild.js")
 const jtree = require("./index.js")
 
@@ -99,6 +101,11 @@ class jbuild extends abstractJBuild {
     this._write(__dirname + "/sandbox/base.tests.es6.js", testFile)
   }
 
+  cover() {
+    const exec = this.require("child_process").exec
+    exec("tap --cov --coverage-report=lcov ./tasks/testAll.js")
+  }
+
   updateVersion(newVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
@@ -110,6 +117,78 @@ class jbuild extends abstractJBuild {
     this.buildBrowserVersion()
     console.log("Don't forget to update releaseNotes.md!")
   }
+
+  test() {
+    const reporter = require("tap-mocha-reporter")
+    const exec = require("child_process").exec
+
+    const proc = exec("node " + __dirname + "/jbuild.js _test")
+
+    proc.stdout.pipe(reporter("dot"))
+    proc.stderr.on("data", data => console.error("stderr: " + data.toString()))
+  }
+
+  _test() {
+    const jtree = require("./index.js")
+    const fs = require("fs")
+    const recursiveReadSync = require("recursive-readdir-sync")
+    const runTestTree = require("./jbuild/testTreeRunner.js")
+
+    // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
+    const checkGrammarFile = grammarPath => {
+      const testTree = {}
+      testTree[`hardCodedGrammarCheckOf${grammarPath}`] = equal => {
+        // Arrange/Act
+        const program = new jtree.GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
+        const errs = program.getAllErrors()
+        const exampleErrors = program.getErrorsInGrammarExamples()
+
+        //Assert
+        equal(errs.length, 0, "should be no errors")
+        if (errs.length) console.log(errs.join("\n"))
+
+        if (exampleErrors.length) console.log(exampleErrors)
+        equal(exampleErrors.length, 0, exampleErrors.length ? "examples errs: " + exampleErrors : "no example errors")
+      }
+
+      testTree[`grammarGrammarCheckOf${grammarPath}`] = equal => {
+        // Arrange/Act
+        const program = jtree.makeProgram(grammarPath, __dirname + "/langs/grammar/grammar.grammar")
+        const errs = program.getAllErrors()
+
+        //Assert
+
+        equal(errs.length, 0, "should be no errors")
+        if (errs.length) console.log(errs.join("\n"))
+      }
+
+      runTestTree(testTree)
+    }
+
+    const allLangFiles = recursiveReadSync(__dirname + "/langs/")
+    allLangFiles.filter(file => file.endsWith(".grammar")).forEach(checkGrammarFile)
+    allLangFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
+    allLangFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
+
+    const allTestFiles = recursiveReadSync(__dirname + "/tests/")
+    allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
+    allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
+
+    recursiveReadSync(__dirname + "/treeBase/")
+      .filter(file => file.endsWith(".test.js"))
+      .forEach(file => runTestTree(require(file)))
+
+    recursiveReadSync(__dirname + "/treeComponent/")
+      .filter(file => file.endsWith(".test.js"))
+      .forEach(file => runTestTree(require(file)))
+  }
 }
 
 module.exports = jbuild
+
+if (!module.parent) {
+  const builder = new jbuild()
+  const command = process.argv[2]
+  if (!builder[command]) throw new Error(`Command '${command}' not found`)
+  builder[command](process.argv[3])
+}

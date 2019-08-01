@@ -1,6 +1,8 @@
 import jTreeTypes from "../jTreeTypes";
 declare class TreeUtils {
     static getPathWithoutFileName(path: string): string;
+    static _getParentFolder(path: string): string;
+    static _removeLastSlash(path: string): string;
     static getClassNameFromFilePath(filename: string): string;
     static _listToEnglishText(list: string[], limit?: number): string;
     static _chooseDelimiter(str: string): string;

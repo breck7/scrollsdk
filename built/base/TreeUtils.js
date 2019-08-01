@@ -6,6 +6,14 @@ class TreeUtils {
         parts.pop();
         return parts.join("/");
     }
+    static _getParentFolder(path) {
+        if (path.endsWith("/"))
+            path = this._removeLastSlash(path);
+        return path.replace(/\/[^\/]*$/, "") + "/";
+    }
+    static _removeLastSlash(path) {
+        return path.replace(/\/$/, "");
+    }
     static getClassNameFromFilePath(filename) {
         return filename
             .replace(/\.[^\.]+$/, "")

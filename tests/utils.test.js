@@ -25,6 +25,17 @@ testTree.getLineIndexAtCharacterPosition = equal => {
   equal(jtree.Utils.getClassNameFromFilePath(`foobar/FooBam.js`), "FooBam")
 }
 
+testTree.getParentFolder = equal => {
+  // Arrange/Act/Assert
+  equal(jtree.Utils._getParentFolder(`foobar/FooBam.js`), "foobar/")
+  equal(jtree.Utils._getParentFolder(`/`), "/")
+  equal(jtree.Utils._getParentFolder(`/bam`), "/")
+  equal(jtree.Utils._getParentFolder(`/bam/`), "/")
+  equal(jtree.Utils._getParentFolder(`/bam/boom`), "/bam/")
+  equal(jtree.Utils._getParentFolder(`/bam/boom/`), "/bam/")
+  equal(jtree.Utils._getParentFolder(`/bam/boom/bah`), "/bam/boom/")
+}
+
 testTree.getUniqueWordsArray = equal => {
   equal(jtree.Utils.getUniqueWordsArray(`hi hi hey`).length, 2)
 }
@@ -70,5 +81,5 @@ testTree.makeRandomTree = equal => {
   equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).getTopDownArray().length, 3)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../jbuild/testTreeRunner.js")(testTree)
 module.exports = testTree

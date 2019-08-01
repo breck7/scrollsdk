@@ -107,6 +107,6 @@ testTree.regressionTest = equal => {
   equal(tokenLines.length, 217)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("./testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../jbuild/testTreeRunner.js")(testTree)
 
 module.exports = testTree

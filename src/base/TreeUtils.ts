@@ -7,6 +7,15 @@ class TreeUtils {
     return parts.join("/")
   }
 
+  static _getParentFolder(path: string) {
+    if (path.endsWith("/")) path = this._removeLastSlash(path)
+    return path.replace(/\/[^\/]*$/, "") + "/"
+  }
+
+  static _removeLastSlash(path: string) {
+    return path.replace(/\/$/, "")
+  }
+
   static getClassNameFromFilePath(filename: string) {
     return filename
       .replace(/\.[^\.]+$/, "")

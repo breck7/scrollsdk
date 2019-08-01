@@ -1,6 +1,8 @@
-edge / 2019-07-31
+36.1.0 / 2019-07-31
 ===================
+- Infra: jBuild
 - Infra: improved error messaging for invalid nodeType.
+- Breaking: some method names changed in Project Tree Language. See that readme for details.
 
 36.0.2 / 2019-07-30
 ===================

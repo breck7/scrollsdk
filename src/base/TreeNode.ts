@@ -2381,7 +2381,7 @@ class TreeNode extends ImmutableNode {
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
-    const content = this.require("fs").readFileSync(path, "utf8")
+    const content = require("fs").readFileSync(path, "utf8")
     const methods: { [kind: string]: (content: string) => TreeNode } = {
       tree: (content: string) => new TreeNode(content),
       csv: (content: string) => this.fromCsv(content),

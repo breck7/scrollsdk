@@ -59,7 +59,9 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _help(filePath = process.argv[1]) {
-    const commands = Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(word => !word.startsWith("_") && word !== "constructor")
+    const commands = Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+      .filter(word => !word.startsWith("_") && word !== "constructor")
+      .sort()
     return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
   }
 

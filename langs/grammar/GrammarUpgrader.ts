@@ -1,8 +1,9 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
-const jtree = require("../../index.js")
+import jtree from "../../core/jtree.node"
 
 class GrammarUpgrader extends jtree.Upgrader {
+  private static _jtree34grammarProgram: any
   getUpgradeFromMap() {
     return {
       "3.0.0": {

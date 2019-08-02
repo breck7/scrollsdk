@@ -1,10 +1,12 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
+import { exec } from "child_process"
+import jTreeTypes from "./core/jTreeTypes"
+import jtree from "./core/jtree.node"
+import { AbstractBuilder } from "./builder/AbstractBuilder"
+import { TestTreeRunner } from "./builder/TestTreeRunner"
+import { TypeScriptRewriter } from "./builder/TypeScriptRewriter"
 
-const AbstractBuilder = require("./builder/AbstractBuilder.js")
-const jtree = require("./index.js")
-const exec = require("child_process").exec
 const recursiveReadSync = require("recursive-readdir-sync")
-const runTestTree = require("./builder/testTreeRunner.js")
 
 class Builder extends AbstractBuilder {
   buildTreeComponentFramework() {
@@ -30,7 +32,7 @@ class Builder extends AbstractBuilder {
 
       // This solves the wierd TS insertin
       // todo: remove
-      const file = new AbstractBuilder.BrowserScript(this._read(outputJsFile))
+      const file = new TypeScriptRewriter(this._read(outputJsFile))
       this._write(outputJsFile, file.getString())
     })
   }
@@ -41,7 +43,7 @@ class Builder extends AbstractBuilder {
     this._write(chexDir + "index.html", new (require(chexPath))().compile())
     this._write(
       __dirname + "/dist/ChexTreeComponent.browser.js",
-      new AbstractBuilder.BrowserScript(this._read(chexPath))
+      new TypeScriptRewriter(this._read(chexPath))
         .removeRequires()
         .changeNodeExportsToWindowExports()
         .getString()
@@ -86,7 +88,7 @@ class Builder extends AbstractBuilder {
   }
 
   _buildBrowserTestFile() {
-    const testFile = new AbstractBuilder.BrowserScript(this._read(__dirname + "/tests/base.test.js"))
+    const testFile = new TypeScriptRewriter(this._read(__dirname + "/tests/base.test.js"))
       .removeRequires()
       .removeHashBang()
       .removeNodeJsOnlyLines()
@@ -120,20 +122,20 @@ class Builder extends AbstractBuilder {
   _test() {
     const allLangFiles = recursiveReadSync(__dirname + "/langs/")
     allLangFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
-    allLangFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
+    allLangFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
     allLangFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
 
     const allTestFiles = recursiveReadSync(__dirname + "/tests/")
-    allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => runTestTree(require(file)))
+    allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
     allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
 
     recursiveReadSync(__dirname + "/treeBase/")
       .filter(file => file.endsWith(".test.js"))
-      .forEach(file => runTestTree(require(file)))
+      .forEach(file => new TestTreeRunner().run(require(file)))
 
     recursiveReadSync(__dirname + "/treeComponentFramework/")
       .filter(file => file.endsWith(".test.js"))
-      .forEach(file => runTestTree(require(file)))
+      .forEach(file => new TestTreeRunner().run(require(file)))
   }
 }
 

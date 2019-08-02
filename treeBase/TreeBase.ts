@@ -1,4 +1,4 @@
-#! /usr/local/bin/node
+#!/usr/bin/env ts-node
 
 // TreeBase: The software-less database for community and personal knowledge bases.
 

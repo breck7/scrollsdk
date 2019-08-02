@@ -1,4 +1,4 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")

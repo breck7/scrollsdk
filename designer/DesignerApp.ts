@@ -1,12 +1,10 @@
-//onsave /usr/local/bin/tsc -p /Users/breck/jtree/sandbox/build/
-
 // todo: get typings in here.
 declare var jtree: any
 declare var CodeMirror: any
 declare var saveAs: any
 declare var JSZip: any
 
-class GrammarIDEApp {
+class DesignerApp {
   constructor(grammarSourceCode: string) {
     this.GrammarConstructor = new jtree.GrammarProgram(grammarSourceCode).getRootConstructor()
   }
@@ -313,7 +311,7 @@ ${testCode}`
 
 jQuery(document).ready(function() {
   jQuery.get("/langs/grammar/grammar.grammar").then(grammarSourceCode => {
-    const app = new GrammarIDEApp(grammarSourceCode)
+    const app = new DesignerApp(grammarSourceCode)
     ;(<any>window).app = app
     app.start()
   })

@@ -1,11 +1,13 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
 // todo: make isomorphic
 
-const fs = require("fs")
-const UnknownGrammarProgram = require("../dist/UnknownGrammarProgram.js").default
+import { readFileSync } from "fs"
+import jTreeTypes from "../core/jTreeTypes"
+import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
 
-const testTree = {}
+const testTree: jTreeTypes.testTree = {}
 
 testTree.predictGrammarFile = equal => {
   // Arrange
@@ -39,8 +41,9 @@ file test
   const types = new UnknownGrammarProgram(input).getPredictedGrammarFile("foobar")
 
   // Assert
-  equal(types, fs.readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
+  equal(types, readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+
+export { testTree }

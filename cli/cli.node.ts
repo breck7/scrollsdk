@@ -1,11 +1,11 @@
 #! /usr/bin/env node
 
-const jtree = require("../index.js")
-const { TreeNode, GrammarProgram, Utils } = jtree
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
-
 import { homedir } from "os"
+
+import jtree from "../core/jtree.node"
+const { TreeNode, GrammarProgram, Utils } = jtree
 import jTreeTypes from "../core/jTreeTypes"
 
 class CLI {
@@ -354,6 +354,6 @@ ${grammars.toTable()}`
   }
 }
 
-module.exports = CLI
+export { CLI }
 
 if (!module.parent) CLI.main()

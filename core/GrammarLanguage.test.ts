@@ -1,19 +1,23 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
 // todo: make isomorphic
 
-const fs = require("fs")
-const GrammarProgram = require("../index.js").GrammarProgram
+import jTreeTypes from "./jTreeTypes"
+import { readFileSync } from "fs"
+import jtree from "./jtree.node"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
+
+const GrammarProgram = jtree.GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
 const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
-const numbersGrammar = fs.readFileSync(numbersPath, "utf8")
+const numbersGrammar = readFileSync(numbersPath, "utf8")
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
-const grammarGrammar = fs.readFileSync(grammarGrammarPath, "utf8")
+const grammarGrammar = readFileSync(grammarGrammarPath, "utf8")
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
-const jibberishGrammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
+const jibberishGrammarCode = readFileSync(jibberishGrammarPath, "utf8")
 
-const testTree = {}
+const testTree: jTreeTypes.testTree = {}
 
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
@@ -35,16 +39,16 @@ testTree.basics = equal => {
   equal(errs.length, 0, "should be no errors")
 }
 
-const makeGrammarProgram = code => makeProgram(grammarGrammar, code)
+const makeGrammarProgram = (code: string) => makeProgram(grammarGrammar, code)
 
-const makeJibberishProgram = code => {
-  const grammarCode = fs.readFileSync(jibberishGrammarPath, "utf8")
+const makeJibberishProgram = (code: string) => {
+  const grammarCode = readFileSync(jibberishGrammarPath, "utf8")
   return makeProgram(grammarCode, code)
 }
 
-const makeNumbersProgram = code => makeProgram(numbersGrammar, code)
+const makeNumbersProgram = (code: string) => makeProgram(numbersGrammar, code)
 
-const makeProgram = (grammarCode, code) => {
+const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new GrammarProgram(grammarCode)
   const rootProgramConstructor = grammarProgram.getRootConstructor()
   return new rootProgramConstructor(code)
@@ -52,7 +56,7 @@ const makeProgram = (grammarCode, code) => {
 
 testTree.jibberish = equal => {
   // Arrange
-  const sampleJibberishCode = fs.readFileSync(jibberishRootDir + "sample.jibberish", "utf8")
+  const sampleJibberishCode = readFileSync(jibberishRootDir + "sample.jibberish", "utf8")
 
   // Act
   const program = makeJibberishProgram(sampleJibberishCode)
@@ -71,9 +75,9 @@ testTree.jibberish = equal => {
   equal(defNode.toString(), "nodeExpandsConstsNode", "family tree works")
 
   // Act
-  const fooNode = program.getNode("foo")
-  const constNode = program.getNode("nodeWithConsts")
-  const nodeExpandsConsts = program.getNode("nodeExpandsConsts")
+  const fooNode = <any>program.getNode("foo")
+  const constNode = <any>program.getNode("nodeWithConsts")
+  const nodeExpandsConsts = <any>program.getNode("nodeExpandsConsts")
 
   // Assert
   equal(fooNode.getNodeTypeId(), "fooNode")
@@ -124,13 +128,13 @@ missing2 true`)
 
   // Grandchild inheritance
   // Arrange
-  const def = program.getNode("html.h1").getDefinition()
+  const def = (<any>program.getNode("html.h1")).getDefinition()
 
   // Act/Assert
   equal(
     def
       ._getAncestorsArray()
-      .map(def => def.getNodeTypeIdFromDefinition())
+      .map((def: any) => def.getNodeTypeIdFromDefinition())
       .join(" "),
     "h1Node abstractHtmlNode topLevelNode"
   )
@@ -159,7 +163,7 @@ testTree.cellTypeTree = equal => {
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
 
-  const a = someJibberishProgram.nodeAt(1).getDefinition()
+  const a = (<any>someJibberishProgram.nodeAt(1)).getDefinition()
 
   // Assert
   equal(
@@ -268,7 +272,7 @@ cokesNode
 cokes 22 11`
 
   // Act
-  const program = makeGrammarProgram(lang, code)
+  const program = makeProgram(lang, code)
 
   // Assert
   equal(program.getAllErrors().length, 0)
@@ -414,7 +418,7 @@ testTree.sublimeSyntaxFile = equal => {
 //   // Arrange/Act
 //   const path = grammarGrammarPath
 //   const anyProgram = makeProgram(
-//     fs.readFileSync(path, "utf8"),
+//     readFileSync(path, "utf8"),
 //     `cellType word
 // nodeType baseNode`,
 //     path
@@ -587,5 +591,6 @@ intCell`
   equal(errors.length, 1)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+
+export { testTree }

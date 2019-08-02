@@ -1,10 +1,12 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
 // todo: make isomorphic
 
-const jtree = require("../index.js")
+import jtree from "../core/jtree.node"
+import jTreeTypes from "../core/jTreeTypes"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
 
-const testTree = {}
+const testTree: jTreeTypes.testTree = {}
 
 testTree.version = equal => {
   // Arrange/Act/Assert
@@ -81,5 +83,6 @@ testTree.makeRandomTree = equal => {
   equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).getTopDownArray().length, 3)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+
+export { testTree }

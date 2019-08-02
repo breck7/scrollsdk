@@ -3,7 +3,7 @@ import TreeUtils from "./TreeUtils"
 import jTreeTypes from "./jTreeTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {
-  new (code: string): GrammarBackedRootNode
+  new (code?: string): GrammarBackedRootNode
 }
 
 declare type parserInfo = { firstWordMap: { [firstWord: string]: nodeTypeDefinitionNode }; regexTests: jTreeTypes.regexTestDef[] }

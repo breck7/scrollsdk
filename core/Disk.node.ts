@@ -1,9 +1,7 @@
 const fs = require("fs")
 
-import jtree from "../core/jtree.node"
-const TreeNode = jtree.TreeNode
-const recursiveReadSync = require("recursive-readdir-sync")
-const mkdirp = require("mkdirp")
+import jtree from "./jtree.node"
+const { TreeNode } = jtree
 
 class Disk {
   static rm = path => fs.unlinkSync(path)
@@ -11,8 +9,8 @@ class Disk {
   static strCount = (str, reg) => (str.match(new RegExp(reg, "gi")) || []).length
   static read = path => fs.readFileSync(path, "utf8")
   static touch = path => (Disk.exists(path) ? true : Disk.write(path, ""))
-  static mkdir = path => mkdirp.sync(path)
-  static getRecursive = path => recursiveReadSync(path)
+  static mkdir = path => require("mkdirp").sync(path)
+  static getRecursive = path => require("recursive-readdir-sync")(path)
   static readJson = path => JSON.parse(Disk.read(path))
   static getFileNameWithoutExtension = path => Disk.getFileName(path).replace(/\.[^\.]+$/, "")
   static write = (path, content) => fs.writeFileSync(path, content, "utf8")

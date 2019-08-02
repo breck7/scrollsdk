@@ -3,6 +3,7 @@
     "outDir": "../dist",
     "types": ["node"],
     "lib": ["es2017", "dom"],
+    "downlevelIteration": true,
     "noImplicitAny": true,
     "composite": true,
     "declaration": true,

@@ -60,7 +60,7 @@ class ImmutableNode extends AbstractNode {
     return "undefinedCellType ".repeat(this.getWords().length).trim()
   }
 
-  executeSync(context: any) {
+  executeSync(context?: any) {
     return this.map(child => child.executeSync(context))
   }
 

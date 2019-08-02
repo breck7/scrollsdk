@@ -124,4 +124,4 @@ class UnknownGrammarProgram extends TreeNode {
   }
 }
 
-export default UnknownGrammarProgram
+export { UnknownGrammarProgram }

@@ -1,9 +1,12 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
 const fs = require("fs")
-const CLI = require("../cli/cli.js")
 
-const testTree = {}
+import { CLI } from "./cli.node"
+import jTreeTypes from "../core/jTreeTypes"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
+
+const testTree: jTreeTypes.testTree = {}
 
 const cliTempHome = __dirname + `/../ignore/cliTempHome/`
 const cliTempRegistryFile = cliTempHome + "grammars.ssv"
@@ -75,6 +78,6 @@ ${data[1]}`
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
 
-module.exports = testTree
+export { testTree }

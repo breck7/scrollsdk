@@ -2,7 +2,7 @@ import TreeUtils from "./TreeUtils"
 import TreeNode from "./TreeNode"
 
 import { GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode } from "./GrammarLanguage"
-import UnknownGrammarProgram from "./UnknownGrammarProgram"
+import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
 import TreeNotationCodeMirrorMode from "./TreeNotationCodeMirrorMode"
 
 class jtree {

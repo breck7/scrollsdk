@@ -134,7 +134,7 @@ class ImmutableNode extends AbstractNode {
     return arr
   }
 
-  *getTopDownArrayIterator(): IterableIterator<jTreeTypes.treeNode> {
+  *getTopDownArrayIterator(): IterableIterator<TreeNode> {
     for (let child of this.getChildren()) {
       yield child
       yield* child.getTopDownArrayIterator()

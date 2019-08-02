@@ -2,6 +2,7 @@
 import { exec } from "child_process"
 import jTreeTypes from "./core/jTreeTypes"
 import jtree from "./core/jtree.node"
+
 import { AbstractBuilder } from "./builder/AbstractBuilder"
 import { TestTreeRunner } from "./builder/TestTreeRunner"
 import { TypeScriptRewriter } from "./builder/TypeScriptRewriter"
@@ -67,7 +68,7 @@ class Builder extends AbstractBuilder {
     const path = __dirname + "/core"
     this._buildBrowserVersionFromTypeScriptFiles(
       path,
-      recursiveReadSync(path).filter(file => file.includes(".ts")),
+      recursiveReadSync(path).filter((file: string) => file.includes(".ts")),
       __dirname + `/dist/jtree.browser.js`,
       __dirname + `/ignore/jtree.browser.ts`
     )
@@ -103,7 +104,7 @@ class Builder extends AbstractBuilder {
     exec("tap --cov --coverage-report=lcov ./tasks/testAll.js")
   }
 
-  updateVersion(newVersion) {
+  updateVersion(newVersion: jTreeTypes.semanticVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
@@ -120,25 +121,25 @@ class Builder extends AbstractBuilder {
   }
 
   _test() {
-    const allLangFiles = recursiveReadSync(__dirname + "/langs/")
+    const allLangFiles = <string[]>recursiveReadSync(__dirname + "/langs/")
     allLangFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
     allLangFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
     allLangFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
 
-    const allTestFiles = recursiveReadSync(__dirname + "/tests/")
+    const allTestFiles = <string[]>recursiveReadSync(__dirname + "/tests/")
     allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
     allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
 
-    recursiveReadSync(__dirname + "/treeBase/")
-      .filter(file => file.endsWith(".test.js"))
-      .forEach(file => new TestTreeRunner().run(require(file)))
+    const files = <string[]>recursiveReadSync(__dirname + "/treeBase/")
 
-    recursiveReadSync(__dirname + "/treeComponentFramework/")
-      .filter(file => file.endsWith(".test.js"))
-      .forEach(file => new TestTreeRunner().run(require(file)))
+    files.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
+
+    const tcfFiles = <string[]>recursiveReadSync(__dirname + "/treeComponentFramework/")
+
+    tcfFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
   }
 }
 
-module.exports = Builder
+export { Builder }
 
 if (!module.parent) new Builder()._main()

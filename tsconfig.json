@@ -4,10 +4,8 @@
     "types": ["node"],
     "lib": ["es2017", "dom"],
     "noImplicitAny": true,
-    "composite": true,
-    "declaration": true,
-    "target": "es2016",
+    "target": "es2017",
     "module": "commonjs"
   },
-  "include": ["./*.ts"]
+  "include": ["./builder.ts"]
 }

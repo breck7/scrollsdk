@@ -1,4 +1,4 @@
-const jtree = require("../index.js")
+import jtree from "../core/jtree.node"
 
 class TypeScriptRewriter {
   constructor(fileStr: string) {

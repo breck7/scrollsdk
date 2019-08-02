@@ -1,6 +1,6 @@
 import { exec } from "child_process"
-import jtree from "../src/jtree.node"
-import jTreeTypes from "../src/jTreeTypes"
+import jtree from "../core/jtree.node"
+import jTreeTypes from "../core/jTreeTypes"
 
 import { TestTreeRunner } from "./TestTreeRunner"
 import { TypeScriptRewriter } from "./TypeScriptRewriter"

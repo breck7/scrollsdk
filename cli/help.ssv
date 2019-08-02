@@ -9,7 +9,7 @@ compile programPath targetExtension Compile a file
 compileCheck folderPath grammarName Test all compiler test cases in a given folder
 create   Create a new Grammar
 distribute combinedFilePath  Distribute a 'combined' file into multiple destination files
-gen grammarName outputPath Generate sublime syntax highlighting files
+sublime grammarName outputPath Generate sublime syntax highlighting files
 help   Show this help
 list   List installed Grammars
 parse programPath  Parse and print the nodeTypes and cellTypes in a program

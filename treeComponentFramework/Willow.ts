@@ -1,8 +1,8 @@
 const superagent = require("superagent")
 const miuri = require("miuri.js")
 
-import jtree from "../../src/jtree"
-import jTreeTypes from "../../src/jTreeTypes"
+import jtree from "../../core/jtree"
+import jTreeTypes from "../../core/jTreeTypes"
 
 const stump = require("../../langs/stump/stump.js")
 

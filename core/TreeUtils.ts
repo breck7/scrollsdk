@@ -1,4 +1,4 @@
-import jTreeTypes from "../jTreeTypes"
+import jTreeTypes from "./jTreeTypes"
 
 class TreeUtils {
   static getFileExtension(filepath = "") {

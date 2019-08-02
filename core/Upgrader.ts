@@ -1,6 +1,6 @@
-import TreeNode from "../base/TreeNode"
-import jTreeTypes from "../jTreeTypes"
-import TreeUtils from "../base/TreeUtils"
+import TreeNode from "./TreeNode"
+import jTreeTypes from "./jTreeTypes"
+import TreeUtils from "./TreeUtils"
 
 // todo: currently only works in nodejs
 

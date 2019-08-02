@@ -1,5 +1,5 @@
 const tap = require("tap")
-import jTreeTypes from "../src/jTreeTypes"
+import jTreeTypes from "../core/jTreeTypes"
 
 class TestTreeRunner {
   run(testTree: jTreeTypes.testTree) {

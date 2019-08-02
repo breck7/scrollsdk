@@ -8,24 +8,24 @@ const runTestTree = require("./builder/testTreeRunner.js")
 
 class Builder extends AbstractBuilder {
   buildTreeComponentFramework() {
-    const path = __dirname + "/treeComponent/"
+    const path = __dirname + "/treeComponentFramework/"
     this._buildTsc(path)
 
     this._write(
       __dirname + `/ignore/treeComponentFramework.browser.ts`,
       `"use strict"\n` +
         this._combineTypeScriptFiles([
-          __dirname + "/treeComponent/TreeComponentFramework.ts",
-          __dirname + "/treeComponent/willow/Willow.ts",
-          __dirname + "/treeComponent/willow/WillowBrowser.ts"
+          __dirname + "/treeComponentFramework/TreeComponentFramework.ts",
+          __dirname + "/treeComponentFramework/Willow.ts",
+          __dirname + "/treeComponentFramework/WillowBrowser.ts"
         ])
     )
 
-    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", __dirname + "/built/", true)
-    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/built/", true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", __dirname + "/dist/", true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/dist/", true)
 
-    const outputJsFile = __dirname + `/built/treeComponentFramework.browser.js`
-    exec("tsc -p tsconfig.browser.json", { cwd: __dirname + "/treeComponent/" }, (err, stdout, stderr) => {
+    const outputJsFile = __dirname + `/dist/treeComponentFramework.browser.js`
+    exec("tsc -p tsconfig.browser.json", { cwd: __dirname + "/treeComponentFramework/" }, (err, stdout, stderr) => {
       if (stderr || err) return console.error(err, stdout, stderr)
 
       // This solves the wierd TS insertin
@@ -36,11 +36,11 @@ class Builder extends AbstractBuilder {
   }
 
   buildChex() {
-    const chexDir = __dirname + "/treeComponent/chex/"
+    const chexDir = __dirname + "/treeComponentFramework/chex/"
     const chexPath = chexDir + "ChexTreeComponent.js"
     this._write(chexDir + "index.html", new (require(chexPath))().compile())
     this._write(
-      __dirname + "/built/ChexTreeComponent.browser.js",
+      __dirname + "/dist/ChexTreeComponent.browser.js",
       new AbstractBuilder.BrowserScript(this._read(chexPath))
         .removeRequires()
         .changeNodeExportsToWindowExports()
@@ -62,11 +62,11 @@ class Builder extends AbstractBuilder {
 
   buildBrowserVersion() {
     // Compile regular version to make sure no errors:
-    const path = __dirname + "/src"
+    const path = __dirname + "/core"
     this._buildBrowserVersionFromTypeScriptFiles(
       path,
-      recursiveReadSync(__dirname + "/src").filter(file => file.includes(".ts")),
-      __dirname + `/built/jtree.browser.js`,
+      recursiveReadSync(path).filter(file => file.includes(".ts")),
+      __dirname + `/dist/jtree.browser.js`,
       __dirname + `/ignore/jtree.browser.ts`
     )
 
@@ -105,7 +105,7 @@ class Builder extends AbstractBuilder {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
-    const codePath = __dirname + "/src/jtree.ts"
+    const codePath = __dirname + "/core/jtree.ts"
     const code = this._read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
     this._write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
@@ -131,7 +131,7 @@ class Builder extends AbstractBuilder {
       .filter(file => file.endsWith(".test.js"))
       .forEach(file => runTestTree(require(file)))
 
-    recursiveReadSync(__dirname + "/treeComponent/")
+    recursiveReadSync(__dirname + "/treeComponentFramework/")
       .filter(file => file.endsWith(".test.js"))
       .forEach(file => runTestTree(require(file)))
   }

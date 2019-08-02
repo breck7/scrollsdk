@@ -2,7 +2,7 @@ const express = require("express")
 import { readFile } from "fs"
 import { TypeScriptRewriter } from "../../builder/TypeScriptRewriter"
 
-import jTreeTypes from "../../src/jTreeTypes"
+import jTreeTypes from "../../core/jTreeTypes"
 
 class SandboxServer {
   start(port: jTreeTypes.portNumber) {

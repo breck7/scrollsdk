@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test grammarSample
  arrangeTestSubject
-  require ../built/GrammarLanguage.js GrammarProgram
+  require ../dist/jtree.node.js jtree.GrammarProgram
   constructWithBlockString
    testlangNode
     root

@@ -3,7 +3,7 @@ const fs = require("fs")
 import jtree from "./jtree"
 import jTreeTypes from "./jTreeTypes"
 import { GrammarProgram, GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage"
-import Upgrader from "./tools/Upgrader"
+import Upgrader from "./Upgrader"
 
 enum CompileTarget {
   nodejs = "nodejs",

@@ -4,9 +4,9 @@
 
 // TODO: toSQL, sql storage backend. sqlite as well?
 
-import jTreeTypes from "../src/jTreeTypes"
+import jTreeTypes from "../core/jTreeTypes"
 import { Disk } from "./Disk"
-import jtree from "../built/jtree.node"
+import jtree from "../core/jtree.node"
 
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils

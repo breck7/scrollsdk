@@ -1,9 +1,9 @@
-import jTreeTypes from "../src/jTreeTypes"
+import jTreeTypes from "../core/jTreeTypes"
 
 const jtree = require("../index.js")
 const stump = require("../langs/stump/stump.js")
 const hakon = require("../langs/hakon/hakon.js")
-// const { AbstractWillowProgram } = require("./willow/Willow.js")
+// const { AbstractWillowProgram } = require("./Willow.js")
 
 abstract class AbstractCommander {
   private _target: any
@@ -423,7 +423,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
 
   compile() {
     const name = this.constructor.name
-    const libPath = "../../built/"
+    const libPath = "../../dist/"
     const libs = ["jtree.browser.js", "stump.browser.js", "hakon.browser.js", "treeComponentFramework.browser.js", this.constructor.name + ".browser.js"]
       .map(
         path =>
@@ -494,7 +494,7 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {
-        const { WillowProgram } = require("./willow/WillowNode.js")
+        const { WillowProgram } = require("./WillowNode.js")
         this._willowProgram = new WillowProgram("http://localhost:8000/")
       } else {
         this._willowProgram = new (<any>window).WillowBrowserProgram(window.location.href)

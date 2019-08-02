@@ -1,5 +1,5 @@
-import TreeNode from "./base/TreeNode"
-import TreeUtils from "./base/TreeUtils"
+import TreeNode from "./TreeNode"
+import TreeUtils from "./TreeUtils"
 import jTreeTypes from "./jTreeTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {

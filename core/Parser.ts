@@ -1,4 +1,4 @@
-import jTreeTypes from "../jTreeTypes"
+import jTreeTypes from "./jTreeTypes"
 
 class Parser {
   // todo: should getErrors be under here? At least for certain types of errors?

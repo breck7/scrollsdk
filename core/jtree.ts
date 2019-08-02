@@ -1,9 +1,9 @@
-import TreeUtils from "./base/TreeUtils"
-import TreeNode from "./base/TreeNode"
+import TreeUtils from "./TreeUtils"
+import TreeNode from "./TreeNode"
 
 import { GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode } from "./GrammarLanguage"
-import UnknownGrammarProgram from "./tools/UnknownGrammarProgram"
-import TreeNotationCodeMirrorMode from "./codemirror/TreeNotationCodeMirrorMode"
+import UnknownGrammarProgram from "./UnknownGrammarProgram"
+import TreeNotationCodeMirrorMode from "./TreeNotationCodeMirrorMode"
 
 class jtree {
   static GrammarBackedRootNode = GrammarBackedRootNode

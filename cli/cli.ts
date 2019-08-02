@@ -6,7 +6,7 @@ const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 
 import { homedir } from "os"
-import jTreeTypes from "../src/jTreeTypes"
+import jTreeTypes from "../core/jTreeTypes"
 
 class CLI {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
@@ -198,7 +198,7 @@ ${grammars.toTable()}`
     return program.getParseTable(35)
   }
 
-  gen(grammarName: jTreeTypes.grammarName, outputDirectory: jTreeTypes.asboluteFolderPath = ".") {
+  sublime(grammarName: jTreeTypes.grammarName, outputDirectory: jTreeTypes.asboluteFolderPath = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`

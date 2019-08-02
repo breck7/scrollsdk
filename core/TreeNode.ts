@@ -1,7 +1,7 @@
 import AbstractNode from "./AbstractNode.node"
 import TreeUtils from "./TreeUtils"
 import Parser from "./Parser"
-import jTreeTypes from "../jTreeTypes"
+import jTreeTypes from "./jTreeTypes"
 
 declare type int = jTreeTypes.int
 declare type word = jTreeTypes.word

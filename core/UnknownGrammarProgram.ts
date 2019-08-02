@@ -1,8 +1,8 @@
-import TreeNode from "../base/TreeNode"
+import TreeNode from "./TreeNode"
 
-import { GrammarConstants, GrammarProgram, PreludeCellTypeIds } from "../GrammarLanguage"
+import { GrammarConstants, GrammarProgram, PreludeCellTypeIds } from "./GrammarLanguage"
 
-import jTreeTypes from "../jTreeTypes"
+import jTreeTypes from "./jTreeTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   getPredictedGrammarFile(grammarName: string): string {

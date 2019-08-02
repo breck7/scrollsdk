@@ -1,7 +1,7 @@
-import jTreeTypes from "../jTreeTypes"
+import jTreeTypes from "./jTreeTypes"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
-/*FOR_TYPES_ONLY*/ import { GrammarBackedRootNode } from "../GrammarLanguage"
+/*FOR_TYPES_ONLY*/ import { GrammarBackedRootNode } from "./GrammarLanguage"
 /* Used for Types Only, but we want this line to remain in the combined intermediate TS program */ import * as CodeMirrorLib from "codemirror"
 
 interface treeNotationCodeMirrorState {

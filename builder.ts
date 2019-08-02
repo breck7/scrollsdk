@@ -66,21 +66,12 @@ class Builder extends AbstractBuilder {
   }
 
   produceBrowserLibrary() {
-    // Compile regular version to make sure no errors:
-    const path = __dirname + "/core"
-    this._buildBrowserVersionFromTypeScriptFiles(
-      path,
-      recursiveReadSync(path).filter((file: string) => file.includes(".ts")),
-      __dirname + `/products/jtree.browser.js`,
-      __dirname + `/ignore/jtree.browser.ts`
-    )
-
-    this._buildBrowserTestFile()
+    this._produceBrowserProductFromTypeScript(__dirname + "/core/", "jtree.browser")
+    // this._buildBrowserTestFile()
   }
 
   produceNodeLibrary() {
-    const folder = __dirname + "/core/"
-    this._produceNodeProductFromTypeScript(folder, "jtree.node")
+    this._produceNodeProductFromTypeScript(__dirname + "/core/", "jtree.node", "module.exports = jtreeNode")
   }
 
   buildBuilder() {

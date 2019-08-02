@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./products",
+    "outDir": "../products",
     "lib": ["es2017", "dom"],
     "moduleResolution": "node",
     "declaration": false,

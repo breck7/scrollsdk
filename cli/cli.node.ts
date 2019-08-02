@@ -4,7 +4,8 @@ const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 import { homedir } from "os"
 
-import jtree from "../core/jtree.node"
+const jtree = require("../products/jtree.node.js")
+//import jtree from "../core/jtree.node"
 const { TreeNode, GrammarProgram, Utils } = jtree
 import jTreeTypes from "../core/jTreeTypes"
 

@@ -3,8 +3,9 @@
 // todo: make isomorphic
 
 const fs = require("fs")
-const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
 const stamp = require("../langs/stamp/stamp.js")
+
+import { GrammarProgram } from "./GrammarLanguage"
 
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"

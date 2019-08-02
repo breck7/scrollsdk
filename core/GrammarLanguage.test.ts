@@ -2,9 +2,9 @@
 
 // todo: make isomorphic
 
-import jTreeTypes from "./jTreeTypes"
 import { readFileSync } from "fs"
 import jtree from "./jtree.node"
+import jTreeTypes from "./jTreeTypes"
 import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const GrammarProgram = jtree.GrammarProgram
@@ -266,6 +266,7 @@ testTree.cokeRegression = equal => {
  inScope cokesNode
 intCell
  highlightScope constant.numeric.integer
+anyFirstCell
 cokesNode
  catchAllCellType intCell`
   const code = `
@@ -275,7 +276,9 @@ cokes 22 11`
   const program = makeProgram(lang, code)
 
   // Assert
-  equal(program.getAllErrors().length, 0)
+  const errs = program.getAllErrors()
+  equal(errs.length, 0)
+  if (errs.length) console.log(errs.map(err => err.getMessage()).join("\n"))
   equal(typeof program.getInPlaceHighlightScopeTree(), "string")
 }
 

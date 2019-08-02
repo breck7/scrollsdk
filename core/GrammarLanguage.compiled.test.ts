@@ -1,9 +1,11 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
-const jtree = require("../index.js")
+import jtree from "./jtree.node"
+import jTreeTypes from "./jTreeTypes"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
 const fs = require("fs")
 
-const testTree = {}
+const testTree: jTreeTypes.testTree = {}
 
 // todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
 
@@ -14,7 +16,7 @@ const outputDir = __dirname + `/../ignore/vms/`
 const mkdirp = require("mkdirp")
 mkdirp.sync(outputDir)
 
-const makeProgram = (grammarCode, code) => {
+const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new jtree.GrammarProgram(grammarCode)
   const rootProgramConstructor = grammarProgram.getRootConstructor()
   return new rootProgramConstructor(code)
@@ -92,7 +94,7 @@ testTree.numbers = equal => {
   // Arrange
   const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"
   const numbersGrammarCode = fs.readFileSync(numbersGrammarPath, "utf8")
-  const makeNumbersRunTimeProgram = code => makeProgram(numbersGrammarCode, code)
+  const makeNumbersRunTimeProgram = (code: string) => makeProgram(numbersGrammarCode, code)
   try {
     const tempFilePath = jtree.compileGrammarForNodeJs(numbersGrammarPath, outputDir, false)
 
@@ -150,5 +152,6 @@ testTree.numbers = equal => {
   }
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+
+export { testTree }

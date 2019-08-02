@@ -2,6 +2,7 @@ coverage/
 .nyc_output/
 ignore/
 node_modules/
+dist/
 *.sublime-workspace
 *.aux
 *.log
@@ -11,7 +12,5 @@ jtree.project
 notes.txt
 jtree.browser.ts
 syntax.sh
-src/*/*.js
-src/*.js
 *.map
 *.d.ts

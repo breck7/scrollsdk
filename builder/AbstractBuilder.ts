@@ -85,7 +85,7 @@ class AbstractBuilder extends jtree.TreeNode {
 
   _mochaTest(filepath: jTreeTypes.filepath) {
     const reporter = require("tap-mocha-reporter")
-    const proc = exec(`node ${filepath} _test`)
+    const proc = exec(`${filepath} _test`)
 
     proc.stdout.pipe(reporter("dot"))
     proc.stderr.on("data", data => console.error("stderr: " + data.toString()))

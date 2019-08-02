@@ -1953,7 +1953,7 @@ someCode
  echo hello world`
 
   // Allow running in both browser and nodejs:
-  const jtreeBase = typeof jtree === "undefined" ? require("../dist/jtree.node.js").default : jtree
+  const jtreeBase = typeof jtree === "undefined" ? require("../products/jtree.node.js").default : jtree
 
   class add extends jtreeBase.GrammarBackedNonRootNode {}
   class lineOfCode extends jtreeBase.GrammarBackedNonRootNode {}

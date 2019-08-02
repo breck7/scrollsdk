@@ -14,7 +14,7 @@
     "jtree": "./cli/cli.node.ts"
   },
   "scripts": {
-    "test": "node ./builder.js test"
+    "test": "./builder.ts test"
   },
   "repository": {
     "type": "git",

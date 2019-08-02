@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "types": ["node"],
-    "outDir": "../dist",
+    "outDir": "../products",
     "lib": ["es2017", "dom"],
     // "noImplicitAny": true,
     "target": "es2017",

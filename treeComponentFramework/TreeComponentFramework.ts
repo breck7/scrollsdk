@@ -423,7 +423,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
 
   compile() {
     const name = this.constructor.name
-    const libPath = "../../dist/"
+    const libPath = "../../products/"
     const libs = ["jtree.browser.js", "stump.browser.js", "hakon.browser.js", "treeComponentFramework.browser.js", this.constructor.name + ".browser.js"]
       .map(
         path =>

@@ -165,6 +165,18 @@ See the "langs/" folder.
 
 If you look at the source, you'll also see a suite of build tools (Builder, TypeScriptRewriter, and TestTreeRunner). These are currently undocumented and not recommended for external use at the moment.
 
+### Product manifest
+
+These are the 7 compiled products:
+
+    /products/jtree.node.js
+    /products/jtree.browser.js
+    /products/cli.node.js
+    /products/treeBase.node.js
+    /products/sandbox.browser.js
+    /products/designer.browser.js
+    /products/treeComponentFramework.browser.js
+
 Monorepo
 --------
 

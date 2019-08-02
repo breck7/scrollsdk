@@ -1,11 +1,13 @@
 #!/usr/bin/env ts-node
-import { exec } from "child_process"
+
 import jTreeTypes from "./core/jTreeTypes"
 import jtree from "./core/jtree.node"
 
 import { AbstractBuilder } from "./builder/AbstractBuilder"
 import { TestTreeRunner } from "./builder/TestTreeRunner"
 import { TypeScriptRewriter } from "./builder/TypeScriptRewriter"
+
+import { exec } from "child_process"
 
 const recursiveReadSync = require("recursive-readdir-sync")
 
@@ -24,10 +26,10 @@ class Builder extends AbstractBuilder {
         ])
     )
 
-    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", __dirname + "/dist/", true)
-    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/dist/", true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", __dirname + "/products/", true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/products/", true)
 
-    const outputJsFile = __dirname + `/dist/treeComponentFramework.browser.js`
+    const outputJsFile = __dirname + `/products/treeComponentFramework.browser.js`
     exec("tsc -p tsconfig.browser.json", { cwd: __dirname + "/treeComponentFramework/" }, (err, stdout, stderr) => {
       if (stderr || err) return console.error(err, stdout, stderr)
 
@@ -43,7 +45,7 @@ class Builder extends AbstractBuilder {
     const chexPath = chexDir + "ChexTreeComponent.js"
     this._write(chexDir + "index.html", new (require(chexPath))().compile())
     this._write(
-      __dirname + "/dist/ChexTreeComponent.browser.js",
+      __dirname + "/products/ChexTreeComponent.browser.js",
       new TypeScriptRewriter(this._read(chexPath))
         .removeRequires()
         .changeNodeExportsToWindowExports()
@@ -69,7 +71,7 @@ class Builder extends AbstractBuilder {
     this._buildBrowserVersionFromTypeScriptFiles(
       path,
       recursiveReadSync(path).filter((file: string) => file.includes(".ts")),
-      __dirname + `/dist/jtree.browser.js`,
+      __dirname + `/products/jtree.browser.js`,
       __dirname + `/ignore/jtree.browser.ts`
     )
 
@@ -123,7 +125,7 @@ class Builder extends AbstractBuilder {
   _test() {
     const allLangFiles = <string[]>recursiveReadSync(__dirname + "/langs/")
     allLangFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
-    allLangFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
+    allLangFiles.filter(file => file.endsWith(".test.ts")).forEach(file => new TestTreeRunner().run(require(file)))
     allLangFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
 
     const allTestFiles = <string[]>recursiveReadSync(__dirname + "/tests/")

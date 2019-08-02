@@ -1,1 +1,1 @@
-module.exports = require("./dist/jtree.node.js").default
+module.exports = require("./products/jtree.node.js").default

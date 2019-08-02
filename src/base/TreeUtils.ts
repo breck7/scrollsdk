@@ -1,12 +1,94 @@
 import jTreeTypes from "../jTreeTypes"
 
 class TreeUtils {
-  static getPathWithoutFileName(path: string) {
+  static getFileExtension(filepath = "") {
+    const match = filepath.match(/\.([^\.]+)$/)
+    return (match && match[1]) || ""
+  }
+
+  static getMethodFromDotPath(context: any, str: string) {
+    const methodParts = str.split(".")
+    while (methodParts.length > 1) {
+      context = context[methodParts.shift()]()
+    }
+    const final = methodParts.shift()
+    return [context, final]
+  }
+
+  static requireAbsOrRelative(filePath: jTreeTypes.filepath, contextFilePath: jTreeTypes.filepath) {
+    if (!filePath.startsWith(".")) return require(filePath)
+    const path = require("path")
+    const folder = this.getPathWithoutFileName(contextFilePath)
+    const file = path.resolve(folder + "/" + filePath)
+    return require(file)
+  }
+
+  // Removes last ".*" from this string
+  static removeFileExtension(filename: jTreeTypes.filepath) {
+    return filename ? filename.replace(/\.[^\.]+$/, "") : ""
+  }
+
+  static getFileName(path: jTreeTypes.filepath) {
+    const parts = path.split("/") // todo: change for windows?
+    return parts.pop()
+  }
+
+  static getPathWithoutFileName(path: jTreeTypes.filepath) {
     const parts = path.split("/") // todo: change for windows?
     parts.pop()
     return parts.join("/")
   }
 
+  // todo: switch algo to: http://indiegamr.com/generate-repeatable-random-numbers-in-js/?
+  static makeSemiRandomFn = (seed = 1) => {
+    return () => {
+      const semiRand = Math.sin(seed++) * 10000
+      return semiRand - Math.floor(semiRand)
+    }
+  }
+
+  static getAvailablePermalink(permalink: string, doesFileExistSyncFn: (permalink: string) => boolean) {
+    const extension = this.getFileExtension(permalink)
+    permalink = this.removeFileExtension(permalink)
+    const originalPermalink = permalink
+    let num = 2
+    let suffix = ""
+    let filename = `${originalPermalink}${suffix}.${extension}`
+
+    while (doesFileExistSyncFn(filename)) {
+      filename = `${originalPermalink}${suffix}.${extension}`
+      suffix = "-" + num
+      num++
+    }
+
+    return filename
+  }
+
+  static toggle(currentValue: any, values: any[]) {
+    const index = values.indexOf(currentValue)
+    return index === -1 || index + 1 === values.length ? values[0] : values[index + 1]
+  }
+
+  static getClassNameFromFilePath(filepath: jTreeTypes.filepath) {
+    return this.removeFileExtension(this.getFileName(filepath))
+  }
+
+  static joinArraysOn(joinOn: string, arrays: any[], columns: string[][]) {
+    const rows: any = {}
+    let index = 0
+    if (!columns) columns = arrays.map(arr => Object.keys(arr[0]))
+    arrays.forEach((arr, index) => {
+      const cols = columns[index]
+
+      arr.forEach((row: any) => {
+        const key = joinOn ? row[joinOn] : index++
+        if (!rows[key]) rows[key] = {}
+        const obj = rows[key]
+        cols.forEach(col => (obj[col] = row[col]))
+      })
+    })
+    return Object.values(rows)
+  }
   static _getParentFolder(path: string) {
     if (path.endsWith("/")) path = this._removeLastSlash(path)
     return path.replace(/\/[^\/]*$/, "") + "/"
@@ -14,13 +96,6 @@ class TreeUtils {
 
   static _removeLastSlash(path: string) {
     return path.replace(/\/$/, "")
-  }
-
-  static getClassNameFromFilePath(filename: string) {
-    return filename
-      .replace(/\.[^\.]+$/, "")
-      .split("/")
-      .pop()
   }
 
   static _listToEnglishText(list: string[], limit = 5) {
@@ -170,11 +245,6 @@ class TreeUtils {
     const path = require("path")
     const folder = this.getPathWithoutFileName(programFilepath)
     return path.resolve(folder + "/" + filePath)
-  }
-
-  static getFileExtension(url = "") {
-    const match = url.match(/\.([^\.]+)$/)
-    return (match && match[1]) || ""
   }
 
   static resolveProperty(obj: Object, path: string | string[], separator = ".") {
@@ -366,132 +436,6 @@ class TreeUtils {
 
       // Should never hit this, unless we have a duplicate line.
       return 0
-    }
-  }
-
-  public static BrowserScript = class {
-    // todo: fix
-    public _str: string
-
-    constructor(fileStr: string) {
-      this._str = fileStr
-    }
-
-    addUseStrict() {
-      this._str = `"use strict";\n` + this._str
-      return this
-    }
-
-    removeRequires() {
-      this._str = this._str.replace(/(\n|^)const .* \= require\(.*/g, "$1")
-      return this
-    }
-
-    _removeAllLinesStartingWith(prefix: string) {
-      this._str = this._str
-        .split("\n")
-        .filter(line => !line.startsWith(prefix))
-        .join("\n")
-      return this
-    }
-
-    removeNodeJsOnlyLines() {
-      return this._removeAllLinesStartingWith("/*NODE_JS_ONLY*/")
-    }
-
-    removeHashBang() {
-      this._str = this._str.replace(/^\#\![^\n]+\n/, "")
-      return this
-    }
-
-    removeUseStrict() {
-      const strict = `"use strict";\n`
-      this._str = this._str.replace(strict, "")
-      return this
-    }
-
-    addUseStrictIfNotPresent() {
-      const str = `"use strict"`
-      this._str = this._str.startsWith(str) ? this._str : str + ";\n" + this._str
-      return this
-    }
-
-    removeNodeJsOnly() {
-      this._str = this._str.replace(/\/\*NODE_JS_ONLY\*\/[^\n]+\n/g, "\n")
-      return this
-    }
-
-    removeImports() {
-      // todo: what if this spans multiple lines?
-      this._str = this._str.replace(/(\n|^)import .* from .*/g, "$1")
-      this._str = this._str.replace(/(\n|^)\/\*FOR_TYPES_ONLY\*\/ import .* from .*/g, "$1")
-      this._str = this._str.replace(/(\n|^)import {[^\}]+} ?from ?"[^\"]+"/g, "$1")
-
-      return this
-    }
-
-    removeExports() {
-      this._str = this._str.replace(/(\n|^)export default .*/g, "$1")
-      this._str = this._str.replace(/(\n|^)export {[^\}]+}/g, "$1")
-
-      return this
-    }
-
-    changeDefaultExportsToWindowExports() {
-      this._str = this._str.replace(/\nexport default ([^;]*)/g, "\nwindow.$1 = $1")
-
-      // todo: should we just switch to some bundler?
-      const matches = this._str.match(/\nexport { [^\}]+ }/g)
-      if (matches)
-        this._str = this._str.replace(
-          /\nexport { ([^\}]+) }/g,
-          matches[0]
-            .replace("export {", "")
-            .replace("}", "")
-            .trim()
-            .split(/ /g)
-            .map(name => name.replace(",", "").trim())
-            .map(mod => `\nwindow.${mod} = ${mod}`)
-            .join("\n")
-        )
-      return this
-    }
-
-    static treeToJs(filepath: string, file: string) {
-      const filename = Util.getFileName(filepath)
-      const baseName = Util.removeFileExtension(filename)
-      const extension = Util.getFileExtension(filename)
-      const varName = baseName + extension.charAt(0).toUpperCase() + extension.substr(1)
-      const basePath = Util.getPathWithoutFileName(filepath)
-      // const newPath = basePath + "/" + varName + ".compiled.js"
-      const lines = file.split(/\n/)
-      const jsCode = `"use strict";
-window.${varName} = \`${jtree.Utils.escapeBackTicks(lines.join("\n"))}\``
-      return jsCode
-    }
-
-    changeNodeExportsToWindowExports() {
-      // todo: should we just switch to some bundler?
-      const reg = /\nmodule\.exports = { ?([^\}]+) ?}/
-      const matches = this._str.match(reg)
-      if (matches) {
-        this._str = this._str.replace(
-          reg,
-          matches[1]
-            .split(/,/g)
-            .map(mod => mod.replace(/\s/g, ""))
-            .map(mod => `\nwindow.${mod} = ${mod}`)
-            .join("\n")
-        )
-      }
-
-      this._str = this._str.replace(/\nmodule\.exports \= ([^;^{]*)/g, "\nwindow.$1 = $1")
-      this._str = this._str.replace(/\nexports\.default \= ([^;]*)/g, "\nwindow.$1 = $1")
-      return this
-    }
-
-    getString() {
-      return this._str
     }
   }
 }

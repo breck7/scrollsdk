@@ -2,6 +2,7 @@ const samples = {}
 
 samples.csv = TreeNode.iris
 
+// todo: autogen this.
 samples.json = `{
  "name": "jtree",
  "version": "18.1.3",
@@ -10,11 +11,6 @@ samples.json = `{
  "types": "./built/jtree.node.d.ts",
  "bin": {
   "jtree": "./cli.js"
- },
- "scripts": {
-  "test": "./tasks/test.js",
-  "cover": "./tasks/cover.sh",
-  "start": "./sandbox.express.js"
  },
  "repository": {
   "type": "git",

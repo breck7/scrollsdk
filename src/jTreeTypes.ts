@@ -56,7 +56,11 @@ export namespace jTreeTypes {
   export declare type firstWord = word
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
+  export declare type typeScriptFilePath = filepath
+  export declare type treeProgramFilePath = filepath
+  export declare type grammarFilePath = filepath
   export declare type fileName = string
+  export declare type grammarName = string
   export declare type globPattern = string
   export declare type highlightScope = string
   export declare type fileExtension = string
@@ -72,6 +76,9 @@ export namespace jTreeTypes {
   export declare type typeScriptCode = string
   export declare type javascriptCode = string
   export declare type id = string
+  export declare type portNumber = int
+
+  export declare type testTree = { [testName: string]: (equalMethod: Function) => void }
 
   export declare type idAccessorFunction = (tree: treeNode) => id
 

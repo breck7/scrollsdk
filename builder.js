@@ -8,8 +8,8 @@ const runTestTree = require("./builder/testTreeRunner.js")
 
 class Builder extends AbstractBuilder {
   buildTreeComponentFramework() {
-    const execOptions = { cwd: __dirname + "/treeComponent/" }
-    exec("tsc", execOptions)
+    const path = __dirname + "/treeComponent/"
+    this._buildTsc(path)
 
     this._write(
       __dirname + `/ignore/treeComponentFramework.browser.ts`,
@@ -25,7 +25,7 @@ class Builder extends AbstractBuilder {
     jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/built/", true)
 
     const outputJsFile = __dirname + `/built/treeComponentFramework.browser.js`
-    exec("tsc -p tsconfig.browser.json", execOptions, (err, stdout, stderr) => {
+    exec("tsc -p tsconfig.browser.json", { cwd: __dirname + "/treeComponent/" }, (err, stdout, stderr) => {
       if (stderr || err) return console.error(err, stdout, stderr)
 
       // This solves the wierd TS insertin
@@ -61,32 +61,28 @@ class Builder extends AbstractBuilder {
   }
 
   buildBrowserVersion() {
-    const execOptions = { cwd: __dirname + "/" }
     // Compile regular version to make sure no errors:
-    this._buildNodeVersion()
-
-    this._bundleBrowserTypeScriptFilesIntoOne(
+    const path = __dirname + "/src"
+    this._buildBrowserVersionFromTypeScriptFiles(
+      path,
       recursiveReadSync(__dirname + "/src").filter(file => file.includes(".ts")),
+      __dirname + `/built/jtree.browser.js`,
       __dirname + `/ignore/jtree.browser.ts`
     )
-
-    const outputJsFile = __dirname + `/built/jtree.browser.js`
-    exec("tsc -p tsconfig.browser.json", execOptions, (err, stdout, stderr) => {
-      if (stderr || err) return console.error(err, stdout, stderr)
-
-      // This solves the wierd TS insertin
-      // todo: remove
-      const file = new AbstractBuilder.BrowserScript(this._read(outputJsFile).replace(/[^\n]*jTreeTypes[^\n]*/g, ""))
-      this._write(outputJsFile, file.getString())
-    })
 
     this._buildBrowserTestFile()
   }
 
   _buildNodeVersion() {
-    const execOptions = { cwd: __dirname + "/" }
-    // Compile regular version to make sure no errors:
-    exec("tsc", execOptions)
+    this._buildTsc(__dirname + "/")
+  }
+
+  buildBuilder() {
+    this._buildTsc(__dirname + "/builder/")
+  }
+
+  buildCli() {
+    this._buildTsc(__dirname + "/cli/")
   }
 
   _buildBrowserTestFile() {
@@ -118,42 +114,7 @@ class Builder extends AbstractBuilder {
   }
 
   test() {
-    const reporter = require("tap-mocha-reporter")
-    const proc = exec(`node ${__dirname}/builder.js _test`)
-
-    proc.stdout.pipe(reporter("dot"))
-    proc.stderr.on("data", data => console.error("stderr: " + data.toString()))
-  }
-
-  _checkGrammarFile(grammarPath) {
-    // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
-    const testTree = {}
-    testTree[`hardCodedGrammarCheckOf${grammarPath}`] = equal => {
-      // Arrange/Act
-      const program = new jtree.GrammarProgram(this._read(grammarPath))
-      const errs = program.getAllErrors()
-      const exampleErrors = program.getErrorsInGrammarExamples()
-
-      //Assert
-      equal(errs.length, 0, "should be no errors")
-      if (errs.length) console.log(errs.join("\n"))
-
-      if (exampleErrors.length) console.log(exampleErrors)
-      equal(exampleErrors.length, 0, exampleErrors.length ? "examples errs: " + exampleErrors : "no example errors")
-    }
-
-    testTree[`grammarGrammarCheckOf${grammarPath}`] = equal => {
-      // Arrange/Act
-      const program = jtree.makeProgram(grammarPath, __dirname + "/langs/grammar/grammar.grammar")
-      const errs = program.getAllErrors()
-
-      //Assert
-
-      equal(errs.length, 0, "should be no errors")
-      if (errs.length) console.log(errs.join("\n"))
-    }
-
-    runTestTree(testTree)
+    this._mochaTest(__filename)
   }
 
   _test() {

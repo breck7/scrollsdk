@@ -190,4 +190,4 @@ class TreeNotationCodeMirrorMode {
   }
 }
 
-export default TreeNotationCodeMirrorMode
+export { TreeNotationCodeMirrorMode }

@@ -1,11 +1,13 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
-const jtree = require("../index.js")
-const TreeNode = require("../dist/jtree.node.js").default.TreeNode
+import jtree from "./jtree.node"
+import jTreeTypes from "./jTreeTypes"
 
-const testStrings = {}
+const TreeNode = jtree.TreeNode
 
-const testTree = {}
+const testStrings: jTreeTypes.stringMap = {}
+
+const testTree: jTreeTypes.testTree = {}
 
 testStrings.webpage = `head
 body
@@ -3795,6 +3797,6 @@ testTree.queryMethods = equal => {
   )
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
 
-module.exports = testTree
+export { testTree }

@@ -1,10 +1,13 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
-const jtree = require("../index.js")
+import jtree from "./jtree.node"
+import jTreeTypes from "./jTreeTypes"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
+
 const TreeNode = jtree.TreeNode
 const fs = require("fs")
 
-const testTree = {}
+const testTree: jTreeTypes.testTree = {}
 
 testTree.combineTests = equal => {
   // Arrange
@@ -36,6 +39,6 @@ testTree.diskTests = equal => {
   equal(fs.existsSync(path), false, "file does not exist")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
 
-module.exports = testTree
+export { testTree }

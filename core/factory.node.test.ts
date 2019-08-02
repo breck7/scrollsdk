@@ -1,9 +1,12 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
-const jtree = require("../index.js")
+import jtree from "./jtree.node"
+import jTreeTypes from "./jTreeTypes"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
+
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
-const testTree = {}
+const testTree: jTreeTypes.testTree = {}
 
 testTree.makeProgram = equal => {
   // Arrange
@@ -21,5 +24,6 @@ testTree.makeProgram = equal => {
   // jtree.getProgramClassFromGrammarFile
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+
+export { testTree }

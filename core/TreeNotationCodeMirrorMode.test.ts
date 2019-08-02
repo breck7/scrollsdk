@@ -1,22 +1,30 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
 // todo: make isomorphic
 
 const fs = require("fs")
 const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
 const stamp = require("../langs/stamp/stamp.js")
-const jtree = require("../dist/jtree.node.js")
-const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
-const TreeUtils = jtree.TreeUtils
 
-const testTree = {}
+import jtree from "./jtree.node"
+import jTreeTypes from "./jTreeTypes"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
+
+const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
+const TreeUtils = jtree.Utils
+
+const testTree: jTreeTypes.testTree = {}
 
 class MockStream {
-  constructor(str) {
+  constructor(str: string) {
     this._str = str
     this._charPosition = -1
     this._last = 0
   }
+
+  private _str: string
+  private _charPosition: number
+  private _last: number
 
   next() {
     this._charPosition++
@@ -56,11 +64,13 @@ class MockStream {
 }
 
 class MockCodeMirror {
-  constructor(mode) {
+  constructor(mode: any) {
     this._mode = mode()
   }
 
-  getTokenLines(words) {
+  private _mode: any
+
+  getTokenLines(words: any) {
     const mode = this._mode
     const testStream = new MockStream(words)
     const startState = mode.startState()
@@ -101,13 +111,13 @@ foobarNode`
 }
 
 testTree.regressionTest = equal => {
-  const code = fs.readFileSync(__dirname + "/code-mirror-regression.stamp", "utf8")
+  const code = fs.readFileSync(__dirname + "/TreeNotationCoreMirrorMode.regression.stamp", "utf8")
 
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stampNode", () => stamp, () => code))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 217)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
 
-module.exports = testTree
+export { testTree }

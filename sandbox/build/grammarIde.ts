@@ -179,7 +179,7 @@ if (errors.length)
     zip.file(`index.js`, `module.exports = require("./${nodePath}")`)
     zip.file(
       "index.html",
-      `<script src="node_modules/jtree/built/jtree.browser.js"></script>
+      `<script src="node_modules/jtree/dist/jtree.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
 const sampleCode = \`${sampleCode}\`

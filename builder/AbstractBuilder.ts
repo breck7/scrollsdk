@@ -1,5 +1,5 @@
 import { exec } from "child_process"
-import jtree from "../built/jtree.node"
+import jtree from "../src/jtree.node"
 import jTreeTypes from "../src/jTreeTypes"
 
 import { TestTreeRunner } from "./TestTreeRunner"

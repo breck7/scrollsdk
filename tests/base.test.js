@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 const jtree = require("../index.js")
-const TreeNode = require("../built/base/TreeNode.js").default
+const TreeNode = require("../dist/jtree.node.js").default.TreeNode
 
 const testStrings = {}
 
@@ -1951,7 +1951,7 @@ someCode
  echo hello world`
 
   // Allow running in both browser and nodejs:
-  const jtreeBase = typeof jtree === "undefined" ? require("../built/jtree.js").default : jtree
+  const jtreeBase = typeof jtree === "undefined" ? require("../dist/jtree.node.js").default : jtree
 
   class add extends jtreeBase.GrammarBackedNonRootNode {}
   class lineOfCode extends jtreeBase.GrammarBackedNonRootNode {}

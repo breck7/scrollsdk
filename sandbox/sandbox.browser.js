@@ -5,29 +5,8 @@ samples.csv = TreeNode.iris
 // todo: autogen this.
 samples.json = `{
  "name": "jtree",
- "version": "18.1.3",
  "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
- "main": "index.js",
- "types": "./built/jtree.node.d.ts",
- "bin": {
-  "jtree": "./cli.js"
- },
- "repository": {
-  "type": "git",
-  "url": "git://github.com/treenotation/jtree"
- },
- "keywords": "jtree",
- "devDependencies": {
-  "express": "*",
-  "jquery": "*",
-  "project-lang": "^1.7.0",
-  "qunitjs": "*",
-  "recursive-readdir-sync": "*",
-  "tap": "^12.6.0",
-  "@types/node": "^11.10.4",
-  "tap-mocha-reporter": "^4.0.1"
- },
- "license": "MIT"
+ "keywords": "jtree"
 }`
 
 $(document).ready(function() {

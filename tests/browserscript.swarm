@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 arrangeTestSubject
- require ../built/base/TreeUtils.js default.BrowserScript
+ require ../dist/jtree.node.js default.TreeUtils.BrowserScript
 test basics
  arrangeTestSubject
   constructWithBlockString

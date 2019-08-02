@@ -120,23 +120,50 @@ You can think of this library as similar to the Java Development Kit, except for
 Using this Library
 -----------------
 
-This library ships with a command line utility:
+This library currently includes about 7 compiled projects (aka "products") and more than a dozen Tree Languages.
 
-    npm install -g jtree
-    jtree help
-
-To use it in an npm project:
+### jtree base library for npm projects:
 
     const jtree = require("jtree")
     const tree = new jtree.TreeNode("hello world")
     console.log(tree.toString())
 
+### jtree base library for the browser:
 
-If you want to make your own Tree Language, launch the jtree sandbox and play around with the grammar examples:
+    <script src="node_modules/jtree/products/jtree.browser.js"
+
+### jtree command line tool
 
     npm install -g jtree
-    jtree sandbox 3333
-    # Open http://localhost:3333/sandbox/build/
+    jtree help
+
+### TreeBase
+
+    npm install -g jtree
+    jtree base
+
+### jtree "sandbox" web app for exploring base Tree Notation
+
+    npm install -g jtree
+    jtree sandbox
+
+### jtree "Designer" web app for building new Tree Languages
+
+    npm install -g jtree
+    jtree sandbox
+    open http://localhost:3333/designer
+
+### TreeComponentFramework for building web apps
+
+(directions coming soon)
+
+### More than 12 example Tree Languages for helping with various tasks
+
+See the "langs/" folder.
+
+### Build Tools
+
+If you look at the source, you'll also see a suite of build tools (Builder, TypeScriptRewriter, and TestTreeRunner). These are currently undocumented and not recommended for external use at the moment.
 
 Monorepo
 --------

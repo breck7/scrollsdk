@@ -1,12 +1,23 @@
 import { exec } from "child_process"
 import jtree from "../core/jtree.node"
 import jTreeTypes from "../core/jTreeTypes"
+import { Disk } from "../core/Disk.node"
 
 import { TestTreeRunner } from "./TestTreeRunner"
 import { TypeScriptRewriter } from "./TypeScriptRewriter"
 
+const recursiveReadSync = require("recursive-readdir-sync")
+
 class AbstractBuilder extends jtree.TreeNode {
   _bundleBrowserTypeScriptFilesIntoOne(typeScriptSrcFiles: jTreeTypes.typeScriptFilePath[], outputFilePath: jTreeTypes.typeScriptFilePath) {
+    this._write(outputFilePath, this._combineTypeScriptFilesForBrowser(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath)))
+  }
+
+  _bundleNodeTypeScriptFilesIntoOne(typeScriptSrcFiles: jTreeTypes.typeScriptFilePath[], outputFilePath: jTreeTypes.typeScriptFilePath) {
+    this._write(outputFilePath, this._combineTypeScriptFilesForNode(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath)))
+  }
+
+  _getOrderedTypeScriptFiles(typeScriptSrcFiles: jTreeTypes.typeScriptFilePath[], outputFilePath: jTreeTypes.typeScriptFilePath) {
     const project = this.require("project", __dirname + "/../langs/project/project.js")
     const projectCode = new jtree.TreeNode(project.makeProjectProgramFromArrayOfScripts(typeScriptSrcFiles))
     projectCode
@@ -15,16 +26,26 @@ class AbstractBuilder extends jtree.TreeNode {
       .forEach(node => node.setLine(node.getLine() + ".ts"))
     const projectFilePath = outputFilePath + ".project"
     this._write(projectFilePath, projectCode.toString()) // Write to disk to inspect if something goes wrong.
-    const typeScriptScriptsInOrderBrowserOnly = new project(projectCode.toString())
-      .getScriptPathsInCorrectDependencyOrder()
-      .filter((file: string) => !file.includes(".node."))
+    const typeScriptScriptsInOrder = new project(projectCode.toString()).getScriptPathsInCorrectDependencyOrder()
 
-    const combinedTypeScriptScript = this._combineTypeScriptFiles(typeScriptScriptsInOrderBrowserOnly)
-
-    this._write(outputFilePath, `"use strict"\n` + combinedTypeScriptScript)
+    return typeScriptScriptsInOrder
   }
 
-  _combineTypeScriptFiles(typeScriptScriptsInOrderBrowserOnly: jTreeTypes.typeScriptFilePath[]) {
+  _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: jTreeTypes.typeScriptFilePath[]) {
+    return typeScriptScriptsInOrder
+      .map(src => this._read(src))
+      .map(content =>
+        new TypeScriptRewriter(content)
+          .removeRequires()
+          .removeImports()
+          .removeExports()
+          .getString()
+      )
+      .join("\n")
+  }
+
+  _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: jTreeTypes.typeScriptFilePath[]) {
+    const typeScriptScriptsInOrderBrowserOnly = typeScriptScriptsInOrder.filter((file: string) => !file.includes(".node."))
     return typeScriptScriptsInOrderBrowserOnly
       .map(src => this._read(src))
       .map(content =>
@@ -39,7 +60,7 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _buildBrowserVersionFromTypeScriptFiles(
-    folder: jTreeTypes.asboluteFolderPath,
+    folder: jTreeTypes.absoluteFolderPath,
     typeScriptFiles: jTreeTypes.typeScriptFilePath[],
     outputFilePath: jTreeTypes.filepath,
     combinedTempFilePath: jTreeTypes.filepath
@@ -59,7 +80,18 @@ class AbstractBuilder extends jtree.TreeNode {
     })
   }
 
-  _buildTsc(folder: jTreeTypes.asboluteFolderPath) {
+  _produceNodeProductFromTypeScript(folder: jTreeTypes.absoluteFolderPath, productId: jTreeTypes.fileName) {
+    const typeScriptFiles = recursiveReadSync(folder)
+      .filter((file: string) => file.includes(".ts"))
+      .filter((file: string) => Disk.read(file).includes(`//tooling product ${productId}.ts`))
+
+    const combinedTypeScriptTempFilePath = __dirname + `/ignore/${productId}.ts`
+    this._bundleNodeTypeScriptFilesIntoOne(typeScriptFiles, combinedTypeScriptTempFilePath)
+
+    exec("tsc", { cwd: folder })
+  }
+
+  _buildTsc(folder: jTreeTypes.absoluteFolderPath) {
     exec("tsc", { cwd: folder })
   }
 

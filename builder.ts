@@ -12,14 +12,14 @@ import { exec } from "child_process"
 const recursiveReadSync = require("recursive-readdir-sync")
 
 class Builder extends AbstractBuilder {
-  buildTreeComponentFramework() {
+  produceTreeComponentFramework() {
     const path = __dirname + "/treeComponentFramework/"
     this._buildTsc(path)
 
     this._write(
       __dirname + `/ignore/treeComponentFramework.browser.ts`,
       `"use strict"\n` +
-        this._combineTypeScriptFiles([
+        this._combineTypeScriptFilesForBrowser([
           __dirname + "/treeComponentFramework/TreeComponentFramework.ts",
           __dirname + "/treeComponentFramework/Willow.ts",
           __dirname + "/treeComponentFramework/WillowBrowser.ts"
@@ -65,7 +65,7 @@ class Builder extends AbstractBuilder {
     new CLI().prettify(path)
   }
 
-  buildBrowserVersion() {
+  produceBrowserLibrary() {
     // Compile regular version to make sure no errors:
     const path = __dirname + "/core"
     this._buildBrowserVersionFromTypeScriptFiles(
@@ -78,15 +78,29 @@ class Builder extends AbstractBuilder {
     this._buildBrowserTestFile()
   }
 
-  _buildNodeVersion() {
-    this._buildTsc(__dirname + "/")
+  produceNodeLibrary() {
+    const folder = __dirname + "/core/"
+    this._produceNodeProductFromTypeScript(folder, "jtree.node")
   }
 
   buildBuilder() {
     this._buildTsc(__dirname + "/builder/")
   }
 
-  buildCli() {
+  produceDesigner() {
+    this._buildTsc(__dirname + "/designer/")
+  }
+
+  produceSandbox() {
+    this._buildTsc(__dirname + "/sandbox/")
+    this._buildTsc(__dirname + "/sandboxServer/")
+  }
+
+  produceCli() {
+    this._buildTsc(__dirname + "/cli/")
+  }
+
+  produceTreeBase() {
     this._buildTsc(__dirname + "/cli/")
   }
 
@@ -114,7 +128,7 @@ class Builder extends AbstractBuilder {
     const code = this._read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
     this._write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
-    this.buildBrowserVersion()
+    this.produceBrowserLibrary()
     console.log("Don't forget to update releaseNotes.md!")
   }
 

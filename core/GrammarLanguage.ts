@@ -1,3 +1,5 @@
+//tooling product jtree.node.js
+
 import TreeNode from "./TreeNode"
 import TreeUtils from "./TreeUtils"
 import jTreeTypes from "./jTreeTypes"

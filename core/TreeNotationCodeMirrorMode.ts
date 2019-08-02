@@ -1,3 +1,5 @@
+//tooling product jtree.node.js
+
 import jTreeTypes from "./jTreeTypes"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 

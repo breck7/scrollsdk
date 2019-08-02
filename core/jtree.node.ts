@@ -1,3 +1,5 @@
+//tooling product jtree.node.js
+
 const fs = require("fs")
 
 import jtree from "./jtree"
@@ -30,13 +32,13 @@ class jtreeNode extends jtree {
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileGrammarForNodeJs(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath, usePrettier = true) {
+  static compileGrammarForNodeJs(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.absoluteFolderPath, usePrettier = true) {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
   }
 
   private static _compileGrammar(
     pathToGrammar: jTreeTypes.absoluteFilePath,
-    outputFolder: jTreeTypes.asboluteFolderPath,
+    outputFolder: jTreeTypes.absoluteFolderPath,
     target: CompileTarget,
     usePrettier: boolean
   ) {
@@ -68,7 +70,7 @@ if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toStrin
     return outputFilePath
   }
 
-  static compileGrammarForBrowser(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.asboluteFolderPath, usePrettier = true) {
+  static compileGrammarForBrowser(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.absoluteFolderPath, usePrettier = true) {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser, usePrettier)
   }
 

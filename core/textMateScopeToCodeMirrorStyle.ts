@@ -1,3 +1,5 @@
+//tooling product jtree.node.js
+
 import jTreeTypes from "./jTreeTypes"
 
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts

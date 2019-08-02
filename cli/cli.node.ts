@@ -33,13 +33,13 @@ class CLI {
     let dir = Utils._removeLastSlash(this._cwd) + "/"
     let filePath = ""
     while (dir !== "/") {
-      filePath = dir + "builder.js"
+      filePath = dir + "builder.ts"
       if (fs.existsSync(filePath)) break
       dir = Utils._getParentFolder(dir)
     }
     if (!fs.existsSync(filePath)) throw new Error(`No '${filePath}' found.`)
-    const builderConstructor = require(filePath)
-    const builder = new builderConstructor()
+    const { Builder } = require(filePath)
+    const builder = new Builder()
     if (commandName) return builder[commandName](argument)
     else return builder._help(filePath)
   }
@@ -115,7 +115,7 @@ class CLI {
     return TreeNode.fromSsv(help).toTable()
   }
 
-  base(folderPath: jTreeTypes.asboluteFolderPath = undefined, port = 4444) {
+  base(folderPath: jTreeTypes.absoluteFolderPath = undefined, port = 4444) {
     const { TreeBaseFolder } = require("../treeBase/TreeBase.js")
     if (!folderPath) {
       folderPath = require("path").resolve(__dirname + "/../treeBase/planets/")
@@ -198,7 +198,7 @@ ${grammars.toTable()}`
     return program.getParseTable(35)
   }
 
-  sublime(grammarName: jTreeTypes.grammarName, outputDirectory: jTreeTypes.asboluteFolderPath = ".") {
+  sublime(grammarName: jTreeTypes.grammarName, outputDirectory: jTreeTypes.absoluteFolderPath = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`

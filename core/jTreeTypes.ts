@@ -1,3 +1,5 @@
+//tooling product jtree.node.js
+
 export namespace jTreeTypes {
   export interface point {
     x: int
@@ -56,6 +58,7 @@ export namespace jTreeTypes {
   export declare type firstWord = word
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
+  export declare type url = string
   export declare type typeScriptFilePath = filepath
   export declare type treeProgramFilePath = filepath
   export declare type grammarFilePath = filepath
@@ -88,7 +91,7 @@ export namespace jTreeTypes {
   export declare type semanticVersion = string
 
   export declare type absoluteFilePath = filepath
-  export declare type asboluteFolderPath = absoluteFilePath
+  export declare type absoluteFolderPath = absoluteFilePath
 
   export declare type javascriptClassPath = string // "jtree.Foo.Bar"
 

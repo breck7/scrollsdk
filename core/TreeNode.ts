@@ -1,3 +1,5 @@
+//tooling product jtree.node.js
+
 import AbstractNode from "./AbstractNode.node"
 import TreeUtils from "./TreeUtils"
 import Parser from "./Parser"

@@ -9,5 +9,5 @@
     "target": "es2016",
     "module": "commonjs"
   },
-  "include": ["./*.ts"]
+  "include": ["../ignore/jtree.node.ts"]
 }

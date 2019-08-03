@@ -1,10 +1,11 @@
+//tooling product treeBase.node.js
+
 const fs = require("fs")
 
-import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"
-const { TreeNode } = jtree
 
 class Disk {
+  static getTreeNode = () => require("../products/jtree.node.js").TreeNode // todo: cleanup
   static rm = (path: jTreeTypes.filepath) => fs.unlinkSync(path)
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
   static makeExecutable = (path: jTreeTypes.filepath) => fs.chmodSync(path, 0o755)
@@ -24,16 +25,16 @@ class Disk {
   static getFolders = (dir: jTreeTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: jTreeTypes.filepath) => fs.statSync(file).isDirectory())
   static getFileName = (path: jTreeTypes.filepath) => path.split("/").pop()
   static append = (path: jTreeTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
-  static readCsvAsTree = (path: jTreeTypes.filepath) => TreeNode.fromCsv(Disk.read(path))
-  static readSsvAsTree = (path: jTreeTypes.filepath) => TreeNode.fromSsv(Disk.read(path))
-  static readTsvAsTree = (path: jTreeTypes.filepath) => TreeNode.fromTsv(Disk.read(path))
+  static readCsvAsTree = (path: jTreeTypes.filepath) => Disk.getTreeNode().fromCsv(Disk.read(path))
+  static readSsvAsTree = (path: jTreeTypes.filepath) => Disk.getTreeNode().fromSsv(Disk.read(path))
+  static readTsvAsTree = (path: jTreeTypes.filepath) => Disk.getTreeNode().fromTsv(Disk.read(path))
   static insertIntoFile = (path: jTreeTypes.filepath, content: string, delimiter: string) =>
     Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
   static detectAndReadAsTree = (path: jTreeTypes.filepath) => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
   static getAllOf = (node: jTreeTypes.treeNode, prop: string) => node.filter((node: jTreeTypes.treeNode) => node.getWord(0) === prop)
   static getDelimitedChildrenAsTree = (node: jTreeTypes.treeNode, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsTree(node.childrenToString())
   static sleep = (ms: jTreeTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
-  static readTree = (path: jTreeTypes.filepath) => new TreeNode(Disk.read(path))
+  static readTree = (path: jTreeTypes.filepath) => new (Disk.getTreeNode())(Disk.read(path))
   static sizeOf = (path: jTreeTypes.filepath) => fs.statSync(path).size
   static stripHtml = (text: string) => (text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text)
   static stripParentheticals = (text: string) => (text && text.replace ? text.replace(/\((?:.|\n)*?\)/gm, "") : text)
@@ -54,6 +55,7 @@ class Disk {
   // todo: move to tree base class
   static detectDelimiterAndReadAsTree = (str: string) => {
     const line1 = str.split("\n")[0]
+    const TreeNode = Disk.getTreeNode()
     if (line1.includes("\t")) return TreeNode.fromTsv(str)
     else if (line1.includes(",")) return TreeNode.fromCsv(str)
     else if (line1.includes("|")) return TreeNode.fromDelimited(str, "|")
@@ -126,7 +128,7 @@ class Disk {
   static csvToMap = (path: string, columnName: string) => {
     const tree = Disk.readCsvAsTree(path)
     const map: jTreeTypes.stringMap = {}
-    tree.forEach(child => {
+    tree.forEach((child: jTreeTypes.treeNode) => {
       const key = child.get(columnName)
       map[key] = child.toObject()
     })

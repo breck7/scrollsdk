@@ -98,7 +98,12 @@ class Builder extends AbstractBuilder {
   }
 
   produceTreeBase() {
-    this._buildTsc(__dirname + "/cli/")
+    const file = this._produceNodeProductFromTypeScript(
+      __dirname + "/treeBase/",
+      [__dirname + "/core/jTreeTypes.ts", __dirname + "/core/Disk.node.ts"],
+      "treeBase.node",
+      (code: string) => code + "\nmodule.exports = {TreeBaseFile, TreeBaseFolder}"
+    )
   }
 
   _buildBrowserTestFile() {

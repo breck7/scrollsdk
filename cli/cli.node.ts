@@ -118,7 +118,7 @@ class CLI {
   }
 
   base(folderPath: jTreeTypes.absoluteFolderPath = undefined, port = 4444) {
-    const { TreeBaseFolder } = require("../treeBase/TreeBase.js")
+    const { TreeBaseFolder } = require("../products/treeBase.node.js")
     if (!folderPath) {
       folderPath = require("path").resolve(__dirname + "/../treeBase/planets/")
       console.log(`No path to a TreeBase folder provided. Defaulting to '${folderPath}'`)

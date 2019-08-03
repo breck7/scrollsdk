@@ -1,12 +1,11 @@
 #!/usr/bin/env ts-node
 
-// TreeBase: The software-less database for community and personal knowledge bases.
-
-// TODO: toSQL, sql storage backend. sqlite as well?
+//tooling product treeBase.node.js
 
 import jTreeTypes from "../core/jTreeTypes"
 import { Disk } from "../core/Disk.node"
-import jtree from "../core/jtree.node"
+
+const jtree = require("../products/jtree.node.js")
 
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils

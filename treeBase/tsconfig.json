@@ -2,11 +2,11 @@
   "compilerOptions": {
     "types": ["node"],
     "outDir": "../products",
-    "lib": ["es2017", "dom"],
-    // "noImplicitAny": true,
+    "lib": ["es2017"],
+    //"noImplicitAny": true,
     "target": "es2017",
     "module": "commonjs"
   },
-  "references": [{ "path": "../core" }],
-  "include": ["./*.ts"]
+  //"references": [{ "path": "../core" }],
+  "include": ["../ignore/treeBase.node.ts"]
 }

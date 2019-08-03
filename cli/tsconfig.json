@@ -7,6 +7,6 @@
     "target": "es2017",
     "module": "commonjs"
   },
-  "references": [{ "path": "../core" }],
-  "include": ["./cli.ts"]
+  //"references": [{ "path": "../core" }],
+  "include": ["../ignore/cli.node.ts"]
 }

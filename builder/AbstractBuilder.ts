@@ -25,8 +25,13 @@ class AbstractBuilder extends jtree.TreeNode {
     const projectCode = new jtree.TreeNode(project.makeProjectProgramFromArrayOfScripts(typeScriptSrcFiles))
     projectCode
       .getTopDownArray()
-      .filter(node => node.getFirstWord() === "relative")
-      .forEach(node => node.setLine(node.getLine() + ".ts"))
+      .filter(node => node.getFirstWord() === "relative") // todo: cleanup
+      .forEach(node => {
+        const line = node.getLine()
+        if (line.endsWith("js")) node.setWord(0, "external")
+        else node.setLine(line + ".ts")
+      })
+
     this._write(outputFilePath + ".project", projectCode.toString()) // Write to disk to inspect if something goes wrong.
     return new project(projectCode.toString()).getScriptPathsInCorrectDependencyOrder()
   }
@@ -40,6 +45,7 @@ class AbstractBuilder extends jtree.TreeNode {
           //.removeRequires()
           .removeImports()
           .removeExports()
+          .removeHashBang()
           .getString()
       )
       .join("\n")
@@ -82,18 +88,29 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _produceBrowserProductFromTypeScript(folder: jTreeTypes.absoluteFolderPath, productId: jTreeTypes.fileName) {
-    this._bundleBrowserTypeScriptFilesIntoOne(this._getFilesForProduction(folder, productId), productId)
+    this._bundleBrowserTypeScriptFilesIntoOne(this._getFilesForProduction(folder, [], productId), productId)
     this._buildBrowserTsc(folder)
   }
 
-  _getFilesForProduction(folder: jTreeTypes.absoluteFolderPath, productId: jTreeTypes.fileName) {
-    return recursiveReadSync(folder)
+  _getFilesForProduction(folder: jTreeTypes.absoluteFolderPath, files: jTreeTypes.absoluteFilePath[], productId: jTreeTypes.fileName) {
+    return files
+      .concat(recursiveReadSync(folder))
       .filter((file: string) => file.includes(".ts"))
       .filter((file: string) => Disk.read(file).includes(`//tooling product ${productId}.js`))
   }
 
-  _produceNodeProductFromTypeScript(folder: jTreeTypes.absoluteFolderPath, productId: jTreeTypes.fileName, code: jTreeTypes.javascriptCode = "") {
-    this._bundleNodeTypeScriptFilesIntoOne(this._getFilesForProduction(folder, productId), productId)
+  _makeExecutable(file: jTreeTypes.filepath) {
+    Disk.makeExecutable(file)
+  }
+
+  _produceNodeProductFromTypeScript(
+    folder: jTreeTypes.absoluteFolderPath,
+    extraFiles: jTreeTypes.absoluteFilePath[],
+    productId: jTreeTypes.fileName,
+    transformFn: (code: jTreeTypes.javascriptCode) => string
+  ) {
+    const files = this._getFilesForProduction(folder, extraFiles, productId)
+    this._bundleNodeTypeScriptFilesIntoOne(files, productId)
     const outputFilePath = __dirname + `/../products/${productId}.js`
 
     try {
@@ -105,7 +122,8 @@ class AbstractBuilder extends jtree.TreeNode {
       console.log(error.stdout)
     }
 
-    Disk.append(outputFilePath, code)
+    Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
+    return outputFilePath
   }
 
   _buildTsc(folder: jTreeTypes.absoluteFolderPath) {

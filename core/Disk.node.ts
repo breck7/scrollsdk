@@ -7,6 +7,7 @@ const { TreeNode } = jtree
 class Disk {
   static rm = (path: jTreeTypes.filepath) => fs.unlinkSync(path)
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
+  static makeExecutable = (path: jTreeTypes.filepath) => fs.chmodSync(path, 0o755)
   static strCount = (str: string, reg: string) => (str.match(new RegExp(reg, "gi")) || []).length
   static read = (path: jTreeTypes.filepath) => fs.readFileSync(path, "utf8")
   static touch = (path: jTreeTypes.filepath) => (Disk.exists(path) ? true : Disk.write(path, ""))

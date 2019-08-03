@@ -1,5 +1,6 @@
 //tooling product jtree.node.js
 //tooling product jtree.browser.js
+//tooling product cli.node.js
 
 export namespace jTreeTypes {
   export interface point {

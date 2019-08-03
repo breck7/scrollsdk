@@ -71,7 +71,7 @@ class Builder extends AbstractBuilder {
   }
 
   produceNodeLibrary() {
-    this._produceNodeProductFromTypeScript(__dirname + "/core/", "jtree.node", "module.exports = jtreeNode")
+    this._produceNodeProductFromTypeScript(__dirname + "/core/", [], "jtree.node", (code: string) => code + "\nmodule.exports = jtreeNode")
   }
 
   buildBuilder() {
@@ -88,7 +88,13 @@ class Builder extends AbstractBuilder {
   }
 
   produceCli() {
-    this._buildTsc(__dirname + "/cli/")
+    const file = this._produceNodeProductFromTypeScript(
+      __dirname + "/cli/",
+      [__dirname + "/core/jTreeTypes.ts"],
+      "cli.node",
+      (code: string) => `#! /usr/bin/env node\n` + code + "\nmodule.exports = CLI"
+    )
+    this._makeExecutable(file)
   }
 
   produceTreeBase() {

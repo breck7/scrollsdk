@@ -1,8 +1,9 @@
 #!/usr/bin/env ts-node
+//tooling product cli.node.js
 
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
-import { homedir } from "os"
+const homedir = require("os").homedir
 
 const jtree = require("../products/jtree.node.js")
 //import jtree from "../core/jtree.node"
@@ -112,7 +113,7 @@ class CLI {
   }
 
   help() {
-    const help = this._read(__dirname + "/help.ssv")
+    const help = this._read(__dirname + "/../cli/help.ssv") // note: we do the parent indirection for compiled reasons.
     return TreeNode.fromSsv(help).toTable()
   }
 

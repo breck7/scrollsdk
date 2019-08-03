@@ -660,13 +660,13 @@ testTree.clone = equal => {
   equal(e.getNode("foobar 123").getContent(), "456")
 
   // Arrange
-  const f = a.clone()
+  const f: any = a.clone()
 
   // Assert
-  equal(f.getNode("foobar 123").getContent(), "456")(
-    // Act
-    <any>f
-  ).hi = "test"
+  equal(f.getNode("foobar 123").getContent(), "456")
+
+  // Act
+  f.hi = "test"
 
   // Assert
   equal((<any>a).hi, undefined)

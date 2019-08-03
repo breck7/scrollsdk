@@ -138,23 +138,26 @@ class Builder extends AbstractBuilder {
     this._mochaTest(__filename)
   }
 
-  _test() {
-    const allLangFiles = <string[]>recursiveReadSync(__dirname + "/langs/")
-    allLangFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
-    allLangFiles.filter(file => file.endsWith(".test.ts")).forEach(file => new TestTreeRunner().run(require(file)))
-    allLangFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
-
-    const allTestFiles = <string[]>recursiveReadSync(__dirname + "/tests/")
+  _testDir(dir: jTreeTypes.absoluteFolderPath) {
+    const allTestFiles = <string[]>recursiveReadSync(dir)
+    allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
     allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
+    allTestFiles.filter(file => file.endsWith(".test.ts")).forEach(file => new TestTreeRunner().run(require(file).testTree))
     allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
+  }
 
-    const files = <string[]>recursiveReadSync(__dirname + "/treeBase/")
-
-    files.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
-
-    const tcfFiles = <string[]>recursiveReadSync(__dirname + "/treeComponentFramework/")
-
-    tcfFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
+  _test() {
+    let folders = `langs
+builder
+cli
+designer
+sandbox
+sandboxServer
+core
+treeBase
+treeComponentFramework`
+    folders = "core"
+    folders.split("\n").forEach(folder => this._testDir(__dirname + `/${folder}/`))
   }
 }
 

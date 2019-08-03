@@ -1840,7 +1840,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const vm = require("vm")
     // todo: cleanup up
     try {
-      ;(<any>global).jtree = require(__dirname + "/../index.js").default
+      ;(<any>global).jtree = require(__dirname + "/../index.js")
       ;(<any>global).require = require
       ;(<any>global).module = {}
       return vm.runInThisContext(code)

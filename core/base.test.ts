@@ -2,6 +2,7 @@
 
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"
+import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const TreeNode = jtree.TreeNode
 
@@ -472,14 +473,14 @@ testTree.duplicateReferences = equal => {
   equal(new TreeNode(a).get("two 0"), "abc")
 
   // Arrange
-  b = { foo: "bar" }
-  a = {
-    one: b,
-    two: b
+  let boo = { foo: "bar" }
+  let abc = {
+    one: boo,
+    two: boo
   }
 
   // Act/Assert
-  equal(new TreeNode(a).get("two foo"), "bar")
+  equal(new TreeNode(abc).get("two foo"), "bar")
 }
 
 testTree.append = equal => {
@@ -662,13 +663,13 @@ testTree.clone = equal => {
   const f = a.clone()
 
   // Assert
-  equal(f.getNode("foobar 123").getContent(), "456")
-
-  // Act
-  f.hi = "test"
+  equal(f.getNode("foobar 123").getContent(), "456")(
+    // Act
+    <any>f
+  ).hi = "test"
 
   // Assert
-  equal(a.hi, undefined)
+  equal((<any>a).hi, undefined)
 }
 
 testTree.concat = equal => {
@@ -832,7 +833,7 @@ testTree.deleteRegression = equal => {
   count 1`
 
   // Act
-  const migrateFn = str => {
+  const migrateFn = (str: string) => {
     const board = new TreeNode(str)
     const dataNodes = board.findNodes("data")
     dataNodes.forEach(nodeTree => {
@@ -1545,7 +1546,7 @@ testTree.simpleTreeLanguage = equal => {
   class AdditionNode extends TreeNode {
     // Look! You created an interpreter!
     executeSync() {
-      return this.getNumbers().reduce((prev, current) => prev + current, 0)
+      return [this.getNumbers().reduce((prev, current) => prev + current, 0)]
     }
 
     // Look! You created a declarative file format!
@@ -1959,10 +1960,10 @@ someCode
   class lineOfCode extends jtreeBase.GrammarBackedNonRootNode {}
   class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
 
-  const JibberishLang = {}
+  const JibberishLang: any = {}
   JibberishLang.add = add
   JibberishLang.lineOfCode = lineOfCode
-  let win = typeof window === "undefined" ? {} : window
+  let win: any = typeof window === "undefined" ? {} : window
   win.JibberishLang = JibberishLang
   win.JibberishProgramRoot = JibberishProgramRoot
   win.add = add
@@ -2183,7 +2184,7 @@ testTree.createFromObject = equal => {
 
   // Test against object with circular references
   // Arrange
-  const a = { foo: "1" }
+  const a: any = { foo: "1" }
   const b = { bar: "2", ref: a }
 
   // Act
@@ -2360,7 +2361,7 @@ testTree.copyToRegression = equal => {
  @blue
  >div`
 
-  const migrateNode = node => {
+  const migrateNode = (node: jTreeTypes.treeNode) => {
     if (!node.getFirstWord().startsWith(">")) return true
     if (node.length) {
       const cla = node.getNode("class").getContent()
@@ -2368,14 +2369,14 @@ testTree.copyToRegression = equal => {
       const css = node.getNode("css")
       if (css) {
         const nodes = css.getChildren()
-        const toMove = []
-        nodes.forEach(propNode => {
+        const toMove: any = []
+        nodes.forEach((propNode: jTreeTypes.treeNode) => {
           const name = propNode.getFirstWord().replace(":", " ")
           propNode.setFirstWord("@" + name)
           toMove.push(propNode)
         })
         toMove.reverse()
-        toMove.forEach(prop => prop.copyTo(node, 0))
+        toMove.forEach((prop: jTreeTypes.treeNode) => prop.copyTo(node, 0))
       }
       node.delete("class")
       node.delete("css")
@@ -2849,7 +2850,7 @@ testTree.set = equal => {
 
   // Act
   tree2.touchNode("2").setContent("hi")
-  tree2.touchNode("3").setContent(3)
+  tree2.touchNode("3").setContent("3")
   // Assert
   equal(tree2.getNode("2").getContent(), "hi")
   equal(tree2.getNode("2").getContent(), "hi")
@@ -2896,10 +2897,10 @@ testTree.set = equal => {
   const tree6 = new TreeNode()
 
   // Act
-  tree6.touchNode("meta x").setContent(123)
-  tree6.touchNode("meta y").setContent(1235)
-  tree6.touchNode("meta c").setContent(435)
-  tree6.touchNode("meta x").setContent(1235123)
+  tree6.touchNode("meta x").setContent("123")
+  tree6.touchNode("meta y").setContent("1235")
+  tree6.touchNode("meta c").setContent("435")
+  tree6.touchNode("meta x").setContent("1235123")
 
   // Assert
   equal(tree6.getNode("meta c").getContent(), "435")
@@ -3040,7 +3041,7 @@ testTree.sortBy = equal => {
   equal(tree.getFirstWords().join(" "), "john susy bob sam brian")
 
   // Act
-  tree.sortBy("age")
+  tree.sortBy(["age"])
 
   // Assert
   equal(tree.getFirstWords().join(" "), "bob sam john susy brian")
@@ -3295,7 +3296,7 @@ testTree.setContentWithChildrenRegression = equal => {
   equal(tree.toString(), "hello earth")
 }
 
-testTree.toString = equal => {
+testTree.toStringMethod = equal => {
   // Arrange
   const tree = new TreeNode("hello world")
   // Assert
@@ -3306,7 +3307,7 @@ testTree.toString = equal => {
   equal(tree.toString(), "hello world\nfoo bar")
 
   // Arrange
-  const tree2 = new TreeNode("z-index 0")
+  const tree2: any = new TreeNode("z-index 0")
   // Act
   tree2["z-index"] = 0
   // Assert
@@ -3648,17 +3649,17 @@ testTree.delimitedTests = equal => {
   equal(base.convertChildrenToDelimited().toString(), `foo.csv\n name,age\n Joe,100`, "convert children to delimited works")
 
   base = new TreeNode(template).nodeAt(0)
-  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited([`name,age`], [`Frank,100`]).length, 3)
+  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Frank,100`]).length, 3)
 
   base = new TreeNode(template).nodeAt(0)
-  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited([`name,age`], [`Joe,100`]).length, 2)
+  equal(base.convertChildrenToDelimited().addUniqueRowsToNestedDelimited(`name,age`, [`Joe,100`]).length, 2)
 }
 
 testTree.printLines = equal => {
   // Arrange
   let lastLogMessage = ""
   const orig = console.log
-  console.log = msg => (lastLogMessage += msg + "\n")
+  console.log = (msg: string) => (lastLogMessage += msg + "\n")
   const a = new TreeNode(`text\n hello`)
   // Act/Assert
   a.printLinesFrom(0, 1)
@@ -3758,7 +3759,7 @@ testTree.mTimeNotIncrementingRegressionTest = equal => {
 
 testTree.queryMethods = equal => {
   // Arrange
-  const tree = TreeNode.fromCsv(TreeNode.iris)
+  const tree = <any>TreeNode.fromCsv(TreeNode.iris)
 
   // Act/Assert
   let result = tree.select(["sepal_width", "species"]).where("sepal_width", ">", 3.7)

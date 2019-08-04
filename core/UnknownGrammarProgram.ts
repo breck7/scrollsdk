@@ -59,7 +59,7 @@ class UnknownGrammarProgram extends TreeNode {
       let cellTypes = []
       for (let index = 0; index < max; index++) {
         const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]))
-        if (cellType.cellTypeDefinition && !globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
+        if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
 
         cellTypes.push(cellType.cellTypeId)
       }
@@ -82,8 +82,7 @@ class UnknownGrammarProgram extends TreeNode {
     })
 
     const cellTypes: string[] = []
-    globalCellTypeMap.forEach(def => cellTypes.push(def))
-
+    globalCellTypeMap.forEach((def, id) => cellTypes.push(def ? def : id))
     return [rootNode.toString(), cellTypes.join(yi), firstWords.join(yi)].filter(i => i).join("\n")
   }
 

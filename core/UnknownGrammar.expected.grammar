@@ -1,6 +1,10 @@
 foobarNode
  root
  inScope fileNode
+anyCell
+intCell
+boolCell
+floatCell
 fileNode
  inScope sizeNode digitsNode openNode tempNode descriptionNode editsNode accountNode
  cells anyCell

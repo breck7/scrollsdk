@@ -38,10 +38,10 @@ file test
   source yes http://to.to.to 31`
 
   // Act
-  const types = new UnknownGrammarProgram(input).getPredictedGrammarFile("foobar")
+  const grammarFile = new UnknownGrammarProgram(input).getPredictedGrammarFile("foobar")
 
   // Assert
-  equal(types, readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
+  equal(grammarFile, readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)

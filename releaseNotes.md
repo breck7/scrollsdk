@@ -1,3 +1,8 @@
+edge / 2019-08-04
+=================
+- Fix: Grammar inference (UnknownGrammarProgram) now predicts base cell types
+
+
 36.2.0 / 2019-08-01
 ===================
 - Breaking: builder refactor. Instead "jbuild.js" now do "builder.js".

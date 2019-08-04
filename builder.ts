@@ -119,7 +119,7 @@ class Builder extends AbstractBuilder {
 
   cover() {
     // todo: fix. should we have some type of arg delimiter? somewhat like infix? splitFix perhaps?
-    exec("tap --cov --coverage-report=lcov ./tasks/testAll.js")
+    exec(`tap --cov --coverage-report=lcov ${__filename} test`)
   }
 
   updateVersion(newVersion: jTreeTypes.semanticVersion) {

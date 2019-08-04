@@ -175,6 +175,7 @@ class TreeNotationCodeMirrorMode {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?
+    if (!program.getCellHighlightScopeAtPosition) console.log(program)
     const highlightScope = program.getCellHighlightScopeAtPosition(lineIndex, cellIndex)
     const style = highlightScope ? <string>textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined
 

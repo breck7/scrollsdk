@@ -5,7 +5,7 @@
 const fs = require("fs")
 const stamp = require("../langs/stamp/stamp.js")
 
-import { GrammarProgram } from "./GrammarLanguage"
+const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
 
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"

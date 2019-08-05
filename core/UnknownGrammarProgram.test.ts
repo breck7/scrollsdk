@@ -5,7 +5,6 @@
 import { readFileSync } from "fs"
 import jTreeTypes from "../core/jTreeTypes"
 import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const testTree: jTreeTypes.testTree = {}
 
@@ -44,6 +43,6 @@ file test
   equal(grammarFile, readFileSync(__dirname + "/unknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

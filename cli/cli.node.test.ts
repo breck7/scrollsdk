@@ -4,7 +4,8 @@ const fs = require("fs")
 
 import { CLI } from "./cli.node"
 import jTreeTypes from "../core/jTreeTypes"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
+
+const jtree = require("../products/jtree.node.js")
 
 const testTree: jTreeTypes.testTree = {}
 
@@ -78,6 +79,6 @@ ${data[1]}`
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

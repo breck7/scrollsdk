@@ -4,7 +4,6 @@ import jTreeTypes from "./core/jTreeTypes"
 import jtree from "./core/jtree.node"
 
 import { AbstractBuilder } from "./builder/AbstractBuilder"
-import { TestTreeRunner } from "./builder/TestTreeRunner"
 import { TypeScriptRewriter } from "./builder/TypeScriptRewriter"
 
 import { exec } from "child_process"
@@ -67,7 +66,6 @@ class Builder extends AbstractBuilder {
 
   produceBrowserLibrary() {
     this._produceBrowserProductFromTypeScript(__dirname + "/core/", "jtree.browser")
-    // this._buildBrowserTestFile()
   }
 
   produceNodeLibrary() {
@@ -111,15 +109,17 @@ class Builder extends AbstractBuilder {
     )
   }
 
-  _buildBrowserTestFile() {
-    const testFile = new TypeScriptRewriter(this._read(__dirname + "/tests/base.test.js"))
-      .removeRequires()
-      .removeHashBang()
-      .removeNodeJsOnlyLines()
-      .changeNodeExportsToWindowExports()
-      .getString()
+  produceBrowserTests() {
+    this._buildTsc(__dirname + "/core", "tsc -p tsconfig.browser.tests.json")
 
-    this._write(__dirname + "/sandbox/base.tests.es6.js", testFile)
+    // const testFile = new TypeScriptRewriter(this._read(__dirname + "/tests/base.test.js"))
+    //   .removeRequires()
+    //   .removeHashBang()
+    //   .removeNodeJsOnlyLines()
+    //   .changeNodeExportsToWindowExports()
+    //   .getString()
+
+    // this._write(__dirname + "/sandbox/base.tests.es6.js", testFile)
   }
 
   cover() {
@@ -146,8 +146,8 @@ class Builder extends AbstractBuilder {
   _testDir(dir: jTreeTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
     allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
-    allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => new TestTreeRunner().run(require(file)))
-    allTestFiles.filter(file => file.endsWith(".test.ts")).forEach(file => new TestTreeRunner().run(require(file).testTree))
+    allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => jtree.Utils.runTestTree(require(file)))
+    allTestFiles.filter(file => file.endsWith(".test.ts")).forEach(file => jtree.Utils.runTestTree(require(file).testTree))
     allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
   }
 

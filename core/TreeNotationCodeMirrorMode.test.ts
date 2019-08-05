@@ -9,7 +9,6 @@ const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + 
 
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
 const TreeUtils = jtree.Utils
@@ -119,6 +118,6 @@ testTree.regressionTest = equal => {
   equal(tokenLines.length, 217)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

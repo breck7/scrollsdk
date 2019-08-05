@@ -2,7 +2,6 @@
 
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
 const fs = require("fs")
 
 const testTree: jTreeTypes.testTree = {}
@@ -152,6 +151,6 @@ testTree.numbers = equal => {
   }
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

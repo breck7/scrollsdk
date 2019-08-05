@@ -4,7 +4,6 @@
 
 import jtree from "../core/jtree.node"
 import jTreeTypes from "../core/jTreeTypes"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const testTree: jTreeTypes.testTree = {}
 
@@ -83,6 +82,6 @@ testTree.makeRandomTree = equal => {
   equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).getTopDownArray().length, 3)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

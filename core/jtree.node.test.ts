@@ -2,7 +2,6 @@
 
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const TreeNode = jtree.TreeNode
 const fs = require("fs")
@@ -39,6 +38,6 @@ testTree.diskTests = equal => {
   equal(fs.existsSync(path), false, "file does not exist")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

@@ -2,7 +2,6 @@
 
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
@@ -24,6 +23,6 @@ testTree.makeProgram = equal => {
   // jtree.getProgramClassFromGrammarFile
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

@@ -3,7 +3,6 @@ import jtree from "../core/jtree.node"
 import jTreeTypes from "../core/jTreeTypes"
 import { Disk } from "../core/Disk.node"
 
-import { TestTreeRunner } from "./TestTreeRunner"
 import { TypeScriptRewriter } from "./TypeScriptRewriter"
 
 const recursiveReadSync = require("recursive-readdir-sync")
@@ -84,7 +83,11 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _buildBrowserTsc(folder: jTreeTypes.absoluteFolderPath) {
-    exec("tsc -p tsconfig.browser.json", { cwd: folder }, (err, stdout, stderr) => {
+    return this._buildTsc(folder, "tsc -p tsconfig.browser.json")
+  }
+
+  _buildTsc(folder: jTreeTypes.absoluteFolderPath, command = "tsc") {
+    exec(command, { cwd: folder }, (err, stdout, stderr) => {
       if (stderr || err) return console.error(err, stdout, stderr)
     })
   }
@@ -126,12 +129,6 @@ class AbstractBuilder extends jtree.TreeNode {
 
     Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
     return outputFilePath
-  }
-
-  _buildTsc(folder: jTreeTypes.absoluteFolderPath) {
-    exec("tsc", { cwd: folder }, (err, stdout, stderr) => {
-      if (stderr || err) return console.error(err, stdout, stderr)
-    })
   }
 
   _readJson(path: jTreeTypes.filepath) {
@@ -195,7 +192,7 @@ class AbstractBuilder extends jtree.TreeNode {
       if (errs.length) console.log(errs.join("\n"))
     }
 
-    new TestTreeRunner().run(testTree)
+    jtree.Utils.runTestTree(testTree)
   }
 
   _help(filePath = process.argv[1]) {

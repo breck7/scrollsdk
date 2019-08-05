@@ -5,7 +5,6 @@
 import { readFileSync } from "fs"
 import jtree from "./jtree.node"
 import jTreeTypes from "./jTreeTypes"
-import { TestTreeRunner } from "../builder/TestTreeRunner"
 
 const GrammarProgram = jtree.GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
@@ -594,6 +593,6 @@ intCell`
   equal(errors.length, 1)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new TestTreeRunner().run(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

@@ -9,6 +9,20 @@ class TreeUtils {
     return (match && match[1]) || ""
   }
 
+  static runTestTree(testTree: jTreeTypes.testTree) {
+    // todo: browser version
+    const tap = require("tap")
+    const runOnlyTheseTest = Object.keys(testTree).filter(key => key.startsWith("_"))
+    const testsToRun = runOnlyTheseTest.length ? runOnlyTheseTest : Object.keys(testTree)
+
+    for (let key of testsToRun) {
+      tap.test(key, async (childTest: any) => {
+        const testCase = await testTree[key](childTest.equal)
+        childTest.end()
+      })
+    }
+  }
+
   static getMethodFromDotPath(context: any, str: string) {
     const methodParts = str.split(".")
     while (methodParts.length > 1) {

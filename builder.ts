@@ -83,8 +83,13 @@ class Builder extends AbstractBuilder {
   }
 
   produceSandbox() {
-    this._buildTsc(__dirname + "/sandbox/")
-    this._buildTsc(__dirname + "/sandboxServer/")
+    this._produceBrowserProductFromTypeScript(__dirname + "/sandbox/", "SandboxApp.browser")
+    this._produceNodeProductFromTypeScript(
+      __dirname + "/sandboxServer/",
+      [__dirname + "/core/jTreeTypes.ts", __dirname + "/builder/TypeScriptRewriter.ts"],
+      "SandboxServer.node",
+      (code: string) => code + "\nmodule.exports = {SandboxServer}"
+    )
   }
 
   produceCli() {

@@ -1,6 +1,9 @@
-const samples = {}
+//tooling product SandboxApp.browser.js
 
-samples.csv = TreeNode.iris
+const jtree = require("../products/jtree.node.js")
+
+const samples: any = {}
+samples.csv = jtree.TreeNode.iris
 
 // todo: autogen this.
 samples.json = `{
@@ -9,22 +12,22 @@ samples.json = `{
  "keywords": "jtree"
 }`
 
-$(document).ready(function() {
-  const treeConsole = $("#treeConsole")
-  const jsonConsole = $("#jsonConsole")
-  const outlineConsole = $("#outlineConsole")
-  const csvConsole = $("#csvConsole")
-  const xmlConsole = $("#xmlConsole")
-  const htmlConsole = $("#htmlConsole")
-  const tableConsole = $("#tableConsole")
-  const yamlConsole = $("#yamlConsole")
+jQuery(document).ready(function() {
+  const treeConsole = jQuery("#treeConsole")
+  const jsonConsole = jQuery("#jsonConsole")
+  const outlineConsole = jQuery("#outlineConsole")
+  const csvConsole = jQuery("#csvConsole")
+  const xmlConsole = jQuery("#xmlConsole")
+  const htmlConsole = jQuery("#htmlConsole")
+  const tableConsole = jQuery("#tableConsole")
+  const yamlConsole = jQuery("#yamlConsole")
 
-  $("#jsonSample").on("click", () => jsonConsole.val(samples.json).keyup())
-  $("#csvSample").on("click", () => csvConsole.val(samples.csv).keyup())
+  jQuery("#jsonSample").on("click", () => jsonConsole.val(samples.json).keyup())
+  jQuery("#csvSample").on("click", () => csvConsole.val(samples.csv).keyup())
 
   // Init vars
   if (localStorage.getItem("tree")) treeConsole.val(localStorage.getItem("tree"))
-  $("#version").html("Version: " + jtree.getVersion())
+  jQuery("#version").html("Version: " + jtree.getVersion())
 
   const updateAll = (tree, eventSource) => {
     if (eventSource !== treeConsole) treeConsole.val(tree.toString())
@@ -36,15 +39,16 @@ $(document).ready(function() {
     if (eventSource !== tableConsole) tableConsole.html(tree.toTable())
     if (eventSource !== yamlConsole) yamlConsole.html(tree.toYaml())
 
-    window.tree = tree
+    let win = <any>window
+    win.tree = tree
     localStorage.setItem("tree", tree.toString())
   }
 
   // Bind listeners
-  treeConsole.on("keyup", () => updateAll(new TreeNode(treeConsole.val()), treeConsole))
-  jsonConsole.on("keyup", () => updateAll(TreeNode.fromJsonSubset(jsonConsole.val()), jsonConsole))
-  csvConsole.on("keyup", () => updateAll(TreeNode.fromCsv(csvConsole.val()), csvConsole))
-  xmlConsole.on("keyup", () => updateAll(TreeNode.fromXml(xmlConsole.val()), xmlConsole))
+  treeConsole.on("keyup", () => updateAll(new jtree.TreeNode(treeConsole.val()), treeConsole))
+  jsonConsole.on("keyup", () => updateAll(jtree.TreeNode.fromJsonSubset(jsonConsole.val()), jsonConsole))
+  csvConsole.on("keyup", () => updateAll(jtree.TreeNode.fromCsv(csvConsole.val()), csvConsole))
+  xmlConsole.on("keyup", () => updateAll(jtree.TreeNode.fromXml(xmlConsole.val()), xmlConsole))
 
   // Trigger start
   treeConsole.keyup()

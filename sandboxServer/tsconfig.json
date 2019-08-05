@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
+    "outDir": "../products",
     "types": ["node"],
     "lib": ["es2017"],
     "noImplicitAny": true,
     "target": "es2017",
     "module": "commonjs"
   },
-  "include": ["./*.ts"]
+  "include": ["../ignore/SandboxServer.node.ts"]
 }

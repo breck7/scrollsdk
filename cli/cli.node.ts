@@ -179,7 +179,7 @@ ${grammars.toTable()}`
   }
 
   sandbox(port = 3333) {
-    const { SandboxServer } = require("../sandbox/server/SandboxServer.js")
+    const { SandboxServer } = require("../products/SandboxServer.node.js")
     const server = new SandboxServer()
     server.start(port)
     return `Starting sandbox on port ${port}`

@@ -84,7 +84,9 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _buildBrowserTsc(folder: jTreeTypes.absoluteFolderPath) {
-    exec("tsc -p tsconfig.browser.json", { cwd: folder })
+    exec("tsc -p tsconfig.browser.json", { cwd: folder }, (err, stdout, stderr) => {
+      if (stderr || err) return console.error(err, stdout, stderr)
+    })
   }
 
   _produceBrowserProductFromTypeScript(folder: jTreeTypes.absoluteFolderPath, productId: jTreeTypes.fileName) {
@@ -127,7 +129,9 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _buildTsc(folder: jTreeTypes.absoluteFolderPath) {
-    exec("tsc", { cwd: folder })
+    exec("tsc", { cwd: folder }, (err, stdout, stderr) => {
+      if (stderr || err) return console.error(err, stdout, stderr)
+    })
   }
 
   _readJson(path: jTreeTypes.filepath) {

@@ -79,7 +79,7 @@ class Builder extends AbstractBuilder {
   }
 
   produceDesigner() {
-    this._buildTsc(__dirname + "/designer/")
+    this._produceBrowserProductFromTypeScript(__dirname + "/designer/", "DesignerApp.browser")
   }
 
   produceSandbox() {

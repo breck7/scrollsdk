@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
+    "outDir": "../products",
     "lib": ["es2017", "dom"],
     "moduleResolution": "node",
+    "noImplicitAny": true,
     "declaration": false,
     "target": "es2017"
-  }
+  },
+  "include": ["../ignore/DesignerApp.browser.ts"]
 }

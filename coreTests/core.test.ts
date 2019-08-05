@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 
-import jtree from "./jtree.node"
-import jTreeTypes from "./jTreeTypes"
+import jTreeTypes from "../core/jTreeTypes"
 
+const jtree = require("../products/jtree.node.js")
 const TreeNode = jtree.TreeNode
 
 const testStrings: jTreeTypes.stringMap = {}
@@ -449,14 +449,15 @@ testTree.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
       return ":"
     }
   }
+  const iHateTypeScript = <any>TestTree
 
-  equal(new TestTree(test).nodeAt(0).length, 2)
+  equal(new iHateTypeScript(test).nodeAt(0).length, 2)
 
-  const rootTree = new TestTree()
-  const tree = rootTree.appendLineAndChildren("", new TestTree())
+  const rootTree = new iHateTypeScript()
+  const tree = rootTree.appendLineAndChildren("", new iHateTypeScript())
   tree.appendLine("")
   tree.appendLine("")
-  const newTree = new TestTree(rootTree.toString())
+  const newTree = new iHateTypeScript(rootTree.toString())
   equal(newTree.nodeAt(0).length, 2)
 }
 
@@ -777,7 +778,7 @@ other`
   const tree6 = new TreeNode(blankTest)
 
   // Act
-  tree6.forEach(node => {
+  tree6.forEach((node: jTreeTypes.treeNode) => {
     if (!node.getFirstWord().startsWith("p")) return true
     node.setContent("President")
     node.delete("class")
@@ -835,10 +836,10 @@ testTree.deleteRegression = equal => {
   const migrateFn = (str: string) => {
     const board = new TreeNode(str)
     const dataNodes = board.findNodes("data")
-    dataNodes.forEach(nodeTree => {
+    dataNodes.forEach((nodeTree: jTreeTypes.treeNode) => {
       const rows = nodeTree.findNodes("row")
       if (!rows.length) return
-      const mapped = rows.map(row => row.toObject())
+      const mapped = rows.map((row: jTreeTypes.treeNode) => row.toObject())
       const csv = new TreeNode(mapped).toCsv()
       nodeTree.touchNode("format").setContent("csv")
       nodeTree.touchNode("content").setContentWithChildren(csv)
@@ -896,7 +897,7 @@ testTree.forEach = equal => {
   var result = ""
 
   // Act
-  value.forEach(function(node) {
+  value.forEach(function(node: jTreeTypes.treeNode) {
     const property = node.getFirstWord()
     const v = node.getContent()
     result += property.toUpperCase()
@@ -914,8 +915,8 @@ testTree.forEach = equal => {
 
   // Act
   value2
-    .filter(n => n.getFirstWord() !== "hello")
-    .forEach(node => {
+    .filter((node: jTreeTypes.treeNode) => node.getFirstWord() !== "hello")
+    .forEach((node: jTreeTypes.treeNode) => {
       const property = node.getFirstWord()
       const value = node.getContent()
       count++
@@ -925,20 +926,20 @@ testTree.forEach = equal => {
 
   // Arrange
   const tree = new TreeNode("hello world\nhi world")
-  var i = 0
+  var inc = 0
 
   // Act
-  tree.forEach((node, index) => {
-    i = i + index
+  tree.forEach((node: jTreeTypes.treeNode, index: number) => {
+    inc = inc + index
   })
 
   // Assert
-  equal(i, 1, "index worked")
+  equal(inc, 1, "index worked")
 }
 
 testTree.every = equal => {
   // Arrange/Act/Assert
-  equal(new TreeNode(`a 2\nb 2\nc 2`).every(node => node.getWord(1) === "2"), true)
+  equal(new TreeNode(`a 2\nb 2\nc 2`).every((node: jTreeTypes.treeNode) => node.getWord(1) === "2"), true)
 }
 
 testTree.extend = equal => {
@@ -1188,7 +1189,7 @@ b`)
   const a = test.getNode("a")
 
   // Act
-  a.replaceNode(str => str.replace("a", "z"))
+  a.replaceNode((str: any) => str.replace("a", "z"))
 
   // Assert
   equal(
@@ -1284,7 +1285,7 @@ testTree.getIndentation = equal => {
     testStrings.webpageTrimmed,
     tree
       .getTopDownArray()
-      .map(line => line.getIndentation() + line.getLine())
+      .map((line: jTreeTypes.treeNode) => line.getIndentation() + line.getLine())
       .join("\n")
   )
 }
@@ -1381,7 +1382,7 @@ testTree.getNodes = equal => {
   // Act
   const result = value
     .findNodes("hello")
-    .map(node => node.getContent())
+    .map((node: jTreeTypes.treeNode) => node.getContent())
     .join("")
 
   // Assert
@@ -1390,7 +1391,7 @@ testTree.getNodes = equal => {
   equal(
     deep
       .findNodes("language line score")
-      .map(a => a.getContent())
+      .map((node: jTreeTypes.treeNode) => node.getContent())
       .join(""),
     "212"
   )
@@ -1419,12 +1420,14 @@ testTree.multiply = equal => {
     }
   }
 
+  const iHateTypeScript = <any>MathNode
+
   // Arrange
-  const two = new MathNode(`o`)
-  const three = new MathNode(`oo`)
+  const two = new iHateTypeScript(`o`)
+  const three = new iHateTypeScript(`oo`)
 
   // Act/Assert
-  const result = MathNode.multiply(two, three)
+  const result = iHateTypeScript.multiply(two, three)
 
   equal(result.toString(), "o-o-o-oo-o-o-", "multipling empty structures (in this case 1D primes) works as expected")
 
@@ -1545,12 +1548,12 @@ testTree.simpleTreeLanguage = equal => {
   class AdditionNode extends TreeNode {
     // Look! You created an interpreter!
     executeSync() {
-      return [this.getNumbers().reduce((prev, current) => prev + current, 0)]
+      return [this.getNumbers().reduce((prev: number, current: number) => prev + current, 0)]
     }
 
     // Look! You created a declarative file format!
     getNumbers() {
-      return this.getWordsFrom(1).map(word => parseFloat(word))
+      return this.getWordsFrom(1).map((word: string) => parseFloat(word))
     }
 
     // Look! You created a compiler!
@@ -1563,7 +1566,8 @@ testTree.simpleTreeLanguage = equal => {
 + 15 1.1 200 100`
 
   // Act
-  const program = new MathProgram(source)
+  const iHateTypeScript = <any>MathProgram
+  const program = new iHateTypeScript(source)
   const compiled = program.compile()
 
   // Assert
@@ -1591,7 +1595,7 @@ testTree.simpleTreeLanguage = equal => {
   equal(program.getChildrenByNodeConstructor(SubstractionNode).length, 0)
 
   // Act
-  program.nodeAt(0).replaceNode(str => str.replace("+", "-"))
+  program.nodeAt(0).replaceNode((str: any) => str.replace("+", "-"))
 
   // Assert
   equal(program.getChildrenByNodeConstructor(AdditionNode).length, 2)
@@ -2063,7 +2067,7 @@ testTree.htmlDsl = equal => {
   var page = ""
 
   // Act
-  html.forEach(node => {
+  html.forEach((node: jTreeTypes.treeNode) => {
     const property = node.getFirstWord()
     const value = node.getContent()
     page += "<" + property + ">" + value + "</" + property + ">"
@@ -2424,7 +2428,8 @@ testTree.treeLanguageDependingOnParent = equal => {
 
   // Act
   // This tests against a regression, it should not throw.
-  const program = new TestLanguage(`foo
+  const iHateTypeScript = <any>TestLanguage
+  const program = new iHateTypeScript(`foo
  bar`)
   // Assert.
   equal(program.length, 1)
@@ -2526,7 +2531,8 @@ testTree.parseNode = equal => {
   }
 
   // Act
-  const node = new TestLanguageNode(
+  const iHateTypeScript = <any>TestLanguageNode
+  const node = new iHateTypeScript(
     `foo bar
  foo bar
   tree bar
@@ -2584,7 +2590,7 @@ d
   // Act/Assert
   const result = reg
     .getTopDownArray()
-    .map(node => node.getPoint().y)
+    .map((node: jTreeTypes.treeNode) => node.getPoint().y)
     .join(" ")
   equal(result, "1 2 3 4 5")
   equal(reg.getNode("a").getPoint().y, 1)
@@ -2637,10 +2643,10 @@ q quantity`
 
   // Act
   const remapped = new TreeNode(test)
-  remapped.forEach(t => t.remap(expandMapObj))
+  remapped.forEach((node: jTreeTypes.treeNode) => node.remap(expandMapObj))
 
   const expected = remapped.clone()
-  expected.forEach(t => t.remap(contractMap))
+  expected.forEach((node: jTreeTypes.treeNode) => node.remap(contractMap))
 
   // Assert
   equal(test, expected.toString())
@@ -3028,7 +3034,7 @@ testTree.sort = equal => {
   // Assert
   equal(tree.getFirstWords().join(" "), "john susy bob")
   // Act
-  tree.sort((a, b) => (b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1))
+  tree.sort((a: jTreeTypes.treeNode, b: jTreeTypes.treeNode) => (b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1))
   // Assert
   equal(tree.getFirstWords().join(" "), "bob john susy")
 }
@@ -3114,7 +3120,8 @@ testTree.syntax = equal => {
   }
 
   // Act
-  const b = new TestLanguage(test2)
+  const iHateTypeScript = <any>TestLanguage
+  const b = new iHateTypeScript(test2)
 
   // Assert
   equal(b.getNode("person=country").getContent(), "USA")
@@ -3274,7 +3281,9 @@ event lala2018
 
   // Act
   const simple = tree.toMarkdownTable()
-  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) => (row ? value : jtree.Utils.ucfirst(value)))
+  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value: any, row: any, col: any) =>
+    row ? value : jtree.Utils.ucfirst(value)
+  )
 
   // Assert
   equal(table, expected, "markdown ok")
@@ -3428,15 +3437,15 @@ testTree.traverse = equal => {
   // Act
   const preOrder = traversal
     .getTopDownArray()
-    .map(node => node.getLine())
+    .map((node: jTreeTypes.treeNode) => node.getLine())
     .join(" ")
   const postOrder = traversal
     .getChildrenFirstArray()
-    .map(node => node.getLine())
+    .map((node: jTreeTypes.treeNode) => node.getLine())
     .join(" ")
   const breadthfirst = traversal
     .getParentFirstArray()
-    .map(node => node.getLine())
+    .map((node: jTreeTypes.treeNode) => node.getLine())
     .join(" ")
 
   // Assert
@@ -3460,15 +3469,15 @@ testTree.traverse = equal => {
   // Act
   const wikipreorder = wikipediaBinaryTree
     .getTopDownArray()
-    .map(node => node.getLine())
+    .map((node: jTreeTypes.treeNode) => node.getLine())
     .join("")
   const wikibreadthfirst = wikipediaBinaryTree
     .getParentFirstArray()
-    .map(node => node.getLine())
+    .map((node: jTreeTypes.treeNode) => node.getLine())
     .join("")
   const wikipostorder = wikipediaBinaryTree
     .getChildrenFirstArray()
-    .map(node => node.getLine())
+    .map((node: jTreeTypes.treeNode) => node.getLine())
     .join("")
 
   // Assert
@@ -3497,7 +3506,7 @@ b
  a
 b
  a
-c`).getFiltered(node => node.getFirstWord() === "a").length,
+c`).getFiltered((node: jTreeTypes.treeNode) => node.getFirstWord() === "a").length,
     3
   )
 }
@@ -3545,7 +3554,7 @@ testTree.toOutline = equal => {
 `
   )
   equal(
-    treeNode.toMappedOutline(node => "o"),
+    treeNode.toMappedOutline((node: jTreeTypes.treeNode) => "o"),
     `└o
  └o
 `
@@ -3597,7 +3606,7 @@ b
 c
  d`)
   // Act
-  a.forEach(child => {
+  a.forEach((child: jTreeTypes.treeNode) => {
     child.destroy()
   })
 

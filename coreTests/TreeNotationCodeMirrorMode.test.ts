@@ -7,8 +7,8 @@ const stamp = require("../langs/stamp/stamp.js")
 
 const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
 
-import jtree from "./jtree.node"
-import jTreeTypes from "./jTreeTypes"
+import jtree from "../core/jtree.node"
+import jTreeTypes from "../core/jTreeTypes"
 
 const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
 const TreeUtils = jtree.Utils

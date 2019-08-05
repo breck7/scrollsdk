@@ -4,7 +4,8 @@
 
 import { readFileSync } from "fs"
 import jTreeTypes from "../core/jTreeTypes"
-import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
+import { UnknownGrammarProgram } from "../core/UnknownGrammarProgram"
+import jtree from "../core/jtree.node"
 
 const testTree: jTreeTypes.testTree = {}
 

@@ -1,6 +1,6 @@
 //tooling product SandboxServer.node.js
 
-const jtree = require("../products/jtree.node.js")
+import jtree from "../core/jtree.node"
 
 class TypeScriptRewriter {
   constructor(fileStr: string) {

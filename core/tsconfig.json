@@ -4,7 +4,7 @@
     "types": ["node"],
     "lib": ["es2017", "dom"],
     "noImplicitAny": true,
-    "declaration": true,
+    //"declaration": true,
     "target": "es2017",
     "module": "commonjs"
   },

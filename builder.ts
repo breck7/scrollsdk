@@ -39,6 +39,14 @@ class Builder extends AbstractBuilder {
     })
   }
 
+  produceAll() {
+    Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+      .filter(word => word.startsWith("produce") && word !== "produceAll")
+      .forEach(command => {
+        ;(<any>this)[command]()
+      })
+  }
+
   buildChex() {
     const chexDir = __dirname + "/treeComponentFramework/chex/"
     const chexPath = chexDir + "ChexTreeComponent.js"
@@ -159,9 +167,10 @@ designer
 sandbox
 sandboxServer
 core
+coreTests
 treeBase
 treeComponentFramework`
-    folders = "core"
+    folders = "coreTests"
     folders.split("\n").forEach(folder => this._testDir(__dirname + `/${folder}/`))
   }
 }

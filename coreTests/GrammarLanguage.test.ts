@@ -3,8 +3,8 @@
 // todo: make isomorphic
 
 import { readFileSync } from "fs"
-import jtree from "./jtree.node"
-import jTreeTypes from "./jTreeTypes"
+import jtree from "../core/jtree.node"
+import jTreeTypes from "../core/jTreeTypes"
 
 const GrammarProgram = jtree.GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"

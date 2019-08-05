@@ -6,5 +6,5 @@
     "declaration": false,
     "target": "es2017"
   },
-  "include": ["./base.test.ts"]
+  "include": ["./core.test.ts"]
 }

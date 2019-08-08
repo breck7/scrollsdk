@@ -62,7 +62,7 @@ class Builder extends AbstractBuilder {
   }
 
   buildJibJab() {
-    const CLI = require("./cli/cli.js")
+    const CommandLineApp = require("./commandLineApp/commandLineApp.js")
 
     const combined = jtree.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
 
@@ -70,7 +70,7 @@ class Builder extends AbstractBuilder {
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
 
-    new CLI().prettify(path)
+    new CommandLineApp().prettify(path)
   }
 
   produceBrowserLibrary() {
@@ -99,12 +99,12 @@ class Builder extends AbstractBuilder {
     )
   }
 
-  produceCli() {
+  produceCommandLineApp() {
     const file = this._produceNodeProductFromTypeScript(
-      __dirname + "/cli/",
+      __dirname + "/commandLineApp/",
       [__dirname + "/core/jTreeTypes.ts"],
-      "cli.node",
-      (code: string) => `#! /usr/bin/env node\n` + code + "\nmodule.exports = CLI"
+      "commandLineApp.node",
+      (code: string) => `#! /usr/bin/env node\n` + code + "\nmodule.exports = CommandLineApp"
     )
     this._makeExecutable(file)
   }
@@ -120,15 +120,6 @@ class Builder extends AbstractBuilder {
 
   produceBrowserTests() {
     this._produceBrowserProductFromTypeScript(__dirname + "/coreTests/", "core.test.browser", [__dirname + "/core/jTreeTypes.ts"])
-
-    // const testFile = new TypeScriptRewriter(this._read(__dirname + "/tests/base.test.js"))
-    //   .removeRequires()
-    //   .removeHashBang()
-    //   .removeNodeJsOnlyLines()
-    //   .changeNodeExportsToWindowExports()
-    //   .getString()
-
-    // this._write(__dirname + "/sandbox/base.tests.es6.js", testFile)
   }
 
   cover() {
@@ -172,7 +163,7 @@ class Builder extends AbstractBuilder {
   async _test() {
     let folders = `langs
 builder
-cli
+commandLineApp
 designer
 sandbox
 sandboxServer

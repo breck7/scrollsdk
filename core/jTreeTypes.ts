@@ -1,6 +1,6 @@
 //tooling product jtree.node.js
 //tooling product jtree.browser.js
-//tooling product cli.node.js
+//tooling product commandLineApp.node.js
 //tooling product treeBase.node.js
 //tooling product SandboxServer.node.js
 //tooling product core.test.browser.js

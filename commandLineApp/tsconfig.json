@@ -8,5 +8,5 @@
     "module": "commonjs"
   },
   //"references": [{ "path": "../core" }],
-  "include": ["../ignore/cli.node.ts"]
+  "include": ["../ignore/commandLineApp.node.ts"]
 }

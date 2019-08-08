@@ -1,5 +1,5 @@
 #!/usr/bin/env ts-node
-//tooling product cli.node.js
+//tooling product commandLineApp.node.js
 
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
@@ -10,7 +10,7 @@ const jtree = require("../products/jtree.node.js")
 const { TreeNode, GrammarProgram, Utils } = jtree
 import jTreeTypes from "../core/jTreeTypes"
 
-class CLI {
+class CommandLineApp {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
     this._grammarsPath = grammarsPath
     this._initFile(grammarsPath, "name filepath")
@@ -113,7 +113,7 @@ class CLI {
   }
 
   help() {
-    const help = this._read(__dirname + "/../cli/help.ssv") // note: we do the parent indirection for compiled reasons.
+    const help = this._read(__dirname + "/../commandLineApp/help.ssv") // note: we do the parent indirection for compiled reasons.
     return TreeNode.fromSsv(help).toTable()
   }
 
@@ -242,7 +242,7 @@ ${grammars.toTable()}`
   _history(grammarName: jTreeTypes.grammarName) {
     this._getGrammarPathByGrammarNameOrThrow(grammarName)
     // todo: store history of all commands
-    // todo: build language for cli history
+    // todo: build language for commandLineApp history
     // todo: refactor this
     // todo: some easier one step way to get a set from a column
     // todo: add support for initing a TreeNode from a JS set and map
@@ -278,7 +278,7 @@ ${grammars.toTable()}`
     // everytime you run/check/compile a tree program, log it by default.
     // that way, if a language changes or you need to do refactors, you have the
     // data of file paths handy..
-    // also the usage data can be used to improve the cli app
+    // also the usage data can be used to improve the commandLineApp app
     const line = `${one || ""} ${two || ""} ${three || ""} ${Date.now()}\n`
     const logFilePath = this._getLogFilePath()
     this._initFile(logFilePath, "command paramOne paramTwo timestamp\n")
@@ -334,7 +334,7 @@ ${grammars.toTable()}`
   }
 
   static async main() {
-    const app = <any>new CLI()
+    const app = <any>new CommandLineApp()
 
     const action = process.argv[2]
     const paramOne = process.argv[3]
@@ -356,6 +356,6 @@ ${grammars.toTable()}`
   }
 }
 
-if (!module.parent) CLI.main()
+if (!module.parent) CommandLineApp.main()
 
-export { CLI }
+export { CommandLineApp }

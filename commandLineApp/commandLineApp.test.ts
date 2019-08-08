@@ -2,24 +2,24 @@
 
 const fs = require("fs")
 
-import { CLI } from "./cli.node"
+import { CommandLineApp } from "./commandLineApp.node"
 import jTreeTypes from "../core/jTreeTypes"
 
 const jtree = require("../products/jtree.node.js")
 
 const testTree: jTreeTypes.testTree = {}
 
-const cliTempHome = __dirname + `/../ignore/cliTempHome/`
-const cliTempRegistryFile = cliTempHome + "grammars.ssv"
+const commandLineAppTempHome = __dirname + `/../ignore/commandLineAppTempHome/`
+const commandLineAppTempRegistryFile = commandLineAppTempHome + "grammars.ssv"
 const grammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 
 const mkdirp = require("mkdirp")
-if (fs.existsSync(cliTempHome) && fs.existsSync(cliTempRegistryFile)) fs.unlinkSync(cliTempRegistryFile)
-mkdirp.sync(cliTempHome)
+if (fs.existsSync(commandLineAppTempHome) && fs.existsSync(commandLineAppTempRegistryFile)) fs.unlinkSync(commandLineAppTempRegistryFile)
+mkdirp.sync(commandLineAppTempHome)
 
 testTree.consoleBasics = equal => {
   // Arrange
-  const app = new CLI(cliTempRegistryFile)
+  const app = new CommandLineApp(commandLineAppTempRegistryFile)
 
   if (!app.isRegistered("grammar")) app.register(grammarPath)
 
@@ -42,7 +42,7 @@ testTree.consoleBasics = equal => {
 
 testTree.usage = equal => {
   // Arrange
-  const app = new CLI(cliTempRegistryFile)
+  const app = new CommandLineApp(commandLineAppTempRegistryFile)
   if (!app.isRegistered("grammar")) app.register(grammarPath)
 
   // Assert
@@ -72,7 +72,7 @@ ${data[1]}`
 
   // Act
   fs.writeFileSync(paths[2], combinedFile, "utf8")
-  const app = new CLI(cliTempRegistryFile)
+  const app = new CommandLineApp(commandLineAppTempRegistryFile)
   const createdFilePaths = app.distribute(paths[2])
 
   // Assert

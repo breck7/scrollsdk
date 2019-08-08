@@ -332,6 +332,16 @@ ${grammars.toTable()}`
     return `jtree version ${jtree.getVersion()} installed at ${__filename}`
   }
 
+  _getAllCommands() {
+    return Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+      .filter(word => !word.startsWith("_") && word !== "constructor")
+      .sort()
+  }
+
+  _getPartialMatches(commandName: string) {
+    return this._getAllCommands().filter(item => item.startsWith(commandName))
+  }
+
   static async main() {
     const app = <any>new CommandLineApp()
 
@@ -339,6 +349,7 @@ ${grammars.toTable()}`
     const paramOne = process.argv[3]
     const paramTwo = process.argv[4]
     const print = console.log
+    const partialMatches = app._getPartialMatches(action)
 
     if (app[action]) {
       app.addToHistory(action, paramOne, paramTwo)
@@ -351,6 +362,9 @@ ${grammars.toTable()}`
       app.addToHistory(undefined, action)
       const result = await app.run(action)
       print(result)
+    } else if (partialMatches.length > 0) {
+      if (partialMatches.length === 1) print(app[partialMatches[0]](paramOne, paramTwo))
+      else print(`Multiple matches for '${action}'. Options are: ${partialMatches}`)
     } else print(`Unknown command '${action}'. Type 'tree help' to see available commands.`)
   }
 }

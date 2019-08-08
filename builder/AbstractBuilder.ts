@@ -8,7 +8,7 @@ import jTreeTypes from "../core/jTreeTypes"
 import { Disk } from "../core/Disk.node"
 
 class AbstractBuilder extends jtree.TreeNode {
-  _bundleBrowserTypeScriptFilesIntoOne(typeScriptSrcFiles: jTreeTypes.typeScriptFilePath[], productId: string) {
+  _bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(typeScriptSrcFiles: jTreeTypes.typeScriptFilePath[], productId: string) {
     const outputFilePath = __dirname + `/../ignore/${productId}.ts`
     this._write(outputFilePath, this._combineTypeScriptFilesForBrowser(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath)))
   }
@@ -77,7 +77,7 @@ class AbstractBuilder extends jtree.TreeNode {
     outputFilePath: jTreeTypes.filepath,
     combinedTempFilePath: jTreeTypes.filepath
   ) {
-    this._bundleBrowserTypeScriptFilesIntoOne(typeScriptFiles, combinedTempFilePath)
+    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(typeScriptFiles, combinedTempFilePath)
     await this._buildTsc(folder, "tsc -p tsconfig.browser.json")
 
     // todo: I think I can remove
@@ -110,8 +110,12 @@ class AbstractBuilder extends jtree.TreeNode {
     productId: jTreeTypes.fileName,
     extraFiles: jTreeTypes.absoluteFilePath[] = []
   ) {
-    this._bundleBrowserTypeScriptFilesIntoOne(this._getFilesForProduction(folder, extraFiles, productId), productId)
-    await this._buildBrowserTsc(folder)
+    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(this._getFilesForProduction(folder, extraFiles, productId), productId)
+    try {
+      await this._buildBrowserTsc(folder)
+    } catch (err) {
+      console.log(err)
+    }
     this._prettifyFile(this._getProductPath(productId))
   }
 
@@ -219,14 +223,14 @@ class AbstractBuilder extends jtree.TreeNode {
     return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
   }
 
-  _getAllPublicActions() {
+  _getAllCommands() {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this))
       .filter(word => !word.startsWith("_") && word !== "constructor")
       .sort()
   }
 
-  _getPartialMatch(commandName: string) {
-    return this._getAllPublicActions().find(item => item.startsWith(commandName))
+  private _getPartialMatches(commandName: string) {
+    return this._getAllCommands().filter(item => item.startsWith(commandName))
   }
 
   _main() {
@@ -235,13 +239,15 @@ class AbstractBuilder extends jtree.TreeNode {
     const paramTwo = process.argv[4]
     const print = console.log
     const builder = <any>this
+    const partialMatches = this._getPartialMatches(action)
 
     if (builder[action]) {
       builder[action](paramOne, paramTwo)
     } else if (!action) {
       print(this._help())
-    } else if (this._getPartialMatch(action)) {
-      builder[this._getPartialMatch(action)](paramOne, paramTwo)
+    } else if (partialMatches.length > 0) {
+      if (partialMatches.length === 1) builder[partialMatches[0]](paramOne, paramTwo)
+      else print(`Multiple matches for '${action}'. Options are: ${partialMatches}`)
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }

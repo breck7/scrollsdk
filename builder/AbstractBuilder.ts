@@ -58,6 +58,8 @@ class AbstractBuilder extends jtree.TreeNode {
         new TypeScriptRewriter(content)
           .removeRequires()
           .removeImports()
+          .removeHashBang()
+          .removeNodeJsOnlyLines()
           .changeDefaultExportsToWindowExports()
           .removeExports()
           .getString()
@@ -92,8 +94,8 @@ class AbstractBuilder extends jtree.TreeNode {
     })
   }
 
-  _produceBrowserProductFromTypeScript(folder: jTreeTypes.absoluteFolderPath, productId: jTreeTypes.fileName) {
-    this._bundleBrowserTypeScriptFilesIntoOne(this._getFilesForProduction(folder, [], productId), productId)
+  _produceBrowserProductFromTypeScript(folder: jTreeTypes.absoluteFolderPath, productId: jTreeTypes.fileName, extraFiles: jTreeTypes.absoluteFilePath[] = []) {
+    this._bundleBrowserTypeScriptFilesIntoOne(this._getFilesForProduction(folder, extraFiles, productId), productId)
     this._buildBrowserTsc(folder)
   }
 

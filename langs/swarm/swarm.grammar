@@ -129,6 +129,7 @@ testBlockNode
     return this._equal
   }
   async _executeNode(programFilepath) {
+    // todo: use runTestTree from jtree lib
     const testSubject = this.getTestSetupNode().getTestSubject(programFilepath)
     const isAsync = this.isAsync()
     const executeMethod = isAsync ? "execute" : "executeSync"
@@ -142,8 +143,8 @@ testBlockNode
           return result
         })
         await Promise.all(promises)
-        childTest.end()
         resolve()
+        childTest.end()
       })
     })
   }

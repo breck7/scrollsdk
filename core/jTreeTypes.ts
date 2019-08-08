@@ -3,6 +3,7 @@
 //tooling product cli.node.js
 //tooling product treeBase.node.js
 //tooling product SandboxServer.node.js
+//tooling product core.test.browser.js
 
 export namespace jTreeTypes {
   export interface point {

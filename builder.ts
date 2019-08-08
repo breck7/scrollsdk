@@ -119,7 +119,7 @@ class Builder extends AbstractBuilder {
   }
 
   produceBrowserTests() {
-    this._buildTsc(__dirname + "/core", "tsc -p tsconfig.browser.tests.json")
+    this._produceBrowserProductFromTypeScript(__dirname + "/coreTests/", "core.test.browser", [__dirname + "/core/jTreeTypes.ts"])
 
     // const testFile = new TypeScriptRewriter(this._read(__dirname + "/tests/base.test.js"))
     //   .removeRequires()
@@ -155,15 +155,21 @@ class Builder extends AbstractBuilder {
   async _testDir(dir: jTreeTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
     allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
-    allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => jtree.Utils.runTestTree(require(file)))
-    allTestFiles.filter(file => file.endsWith(".test.ts")).forEach(file => jtree.Utils.runTestTree(require(file).testTree))
-    const swarmFiles = allTestFiles.filter(file => file.endsWith(".swarm"))
-    for (let file of swarmFiles) {
+
+    for (let file of allTestFiles.filter(file => file.endsWith(".test.js"))) {
+      await jtree.Utils.runTestTree(require(file))
+    }
+
+    for (let file of allTestFiles.filter(file => file.endsWith(".test.ts"))) {
+      await jtree.Utils.runTestTree(require(file).testTree)
+    }
+
+    for (let file of allTestFiles.filter(file => file.endsWith(".swarm"))) {
       await jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar")
     }
   }
 
-  _test() {
+  async _test() {
     let folders = `langs
 builder
 cli
@@ -172,9 +178,11 @@ sandbox
 sandboxServer
 core
 coreTests
-treeBase`
+treeBase`.split("\n")
     //treeComponentFramework`
-    folders.split("\n").forEach(folder => this._testDir(__dirname + `/${folder}/`))
+    for (let folder of folders) {
+      await this._testDir(__dirname + `/${folder}/`)
+    }
   }
 }
 

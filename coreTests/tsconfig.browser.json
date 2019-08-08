@@ -6,5 +6,5 @@
     "declaration": false,
     "target": "es2017"
   },
-  "include": ["./core.test.ts"]
+  "include": ["../ignore/core.test.browser.ts"]
 }

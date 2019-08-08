@@ -17,5 +17,5 @@ testTree.all = equal => {
   equal(new numbers(`+ 2 2 1 1`).executeSync().join(""), `6`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../../products/jtree.node.js").Utils.runTestTree(testTree)
 module.exports = testTree

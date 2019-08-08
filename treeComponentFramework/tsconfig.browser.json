@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "../built",
+    "outDir": "../products",
     "lib": ["es2017", "dom"],
-    "declaration": false,
-    "allowJs": true,
     "moduleResolution": "node",
+    "declaration": false,
     "target": "es2017"
   },
-  "references": [{ "path": "../tsconfig.json" }],
-  "include": ["../ignore/treeComponentFramework.browser.ts"]
+  "include": ["../ignore/treeComponentFramework.node.ts"]
 }

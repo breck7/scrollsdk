@@ -1,10 +1,10 @@
 const superagent = require("superagent")
 const miuri = require("miuri.js")
 
-import jtree from "../../core/jtree"
-import jTreeTypes from "../../core/jTreeTypes"
+import jTreeTypes from "../core/jTreeTypes"
 
-const stump = require("../../langs/stump/stump.js")
+const jtree = require("../products/jtree.node.js")
+const stump = require("../langs/stump/stump.js")
 
 const WillowConstants: jTreeTypes.stringMap = {}
 WillowConstants.ShadowEvents = {}
@@ -98,7 +98,7 @@ class WillowHTTPResponse {
     return this._fromCache
   }
 
-  setFromCache(val) {
+  setFromCache(val: any) {
     this._fromCache = val
     return this
   }
@@ -110,7 +110,7 @@ class WillowHTTPResponse {
 }
 
 class WillowHTTPProxyCacheResponse extends WillowHTTPResponse {
-  constructor(proxyServerResponse) {
+  constructor(proxyServerResponse: any) {
     super()
     this._proxyServerResponse = proxyServerResponse
     this._cacheType = proxyServerResponse.body.cacheType
@@ -120,7 +120,7 @@ class WillowHTTPProxyCacheResponse extends WillowHTTPResponse {
 }
 
 class AbstractWillowShadow {
-  constructor(stumpNode) {
+  constructor(stumpNode: any) {
     this._stumpNode = stumpNode
   }
 
@@ -139,7 +139,7 @@ class AbstractWillowShadow {
     return this
   }
 
-  setInputOrTextAreaValue(value) {
+  setInputOrTextAreaValue(value: string) {
     this._val = value
     return this
   }
@@ -161,11 +161,11 @@ class AbstractWillowShadow {
     }
   }
 
-  shadowHasClass(name) {
+  shadowHasClass(name: string) {
     return false
   }
 
-  getShadowAttr(name) {
+  getShadowAttr(name: string) {
     return ""
   }
 
@@ -203,7 +203,7 @@ class AbstractWillowShadow {
     return false
   }
 
-  setShadowAttr(name, value) {
+  setShadowAttr(name: string, value: any) {
     return this
   }
 
@@ -229,7 +229,7 @@ class AbstractWillowShadow {
     return this
   }
 
-  triggerShadowEvent(name) {
+  triggerShadowEvent(name: string) {
     return this
   }
 
@@ -269,17 +269,17 @@ class WillowStore {
   }
   private _values: jTreeTypes.stringMap
 
-  get(key) {
+  get(key: string) {
     return this._values[key]
   }
-  set(key, value) {
+  set(key: string, value: any) {
     this._values[key] = value
     return this
   }
-  remove(key) {
+  remove(key: string) {
     delete this._values[key]
   }
-  each(fn) {
+  each(fn: any) {
     Object.keys(this._values).forEach(key => {
       fn(this._values[key], key)
     })
@@ -316,9 +316,9 @@ class AbstractWillowProgram extends stump {
     this.location.host = uri.host()
   }
 
-  private _htmlStumpNode
-  private _headStumpNode
-  private _bodyStumpNode
+  private _htmlStumpNode: any
+  private _headStumpNode: any
+  private _bodyStumpNode: any
   protected _offlineMode = false
   private _baseUrl: string
   private _httpGetResponseCache: any = {}
@@ -330,11 +330,11 @@ class AbstractWillowProgram extends stump {
     return this.location.port ? ":" + this.location.port : ""
   }
 
-  queryObjectToQueryString(obj) {
+  queryObjectToQueryString(obj: Object) {
     return ""
   }
 
-  toPrettyDeepLink(treeCode, queryObject) {
+  toPrettyDeepLink(treeCode: string, queryObject: any) {
     // todo: move things to a constant.
     const yi = "~"
     const xi = "_"
@@ -411,18 +411,18 @@ class AbstractWillowProgram extends stump {
 
   copyTextToClipboard(text: string) {}
 
-  setCopyData(evt, str) {}
+  setCopyData(evt: any, str: string) {}
 
   getBaseUrl() {
     return this._baseUrl
   }
 
-  _makeRelativeUrlAbsolute(url) {
+  _makeRelativeUrlAbsolute(url: string) {
     if (url.startsWith("http://") || url.startsWith("https://")) return url
     return this.getBaseUrl() + url
   }
 
-  async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
+  async httpGetUrl(url: string, queryStringObject: Object, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
 
     const superAgentResponse = await superagent
@@ -433,18 +433,18 @@ class AbstractWillowProgram extends stump {
     return new responseClass(superAgentResponse)
   }
 
-  _getFromResponseCache(cacheKey) {
+  _getFromResponseCache(cacheKey: any) {
     const hit = this._httpGetResponseCache[cacheKey]
     if (hit) hit.setFromCache(true)
     return hit
   }
 
-  _setInResponseCache(url, res) {
+  _setInResponseCache(url: string, res: any) {
     this._httpGetResponseCache[url] = res
     return this
   }
 
-  async httpGetUrlFromCache(url, queryStringMap: jTreeTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
+  async httpGetUrlFromCache(url: string, queryStringMap: jTreeTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
     const cacheKey = url + JSON.stringify(queryStringMap)
     const cacheHit = this._getFromResponseCache(cacheKey)
     if (!cacheHit) {
@@ -455,7 +455,7 @@ class AbstractWillowProgram extends stump {
     return cacheHit
   }
 
-  async httpGetUrlFromProxyCache(url) {
+  async httpGetUrlFromProxyCache(url: string) {
     if (!this.isDesktopVersion()) return this.httpGetUrlFromCache(url)
     const queryStringMap: jTreeTypes.queryStringMap = {}
     queryStringMap.url = url
@@ -463,7 +463,7 @@ class AbstractWillowProgram extends stump {
     return await this.httpGetUrlFromCache("/proxy", queryStringMap, WillowHTTPProxyCacheResponse)
   }
 
-  async httpPostUrl(url, data) {
+  async httpPostUrl(url: string, data: any) {
     if (this._offlineMode) return new WillowHTTPResponse()
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
@@ -473,26 +473,26 @@ class AbstractWillowProgram extends stump {
     return new WillowHTTPResponse(superAgentResponse)
   }
 
-  encodeURIComponent(str) {
+  encodeURIComponent(str: string) {
     return encodeURIComponent(str)
   }
 
-  downloadFile(data, filename, filetype) {
+  downloadFile(data: any, filename: string, filetype: string) {
     // noop
   }
 
-  async appendScript(url) {}
+  async appendScript(url: string) {}
 
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.getTopDownArray()
-    const titleNode = nodes.find(node => node.getFirstWord() === WillowConstants.titleTag)
+    const titleNode = nodes.find((node: jTreeTypes.treeNode) => node.getFirstWord() === WillowConstants.titleTag)
     return titleNode ? titleNode.getContent() : ""
   }
 
-  setWindowTitle(value) {
+  setWindowTitle(value: string) {
     const nodes = this.getTopDownArray()
-    const headNode = nodes.find(node => node.getFirstWord() === WillowConstants.tags.head)
+    const headNode = nodes.find((node: jTreeTypes.treeNode) => node.getFirstWord() === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -501,7 +501,7 @@ class AbstractWillowProgram extends stump {
     return this.location.hostname || ""
   }
 
-  openUrl(link) {
+  openUrl(link: string) {
     // noop in willow
   }
 
@@ -509,33 +509,33 @@ class AbstractWillowProgram extends stump {
     return this.getHtmlStumpNode().toHtmlWithSuids()
   }
 
-  getStumpNodeFromElement(el) {}
+  getStumpNodeFromElement(el: any) {}
 
-  setPasteHandler(fn) {
+  setPasteHandler(fn: Function) {
     return this
   }
 
-  setErrorHandler(fn) {
+  setErrorHandler(fn: Function) {
     return this
   }
 
-  setCopyHandler(fn) {
+  setCopyHandler(fn: Function) {
     return this
   }
 
-  setCutHandler(fn) {
+  setCutHandler(fn: Function) {
     return this
   }
 
-  setResizeEndHandler(fn) {
+  setResizeEndHandler(fn: Function) {
     return this
   }
 
-  async confirmThen(message) {
+  async confirmThen(message: string) {
     return true
   }
 
-  async promptThen(message, value) {
+  async promptThen(message: string, value: any) {
     return value
   }
 
@@ -544,7 +544,7 @@ class AbstractWillowProgram extends stump {
     return this._getHostname() === "localhost"
   }
 
-  setLoadedDroppedFileHandler(callback, helpText = "") {}
+  setLoadedDroppedFileHandler(callback: Function, helpText = "") {}
 
   getWindowSize() {
     return {
@@ -557,7 +557,7 @@ class AbstractWillowProgram extends stump {
     return this.getWindowSize()
   }
 
-  isExternalLink(link) {
+  isExternalLink(link: string) {
     if (link && link.substr(0, 1) === "/") return false
     if (!link.includes("//")) return false
 

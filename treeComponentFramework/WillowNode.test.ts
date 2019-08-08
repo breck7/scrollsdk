@@ -36,5 +36,5 @@ testTree.all = (equal: any) => {
   equal(bodyStumpNode.findStumpNodeByFirstWord("h6").getLine(), "h6 Hello world")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../products/jtree.node.js").Utils.runTestTree(testTree)
 export { testTree }

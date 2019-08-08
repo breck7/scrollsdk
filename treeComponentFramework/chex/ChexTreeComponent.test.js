@@ -9,5 +9,5 @@ testTree.chexBasics = equal => {
   equal(!!app, true)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../../products/jtree.node.js").Utils.runTestTree(testTree)
 module.exports = testTree

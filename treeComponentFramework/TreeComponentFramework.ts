@@ -1,9 +1,8 @@
 import jTreeTypes from "../core/jTreeTypes"
 
-const jtree = require("../index.js")
+const jtree = require("../products/jtree.node.js")
 const stump = require("../langs/stump/stump.js")
 const hakon = require("../langs/hakon/hakon.js")
-// const { AbstractWillowProgram } = require("./Willow.js")
 
 abstract class AbstractCommander {
   private _target: any

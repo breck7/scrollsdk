@@ -13,5 +13,5 @@ testTree.all = equal => {
   equal(program.compile(), `const ten = 2 + 3 + 5`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../../builder/testTreeRunner.js")(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../../products/jtree.node.js").Utils.runTestTree(testTree)
 module.exports = testTree

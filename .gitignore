@@ -6,12 +6,9 @@ node_modules/
 *.aux
 *.log
 *.synctex.gz
-debugger.js
 jtree.project
 notes.txt
 jtree.browser.ts
 syntax.sh
-src/*/*.js
-src/*.js
 *.map
 *.d.ts

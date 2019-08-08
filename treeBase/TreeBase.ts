@@ -1,12 +1,11 @@
-#! /usr/local/bin/node
+#!/usr/bin/env ts-node
 
-// TreeBase: The software-less database for community and personal knowledge bases.
+//tooling product treeBase.node.js
 
-// TODO: toSQL, sql storage backend. sqlite as well?
+import jTreeTypes from "../core/jTreeTypes"
+import { Disk } from "../core/Disk.node"
 
-import jTreeTypes from "../src/jTreeTypes"
-import { Disk } from "./Disk"
-import jtree from "../built/jtree.node"
+const jtree = require("../products/jtree.node.js")
 
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils
@@ -23,7 +22,7 @@ class TreeBaseFile extends TreeNode {
     return this._diskVersion
   }
 
-  getOneOf(keys) {
+  getOneOf(keys: string[]) {
     for (let i = 0; i < keys.length; i++) {
       const value = this.get(keys[i])
       if (value) return value
@@ -35,26 +34,26 @@ class TreeBaseFile extends TreeNode {
     // todo: do things like wp_example_2 wp_example_3 ...
   }
 
-  getDoc(terms) {
+  getDoc(terms: string[]) {
     return terms
       .map(term => {
         const nodes = this.findNodes(this._getFilePath() + " " + term)
-        return nodes.map(node => node.childrenToString()).join("\n")
+        return nodes.map((node: jTreeTypes.treeNode) => node.childrenToString()).join("\n")
       })
       .filter(a => a)
       .join("\n")
   }
 
-  set(keywordPath, content) {
+  set(keywordPath: any, content: any) {
     return typeof keywordPath === "object" ? this.setProperties(keywordPath) : super.set(keywordPath, content)
   }
 
-  setPropertyIfMissing(prop, value) {
+  setPropertyIfMissing(prop: string, value: string) {
     if (this.has(prop)) return true
     return this.touchNode(prop).setContent(value)
   }
 
-  setProperties(propMap) {
+  setProperties(propMap: jTreeTypes.stringMap) {
     const props = Object.keys(propMap)
     const values = Object.values(propMap)
     // todo: is there a built in tree method to do this?
@@ -70,7 +69,7 @@ class TreeBaseFile extends TreeNode {
   extract(fields: string[]) {
     const newTree = new TreeNode(this.toString()) // todo: why not clone?
     const map = TreeUtils.arrayToMap(fields)
-    newTree.nodeAt(0).forEach(node => {
+    newTree.nodeAt(0).forEach((node: jTreeTypes.treeNode) => {
       if (!map[node.getWord(0)]) node.destroy()
     })
 
@@ -86,7 +85,7 @@ class TreeBaseFile extends TreeNode {
     return this
   }
 
-  appendUniqueLine(line) {
+  appendUniqueLine(line: string) {
     const file = this.toString()
     if (file.match(new RegExp("^" + Disk.escape(line), "m"))) return true
     const prefix = !file || file.endsWith("\n") ? "" : "\n"
@@ -119,7 +118,7 @@ class TreeBaseFolder extends TreeNode {
   private _isLoaded = false
 
   // todo: RAII?
-  loadFolder(files = undefined, sampleSize = undefined, seed = Date.now()) {
+  loadFolder(files: jTreeTypes.filepath[] = undefined, sampleSize: jTreeTypes.int = undefined, seed:number = Date.now()) {
     if (this._isLoaded) return this
     files = files || this._getAndFilterFilesFromFolder()
 
@@ -159,7 +158,7 @@ class TreeBaseFolder extends TreeNode {
       }
       if (err.length) totalErrors += err.length
       if (printLimit && err) {
-        err.forEach(err =>
+        err.forEach((err: jTreeTypes.treeNode) =>
           console.log(
             err
               .getNode()
@@ -185,11 +184,11 @@ class TreeBaseFolder extends TreeNode {
   }
 
   private _getGrammarPaths() {
-    return Disk.getFiles(this._getDir()).filter(file => file.endsWith(GrammarConstants.grammarFileExtension))
+    return Disk.getFiles(this._getDir()).filter((file: string) => file.endsWith(GrammarConstants.grammarFileExtension))
   }
 
   private _setDiskVersions() {
-    this.forEach(node => {
+    this.forEach((node: jTreeTypes.treeNode) => {
       node.setDiskVersion()
     })
     return this
@@ -200,8 +199,8 @@ class TreeBaseFolder extends TreeNode {
   }
 
   // todo: cleanup the filtering here.
-  private _filterFiles(files) {
-    return files.filter(file => !file.endsWith(GrammarConstants.grammarFileExtension))
+  private _filterFiles(files: string[]) {
+    return files.filter((file: string) => !file.endsWith(GrammarConstants.grammarFileExtension))
   }
 
   private _getExpressApp() {
@@ -213,7 +212,7 @@ class TreeBaseFolder extends TreeNode {
 
   private _startListeningForFileChanges() {
     const fs = require("fs")
-    fs.watch(this._getDir(), (event, filename) => {
+    fs.watch(this._getDir(), (event: any, filename: jTreeTypes.fileName) => {
       let fullPath = this._getDir() + filename
       fullPath = this._filterFiles([fullPath])[0]
       if (!fullPath) return true
@@ -227,8 +226,8 @@ class TreeBaseFolder extends TreeNode {
   private _getStatusMessage() {
     const paths = this._getExpressApp()
       ._router.stack // registered routes
-      .filter(route => route.route && route.route.path.length > 1) // take out all the middleware
-      .map(route => `<a href="${route.route.path}">${route.route.path}</a>`) // get all the paths
+      .filter((route: any) => route.route && route.route.path.length > 1) // take out all the middleware
+      .map((route: any) => `<a href="${route.route.path}">${route.route.path}</a>`) // get all the paths
 
     return `<div style="white-space:pre;">TreeBase server running:
 -- Folder: '${this._getDir()}'
@@ -246,7 +245,7 @@ class TreeBaseFolder extends TreeNode {
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
 
-    app.use((req, res, next) => {
+    app.use((req: any, res: any, next: any) => {
       res.setHeader("Access-Control-Allow-Origin", "*")
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
       res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type")
@@ -254,23 +253,23 @@ class TreeBaseFolder extends TreeNode {
       next()
     })
 
-    app.get("/list", (req, res) => {
-      res.send(this.map(node => `<a href="${node.getFileName()}">${node.getFileName()}</a>`).join("<br>"))
+    app.get("/list", (req: any, res: any) => {
+      res.send(this.map((node: jTreeTypes.treeNode) => `<a href="${node.getFileName()}">${node.getFileName()}</a>`).join("<br>"))
     })
 
-    app.get("/", (req, res) => {
+    app.get("/", (req: any, res: any) => {
       res.send(this._getStatusMessage())
     })
 
     app.use(
       express.static(this._getDir(), {
-        setHeaders: (res, requestPath) => {
+        setHeaders: (res: any, requestPath: string) => {
           res.setHeader("Content-Type", "text/plain")
         }
       })
     )
 
-    app.get("/cellCheck", (req, res) => {
+    app.get("/cellCheck", (req: any, res: any) => {
       let end = TreeUtils._tick("Loaded collection....")
       let lines = this.getNumberOfLines()
       let lps = lines / (end / 1000)
@@ -294,7 +293,7 @@ class TreeBaseFolder extends TreeNode {
       "\n" +
       `treeBaseFolderNode
  ${GrammarConstants.root}
- ${GrammarConstants.inScope} ${rootNodes.map(node => node.getWord(0)).join(" ")}
+ ${GrammarConstants.inScope} ${rootNodes.map((node: jTreeTypes.treeNode) => node.getWord(0)).join(" ")}
  ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
 treeBaseErrorNode
  ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
@@ -308,7 +307,7 @@ treeBaseErrorNode
     return new programConstructor(this.toString())
   }
 
-  private _readFiles(files) {
+  private _readFiles(files: jTreeTypes.filepath[]) {
     return files
       .map(fullPath => {
         const filename = Disk.getFileName(fullPath)

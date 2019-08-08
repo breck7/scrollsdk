@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "outDir": "../products",
+    "types": ["node"],
+    "lib": ["es2017", "dom"],
+    "noImplicitAny": true,
+    "target": "es2017",
+    "module": "commonjs"
+  },
+  "include": ["../ignore/treeComponentFramework.node.ts"]
+}

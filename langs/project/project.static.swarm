@@ -1,0 +1,14 @@
+#! /usr/bin/env node /usr/local/bin/jtree
+arrangeTestSubject
+ require ./project.js
+ static
+test getTypeScriptAndJavaScriptImportsFromSourceCodeTest
+ getTypeScriptAndJavaScriptImportsFromSourceCode
+  blockStringParam
+   foobar
+  lengthIs 0
+ getTypeScriptAndJavaScriptImportsFromSourceCode
+  blockStringParam
+   const Foobar = require("foobar")
+   import FamBam from "../fambam.js"
+  lengthIs 2

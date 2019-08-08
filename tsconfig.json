@@ -1,14 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "./built",
+    "outDir": "../products",
     "types": ["node"],
     "lib": ["es2017", "dom"],
     "noImplicitAny": true,
-    "composite": true,
-    "declaration": true,
     "target": "es2017",
-    "rootDir": "./src",
     "module": "commonjs"
   },
-  "include": ["./src/**/*"]
+  "include": ["./builder.ts"]
 }

@@ -98,7 +98,9 @@ Yes. With one command you can convert your TreeBase data into JSON, CSV, TSV, et
 Does TreeBase scale?
 --------------------
 
-Yes. We have been using TreeBase for over 2 years in systems with millions of rows and dozens of collaborators. While we don't recommend TreeBase for mission critical applications yet, there is no reason to think it will not scale to that as well, as the community grows and improves the core libraries in different host languages.
+For collaborative knowledge baess, yes. We have been using TreeBase for over 2 years in systems with millions of rows and dozens of collaborators. While we don't recommend TreeBase for mission critical applications yet, there is no reason to think it will not scale to that as well, as the community grows and improves the core libraries in different host languages.
+
+Our focus with TreeBase is on collaborative knowledge bases, like Wikipedia for data. You are free to experiment with using TreeBase in other domains, and if you do please let us know how you are using it, but at the moment our focus is on knowledge bases.
 
 Similar Projects
 ----------------

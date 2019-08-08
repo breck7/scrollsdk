@@ -1,0 +1,43 @@
+#! /usr/bin/env node /usr/local/bin/jtree
+arrangeTestSubject
+ require ./project.js
+test projectBasics
+ arrangeTestSubject
+  constructWithBlockString
+   file /foobar/foobar.js
+   file /foobar/bam.js
+   file /foo/c.js
+    external abc
+    absolute /foobar/after.js
+    absolute /foobar/bam.js
+   file /foobar/after.js
+    relative ./foobar.js
+ getAllErrors
+  lengthIs 0
+ getScriptPathsInCorrectDependencyOrder
+  lengthIs 4
+  join
+   blockStringParam
+     
+   blockStringIs
+    /foobar/foobar.js /foobar/bam.js /foobar/after.js /foo/c.js
+test spaces
+ arrangeTestSubject
+  constructWithBlockString
+   file /foobar/f oobar.js
+   file /foobar/after.js
+    relative ./f oobar.js
+ getAllErrors
+  lengthIs 0
+ getScriptPathsInCorrectDependencyOrder
+  join
+   blockStringParam
+     
+   blockStringIs
+    /foobar/f oobar.js /foobar/after.js
+test error
+ arrangeTestSubject
+  constructWithBlockString
+   relative foobar.js
+ getAllErrors
+  lengthIs 1

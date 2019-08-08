@@ -2,12 +2,9 @@
 <html>
   <head>
     <script type="text/javascript" src="/sandbox/lib/jquery.min.js"></script>
-    <script src="/built/jtree.browser.js"></script>
+    <script src="/products/jtree.browser.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <script type="text/javascript">
-
-
-
       const programCode = `foo
  whoodat
 nodeWithConsts
@@ -17,11 +14,11 @@ lightbulbState off
 text
 thisShouldErrorError1
 to fillThis`
-      
+
       const log = msg => {
-        $("body").append(msg + "<br>")
+        jQuery("body").append(msg + "<br>")
         console.log(msg)
-        $("body").width()
+        jQuery("body").width()
       }
 
       const getCode = () => {
@@ -36,7 +33,7 @@ to fillThis`
 
       const main = (grammarCode, code) => {
         log("Building language...")
-        const programClass = GrammarProgram.newFromCondensed(grammarCode, "sandbox/typePerf.html").getRootConstructor()
+        const programClass = new GrammarProgram(grammarCode).getRootConstructor()
 
         log("Loading program...")
 
@@ -51,9 +48,7 @@ to fillThis`
 
         let totalLines = code.getNumberOfLines()
         const ps = (totalLines / (elapsed / 1000)).toLocaleString()
-        let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Errors: ${
-          errors.length
-        } === ${expected}`
+        let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Expected ${expected} errors. Actual errors: ${errors.length}.`
 
         log(msg)
         log("")
@@ -61,19 +56,17 @@ to fillThis`
         log(
           errors
             .slice(0, 5)
-            .map(e => e.message)
+            .map(e => e.getMessage())
             .join("<br>")
         )
-
-        //log("<pre>" + program.toString() + "</pre>")
-        // log(program.getSyntaxTreeHtml())
       }
 
-      $(async () => {
+      jQuery(async () => {
         const grammarCode = await $.get("/langs/jibberish/jibberish.grammar")
         let someUrl = ""
-        if (!someUrl){ main(grammarCode, getCode())}
-        else {
+        if (!someUrl) {
+          main(grammarCode, getCode())
+        } else {
           const data = await $.get(someUrl)
           main(grammarCode, new jtree.TreeNode(data))
         }

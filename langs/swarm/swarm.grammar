@@ -129,6 +129,7 @@ testBlockNode
     return this._equal
   }
   async _executeNode(programFilepath) {
+    // todo: use runTestTree from jtree lib
     const testSubject = this.getTestSetupNode().getTestSubject(programFilepath)
     const isAsync = this.isAsync()
     const executeMethod = isAsync ? "execute" : "executeSync"
@@ -139,11 +140,11 @@ testBlockNode
         this.setEqualMethod(childTest.equal)
         const promises = this.map(async child => {
           const result = await child[executeMethod](testSubject)
-          return isAsync ? Promise.resolve(result) : result
+          return result
         })
         await Promise.all(promises)
-        childTest.end()
         resolve()
+        childTest.end()
       })
     })
   }
@@ -164,7 +165,11 @@ testBlockNode
     await Promise.all(promises)
   }
   async execute(programFilepath) {
-    const res = await this.isNodeJs() ? this._executeNode(programFilepath) : this._executeBrowser()
+    let res
+    if (this.isNodeJs())
+      res = await this._executeNode(programFilepath)
+    else
+      res = await this._executeBrowser()
     return res
   }
  inScope arrangeTestSubjectNode
@@ -198,7 +203,7 @@ arrangeTestSubjectNode
     else theClass = window[jtree.Utils.getClassNameFromFilePath(requiredClass)]
     if (requiredClassParts[1]) theClass = jtree.Utils.resolveProperty(theClass, requiredClassParts[1])
     if (!theClass)
-      throw new Error(`Required class '${requiredClass}${requiredClassParts[1] ? " (" + requiredClassParts[1] + ")" : ""}' not found for ${this.toString()}`)
+      throw new Error(`Required class '${requiredClassParts.join(" ")}' not found for ${this.toString()}`)
     return theClass
    }
   executeSync() {}

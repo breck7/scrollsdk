@@ -1,5 +1,5 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-test basics stamp
+test stampBasics
  arrangeTestSubject
   require ../stamp.js
   constructWithBlockString

@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "36.2.0",
+  "version": "37.0.0",
   "description": "Simplify your code with Tree Notation. This jtree package includes a Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages, as well as sample languages, implemented in TypeScript.",
   "main": "index.js",
   "types": "./built/jtree.node.d.ts",
@@ -11,10 +11,10 @@
     "printWidth": 160
   },
   "bin": {
-    "jtree": "./cli/cli.js"
+    "jtree": "./products/commandLineApp.node.js"
   },
   "scripts": {
-    "test": "node ./builder.js test"
+    "test": "./builder.ts test"
   },
   "repository": {
     "type": "git",
@@ -37,7 +37,9 @@
     "@types/node": "^11.13.12",
     "@types/semver": "^6.0.1",
     "tap": "^14.2.0",
-    "tap-mocha-reporter": "^4.0.1"
+    "tap-mocha-reporter": "^4.0.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3"
   },
   "license": "MIT"
 }

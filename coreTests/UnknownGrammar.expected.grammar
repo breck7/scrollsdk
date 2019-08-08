@@ -1,0 +1,34 @@
+foobarNode
+ root
+ inScope fileNode
+anyCell
+intCell
+boolCell
+floatCell
+fileNode
+ inScope sizeNode digitsNode openNode tempNode descriptionNode editsNode accountNode
+ cells anyCell
+sizeNode
+ cells intCell
+digitsNode
+ cells intCell intCell
+openNode
+ cells boolCell
+tempNode
+ cells floatCell
+descriptionNode
+ catchAllCellType anyCell
+editsNode
+ inScope editsChildNode
+editsChildNode
+ inScope dataNode
+dataNode
+ cells anyCell
+accountNode
+ inScope balanceNode transactionsNode sourceNode
+balanceNode
+ cells floatCell
+transactionsNode
+ cells intCell
+sourceNode
+ cells boolCell anyCell intCell

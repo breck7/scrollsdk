@@ -10,7 +10,8 @@ import jTreeTypes from "./core/jTreeTypes"
 import { AbstractBuilder } from "./builder/AbstractBuilder"
 
 class Builder extends AbstractBuilder {
-  async produceTreeComponentFramework() {
+  async _produceTreeComponentFramework() {
+    // todo: Finish
     const path = __dirname + "/treeComponentFramework/"
     this._buildTsc(path)
 
@@ -86,7 +87,7 @@ class Builder extends AbstractBuilder {
     this._produceBrowserProductFromTypeScript(__dirname + "/sandbox/", "SandboxApp.browser")
     this._produceNodeProductFromTypeScript(
       __dirname + "/sandboxServer/",
-      [__dirname + "/core/jTreeTypes.ts", __dirname + "/builder/TypeScriptRewriter.ts"],
+      [__dirname + "/core/jTreeTypes.ts", __dirname + "/typeScriptRewriter/TypeScriptRewriter.ts"],
       "SandboxServer.node",
       (code: string) => code + "\nmodule.exports = {SandboxServer}"
     )
@@ -163,7 +164,7 @@ sandboxServer
 core
 coreTests
 treeBase`.split("\n")
-    //treeComponentFramework`
+    //treeComponentFramework` // todo: finish
     for (let folder of folders) {
       await this._testDir(__dirname + `/${folder}/`)
     }

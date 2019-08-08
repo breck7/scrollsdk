@@ -215,10 +215,18 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _help(filePath = process.argv[1]) {
-    const commands = Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+    const commands = this._getAllPublicActions()
+    return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
+  }
+
+  _getAllPublicActions() {
+    return Object.getOwnPropertyNames(Object.getPrototypeOf(this))
       .filter(word => !word.startsWith("_") && word !== "constructor")
       .sort()
-    return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
+  }
+
+  _getPartialMatch(commandName: string) {
+    return this._getAllPublicActions().find(item => item.startsWith(commandName))
   }
 
   _main() {
@@ -232,6 +240,8 @@ class AbstractBuilder extends jtree.TreeNode {
       builder[action](paramOne, paramTwo)
     } else if (!action) {
       print(this._help())
+    } else if (this._getPartialMatch(action)) {
+      builder[this._getPartialMatch(action)](paramOne, paramTwo)
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }

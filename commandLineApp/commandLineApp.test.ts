@@ -1,11 +1,12 @@
 #!/usr/bin/env ts-node
 
 const fs = require("fs")
+const mkdirp = require("mkdirp")
+
+const jtree = require("../products/jtree.node.js")
 
 import { CommandLineApp } from "./commandLineApp.node"
 import jTreeTypes from "../core/jTreeTypes"
-
-const jtree = require("../products/jtree.node.js")
 
 const testTree: jTreeTypes.testTree = {}
 
@@ -13,7 +14,6 @@ const commandLineAppTempHome = __dirname + `/../ignore/commandLineAppTempHome/`
 const commandLineAppTempRegistryFile = commandLineAppTempHome + "grammars.ssv"
 const grammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 
-const mkdirp = require("mkdirp")
 if (fs.existsSync(commandLineAppTempHome) && fs.existsSync(commandLineAppTempRegistryFile)) fs.unlinkSync(commandLineAppTempRegistryFile)
 mkdirp.sync(commandLineAppTempHome)
 

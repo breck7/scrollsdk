@@ -1,7 +1,10 @@
-edge / 2019-08-04
-=================
+37.0.0 / 2019-08-08
+===================
+- Breaking: No more "dist" folder. Use files in "/products/" folder instead.
 - Fix: Grammar inference (UnknownGrammarProgram) now predicts base cell types
-
+- Infra: switched to TypeScript for all JS src files and test files.
+- Infra: new folders for each product
+- Infra: "products" folder. Currently checking in compiled versions as this makes distribution simpler. In the future maybe move products to separate repo.
 
 36.2.0 / 2019-08-01
 ===================

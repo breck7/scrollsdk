@@ -1,18 +1,16 @@
 #!/usr/bin/env ts-node
 
-import { exec } from "child_process"
-
-import jTreeTypes from "./core/jTreeTypes"
-import jtree from "./core/jtree.node"
-
-import { AbstractBuilder } from "./builder/AbstractBuilder"
-
+const { exec } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
 
+const jtree = require("./products/jtree.node.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 
+import jTreeTypes from "./core/jTreeTypes"
+import { AbstractBuilder } from "./builder/AbstractBuilder"
+
 class Builder extends AbstractBuilder {
-  produceTreeComponentFramework() {
+  async produceTreeComponentFramework() {
     const path = __dirname + "/treeComponentFramework/"
     this._buildTsc(path)
 
@@ -30,14 +28,13 @@ class Builder extends AbstractBuilder {
     jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/products/", true)
 
     const outputJsFile = __dirname + `/products/treeComponentFramework.browser.js`
-    exec("tsc -p tsconfig.browser.json", { cwd: __dirname + "/treeComponentFramework/" }, (err, stdout, stderr) => {
-      if (stderr || err) return console.error(err, stdout, stderr)
 
-      // This solves the wierd TS insertin
-      // todo: remove
-      const file = new TypeScriptRewriter(this._read(outputJsFile))
-      this._write(outputJsFile, file.getString())
-    })
+    await this._buildBrowserTsc(__dirname)
+
+    // This solves the wierd TS insertin
+    // todo: remove
+    const file = new TypeScriptRewriter(this._read(outputJsFile))
+    this._write(outputJsFile, file.getString())
   }
 
   produceAll() {
@@ -79,10 +76,6 @@ class Builder extends AbstractBuilder {
 
   produceNodeLibrary() {
     this._produceNodeProductFromTypeScript(__dirname + "/core/", [], "jtree.node", (code: string) => code + "\nmodule.exports = jtreeNode")
-  }
-
-  buildBuilder() {
-    this._buildTsc(__dirname + "/builder/")
   }
 
   produceDesigner() {

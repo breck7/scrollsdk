@@ -4,10 +4,11 @@
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
+const { execSync } = require("child_process")
 
 const jtree = require("../products/jtree.node.js")
-//import jtree from "../core/jtree.node"
 const { TreeNode, GrammarProgram, Utils } = jtree
+
 import jTreeTypes from "../core/jTreeTypes"
 
 class CommandLineApp {
@@ -40,10 +41,8 @@ class CommandLineApp {
       dir = Utils._getParentFolder(dir)
     }
     if (!fs.existsSync(filePath)) throw new Error(`No '${filePath}' found.`)
-    const { Builder } = require(filePath)
-    const builder = new Builder()
-    if (commandName) return builder[commandName](argument)
-    else return builder._help(filePath)
+
+    return execSync([filePath, commandName, argument].filter(f => f).join(" "), { encoding: "utf8" })
   }
 
   combine(grammarName: jTreeTypes.grammarName) {

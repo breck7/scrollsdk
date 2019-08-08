@@ -157,7 +157,7 @@ ${testCode}
 /*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
 ${testCode}`
     )
-    zip.generateAsync({ type: "blob" }).then(function(content) {
+    zip.generateAsync({ type: "blob" }).then(content => {
       // see FileSaver.js
       saveAs(content, languageName + ".zip")
     })

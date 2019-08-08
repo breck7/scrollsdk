@@ -194,7 +194,7 @@ ${testCode}
 ${testCode}`
     )
 
-    zip.generateAsync({ type: "blob" }).then(function(content) {
+    zip.generateAsync({ type: "blob" }).then((content: any) => {
       // see FileSaver.js
       saveAs(content, languageName + ".zip")
     })
@@ -202,7 +202,7 @@ ${testCode}`
 
   private async _restoreFromLocalStorage() {
     console.log("Restoring from local storage....")
-    const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole)
+    const grammarCode: any = localStorage.getItem(this._localStorageKeys.grammarConsole)
     const code = localStorage.getItem(this._localStorageKeys.codeConsole)
 
     if (typeof grammarCode === "string" && typeof code === "string") this._setGrammarAndCode(grammarCode, code)
@@ -220,7 +220,7 @@ ${testCode}`
   private _grammarConstructor: any
   private _cachedGrammarCode: string
 
-  private _getGrammarErrors(grammarCode) {
+  private _getGrammarErrors(grammarCode: string) {
     return new this.GrammarConstructor(grammarCode).getAllErrors()
   }
 
@@ -245,7 +245,7 @@ ${testCode}`
     const grammarCode = this.grammarInstance.getValue()
     this._updateLocalStorage()
     this.grammarProgram = new this.GrammarConstructor(grammarCode)
-    const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
+    const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
 
@@ -267,7 +267,7 @@ ${testCode}`
 
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
-    this._codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
+    this._codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
 
     const cursor = this.codeInstance.getCursor()
 
@@ -277,10 +277,10 @@ ${testCode}`
       this.codeWidgets.length = 0
 
       errs
-        .filter(err => !err.isBlankLineError())
-        .filter(err => !err.isCursorOnWord(cursor.line, cursor.ch))
+        .filter((err: any) => !err.isBlankLineError())
+        .filter((err: any) => !err.isCursorOnWord(cursor.line, cursor.ch))
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
-        .forEach(err => {
+        .forEach((err: any) => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
             this.codeInstance.setValue(this.program.toString())
             this._codeDidUpdate()
@@ -301,7 +301,7 @@ ${testCode}`
     this._codeDidUpdate()
   }
 
-  private async _fetchJTreeStandardGrammar(name) {
+  private async _fetchJTreeStandardGrammar(name: string) {
     const samplePath = `/langs/${name}/sample.${name}`
     const grammarPath = `/langs/${name}/${name}.grammar`
     const grammar = await jQuery.get(grammarPath)

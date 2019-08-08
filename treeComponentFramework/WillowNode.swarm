@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 arrangeTestSubject
-test basics
+test willowBasics
  arrangeTestSubject
   require ./WillowNode.js WillowProgram
   constructWithBlockString

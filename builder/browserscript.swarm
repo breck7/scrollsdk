@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 arrangeTestSubject
  require ../products/jtree.node.js TypeScriptRewriter
-test basics
+test browserScriptBasics
  arrangeTestSubject
   constructWithBlockString
    const Foobar = require("foobar")

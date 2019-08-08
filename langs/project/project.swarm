@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 arrangeTestSubject
  require ./project.js
-test basics
+test projectBasics
  arrangeTestSubject
   constructWithBlockString
    file /foobar/foobar.js

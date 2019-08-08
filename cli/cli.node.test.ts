@@ -11,12 +11,12 @@ const testTree: jTreeTypes.testTree = {}
 
 const cliTempHome = __dirname + `/../ignore/cliTempHome/`
 const cliTempRegistryFile = cliTempHome + "grammars.ssv"
+const grammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 
 const mkdirp = require("mkdirp")
 mkdirp.sync(cliTempHome)
 
 testTree.consoleBasics = equal => {
-  const grammarPath = __dirname + "/../langs/grammar/grammar.grammar"
   // Arrange
   const app = new CLI(cliTempRegistryFile)
 
@@ -30,9 +30,6 @@ testTree.consoleBasics = equal => {
   equal(typeof app.list(), "string", "list works")
   equal(typeof app.version(), "string", "version ok")
 
-  // Assert
-  equal(typeof app.usage("grammar"), "string", "usage")
-
   // Act
   const grammarErrors = app.check(grammarPath)
   const jibErrors = app.check(__dirname + "/../langs/jibberish/jibberish.grammar")
@@ -40,6 +37,15 @@ testTree.consoleBasics = equal => {
   // Assert
   equal(grammarErrors.includes("0 errors"), true, grammarErrors)
   equal(jibErrors.includes("0 errors"), true, jibErrors)
+}
+
+testTree.usage = equal => {
+  // Arrange
+  const app = new CLI(cliTempRegistryFile)
+  if (!app.isRegistered("grammar")) app.register(grammarPath)
+
+  // Assert
+  equal(typeof app.usage("grammar"), "string", "usage")
 }
 
 testTree.distribute = equal => {

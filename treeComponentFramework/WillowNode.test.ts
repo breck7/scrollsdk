@@ -37,4 +37,4 @@ testTree.all = (equal: any) => {
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("../../builder/testTreeRunner.js")(testTree)
-module.exports = testTree
+export { testTree }

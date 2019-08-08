@@ -28,7 +28,7 @@ testTree.emptyProgram = equal => {
   equal(errs.length, 0, "should be no errors")
 }
 
-testTree.basics = equal => {
+testTree.grammarLangBasics = equal => {
   // Arrange/Act
   const grammarProgram = new GrammarProgram(jibberishGrammarCode)
   const errs = grammarProgram.getAllErrors()

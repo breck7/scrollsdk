@@ -4,7 +4,7 @@ const ChexTreeComponent = require("./ChexTreeComponent.js")
 
 const testTree = {}
 
-testTree.basics = equal => {
+testTree.chexBasics = equal => {
   const app = new ChexTreeComponent()
   equal(!!app, true)
 }

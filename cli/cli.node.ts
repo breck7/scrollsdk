@@ -307,7 +307,7 @@ ${grammars.toTable()}`
   usage(grammarName: jTreeTypes.grammarName) {
     const files = this._history(grammarName)
     if (!files.length) return ""
-    const grammarPath = this._getGrammarPathOrThrow(files[0])
+    const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     const programConstructor = jtree.getProgramConstructor(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
@@ -356,6 +356,6 @@ ${grammars.toTable()}`
   }
 }
 
-export { CLI }
-
 if (!module.parent) CLI.main()
+
+export { CLI }

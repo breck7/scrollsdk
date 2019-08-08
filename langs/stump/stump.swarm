@@ -1,5 +1,5 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-test basics
+test stumpBasics
  arrangeTestSubject
   require ./stump.js
   constructWithBlockString

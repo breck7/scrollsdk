@@ -76,6 +76,7 @@ if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toStrin
 
   // returns GrammarBackedProgramClass
   static getProgramConstructor = (grammarPath: jTreeTypes.filepath) => {
+    if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
     const grammarProgram = new GrammarProgram(grammarCode)
     return <any>grammarProgram.getRootConstructor()

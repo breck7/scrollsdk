@@ -2,7 +2,7 @@
 arrangeTestSubject
  require ./project.js
  static
-test _getImportsTypescript
+test getTypeScriptAndJavaScriptImportsFromSourceCodeTest
  getTypeScriptAndJavaScriptImportsFromSourceCode
   blockStringParam
    foobar

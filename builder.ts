@@ -156,7 +156,7 @@ class Builder extends AbstractBuilder {
     allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
     allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => jtree.Utils.runTestTree(require(file)))
     allTestFiles.filter(file => file.endsWith(".test.ts")).forEach(file => jtree.Utils.runTestTree(require(file).testTree))
-    allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
+    //allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
   }
 
   _test() {
@@ -170,7 +170,7 @@ core
 coreTests
 treeBase
 treeComponentFramework`
-    folders = "coreTests"
+    //folders = "coreTests"
     folders.split("\n").forEach(folder => this._testDir(__dirname + `/${folder}/`))
   }
 }

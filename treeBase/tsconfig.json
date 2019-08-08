@@ -3,7 +3,7 @@
     "types": ["node"],
     "outDir": "../products",
     "lib": ["es2017"],
-    //"noImplicitAny": true,
+    "noImplicitAny": true,
     "target": "es2017",
     "module": "commonjs"
   },

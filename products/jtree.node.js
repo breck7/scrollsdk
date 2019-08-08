@@ -4562,7 +4562,7 @@ jtree.TreeNode = TreeNode
 jtree.GrammarProgram = GrammarProgram
 jtree.UnknownGrammarProgram = UnknownGrammarProgram
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
-jtree.getVersion = () => "36.2.0"
+jtree.getVersion = () => "37.0.0"
 //tooling product jtree.node.js
 const fs = require("fs")
 var CompileTarget

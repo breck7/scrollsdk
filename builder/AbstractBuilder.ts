@@ -219,7 +219,7 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _help(filePath = process.argv[1]) {
-    const commands = this._getAllPublicActions()
+    const commands = this._getAllCommands()
     return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
   }
 

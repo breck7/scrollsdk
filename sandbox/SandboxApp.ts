@@ -1,6 +1,6 @@
 //tooling product SandboxApp.browser.js
 
-const jtree = require("../products/jtree.node.js")
+declare var jtree: any
 
 const samples: any = {}
 samples.csv = jtree.TreeNode.iris
@@ -29,7 +29,7 @@ jQuery(document).ready(function() {
   if (localStorage.getItem("tree")) treeConsole.val(localStorage.getItem("tree"))
   jQuery("#version").html("Version: " + jtree.getVersion())
 
-  const updateAll = (tree, eventSource) => {
+  const updateAll = (tree: any, eventSource: any) => {
     if (eventSource !== treeConsole) treeConsole.val(tree.toString())
     if (eventSource !== jsonConsole) jsonConsole.val(tree.toJsonSubset())
     if (eventSource !== outlineConsole) outlineConsole.html(tree.toOutline())

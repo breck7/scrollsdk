@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 arrangeTestSubject
- require ../products/jtree.node.js TypeScriptRewriter
+ require ../products/TypeScriptRewriter.js TypeScriptRewriter
 test browserScriptBasics
  arrangeTestSubject
   constructWithBlockString

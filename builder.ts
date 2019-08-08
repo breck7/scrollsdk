@@ -1,14 +1,15 @@
 #!/usr/bin/env ts-node
 
+import { exec } from "child_process"
+
 import jTreeTypes from "./core/jTreeTypes"
 import jtree from "./core/jtree.node"
 
 import { AbstractBuilder } from "./builder/AbstractBuilder"
-import { TypeScriptRewriter } from "./builder/TypeScriptRewriter"
-
-import { exec } from "child_process"
 
 const recursiveReadSync = require("recursive-readdir-sync")
+
+const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 
 class Builder extends AbstractBuilder {
   produceTreeComponentFramework() {
@@ -151,12 +152,15 @@ class Builder extends AbstractBuilder {
     this._mochaTest(__filename)
   }
 
-  _testDir(dir: jTreeTypes.absoluteFolderPath) {
+  async _testDir(dir: jTreeTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
     allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
     allTestFiles.filter(file => file.endsWith(".test.js")).forEach(file => jtree.Utils.runTestTree(require(file)))
     allTestFiles.filter(file => file.endsWith(".test.ts")).forEach(file => jtree.Utils.runTestTree(require(file).testTree))
-    //allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar"))
+    const swarmFiles = allTestFiles.filter(file => file.endsWith(".swarm"))
+    for (let file of swarmFiles) {
+      await jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar")
+    }
   }
 
   _test() {
@@ -168,9 +172,8 @@ sandbox
 sandboxServer
 core
 coreTests
-treeBase
-treeComponentFramework`
-    //folders = "coreTests"
+treeBase`
+    //treeComponentFramework`
     folders.split("\n").forEach(folder => this._testDir(__dirname + `/${folder}/`))
   }
 }

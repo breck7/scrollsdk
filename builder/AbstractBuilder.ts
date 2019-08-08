@@ -3,7 +3,7 @@ import jtree from "../core/jtree.node"
 import jTreeTypes from "../core/jTreeTypes"
 import { Disk } from "../core/Disk.node"
 
-import { TypeScriptRewriter } from "./TypeScriptRewriter"
+const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 
 const recursiveReadSync = require("recursive-readdir-sync")
 

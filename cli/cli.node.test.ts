@@ -14,6 +14,7 @@ const cliTempRegistryFile = cliTempHome + "grammars.ssv"
 const grammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 
 const mkdirp = require("mkdirp")
+if (fs.existsSync(cliTempHome) && fs.existsSync(cliTempRegistryFile)) fs.unlinkSync(cliTempRegistryFile)
 mkdirp.sync(cliTempHome)
 
 testTree.consoleBasics = equal => {

@@ -1,7 +1,6 @@
-//tooling product SandboxServer.node.js
+const jtree = require("../products/jtree.node.js")
 
-import jtree from "../core/jtree.node"
-
+// This is a temporary class until we move off TypeScript
 class TypeScriptRewriter {
   constructor(fileStr: string) {
     this._str = fileStr

@@ -18,7 +18,7 @@ grammarNode
 abstractConstantCell
  highlightScope entity.name.tag
 javascriptSafeAlphaNumericIdentifierCell
- regex [a-zA-Z0-9]+
+ regex [a-zA-Z0-9_]+
  reservedWords enum extends function static if while export return class for default require var let const new
 anyFirstCell
 anyCell
@@ -124,7 +124,7 @@ cellTypeDefinitionNode
  todo Generate a class for each cell type?
  todo Allow abstract cell types?
  todo Change pattern to postfix.
- pattern ^[a-zA-Z0-9]+Cell$
+ pattern ^[a-zA-Z0-9_]+Cell$
  firstCellType cellTypeIdCell
  inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode
 compilesToNode
@@ -154,7 +154,7 @@ rootFlagNode
  description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
 nodeTypeDefinitionNode
  todo Add multiple dispatch?
- pattern ^[a-zA-Z0-9]+Node$
+ pattern ^[a-zA-Z0-9_]+Node$
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
  firstCellType nodeTypeIdCell

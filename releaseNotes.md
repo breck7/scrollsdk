@@ -1,3 +1,8 @@
+37.1.0 / 2019-08-10
+===================
+- New: support for inference of prefix languages with unicode characters (emojis)
+- Breaking: UnknownGrammarProgram "getPredictedGrammarFile" is now "inferGrammarFileForAPrefixLanguage" to be more precise about what the method does
+
 37.0.0 / 2019-08-08
 ===================
 - Breaking: No more "dist" folder. Use files in "/products/" folder instead.

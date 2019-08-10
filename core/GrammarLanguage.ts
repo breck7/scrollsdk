@@ -1806,14 +1806,16 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     ])
   }
 
-  static makeNodeTypeId = (str: string) => str.replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-  static makeCellTypeId = (str: string) => str.replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+  static makeNodeTypeId = (str: string) =>
+    TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+  static makeCellTypeId = (str: string) =>
+    TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 
   static nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
-  static nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.nodeTypeSuffix + "$")
+  static nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
 
   static cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
-  static cellTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.cellTypeSuffix + "$")
+  static cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
 
   private _cache_compiledLoadedNodeTypes: { [nodeTypeId: string]: Function }
 

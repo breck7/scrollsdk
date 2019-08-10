@@ -118,7 +118,7 @@ class DesignerApp {
     })
 
     this._inferButton.on("click", () => {
-      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).getPredictedGrammarFile("guess"))
+      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("guess"))
     })
 
     this._downloadButton.on("click", () => this._downloadBundleCommand())

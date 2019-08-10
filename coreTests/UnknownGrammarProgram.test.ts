@@ -38,10 +38,23 @@ file test
   source yes http://to.to.to 31`
 
   // Act
-  const grammarFile = new UnknownGrammarProgram(input).getPredictedGrammarFile("foobar")
+  const grammarFile = new UnknownGrammarProgram(input).inferGrammarFileForAPrefixLanguage("foobar")
 
   // Assert
   equal(grammarFile, readFileSync(__dirname + "/UnknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
+}
+
+testTree.emojis = equal => {
+  const source = `⌨🕸🌐
+ 📈
+  🏦😎
+ 📉
+  💩`
+
+  // Act
+  const grammarFile = new UnknownGrammarProgram(source).inferGrammarFileForAPrefixLanguage("emojiLang")
+  // Assert
+  equal(grammarFile, readFileSync(__dirname + "/UnknownGrammar.expectedEmoji.grammar", "utf8"), "predicted grammar correct")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)

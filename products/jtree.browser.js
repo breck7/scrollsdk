@@ -358,6 +358,11 @@ class TreeUtils {
     arr.forEach(val => (map[val] = true))
     return map
   }
+  static _replaceNonAlphaNumericCharactersWithCharCodes(str) {
+    return str.replace(/[^a-zA-Z0-9]/g, sub => {
+      return "_" + sub.charCodeAt(0).toString()
+    })
+  }
   static mapValues(object, fn) {
     const result = {}
     Object.keys(object).forEach(key => {
@@ -4084,12 +4089,14 @@ ${includes}
 ${nodeTypeContexts}`
   }
 }
-GrammarProgram.makeNodeTypeId = str => str.replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-GrammarProgram.makeCellTypeId = str => str.replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+GrammarProgram.makeNodeTypeId = str =>
+  TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+GrammarProgram.makeCellTypeId = str =>
+  TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 GrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
-GrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.nodeTypeSuffix + "$")
+GrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
 GrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
-GrammarProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9]+" + GrammarConstants.cellTypeSuffix + "$")
+GrammarProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
 GrammarProgram._languages = {}
 GrammarProgram._nodeTypes = {}
 window.GrammarConstants = GrammarConstants
@@ -4100,7 +4107,7 @@ window.GrammarBackedNonRootNode = GrammarBackedNonRootNode
 //tooling product jtree.node.js
 //tooling product jtree.browser.js
 class UnknownGrammarProgram extends TreeNode {
-  getPredictedGrammarFile(grammarName) {
+  _inferRootNodeForAPrefixLanguage(grammarName) {
     grammarName = GrammarProgram.makeNodeTypeId(grammarName)
     const rootNode = new TreeNode(`${grammarName}
  ${GrammarConstants.root}`)
@@ -4110,65 +4117,77 @@ class UnknownGrammarProgram extends TreeNode {
       .nodeAt(0)
       .touchNode(GrammarConstants.inScope)
       .setWordsFrom(1, Array.from(new Set(rootNodeNames)))
-    const clone = this.clone()
-    let node
-    for (node of clone.getTopDownArrayIterator()) {
-      const firstWord = node.getFirstWord()
-      const asInt = parseInt(firstWord)
-      const isANumber = !isNaN(asInt)
+    return rootNode
+  }
+  _renameIntegerKeywords(clone) {
+    // todo: why are we doing this?
+    for (let node of clone.getTopDownArrayIterator()) {
+      const firstWordIsAnInteger = !!node.getFirstWord().match(/^\d+$/)
       const parentFirstWord = node.getParent().getFirstWord()
-      if (isANumber && asInt.toString() === firstWord && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + "Child"))
+      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + "Child"))
     }
-    const allChilds = {}
-    const allFirstWordNodes = {}
+  }
+  _getKeywordMaps(clone) {
+    const keywordsToChildKeywords = {}
+    const keywordsToNodeInstances = {}
     for (let node of clone.getTopDownArrayIterator()) {
       const firstWord = node.getFirstWord()
-      if (!allChilds[firstWord]) allChilds[firstWord] = {}
-      if (!allFirstWordNodes[firstWord]) allFirstWordNodes[firstWord] = []
-      allFirstWordNodes[firstWord].push(node)
+      if (!keywordsToChildKeywords[firstWord]) keywordsToChildKeywords[firstWord] = {}
+      if (!keywordsToNodeInstances[firstWord]) keywordsToNodeInstances[firstWord] = []
+      keywordsToNodeInstances[firstWord].push(node)
       node.forEach(child => {
-        allChilds[firstWord][child.getFirstWord()] = true
+        keywordsToChildKeywords[firstWord][child.getFirstWord()] = true
       })
     }
-    const globalCellTypeMap = new Map()
+    return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToNodeInstances: keywordsToNodeInstances }
+  }
+  _inferNodeTypeDef(firstWord, globalCellTypeMap, childFirstWords, instances) {
     const xi = this.getXI()
+    const nodeTypeId = GrammarProgram.makeNodeTypeId(firstWord)
+    const nodeDefNode = new TreeNode(nodeTypeId).nodeAt(0)
+    const childNodeTypeIds = childFirstWords.map(word => GrammarProgram.makeNodeTypeId(word))
+    if (childNodeTypeIds.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childNodeTypeIds)
+    const cells = instances
+      .map(line => line.getContent())
+      .filter(line => line)
+      .map(line => line.split(xi))
+    const sizes = new Set(cells.map(c => c.length))
+    const max = Math.max(...Array.from(sizes))
+    const min = Math.min(...Array.from(sizes))
+    let catchAllCellType
+    let cellTypes = []
+    for (let index = 0; index < max; index++) {
+      const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]))
+      if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
+      cellTypes.push(cellType.cellTypeId)
+    }
+    if (max > min) {
+      //columns = columns.slice(0, min)
+      catchAllCellType = cellTypes.pop()
+      while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
+        cellTypes.pop()
+      }
+    }
+    const needsMatchProperty = TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(firstWord) !== firstWord
+    if (needsMatchProperty) nodeDefNode.set(GrammarConstants.match, firstWord)
+    if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
+    if (cellTypes.length > 1) nodeDefNode.set(GrammarConstants.cells, cellTypes.join(xi))
+    if (!catchAllCellType && cellTypes.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypes[0])
+    // Todo: add conditional frequencies
+    return nodeDefNode.getParent().toString()
+  }
+  inferGrammarFileForAPrefixLanguage(grammarName) {
+    const clone = this.clone()
+    this._renameIntegerKeywords(clone)
+    const { keywordsToChildKeywords, keywordsToNodeInstances } = this._getKeywordMaps(clone)
+    const globalCellTypeMap = new Map()
+    const nodeTypeDefs = Object.keys(keywordsToChildKeywords).map(firstWord =>
+      this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord])
+    )
+    const cellTypeDefs = []
+    globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
     const yi = this.getYI()
-    const firstWords = Object.keys(allChilds).map(firstWord => {
-      const nodeTypeId = GrammarProgram.makeNodeTypeId(firstWord)
-      const nodeDefNode = new TreeNode(nodeTypeId).nodeAt(0)
-      const childFirstWords = Object.keys(allChilds[firstWord]).map(word => GrammarProgram.makeNodeTypeId(word))
-      if (childFirstWords.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childFirstWords)
-      const allLines = allFirstWordNodes[firstWord]
-      const cells = allLines
-        .map(line => line.getContent())
-        .filter(i => i)
-        .map(i => i.split(xi))
-      const sizes = new Set(cells.map(c => c.length))
-      const max = Math.max(...Array.from(sizes))
-      const min = Math.min(...Array.from(sizes))
-      let catchAllCellType
-      let cellTypes = []
-      for (let index = 0; index < max; index++) {
-        const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]))
-        if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
-        cellTypes.push(cellType.cellTypeId)
-      }
-      if (max > min) {
-        //columns = columns.slice(0, min)
-        catchAllCellType = cellTypes.pop()
-        while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
-          cellTypes.pop()
-        }
-      }
-      if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
-      if (cellTypes.length > 1) nodeDefNode.set(GrammarConstants.cells, cellTypes.join(xi))
-      if (!catchAllCellType && cellTypes.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypes[0])
-      // Todo: add conditional frequencies
-      return nodeDefNode.getParent().toString()
-    })
-    const cellTypes = []
-    globalCellTypeMap.forEach((def, id) => cellTypes.push(def ? def : id))
-    return [rootNode.toString(), cellTypes.join(yi), firstWords.join(yi)].filter(i => i).join("\n")
+    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(yi), nodeTypeDefs.join(yi)].filter(def => def).join("\n")
   }
   _getBestCellType(firstWord, allValues) {
     const asSet = new Set(allValues)
@@ -4582,5 +4601,5 @@ jtree.TreeNode = TreeNode
 jtree.GrammarProgram = GrammarProgram
 jtree.UnknownGrammarProgram = UnknownGrammarProgram
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
-jtree.getVersion = () => "37.0.0"
+jtree.getVersion = () => "37.1.0"
 window.jtree = jtree

@@ -370,6 +370,12 @@ class TreeUtils {
     return map
   }
 
+  static _replaceNonAlphaNumericCharactersWithCharCodes(str: string) {
+    return str.replace(/[^a-zA-Z0-9]/g, (sub: string) => {
+      return "_" + sub.charCodeAt(0).toString()
+    })
+  }
+
   static mapValues<T>(object: Object, fn: (key: string) => T) {
     const result: { [key: string]: T } = {}
     Object.keys(object).forEach(key => {

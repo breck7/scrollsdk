@@ -600,3 +600,4 @@ MsUserSelectNode
  extends abstractPropertyNode
 KhtmlUserSelectNode
  match -khtml-user-select
+ extends abstractPropertyNode

@@ -3944,6 +3944,44 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     )
     return errors
   }
+  toReadMe() {
+    const languageName = this.getExtensionName()
+    const rootNodeDef = this._getRootNodeTypeDefinitionNode()
+    const cellTypes = this.getCellTypeDefinitions()
+    const nodeTypeFamilyTree = this.getNodeTypeFamilyTree()
+    const example = rootNodeDef.getExamples()[0]
+    return `# ${languageName} Readme
+
+${rootNodeDef.getDescription()}
+
+## Quick Example
+
+${example ? example.getContent() + "\n\n" + TreeNode.nest(example.childrenToString(), 4) : ""}
+
+## Quick facts about ${languageName}
+
+- ${languageName} has ${nodeTypeFamilyTree.getTopDownArray().length} node types.
+- ${languageName} has ${Object.keys(cellTypes).length} cell types
+- The source code for ${languageName} is ${this.getTopDownArray().length} lines long.
+
+### Installing
+
+    npm install .
+
+### Testing
+
+    node test.js
+
+## Node Types
+
+${TreeNode.nest(nodeTypeFamilyTree.toString(), 4)}
+
+## Cell Types
+
+${TreeNode.nest(Object.keys(cellTypes).join("\n"), 4)}
+
+This readme was auto-generated using the [JTree library](https://github.com/treenotation/jtree).`
+  }
   toBundle() {
     const files = {}
     const languageName = this.getGrammarName()
@@ -3959,15 +3997,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       null,
       2
     )
-    files[GrammarBundleFiles.readme] = `# ${languageName} Readme
-
-### Installing
-
-    npm install .
-
-### Testing
-
-    node test.js`
+    files[GrammarBundleFiles.readme] = this.toReadMe()
     const testCode = `const program = new ${languageName}(sampleCode)
 const errors = program.getAllErrors()
 console.log("Sample program compiled with " + errors.length + " errors.")

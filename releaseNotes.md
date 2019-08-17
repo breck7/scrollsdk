@@ -1,5 +1,6 @@
-edge / 2019-08-17
+38.0.0 / 2019-08-17
 ===================
+- New: toReadMe method on GrammarProgram
 - New: toBundle method on GrammarProgram
 - Breaking: removed "anyFirstCell". Now just use "anyCell"
 - Fix: anyCell now always added to inferred grammar

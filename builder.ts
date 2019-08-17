@@ -125,7 +125,7 @@ class Builder extends AbstractBuilder {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
-    const codePath = __dirname + "/core/jtree.ts"
+    const codePath = __dirname + "/core/TreeNode.ts"
     const code = this._read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
     this._write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)

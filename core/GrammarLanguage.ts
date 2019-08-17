@@ -38,6 +38,14 @@ enum GrammarConstantsConstantTypes {
   float = "float"
 }
 
+enum GrammarBundleFiles {
+  package = "package.json",
+  readme = "readme.md",
+  indexHtml = "index.html",
+  indexJs = "index.js",
+  testJs = "test.js"
+}
+
 enum GrammarConstants {
   // node types
   extensions = "extensions",
@@ -1880,6 +1888,58 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       })
     )
     return errors
+  }
+
+  toBundle() {
+    const files: jTreeTypes.stringMap = {}
+    const languageName = this.getGrammarName()
+    const sampleCode = this.getExamples()[0] || ""
+
+    files[GrammarBundleFiles.package] = JSON.stringify(
+      {
+        name: languageName,
+        private: true,
+        dependencies: {
+          jtree: TreeNode.getVersion()
+        }
+      },
+      null,
+      2
+    )
+    files[GrammarBundleFiles.readme] = `# ${languageName} Readme
+
+### Installing
+
+    npm install .
+
+### Testing
+
+    node test.js`
+    const testCode = `const program = new ${languageName}(sampleCode)
+const errors = program.getAllErrors()
+console.log("Sample program compiled with " + errors.length + " errors.")
+if (errors.length)
+ console.log(errors.map(error => error.getMessage()))`
+
+    const nodePath = `${languageName}.node.js`
+    files[nodePath] = this.toNodeJsJavascript()
+    files[GrammarBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
+
+    const browserPath = `${languageName}.browser.js`
+    files[browserPath] = this.toBrowserJavascript()
+    files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/jtree/products/jtree.browser.js"></script>
+<script src="${browserPath}"></script>
+<script>
+const sampleCode = \`${sampleCode}\`
+${testCode}
+</script>`
+
+    const samplePath = "sample." + this.getExtensionName()
+    files[samplePath] = sampleCode
+    files[GrammarBundleFiles.testJs] = `const ${languageName} = require("./index.js")
+/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
+${testCode}`
+    return files
   }
 
   getTargetExtension() {

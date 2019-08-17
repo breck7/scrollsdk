@@ -135,64 +135,14 @@ class DesignerApp {
 
   // TODO: ADD TESTS!!!!!
   private async _downloadBundleCommand() {
-    const grammarCode = this.grammarInstance.getValue()
-    const grammarProgram = new jtree.GrammarProgram(grammarCode)
-    const languageName = grammarProgram.getGrammarName()
-    const extension = grammarProgram.getExtensionName()
-
+    const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
     const zip = new JSZip()
+    const bundle = grammarProgram.toBundle()
+    Object.keys(bundle).forEach(key => {
+      zip.file(key, bundle[key])
+    })
 
-    const pack = {
-      name: languageName,
-      private: true,
-      dependencies: {
-        jtree: jtree.getVersion()
-      }
-    }
-
-    const nodePath = `${languageName}.node.js`
-    const samplePath = "sample." + extension
-    const sampleCode = this.codeInstance.getValue()
-    const browserPath = `${languageName}.browser.js`
-    const rootProgramClassName = languageName
-    zip.file("package.json", JSON.stringify(pack, null, 2))
-    zip.file(
-      "readme.md",
-      `# ${languageName} Readme
-
-### Installing
-
-    npm install .
-
-### Testing
-
-    node test.js`
-    )
-    const testCode = `const program = new ${rootProgramClassName}(sampleCode)
-const errors = program.getAllErrors()
-console.log("Sample program compiled with " + errors.length + " errors.")
-if (errors.length)
- console.log(errors.map(error => error.getMessage()))`
-
-    zip.file(browserPath, grammarProgram.toBrowserJavascript())
-    zip.file(nodePath, grammarProgram.toNodeJsJavascript())
-    zip.file(`index.js`, `module.exports = require("./${nodePath}")`)
-    zip.file(
-      "index.html",
-      `<script src="node_modules/jtree/products/jtree.browser.js"></script>
-<script src="${browserPath}"></script>
-<script>
-const sampleCode = \`${sampleCode}\`
-${testCode}
-</script>`
-    )
-    zip.file(samplePath, sampleCode)
-    zip.file(
-      `test.js`,
-      `const ${rootProgramClassName} = require("./index.js")
-/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
-${testCode}`
-    )
+    const languageName = grammarProgram.getGrammarName()
 
     zip.generateAsync({ type: "blob" }).then((content: any) => {
       // see FileSaver.js

@@ -566,6 +566,17 @@ testTree.invalidGrammarRegression = equal => {
   equal(typeof compiledParser, "string")
 }
 
+testTree.bundler = equal => {
+  // Arrange
+  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode)
+
+  // Act
+  const bundle = jibberishGrammarProgram.toBundle()
+
+  // Assert
+  equal(bundle["readme.md"].includes("Installing"), true)
+}
+
 testTree.examples = equal => {
   // Arrange/Act
   const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode)

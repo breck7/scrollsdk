@@ -113,7 +113,7 @@ class DesignerApp {
     Object.keys(bundle).forEach(key => {
       zip.file(key, bundle[key])
     })
-    const languageName = grammarProgram.getGrammarName()
+    const languageName = grammarProgram.getExtensionName()
     zip.generateAsync({ type: "blob" }).then(content => {
       // see FileSaver.js
       saveAs(content, languageName + ".zip")

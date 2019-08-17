@@ -1,3 +1,8 @@
+38.0.1 / 2019-08-17
+===================
+- Fix: cleanup to bundle filenames
+- Fix: sample code fix in bundle files
+
 38.0.0 / 2019-08-17
 ===================
 - New: toReadMe method on GrammarProgram

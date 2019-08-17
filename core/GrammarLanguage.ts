@@ -1900,7 +1900,7 @@ ${rootNodeDef.getDescription()}
 
 ## Quick Example
 
-${example ? example.getContent() + "\n\n" + TreeNode.nest(example.childrenToString(), 4) : ""}
+${example ? (example.getContent() || "") + "\n\n" + TreeNode.nest(example.childrenToString(), 4) : ""}
 
 ## Quick facts about ${languageName}
 
@@ -1929,8 +1929,10 @@ This readme was auto-generated using the [JTree library](https://github.com/tree
 
   toBundle() {
     const files: jTreeTypes.stringMap = {}
-    const languageName = this.getGrammarName()
-    const sampleCode = this.getExamples()[0] || ""
+    const rootNodeDef = this._getRootNodeTypeDefinitionNode()
+    const languageName = this.getExtensionName()
+    const example = rootNodeDef.getExamples()[0]
+    const sampleCode = example ? example.childrenToString() : ""
 
     files[GrammarBundleFiles.package] = JSON.stringify(
       {
@@ -1960,12 +1962,12 @@ if (errors.length)
     files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/jtree/products/jtree.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
-const sampleCode = \`${sampleCode}\`
+const sampleCode = \`${sampleCode.toString()}\`
 ${testCode}
 </script>`
 
     const samplePath = "sample." + this.getExtensionName()
-    files[samplePath] = sampleCode
+    files[samplePath] = sampleCode.toString()
     files[GrammarBundleFiles.testJs] = `const ${languageName} = require("./index.js")
 /*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
 ${testCode}`

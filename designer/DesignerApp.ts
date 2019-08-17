@@ -147,7 +147,7 @@ class DesignerApp {
       zip.file(key, bundle[key])
     })
 
-    const languageName = grammarProgram.getGrammarName()
+    const languageName = grammarProgram.getExtensionName()
 
     zip.generateAsync({ type: "blob" }).then((content: any) => {
       // see FileSaver.js

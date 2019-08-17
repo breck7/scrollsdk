@@ -2426,7 +2426,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "38.0.0"
+TreeNode.getVersion = () => "38.0.1"
 window.TreeNode = TreeNode
 var GrammarConstantsCompiler
 ;(function(GrammarConstantsCompiler) {
@@ -3956,7 +3956,7 @@ ${rootNodeDef.getDescription()}
 
 ## Quick Example
 
-${example ? example.getContent() + "\n\n" + TreeNode.nest(example.childrenToString(), 4) : ""}
+${example ? (example.getContent() || "") + "\n\n" + TreeNode.nest(example.childrenToString(), 4) : ""}
 
 ## Quick facts about ${languageName}
 
@@ -3984,8 +3984,10 @@ This readme was auto-generated using the [JTree library](https://github.com/tree
   }
   toBundle() {
     const files = {}
-    const languageName = this.getGrammarName()
-    const sampleCode = this.getExamples()[0] || ""
+    const rootNodeDef = this._getRootNodeTypeDefinitionNode()
+    const languageName = this.getExtensionName()
+    const example = rootNodeDef.getExamples()[0]
+    const sampleCode = example ? example.childrenToString() : ""
     files[GrammarBundleFiles.package] = JSON.stringify(
       {
         name: languageName,
@@ -4011,11 +4013,11 @@ if (errors.length)
     files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/jtree/products/jtree.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
-const sampleCode = \`${sampleCode}\`
+const sampleCode = \`${sampleCode.toString()}\`
 ${testCode}
 </script>`
     const samplePath = "sample." + this.getExtensionName()
-    files[samplePath] = sampleCode
+    files[samplePath] = sampleCode.toString()
     files[GrammarBundleFiles.testJs] = `const ${languageName} = require("./index.js")
 /*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
 ${testCode}`

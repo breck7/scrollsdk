@@ -6,7 +6,7 @@ jibberishNode
  compilesTo txt
  catchAllNodeType errorNode
  inScope topLevelNode textNode someAbstractClassNode
-anyFirstCell
+anyCell
 columnNameEnumCell
 columnNameCell
 errorCell

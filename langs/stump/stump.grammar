@@ -6,7 +6,7 @@ stumpNode
  compilesTo html
  javascript
   compile() { return this.toHtml() }
-anyFirstCell
+anyCell
 extraCell
  highlightScope invalid
 anyHtmlContentCell

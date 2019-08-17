@@ -265,7 +265,7 @@ testTree.cokeRegression = equal => {
  inScope cokesNode
 intCell
  highlightScope constant.numeric.integer
-anyFirstCell
+anyCell
 cokesNode
  catchAllCellType intCell`
   const code = `
@@ -464,7 +464,7 @@ testTree.rootCatchAllNode = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.getInPlaceCellTypeTree(), "anyFirstCell")
+  equal(program.getInPlaceCellTypeTree(), "anyCell")
 
   // Arrange
   const abcLangWithErrors = new GrammarProgram(`abcNode
@@ -595,7 +595,7 @@ addNode
  catchAllCellType intCell
  example This is a bad example.
   + 1 B
-anyFirstCell
+anyCell
 intCell`
   )
 

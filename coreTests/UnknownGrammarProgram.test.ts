@@ -44,6 +44,25 @@ file test
   equal(grammarFile, readFileSync(__dirname + "/UnknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
 }
 
+testTree.inferAll = equal => {
+  // Arrange/Act
+  ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "jibjab", "fire", "stamp", "zin", "newlang"].map(name => {
+    // Arrange
+    const path = __dirname + `/../langs/${name}/sample.${name}`
+    const sampleCode = jtree.TreeNode.fromDisk(path).toString()
+
+    // Act
+    const grammarCode = new UnknownGrammarProgram(sampleCode).inferGrammarFileForAPrefixLanguage("foobar")
+    const grammarProgram = new jtree.GrammarProgram(grammarCode)
+    const rootProgramConstructor = grammarProgram.getRootConstructor()
+    const program = new rootProgramConstructor(sampleCode)
+
+    // Assert
+    equal(grammarProgram.getAllErrors().length, 0, `no errors in inferred grammar program for language ${name}`)
+    equal(program.getAllErrors().length, 0, `no errors in program from inferred grammar for ${name}`)
+  })
+}
+
 testTree.emojis = equal => {
   const source = `⌨🕸🌐
  📈

@@ -55,26 +55,26 @@ class UnknownGrammarProgram extends TreeNode {
     const childNodeTypeIds = childFirstWords.map(word => GrammarProgram.makeNodeTypeId(word))
     if (childNodeTypeIds.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childNodeTypeIds)
 
-    const cells = instances
+    const cellsForAllInstances = instances
       .map(line => line.getContent())
       .filter(line => line)
       .map(line => line.split(xi))
-    const sizes = new Set(cells.map(c => c.length))
-    const max = Math.max(...Array.from(sizes))
-    const min = Math.min(...Array.from(sizes))
+    const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))
+    const maxCellsOnLine = Math.max(...Array.from(instanceCellCounts))
+    const minCellsOnLine = Math.min(...Array.from(instanceCellCounts))
     let catchAllCellType: string
-    let cellTypes = []
-    for (let index = 0; index < max; index++) {
-      const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]))
+    let cellTypeIds = []
+    for (let cellIndex = 0; cellIndex < maxCellsOnLine; cellIndex++) {
+      const cellType = this._getBestCellType(firstWord, instances.length, maxCellsOnLine, cellsForAllInstances.map(cells => cells[cellIndex]))
       if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
 
-      cellTypes.push(cellType.cellTypeId)
+      cellTypeIds.push(cellType.cellTypeId)
     }
-    if (max > min) {
+    if (maxCellsOnLine > minCellsOnLine) {
       //columns = columns.slice(0, min)
-      catchAllCellType = cellTypes.pop()
-      while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
-        cellTypes.pop()
+      catchAllCellType = cellTypeIds.pop()
+      while (cellTypeIds[cellTypeIds.length - 1] === catchAllCellType) {
+        cellTypeIds.pop()
       }
     }
 
@@ -84,9 +84,9 @@ class UnknownGrammarProgram extends TreeNode {
 
     if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
 
-    if (cellTypes.length > 1) nodeDefNode.set(GrammarConstants.cells, cellTypes.join(xi))
+    if (cellTypeIds.length > 0) nodeDefNode.set(GrammarConstants.cells, cellTypeIds.join(xi))
 
-    if (!catchAllCellType && cellTypes.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypes[0])
+    //if (!catchAllCellType && cellTypeIds.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypeIds[0])
 
     // Todo: add conditional frequencies
     return nodeDefNode.getParent().toString()
@@ -99,6 +99,7 @@ class UnknownGrammarProgram extends TreeNode {
     const { keywordsToChildKeywords, keywordsToNodeInstances } = this._getKeywordMaps(clone)
 
     const globalCellTypeMap = new Map()
+    globalCellTypeMap.set(PreludeCellTypeIds.anyCell, undefined)
     const nodeTypeDefs = Object.keys(keywordsToChildKeywords).map(firstWord =>
       this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord])
     )
@@ -109,20 +110,25 @@ class UnknownGrammarProgram extends TreeNode {
     return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(yi), nodeTypeDefs.join(yi)].filter(def => def).join("\n")
   }
 
-  private _getBestCellType(firstWord: string, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {
+  private _getBestCellType(
+    firstWord: string,
+    instanceCount: jTreeTypes.int,
+    maxCellsOnLine: jTreeTypes.int,
+    allValues: any[]
+  ): { cellTypeId: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)
     const xi = this.getXI()
     const values = Array.from(asSet).filter(c => c)
-    const all = (fn: Function) => {
-      for (let i = 0; i < values.length; i++) {
-        if (!fn(values[i])) return false
+    const every = (fn: Function) => {
+      for (let index = 0; index < values.length; index++) {
+        if (!fn(values[index])) return false
       }
       return true
     }
-    if (all((str: string) => str === "0" || str === "1")) return { cellTypeId: PreludeCellTypeIds.bitCell }
+    if (every((str: string) => str === "0" || str === "1")) return { cellTypeId: PreludeCellTypeIds.bitCell }
 
     if (
-      all((str: string) => {
+      every((str: string) => {
         const num = parseInt(str)
         if (isNaN(num)) return false
         return num.toString() === str
@@ -131,14 +137,14 @@ class UnknownGrammarProgram extends TreeNode {
       return { cellTypeId: PreludeCellTypeIds.intCell }
     }
 
-    if (all((str: string) => !str.match(/[^\d\.\-]/))) return { cellTypeId: PreludeCellTypeIds.floatCell }
+    if (every((str: string) => str.match(/^-?\d*.?\d+$/))) return { cellTypeId: PreludeCellTypeIds.floatCell }
 
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (all((str: string) => bools.has(str.toLowerCase()))) return { cellTypeId: PreludeCellTypeIds.boolCell }
+    if (every((str: string) => bools.has(str.toLowerCase()))) return { cellTypeId: PreludeCellTypeIds.boolCell }
 
-    // If there are duplicate files and the set is less than enum
-    const enumLimit = 10
-    if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
+    // todo: cleanup
+    const enumLimit = 30
+    if (instanceCount > 1 && maxCellsOnLine === 1 && allValues.length > asSet.size && asSet.size < enumLimit)
       return {
         cellTypeId: GrammarProgram.makeCellTypeId(firstWord),
         cellTypeDefinition: `${GrammarProgram.makeCellTypeId(firstWord)}

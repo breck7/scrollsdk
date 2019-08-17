@@ -8,7 +8,6 @@ test grammarSample
     compilesTo txt
     inScope baseNode
    anyCell
-   anyFirstCell
    wordCell
     extends anyCell
    baseNode

@@ -22,7 +22,6 @@ enum GrammarConstantsCompiler {
 
 enum PreludeCellTypeIds {
   anyCell = "anyCell",
-  anyFirstCell = "anyFirstCell", // todo: remove
   extraWordCell = "extraWordCell",
   floatCell = "floatCell",
   numberCell = "numberCell",
@@ -1243,7 +1242,6 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   getCellConstructor(): typeof AbstractGrammarBackedCell {
     const kinds: jTreeTypes.stringMap = {}
     kinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell
-    kinds[PreludeCellTypeIds.anyFirstCell] = GrammarAnyCell
     kinds[PreludeCellTypeIds.floatCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
@@ -1568,7 +1566,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   getFirstCellTypeId(): jTreeTypes.cellTypeId {
-    return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyFirstCell
+    return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyCell
   }
 
   isDefined(nodeTypeId: string) {

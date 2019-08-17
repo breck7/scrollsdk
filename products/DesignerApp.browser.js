@@ -46,6 +46,16 @@ class DesignerApp {
   _clearHash() {
     history.replaceState(null, null, " ")
   }
+  _onGrammarKeyup() {
+    this._grammarDidUpdate()
+    this._codeDidUpdate()
+    // Hack to break CM cache:
+    if (true) {
+      const val = this.codeInstance.getValue()
+      this.codeInstance.setValue("\n" + val)
+      this.codeInstance.setValue(val)
+    }
+  }
   async start() {
     this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))
     this._bindListeners()
@@ -54,14 +64,7 @@ class DesignerApp {
       .register()
       .fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true })
     this.grammarInstance.on("keyup", () => {
-      this._grammarDidUpdate()
-      this._codeDidUpdate()
-      // Hack to break CM cache:
-      if (true) {
-        const val = this.codeInstance.getValue()
-        this.codeInstance.setValue("\n" + val)
-        this.codeInstance.setValue(val)
-      }
+      this._onGrammarKeyup()
     })
     this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
       .register()
@@ -97,66 +100,20 @@ class DesignerApp {
       )
     })
     this._inferButton.on("click", () => {
-      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("guess"))
+      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("inferredLanguage"))
+      this._onGrammarKeyup()
     })
     this._downloadButton.on("click", () => this._downloadBundleCommand())
   }
   // TODO: ADD TESTS!!!!!
   async _downloadBundleCommand() {
-    const grammarCode = this.grammarInstance.getValue()
-    const grammarProgram = new jtree.GrammarProgram(grammarCode)
-    const languageName = grammarProgram.getGrammarName()
-    const extension = grammarProgram.getExtensionName()
+    const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
     const zip = new JSZip()
-    const pack = {
-      name: languageName,
-      private: true,
-      dependencies: {
-        jtree: jtree.getVersion()
-      }
-    }
-    const nodePath = `${languageName}.node.js`
-    const samplePath = "sample." + extension
-    const sampleCode = this.codeInstance.getValue()
-    const browserPath = `${languageName}.browser.js`
-    const rootProgramClassName = languageName
-    zip.file("package.json", JSON.stringify(pack, null, 2))
-    zip.file(
-      "readme.md",
-      `# ${languageName} Readme
-
-### Installing
-
-    npm install .
-
-### Testing
-
-    node test.js`
-    )
-    const testCode = `const program = new ${rootProgramClassName}(sampleCode)
-const errors = program.getAllErrors()
-console.log("Sample program compiled with " + errors.length + " errors.")
-if (errors.length)
- console.log(errors.map(error => error.getMessage()))`
-    zip.file(browserPath, grammarProgram.toBrowserJavascript())
-    zip.file(nodePath, grammarProgram.toNodeJsJavascript())
-    zip.file(`index.js`, `module.exports = require("./${nodePath}")`)
-    zip.file(
-      "index.html",
-      `<script src="node_modules/jtree/products/jtree.browser.js"></script>
-<script src="${browserPath}"></script>
-<script>
-const sampleCode = \`${sampleCode}\`
-${testCode}
-</script>`
-    )
-    zip.file(samplePath, sampleCode)
-    zip.file(
-      `test.js`,
-      `const ${rootProgramClassName} = require("./index.js")
-/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
-${testCode}`
-    )
+    const bundle = grammarProgram.toBundle()
+    Object.keys(bundle).forEach(key => {
+      zip.file(key, bundle[key])
+    })
+    const languageName = grammarProgram.getGrammarName()
     zip.generateAsync({ type: "blob" }).then(content => {
       // see FileSaver.js
       saveAs(content, languageName + ".zip")

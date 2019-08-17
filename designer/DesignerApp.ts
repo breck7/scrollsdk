@@ -39,6 +39,17 @@ class DesignerApp {
 
   public languages = "newlang hakon stump dug fire swarm project stamp grammar jibberish numbers".split(" ")
 
+  private _onGrammarKeyup() {
+    this._grammarDidUpdate()
+    this._codeDidUpdate()
+    // Hack to break CM cache:
+    if (true) {
+      const val = this.codeInstance.getValue()
+      this.codeInstance.setValue("\n" + val)
+      this.codeInstance.setValue(val)
+    }
+  }
+
   async start() {
     this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))
 
@@ -51,14 +62,7 @@ class DesignerApp {
       .fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
 
     this.grammarInstance.on("keyup", () => {
-      this._grammarDidUpdate()
-      this._codeDidUpdate()
-      // Hack to break CM cache:
-      if (true) {
-        const val = this.codeInstance.getValue()
-        this.codeInstance.setValue("\n" + val)
-        this.codeInstance.setValue(val)
-      }
+      this._onGrammarKeyup()
     })
 
     this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
@@ -118,7 +122,8 @@ class DesignerApp {
     })
 
     this._inferButton.on("click", () => {
-      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("guess"))
+      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("inferredLanguage"))
+      this._onGrammarKeyup()
     })
 
     this._downloadButton.on("click", () => this._downloadBundleCommand())

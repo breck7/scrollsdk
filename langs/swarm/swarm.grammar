@@ -20,7 +20,6 @@ swarmNode
     const solos = this.getChildInstancesOfNodeTypeId("testOnlyNode")
     return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlockNode").filter(test => !(test.doesExtend("skipTestNode")))
   }
-anyFirstCell
 anyCell
  highlightScope string
 arrangeCell

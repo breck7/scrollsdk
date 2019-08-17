@@ -1899,8 +1899,8 @@ foo`
  catchAllNodeType errorNode
  inScope topLevelNode textNode someAbstractClassNode
 intCell
+anyCell
 wordCell
-anyFirstCell
 onoffCell
  enum on off
 errorNode

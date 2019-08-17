@@ -20,7 +20,7 @@ hakonNode
    &:hover
     color blue
     font-size 17px
-anyFirstCell
+anyCell
 extraCell
  highlightScope invalid
 cssValueCell

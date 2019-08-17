@@ -49,7 +49,7 @@ stampNode
     return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
   }
  inScope hashbangNode promptNode folderNode fileNode
-anyFirstCell
+anyCell
 extraCell
  highlightScope invalid
 anyCell

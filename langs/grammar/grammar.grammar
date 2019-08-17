@@ -20,7 +20,6 @@ abstractConstantCell
 javascriptSafeAlphaNumericIdentifierCell
  regex [a-zA-Z0-9_]+
  reservedWords enum extends function static if while export return class for default require var let const new
-anyFirstCell
 anyCell
 baseNodeTypesCell
  description There are a few classes of special nodeTypes. BlobNodes don't have their children parsed. Error nodes always report an error.

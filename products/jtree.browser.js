@@ -2426,6 +2426,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
+TreeNode.getVersion = () => "37.1.0"
 window.TreeNode = TreeNode
 var GrammarConstantsCompiler
 ;(function(GrammarConstantsCompiler) {
@@ -2439,7 +2440,6 @@ var GrammarConstantsCompiler
 var PreludeCellTypeIds
 ;(function(PreludeCellTypeIds) {
   PreludeCellTypeIds["anyCell"] = "anyCell"
-  PreludeCellTypeIds["anyFirstCell"] = "anyFirstCell"
   PreludeCellTypeIds["extraWordCell"] = "extraWordCell"
   PreludeCellTypeIds["floatCell"] = "floatCell"
   PreludeCellTypeIds["numberCell"] = "numberCell"
@@ -2454,6 +2454,14 @@ var GrammarConstantsConstantTypes
   GrammarConstantsConstantTypes["int"] = "int"
   GrammarConstantsConstantTypes["float"] = "float"
 })(GrammarConstantsConstantTypes || (GrammarConstantsConstantTypes = {}))
+var GrammarBundleFiles
+;(function(GrammarBundleFiles) {
+  GrammarBundleFiles["package"] = "package.json"
+  GrammarBundleFiles["readme"] = "readme.md"
+  GrammarBundleFiles["indexHtml"] = "index.html"
+  GrammarBundleFiles["indexJs"] = "index.js"
+  GrammarBundleFiles["testJs"] = "test.js"
+})(GrammarBundleFiles || (GrammarBundleFiles = {}))
 var GrammarConstants
 ;(function(GrammarConstants) {
   // node types
@@ -3409,7 +3417,6 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   getCellConstructor() {
     const kinds = {}
     kinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell
-    kinds[PreludeCellTypeIds.anyFirstCell] = GrammarAnyCell
     kinds[PreludeCellTypeIds.floatCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
@@ -3674,7 +3681,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     return this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
   }
   getFirstCellTypeId() {
-    return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyFirstCell
+    return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyCell
   }
   isDefined(nodeTypeId) {
     return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
@@ -3937,6 +3944,53 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     )
     return errors
   }
+  toBundle() {
+    const files = {}
+    const languageName = this.getGrammarName()
+    const sampleCode = this.getExamples()[0] || ""
+    files[GrammarBundleFiles.package] = JSON.stringify(
+      {
+        name: languageName,
+        private: true,
+        dependencies: {
+          jtree: TreeNode.getVersion()
+        }
+      },
+      null,
+      2
+    )
+    files[GrammarBundleFiles.readme] = `# ${languageName} Readme
+
+### Installing
+
+    npm install .
+
+### Testing
+
+    node test.js`
+    const testCode = `const program = new ${languageName}(sampleCode)
+const errors = program.getAllErrors()
+console.log("Sample program compiled with " + errors.length + " errors.")
+if (errors.length)
+ console.log(errors.map(error => error.getMessage()))`
+    const nodePath = `${languageName}.node.js`
+    files[nodePath] = this.toNodeJsJavascript()
+    files[GrammarBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
+    const browserPath = `${languageName}.browser.js`
+    files[browserPath] = this.toBrowserJavascript()
+    files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/jtree/products/jtree.browser.js"></script>
+<script src="${browserPath}"></script>
+<script>
+const sampleCode = \`${sampleCode}\`
+${testCode}
+</script>`
+    const samplePath = "sample." + this.getExtensionName()
+    files[samplePath] = sampleCode
+    files[GrammarBundleFiles.testJs] = `const ${languageName} = require("./index.js")
+/*keep-line*/ const sampleCode = require("fs").readFileSync("${samplePath}", "utf8")
+${testCode}`
+    return files
+  }
   getTargetExtension() {
     return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo)
   }
@@ -4147,32 +4201,32 @@ class UnknownGrammarProgram extends TreeNode {
     const nodeDefNode = new TreeNode(nodeTypeId).nodeAt(0)
     const childNodeTypeIds = childFirstWords.map(word => GrammarProgram.makeNodeTypeId(word))
     if (childNodeTypeIds.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childNodeTypeIds)
-    const cells = instances
+    const cellsForAllInstances = instances
       .map(line => line.getContent())
       .filter(line => line)
       .map(line => line.split(xi))
-    const sizes = new Set(cells.map(c => c.length))
-    const max = Math.max(...Array.from(sizes))
-    const min = Math.min(...Array.from(sizes))
+    const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))
+    const maxCellsOnLine = Math.max(...Array.from(instanceCellCounts))
+    const minCellsOnLine = Math.min(...Array.from(instanceCellCounts))
     let catchAllCellType
-    let cellTypes = []
-    for (let index = 0; index < max; index++) {
-      const cellType = this._getBestCellType(firstWord, cells.map(c => c[index]))
+    let cellTypeIds = []
+    for (let cellIndex = 0; cellIndex < maxCellsOnLine; cellIndex++) {
+      const cellType = this._getBestCellType(firstWord, instances.length, maxCellsOnLine, cellsForAllInstances.map(cells => cells[cellIndex]))
       if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
-      cellTypes.push(cellType.cellTypeId)
+      cellTypeIds.push(cellType.cellTypeId)
     }
-    if (max > min) {
+    if (maxCellsOnLine > minCellsOnLine) {
       //columns = columns.slice(0, min)
-      catchAllCellType = cellTypes.pop()
-      while (cellTypes[cellTypes.length - 1] === catchAllCellType) {
-        cellTypes.pop()
+      catchAllCellType = cellTypeIds.pop()
+      while (cellTypeIds[cellTypeIds.length - 1] === catchAllCellType) {
+        cellTypeIds.pop()
       }
     }
     const needsMatchProperty = TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(firstWord) !== firstWord
     if (needsMatchProperty) nodeDefNode.set(GrammarConstants.match, firstWord)
     if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
-    if (cellTypes.length > 1) nodeDefNode.set(GrammarConstants.cells, cellTypes.join(xi))
-    if (!catchAllCellType && cellTypes.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypes[0])
+    if (cellTypeIds.length > 0) nodeDefNode.set(GrammarConstants.cells, cellTypeIds.join(xi))
+    //if (!catchAllCellType && cellTypeIds.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypeIds[0])
     // Todo: add conditional frequencies
     return nodeDefNode.getParent().toString()
   }
@@ -4181,6 +4235,7 @@ class UnknownGrammarProgram extends TreeNode {
     this._renameIntegerKeywords(clone)
     const { keywordsToChildKeywords, keywordsToNodeInstances } = this._getKeywordMaps(clone)
     const globalCellTypeMap = new Map()
+    globalCellTypeMap.set(PreludeCellTypeIds.anyCell, undefined)
     const nodeTypeDefs = Object.keys(keywordsToChildKeywords).map(firstWord =>
       this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord])
     )
@@ -4189,19 +4244,19 @@ class UnknownGrammarProgram extends TreeNode {
     const yi = this.getYI()
     return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(yi), nodeTypeDefs.join(yi)].filter(def => def).join("\n")
   }
-  _getBestCellType(firstWord, allValues) {
+  _getBestCellType(firstWord, instanceCount, maxCellsOnLine, allValues) {
     const asSet = new Set(allValues)
     const xi = this.getXI()
     const values = Array.from(asSet).filter(c => c)
-    const all = fn => {
-      for (let i = 0; i < values.length; i++) {
-        if (!fn(values[i])) return false
+    const every = fn => {
+      for (let index = 0; index < values.length; index++) {
+        if (!fn(values[index])) return false
       }
       return true
     }
-    if (all(str => str === "0" || str === "1")) return { cellTypeId: PreludeCellTypeIds.bitCell }
+    if (every(str => str === "0" || str === "1")) return { cellTypeId: PreludeCellTypeIds.bitCell }
     if (
-      all(str => {
+      every(str => {
         const num = parseInt(str)
         if (isNaN(num)) return false
         return num.toString() === str
@@ -4209,12 +4264,12 @@ class UnknownGrammarProgram extends TreeNode {
     ) {
       return { cellTypeId: PreludeCellTypeIds.intCell }
     }
-    if (all(str => !str.match(/[^\d\.\-]/))) return { cellTypeId: PreludeCellTypeIds.floatCell }
+    if (every(str => str.match(/^-?\d*.?\d+$/))) return { cellTypeId: PreludeCellTypeIds.floatCell }
     const bools = new Set(["1", "0", "true", "false", "t", "f", "yes", "no"])
-    if (all(str => bools.has(str.toLowerCase()))) return { cellTypeId: PreludeCellTypeIds.boolCell }
-    // If there are duplicate files and the set is less than enum
-    const enumLimit = 10
-    if ((asSet.size === 1 || allValues.length > asSet.size) && asSet.size < enumLimit)
+    if (every(str => bools.has(str.toLowerCase()))) return { cellTypeId: PreludeCellTypeIds.boolCell }
+    // todo: cleanup
+    const enumLimit = 30
+    if (instanceCount > 1 && maxCellsOnLine === 1 && allValues.length > asSet.size && asSet.size < enumLimit)
       return {
         cellTypeId: GrammarProgram.makeCellTypeId(firstWord),
         cellTypeDefinition: `${GrammarProgram.makeCellTypeId(firstWord)}
@@ -4601,5 +4656,5 @@ jtree.TreeNode = TreeNode
 jtree.GrammarProgram = GrammarProgram
 jtree.UnknownGrammarProgram = UnknownGrammarProgram
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
-jtree.getVersion = () => "37.1.0"
+jtree.getVersion = () => TreeNode.getVersion()
 window.jtree = jtree

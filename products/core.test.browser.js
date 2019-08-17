@@ -4,6 +4,7 @@
 //tooling product treeBase.node.js
 //tooling product SandboxServer.node.js
 //tooling product core.test.browser.js
+//tooling product abstractBuilder.node.js
 //tooling product core.test.browser.js
 const testTree = {}
 {
@@ -1586,8 +1587,8 @@ foo`
  catchAllNodeType errorNode
  inScope topLevelNode textNode someAbstractClassNode
 intCell
+anyCell
 wordCell
-anyFirstCell
 onoffCell
  enum on off
 errorNode

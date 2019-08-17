@@ -1,3 +1,12 @@
+edge / 2019-08-17
+===================
+- New: toBundle method on GrammarProgram
+- Breaking: removed "anyFirstCell". Now just use "anyCell"
+- Fix: anyCell now always added to inferred grammar
+- Fix: various fixes to make inferring prefix grammars more robust
+- Infra: now run UnknownGrammarProgram against all sample grammars
+- Infra: builder is now compiled into a product
+
 37.1.0 / 2019-08-10
 ===================
 - New: support for inference of prefix languages with unicode characters (emojis)

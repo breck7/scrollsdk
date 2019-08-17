@@ -64,7 +64,7 @@ projectNode
   }
  inScope fileNode
  catchAllNodeType errorNode
-anyFirstCell
+anyCell
 filepathCell
  highlightScope string
 termCell

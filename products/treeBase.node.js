@@ -5,8 +5,10 @@
 //tooling product treeBase.node.js
 //tooling product SandboxServer.node.js
 //tooling product core.test.browser.js
+//tooling product abstractBuilder.node.js
 Object.defineProperty(exports, "__esModule", { value: true })
 //tooling product treeBase.node.js
+//tooling product abstractBuilder.node.js
 const fs = require("fs")
 class Disk {}
 Disk.getTreeNode = () => require("../products/jtree.node.js").TreeNode // todo: cleanup

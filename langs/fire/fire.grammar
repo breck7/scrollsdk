@@ -19,7 +19,6 @@ fireNode
     console.log(outputLines.join("\n"))
     return outputLines
   }
-anyFirstCell
 anyCell
 booleanCell
  regex (false|true)

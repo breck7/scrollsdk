@@ -4,8 +4,7 @@ planetNode
  pattern \.planet$
  inScope abstractIntPropertyNode abstractFloatPropertyNode
  catchAllNodeType errorNode
-anyFirstCell
- todo remove the need for this
+anyCell
 errorNode
  baseNodeType errorNode
 intCell

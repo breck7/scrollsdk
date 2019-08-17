@@ -10,7 +10,7 @@ dugNode
     const res = super.compile()
     return JSON.stringify(JSON.parse(res), null, 2)
   }
-anyFirstCell
+anyCell
 typeNameCell
  highlightScope keyword
 stringCell

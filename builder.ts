@@ -5,9 +5,9 @@ const recursiveReadSync = require("recursive-readdir-sync")
 
 const jtree = require("./products/jtree.node.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
+const { AbstractBuilder } = require("./products/abstractBuilder.node.js")
 
 import jTreeTypes from "./core/jTreeTypes"
-import { AbstractBuilder } from "./builder/AbstractBuilder"
 
 class Builder extends AbstractBuilder {
   async _produceTreeComponentFramework() {
@@ -109,6 +109,15 @@ class Builder extends AbstractBuilder {
       [__dirname + "/core/jTreeTypes.ts", __dirname + "/core/Disk.node.ts"],
       "treeBase.node",
       (code: string) => code + "\nmodule.exports = {TreeBaseFile, TreeBaseFolder}"
+    )
+  }
+
+  produceBuilder() {
+    const file = this._produceNodeProductFromTypeScript(
+      __dirname + "/builder/",
+      [__dirname + "/core/jTreeTypes.ts", __dirname + "/core/Disk.node.ts"],
+      "abstractBuilder.node",
+      (code: string) => code + "\nmodule.exports = {AbstractBuilder}"
     )
   }
 

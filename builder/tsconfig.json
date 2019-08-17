@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
     "types": ["node"],
+    "outDir": "../products",
     "lib": ["es2017"],
     "noImplicitAny": true,
     "downlevelIteration": true,
     "target": "es2017",
     "module": "commonjs"
   },
-  "include": ["./*.ts"]
+  "include": ["../ignore/abstractBuilder.node.ts"]
 }

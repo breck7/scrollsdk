@@ -1,3 +1,5 @@
+//tooling product abstractBuilder.node.js
+
 const { exec, execSync } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
 

@@ -16,7 +16,7 @@ Links
 What is Tree Notation?
 ----------------------
 
-Tree Notation is a simpler way to write code. Tree Notation is an error-free base notation like binary. This is our current stack of computer languages:
+Tree Notation is a simpler kind of code. Tree Notation is an error-free base notation like binary. This is our current stack of computer languages:
 
 1 Binary => 1,000+ Syntaxes => 10,000+ languages
 
@@ -24,20 +24,20 @@ In the future we think the stack may look like this:
 
 1 Binary => 1 Tree Notation => 10,000+ Tree Languages
 
-We all use software tools to build our software. Tree Notation makes writing such tools much easier, and as more people join the Tree Notation ecosystem there will be significant network effects.
+We all use software tools to build software. Tree Notation makes building these tools significantly easier, and as more people join the Tree Notation ecosystem there will be significant network effects.
 
-What is so special about Tree Notation?
----------------------------------------
+What is special about Tree Notation?
+------------------------------------
 
 Tree Notation may seem similar to notations like JSON, XML, YAML or S-expressions. However, Tree Notation is the most minimal, is grounded in 3-dimensional geometry, and the concept of syntax errors does not exist. We think this makes Tree Notation substantially different and will cause a *major improvement* in computing. Read the [FAQ](http://treenotation.org/faq.html) to find out what major problems in computer science Tree Notation solves.
 
 Advanced Examples
 -----------------
 
-Check out the [Ohayo](https://github.com/treenotation/ohayo) project or the [Tree Language Builder](http://treenotation.org/sandbox/build/) for advanced examples of Tree Notation in action.
+Check out the [Ohayo](https://github.com/treenotation/ohayo) project or the [Tree Language Builder](http://treenotation.org/designer/) for advanced examples of Tree Notation in action.
 
-Basic Boring Examples
----------------------
+Boring Examples
+---------------
 
 Below are some very simple examples to explain some of the very basics.
 
@@ -89,22 +89,29 @@ make8.lisp:
 Terminology
 -----------
 
+#### Tree Notation vs Tree Languages
+
+There is a very important distinction between *Tree Notation* and *Tree Languages*. Tree Notation is a simple dumb format for encoding Tree Data structures. Tree Languages give you higher level semantics. There is not a single general purpose "Tree Language", like you might expect if you come from the Racket or Lisp worlds. Instead, there are many independent general purpose "Tree Languages" with any semantics desired by the language designer(s).
+
+#### Basic terms
+
 Example:
 
     if true
      print Hello world
 
-In Tree Notation, the units of measure are words and nodes. Each line is equal to one node. The example program above has 5 words and 2 nodes. In this language the nodeType is termined by the first words (if and print). Notice how the second line in the program above is indented by one space, this makes the print node a child node of the line above it, the if node.
+In Tree Notation, the units of measure are **words** and **nodes**. Each line is equal to one node. The example program above has 5 words and 2 nodes. In this language the nodeType is termined by the first words (if and print). Notice how the second line in the program above is indented by one space, this makes the print node a **child node** of the line above it, the if node.
 
 If you are familiar with Lisp terminology, you can think of words as atoms.
 
-Grammar files add the additional concept of "cells", which can be thought of as placeholders and type information for words. Grammar files define new languages with nodeTypes and cellTypes. In the example language above, the word "true" would be in a boolean cell type.
+Grammar files add the additional concept of **cells**, which can be thought of as placeholders and type information for words. Grammar files define new languages with **nodeTypes** and **cellTypes**. In the example language above, the word "true" would be in a boolean cell type.
 
+Here is a [longer spec](https://github.com/treenotation/jtree/blob/master/spec.txt).
 
 Grammar Files
 -------------
 
-This library contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. This library also includes a simple web [Tree Language Builder](http://treenotation.org/sandbox/build/).
+This library contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. This library also includes a simple web [Tree Language Builder](https://treenotation.org/designer/).
 
 To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. This jtree library lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript.
 

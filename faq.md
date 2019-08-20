@@ -85,7 +85,7 @@ Usually when using Tree Notation you use a higher level grammar, called a Tree L
 
 #### How do I escape characters?
 
-In Tree Notation you never need to escape characters. If your node spans across multiple lines, simply indent the child lines by one space more than their parent, and leave the rest of the line as is. Some Tree Languages might have the notion of escape characters in certain places, but there's no such thing at the Tree Notation base layer.
+In Tree Notation you never need to escape characters. If your node spans across multiple lines, simply indent the child lines by one space more than their parent, leave the rest of the line as is, and ensure your nodeType definition treats child nodes as one block. Some Tree Languages might have the notion of escape characters in certain places, but there's no such thing at the Tree Notation base layer.
 
 #### Does Tree Notation directly map to XML or JSON?
 

@@ -93,6 +93,16 @@ Terminology
 
 There is a very important distinction between *Tree Notation* and *Tree Languages*. Tree Notation is a simple dumb format for encoding Tree Data structures. Tree Languages give you higher level semantics. There is not a single general purpose "Tree Language", like you might expect if you come from the Racket or Lisp worlds. Instead, there are many independent general purpose "Tree Languages" with any semantics desired by the language designer(s).
 
+#### Data structures
+
+The Tree is *the* data structure in Tree Notation. Types like booleans, ints and vectors only exist at the higher level Tree Language level. The theory behind Tree Notation is that concepts like booleans, ints and vectors are just kinds of Trees.
+
+    interface TreeNode {
+      parent: &TreeNode
+      children: TreeNode[]
+      line: string
+    }
+
 #### Basic terms
 
 Example:

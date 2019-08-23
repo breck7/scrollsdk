@@ -118,7 +118,7 @@ class TreeBaseFolder extends TreeNode {
   private _isLoaded = false
 
   // todo: RAII?
-  loadFolder(files: jTreeTypes.filepath[] = undefined, sampleSize: jTreeTypes.int = undefined, seed:number = Date.now()) {
+  loadFolder(files: jTreeTypes.filepath[] = undefined, sampleSize: jTreeTypes.int = undefined, seed: number = Date.now()) {
     if (this._isLoaded) return this
     files = files || this._getAndFilterFilesFromFolder()
 
@@ -276,6 +276,12 @@ class TreeBaseFolder extends TreeNode {
       const errors = this._getAsProgram().getAllErrors()
       res.setHeader("Content-Type", "text/plain")
       res.send(`Total errors: ${errors.length}\n${errors.join("\n")}`)
+    })
+
+    app.get("/errors.csv", (req: any, res: any) => {
+      const errors = this._getAsProgram().getAllErrors()
+      res.setHeader("Content-Type", "text/plain")
+      res.send(new jtree.TreeNode(errors.map((err: any) => err.toObject())).toCsv())
     })
 
     return app

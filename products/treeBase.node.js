@@ -370,6 +370,11 @@ class TreeBaseFolder extends TreeNode {
       res.setHeader("Content-Type", "text/plain")
       res.send(`Total errors: ${errors.length}\n${errors.join("\n")}`)
     })
+    app.get("/errors.csv", (req, res) => {
+      const errors = this._getAsProgram().getAllErrors()
+      res.setHeader("Content-Type", "text/plain")
+      res.send(new jtree.TreeNode(errors.map(err => err.toObject())).toCsv())
+    })
     return app
   }
   _getTreeBaseGrammarCode() {

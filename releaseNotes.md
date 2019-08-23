@@ -1,3 +1,7 @@
+38.1.0 / 2019-08-23
+===================
+- New: errors.csv route to TreeBase
+
 38.0.1 / 2019-08-17
 ===================
 - Fix: cleanup to bundle filenames

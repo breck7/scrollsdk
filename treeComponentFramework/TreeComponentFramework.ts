@@ -100,8 +100,8 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   getParseErrorCount() {
     if (!this.length) return 0
     return this.getTopDownArray()
-      .map(child => child.getParseErrorCount())
-      .reduce((sum, num) => sum + num)
+      .map((child: any) => child.getParseErrorCount())
+      .reduce((sum: number, num: number) => sum + num)
   }
 
   getRootNode(): AbstractTreeComponentRootNode {
@@ -166,7 +166,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
       !this.isMounted() // todo: why do we need this check?
     )
       return undefined
-    this._getChildTreeComponents().forEach(child => child.unmount())
+    this._getChildTreeComponents().forEach((child: any) => child.unmount())
     this.treeComponentWillUnmount()
     this._removeCss()
     this._removeHtml()
@@ -217,7 +217,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   // todo: delete this
   makeAllDirty() {
     this.makeDirty()
-    this._getChildTreeComponents().forEach(child => child.makeAllDirty())
+    this._getChildTreeComponents().forEach((child: any) => child.makeAllDirty())
   }
 
   _hasChildrenTreeComponents() {
@@ -455,7 +455,7 @@ ${libs}
     const stumpNodeForChildren = this.getStumpNodeForChildren()
 
     // Todo: insert delayed rendering?
-    const childResults = this._getChildTreeComponents().map((child, index) => child.renderAndGetRenderResult(stumpNodeForChildren, index))
+    const childResults = this._getChildTreeComponents().map((child: any, index: number) => child.renderAndGetRenderResult(stumpNodeForChildren, index))
 
     if (isUpdateOp) {
       if (treeComponentUpdateResult.treeComponentDidUpdate) {
@@ -493,7 +493,7 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {
-        const { WillowProgram } = require("./WillowNode.js")
+        const { WillowProgram } = require("./Willow.js")
         this._willowProgram = new WillowProgram("http://localhost:8000/")
       } else {
         this._willowProgram = new (<any>window).WillowBrowserProgram(window.location.href)

@@ -1,4 +1,5 @@
-const { AbstractTreeComponentRootNode } = require("../TreeComponentFramework.js")
+const { AbstractTreeComponentRootNode } = require("../TreeComponentFramework")
+const jtree = require("../../products/jtree.node.js")
 
 class ChexTreeComponent extends AbstractTreeComponentRootNode {
   getBuiltPath() {
@@ -6,7 +7,7 @@ class ChexTreeComponent extends AbstractTreeComponentRootNode {
   }
 
   createParser() {
-    return new TreeNode.Parser(undefined, {
+    return new jtree.TreeNode.Parser(undefined, {
       footer: footer
     })
   }
@@ -18,4 +19,4 @@ class footer extends AbstractTreeComponentRootNode {
   }
 }
 
-module.exports = ChexTreeComponent
+export { ChexTreeComponent }

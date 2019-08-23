@@ -1,10 +1,10 @@
-#! /usr/bin/env node
+#!/usr/bin/env ts-node
 
-const ChexTreeComponent = require("./ChexTreeComponent.js")
+const { ChexTreeComponent } = require("./ChexTreeComponent")
 
-const testTree = {}
+const testTree: any = {}
 
-testTree.chexBasics = equal => {
+testTree.chexBasics = (equal: any) => {
   const app = new ChexTreeComponent()
   equal(!!app, true)
 }

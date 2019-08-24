@@ -1,5 +1,4 @@
 const superagent = require("superagent")
-const miuri = require("miuri.js")
 
 declare var jQuery: any
 
@@ -311,11 +310,11 @@ class AbstractWillowProgram extends stump {
     this.addSuidsToHtmlHeadAndBodyShadows()
     const baseUrlWithoutTrailingPath = baseUrl.replace(/\/[^\/]*$/, "/")
     this._baseUrl = baseUrlWithoutTrailingPath
-    const uri = new miuri(baseUrl)
-    this.location.port = uri.port()
-    this.location.protocol = uri.protocol()
-    this.location.hostname = uri.hostname()
-    this.location.host = uri.host()
+    const url = new URL(baseUrl)
+    this.location.port = url.port
+    this.location.protocol = url.protocol
+    this.location.hostname = url.hostname
+    this.location.host = url.host
   }
 
   private _htmlStumpNode: any
@@ -565,8 +564,8 @@ class AbstractWillowProgram extends stump {
 
     const hostname = this._getHostname()
 
-    const uri = new miuri(link)
-    return uri.hostname() && hostname !== uri.hostname()
+    const url = new URL(link)
+    return url.hostname && hostname !== url.hostname
   }
 
   forceRepaint() {}

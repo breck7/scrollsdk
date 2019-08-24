@@ -24,7 +24,6 @@
   "dependencies": {
     "express": "*",
     "glob": "^7.1.4",
-    "miuri.js": "0.0.6",
     "semver": "^6.1.1",
     "mkdirp": "^0.5.1",
     "prettier": "^1.18.2",

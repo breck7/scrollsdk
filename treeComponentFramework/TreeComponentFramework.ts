@@ -436,8 +436,6 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
  body
   script
    src ../../sandbox/lib/jquery.min.js
-  script
-   src ../../node_modules/miuri.js/lib/miuri.min.js
 ${libs}
   script
    bern

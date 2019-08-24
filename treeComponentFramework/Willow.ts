@@ -1,5 +1,4 @@
 const superagent = require("superagent")
-
 declare var jQuery: any
 
 import jTreeTypes from "../core/jTreeTypes"

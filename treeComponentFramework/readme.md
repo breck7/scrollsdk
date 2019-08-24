@@ -23,28 +23,28 @@ Willow shims the environment so your app works with Willow and Willow handles sy
 
 The chart below was designed using textik (https://textik.com/#5d3d5f6ffc50de4b)
 
-    +--------------------------+         +-------------------------+           
-    |          Browser         |         |          NodeJS         |           
-    +--------------------------+         +-------------------------+           
-                  |                                   |                        
-                  |                                   |                        
-    +--------------------------+        +--------------------------+           
-    |  External Dependencies:  |        |    External Dependencies:|           
-    |   jQuery, SuperAgent     |        |         Superagent       |           
-    +--------------------------+        +--------------------------+           
-                  |                                   |                        
-                  |    +----------------------------+ |                        
-                  |    | Tree Dependencies:         | |                        
-                  +----| JTree, Stump, Hakon        |-+                        
-                       +----------------------------+                          
-                                      |                                        
-                                      |                                        
-                       +--------------|-------------+                          
-                       | TreeComponentFramework &   |                          
-                       | Willow for browser shim    |                          
-                       +----------------------------+                          
-                                      |                                        
-                                      |                                        
-                       +--------------|-------------+                          
-                       |Your App                    |                          
-                       +----------------------------+                          
+    +--------------------------+         +-------------------------+
+    |          Browser         |         |          NodeJS         |
+    +--------------------------+         +-------------------------+
+                  |                                   |             
+                  |                                   |             
+    +--------------------------+        +--------------------------+
+    |  External Dependencies:  |        |    External Dependencies:|
+    |   jQuery, SuperAgent     |        |         Superagent       |
+    +--------------------------+        +--------------------------+
+                  |                                   |             
+                  |    +----------------------------+ |             
+                  |    | Tree Dependencies:         | |             
+                  +----| JTree, Stump, Hakon        |-+             
+                       +----------------------------+               
+                                      |                             
+                                      |                             
+                       +----------------------------+               
+                       | TreeComponentFramework &   |               
+                       | Willow for browser shim    |               
+                       +----------------------------+               
+                                      |                             
+                                      |                             
+                       +----------------------------+               
+                       |Your App                    |               
+                       +----------------------------+               

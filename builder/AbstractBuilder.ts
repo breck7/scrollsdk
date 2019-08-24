@@ -22,7 +22,7 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   _getOrderedTypeScriptFiles(typeScriptSrcFiles: jTreeTypes.typeScriptFilePath[], outputFilePath: jTreeTypes.typeScriptFilePath) {
-    const project = this.require("project", __dirname + "/../langs/project/project.js")
+    const project = this.require("project", __dirname + "/../langs/project/project.node.js")
     const projectCode = new jtree.TreeNode(project.makeProjectProgramFromArrayOfScripts(typeScriptSrcFiles))
     projectCode
       .getTopDownArray()

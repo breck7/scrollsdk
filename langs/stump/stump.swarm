@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test stumpBasics
  arrangeTestSubject
-  require ./stump.js
+  require ./stump.node.js
   constructWithBlockString
    html
     id bam
@@ -27,7 +27,7 @@ test stumpBasics
    
 test div
  arrangeTestSubject
-  require ./stump.js
+  require ./stump.node.js
   constructWithBlockString
    div hello world
     id bam
@@ -38,7 +38,7 @@ test div
    
 test uids
  arrangeTestSubject
-  require ./stump.js
+  require ./stump.node.js
   constructWithBlockString
    div hello world
     id bam
@@ -57,7 +57,7 @@ test uids
    stringIs bam
 test syntax
  arrangeTestSubject
-  require ./stump.js
+  require ./stump.node.js
   constructWithBlockString
    div
     bern

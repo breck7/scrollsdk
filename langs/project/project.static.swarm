@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 arrangeTestSubject
- require ./project.js
+ require ./project.node.js
  static
 test getTypeScriptAndJavaScriptImportsFromSourceCodeTest
  getTypeScriptAndJavaScriptImportsFromSourceCode

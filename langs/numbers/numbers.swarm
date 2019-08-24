@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test basics Numbers
  arrangeTestSubject
-  require ./numbers.js
+  require ./numbers.node.js
   constructWithBlockString
    # Should be 5:
    + 2 3

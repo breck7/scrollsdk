@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const hakon = require("./hakon.js")
+const hakon = require("./hakon.node.js")
 
 const testTree = {}
 

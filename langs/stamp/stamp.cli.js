@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 const path = require("path")
-const stamp = require("./stamp.js")
+const stamp = require("./stamp.node.js")
 
 const getAbsPath = input => (input.startsWith("/") ? input : path.resolve(pwd + "/" + input))
 

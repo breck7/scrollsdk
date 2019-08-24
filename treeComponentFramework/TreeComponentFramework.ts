@@ -1,8 +1,8 @@
 import jTreeTypes from "../core/jTreeTypes"
 
 const jtree = require("../products/jtree.node.js")
-const stump = require("../langs/stump/stump.js")
-const hakon = require("../langs/hakon/hakon.js")
+const stump = require("../langs/stump/stump.node.js")
+const hakon = require("../langs/hakon/hakon.node.js")
 
 abstract class AbstractCommander {
   private _target: any

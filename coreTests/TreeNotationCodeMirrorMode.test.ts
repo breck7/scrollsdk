@@ -3,7 +3,7 @@
 // todo: make isomorphic
 
 const fs = require("fs")
-const stamp = require("../langs/stamp/stamp.js")
+const stamp = require("../langs/stamp/stamp.node.js")
 
 const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
 

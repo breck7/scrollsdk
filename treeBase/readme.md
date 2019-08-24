@@ -106,6 +106,7 @@ Similar Projects
 ----------------
 
 - [Forest 1.0](https://www.cs.princeton.edu/research/techreps/TR-904-11)
+- [Semantic Wikis](https://en.wikipedia.org/wiki/Semantic_wiki)
 
 Footnotes
 ---------

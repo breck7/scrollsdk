@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const numbers = require("./numbers.js")
+const numbers = require("./numbers.node.js")
 
 const testTree = {}
 

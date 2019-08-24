@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test jibjab
  arrangeTestSubject
-  require ./jibjab.js
+  require ./jibjab.node.js
   constructWithBlockString
    foo
    nodeWithConsts
@@ -11,7 +11,7 @@ test jibjab
   lengthIs 0
 test errors
  arrangeTestSubject
-  require ./jibjab.js
+  require ./jibjab.node.js
   constructWithBlockString
    ERRRORRRRR
    comment Hello world. this is a comment.

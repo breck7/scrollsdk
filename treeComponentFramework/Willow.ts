@@ -6,7 +6,7 @@ declare var jQuery: any
 import jTreeTypes from "../core/jTreeTypes"
 
 const jtree = require("../products/jtree.node.js")
-const stump = require("../langs/stump/stump.js")
+const stump = require("../langs/stump/stump.node.js")
 
 const WillowConstants: jTreeTypes.stringMap = {}
 WillowConstants.ShadowEvents = {}

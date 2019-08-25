@@ -113,6 +113,10 @@ If you'd prefer to wait until most of the details are settled, 2020 is probably 
 
 Thank you for asking! We need a lot of volunteers. Particularly important needs now are someone with project management skills to help organize and lead the team, someone to do community organizing/evangelism, dev leads to make libraries in various languages, testers to do cross platform testing, and more! Get in touch if you want to help.
 
+#### How is the Tree Notation Lab funded?
+
+The Tree Notation Lab is funded entirely by anonymous gifts. You can donate bitcoin to the Tree Notation Lab at this address: 36DMShMSDUp19FnshHZDnoVCGrAYCrowfN
+
 ## Editing Tips
 
 #### How can I copy and paste code in Tree Notation and have the editor ensure correct indentation?

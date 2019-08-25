@@ -163,8 +163,7 @@ sandbox
 sandboxServer
 core
 coreTests
-treeBase`.split("\n")
-    //treeComponentFramework` // todo: finish
+treeBase`.split("\n") // treeComponentFramework
     for (let folder of folders) {
       await this._testDir(__dirname + `/${folder}/`)
     }

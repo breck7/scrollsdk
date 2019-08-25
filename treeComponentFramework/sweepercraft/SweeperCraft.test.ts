@@ -318,4 +318,4 @@ testTree.getNeighbors = (equal: any) => {
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) require("../../products/jtree.node.js").Utils.runTestTree(testTree)
-module.exports = testTree
+export { testTree }

@@ -155,7 +155,7 @@ class AbstractBuilder extends jtree.TreeNode {
     this._write(outputFilePath, code)
   }
   _getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath) {
-    const project = this.require("project", __dirname + "/../langs/project/project.js")
+    const project = this.require("project", __dirname + "/../langs/project/project.node.js")
     const projectCode = new jtree.TreeNode(project.makeProjectProgramFromArrayOfScripts(typeScriptSrcFiles))
     projectCode
       .getTopDownArray()
@@ -334,7 +334,7 @@ class AbstractBuilder extends jtree.TreeNode {
       print(this._help())
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) builder[partialMatches[0]](paramOne, paramTwo)
-      else print(`Multiple matches for '${action}'. Options are: ${partialMatches}`)
+      else print(`Multiple matches for '${action}'. Options are:\n${partialMatches.join("\n")}`)
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }

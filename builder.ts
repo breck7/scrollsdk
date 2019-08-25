@@ -46,17 +46,8 @@ class Builder extends AbstractBuilder {
       })
   }
 
-  buildChex() {
-    const chexDir = __dirname + "/treeComponentFramework/chex/"
-    const chexPath = chexDir + "ChexTreeComponent.js"
-    this._write(chexDir + "index.html", new (require(chexPath))().compile())
-    this._write(
-      __dirname + "/products/ChexTreeComponent.browser.js",
-      new TypeScriptRewriter(this._read(chexPath))
-        .removeRequires()
-        .changeNodeExportsToWindowExports()
-        .getString()
-    )
+  produceSweeperCraft() {
+    this._produceBrowserProductFromTypeScript(__dirname + "/treeComponentFramework/sweepercraft/", "SweeperCraft.browser")
   }
 
   buildJibJab() {

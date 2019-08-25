@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "outDir": "../products",
+    "outDir": "../../products",
     "lib": ["es2017", "dom"],
     "moduleResolution": "node",
     "noImplicitAny": true,
     "declaration": false,
     "target": "es2017"
   },
-  "include": ["../ignore/TreeComponentFramework.browser.ts"]
+  "include": ["../../ignore/SweeperCraft.browser.ts"]
 }

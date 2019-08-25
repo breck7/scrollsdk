@@ -1068,20 +1068,6 @@ class WillowBrowserProgram extends AbstractWillowProgram {
     const stumpNode = this.getStumpNodeFromElement(document.activeElement)
     return stumpNode && stumpNode.getShadow()
   }
-
-  static startApp(appClass: any, startState?: string) {
-    document.addEventListener(
-      "DOMContentLoaded",
-      () => {
-        const win = <any>window
-        if (!win.app) {
-          win.app = new appClass(startState)
-          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
-        }
-      },
-      false
-    )
-  }
 }
 
 export { AbstractWillowProgram, AbstractWillowShadow, WillowConstants, WillowProgram, WillowBrowserProgram }

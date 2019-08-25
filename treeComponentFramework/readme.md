@@ -1,23 +1,25 @@
 TreeComponentFramework
 ======================
 
-TreeComponentFramework is an **experimental** web framework for building reactive web apps using entirely Tree Notation.
+TreeComponentFramework is a **research** web framework for building reactive web apps using entirely Tree Notation.
 
 ## The Vision
 
-With TreeComponentFramework, you build your components in Tree Languages (Hakon for CSS, Stump for HTML, and TBD for Javascript) and then you create a high level Tree Language to stitch those components together.
+With TreeComponentFramework, you build your components in Tree Languages: instead of CSS use Hakon; instead of HTML use Stump; and instead of TypeScript/Javascript use TreeScript (coming soon). You define your components in those and then you create a high level Tree Language specifically for your app to stitch those components together.
 
-In the future as Tree Notation and Tree Language tooling improves you will be able to build enormously powerful and complex app webs using a single universal syntax from top to bottom.
+In the future as Tree Notation and Tree Language tooling improves you will be able to build enormously powerful and complex app webs using a single universal syntax from top to bottom. We think this will greatly simplify and improve the reliability of web apps.
 
-Your TreeComponentFramework apps are compiled to Javascript and HTML and then run on Virtual Machines like v8/Chromium, which will further compile your code to assembly/machine code and then send that to microprocessors which then compile it to microcode before final execution on hardware. In the long run if people build Tree Machines your code could be run directly as is on those.
+Today, your TreeComponentFramework apps are compiled to Javascript and HTML and then run on Virtual Machines like v8/Chromium, which will further compile your code to assembly/machine code and then send that to microprocessors which then compile it to microcode before final execution on hardware. In the long run if people build Tree Machines your code could be run directly as is on those.
 
 ## Using it
 
-This framework is currently "alpha". Feedback is much appreciated and feel free to experiment, but it is recommended it not be used in production for some time.
+This framework is currently a **research project**. We expect to have **version 1 released sometime in 2020, if ever**. Feedback is much appreciated and feel free to experiment, but it is not recommended for production use at this time.
 
 ## Examples
 
-This framework powers https://ohayo.computer
+This folder contains a demonstration game called "SweeperCraft" that let's you design your own Minesweeper board. You can try the game here: https://treenotation.org/treeComponentFramework/sweeperCraft/
+
+This framework also powers https://github.com/treenotation/ohayo
 
 ## Current Architecture
 
@@ -52,3 +54,13 @@ The diagram below was designed using textik (https://textik.com/#5d3d5f6ffc50de4
                        +----------------------------+               
                        |Your App                    |               
                        +----------------------------+               
+
+## FAQ
+
+### Why build another web framework?
+
+No one has built a web framework that allows you to build web apps using only one single syntax, Tree Notation. This is an experiment.
+
+### I see the Hakon and Stump but then I see mostly TypeScript/Javascript, so how is this different?
+
+An upcoming release will contain most of the TypeScript/Javascript converted to TreeScript. The design of TreeScript is still in heavy flux.

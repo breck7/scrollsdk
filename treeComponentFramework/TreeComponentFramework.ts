@@ -420,28 +420,6 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     this.treeComponentDidMount()
   }
 
-  compile() {
-    const name = this.constructor.name
-    const libPath = "../../products/"
-    const libs = ["jtree.browser.js", "stump.browser.js", "hakon.browser.js", "treeComponentFramework.browser.js", this.constructor.name + ".browser.js"]
-      .map(
-        path =>
-          `  script
-   src ${libPath}${path}`
-      )
-      .join("\n")
-    return new stump(`html
- head
-  titleTag ${name}
- body
-  script
-   src ../../sandbox/lib/jquery.min.js
-${libs}
-  script
-   bern
-    WillowBrowserProgram.startApp(${name}, "footer")`).compile()
-  }
-
   renderAndGetRenderResult(stumpNode?: abstractHtmlTag, index?: number) {
     const isUpdateOp = this.isMounted()
     let treeComponentUpdateResult = {
@@ -479,7 +457,7 @@ ${libs}
   }
 }
 
-class AbstractTreeComponentRootNode extends AbstractTreeComponent {
+abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   private _willowProgram: any
   private _theme: AbstractTheme
 
@@ -491,13 +469,31 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {
-        const { WillowProgram } = require("./Willow.js")
+        const { WillowProgram } = require("./Willow")
         this._willowProgram = new WillowProgram("http://localhost:8000/")
       } else {
         this._willowProgram = new (<any>window).WillowBrowserProgram(window.location.href)
       }
     }
     return this._willowProgram
+  }
+
+  abstract getDefaultStartState(): string
+
+  static startApp(appClass: AbstractTreeComponentRootNode) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        const win = <any>window
+        if (!win.app) {
+          const startState = appClass.getDefaultStartState()
+          const anyAppClass = <any>appClass // todo: cleanup
+          win.app = new anyAppClass(startState)
+          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
+        }
+      },
+      false
+    )
   }
 }
 

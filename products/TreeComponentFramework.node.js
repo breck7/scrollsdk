@@ -1,15 +1,383 @@
+"use strict"
+//tooling product jtree.node.js
+//tooling product jtree.browser.js
+//tooling product commandLineApp.node.js
+//tooling product treeBase.node.js
+//tooling product SandboxServer.node.js
+//tooling product core.test.browser.js
+//tooling product abstractBuilder.node.js
 //tooling product TreeComponentFramework.browser.js
 //tooling product TreeComponentFramework.node.js
-
-const superagent = require("superagent")
-declare var jQuery: any
-
-import jTreeTypes from "../core/jTreeTypes"
-
+Object.defineProperty(exports, "__esModule", { value: true })
+//tooling product TreeComponentFramework.browser.js
+//tooling product TreeComponentFramework.node.js
 const jtree = require("../products/jtree.node.js")
 const stumpNode = require("../langs/stump/stump.node.js")
-
-const WillowConstants: jTreeTypes.stringMap = {}
+const hakonNode = require("../langs/hakon/hakon.node.js")
+class AbstractCommander {
+  constructor(target) {
+    this._target = target
+  }
+  getTarget() {
+    return this._target
+  }
+}
+class AbstractTheme {
+  hakonToCss(str) {
+    const hakonProgram = new hakonNode(str)
+    // console.log(hakonProgram.getAllErrors())
+    return hakonProgram.compile()
+  }
+}
+class DefaultTheme extends AbstractTheme {}
+class TreeComponentCommander extends AbstractCommander {
+  stopPropagationCommand() {
+    // intentional noop
+  }
+  async clearMessageBufferCommand() {
+    const treeComponent = this.getTarget()
+    delete treeComponent._messageBuffer
+  }
+  async unmountAndDestroyCommand() {
+    const treeComponent = this.getTarget()
+    treeComponent.unmountAndDestroy()
+  }
+}
+class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
+  getParseErrorCount() {
+    if (!this.length) return 0
+    return this.getTopDownArray()
+      .map(child => child.getParseErrorCount())
+      .reduce((sum, num) => sum + num)
+  }
+  getRootNode() {
+    return super.getRootNode()
+  }
+  getCommander() {
+    return new TreeComponentCommander(this)
+  }
+  getStumpNode() {
+    return this._htmlStumpNode
+  }
+  getHakon() {
+    return ""
+  }
+  getTheme() {
+    return this.getRootNode().getTheme()
+  }
+  getCommandsBuffer() {
+    if (!this._commandsBuffer) this._commandsBuffer = []
+    return this._commandsBuffer
+  }
+  addToCommandLog(command) {
+    this.getCommandsBuffer().push({
+      command: command,
+      time: this._getProcessTimeInMilliseconds()
+    })
+  }
+  getMessageBuffer() {
+    if (!this._messageBuffer) this._messageBuffer = new jtree.TreeNode()
+    return this._messageBuffer
+  }
+  // todo: move this to tree class? or other higher level class?
+  addStumpCodeMessageToLog(message) {
+    // note: we have 1 parameter, and are going to do type inference first.
+    // Todo: add actions that can be taken from a message?
+    // todo: add tests
+    this.getMessageBuffer().appendLineAndChildren("message", message)
+  }
+  addStumpErrorMessageToLog(errorMessage) {
+    return this.addStumpCodeMessageToLog(`div
+ class OhayoError
+ bern${jtree.TreeNode.nest(errorMessage, 2)}`)
+  }
+  logMessageText(message = "") {
+    const pre = `pre
+ bern${jtree.TreeNode.nest(message, 2)}`
+    return this.addStumpCodeMessageToLog(pre)
+  }
+  unmount() {
+    if (
+      !this.isMounted() // todo: why do we need this check?
+    )
+      return undefined
+    this._getChildTreeComponents().forEach(child => child.unmount())
+    this.treeComponentWillUnmount()
+    this._removeCss()
+    this._removeHtml()
+    delete this._lastRenderedTime
+    this.treeComponentDidUnmount()
+  }
+  _removeHtml() {
+    this._htmlStumpNode.removeStumpNode()
+    delete this._htmlStumpNode
+  }
+  getStumpCode() {
+    return `div
+ class ${this.getCssClassNames()}`
+  }
+  getCssClassNames() {
+    return this.constructor.name
+  }
+  treeComponentWillMount() {}
+  treeComponentDidMount() {
+    AbstractTreeComponent._mountedTreeComponents++
+  }
+  treeComponentDidUnmount() {
+    AbstractTreeComponent._mountedTreeComponents--
+  }
+  treeComponentWillUnmount() {}
+  forceUpdate() {}
+  getNewestTimeToRender() {
+    return this._lastTimeToRender
+  }
+  _setLastRenderedTime(time) {
+    this._lastRenderedTime = time
+    return this
+  }
+  // todo: can this be async?
+  treeComponentDidUpdate() {}
+  _getChildTreeComponents() {
+    return this.getChildrenByNodeConstructor(AbstractTreeComponent)
+  }
+  // todo: delete this
+  makeAllDirty() {
+    this.makeDirty()
+    this._getChildTreeComponents().forEach(child => child.makeAllDirty())
+  }
+  _hasChildrenTreeComponents() {
+    return this._getChildTreeComponents().length > 0
+  }
+  // todo: this is hacky. we do it so we can just mount all tiles to wall.
+  getStumpNodeForChildren() {
+    return this.getStumpNode()
+  }
+  _getLastRenderedTime() {
+    return this._lastRenderedTime
+  }
+  // todo: delete this
+  makeDirty() {
+    this._setLastRenderedTime(0)
+  }
+  _getCss() {
+    return this.getTheme().hakonToCss(this.getHakon())
+  }
+  _getCssStumpCode() {
+    return `styleTag
+ stumpStyleFor ${this.constructor.name}
+ bern${jtree.TreeNode.nest(this._getCss(), 2)}`
+  }
+  isNotATile() {
+    // quick hacky way to get around children problem
+    return true
+  }
+  _updateAndGetUpdateResult() {
+    if (!this._shouldTreeComponentUpdate()) return { treeComponentDidUpdate: false, reason: "_shouldTreeComponentUpdate is false" }
+    this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
+    this._removeCss()
+    this._mountCss()
+    // todo: fucking switch to react? looks like we don't update parent because we dont want to nuke children.
+    // okay. i see why we might do that for non tile treeComponents. but for Tile treeComponents, seems like we arent nesting, so why not?
+    // for now
+    if (this.isNotATile() && this._hasChildrenTreeComponents()) return { treeComponentDidUpdate: false, reason: "is a parent" }
+    this.updateHtml()
+    this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
+    return { treeComponentDidUpdate: true }
+  }
+  _getWrappedStumpCode(index) {
+    return this.getStumpCode()
+  }
+  updateHtml() {
+    const stumpNodeToMountOn = this._htmlStumpNode.getParent()
+    const index = this._htmlStumpNode.getIndex()
+    this._removeHtml()
+    this._mountHtml(stumpNodeToMountOn, index)
+  }
+  unmountAndDestroy() {
+    this.unmount()
+    return this.destroy()
+  }
+  // todo: move to keyword node class?
+  toggle(firstWord, contentOptions) {
+    const currentNode = this.getNode(firstWord)
+    if (!contentOptions) return currentNode ? currentNode.unmountAndDestroy() : this.appendLine(firstWord)
+    const currentContent = currentNode === undefined ? undefined : currentNode.getContent()
+    const index = contentOptions.indexOf(currentContent)
+    const newContent = index === -1 || index + 1 === contentOptions.length ? contentOptions[0] : contentOptions[index + 1]
+    this.delete(firstWord)
+    if (newContent) this.touchNode(firstWord).setContent(newContent)
+    return newContent
+  }
+  isMounted() {
+    return !!this._htmlStumpNode
+  }
+  // todo: move to base TreeNode?
+  getNextOrPrevious(arr) {
+    const length = arr.length
+    const index = arr.indexOf(this)
+    if (length === 1) return undefined
+    if (index === length - 1) return arr[index - 1]
+    return arr[index + 1]
+  }
+  toggleAndRender(firstWord, contentOptions) {
+    this.toggle(firstWord, contentOptions)
+    this.getRootNode().renderAndGetRenderResult()
+  }
+  _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
+    return this.getDependencies().find(dep => dep.getMTime() > lastRenderedTime)
+  }
+  _getReasonForUpdatingOrNot() {
+    const mTime = this.getMTime()
+    const lastRenderedTime = this._getLastRenderedTime() || 0
+    const staleTime = mTime - lastRenderedTime
+    if (lastRenderedTime === 0)
+      return {
+        shouldUpdate: true,
+        reason: "TreeComponent hasn't been rendered yet",
+        staleTime: staleTime
+      }
+    if (staleTime > 0)
+      return {
+        shouldUpdate: true,
+        reason: "TreeComponent itself changed",
+        staleTime: staleTime
+      }
+    const outdatedDependency = this._getFirstOutdatedDependency(lastRenderedTime)
+    if (outdatedDependency)
+      return {
+        shouldUpdate: true,
+        reason: "A dependency changed",
+        dependency: outdatedDependency,
+        staleTime: outdatedDependency.getMTime() - lastRenderedTime
+      }
+    return {
+      shouldUpdate: false,
+      reason: "No render needed",
+      lastRenderedTime: lastRenderedTime,
+      mTime: mTime
+    }
+  }
+  getDependencies() {
+    return []
+  }
+  getChildrenThatNeedRendering() {
+    const all = []
+    this._getTreeComponentsThatNeedRendering(all)
+    return all
+  }
+  _shouldTreeComponentUpdate() {
+    return this._getReasonForUpdatingOrNot().shouldUpdate
+  }
+  _getTreeComponentsThatNeedRendering(arr) {
+    this._getChildTreeComponents().forEach(child => {
+      if (!child.isMounted() || child._shouldTreeComponentUpdate()) arr.push({ child: child, childUpdateBecause: child._getReasonForUpdatingOrNot() })
+      child._getTreeComponentsThatNeedRendering(arr)
+    })
+  }
+  _mount(stumpNodeToMountOn, index) {
+    this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
+    this.treeComponentWillMount()
+    this._mountCss()
+    this._mountHtml(stumpNodeToMountOn, index) // todo: add index back?
+    this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
+    return this
+  }
+  // todo: we might be able to squeeze virtual dom in here on the mountCss and mountHtml methods.
+  _mountCss() {
+    // todo: only insert css once per class? have a set?
+    this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(this._getCssStumpCode())
+  }
+  _getPageHeadStump() {
+    return this.getRootNode()
+      .getWillowProgram()
+      .getHeadStumpNode()
+  }
+  _removeCss() {
+    this._cssStumpNode.removeCssStumpNode()
+    delete this._cssStumpNode
+  }
+  _mountHtml(stumpNodeToMountOn, index) {
+    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(this._getWrappedStumpCode(index), index)
+    if (!this._htmlStumpNode.setStumpNodeTreeComponent) console.log(this._htmlStumpNode)
+    this._htmlStumpNode.setStumpNodeTreeComponent(this)
+  }
+  _treeComponentDidUpdate() {
+    this.treeComponentDidUpdate()
+  }
+  _treeComponentDidMount() {
+    this.treeComponentDidMount()
+  }
+  renderAndGetRenderResult(stumpNode, index) {
+    const isUpdateOp = this.isMounted()
+    let treeComponentUpdateResult = {
+      treeComponentDidUpdate: false
+    }
+    if (isUpdateOp) treeComponentUpdateResult = this._updateAndGetUpdateResult()
+    else this._mount(stumpNode, index)
+    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    // Todo: insert delayed rendering?
+    const childResults = this._getChildTreeComponents().map((child, index) => child.renderAndGetRenderResult(stumpNodeForChildren, index))
+    if (isUpdateOp) {
+      if (treeComponentUpdateResult.treeComponentDidUpdate) {
+        try {
+          this._treeComponentDidUpdate()
+        } catch (err) {
+          console.error(err)
+        }
+      }
+    } else {
+      try {
+        this._treeComponentDidMount()
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    return {
+      type: isUpdateOp ? "update" : "mount",
+      treeComponentUpdateResult: treeComponentUpdateResult,
+      children: childResults
+    }
+  }
+}
+AbstractTreeComponent._mountedTreeComponents = 0
+class AbstractTreeComponentRootNode extends AbstractTreeComponent {
+  getTheme() {
+    if (!this._theme) this._theme = new DefaultTheme()
+    return this._theme
+  }
+  getWillowProgram() {
+    if (!this._willowProgram) {
+      if (this.isNodeJs()) {
+        const { WillowProgram } = require("./Willow")
+        this._willowProgram = new WillowProgram("http://localhost:8000/")
+      } else {
+        this._willowProgram = new window.WillowBrowserProgram(window.location.href)
+      }
+    }
+    return this._willowProgram
+  }
+  static startApp(appClass) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      () => {
+        const win = window
+        if (!win.app) {
+          const startState = appClass.getDefaultStartState()
+          const anyAppClass = appClass // todo: cleanup
+          win.app = new anyAppClass(startState)
+          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
+        }
+      },
+      false
+    )
+  }
+}
+//tooling product TreeComponentFramework.browser.js
+//tooling product TreeComponentFramework.node.js
+const superagent = require("superagent")
+const jtree = require("../products/jtree.node.js")
+const stumpNode = require("../langs/stump/stump.node.js")
+const WillowConstants = {}
 WillowConstants.ShadowEvents = {}
 WillowConstants.ShadowEvents.click = "click"
 WillowConstants.ShadowEvents.change = "change"
@@ -33,7 +401,6 @@ WillowConstants.ShadowEvents.dragover = "dragover"
 WillowConstants.ShadowEvents.dragenter = "dragenter"
 WillowConstants.ShadowEvents.dragleave = "dragleave"
 WillowConstants.ShadowEvents.ready = "ready"
-
 // todo: cleanup
 WillowConstants.DataShadowEvents = {}
 WillowConstants.DataShadowEvents.onClickCommand = "stumpOnClickCommand"
@@ -42,7 +409,6 @@ WillowConstants.DataShadowEvents.onBlurCommand = "stumpOnBlurCommand"
 WillowConstants.DataShadowEvents.onContextMenuCommand = "stumpOnContextMenuCommand"
 WillowConstants.DataShadowEvents.onChangeCommand = "stumpOnChangeCommand"
 WillowConstants.DataShadowEvents.onDblClickCommand = "stumpOnDblClickCommand"
-
 // todo: cleanup
 WillowConstants.titleTag = "titleTag"
 WillowConstants.styleTag = "styleTag"
@@ -63,66 +429,51 @@ WillowConstants.checkbox = "checkbox"
 WillowConstants.checkedSelector = ":checked"
 WillowConstants.contenteditable = "contenteditable"
 WillowConstants.inputTypes = ["input", "textarea"]
-
-enum CacheType {
-  inBrowserMemory = "inBrowserMemory"
-}
-
+var CacheType
+;(function(CacheType) {
+  CacheType["inBrowserMemory"] = "inBrowserMemory"
+})(CacheType || (CacheType = {}))
 class WillowHTTPResponse {
-  constructor(superAgentResponse?: any) {
+  constructor(superAgentResponse) {
+    this._cacheType = CacheType.inBrowserMemory
+    this._fromCache = false
+    this._cacheTime = Date.now()
     this._superAgentResponse = superAgentResponse
     this._mimeType = superAgentResponse && superAgentResponse.type
   }
-
-  private _superAgentResponse: any
-  private _mimeType: any
-  protected _cacheType = CacheType.inBrowserMemory
-  private _fromCache = false
-  protected _text: string
-  protected _cacheTime = Date.now()
-  protected _proxyServerResponse: any
-
   // todo: ServerMemoryCacheTime and ServerMemoryDiskCacheTime
   get cacheTime() {
     return this._cacheTime
   }
-
   get cacheType() {
     return this._cacheType
   }
-
   get body() {
     return this._superAgentResponse && this._superAgentResponse.body
   }
-
   get text() {
     if (this._text === undefined)
       this._text =
         this._superAgentResponse && this._superAgentResponse.text ? this._superAgentResponse.text : this.body ? JSON.stringify(this.body, null, 2) : ""
     return this._text
   }
-
   get asJson() {
     return this.body ? this.body : JSON.parse(this.text)
   }
-
   get fromCache() {
     return this._fromCache
   }
-
-  setFromCache(val: any) {
+  setFromCache(val) {
     this._fromCache = val
     return this
   }
-
   getParsedDataOrText() {
     if (this._mimeType === "text/csv") return this.text
     return this.body || this.text
   }
 }
-
 class WillowHTTPProxyCacheResponse extends WillowHTTPResponse {
-  constructor(proxyServerResponse: any) {
+  constructor(proxyServerResponse) {
     super()
     this._proxyServerResponse = proxyServerResponse
     this._cacheType = proxyServerResponse.body.cacheType
@@ -130,38 +481,28 @@ class WillowHTTPProxyCacheResponse extends WillowHTTPResponse {
     this._text = proxyServerResponse.body.text
   }
 }
-
 class AbstractWillowShadow {
-  constructor(stumpNode: any) {
+  constructor(stumpNode) {
     this._stumpNode = stumpNode
   }
-
-  private _stumpNode: any // todo: add stump type
-  private _val: string
-
   getShadowStumpNode() {
     return this._stumpNode
   }
-
   getShadowValue() {
     return this._val
   }
-
   removeShadow() {
     return this
   }
-
-  setInputOrTextAreaValue(value: string) {
+  setInputOrTextAreaValue(value) {
     this._val = value
     return this
   }
-
   getShadowParent() {
     return this.getShadowStumpNode()
       .getParent()
       .getShadow()
   }
-
   getPositionAndDimensions(gridSize = 1) {
     const offset = this.getShadowOffset()
     const parentOffset = this.getShadowParent().getShadowOffset()
@@ -172,126 +513,98 @@ class AbstractWillowShadow {
       height: Math.floor(this.getShadowHeight() / gridSize)
     }
   }
-
-  shadowHasClass(name: string) {
+  shadowHasClass(name) {
     return false
   }
-
-  getShadowAttr(name: string) {
+  getShadowAttr(name) {
     return ""
   }
-
-  makeResizable(options: any) {
+  makeResizable(options) {
     return this
   }
-  makeDraggable(options: any) {
+  makeDraggable(options) {
     return this
   }
-  makeSelectable(options: any) {
+  makeSelectable(options) {
     return this
   }
-
   isShadowChecked() {
     return false
   }
-
   getShadowHtml() {
     return ""
   }
-
   getShadowOffset() {
     return { left: 111, top: 111 }
   }
-
   getShadowWidth() {
     return 111
   }
-
   getShadowHeight() {
     return 111
   }
-
   isShadowResizable() {
     return false
   }
-
-  setShadowAttr(name: string, value: any) {
+  setShadowAttr(name, value) {
     return this
   }
-
   isShadowDraggable() {
     return this.shadowHasClass("draggable")
   }
-
   toggleShadow() {}
-
-  addClassToShadow(className: string) {}
-
-  removeClassFromShadow(className: string) {
+  addClassToShadow(className) {}
+  removeClassFromShadow(className) {
     return this
   }
-
-  onShadowEvent(event: any, selector?: any, fn?: any) {
+  onShadowEvent(event, selector, fn) {
     // todo:
     return this
   }
-
-  offShadowEvent(event: any, fn: any) {
+  offShadowEvent(event, fn) {
     // todo:
     return this
   }
-
-  triggerShadowEvent(name: string) {
+  triggerShadowEvent(name) {
     return this
   }
-
   getShadowPosition() {
     return {
       left: 111,
       top: 111
     }
   }
-
   getShadowOuterHeight() {
     return 11
   }
-
   getShadowOuterWidth() {
     return 11
   }
-
-  getShadowCss(property: string) {
+  getShadowCss(property) {
     return ""
   }
-
-  setShadowCss(css: any) {
+  setShadowCss(css) {
     return this
   }
-
-  insertHtmlNode(childNode: any, index?: number) {}
-
+  insertHtmlNode(childNode, index) {}
   getShadowElement() {}
 }
-
 class WillowShadow extends AbstractWillowShadow {}
-
 class WillowStore {
   constructor() {
     this._values = {}
   }
-  private _values: jTreeTypes.stringMap
-
-  get(key: string) {
+  get(key) {
     return this._values[key]
   }
-  set(key: string, value: any) {
+  set(key, value) {
     this._values[key] = value
     return this
   }
-  remove(key: string) {
+  remove(key) {
     delete this._values[key]
   }
-  each(fn: any) {
+  each(fn) {
     Object.keys(this._values).forEach(key => {
       fn(this._values[key], key)
     })
@@ -300,21 +613,21 @@ class WillowStore {
     this._values = {}
   }
 }
-
 class WillowMousetrap {
   constructor() {
     this.prototype = {}
   }
-  private prototype: jTreeTypes.stringMap
   bind() {}
 }
-
 // this one should have no document, window, $, et cetera.
 class AbstractWillowProgram extends stumpNode {
-  constructor(baseUrl: string) {
+  constructor(baseUrl) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
  ${WillowConstants.tags.body}`)
+    this._offlineMode = false
+    this._httpGetResponseCache = {}
+    this.location = {}
     this._htmlStumpNode = this.nodeAt(0)
     this._headStumpNode = this.nodeAt(0).nodeAt(0)
     this._bodyStumpNode = this.nodeAt(0).nodeAt(1)
@@ -327,56 +640,35 @@ class AbstractWillowProgram extends stumpNode {
     this.location.hostname = url.hostname
     this.location.host = url.host
   }
-
-  private _htmlStumpNode: any
-  private _headStumpNode: any
-  private _bodyStumpNode: any
-  protected _offlineMode = false
-  private _baseUrl: string
-  private _httpGetResponseCache: any = {}
-  public location: any = {}
-  private _mousetrap: any
-  private _store: any
-
   _getPort() {
     return this.location.port ? ":" + this.location.port : ""
   }
-
-  queryObjectToQueryString(obj: Object) {
+  queryObjectToQueryString(obj) {
     return ""
   }
-
-  toPrettyDeepLink(treeCode: string, queryObject: any) {
+  toPrettyDeepLink(treeCode, queryObject) {
     // todo: move things to a constant.
     const yi = "~"
     const xi = "_"
     const obj = Object.assign({}, queryObject)
-
     if (!treeCode.includes(yi) && !treeCode.includes(xi)) {
       obj.yi = yi
       obj.xi = xi
       obj.data = encodeURIComponent(treeCode.replace(/ /g, xi).replace(/\n/g, yi))
     } else obj.data = encodeURIComponent(treeCode)
-
     return this.getBaseUrl() + "?" + this.queryObjectToQueryString(obj)
   }
-
   getHost() {
     return this.location.host
   }
-
   reload() {}
-
   toggleOfflineMode() {
     this._offlineMode = !this._offlineMode
   }
-
   addSuidsToHtmlHeadAndBodyShadows() {}
-
   getShadowClass() {
     return WillowShadow
   }
-
   getMockMouseEvent() {
     return {
       clientX: 0,
@@ -385,78 +677,60 @@ class AbstractWillowProgram extends stumpNode {
       offsetY: 0
     }
   }
-
   toggleFullScreen() {}
-
   getMousetrap() {
     if (!this._mousetrap) this._mousetrap = new WillowMousetrap()
     return this._mousetrap
   }
-
   _getFocusedShadow() {
     return this._focusedShadow || this.getBodyStumpNode().getShadow()
   }
-
   getHeadStumpNode() {
     return this._headStumpNode
   }
-
   getBodyStumpNode() {
     return this._bodyStumpNode
   }
-
   getHtmlStumpNode() {
     return this._htmlStumpNode
   }
-
   getStore() {
     if (!this._store) this._store = new WillowStore()
     return this._store
   }
-
   someInputHasFocus() {
     const focusedShadow = this._getFocusedShadow()
     if (!focusedShadow) return false
     const stumpNode = focusedShadow.getShadowStumpNode()
     return stumpNode && stumpNode.isInputType()
   }
-
-  copyTextToClipboard(text: string) {}
-
-  setCopyData(evt: any, str: string) {}
-
+  copyTextToClipboard(text) {}
+  setCopyData(evt, str) {}
   getBaseUrl() {
     return this._baseUrl
   }
-
-  _makeRelativeUrlAbsolute(url: string) {
+  _makeRelativeUrlAbsolute(url) {
     if (url.startsWith("http://") || url.startsWith("https://")) return url
     return this.getBaseUrl() + url
   }
-
-  async httpGetUrl(url: string, queryStringObject: Object, responseClass = WillowHTTPResponse) {
+  async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
-
     const superAgentResponse = await superagent
       .get(this._makeRelativeUrlAbsolute(url))
       .query(queryStringObject)
       .set(this._headers || {})
-
     return new responseClass(superAgentResponse)
   }
-
-  _getFromResponseCache(cacheKey: any) {
+  _getFromResponseCache(cacheKey) {
     const hit = this._httpGetResponseCache[cacheKey]
     if (hit) hit.setFromCache(true)
     return hit
   }
-
-  _setInResponseCache(url: string, res: any) {
+  _setInResponseCache(url, res) {
     this._httpGetResponseCache[url] = res
     return this
   }
-
-  async httpGetUrlFromCache(url: string, queryStringMap: jTreeTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
+  async httpGetUrlFromCache(url, queryStringMap = {}, responseClass = WillowHTTPResponse) {
     const cacheKey = url + JSON.stringify(queryStringMap)
     const cacheHit = this._getFromResponseCache(cacheKey)
     if (!cacheHit) {
@@ -466,378 +740,300 @@ class AbstractWillowProgram extends stumpNode {
     }
     return cacheHit
   }
-
-  async httpGetUrlFromProxyCache(url: string) {
+  async httpGetUrlFromProxyCache(url) {
     if (!this.isDesktopVersion()) return this.httpGetUrlFromCache(url)
-    const queryStringMap: jTreeTypes.queryStringMap = {}
+    const queryStringMap = {}
     queryStringMap.url = url
     queryStringMap.cacheOnServer = "true"
     return await this.httpGetUrlFromCache("/proxy", queryStringMap, WillowHTTPProxyCacheResponse)
   }
-
-  async httpPostUrl(url: string, data: any) {
+  async httpPostUrl(url, data) {
     if (this._offlineMode) return new WillowHTTPResponse()
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})
       .send(data)
-
     return new WillowHTTPResponse(superAgentResponse)
   }
-
-  encodeURIComponent(str: string) {
+  encodeURIComponent(str) {
     return encodeURIComponent(str)
   }
-
-  downloadFile(data: any, filename: string, filetype: string) {
+  downloadFile(data, filename, filetype) {
     // noop
   }
-
-  async appendScript(url: string) {}
-
+  async appendScript(url) {}
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.getTopDownArray()
-    const titleNode = nodes.find((node: jTreeTypes.treeNode) => node.getFirstWord() === WillowConstants.titleTag)
+    const titleNode = nodes.find(node => node.getFirstWord() === WillowConstants.titleTag)
     return titleNode ? titleNode.getContent() : ""
   }
-
-  setWindowTitle(value: string) {
+  setWindowTitle(value) {
     const nodes = this.getTopDownArray()
-    const headNode = nodes.find((node: jTreeTypes.treeNode) => node.getFirstWord() === WillowConstants.tags.head)
+    const headNode = nodes.find(node => node.getFirstWord() === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }
-
   _getHostname() {
     return this.location.hostname || ""
   }
-
-  openUrl(link: string) {
+  openUrl(link) {
     // noop in willow
   }
-
   getPageHtml() {
     return this.getHtmlStumpNode().toHtmlWithSuids()
   }
-
-  getStumpNodeFromElement(el: any) {}
-
-  setPasteHandler(fn: Function) {
+  getStumpNodeFromElement(el) {}
+  setPasteHandler(fn) {
     return this
   }
-
-  setErrorHandler(fn: Function) {
+  setErrorHandler(fn) {
     return this
   }
-
-  setCopyHandler(fn: Function) {
+  setCopyHandler(fn) {
     return this
   }
-
-  setCutHandler(fn: Function) {
+  setCutHandler(fn) {
     return this
   }
-
-  setResizeEndHandler(fn: Function) {
+  setResizeEndHandler(fn) {
     return this
   }
-
-  async confirmThen(message: string) {
+  async confirmThen(message) {
     return true
   }
-
-  async promptThen(message: string, value: any) {
+  async promptThen(message, value) {
     return value
   }
-
   // todo: refactor. should be able to override this.
   isDesktopVersion() {
     return this._getHostname() === "localhost"
   }
-
-  setLoadedDroppedFileHandler(callback: Function, helpText = "") {}
-
+  setLoadedDroppedFileHandler(callback, helpText = "") {}
   getWindowSize() {
     return {
       width: 1111,
       height: 1111
     }
   }
-
   getDocumentSize() {
     return this.getWindowSize()
   }
-
-  isExternalLink(link: string) {
+  isExternalLink(link) {
     if (link && link.substr(0, 1) === "/") return false
     if (!link.includes("//")) return false
-
     const hostname = this._getHostname()
-
     const url = new URL(link)
     return url.hostname && hostname !== url.hostname
   }
-
   forceRepaint() {}
-
   blurFocusedInput() {}
 }
-
 class WillowProgram extends AbstractWillowProgram {
-  constructor(baseUrl: string) {
+  constructor(baseUrl) {
     super(baseUrl)
     this._offlineMode = true
   }
 }
-
 class WillowBrowserShadow extends AbstractWillowShadow {
-  static _shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
   _getJQElement() {
     // todo: speedup?
     if (!this._cachedEl) this._cachedEl = jQuery(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
     return this._cachedEl
   }
-
-  private _cachedEl: any // todo: add typings.
-
   getShadowElement() {
     return this._getJQElement()[0]
   }
-
   getShadowPosition() {
     return this._getJQElement().position()
   }
-
-  shadowHasClass(name: string) {
+  shadowHasClass(name) {
     return this._getJQElement().hasClass(name)
   }
-
   getShadowHtml() {
     return this._getJQElement().html()
   }
-
   getShadowValue() {
     // todo: cleanup, add tests
     if (this.getShadowStumpNode().isInputType()) return this._getJQElement().val()
     return this._getJQElement().val() || this.getShadowValueFromAttr()
   }
-
   getShadowValueFromAttr() {
     return this._getJQElement().attr(WillowConstants.value)
   }
-
   getShadowOuterHeight() {
     return this._getJQElement().outerHeight()
   }
-
   getShadowOuterWidth() {
     return this._getJQElement().outerWidth()
   }
-
   isShadowChecked() {
     return this._getJQElement().is(WillowConstants.checkedSelector)
   }
-
   getShadowWidth() {
     return this._getJQElement().width()
   }
-
   getShadowHeight() {
     return this._getJQElement().height()
   }
-
   getShadowOffset() {
     return this._getJQElement().offset()
   }
-
-  getShadowAttr(name: string) {
+  getShadowAttr(name) {
     return this._getJQElement().attr(name)
   }
-
-  _logMessage(type: string) {
+  _logMessage(type) {
     if (true) return true
     WillowBrowserShadow._shadowUpdateNumber++
     console.log(`DOM Update ${WillowBrowserShadow._shadowUpdateNumber}: ${type}`)
   }
-
-  getShadowCss(prop: string) {
+  getShadowCss(prop) {
     return this._getJQElement().css(prop)
   }
-
   isShadowResizable() {
     return this._getJQElement().find(".ui-resizable-handle").length > 0
   }
-
-  triggerShadowEvent(event: string) {
+  triggerShadowEvent(event) {
     this._getJQElement().trigger(event)
     this._logMessage("trigger")
     return this
   }
-
   // BEGIN MUTABLE METHODS:
-
   // todo: add tests
   // todo: idea, don't "paint" wall (dont append it to parent, until done.)
-  insertHtmlNode(childStumpNode: any, index: number) {
+  insertHtmlNode(childStumpNode, index) {
     const newChildJqElement = jQuery(childStumpNode.toHtmlWithSuids())
     newChildJqElement.data("stumpNode", childStumpNode) // todo: what do we use this for?
-
     const jqEl = this._getJQElement()
-
     // todo: can we virtualize this?
     // would it be a "virtual shadow?"
     if (index === undefined) jqEl.append(newChildJqElement)
     else if (index === 0) jqEl.prepend(newChildJqElement)
     else jQuery(jqEl.children().get(index - 1)).after(newChildJqElement)
-
     this._logMessage("insert")
   }
-
-  addClassToShadow(className: string) {
+  addClassToShadow(className) {
     this._getJQElement().addClass(className)
     this._logMessage("addClass")
     return this
   }
-
-  removeClassFromShadow(className: string) {
+  removeClassFromShadow(className) {
     this._getJQElement().removeClass(className)
     this._logMessage("removeClass")
     return this
   }
-
-  onShadowEvent(event: string, two: any, three: any) {
+  onShadowEvent(event, two, three) {
     this._getJQElement().on(event, two, three)
     this._logMessage("bind on")
     return this
   }
-
-  offShadowEvent(event: string, fn: Function) {
+  offShadowEvent(event, fn) {
     this._getJQElement().off(event, fn)
     this._logMessage("bind off")
     return this
   }
-
   toggleShadow() {
     this._getJQElement().toggle()
     this._logMessage("toggle")
     return this
   }
-
-  makeResizable(options: any) {
+  makeResizable(options) {
     this._getJQElement().resizable(options)
     this._logMessage("resizable")
     return this
   }
-
   removeShadow() {
     this._getJQElement().remove()
     this._logMessage("remove")
     return this
   }
-
-  setInputOrTextAreaValue(value: string) {
+  setInputOrTextAreaValue(value) {
     this._getJQElement().val(value)
     this._logMessage("val")
     return this
   }
-
-  setShadowAttr(name: string, value: string) {
+  setShadowAttr(name, value) {
     this._getJQElement().attr(name, value)
     this._logMessage("attr")
     return this
   }
-
-  makeDraggable(options: any) {
+  makeDraggable(options) {
     this._logMessage("draggable")
     this._getJQElement().draggable(options)
     return this
   }
-
-  setShadowCss(css: Object) {
+  setShadowCss(css) {
     this._getJQElement().css(css)
     this._logMessage("css")
     return this
   }
-
-  makeSelectable(options: any) {
+  makeSelectable(options) {
     this._getJQElement().selectable(options)
     this._logMessage("selectable")
     return this
   }
 }
-
+WillowBrowserShadow._shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
 // same thing, except with side effects.
 class WillowBrowserProgram extends AbstractWillowProgram {
-  findStumpNodesByShadowClass(className: string) {
-    const stumpNodes: any[] = []
+  findStumpNodesByShadowClass(className) {
+    const stumpNodes = []
     const that = this
     jQuery("." + className).each(function() {
       stumpNodes.push(that.getStumpNodeFromElement(this))
     })
     return stumpNodes
   }
-
-  queryObjectToQueryString(obj: any) {
+  queryObjectToQueryString(obj) {
     return jQuery.param(obj)
   }
-
   addSuidsToHtmlHeadAndBodyShadows() {
     jQuery(WillowConstants.tags.html).attr(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
     jQuery(WillowConstants.tags.head).attr(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
     jQuery(WillowConstants.tags.body).attr(WillowConstants.uidAttribute, this.getBodyStumpNode()._getUid())
   }
-
   getShadowClass() {
     return WillowBrowserShadow
   }
-
-  setCopyHandler(fn: Function) {
+  setCopyHandler(fn) {
     jQuery(document).on(WillowConstants.ShadowEvents.copy, fn)
     return this
   }
-
-  setCutHandler(fn: Function) {
+  setCutHandler(fn) {
     jQuery(document).on(WillowConstants.ShadowEvents.cut, fn)
     return this
   }
-
-  setPasteHandler(fn: any) {
+  setPasteHandler(fn) {
     window.addEventListener(WillowConstants.ShadowEvents.paste, fn, false)
     return this
   }
-
-  setErrorHandler(fn: any) {
+  setErrorHandler(fn) {
     window.addEventListener("error", fn)
     window.addEventListener("unhandledrejection", fn)
     return this
   }
-
   toggleFullScreen() {
-    const doc = <any>document
+    const doc = document
     if ((doc.fullScreenElement && doc.fullScreenElement !== null) || (!doc.mozFullScreen && !doc.webkitIsFullScreen)) {
       if (doc.documentElement.requestFullScreen) doc.documentElement.requestFullScreen()
       else if (doc.documentElement.mozRequestFullScreen) doc.documentElement.mozRequestFullScreen()
-      else if (doc.documentElement.webkitRequestFullScreen) doc.documentElement.webkitRequestFullScreen((<any>Element).ALLOW_KEYBOARD_INPUT)
+      else if (doc.documentElement.webkitRequestFullScreen) doc.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT)
     } else {
       if (doc.cancelFullScreen) doc.cancelFullScreen()
       else if (doc.mozCancelFullScreen) doc.mozCancelFullScreen()
       else if (doc.webkitCancelFullScreen) doc.webkitCancelFullScreen()
     }
   }
-
-  setCopyData(evt: any, str: string) {
+  setCopyData(evt, str) {
     const originalEvent = evt.originalEvent
     originalEvent.preventDefault()
     originalEvent.clipboardData.setData("text/plain", str)
     originalEvent.clipboardData.setData("text/html", str)
   }
-
   getMousetrap() {
-    return (<any>window).Mousetrap
+    return window.Mousetrap
   }
-
-  copyTextToClipboard(text: string) {
+  copyTextToClipboard(text) {
     // http://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
     const textArea = document.createElement("textarea")
     textArea.style.position = "fixed"
@@ -858,42 +1054,32 @@ class WillowBrowserProgram extends AbstractWillowProgram {
     } catch (err) {}
     document.body.removeChild(textArea)
   }
-
   getStore() {
-    return (<any>window).store
+    return window.store
   }
-
   getHost() {
     return location.host
   }
-
   _getHostname() {
     return location.hostname
   }
-
-  private _loadingPromises: any
-
-  async appendScript(url: string) {
+  async appendScript(url) {
     if (!url) return undefined
     if (!this._loadingPromises) this._loadingPromises = {}
     if (this._loadingPromises[url]) return this._loadingPromises[url]
-
     if (this.isNodeJs()) return undefined
-
     this._loadingPromises[url] = this._appendScript(url)
     return this._loadingPromises[url]
   }
-
-  _appendScript(url: string) {
+  _appendScript(url) {
     //https://bradb.net/blog/promise-based-js-script-loader/
     return new Promise(function(resolve, reject) {
       let resolved = false
       const scriptEl = document.createElement("script")
-
       scriptEl.type = "text/javascript"
       scriptEl.src = url
       scriptEl.async = true
-      scriptEl.onload = (<any>scriptEl).onreadystatechange = function() {
+      scriptEl.onload = scriptEl.onreadystatechange = function() {
         if (!resolved && (!this.readyState || this.readyState == "complete")) {
           resolved = true
           resolve(this)
@@ -903,25 +1089,21 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       document.head.appendChild(scriptEl)
     })
   }
-
-  downloadFile(data: any, filename: string, filetype: string) {
+  downloadFile(data, filename, filetype) {
     const downloadLink = document.createElement("a")
     downloadLink.setAttribute("href", `data:${filetype},` + encodeURIComponent(data))
     downloadLink.setAttribute("download", filename)
     downloadLink.click()
   }
-
   reload() {
     window.location.reload()
   }
-
-  openUrl(link: string) {
+  openUrl(link) {
     window.open(link)
   }
-
-  setResizeEndHandler(fn: Function) {
-    let resizeTimer: any
-    jQuery(window).on(WillowConstants.ShadowEvents.resize, (evt: any) => {
+  setResizeEndHandler(fn) {
+    let resizeTimer
+    jQuery(window).on(WillowConstants.ShadowEvents.resize, evt => {
       const target = jQuery(evt.target)
       if (target.is("div")) return // dont resize on div resizes
       clearTimeout(resizeTimer)
@@ -931,28 +1113,22 @@ class WillowBrowserProgram extends AbstractWillowProgram {
     })
     return this
   }
-
-  getStumpNodeFromElement(el: any) {
-    const jqEl: any = jQuery(el)
+  getStumpNodeFromElement(el) {
+    const jqEl = jQuery(el)
     return this.getHtmlStumpNode().getNodeByGuid(parseInt(jqEl.attr(WillowConstants.uidAttribute)))
   }
-
   forceRepaint() {
     jQuery(window).width()
   }
-
   getBrowserHtml() {
     return document.documentElement.outerHTML
   }
-
-  async confirmThen(message: string) {
+  async confirmThen(message) {
     return confirm(message)
   }
-
-  async promptThen(message: string, value: any) {
+  async promptThen(message, value) {
     return prompt(message, value)
   }
-
   getWindowSize() {
     const windowStumpNode = jQuery(window)
     return {
@@ -960,7 +1136,6 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       height: windowStumpNode.height()
     }
   }
-
   getDocumentSize() {
     const documentStumpNode = jQuery(document)
     return {
@@ -968,28 +1143,23 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       height: documentStumpNode.height()
     }
   }
-
   // todo: denote the side effect
   blurFocusedInput() {
     // todo: test against browser.
-    ;(<any>document.activeElement).blur()
+    document.activeElement.blur()
   }
-
-  setLoadedDroppedFileHandler(callback: Function, helpText = "") {
+  setLoadedDroppedFileHandler(callback, helpText = "") {
     const bodyStumpNode = this.getBodyStumpNode()
     const bodyShadow = bodyStumpNode.getShadow()
-
     // Added the below to ensure dragging from the chrome downloads bar works
     // http://stackoverflow.com/questions/19526430/drag-and-drop-file-uploads-from-chrome-downloads-bar
-    const handleChromeBug = (event: any) => {
+    const handleChromeBug = event => {
       const originalEvent = event.originalEvent
       const effect = originalEvent.dataTransfer.effectAllowed
       originalEvent.dataTransfer.dropEffect = effect === "move" || effect === "linkMove" ? "move" : "copy"
     }
-
-    const dragoverHandler = (event: any) => {
+    const dragoverHandler = event => {
       handleChromeBug(event)
-
       event.preventDefault()
       event.stopPropagation()
       if (!bodyStumpNode.stumpNodeHasClass("dragOver")) {
@@ -1004,21 +1174,18 @@ class WillowBrowserProgram extends AbstractWillowProgram {
         }, 50)
       }
     }
-
-    const dragleaveHandler = (event: any) => {
+    const dragleaveHandler = event => {
       event.preventDefault()
       event.stopPropagation()
       bodyStumpNode.removeClassFromStumpNode("dragOver")
       bodyStumpNode.findStumpNodeByChild("id dragOverHelp").removeStumpNode()
       bodyShadow.offShadowEvent(WillowConstants.ShadowEvents.dragleave, dragleaveHandler)
     }
-
-    const dropHandler = async (event: any) => {
+    const dropHandler = async event => {
       event.preventDefault()
       event.stopPropagation()
       bodyStumpNode.removeClassFromStumpNode("dragOver")
       bodyStumpNode.findStumpNodeByChild("id dragOverHelp").removeStumpNode()
-
       const droppedItems = event.originalEvent.dataTransfer.items
       // NOTE: YOU NEED TO STAY IN THE "DROP" EVENT, OTHERWISE THE DATATRANSFERITEMS MUTATE
       // (BY DESIGN) https://bugs.chromium.org/p/chromium/issues/detail?id=137231
@@ -1031,26 +1198,22 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       const results = await Promise.all(items)
       callback(results)
     }
-
     bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dragover, dragoverHandler)
     bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.drop, dropHandler)
-
     // todo: why do we do this?
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dragenter, function(event: any) {
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dragenter, function(event) {
       event.preventDefault()
       event.stopPropagation()
     })
   }
-
-  _handleDroppedEntry(item: any, path = "") {
+  _handleDroppedEntry(item, path = "") {
     // http://stackoverflow.com/questions/3590058/does-html5-allow-drag-drop-upload-of-folders-or-a-folder-tree
     // http://stackoverflow.com/questions/6756583/prevent-browser-from-loading-a-drag-and-dropped-file
     return item.isFile ? this._handleDroppedFile(item) : this._handleDroppedDirectory(item, path)
   }
-
-  _handleDroppedDirectory(item: any, path: any) {
+  _handleDroppedDirectory(item, path) {
     return new Promise((resolve, reject) => {
-      item.createReader().readEntries(async (entries: any) => {
+      item.createReader().readEntries(async entries => {
         const promises = []
         for (let i = 0; i < entries.length; i++) {
           promises.push(this._handleDroppedEntry(entries[i], path + item.name + "/"))
@@ -1060,26 +1223,24 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       })
     })
   }
-
-  _handleDroppedFile(file: any) {
+  _handleDroppedFile(file) {
     // https://developer.mozilla.org/en-US/docs/Using_files_from_web_applications
     // http://www.sitepoint.com/html5-javascript-open-dropped-files/
     return new Promise((resolve, reject) => {
-      file.file((data: any) => {
+      file.file(data => {
         const reader = new FileReader()
         reader.onload = evt => {
-          resolve({ data: (<any>evt.target).result, filename: data.name })
+          resolve({ data: evt.target.result, filename: data.name })
         }
         reader.onerror = err => reject(err)
         reader.readAsText(data)
       })
     })
   }
-
   _getFocusedShadow() {
     const stumpNode = this.getStumpNodeFromElement(document.activeElement)
     return stumpNode && stumpNode.getShadow()
   }
 }
 
-export { AbstractWillowProgram, AbstractWillowShadow, WillowConstants, WillowProgram, WillowBrowserProgram }
+module.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander }

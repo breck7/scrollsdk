@@ -1,13 +1,19 @@
 SweeperCraftAppNode
  root
  description SweeperCraft let's you design your own Minesweeper boards. SweeperCraft is a demonstration app for the TreeComponentFramework.
- inScope headerNode boardNode controlsNode shortcutsTableNode
+ inScope topLevelComponentNode
 anyCell
-headerNode
+topLevelComponentNode
+ abstract
+headerComponentNode
  description Header contains basic game state
-boardNode
+ extends topLevelComponentNode
+boardComponentNode
  description Contains the main board
-controlsNode
+ extends topLevelComponentNode
+controlsComponentNode
  description Contains the restart button
-shortcutsTableNode
+ extends topLevelComponentNode
+shortcutsTableComponentNode
  description Contains help for the keyboard shortcuts
+ extends topLevelComponentNode

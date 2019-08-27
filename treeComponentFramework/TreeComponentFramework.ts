@@ -1,8 +1,11 @@
+//tooling product TreeComponentFramework.browser.js
+//tooling product TreeComponentFramework.node.js
+
 import jTreeTypes from "../core/jTreeTypes"
 
 const jtree = require("../products/jtree.node.js")
-const stump = require("../langs/stump/stump.node.js")
-const hakon = require("../langs/hakon/hakon.node.js")
+const stumpNode = require("../langs/stump/stump.node.js")
+const hakonNode = require("../langs/hakon/hakon.node.js")
 
 abstract class AbstractCommander {
   private _target: any
@@ -17,7 +20,7 @@ abstract class AbstractCommander {
 
 abstract class AbstractTheme {
   hakonToCss(str: string) {
-    const hakonProgram = new hakon(str)
+    const hakonProgram = new hakonNode(str)
     // console.log(hakonProgram.getAllErrors())
     return hakonProgram.compile()
   }
@@ -181,7 +184,11 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
 
   getStumpCode() {
     return `div
- class ${this.constructor.name}`
+ class ${this.getCssClassNames()}`
+  }
+
+  getCssClassNames() {
+    return this.constructor.name
   }
 
   treeComponentWillMount() {}

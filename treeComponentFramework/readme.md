@@ -64,3 +64,7 @@ No one has built a web framework that allows you to build web apps using only on
 ### I see the Hakon and Stump but then I see mostly TypeScript/Javascript, so how is this different?
 
 An upcoming release will contain most of the TypeScript/Javascript converted to TreeScript. The design of TreeScript is still in heavy flux.
+
+### How can I help?
+
+We are trying to combine Tree Notation with the best ideas from the current leading web frameworks like [React](https://reactjs.org/), [Svelte](https://svelte.dev/), and [Vue](https://vuejs.org/). We are not web framework experts and would LOVE if any experts on frameworks like those could give us some code reviews and point out any obvious bad patterns that we could fix.

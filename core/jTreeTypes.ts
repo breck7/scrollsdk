@@ -5,6 +5,8 @@
 //tooling product SandboxServer.node.js
 //tooling product core.test.browser.js
 //tooling product abstractBuilder.node.js
+//tooling product TreeComponentFramework.browser.js
+//tooling product TreeComponentFramework.node.js
 
 export namespace jTreeTypes {
   export interface point {

@@ -10,32 +10,14 @@ const { AbstractBuilder } = require("./products/abstractBuilder.node.js")
 import jTreeTypes from "./core/jTreeTypes"
 
 class Builder extends AbstractBuilder {
-  async _produceTreeComponentFramework() {
-    // todo: Finish
-    const path = __dirname + "/treeComponentFramework/"
-    this._buildTsc(path)
-
-    this._write(
-      __dirname + `/ignore/treeComponentFramework.browser.ts`,
-      `"use strict"\n` +
-        this._combineTypeScriptFilesForBrowser([
-          __dirname + "/treeComponentFramework/TreeComponentFramework.ts",
-          __dirname + "/treeComponentFramework/Willow.ts",
-          __dirname + "/treeComponentFramework/WillowBrowser.ts"
-        ])
+  produceTreeComponentFramework() {
+    this._produceBrowserProductFromTypeScript(__dirname + "/treeComponentFramework/", "TreeComponentFramework.browser", [__dirname + "/core/jTreeTypes.ts"])
+    this._produceNodeProductFromTypeScript(
+      __dirname + "/treeComponentFramework/",
+      [__dirname + "/core/jTreeTypes.ts"],
+      "TreeComponentFramework.node",
+      (code: string) => code + "\nmodule.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander }"
     )
-
-    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", __dirname + "/products/", true)
-    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/products/", true)
-
-    const outputJsFile = __dirname + `/products/treeComponentFramework.browser.js`
-
-    await this._buildBrowserTsc(__dirname)
-
-    // This solves the wierd TS insertin
-    // todo: remove
-    const file = new TypeScriptRewriter(this._read(outputJsFile))
-    this._write(outputJsFile, file.getString())
   }
 
   produceAll() {
@@ -44,6 +26,11 @@ class Builder extends AbstractBuilder {
       .forEach(command => {
         ;(<any>this)[command]()
       })
+  }
+
+  produceLangs() {
+    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/products/", true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", __dirname + "/products/", true)
   }
 
   produceSweeperCraft() {

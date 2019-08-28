@@ -1836,6 +1836,12 @@ class TreeNode extends AbstractNode {
     this._updateMTime()
     return this._setLine(newArray.join(this.getZI()))
   }
+  prependSibling(line, children) {
+    return this.getParent().insertLineAndChildren(line, children, this.getIndex())
+  }
+  appendSibling(line, children) {
+    return this.getParent().insertLineAndChildren(line, children, this.getIndex() + 1)
+  }
   setContentWithChildren(text) {
     // todo: deprecate
     if (!text.includes(this.getYI())) {
@@ -2416,7 +2422,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "38.0.1"
+TreeNode.getVersion = () => "38.2.0"
 var GrammarConstantsCompiler
 ;(function(GrammarConstantsCompiler) {
   GrammarConstantsCompiler["stringTemplate"] = "stringTemplate"

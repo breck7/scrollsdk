@@ -378,6 +378,9 @@ class SweeperCraftCommander extends AbstractCommander {
   _getGame() {
     return this._app.getGame()
   }
+  retryGameCommand() {
+    this._getGame().retry()
+  }
   flagSquareCommand(row, col) {
     row = typeof row === "string" ? parseInt(row) : row
     col = typeof col === "string" ? parseInt(col) : col
@@ -606,11 +609,18 @@ shortcutsTableComponent`
     if (!link) board = SweeperCraftGame.getRandomBoard(9, 9, 10)
     else board = SweeperCraftGame.boardFromPermalink(link)
     this._mainGame = new SweeperCraftGame(board, game => {
-      this.makeAllDirty()
+      this.makeAllDirty() // todo: cleanup
       this.renderAndGetRenderResult(stumpNode)
     })
-    const boardNode = this.getNode("boardComponent")
-    if (boardNode) boardNode.setChildren(this._mainGame.getGameAsTree())
+    let boardNode = this.getNode("boardComponent")
+    if (boardNode) {
+      if (boardNode.isMounted()) {
+        boardNode.unmountAndDestroy() // todo: cleanup
+        let headerComponent = this.getNode("headerComponent")
+        boardNode = headerComponent.appendSibling("boardComponent")
+      }
+      boardNode.setChildren(this._mainGame.getGameAsTree())
+    }
     this._mainGame._render()
   }
   getCssClassNames() {
@@ -737,7 +747,8 @@ class controlsComponent extends AbstractTreeComponent {
     const game = this.getRootNode().getGame()
     if (game.isOver())
       parts.push(`div Restart
- class button`) // onclick game.retry()
+ stumpOnClickCommand retryGameCommand
+ class button`)
     if (game.isFlagLockOn()) parts.push(`span Flag lock on`)
     return parts.join("\n") || "div"
   }
@@ -771,7 +782,7 @@ class shortcutsTableComponent extends AbstractTreeComponent {
     td s
     td Solve game
    tr
-    td n
+    td e
     td New easy board
    tr
     td m

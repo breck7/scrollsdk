@@ -5,6 +5,8 @@
 //tooling product SandboxServer.node.js
 //tooling product core.test.browser.js
 //tooling product abstractBuilder.node.js
+//tooling product TreeComponentFramework.browser.js
+//tooling product TreeComponentFramework.node.js
 //tooling product core.test.browser.js
 const testTree = {}
 {
@@ -983,6 +985,20 @@ c`)
     equal(c.getSiblings().length, 2)
     equal(c.getOlderSiblings().length, 2)
     equal(c.getYoungerSiblings().length, 0)
+    // Act
+    a.appendSibling("a2", "foo")
+    a.prependSibling("a-1", "foo")
+    // Assert
+    equal(
+      test.toString(),
+      `a-1
+ foo
+a
+a2
+ foo
+b
+c`
+    )
   }
   testTree.replaceNode = equal => {
     // Arrange

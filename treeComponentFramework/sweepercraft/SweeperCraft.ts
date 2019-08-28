@@ -484,7 +484,7 @@ const linkToObject = (link: string): Object => {
 const getRandomInt = (min: int, max: int) => Math.floor(Math.random() * (max - min)) + min
 
 class SweeperCraftCommander extends AbstractCommander {
-  constructor(app) {
+  constructor(app: SweeperCraftApp) {
     super(app)
     this._app = app
   }
@@ -509,6 +509,10 @@ class SweeperCraftCommander extends AbstractCommander {
 
   private _getGame() {
     return this._app.getGame()
+  }
+
+  retryGameCommand() {
+    this._getGame().retry()
   }
 
   flagSquareCommand(row: int | string, col: int | string) {
@@ -563,12 +567,12 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
 
     const DataShadowEvents = WillowConstants.DataShadowEvents
 
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt) {
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt: any) {
       if (evt.ctrlKey) return true
       return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
     })
 
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt) {
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt: any) {
       if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
       return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
     })
@@ -761,8 +765,15 @@ shortcutsTableComponent`
       this.makeAllDirty() // todo: cleanup
       this.renderAndGetRenderResult(stumpNode)
     })
-    const boardNode = this.getNode("boardComponent")
-    if (boardNode) boardNode.setChildren(this._mainGame.getGameAsTree())
+    let boardNode = this.getNode("boardComponent")
+    if (boardNode) {
+      if (boardNode.isMounted()) {
+        boardNode.unmountAndDestroy() // todo: cleanup
+        let headerComponent = this.getNode("headerComponent")
+        boardNode = headerComponent.appendSibling("boardComponent")
+      }
+      boardNode.setChildren(this._mainGame.getGameAsTree())
+    }
     this._mainGame._render()
   }
 
@@ -779,7 +790,7 @@ shortcutsTableComponent`
     Object.keys(keyboardShortcuts).forEach(key => {
       this.getWillowProgram()
         .getMousetrap()
-        .bind(key, function(evt) {
+        .bind(key, function(evt: any) {
           keyboardShortcuts[key]()
           // todo: handle the below when we need to
           if (evt.preventDefault) evt.preventDefault()
@@ -912,7 +923,8 @@ class controlsComponent extends AbstractTreeComponent {
 
     if (game.isOver())
       parts.push(`div Restart
- class button`) // onclick game.retry()
+ stumpOnClickCommand retryGameCommand
+ class button`)
 
     if (game.isFlagLockOn()) parts.push(`span Flag lock on`)
 
@@ -949,7 +961,7 @@ class shortcutsTableComponent extends AbstractTreeComponent {
     td s
     td Solve game
    tr
-    td n
+    td e
     td New easy board
    tr
     td m

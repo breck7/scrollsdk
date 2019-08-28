@@ -1708,6 +1708,14 @@ class TreeNode extends AbstractNode {
     return this._setLine(newArray.join(this.getZI()))
   }
 
+  prependSibling(line: string, children: string) {
+    return this.getParent().insertLineAndChildren(line, children, this.getIndex())
+  }
+
+  appendSibling(line: string, children: string) {
+    return this.getParent().insertLineAndChildren(line, children, this.getIndex() + 1)
+  }
+
   setContentWithChildren(text: string) {
     // todo: deprecate
     if (!text.includes(this.getYI())) {
@@ -2381,7 +2389,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "38.0.1"
+  static getVersion = () => "38.2.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

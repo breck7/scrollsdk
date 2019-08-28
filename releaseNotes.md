@@ -1,3 +1,10 @@
+38.2.0 / 2019-08-28
+===================
+- New: appendSibling base method
+- New: TreeComponentFramework added to products
+- New: added SweeperCraft demo to products
+- New: added hakon and stump to products
+
 38.1.0 / 2019-08-23
 ===================
 - New: errors.csv route to TreeBase

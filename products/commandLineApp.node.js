@@ -7,6 +7,8 @@
 //tooling product SandboxServer.node.js
 //tooling product core.test.browser.js
 //tooling product abstractBuilder.node.js
+//tooling product TreeComponentFramework.browser.js
+//tooling product TreeComponentFramework.node.js
 Object.defineProperty(exports, "__esModule", { value: true })
 //tooling product commandLineApp.node.js
 const fs = require("fs")
@@ -310,7 +312,7 @@ ${grammars.toTable()}`
       print(result)
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) print(app[partialMatches[0]](paramOne, paramTwo))
-      else print(`Multiple matches for '${action}'. Options are: ${partialMatches}`)
+      else print(`Multiple matches for '${action}'. Options are:\n${partialMatches.join("\n")}`)
     } else print(`Unknown command '${action}'. Type 'tree help' to see available commands.`)
   }
 }

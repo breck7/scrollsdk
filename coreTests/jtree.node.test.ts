@@ -1,12 +1,12 @@
 #!/usr/bin/env ts-node
 
 import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const TreeNode = jtree.TreeNode
 const fs = require("fs")
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 testTree.combineTests = equal => {
   // Arrange

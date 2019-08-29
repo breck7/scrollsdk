@@ -1,10 +1,10 @@
 #!/usr/bin/env ts-node
 
 import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 const fs = require("fs")
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 // todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
 

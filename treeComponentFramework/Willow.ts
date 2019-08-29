@@ -4,12 +4,12 @@
 const superagent = require("superagent")
 declare var jQuery: any
 
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const jtree = require("../products/jtree.node.js")
 const stumpNode = require("../langs/stump/stump.node.js")
 
-const WillowConstants: jTreeTypes.stringMap = {}
+const WillowConstants: treeNotationTypes.stringMap = {}
 WillowConstants.ShadowEvents = {}
 WillowConstants.ShadowEvents.click = "click"
 WillowConstants.ShadowEvents.change = "change"
@@ -279,7 +279,7 @@ class WillowStore {
   constructor() {
     this._values = {}
   }
-  private _values: jTreeTypes.stringMap
+  private _values: treeNotationTypes.stringMap
 
   get(key: string) {
     return this._values[key]
@@ -305,7 +305,7 @@ class WillowMousetrap {
   constructor() {
     this.prototype = {}
   }
-  private prototype: jTreeTypes.stringMap
+  private prototype: treeNotationTypes.stringMap
   bind() {}
 }
 
@@ -456,7 +456,7 @@ class AbstractWillowProgram extends stumpNode {
     return this
   }
 
-  async httpGetUrlFromCache(url: string, queryStringMap: jTreeTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
+  async httpGetUrlFromCache(url: string, queryStringMap: treeNotationTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
     const cacheKey = url + JSON.stringify(queryStringMap)
     const cacheHit = this._getFromResponseCache(cacheKey)
     if (!cacheHit) {
@@ -469,7 +469,7 @@ class AbstractWillowProgram extends stumpNode {
 
   async httpGetUrlFromProxyCache(url: string) {
     if (!this.isDesktopVersion()) return this.httpGetUrlFromCache(url)
-    const queryStringMap: jTreeTypes.queryStringMap = {}
+    const queryStringMap: treeNotationTypes.queryStringMap = {}
     queryStringMap.url = url
     queryStringMap.cacheOnServer = "true"
     return await this.httpGetUrlFromCache("/proxy", queryStringMap, WillowHTTPProxyCacheResponse)
@@ -498,13 +498,13 @@ class AbstractWillowProgram extends stumpNode {
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.getTopDownArray()
-    const titleNode = nodes.find((node: jTreeTypes.treeNode) => node.getFirstWord() === WillowConstants.titleTag)
+    const titleNode = nodes.find((node: treeNotationTypes.treeNode) => node.getFirstWord() === WillowConstants.titleTag)
     return titleNode ? titleNode.getContent() : ""
   }
 
   setWindowTitle(value: string) {
     const nodes = this.getTopDownArray()
-    const headNode = nodes.find((node: jTreeTypes.treeNode) => node.getFirstWord() === WillowConstants.tags.head)
+    const headNode = nodes.find((node: treeNotationTypes.treeNode) => node.getFirstWord() === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }

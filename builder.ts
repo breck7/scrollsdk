@@ -5,19 +5,23 @@ const recursiveReadSync = require("recursive-readdir-sync")
 
 const jtree = require("./products/jtree.node.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
-const { AbstractBuilder } = require("./products/abstractBuilder.node.js")
+const { AbstractBuilder } = require("./products/AbstractBuilder.node.js")
 
-import jTreeTypes from "./core/jTreeTypes"
+import treeNotationTypes from "./worldWideTypes/treeNotationTypes"
 
 class Builder extends AbstractBuilder {
   produceTreeComponentFramework() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/treeComponentFramework/", "TreeComponentFramework.browser", [__dirname + "/core/jTreeTypes.ts"])
+    this._produceBrowserProductFromTypeScript(__dirname + "/treeComponentFramework/", "TreeComponentFramework.browser", [this._getTypesPath()])
     this._produceNodeProductFromTypeScript(
       __dirname + "/treeComponentFramework/",
-      [__dirname + "/core/jTreeTypes.ts"],
+      [this._getTypesPath()],
       "TreeComponentFramework.node",
       (code: string) => code + "\nmodule.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander }"
     )
+  }
+
+  private _getTypesPath() {
+    return __dirname + "/worldWideTypes/treeNotationTypes.ts"
   }
 
   produceAll() {
@@ -69,7 +73,7 @@ class Builder extends AbstractBuilder {
     this._produceBrowserProductFromTypeScript(__dirname + "/sandbox/", "SandboxApp.browser")
     this._produceNodeProductFromTypeScript(
       __dirname + "/sandboxServer/",
-      [__dirname + "/core/jTreeTypes.ts", __dirname + "/typeScriptRewriter/TypeScriptRewriter.ts"],
+      [this._getTypesPath(), __dirname + "/typeScriptRewriter/TypeScriptRewriter.ts"],
       "SandboxServer.node",
       (code: string) => code + "\nmodule.exports = {SandboxServer}"
     )
@@ -78,7 +82,7 @@ class Builder extends AbstractBuilder {
   produceCommandLineApp() {
     const file = this._produceNodeProductFromTypeScript(
       __dirname + "/commandLineApp/",
-      [__dirname + "/core/jTreeTypes.ts"],
+      [this._getTypesPath()],
       "commandLineApp.node",
       (code: string) => `#! /usr/bin/env node\n` + code + "\nmodule.exports = CommandLineApp"
     )
@@ -88,7 +92,7 @@ class Builder extends AbstractBuilder {
   produceTreeBase() {
     const file = this._produceNodeProductFromTypeScript(
       __dirname + "/treeBase/",
-      [__dirname + "/core/jTreeTypes.ts"],
+      [this._getTypesPath()],
       "treeBase.node",
       (code: string) => code + "\nmodule.exports = {TreeBaseFile, TreeBaseFolder}"
     )
@@ -101,14 +105,14 @@ class Builder extends AbstractBuilder {
   produceBuilder() {
     const file = this._produceNodeProductFromTypeScript(
       __dirname + "/builder/",
-      [__dirname + "/core/jTreeTypes.ts"],
-      "abstractBuilder.node",
+      [this._getTypesPath()],
+      "AbstractBuilder.node",
       (code: string) => code + "\nmodule.exports = {AbstractBuilder}"
     )
   }
 
   produceBrowserTests() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/coreTests/", "core.test.browser", [__dirname + "/core/jTreeTypes.ts"])
+    this._produceBrowserProductFromTypeScript(__dirname + "/coreTests/", "core.test.browser", [this._getTypesPath()])
   }
 
   cover() {
@@ -116,7 +120,7 @@ class Builder extends AbstractBuilder {
     exec(`tap --cov --coverage-report=lcov ${__filename} test`)
   }
 
-  updateVersion(newVersion: jTreeTypes.semanticVersion) {
+  updateVersion(newVersion: treeNotationTypes.semanticVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
@@ -132,7 +136,7 @@ class Builder extends AbstractBuilder {
     this._mochaTest(__filename)
   }
 
-  async _testDir(dir: jTreeTypes.absoluteFolderPath) {
+  async _testDir(dir: treeNotationTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
     allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
 

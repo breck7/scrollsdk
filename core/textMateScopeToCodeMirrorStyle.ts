@@ -1,7 +1,7 @@
 //tooling product jtree.node.js
 //tooling product jtree.browser.js
 
-import jTreeTypes from "./jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 enum CmToken {
@@ -188,7 +188,7 @@ const tmToCm = {
   }
 }
 
-const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], styleTree: jTreeTypes.stringMap = tmToCm): CmToken => {
+const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], styleTree: treeNotationTypes.stringMap = tmToCm): CmToken => {
   const matchingBranch = styleTree[scopeSegments.shift()]
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }

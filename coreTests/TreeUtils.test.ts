@@ -3,9 +3,9 @@
 // todo: make isomorphic
 
 import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 testTree.version = equal => {
   // Arrange/Act/Assert

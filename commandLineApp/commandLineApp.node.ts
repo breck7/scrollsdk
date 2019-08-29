@@ -9,7 +9,7 @@ const { execSync } = require("child_process")
 const jtree = require("../products/jtree.node.js")
 const { TreeNode, GrammarProgram, Utils } = jtree
 
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 class CommandLineApp {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
@@ -19,9 +19,9 @@ class CommandLineApp {
     this._cwd = cwd
   }
 
-  private _grammarsPath: jTreeTypes.filepath
-  private _cwd: jTreeTypes.filepath
-  private _grammarsTree: jTreeTypes.treeNode
+  private _grammarsPath: treeNotationTypes.filepath
+  private _cwd: treeNotationTypes.filepath
+  private _grammarsTree: treeNotationTypes.treeNode
 
   _getRegistryPath() {
     return this._grammarsPath
@@ -45,7 +45,7 @@ class CommandLineApp {
     return execSync([filePath, commandName, argument].filter(f => f).join(" "), { encoding: "utf8" })
   }
 
-  combine(grammarName: jTreeTypes.grammarName) {
+  combine(grammarName: treeNotationTypes.grammarName) {
     const content = this.programs(grammarName)
       .split(" ")
       .map(path => {
@@ -57,10 +57,10 @@ class CommandLineApp {
     return new TreeNode(content).toString()
   }
 
-  distribute(combinedFilePath: jTreeTypes.filepath) {
+  distribute(combinedFilePath: treeNotationTypes.filepath) {
     if (!combinedFilePath) throw new Error(`No combinedFilePath provided`)
     const masterFile = new TreeNode(this._read(combinedFilePath))
-    return masterFile.split("#file").map((file: jTreeTypes.treeNode) => {
+    return masterFile.split("#file").map((file: treeNotationTypes.treeNode) => {
       const firstLine = file.nodeAt(0)
       if (firstLine.getFirstWord() !== "#file") return undefined
       const filepath = firstLine.getWord(1)
@@ -73,23 +73,23 @@ class CommandLineApp {
     })
   }
 
-  _initFile(path: jTreeTypes.filepath, initialString = "") {
+  _initFile(path: treeNotationTypes.filepath, initialString = "") {
     if (!fs.existsSync(path)) this._write(path, initialString)
   }
 
-  _write(path: jTreeTypes.filepath, content: string) {
+  _write(path: treeNotationTypes.filepath, content: string) {
     return fs.writeFileSync(path, content, "utf8")
   }
 
-  _read(path: jTreeTypes.filepath) {
+  _read(path: treeNotationTypes.filepath) {
     return fs.readFileSync(path, "utf8")
   }
 
   // todo: improve or remove
-  cases(folder: jTreeTypes.filepath, grammarName: jTreeTypes.grammarName) {
-    const files = recursiveReadSync(folder).filter((file: jTreeTypes.filepath) => file.endsWith("." + grammarName))
+  cases(folder: treeNotationTypes.filepath, grammarName: treeNotationTypes.grammarName) {
+    const files = recursiveReadSync(folder).filter((file: treeNotationTypes.filepath) => file.endsWith("." + grammarName))
     const grammarProgram = this._getGrammarProgramRoot(grammarName)
-    files.map((filename: jTreeTypes.filepath) => {
+    files.map((filename: treeNotationTypes.filepath) => {
       const errors = this._check(filename)
       if (errors.length) {
         throw new Error(`Type check errors ${errors}`)
@@ -116,7 +116,7 @@ class CommandLineApp {
     return TreeNode.fromSsv(help).toTable()
   }
 
-  base(folderPath: jTreeTypes.absoluteFolderPath = undefined, port = 4444) {
+  base(folderPath: treeNotationTypes.absoluteFolderPath = undefined, port = 4444) {
     const { TreeBaseFolder } = require("../products/treeBase.node.js")
     if (!folderPath) {
       folderPath = require("path").resolve(__dirname + "/../treeBase/planets/")
@@ -132,11 +132,11 @@ class CommandLineApp {
 ${grammars.toTable()}`
   }
 
-  isRegistered(grammarName: jTreeTypes.grammarName) {
+  isRegistered(grammarName: treeNotationTypes.grammarName) {
     return this.getGrammars().where("name", "=", grammarName).length === 1
   }
 
-  _getGrammarPathByGrammarNameOrThrow(grammarName: jTreeTypes.grammarName) {
+  _getGrammarPathByGrammarNameOrThrow(grammarName: treeNotationTypes.grammarName) {
     const node = this.getGrammars().getNodeByColumns("name", grammarName)
 
     if (!node) throw new Error(`No registered grammar named '${grammarName}'. Registered grammars are ${this._getRegisteredGrammarNames().join(",")}`)
@@ -148,21 +148,21 @@ ${grammars.toTable()}`
     jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarNameOrThrow("stamp"))
   }
 
-  check(programPath: jTreeTypes.treeProgramFilePath) {
+  check(programPath: treeNotationTypes.treeProgramFilePath) {
     return this._checkAndLog(programPath)
   }
 
-  checkAll(grammarName: jTreeTypes.grammarName) {
+  checkAll(grammarName: treeNotationTypes.grammarName) {
     const files = this._history(grammarName)
     return files.map(file => this._checkAndLog(file)).join("\n")
   }
 
-  _checkAndLog(programPath: jTreeTypes.treeProgramFilePath) {
+  _checkAndLog(programPath: treeNotationTypes.treeProgramFilePath) {
     const errors = this._check(programPath)
     return `${errors.length} errors for ${programPath}${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
-  _check(programPath: jTreeTypes.treeProgramFilePath) {
+  _check(programPath: treeNotationTypes.treeProgramFilePath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
     return program.getAllErrors().map((err: any) => err.getMessage())
@@ -172,7 +172,7 @@ ${grammars.toTable()}`
     return this.getGrammars().getColumn("name")
   }
 
-  _getGrammarPathOrThrow(programPath: jTreeTypes.treeProgramFilePath) {
+  _getGrammarPathOrThrow(programPath: treeNotationTypes.treeProgramFilePath) {
     const extension = Utils.getFileExtension(programPath)
     return this._getGrammarPathByGrammarNameOrThrow(extension)
   }
@@ -184,7 +184,7 @@ ${grammars.toTable()}`
     return `Starting sandbox on port ${port}`
   }
 
-  prettify(programPath: jTreeTypes.treeProgramFilePath) {
+  prettify(programPath: treeNotationTypes.treeProgramFilePath) {
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
     const program = new programConstructor(this._read(programPath))
     const original = program.toString()
@@ -193,13 +193,13 @@ ${grammars.toTable()}`
     return original === pretty ? "No change" : "File updated"
   }
 
-  parse(programPath: jTreeTypes.treeProgramFilePath) {
+  parse(programPath: treeNotationTypes.treeProgramFilePath) {
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
     const program = new programConstructor(this._read(programPath))
     return program.getParseTable(35)
   }
 
-  sublime(grammarName: jTreeTypes.grammarName, outputDirectory: jTreeTypes.absoluteFolderPath = ".") {
+  sublime(grammarName: treeNotationTypes.grammarName, outputDirectory: treeNotationTypes.absoluteFolderPath = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
@@ -208,12 +208,12 @@ ${grammars.toTable()}`
     return `Saved: ${outputPath}`
   }
 
-  _getGrammarProgramRoot(grammarName: jTreeTypes.grammarName) {
+  _getGrammarProgramRoot(grammarName: treeNotationTypes.grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     return new GrammarProgram(this._read(grammarPath))
   }
 
-  compile(programPath: jTreeTypes.treeProgramFilePath) {
+  compile(programPath: treeNotationTypes.treeProgramFilePath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
@@ -225,7 +225,7 @@ ${grammars.toTable()}`
     return homedir() + "/history.ssv"
   }
 
-  programs(grammarName: jTreeTypes.grammarName) {
+  programs(grammarName: treeNotationTypes.grammarName) {
     return this._history(grammarName).join(" ")
   }
 
@@ -238,7 +238,7 @@ ${grammars.toTable()}`
     return this._read(this._getLogFilePath())
   }
 
-  _history(grammarName: jTreeTypes.grammarName) {
+  _history(grammarName: treeNotationTypes.grammarName) {
     this._getGrammarPathByGrammarNameOrThrow(grammarName)
     // todo: store history of all commands
     // todo: build language for commandLineApp history
@@ -247,24 +247,24 @@ ${grammars.toTable()}`
     // todo: add support for initing a TreeNode from a JS set and map
     const data = TreeNode.fromSsv(this._getHistoryFile())
     const files = data
-      .filter((node: jTreeTypes.treeNode) => {
+      .filter((node: treeNotationTypes.treeNode) => {
         const command = node.get("command")
         const filepath = node.get("paramOne")
         // make sure theres a filder and it has an extension.
         if (!filepath || !filepath.includes(".")) return false
         if (["check", "run", "", "compile"].includes(command)) return true
       })
-      .map((node: jTreeTypes.treeNode) => node.get("paramOne"))
+      .map((node: treeNotationTypes.treeNode) => node.get("paramOne"))
     const items = Object.keys(new TreeNode(files.join("\n")).toObject())
     return items.filter(file => file.endsWith(grammarName)).filter(file => fs.existsSync(file))
   }
 
-  register(grammarPath: jTreeTypes.grammarFilePath) {
+  register(grammarPath: treeNotationTypes.grammarFilePath) {
     const extension = this._register(grammarPath)
     return `Registered ${extension}`
   }
 
-  _register(grammarPath: jTreeTypes.grammarFilePath) {
+  _register(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
     const grammarProgram = new GrammarProgram(this._read(grammarPath))
     const extension = grammarProgram.getExtensionName()
@@ -284,26 +284,26 @@ ${grammars.toTable()}`
     fs.appendFile(logFilePath, line, "utf8", () => {})
   }
 
-  async _run(programPath: jTreeTypes.treeProgramFilePath) {
+  async _run(programPath: treeNotationTypes.treeProgramFilePath) {
     const result = await jtree.executeFile(programPath, this._getGrammarPathOrThrow(programPath))
     return result
   }
 
-  _runSync(programPath: jTreeTypes.treeProgramFilePath) {
+  _runSync(programPath: treeNotationTypes.treeProgramFilePath) {
     return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
   }
 
-  async run(programPathOrGrammarName: jTreeTypes.treeProgramFilePath | jTreeTypes.grammarName) {
+  async run(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
     if (programPathOrGrammarName.includes(".")) return this._run(programPathOrGrammarName)
     return Promise.all(this._history(programPathOrGrammarName).map(file => this._run(file)))
   }
 
-  runSync(programPathOrGrammarName: jTreeTypes.treeProgramFilePath | jTreeTypes.grammarName) {
+  runSync(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
     if (programPathOrGrammarName.includes(".")) return this._runSync(programPathOrGrammarName)
     return this._history(programPathOrGrammarName).map(file => this._runSync(file))
   }
 
-  usage(grammarName: jTreeTypes.grammarName) {
+  usage(grammarName: treeNotationTypes.grammarName) {
     const files = this._history(grammarName)
     if (!files.length) return ""
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
@@ -321,7 +321,7 @@ ${grammars.toTable()}`
     })
     const folderName = grammarName
     const stampFile = new TreeNode(`folder ${folderName}`)
-    report.forEach((node: jTreeTypes.treeNode) => {
+    report.forEach((node: treeNotationTypes.treeNode) => {
       const fileNode = stampFile.appendLine(`file ${folderName}/${node.getFirstWord()}.ssv`)
       fileNode.appendLineAndChildren("data", `${node.getContent()}\n` + node.childrenToString())
     })

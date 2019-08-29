@@ -1,17 +1,17 @@
 //tooling product jtree.node.js
 //tooling product jtree.browser.js
 
-import jTreeTypes from "./jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 class Parser {
   // todo: should getErrors be under here? At least for certain types of errors?
-  private _catchAllNodeConstructor: jTreeTypes.TreeNodeConstructor
-  private _firstWordMap: jTreeTypes.firstWordToNodeConstructorMap
-  private _regexTests: jTreeTypes.regexTest[]
+  private _catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor
+  private _firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap
+  private _regexTests: treeNotationTypes.regexTest[]
   constructor(
-    catchAllNodeConstructor: jTreeTypes.TreeNodeConstructor,
-    firstWordMap: jTreeTypes.firstWordToNodeConstructorMap = {},
-    regexTests: jTreeTypes.regexTest[] = undefined
+    catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor,
+    firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap = {},
+    regexTests: treeNotationTypes.regexTest[] = undefined
   ) {
     this._catchAllNodeConstructor = catchAllNodeConstructor
     this._firstWordMap = firstWordMap
@@ -27,11 +27,11 @@ class Parser {
     return this._firstWordMap
   }
 
-  _getNodeConstructor(line: string, contextNode: jTreeTypes.treeNode, zi = " "): jTreeTypes.TreeNodeConstructor {
+  _getNodeConstructor(line: string, contextNode: treeNotationTypes.treeNode, zi = " "): treeNotationTypes.TreeNodeConstructor {
     return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
   }
 
-  _getCatchAllNodeConstructor(contextNode: jTreeTypes.treeNode) {
+  _getCatchAllNodeConstructor(contextNode: treeNotationTypes.treeNode) {
     if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
 
     const parent = contextNode.getParent()
@@ -41,7 +41,7 @@ class Parser {
     return contextNode.constructor
   }
 
-  private _getConstructorFromRegexTests(line: string): jTreeTypes.TreeNodeConstructor {
+  private _getConstructorFromRegexTests(line: string): treeNotationTypes.TreeNodeConstructor {
     if (!this._regexTests) return undefined
     const hit = this._regexTests.find(test => test.regex.test(line))
     if (hit) return hit.nodeConstructor

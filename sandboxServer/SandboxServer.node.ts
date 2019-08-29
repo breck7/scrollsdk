@@ -2,17 +2,17 @@
 
 const express = require("express")
 const { readFile } = require("fs")
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 
 class SandboxServer {
-  start(port: jTreeTypes.portNumber) {
+  start(port: treeNotationTypes.portNumber) {
     const app = express()
 
     app.get("/*.js", (req: any, res: any) => {
       const filename = req.path.substr(1)
-      readFile(__dirname + "/../" + filename, "utf8", (err: any, code: jTreeTypes.typeScriptCode) => {
+      readFile(__dirname + "/../" + filename, "utf8", (err: any, code: treeNotationTypes.typeScriptCode) => {
         if (err) throw err
         res.send(
           new TypeScriptRewriter(code)

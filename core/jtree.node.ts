@@ -3,7 +3,7 @@
 const fs = require("fs")
 
 import jtree from "./jtree"
-import jTreeTypes from "./jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 import { GrammarProgram, GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage"
 import Upgrader from "./Upgrader"
 
@@ -16,29 +16,29 @@ class jtreeNode extends jtree {
   static Upgrader = Upgrader
   static GrammarConstants = GrammarConstants
 
-  static executeFile = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): Promise<any> =>
+  static executeFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): Promise<any> =>
     jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 
-  static executeFiles = (programPaths: jTreeTypes.filepath[], grammarPath: jTreeTypes.filepath): Promise<any>[] => {
+  static executeFiles = (programPaths: treeNotationTypes.filepath[], grammarPath: treeNotationTypes.filepath): Promise<any>[] => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
     return programPaths.map(programPath => new programConstructor(fs.readFileSync(programPath, "utf8")).execute(programPath))
   }
 
-  static executeFileSync = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): any =>
+  static executeFileSync = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): any =>
     jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 
-  static makeProgram = (programPath: jTreeTypes.filepath, grammarPath: jTreeTypes.filepath): GrammarBackedRootNode => {
+  static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedRootNode => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileGrammarForNodeJs(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.absoluteFolderPath, usePrettier = true) {
+  static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true) {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
   }
 
   private static _compileGrammar(
-    pathToGrammar: jTreeTypes.absoluteFilePath,
-    outputFolder: jTreeTypes.absoluteFolderPath,
+    pathToGrammar: treeNotationTypes.absoluteFilePath,
+    outputFolder: treeNotationTypes.absoluteFolderPath,
     target: CompileTarget,
     usePrettier: boolean
   ) {
@@ -70,22 +70,22 @@ if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toStrin
     return outputFilePath
   }
 
-  static compileGrammarForBrowser(pathToGrammar: jTreeTypes.absoluteFilePath, outputFolder: jTreeTypes.absoluteFolderPath, usePrettier = true) {
+  static compileGrammarForBrowser(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true) {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser, usePrettier)
   }
 
   // returns GrammarBackedProgramClass
-  static getProgramConstructor = (grammarPath: jTreeTypes.filepath) => {
+  static getProgramConstructor = (grammarPath: treeNotationTypes.filepath) => {
     if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
     const grammarProgram = new GrammarProgram(grammarCode)
     return <any>grammarProgram.getRootConstructor()
   }
 
-  static combineFiles = (globPatterns: jTreeTypes.globPattern[]) => {
+  static combineFiles = (globPatterns: treeNotationTypes.globPattern[]) => {
     const glob = require("glob")
     const files = jtree.Utils.flatten(<any>globPatterns.map(pattern => glob.sync(pattern)))
-    const content = files.map((path: jTreeTypes.filepath) => fs.readFileSync(path, "utf8")).join("\n")
+    const content = files.map((path: treeNotationTypes.filepath) => fs.readFileSync(path, "utf8")).join("\n")
 
     return new jtree.TreeNode(content)
   }

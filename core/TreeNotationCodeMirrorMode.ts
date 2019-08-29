@@ -1,7 +1,7 @@
 //tooling product jtree.node.js
 //tooling product jtree.browser.js
 
-import jTreeTypes from "./jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 import textMateScopeToCodeMirrorStyle from "./textMateScopeToCodeMirrorStyle"
 
 /*FOR_TYPES_ONLY*/ import { GrammarBackedRootNode } from "./GrammarLanguage"
@@ -14,7 +14,7 @@ interface treeNotationCodeMirrorState {
 class TreeNotationCodeMirrorMode {
   constructor(
     name: string,
-    getProgramConstructorMethod: () => jTreeTypes.TreeProgramConstructor,
+    getProgramConstructorMethod: () => treeNotationTypes.TreeProgramConstructor,
     getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string,
     codeMirrorLib: typeof CodeMirrorLib = undefined
   ) {
@@ -26,10 +26,10 @@ class TreeNotationCodeMirrorMode {
 
   private _name: string
   private _getProgramCodeMethod: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getProgramConstructorMethod: () => jTreeTypes.TreeProgramConstructor
+  private _getProgramConstructorMethod: () => treeNotationTypes.TreeProgramConstructor
   private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
-  private _cachedProgram: jTreeTypes.treeProgram
+  private _cachedProgram: treeNotationTypes.treeProgram
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
@@ -42,7 +42,7 @@ class TreeNotationCodeMirrorMode {
     return this._cachedProgram
   }
 
-  private _getExcludedIntelliSenseTriggerKeys(): jTreeTypes.stringMap {
+  private _getExcludedIntelliSenseTriggerKeys(): treeNotationTypes.stringMap {
     return {
       "8": "backspace",
       "9": "tab",
@@ -171,7 +171,7 @@ class TreeNotationCodeMirrorMode {
     return style
   }
 
-  private _getCellStyle(lineIndex: jTreeTypes.int, cellIndex: jTreeTypes.int): string {
+  private _getCellStyle(lineIndex: treeNotationTypes.int, cellIndex: treeNotationTypes.int): string {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?

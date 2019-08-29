@@ -2,45 +2,49 @@
 
 const fs = require("fs")
 
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 class Disk {
   static getTreeNode = () => require("../products/jtree.node.js").TreeNode // todo: cleanup
-  static rm = (path: jTreeTypes.filepath) => fs.unlinkSync(path)
+  static rm = (path: treeNotationTypes.filepath) => fs.unlinkSync(path)
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
-  static makeExecutable = (path: jTreeTypes.filepath) => fs.chmodSync(path, 0o755)
+  static makeExecutable = (path: treeNotationTypes.filepath) => fs.chmodSync(path, 0o755)
   static strCount = (str: string, reg: string) => (str.match(new RegExp(reg, "gi")) || []).length
-  static read = (path: jTreeTypes.filepath) => fs.readFileSync(path, "utf8")
-  static touch = (path: jTreeTypes.filepath) => (Disk.exists(path) ? true : Disk.write(path, ""))
-  static mkdir = (path: jTreeTypes.filepath) => require("mkdirp").sync(path)
-  static getRecursive = (path: jTreeTypes.filepath) => require("recursive-readdir-sync")(path)
-  static readJson = (path: jTreeTypes.filepath) => JSON.parse(Disk.read(path))
-  static getFileNameWithoutExtension = (path: jTreeTypes.filepath) => Disk.getFileName(path).replace(/\.[^\.]+$/, "")
-  static write = (path: jTreeTypes.filepath, content: string) => fs.writeFileSync(path, content, "utf8")
-  static writeJson = (path: jTreeTypes.filepath, content: any) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
-  static exists = (path: jTreeTypes.filepath) => fs.existsSync(path)
-  static dir = (dir: jTreeTypes.absoluteFolderPath) => fs.readdirSync(dir).filter((file: jTreeTypes.filepath) => file !== ".DS_Store")
-  static getFullPaths = (dir: jTreeTypes.absoluteFolderPath) => Disk.dir(dir).map((file: jTreeTypes.filepath) => dir.replace(/\/$/, "") + "/" + file)
-  static getFiles = (dir: jTreeTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: jTreeTypes.filepath) => fs.statSync(file).isFile())
-  static getFolders = (dir: jTreeTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: jTreeTypes.filepath) => fs.statSync(file).isDirectory())
-  static getFileName = (path: jTreeTypes.filepath) => path.split("/").pop()
-  static append = (path: jTreeTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
-  static readCsvAsTree = (path: jTreeTypes.filepath) => Disk.getTreeNode().fromCsv(Disk.read(path))
-  static readSsvAsTree = (path: jTreeTypes.filepath) => Disk.getTreeNode().fromSsv(Disk.read(path))
-  static readTsvAsTree = (path: jTreeTypes.filepath) => Disk.getTreeNode().fromTsv(Disk.read(path))
-  static insertIntoFile = (path: jTreeTypes.filepath, content: string, delimiter: string) =>
+  static read = (path: treeNotationTypes.filepath) => fs.readFileSync(path, "utf8")
+  static touch = (path: treeNotationTypes.filepath) => (Disk.exists(path) ? true : Disk.write(path, ""))
+  static mkdir = (path: treeNotationTypes.filepath) => require("mkdirp").sync(path)
+  static getRecursive = (path: treeNotationTypes.filepath) => require("recursive-readdir-sync")(path)
+  static readJson = (path: treeNotationTypes.filepath) => JSON.parse(Disk.read(path))
+  static getFileNameWithoutExtension = (path: treeNotationTypes.filepath) => Disk.getFileName(path).replace(/\.[^\.]+$/, "")
+  static write = (path: treeNotationTypes.filepath, content: string) => fs.writeFileSync(path, content, "utf8")
+  static writeJson = (path: treeNotationTypes.filepath, content: any) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
+  static exists = (path: treeNotationTypes.filepath) => fs.existsSync(path)
+  static dir = (dir: treeNotationTypes.absoluteFolderPath) => fs.readdirSync(dir).filter((file: treeNotationTypes.filepath) => file !== ".DS_Store")
+  static getFullPaths = (dir: treeNotationTypes.absoluteFolderPath) =>
+    Disk.dir(dir).map((file: treeNotationTypes.filepath) => dir.replace(/\/$/, "") + "/" + file)
+  static getFiles = (dir: treeNotationTypes.absoluteFolderPath) =>
+    Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isFile())
+  static getFolders = (dir: treeNotationTypes.absoluteFolderPath) =>
+    Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isDirectory())
+  static getFileName = (path: treeNotationTypes.filepath) => path.split("/").pop()
+  static append = (path: treeNotationTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
+  static readCsvAsTree = (path: treeNotationTypes.filepath) => Disk.getTreeNode().fromCsv(Disk.read(path))
+  static readSsvAsTree = (path: treeNotationTypes.filepath) => Disk.getTreeNode().fromSsv(Disk.read(path))
+  static readTsvAsTree = (path: treeNotationTypes.filepath) => Disk.getTreeNode().fromTsv(Disk.read(path))
+  static insertIntoFile = (path: treeNotationTypes.filepath, content: string, delimiter: string) =>
     Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
-  static detectAndReadAsTree = (path: jTreeTypes.filepath) => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
-  static getAllOf = (node: jTreeTypes.treeNode, prop: string) => node.filter((node: jTreeTypes.treeNode) => node.getWord(0) === prop)
-  static getDelimitedChildrenAsTree = (node: jTreeTypes.treeNode, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsTree(node.childrenToString())
-  static sleep = (ms: jTreeTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
-  static readTree = (path: jTreeTypes.filepath) => new (Disk.getTreeNode())(Disk.read(path))
-  static sizeOf = (path: jTreeTypes.filepath) => fs.statSync(path).size
+  static detectAndReadAsTree = (path: treeNotationTypes.filepath) => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
+  static getAllOf = (node: treeNotationTypes.treeNode, prop: string) => node.filter((node: treeNotationTypes.treeNode) => node.getWord(0) === prop)
+  static getDelimitedChildrenAsTree = (node: treeNotationTypes.treeNode, delimiter: string = undefined) =>
+    Disk.detectDelimiterAndReadAsTree(node.childrenToString())
+  static sleep = (ms: treeNotationTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
+  static readTree = (path: treeNotationTypes.filepath) => new (Disk.getTreeNode())(Disk.read(path))
+  static sizeOf = (path: treeNotationTypes.filepath) => fs.statSync(path).size
   static stripHtml = (text: string) => (text && text.replace ? text.replace(/<(?:.|\n)*?>/gm, "") : text)
   static stripParentheticals = (text: string) => (text && text.replace ? text.replace(/\((?:.|\n)*?\)/gm, "") : text)
   static escape = (str: string) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&")
-  static hasLine = (path: jTreeTypes.filepath, line: string) => Disk.read(path).includes(line)
-  static mv = (source: jTreeTypes.filepath, dest: jTreeTypes.filepath) => {
+  static hasLine = (path: treeNotationTypes.filepath, line: string) => Disk.read(path).includes(line)
+  static mv = (source: treeNotationTypes.filepath, dest: treeNotationTypes.filepath) => {
     if (Disk.exists(dest) && false) {
       console.log(`${dest} exists. Skipping`)
     } else {
@@ -63,9 +67,9 @@ class Disk {
     // todo: add more robust. align with choose delimiter
     return TreeNode.fromSsv(str)
   }
-  static deleteDuplicates = (node: jTreeTypes.treeNode, prop1: any, prop2: any, reverse = false) => {
+  static deleteDuplicates = (node: treeNotationTypes.treeNode, prop1: any, prop2: any, reverse = false) => {
     const map: any = {}
-    Disk.getAllOf(node, prop1).forEach((node: jTreeTypes.treeNode) => {
+    Disk.getAllOf(node, prop1).forEach((node: treeNotationTypes.treeNode) => {
       const val = node.get(prop2)
       console.log(val)
       if (map[val] && reverse) {
@@ -76,7 +80,7 @@ class Disk {
       } else map[val] = node
     })
   }
-  static getLastFolderName = (path: jTreeTypes.filepath) => {
+  static getLastFolderName = (path: treeNotationTypes.filepath) => {
     const parts = path.replace(/\/$/, "").split("/")
     const last = parts.pop()
     return fs.statSync(path).isDirectory() ? last : parts.pop()
@@ -87,11 +91,11 @@ class Disk {
     const prefix = !file || file.endsWith("\n") ? "" : "\n"
     return Disk.append(path, prefix + line + "\n")
   }
-  static move = (node: jTreeTypes.treeNode, newPosition: jTreeTypes.int) => {
+  static move = (node: treeNotationTypes.treeNode, newPosition: treeNotationTypes.int) => {
     node.getParent().insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
     node.destroy()
   }
-  static _getTextUrl = async (url: jTreeTypes.url) => {
+  static _getTextUrl = async (url: treeNotationTypes.url) => {
     // todo: https://visionmedia.github.io/superagent/
     // build well tested version of this.
     // have a mock server returning with all sorts of things.
@@ -99,36 +103,36 @@ class Disk {
     // todo: leave it up to user to specfiy text ro body
     return res.body || res.text || ""
   }
-  static getUrl = async (url: jTreeTypes.url) => {
+  static getUrl = async (url: treeNotationTypes.url) => {
     const superagent = require("superagent")
     const agent = superagent.agent()
     const res = await agent.get(url)
     return res
   }
-  static download = async (url: jTreeTypes.url, destination: jTreeTypes.filepath) => {
+  static download = async (url: treeNotationTypes.url, destination: treeNotationTypes.filepath) => {
     const result = await Disk._getTextUrl(url)
     Disk.write(destination, result)
   }
-  static downloadPlain = async (url: jTreeTypes.url, destination: jTreeTypes.filepath) => {
+  static downloadPlain = async (url: treeNotationTypes.url, destination: treeNotationTypes.filepath) => {
     const result = await Disk.getUrl(url)
     Disk.write(destination, result.text)
   }
-  static downloadJson = async (url: jTreeTypes.url, destination: jTreeTypes.filepath) => {
+  static downloadJson = async (url: treeNotationTypes.url, destination: treeNotationTypes.filepath) => {
     const result = await Disk._getTextUrl(url)
     if (destination) Disk.writeJson(destination, result)
     return result
   }
-  static buildMapFrom = (tree: jTreeTypes.treeNode, key: string, value: string) => {
-    const map: jTreeTypes.stringMap = {}
-    tree.forEach((child: jTreeTypes.treeNode) => {
+  static buildMapFrom = (tree: treeNotationTypes.treeNode, key: string, value: string) => {
+    const map: treeNotationTypes.stringMap = {}
+    tree.forEach((child: treeNotationTypes.treeNode) => {
       map[child.get(key)] = child.get(value)
     })
     return map
   }
   static csvToMap = (path: string, columnName: string) => {
     const tree = Disk.readCsvAsTree(path)
-    const map: jTreeTypes.stringMap = {}
-    tree.forEach((child: jTreeTypes.treeNode) => {
+    const map: treeNotationTypes.stringMap = {}
+    tree.forEach((child: treeNotationTypes.treeNode) => {
       const key = child.get(columnName)
       map[key] = child.toObject()
     })

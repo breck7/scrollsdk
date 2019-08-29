@@ -1,7 +1,7 @@
 //tooling product TreeComponentFramework.browser.js
 //tooling product TreeComponentFramework.node.js
 
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const jtree = require("../products/jtree.node.js")
 const stumpNode = require("../langs/stump/stump.node.js")
@@ -92,8 +92,8 @@ class TreeComponentCommander extends AbstractCommander {
 }
 
 abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
-  private _commandsBuffer: jTreeTypes.treeNode[]
-  private _messageBuffer: jTreeTypes.treeNode
+  private _commandsBuffer: treeNotationTypes.treeNode[]
+  private _messageBuffer: treeNotationTypes.treeNode
   private _htmlStumpNode: abstractHtmlTag
   private _cssStumpNode: abstractHtmlTag
   private _lastRenderedTime: number

@@ -3,13 +3,13 @@
 
 import TreeNode from "./TreeNode"
 import TreeUtils from "./TreeUtils"
-import jTreeTypes from "./jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {
   new (code?: string): GrammarBackedRootNode
 }
 
-declare type parserInfo = { firstWordMap: { [firstWord: string]: nodeTypeDefinitionNode }; regexTests: jTreeTypes.regexTestDef[] }
+declare type parserInfo = { firstWordMap: { [firstWord: string]: nodeTypeDefinitionNode }; regexTests: treeNotationTypes.regexTestDef[] }
 
 enum GrammarConstantsCompiler {
   stringTemplate = "stringTemplate", // replacement instructions
@@ -108,15 +108,15 @@ enum GrammarConstants {
 abstract class GrammarBackedNode extends TreeNode {
   abstract getDefinition(): AbstractGrammarDefinitionNode
 
-  getAutocompleteResults(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
+  getAutocompleteResults(partialWord: string, cellIndex: treeNotationTypes.positiveInt) {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
-  getChildInstancesOfNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): GrammarBackedNode[] {
+  getChildInstancesOfNodeTypeId(nodeTypeId: treeNotationTypes.nodeTypeId): GrammarBackedNode[] {
     return this.filter(node => node.doesExtend(nodeTypeId))
   }
 
-  doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
+  doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
     return this.getDefinition()._doesExtend(nodeTypeId)
   }
 
@@ -147,7 +147,7 @@ abstract class GrammarBackedNode extends TreeNode {
     })
   }
 
-  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: jTreeTypes.positiveInt) {
+  private _getAutocompleteResultsForCell(partialWord: string, cellIndex: treeNotationTypes.positiveInt) {
     // todo: root should be [] correct?
     const cell = this._getGrammarBackedCellArray()[cellIndex]
     return cell ? cell.getAutoCompleteWords(partialWord) : []
@@ -171,7 +171,7 @@ abstract class GrammarBackedNode extends TreeNode {
   sortNodesByInScopeOrder() {
     const nodeTypeOrder = this.getDefinition()._getMyInScopeNodeTypeIds()
     if (!nodeTypeOrder.length) return this
-    const orderMap: jTreeTypes.stringMap = {}
+    const orderMap: treeNotationTypes.stringMap = {}
     nodeTypeOrder.forEach((word, index) => {
       orderMap[word] = index
     })
@@ -183,7 +183,7 @@ abstract class GrammarBackedNode extends TreeNode {
     return this
   }
 
-  protected _getRequiredNodeErrors(errors: jTreeTypes.TreeError[] = []) {
+  protected _getRequiredNodeErrors(errors: treeNotationTypes.TreeError[] = []) {
     Object.values(this.getDefinition().getFirstWordMapWithDefinitions()).forEach(def => {
       if (def.isRequired()) {
         if (!this.getChildren().some(node => node.getDefinition() === def))
@@ -238,11 +238,11 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     return words
   }
 
-  findAllWordsWithCellType(cellTypeId: jTreeTypes.cellTypeId) {
+  findAllWordsWithCellType(cellTypeId: treeNotationTypes.cellTypeId) {
     return this.getAllTypedWords().filter(typedWord => typedWord.type === cellTypeId)
   }
 
-  findAllNodesWithNodeType(nodeTypeId: jTreeTypes.nodeTypeId) {
+  findAllNodesWithNodeType(nodeTypeId: treeNotationTypes.nodeTypeId) {
     return this.getTopDownArray().filter((node: GrammarBackedNonRootNode) => node.getDefinition().getNodeTypeIdFromDefinition() === nodeTypeId)
   }
 
@@ -276,7 +276,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     ).toFormattedTable(maxColumnWidth)
   }
 
-  getErrors(): jTreeTypes.TreeError[] {
+  getErrors(): treeNotationTypes.TreeError[] {
     return this._getRequiredNodeErrors(super.getErrors())
   }
 
@@ -305,7 +305,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     ).toTable()
   }
 
-  getAutocompleteResultsAt(lineIndex: jTreeTypes.positiveInt, charIndex: jTreeTypes.positiveInt) {
+  getAutocompleteResultsAt(lineIndex: treeNotationTypes.positiveInt, charIndex: treeNotationTypes.positiveInt) {
     const lineNode = this.nodeAtLine(lineIndex) || this
     const nodeInScope = <GrammarBackedNode>lineNode.getNodeInScopeAtCharIndex(charIndex)
 
@@ -326,7 +326,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
   getSortedByInheritance() {
     const clone = new ExtendibleTreeNode(this.clone())
     const familyTree = new GrammarProgram(clone.toString()).getNodeTypeFamilyTree()
-    const rank: jTreeTypes.stringMap = {}
+    const rank: treeNotationTypes.stringMap = {}
     familyTree.getTopDownArray().forEach((node, index) => {
       rank[node.getWord(0)] = index
     })
@@ -373,7 +373,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
       .join("\n")
   }
 
-  getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): jTreeTypes.highlightScope | undefined {
+  getCellHighlightScopeAtPosition(lineIndex: number, wordIndex: number): treeNotationTypes.highlightScope | undefined {
     this._initCellTypeCache()
     const typeNode = this._cache_highlightScopeTree.getTopDownArray()[lineIndex - 1]
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
@@ -407,7 +407,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     )
   }
 
-  getNodeTypeId(): jTreeTypes.nodeTypeId {
+  getNodeTypeId(): treeNotationTypes.nodeTypeId {
     return this.getDefinition().getNodeTypeIdFromDefinition()
   }
 
@@ -525,7 +525,7 @@ ${indent}${closeChildrenString}`
 
   // todo: remove
   get cells() {
-    const cells: jTreeTypes.stringMap = {}
+    const cells: treeNotationTypes.stringMap = {}
     this._getGrammarBackedCellArray().forEach(cell => {
       const cellTypeId = cell.getCellTypeId()
       if (!cell.isCatchAll()) cells[cellTypeId] = cell.getParsed()
@@ -543,7 +543,7 @@ class BlobNode extends GrammarBackedNonRootNode {
     return new TreeNode.Parser(BlobNode, {})
   }
 
-  getErrors(): jTreeTypes.TreeError[] {
+  getErrors(): treeNotationTypes.TreeError[] {
     return []
   }
 }
@@ -553,7 +553,7 @@ class UnknownNodeTypeNode extends GrammarBackedNonRootNode {
     return new TreeNode.Parser(UnknownNodeTypeNode, {})
   }
 
-  getErrors(): jTreeTypes.TreeError[] {
+  getErrors(): treeNotationTypes.TreeError[] {
     return [new UnknownNodeTypeError(this)]
   }
 }
@@ -562,7 +562,7 @@ class UnknownNodeTypeNode extends GrammarBackedNonRootNode {
 A cell contains a word but also the type information for that word.
 */
 abstract class AbstractGrammarBackedCell<T> {
-  constructor(node: GrammarBackedNonRootNode, index: jTreeTypes.int, typeDef: cellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean) {
+  constructor(node: GrammarBackedNonRootNode, index: treeNotationTypes.int, typeDef: cellTypeDefinitionNode, cellTypeId: string, isCatchAll: boolean) {
     this._typeDef = typeDef
     this._node = node
     this._isCatchAll = isCatchAll
@@ -573,7 +573,7 @@ abstract class AbstractGrammarBackedCell<T> {
   }
 
   private _node: GrammarBackedNonRootNode
-  protected _index: jTreeTypes.int
+  protected _index: treeNotationTypes.int
   protected _word: string
   private _typeDef: cellTypeDefinitionNode
   private _isCatchAll: boolean
@@ -644,7 +644,7 @@ abstract class AbstractGrammarBackedCell<T> {
     return this._getCellTypeDefinition().isValid(this._word, this.getNode().getRootProgramNode()) && this._isValid()
   }
 
-  getErrorIfAny(): jTreeTypes.TreeError {
+  getErrorIfAny(): treeNotationTypes.TreeError {
     if (this._word !== undefined && this.isValid()) return undefined
 
     // todo: refactor invalidwordError. We want better error messages.
@@ -749,7 +749,7 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
     return this._word
   }
 
-  getErrorIfAny(): jTreeTypes.TreeError {
+  getErrorIfAny(): treeNotationTypes.TreeError {
     return new ExtraWordError(this)
   }
 }
@@ -763,30 +763,30 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
     return this._word
   }
 
-  getErrorIfAny(): jTreeTypes.TreeError {
+  getErrorIfAny(): treeNotationTypes.TreeError {
     return new UnknownCellTypeError(this)
   }
 }
 
-abstract class AbstractTreeError implements jTreeTypes.TreeError {
+abstract class AbstractTreeError implements treeNotationTypes.TreeError {
   constructor(node: GrammarBackedNode) {
     this._node = node
   }
   private _node: GrammarBackedNode // todo: would it ever be a TreeNode?
 
-  getLineIndex(): jTreeTypes.positiveInt {
+  getLineIndex(): treeNotationTypes.positiveInt {
     return this.getLineNumber() - 1
   }
 
-  getLineNumber(): jTreeTypes.positiveInt {
+  getLineNumber(): treeNotationTypes.positiveInt {
     return this.getNode()._getLineNumber() // todo: handle sourcemaps
   }
 
-  isCursorOnWord(lineIndex: jTreeTypes.positiveInt, characterIndex: jTreeTypes.positiveInt) {
+  isCursorOnWord(lineIndex: treeNotationTypes.positiveInt, characterIndex: treeNotationTypes.positiveInt) {
     return lineIndex === this.getLineIndex() && this._doesCharacterIndexFallOnWord(characterIndex)
   }
 
-  private _doesCharacterIndexFallOnWord(characterIndex: jTreeTypes.positiveInt) {
+  private _doesCharacterIndexFallOnWord(characterIndex: treeNotationTypes.positiveInt) {
     return this.getCellIndex() === this.getNode().getWordIndexAtCharacterIndex(characterIndex)
   }
 
@@ -969,12 +969,12 @@ class BlankLineError extends UnknownNodeTypeError {
 }
 
 class MissingRequiredNodeTypeError extends AbstractTreeError {
-  constructor(node: GrammarBackedNode, missingNodeTypeId: jTreeTypes.firstWord) {
+  constructor(node: GrammarBackedNode, missingNodeTypeId: treeNotationTypes.firstWord) {
     super(node)
     this._missingNodeTypeId = missingNodeTypeId
   }
 
-  private _missingNodeTypeId: jTreeTypes.nodeTypeId
+  private _missingNodeTypeId: treeNotationTypes.nodeTypeId
 
   getMessage(): string {
     return super.getMessage() + ` A "${this._missingNodeTypeId}" is required.`
@@ -1073,7 +1073,7 @@ class GrammarReservedWordsTestNode extends AbstractGrammarWordTestNode {
 
 // todo: remove in favor of custom word type constructors
 class EnumFromCellTypesTestNode extends AbstractGrammarWordTestNode {
-  _getEnumFromCellTypes(programRootNode: GrammarBackedRootNode): jTreeTypes.stringMap {
+  _getEnumFromCellTypes(programRootNode: GrammarBackedRootNode): treeNotationTypes.stringMap {
     const cellTypeIds = this.getWordsFrom(1)
     const enumGroup = cellTypeIds.join(" ")
     // note: hack where we store it on the program. otherwise has global effects.
@@ -1081,8 +1081,8 @@ class EnumFromCellTypesTestNode extends AbstractGrammarWordTestNode {
     if ((<any>programRootNode)._enumMaps[enumGroup]) return (<any>programRootNode)._enumMaps[enumGroup]
 
     const wordIndex = 1
-    const map: jTreeTypes.stringMap = {}
-    const cellTypeMap: jTreeTypes.stringMap = {}
+    const map: treeNotationTypes.stringMap = {}
+    const cellTypeMap: treeNotationTypes.stringMap = {}
     cellTypeIds.forEach(typeId => (cellTypeMap[typeId] = true))
     programRootNode
       .getAllTypedWords()
@@ -1101,7 +1101,7 @@ class EnumFromCellTypesTestNode extends AbstractGrammarWordTestNode {
 }
 
 class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
-  private _map: jTreeTypes.stringMap
+  private _map: treeNotationTypes.stringMap
 
   isValid(str: string) {
     // enum c c++ java
@@ -1115,7 +1115,7 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
 }
 
 abstract class AbstractExtendibleTreeNode extends TreeNode {
-  _getFromExtended(firstWordPath: jTreeTypes.firstWordPath) {
+  _getFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
     return hit ? hit.get(firstWordPath) : undefined
   }
@@ -1129,15 +1129,15 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     return this._getAncestorsArray()[1]
   }
 
-  _hasFromExtended(firstWordPath: jTreeTypes.firstWordPath) {
+  _hasFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
     return !!this._getNodeFromExtended(firstWordPath)
   }
 
-  _getNodeFromExtended(firstWordPath: jTreeTypes.firstWordPath) {
+  _getNodeFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
   }
 
-  _doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
+  _doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
     return this._getAncestorSet().has(nodeTypeId)
   }
 
@@ -1148,7 +1148,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   abstract _getId(): string
 
-  private _cache_ancestorSet: Set<jTreeTypes.nodeTypeId>
+  private _cache_ancestorSet: Set<treeNotationTypes.nodeTypeId>
   private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
 
   // Note: the order is: [this, parent, grandParent, ...]
@@ -1198,7 +1198,7 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
 
 class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   createParser() {
-    const types: jTreeTypes.stringMap = {}
+    const types: treeNotationTypes.stringMap = {}
     types[GrammarConstants.regex] = GrammarRegexTestNode
     types[GrammarConstants.reservedWords] = GrammarReservedWordsTestNode
     types[GrammarConstants.enumFromCellTypes] = EnumFromCellTypesTestNode
@@ -1240,7 +1240,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
 
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
   getCellConstructor(): typeof AbstractGrammarBackedCell {
-    const kinds: jTreeTypes.stringMap = {}
+    const kinds: treeNotationTypes.stringMap = {}
     kinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell
     kinds[PreludeCellTypeIds.floatCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell
@@ -1294,7 +1294,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     )
   }
 
-  getCellTypeId(): jTreeTypes.cellTypeId {
+  getCellTypeId(): treeNotationTypes.cellTypeId {
     return this.getWord(0)
   }
 
@@ -1313,7 +1313,7 @@ class GrammarCompilerNode extends TreeNode {
       GrammarConstantsCompiler.openChildren,
       GrammarConstantsCompiler.closeChildren
     ]
-    const map: jTreeTypes.firstWordToNodeConstructorMap = {}
+    const map: treeNotationTypes.firstWordToNodeConstructorMap = {}
     types.forEach(type => {
       map[type] = TreeNode
     })
@@ -1380,7 +1380,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.todoComment
     ]
 
-    const map: jTreeTypes.firstWordToNodeConstructorMap = {}
+    const map: treeNotationTypes.firstWordToNodeConstructorMap = {}
     types.forEach(type => {
       map[type] = TreeNode
     })
@@ -1419,7 +1419,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this._getChildrenByNodeConstructorInExtended(GrammarExampleNode)
   }
 
-  getNodeTypeIdFromDefinition(): jTreeTypes.nodeTypeId {
+  getNodeTypeIdFromDefinition(): treeNotationTypes.nodeTypeId {
     return this.getWord(0)
   }
 
@@ -1436,7 +1436,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this.has(GrammarConstants.abstract)
   }
 
-  private _cache_definedNodeConstructor: jTreeTypes.RunTimeNodeConstructor
+  private _cache_definedNodeConstructor: treeNotationTypes.RunTimeNodeConstructor
 
   _getConstructorDefinedInGrammar() {
     if (!this._cache_definedNodeConstructor)
@@ -1463,7 +1463,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return <GrammarProgram>this.getParent()
   }
 
-  protected _getCustomJavascriptMethods(): jTreeTypes.javascriptCode {
+  protected _getCustomJavascriptMethods(): treeNotationTypes.javascriptCode {
     const hasJsCode = this.has(GrammarConstants.javascript)
     return hasJsCode ? this.getNode(GrammarConstants.javascript).childrenToString() : ""
   }
@@ -1476,11 +1476,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   // todo: remove
-  getRunTimeFirstWordsInScope(): jTreeTypes.nodeTypeId[] {
+  getRunTimeFirstWordsInScope(): treeNotationTypes.nodeTypeId[] {
     return this._getParser().getFirstWordOptions()
   }
 
-  getRequiredCellTypeIds(): jTreeTypes.cellTypeId[] {
+  getRequiredCellTypeIds(): treeNotationTypes.cellTypeId[] {
     const parameters = this._getFromExtended(GrammarConstants.cells)
     return parameters ? parameters.split(" ") : []
   }
@@ -1507,11 +1507,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return getters.join("\n")
   }
 
-  getCatchAllCellTypeId(): jTreeTypes.cellTypeId | undefined {
+  getCatchAllCellTypeId(): treeNotationTypes.cellTypeId | undefined {
     return this._getFromExtended(GrammarConstants.catchAllCellType)
   }
 
-  protected _createParserInfo(nodeTypeIdsInScope: jTreeTypes.nodeTypeId[]): parserInfo {
+  protected _createParserInfo(nodeTypeIdsInScope: treeNotationTypes.nodeTypeId[]): parserInfo {
     const result: parserInfo = {
       firstWordMap: {},
       regexTests: []
@@ -1533,19 +1533,19 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return result
   }
 
-  getTopNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  getTopNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
     arr.sort(TreeUtils.sortByAccessor((definition: nodeTypeDefinitionNode) => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }
 
-  _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  _getMyInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
     const nodeTypesNode = this.getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
 
-  protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  protected _getInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
     // todo: allow multiple of these if we allow mixins?
     const ids = this._getMyInScopeNodeTypeIds()
     const parentDef = this._getExtendedParent()
@@ -1556,7 +1556,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this._hasFromExtended(GrammarConstants.required)
   }
 
-  getNodeTypeDefinitionByNodeTypeId(nodeTypeId: jTreeTypes.nodeTypeId): AbstractGrammarDefinitionNode {
+  getNodeTypeDefinitionByNodeTypeId(nodeTypeId: treeNotationTypes.nodeTypeId): AbstractGrammarDefinitionNode {
     // todo: return catch all?
     const def = this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
     if (def) return def
@@ -1565,7 +1565,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
   }
 
-  getFirstCellTypeId(): jTreeTypes.cellTypeId {
+  getFirstCellTypeId(): treeNotationTypes.cellTypeId {
     return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyCell
   }
 
@@ -1597,13 +1597,13 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this.get(GrammarConstants.baseNodeType) === GrammarConstants.blobNode
   }
 
-  private _getErrorMethodToJavascript(): jTreeTypes.javascriptCode {
+  private _getErrorMethodToJavascript(): treeNotationTypes.javascriptCode {
     if (this._isBlobNodeType()) return "getErrors() { return [] }" // Skips parsing child nodes for perf gains.
     if (this._isErrorNodeType()) return "getErrors() { return this._getErrorNodeErrors() }"
     return ""
   }
 
-  private _getParserToJavascript(): jTreeTypes.javascriptCode {
+  private _getParserToJavascript(): treeNotationTypes.javascriptCode {
     if (this._isBlobNodeType())
       // todo: do we need this?
       return "createParser() { return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType())}"
@@ -1639,7 +1639,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }`
   }
 
-  private _getCatchAllNodeConstructorToJavascript(): jTreeTypes.javascriptCode {
+  private _getCatchAllNodeConstructorToJavascript(): treeNotationTypes.javascriptCode {
     if (this._isBlobNodeType()) return "this._getBlobNodeCatchAllNodeType()"
     const nodeTypeId = this.get(GrammarConstants.catchAllNodeType)
     if (!nodeTypeId) return ""
@@ -1648,7 +1648,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return nodeDef._getGeneratedClassName()
   }
 
-  _nodeDefToJavascriptClass(): jTreeTypes.javascriptCode {
+  _nodeDefToJavascriptClass(): treeNotationTypes.javascriptCode {
     const components = [
       this._getParserToJavascript(),
       this._getErrorMethodToJavascript(),
@@ -1694,7 +1694,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     }`
   }
 
-  _getCompilerObject(): jTreeTypes.stringMap {
+  _getCompilerObject(): treeNotationTypes.stringMap {
     let obj: { [key: string]: string } = {}
     const items = this._getChildrenByNodeConstructorInExtended(GrammarCompilerNode)
     items.reverse() // Last definition wins.
@@ -1761,15 +1761,15 @@ ${captures}
        pop: true`
   }
 
-  private _cache_nodeTypeInheritanceSet: Set<jTreeTypes.nodeTypeId>
-  private _cache_ancestorNodeTypeIdsArray: jTreeTypes.nodeTypeId[]
+  private _cache_nodeTypeInheritanceSet: Set<treeNotationTypes.nodeTypeId>
+  private _cache_ancestorNodeTypeIdsArray: treeNotationTypes.nodeTypeId[]
 
   _getNodeTypeInheritanceSet() {
     if (!this._cache_nodeTypeInheritanceSet) this._cache_nodeTypeInheritanceSet = new Set(this.getAncestorNodeTypeIdsArray())
     return this._cache_nodeTypeInheritanceSet
   }
 
-  getAncestorNodeTypeIdsArray(): jTreeTypes.nodeTypeId[] {
+  getAncestorNodeTypeIdsArray(): treeNotationTypes.nodeTypeId[] {
     if (!this._cache_ancestorNodeTypeIdsArray) {
       this._cache_ancestorNodeTypeIdsArray = this._getAncestorsArray().map(def => (<AbstractGrammarDefinitionNode>def).getNodeTypeIdFromDefinition())
       this._cache_ancestorNodeTypeIdsArray.reverse()
@@ -1790,7 +1790,7 @@ ${captures}
     return val ? parseFloat(val) : 0
   }
 
-  private _getExtendedNodeTypeId(): jTreeTypes.nodeTypeId {
+  private _getExtendedNodeTypeId(): treeNotationTypes.nodeTypeId {
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
   }
@@ -1803,7 +1803,7 @@ class nodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {}
 // constructor for new language that takes files in that language to execute, compile, etc.
 class GrammarProgram extends AbstractGrammarDefinitionNode {
   createParser() {
-    const map: jTreeTypes.stringMap = {}
+    const map: treeNotationTypes.stringMap = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [
@@ -1844,7 +1844,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._cache_compiledLoadedNodeTypes
   }
 
-  private _importNodeJsRootNodeTypeConstructor(code: jTreeTypes.javascriptCode): any {
+  private _importNodeJsRootNodeTypeConstructor(code: treeNotationTypes.javascriptCode): any {
     const vm = require("vm")
     // todo: cleanup up
     try {
@@ -1865,7 +1865,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
   }
 
-  private _importBrowserRootNodeTypeConstructor(code: jTreeTypes.javascriptCode, name: string): any {
+  private _importBrowserRootNodeTypeConstructor(code: treeNotationTypes.javascriptCode, name: string): any {
     const script = document.createElement("script")
     script.innerHTML = code
     document.head.appendChild(script)
@@ -1876,7 +1876,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
   getErrorsInGrammarExamples() {
     const programConstructor = this.getRootConstructor()
-    const errors: jTreeTypes.TreeError[] = []
+    const errors: treeNotationTypes.TreeError[] = []
     this.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
         const exampleProgram = new programConstructor(example.childrenToString())
@@ -1928,7 +1928,7 @@ This readme was auto-generated using the [JTree library](https://github.com/tree
   }
 
   toBundle() {
-    const files: jTreeTypes.stringMap = {}
+    const files: treeNotationTypes.stringMap = {}
     const rootNodeDef = this._getRootNodeTypeDefinitionNode()
     const languageName = this.getExtensionName()
     const example = rootNodeDef.getExamples()[0]
@@ -1987,7 +1987,7 @@ ${testCode}`
     return this._cache_cellTypes
   }
 
-  getCellTypeDefinitionById(cellTypeId: jTreeTypes.cellTypeId) {
+  getCellTypeDefinitionById(cellTypeId: treeNotationTypes.cellTypeId) {
     // todo: return unknownCellTypeDefinition? or is that handled somewhere else?
     return this.getCellTypeDefinitions()[cellTypeId]
   }
@@ -2052,12 +2052,12 @@ ${testCode}`
     return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
   }
 
-  _getMyInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  _getMyInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
     const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
 
-  protected _getInScopeNodeTypeIds(): jTreeTypes.nodeTypeId[] {
+  protected _getInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
     const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
@@ -2104,11 +2104,11 @@ ${testCode}`
       : this.getExtensionName()
   }
 
-  toNodeJsJavascript(jtreePath = "jtree"): jTreeTypes.javascriptCode {
+  toNodeJsJavascript(jtreePath = "jtree"): treeNotationTypes.javascriptCode {
     return this._rootNodeDefToJavascriptClass(jtreePath, true).trim()
   }
 
-  toBrowserJavascript(): jTreeTypes.javascriptCode {
+  toBrowserJavascript(): treeNotationTypes.javascriptCode {
     return this._rootNodeDefToJavascriptClass("", false).trim()
   }
 
@@ -2116,7 +2116,7 @@ ${testCode}`
     return TreeUtils.ucfirst(this.getExtensionName())
   }
 
-  private _rootNodeDefToJavascriptClass(jtreePath: string, forNodeJs = true): jTreeTypes.javascriptCode {
+  private _rootNodeDefToJavascriptClass(jtreePath: string, forNodeJs = true): treeNotationTypes.javascriptCode {
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")

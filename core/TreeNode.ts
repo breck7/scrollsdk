@@ -4,10 +4,10 @@
 import AbstractNode from "./AbstractNode.node"
 import TreeUtils from "./TreeUtils"
 import Parser from "./Parser"
-import jTreeTypes from "./jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
-declare type int = jTreeTypes.int
-declare type word = jTreeTypes.word
+declare type int = treeNotationTypes.int
+declare type word = treeNotationTypes.word
 
 declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any
@@ -34,7 +34,7 @@ enum WhereOperators {
 }
 
 class TreeNode extends AbstractNode {
-  constructor(children?: jTreeTypes.children, line?: string, parent?: TreeNode) {
+  constructor(children?: treeNotationTypes.children, line?: string, parent?: TreeNode) {
     super()
     this._parent = parent
     this._setLine(line)
@@ -54,7 +54,7 @@ class TreeNode extends AbstractNode {
     return Promise.all(this.map(child => child.execute(context)))
   }
 
-  getErrors(): jTreeTypes.TreeError[] {
+  getErrors(): treeNotationTypes.TreeError[] {
     return []
   }
 
@@ -105,11 +105,11 @@ class TreeNode extends AbstractNode {
     return this._parent
   }
 
-  getPoint(): jTreeTypes.point {
+  getPoint(): treeNotationTypes.point {
     return this._getPoint()
   }
 
-  protected _getPoint(relativeTo?: TreeNode): jTreeTypes.point {
+  protected _getPoint(relativeTo?: TreeNode): treeNotationTypes.point {
     return {
       x: this._getXCoordinate(relativeTo),
       y: this._getYCoordinate(relativeTo)
@@ -131,7 +131,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  getTopDownArray(): jTreeTypes.treeNode[] {
+  getTopDownArray(): treeNotationTypes.treeNode[] {
     const arr: TreeNode[] = []
     this._getTopDownArray(arr)
     return arr
@@ -144,7 +144,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  nodeAtLine(lineNumber: jTreeTypes.positiveInt): TreeNode | undefined {
+  nodeAtLine(lineNumber: treeNotationTypes.positiveInt): TreeNode | undefined {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (lineNumber === index) return node
@@ -209,15 +209,15 @@ class TreeNode extends AbstractNode {
     )
   }
 
-  printLinesFrom(start: jTreeTypes.int, quantity: jTreeTypes.int) {
+  printLinesFrom(start: treeNotationTypes.int, quantity: treeNotationTypes.int) {
     return this._printLinesFrom(start, quantity, false)
   }
 
-  printLinesWithLineNumbersFrom(start: jTreeTypes.int, quantity: jTreeTypes.int) {
+  printLinesWithLineNumbersFrom(start: treeNotationTypes.int, quantity: treeNotationTypes.int) {
     return this._printLinesFrom(start, quantity, true)
   }
 
-  private _printLinesFrom(start: jTreeTypes.int, quantity: jTreeTypes.int, printLineNumbers: boolean) {
+  private _printLinesFrom(start: treeNotationTypes.int, quantity: treeNotationTypes.int, printLineNumbers: boolean) {
     // todo: use iterator for better perf?
     const end = start + quantity
     this.toString()
@@ -264,7 +264,7 @@ class TreeNode extends AbstractNode {
     return this._getWords(0)
   }
 
-  doesExtend(nodeTypeId: jTreeTypes.nodeTypeId) {
+  doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
     return false
   }
 
@@ -312,7 +312,7 @@ class TreeNode extends AbstractNode {
     return [oneToTwo, twoToOne]
   }
 
-  private _getWordIndexCharacterStartPosition(wordIndex: int): jTreeTypes.positiveInt {
+  private _getWordIndexCharacterStartPosition(wordIndex: int): treeNotationTypes.positiveInt {
     const xiLength = this.getXI().length
     const numIndents = this._getXCoordinate(undefined) - 1
     const indentPosition = xiLength * numIndents
@@ -326,7 +326,7 @@ class TreeNode extends AbstractNode {
     )
   }
 
-  getNodeInScopeAtCharIndex(charIndex: jTreeTypes.positiveInt) {
+  getNodeInScopeAtCharIndex(charIndex: treeNotationTypes.positiveInt) {
     if (this.isRoot()) return this
     let wordIndex = this.getWordIndexAtCharacterIndex(charIndex)
     if (wordIndex > 0) return this
@@ -349,7 +349,7 @@ class TreeNode extends AbstractNode {
   }
 
   getAllWordBoundaryCoordinates() {
-    const coordinates: jTreeTypes.point[] = []
+    const coordinates: treeNotationTypes.point[] = []
     let line = 0
     for (let node of this.getTopDownArrayIterator()) {
       ;(<TreeNode>node).getWordBoundaryIndices().forEach(index => {
@@ -364,7 +364,7 @@ class TreeNode extends AbstractNode {
     return coordinates
   }
 
-  getWordBoundaryIndices(): jTreeTypes.positiveInt[] {
+  getWordBoundaryIndices(): treeNotationTypes.positiveInt[] {
     const boundaries = [0]
     let numberOfIndents = this._getXCoordinate(undefined) - 1
     let start = numberOfIndents
@@ -384,7 +384,7 @@ class TreeNode extends AbstractNode {
     return boundaries
   }
 
-  getWordIndexAtCharacterIndex(charIndex: jTreeTypes.positiveInt): int {
+  getWordIndexAtCharacterIndex(charIndex: treeNotationTypes.positiveInt): int {
     // todo: is this correct thinking for handling root?
     if (this.isRoot()) return 0
     const numberOfIndents = this._getXCoordinate(undefined) - 1
@@ -403,11 +403,11 @@ class TreeNode extends AbstractNode {
     return spots[charIndex]
   }
 
-  getAllErrors(lineStartsAt = 1): jTreeTypes.TreeError[] {
-    const errors: jTreeTypes.TreeError[] = []
+  getAllErrors(lineStartsAt = 1): treeNotationTypes.TreeError[] {
+    const errors: treeNotationTypes.TreeError[] = []
     for (let node of this.getTopDownArray()) {
       node._cachedLineNumber = lineStartsAt // todo: cleanup
-      const errs: jTreeTypes.TreeError[] = node.getErrors()
+      const errs: treeNotationTypes.TreeError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       // delete node._cachedLineNumber
       lineStartsAt++
@@ -485,30 +485,30 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: return array? getPathArray?
-  protected _getFirstWordPath(relativeTo?: TreeNode): jTreeTypes.firstWordPath {
+  protected _getFirstWordPath(relativeTo?: TreeNode): treeNotationTypes.firstWordPath {
     if (this.isRoot(relativeTo)) return ""
     else if (this.getParent().isRoot(relativeTo)) return this.getFirstWord()
 
     return this.getParent()._getFirstWordPath(relativeTo) + this.getXI() + this.getFirstWord()
   }
 
-  getFirstWordPathRelativeTo(relativeTo?: TreeNode): jTreeTypes.firstWordPath {
+  getFirstWordPathRelativeTo(relativeTo?: TreeNode): treeNotationTypes.firstWordPath {
     return this._getFirstWordPath(relativeTo)
   }
 
-  getFirstWordPath(): jTreeTypes.firstWordPath {
+  getFirstWordPath(): treeNotationTypes.firstWordPath {
     return this._getFirstWordPath()
   }
 
-  getPathVector(): jTreeTypes.pathVector {
+  getPathVector(): treeNotationTypes.pathVector {
     return this._getPathVector()
   }
 
-  getPathVectorRelativeTo(relativeTo?: TreeNode): jTreeTypes.pathVector {
+  getPathVectorRelativeTo(relativeTo?: TreeNode): treeNotationTypes.pathVector {
     return this._getPathVector(relativeTo)
   }
 
-  protected _getPathVector(relativeTo?: TreeNode): jTreeTypes.pathVector {
+  protected _getPathVector(relativeTo?: TreeNode): treeNotationTypes.pathVector {
     if (this.isRoot(relativeTo)) return []
     const path = this.getParent()._getPathVector(relativeTo)
     path.push(this.getIndex())
@@ -529,12 +529,12 @@ class TreeNode extends AbstractNode {
       .join(`<span class="zIncrement">${this.getZI()}</span>`)
   }
 
-  protected _getXmlContent(indentCount: jTreeTypes.positiveInt) {
+  protected _getXmlContent(indentCount: treeNotationTypes.positiveInt) {
     if (this.getContent() !== undefined) return this.getContentWithChildren()
     return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
 
-  protected _toXml(indentCount: jTreeTypes.positiveInt) {
+  protected _toXml(indentCount: treeNotationTypes.positiveInt) {
     const indent = " ".repeat(indentCount)
     const tag = this.getFirstWord()
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
@@ -717,7 +717,7 @@ class TreeNode extends AbstractNode {
     return this._getChildren().slice(0)
   }
 
-  get length(): jTreeTypes.positiveInt {
+  get length(): treeNotationTypes.positiveInt {
     return this._getChildren().length
   }
 
@@ -738,7 +738,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _toObject() {
-    const obj: jTreeTypes.stringMap = {}
+    const obj: treeNotationTypes.stringMap = {}
     this.forEach(node => {
       const tuple = node._toObjectTuple()
       obj[tuple[0]] = tuple[1]
@@ -746,7 +746,7 @@ class TreeNode extends AbstractNode {
     return obj
   }
 
-  toHtml(): jTreeTypes.htmlString {
+  toHtml(): treeNotationTypes.htmlString {
     return this._childrenToHtml(0)
   }
 
@@ -776,7 +776,7 @@ class TreeNode extends AbstractNode {
     return this.map(child => child.compile()).join(this._getChildJoinCharacter())
   }
 
-  toXml(): jTreeTypes.xmlString {
+  toXml(): treeNotationTypes.xmlString {
     return this._childrenToXml(0)
   }
 
@@ -843,11 +843,11 @@ class TreeNode extends AbstractNode {
     return this.map(node => node._toYamlAssociativeArrayElement(indentLevel))
   }
 
-  toJsonSubset(): jTreeTypes.jsonSubset {
+  toJsonSubset(): treeNotationTypes.jsonSubset {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  findNodes(firstWordPath: jTreeTypes.firstWordPath | jTreeTypes.firstWordPath[]): TreeNode[] {
+  findNodes(firstWordPath: treeNotationTypes.firstWordPath | treeNotationTypes.firstWordPath[]): TreeNode[] {
     // todo: can easily speed this up
     const map: any = {}
     if (!Array.isArray(firstWordPath)) firstWordPath = [firstWordPath]
@@ -858,7 +858,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  format(str: jTreeTypes.formatString): string {
+  format(str: treeNotationTypes.formatString): string {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }
@@ -867,7 +867,7 @@ class TreeNode extends AbstractNode {
     return this.map(node => node.get(path))
   }
 
-  getFiltered(fn: jTreeTypes.filterFn) {
+  getFiltered(fn: treeNotationTypes.filterFn) {
     const clone = this.clone()
     clone
       .filter((node, index) => !fn(node, index))
@@ -877,20 +877,20 @@ class TreeNode extends AbstractNode {
     return clone
   }
 
-  getNode(firstWordPath: jTreeTypes.firstWordPath) {
+  getNode(firstWordPath: treeNotationTypes.firstWordPath) {
     return this._getNodeByPath(firstWordPath)
   }
 
-  get(firstWordPath: jTreeTypes.firstWordPath) {
+  get(firstWordPath: treeNotationTypes.firstWordPath) {
     const node = this._getNodeByPath(firstWordPath)
     return node === undefined ? undefined : node.getContent()
   }
 
-  getNodesByGlobPath(query: jTreeTypes.globPath): TreeNode[] {
+  getNodesByGlobPath(query: treeNotationTypes.globPath): TreeNode[] {
     return this._getNodesByGlobPath(query)
   }
 
-  private _getNodesByGlobPath(globPath: jTreeTypes.globPath): TreeNode[] {
+  private _getNodesByGlobPath(globPath: treeNotationTypes.globPath): TreeNode[] {
     const xi = this.getXI()
     if (!globPath.includes(xi)) {
       if (globPath === "*") return this.getChildren()
@@ -905,7 +905,7 @@ class TreeNode extends AbstractNode {
     return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)))
   }
 
-  protected _getNodeByPath(firstWordPath: jTreeTypes.firstWordPath): TreeNode {
+  protected _getNodeByPath(firstWordPath: treeNotationTypes.firstWordPath): TreeNode {
     const xi = this.getXI()
     if (!firstWordPath.includes(xi)) {
       const index = this.indexOfLast(firstWordPath)
@@ -939,7 +939,7 @@ class TreeNode extends AbstractNode {
   protected _getUnionNames() {
     if (!this.length) return []
 
-    const obj: jTreeTypes.stringMap = {}
+    const obj: treeNotationTypes.stringMap = {}
     this.forEach((node: TreeNode) => {
       if (!node.length) return undefined
       node.forEach(node => {
@@ -985,7 +985,7 @@ class TreeNode extends AbstractNode {
     return ancestorNodes
   }
 
-  pathVectorToFirstWordPath(pathVector: jTreeTypes.pathVector): word[] {
+  pathVectorToFirstWordPath(pathVector: treeNotationTypes.pathVector): word[] {
     const path = pathVector.slice() // copy array
     const names = []
     let node: TreeNode = this
@@ -1020,7 +1020,7 @@ class TreeNode extends AbstractNode {
     return types
   }
 
-  toDataTable(header = this._getUnionNames()): jTreeTypes.dataTable {
+  toDataTable(header = this._getUnionNames()): treeNotationTypes.dataTable {
     const types = this._getTypes(header)
     const parsers: { [parseName: string]: (str: string) => any } = {
       string: str => str,
@@ -1033,7 +1033,7 @@ class TreeNode extends AbstractNode {
     return arrays.rows
   }
 
-  toDelimited(delimiter: jTreeTypes.delimiter, header = this._getUnionNames()) {
+  toDelimited(delimiter: treeNotationTypes.delimiter, header = this._getUnionNames()) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn: cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
     return this._toDelimited(delimiter, header, cellFn)
@@ -1067,7 +1067,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  protected _toDelimited(delimiter: jTreeTypes.delimiter, header: string[], cellFn: cellFn) {
+  protected _toDelimited(delimiter: treeNotationTypes.delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
@@ -1097,7 +1097,7 @@ class TreeNode extends AbstractNode {
       })
     })
 
-    const cellFn = (cellText: string, row: jTreeTypes.positiveInt, col: jTreeTypes.positiveInt) => {
+    const cellFn = (cellText: string, row: treeNotationTypes.positiveInt, col: treeNotationTypes.positiveInt) => {
       const width = widths[col]
       // Strip newlines in fixedWidth output
       const cellValue = cellText.toString().replace(/\n/g, "\\n")
@@ -1118,13 +1118,13 @@ class TreeNode extends AbstractNode {
     return this._toOutline(node => node.getLine())
   }
 
-  toMappedOutline(nodeFn: jTreeTypes.nodeToStringFn): string {
+  toMappedOutline(nodeFn: treeNotationTypes.nodeToStringFn): string {
     return this._toOutline(nodeFn)
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  protected _toOutline(nodeFn: jTreeTypes.nodeToStringFn) {
-    const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: jTreeTypes.nodeToStringFn, callback: any) => {
+  protected _toOutline(nodeFn: treeNotationTypes.nodeToStringFn) {
+    const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: treeNotationTypes.nodeToStringFn, callback: any) => {
       let lastStatesCopy = lastStates.slice(0)
       const node: TreeNode = outlineTreeNode.node
 
@@ -1165,7 +1165,7 @@ class TreeNode extends AbstractNode {
 
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
-  split(firstWord: jTreeTypes.word): TreeNode[] {
+  split(firstWord: treeNotationTypes.word): TreeNode[] {
     const constructor = <any>this.constructor
     const YI = this.getYI()
     const ZI = this.getZI()
@@ -1180,7 +1180,7 @@ class TreeNode extends AbstractNode {
     return this.toMarkdownTableAdvanced(this._getUnionNames(), (val: string) => val)
   }
 
-  toMarkdownTableAdvanced(columns: word[], formatFn: jTreeTypes.formatFunction): string {
+  toMarkdownTableAdvanced(columns: word[], formatFn: treeNotationTypes.formatFunction): string {
     const matrix = this._getMatrix(columns)
     const empty = columns.map(col => "-")
     matrix.unshift(empty)
@@ -1273,7 +1273,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(firstWord: jTreeTypes.word, content: any, circularCheckArray: Object[]) {
+  protected _appendFromJavascriptObjectTuple(firstWord: treeNotationTypes.word, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let children
@@ -1302,7 +1302,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: protected?
-  _setLineAndChildren(line: string, children?: jTreeTypes.children, index = this.length) {
+  _setLineAndChildren(line: string, children?: treeNotationTypes.children, index = this.length) {
     const nodeConstructor: any = this._getParser()._getNodeConstructor(line, this)
     const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
@@ -1377,7 +1377,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  toObject(): jTreeTypes.stringMap {
+  toObject(): treeNotationTypes.stringMap {
     return this._toObject()
   }
 
@@ -1398,7 +1398,7 @@ class TreeNode extends AbstractNode {
     return newIndex
   }
 
-  protected _childrenToXml(indentCount: jTreeTypes.positiveInt) {
+  protected _childrenToXml(indentCount: treeNotationTypes.positiveInt) {
     return this.map(node => node._toXml(indentCount)).join("")
   }
 
@@ -1428,15 +1428,15 @@ class TreeNode extends AbstractNode {
     return this.getChildren().map(fn)
   }
 
-  filter(fn: jTreeTypes.filterFn) {
+  filter(fn: treeNotationTypes.filterFn) {
     return this.getChildren().filter(fn)
   }
 
-  find(fn: jTreeTypes.filterFn) {
+  find(fn: treeNotationTypes.filterFn) {
     return this.getChildren().find(fn)
   }
 
-  every(fn: jTreeTypes.everyFn) {
+  every(fn: treeNotationTypes.everyFn) {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (!fn(node, index)) return false
@@ -1445,7 +1445,7 @@ class TreeNode extends AbstractNode {
     return true
   }
 
-  forEach(fn: jTreeTypes.forEachFn) {
+  forEach(fn: treeNotationTypes.forEachFn) {
     this.getChildren().forEach(fn)
     return this
   }
@@ -1461,7 +1461,7 @@ class TreeNode extends AbstractNode {
 
   // todo: make 0 and 1 a param
   getInheritanceTree() {
-    const paths: jTreeTypes.stringMap = {}
+    const paths: treeNotationTypes.stringMap = {}
     const result = new TreeNode()
     this.forEach(node => {
       const key = node.getWord(0)
@@ -1559,7 +1559,7 @@ class TreeNode extends AbstractNode {
   }
 
   private _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes: TreeNode[], thisIdColumnNumber: int, extendsIdColumnNumber: int) {
-    const map: { [nodeId: string]: jTreeTypes.inheritanceInfo } = {}
+    const map: { [nodeId: string]: treeNotationTypes.inheritanceInfo } = {}
     for (let node of nodes) {
       const nodeId = node.getWord(thisIdColumnNumber)
       if (map[nodeId]) throw new Error(`Tried to define a node with id "${nodeId}" but one is already defined.`)
@@ -1658,7 +1658,7 @@ class TreeNode extends AbstractNode {
     return clone
   }
 
-  setChildren(children: jTreeTypes.children) {
+  setChildren(children: treeNotationTypes.children) {
     return this._setChildren(children)
   }
 
@@ -1755,7 +1755,7 @@ class TreeNode extends AbstractNode {
     ;(this.getParent() as TreeNode)._deleteNode(this)
   }
 
-  set(firstWordPath: jTreeTypes.firstWordPath, text: string) {
+  set(firstWordPath: treeNotationTypes.firstWordPath, text: string) {
     return this.touchNode(firstWordPath).setContentWithChildren(text)
   }
 
@@ -1771,7 +1771,7 @@ class TreeNode extends AbstractNode {
     return this._setLineAndChildren(line)
   }
 
-  appendLineAndChildren(line: string, children: jTreeTypes.children) {
+  appendLineAndChildren(line: string, children: treeNotationTypes.children) {
     return this._setLineAndChildren(line, children)
   }
 
@@ -1825,7 +1825,7 @@ class TreeNode extends AbstractNode {
     return node.copyTo(new (<any>this.constructor)(), 0)
   }
 
-  sort(fn: jTreeTypes.sortFn) {
+  sort(fn: treeNotationTypes.sortFn) {
     this._getChildrenArray().sort(fn)
     this._clearIndex()
     return this
@@ -1836,7 +1836,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  protected _rename(oldFirstWord: jTreeTypes.word, newFirstWord: jTreeTypes.word) {
+  protected _rename(oldFirstWord: treeNotationTypes.word, newFirstWord: treeNotationTypes.word) {
     const index = this.indexOf(oldFirstWord)
 
     if (index === -1) return this
@@ -1849,7 +1849,7 @@ class TreeNode extends AbstractNode {
   }
 
   // Does not recurse.
-  remap(map: jTreeTypes.stringMap) {
+  remap(map: treeNotationTypes.stringMap) {
     this.forEach(node => {
       const firstWord = node.getFirstWord()
       if (map[firstWord] !== undefined) node.setFirstWord(map[firstWord])
@@ -1877,7 +1877,7 @@ class TreeNode extends AbstractNode {
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(path: jTreeTypes.firstWordPath = "") {
+  delete(path: treeNotationTypes.firstWordPath = "") {
     const xi = this.getXI()
     if (!path.includes(xi)) return this._deleteAllChildNodesWithFirstWord(path)
 
@@ -1912,7 +1912,7 @@ class TreeNode extends AbstractNode {
     return returnedNodes
   }
 
-  insertLineAndChildren(line: string, children: jTreeTypes.children, index: int) {
+  insertLineAndChildren(line: string, children: treeNotationTypes.children, index: int) {
     return this._setLineAndChildren(line, children, index)
   }
 
@@ -1924,7 +1924,7 @@ class TreeNode extends AbstractNode {
     return this.insertLine(line, 0)
   }
 
-  pushContentAndChildren(content?: jTreeTypes.line, children?: jTreeTypes.children) {
+  pushContentAndChildren(content?: treeNotationTypes.line, children?: treeNotationTypes.children) {
     let index = this.length
 
     while (this.has(index.toString())) {
@@ -1943,21 +1943,21 @@ class TreeNode extends AbstractNode {
 
   // todo: add "globalReplace" method? Which runs a global regex or string replace on the Tree doc as a string?
 
-  firstWordSort(firstWordOrder: jTreeTypes.word[]): this {
+  firstWordSort(firstWordOrder: treeNotationTypes.word[]): this {
     return this._firstWordSort(firstWordOrder)
   }
 
-  deleteWordAt(wordIndex: jTreeTypes.positiveInt): this {
+  deleteWordAt(wordIndex: treeNotationTypes.positiveInt): this {
     const words = this.getWords()
     words.splice(wordIndex, 1)
     return this.setWords(words)
   }
 
-  setWords(words: jTreeTypes.word[]): this {
+  setWords(words: treeNotationTypes.word[]): this {
     return this.setLine(words.join(this.getZI()))
   }
 
-  setWordsFrom(index: jTreeTypes.positiveInt, words: jTreeTypes.word[]): this {
+  setWordsFrom(index: treeNotationTypes.positiveInt, words: treeNotationTypes.word[]): this {
     this.setWords(
       this.getWords()
         .slice(0, index)
@@ -1966,13 +1966,13 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  appendWord(word: jTreeTypes.word): this {
+  appendWord(word: treeNotationTypes.word): this {
     const words = this.getWords()
     words.push(word)
     return this.setWords(words)
   }
 
-  _firstWordSort(firstWordOrder: jTreeTypes.word[], secondarySortFn?: jTreeTypes.sortFn): this {
+  _firstWordSort(firstWordOrder: treeNotationTypes.word[], secondarySortFn?: treeNotationTypes.sortFn): this {
     const nodeAFirst = -1
     const nodeBFirst = 1
     const map: { [firstWord: string]: int } = {}
@@ -1989,7 +1989,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  protected _touchNode(firstWordPathArray: jTreeTypes.word[]) {
+  protected _touchNode(firstWordPathArray: treeNotationTypes.word[]) {
     let contextNode = this
     firstWordPathArray.forEach(firstWord => {
       contextNode = contextNode.getNode(firstWord) || contextNode.appendLine(firstWord)
@@ -2002,7 +2002,7 @@ class TreeNode extends AbstractNode {
     return this._touchNode(str.split(this.getZI()))
   }
 
-  touchNode(str: jTreeTypes.firstWordPath) {
+  touchNode(str: treeNotationTypes.firstWordPath) {
     return this._touchNodeByString(str)
   }
 
@@ -2010,15 +2010,15 @@ class TreeNode extends AbstractNode {
     return this.appendLineAndChildren(node.getLine(), node.childrenToString())
   }
 
-  hasLine(line: jTreeTypes.line) {
+  hasLine(line: treeNotationTypes.line) {
     return this.getChildren().some(node => node.getLine() === line)
   }
 
-  getNodesByLine(line: jTreeTypes.line) {
+  getNodesByLine(line: treeNotationTypes.line) {
     return this.filter(node => node.getLine() === line)
   }
 
-  toggleLine(line: jTreeTypes.line): TreeNode {
+  toggleLine(line: treeNotationTypes.line): TreeNode {
     const lines = this.getNodesByLine(line)
     if (lines.length) {
       lines.map(line => line.destroy())
@@ -2121,7 +2121,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  sortBy(nameOrNames: jTreeTypes.word[]) {
+  sortBy(nameOrNames: treeNotationTypes.word[]) {
     const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
 
     const length = names.length
@@ -2147,7 +2147,7 @@ class TreeNode extends AbstractNode {
     return this.fromDelimited(str, ",", '"')
   }
 
-  static fromJsonSubset(str: jTreeTypes.jsonSubset) {
+  static fromJsonSubset(str: treeNotationTypes.jsonSubset) {
     return new TreeNode(JSON.parse(str))
   }
 
@@ -2258,7 +2258,7 @@ class TreeNode extends AbstractNode {
         }
       }
 
-      const obj: jTreeTypes.stringMap = {}
+      const obj: treeNotationTypes.stringMap = {}
       row.forEach((cellValue, index) => {
         obj[names[index]] = cellValue
       })
@@ -2298,7 +2298,7 @@ class TreeNode extends AbstractNode {
   }
 
   static _zipObject(keys: string[], values: any) {
-    const obj: jTreeTypes.stringMap = {}
+    const obj: treeNotationTypes.stringMap = {}
     keys.forEach((key, index) => (obj[key] = values[index]))
     return obj
   }
@@ -2315,7 +2315,7 @@ class TreeNode extends AbstractNode {
     return rootNode
   }
 
-  static fromDataTable(table: jTreeTypes.dataTable) {
+  static fromDataTable(table: treeNotationTypes.dataTable) {
     const header = table.shift()
     return new TreeNode(table.map(row => this._zipObject(header, row)))
   }

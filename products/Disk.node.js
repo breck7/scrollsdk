@@ -129,6 +129,4 @@ Disk.csvToMap = (path, columnName) => {
   })
   return map
 }
-export { Disk }
-
 module.exports = { Disk }

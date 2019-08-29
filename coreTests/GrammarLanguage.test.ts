@@ -4,7 +4,7 @@
 
 import { readFileSync } from "fs"
 import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const GrammarProgram = jtree.GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
@@ -16,7 +16,7 @@ const grammarGrammar = readFileSync(grammarGrammarPath, "utf8")
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
 const jibberishGrammarCode = readFileSync(jibberishGrammarPath, "utf8")
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert

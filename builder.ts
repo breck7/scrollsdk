@@ -28,7 +28,7 @@ class Builder extends AbstractBuilder {
   produceAll() {
     this._getProductsTree()
       .getColumn("outputFileName")
-      .forEach(outputFileName => {
+      .forEach((outputFileName: any) => {
         this._produce(outputFileName)
       })
   }

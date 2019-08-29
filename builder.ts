@@ -29,8 +29,8 @@ class Builder extends AbstractBuilder {
   }
 
   produceLangs() {
-    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", __dirname + "/products/", true)
-    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", __dirname + "/products/", true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", this._getProductFolder(), true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", this._getProductFolder(), true)
   }
 
   produceSweeperCraft() {
@@ -88,6 +88,10 @@ class Builder extends AbstractBuilder {
       "treeBase.node",
       (code: string) => code + "\nmodule.exports = {TreeBaseFile, TreeBaseFolder}"
     )
+  }
+
+  _getProductFolder() {
+    return __dirname + "/products/"
   }
 
   produceBuilder() {

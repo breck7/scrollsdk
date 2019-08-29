@@ -134,23 +134,16 @@ class AbstractBuilder extends jtree.TreeNode {
   async _produceBrowserProductFromTypeScript(
     folder: treeNotationTypes.absoluteFolderPath,
     productId: treeNotationTypes.fileName,
-    extraFiles: treeNotationTypes.absoluteFilePath[] = []
+    files: treeNotationTypes.absoluteFilePath[] = []
   ) {
     const bundleFilePath = folder + `/${productId}.ts`
-    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(this._getFilesForProduction(folder, extraFiles, productId), folder, bundleFilePath)
+    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(files, folder, bundleFilePath)
     try {
       await this._buildBrowserTsc(folder, bundleFilePath)
     } catch (err) {
       console.log(err)
     }
     this._prettifyFile(this._getProductPath(productId))
-  }
-
-  _getFilesForProduction(folder: treeNotationTypes.absoluteFolderPath, files: treeNotationTypes.absoluteFilePath[], productId: treeNotationTypes.fileName) {
-    return files
-      .concat(recursiveReadSync(folder))
-      .filter((file: string) => file.includes(".ts"))
-      .filter((file: string) => Disk.read(file).includes(`//tooling product ${productId}.js`))
   }
 
   _makeExecutable(file: treeNotationTypes.filepath) {
@@ -163,12 +156,11 @@ class AbstractBuilder extends jtree.TreeNode {
 
   async _produceNodeProductFromTypeScript(
     folder: treeNotationTypes.absoluteFolderPath,
-    extraFiles: treeNotationTypes.absoluteFilePath[],
+    files: treeNotationTypes.absoluteFilePath[],
     productId: treeNotationTypes.fileName,
     transformFn: (code: treeNotationTypes.javascriptCode) => string
   ) {
     const bundleFilePath = folder + `/${productId}.ts`
-    const files = this._getFilesForProduction(folder, extraFiles, productId)
     this._bundleNodeTypeScriptFilesIntoOne(files, folder, bundleFilePath)
     const outputFilePath = this._getProductPath(productId)
 

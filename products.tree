@@ -1,0 +1,59 @@
+browserProduct
+ outputFileName SweeperCraft.browser.js
+ folder treeComponentFramework/sweepercraft/
+ files treeComponentFramework/sweepercraft/SweeperCraft.ts
+browserProduct
+ outputFileName TreeComponentFramework.browser.js
+ folder treeComponentFramework
+ files worldWideTypes/treeNotationTypes.ts treeComponentFramework/Willow.ts treeComponentFramework/TreeComponentFramework.ts
+nodeProduct
+ outputFileName TreeComponentFramework.node.js
+ folder treeComponentFramework
+ files worldWideTypes/treeNotationTypes.ts treeComponentFramework/Willow.ts treeComponentFramework/TreeComponentFramework.ts
+ lastLine module.exports = {AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander}
+browserProduct
+ outputFileName jtree.browser.js
+ folder core/
+ files 
+nodeProduct
+ outputFileName jtree.node.js
+ folder core/
+ lastLine module.exports = jtreeNode
+ files 
+nodeProduct
+ outputFileName Disk.node.js
+ folder disk/
+ lastLine module.exports = {Disk}
+browserProduct
+ folder designer/
+ outputFileName DesignerApp.browser.js
+ files 
+nodeProduct
+ outputFileName commandLineApp.node.js
+ folder commandLineApp/
+ files worldWideTypes/treeNotationTypes.ts
+ lastLine module.exports = CommandLineApp
+ firstLine #! /usr/bin/env node
+ executable
+browserProduct
+ outputFileName SandboxApp.browser.js
+ folder sandbox/
+nodeProduct
+ outputFileName sandboxServer
+ outputFileName SandboxServer.node.js
+ files worldWideTypes/treeNotationTypes.ts typeScriptRewriter/TypeScriptRewriter.ts
+ lastLine module.exports = {SandboxServer}
+nodeProduct
+ outputFileName AbstractBuilder.node.js
+ folder builder/
+ files worldWideTypes/treeNotationTypes.ts
+ lastLine module.exports = {AbstractBuilder}
+browserProduct
+ outputFileName core.test.browser.js
+ files worldWideTypes/treeNotationTypes.ts
+ folder coreTests/
+nodeProduct
+ outputFileName treeBase.node.js
+ files worldWideTypes/treeNotationTypes.ts
+ folder treeBase/
+ lastLine module.exports = {TreeBaseFile, TreeBaseFolder}

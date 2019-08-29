@@ -10,25 +10,26 @@ const { AbstractBuilder } = require("./products/AbstractBuilder.node.js")
 import treeNotationTypes from "./worldWideTypes/treeNotationTypes"
 
 class Builder extends AbstractBuilder {
-  produceTreeComponentFramework() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/treeComponentFramework/", "TreeComponentFramework.browser", [this._getTypesPath()])
-    this._produceNodeProductFromTypeScript(
-      __dirname + "/treeComponentFramework/",
-      [this._getTypesPath()],
-      "TreeComponentFramework.node",
-      (code: string) => code + "\nmodule.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander }"
-    )
-  }
-
   private _getTypesPath() {
     return __dirname + "/worldWideTypes/treeNotationTypes.ts"
   }
 
+  produce(outputFileName: string) {
+    if (outputFileName) return this._produce(outputFileName)
+
+    console.log(
+      "Available options:\n" +
+        this._getProductsTree()
+          .getColumn("outputFileName")
+          .join("\n")
+    )
+  }
+
   produceAll() {
-    Object.getOwnPropertyNames(Object.getPrototypeOf(this))
-      .filter(word => word.startsWith("produce") && word !== "produceAll")
-      .forEach(command => {
-        ;(<any>this)[command]()
+    this._getProductsTree()
+      .getColumn("outputFileName")
+      .forEach(outputFileName => {
+        this._produce(outputFileName)
       })
   }
 
@@ -37,82 +38,38 @@ class Builder extends AbstractBuilder {
     jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", this._getProductFolder(), true)
   }
 
-  produceSweeperCraft() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/treeComponentFramework/sweepercraft/", "SweeperCraft.browser")
+  private _getProductsTree() {
+    return jtree.TreeNode.fromDisk(__dirname + "/products.tree")
+  }
+
+  private _produce(outputFileName: string) {
+    const tree = this._getProductsTree()
+    const productNode = tree.where("outputFileName", "=", outputFileName)
+    const folder = __dirname + "/" + productNode.get("folder")
+    const inputFiles = productNode.getNode("files").getWordsFrom(1)
+    const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
+    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(folder, outputFileName, inputFiles)
+    else
+      this._produceNodeProductFromTypeScript(
+        folder,
+        inputFiles,
+        outputFileName,
+        (code: string) => firstLine + code + "\n" + (productNode.get("lastLine") ? productNode.get("lastLine") : "")
+      )
+    if (productNode.has("executable")) this.makeExecutable(__dirname + "/products/" + outputFileName)
   }
 
   buildJibJab() {
-    const CommandLineApp = require("./commandLineApp/commandLineApp.js")
-
+    const CommandLineApp = require("./products/commandLineApp.node.js")
     const combined = jtree.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
-
     combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
-
     new CommandLineApp().prettify(path)
-  }
-
-  produceBrowserLibrary() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/core/", "jtree.browser")
-  }
-
-  produceNodeLibrary() {
-    this._produceNodeProductFromTypeScript(__dirname + "/core/", [], "jtree.node", (code: string) => code + "\nmodule.exports = jtreeNode")
-  }
-
-  produceNodeDisk() {
-    this._produceNodeProductFromTypeScript(__dirname + "/disk/", [], "Disk.node", (code: string) => code + "\nmodule.exports = {Disk}")
-  }
-
-  produceDesigner() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/designer/", "DesignerApp.browser")
-  }
-
-  produceSandbox() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/sandbox/", "SandboxApp.browser")
-    this._produceNodeProductFromTypeScript(
-      __dirname + "/sandboxServer/",
-      [this._getTypesPath(), __dirname + "/typeScriptRewriter/TypeScriptRewriter.ts"],
-      "SandboxServer.node",
-      (code: string) => code + "\nmodule.exports = {SandboxServer}"
-    )
-  }
-
-  produceCommandLineApp() {
-    const file = this._produceNodeProductFromTypeScript(
-      __dirname + "/commandLineApp/",
-      [this._getTypesPath()],
-      "commandLineApp.node",
-      (code: string) => `#! /usr/bin/env node\n` + code + "\nmodule.exports = CommandLineApp"
-    )
-    this._makeExecutable(file)
-  }
-
-  produceTreeBase() {
-    const file = this._produceNodeProductFromTypeScript(
-      __dirname + "/treeBase/",
-      [this._getTypesPath()],
-      "treeBase.node",
-      (code: string) => code + "\nmodule.exports = {TreeBaseFile, TreeBaseFolder}"
-    )
   }
 
   _getProductFolder() {
     return __dirname + "/products/"
-  }
-
-  produceBuilder() {
-    const file = this._produceNodeProductFromTypeScript(
-      __dirname + "/builder/",
-      [this._getTypesPath()],
-      "AbstractBuilder.node",
-      (code: string) => code + "\nmodule.exports = {AbstractBuilder}"
-    )
-  }
-
-  produceBrowserTests() {
-    this._produceBrowserProductFromTypeScript(__dirname + "/coreTests/", "core.test.browser", [this._getTypesPath()])
   }
 
   cover() {

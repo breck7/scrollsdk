@@ -240,3 +240,5 @@ class AbstractBuilder extends jtree.TreeNode {
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }
+
+module.exports = { AbstractBuilder }

@@ -147,12 +147,39 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const jtree = require("../products/jtree.node.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 class AbstractBuilder extends jtree.TreeNode {
-  _bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(typeScriptSrcFiles, productId) {
-    const outputFilePath = __dirname + `/../ignore/${productId}.ts`
+  _bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(typeScriptSrcFiles, folder) {
+    const outputFilePath = folder + `/combined.browser.temp.ts`
     this._write(outputFilePath, this._combineTypeScriptFilesForBrowser(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath)))
   }
-  _bundleNodeTypeScriptFilesIntoOne(typeScriptSrcFiles, productId) {
-    const outputFilePath = __dirname + `/../ignore/${productId}.ts`
+  _getNodeTsConfig(outDir = "") {
+    return {
+      compilerOptions: {
+        types: ["node"],
+        outDir: outDir,
+        lib: ["es2017"],
+        noImplicitAny: true,
+        downlevelIteration: true,
+        target: "es2017",
+        module: "commonjs"
+      },
+      include: ["combined.node.temp.ts"]
+    }
+  }
+  _getBrowserTsConfig(outDir = "") {
+    return {
+      compilerOptions: {
+        outDir: outDir,
+        lib: ["es2017", "dom"],
+        moduleResolution: "node",
+        noImplicitAny: true,
+        declaration: false,
+        target: "es2017"
+      },
+      include: ["combined.browser.temp.ts"]
+    }
+  }
+  _bundleNodeTypeScriptFilesIntoOne(typeScriptSrcFiles, folder) {
+    const outputFilePath = folder + `/combined.node.temp.ts`
     const code = this._combineTypeScriptFilesForNode(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath))
     this._write(outputFilePath, code)
   }
@@ -203,19 +230,15 @@ class AbstractBuilder extends jtree.TreeNode {
       )
       .join("\n")
   }
-  async _buildBrowserVersionFromTypeScriptFiles(folder, typeScriptFiles, outputFilePath, combinedTempFilePath) {
-    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(typeScriptFiles, combinedTempFilePath)
-    await this._buildTsc(folder, "tsc -p tsconfig.browser.json")
-    // todo: I think I can remove
-    const file = new TypeScriptRewriter(this._read(outputFilePath).replace(/[^\n]*jTreeTypes[^\n]*/g, ""))
-    this._write(outputFilePath, file.getString())
-  }
   async _buildBrowserTsc(folder) {
-    return this._buildTsc(folder, "tsc -p tsconfig.browser.json")
+    return this._buildTsc(folder, true)
   }
-  async _buildTsc(folder, command = "tsc") {
-    return new Promise((resolve, reject) => {
-      exec(command, { cwd: folder }, (err, stdout, stderr) => {
+  async _buildTsc(folder, forBrowser = false) {
+    const outputFolder = this._getProductFolder()
+    const configPath = folder + "tsconfig.json"
+    Disk.writeJson(configPath, forBrowser ? this._getBrowserTsConfig(outputFolder) : this._getNodeTsConfig(outputFolder))
+    const prom = new Promise((resolve, reject) => {
+      exec("tsc", { cwd: folder }, (err, stdout, stderr) => {
         if (stderr || err) {
           console.error(err, stdout, stderr)
           return reject()
@@ -223,12 +246,16 @@ class AbstractBuilder extends jtree.TreeNode {
         resolve(stdout)
       })
     })
+    await prom
+    Disk.rm(configPath)
+    return prom
   }
+  // todo: cleanup
   _getProductPath(productId) {
     return __dirname + "/../products/" + productId + ".js"
   }
   async _produceBrowserProductFromTypeScript(folder, productId, extraFiles = []) {
-    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(this._getFilesForProduction(folder, extraFiles, productId), productId)
+    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(this._getFilesForProduction(folder, extraFiles, productId), folder)
     try {
       await this._buildBrowserTsc(folder)
     } catch (err) {
@@ -245,11 +272,15 @@ class AbstractBuilder extends jtree.TreeNode {
   _makeExecutable(file) {
     Disk.makeExecutable(file)
   }
-  _produceNodeProductFromTypeScript(folder, extraFiles, productId, transformFn) {
+  _getProductFolder() {
+    return __dirname
+  }
+  async _produceNodeProductFromTypeScript(folder, extraFiles, productId, transformFn) {
     const files = this._getFilesForProduction(folder, extraFiles, productId)
-    this._bundleNodeTypeScriptFilesIntoOne(files, productId)
+    this._bundleNodeTypeScriptFilesIntoOne(files, folder)
     const outputFilePath = this._getProductPath(productId)
     try {
+      this._buildTsc(folder, false)
       execSync("tsc", { cwd: folder, encoding: "utf8" })
     } catch (error) {
       console.log(error.status)

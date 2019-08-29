@@ -57,6 +57,10 @@ class Builder extends AbstractBuilder {
     this._produceNodeProductFromTypeScript(__dirname + "/core/", [], "jtree.node", (code: string) => code + "\nmodule.exports = jtreeNode")
   }
 
+  produceNodeDisk() {
+    this._produceNodeProductFromTypeScript(__dirname + "/disk/", [], "Disk.node", (code: string) => code + "\nmodule.exports = {Disk}")
+  }
+
   produceDesigner() {
     this._produceBrowserProductFromTypeScript(__dirname + "/designer/", "DesignerApp.browser")
   }
@@ -84,7 +88,7 @@ class Builder extends AbstractBuilder {
   produceTreeBase() {
     const file = this._produceNodeProductFromTypeScript(
       __dirname + "/treeBase/",
-      [__dirname + "/core/jTreeTypes.ts", __dirname + "/core/Disk.node.ts"],
+      [__dirname + "/core/jTreeTypes.ts"],
       "treeBase.node",
       (code: string) => code + "\nmodule.exports = {TreeBaseFile, TreeBaseFolder}"
     )
@@ -97,7 +101,7 @@ class Builder extends AbstractBuilder {
   produceBuilder() {
     const file = this._produceNodeProductFromTypeScript(
       __dirname + "/builder/",
-      [__dirname + "/core/jTreeTypes.ts", __dirname + "/core/Disk.node.ts"],
+      [__dirname + "/core/jTreeTypes.ts"],
       "abstractBuilder.node",
       (code: string) => code + "\nmodule.exports = {AbstractBuilder}"
     )

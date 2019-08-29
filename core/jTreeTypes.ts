@@ -7,6 +7,7 @@
 //tooling product abstractBuilder.node.js
 //tooling product TreeComponentFramework.browser.js
 //tooling product TreeComponentFramework.node.js
+//tooling product Disk.node.js
 
 export namespace jTreeTypes {
   export interface point {

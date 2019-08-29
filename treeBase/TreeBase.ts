@@ -3,9 +3,9 @@
 //tooling product treeBase.node.js
 
 import jTreeTypes from "../core/jTreeTypes"
-import { Disk } from "../core/Disk.node"
 
 const jtree = require("../products/jtree.node.js")
+const { Disk } = require("../products/Disk.node.js")
 
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils

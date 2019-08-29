@@ -1,9 +1,8 @@
-//tooling product treeBase.node.js
-//tooling product abstractBuilder.node.js
+//tooling product Disk.node.js
 
 const fs = require("fs")
 
-import jTreeTypes from "./jTreeTypes"
+import jTreeTypes from "../core/jTreeTypes"
 
 class Disk {
   static getTreeNode = () => require("../products/jtree.node.js").TreeNode // todo: cleanup

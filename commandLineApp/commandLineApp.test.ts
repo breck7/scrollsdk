@@ -3,10 +3,10 @@
 const fs = require("fs")
 const mkdirp = require("mkdirp")
 
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 
 import { CommandLineApp } from "./commandLineApp.node"
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env ts-node
 
-import jtree from "../core/jtree.node"
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+const { jtree } = require("../index.js")
+
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 const fs = require("fs")
 
 const testTree: treeNotationTypes.testTree = {}

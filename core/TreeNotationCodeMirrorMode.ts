@@ -1,4 +1,4 @@
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 /*FOR_TYPES_ONLY*/ import { GrammarBackedRootNode } from "./GrammarLanguage"
 /* Used for Types Only, but we want this line to remain in the combined intermediate TS program */ import * as CodeMirrorLib from "codemirror"

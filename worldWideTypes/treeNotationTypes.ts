@@ -1,4 +1,4 @@
-export namespace treeNotationTypes {
+namespace treeNotationTypes {
   export interface point {
     x: int
     y: int
@@ -107,4 +107,4 @@ export namespace treeNotationTypes {
   export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
 }
 
-/*TSC_HACK*/ export default treeNotationTypes
+export { treeNotationTypes }

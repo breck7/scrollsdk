@@ -1,8 +1,8 @@
 #!/usr/bin/env ts-node
 
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
 
 const GrammarProgram = jtree.GrammarProgram

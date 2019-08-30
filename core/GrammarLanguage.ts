@@ -1,6 +1,6 @@
 import { TreeNode } from "./TreeNode"
 import { TreeUtils } from "./TreeUtils"
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {
   new (code?: string): GrammarBackedRootNode
@@ -2133,7 +2133,7 @@ ${rootName}`
     return `{
 "use strict";
 
-${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
+${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
 
 ${nodeTypeClasses}
 

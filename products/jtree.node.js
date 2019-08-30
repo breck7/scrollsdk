@@ -1,50 +1,5 @@
 "use strict"
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
 Object.defineProperty(exports, "__esModule", { value: true })
-class AbstractNode {
-  _getProcessTimeInMilliseconds() {
-    const hrtime = process.hrtime()
-    return (hrtime[0] * 1e9 + hrtime[1]) / 1e6
-  }
-}
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-class Parser {
-  constructor(catchAllNodeConstructor, firstWordMap = {}, regexTests = undefined) {
-    this._catchAllNodeConstructor = catchAllNodeConstructor
-    this._firstWordMap = firstWordMap
-    this._regexTests = regexTests
-  }
-  getFirstWordOptions() {
-    return Object.keys(this._firstWordMap)
-  }
-  // todo: remove
-  _getFirstWordMap() {
-    return this._firstWordMap
-  }
-  _getNodeConstructor(line, contextNode, zi = " ") {
-    return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
-  }
-  _getCatchAllNodeConstructor(contextNode) {
-    if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
-    const parent = contextNode.getParent()
-    if (parent) return parent._getParser()._getCatchAllNodeConstructor(parent)
-    return contextNode.constructor
-  }
-  _getConstructorFromRegexTests(line) {
-    if (!this._regexTests) return undefined
-    const hit = this._regexTests.find(test => test.regex.test(line))
-    if (hit) return hit.nodeConstructor
-    return undefined
-  }
-  _getFirstWord(line, zi) {
-    const firstBreak = line.indexOf(zi)
-    return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
-  }
-}
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
@@ -435,6 +390,12 @@ TreeUtils.makeSemiRandomFn = (seed = 1) => {
   }
 }
 TreeUtils.MAX_INT = Math.pow(2, 32) - 1
+class AbstractNode {
+  _getProcessTimeInMilliseconds() {
+    const hrtime = process.hrtime()
+    return (hrtime[0] * 1e9 + hrtime[1]) / 1e6
+  }
+}
 var FileFormat
 ;(function(FileFormat) {
   FileFormat["csv"] = "csv"
@@ -456,6 +417,39 @@ var WhereOperators
   WhereOperators["empty"] = "empty"
   WhereOperators["notEmpty"] = "notEmpty"
 })(WhereOperators || (WhereOperators = {}))
+class Parser {
+  constructor(catchAllNodeConstructor, firstWordMap = {}, regexTests = undefined) {
+    this._catchAllNodeConstructor = catchAllNodeConstructor
+    this._firstWordMap = firstWordMap
+    this._regexTests = regexTests
+  }
+  getFirstWordOptions() {
+    return Object.keys(this._firstWordMap)
+  }
+  // todo: remove
+  _getFirstWordMap() {
+    return this._firstWordMap
+  }
+  _getNodeConstructor(line, contextNode, zi = " ") {
+    return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
+  }
+  _getCatchAllNodeConstructor(contextNode) {
+    if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
+    const parent = contextNode.getParent()
+    if (parent) return parent._getParser()._getCatchAllNodeConstructor(parent)
+    return contextNode.constructor
+  }
+  _getConstructorFromRegexTests(line) {
+    if (!this._regexTests) return undefined
+    const hit = this._regexTests.find(test => test.regex.test(line))
+    if (hit) return hit.nodeConstructor
+    return undefined
+  }
+  _getFirstWord(line, zi) {
+    const firstBreak = line.indexOf(zi)
+    return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
+  }
+}
 class TreeNode extends AbstractNode {
   constructor(children, line, parent) {
     super()
@@ -4138,7 +4132,7 @@ ${rootName}`
     return `{
 "use strict";
 
-${forNodeJs ? `const jtree = require("${jtreePath}")` : ""}
+${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
 
 ${nodeTypeClasses}
 
@@ -4180,8 +4174,40 @@ GrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix 
 GrammarProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
 GrammarProgram._languages = {}
 GrammarProgram._nodeTypes = {}
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
+class Upgrader extends TreeNode {
+  upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
+    this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path))
+    return this
+  }
+  upgradeManyPreview(globPatterns, fromVersion, toVersion) {
+    return this._upgradeMany(globPatterns, fromVersion, toVersion)
+  }
+  _upgradeMany(globPatterns, fromVersion, toVersion) {
+    const glob = this.require("glob")
+    const files = TreeUtils.flatten(globPatterns.map(pattern => glob.sync(pattern)))
+    console.log(`${files.length} files to upgrade`)
+    return files.map(path => {
+      console.log("Upgrading " + path)
+      return {
+        tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
+        path: path
+      }
+    })
+  }
+  upgrade(code, fromVersion, toVersion) {
+    const updateFromMap = this.getUpgradeFromMap()
+    const semver = this.require("semver")
+    let fromMap
+    while ((fromMap = updateFromMap[fromVersion])) {
+      const toNextVersion = Object.keys(fromMap)[0] // todo: currently we just assume 1 step at a time
+      if (semver.lt(toVersion, toNextVersion)) break
+      const fn = Object.values(fromMap)[0]
+      code = fn(code)
+      fromVersion = toNextVersion
+    }
+    return code
+  }
+}
 class UnknownGrammarProgram extends TreeNode {
   _inferRootNodeForAPrefixLanguage(grammarName) {
     grammarName = GrammarProgram.makeNodeTypeId(grammarName)
@@ -4300,42 +4326,6 @@ class UnknownGrammarProgram extends TreeNode {
     return { cellTypeId: PreludeCellTypeIds.anyCell }
   }
 }
-class Upgrader extends TreeNode {
-  upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
-    this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path))
-    return this
-  }
-  upgradeManyPreview(globPatterns, fromVersion, toVersion) {
-    return this._upgradeMany(globPatterns, fromVersion, toVersion)
-  }
-  _upgradeMany(globPatterns, fromVersion, toVersion) {
-    const glob = this.require("glob")
-    const files = TreeUtils.flatten(globPatterns.map(pattern => glob.sync(pattern)))
-    console.log(`${files.length} files to upgrade`)
-    return files.map(path => {
-      console.log("Upgrading " + path)
-      return {
-        tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
-        path: path
-      }
-    })
-  }
-  upgrade(code, fromVersion, toVersion) {
-    const updateFromMap = this.getUpgradeFromMap()
-    const semver = this.require("semver")
-    let fromMap
-    while ((fromMap = updateFromMap[fromVersion])) {
-      const toNextVersion = Object.keys(fromMap)[0] // todo: currently we just assume 1 step at a time
-      if (semver.lt(toVersion, toNextVersion)) break
-      const fn = Object.values(fromMap)[0]
-      code = fn(code)
-      fromVersion = toNextVersion
-    }
-    return code
-  }
-}
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 var CmToken
 ;(function(CmToken) {
@@ -4664,8 +4654,6 @@ class TreeNotationCodeMirrorMode {
     state.cellIndex = 0
   }
 }
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
 class jtree {}
 jtree.GrammarBackedRootNode = GrammarBackedRootNode
 jtree.GrammarBackedNonRootNode = GrammarBackedNonRootNode
@@ -4675,7 +4663,6 @@ jtree.GrammarProgram = GrammarProgram
 jtree.UnknownGrammarProgram = UnknownGrammarProgram
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
 jtree.getVersion = () => TreeNode.getVersion()
-//tooling product jtree.node.js
 const fs = require("fs")
 var CompileTarget
 ;(function(CompileTarget) {
@@ -4739,4 +4726,4 @@ jtreeNode.combineFiles = globPatterns => {
   return new jtree.TreeNode(content)
 }
 
-module.exports = jtreeNode
+module.exports = { jtreeNode }

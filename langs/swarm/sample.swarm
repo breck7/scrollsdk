@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test swarmSample
  arrangeTestSubject
-  require ../../products/jtree.node.js GrammarProgram
+  require ../../index.js jtree.GrammarProgram
   constructWithBlockString
    testlangNode
     root

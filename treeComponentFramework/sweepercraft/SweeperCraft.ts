@@ -1,5 +1,5 @@
 const { AbstractTreeComponentRootNode, AbstractTreeComponent, WillowConstants, AbstractCommander } = require("../../products/TreeComponentFramework.node.js")
-const jtree = require("../../products/jtree.node.js")
+const { jtree } = require("../../index.js")
 
 declare type int = number
 declare type Row = int[]

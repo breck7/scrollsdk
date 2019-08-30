@@ -1,6 +1,6 @@
-import AbstractNode from "./AbstractNode.node"
+import { AbstractNode } from "./AbstractNode.node"
 import { TreeUtils } from "./TreeUtils"
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 declare type int = treeNotationTypes.int
 declare type word = treeNotationTypes.word

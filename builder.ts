@@ -3,11 +3,11 @@
 const { exec } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
 
-const jtree = require("./products/jtree.node.js")
+const { jtree } = require("./index.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { AbstractBuilder } = require("./products/AbstractBuilder.node.js")
 
-import treeNotationTypes from "./worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "./worldWideTypes/treeNotationTypes"
 
 class Builder extends AbstractBuilder {
   private _getTypesPath() {

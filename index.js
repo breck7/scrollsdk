@@ -1,1 +1,3 @@
-module.exports = require("./products/jtree.node.js")
+const { jtreeNode } = require("./products/jtree.node.js")
+const jtree = jtreeNode
+module.exports = { jtree }

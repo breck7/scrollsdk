@@ -1,6 +1,6 @@
 const { exec, execSync } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
 const ts = require("typescript")
@@ -38,8 +38,7 @@ class AbstractBuilder extends jtree.TreeNode {
     Disk.write(path, require("prettier").format(Disk.read(path), { semi: false, parser: "babel", printWidth: 160 }))
   }
   _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder) {
-    const typeScriptScriptsInOrderBrowserOnly = typeScriptScriptsInOrder.filter(file => !file.includes(".node."))
-    return typeScriptScriptsInOrderBrowserOnly
+    return typeScriptScriptsInOrder
       .map(src => this._read(src))
       .map(content =>
         new TypeScriptRewriter(content)
@@ -167,4 +166,5 @@ class AbstractBuilder extends jtree.TreeNode {
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }
+
 module.exports = { AbstractBuilder }

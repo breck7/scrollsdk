@@ -1,11 +1,11 @@
 const { exec, execSync } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
 
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
 
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const ts = require("typescript")
 

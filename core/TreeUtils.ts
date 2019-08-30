@@ -1,4 +1,4 @@
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 class TreeUtils {
   static getFileExtension(filepath = "") {

@@ -5,4 +5,4 @@ abstract class AbstractNode {
   }
 }
 
-export default AbstractNode
+export { AbstractNode }

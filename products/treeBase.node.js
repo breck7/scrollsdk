@@ -1,6 +1,4 @@
-"use strict"
-Object.defineProperty(exports, "__esModule", { value: true })
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils

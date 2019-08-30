@@ -16,4 +16,4 @@ class jtree {
   static getVersion = () => TreeNode.getVersion()
 }
 
-export default jtree
+export { jtree }

@@ -1,1 +1,1 @@
-module.exports = require("../../index.js").getProgramConstructor(__dirname + "/numbers.grammar")
+module.exports = require("../../index.js").jtree.getProgramConstructor(__dirname + "/numbers.grammar")

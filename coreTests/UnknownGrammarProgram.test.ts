@@ -3,9 +3,9 @@
 // todo: make isomorphic
 
 import { readFileSync } from "fs"
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 import { UnknownGrammarProgram } from "../core/UnknownGrammarProgram"
-import jtree from "../core/jtree.node"
+const { jtree } = require("../index.js")
 
 const testTree: treeNotationTypes.testTree = {}
 

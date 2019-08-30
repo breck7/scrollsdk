@@ -14,11 +14,11 @@ nodeProduct
  lastLine module.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram }
 browserProduct
  outputFileName jtree.browser.js
- files worldWideTypes/treeNotationTypes.ts core/TreeUtils.ts core/Parser.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
+ files worldWideTypes/treeNotationTypes.ts core/TreeUtils.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
 nodeProduct
  outputFileName jtree.node.js
- lastLine module.exports = jtreeNode
- files worldWideTypes/treeNotationTypes.ts core/TreeUtils.ts core/Parser.ts core/AbstractNode.node.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts core/jtree.node.ts
+ lastLine module.exports = {jtreeNode}
+ files worldWideTypes/treeNotationTypes.ts core/TreeUtils.ts core/AbstractNode.node.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts core/jtree.node.ts
 browserProduct
  outputFileName core.test.browser.js
  files worldWideTypes/treeNotationTypes.ts coreTests/core.test.ts
@@ -32,7 +32,7 @@ browserProduct
 nodeProduct
  outputFileName commandLineApp.node.js
  files worldWideTypes/treeNotationTypes.ts commandLineApp/commandLineApp.node.ts
- lastLine module.exports = CommandLineApp
+ lastLine module.exports = {CommandLineApp}
  firstLine #! /usr/bin/env node
  executable
 browserProduct

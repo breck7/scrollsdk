@@ -1,5 +1,5 @@
 import { TreeNode } from "./TreeNode"
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 import { TreeUtils } from "./TreeUtils"
 
 interface updatedFile {
@@ -59,4 +59,4 @@ abstract class Upgrader extends TreeNode {
   }
 }
 
-export default Upgrader
+export { Upgrader }

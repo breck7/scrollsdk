@@ -3,7 +3,7 @@ import { TreeUtils } from "./TreeUtils"
 
 import { GrammarConstants, GrammarProgram, PreludeCellTypeIds } from "./GrammarLanguage"
 
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   private _inferRootNodeForAPrefixLanguage(grammarName: string): TreeNode {

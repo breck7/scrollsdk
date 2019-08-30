@@ -1,5 +1,4 @@
-"use strict"
-Object.defineProperty(exports, "__esModule", { value: true })
+window.treeNotationTypes = treeNotationTypes
 const WillowConstants = {}
 WillowConstants.ShadowEvents = {}
 WillowConstants.ShadowEvents.click = "click"

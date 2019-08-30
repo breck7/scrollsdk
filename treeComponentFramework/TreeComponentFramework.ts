@@ -1,6 +1,6 @@
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 const stumpNode = require("../langs/stump/stump.node.js")
 const hakonNode = require("../langs/hakon/hakon.node.js")
 

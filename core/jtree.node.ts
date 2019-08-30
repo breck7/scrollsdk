@@ -1,9 +1,9 @@
 const fs = require("fs")
 
-import jtree from "./jtree"
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { jtree } from "./jtree"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 import { GrammarProgram, GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage"
-import Upgrader from "./Upgrader"
+import { Upgrader } from "./Upgrader"
 
 enum CompileTarget {
   nodejs = "nodejs",
@@ -89,4 +89,4 @@ if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toStrin
   }
 }
 
-export default jtreeNode
+export { jtreeNode }

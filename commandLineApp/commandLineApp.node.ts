@@ -5,10 +5,10 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
 const { execSync } = require("child_process")
 
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 const { TreeNode, GrammarProgram, Utils } = jtree
 
-import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 class CommandLineApp {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {

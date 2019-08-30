@@ -1,11 +1,6 @@
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-
-import TreeNode from "./TreeNode"
+import { TreeNode } from "./TreeNode"
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
-import TreeUtils from "./TreeUtils"
-
-// todo: currently only works in nodejs
+import { TreeUtils } from "./TreeUtils"
 
 interface updatedFile {
   tree: TreeNode

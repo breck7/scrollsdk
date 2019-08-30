@@ -12,7 +12,7 @@ const ts = require("typescript")
 class AbstractBuilder extends jtree.TreeNode {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
     // downlevelIteration: true, // todo: what is this again?
-    const tsConfig = {
+    const tsConfig: any = {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: "es2017", noImplicitAny: true }
     }
     if (forBrowser) {
@@ -46,8 +46,7 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
-    const typeScriptScriptsInOrderBrowserOnly = typeScriptScriptsInOrder.filter((file: string) => !file.includes(".node."))
-    return typeScriptScriptsInOrderBrowserOnly
+    return typeScriptScriptsInOrder
       .map(src => this._read(src))
       .map(content =>
         new TypeScriptRewriter(content)

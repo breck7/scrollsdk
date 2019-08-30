@@ -1,5 +1,3 @@
-//tooling product jtree.node.js
-
 const fs = require("fs")
 
 import jtree from "./jtree"

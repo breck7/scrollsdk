@@ -1,7 +1,5 @@
 #!/usr/bin/env ts-node
 
-//tooling product core.test.browser.js
-
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}

@@ -1,13 +1,3 @@
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-//tooling product commandLineApp.node.js
-//tooling product treeBase.node.js
-//tooling product SandboxServer.node.js
-//tooling product core.test.browser.js
-//tooling product abstractBuilder.node.js
-//tooling product TreeComponentFramework.browser.js
-//tooling product TreeComponentFramework.node.js
-//tooling product core.test.browser.js
 const testTree = {}
 {
   const TreeNode = jtree.TreeNode

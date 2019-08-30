@@ -141,7 +141,7 @@ This library currently includes about 7 compiled projects (aka "products") and m
 
 ### jtree base library for npm projects:
 
-    const jtree = require("jtree")
+    const {jtree} = require("jtree")
     const tree = new jtree.TreeNode("hello world")
     console.log(tree.toString())
 

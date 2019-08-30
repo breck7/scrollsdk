@@ -1,25 +1,9 @@
-"use strict"
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-//tooling product commandLineApp.node.js
-//tooling product treeBase.node.js
-//tooling product SandboxServer.node.js
-//tooling product core.test.browser.js
-//tooling product AbstractBuilder.node.js
-//tooling product TreeComponentFramework.browser.js
-//tooling product TreeComponentFramework.node.js
-//tooling product Disk.node.js
-Object.defineProperty(exports, "__esModule", { value: true })
-//tooling product AbstractBuilder.node.js
 const { exec, execSync } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
 const jtree = require("../products/jtree.node.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
 class AbstractBuilder extends jtree.TreeNode {
-  _bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(typeScriptSrcFiles, folder, outputFilePath) {
-    this._write(outputFilePath, this._combineTypeScriptFilesForBrowser(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath)))
-  }
   _getNodeTsConfig(outDir = "", inputFilePath = "") {
     return {
       compilerOptions: {
@@ -46,24 +30,6 @@ class AbstractBuilder extends jtree.TreeNode {
       },
       include: [inputFilePath]
     }
-  }
-  _bundleNodeTypeScriptFilesIntoOne(typeScriptSrcFiles, folder, outputFilePath) {
-    const code = this._combineTypeScriptFilesForNode(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath))
-    this._write(outputFilePath, code)
-  }
-  _getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath) {
-    const project = this.require("project", __dirname + "/../langs/project/project.node.js")
-    const projectCode = new jtree.TreeNode(project.makeProjectProgramFromArrayOfScripts(typeScriptSrcFiles))
-    projectCode
-      .getTopDownArray()
-      .filter(node => node.getFirstWord() === "relative") // todo: cleanup
-      .forEach(node => {
-        const line = node.getLine()
-        if (line.endsWith("js")) node.setWord(0, "external")
-        else node.setLine(line + ".ts")
-      })
-    // this._write(outputFilePath + ".project", projectCode.toString()) // Write to disk to inspect if something goes wrong.
-    return new project(projectCode.toString()).getScriptPathsInCorrectDependencyOrder()
   }
   _combineTypeScriptFilesForNode(typeScriptScriptsInOrder) {
     // todo: prettify
@@ -98,15 +64,15 @@ class AbstractBuilder extends jtree.TreeNode {
       )
       .join("\n")
   }
-  async _buildBrowserTsc(folder, inputFilePath) {
-    return this._buildTsc(folder, inputFilePath, true)
+  async _buildBrowserTsc(inputFilePath) {
+    return this._buildTsc(inputFilePath, true)
   }
-  async _buildTsc(folder, inputFilePath, forBrowser = false) {
+  async _buildTsc(inputFilePath, forBrowser = false) {
     const outputFolder = this._getProductFolder()
-    const configPath = folder + "tsconfig.json"
+    const configPath = outputFolder + "tsconfig.json"
     Disk.writeJson(configPath, forBrowser ? this._getBrowserTsConfig(outputFolder, inputFilePath) : this._getNodeTsConfig(outputFolder, inputFilePath))
     const prom = new Promise((resolve, reject) => {
-      exec("tsc", { cwd: folder }, (err, stdout, stderr) => {
+      exec("tsc", (err, stdout, stderr) => {
         if (stderr || err) {
           console.error(err, stdout, stderr)
           return reject()
@@ -119,24 +85,18 @@ class AbstractBuilder extends jtree.TreeNode {
     return prom
   }
   // todo: cleanup
-  _getProductPath(productId) {
-    return __dirname + "/../products/" + productId + ".js"
+  _getOutputFilePath(outputFileName) {
+    return __dirname + "/../products/" + outputFileName
   }
-  async _produceBrowserProductFromTypeScript(folder, productId, extraFiles = []) {
-    const bundleFilePath = folder + `/${productId}.ts`
-    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(this._getFilesForProduction(folder, extraFiles, productId), folder, bundleFilePath)
+  async _produceBrowserProductFromTypeScript(files = [], outputFileName) {
+    const bundleFilePath = this._getBundleFilePath(outputFileName)
+    this._write(bundleFilePath, this._combineTypeScriptFilesForBrowser(files))
     try {
-      await this._buildBrowserTsc(folder, bundleFilePath)
+      await this._buildBrowserTsc(bundleFilePath)
     } catch (err) {
       console.log(err)
     }
-    this._prettifyFile(this._getProductPath(productId))
-  }
-  _getFilesForProduction(folder, files, productId) {
-    return files
-      .concat(recursiveReadSync(folder))
-      .filter(file => file.includes(".ts"))
-      .filter(file => Disk.read(file).includes(`//tooling product ${productId}.js`))
+    this._prettifyFile(this._getOutputFilePath(productId))
   }
   _makeExecutable(file) {
     Disk.makeExecutable(file)
@@ -144,13 +104,15 @@ class AbstractBuilder extends jtree.TreeNode {
   _getProductFolder() {
     return __dirname
   }
-  async _produceNodeProductFromTypeScript(folder, extraFiles, productId, transformFn) {
-    const bundleFilePath = folder + `/${productId}.ts`
-    const files = this._getFilesForProduction(folder, extraFiles, productId)
-    this._bundleNodeTypeScriptFilesIntoOne(files, folder, bundleFilePath)
-    const outputFilePath = this._getProductPath(productId)
+  _getBundleFilePath(outputFileName) {
+    return this._getProductFolder() + `${outputFileName.replace(".js", ".ts")}`
+  }
+  async _produceNodeProductFromTypeScript(files, outputFileName, transformFn) {
+    const bundleFilePath = this._getBundleFilePath(outputFileName)
+    this._write(bundleFilePath, this._combineTypeScriptFilesForNode(files))
+    const outputFilePath = this._getOutputFilePath(outputFileName)
     try {
-      this._buildTsc(folder, bundleFilePath, false)
+      this._buildTsc(bundleFilePath, false)
     } catch (error) {
       console.log(error.status)
       console.log(error.message)
@@ -240,5 +202,4 @@ class AbstractBuilder extends jtree.TreeNode {
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }
-
 module.exports = { AbstractBuilder }

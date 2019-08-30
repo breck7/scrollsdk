@@ -8,10 +8,6 @@ const { Disk } = require("../products/Disk.node.js")
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 class AbstractBuilder extends jtree.TreeNode {
-  private _bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(typeScriptSrcFiles: treeNotationTypes.typeScriptFilePath[], outputFilePath: string) {
-    this._write(outputFilePath, this._combineTypeScriptFilesForBrowser(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath)))
-  }
-
   private _getNodeTsConfig(outDir = "", inputFilePath = "") {
     return {
       compilerOptions: {
@@ -39,26 +35,6 @@ class AbstractBuilder extends jtree.TreeNode {
       },
       include: [inputFilePath]
     }
-  }
-
-  private _bundleNodeTypeScriptFilesIntoOne(typeScriptSrcFiles: treeNotationTypes.typeScriptFilePath[], outputFilePath: string) {
-    this._write(outputFilePath, this._combineTypeScriptFilesForNode(this._getOrderedTypeScriptFiles(typeScriptSrcFiles, outputFilePath)))
-  }
-
-  private _getOrderedTypeScriptFiles(typeScriptSrcFiles: treeNotationTypes.typeScriptFilePath[], outputFilePath: treeNotationTypes.typeScriptFilePath) {
-    const project = this.require("project", __dirname + "/../langs/project/project.node.js")
-    const projectCode = new jtree.TreeNode(project.makeProjectProgramFromArrayOfScripts(typeScriptSrcFiles))
-    projectCode
-      .getTopDownArray()
-      .filter((node: treeNotationTypes.treeNode) => node.getFirstWord() === "relative") // todo: cleanup
-      .forEach((node: treeNotationTypes.treeNode) => {
-        const line = node.getLine()
-        if (line.endsWith("js")) node.setWord(0, "external")
-        else node.setLine(line + ".ts")
-      })
-
-    // this._write(outputFilePath + ".project", projectCode.toString()) // Write to disk to inspect if something goes wrong.
-    return new project(projectCode.toString()).getScriptPathsInCorrectDependencyOrder()
   }
 
   private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
@@ -124,9 +100,9 @@ class AbstractBuilder extends jtree.TreeNode {
     return __dirname + "/../products/" + outputFileName
   }
 
-  async _produceBrowserProductFromTypeScript(outputFileName: treeNotationTypes.fileName, files: treeNotationTypes.absoluteFilePath[] = []) {
+  async _produceBrowserProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[] = [], outputFileName: treeNotationTypes.fileName) {
     const bundleFilePath = this._getBundleFilePath(outputFileName)
-    this._bundleBrowserTypeScriptFilesIntoOneTypeScriptFile(files, bundleFilePath)
+    this._write(bundleFilePath, this._combineTypeScriptFilesForBrowser(files))
     try {
       await this._buildBrowserTsc(bundleFilePath)
     } catch (err) {
@@ -153,7 +129,7 @@ class AbstractBuilder extends jtree.TreeNode {
     transformFn: (code: treeNotationTypes.javascriptCode) => string
   ) {
     const bundleFilePath = this._getBundleFilePath(outputFileName)
-    this._bundleNodeTypeScriptFilesIntoOne(files, bundleFilePath)
+    this._write(bundleFilePath, this._combineTypeScriptFilesForNode(files))
     const outputFilePath = this._getOutputFilePath(outputFileName)
 
     try {

@@ -44,14 +44,12 @@ class Builder extends AbstractBuilder {
 
   private _produce(outputFileName: string) {
     const tree = this._getProductsTree()
-    const productNode = tree.where("outputFileName", "=", outputFileName)
-    const folder = __dirname + "/" + productNode.get("folder")
+    const productNode = tree.where("outputFileName", "=", outputFileName).nodeAt(0)
     const inputFiles = productNode.getNode("files").getWordsFrom(1)
     const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
-    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(folder, outputFileName, inputFiles)
+    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName)
     else
       this._produceNodeProductFromTypeScript(
-        folder,
         inputFiles,
         outputFileName,
         (code: string) => firstLine + code + "\n" + (productNode.get("lastLine") ? productNode.get("lastLine") : "")

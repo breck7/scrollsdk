@@ -7,7 +7,7 @@ const { Disk } = require("../products/Disk.node.js")
 
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
-import * as ts from "typescript"
+const ts = require("typescript")
 
 class AbstractBuilder extends jtree.TreeNode {
   private _getNodeTsConfig(outDir = "", inputFilePath = "") {
@@ -84,10 +84,10 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   private async _buildBrowserTsc(inputFilePath: string, outputFilePath: string) {
-    return this._buildTsc(inputFilePath, true, outputFilePath)
+    return this._buildTsc(inputFilePath, outputFilePath, true)
   }
 
-  private async _buildTsc(inputFilePath: string, forBrowser = false) {
+  private async _buildTsc(inputFilePath: string, outputFilePath: string, forBrowser = false) {
     const outputFolder = this._getProductFolder()
     const configPath = outputFolder + "tsconfig.json"
     Disk.writeJson(configPath, forBrowser ? this._getBrowserTsConfig(outputFolder, inputFilePath) : this._getNodeTsConfig(outputFolder, inputFilePath))
@@ -151,7 +151,7 @@ class AbstractBuilder extends jtree.TreeNode {
     const outputFilePath = this._getOutputFilePath(outputFileName)
 
     try {
-      await this._buildTsc(bundleFilePath, false, outputFilePath)
+      await this._buildTsc(bundleFilePath, outputFilePath, false)
       Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
       this._prettifyFile(outputFilePath)
       Disk.rm(bundleFilePath)

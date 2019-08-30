@@ -3,7 +3,8 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const jtree = require("../products/jtree.node.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
-import * as ts from "typescript"
+const ts = require("typescript")
+
 class AbstractBuilder extends jtree.TreeNode {
   _getNodeTsConfig(outDir = "", inputFilePath = "") {
     return {
@@ -72,9 +73,9 @@ class AbstractBuilder extends jtree.TreeNode {
       .join("\n")
   }
   async _buildBrowserTsc(inputFilePath, outputFilePath) {
-    return this._buildTsc(inputFilePath, true, outputFilePath)
+    return this._buildTsc(inputFilePath, outputFilePath, true)
   }
-  async _buildTsc(inputFilePath, forBrowser = false) {
+  async _buildTsc(inputFilePath, outputFilePath, forBrowser = false) {
     const outputFolder = this._getProductFolder()
     const configPath = outputFolder + "tsconfig.json"
     Disk.writeJson(configPath, forBrowser ? this._getBrowserTsConfig(outputFolder, inputFilePath) : this._getNodeTsConfig(outputFolder, inputFilePath))
@@ -126,7 +127,7 @@ class AbstractBuilder extends jtree.TreeNode {
     this._write(bundleFilePath, this._combineTypeScriptFilesForNode(files))
     const outputFilePath = this._getOutputFilePath(outputFileName)
     try {
-      await this._buildTsc(bundleFilePath, false, outputFilePath)
+      await this._buildTsc(bundleFilePath, outputFilePath, false)
       Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
       this._prettifyFile(outputFilePath)
       Disk.rm(bundleFilePath)

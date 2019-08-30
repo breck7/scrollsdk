@@ -1,5 +1,3 @@
-//tooling product SweeperCraft.browser.js
-
 const { AbstractTreeComponentRootNode, AbstractTreeComponent, WillowConstants, AbstractCommander } = require("../../products/TreeComponentFramework.node.js")
 const jtree = require("../../products/jtree.node.js")
 

@@ -1,4 +1,3 @@
-//tooling product DesignerApp.browser.js
 class DesignerApp {
   constructor(grammarSourceCode) {
     this.languages = "newlang hakon stump dug fire swarm project stamp grammar jibberish numbers".split(" ")

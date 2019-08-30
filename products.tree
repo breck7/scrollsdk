@@ -19,30 +19,34 @@ nodeProduct
  outputFileName jtree.node.js
  lastLine module.exports = jtreeNode
  files 
+browserProduct
+ outputFileName core.test.browser.js
+ files worldWideTypes/treeNotationTypes.ts
 nodeProduct
  outputFileName Disk.node.js
  lastLine module.exports = {Disk}
  files disk/Disk.node.ts
 browserProduct
  outputFileName DesignerApp.browser.js
- files 
+ files designer/DesignerApp.ts
 nodeProduct
  outputFileName commandLineApp.node.js
- files worldWideTypes/treeNotationTypes.ts
+ files worldWideTypes/treeNotationTypes.ts commandLineApp/commandLineApp.node.ts
  lastLine module.exports = CommandLineApp
  firstLine #! /usr/bin/env node
  executable
 browserProduct
+ files sandbox/SandboxApp.ts
  outputFileName SandboxApp.browser.js
 nodeProduct
- outputFileName sandboxServer
  outputFileName SandboxServer.node.js
- files worldWideTypes/treeNotationTypes.ts typeScriptRewriter/TypeScriptRewriter.ts
+ files worldWideTypes/treeNotationTypes.ts sandboxServer/SandboxServer.node.ts
  lastLine module.exports = {SandboxServer}
-browserProduct
- outputFileName core.test.browser.js
- files worldWideTypes/treeNotationTypes.ts
 nodeProduct
  outputFileName treeBase.node.js
- files worldWideTypes/treeNotationTypes.ts
+ files worldWideTypes/treeNotationTypes.ts treeBase/TreeBase.ts
  lastLine module.exports = {TreeBaseFile, TreeBaseFolder}
+nodeProduct
+ outputFileName TypeScriptRewriter.js
+ files typeScriptRewriter/TypeScriptRewriter.ts
+ lastLine module.exports = {TypeScriptRewriter}

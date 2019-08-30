@@ -1,6 +1,3 @@
-"use strict"
-//tooling product SandboxServer.node.js
-Object.defineProperty(exports, "__esModule", { value: true })
 const jtree = require("../products/jtree.node.js")
 // This is a temporary class until we move off TypeScript
 class TypeScriptRewriter {
@@ -108,4 +105,4 @@ window.${varName} = \`${TreeUtils.escapeBackTicks(lines.join("\n"))}\``
     return this._str
   }
 }
-exports.TypeScriptRewriter = TypeScriptRewriter
+module.exports = { TypeScriptRewriter }

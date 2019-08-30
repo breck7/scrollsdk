@@ -57,7 +57,7 @@ class Builder extends AbstractBuilder {
         outputFileName,
         (code: string) => firstLine + code + "\n" + (productNode.get("lastLine") ? productNode.get("lastLine") : "")
       )
-    if (productNode.has("executable")) this.makeExecutable(__dirname + "/products/" + outputFileName)
+    if (productNode.has("executable")) this._makeExecutable(__dirname + "/products/" + outputFileName)
   }
 
   buildJibJab() {

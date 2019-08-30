@@ -1,7 +1,5 @@
 #!/usr/bin/env ts-node
 
-//tooling product treeBase.node.js
-
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const jtree = require("../products/jtree.node.js")

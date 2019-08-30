@@ -1,5 +1,3 @@
-//tooling product SandboxServer.node.js
-
 const express = require("express")
 const { readFile } = require("fs")
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"

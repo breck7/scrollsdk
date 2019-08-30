@@ -1,5 +1,4 @@
 #!/usr/bin/env ts-node
-//tooling product commandLineApp.node.js
 
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")

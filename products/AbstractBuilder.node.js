@@ -11,11 +11,11 @@ class AbstractBuilder extends jtree.TreeNode {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: "es2017", noImplicitAny: true }
     }
     if (forBrowser) {
-      compilerOptions.moduleResolution = "node"
-      compilerOptions.lib = ["es2017", "dom"]
+      tsConfig.compilerOptions.moduleResolution = "node"
+      tsConfig.compilerOptions.lib = ["es2017", "dom"]
     } else {
-      compilerOptions.tiles = ["node"]
-      compilerOptions.lib = ["es2017"]
+      tsConfig.compilerOptions.tiles = ["node"]
+      tsConfig.compilerOptions.lib = ["es2017"]
     }
     const result = ts.transpileModule(sourceCode, tsConfig)
     console.log(JSON.stringify(result, null, 2))

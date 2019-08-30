@@ -23,9 +23,6 @@ class AbstractBuilder extends jtree.TreeNode {
       tsConfig.compilerOptions.lib = ["es2017"]
     }
     const result = ts.transpileModule(sourceCode, tsConfig)
-
-    console.log(JSON.stringify(result, null, 2))
-
     return result.outputText
   }
 
@@ -65,12 +62,12 @@ class AbstractBuilder extends jtree.TreeNode {
       .join("\n")
   }
 
-  private _buildBrowserTsc(inputFilePath: string, outputFilePath: string) {
-    return this._buildTsc(inputFilePath, outputFilePath, true)
+  private _buildBrowserTsc(sourceCode: string, outputFilePath: string) {
+    return this._buildTsc(sourceCode, outputFilePath, true)
   }
 
-  private _buildTsc(inputFilePath: string, outputFilePath: string, forBrowser = false) {
-    Disk.write(outputFilePath, this._typeScriptToJavascript(Disk.read(inputFilePath), forBrowser))
+  private _buildTsc(sourceCode: string, outputFilePath: string, forBrowser = false) {
+    Disk.write(outputFilePath, this._typeScriptToJavascript(sourceCode, forBrowser))
   }
 
   // todo: cleanup
@@ -79,14 +76,8 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   async _produceBrowserProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[] = [], outputFileName: treeNotationTypes.fileName) {
-    const bundleFilePath = this._getBundleFilePath(outputFileName)
     const outputFilePath = this._getOutputFilePath(outputFileName)
-    this._write(bundleFilePath, this._combineTypeScriptFilesForBrowser(files))
-    try {
-      await this._buildBrowserTsc(bundleFilePath, outputFilePath)
-    } catch (err) {
-      console.log(err)
-    }
+    this._buildBrowserTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath)
     this._prettifyFile(this._getOutputFilePath(productId))
   }
 
@@ -107,20 +98,14 @@ class AbstractBuilder extends jtree.TreeNode {
     outputFileName: treeNotationTypes.fileName,
     transformFn: (code: treeNotationTypes.javascriptCode) => string
   ) {
-    const bundleFilePath = this._getBundleFilePath(outputFileName)
-    this._write(bundleFilePath, this._combineTypeScriptFilesForNode(files))
     const outputFilePath = this._getOutputFilePath(outputFileName)
 
     try {
-      await this._buildTsc(bundleFilePath, outputFilePath, false)
+      await this._buildTsc(this._combineTypeScriptFilesForNode(files), outputFilePath, false)
       Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
       this._prettifyFile(outputFilePath)
-      Disk.rm(bundleFilePath)
     } catch (error) {
-      console.log(error.status)
-      console.log(error.message)
-      console.log(error.stderr)
-      console.log(error.stdout)
+      console.log(error)
     }
 
     return outputFilePath

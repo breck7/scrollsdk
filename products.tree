@@ -1,3 +1,7 @@
+nodeProduct
+ outputFileName AbstractBuilder.node.js
+ files worldWideTypes/treeNotationTypes.ts builder/AbstractBuilder.ts
+ lastLine module.exports = {AbstractBuilder}
 browserProduct
  outputFileName SweeperCraft.browser.js
  files treeComponentFramework/sweepercraft/SweeperCraft.ts
@@ -34,10 +38,6 @@ nodeProduct
  outputFileName SandboxServer.node.js
  files worldWideTypes/treeNotationTypes.ts typeScriptRewriter/TypeScriptRewriter.ts
  lastLine module.exports = {SandboxServer}
-nodeProduct
- outputFileName AbstractBuilder.node.js
- files worldWideTypes/treeNotationTypes.ts builder/AbstractBuilder.ts
- lastLine module.exports = {AbstractBuilder}
 browserProduct
  outputFileName core.test.browser.js
  files worldWideTypes/treeNotationTypes.ts

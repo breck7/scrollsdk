@@ -86,7 +86,7 @@ class Builder extends AbstractBuilder {
     const code = this._read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
     this._write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
-    this.produceBrowserLibrary()
+    this.produceAll()
     console.log("Don't forget to update releaseNotes.md!")
   }
 

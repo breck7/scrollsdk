@@ -3,6 +3,7 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const jtree = require("../products/jtree.node.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
+import * as ts from "typescript"
 class AbstractBuilder extends jtree.TreeNode {
   _getNodeTsConfig(outDir = "", inputFilePath = "") {
     return {
@@ -17,6 +18,12 @@ class AbstractBuilder extends jtree.TreeNode {
       },
       include: [inputFilePath]
     }
+  }
+  _typeScriptToJavascript(sourceCode) {
+    const result = ts.transpileModule(sourceCode, {
+      compilerOptions: { module: ts.ModuleKind.CommonJS }
+    })
+    console.log(JSON.stringify(result))
   }
   _getBrowserTsConfig(outDir = "", inputFilePath = "") {
     return {
@@ -64,24 +71,30 @@ class AbstractBuilder extends jtree.TreeNode {
       )
       .join("\n")
   }
-  async _buildBrowserTsc(inputFilePath) {
-    return this._buildTsc(inputFilePath, true)
+  async _buildBrowserTsc(inputFilePath, outputFilePath) {
+    return this._buildTsc(inputFilePath, true, outputFilePath)
   }
   async _buildTsc(inputFilePath, forBrowser = false) {
     const outputFolder = this._getProductFolder()
     const configPath = outputFolder + "tsconfig.json"
     Disk.writeJson(configPath, forBrowser ? this._getBrowserTsConfig(outputFolder, inputFilePath) : this._getNodeTsConfig(outputFolder, inputFilePath))
-    const prom = new Promise((resolve, reject) => {
-      exec("tsc", (err, stdout, stderr) => {
-        if (stderr || err) {
-          console.error(err, stdout, stderr)
-          return reject()
-        }
-        resolve(stdout)
-      })
-    })
-    await prom
-    Disk.rm(configPath)
+    try {
+      Disk.write(outputFilePath, this._typeScriptToJavascript(Disk.read(inputFilePath)))
+      // const prom = new Promise((resolve, reject) => {
+      //   exec("tsc", { cwd: outputFolder }, (err: any, stdout: any, stderr: any) => {
+      //     if (stderr || err) {
+      //       console.error(err, stdout, stderr)
+      //       return reject()
+      //     }
+      //     resolve(stdout)
+      //   })
+      // })
+      // await prom
+    } catch (err) {
+      throw err
+    } finally {
+      Disk.rm(configPath)
+    }
     return prom
   }
   // todo: cleanup
@@ -90,9 +103,10 @@ class AbstractBuilder extends jtree.TreeNode {
   }
   async _produceBrowserProductFromTypeScript(files = [], outputFileName) {
     const bundleFilePath = this._getBundleFilePath(outputFileName)
+    const outputFilePath = this._getOutputFilePath(outputFileName)
     this._write(bundleFilePath, this._combineTypeScriptFilesForBrowser(files))
     try {
-      await this._buildBrowserTsc(bundleFilePath)
+      await this._buildBrowserTsc(bundleFilePath, outputFilePath)
     } catch (err) {
       console.log(err)
     }
@@ -112,15 +126,16 @@ class AbstractBuilder extends jtree.TreeNode {
     this._write(bundleFilePath, this._combineTypeScriptFilesForNode(files))
     const outputFilePath = this._getOutputFilePath(outputFileName)
     try {
-      this._buildTsc(bundleFilePath, false)
+      await this._buildTsc(bundleFilePath, false, outputFilePath)
+      Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
+      this._prettifyFile(outputFilePath)
+      Disk.rm(bundleFilePath)
     } catch (error) {
       console.log(error.status)
       console.log(error.message)
       console.log(error.stderr)
       console.log(error.stdout)
     }
-    Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
-    this._prettifyFile(outputFilePath)
     return outputFilePath
   }
   _readJson(path) {
@@ -202,4 +217,5 @@ class AbstractBuilder extends jtree.TreeNode {
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }
+
 module.exports = { AbstractBuilder }

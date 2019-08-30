@@ -45,7 +45,10 @@ class Builder extends AbstractBuilder {
   private _produce(outputFileName: string) {
     const tree = this._getProductsTree()
     const productNode = tree.where("outputFileName", "=", outputFileName).nodeAt(0)
-    const inputFiles = productNode.getNode("files").getWordsFrom(1)
+    const inputFiles = productNode
+      .getNode("files")
+      .getWordsFrom(1)
+      .map((path: string) => __dirname + "/" + path)
     const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
     if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName)
     else

@@ -1,21 +1,9 @@
 #! /usr/bin/env node
-"use strict"
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-//tooling product commandLineApp.node.js
-//tooling product treeBase.node.js
-//tooling product SandboxServer.node.js
-//tooling product core.test.browser.js
-//tooling product abstractBuilder.node.js
-//tooling product TreeComponentFramework.browser.js
-//tooling product TreeComponentFramework.node.js
-Object.defineProperty(exports, "__esModule", { value: true })
-//tooling product commandLineApp.node.js
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
 const { execSync } = require("child_process")
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 const { TreeNode, GrammarProgram, Utils } = jtree
 class CommandLineApp {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
@@ -318,4 +306,4 @@ ${grammars.toTable()}`
 }
 if (!module.parent) CommandLineApp.main()
 
-module.exports = CommandLineApp
+module.exports = { CommandLineApp }

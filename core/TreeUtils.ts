@@ -1,7 +1,4 @@
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-
-import jTreeTypes from "./jTreeTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 class TreeUtils {
   static getFileExtension(filepath = "") {
@@ -9,7 +6,7 @@ class TreeUtils {
     return (match && match[1]) || ""
   }
 
-  static async runTestTree(testTree: jTreeTypes.testTree) {
+  static async runTestTree(testTree: treeNotationTypes.testTree) {
     // todo: browser version
     const tap = require("tap")
     const runOnlyTheseTest = Object.keys(testTree).filter(key => key.startsWith("_"))
@@ -35,7 +32,7 @@ class TreeUtils {
     return [context, final]
   }
 
-  static requireAbsOrRelative(filePath: jTreeTypes.filepath, contextFilePath: jTreeTypes.filepath) {
+  static requireAbsOrRelative(filePath: treeNotationTypes.filepath, contextFilePath: treeNotationTypes.filepath) {
     if (!filePath.startsWith(".")) return require(filePath)
     const path = require("path")
     const folder = this.getPathWithoutFileName(contextFilePath)
@@ -44,16 +41,16 @@ class TreeUtils {
   }
 
   // Removes last ".*" from this string
-  static removeFileExtension(filename: jTreeTypes.filepath) {
+  static removeFileExtension(filename: treeNotationTypes.filepath) {
     return filename ? filename.replace(/\.[^\.]+$/, "") : ""
   }
 
-  static getFileName(path: jTreeTypes.filepath) {
+  static getFileName(path: treeNotationTypes.filepath) {
     const parts = path.split("/") // todo: change for windows?
     return parts.pop()
   }
 
-  static getPathWithoutFileName(path: jTreeTypes.filepath) {
+  static getPathWithoutFileName(path: treeNotationTypes.filepath) {
     const parts = path.split("/") // todo: change for windows?
     parts.pop()
     return parts.join("/")
@@ -89,7 +86,7 @@ class TreeUtils {
     return index === -1 || index + 1 === values.length ? values[0] : values[index + 1]
   }
 
-  static getClassNameFromFilePath(filepath: jTreeTypes.filepath) {
+  static getClassNameFromFilePath(filepath: treeNotationTypes.filepath) {
     return this.removeFileExtension(this.getFileName(filepath))
   }
 
@@ -177,10 +174,10 @@ class TreeUtils {
     return closestMatch
   }
 
-  private static MAX_INT: jTreeTypes.positiveInt = Math.pow(2, 32) - 1
+  private static MAX_INT: treeNotationTypes.positiveInt = Math.pow(2, 32) - 1
 
   // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
-  private static _getEditDistance(stringA: string, stringB: string, maxInt: jTreeTypes.positiveInt) {
+  private static _getEditDistance(stringA: string, stringB: string, maxInt: treeNotationTypes.positiveInt) {
     // Handle null or undefined max.
     maxInt = maxInt || maxInt === 0 ? maxInt : TreeUtils.MAX_INT
 
@@ -272,7 +269,7 @@ class TreeUtils {
     return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
   }
 
-  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: jTreeTypes.stringMap) {
+  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: treeNotationTypes.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
@@ -286,7 +283,7 @@ class TreeUtils {
 
   static getUniqueWordsArray(allWords: string) {
     const words = allWords.replace(/\n/g, " ").split(" ")
-    const index: jTreeTypes.stringMap = {}
+    const index: treeNotationTypes.stringMap = {}
     words.forEach(word => {
       if (!index[word]) index[word] = 0
       index[word]++
@@ -365,7 +362,7 @@ class TreeUtils {
   }
 
   static arrayToMap(arr: Array<any>) {
-    const map: jTreeTypes.stringMap = {}
+    const map: treeNotationTypes.stringMap = {}
     arr.forEach(val => (map[val] = true))
     return map
   }
@@ -399,8 +396,8 @@ class TreeUtils {
     }
   }
 
-  static _makeGraphSortFunctionFromGraph(idAccessor: jTreeTypes.idAccessorFunction, graph: { [id: string]: Set<string> }) {
-    return (nodeA: jTreeTypes.treeNode, nodeB: jTreeTypes.treeNode) => {
+  static _makeGraphSortFunctionFromGraph(idAccessor: treeNotationTypes.idAccessorFunction, graph: { [id: string]: Set<string> }) {
+    return (nodeA: treeNotationTypes.treeNode, nodeB: treeNotationTypes.treeNode) => {
       const nodeAFirst = -1
       const nodeBFirst = 1
 
@@ -425,8 +422,8 @@ class TreeUtils {
     }
   }
 
-  static _makeGraphSortFunction(idAccessor: jTreeTypes.idAccessorFunction, extendsIdAccessor: jTreeTypes.idAccessorFunction) {
-    return (nodeA: jTreeTypes.treeNode, nodeB: jTreeTypes.treeNode) => {
+  static _makeGraphSortFunction(idAccessor: treeNotationTypes.idAccessorFunction, extendsIdAccessor: treeNotationTypes.idAccessorFunction) {
+    return (nodeA: treeNotationTypes.treeNode, nodeB: treeNotationTypes.treeNode) => {
       // -1 === a before b
       const nodeAUniqueId = idAccessor(nodeA)
       const nodeAExtends = extendsIdAccessor(nodeA)
@@ -466,4 +463,4 @@ class TreeUtils {
   }
 }
 
-export default TreeUtils
+export { TreeUtils }

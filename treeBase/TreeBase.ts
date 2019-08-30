@@ -1,11 +1,9 @@
 #!/usr/bin/env ts-node
 
-//tooling product treeBase.node.js
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
-import jTreeTypes from "../core/jTreeTypes"
-import { Disk } from "../core/Disk.node"
-
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
+const { Disk } = require("../products/Disk.node.js")
 
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils
@@ -38,7 +36,7 @@ class TreeBaseFile extends TreeNode {
     return terms
       .map(term => {
         const nodes = this.findNodes(this._getFilePath() + " " + term)
-        return nodes.map((node: jTreeTypes.treeNode) => node.childrenToString()).join("\n")
+        return nodes.map((node: treeNotationTypes.treeNode) => node.childrenToString()).join("\n")
       })
       .filter(a => a)
       .join("\n")
@@ -53,7 +51,7 @@ class TreeBaseFile extends TreeNode {
     return this.touchNode(prop).setContent(value)
   }
 
-  setProperties(propMap: jTreeTypes.stringMap) {
+  setProperties(propMap: treeNotationTypes.stringMap) {
     const props = Object.keys(propMap)
     const values = Object.values(propMap)
     // todo: is there a built in tree method to do this?
@@ -69,7 +67,7 @@ class TreeBaseFile extends TreeNode {
   extract(fields: string[]) {
     const newTree = new TreeNode(this.toString()) // todo: why not clone?
     const map = TreeUtils.arrayToMap(fields)
-    newTree.nodeAt(0).forEach((node: jTreeTypes.treeNode) => {
+    newTree.nodeAt(0).forEach((node: treeNotationTypes.treeNode) => {
       if (!map[node.getWord(0)]) node.destroy()
     })
 
@@ -106,7 +104,7 @@ class TreeBaseFile extends TreeNode {
 }
 
 class TreeBaseFolder extends TreeNode {
-  touch(filename: jTreeTypes.fileName) {
+  touch(filename: treeNotationTypes.fileName) {
     // todo: throw if its a folder path, has wrong file extension, or other invalid
     return Disk.touch(this._getDir() + filename)
   }
@@ -118,7 +116,7 @@ class TreeBaseFolder extends TreeNode {
   private _isLoaded = false
 
   // todo: RAII?
-  loadFolder(files: jTreeTypes.filepath[] = undefined, sampleSize: jTreeTypes.int = undefined, seed: number = Date.now()) {
+  loadFolder(files: treeNotationTypes.filepath[] = undefined, sampleSize: treeNotationTypes.int = undefined, seed: number = Date.now()) {
     if (this._isLoaded) return this
     files = files || this._getAndFilterFilesFromFolder()
 
@@ -158,7 +156,7 @@ class TreeBaseFolder extends TreeNode {
       }
       if (err.length) totalErrors += err.length
       if (printLimit && err) {
-        err.forEach((err: jTreeTypes.treeNode) =>
+        err.forEach((err: treeNotationTypes.treeNode) =>
           console.log(
             err
               .getNode()
@@ -188,7 +186,7 @@ class TreeBaseFolder extends TreeNode {
   }
 
   private _setDiskVersions() {
-    this.forEach((node: jTreeTypes.treeNode) => {
+    this.forEach((node: treeNotationTypes.treeNode) => {
       node.setDiskVersion()
     })
     return this
@@ -212,7 +210,7 @@ class TreeBaseFolder extends TreeNode {
 
   private _startListeningForFileChanges() {
     const fs = require("fs")
-    fs.watch(this._getDir(), (event: any, filename: jTreeTypes.fileName) => {
+    fs.watch(this._getDir(), (event: any, filename: treeNotationTypes.fileName) => {
       let fullPath = this._getDir() + filename
       fullPath = this._filterFiles([fullPath])[0]
       if (!fullPath) return true
@@ -254,7 +252,7 @@ class TreeBaseFolder extends TreeNode {
     })
 
     app.get("/list", (req: any, res: any) => {
-      res.send(this.map((node: jTreeTypes.treeNode) => `<a href="${node.getFileName()}">${node.getFileName()}</a>`).join("<br>"))
+      res.send(this.map((node: treeNotationTypes.treeNode) => `<a href="${node.getFileName()}">${node.getFileName()}</a>`).join("<br>"))
     })
 
     app.get("/", (req: any, res: any) => {
@@ -299,7 +297,7 @@ class TreeBaseFolder extends TreeNode {
       "\n" +
       `treeBaseFolderNode
  ${GrammarConstants.root}
- ${GrammarConstants.inScope} ${rootNodes.map((node: jTreeTypes.treeNode) => node.getWord(0)).join(" ")}
+ ${GrammarConstants.inScope} ${rootNodes.map((node: treeNotationTypes.treeNode) => node.getWord(0)).join(" ")}
  ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
 treeBaseErrorNode
  ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
@@ -313,7 +311,7 @@ treeBaseErrorNode
     return new programConstructor(this.toString())
   }
 
-  private _readFiles(files: jTreeTypes.filepath[]) {
+  private _readFiles(files: treeNotationTypes.filepath[]) {
     return files
       .map(fullPath => {
         const filename = Disk.getFileName(fullPath)

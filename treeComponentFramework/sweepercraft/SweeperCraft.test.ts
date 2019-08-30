@@ -2,7 +2,7 @@
 
 const { SweeperCraftApp, SweeperCraftGame } = require("./SweeperCraft")
 
-const jtree = require("../../products/jtree.node.js")
+const { jtree } = require("../../index.js")
 
 const testTree: any = {}
 

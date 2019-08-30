@@ -3,11 +3,11 @@
 // todo: make isomorphic
 
 import { readFileSync } from "fs"
-import jTreeTypes from "../core/jTreeTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 import { UnknownGrammarProgram } from "../core/UnknownGrammarProgram"
-import jtree from "../core/jtree.node"
+const { jtree } = require("../index.js")
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 testTree.predictGrammarFile = equal => {
   // Arrange

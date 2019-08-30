@@ -2,7 +2,7 @@
 arrangeTestSubject
 test willowBasics
  arrangeTestSubject
-  require ./Willow.js WillowProgram
+  require ../products/TreeComponentFramework.node.js WillowProgram
   constructWithBlockString
    http://localhost:8000/
  someInputHasFocus

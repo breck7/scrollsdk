@@ -1,0 +1,15 @@
+mapNode
+ description A simple Tree Language for storing recursive maps with keys as strings with any characters except spaces, and values as strings.
+ root
+ catchAllNodeType pairNode
+anyCell
+valueCell
+ highlightScope string
+ description Any character is valid in a value.
+keywordCell
+ description Allows any character except a space.
+ highlightScope keyword
+pairNode
+ description Holds a key/value pair
+ firstCellType keywordCell
+ catchAllCellType valueCell

@@ -1,18 +1,13 @@
 const { exec, execSync } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
-
 const { jtree } = require("../index.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
-
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
-
 const ts = require("typescript")
-
 class AbstractBuilder extends jtree.TreeNode {
-  private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
+  _typeScriptToJavascript(sourceCode, forBrowser = false) {
     // downlevelIteration: true, // todo: what is this again?
-    const tsConfig: any = {
+    const tsConfig = {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: "es2017", noImplicitAny: true }
     }
     if (forBrowser) {
@@ -25,8 +20,7 @@ class AbstractBuilder extends jtree.TreeNode {
     const result = ts.transpileModule(sourceCode, tsConfig)
     return result.outputText
   }
-
-  private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
+  _combineTypeScriptFilesForNode(typeScriptScriptsInOrder) {
     // todo: prettify
     return typeScriptScriptsInOrder
       .map(src => this._read(src))
@@ -40,12 +34,10 @@ class AbstractBuilder extends jtree.TreeNode {
       )
       .join("\n")
   }
-
-  private _prettifyFile(path: treeNotationTypes.filepath) {
+  _prettifyFile(path) {
     Disk.write(path, require("prettier").format(Disk.read(path), { semi: false, parser: "babel", printWidth: 160 }))
   }
-
-  private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
+  _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder) {
     return typeScriptScriptsInOrder
       .map(src => this._read(src))
       .map(content =>
@@ -60,45 +52,32 @@ class AbstractBuilder extends jtree.TreeNode {
       )
       .join("\n")
   }
-
-  private _buildBrowserTsc(sourceCode: string, outputFilePath: string) {
+  _buildBrowserTsc(sourceCode, outputFilePath) {
     return this._buildTsc(sourceCode, outputFilePath, true)
   }
-
-  private _buildTsc(sourceCode: string, outputFilePath: string, forBrowser = false) {
+  _buildTsc(sourceCode, outputFilePath, forBrowser = false) {
     Disk.write(outputFilePath, this._typeScriptToJavascript(sourceCode, forBrowser))
   }
-
   // todo: cleanup
-  _getOutputFilePath(outputFileName: string) {
+  _getOutputFilePath(outputFileName) {
     return __dirname + "/../products/" + outputFileName
   }
-
-  async _produceBrowserProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[] = [], outputFileName: treeNotationTypes.fileName) {
+  async _produceBrowserProductFromTypeScript(files = [], outputFileName) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
     this._buildBrowserTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath)
     this._prettifyFile(outputFilePath)
   }
-
-  _makeExecutable(file: treeNotationTypes.filepath) {
+  _makeExecutable(file) {
     Disk.makeExecutable(file)
   }
-
   _getProductFolder() {
     return __dirname
   }
-
-  _getBundleFilePath(outputFileName: treeNotationTypes.fileName) {
+  _getBundleFilePath(outputFileName) {
     return this._getProductFolder() + `${outputFileName.replace(".js", ".ts")}`
   }
-
-  async _produceNodeProductFromTypeScript(
-    files: treeNotationTypes.absoluteFilePath[],
-    outputFileName: treeNotationTypes.fileName,
-    transformFn: (code: treeNotationTypes.javascriptCode) => string
-  ) {
+  async _produceNodeProductFromTypeScript(files, outputFileName, transformFn) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
-
     try {
       await this._buildTsc(this._combineTypeScriptFilesForNode(files), outputFilePath, false)
       Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
@@ -106,97 +85,77 @@ class AbstractBuilder extends jtree.TreeNode {
     } catch (error) {
       console.log(error)
     }
-
     return outputFilePath
   }
-
-  _readJson(path: treeNotationTypes.filepath) {
+  _readJson(path) {
     return JSON.parse(this._read(path))
   }
-
-  _writeJson(path: treeNotationTypes.filepath, obj: any) {
+  _writeJson(path, obj) {
     this._write(path, JSON.stringify(obj, null, 2))
   }
-
-  _updatePackageJson(packagePath: treeNotationTypes.filepath, newVersion: treeNotationTypes.semanticVersion) {
+  _updatePackageJson(packagePath, newVersion) {
     const packageJson = this._readJson(packagePath)
     packageJson.version = newVersion
     this._writeJson(packagePath, packageJson)
     console.log(`Updated ${packagePath} to ${newVersion}`)
   }
-
-  _read(path: treeNotationTypes.filepath) {
+  _read(path) {
     const fs = this.require("fs")
     return fs.readFileSync(path, "utf8")
   }
-
-  _mochaTest(filepath: treeNotationTypes.filepath) {
+  _mochaTest(filepath) {
     const reporter = require("tap-mocha-reporter")
     const proc = exec(`${filepath} _test`)
-
     proc.stdout.pipe(reporter("dot"))
-    proc.stderr.on("data", (data: any) => console.error("stderr: " + data.toString()))
+    proc.stderr.on("data", data => console.error("stderr: " + data.toString()))
   }
-
-  _write(path: treeNotationTypes.filepath, str: string) {
+  _write(path, str) {
     const fs = this.require("fs")
     return fs.writeFileSync(path, str, "utf8")
   }
-
-  _checkGrammarFile(grammarPath: treeNotationTypes.grammarFilePath) {
+  _checkGrammarFile(grammarPath) {
     // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
-    const testTree: any = {}
-    testTree[`hardCodedGrammarCheckOf${grammarPath}`] = (equal: Function) => {
+    const testTree = {}
+    testTree[`hardCodedGrammarCheckOf${grammarPath}`] = equal => {
       // Arrange/Act
       const program = new jtree.GrammarProgram(this._read(grammarPath))
       const errs = program.getAllErrors()
       const exampleErrors = program.getErrorsInGrammarExamples()
-
       //Assert
       equal(errs.length, 0, "should be no errors")
       if (errs.length) console.log(errs.join("\n"))
-
       if (exampleErrors.length) console.log(exampleErrors)
       equal(exampleErrors.length, 0, exampleErrors.length ? "examples errs: " + exampleErrors : "no example errors")
     }
-
-    testTree[`grammarGrammarCheckOf${grammarPath}`] = (equal: Function) => {
+    testTree[`grammarGrammarCheckOf${grammarPath}`] = equal => {
       // Arrange/Act
       const program = jtree.makeProgram(grammarPath, __dirname + "/../langs/grammar/grammar.grammar")
       const errs = program.getAllErrors()
-
       //Assert
-
       equal(errs.length, 0, "should be no errors")
       if (errs.length) console.log(errs.join("\n"))
     }
-
     jtree.Utils.runTestTree(testTree)
   }
-
   _help(filePath = process.argv[1]) {
     const commands = this._getAllCommands()
     return `${commands.length} commands in ${filePath}:\n${commands.join("\n")}`
   }
-
   _getAllCommands() {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this))
       .filter(word => !word.startsWith("_") && word !== "constructor")
       .sort()
   }
-
-  private _getPartialMatches(commandName: string) {
+  _getPartialMatches(commandName) {
     return this._getAllCommands().filter(item => item.startsWith(commandName))
   }
-
   _main() {
     const action = process.argv[2]
     const paramOne = process.argv[3]
     const paramTwo = process.argv[4]
     const print = console.log
-    const builder = <any>this
+    const builder = this
     const partialMatches = this._getPartialMatches(action)
-
     if (builder[action]) {
       builder[action](paramOne, paramTwo)
     } else if (!action) {
@@ -208,4 +167,4 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 }
 
-export { AbstractBuilder }
+module.exports = { AbstractBuilder }

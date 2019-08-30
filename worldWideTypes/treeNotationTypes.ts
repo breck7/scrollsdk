@@ -1,14 +1,4 @@
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-//tooling product commandLineApp.node.js
-//tooling product treeBase.node.js
-//tooling product SandboxServer.node.js
-//tooling product core.test.browser.js
-//tooling product abstractBuilder.node.js
-//tooling product TreeComponentFramework.browser.js
-//tooling product TreeComponentFramework.node.js
-
-export namespace jTreeTypes {
+namespace treeNotationTypes {
   export interface point {
     x: int
     y: int
@@ -117,4 +107,4 @@ export namespace jTreeTypes {
   export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
 }
 
-/*TSC_HACK*/ export default jTreeTypes
+export { treeNotationTypes }

@@ -1,3 +1,14 @@
+39.0.0 / 2019-08-30
+===================
+- Breaking: we now export {jtree} instead of jtree. We removed all TypeScript export default.
+- New: added "map" demo language
+- Infra: refactored build system
+- Infra: moved Disk to products
+- Infra: removed tsconfigs
+- Infra: created products.tree
+- Infra: started worldWideTypes folder
+- Infra: TCF tests now included in npm test
+
 38.2.0 / 2019-08-28
 ===================
 - New: appendSibling base method

@@ -3,8 +3,8 @@
 // todo: make isomorphic
 
 import { readFileSync } from "fs"
-import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+const { jtree } = require("../index.js")
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const GrammarProgram = jtree.GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
@@ -16,7 +16,7 @@ const grammarGrammar = readFileSync(grammarGrammarPath, "utf8")
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
 const jibberishGrammarCode = readFileSync(jibberishGrammarPath, "utf8")
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
@@ -24,7 +24,7 @@ testTree.emptyProgram = equal => {
   const errs = program.getAllErrors()
 
   // Assert
-  if (errs.length) console.log(errs.map(err => err.getMessage()))
+  if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
   equal(errs.length, 0, "should be no errors")
 }
 
@@ -34,7 +34,7 @@ testTree.grammarLangBasics = equal => {
   const errs = grammarProgram.getAllErrors()
 
   // Assert
-  if (errs.length) console.log(errs.map(err => err.getMessage()))
+  if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
   equal(errs.length, 0, "should be no errors")
 }
 
@@ -64,7 +64,7 @@ testTree.jibberish = equal => {
   equal(program.constructor.name, "jibberishNode", "correct program class")
   const errs = program.getAllErrors()
   equal(errs.length, 0, `should be 0 errors`)
-  if (errs.length) console.log(errs.map(err => err.getMessage()))
+  if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
 
   const defNode = program
     .getGrammarProgramRoot()
@@ -277,7 +277,7 @@ cokes 22 11`
   // Assert
   const errs = program.getAllErrors()
   equal(errs.length, 0)
-  if (errs.length) console.log(errs.map(err => err.getMessage()).join("\n"))
+  if (errs.length) console.log(errs.map((err: any) => err.getMessage()).join("\n"))
   equal(typeof program.getInPlaceHighlightScopeTree(), "string")
 }
 
@@ -535,7 +535,7 @@ foobarCell
  regex test`)
 
   // Assert
-  anyProgram.findAllNodesWithNodeType("regexNode").forEach(node => {
+  anyProgram.findAllNodesWithNodeType("regexNode").forEach((node: any) => {
     node.setWord(0, "regexString")
   })
   equal(

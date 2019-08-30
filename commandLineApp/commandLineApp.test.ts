@@ -3,12 +3,12 @@
 const fs = require("fs")
 const mkdirp = require("mkdirp")
 
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 
 import { CommandLineApp } from "./commandLineApp.node"
-import jTreeTypes from "../core/jTreeTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 const commandLineAppTempHome = __dirname + `/../ignore/commandLineAppTempHome/`
 const commandLineAppTempRegistryFile = commandLineAppTempHome + "grammars.ssv"

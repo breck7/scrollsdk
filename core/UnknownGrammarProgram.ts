@@ -1,12 +1,9 @@
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-
-import TreeNode from "./TreeNode"
-import TreeUtils from "./TreeUtils"
+import { TreeNode } from "./TreeNode"
+import { TreeUtils } from "./TreeUtils"
 
 import { GrammarConstants, GrammarProgram, PreludeCellTypeIds } from "./GrammarLanguage"
 
-import jTreeTypes from "./jTreeTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   private _inferRootNodeForAPrefixLanguage(grammarName: string): TreeNode {
@@ -34,7 +31,7 @@ class UnknownGrammarProgram extends TreeNode {
   }
 
   private _getKeywordMaps(clone: UnknownGrammarProgram) {
-    const keywordsToChildKeywords: { [firstWord: string]: jTreeTypes.stringMap } = {}
+    const keywordsToChildKeywords: { [firstWord: string]: treeNotationTypes.stringMap } = {}
     const keywordsToNodeInstances: { [firstWord: string]: TreeNode[] } = {}
     for (let node of clone.getTopDownArrayIterator()) {
       const firstWord = node.getFirstWord()
@@ -112,8 +109,8 @@ class UnknownGrammarProgram extends TreeNode {
 
   private _getBestCellType(
     firstWord: string,
-    instanceCount: jTreeTypes.int,
-    maxCellsOnLine: jTreeTypes.int,
+    instanceCount: treeNotationTypes.int,
+    maxCellsOnLine: treeNotationTypes.int,
     allValues: any[]
   ): { cellTypeId: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)

@@ -10,5 +10,4 @@ jtree.project
 notes.txt
 jtree.browser.ts
 syntax.sh
-*.map
 *.d.ts

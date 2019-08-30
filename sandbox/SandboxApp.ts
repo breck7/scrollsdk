@@ -1,5 +1,3 @@
-//tooling product SandboxApp.browser.js
-
 declare var jtree: any
 
 const samples: any = {}

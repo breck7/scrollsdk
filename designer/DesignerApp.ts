@@ -1,5 +1,3 @@
-//tooling product DesignerApp.browser.js
-
 // todo: get typings in here.
 declare var jtree: any
 declare var CodeMirror: any

@@ -1,6 +1,3 @@
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-
 abstract class AbstractNode {
   protected _getProcessTimeInMilliseconds() {
     const hrtime = process.hrtime()
@@ -8,4 +5,4 @@ abstract class AbstractNode {
   }
 }
 
-export default AbstractNode
+export { AbstractNode }

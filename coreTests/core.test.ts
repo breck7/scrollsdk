@@ -1,16 +1,14 @@
 #!/usr/bin/env ts-node
 
-//tooling product core.test.browser.js
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
-import jTreeTypes from "../core/jTreeTypes"
-
-const testTree: jTreeTypes.testTree = {}
-const jtree = require("../products/jtree.node.js")
+const testTree: treeNotationTypes.testTree = {}
+const { jtree } = require("../index.js")
 
 {
   const TreeNode = jtree.TreeNode
 
-  const testStrings: jTreeTypes.stringMap = {}
+  const testStrings: treeNotationTypes.stringMap = {}
 
   testStrings.webpage = `head
 body
@@ -781,7 +779,7 @@ other`
     const tree6 = new TreeNode(blankTest)
 
     // Act
-    tree6.forEach((node: jTreeTypes.treeNode) => {
+    tree6.forEach((node: treeNotationTypes.treeNode) => {
       if (!node.getFirstWord().startsWith("p")) return true
       node.setContent("President")
       node.delete("class")
@@ -839,10 +837,10 @@ other`
     const migrateFn = (str: string) => {
       const board = new TreeNode(str)
       const dataNodes = board.findNodes("data")
-      dataNodes.forEach((nodeTree: jTreeTypes.treeNode) => {
+      dataNodes.forEach((nodeTree: treeNotationTypes.treeNode) => {
         const rows = nodeTree.findNodes("row")
         if (!rows.length) return
-        const mapped = rows.map((row: jTreeTypes.treeNode) => row.toObject())
+        const mapped = rows.map((row: treeNotationTypes.treeNode) => row.toObject())
         const csv = new TreeNode(mapped).toCsv()
         nodeTree.touchNode("format").setContent("csv")
         nodeTree.touchNode("content").setContentWithChildren(csv)
@@ -900,7 +898,7 @@ yo hey`
     var result = ""
 
     // Act
-    value.forEach(function(node: jTreeTypes.treeNode) {
+    value.forEach(function(node: treeNotationTypes.treeNode) {
       const property = node.getFirstWord()
       const v = node.getContent()
       result += property.toUpperCase()
@@ -918,8 +916,8 @@ yo hey`
 
     // Act
     value2
-      .filter((node: jTreeTypes.treeNode) => node.getFirstWord() !== "hello")
-      .forEach((node: jTreeTypes.treeNode) => {
+      .filter((node: treeNotationTypes.treeNode) => node.getFirstWord() !== "hello")
+      .forEach((node: treeNotationTypes.treeNode) => {
         const property = node.getFirstWord()
         const value = node.getContent()
         count++
@@ -932,7 +930,7 @@ yo hey`
     var inc = 0
 
     // Act
-    tree.forEach((node: jTreeTypes.treeNode, index: number) => {
+    tree.forEach((node: treeNotationTypes.treeNode, index: number) => {
       inc = inc + index
     })
 
@@ -942,7 +940,7 @@ yo hey`
 
   testTree.every = equal => {
     // Arrange/Act/Assert
-    equal(new TreeNode(`a 2\nb 2\nc 2`).every((node: jTreeTypes.treeNode) => node.getWord(1) === "2"), true)
+    equal(new TreeNode(`a 2\nb 2\nc 2`).every((node: treeNotationTypes.treeNode) => node.getWord(1) === "2"), true)
   }
 
   testTree.extend = equal => {
@@ -1304,7 +1302,7 @@ b`
       testStrings.webpageTrimmed,
       tree
         .getTopDownArray()
-        .map((line: jTreeTypes.treeNode) => line.getIndentation() + line.getLine())
+        .map((line: treeNotationTypes.treeNode) => line.getIndentation() + line.getLine())
         .join("\n")
     )
   }
@@ -1401,7 +1399,7 @@ helpButton abstractButton`
     // Act
     const result = value
       .findNodes("hello")
-      .map((node: jTreeTypes.treeNode) => node.getContent())
+      .map((node: treeNotationTypes.treeNode) => node.getContent())
       .join("")
 
     // Assert
@@ -1410,7 +1408,7 @@ helpButton abstractButton`
     equal(
       deep
         .findNodes("language line score")
-        .map((node: jTreeTypes.treeNode) => node.getContent())
+        .map((node: treeNotationTypes.treeNode) => node.getContent())
         .join(""),
       "212"
     )
@@ -2086,7 +2084,7 @@ car non-existant`)
     var page = ""
 
     // Act
-    html.forEach((node: jTreeTypes.treeNode) => {
+    html.forEach((node: treeNotationTypes.treeNode) => {
       const property = node.getFirstWord()
       const value = node.getContent()
       page += "<" + property + ">" + value + "</" + property + ">"
@@ -2383,7 +2381,7 @@ chart2
  @blue
  >div`
 
-    const migrateNode = (node: jTreeTypes.treeNode) => {
+    const migrateNode = (node: treeNotationTypes.treeNode) => {
       if (!node.getFirstWord().startsWith(">")) return true
       if (node.length) {
         const cla = node.getNode("class").getContent()
@@ -2392,13 +2390,13 @@ chart2
         if (css) {
           const nodes = css.getChildren()
           const toMove: any = []
-          nodes.forEach((propNode: jTreeTypes.treeNode) => {
+          nodes.forEach((propNode: treeNotationTypes.treeNode) => {
             const name = propNode.getFirstWord().replace(":", " ")
             propNode.setFirstWord("@" + name)
             toMove.push(propNode)
           })
           toMove.reverse()
-          toMove.forEach((prop: jTreeTypes.treeNode) => prop.copyTo(node, 0))
+          toMove.forEach((prop: treeNotationTypes.treeNode) => prop.copyTo(node, 0))
         }
         node.delete("class")
         node.delete("css")
@@ -2609,7 +2607,7 @@ d
     // Act/Assert
     const result = reg
       .getTopDownArray()
-      .map((node: jTreeTypes.treeNode) => node.getPoint().y)
+      .map((node: treeNotationTypes.treeNode) => node.getPoint().y)
       .join(" ")
     equal(result, "1 2 3 4 5")
     equal(reg.getNode("a").getPoint().y, 1)
@@ -2662,10 +2660,10 @@ q quantity`
 
     // Act
     const remapped = new TreeNode(test)
-    remapped.forEach((node: jTreeTypes.treeNode) => node.remap(expandMapObj))
+    remapped.forEach((node: treeNotationTypes.treeNode) => node.remap(expandMapObj))
 
     const expected = remapped.clone()
-    expected.forEach((node: jTreeTypes.treeNode) => node.remap(contractMap))
+    expected.forEach((node: treeNotationTypes.treeNode) => node.remap(contractMap))
 
     // Assert
     equal(test, expected.toString())
@@ -3053,7 +3051,9 @@ bob
     // Assert
     equal(tree.getFirstWords().join(" "), "john susy bob")
     // Act
-    tree.sort((a: jTreeTypes.treeNode, b: jTreeTypes.treeNode) => (b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1))
+    tree.sort((a: treeNotationTypes.treeNode, b: treeNotationTypes.treeNode) =>
+      b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1
+    )
     // Assert
     equal(tree.getFirstWords().join(" "), "bob john susy")
   }
@@ -3456,15 +3456,15 @@ event lala2018
     // Act
     const preOrder = traversal
       .getTopDownArray()
-      .map((node: jTreeTypes.treeNode) => node.getLine())
+      .map((node: treeNotationTypes.treeNode) => node.getLine())
       .join(" ")
     const postOrder = traversal
       .getChildrenFirstArray()
-      .map((node: jTreeTypes.treeNode) => node.getLine())
+      .map((node: treeNotationTypes.treeNode) => node.getLine())
       .join(" ")
     const breadthfirst = traversal
       .getParentFirstArray()
-      .map((node: jTreeTypes.treeNode) => node.getLine())
+      .map((node: treeNotationTypes.treeNode) => node.getLine())
       .join(" ")
 
     // Assert
@@ -3488,15 +3488,15 @@ event lala2018
     // Act
     const wikipreorder = wikipediaBinaryTree
       .getTopDownArray()
-      .map((node: jTreeTypes.treeNode) => node.getLine())
+      .map((node: treeNotationTypes.treeNode) => node.getLine())
       .join("")
     const wikibreadthfirst = wikipediaBinaryTree
       .getParentFirstArray()
-      .map((node: jTreeTypes.treeNode) => node.getLine())
+      .map((node: treeNotationTypes.treeNode) => node.getLine())
       .join("")
     const wikipostorder = wikipediaBinaryTree
       .getChildrenFirstArray()
-      .map((node: jTreeTypes.treeNode) => node.getLine())
+      .map((node: treeNotationTypes.treeNode) => node.getLine())
       .join("")
 
     // Assert
@@ -3525,7 +3525,7 @@ b
  a
 b
  a
-c`).getFiltered((node: jTreeTypes.treeNode) => node.getFirstWord() === "a").length,
+c`).getFiltered((node: treeNotationTypes.treeNode) => node.getFirstWord() === "a").length,
       3
     )
   }
@@ -3573,7 +3573,7 @@ c`).deleteDuplicates().length,
 `
     )
     equal(
-      treeNode.toMappedOutline((node: jTreeTypes.treeNode) => "o"),
+      treeNode.toMappedOutline((node: treeNotationTypes.treeNode) => "o"),
       `└o
  └o
 `
@@ -3625,7 +3625,7 @@ b
 c
  d`)
     // Act
-    a.forEach((child: jTreeTypes.treeNode) => {
+    a.forEach((child: treeNotationTypes.treeNode) => {
       child.destroy()
     })
 

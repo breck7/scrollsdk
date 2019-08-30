@@ -1,15 +1,3 @@
-"use strict"
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-//tooling product commandLineApp.node.js
-//tooling product treeBase.node.js
-//tooling product SandboxServer.node.js
-//tooling product core.test.browser.js
-//tooling product abstractBuilder.node.js
-//tooling product TreeComponentFramework.browser.js
-//tooling product TreeComponentFramework.node.js
-Object.defineProperty(exports, "__esModule", { value: true })
-//tooling product SandboxServer.node.js
 const express = require("express")
 const { readFile } = require("fs")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")

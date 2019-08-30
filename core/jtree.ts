@@ -1,8 +1,5 @@
-//tooling product jtree.node.js
-//tooling product jtree.browser.js
-
-import TreeUtils from "./TreeUtils"
-import TreeNode from "./TreeNode"
+import { TreeUtils } from "./TreeUtils"
+import { TreeNode } from "./TreeNode"
 
 import { GrammarProgram, GrammarBackedRootNode, GrammarBackedNonRootNode } from "./GrammarLanguage"
 import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
@@ -19,4 +16,4 @@ class jtree {
   static getVersion = () => TreeNode.getVersion()
 }
 
-export default jtree
+export { jtree }

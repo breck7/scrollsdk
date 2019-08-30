@@ -1,1 +1,1 @@
-module.exports = require("../../index.js").getProgramConstructor(__dirname + "/jibberish.grammar")
+module.exports = require("../../index.js").jtree.getProgramConstructor(__dirname + "/jibberish.grammar")

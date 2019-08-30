@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 import { AbstractTreeComponentRootNode, AbstractTreeComponent } from "./TreeComponentFramework"
-const jtree = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 
 const testTree: any = {}
 

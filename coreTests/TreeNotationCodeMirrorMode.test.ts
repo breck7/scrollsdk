@@ -5,15 +5,16 @@
 const fs = require("fs")
 const stamp = require("../langs/stamp/stamp.node.js")
 
-const GrammarProgram = require("../index.js").getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
+const { jtree } = require("../index.js")
 
-import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+const GrammarProgram = require("../index.js").jtree.getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
+
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
 const TreeUtils = jtree.Utils
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 class MockStream {
   constructor(str: string) {

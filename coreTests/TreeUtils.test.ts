@@ -2,10 +2,10 @@
 
 // todo: make isomorphic
 
-import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+const { jtree } = require("../index.js")
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 testTree.version = equal => {
   // Arrange/Act/Assert
@@ -63,7 +63,7 @@ retriever dog
 car
 cat animal
 house`)
-  a.sort(jtree.Utils._makeGraphSortFunction(node => node.getWord(0), node => node.getWord(1)))
+  a.sort(jtree.Utils._makeGraphSortFunction((node: any) => node.getWord(0), (node: any) => node.getWord(1)))
 
   // Assert
   equal(

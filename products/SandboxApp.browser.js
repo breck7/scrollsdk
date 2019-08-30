@@ -1,4 +1,3 @@
-//tooling product SandboxApp.browser.js
 const samples = {}
 samples.csv = jtree.TreeNode.iris
 // todo: autogen this.

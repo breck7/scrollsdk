@@ -1,4 +1,3 @@
-//tooling product SweeperCraft.browser.js
 class SweeperCraftGame {
   constructor(board, renderFn) {
     this._setBoard(board)

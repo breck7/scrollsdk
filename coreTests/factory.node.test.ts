@@ -1,11 +1,11 @@
 #!/usr/bin/env ts-node
 
-import jtree from "../core/jtree.node"
-import jTreeTypes from "../core/jTreeTypes"
+const { jtree } = require("../index.js")
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
-const testTree: jTreeTypes.testTree = {}
+const testTree: treeNotationTypes.testTree = {}
 
 testTree.makeProgram = equal => {
   // Arrange

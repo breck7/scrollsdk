@@ -66,7 +66,7 @@ class AbstractBuilder extends jtree.TreeNode {
   async _produceBrowserProductFromTypeScript(files = [], outputFileName) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
     this._buildBrowserTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath)
-    this._prettifyFile(this._getOutputFilePath(productId))
+    this._prettifyFile(outputFilePath)
   }
   _makeExecutable(file) {
     Disk.makeExecutable(file)

@@ -1,4 +1,3 @@
-//tooling product Disk.node
 const fs = require("fs")
 class Disk {}
 Disk.getTreeNode = () => require("../products/jtree.node.js").TreeNode // todo: cleanup
@@ -129,4 +128,5 @@ Disk.csvToMap = (path, columnName) => {
   })
   return map
 }
+
 module.exports = { Disk }

@@ -1,6 +1,3 @@
-//tooling product TreeComponentFramework.browser.js
-//tooling product TreeComponentFramework.node.js
-
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 
 const jtree = require("../products/jtree.node.js")

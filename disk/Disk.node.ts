@@ -1,5 +1,3 @@
-//tooling product Disk.node.js
-
 const fs = require("fs")
 
 import treeNotationTypes from "../worldWideTypes/treeNotationTypes"

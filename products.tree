@@ -22,6 +22,7 @@ nodeProduct
 nodeProduct
  outputFileName Disk.node.js
  lastLine module.exports = {Disk}
+ files disk/Disk.node.ts
 browserProduct
  outputFileName DesignerApp.browser.js
  files 

@@ -1,6 +1,3 @@
-//tooling product TreeComponentFramework.browser.js
-//tooling product TreeComponentFramework.node.js
-
 const superagent = require("superagent")
 declare var jQuery: any
 

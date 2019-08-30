@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { WillowProgram } from "./Willow"
+import { WillowProgram } from "./TreeComponentFramework"
 
 const testTree: any = {}
 

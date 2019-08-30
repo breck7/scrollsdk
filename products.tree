@@ -7,10 +7,10 @@ browserProduct
  files treeComponentFramework/sweepercraft/SweeperCraft.ts
 browserProduct
  outputFileName TreeComponentFramework.browser.js
- files worldWideTypes/treeNotationTypes.ts treeComponentFramework/Willow.ts treeComponentFramework/TreeComponentFramework.ts
+ files worldWideTypes/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
 nodeProduct
  outputFileName TreeComponentFramework.node.js
- files worldWideTypes/treeNotationTypes.ts treeComponentFramework/Willow.ts treeComponentFramework/TreeComponentFramework.ts
+ files worldWideTypes/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
  lastLine module.exports = {AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander}
 browserProduct
  outputFileName jtree.browser.js

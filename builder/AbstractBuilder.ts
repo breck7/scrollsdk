@@ -10,41 +10,23 @@ import treeNotationTypes from "../worldWideTypes/treeNotationTypes"
 const ts = require("typescript")
 
 class AbstractBuilder extends jtree.TreeNode {
-  private _getNodeTsConfig(outDir = "", inputFilePath = "") {
-    return {
-      compilerOptions: {
-        types: ["node"],
-        outDir: outDir,
-        lib: ["es2017"],
-        noImplicitAny: true,
-        downlevelIteration: true, // todo: what is this again?
-        target: "es2017",
-        module: "commonjs"
-      },
-      include: [inputFilePath]
+  private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
+    // downlevelIteration: true, // todo: what is this again?
+    const tsConfig = {
+      compilerOptions: { module: ts.ModuleKind.CommonJS, target: "es2017", noImplicitAny: true }
     }
-  }
-
-  private _typeScriptToJavascript(sourceCode: string) {
-    const result = ts.transpileModule(sourceCode, {
-      compilerOptions: { module: ts.ModuleKind.CommonJS }
-    })
-
-    console.log(JSON.stringify(result))
-  }
-
-  private _getBrowserTsConfig(outDir = "", inputFilePath = "") {
-    return {
-      compilerOptions: {
-        outDir: outDir,
-        lib: ["es2017", "dom"],
-        moduleResolution: "node",
-        noImplicitAny: true,
-        declaration: false,
-        target: "es2017"
-      },
-      include: [inputFilePath]
+    if (forBrowser) {
+      compilerOptions.moduleResolution = "node"
+      compilerOptions.lib = ["es2017", "dom"]
+    } else {
+      compilerOptions.tiles = ["node"]
+      compilerOptions.lib = ["es2017"]
     }
+    const result = ts.transpileModule(sourceCode, tsConfig)
+
+    console.log(JSON.stringify(result, null, 2))
+
+    return result.outputText
   }
 
   private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
@@ -83,33 +65,12 @@ class AbstractBuilder extends jtree.TreeNode {
       .join("\n")
   }
 
-  private async _buildBrowserTsc(inputFilePath: string, outputFilePath: string) {
+  private _buildBrowserTsc(inputFilePath: string, outputFilePath: string) {
     return this._buildTsc(inputFilePath, outputFilePath, true)
   }
 
-  private async _buildTsc(inputFilePath: string, outputFilePath: string, forBrowser = false) {
-    const outputFolder = this._getProductFolder()
-    const configPath = outputFolder + "tsconfig.json"
-    Disk.writeJson(configPath, forBrowser ? this._getBrowserTsConfig(outputFolder, inputFilePath) : this._getNodeTsConfig(outputFolder, inputFilePath))
-    try {
-      Disk.write(outputFilePath, this._typeScriptToJavascript(Disk.read(inputFilePath)))
-
-      // const prom = new Promise((resolve, reject) => {
-      //   exec("tsc", { cwd: outputFolder }, (err: any, stdout: any, stderr: any) => {
-      //     if (stderr || err) {
-      //       console.error(err, stdout, stderr)
-      //       return reject()
-      //     }
-      //     resolve(stdout)
-      //   })
-      // })
-      // await prom
-    } catch (err) {
-      throw err
-    } finally {
-      Disk.rm(configPath)
-    }
-    return prom
+  private _buildTsc(inputFilePath: string, outputFilePath: string, forBrowser = false) {
+    Disk.write(outputFilePath, this._typeScriptToJavascript(Disk.read(inputFilePath), forBrowser))
   }
 
   // todo: cleanup

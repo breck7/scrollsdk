@@ -4,40 +4,22 @@ const jtree = require("../products/jtree.node.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
 const ts = require("typescript")
-
 class AbstractBuilder extends jtree.TreeNode {
-  _getNodeTsConfig(outDir = "", inputFilePath = "") {
-    return {
-      compilerOptions: {
-        types: ["node"],
-        outDir: outDir,
-        lib: ["es2017"],
-        noImplicitAny: true,
-        downlevelIteration: true,
-        target: "es2017",
-        module: "commonjs"
-      },
-      include: [inputFilePath]
+  _typeScriptToJavascript(sourceCode, forBrowser = false) {
+    // downlevelIteration: true, // todo: what is this again?
+    const tsConfig = {
+      compilerOptions: { module: ts.ModuleKind.CommonJS, target: "es2017", noImplicitAny: true }
     }
-  }
-  _typeScriptToJavascript(sourceCode) {
-    const result = ts.transpileModule(sourceCode, {
-      compilerOptions: { module: ts.ModuleKind.CommonJS }
-    })
-    console.log(JSON.stringify(result))
-  }
-  _getBrowserTsConfig(outDir = "", inputFilePath = "") {
-    return {
-      compilerOptions: {
-        outDir: outDir,
-        lib: ["es2017", "dom"],
-        moduleResolution: "node",
-        noImplicitAny: true,
-        declaration: false,
-        target: "es2017"
-      },
-      include: [inputFilePath]
+    if (forBrowser) {
+      compilerOptions.moduleResolution = "node"
+      compilerOptions.lib = ["es2017", "dom"]
+    } else {
+      compilerOptions.tiles = ["node"]
+      compilerOptions.lib = ["es2017"]
     }
+    const result = ts.transpileModule(sourceCode, tsConfig)
+    console.log(JSON.stringify(result, null, 2))
+    return result.outputText
   }
   _combineTypeScriptFilesForNode(typeScriptScriptsInOrder) {
     // todo: prettify
@@ -72,31 +54,11 @@ class AbstractBuilder extends jtree.TreeNode {
       )
       .join("\n")
   }
-  async _buildBrowserTsc(inputFilePath, outputFilePath) {
+  _buildBrowserTsc(inputFilePath, outputFilePath) {
     return this._buildTsc(inputFilePath, outputFilePath, true)
   }
-  async _buildTsc(inputFilePath, outputFilePath, forBrowser = false) {
-    const outputFolder = this._getProductFolder()
-    const configPath = outputFolder + "tsconfig.json"
-    Disk.writeJson(configPath, forBrowser ? this._getBrowserTsConfig(outputFolder, inputFilePath) : this._getNodeTsConfig(outputFolder, inputFilePath))
-    try {
-      Disk.write(outputFilePath, this._typeScriptToJavascript(Disk.read(inputFilePath)))
-      // const prom = new Promise((resolve, reject) => {
-      //   exec("tsc", { cwd: outputFolder }, (err: any, stdout: any, stderr: any) => {
-      //     if (stderr || err) {
-      //       console.error(err, stdout, stderr)
-      //       return reject()
-      //     }
-      //     resolve(stdout)
-      //   })
-      // })
-      // await prom
-    } catch (err) {
-      throw err
-    } finally {
-      Disk.rm(configPath)
-    }
-    return prom
+  _buildTsc(inputFilePath, outputFilePath, forBrowser = false) {
+    Disk.write(outputFilePath, this._typeScriptToJavascript(Disk.read(inputFilePath), forBrowser))
   }
   // todo: cleanup
   _getOutputFilePath(outputFileName) {
@@ -218,5 +180,4 @@ class AbstractBuilder extends jtree.TreeNode {
     } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
   }
 }
-
 module.exports = { AbstractBuilder }

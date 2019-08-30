@@ -120,7 +120,8 @@ sandbox
 sandboxServer
 core
 coreTests
-treeBase`.split("\n") // treeComponentFramework
+treeBase
+treeComponentFramework`.split("\n")
     for (let folder of folders) {
       await this._testDir(__dirname + `/${folder}/`)
     }

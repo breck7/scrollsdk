@@ -11,7 +11,7 @@ browserProduct
 nodeProduct
  outputFileName TreeComponentFramework.node.js
  files worldWideTypes/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
- lastLine module.exports = {AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander}
+ lastLine module.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram }
 browserProduct
  outputFileName jtree.browser.js
  files 

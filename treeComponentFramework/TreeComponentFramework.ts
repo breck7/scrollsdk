@@ -4,7 +4,6 @@ const jtree = require("../products/jtree.node.js")
 const stumpNode = require("../langs/stump/stump.node.js")
 const hakonNode = require("../langs/hakon/hakon.node.js")
 
-const superagent = require("superagent")
 declare var jQuery: any
 
 const WillowConstants: treeNotationTypes.stringMap = {}
@@ -435,6 +434,7 @@ class AbstractWillowProgram extends stumpNode {
   async httpGetUrl(url: string, queryStringObject: Object, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
 
+    const superagent = require("superagent")
     const superAgentResponse = await superagent
       .get(this._makeRelativeUrlAbsolute(url))
       .query(queryStringObject)
@@ -475,6 +475,8 @@ class AbstractWillowProgram extends stumpNode {
 
   async httpPostUrl(url: string, data: any) {
     if (this._offlineMode) return new WillowHTTPResponse()
+
+    const superagent = require("superagent")
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})
@@ -1549,10 +1551,9 @@ abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {
-        const { WillowProgram } = require("./Willow")
         this._willowProgram = new WillowProgram("http://localhost:8000/")
       } else {
-        this._willowProgram = new (<any>window).WillowBrowserProgram(window.location.href)
+        this._willowProgram = new WillowBrowserProgram(window.location.href)
       }
     }
     return this._willowProgram
@@ -1577,4 +1578,4 @@ abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   }
 }
 
-export { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram, WillowBrowserProgram }
+export { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram }

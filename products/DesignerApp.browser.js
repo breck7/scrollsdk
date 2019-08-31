@@ -157,12 +157,16 @@ class DesignerApp {
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
   }
   _updateShareLink() {
+    const url = new URL(location.href)
+    url.hash = ""
+    const base = url.toString()
+    this._shareLink.val(base + this.toShareLink())
+  }
+  toShareLink() {
     const tree = new jtree.TreeNode()
     tree.appendLineAndChildren("grammar", this.grammarInstance.getValue())
     tree.appendLineAndChildren("sample", this.codeInstance.getValue())
-    const hash = "#" + encodeURIComponent(tree.toString())
-    const link = location.href.replace(location.hash, "") + hash
-    this._shareLink.val(link)
+    return "#" + encodeURIComponent(tree.toString())
   }
   _codeDidUpdate() {
     const code = this.codeInstance.getValue()
@@ -214,3 +218,4 @@ jQuery(document).ready(function() {
     app.start()
   })
 })
+window.DesignerApp = DesignerApp

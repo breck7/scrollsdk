@@ -205,12 +205,17 @@ class DesignerApp {
   private codeWidgets: any[] = []
 
   private _updateShareLink() {
+    const url = new URL(location.href)
+    url.hash = ""
+    const base = url.toString()
+    this._shareLink.val(base + this.toShareLink())
+  }
+
+  toShareLink() {
     const tree = new jtree.TreeNode()
     tree.appendLineAndChildren("grammar", this.grammarInstance.getValue())
     tree.appendLineAndChildren("sample", this.codeInstance.getValue())
-    const hash = "#" + encodeURIComponent(tree.toString())
-    const link = location.href.replace(location.hash, "") + hash
-    this._shareLink.val(link)
+    return "#" + encodeURIComponent(tree.toString())
   }
 
   private _codeDidUpdate() {
@@ -271,3 +276,5 @@ jQuery(document).ready(function() {
     app.start()
   })
 })
+
+export { DesignerApp }

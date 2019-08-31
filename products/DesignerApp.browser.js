@@ -10,6 +10,7 @@ class DesignerApp {
     this._readmeComponent = jQuery("#readmeComponent")
     this._execResultsTextArea = jQuery("#execResultsTextArea")
     this._compileButton = jQuery("#compileButton")
+    this._explainButton = jQuery("#explainButton")
     this._downloadButton = jQuery("#downloadButton")
     this._samplesButtons = jQuery("#samplesButtons")
     this._otherErrorsDiv = jQuery("#otherErrorsDiv")
@@ -92,6 +93,9 @@ class DesignerApp {
     })
     this._compileButton.on("click", () => {
       this._setProgramResults(this.program ? this.program.compile() : "Program failed to execute")
+    })
+    this._explainButton.on("click", () => {
+      this._setProgramResults(this.program ? this.program.getInPlaceCellTypeTreeWithNodeConstructorNames() : "Program failed to parse")
     })
     const that = this
     this._samplesButtons.on("click", "a", function() {

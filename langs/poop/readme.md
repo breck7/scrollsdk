@@ -13,11 +13,30 @@ POOP is an anyfix language. You can put the time first or the event type first. 
     ✨ 6
     630 💩
 
+
 ## Quick facts about poop
 
 - poop has 9 node types.
 - poop has 3 cell types
-- The source code for poop is 46 lines long.
+- The source code for poop is 60 lines long.
+
+## Node Types
+
+    poopNode
+    abstractEventNode
+     bowelNode
+     bladderNode
+     bottleNode
+     sleep4Node
+     awakeNode
+     memoryNode
+    dayNode
+
+## Cell Types
+
+    dateIntCell
+    timeIntCell
+    anyCell
 
 This readme was auto-generated using the [JTree library](https://github.com/treenotation/jtree).
 

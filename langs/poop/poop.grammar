@@ -1,7 +1,19 @@
 poopNode
- description POOP is the Programming Option for Overtired Parents. It is a Tree Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes. POOP is an anyfix language. You can put the time first or the event type first. You can write the actual symbols, or, if it is 3am, you can just use some of the natural medium to record the event type. 
+ description POOP is the Programming Option for Overtired Parents. It is a Tree Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes. POOP is an anyfix language. You can put the time first or the event type first. You can write the actual symbols, or, if it is 3am, you can just use some of the natural medium to record the event type.
  root
- inScope abstractEventNode _55356_57092Node
+ compilesTo csv
+ javascript
+  compile() {
+    let day = ""
+    const rows = this.getTopDownArray().map(node => {
+      if (node.doesExtend("dayNode")) {
+        day = node.getLine()
+            return undefined
+              }return node.compile(day)
+      }).filter(row => row)
+    return `date,time,event,notes\n` + rows.join("\n")
+  }
+ inScope abstractEventNode dayNode
  example
   🌄 8 29 2019
   😀 4
@@ -11,36 +23,38 @@ abstractEventNode
  abstract
  catchAllCellType timeIntCell
  firstCellType timeIntCell
+ compiler
+  stringTemplate 2/2/2,3:33am,bm,notes
 dateIntCell
  highlightScope constant.numeric.integer
 timeIntCell
  highlightScope constant.numeric.integer
 anyCell
-_55357_56489Node
+bowelNode
  pattern 💩
  extends abstractEventNode
  description Bowel movement.
-_10024Node
+bladderNode
  pattern ✨
  description Bladder movement.
  extends abstractEventNode
-_55356_57212Node
+bottleNode
  pattern 🍼
  extends abstractEventNode
  description Feeding.
-_55357_56884Node
+sleep4Node
  pattern 😴
  description Sleep.
  extends abstractEventNode
-_55357_56832Node
+awakeNode
  pattern 😀
  description I'm awake!
  extends abstractEventNode
-_10084_65039Node
+memoryNode
  pattern ❤️
  description Special memory.
  extends abstractEventNode
-_55356_57092Node
+dayNode
  pattern 🌄
  description We survived another day!
  cells dateIntCell dateIntCell dateIntCell

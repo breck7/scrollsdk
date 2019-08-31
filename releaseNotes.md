@@ -1,8 +1,12 @@
-39.2.0 / 2019-08-30
+39.3.0 / 2019-08-31
+===================
+- New: added "Explain" button to Designer
+- New: renamed poop node types
+
+39.2.0 / 2019-08-31
 ===================
 - New: new layout for Designer app from feedback
 - New: show readme for Grammars in Designer app
-
 
 39.1.0 / 2019-08-30
 ===================

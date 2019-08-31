@@ -46,6 +46,17 @@ blankLineNode
 titleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
+ example
+  title Hello world
+  subtitle This is dumbdown
+  
+  paragraph It compiles to HTML. Blank lines get turned into <br>s.
+  link https://treenotation.org dumbdown is a Tree Language.
+  list
+   - It has lists
+   - Too!
+  code
+   You can add code as well.
  compiler
   stringTemplate <h1>{textCell}</h1>
 linkNode
@@ -74,16 +85,16 @@ codeNode
  extends abstractTopLevelNode
  todo Fix spacing
  compiler
-  openChildren <pre>
-  closeChildren </pre>
+  openChildren <code>
+  closeChildren </code>
   stringTemplate 
 listNode
  inScope dashNode
  extends abstractTopLevelNode
  compiler
   stringTemplate 
-  openChildren <li>
-  closeChildren </li>
+  openChildren <ul>
+  closeChildren </ul>
 dashNode
  match -
  catchAllCellType textCell

@@ -169,7 +169,8 @@ class DesignerApp {
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
-    this._readmeComponent.html(new dumbdownNode(grammarProgram.toReadMe()).compile())
+    const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
+    this._readmeComponent.html(readme)
   }
   _updateShareLink() {
     const url = new URL(location.href)

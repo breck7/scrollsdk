@@ -1069,8 +1069,8 @@ class TreeNode extends AbstractNode {
   _childrenToString(indentCount, language = this) {
     return this.map(node => node.toString(indentCount, language)).join(language.getYI())
   }
-  childrenToString() {
-    return this._childrenToString()
+  childrenToString(indentCount = 0) {
+    return this._childrenToString(indentCount)
   }
   // todo: implement
   _getChildJoinCharacter() {
@@ -3949,7 +3949,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const rootNodeDef = this._getRootNodeTypeDefinitionNode()
     const cellTypes = this.getCellTypeDefinitions()
     const nodeTypeFamilyTree = this.getNodeTypeFamilyTree()
-    const example = rootNodeDef.getExamples()[0]
+    const exampleNode = rootNodeDef.getExamples()[0]
     return `title ${languageName} Readme
 
 paragraph ${rootNodeDef.getDescription()}
@@ -3957,7 +3957,7 @@ paragraph ${rootNodeDef.getDescription()}
 subtitle Quick Example
 
 code
-${example ? (example.getContent() || "") + "\n\n" + TreeNode.nest(example.childrenToString(), 1) : ""}
+${exampleNode ? exampleNode.childrenToString(1) : ""}
 
 subtitle Quick facts about ${languageName}
 
@@ -3979,25 +3979,22 @@ code
 subtitle Node Types
 
 code
-${TreeNode.nest(nodeTypeFamilyTree.toString(), 1)}
+${nodeTypeFamilyTree.toString(1)}
 
 subtitle Cell Types
 
 code
-${TreeNode.nest(Object.keys(cellTypes).join("\n"), 1)}
+${new TreeNode(Object.keys(cellTypes).join("\n")).toString(1)}
 
 subtitle Road Map
 
 paragraph Here are the "todos" present in the source code for ${languageName}:
 
 list
-${TreeNode.nest(
-  this.getTopDownArray()
-    .filter(node => node.getWord(0) === "todo")
-    .map(node => `- ${node.getLine()}`)
-    .join("\n"),
-  1
-)}
+${this.getTopDownArray()
+  .filter(node => node.getWord(0) === "todo")
+  .map(node => ` - ${node.getLine()}`)
+  .join("\n")}
 
 paragraph This readme was auto-generated using the
  link https://github.com/treenotation/jtree JTree library.`

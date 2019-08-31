@@ -1,3 +1,5 @@
+//tooling onsave jtree build produce DesignerApp.browser.js
+
 // todo: get typings in here.
 declare var jtree: any
 declare var CodeMirror: any
@@ -50,6 +52,7 @@ class DesignerApp {
 
   async start() {
     this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))
+    this._samplesButtons.append(` | <a href="#" class="resetButton">Reset</a>`)
 
     this._bindListeners()
 
@@ -85,8 +88,8 @@ class DesignerApp {
   private _codeConsole = jQuery("#codeConsole")
   private _grammarConsole = jQuery("#grammarConsole")
   private _grammarErrorsConsole = jQuery("#grammarErrorsConsole")
-  private _resetButton = jQuery("#resetButton")
   private _execButton = jQuery("#execButton")
+  private _readmeComponent = jQuery("#readmeComponent")
   private _execResultsTextArea = jQuery("#execResultsTextArea")
   private _compileButton = jQuery("#compileButton")
   private _downloadButton = jQuery("#downloadButton")
@@ -96,22 +99,31 @@ class DesignerApp {
   private _shareLink = jQuery("#shareLink")
   private _inferButton = jQuery("#inferButton")
 
+  private _setProgramResults(results: string) {
+    this._execResultsTextArea.val(results)
+    const el = this._execResultsTextArea[0]
+    el.style.height = el.scrollHeight > el.clientHeight ? el.scrollHeight + "px" : "10px"
+  }
+
+  private _clearResults() {
+    this._execResultsTextArea.val("")
+  }
+
   private _bindListeners() {
-    this._resetButton.on("click", () => {
-      this.resetCommand()
-      console.log("reset...")
-      window.location.reload()
-    })
     this._execButton.on("click", () => {
-      if (this.program) this._execResultsTextArea.val(this.program.executeSync())
-      else this._execResultsTextArea.val("Program failed to execute")
+      this._setProgramResults(this.program ? this.program.executeSync() : "Program failed to execute")
     })
     this._compileButton.on("click", () => {
-      if (this.program) this._execResultsTextArea.val(this.program.compile())
-      else this._execResultsTextArea.val("Program failed to compile")
+      this._setProgramResults(this.program ? this.program.compile() : "Program failed to execute")
     })
     const that = this
     this._samplesButtons.on("click", "a", function() {
+      if (jQuery(this).hasClass("resetButton")) {
+        that.resetCommand()
+        console.log("reset...")
+        window.location.reload()
+        return
+      }
       that._fetchJTreeStandardGrammar(
         jQuery(this)
           .text()
@@ -200,6 +212,8 @@ class DesignerApp {
     this.grammarProgram = new this.GrammarConstructor(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
+    const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
+    this._readmeComponent.html(grammarProgram.toReadMe())
   }
 
   private codeWidgets: any[] = []
@@ -257,6 +271,7 @@ class DesignerApp {
     this._clearHash()
     this._grammarDidUpdate()
     this._codeDidUpdate()
+    this._clearResults()
   }
 
   private async _fetchJTreeStandardGrammar(name: string) {

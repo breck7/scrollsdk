@@ -35,14 +35,16 @@
       <a href="https://github.com/breck7/jtree/blob/master/languageChecklist.md">checklist for creating new Tree Languages</a>.
     </p>
     <p id="samplesButtons"></p>
+    <div id="shareDiv"><span>Share</span><input id="shareLink" readonly /></div>
+    <div id="otherErrorsDiv"></div>
     <table>
       <tr>
         <td>
-          Grammar for your Tree Language<br />
+          Grammar for your Tree Language <a href="#" id="inferButton">Infer Grammar</a> | <a href="#" id="downloadButton">Download Bundle</a> <br />
           <textarea id="grammarConsole"></textarea>
         </td>
         <td>
-          Source Code in your Language <br />
+          Source Code in your Language <a href="#" id="execButton">Execute</a> | <a href="#" id="compileButton">Compile</a> <br />
           <textarea id="codeConsole"></textarea>
         </td>
       </tr>
@@ -50,22 +52,15 @@
         <td>
           Grammar Errors:<br />
           <pre id="grammarErrorsConsole"></pre>
+          <pre id="readmeComponent"></pre>
         </td>
         <td>
           Language Errors:<br />
           <pre id="codeErrorsConsole"></pre>
+          Output:<br />
+          <textarea id="execResultsTextArea" placeholder="Results..."></textarea>
         </td>
       </tr>
     </table>
-
-    <div>
-      <div id="otherErrorsDiv"></div>
-      <div id="shareDiv"><span>Share:</span><input id="shareLink" readonly /></div>
-      <br />
-      <a href="#" id="resetButton">Reset</a> | <a href="#" id="inferButton">Infer</a> | <a href="#" id="execButton">Execute</a> |
-      <a href="#" id="compileButton">Compile</a> | <a href="#" id="downloadButton">Download Bundle</a>
-      <br />
-      <textarea id="execResultsTextArea" placeholder="Results..."></textarea>
-    </div>
   </body>
 </html>

@@ -1,4 +1,10 @@
-39.1.0 / 2019-08-31
+39.2.0 / 2019-08-30
+===================
+- New: new layout for Designer app from feedback
+- New: show readme for Grammars in Designer app
+
+
+39.1.0 / 2019-08-30
 ===================
 - New: added "config" sample language
 - New: added "poop" sample language

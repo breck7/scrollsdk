@@ -219,7 +219,8 @@ class DesignerApp {
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
-    this._readmeComponent.html(new dumbdownNode(grammarProgram.toReadMe()).compile())
+    const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
+    this._readmeComponent.html(readme)
   }
 
   private codeWidgets: any[] = []

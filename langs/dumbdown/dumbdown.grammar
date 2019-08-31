@@ -5,6 +5,18 @@ dumbdownNode
  inScope abstractTopLevelNode
  catchAllNodeType blankLineNode
  compilesTo html
+ example
+  title Hello world
+  subtitle This is dumbdown
+  
+  paragraph It compiles to HTML. Blank lines get turned into brs.
+  link https://treenotation.org dumbdown is a Tree Language.
+  list
+   - It has lists
+   - Too!
+  code
+   // You can add code as well.
+   print("Hello world")
 abstractTopLevelNode
  abstract
  firstCellType keywordCell
@@ -62,8 +74,8 @@ listNode
  extends abstractTopLevelNode
  compiler
   stringTemplate 
-  openChildren <li>
-  closeChildren </li>
+  openChildren <ul>
+  closeChildren </ul>
 dashNode
  match -
  catchAllCellType textCell

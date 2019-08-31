@@ -810,8 +810,8 @@ class TreeNode extends AbstractNode {
     return this.map(node => node.toString(indentCount, language)).join(language.getYI())
   }
 
-  childrenToString(): string {
-    return this._childrenToString()
+  childrenToString(indentCount = 0): string {
+    return this._childrenToString(indentCount)
   }
 
   // todo: implement

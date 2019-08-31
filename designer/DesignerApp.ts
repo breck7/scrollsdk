@@ -35,7 +35,7 @@ class DesignerApp {
     history.replaceState(null, null, " ")
   }
 
-  public languages = "newlang hakon stump dug fire swarm project stamp grammar jibberish numbers".split(" ")
+  public languages = "newlang hakon stump dug fire swarm project stamp grammar jibberish numbers poop".split(" ")
 
   private _onGrammarKeyup() {
     this._grammarDidUpdate()

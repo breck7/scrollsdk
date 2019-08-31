@@ -1,6 +1,6 @@
 class DesignerApp {
   constructor(grammarSourceCode) {
-    this.languages = "newlang hakon stump dug fire swarm project stamp grammar jibberish numbers poop".split(" ")
+    this.languages = "newlang hakon stump dug fire swarm project stamp grammar config jibberish numbers poop".split(" ")
     this._codeErrorsConsole = jQuery("#codeErrorsConsole")
     this._codeConsole = jQuery("#codeConsole")
     this._grammarConsole = jQuery("#grammarConsole")

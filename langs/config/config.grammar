@@ -1,5 +1,5 @@
-mapNode
- description A simple Tree Language for storing recursive maps with keys as strings with any characters except spaces, and values as strings.
+configNode
+ description A simple Tree Language for config files. Stores recursive maps with keys as strings and values as strings.
  root
  catchAllNodeType pairNode
 anyCell

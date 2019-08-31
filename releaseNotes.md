@@ -1,3 +1,8 @@
+39.1.0 / 2019-08-31
+===================
+- New: added "config" sample language
+- New: added "poop" sample language
+
 39.0.0 / 2019-08-30
 ===================
 - Breaking: we now export {jtree} instead of jtree. We removed all TypeScript export default.

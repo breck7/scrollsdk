@@ -5,9 +5,7 @@ test compilePoop
   constructWithBlockString
    🌄 8 29 2019
    😀 4
-   ✨
-   🍼
-   ✨ 6
-   💩 630
  getAllErrors
   lengthIs 0
+ compile
+  typeIs string

@@ -48,19 +48,20 @@ subtitleNode
 lineOfCodeNode
  catchAllCellType codeCell
  firstCellType codeCell
- compiler
-  stringTemplate {codeCell}
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
  extends abstractTopLevelNode
+ todo Fix spacing
  compiler
-  openChildren <pre>
-  closeChildren </pre>
+  openChildren <code>
+  closeChildren </code>
+  stringTemplate 
 listNode
  inScope dashNode
  extends abstractTopLevelNode
  compiler
+  stringTemplate 
   openChildren <li>
   closeChildren </li>
 dashNode

@@ -2834,7 +2834,7 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     const compiler = this.getDefinition()._getCompilerObject()
     const catchAllCellDelimiter = compiler[GrammarConstantsCompiler.catchAllCellDelimiter]
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
-    return str ? TreeUtils.formatStr(str, catchAllCellDelimiter, this.cells) : this.getLine()
+    return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, this.cells) : this.getLine()
   }
   compile() {
     const def = this.getDefinition()
@@ -3950,37 +3950,57 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const cellTypes = this.getCellTypeDefinitions()
     const nodeTypeFamilyTree = this.getNodeTypeFamilyTree()
     const example = rootNodeDef.getExamples()[0]
-    return `# ${languageName} Readme
+    return `title ${languageName} Readme
 
-${rootNodeDef.getDescription()}
+paragraph ${rootNodeDef.getDescription()}
 
-## Quick Example
+subtitle Quick Example
 
-${example ? (example.getContent() || "") + "\n\n" + TreeNode.nest(example.childrenToString(), 4) : ""}
+code
+${example ? (example.getContent() || "") + "\n\n" + TreeNode.nest(example.childrenToString(), 1) : ""}
 
-## Quick facts about ${languageName}
+subtitle Quick facts about ${languageName}
 
-- ${languageName} has ${nodeTypeFamilyTree.getTopDownArray().length} node types.
-- ${languageName} has ${Object.keys(cellTypes).length} cell types
-- The source code for ${languageName} is ${this.getTopDownArray().length} lines long.
+list
+ - ${languageName} has ${nodeTypeFamilyTree.getTopDownArray().length} node types.
+ - ${languageName} has ${Object.keys(cellTypes).length} cell types
+ - The source code for ${languageName} is ${this.getTopDownArray().length} lines long.
 
-## Installing
+subtitle Installing
 
-    npm install .
+code
+ npm install .
 
-## Testing
+subtitle Testing
 
-    node test.js
+code
+ node test.js
 
-## Node Types
+subtitle Node Types
 
-${TreeNode.nest(nodeTypeFamilyTree.toString(), 4)}
+code
+${TreeNode.nest(nodeTypeFamilyTree.toString(), 1)}
 
-## Cell Types
+subtitle Cell Types
 
-${TreeNode.nest(Object.keys(cellTypes).join("\n"), 4)}
+code
+${TreeNode.nest(Object.keys(cellTypes).join("\n"), 1)}
 
-This readme was auto-generated using the [JTree library](https://github.com/treenotation/jtree).`
+subtitle Road Map
+
+paragraph Here are the "todos" present in the source code for ${languageName}:
+
+list
+${TreeNode.nest(
+  this.getTopDownArray()
+    .filter(node => node.getWord(0) === "todo")
+    .map(node => `- ${node.getLine()}`)
+    .join("\n"),
+  1
+)}
+
+paragraph This readme was auto-generated using the
+ link https://github.com/treenotation/jtree JTree library.`
   }
   toBundle() {
     const files = {}

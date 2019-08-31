@@ -35,6 +35,7 @@ class Builder extends AbstractBuilder {
 
   produceLangs() {
     jtree.compileGrammarForBrowser(__dirname + "/langs/hakon/hakon.grammar", this._getProductFolder(), true)
+    jtree.compileGrammarForBrowser(__dirname + "/langs/dumbdown/dumbdown.grammar", this._getProductFolder(), true)
     jtree.compileGrammarForBrowser(__dirname + "/langs/stump/stump.grammar", this._getProductFolder(), true)
   }
 

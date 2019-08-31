@@ -5,6 +5,7 @@ declare var jtree: any
 declare var CodeMirror: any
 declare var saveAs: any
 declare var JSZip: any
+declare var dumbdownNode: any
 
 class DesignerApp {
   constructor(grammarSourceCode: string) {
@@ -218,7 +219,7 @@ class DesignerApp {
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
-    this._readmeComponent.html(grammarProgram.toReadMe())
+    this._readmeComponent.html(new dumbdownNode(grammarProgram.toReadMe()).compile())
   }
 
   private codeWidgets: any[] = []

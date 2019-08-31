@@ -1,3 +1,11 @@
+39.4.0 / 2019-08-31
+===================
+- Breaking: toReadme now generates Dumbdown instead of markdown
+- New: added dumbdown language
+- New: toReadme now generates roadmap from todos
+- Fix: fix for poop compile
+- Fix: fix for compiling with an empty stringTemplate
+
 39.3.0 / 2019-08-31
 ===================
 - New: added "Explain" button to Designer

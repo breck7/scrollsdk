@@ -4,7 +4,9 @@ test dumbdownRegression
   require ./dumbdown.node.js
   constructWithBlockString
    code
-    timeIntCell fdsoa
+    a b
  compile
   blockStringIs
-   <code>timeIntCell fdsoa</code>
+   <code>
+    a b
+   </code>

@@ -21,12 +21,12 @@ td {
 
 pre {
   overflow: scroll;
-  padding-bottom: 30px;
 }
 
 a {
   cursor: pointer;
 }
+
 
 #shareDiv {
   font-size: 16px;

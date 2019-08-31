@@ -1,0 +1,10 @@
+#! /usr/bin/env node /usr/local/bin/jtree
+test overviewRegression
+ arrangeTestSubject
+  require ./overview.node.js
+  constructWithBlockString
+   code
+    timeIntCell fdsoa
+ compile
+  blockStringIs
+   <code>timeIntCell fdsoa</code>

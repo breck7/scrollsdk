@@ -1,0 +1,70 @@
+overviewNode
+ description A Tree Language that compiles to HTML. An alternative to Markdown.
+ root
+ inScope abstractTopLevelNode
+ catchAllNodeType blankLineNode
+ compilesTo html
+abstractTopLevelNode
+ abstract
+ firstCellType keywordCell
+anyCell
+dashCell
+ highlightScope constant.language
+codeCell
+ highlightScope comment
+keywordCell
+ highlightScope keyword
+textCell
+ highlightScope string
+urlCell
+ highlightScope constant.language
+blankLineNode
+ description Blank lines compile to a br in the HTML.
+ compiler
+  stringTemplate <br>
+titleNode
+ catchAllCellType textCell
+ extends abstractTopLevelNode
+ compiler
+  stringTemplate <h1>{textCell}</h1>
+linkNode
+ cells urlCell
+ catchAllCellType textCell
+ extends abstractTopLevelNode
+ compiler
+  stringTemplate <a href="{urlCell}">{textCell}</h1>
+paragraphNode
+ inScope linkNode
+ catchAllCellType textCell
+ extends abstractTopLevelNode
+ compiler
+  stringTemplate <p>{textCell}</p>
+subtitleNode
+ catchAllCellType textCell
+ extends abstractTopLevelNode
+ compiler
+  stringTemplate <h2>{textCell}</h2>
+lineOfCodeNode
+ catchAllCellType codeCell
+ firstCellType codeCell
+ compiler
+  stringTemplate {codeCell}
+codeNode
+ description A code block.
+ catchAllNodeType lineOfCodeNode
+ extends abstractTopLevelNode
+ compiler
+  openChildren <pre>
+  closeChildren </pre>
+listNode
+ inScope dashNode
+ extends abstractTopLevelNode
+ compiler
+  openChildren <li>
+  closeChildren </li>
+dashNode
+ match -
+ catchAllCellType textCell
+ firstCellType dashCell
+ compiler
+  stringTemplate <li>{textCell}</li>

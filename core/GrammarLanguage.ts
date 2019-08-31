@@ -1921,6 +1921,17 @@ ${TreeNode.nest(nodeTypeFamilyTree.toString(), 4)}
 
 ${TreeNode.nest(Object.keys(cellTypes).join("\n"), 4)}
 
+## Road Map
+
+Here are the "todos" present in the source code for ${languageName}:
+
+${TreeNode.nest(
+  this.getTopDownArray()
+    .filter(node => node.getWord(0) === "todo")
+    .join("\n"),
+  4
+)}
+
 This readme was auto-generated using the [JTree library](https://github.com/treenotation/jtree).`
   }
 

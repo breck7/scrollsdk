@@ -1,10 +1,11 @@
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
-todo Allow extending of root grammar nodes
+todo Add omnifix support
+todo cleanup firstCellType stuff, since that is outdated now with all the different cell parsing strategies.
 grammarNode
  root
- description The Grammar Language is currently just used for type checking and documenting grammar files. The actual tree Grammar Language is still hard coded. Someday it may bootstrap itself from this file.
+ description Grammar is a Tree Language for creating new Tree Languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language.
  catchAllNodeType catchAllErrorNode
  extensions grammar gram
  example A grammar that parses anything:
@@ -59,7 +60,6 @@ javascriptCodeCell
 lowercaseCell
  regex [a-z]+
 nodeTypeIdCell
- todo Cell type checking.
  description This doubles as the class name in Javascript.
  highlightScope variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
@@ -94,7 +94,6 @@ exampleCell
  extends stringCell
 abstractCompilerRuleNode
  abstract
- todo Remove if we remove compiler stuff?
  catchAllCellType anyCell
  firstCellType propertyKeywordCell
 abstractConstantNode

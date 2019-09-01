@@ -6,9 +6,10 @@ Tree Notation
 Links
 -----
 
-🌴 [Try Tree Notation](http://treenotation.org/sandbox/)  
-🌴 [FAQ](http://treenotation.org/faq.html)  
-🌴 [TreeBase](http://treenotation.org/treeBase/)  
+🌴 [Try Tree Notation](https://treenotation.org/sandbox/)  
+🌴 [Tree Language Designer](https://treenotation.org/designer/)  
+🌴 [FAQ](https://treenotation.org/faq.html)  
+🌴 [TreeBase](https://treenotation.org/treeBase/)  
 🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
 🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  
@@ -29,12 +30,12 @@ We all use software tools to build software. Tree Notation makes building these 
 What is special about Tree Notation?
 ------------------------------------
 
-Tree Notation may seem similar to notations like JSON, XML, YAML or S-expressions. However, Tree Notation is the most minimal, is grounded in 3-dimensional geometry, and the concept of syntax errors does not exist. We think this makes Tree Notation substantially different and will cause a *major improvement* in computing. Read the [FAQ](http://treenotation.org/faq.html) to find out what major problems in computer science Tree Notation solves.
+Tree Notation may seem similar to notations like JSON, XML, YAML or S-expressions. However, Tree Notation is the most minimal, is grounded in 3-dimensional geometry, and the concept of syntax errors does not exist. We think this makes Tree Notation substantially different and will cause a *major improvement* in computing. Read the [FAQ](https://treenotation.org/faq.html) to find out what major problems in computer science Tree Notation solves.
 
 Advanced Examples
 -----------------
 
-Check out the [Ohayo](https://github.com/treenotation/ohayo) project or the [Tree Language Builder](http://treenotation.org/designer/) for advanced examples of Tree Notation in action.
+Check out the [Ohayo](https://github.com/treenotation/ohayo) project or the [Tree Language Builder](https://treenotation.org/designer/) for advanced examples of Tree Notation in action.
 
 Boring Examples
 ---------------

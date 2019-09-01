@@ -18,7 +18,7 @@ This will launch a TreeBase server on port 4444 using the included example "plan
 How does it work?
 -----------------
 
-TreeBase stores data in plain text files using [Tree Notation](http://treenotation.org). Instead of storing data in rows in a compressed binary format, you store data in regular files.
+TreeBase stores data in plain text files using [Tree Notation](https://treenotation.org). Instead of storing data in rows in a compressed binary format, you store data in regular files.
 
 So a database of planets might look like this:
 
@@ -76,7 +76,7 @@ The Grammar file (TreeBase's version of "Schemas"), for this file would be this:
     yearsToOrbitSunNode
      extends abstractFloatPropertyNode
 
-By creating the Grammar file, you get type checking, autocomplete, syntax highlighting, and more. Try the [Planets Grammar](http://treenotation.org/sandbox/build/#grammar%0A%20planetNode%0A%20%20root%0A%20%20todo%20Change%20pattern%20to%20postfix.%0A%20%20pattern%20%5C.planet%24%0A%20%20inScope%20abstractIntPropertyNode%20abstractFloatPropertyNode%0A%20%20catchAllNodeType%20errorNode%0A%20anyFirstCell%0A%20%20todo%20remove%20the%20need%20for%20this%0A%20errorNode%0A%20%20baseNodeType%20errorNode%0A%20intCell%0A%20%20highlightScope%20constant.numeric.integer%0A%20floatCell%0A%20%20highlightScope%20constant.numeric.float%0A%20keywordCell%0A%20%20highlightScope%20keyword%0A%20abstractIntPropertyNode%0A%20%20cells%20intCell%0A%20%20firstCellType%20keywordCell%0A%20%20abstract%0A%20abstractFloatPropertyNode%0A%20%20cells%20floatCell%0A%20%20firstCellType%20keywordCell%0A%20%20abstract%0A%20surfaceGravityNode%0A%20%20extends%20abstractIntPropertyNode%0A%20diameterNode%0A%20%20extends%20abstractIntPropertyNode%0A%20moonsNode%0A%20%20extends%20abstractIntPropertyNode%0A%20yearsToOrbitSunNode%0A%20%20extends%20abstractFloatPropertyNode%0Asample%0A%20diameter%206794%0A%20surfaceGravity%204%0A%20yearsToOrbitSun%201.881%0A%20moons%202).
+By creating the Grammar file, you get type checking, autocomplete, syntax highlighting, and more. Try the [Planets Grammar](https://treenotation.org/designer/#grammar%0A%20planetNode%0A%20%20root%0A%20%20todo%20Change%20pattern%20to%20postfix.%0A%20%20pattern%20%5C.planet%24%0A%20%20inScope%20abstractIntPropertyNode%20abstractFloatPropertyNode%0A%20%20catchAllNodeType%20errorNode%0A%20anyFirstCell%0A%20%20todo%20remove%20the%20need%20for%20this%0A%20errorNode%0A%20%20baseNodeType%20errorNode%0A%20intCell%0A%20%20highlightScope%20constant.numeric.integer%0A%20floatCell%0A%20%20highlightScope%20constant.numeric.float%0A%20keywordCell%0A%20%20highlightScope%20keyword%0A%20abstractIntPropertyNode%0A%20%20cells%20intCell%0A%20%20firstCellType%20keywordCell%0A%20%20abstract%0A%20abstractFloatPropertyNode%0A%20%20cells%20floatCell%0A%20%20firstCellType%20keywordCell%0A%20%20abstract%0A%20surfaceGravityNode%0A%20%20extends%20abstractIntPropertyNode%0A%20diameterNode%0A%20%20extends%20abstractIntPropertyNode%0A%20moonsNode%0A%20%20extends%20abstractIntPropertyNode%0A%20yearsToOrbitSunNode%0A%20%20extends%20abstractFloatPropertyNode%0Asample%0A%20diameter%206794%0A%20surfaceGravity%204%0A%20yearsToOrbitSun%201.881%0A%20moons%202).
 
 TreeBase delegates to Git for versioning, backups, and collaboration.
 

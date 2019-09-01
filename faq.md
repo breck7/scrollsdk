@@ -1,7 +1,7 @@
 Tree Notation Frequently Asked Questions
 ========================================
 
-Below is a list of questions that are commonly asked by people who are new to <a href="http://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or posting a message to the [TreeNotation Subreddit](https://www.reddit.com/r/treenotation/).
+Below is a list of questions that are commonly asked by people who are new to <a href="https://treenotation.org/">Tree Notation</a>. If you have a question not listed here please ask us by filing an issue, sending a pull request, or posting a message to the [TreeNotation Subreddit](https://www.reddit.com/r/treenotation/).
 
 ## Overview
 
@@ -21,7 +21,7 @@ In the future we think it may look like this:
 
 #### What's the difference between Tree Notation and Tree Languages?
 
-Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. We are building a Tree Language called [Grammar](http://treenotation.org/sandbox/build/#standard%20grammar) to make it easier to build Tree Languages.
+Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. We are building a Tree Language called [Grammar](https://treenotation.org/designer/#standard%20grammar) to make it easier to build Tree Languages.
 
 #### What major problems in computer science does help Tree Notation solve?
 
@@ -33,7 +33,7 @@ We are building the data science app [Ohayo](https://github.com/treenotation/oha
 
 #### How can I build a new Tree Language?
 
-A good place to start is with our simple <a href="http://treenotation.org/sandbox/build/">Tree Language Builder</a>.
+A good place to start is with our simple <a href="https://treenotation.org/designer/">Tree Language Builder</a>.
 
 #### Where can I use Tree Notation?
 
@@ -41,11 +41,11 @@ Everywhere! Anywhere you use programming languages or encodings, you can use Tre
 
 #### What are some examples of Tree Languages?
 
-There are over a dozen <a href="https://github.com/treenotation/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://treenotation.org/sandbox/build/#standard%20stump">HTML</a>, a <a href="http://treenotation.org/sandbox/build/#standard%20project">language similar to Make</a>, and a <a href="http://treenotation.org/sandbox/build/#standard%20numbers">language that does simple math </a>.
+There are over a dozen <a href="https://github.com/treenotation/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="https://treenotation.org/designer/#standard%20stump">HTML</a>, a <a href="https://treenotation.org/designer/#standard%20project">language similar to Make</a>, and a <a href="https://treenotation.org/designer/#standard%20numbers">language that does simple math </a>.
 
 #### Languages that add numbers or compile to HTML are cute, but are there any advanced Tree Language?
 
-Currently the most advanced non-experimental Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="http://treenotation.org/sandbox/build/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
+Currently the most advanced non-experimental Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="https://treenotation.org/designer/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
 
 ## Structure
 

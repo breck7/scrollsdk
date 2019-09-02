@@ -6,6 +6,7 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const { jtree } = require("./index.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { AbstractBuilder } = require("./products/AbstractBuilder.node.js")
+const { Disk } = require("./products/Disk.node.js")
 
 import { treeNotationTypes } from "./worldWideTypes/treeNotationTypes"
 

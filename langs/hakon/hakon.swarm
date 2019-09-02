@@ -9,9 +9,11 @@ test compileHakon
     h1,h2
      color red
    a
+    comment hello world
     &:hover
      color blue
      font-size 17px
+   comment hello world
  getAllErrors
   lengthIs 0
  compile

@@ -1,7 +1,9 @@
 hakonNode
  root
+ todo Add variables?
  description A Tree Language that compiles to CSS
  compilesTo css
+ inScope commentNode
  catchAllNodeType selectorNode
  javascript
   getSelector() { return "" }
@@ -43,9 +45,15 @@ errorNode
  catchAllCellType errorCell
  firstCellType errorCell
  baseNodeType errorNode
+commentCell
+ highlightScope comment
+commentNode
+ firstCellType commentCell
+ catchAllCellType commentCell
+ catchAllNodeType commentNode
 selectorNode
  firstCellType selectorCell
- inScope abstractPropertyNode
+ inScope abstractPropertyNode commentNode
  catchAllNodeType selectorNode
  boolean isSelectorNode true
  javascript

@@ -1,3 +1,7 @@
+39.5.0 / 2019-09-01
+===================
+- New: added comments to hakon
+
 39.4.0 / 2019-08-31
 ===================
 - Breaking: toReadme now generates Dumbdown instead of markdown

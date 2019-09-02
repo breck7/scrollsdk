@@ -45,7 +45,7 @@ linkNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
-  stringTemplate <a href="{urlCell}">{textCell}</h1>
+  stringTemplate <a href="{urlCell}">{textCell}</a>
 paragraphNode
  inScope linkNode
  catchAllCellType textCell

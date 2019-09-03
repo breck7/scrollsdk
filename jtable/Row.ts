@@ -6,7 +6,7 @@ import { Column } from "./Column"
 /*FOR_TYPES_ONLY*/ import { Table } from "./Table"
 
 class Row {
-  constructor(sourceObject = {}, table) {
+  constructor(sourceObject = {}, table: any) {
     this._puid = this._getUniqueId()
     this._sourceObject = sourceObject
     this._table = table
@@ -31,7 +31,7 @@ class Row {
 
   async destroyRow() {}
 
-  getAsArray(headerRow) {
+  getAsArray(headerRow: string[]) {
     const obj = this.rowToObjectWithOnlyNativeJavascriptTypes()
     return headerRow.map(col => obj[col])
   }
@@ -43,7 +43,7 @@ class Row {
   // todo: rowToObjectWithOnlyNativeJavascriptTypes method? Its numerics where we need and strings where we need.
   private _parseIntoObjectWithOnlyNativeJavascriptTypes() {
     const columns = this._getRowTable().getColumnsMap()
-    const typedNode = {}
+    const typedNode: any = {}
     Object.keys(columns).forEach(colName => {
       typedNode[colName] = this._getRowValueFromSourceColOrOriginalCol(colName)
     })
@@ -51,7 +51,7 @@ class Row {
   }
 
   // why from source col? if we always copy, we shouldnt need that, correct? perhaps have an audit array of all operations on a row?
-  private _getRowValueFromSourceColOrOriginalCol(colName) {
+  private _getRowValueFromSourceColOrOriginalCol(colName: string) {
     const columns = this._getRowTable().getColumnsMap()
     const destColumn = columns[colName]
     const sourceColName = destColumn.getSourceColumnName()

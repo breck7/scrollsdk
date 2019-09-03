@@ -2,6 +2,8 @@
 
 import { TableParser } from "./TableParser"
 
+const { jtree } = require("../../index.js")
+
 import { treeNotationTypes } from "../../worldWideTypes/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}

@@ -1,3 +1,4 @@
+window.treeNotationTypes = treeNotationTypes
 const testTree = {}
 {
   const TreeNode = jtree.TreeNode

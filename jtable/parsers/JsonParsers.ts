@@ -1,4 +1,4 @@
-const { jtree } = require("../../products/jtree.node.js")
+const { jtree } = require("../../index.js")
 
 import { TableParserIds } from "../JTableConstants"
 
@@ -80,7 +80,7 @@ class JsonDataTableWithHeaderParser extends AbstractJsonArrayParser {
 }
 
 abstract class AbstractJsonObjectParser extends AbstractJsonParser {
-  getProbForRowSpecimen(specimen): number {
+  getProbForRowSpecimen(specimen: any): number {
     const str = specimen.trimmedStr
     if (str.match(/^\s*\{/) && str.match(/\}\s*$/)) return 0.99
     return 0
@@ -99,7 +99,7 @@ class JsonMapParser extends AbstractJsonObjectParser {
     return TableParserIds.jsonMap
   }
 
-  _parseTableInputsFromString(str) {
+  _parseTableInputsFromString(str: string) {
     // todo: should we preserve keys?
     return { rows: Object.values(JSON.parse(str)) }
   }
@@ -115,7 +115,7 @@ class JsonVectorParser extends AbstractJsonArrayParser {
     return TableParserIds.jsonVector
   }
 
-  getProbForRowSpecimen(specimen) {
+  getProbForRowSpecimen(specimen: any) {
     const result = specimen.getParsedJsonAttemptResult()
     if (!result.ok) return 0
 
@@ -125,9 +125,9 @@ class JsonVectorParser extends AbstractJsonArrayParser {
     return 0
   }
 
-  _parseTableInputsFromString(str) {
+  _parseTableInputsFromString(str: string) {
     return {
-      rows: JSON.parse(str).map(num => {
+      rows: JSON.parse(str).map((num: any) => {
         return { value: num }
       })
     }
@@ -139,7 +139,7 @@ class JsonCountMapParser extends AbstractJsonObjectParser {
     return TableParserIds.jsonCounts
   }
 
-  getProbForRowSpecimen(specimen) {
+  getProbForRowSpecimen(specimen: any) {
     const result = specimen.getParsedJsonAttemptResult()
     if (!result.ok) return 0
 
@@ -154,7 +154,7 @@ class JsonCountMapParser extends AbstractJsonObjectParser {
     return JSON.stringify({ h1: 10, h2: 5, h3: 2 })
   }
 
-  _parseTableInputsFromString(str) {
+  _parseTableInputsFromString(str: string) {
     const obj = JSON.parse(str)
     return {
       rows: Object.keys(obj).map(key => {

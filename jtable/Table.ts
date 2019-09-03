@@ -44,7 +44,7 @@ class Table {
   private _ctime: jTableTypes.now
   private _columnsMap: columnsMap = {}
 
-  private _registerColumn(col) {
+  private _registerColumn(col: any) {
     this._columnsMap[col.name] = new Column(col, this._getColumnValuesFromSourceAsAnyVector(col.name))
     return this
   }
@@ -63,7 +63,7 @@ class Table {
     const tests = predictionHints.split(",")
 
     const filterTests = tests.filter(test => test.includes("=")).map(test => test.split("="))
-    const filterFn = col => filterTests.every(test => col[test[0]] !== undefined && col[test[0]]().toString() === test[1])
+    const filterFn = (col: any) => filterTests.every(test => col[test[0]] !== undefined && col[test[0]]().toString() === test[1])
     let colsThatPassed = columnsArray.filter(col => filterFn(col))
 
     const notIn: any = {}
@@ -114,12 +114,12 @@ class Table {
     return this._columnsMap
   }
 
-  getColumnByName(name) {
+  getColumnByName(name: string) {
     return this.getColumnsMap()[name]
   }
 
   private _getLowerCaseColumnsMap() {
-    const map = {}
+    const map: any = {}
     Object.keys(this._columnsMap).forEach(key => (map[key.toLowerCase()] = key))
     return map
   }
@@ -173,14 +173,14 @@ class Table {
       .map(obj => Object.assign({}, obj))
   }
 
-  getTableColumnByName(name) {
+  getTableColumnByName(name: string) {
     return this.getColumnsMap()[name]
   }
 
   private _getUnionSample(sampleSet: Row[]) {
-    const sample = {}
+    const sample: any = {}
     sampleSet.forEach((row: any) => {
-      row.getRowKeys().forEach(key => {
+      row.getRowKeys().forEach((key: string) => {
         if (!key) return
         const currentVal = sample[key]
         if (currentVal !== undefined && currentVal !== "") return
@@ -227,7 +227,7 @@ ${cols}
 
   private _getColumnNamesAndTypes(withReductions = false) {
     const columns = this.getColumnsMap()
-    return this.getColumnNames().map(name => {
+    return this.getColumnNames().map((name: string) => {
       const column = columns[name]
       const obj = {
         Column: name,
@@ -245,9 +245,11 @@ ${cols}
   ): jTableTypes.propertyNameToColumnNameMap {
     const results: jTableTypes.propertyNameToColumnNameMap = {}
     hintsNode
-      .map(columnHintNode => this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.getContent(), propertyNameToColumnNameMap))
-      .filter(pred => pred.length)
-      .forEach(predictions => {
+      .map((columnHintNode: any) =>
+        this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.getContent(), propertyNameToColumnNameMap)
+      )
+      .filter((pred: any) => pred.length)
+      .forEach((predictions: any) => {
         const topPrediction = predictions[0]
         results[topPrediction.propertyName] = topPrediction.columnName
       })
@@ -317,7 +319,7 @@ ${cols}
   dropAllColumnsExcept(columnsToKeep: jTableTypes.columnName[]): Table {
     return new Table(
       this.cloneNativeJavascriptTypedRows().map((inputRow, rowIndex) => {
-        const result = {}
+        const result: any = {}
         columnsToKeep.forEach(name => {
           result[name] = inputRow[name]
         })
@@ -331,7 +333,7 @@ ${cols}
   // to same rows
   addRow(rowWords: string[]) {
     const rows = this.cloneNativeJavascriptTypedRows()
-    const newRow = {}
+    const newRow: any = {}
     Object.keys(rows[0] || {}).forEach((key, index) => {
       // todo: handle typings
       newRow[key] = rowWords[index]
@@ -358,7 +360,7 @@ ${cols}
   // Pivot is shorthand for group and reduce?
   makePivotTable(groupByColumnNames: jTableTypes.columnName[], newCols: jTableTypes.columnDefinitionObject[]) {
     const inputColumns = this.getColumnsArrayOfObjects()
-    const colMap = {}
+    const colMap: any = {}
     inputColumns.forEach(col => (colMap[col.name] = true))
     const groupByCols = groupByColumnNames.filter(col => colMap[col])
 

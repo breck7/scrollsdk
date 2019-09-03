@@ -15,12 +15,12 @@ age 20`
     return TableParserIds.spaced
   }
 
-  getProbForRowSpecimen(specimen) {
+  getProbForRowSpecimen(specimen: any) {
     if (specimen.blankLineCount > 10) return 0.95
     return 0.05
   }
 
-  _parseTableInputsFromString(str) {
+  _parseTableInputsFromString(str: string) {
     // todo: clean this up. it looks like this is just trees, but not indented, with a newline as a delimiter.
     const headerBreak = str.indexOf("\n\n")
     const header = str.substr(0, headerBreak)
@@ -35,11 +35,11 @@ age 20`
     const rows = []
 
     // todo: should we do this here?
-    names = names.map(name => name.replace(/ /g, ""))
+    names = names.map((name: string) => name.replace(/ /g, ""))
 
     for (let lineNumber = 0; lineNumber < lineCount; lineNumber = lineNumber + nodeCount) {
-      const obj = {}
-      names.forEach((col, index) => {
+      const obj: any = {}
+      names.forEach((col: string, index: number) => {
         obj[col] = rest[lineNumber + index].trim()
       })
 
@@ -70,7 +70,7 @@ mary
     return TableParserIds.sections
   }
 
-  _parseTableInputsFromString(str) {
+  _parseTableInputsFromString(str: string) {
     const firstDoubleNewline = str.indexOf("\n\n")
     const tiles = [str.slice(0, firstDoubleNewline), str.slice(firstDoubleNewline + 1)]
     const header = tiles.shift()
@@ -84,7 +84,7 @@ mary
     for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
       const startLine = rowIndex * length
       const values = lines.slice(startLine, startLine + length)
-      const obj = {}
+      const obj: any = {}
       names.forEach((name, colIndex) => (obj[name] = values[colIndex]))
       rows.push(obj)
     }
@@ -107,9 +107,9 @@ frank jones`
     return TableParserIds.list
   }
 
-  _parseTableInputsFromString(str) {
+  _parseTableInputsFromString(str: string) {
     return {
-      rows: str.split(/\n/g).map((line, index) => {
+      rows: str.split(/\n/g).map((line: string, index: number) => {
         return {
           index: index,
           name: line
@@ -134,12 +134,12 @@ class TextParser extends AbstractTableParser {
     return "hello world"
   }
 
-  getProbForRowSpecimen(specimen) {
+  getProbForRowSpecimen(specimen: any) {
     if (specimen.blankLineCount) return 0.12
     return 0.05
   }
 
-  _parseTableInputsFromString(str) {
+  _parseTableInputsFromString(str: string) {
     return { rows: [{ text: str }] }
   }
 }

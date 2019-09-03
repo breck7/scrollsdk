@@ -14,7 +14,7 @@ class PivotTable {
   private _rows: jTableTypes.objectWithOnlyNativeJavascriptTypes[]
   private _columns: { [columnName: string]: jTableTypes.columnDefinitionObject } = {}
 
-  _getGroups(allRows, groupByColNames: jTableTypes.columnName[]) {
+  _getGroups(allRows: any[], groupByColNames: jTableTypes.columnName[]) {
     const rowsInGroups = new Map()
     allRows.forEach((row: any) => {
       const groupKey = groupByColNames.map(col => row[col].toString().replace(/ /g, "")).join(" ")
@@ -55,14 +55,14 @@ class PivotTable {
       // todo: add more reductions? count, stddev, median, variance.
       colsToReduce.forEach(col => {
         const sourceColName = col.source
-        const values = group.map((row: any) => row[sourceColName]).filter(val => typeof val === "number" && !isNaN(val))
+        const values = group.map((row: any) => row[sourceColName]).filter((val: any) => typeof val === "number" && !isNaN(val))
         const reduction = col.reduction
         let reducedValue = firstRow[sourceColName]
 
-        if (reduction === "sum") reducedValue = values.reduce((prev, current) => prev + current, 0)
+        if (reduction === "sum") reducedValue = values.reduce((prev: number, current: number) => prev + current, 0)
         if (reduction === "max") reducedValue = Math.max(...values)
         if (reduction === "min") reducedValue = Math.min(...values)
-        if (reduction === "mean") reducedValue = values.reduce((prev, current) => prev + current, 0) / values.length
+        if (reduction === "mean") reducedValue = values.reduce((prev: number, current: number) => prev + current, 0) / values.length
 
         newRow[col.name] = reducedValue
       })

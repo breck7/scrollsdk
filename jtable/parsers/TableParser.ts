@@ -1,4 +1,4 @@
-const { jtree } = require("../../products/jtree.node.js")
+const { jtree } = require("../../index.js")
 
 import { AbstractTableParser } from "./AbstractTableParser"
 
@@ -71,7 +71,7 @@ class TableParser {
   }
 
   // todo: remove this?
-  parseTableInputsFromObject(data, parserId: TableParserIds): jTableTypes.tableInputs {
+  parseTableInputsFromObject(data: any, parserId: TableParserIds): jTableTypes.tableInputs {
     if (data instanceof Array) {
       if (JsonDataTableWithHeaderParser.isJavaScriptDataTable(data)) return { rows: jtree.Utils.javascriptTableWithHeaderRowToObjects(data) }
 
@@ -98,10 +98,10 @@ class TableParser {
     }
   }
 
-  guessProbabilitiesForAllTableParsers(str): { [tableParserId: string]: jTableTypes.probability } {
+  guessProbabilitiesForAllTableParsers(str: string): { [tableParserId: string]: jTableTypes.probability } {
     const parsers = this._getParsersArray()
     const length = parsers.length
-    const probabilities = {}
+    const probabilities: any = {}
     const specimen = new RowStringSpecimen(str)
 
     for (let index = 0; index < parsers.length; index++) {
@@ -109,7 +109,7 @@ class TableParser {
       const probability = parser.getProbForRowSpecimen(specimen)
       const name = parser.getParserId()
       if (probability === 1) {
-        const exact = {}
+        const exact: any = {}
         exact[name] = 1
         return exact
       }
@@ -122,7 +122,7 @@ class TableParser {
     const probabilities = this.guessProbabilitiesForAllTableParsers(str)
 
     let maxScore = 0
-    let bestGuess = null
+    let bestGuess: any = null
     for (let option in probabilities) {
       if (probabilities[option] > maxScore) {
         maxScore = probabilities[option]

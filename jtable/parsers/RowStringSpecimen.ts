@@ -13,7 +13,7 @@ class RowStringSpecimen {
     const lines = trimmedStr.split(/\n/g)
     const firstLine = lines[0]
 
-    const strCount = (str, reg) => (str.match(reg) || []).length
+    const strCount = (str: string, reg: RegExp) => (str.match(reg) || []).length
 
     // todo: do these things lazily.
 

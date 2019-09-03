@@ -97,7 +97,7 @@ class TreeBaseFolder extends TreeNode {
   loadFolder(files = undefined, sampleSize = undefined, seed = Date.now()) {
     if (this._isLoaded) return this
     files = files || this._getAndFilterFilesFromFolder()
-    if (sampleSize !== undefined) files = TreeUtils._sampleWithoutReplacement(files, sampleSize, seed)
+    if (sampleSize !== undefined) files = TreeUtils.sampleWithoutReplacement(files, sampleSize, seed)
     this.setChildren(this._readFiles(files))
     this._setDiskVersions()
     this._isLoaded = true

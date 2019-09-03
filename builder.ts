@@ -114,7 +114,8 @@ class Builder extends AbstractBuilder {
   }
 
   async _test() {
-    let folders = `langs
+    let folders = `jtable
+langs
 builder
 commandLineApp
 designer

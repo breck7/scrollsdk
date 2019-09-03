@@ -1,0 +1,36 @@
+#! /usr/bin/env node /usr/local/bin/jtree
+arrangeTestSubject
+ require ../index.js jtree.Utils
+ static
+test stringToPermalink
+ stringToPermalink 
+  stringIs 
+ stringToPermalink
+  blockStringParam
+   hello%> world
+  stringIs hello-world
+ stringToPermalink hello.world
+  stringIs hello.world
+test stripHtml
+ stripHtml <b>hello</b>
+  stringIs hello
+test strip2
+ stripHtml
+  blockStringParam
+   some text
+    if
+     we
+      have
+  blockStringIs
+   some text
+    if
+     we
+      have
+test getRandomString
+ getRandomString 12
+  lengthIs 12
+ getRandomString 13
+  lengthIs 13
+test linkify
+ linkify http://cnn.com
+  stringIs <a href="http://cnn.com" target="_blank">http://cnn.com</a>

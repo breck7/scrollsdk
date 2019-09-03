@@ -48,6 +48,26 @@ class TreeUtils {
     parts.pop()
     return parts.join("/")
   }
+  static shuffleInPlace(arr) {
+    // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+    for (let index = arr.length - 1; index > 0; index--) {
+      const tempIndex = Math.floor(Math.random() * (index + 1))
+      ;[arr[index], arr[tempIndex]] = [arr[tempIndex], arr[index]]
+    }
+    return arr
+  }
+  // Only allows a-zA-Z0-9-_  (And optionally .)
+  static _permalink(str, reg) {
+    return str.length
+      ? str
+          .toLowerCase()
+          .replace(reg, "")
+          .replace(/ /g, "-")
+      : ""
+  }
+  static stringToPermalink(str) {
+    return this._permalink(str, /[^a-z0-9- _\.]/gi)
+  }
   static getAvailablePermalink(permalink, doesFileExistSyncFn) {
     const extension = this.getFileExtension(permalink)
     permalink = this.removeFileExtension(permalink)
@@ -285,7 +305,7 @@ class TreeUtils {
     this._tickTime = Date.now()
     return elapsed
   }
-  static _sampleWithoutReplacement(population, quantity, seed) {
+  static sampleWithoutReplacement(population = [], quantity, seed) {
     const prng = this._getPRNG(seed)
     const sampled = {}
     const populationSize = population.length
@@ -316,11 +336,21 @@ class TreeUtils {
     })
     return result
   }
-  // todo: rename
-  static sortByAccessor(accessor) {
+  static javascriptTableWithHeaderRowToObjects(dataTable) {
+    dataTable = dataTable.slice()
+    const header = dataTable.shift()
+    return dataTable.map(row => {
+      const obj = {}
+      header.forEach((colName, index) => (obj[colName] = row[index]))
+      return obj
+    })
+  }
+  static makeSortByFn(accessorOrAccessors) {
+    const arrayOfFns = Array.isArray(accessorOrAccessors) ? accessorOrAccessors : [accessorOrAccessors]
     return (objectA, objectB) => {
       const nodeAFirst = -1
       const nodeBFirst = 1
+      const accessor = arrayOfFns[0] // todo: handle accessors
       const av = accessor(objectA)
       const bv = accessor(objectB)
       let result = av < bv ? nodeAFirst : av > bv ? nodeBFirst : 0
@@ -381,6 +411,23 @@ class TreeUtils {
       return 0
     }
   }
+}
+//http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links#21925491
+TreeUtils.linkify = text => {
+  let replacedText
+  let replacePattern1
+  let replacePattern2
+  let replacePattern3
+  //URLs starting with http://, https://, or ftp://
+  replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim
+  replacedText = text.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>')
+  //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+  replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim
+  replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>')
+  //Change email addresses to mailto:: links.
+  replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim
+  replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>')
+  return replacedText
 }
 // todo: switch algo to: http://indiegamr.com/generate-repeatable-random-numbers-in-js/?
 TreeUtils.makeSemiRandomFn = (seed = 1) => {
@@ -2553,7 +2600,7 @@ class GrammarBackedNode extends TreeNode {
       orderMap[word] = index
     })
     this.sort(
-      TreeUtils.sortByAccessor(runtimeNode => {
+      TreeUtils.makeSortByFn(runtimeNode => {
         return orderMap[runtimeNode.getDefinition().getNodeTypeIdFromDefinition()]
       })
     )
@@ -3644,7 +3691,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   }
   getTopNodeTypeIds() {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
-    arr.sort(TreeUtils.sortByAccessor(definition => definition.getFrequency()))
+    arr.sort(TreeUtils.makeSortByFn(definition => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }

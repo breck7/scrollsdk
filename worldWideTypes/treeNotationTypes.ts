@@ -44,6 +44,8 @@ namespace treeNotationTypes {
   export declare type dataTable = (any[])[]
   export declare type delimiter = string
 
+  export declare type rawRowJavascriptObject = Object
+
   // A subset of JSON that has the property that it translates to and from JSON and Tree identically.
   // So, this rules out JSON objects with non-string types or spaces in their key name.
   // For closer fidelity to JSON, use a tree language.

@@ -173,7 +173,7 @@ abstract class GrammarBackedNode extends TreeNode {
       orderMap[word] = index
     })
     this.sort(
-      TreeUtils.sortByAccessor((runtimeNode: GrammarBackedNonRootNode) => {
+      TreeUtils.makeSortByFn((runtimeNode: GrammarBackedNonRootNode) => {
         return orderMap[runtimeNode.getDefinition().getNodeTypeIdFromDefinition()]
       })
     )
@@ -1532,7 +1532,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
   getTopNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
-    arr.sort(TreeUtils.sortByAccessor((definition: nodeTypeDefinitionNode) => definition.getFrequency()))
+    arr.sort(TreeUtils.makeSortByFn((definition: nodeTypeDefinitionNode) => definition.getFrequency()))
     arr.reverse()
     return arr.map(definition => definition.getNodeTypeIdFromDefinition())
   }

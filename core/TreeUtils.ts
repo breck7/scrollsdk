@@ -23,6 +23,28 @@ class TreeUtils {
     }
   }
 
+  //http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links#21925491
+  static linkify = (text: string) => {
+    let replacedText
+    let replacePattern1
+    let replacePattern2
+    let replacePattern3
+
+    //URLs starting with http://, https://, or ftp://
+    replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim
+    replacedText = text.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>')
+
+    //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+    replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim
+    replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>')
+
+    //Change email addresses to mailto:: links.
+    replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim
+    replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>')
+
+    return replacedText
+  }
+
   static getMethodFromDotPath(context: any, str: string) {
     const methodParts = str.split(".")
     while (methodParts.length > 1) {
@@ -62,6 +84,29 @@ class TreeUtils {
       const semiRand = Math.sin(seed++) * 10000
       return semiRand - Math.floor(semiRand)
     }
+  }
+
+  static shuffleInPlace(arr: any[]) {
+    // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+    for (let index = arr.length - 1; index > 0; index--) {
+      const tempIndex = Math.floor(Math.random() * (index + 1))
+      ;[arr[index], arr[tempIndex]] = [arr[tempIndex], arr[index]]
+    }
+    return arr
+  }
+
+  // Only allows a-zA-Z0-9-_  (And optionally .)
+  static _permalink(str: string, reg: RegExp) {
+    return str.length
+      ? str
+          .toLowerCase()
+          .replace(reg, "")
+          .replace(/ /g, "-")
+      : ""
+  }
+
+  static stringToPermalink(str: string) {
+    return this._permalink(str, /[^a-z0-9- _\.]/gi)
   }
 
   static getAvailablePermalink(permalink: string, doesFileExistSyncFn: (permalink: string) => boolean) {
@@ -346,7 +391,7 @@ class TreeUtils {
     return elapsed
   }
 
-  static _sampleWithoutReplacement(population: any[], quantity: number, seed: number) {
+  static sampleWithoutReplacement(population: any[], quantity: number, seed: number) {
     const prng = this._getPRNG(seed)
     const sampled: { [index: number]: boolean } = {}
     const populationSize = population.length
@@ -381,12 +426,23 @@ class TreeUtils {
     return result
   }
 
-  // todo: rename
-  static sortByAccessor(accessor: Function) {
+  static javascriptTableWithHeaderRowToObjects(dataTable: Array<any>): treeNotationTypes.rawRowJavascriptObject[] {
+    dataTable = dataTable.slice()
+    const header = dataTable.shift()
+    return dataTable.map((row: any) => {
+      const obj: any = {}
+      header.forEach((colName: string, index: treeNotationTypes.int) => (obj[colName] = row[index]))
+      return obj
+    })
+  }
+
+  static makeSortByFn(accessorOrAccessors: Function | Function[]): treeNotationTypes.sortFn {
+    const arrayOfFns = Array.isArray(accessorOrAccessors) ? accessorOrAccessors : [accessorOrAccessors]
     return (objectA: Object, objectB: Object) => {
       const nodeAFirst = -1
       const nodeBFirst = 1
 
+      const accessor = arrayOfFns[0] // todo: handle accessors
       const av = accessor(objectA)
       const bv = accessor(objectB)
       let result = av < bv ? nodeAFirst : av > bv ? nodeBFirst : 0

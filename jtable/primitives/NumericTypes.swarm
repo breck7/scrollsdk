@@ -1,0 +1,51 @@
+#! /usr/bin/env node /usr/local/bin/jtree
+test IntType
+ arrangeTestSubject
+  require ./NumericTypes.js IntType
+ fromStringToNumeric 2.2
+  stringIs 2
+test Feet
+ arrangeTestSubject
+  require ./NumericTypes.js Feet
+ fromStringToNumeric 6'0"
+  stringIs 72
+ getProbForColumnSpecimen 6'0"
+  stringIs 1
+ getProbForColumnSpecimen fsdafs
+  stringIs 0
+ toDisplayString 72
+  stringIs 6'0"
+test USD
+ arrangeTestSubject
+  require ./NumericTypes.js USD
+ getDefaultFormat
+  typeIs string
+ toDisplayString 200 $0.00
+  stringIs $200.00
+ toDisplayString 200
+  stringIs 200
+test NumberCol
+ arrangeTestSubject
+  require ./NumericTypes.js NumberCol
+ toDisplayString 100 percent
+  stringIs 100.00%
+ toDisplayString 100
+  stringIs 100
+ getDefaultFormat mile
+  stringIs 0.0
+ getDefaultFormat calorie
+  stringIs 0,0
+ getDefaultFormat something 2222
+  stringIs 0,0
+ getDefaultFormat something 2222.
+  typeIs undefined
+test NumberString
+ arrangeTestSubject
+  require ./NumericTypes.js NumberString
+ getDefaultFormat
+ toDisplayString 2000
+  stringIs 2000
+ toDisplayString 2000 0,0
+  stringIs 2,000
+ fromStringToNumeric $100
+  stringIs 100

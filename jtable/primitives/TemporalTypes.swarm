@@ -1,0 +1,65 @@
+#! /usr/bin/env node /usr/local/bin/jtree
+test DateCol
+ arrangeTestSubject
+  require ./TemporalTypes.js DateCol
+ _fromStringToDate 2/22/22
+  typeIs object
+ toDisplayString 2/22/22
+  stringIs 02/22/22
+ toDisplayString 2/22/22 fromNow
+  typeIs string
+test Day
+ arrangeTestSubject
+  require ./TemporalTypes.js Day
+ toDisplayString 02/22/22
+  stringIs 02/22/2022
+ toDisplayString 02/22/22 YY
+  stringIs 22
+ _fromStringToDate 2/22/22
+  typeIs object
+ fromStringToNumeric 2/22/22
+  typeIs number
+test Week
+ arrangeTestSubject
+  require ./TemporalTypes.js Week
+ toDisplayString 01/01/2001 - 01
+  stringIs 01/01/2001 - 01
+test Month
+ arrangeTestSubject
+  require ./TemporalTypes.js Month
+ toDisplayString 01/01/2001
+  stringIs January
+test Minute
+ arrangeTestSubject
+  require ./TemporalTypes.js Minute
+ _fromStringToDate 2/22/2222
+  typeIs object
+ fromStringToNumeric 2/22/2222
+  typeIs number
+ toDisplayString 2/22/2222
+  typeIs string
+   =# 2
+test Hour
+ arrangeTestSubject
+  require ./TemporalTypes.js Hour
+ fromStringToNumeric 2/22/2222
+  typeIs number
+test HourMinute
+ arrangeTestSubject
+  require ./TemporalTypes.js HourMinute
+ fromStringToNumeric 2/22/2222
+  typeIs number
+test Second
+ arrangeTestSubject
+  require ./TemporalTypes.js Second
+ fromStringToNumeric 20
+  stringIs 20000
+test MilliSecond
+ arrangeTestSubject
+  require ./TemporalTypes.js MilliSecond
+ toDisplayString 200
+  typeIs string
+ toDisplayString 200 fromNow
+  typeIs string
+ getDefaultFormat
+  stringIs fromNow

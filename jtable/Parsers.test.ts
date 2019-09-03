@@ -1,10 +1,10 @@
 #!/usr/bin/env ts-node
 
-import { TableParser } from "./TableParser"
+import { TableParser } from "./Parsers"
 
-const { jtree } = require("../../index.js")
+const { jtree } = require("../index.js")
 
-import { treeNotationTypes } from "../../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}
 

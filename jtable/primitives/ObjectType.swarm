@@ -1,7 +1,0 @@
-#! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
-test Object
- arrangeTestSubject
-  require ./ObjectType.js default
- isNumeric
-  stringIs false

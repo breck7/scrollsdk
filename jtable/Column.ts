@@ -2,12 +2,35 @@ const { jtree } = require("../index.js")
 
 import { jTableTypes } from "../worldWideTypes/JTableTypes"
 
-import { AbstractPrimitiveType } from "./primitives/AbstractPrimitiveType"
-import { AbstractTemporal, MilliSecond, Second, DateCol, Day, Month, MonthDay, Week, Hour, Minute, Year, HourMinute } from "./primitives/TemporalTypes"
-import { USD, NumberCol, NumberString, Feet, IntType } from "./primitives/NumericTypes"
-import { UrlCol, HTMLCol, DirCol, PathCol, TextCol, StringCol, CodeCol } from "./primitives/StringTypes"
-import { BooleanType } from "./primitives/BooleanType"
-import { ObjectType } from "./primitives/ObjectType"
+import {
+  AbstractPrimitiveType,
+  BooleanType,
+  ObjectType,
+  USD,
+  NumberCol,
+  NumberString,
+  Feet,
+  IntType,
+  UrlCol,
+  HTMLCol,
+  DirCol,
+  PathCol,
+  TextCol,
+  StringCol,
+  AbstractTemporal,
+  MilliSecond,
+  Second,
+  DateCol,
+  Day,
+  Month,
+  MonthDay,
+  Week,
+  Hour,
+  Minute,
+  Year,
+  HourMinute,
+  CodeCol
+} from "./Primitives"
 
 // todo: ADD TYPINGS
 class Column {

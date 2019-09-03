@@ -1,8 +1,7 @@
 #!/usr/bin/env ts-node
 
-import { Table } from "./Table"
+import { Table, ComparisonOperators } from "./Table"
 import { DummyDataSets } from "./DummyDataSets"
-import { ComparisonOperators } from "./JTableConstants"
 
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 

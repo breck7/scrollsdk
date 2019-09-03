@@ -37,25 +37,14 @@ Advanced Examples
 
 Check out the [Ohayo](https://github.com/treenotation/ohayo) project or the [Tree Language Builder](https://treenotation.org/designer/) for advanced examples of Tree Notation in action.
 
-Boring Examples
+Basic Examples
 ---------------
 
-Below are some very simple examples to explain some of the very basics.
+Below are some very simple examples to explain some of the very basics. The Tree Notation syntax is the same in both languages. The semantics are different. The semantics come from "Tree Language" implementations and libraries, which anyone can design and build.
 
 #### For file formats:
 
-Tree Notation makes a great base for formats where you traditionally might use JSON or XML.
-
-Compare the two files below. The first uses Tree Notation and the second uses JSON.
-
-package.tree:
-
-    name mypackage
-    version 2.1.1
-    description A package
-    repository
-     type git
-     url git://github.com/username/mypackage
+Currently all Node.js npm projects contain a "package.json" file. While this is simple, it could be simpler using Tree Notation, and better. Let's take a look.
 
 package.json:
 
@@ -69,23 +58,34 @@ package.json:
       }
     }
 
-Note: the JSON example above works correctly, but JSON and Tree Notation are not isomorphic by default. If you want JSON features such as keys with spaces, numbers, or arrays, you'll need to use a higher level Tree Language that has a 1-to-1 relationship to JSON.
+package.npm:
+
+    name mypackage
+    version 2.1.1
+    description A package
+    repository
+     type git
+     url git://github.com/username/mypackage
+
+It may look like the only benefit is fewer syntax characters, but there's actually a lot more we can now do. Our "package.npm" grammar file gets typechecking, autocomplete, tailored syntax highlighting ([github highlighting coming soon](https://github.com/treenotation/jtree/issues/55)), can support multiline strings, strings without quotes that don't require escaping, comments, and more.
+
+Note: the JSON example above works correctly, but JSON and Tree Notation are not equivalent by default, since JSON does not support certain structures and Tree Notation does not implement all JSON types by default. If you want JSON features such as keys with spaces, numbers, or arrays, you'll need to use a higher level Tree Language such as [Dug](https://treenotation.org/designer/#standard%20dug) that has a 1-to-1 relationship to JSON.
 
 #### For programming languages:
 
-In the example below, Tree Notation is used as a base for a math language where traditionally S-Expressions/Lisp might be used.
+In the example below, Tree Notation is used as a base for a math Tree Language where traditionally S-Expressions/Lisp might be used.
 
-make8.tree:
+make8.math:
 
-    *
-     + 1 1
-     + 2 2
+    multiply
+     add 1 1
+     add 2 2
 
 make8.lisp:
 
     (* (+ 1 1) (+ 2 2))
 
-
+The second example contains 13 parts, whereas the first only has 7. There are also infinite ways to represent the second example, since the compiler ignores insignificant whitespace, whereas in the first there is only 1 way to represent that particular structure.
 
 Terminology
 -----------

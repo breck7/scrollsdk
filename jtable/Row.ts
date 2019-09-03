@@ -1,4 +1,4 @@
-const { jtree } = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 
 import { jTableTypes } from "../worldWideTypes/JTableTypes"
 import { Column } from "./Column"

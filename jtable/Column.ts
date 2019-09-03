@@ -1,4 +1,4 @@
-const { jtree } = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 
 import { jTableTypes } from "../worldWideTypes/JTableTypes"
 
@@ -80,7 +80,7 @@ class Column {
     return this._colDefObject.source
   }
 
-  isInvalidValue(value) {
+  isInvalidValue(value: any) {
     return this.getPrimitiveTypeObj().isInvalidValue(value)
   }
 
@@ -105,7 +105,7 @@ class Column {
     return this.getPrimitiveTypeObj().isTemporal()
   }
 
-  toDisplayString(value) {
+  toDisplayString(value: any) {
     return this.getPrimitiveTypeObj().toDisplayString(value, this.getFormat())
   }
 
@@ -125,7 +125,7 @@ class Column {
 
   getEntropy() {
     if (this._entropy !== undefined) return this._entropy
-    const possibilities = {}
+    const possibilities: any = {}
     let bits = 1
     const name = this.getColumnName()
     this._getSampleSet().forEach(val => {
@@ -156,7 +156,7 @@ class Column {
   getTitlePotential() {
     if (this._getColDefObject().title) return 1
     if (this._titlePotential !== undefined) return this._titlePotential
-    const titleCols = {
+    const titleCols: any = {
       title: 0.99,
       name: 0.98,
       label: 0.97,
@@ -223,7 +223,7 @@ class Column {
   }
 
   private _createSummaryVector(): jTableTypes.summaryVector {
-    const values = []
+    const values: any = []
     const name = this.getColumnName()
     const map = new Map()
     let incompleteCount = 0
@@ -300,7 +300,7 @@ class Column {
     return this.getReductions().mean
   }
 
-  private _getReductionResult(valuesObj: jTableTypes.summaryVector, col) {
+  private _getReductionResult(valuesObj: jTableTypes.summaryVector, col: any) {
     const values = valuesObj.values
     const count = values.length
     const reductionResult: jTableTypes.reductionResult = {}
@@ -308,7 +308,7 @@ class Column {
     reductionResult.uniqueValues = valuesObj.uniqueValues
     if (!count) return reductionResult
 
-    const numericCompare = (av, bv) => (av > bv ? 1 : av < bv ? -1 : 0)
+    const numericCompare = (av: number, bv: number) => (av > bv ? 1 : av < bv ? -1 : 0)
 
     const arr = values.slice()
     col.isString() ? arr.sort() : arr.sort(numericCompare)
@@ -415,7 +415,7 @@ class Column {
     const sample = this._getSample()
     if (columnObj && columnObj.type && Column.getPrimitiveTypeByName(columnObj.type)) return Column.getPrimitiveTypeByName(columnObj.type)
 
-    const guesses = Column._getColumnProbabilities(this.getColumnName(), this._getSample())
+    const guesses: any = Column._getColumnProbabilities(this.getColumnName(), this._getSample())
 
     let max = 0
     let bestGuess = null

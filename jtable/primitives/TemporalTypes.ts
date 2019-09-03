@@ -3,11 +3,12 @@ const parseFormat = require("moment-parseformat")
 
 import { AbstractPrimitiveType } from "./AbstractPrimitiveType"
 import { jTableTypes } from "../../worldWideTypes/jTableTypes"
-import { Metrics } from "../Metrics"
 import { VegaTypes, JavascriptNativeTypeNames } from "../JTableConstants"
 
 // https://github.com/gentooboontoo/js-quantities
-moment.createFromInputFallback = function(momentConfig) {
+// https://github.com/moment/moment/issues/2469
+// todo: ugly. how do we ditch this or test?
+moment.createFromInputFallback = function(momentConfig: any) {
   momentConfig._d = new Date(momentConfig._i)
 }
 
@@ -18,7 +19,7 @@ interface TemporalType {
 }
 
 abstract class AbstractTemporal extends AbstractPrimitiveType implements TemporalType {
-  _fromStringToDate(value) {
+  _fromStringToDate(value: string) {
     return moment(parseInt(value)).toDate()
   }
 
@@ -30,7 +31,7 @@ abstract class AbstractTemporal extends AbstractPrimitiveType implements Tempora
     return this._fromNumericToDate(val)
   }
 
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return moment(date).unix()
   }
 
@@ -54,7 +55,7 @@ abstract class AbstractTemporal extends AbstractPrimitiveType implements Tempora
     return VegaTypes.temporal
   }
 
-  getVegaTimeUnit() {
+  getVegaTimeUnit(): jTableTypes.vegaTimeUnit {
     return undefined
   }
 
@@ -64,7 +65,7 @@ abstract class AbstractTemporal extends AbstractPrimitiveType implements Tempora
 }
 
 class DateCol extends AbstractTemporal {
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     if (!format) format = "MM/DD/YY"
 
     if (format === "fromNow") return moment(parseFloat(value)).fromNow()
@@ -73,47 +74,104 @@ class DateCol extends AbstractTemporal {
     return moment(value).format(format)
   }
 
-  fromStringToNumeric(value) {
-    return Metrics.getDate(value).unix() * 1000
+  fromStringToNumeric(value: string) {
+    return DateCol.getDate(value).unix() * 1000
   }
 
-  _fromStringToDate(value) {
-    return Metrics.getDate(value).toDate()
+  _fromStringToDate(value: string) {
+    return DateCol.getDate(value).toDate()
   }
 
-  getProbForColumnSpecimen(value) {
-    const isValid = Metrics.getDate(value).isValid()
+  getProbForColumnSpecimen(value: any) {
+    const isValid = DateCol.getDate(value).isValid()
     return isValid
   }
 
   getStringExamples() {
     return ["01/01/01"]
   }
+
+  static getDateAsUnixUtx(value: any) {
+    return this.getDate(value, moment.utc).unix()
+  }
+  static getDate(value: any, momentFn = moment) {
+    let result = momentFn(value)
+
+    if (result.isValid()) return result
+
+    if (typeof value === "string" && value.match(/^[0-9]{8}$/)) {
+      const first2 = parseInt(value.substr(0, 2))
+      const second2 = parseInt(value.substr(2, 2))
+      const third2 = parseInt(value.substr(4, 2))
+      const last2 = parseInt(value.substr(6, 2))
+      const first4 = parseInt(value.substr(0, 4))
+      const last4 = parseInt(value.substr(4, 4))
+
+      const first2couldBeDay = first2 < 32
+      const first2couldBeMonth = first2 < 13
+      const second2couldBeDay = second2 < 32
+      const second2couldBeMonth = second2 < 13
+      const third2couldBeDay = third2 < 32
+      const third2couldBeMonth = third2 < 13
+      const last2couldBeDay = last2 < 32
+      const last2couldBeMonth = last2 < 13
+      const last4looksLikeAYear = last4 > 1000 && last4 < 2100
+      const first4looksLikeAYear = first4 > 1000 && first4 < 2100
+
+      // MMDDYYYY
+      // YYYYMMDD
+      // Prioritize the above 2 american versions
+      // YYYYDDMM
+      // DDMMYYYY
+
+      if (first2couldBeMonth && second2couldBeDay && last4looksLikeAYear) result = momentFn(value, "MMDDYYYY")
+      else if (first4looksLikeAYear && third2couldBeMonth && last2couldBeDay) result = momentFn(value, "YYYYMMDD")
+      else if (first4looksLikeAYear && last2couldBeMonth) result = momentFn(value, "YYYYDDMM")
+      else result = momentFn(value, "DDMMYYYY")
+
+      return result
+    } else if (typeof value === "string" && value.match(/^[0-9]{2}\/[0-9]{4}$/))
+      // MM/YYYY
+      return momentFn(value, "MM/YYYY")
+
+    // Check if timestamp
+    if (value.match && !value.match(/[^0-9]/)) {
+      const num = parseFloat(value)
+      if (!isNaN(num)) {
+        if (value.length === 10) return momentFn(num * 1000)
+        else return momentFn(num)
+      }
+    }
+
+    // Okay to return an invalid result if we dont find a match
+    // todo: why??? should we return "" instead ?
+    return result
+  }
 }
 
 // Beginning of day
 class Day extends AbstractTemporal {
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     return moment(value).format(format || "MM/DD/YYYY")
   }
-  fromStringToNumeric(value) {
+  fromStringToNumeric(value: string) {
     return (
-      Metrics.getDate(value)
+      DateCol.getDate(value)
         .startOf("day")
         .unix() * 1000
     )
   }
 
-  getVegaTimeUnit() {
+  getVegaTimeUnit(): jTableTypes.vegaTimeUnit {
     return undefined
   }
 
-  _fromStringToDate(value) {
-    return Metrics.getDate(value)
+  _fromStringToDate(value: string) {
+    return DateCol.getDate(value)
       .startOf("day")
       .toDate()
   }
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return (
       moment(date)
         .startOf("day")
@@ -123,7 +181,7 @@ class Day extends AbstractTemporal {
   getStringExamples() {
     return ["01/01/01"]
   }
-  getProbForColumnSpecimen(sample) {
+  getProbForColumnSpecimen(sample: any) {
     const format = moment.parseFormat ? moment.parseFormat(sample) : parseFormat
     return format === "MM/DD/YY" || format === "MM/DD/YYYY" || format === "M/D/YYYY" ? 1 : 0
   }
@@ -131,8 +189,8 @@ class Day extends AbstractTemporal {
 
 class HourMinute extends AbstractTemporal {
   // todo: is this correct? I dont think so.
-  fromStringToNumeric(value) {
-    return parseFloat(Metrics.getDate(value).format("H.m"))
+  fromStringToNumeric(value: string) {
+    return parseFloat(DateCol.getDate(value).format("H.m"))
   }
 
   getVegaTimeUnit() {
@@ -146,12 +204,12 @@ class HourMinute extends AbstractTemporal {
 }
 
 class Minute extends AbstractTemporal {
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     return moment(value).format("m")
   }
-  fromStringToNumeric(value) {
+  fromStringToNumeric(value: string) {
     return (
-      Metrics.getDate(value)
+      DateCol.getDate(value)
         .startOf("minute")
         .unix() * 1000
     )
@@ -167,7 +225,7 @@ class Minute extends AbstractTemporal {
 }
 
 abstract class AbstractTemporalInt extends AbstractTemporal implements TemporalType {
-  fromStringToNumeric(val) {
+  fromStringToNumeric(val: string) {
     return parseInt(val)
   }
 
@@ -188,15 +246,15 @@ abstract class AbstractTemporalInt extends AbstractTemporal implements TemporalT
     return false
   }
 
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return moment(date).unix()
   }
 
-  _fromStringToDate(val) {
+  _fromStringToDate(val: string) {
     return moment(parseFloat(val)).toDate()
   }
 
-  _fromNumericToDate(value) {
+  _fromNumericToDate(value: number) {
     return moment(value).toDate()
   }
 
@@ -206,10 +264,10 @@ abstract class AbstractTemporalInt extends AbstractTemporal implements TemporalT
 }
 
 class Week extends AbstractTemporalInt {
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     return moment(value).format("MM/DD/YYYY - WW")
   }
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return (
       moment(date)
         .startOf("week")
@@ -223,10 +281,10 @@ class Week extends AbstractTemporalInt {
 }
 
 class Month extends AbstractTemporalInt {
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     return moment(value).format(format || "MMMM")
   }
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return (
       moment(date)
         .startOf("month")
@@ -240,10 +298,10 @@ class Month extends AbstractTemporalInt {
 }
 
 class MonthDay extends AbstractTemporalInt {
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     return moment(value).format(format || "MMDD")
   }
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return moment(date).unix() * 1000
   }
   getVegaTimeUnit() {
@@ -252,7 +310,7 @@ class MonthDay extends AbstractTemporalInt {
 }
 
 class Hour extends AbstractTemporalInt {
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return parseInt(
       moment(date)
         .startOf("hour")
@@ -266,15 +324,15 @@ class Hour extends AbstractTemporalInt {
 }
 
 class Year extends AbstractTemporalInt {
-  fromDateToNumeric(date) {
+  fromDateToNumeric(date: Date) {
     return parseInt(moment(date).format("YYYY"))
   }
 
-  _fromStringToDate(val) {
+  _fromStringToDate(val: string) {
     return moment(parseFloat(val), "YYYY").toDate()
   }
 
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     return moment(value).format(format || "YYYY")
   }
 
@@ -292,7 +350,7 @@ class Year extends AbstractTemporalInt {
 }
 
 abstract class AbstractMillisecond extends AbstractTemporalInt {
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     if (format === "fromNow") return moment(parseFloat(value)).fromNow()
     return value
   }
@@ -313,7 +371,7 @@ class MilliSecond extends AbstractMillisecond {
 }
 
 class Second extends AbstractMillisecond {
-  fromStringToNumeric(value) {
+  fromStringToNumeric(value: string) {
     return parseInt(value) * 1000
   }
 
@@ -321,11 +379,11 @@ class Second extends AbstractMillisecond {
     return "seconds"
   }
 
-  _fromNumericToDate(number) {
+  _fromNumericToDate(number: number) {
     return moment(number * 1000).toDate()
   }
 
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     if (format === "fromNow") return moment(parseFloat(value) * 1000).fromNow()
     return value
   }

@@ -4,6 +4,8 @@ import { Column } from "./Column"
 
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
+const { jtree } = require("../index.js")
+
 const testTree: treeNotationTypes.testTree = {}
 
 testTree.all = equal => {

@@ -1,9 +1,7 @@
-import * as numeral from "numeral"
+import * as d3format from "d3-format"
 
 import { jTableTypes } from "../../worldWideTypes/jTableTypes"
 import { AbstractPrimitiveType } from "./AbstractPrimitiveType"
-
-import { Metrics } from "../Metrics"
 
 import { VegaTypes, JavascriptNativeTypeNames } from "../JTableConstants"
 
@@ -41,13 +39,13 @@ abstract class AbstractNumeric extends AbstractPrimitiveType {
     return true
   }
 
-  isInvalidValue(value) {
+  isInvalidValue(value: any) {
     return super.isInvalidValue(value) || isNaN(value)
   }
 }
 
 class IntType extends AbstractNumeric {
-  fromStringToNumeric(val) {
+  fromStringToNumeric(val: string) {
     return parseInt(val)
   }
 
@@ -73,13 +71,13 @@ class IntType extends AbstractNumeric {
 }
 
 class Feet extends AbstractNumeric {
-  getProbForColumnSpecimen(sample) {
-    return isNaN(Metrics.feetToInches(sample)) ? 0 : 1
+  getProbForColumnSpecimen(sample: any) {
+    return isNaN(Feet.feetToInches(sample)) ? 0 : 1
   }
-  fromStringToNumeric(val) {
-    return Metrics.feetToInches(val)
+  fromStringToNumeric(val: string) {
+    return Feet.feetToInches(val)
   }
-  toDisplayString(value, format) {
+  toDisplayString(value: any, format: string) {
     value = parseFloat(value)
     const inches = Math.round(value % 12)
     const feet = Math.floor(value / 12)
@@ -89,19 +87,34 @@ class Feet extends AbstractNumeric {
   getStringExamples() {
     return ["5'10\""]
   }
+
+  // Return inches given formats like 6'1 6'2"
+  static feetToInches(numStr: string) {
+    let result = 0
+    const indexOfDelimited = numStr.search(/[^0-9\.]/)
+    if (indexOfDelimited < 1) {
+      result = parseFloat(numStr.replace(/[^0-9\.]/g, ""))
+      return isNaN(result) ? result : result * 12
+    }
+    const feetPart = parseFloat(numStr.substr(0, indexOfDelimited).replace(/[^0-9\.]/g, ""))
+    const inchesPart = parseFloat(numStr.substr(indexOfDelimited).replace(/[^0-9\.]/g, ""))
+    if (!isNaN(feetPart)) result += feetPart * 12
+    if (!isNaN(inchesPart)) result += inchesPart
+    return result
+  }
 }
 
 abstract class AbstractCurrency extends AbstractNumeric {}
 
 class USD extends AbstractCurrency {
-  toDisplayString(value, format) {
-    return format ? numeral(value).format(format) : value
+  toDisplayString(value: any, format: string) {
+    return format ? d3format.format(format)(value) : value
   }
 
-  fromStringToNumeric(value) {
+  fromStringToNumeric(value: string) {
     return parseFloat(value.toString().replace(/[\$\, \%]/g, ""))
   }
-  getProbForColumnSpecimen(sample) {
+  getProbForColumnSpecimen(sample: any) {
     return sample && sample.match && !!sample.match(/^\$[0-9\.\,]+$/) ? 1 : 0
   }
   getDefaultFormat() {
@@ -114,15 +127,15 @@ class USD extends AbstractCurrency {
 }
 
 class NumberCol extends AbstractNumeric {
-  toDisplayString(value, format) {
-    if (format === "percent") return numeral(parseFloat(value)).format("0.00") + "%"
+  toDisplayString(value: any, format: string) {
+    if (format === "percent") return d3format.format("0.00")(parseFloat(value)) + "%"
 
     // Need the isNan bc numeral will throw otherwise
-    if (format && !isNaN(value) && value !== Infinity) return numeral(value).format(format)
+    if (format && !isNaN(value) && value !== Infinity) return d3format.format(format)(value)
 
     return value
   }
-  getDefaultFormat(columnName, sample) {
+  getDefaultFormat(columnName: jTableTypes.columnName, sample: any) {
     if (columnName.match(/^(mile|pound|inch|feet)s?$/i)) return "0.0"
 
     if (columnName.match(/^(calorie|steps)s?$/i)) return "0,0"
@@ -136,13 +149,13 @@ class NumberCol extends AbstractNumeric {
 }
 
 class NumberString extends AbstractNumeric {
-  toDisplayString(value, format) {
-    return format ? numeral(value).format(format) : value
+  toDisplayString(value: any, format: string) {
+    return format ? d3format.format(format)(value) : value
   }
   getDefaultFormat() {
     return "0,0"
   }
-  fromStringToNumeric(str) {
+  fromStringToNumeric(str: string) {
     return parseFloat(str.toString().replace(/[\$\, \%]/g, ""))
   }
 

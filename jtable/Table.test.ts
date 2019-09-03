@@ -6,7 +6,7 @@ import { ComparisonOperators } from "./JTableConstants"
 
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
-const { jtree } = require("../products/jtree.node.js")
+const { jtree } = require("../index.js")
 
 const moment = require("moment")
 

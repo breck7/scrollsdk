@@ -63,3 +63,25 @@ test MilliSecond
   typeIs string
  getDefaultFormat
   stringIs fromNow
+test getDate
+ arrangeTestSubject
+  require ./TemporalTypes.js DateCol
+  static
+ getDateAsUnixUtx 02012012
+  stringIs 1328054400
+ getDateAsUnixUtx 20120201
+  stringIs 1328054400
+ getDateAsUnixUtx 20120102
+  stringIs 1325462400
+ getDateAsUnixUtx 20012012
+  stringIs 1008806400
+ getDateAsUnixUtx 02/2012
+  stringIs 1328054400
+ getDateAsUnixUtx 1496623133
+  stringIs 1496623133
+ getDateAsUnixUtx 20201212
+  typeIs number
+ getDateAsUnixUtx 13024949
+  typeIs number
+ getDateAsUnixUtx 33332201
+  typeIs number

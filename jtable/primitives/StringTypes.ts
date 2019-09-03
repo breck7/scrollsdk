@@ -21,7 +21,7 @@ abstract class AbstractStringCol extends AbstractPrimitiveType {
     return JavascriptNativeTypeNames.string
   }
 
-  fromStringToNumeric() {
+  fromStringToNumeric(): number {
     return undefined
   }
 

@@ -11,7 +11,7 @@ class ObjectType extends AbstractPrimitiveType {
     return ["{score: 10}"]
   }
 
-  fromStringToNumeric() {
+  fromStringToNumeric(): number {
     return undefined
   }
 

@@ -15,6 +15,18 @@ test Feet
   stringIs 0
  toDisplayString 72
   stringIs 6'0"
+test FeetStatic
+ arrangeTestSubject
+  require ./NumericTypes.js Feet
+  static
+ feetToInches 6'0
+  stringIs 72
+ feetToInches 6'1
+  stringIs 73
+ feetToInches 6
+  stringIs 72
+ feetToInches a"a
+  stringIs NaN
 test USD
  arrangeTestSubject
   require ./NumericTypes.js USD

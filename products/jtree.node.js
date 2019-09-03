@@ -2463,7 +2463,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "39.1.0"
+TreeNode.getVersion = () => "39.6.0"
 var GrammarConstantsCompiler
 ;(function(GrammarConstantsCompiler) {
   GrammarConstantsCompiler["stringTemplate"] = "stringTemplate"

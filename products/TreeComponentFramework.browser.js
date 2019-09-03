@@ -1,4 +1,3 @@
-window.treeNotationTypes = treeNotationTypes
 const WillowConstants = {}
 WillowConstants.ShadowEvents = {}
 WillowConstants.ShadowEvents.click = "click"

@@ -1,5 +1,3 @@
-window.treeNotationTypes = treeNotationTypes
-window.jTableTypes = jTableTypes
 // todo: create a Tree Language for number formatting
 var VegaTypes
 ;(function(VegaTypes) {
@@ -165,7 +163,7 @@ class USD extends AbstractCurrency {
     return sample && sample.match && !!sample.match(/^\$[0-9\.\,]+$/) ? 1 : 0
   }
   getDefaultFormat() {
-    return "$,"
+    return "($.2f"
   }
   getStringExamples() {
     return ["$2.22"]

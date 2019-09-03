@@ -391,7 +391,7 @@ class TreeUtils {
     return elapsed
   }
 
-  static sampleWithoutReplacement(population: any[], quantity: number, seed: number) {
+  static sampleWithoutReplacement(population: any[] = [], quantity: number, seed: number) {
     const prng = this._getPRNG(seed)
     const sampled: { [index: number]: boolean } = {}
     const populationSize = population.length

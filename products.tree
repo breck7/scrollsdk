@@ -23,6 +23,13 @@ browserProduct
  outputFileName core.test.browser.js
  files worldWideTypes/treeNotationTypes.ts coreTests/core.test.ts
 nodeProduct
+ outputFileName jtable.node.js
+ lastLine module.exports = {Table, TableParser, Column, Row, DummyDataSets, PrimitiveTypes }
+ files worldWideTypes/treeNotationTypes.ts worldWideTypes/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
+browserProduct
+ outputFileName jtable.browser.js
+ files worldWideTypes/treeNotationTypes.ts worldWideTypes/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
+nodeProduct
  outputFileName Disk.node.js
  lastLine module.exports = {Disk}
  files disk/Disk.node.ts

@@ -305,7 +305,7 @@ class TreeUtils {
     this._tickTime = Date.now()
     return elapsed
   }
-  static sampleWithoutReplacement(population, quantity, seed) {
+  static sampleWithoutReplacement(population = [], quantity, seed) {
     const prng = this._getPRNG(seed)
     const sampled = {}
     const populationSize = population.length

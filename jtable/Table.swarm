@@ -2,6 +2,6 @@
 arrangeTestSubject
 test basics
  arrangeTestSubject
-  require ./Table.js Table
+  require ../products/jtable.node.js Table
  getRows
   lengthIs 0

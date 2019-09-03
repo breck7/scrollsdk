@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { TableParser } from "./Parsers"
+import { TableParser } from "./TableParser"
 
 const { jtree } = require("../index.js")
 

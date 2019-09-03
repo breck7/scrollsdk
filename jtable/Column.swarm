@@ -48,7 +48,7 @@ test USD
   require ../products/jtable.node.js PrimitiveTypes.USD
  getDefaultFormat
   typeIs string
- toDisplayString 200 $0.00
+ toDisplayString 200 ($.2f
   stringIs $200.00
  toDisplayString 200
   stringIs 200
@@ -60,11 +60,11 @@ test NumberCol
  toDisplayString 100
   stringIs 100
  getDefaultFormat mile
-  stringIs 0.0
+  stringIs (.1f
  getDefaultFormat calorie
-  stringIs 0,0
+  stringIs ,
  getDefaultFormat something 2222
-  stringIs 0,0
+  stringIs ,
  getDefaultFormat something 2222.
   typeIs undefined
 test NumberString
@@ -73,7 +73,7 @@ test NumberString
  getDefaultFormat
  toDisplayString 2000
   stringIs 2000
- toDisplayString 2000 0,0
+ toDisplayString 2000 ,
   stringIs 2,000
  fromStringToNumeric $100
   stringIs 100

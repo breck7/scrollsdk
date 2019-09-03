@@ -5,6 +5,8 @@ import { Row } from "./Row"
 
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
+const { jtree } = require("../index.js")
+
 const testTree: treeNotationTypes.testTree = {}
 
 testTree.all = equal => {
@@ -25,5 +27,5 @@ testTree.all = equal => {
   equal(arr.length, 2)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("jtree").Utils.runTestTree(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+export { testTree }

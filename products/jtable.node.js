@@ -1,4 +1,5 @@
 const { jtree } = require("../index.js")
+// todo: create a Tree Language for number formatting
 const d3format = require("d3-format")
 var VegaTypes
 ;(function(VegaTypes) {
@@ -166,23 +167,24 @@ class USD extends AbstractCurrency {
     return sample && sample.match && !!sample.match(/^\$[0-9\.\,]+$/) ? 1 : 0
   }
   getDefaultFormat() {
-    return "$(0a)"
+    return "($.2f"
   }
   getStringExamples() {
     return ["$2.22"]
   }
 }
 class NumberCol extends AbstractNumeric {
+  // https://github.com/d3/d3-format
   toDisplayString(value, format) {
-    if (format === "percent") return d3format.format("0.00")(parseFloat(value)) + "%"
+    if (format === "percent") return d3format.format("(.2f")(parseFloat(value)) + "%"
     // Need the isNan bc numeral will throw otherwise
     if (format && !isNaN(value) && value !== Infinity) return d3format.format(format)(value)
     return value
   }
   getDefaultFormat(columnName, sample) {
-    if (columnName.match(/^(mile|pound|inch|feet)s?$/i)) return "0.0"
-    if (columnName.match(/^(calorie|steps)s?$/i)) return "0,0"
-    if (sample && !sample.toString().includes(".")) return "0,0"
+    if (columnName.match(/^(mile|pound|inch|feet)s?$/i)) return "(.1f"
+    if (columnName.match(/^(calorie|steps)s?$/i)) return ","
+    if (sample && !sample.toString().includes(".")) return ","
   }
   getStringExamples() {
     return ["2.22"]
@@ -193,7 +195,7 @@ class NumberString extends AbstractNumeric {
     return format ? d3format.format(format)(value) : value
   }
   getDefaultFormat() {
-    return "0,0"
+    return ","
   }
   fromStringToNumeric(str) {
     return parseFloat(str.toString().replace(/[\$\, \%]/g, ""))

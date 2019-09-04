@@ -98,13 +98,6 @@ If you build a Tree Notation library/SDK in another language, let us know and we
 
 If you are working on a Tree Notation library in a new host language, feel free to post an issue or ask for help in the [TreeNotation subreddit](https://www.reddit.com/r/treenotation/).
 
-Research
---------
-
-You can read the half-baked [papers about Tree Notation](https://github.com/treenotation/jtree/tree/master/papers).
-
-The basic gist of the theory is that all structures are trees, Tree Notation is all you need to represent trees, and by building things up from Tree Notation we might be able to make things simpler *AND better*.
-
 Copyright & License
 -------------------
 

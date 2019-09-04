@@ -239,6 +239,12 @@ In Lisp you have to escape certain characters. In Tree Notation, you never need 
 
 ## History
 
+#### Are there any papers written about Tree Notation?
+
+You can read the half-baked [papers about Tree Notation](https://github.com/treenotation/jtree/tree/master/papers).
+
+The basic gist of the theory is that all structures are trees, Tree Notation is all you need to represent trees, and by building things up from Tree Notation we might be able to make things simpler *AND better*.
+
 #### Which language influenced Tree Notation the most?
 
 Syntactically there's no question--it was <a href="http://haml.info/">HAML</a>. See the origin story below if you are curious why. Semantically there's been a lot of influences from thousands of languages. Particularly influential ones are Lisp, Haskell, Racket, ANTLR, TypeScript, C#, Python, Scheme, Javascript, COBOL, Rebol, Mathematica, APL, R, Red-Lang, Fortran, Forth, C++, JSON, XML, HTML, CSS, SQL, somewhat, but not necessarily, in that order.

@@ -20,7 +20,8 @@ class GrammarUpgrader extends jtree.Upgrader {
             node.delete(firstCellTypeKeyword)
           }
 
-          const familyTreeIds = extTree._getFamilyTree().getTopDownArray()
+          const ft = extTree._getFamilyTree()
+          const familyTreeIds = ft.getTopDownArray()
           familyTreeIds.reverse()
           familyTreeIds.forEach((idNode: any) => {
             const id = idNode.getLine()
@@ -29,6 +30,7 @@ class GrammarUpgrader extends jtree.Upgrader {
             if (node.has(firstCellTypeKeyword)) {
               handle(node, node.get(firstCellTypeKeyword))
             } else {
+              if (!node.has("cells")) return 1
               const nodeWithFct = node._getNodeFromExtended(firstCellTypeKeyword)
               if (nodeWithFct) {
                 handle(node, nodeWithFct.get(firstCellTypeKeyword))
@@ -38,10 +40,10 @@ class GrammarUpgrader extends jtree.Upgrader {
             }
           })
 
-          extTree.forEach((node: any) => {
-            const fct = node.get(firstCellTypeKeyword)
-            if (fct) handle(node, fct)
-          })
+          // extTree.forEach((node: any) => {
+          //   const fct = node.get(firstCellTypeKeyword)
+          //   if (fct) handle(node, fct)
+          // })
 
           return extTree
         }

@@ -73,13 +73,12 @@ fileConstantCell
  highlightScope keyword.control
 termNode
  catchAllCellType filepathCell
- firstCellType termCell
  abstract
+ cells termCell
 errorNode
  baseNodeType errorNode
 fileNode
  catchAllCellType filepathCell
- firstCellType fileConstantCell
  inScope externalNode absoluteNode relativeNode
  javascript
   getFilePath() {
@@ -102,6 +101,7 @@ fileNode
   getMissingDependencies(includedMap) {
     return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
+ cells fileConstantCell
 absoluteNode
  extends termNode
 externalNode

@@ -21,7 +21,7 @@ booleanCell
 numberCell
  highlightScope constant.numeric
 valueNode
- firstCellType typeNameCell
+ cells typeNameCell
 nullNode
  compiler
   stringTemplate null
@@ -30,7 +30,7 @@ nullNode
 numberNode
  match number
  extends valueNode
- cells numberCell
+ cells typeNameCell numberCell
  compiler
   stringTemplate {numberCell}
 stringNode
@@ -42,14 +42,14 @@ stringNode
 booleanNode
  match boolean
  extends valueNode
- cells booleanCell
+ cells typeNameCell booleanCell
  compiler
   stringTemplate {booleanCell}
 memberNode
- firstCellType stringCell
  inScope valueNode
  compiler
   stringTemplate "{stringCell}" :
+ cells stringCell
 objectNode
  match object
  catchAllNodeType memberNode

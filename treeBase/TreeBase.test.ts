@@ -13,5 +13,5 @@ testTree.all = (equal: any) => {
   if (errs.length) console.log(errs.join("\n"))
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../products/jtree.node.js").Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) require("../index.js").jtree.Utils.runTestTree(testTree)
 export { testTree }

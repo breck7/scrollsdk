@@ -38,7 +38,7 @@ class DesignerApp {
     history.replaceState(null, null, " ")
   }
 
-  public languages = "newlang hakon stump dumbdown dug fire swarm project stamp grammar config jibberish numbers poop".split(" ")
+  public languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
 
   private _onGrammarKeyup() {
     this._grammarDidUpdate()
@@ -99,12 +99,13 @@ class DesignerApp {
   private _otherErrorsDiv = jQuery("#otherErrorsDiv")
   private _versionSpan = jQuery("#versionSpan")
   private _shareLink = jQuery("#shareLink")
-  private _inferButton = jQuery("#inferButton")
+  private _inferKeywordGrammarButton = jQuery("#inferKeywordGrammarButton")
+  private _simulateDataButton = jQuery("#simulateDataButton")
 
   private _setProgramResults(results: string) {
     this._execResultsTextArea.val(results)
     const el = this._execResultsTextArea[0]
-    el.style.height = el.scrollHeight > el.clientHeight ? el.scrollHeight + "px" : "10px"
+    el.style.height = el.scrollHeight + "px"
   }
 
   private _clearResults() {
@@ -137,9 +138,14 @@ class DesignerApp {
       )
     })
 
-    this._inferButton.on("click", () => {
-      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("inferredLanguage"))
+    this._inferKeywordGrammarButton.on("click", () => {
+      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
       this._onGrammarKeyup()
+    })
+
+    this._simulateDataButton.on("click", () => {
+      const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
+      this.codeInstance.setValue(grammarProgram.generateSimulatedData())
     })
 
     this._downloadButton.on("click", () => this._downloadBundleCommand())

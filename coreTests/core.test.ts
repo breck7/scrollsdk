@@ -1914,6 +1914,8 @@ foo`
  inScope topLevelNode textNode someAbstractClassNode
 intCell
 anyCell
+topLevelPropertyCell
+ highlightScope constant.language
 wordCell
 onoffCell
  enum on off
@@ -1921,12 +1923,13 @@ errorNode
  baseNodeType errorNode
 topLevelNode
  abstract
+ cells topLevelPropertyCell
 someAbstractClassNode
  abstract
 colorPropertiesNode
  abstract
  extends topLevelNode
- cells intCell
+ cells topLevelPropertyCell intCell
 hueNode
  extends colorPropertiesNode
 saturationNode
@@ -1957,7 +1960,7 @@ addNode
  catchAllCellType intCell
 lightbulbStateNode
  extends topLevelNode
- cells onoffCell
+ cells topLevelPropertyCell onoffCell
 toNode
  extends blockNode
  cells wordCell
@@ -3699,6 +3702,20 @@ c
     equal(lastLogMessage, "0 text\n1  hello\n")
     // Cleanup
     console.log = orig
+  }
+
+  testTree.extendible = equal => {
+    // Arrange
+    const a = new jtree.ExtendibleTreeNode(`a
+ color red
+b
+ extends a`)
+    // Assert
+    equal(
+      a._getFamilyTree().toString(),
+      `a
+ b`
+    )
   }
 
   testTree.isBlank = equal => {

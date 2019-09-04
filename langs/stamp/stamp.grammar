@@ -63,25 +63,25 @@ commentCell
  highlightScope comment
 inputTypeCell
  regex (string|int|any|lowercase)
-propertyCell
+keywordCell
  highlightScope keyword.control
 hashbangNode
  match #!
  catchAllCellType commentCell
- firstCellType commentCell
+ cells commentCell
 catchAllAnyLineNode
  catchAllCellType anyCell
  catchAllNodeType catchAllAnyLineNode
- firstCellType anyCell
+ cells anyCell
 dataNode
  catchAllNodeType catchAllAnyLineNode
- firstCellType propertyCell
+ cells keywordCell
 errorNode
  baseNodeType errorNode
 executableNode
+ cells keywordCell
 fileNode
- cells filepathCell
- firstCellType propertyCell
+ cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {
     const filePath = this.getAbsolutePath()
@@ -102,8 +102,7 @@ fileNode
   }
  inScope dataNode executableNode
 folderNode
- cells filepathCell
- firstCellType propertyCell
+ cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {
     return `mkdir ${this.getAbsolutePath()}`
@@ -117,9 +116,8 @@ folderNode
     require("mkdirp").sync(path)
   }
 promptNode
- cells varNameCell inputTypeCell
+ cells keywordCell varNameCell inputTypeCell
  catchAllCellType promptWordsCell
- firstCellType propertyCell
  example Ask for a project name and create a new directory.
   prompt PROJECT_NAME any Enter the name for your new project
   folder PROJECT_NAME

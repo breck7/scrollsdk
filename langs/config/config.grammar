@@ -11,5 +11,5 @@ keywordCell
  highlightScope keyword
 pairNode
  description Holds a key/value pair
- firstCellType keywordCell
  catchAllCellType valueCell
+ cells keywordCell

@@ -1,7 +1,7 @@
 //tooling onsave jtree build produce DesignerApp.browser.js
 class DesignerApp {
   constructor(grammarSourceCode) {
-    this.languages = "newlang hakon stump dumbdown dug fire swarm project stamp grammar config jibberish numbers poop".split(" ")
+    this.languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
     this._codeErrorsConsole = jQuery("#codeErrorsConsole")
     this._codeConsole = jQuery("#codeConsole")
     this._grammarConsole = jQuery("#grammarConsole")
@@ -16,7 +16,8 @@ class DesignerApp {
     this._otherErrorsDiv = jQuery("#otherErrorsDiv")
     this._versionSpan = jQuery("#versionSpan")
     this._shareLink = jQuery("#shareLink")
-    this._inferButton = jQuery("#inferButton")
+    this._inferKeywordGrammarButton = jQuery("#inferKeywordGrammarButton")
+    this._simulateDataButton = jQuery("#simulateDataButton")
     this._localStorageKeys = {
       grammarConsole: "grammarConsole",
       codeConsole: "codeConsole"
@@ -82,7 +83,7 @@ class DesignerApp {
   _setProgramResults(results) {
     this._execResultsTextArea.val(results)
     const el = this._execResultsTextArea[0]
-    el.style.height = el.scrollHeight > el.clientHeight ? el.scrollHeight + "px" : "10px"
+    el.style.height = el.scrollHeight + "px"
   }
   _clearResults() {
     this._execResultsTextArea.val("")
@@ -111,9 +112,13 @@ class DesignerApp {
           .toLowerCase()
       )
     })
-    this._inferButton.on("click", () => {
-      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("inferredLanguage"))
+    this._inferKeywordGrammarButton.on("click", () => {
+      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
       this._onGrammarKeyup()
+    })
+    this._simulateDataButton.on("click", () => {
+      const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
+      this.codeInstance.setValue(grammarProgram.generateSimulatedData())
     })
     this._downloadButton.on("click", () => this._downloadBundleCommand())
   }

@@ -1,4 +1,4 @@
-import { TreeNode } from "./TreeNode"
+import { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode } from "./TreeNode"
 import { TreeUtils } from "./TreeUtils"
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
@@ -19,6 +19,7 @@ enum GrammarConstantsCompiler {
 
 enum PreludeCellTypeIds {
   anyCell = "anyCell",
+  keywordCell = "keywordCell",
   extraWordCell = "extraWordCell",
   floatCell = "floatCell",
   numberCell = "numberCell",
@@ -76,7 +77,6 @@ enum GrammarConstants {
   inScope = "inScope",
   cells = "cells",
   catchAllCellType = "catchAllCellType",
-  firstCellType = "firstCellType",
   catchAllNodeType = "catchAllNodeType",
   constants = "constants",
   required = "required", // Require this nodeType to be present in a node or program
@@ -119,6 +119,16 @@ abstract class GrammarBackedNode extends TreeNode {
 
   _getErrorNodeErrors() {
     return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
+  }
+
+  generateSimulatedData(nodeCount = 1) {
+    const lines = []
+    const cells = this._getGrammarBackedCellArray()
+    while (nodeCount > 0) {
+      lines.push(cells.map(cell => cell.generateSimulatedData()).join(" "))
+      nodeCount--
+    }
+    return lines.join("\n")
   }
 
   _getBlobNodeCatchAllNodeType() {
@@ -426,8 +436,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     const definition = this.getDefinition()
     const grammarProgram = definition.getLanguageDefinitionProgram()
     const requiredCellTypeIds = definition.getRequiredCellTypeIds()
-    const firstCellTypeId = definition.getFirstCellTypeId()
-    const numberOfRequiredCells = requiredCellTypeIds.length + 1 // todo: assuming here first cell is required.
+    const numberOfRequiredCells = requiredCellTypeIds.length
 
     const catchAllCellTypeId = definition.getCatchAllCellTypeId()
 
@@ -439,9 +448,8 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
       const isCatchAll = cellIndex >= numberOfRequiredCells
 
       let cellTypeId
-      if (cellIndex === 0) cellTypeId = firstCellTypeId
-      else if (isCatchAll) cellTypeId = catchAllCellTypeId
-      else cellTypeId = requiredCellTypeIds[cellIndex - 1]
+      if (isCatchAll) cellTypeId = catchAllCellTypeId
+      else cellTypeId = requiredCellTypeIds[cellIndex]
 
       let cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
 
@@ -598,7 +606,7 @@ abstract class AbstractGrammarBackedCell<T> {
 
   getHighlightScope(): string | undefined {
     const definition = this._getCellTypeDefinition()
-    if (definition) return definition.getHighlightScope()
+    if (definition) return definition.getHighlightScope() // todo: why the undefined?
   }
 
   getAutoCompleteWords(partialWord: string = "") {
@@ -616,6 +624,8 @@ abstract class AbstractGrammarBackedCell<T> {
       }
     })
   }
+
+  abstract generateSimulatedData(): string
 
   getWord() {
     return this._word
@@ -656,6 +666,12 @@ class GrammarIntCell extends AbstractGrammarBackedCell<number> {
     return num.toString() === this._word
   }
 
+  static defaultHighlightScope = "constant.numeric.integer"
+
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(2, "0123456789".split(""))
+  }
+
   getRegexString() {
     return "\-?[0-9]+"
   }
@@ -673,6 +689,12 @@ class GrammarBitCell extends AbstractGrammarBackedCell<boolean> {
     return str === "0" || str === "1"
   }
 
+  static defaultHighlightScope = "constant.numeric"
+
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(1, "01".split(""))
+  }
+
   getRegexString() {
     return "[01]"
   }
@@ -686,6 +708,12 @@ class GrammarFloatCell extends AbstractGrammarBackedCell<number> {
   _isValid() {
     const num = parseFloat(this._word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(this._word)
+  }
+
+  static defaultHighlightScope = "constant.numeric.float"
+
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(2, "0123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
   }
 
   getRegexString() {
@@ -710,6 +738,12 @@ class GrammarBoolCell extends AbstractGrammarBackedCell<boolean> {
     return this._trues.has(str) || this._falses.has(str)
   }
 
+  static defaultHighlightScope = "constant.numeric"
+
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
+  }
+
   private _getOptions() {
     return Array.from(this._trues).concat(Array.from(this._falses))
   }
@@ -728,6 +762,10 @@ class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
     return true
   }
 
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(10)
+  }
+
   getRegexString() {
     return "[^ ]+"
   }
@@ -737,9 +775,17 @@ class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
   }
 }
 
+class GrammarKeywordCell extends GrammarAnyCell {
+  static defaultHighlightScope = "keyword"
+}
+
 class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
   _isValid() {
     return false
+  }
+
+  generateSimulatedData() {
+    return ""
   }
 
   getParsed() {
@@ -754,6 +800,10 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
 class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
   _isValid() {
     return false
+  }
+
+  generateSimulatedData() {
+    return ""
   }
 
   getParsed() {
@@ -1111,88 +1161,6 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   }
 }
 
-abstract class AbstractExtendibleTreeNode extends TreeNode {
-  _getFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
-    const hit = this._getNodeFromExtended(firstWordPath)
-    return hit ? hit.get(firstWordPath) : undefined
-  }
-
-  // todo: be more specific with the param
-  _getChildrenByNodeConstructorInExtended(constructor: Function): TreeNode[] {
-    return TreeUtils.flatten(<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
-  }
-
-  _getExtendedParent() {
-    return this._getAncestorsArray()[1]
-  }
-
-  _hasFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
-    return !!this._getNodeFromExtended(firstWordPath)
-  }
-
-  _getNodeFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
-    return this._getAncestorsArray().find(node => node.has(firstWordPath))
-  }
-
-  _doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
-    return this._getAncestorSet().has(nodeTypeId)
-  }
-
-  _getAncestorSet() {
-    if (!this._cache_ancestorSet) this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()))
-    return this._cache_ancestorSet
-  }
-
-  abstract _getId(): string
-
-  private _cache_ancestorSet: Set<treeNotationTypes.nodeTypeId>
-  private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
-
-  // Note: the order is: [this, parent, grandParent, ...]
-  _getAncestorsArray(cannotContainNodes?: AbstractExtendibleTreeNode[]) {
-    this._initAncestorsArrayCache(cannotContainNodes)
-    return this._cache_ancestorsArray
-  }
-
-  private _getIdThatThisExtends() {
-    return this.get(GrammarConstants.extends)
-  }
-
-  abstract _getIdToNodeMap(): { [id: string]: AbstractExtendibleTreeNode }
-
-  protected _initAncestorsArrayCache(cannotContainNodes?: AbstractExtendibleTreeNode[]): void {
-    if (this._cache_ancestorsArray) return undefined
-    if (cannotContainNodes && cannotContainNodes.includes(this)) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
-    cannotContainNodes = cannotContainNodes || [this]
-    let ancestors: AbstractExtendibleTreeNode[] = [this]
-    const extendedId = this._getIdThatThisExtends()
-    if (extendedId) {
-      const parentNode = this._getIdToNodeMap()[extendedId]
-      if (!parentNode) throw new Error(`${extendedId} not found`)
-
-      ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes))
-    }
-    this._cache_ancestorsArray = ancestors
-  }
-}
-
-class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
-  private _nodeMapCache: { [id: string]: AbstractExtendibleTreeNode }
-  _getIdToNodeMap() {
-    if (!this._nodeMapCache) {
-      this._nodeMapCache = {}
-      this.forEach(child => {
-        this._nodeMapCache[child.getWord(1)] = child
-      })
-    }
-    return this._nodeMapCache
-  }
-
-  _getId() {
-    return this.getWord(1)
-  }
-}
-
 class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   createParser() {
     const types: treeNotationTypes.stringMap = {}
@@ -1237,14 +1205,19 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
 
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
   getCellConstructor(): typeof AbstractGrammarBackedCell {
+    return this._getPreludeKind() || GrammarAnyCell
+  }
+
+  private _getPreludeKind() {
     const kinds: treeNotationTypes.stringMap = {}
     kinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell
+    kinds[PreludeCellTypeIds.keywordCell] = GrammarKeywordCell
     kinds[PreludeCellTypeIds.floatCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
     kinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
     kinds[PreludeCellTypeIds.intCell] = GrammarIntCell
-    return kinds[this.getWord(0)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell
+    return kinds[this.getWord(0)] || kinds[this._getExtendedCellTypeId()]
   }
 
   private _getExtendedCellTypeId() {
@@ -1252,7 +1225,10 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   }
 
   getHighlightScope(): string | undefined {
-    return this._getFromExtended(GrammarConstants.highlightScope)
+    const hs = this._getFromExtended(GrammarConstants.highlightScope)
+    if (hs) return hs
+    const preludeKind = this._getPreludeKind()
+    if (preludeKind) return preludeKind.defaultHighlightScope
   }
 
   private _getEnumOptions() {
@@ -1361,7 +1337,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.description,
       GrammarConstants.catchAllNodeType,
       GrammarConstants.catchAllCellType,
-      GrammarConstants.firstCellType,
       GrammarConstants.extensions,
       GrammarConstants.version,
       GrammarConstants.tags,
@@ -1490,11 +1465,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) => {
       const cellTypeDef = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
-      return cellTypeDef.getGetter(index + 1)
+      return cellTypeDef.getGetter(index)
     })
 
     const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType)
-    if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1))
+    if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
 
     // Constants
     Object.values(this._getUniqueConstantNodes(false)).forEach(node => {
@@ -1560,10 +1535,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     // todo: cleanup
     this.getLanguageDefinitionProgram()._addDefaultCatchAllBlobNode()
     return this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
-  }
-
-  getFirstCellTypeId(): treeNotationTypes.cellTypeId {
-    return this._getFromExtended(GrammarConstants.firstCellType) || PreludeCellTypeIds.anyCell
   }
 
   isDefined(nodeTypeId: string) {
@@ -1716,27 +1687,20 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return !this._getFromExtended(GrammarConstants.inScope) && !this._getFromExtended(GrammarConstants.catchAllNodeType)
   }
 
-  private _getFirstCellHighlightScope() {
-    const program = this.getLanguageDefinitionProgram()
-    const cellTypeDefinition = program.getCellTypeDefinitionById(this.getFirstCellTypeId())
-    // todo: standardize error/capture error at grammar time
-    if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${this.getFirstCellTypeId()} found`)
-    return cellTypeDefinition.getHighlightScope()
-  }
-
   getMatchBlock() {
     const defaultHighlightScope = "source"
     const program = this.getLanguageDefinitionProgram()
     const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-    const firstWordHighlightScope = (this._getFirstCellHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const regexMatch = this._getRegexMatch()
     const firstWordMatch = this._getFirstWordMatch()
     const match = regexMatch ? `'${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`
+    const requiredCellTypeIds = this.getRequiredCellTypeIds()
+    const catchAllCellTypeId = this.getCatchAllCellTypeId()
+    const firstCellTypeDef = program.getCellTypeDefinitionById(requiredCellTypeIds[0])
+    const firstWordHighlightScope = (firstCellTypeDef ? firstCellTypeDef.getHighlightScope() : defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const topHalf = ` '${this.getNodeTypeIdFromDefinition()}':
   - match: ${match}
     scope: ${firstWordHighlightScope}`
-    const requiredCellTypeIds = this.getRequiredCellTypeIds()
-    const catchAllCellTypeId = this.getCatchAllCellTypeId()
     if (catchAllCellTypeId) requiredCellTypeIds.push(catchAllCellTypeId)
     if (!requiredCellTypeIds.length) return topHalf
     const captures = requiredCellTypeIds

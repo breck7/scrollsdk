@@ -23,7 +23,6 @@ htmlAttributeNameCell
 contentHolderNameCell
  highlightScope keyword
 abstractHtmlTagNode
- firstCellType htmlTagNameCell
  inScope bernNode abstractHtmlTagNode abstractHtmlAttributeNode
  catchAllCellType anyHtmlContentCell
  javascript
@@ -190,10 +189,10 @@ abstractHtmlTagNode
     return this._toHtml()
   }
  abstract
+ cells htmlTagNameCell
 errorNode
  baseNodeType errorNode
 abstractHtmlAttributeNode
- firstCellType htmlAttributeNameCell
  javascript
   _toHtml() { return "" }
   getAttribute() { return ` ${this.getFirstWord()}="${this.getContent()}"` }
@@ -201,17 +200,18 @@ abstractHtmlAttributeNode
  catchAllNodeType errorNode
  catchAllCellType attributeValueCell
  abstract
+ cells htmlAttributeNameCell
 lineOfHtmlContentNode
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
- firstCellType anyHtmlContentCell
+ cells anyHtmlContentCell
 bernNode
  todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
- firstCellType contentHolderNameCell
  catchAllNodeType lineOfHtmlContentNode
  javascript
   _toHtml() { return this.childrenToString() }
+ cells contentHolderNameCell
 aNode
  extends abstractHtmlTagNode
 abbrNode

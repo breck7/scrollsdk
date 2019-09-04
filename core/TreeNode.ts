@@ -29,6 +29,10 @@ enum WhereOperators {
   notEmpty = "notEmpty"
 }
 
+enum TreeNotationConstants {
+  extends = "extends"
+}
+
 class Parser {
   // todo: should getErrors be under here? At least for certain types of errors?
   private _catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor
@@ -2436,7 +2440,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "39.6.0"
+  static getVersion = () => "40.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
@@ -2451,4 +2455,97 @@ class TreeNode extends AbstractNode {
   }
 }
 
-export { TreeNode }
+abstract class AbstractExtendibleTreeNode extends TreeNode {
+  _getFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+    const hit = this._getNodeFromExtended(firstWordPath)
+    return hit ? hit.get(firstWordPath) : undefined
+  }
+
+  _getFamilyTree() {
+    const tree = new TreeNode()
+    this.forEach(node => {
+      const path = node._getAncestorsArray().map((node: AbstractExtendibleTreeNode) => node._getId())
+      path.reverse()
+      tree.touchNode(path.join(" "))
+    })
+    return tree
+  }
+
+  // todo: be more specific with the param
+  _getChildrenByNodeConstructorInExtended(constructor: Function): TreeNode[] {
+    return TreeUtils.flatten(<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
+  }
+
+  _getExtendedParent() {
+    return this._getAncestorsArray()[1]
+  }
+
+  _hasFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+    return !!this._getNodeFromExtended(firstWordPath)
+  }
+
+  _getNodeFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+    return this._getAncestorsArray().find(node => node.has(firstWordPath))
+  }
+
+  _doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
+    return this._getAncestorSet().has(nodeTypeId)
+  }
+
+  _getAncestorSet() {
+    if (!this._cache_ancestorSet) this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()))
+    return this._cache_ancestorSet
+  }
+
+  abstract _getId(): string
+
+  private _cache_ancestorSet: Set<treeNotationTypes.nodeTypeId>
+  private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
+
+  // Note: the order is: [this, parent, grandParent, ...]
+  _getAncestorsArray(cannotContainNodes?: AbstractExtendibleTreeNode[]) {
+    this._initAncestorsArrayCache(cannotContainNodes)
+    return this._cache_ancestorsArray
+  }
+
+  private _getIdThatThisExtends() {
+    return this.get(TreeNotationConstants.extends)
+  }
+
+  abstract _getIdToNodeMap(): { [id: string]: AbstractExtendibleTreeNode }
+
+  protected _initAncestorsArrayCache(cannotContainNodes?: AbstractExtendibleTreeNode[]): void {
+    if (this._cache_ancestorsArray) return undefined
+    if (cannotContainNodes && cannotContainNodes.includes(this)) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
+    cannotContainNodes = cannotContainNodes || [this]
+    let ancestors: AbstractExtendibleTreeNode[] = [this]
+    const extendedId = this._getIdThatThisExtends()
+    if (extendedId) {
+      const parentNode = this._getIdToNodeMap()[extendedId]
+      if (!parentNode) throw new Error(`${extendedId} not found`)
+
+      ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes))
+    }
+    this._cache_ancestorsArray = ancestors
+  }
+}
+
+class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
+  private _nodeMapCache: { [id: string]: AbstractExtendibleTreeNode }
+  _getIdToNodeMap() {
+    if (!this.isRoot()) return (<AbstractExtendibleTreeNode>this.getRootNode())._getIdToNodeMap()
+    if (!this._nodeMapCache) {
+      this._nodeMapCache = {}
+      this.forEach(child => {
+        this._nodeMapCache[child._getId()] = child
+      })
+    }
+    return this._nodeMapCache
+  }
+
+  _getId() {
+    return this.getWord(0)
+  }
+}
+
+export { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode }

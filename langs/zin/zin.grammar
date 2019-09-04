@@ -11,6 +11,6 @@ keywordCell
 alohaNode
  description Say aloha to a person.
  catchAllCellType nameCell
- firstCellType keywordCell
+ cells keywordCell
 catchAllErrorNode
  baseNodeType errorNode

@@ -23,10 +23,10 @@ opSymbolCell
 someAbstractClassNode
  abstract
 topLevelNode
- firstCellType topLevelPropertyCell
  abstract
+ cells topLevelPropertyCell
 colorPropertiesNode
- cells intCell
+ cells topLevelPropertyCell intCell
  extends topLevelNode
  abstract
 hueNode
@@ -42,25 +42,25 @@ abstractHtmlNode
 contentNode
  baseNodeType blobNode
 errorNode
- firstCellType errorCell
  catchAllCellType errorCell
  baseNodeType errorNode
+ cells errorCell
 lineOfCodeNode
  catchAllCellType wordCell
 textNode
  baseNodeType blobNode
 extendsAbstractNode
- cells intCell
+ cells topLevelPropertyCell intCell
  extends someAbstractClassNode
 addNode
  extends topLevelNode
 plusNode
  match +
  extends addNode
- firstCellType opSymbolCell
  example Adding two numbers:
   + 1 2
  catchAllCellType intCell
+ cells opSymbolCell
 blockNode
  inScope topLevelNode scoreBlockNode
  extends topLevelNode
@@ -70,8 +70,9 @@ scoreBlockNode
  inScope scoresNode
 scoresNode
  catchAllCellType intCell
+ cells topLevelPropertyCell
 toNode
- cells wordCell
+ cells topLevelPropertyCell wordCell
  compiler
   stringTemplate to {word}
   closeChildren end
@@ -80,14 +81,14 @@ fooNode
  extends topLevelNode
 xColumnNameNode
  description The name of the column to use for the x axis
- cells columnNameEnumCell
+ cells topLevelPropertyCell columnNameEnumCell
  javascript
   getRunTimeEnumOptions(cell) {
     return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
  extends topLevelNode
 lightbulbStateNode
- cells onoffCell
+ cells topLevelPropertyCell onoffCell
  extends topLevelNode
 nestedNode
  extends topLevelNode
@@ -113,6 +114,6 @@ someCodeNode
  catchAllNodeType lineOfCodeNode
  extends topLevelNode
 typeNode
- cells wordCell
+ cells topLevelPropertyCell wordCell
  single
  extends topLevelNode

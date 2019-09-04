@@ -2,9 +2,11 @@ planetNode
  root
  todo Change pattern to postfix.
  pattern \.planet$
+ cells filenameCell
  inScope abstractIntPropertyNode abstractFloatPropertyNode
  catchAllNodeType errorNode
 anyCell
+filenameCell
 errorNode
  baseNodeType errorNode
 intCell
@@ -14,12 +16,10 @@ floatCell
 keywordCell
  highlightScope keyword
 abstractIntPropertyNode
- cells intCell
- firstCellType keywordCell
+ cells keywordCell intCell
  abstract
 abstractFloatPropertyNode
- cells floatCell
- firstCellType keywordCell
+ cells keywordCell floatCell
  abstract
 surfaceGravityNode
  extends abstractIntPropertyNode

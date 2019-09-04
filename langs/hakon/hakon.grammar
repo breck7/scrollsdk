@@ -36,23 +36,22 @@ errorCell
 abstractPropertyNode
  catchAllCellType cssValueCell
  catchAllNodeType errorNode
- firstCellType propertyKeywordCell
  javascript
   compile(spaces) { return `${spaces}${this.getFirstWord()}: ${this.getContent()};` }
  abstract
+ cells propertyKeywordCell
 errorNode
  catchAllNodeType errorNode
  catchAllCellType errorCell
- firstCellType errorCell
  baseNodeType errorNode
+ cells errorCell
 commentCell
  highlightScope comment
 commentNode
- firstCellType commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
+ cells commentCell
 selectorNode
- firstCellType selectorCell
  inScope abstractPropertyNode commentNode
  catchAllNodeType selectorNode
  boolean isSelectorNode true
@@ -75,6 +74,7 @@ selectorNode
   ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
   }\n`
     }
+ cells selectorCell
 alignContentNode
  match align-content
  extends abstractPropertyNode

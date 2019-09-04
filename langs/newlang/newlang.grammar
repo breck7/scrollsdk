@@ -10,6 +10,6 @@ keywordCell
  highlightScope keyword
 helloNode
  catchAllCellType nameCell
- firstCellType keywordCell
+ cells keywordCell
 catchAllErrorNode
  baseNodeType errorNode

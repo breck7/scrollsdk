@@ -7,6 +7,8 @@ anyCell
 floatCell
  highlightScope constant.numeric.float
 intCell
+headerCell
+ highlightScope string
 commentCell
  highlightScope comment
 sepalLengthCell
@@ -19,8 +21,11 @@ petalWidthCell
  extends floatCell
 speciesCell
  enum virginica versicolor setosa
+ highlightScope constant.language
 commentNode
  catchAllCellType commentCell
 headerNode
+ todo get this working? should we do a catchAllNodeStack?
+ catchAllCellType headerCell
 rowNode
  cells sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell

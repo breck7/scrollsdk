@@ -19,6 +19,7 @@ enum GrammarConstantsCompiler {
 
 enum PreludeCellTypeIds {
   anyCell = "anyCell",
+  keywordCell = "keywordCell",
   extraWordCell = "extraWordCell",
   floatCell = "floatCell",
   numberCell = "numberCell",
@@ -605,7 +606,7 @@ abstract class AbstractGrammarBackedCell<T> {
 
   getHighlightScope(): string | undefined {
     const definition = this._getCellTypeDefinition()
-    if (definition) return definition.getHighlightScope()
+    if (definition) return definition.getHighlightScope() // todo: why the undefined?
   }
 
   getAutoCompleteWords(partialWord: string = "") {
@@ -665,6 +666,8 @@ class GrammarIntCell extends AbstractGrammarBackedCell<number> {
     return num.toString() === this._word
   }
 
+  static defaultHighlightScope = "constant.numeric.integer"
+
   generateSimulatedData() {
     return TreeUtils.getRandomString(2, "0123456789".split(""))
   }
@@ -686,6 +689,8 @@ class GrammarBitCell extends AbstractGrammarBackedCell<boolean> {
     return str === "0" || str === "1"
   }
 
+  static defaultHighlightScope = "constant.numeric"
+
   generateSimulatedData() {
     return TreeUtils.getRandomString(1, "01".split(""))
   }
@@ -704,6 +709,8 @@ class GrammarFloatCell extends AbstractGrammarBackedCell<number> {
     const num = parseFloat(this._word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(this._word)
   }
+
+  static defaultHighlightScope = "constant.numeric.float"
 
   generateSimulatedData() {
     return TreeUtils.getRandomString(2, "0123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
@@ -730,6 +737,8 @@ class GrammarBoolCell extends AbstractGrammarBackedCell<boolean> {
     const str = this._word.toLowerCase()
     return this._trues.has(str) || this._falses.has(str)
   }
+
+  static defaultHighlightScope = "constant.numeric"
 
   generateSimulatedData() {
     return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
@@ -764,6 +773,10 @@ class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
   getParsed() {
     return this._word
   }
+}
+
+class GrammarKeywordCell extends GrammarAnyCell {
+  static defaultHighlightScope = "keyword"
 }
 
 class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
@@ -1192,14 +1205,19 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
 
   // todo: cleanup typings. todo: remove this hidden logic. have a "baseType" property?
   getCellConstructor(): typeof AbstractGrammarBackedCell {
+    return this._getPreludeKind() || GrammarAnyCell
+  }
+
+  private _getPreludeKind() {
     const kinds: treeNotationTypes.stringMap = {}
     kinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell
+    kinds[PreludeCellTypeIds.keywordCell] = GrammarKeywordCell
     kinds[PreludeCellTypeIds.floatCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell
     kinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
     kinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
     kinds[PreludeCellTypeIds.intCell] = GrammarIntCell
-    return kinds[this.getWord(0)] || kinds[this._getExtendedCellTypeId()] || GrammarAnyCell
+    return kinds[this.getWord(0)] || kinds[this._getExtendedCellTypeId()]
   }
 
   private _getExtendedCellTypeId() {
@@ -1207,7 +1225,10 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   }
 
   getHighlightScope(): string | undefined {
-    return this._getFromExtended(GrammarConstants.highlightScope)
+    const hs = this._getFromExtended(GrammarConstants.highlightScope)
+    if (hs) return hs
+    const preludeKind = this._getPreludeKind()
+    if (preludeKind) return preludeKind.defaultHighlightScope
   }
 
   private _getEnumOptions() {
@@ -1444,11 +1465,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) => {
       const cellTypeDef = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
-      return cellTypeDef.getGetter(index + 1)
+      return cellTypeDef.getGetter(index)
     })
 
     const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType)
-    if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length + 1))
+    if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
 
     // Constants
     Object.values(this._getUniqueConstantNodes(false)).forEach(node => {
@@ -1675,8 +1696,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const match = regexMatch ? `'${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`
     const requiredCellTypeIds = this.getRequiredCellTypeIds()
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
-    const firstWordHighlightScope =
-      (program.getCellTypeDefinitionById(requiredCellTypeIds[0]).getHighlightScope() || defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
+    const firstCellTypeDef = program.getCellTypeDefinitionById(requiredCellTypeIds[0])
+    const firstWordHighlightScope = (firstCellTypeDef ? firstCellTypeDef.getHighlightScope() : defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const topHalf = ` '${this.getNodeTypeIdFromDefinition()}':
   - match: ${match}
     scope: ${firstWordHighlightScope}`

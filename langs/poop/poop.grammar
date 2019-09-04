@@ -39,6 +39,7 @@ someCellTypeCell
  todo remove once we add omnifix
  highlightScope constant.numeric.integer
 anyCell
+symbolCell
 bowelNode
  pattern 💩
  extends abstractEventNode
@@ -66,4 +67,4 @@ memoryNode
 dayNode
  pattern 🌄
  description We survived another day!
- cells monthIntCell dayIntCell yearIntCell
+ cells symbolCell monthIntCell dayIntCell yearIntCell

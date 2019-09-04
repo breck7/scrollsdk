@@ -1,34 +1,39 @@
 foobarNode
  root
  inScope fileNode
+keywordCell
 anyCell
 intCell
 boolCell
 floatCell
 fileNode
  inScope sizeNode digitsNode openNode tempNode descriptionNode editsNode accountNode
- cells anyCell
+ cells keywordCell anyCell
 sizeNode
- cells intCell
+ cells keywordCell intCell
 digitsNode
- cells intCell intCell
+ cells keywordCell intCell intCell
 openNode
- cells boolCell
+ cells keywordCell boolCell
 tempNode
- cells floatCell
+ cells keywordCell floatCell
 descriptionNode
  catchAllCellType anyCell
+ cells keywordCell
 editsNode
  inScope editsChildNode
+ cells keywordCell
 editsChildNode
  inScope dataNode
+ cells keywordCell
 dataNode
- cells anyCell
+ cells keywordCell anyCell
 accountNode
  inScope balanceNode transactionsNode sourceNode
+ cells keywordCell
 balanceNode
- cells floatCell
+ cells keywordCell floatCell
 transactionsNode
- cells intCell
+ cells keywordCell intCell
 sourceNode
- cells boolCell anyCell intCell
+ cells keywordCell boolCell anyCell intCell

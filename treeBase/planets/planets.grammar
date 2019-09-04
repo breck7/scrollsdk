@@ -2,9 +2,11 @@ planetNode
  root
  todo Change pattern to postfix.
  pattern \.planet$
+ cells filenameCell
  inScope abstractIntPropertyNode abstractFloatPropertyNode
  catchAllNodeType errorNode
 anyCell
+filenameCell
 errorNode
  baseNodeType errorNode
 intCell

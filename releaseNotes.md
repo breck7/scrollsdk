@@ -1,3 +1,9 @@
+40.0.0 / 2019-09-03
+===================
+- Breaking: removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Tree Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
+- New: default highlightScopes for basic cellTypes
+- Fix: fixes from reducing complexity of ExtendibleTreeNode and firstCellType
+
 39.6.0 / 2019-09-03
 ===================
 - New: added jtable

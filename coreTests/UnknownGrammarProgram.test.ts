@@ -38,29 +38,10 @@ file test
   source yes http://to.to.to 31`
 
   // Act
-  const grammarFile = new UnknownGrammarProgram(input).inferGrammarFileForAPrefixLanguage("foobar")
+  const grammarFile = new UnknownGrammarProgram(input).inferGrammarFileForAKeywordLanguage("foobar")
 
   // Assert
   equal(grammarFile, readFileSync(__dirname + "/UnknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
-}
-
-testTree.inferAll = equal => {
-  // Arrange/Act
-  ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "jibjab", "fire", "stamp", "zin", "newlang"].map(name => {
-    // Arrange
-    const path = __dirname + `/../langs/${name}/sample.${name}`
-    const sampleCode = jtree.TreeNode.fromDisk(path).toString()
-
-    // Act
-    const grammarCode = new UnknownGrammarProgram(sampleCode).inferGrammarFileForAPrefixLanguage("foobar")
-    const grammarProgram = new jtree.GrammarProgram(grammarCode)
-    const rootProgramConstructor = grammarProgram.getRootConstructor()
-    const program = new rootProgramConstructor(sampleCode)
-
-    // Assert
-    equal(grammarProgram.getAllErrors().length, 0, `no errors in inferred grammar program for language ${name}`)
-    equal(program.getAllErrors().length, 0, `no errors in program from inferred grammar for ${name}`)
-  })
 }
 
 testTree.emojis = equal => {
@@ -71,9 +52,28 @@ testTree.emojis = equal => {
   💩`
 
   // Act
-  const grammarFile = new UnknownGrammarProgram(source).inferGrammarFileForAPrefixLanguage("emojiLang")
+  const grammarFile = new UnknownGrammarProgram(source).inferGrammarFileForAKeywordLanguage("emojiLang")
   // Assert
   equal(grammarFile, readFileSync(__dirname + "/UnknownGrammar.expectedEmoji.grammar", "utf8"), "predicted grammar correct")
+}
+
+testTree._inferAll = equal => {
+  // Arrange/Act
+  ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "config", "iris", "dumbdown", "jibjab", "fire", "stamp", "zin", "newlang"].map(name => {
+    // Arrange
+    const path = __dirname + `/../langs/${name}/sample.${name}`
+    const sampleCode = jtree.TreeNode.fromDisk(path).toString()
+
+    // Act
+    const grammarCode = new UnknownGrammarProgram(sampleCode).inferGrammarFileForAKeywordLanguage("foobar")
+    const grammarProgram = new jtree.GrammarProgram(grammarCode)
+    const rootProgramConstructor = grammarProgram.getRootConstructor()
+    const program = new rootProgramConstructor(sampleCode)
+
+    // Assert
+    equal(grammarProgram.getAllErrors().length, 0, `no errors in inferred grammar program for language ${name}`)
+    equal(program.getAllErrors().length, 0, `no errors in program from inferred grammar for ${name}`)
+  })
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)

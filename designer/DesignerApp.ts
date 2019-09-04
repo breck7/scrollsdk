@@ -99,13 +99,13 @@ class DesignerApp {
   private _otherErrorsDiv = jQuery("#otherErrorsDiv")
   private _versionSpan = jQuery("#versionSpan")
   private _shareLink = jQuery("#shareLink")
-  private _inferButton = jQuery("#inferButton")
+  private _inferKeywordGrammarButton = jQuery("#inferKeywordGrammarButton")
   private _simulateDataButton = jQuery("#simulateDataButton")
 
   private _setProgramResults(results: string) {
     this._execResultsTextArea.val(results)
     const el = this._execResultsTextArea[0]
-    el.style.height = el.scrollHeight > el.clientHeight ? el.scrollHeight + "px" : "10px"
+    el.style.height = el.scrollHeight + "px"
   }
 
   private _clearResults() {
@@ -138,8 +138,8 @@ class DesignerApp {
       )
     })
 
-    this._inferButton.on("click", () => {
-      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAPrefixLanguage("inferredLanguage"))
+    this._inferKeywordGrammarButton.on("click", () => {
+      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
       this._onGrammarKeyup()
     })
 

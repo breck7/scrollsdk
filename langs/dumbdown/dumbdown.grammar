@@ -21,6 +21,7 @@ abstractTopLevelNode
  abstract
  cells keywordCell
 anyCell
+blankCell
 dashCell
  highlightScope constant.language
 codeCell
@@ -33,6 +34,7 @@ urlCell
  highlightScope constant.language
 blankLineNode
  description Blank lines compile to a br in the HTML.
+ cells blankCell
  compiler
   stringTemplate <br>
 titleNode

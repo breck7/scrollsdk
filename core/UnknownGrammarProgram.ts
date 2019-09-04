@@ -12,7 +12,9 @@ class UnknownGrammarProgram extends TreeNode {
  ${GrammarConstants.root}`)
 
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
-    const rootNodeNames = this.getFirstWords().map(word => GrammarProgram.makeNodeTypeId(word))
+    const rootNodeNames = this.getFirstWords()
+      .filter(word => word)
+      .map(word => GrammarProgram.makeNodeTypeId(word))
     rootNode
       .nodeAt(0)
       .touchNode(GrammarConstants.inScope)
@@ -81,7 +83,9 @@ class UnknownGrammarProgram extends TreeNode {
 
     if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
 
-    if (cellTypeIds.length > 0) nodeDefNode.set(GrammarConstants.cells, cellTypeIds.join(xi))
+    const cellLine = cellTypeIds.slice()
+    cellLine.unshift(PreludeCellTypeIds.keywordCell)
+    if (cellLine.length > 0) nodeDefNode.set(GrammarConstants.cells, cellLine.join(xi))
 
     //if (!catchAllCellType && cellTypeIds.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypeIds[0])
 
@@ -104,17 +108,19 @@ class UnknownGrammarProgram extends TreeNode {
   //    return rootNode
   //  }
 
-  inferGrammarFileForAPrefixLanguage(grammarName: string): string {
+  inferGrammarFileForAKeywordLanguage(grammarName: string): string {
     const clone = <UnknownGrammarProgram>this.clone()
     this._renameIntegerKeywords(clone)
 
     const { keywordsToChildKeywords, keywordsToNodeInstances } = this._getKeywordMaps(clone)
 
     const globalCellTypeMap = new Map()
-    globalCellTypeMap.set(PreludeCellTypeIds.anyCell, undefined)
-    const nodeTypeDefs = Object.keys(keywordsToChildKeywords).map(firstWord =>
-      this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord])
-    )
+    globalCellTypeMap.set(PreludeCellTypeIds.keywordCell, undefined)
+    const nodeTypeDefs = Object.keys(keywordsToChildKeywords)
+      .filter(word => word)
+      .map(firstWord =>
+        this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord])
+      )
 
     const cellTypeDefs: string[] = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))

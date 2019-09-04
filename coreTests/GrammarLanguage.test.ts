@@ -267,6 +267,7 @@ intCell
  highlightScope constant.numeric.integer
 anyCell
 cokesNode
+ cells anyCell
  catchAllCellType intCell`
   const code = `
 cokes 22 11`
@@ -464,7 +465,7 @@ testTree.rootCatchAllNode = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.getInPlaceCellTypeTree(), "anyCell")
+  equal(program.getInPlaceCellTypeTree(), "extraWordCell", "one word")
 
   // Arrange
   const abcLangWithErrors = new GrammarProgram(`abcNode
@@ -593,9 +594,10 @@ testTree.examples = equal => {
 addNode
  match +
  catchAllCellType intCell
+ cells keywordCell
  example This is a bad example.
   + 1 B
-anyCell
+keywordCell
 intCell`
   )
 

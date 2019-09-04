@@ -413,9 +413,11 @@ class TreeUtils {
   }
 
   static _replaceNonAlphaNumericCharactersWithCharCodes(str: string) {
-    return str.replace(/[^a-zA-Z0-9]/g, (sub: string) => {
-      return "_" + sub.charCodeAt(0).toString()
-    })
+    return str
+      .replace(/[^a-zA-Z0-9]/g, (sub: string) => {
+        return "_" + sub.charCodeAt(0).toString()
+      })
+      .replace(/^([0-9])/, "number$1")
   }
 
   static mapValues<T>(object: Object, fn: (key: string) => T) {

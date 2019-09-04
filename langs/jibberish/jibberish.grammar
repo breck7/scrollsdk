@@ -50,7 +50,7 @@ lineOfCodeNode
 textNode
  baseNodeType blobNode
 extendsAbstractNode
- cells intCell
+ cells topLevelPropertyCell intCell
  extends someAbstractClassNode
 addNode
  extends topLevelNode
@@ -70,6 +70,7 @@ scoreBlockNode
  inScope scoresNode
 scoresNode
  catchAllCellType intCell
+ cells topLevelPropertyCell
 toNode
  cells topLevelPropertyCell wordCell
  compiler

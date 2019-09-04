@@ -11,12 +11,13 @@ test grammarSample
    wordCell
     extends anyCell
    baseNode
+   keywordCell
    blockNode
     extends baseNode
     inScope baseNode
    toNode
     extends blockNode
-    cells wordCell
+    cells keywordCell wordCell
     tags test
     compiler
      stringTemplate to {wordCell}

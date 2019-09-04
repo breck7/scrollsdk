@@ -14,10 +14,10 @@ class GrammarUpgrader extends jtree.Upgrader {
           const handle = (node: any, fct: string) => {
             if (!node.has("cells")) {
               node.appendLine(`cells ${fct}`)
-              node.delete(firstCellTypeKeyword)
             } else {
               node.set("cells", `${fct} ${node.get("cells")}`)
             }
+            node.delete(firstCellTypeKeyword)
           }
 
           const familyTreeIds = extTree._getFamilyTree().getTopDownArray()

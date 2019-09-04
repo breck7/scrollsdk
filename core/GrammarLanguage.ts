@@ -76,7 +76,6 @@ enum GrammarConstants {
   inScope = "inScope",
   cells = "cells",
   catchAllCellType = "catchAllCellType",
-  firstCellType = "firstCellType",
   catchAllNodeType = "catchAllNodeType",
   constants = "constants",
   required = "required", // Require this nodeType to be present in a node or program
@@ -1317,7 +1316,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.description,
       GrammarConstants.catchAllNodeType,
       GrammarConstants.catchAllCellType,
-      GrammarConstants.firstCellType,
       GrammarConstants.extensions,
       GrammarConstants.version,
       GrammarConstants.tags,

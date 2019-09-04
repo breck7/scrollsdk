@@ -19,7 +19,7 @@ dumbdownNode
    print("Hello world")
 abstractTopLevelNode
  abstract
- firstCellType keywordCell
+ cells keywordCell
 anyCell
 dashCell
  highlightScope constant.language
@@ -41,7 +41,7 @@ titleNode
  compiler
   stringTemplate <h1>{textCell}</h1>
 linkNode
- cells urlCell
+ cells keywordCell urlCell
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
@@ -59,7 +59,7 @@ subtitleNode
   stringTemplate <h2>{textCell}</h2>
 lineOfCodeNode
  catchAllCellType codeCell
- firstCellType codeCell
+ cells codeCell
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
@@ -79,6 +79,6 @@ listNode
 dashNode
  match -
  catchAllCellType textCell
- firstCellType dashCell
  compiler
   stringTemplate <li>{textCell}</li>
+ cells dashCell

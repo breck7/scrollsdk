@@ -23,22 +23,22 @@ abstractArithmeticReducerNode
     return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.numbersCell[0])
   }
   async execute() { return this.executeSync() }
- firstCellType operatorCell
  inScope abstractArithmeticReducerNode commentNode
  abstract
+ cells operatorCell
 commentNode
  match #
  description This is a line comment.
- firstCellType commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
+ cells commentCell
 simpleCommentNode
  match comment
  extends commentNode
 errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
- firstCellType errorCell
+ cells errorCell
 hashBangNode
  match #!
  extends commentNode

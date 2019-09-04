@@ -21,10 +21,10 @@ poopNode
   💩 630
 abstractEventNode
  abstract
- catchAllCellType firstCellTypeCell
- firstCellType timeIntCell
+ catchAllCellType someCellTypeCell
  compiler
   stringTemplate 2/2/2,3:33am,bm,notes
+ cells timeIntCell
 dateIntCell
  highlightScope constant.numeric.integer
 monthIntCell
@@ -35,7 +35,7 @@ dayIntCell
  extends dateIntCell
 timeIntCell
  highlightScope constant.numeric.integer
-firstCellTypeCell
+someCellTypeCell
  todo remove once we add omnifix
  highlightScope constant.numeric.integer
 anyCell

@@ -48,7 +48,6 @@ typeOfOptionCell
  highlightScope constant.language
  enum object boolean function number string undefined
 abstractAssertionNode
- firstCellType assertCell
  abstract
  javascript
   async execute(testSubject) {
@@ -107,9 +106,10 @@ abstractAssertionNode
     const final = methodParts.shift()
     return [context, final]
   }
+ cells assertCell
 terminalNode
- firstCellType arrangeCell
  abstract
+ cells arrangeCell
 testBlockNode
  catchAllCellType anyCell
  javascript
@@ -173,14 +173,13 @@ testBlockNode
   }
  inScope arrangeTestSubjectNode
  catchAllNodeType commandNode
- firstCellType controlCell
  abstract
+ cells controlCell
 hashbangNode
  match #!
  description Standard bash hashbang line.
- cells hashBangCell
+ cells hashBangCell hashBangCell
  catchAllCellType hashBangCell
- firstCellType hashBangCell
 arrangeTestSubjectNode
  javascript
   getTestSubject(programFilepath) {
@@ -206,8 +205,8 @@ arrangeTestSubjectNode
     return theClass
    }
   executeSync() {}
- firstCellType arrangeCell
  inScope asyncNode requireNode staticNode constructWithBlockStringNode todoNode
+ cells arrangeCell
 asyncNode
  description Set this in setup to test async methods.
  extends terminalNode
@@ -223,10 +222,10 @@ abstractCommandArgNode
  javascript
   executeSync() {}
 blockStringParamNode
- firstCellType parameterCell
  description Pass in a multiline string as a command arg. #todo: rename
  extends abstractCommandArgNode
  catchAllNodeType textBlockNode
+ cells parameterCell
 commandNode
  javascript
   getTestBlock() {
@@ -258,19 +257,19 @@ commandNode
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyCell
  catchAllNodeType commandNode
- firstCellType commandCell
  inScope blockStringParamNode abstractAssertionNode
+ cells commandCell
 constructWithBlockStringNode
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
  catchAllNodeType textBlockNode
- firstCellType arrangeCell
+ cells arrangeCell
 errorNode
  baseNodeType errorNode
 lengthIsNode
  description Intake is an array, and checks if the length of array matches expected.
- cells intCell
+ cells assertCell intCell
  javascript
   parseActual(actual) { return actual.length }
   printFailureMessage(actual) {
@@ -280,7 +279,7 @@ lengthIsNode
  extends abstractAssertionNode
 requireNode
  match require
- cells filepathCell
+ cells arrangeCell filepathCell
  catchAllCellType anyCell
  extends terminalNode
 staticNode
@@ -328,17 +327,17 @@ skipTestNode
   async execute() { console.log(`Skipped test ${this.getLine()}`) }
  extends testBlockNode
 textBlockNode
- firstCellType anyCell
  catchAllCellType anyCell
  catchAllNodeType textBlockNode
+ cells anyCell
 todoNode
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
  catchAllCellType todoCell
- firstCellType todoCell
  catchAllNodeType todoNode
+ cells todoCell
 typeIsNode
  description Assert result is one of Javascript's 6 typeof types.
- cells typeOfOptionCell
+ cells assertCell typeOfOptionCell
  javascript
   parseActual(actual) { return typeof actual }
  extends abstractAssertionNode

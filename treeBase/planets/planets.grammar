@@ -14,12 +14,10 @@ floatCell
 keywordCell
  highlightScope keyword
 abstractIntPropertyNode
- cells intCell
- firstCellType keywordCell
+ cells keywordCell intCell
  abstract
 abstractFloatPropertyNode
- cells floatCell
- firstCellType keywordCell
+ cells keywordCell floatCell
  abstract
 surfaceGravityNode
  extends abstractIntPropertyNode

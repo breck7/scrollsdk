@@ -1,5 +1,4 @@
 todo Explore best ways to add polymorphism
-todo Explore non-firstCell node type detection
 fireNode
  root
  description A useless Tree Language that compiles to Javascript for testing Tree Notation features.
@@ -57,16 +56,16 @@ stringCellsCell
  extends stringCell
 abstractNonTerminalNode
  inScope abstractTerminalNode abstractNonTerminalNode
- firstCellType keywordCell
  abstract
+ cells keywordCell
 abstractTerminalNode
- firstCellType keywordCell
  abstract
+ cells keywordCell
 abstractAssignmentNode
  extends abstractTerminalNode
  abstract
 abstractArithmeticNode
- cells identifierCell
+ cells keywordCell identifierCell
  catchAllCellType anyCell
  compiler
   stringTemplate const {identifierCell} = {anyCell}
@@ -87,9 +86,9 @@ hashbangNode
  match #!
  description Standard bash hashbang line.
  catchAllCellType hashBangCell
- firstCellType hashBangKeywordCell
  compiler
   stringTemplate // #! {hashBangCell}
+ cells hashBangKeywordCell
 errorNode
  baseNodeType errorNode
  compiler
@@ -121,7 +120,7 @@ addNode
  extends abstractArithmeticNode
 sumNode
  description Add numbers and store result
- cells numberIdentifierCell
+ cells keywordCell numberIdentifierCell
  catchAllCellType numberCell
  compiler
   stringTemplate const {numberIdentifierCell} = [{numberCell}].reduce((sum, num) => sum + num)
@@ -130,14 +129,14 @@ sumNode
  extends abstractAssignmentNode
 booleanNode
  description Boolean Assignment
- cells booleanIdentifierCell booleanCell
+ cells keywordCell booleanIdentifierCell booleanCell
  compiler
   stringTemplate const {booleanIdentifierCell} = {booleanCell}
  extends abstractAssignmentNode
 callFunctionAndSetNode
  description Function Call
  frequency .5
- cells resultIdentifierCell functionIdentifierCell
+ cells keywordCell resultIdentifierCell functionIdentifierCell
  catchAllCellType anyCell
  compiler
   stringTemplate const {resultIdentifierCell} = {functionIdentifierCell}({anyCell})
@@ -146,7 +145,7 @@ callFunctionAndSetNode
 callMethodAndSetNode
  description Method Call
  frequency .5
- cells resultIdentifierCell instanceIdentifierCell methodIdentifierCell
+ cells keywordCell resultIdentifierCell instanceIdentifierCell methodIdentifierCell
  catchAllCellType anyCell
  compiler
   stringTemplate const {resultIdentifierCell} = {instanceIdentifierCell}.{methodIdentifierCell}({anyCell})
@@ -154,7 +153,7 @@ callMethodAndSetNode
  extends abstractAssignmentNode
 joinNode
  description Join strings to form new string
- cells identifierCell
+ cells keywordCell identifierCell
  catchAllCellType identifiersCell
  compiler
   stringTemplate const {identifierCell} = [{identifiersCell}].join("")
@@ -163,20 +162,20 @@ joinNode
  extends abstractAssignmentNode
 mutableNumberNode
  description Mutable Number Assignment
- cells identifierCell numberCell
+ cells keywordCell identifierCell numberCell
  compiler
   stringTemplate let {identifierCell} = {numberCell}
  extends abstractAssignmentNode
 numberNode
  description Number Assignment
- cells identifierCell numberCell
+ cells keywordCell identifierCell numberCell
  compiler
   stringTemplate const {identifierCell} = {numberCell}
  frequency .3
  extends abstractAssignmentNode
 numbersNode
  description Number Array Assignment
- cells identifierCell
+ cells keywordCell identifierCell
  catchAllCellType numberCell
  frequency .4
  compiler
@@ -185,7 +184,7 @@ numbersNode
  extends abstractAssignmentNode
 stringNode
  description String Assignment
- cells stringIdentifierCell
+ cells keywordCell stringIdentifierCell
  catchAllCellType anyCell
  compiler
   stringTemplate const {stringIdentifierCell} = "{anyCell}"
@@ -197,28 +196,28 @@ leftAnyCell
  extends anyCell
 greaterThanNode
  description Greater than test
- cells identifierCell leftNumberCell numberCell
+ cells keywordCell identifierCell leftNumberCell numberCell
  compiler
   stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
  frequency .1
  extends abstractBooleanOperatorNode
 greaterThanOrEqualNode
  description Greater than or equal to test
- cells identifierCell leftNumberCell numberCell
+ cells keywordCell identifierCell leftNumberCell numberCell
  compiler
   stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
  frequency .1
  extends abstractBooleanOperatorNode
 lessThanNode
  description Less than test
- cells identifierCell leftAnyCell anyCell
+ cells keywordCell identifierCell leftAnyCell anyCell
  compiler
   stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
  frequency .1
  extends abstractBooleanOperatorNode
 lessThanOrEqualNode
  description Less than or equal to test
- cells identifierCell leftAnyCell anyCell
+ cells keywordCell identifierCell leftAnyCell anyCell
  compiler
   stringTemplate const {identifierCell} = {leftAnyCell} <= {anyCell}
  frequency .1
@@ -232,7 +231,7 @@ blockNode
 functionNode
  match function
  description Function Assignment
- cells functionIdentifierCell
+ cells keywordCell functionIdentifierCell
  catchAllCellType anyCell
  compiler
   stringTemplate const {functionIdentifierCell} = ({anyCell}) =>
@@ -242,7 +241,7 @@ functionNode
 ifNode
  match if
  description If tile
- cells identifierCell
+ cells keywordCell identifierCell
  frequency .2
  compiler
   stringTemplate if ({identifierCell})
@@ -250,7 +249,7 @@ ifNode
 whileNode
  match while
  description While tile
- cells identifierCell
+ cells keywordCell identifierCell
  frequency .1
  compiler
   stringTemplate while ({identifierCell})
@@ -258,7 +257,7 @@ whileNode
 callFunctionNode
  description Function call ignore result.
  frequency .1
- cells functionIdentifierCell
+ cells keywordCell functionIdentifierCell
  catchAllCellType anyCell
  compiler
   stringTemplate {functionIdentifierCell}({anyCell})
@@ -266,7 +265,7 @@ callFunctionNode
  extends abstractTerminalNode
 decrementNode
  description Decrement
- cells numberIdentifierCell
+ cells keywordCell numberIdentifierCell
  compiler
   stringTemplate {numberIdentifierCell}--
  frequency .1
@@ -282,7 +281,7 @@ dumpIdentifierNode
 exportNode
  match export
  description Export This
- cells identifierCell
+ cells keywordCell identifierCell
  compiler
   stringTemplate module.exports = {identifierCell}
  frequency .1
@@ -290,7 +289,7 @@ exportNode
 incrementNode
  description Increment
  frequency .3
- cells numberIdentifierCell
+ cells keywordCell numberIdentifierCell
  compiler
   stringTemplate {numberIdentifierCell}++
  extends abstractTerminalNode
@@ -308,14 +307,14 @@ printStringNode
 requireNode
  match require
  description Require Something
- cells identifierCell filepathCell
+ cells keywordCell identifierCell filepathCell
  compiler
   stringTemplate const {identifierCell} = require("{filepathCell}")
  frequency .1
  extends abstractTerminalNode
 returnNode
  match return
- cells anyCell
+ cells keywordCell anyCell
  compiler
   stringTemplate return {anyCell}
  frequency .1

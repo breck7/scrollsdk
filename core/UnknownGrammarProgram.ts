@@ -89,6 +89,21 @@ class UnknownGrammarProgram extends TreeNode {
     return nodeDefNode.getParent().toString()
   }
 
+  //  inferGrammarFileForAnSSVLanguage(grammarName: string): string {
+  //     grammarName = GrammarProgram.makeNodeTypeId(grammarName)
+  //    const rootNode = new TreeNode(`${grammarName}
+  // ${GrammarConstants.root}`)
+
+  //    // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
+  //    const rootNodeNames = this.getFirstWords().map(word => GrammarProgram.makeNodeTypeId(word))
+  //    rootNode
+  //      .nodeAt(0)
+  //      .touchNode(GrammarConstants.inScope)
+  //      .setWordsFrom(1, Array.from(new Set(rootNodeNames)))
+
+  //    return rootNode
+  //  }
+
   inferGrammarFileForAPrefixLanguage(grammarName: string): string {
     const clone = <UnknownGrammarProgram>this.clone()
     this._renameIntegerKeywords(clone)

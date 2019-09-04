@@ -2573,6 +2573,15 @@ class GrammarBackedNode extends TreeNode {
   _getErrorNodeErrors() {
     return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
   }
+  generateSimulatedData(nodeCount = 1) {
+    const lines = []
+    const cells = this._getGrammarBackedCellArray()
+    while (nodeCount > 0) {
+      lines.push(cells.map(cell => cell.generateSimulatedData()).join(" "))
+      nodeCount--
+    }
+    return lines.join("\n")
+  }
   _getBlobNodeCatchAllNodeType() {
     return BlobNode
   }
@@ -2998,6 +3007,9 @@ class GrammarIntCell extends AbstractGrammarBackedCell {
     if (isNaN(num)) return false
     return num.toString() === this._word
   }
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(2, "0123456789".split(""))
+  }
   getRegexString() {
     return "-?[0-9]+"
   }
@@ -3011,6 +3023,9 @@ class GrammarBitCell extends AbstractGrammarBackedCell {
     const str = this._word
     return str === "0" || str === "1"
   }
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(1, "01".split(""))
+  }
   getRegexString() {
     return "[01]"
   }
@@ -3022,6 +3037,9 @@ class GrammarFloatCell extends AbstractGrammarBackedCell {
   _isValid() {
     const num = parseFloat(this._word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(this._word)
+  }
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(2, "0123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
   }
   getRegexString() {
     return "-?d*(.d+)?"
@@ -3042,6 +3060,9 @@ class GrammarBoolCell extends AbstractGrammarBackedCell {
     const str = this._word.toLowerCase()
     return this._trues.has(str) || this._falses.has(str)
   }
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
+  }
   _getOptions() {
     return Array.from(this._trues).concat(Array.from(this._falses))
   }
@@ -3056,6 +3077,9 @@ class GrammarAnyCell extends AbstractGrammarBackedCell {
   _isValid() {
     return true
   }
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(10)
+  }
   getRegexString() {
     return "[^ ]+"
   }
@@ -3067,6 +3091,9 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell {
   _isValid() {
     return false
   }
+  generateSimulatedData() {
+    return ""
+  }
   getParsed() {
     return this._word
   }
@@ -3077,6 +3104,9 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell {
 class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
   _isValid() {
     return false
+  }
+  generateSimulatedData() {
+    return ""
   }
   getParsed() {
     return this._word
@@ -4359,6 +4389,18 @@ class UnknownGrammarProgram extends TreeNode {
     // Todo: add conditional frequencies
     return nodeDefNode.getParent().toString()
   }
+  //  inferGrammarFileForAnSSVLanguage(grammarName: string): string {
+  //     grammarName = GrammarProgram.makeNodeTypeId(grammarName)
+  //    const rootNode = new TreeNode(`${grammarName}
+  // ${GrammarConstants.root}`)
+  //    // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
+  //    const rootNodeNames = this.getFirstWords().map(word => GrammarProgram.makeNodeTypeId(word))
+  //    rootNode
+  //      .nodeAt(0)
+  //      .touchNode(GrammarConstants.inScope)
+  //      .setWordsFrom(1, Array.from(new Set(rootNodeNames)))
+  //    return rootNode
+  //  }
   inferGrammarFileForAPrefixLanguage(grammarName) {
     const clone = this.clone()
     this._renameIntegerKeywords(clone)

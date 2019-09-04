@@ -121,6 +121,16 @@ abstract class GrammarBackedNode extends TreeNode {
     return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
   }
 
+  generateSimulatedData(nodeCount = 1) {
+    const lines = []
+    const cells = this._getGrammarBackedCellArray()
+    while (nodeCount > 0) {
+      lines.push(cells.map(cell => cell.generateSimulatedData()).join(" "))
+      nodeCount--
+    }
+    return lines.join("\n")
+  }
+
   _getBlobNodeCatchAllNodeType() {
     return BlobNode
   }
@@ -617,6 +627,8 @@ abstract class AbstractGrammarBackedCell<T> {
     })
   }
 
+  abstract generateSimulatedData(): string
+
   getWord() {
     return this._word
   }
@@ -656,6 +668,10 @@ class GrammarIntCell extends AbstractGrammarBackedCell<number> {
     return num.toString() === this._word
   }
 
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(2, "0123456789".split(""))
+  }
+
   getRegexString() {
     return "\-?[0-9]+"
   }
@@ -673,6 +689,10 @@ class GrammarBitCell extends AbstractGrammarBackedCell<boolean> {
     return str === "0" || str === "1"
   }
 
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(1, "01".split(""))
+  }
+
   getRegexString() {
     return "[01]"
   }
@@ -686,6 +706,10 @@ class GrammarFloatCell extends AbstractGrammarBackedCell<number> {
   _isValid() {
     const num = parseFloat(this._word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(this._word)
+  }
+
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(2, "0123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
   }
 
   getRegexString() {
@@ -710,6 +734,10 @@ class GrammarBoolCell extends AbstractGrammarBackedCell<boolean> {
     return this._trues.has(str) || this._falses.has(str)
   }
 
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
+  }
+
   private _getOptions() {
     return Array.from(this._trues).concat(Array.from(this._falses))
   }
@@ -728,6 +756,10 @@ class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
     return true
   }
 
+  generateSimulatedData() {
+    return TreeUtils.getRandomString(10)
+  }
+
   getRegexString() {
     return "[^ ]+"
   }
@@ -742,6 +774,10 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
     return false
   }
 
+  generateSimulatedData() {
+    return ""
+  }
+
   getParsed() {
     return this._word
   }
@@ -754,6 +790,10 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
 class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
   _isValid() {
     return false
+  }
+
+  generateSimulatedData() {
+    return ""
   }
 
   getParsed() {

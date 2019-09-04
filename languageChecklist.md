@@ -2,10 +2,10 @@ A checklist for creating a new Tree Language from Scratch
 =========================================================
 
 - [ ] Know where to get help. [GitHub issues](https://github.com/treenotation/jtree/issues), [Tree Notation subreddit](https://reddit.com/r/treenotation), [Google Groups](mailto:treenotation@googlegroups.com), or [email Breck](mailto:breck7@gmail.com).
-- [ ] Take a look at some of the sample languages in the simple web [Tree Language builder](https://treenotation.org/designer/). You might be able to use these as a reference if you get stuck.
-- [ ] Open the [Tree Language builder](https://treenotation.org/designer/) or use your own editor (note: only [Sublime Text 3](https://www.sublimetext.com/) currently has syntax highlighting for Grammar Languages).
+- [ ] Take a look at some of the sample languages in the simple web [Tree Language builder](http://jtree.treenotation.org/designer/). You might be able to use these as a reference if you get stuck.
+- [ ] Open the [Tree Language builder](http://jtree.treenotation.org/designer/) or use your own editor (note: only [Sublime Text 3](https://www.sublimetext.com/) currently has syntax highlighting for Grammar Languages).
 - [ ] Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
-- [ ] If you are using the [Tree Language builder](https://treenotation.org/designer/), clear the boxes to create a new language from scratch.
+- [ ] If you are using the [Tree Language builder](http://jtree.treenotation.org/designer/), clear the boxes to create a new language from scratch.
 If you are using your own editor, create a new file with the name "{yourLanguageNameGoesHere}.grammar"
 - [ ] Create a root nodeType. This will be the root node for your language. It should like this:
 

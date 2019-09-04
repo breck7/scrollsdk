@@ -1,6 +1,6 @@
 # poop Readme
 
-[Try it now](https://treenotation.org/designer/#standard%20poop)
+[Try it now](http://jtree.treenotation.org/designer/#standard%20poop)
 
 POOP is the *Programming Option for Overtired Parents*. It is a Tree Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes.
 

@@ -7,21 +7,25 @@ Below is a list of questions that are commonly asked by people who are new to <a
 
 #### There are already over 10,000 programming languages and over 1,000 syntax systems like JSON, XML and BNF, why create another one?
 
-There is only 1 binary. Tree Notation is more like binary than it is like a programming language. Tree Notation is a basic building block that you can build higher level languages on top of.
+There is only 1 binary. Tree Notation is more like binary than it is like a programming language. Tree Notation is a basic building block that you can build higher level languages on top of. Tree Notation is an error-free base notation like binary.
 
-Tree Notation will have strong network effects. If Jane is building a Tree Language and tools for automating train schedules, and John is building a Tree Language and tools for doing cancer research, even though our 2 domains are very different, we can share a lot of the tools and code.
-
-Currently languages look like this:
+This is our current stack of computer languages:
 
 1 Binary => 1,000+ Syntaxes => 10,000+ languages
 
-In the future we think it may look like this:
+In the future we think the stack may look like this:
 
 1 Binary => 1 Tree Notation => 10,000+ Tree Languages
 
+We all use software tools to build software. Tree Notation makes building these tools significantly easier, and as more people join the Tree Notation ecosystem there will be significant network effects. If Jane is building a Tree Language and tools for automating train schedules, and John is building a Tree Language and tools for doing cancer research, even though our 2 domains are very different, we can share a lot of the tools and code.
+
 #### What's the difference between Tree Notation and Tree Languages?
 
-Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. We are building a Tree Language called [Grammar](https://treenotation.org/designer/#standard%20grammar) to make it easier to build Tree Languages.
+Tree Notation is a base level notation. Generally users use Tree Languages, which make Tree Notation useful. We are building a Tree Language called [Grammar](http://jtree.treenotation.org/designer/#standard%20grammar) to make it easier to build Tree Languages.
+
+#### What is special about Tree Notation?
+
+Tree Notation may seem similar to notations like JSON, XML, YAML or S-expressions. However, Tree Notation is the most minimal, is grounded in 3-dimensional geometry, and the concept of syntax errors does not exist. We think this makes Tree Notation substantially different and will cause a *major improvement* in computing. Tree Notation solves some major problems in computer science.
 
 #### What major problems in computer science does help Tree Notation solve?
 
@@ -31,9 +35,58 @@ Tree Notation is a base level notation. Generally users use Tree Languages, whic
 
 We are building the data science app [Ohayo](https://github.com/treenotation/ohayo) in part to demonstrate these 3 advantages of Tree Notation.
 
+#### What is a basic example of Tree Notation for file formats?
+
+Currently all Node.js npm projects contain a "package.json" file. While this is simple, it could be simpler using Tree Notation, and better. Let's take a look.
+
+package.json:
+
+    {
+      "name": "mypackage"
+      "version": "2.1.1"
+      "description": "A package",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/username/mypackage"
+      }
+    }
+
+package.npm:
+
+    name mypackage
+    version 2.1.1
+    description A package
+    repository
+     type git
+     url git://github.com/username/mypackage
+
+It may look like the only benefit is fewer syntax characters, but there's actually a lot more we can now do. Our "package.npm" grammar file gets typechecking, autocomplete, tailored syntax highlighting ([github highlighting coming soon](https://github.com/treenotation/jtree/issues/55)), can support multiline strings, strings without quotes that don't require escaping, comments, and more.
+
+Note: the JSON example above works correctly, but JSON and Tree Notation are not equivalent by default, since JSON does not support certain structures and Tree Notation does not implement all JSON types by default. If you want JSON features such as keys with spaces, numbers, or arrays, you'll need to use a higher level Tree Language such as [Dug](http://jtree.treenotation.org/designer/#standard%20dug) that has a 1-to-1 relationship to JSON.
+
+#### What is a basic example of Tree Notation for programming languages?
+
+In the example below, Tree Notation is used as a base for a math Tree Language where traditionally S-Expressions/Lisp might be used.
+
+make8.math:
+
+    multiply
+     add 1 1
+     add 2 2
+
+make8.lisp:
+
+    (* (+ 1 1) (+ 2 2))
+
+The second example contains 13 parts, whereas the first only has 7. There are also infinite ways to represent the second example, since the compiler ignores insignificant whitespace, whereas in the first there is only 1 way to represent that particular structure.
+
+#### What are some advanced examples of Tree Notation in action?
+
+Check out the [Ohayo](https://github.com/treenotation/ohayo) project or the [Tree Language Builder](http://jtree.treenotation.org/designer/).
+
 #### How can I build a new Tree Language?
 
-A good place to start is with our simple <a href="https://treenotation.org/designer/">Tree Language Builder</a>.
+A good place to start is with our simple <a href="http://jtree.treenotation.org/designer/">Tree Language Builder</a>.
 
 #### Where can I use Tree Notation?
 
@@ -41,13 +94,17 @@ Everywhere! Anywhere you use programming languages or encodings, you can use Tre
 
 #### What are some examples of Tree Languages?
 
-There are over a dozen <a href="https://github.com/treenotation/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="https://treenotation.org/designer/#standard%20stump">HTML</a>, a <a href="https://treenotation.org/designer/#standard%20project">language similar to Make</a>, and a <a href="https://treenotation.org/designer/#standard%20numbers">language that does simple math </a>.
+There are over a dozen <a href="https://github.com/treenotation/jtree/tree/master/langs">example languages</a> in the JTree GitHub repo. Here's a language that compiles to <a href="http://jtree.treenotation.org/designer/#standard%20stump">HTML</a>, a <a href="http://jtree.treenotation.org/designer/#standard%20project">language similar to Make</a>, and a <a href="http://jtree.treenotation.org/designer/#standard%20numbers">language that does simple math </a>.
 
 #### Languages that add numbers or compile to HTML are cute, but are there any advanced Tree Language?
 
-Currently the most advanced non-experimental Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="https://treenotation.org/designer/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
+Currently the most advanced non-experimental Tree Language that we are aware of is Flow, the dataflow language used by our visual data science studio <a href="https://ohayo.computer/">Ohayo</a>. By 2020, we expect Flow to be a competitive rival to Python or R for 80% of data science tasks. Another very powerful language is <a href="http://jtree.treenotation.org/designer/#standard%20grammar">Grammar</a>, which is similar to ANTLR or Racket in that it's a language for building languages. However, in 2020 the most powerful Tree Language could be yours! We are here to help you build it!
 
 ## Structure
+
+#### What is the difference between Tree Notation and Tree Languages?
+
+There is a very important distinction between *Tree Notation* and *Tree Languages*. Tree Notation is a simple dumb format for encoding Tree Data structures. Tree Languages give you higher level semantics. There is not a single general purpose "Tree Language", like you might expect if you come from the Racket or Lisp worlds. Instead, there are many independent general purpose "Tree Languages" with any semantics desired by the language designer(s).
 
 #### What are the data structures in Tree Notation?
 
@@ -61,7 +118,24 @@ This is the base Tree Notation:
       line: string
     }
 
+The Tree is *the* data structure in Tree Notation. Types like booleans, ints and vectors only exist at the higher level Tree Language level. The theory behind Tree Notation is that concepts like booleans, ints and vectors are just kinds of Trees.
+
 Higher level Tree Languages are where additional concepts can be added like strings, integers, booleans, control flow, assignment, encapsulation, functions, and so forth.
+
+#### What are the basic terms when talking about things written in Tree Notation?
+
+Example:
+
+    if true
+     print Hello world
+
+In Tree Notation, the units of measure are **words** and **nodes**. Each line is equal to one node. The example program above has 5 words and 2 nodes. In this language the nodeType is termined by the first words (if and print). Notice how the second line in the program above is indented by one space, this makes the print node a **child node** of the line above it, the if node.
+
+If you are familiar with Lisp terminology, you can think of words as atoms.
+
+Grammar files add the additional concept of **cells**, which can be thought of as placeholders and type information for words. Grammar files define new languages with **nodeTypes** and **cellTypes**. In the example language above, the word "true" would be in a boolean cell type.
+
+Here is a [longer spec](https://github.com/treenotation/jtree/blob/master/spec.txt).
 
 #### Does Tree Notation use tabs or spaces?
 

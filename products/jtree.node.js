@@ -2476,11 +2476,9 @@ class AbstractExtendibleTreeNode extends TreeNode {
   _getFamilyTree() {
     const tree = new TreeNode()
     this.forEach(node => {
-      const path = node
-        ._getAncestorsArray()
-        .map(node => node._getId())
-        .join(" ")
-      tree.touchNode(path)
+      const path = node._getAncestorsArray().map(node => node._getId())
+      path.reverse()
+      tree.touchNode(path.join(" "))
     })
     return tree
   }
@@ -2528,16 +2526,17 @@ class AbstractExtendibleTreeNode extends TreeNode {
 }
 class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   _getIdToNodeMap() {
+    if (!this.isRoot()) return this.getRootNode()._getIdToNodeMap()
     if (!this._nodeMapCache) {
       this._nodeMapCache = {}
       this.forEach(child => {
-        this._nodeMapCache[child.getWord(1)] = child
+        this._nodeMapCache[child._getId()] = child
       })
     }
     return this._nodeMapCache
   }
   _getId() {
-    return this.getWord(1)
+    return this.getWord(0)
   }
 }
 var GrammarConstantsCompiler
@@ -2604,7 +2603,6 @@ var GrammarConstants
   GrammarConstants["inScope"] = "inScope"
   GrammarConstants["cells"] = "cells"
   GrammarConstants["catchAllCellType"] = "catchAllCellType"
-  GrammarConstants["firstCellType"] = "firstCellType"
   GrammarConstants["catchAllNodeType"] = "catchAllNodeType"
   GrammarConstants["constants"] = "constants"
   GrammarConstants["required"] = "required"
@@ -3594,7 +3592,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.description,
       GrammarConstants.catchAllNodeType,
       GrammarConstants.catchAllCellType,
-      GrammarConstants.firstCellType,
       GrammarConstants.extensions,
       GrammarConstants.version,
       GrammarConstants.tags,

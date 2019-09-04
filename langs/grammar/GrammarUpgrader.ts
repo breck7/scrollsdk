@@ -8,7 +8,7 @@ class GrammarUpgrader extends jtree.Upgrader {
     return {
       "4.0.0": {
         "5.0.0": (tree: any) => {
-          const extTree = new jtree.ExtendibleTreeNode(tree)
+          const extTree = new jtree.ExtendibleTreeNode(tree.toString())
           const firstCellTypeKeyword = "firstCellType"
 
           const handle = (node: any, fct: string) => {

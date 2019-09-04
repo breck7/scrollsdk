@@ -3701,6 +3701,20 @@ c
     console.log = orig
   }
 
+  testTree.extendible = equal => {
+    // Arrange
+    const a = new jtree.ExtendibleTreeNode(`a
+ color red
+b
+ extends a`)
+    // Assert
+    equal(
+      a._getFamilyTree().toString(),
+      `a
+ b`
+    )
+  }
+
   testTree.isBlank = equal => {
     // Arrange
     const a = new TreeNode("text\n\ntest \ntest2  ")

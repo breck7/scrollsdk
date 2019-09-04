@@ -2464,11 +2464,9 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
   _getFamilyTree() {
     const tree = new TreeNode()
     this.forEach(node => {
-      const path = node
-        ._getAncestorsArray()
-        .map((node: AbstractExtendibleTreeNode) => node._getId())
-        .join(" ")
-      tree.touchNode(path)
+      const path = node._getAncestorsArray().map((node: AbstractExtendibleTreeNode) => node._getId())
+      path.reverse()
+      tree.touchNode(path.join(" "))
     })
     return tree
   }
@@ -2535,17 +2533,18 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   private _nodeMapCache: { [id: string]: AbstractExtendibleTreeNode }
   _getIdToNodeMap() {
+    if (!this.isRoot()) return (<AbstractExtendibleTreeNode>this.getRootNode())._getIdToNodeMap()
     if (!this._nodeMapCache) {
       this._nodeMapCache = {}
       this.forEach(child => {
-        this._nodeMapCache[child.getWord(1)] = child
+        this._nodeMapCache[child._getId()] = child
       })
     }
     return this._nodeMapCache
   }
 
   _getId() {
-    return this.getWord(1)
+    return this.getWord(0)
   }
 }
 

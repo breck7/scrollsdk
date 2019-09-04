@@ -1,14 +1,54 @@
 #!/usr/bin/env ts-node
 
-import jtree from "../../core/jtree.node"
+const { jtree } = require("../../index.js")
 
 class GrammarUpgrader extends jtree.Upgrader {
   private static _jtree34grammarProgram: any
   getUpgradeFromMap() {
     return {
+      "4.0.0": {
+        "5.0.0": (tree: any) => {
+          const extTree = new jtree.ExtendibleTreeNode(tree)
+          const firstCellTypeKeyword = "firstCellType"
+
+          const handle = (node: any, fct: string) => {
+            if (!node.has("cells")) {
+              node.appendLine(`cells ${fct}`)
+              node.delete(firstCellTypeKeyword)
+            } else {
+              node.set("cells", `${fct} ${node.get("cells")}`)
+            }
+          }
+
+          const familyTreeIds = extTree._getFamilyTree().getTopDownArray()
+          familyTreeIds.reverse()
+          familyTreeIds.forEach((idNode: any) => {
+            const id = idNode.getLine()
+            const node = extTree.getNode(id)
+            if (!node) return 1
+            if (node.has(firstCellTypeKeyword)) {
+              handle(node, node.get(firstCellTypeKeyword))
+            } else {
+              const nodeWithFct = node._getNodeFromExtended(firstCellTypeKeyword)
+              if (nodeWithFct) {
+                handle(node, nodeWithFct.get(firstCellTypeKeyword))
+              } else {
+                // done
+              }
+            }
+          })
+
+          extTree.forEach((node: any) => {
+            const fct = node.get(firstCellTypeKeyword)
+            if (fct) handle(node, fct)
+          })
+
+          return extTree
+        }
+      },
       "3.0.0": {
-        "4.0.0": tree => {
-          const makeNewId = (currentId, suffix) => currentId.replace(new RegExp(suffix + "$"), "") + suffix
+        "4.0.0": (tree: any) => {
+          const makeNewId = (currentId: string, suffix: string) => currentId.replace(new RegExp(suffix + "$"), "") + suffix
           // todo: require jtree 34 to do this upgrade.
           if (!GrammarUpgrader._jtree34grammarProgram)
             GrammarUpgrader._jtree34grammarProgram = new jtree.GrammarProgram(jtree.TreeNode.fromDisk(__dirname + "/grammar.grammar")).getRootConstructor()
@@ -21,11 +61,11 @@ class GrammarUpgrader extends jtree.Upgrader {
           //const grammarProgram = new jtree.GrammarProgram(grammarCode)
           //const rootProgramConstructor = grammarProgram.getRootConstructor()
           const program = new GrammarUpgrader._jtree34grammarProgram(tree.toString())
-          program.getAllTypedWords().forEach(typedWord => {
+          program.getAllTypedWords().forEach((typedWord: any) => {
             if (typedWord.type === "nodeTypeId") typedWord.replace(makeNewId(typedWord.word, "Node"))
             if (typedWord.type === "cellTypeId") typedWord.replace(makeNewId(typedWord.word, "Cell"))
           })
-          const removeTypeWord = node => node.setLine(node.getWord(1))
+          const removeTypeWord = (node: any) => node.setLine(node.getWord(1))
 
           program.findNodes("nodeType").forEach(removeTypeWord)
           program.findNodes("cellType").forEach(removeTypeWord)
@@ -36,36 +76,36 @@ class GrammarUpgrader extends jtree.Upgrader {
         }
       },
       "2.0.0": {
-        "3.0.0": tree => {
+        "3.0.0": (tree: any) => {
           // Nest abstract nodes
-          tree.findNodes("abstract").forEach(node => {
+          tree.findNodes("abstract").forEach((node: any) => {
             node.appendLine("abstract")
             node.setWord(0, "nodeType")
           })
 
           // Expand out and remove group nodes
-          tree.findNodes("nodeType").forEach(node => {
+          tree.findNodes("nodeType").forEach((node: any) => {
             const groupNode = node.getNode("group")
             if (groupNode) {
               const parentNodeId = node.getWord(1)
-              groupNode.getWordsFrom(1).forEach(groupWord => {
+              groupNode.getWordsFrom(1).forEach((groupWord: string) => {
                 tree.appendLineAndChildren(`nodeType ${groupWord}`, `extends ${parentNodeId}`)
               })
               groupNode.destroy()
             }
           })
 
-          const getCleanId = id => {
+          const getCleanId = (id: string) => {
             let javascriptSyntaxSafeId = id
-            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, letter => letter[1].toUpperCase())
-            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\_.)/g, letter => letter[1].toUpperCase())
-            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\-.)/g, letter => letter[1].toUpperCase())
+            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\..)/g, (letter: string) => letter[1].toUpperCase())
+            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\_.)/g, (letter: string) => letter[1].toUpperCase())
+            javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/(\-.)/g, (letter: string) => letter[1].toUpperCase())
             javascriptSyntaxSafeId = javascriptSyntaxSafeId.replace(/\?/g, "")
             return javascriptSyntaxSafeId
           }
 
           // Attempt to rename nodeTypeIds that are no longer valid, moving the original to a match subnode
-          tree.findNodes("nodeType").forEach(node => {
+          tree.findNodes("nodeType").forEach((node: any) => {
             const id = node.getWord(1)
             if (id.match(/[\_\.\-\?]/)) {
               if (!node.has("abstract")) node.appendLine(`match ${id}`)
@@ -74,7 +114,7 @@ class GrammarUpgrader extends jtree.Upgrader {
           })
 
           // Rename any other nodeTypes
-          tree.findNodes("nodeType extends").forEach(node => {
+          tree.findNodes("nodeType extends").forEach((node: any) => {
             const id = node.getWord(1)
             if (id.match(/[\_\.\-\?]/)) {
               node.setWord(1, getCleanId(id))
@@ -84,8 +124,8 @@ class GrammarUpgrader extends jtree.Upgrader {
         }
       },
       "1.2.0": {
-        "2.0.0": tree => {
-          const moveExtend = node => {
+        "2.0.0": (tree: any) => {
+          const moveExtend = (node: any) => {
             const extendsId = node.getWord(2)
             if (extendsId) {
               node.appendLine(`extends ` + extendsId)
@@ -99,10 +139,10 @@ class GrammarUpgrader extends jtree.Upgrader {
         }
       },
       "1.1.0": {
-        "1.2.0": tree => {
+        "1.2.0": (tree: any) => {
           // update nodeTypes
           // todo: need to preserve history of grammars to have celltype safe upgrades.
-          tree.forEach(node => {
+          tree.forEach((node: any) => {
             const types = node.getNode("nodeTypes")
             if (types) {
               types.setFirstWord("inScope")
@@ -113,10 +153,10 @@ class GrammarUpgrader extends jtree.Upgrader {
 
           // todo: blob to baseNodeType blob, constructors js errorNode
           // update constants
-          tree.forEach(node => {
+          tree.forEach((node: any) => {
             const constants = node.getNode("constants")
             if (constants) {
-              constants.forEach(constant => {
+              constants.forEach((constant: any) => {
                 const words = constant.getWords()
                 // todo: words[1] was not cell checked before, so this may surface errors.
                 if (!constant.length) node.appendLine(`${words[1]} ${words[0]} ${words.slice(2).join(" ")}`)
@@ -135,5 +175,8 @@ class GrammarUpgrader extends jtree.Upgrader {
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent)
-  new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "3.0.0", "4.0.0").forEach(item => console.log(item.path, item.tree.toString()))
-module.exports = GrammarUpgrader
+  new GrammarUpgrader()
+    .upgradeManyInPlace([__dirname + "/../*/*.grammar"], "4.0.0", "5.0.0")
+    .forEach((item: any) => console.log(item.path, item.tree.toString()))
+
+export { GrammarUpgrader }

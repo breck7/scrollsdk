@@ -105,6 +105,7 @@ Our focus with TreeBase is on collaborative knowledge bases, like Wikipedia for 
 Similar Projects
 ----------------
 
+- [Outline](https://github.com/outline/outline)
 - [Forest 1.0](https://www.cs.princeton.edu/research/techreps/TR-904-11)
 - [Semantic Wikis](https://en.wikipedia.org/wiki/Semantic_wiki)
 

@@ -1,3 +1,5 @@
+// jtree build produce SweeperCraft.browser.js
+
 const { AbstractTreeComponentRootNode, AbstractTreeComponent, WillowConstants, AbstractCommander } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
 
@@ -679,7 +681,6 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
 .logo
  color #333
 #shortcuts
- display none
  table
   margin-top 15px
  td

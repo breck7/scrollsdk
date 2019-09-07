@@ -3,7 +3,7 @@ const fs = require("fs")
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 class Disk {
-  static getTreeNode = () => require("../products/jtree.node.js").TreeNode // todo: cleanup
+  static getTreeNode = () => require("../index.js").jtree.TreeNode // todo: cleanup
   static rm = (path: treeNotationTypes.filepath) => fs.unlinkSync(path)
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
   static makeExecutable = (path: treeNotationTypes.filepath) => fs.chmodSync(path, 0o755)

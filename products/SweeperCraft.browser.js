@@ -1,3 +1,4 @@
+// jtree build produce SweeperCraft.browser.js
 class SweeperCraftGame {
   constructor(board, renderFn) {
     this._setBoard(board)
@@ -537,7 +538,6 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
 .logo
  color #333
 #shortcuts
- display none
  table
   margin-top 15px
  td

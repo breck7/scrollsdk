@@ -1,3 +1,8 @@
+Edge / 2019-09-07
+===================
+- Fix: bug fix in Disk
+- Fix: added GitHub link and show keyboard shortcuts by default in SweeperCraft
+
 40.0.0 / 2019-09-03
 ===================
 - Breaking: removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Tree Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.

@@ -3,7 +3,8 @@
 const { jtree } = require("../index.js")
 
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
-const fs = require("fs")
+
+const { Disk } = require("../products/Disk.node.js")
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -93,7 +94,7 @@ testTree.jibberish = equal => {
 testTree.numbers = equal => {
   // Arrange
   const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"
-  const numbersGrammarCode = fs.readFileSync(numbersGrammarPath, "utf8")
+  const numbersGrammarCode = Disk.read(numbersGrammarPath)
   const makeNumbersRunTimeProgram = (code: string) => makeProgram(numbersGrammarCode, code)
   try {
     const tempFilePath = jtree.compileGrammarForNodeJs(numbersGrammarPath, outputDir, false)

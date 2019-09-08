@@ -4,7 +4,8 @@ const { jtree } = require("../index.js")
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const TreeNode = jtree.TreeNode
-const fs = require("fs")
+
+const { Disk } = require("../products/Disk.node.js")
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -21,21 +22,21 @@ testTree.diskTests = equal => {
   const path = __dirname + `/temp-disk.csv`
 
   // Assert
-  equal(fs.existsSync(path), false, "file does not exist")
+  equal(Disk.exists(path), false, "file does not exist")
 
   // Arrange
   const node = TreeNode.fromCsv(TreeNode.iris)
   node.toDisk(path)
 
   // Act/Assert
-  equal(fs.existsSync(path), true, "file exists")
+  equal(Disk.exists(path), true, "file exists")
   equal(TreeNode.fromDisk(path).toString(), node.toString(), "tree unchanged")
 
   // Cleanup
-  fs.unlinkSync(path)
+  Disk.rm(path)
 
   // Assert
-  equal(fs.existsSync(path), false, "file does not exist")
+  equal(Disk.exists(path), false, "file does not exist")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)

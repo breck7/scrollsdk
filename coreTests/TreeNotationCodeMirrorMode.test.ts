@@ -2,12 +2,23 @@
 
 // todo: make isomorphic
 
-const fs = require("fs")
 const stamp = require("../langs/stamp/stamp.node.js")
+const { Disk } = require("../products/Disk.node.js")
 
 const { jtree } = require("../index.js")
 
-const GrammarProgram = require("../index.js").jtree.getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
+const irisPath = __dirname + "/../langs/iris/iris.grammar"
+const irisGrammar = Disk.read(irisPath)
+
+const GrammarProgram = jtree.getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
+
+const makeProgram = (grammarCode: string, code: string) => {
+  const grammarProgram = new jtree.GrammarProgram(grammarCode)
+  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  return new rootProgramConstructor(code)
+}
+
+const makeIrisProgram = (code: string) => makeProgram(irisGrammar, code)
 
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
@@ -99,6 +110,23 @@ testTree.codeMirrorTest = equal => {
   equal(tokenLines.join(" "), `def bracket atom bracket atom`)
 }
 
+testTree.iris = equal => {
+  const irisConstructor = new jtree.GrammarProgram(irisGrammar).getRootConstructor()
+  const goodCode = `6.1 3 4.9 2 virginica`
+  const codeWithMissingCell = `6.1 3 4.9  virginica`
+  // Act
+  const tokenLines = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("irisNode", () => irisConstructor, () => goodCode)).getTokenLines(goodCode)
+  // Assert
+  equal(tokenLines.join(" "), `number bracket number bracket number bracket number bracket atom`)
+
+  // Act
+  const tokenLines2 = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("irisNode", () => irisConstructor, () => codeWithMissingCell)).getTokenLines(
+    codeWithMissingCell
+  )
+  // Assert
+  equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
+}
+
 testTree.codeMirrorTest2 = equal => {
   const code = `testNode
  root
@@ -112,7 +140,7 @@ foobarNode`
 }
 
 testTree.regressionTest = equal => {
-  const code = fs.readFileSync(__dirname + "/TreeNotationCoreMirrorMode.regression.stamp", "utf8")
+  const code = Disk.read(__dirname + "/TreeNotationCoreMirrorMode.regression.stamp")
 
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stampNode", () => stamp, () => code))
   const tokenLines = mock.getTokenLines(code)

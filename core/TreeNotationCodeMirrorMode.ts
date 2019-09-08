@@ -341,6 +341,10 @@ class TreeNotationCodeMirrorMode {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
+        if (peek === " ") {
+          // If we are missing a cell.
+          state.cellIndex++
+        }
         return "bracket"
       }
       if (peek === " ") {

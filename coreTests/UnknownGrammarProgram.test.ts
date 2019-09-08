@@ -2,7 +2,8 @@
 
 // todo: make isomorphic
 
-import { readFileSync } from "fs"
+const { Disk } = require("../products/Disk.node.js")
+
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 import { UnknownGrammarProgram } from "../core/UnknownGrammarProgram"
 const { jtree } = require("../index.js")
@@ -41,7 +42,7 @@ file test
   const grammarFile = new UnknownGrammarProgram(input).inferGrammarFileForAKeywordLanguage("foobar")
 
   // Assert
-  equal(grammarFile, readFileSync(__dirname + "/UnknownGrammar.expected.grammar", "utf8"), "predicted grammar correct")
+  equal(grammarFile, Disk.read(__dirname + "/UnknownGrammar.expected.grammar"), "predicted grammar correct")
 }
 
 testTree.emojis = equal => {
@@ -54,7 +55,7 @@ testTree.emojis = equal => {
   // Act
   const grammarFile = new UnknownGrammarProgram(source).inferGrammarFileForAKeywordLanguage("emojiLang")
   // Assert
-  equal(grammarFile, readFileSync(__dirname + "/UnknownGrammar.expectedEmoji.grammar", "utf8"), "predicted grammar correct")
+  equal(grammarFile, Disk.read(__dirname + "/UnknownGrammar.expectedEmoji.grammar"), "predicted grammar correct")
 }
 
 testTree._inferAll = equal => {

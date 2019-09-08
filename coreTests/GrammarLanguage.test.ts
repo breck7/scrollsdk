@@ -2,19 +2,22 @@
 
 // todo: make isomorphic
 
-import { readFileSync } from "fs"
 const { jtree } = require("../index.js")
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+
+const { Disk } = require("../products/Disk.node.js")
 
 const GrammarProgram = jtree.GrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
 const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
-const numbersGrammar = readFileSync(numbersPath, "utf8")
+const numbersGrammar = Disk.read(numbersPath)
+const irisPath = __dirname + "/../langs/iris/iris.grammar"
+const irisGrammar = Disk.read(irisPath)
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
-const grammarGrammar = readFileSync(grammarGrammarPath, "utf8")
+const grammarGrammar = Disk.read(grammarGrammarPath)
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
-const jibberishGrammarCode = readFileSync(jibberishGrammarPath, "utf8")
+const jibberishGrammarCode = Disk.read(jibberishGrammarPath)
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -41,9 +44,11 @@ testTree.grammarLangBasics = equal => {
 const makeGrammarProgram = (code: string) => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = (code: string) => {
-  const grammarCode = readFileSync(jibberishGrammarPath, "utf8")
+  const grammarCode = Disk.read(jibberishGrammarPath)
   return makeProgram(grammarCode, code)
 }
+
+const makeIrisProgram = (code: string) => makeProgram(irisGrammar, code)
 
 const makeNumbersProgram = (code: string) => makeProgram(numbersGrammar, code)
 
@@ -55,7 +60,7 @@ const makeProgram = (grammarCode: string, code: string) => {
 
 testTree.jibberish = equal => {
   // Arrange
-  const sampleJibberishCode = readFileSync(jibberishRootDir + "sample.jibberish", "utf8")
+  const sampleJibberishCode = Disk.read(jibberishRootDir + "sample.jibberish")
 
   // Act
   const program = makeJibberishProgram(sampleJibberishCode)
@@ -137,6 +142,14 @@ missing2 true`)
       .join(" "),
     "h1Node abstractHtmlNode topLevelNode"
   )
+}
+
+testTree.iris = equal => {
+  // Arrange
+  const programWithBugs = makeIrisProgram(`6.1 3 4.9  virginica`)
+
+  // Act/Assert
+  equal(programWithBugs.getInPlaceCellTypeTree(), `sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell`)
 }
 
 testTree.jibberishErrors = equal => {

@@ -12,8 +12,6 @@ const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
 const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
 const numbersGrammar = Disk.read(numbersPath)
-const irisPath = __dirname + "/../langs/iris/iris.grammar"
-const irisGrammar = Disk.read(irisPath)
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = Disk.read(grammarGrammarPath)
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
@@ -48,7 +46,7 @@ const makeJibberishProgram = (code: string) => {
   return makeProgram(grammarCode, code)
 }
 
-const makeIrisProgram = (code: string) => makeProgram(irisGrammar, code)
+const makeIrisProgram = (code: string) => makeProgram(Disk.read(__dirname + "/../langs/iris/iris.grammar"), code)
 
 const makeNumbersProgram = (code: string) => makeProgram(numbersGrammar, code)
 
@@ -144,6 +142,22 @@ missing2 true`)
   )
 }
 
+// tidsable for now
+// testTree.simTests = equal => {
+//   ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "config", "poop", "jibjab", "fire", "stamp", "zin", "newlang"].forEach(lang => {
+//     const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
+//     const grammarProgram = new jtree.GrammarProgram(grammarCode)
+//     const programConstructor = grammarProgram.getRootConstructor()
+
+//     // Act
+//     const simulatedProgram = grammarProgram._getRootNodeTypeDefinitionNode().generateSimulatedData()
+
+//     // Assert
+//     console.log(simulatedProgram)
+//     equal(new programConstructor(simulatedProgram.join("\n")).getAllErrors().length, 0, `should be no errors in simulated ${lang} program`)
+//   })
+// }
+
 testTree.iris = equal => {
   // Arrange
   const programWithBugs = makeIrisProgram(`6.1 3 4.9  virginica`)
@@ -202,6 +216,16 @@ plusNode opSymbolCell intCell intCell intCell`,
     `fooNode foo
 plusNode + 2 3 2`,
     "treeWithNodeTypes word types should match"
+  )
+}
+
+testTree.preludeTypes = equal => {
+  // Act/Assert
+  equal(
+    makeNumbersProgram(`+ 2`)
+      .nodeAt(0)
+      .getLineCellPreludeTypes(),
+    `anyCell floatCell`
   )
 }
 

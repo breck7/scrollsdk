@@ -10,6 +10,7 @@ stumpNode
  javascript
   compile() { return this.toHtml() }
 anyCell
+keywordCell
 extraCell
  highlightScope invalid
 anyHtmlContentCell
@@ -18,8 +19,10 @@ attributeValueCell
  highlightScope constant.language
 htmlTagNameCell
  highlightScope variable.function
+ extends keywordCell
 htmlAttributeNameCell
  highlightScope entity.name.type
+ extends keywordCell
 contentHolderNameCell
  highlightScope keyword
 abstractHtmlTagNode

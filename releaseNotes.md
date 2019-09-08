@@ -1,3 +1,9 @@
+Edge / 2019-09-08
+===================
+- New: getInPlacePreludeCellTypeTreeWithNodeConstructorNames
+- New: generateSimulatedData
+- New: designer app - simulate data and explain roots buttons
+
 40.1.0 / 2019-09-08
 ===================
 - Fix: missing words now trigger "MissingWord" error instead of "InvalidWord"

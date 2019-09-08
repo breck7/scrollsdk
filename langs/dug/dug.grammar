@@ -11,7 +11,7 @@ dugNode
     return JSON.stringify(JSON.parse(res), null, 2)
   }
 anyCell
-typeNameCell
+keywordCell
  highlightScope keyword
 stringCell
  highlightScope string
@@ -21,7 +21,7 @@ booleanCell
 numberCell
  highlightScope constant.numeric
 valueNode
- cells typeNameCell
+ cells keywordCell
 nullNode
  compiler
   stringTemplate null
@@ -30,7 +30,7 @@ nullNode
 numberNode
  match number
  extends valueNode
- cells typeNameCell numberCell
+ cells keywordCell numberCell
  compiler
   stringTemplate {numberCell}
 stringNode
@@ -42,7 +42,7 @@ stringNode
 booleanNode
  match boolean
  extends valueNode
- cells typeNameCell booleanCell
+ cells keywordCell booleanCell
  compiler
   stringTemplate {booleanCell}
 memberNode

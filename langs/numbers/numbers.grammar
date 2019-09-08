@@ -6,6 +6,10 @@ numbersNode
 floatCell
 commentCell
  highlightScope comment
+keywordCell
+commentKeywordCell
+ extends keywordCell
+ highlightScope comment
 errorCell
  highlightScope invalid
 numberCell
@@ -31,7 +35,7 @@ commentNode
  description This is a line comment.
  catchAllCellType commentCell
  catchAllNodeType commentNode
- cells commentCell
+ cells commentKeywordCell
 simpleCommentNode
  match comment
  extends commentNode

@@ -23,6 +23,10 @@ hakonNode
     color blue
     font-size 17px
 anyCell
+keywordCell
+commentKeywordCell
+ extends keywordCell
+ highlightScope comment
 extraCell
  highlightScope invalid
 cssValueCell
@@ -31,6 +35,7 @@ selectorCell
  highlightScope keyword.control
 propertyKeywordCell
  highlightScope variable.function
+ extends keywordCell
 errorCell
  highlightScope invalid
 abstractPropertyNode

@@ -11,6 +11,7 @@ class DesignerApp {
     this._execResultsTextArea = jQuery("#execResultsTextArea")
     this._compileButton = jQuery("#compileButton")
     this._explainButton = jQuery("#explainButton")
+    this._explainRootsButton = jQuery("#explainRootsButton")
     this._downloadButton = jQuery("#downloadButton")
     this._samplesButtons = jQuery("#samplesButtons")
     this._otherErrorsDiv = jQuery("#otherErrorsDiv")
@@ -50,7 +51,7 @@ class DesignerApp {
   }
   _onGrammarKeyup() {
     this._grammarDidUpdate()
-    this._codeDidUpdate()
+    this._onCodeKeyUp()
     // Hack to break CM cache:
     if (true) {
       const val = this.codeInstance.getValue()
@@ -72,7 +73,7 @@ class DesignerApp {
     this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
       .register()
       .fromTextAreaWithAutocomplete(this._codeConsole[0], { lineWrapping: true })
-    this.codeInstance.on("keyup", () => this._codeDidUpdate())
+    this.codeInstance.on("keyup", () => this._onCodeKeyUp())
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
@@ -89,16 +90,19 @@ class DesignerApp {
     this._execResultsTextArea.val("")
   }
   _bindListeners() {
+    const that = this
     this._execButton.on("click", () => {
       this._setProgramResults(this.program ? this.program.executeSync() : "Program failed to execute")
     })
     this._compileButton.on("click", () => {
       this._setProgramResults(this.program ? this.program.compile() : "Program failed to execute")
     })
+    this._explainRootsButton.on("click", () => {
+      this._setProgramResults(this.program ? this.program.getInPlacePreludeCellTypeTreeWithNodeConstructorNames() : "Program failed to parse")
+    })
     this._explainButton.on("click", () => {
       this._setProgramResults(this.program ? this.program.getInPlaceCellTypeTreeWithNodeConstructorNames() : "Program failed to parse")
     })
-    const that = this
     this._samplesButtons.on("click", "a", function() {
       if (jQuery(this).hasClass("resetButton")) {
         that.resetCommand()
@@ -118,7 +122,13 @@ class DesignerApp {
     })
     this._simulateDataButton.on("click", () => {
       const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
-      this.codeInstance.setValue(grammarProgram.generateSimulatedData())
+      this.codeInstance.setValue(
+        grammarProgram
+          ._getRootNodeTypeDefinitionNode()
+          .generateSimulatedData()
+          .join("\n")
+      )
+      this._onCodeKeyUp()
     })
     this._downloadButton.on("click", () => this._downloadBundleCommand())
   }
@@ -189,7 +199,7 @@ class DesignerApp {
     tree.appendLineAndChildren("sample", this.codeInstance.getValue())
     return "#" + encodeURIComponent(tree.toString())
   }
-  _codeDidUpdate() {
+  _onCodeKeyUp() {
     const code = this.codeInstance.getValue()
     this._updateLocalStorage()
     const programConstructor = this._getGrammarConstructor()
@@ -208,7 +218,7 @@ class DesignerApp {
         .forEach(err => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
             this.codeInstance.setValue(this.program.toString())
-            this._codeDidUpdate()
+            this._onCodeKeyUp()
           })
           this.codeWidgets.push(this.codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
         })
@@ -222,7 +232,7 @@ class DesignerApp {
     this.codeInstance.setValue(code)
     this._clearHash()
     this._grammarDidUpdate()
-    this._codeDidUpdate()
+    this._onCodeKeyUp()
     this._clearResults()
   }
   async _fetchJTreeStandardGrammar(name) {

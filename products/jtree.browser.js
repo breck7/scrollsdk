@@ -2479,7 +2479,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "40.0.0"
+TreeNode.getVersion = () => "40.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3074,7 +3074,7 @@ class AbstractGrammarBackedCell {
   getErrorIfAny() {
     if (this._word !== undefined && this.isValid()) return undefined
     // todo: refactor invalidwordError. We want better error messages.
-    return this._word === undefined ? new MissingWordError(this) : new InvalidWordError(this)
+    return this._word === undefined || this._word === "" ? new MissingWordError(this) : new InvalidWordError(this)
   }
 }
 AbstractGrammarBackedCell.parserFunctionName = ""

@@ -1,5 +1,7 @@
-Edge / 2019-09-07
+40.1.0 / 2019-09-08
 ===================
+- Fix: missing words now trigger "MissingWord" error instead of "InvalidWord"
+- Fix: fixed bug in codemirror where a missing word would break syntax highlighting of remaining words
 - Fix: bug fix in Disk
 - Fix: added GitHub link and show keyboard shortcuts by default in SweeperCraft
 

@@ -1,7 +1,7 @@
 todo Explore best ways to add polymorphism
 fireNode
  root
- description A useless Tree Language that compiles to Javascript for testing Tree Notation features.
+ description A useless prefix Tree Language that compiles to Javascript for testing Tree Notation features.
  compilesTo js
  inScope hashbangNode abstractTerminalNode abstractNonTerminalNode
  catchAllNodeType errorNode

@@ -1,6 +1,6 @@
 stumpNode
  root
- description A Tree Language that compiles to HTML.
+ description A prefix Tree Language that compiles to HTML.
  catchAllNodeType errorNode
  inScope abstractHtmlTagNode
  example

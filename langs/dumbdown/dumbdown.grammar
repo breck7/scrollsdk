@@ -1,6 +1,6 @@
 dumbdownNode
  extensions dd dumbdown
- description A Tree Language that compiles to HTML. An alternative to Markdown.
+ description A prefix Tree Language that compiles to HTML. An alternative to Markdown.
  root
  inScope abstractTopLevelNode
  catchAllNodeType blankLineNode

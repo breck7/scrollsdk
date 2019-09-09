@@ -1,7 +1,7 @@
 todo File permissions
 stampNode
  root
- description A Tree Language for creating distributable text template files that expand to folders and files.
+ description A prefix Tree Language for creating distributable text template files that expand to folders and files.
  catchAllNodeType errorNode
  javascript
   async executeSeries(context) {

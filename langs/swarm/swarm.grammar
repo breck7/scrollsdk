@@ -3,7 +3,7 @@ todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
 swarmNode
  root
- description A Tree Language for unit testing.
+ description A prefix Tree Language for unit testing.
  inScope hashbangNode arrangeTestSubjectNode testBlockNode
  catchAllNodeType errorNode
  javascript

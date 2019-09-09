@@ -1,7 +1,7 @@
 projectNode
  root
  version 2.0.0
- description A Tree Language for project dependency management in Javascript and Typescript.
+ description A prefix Tree Language for project dependency management in Javascript and Typescript.
  javascript
   getScriptPathsInCorrectDependencyOrder() {
     const cloned = this.clone()

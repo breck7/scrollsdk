@@ -2,7 +2,7 @@ todo Add swarm tests for top scenarios, including the scalar at root level scena
 todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 dugNode
  root
- description A demonstration language that compiles to JSON.
+ description A demonstration prefix Tree Language that compiles to JSON.
  inScope valueNode
  catchAllNodeType errorNode
  javascript

@@ -1,6 +1,6 @@
 newlangNode
  root
- description This is the basic root node for your new language!
+ description This is the basic root node for your new prefix Tree Language.
  catchAllNodeType catchAllErrorNode
  inScope helloNode
 nameCell

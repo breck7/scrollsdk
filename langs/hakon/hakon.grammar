@@ -1,7 +1,7 @@
 hakonNode
  root
  todo Add variables?
- description A Tree Language that compiles to CSS
+ description A prefix Tree Language that compiles to CSS
  compilesTo css
  inScope commentNode
  catchAllNodeType selectorNode

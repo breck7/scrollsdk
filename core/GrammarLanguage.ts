@@ -756,7 +756,7 @@ class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
   }
 
   _generateSimulatedDataForCell() {
-    return TreeUtils.getRandomString(1, "two roads diverged in a yellow wood".split(" "))
+    return this._nodeTypeDefinition._getKeywordIfAny()
   }
 
   getRegexString() {
@@ -772,7 +772,7 @@ class GrammarKeywordCell extends GrammarAnyCell {
   static defaultHighlightScope = "keyword"
 
   _generateSimulatedDataForCell() {
-    return this._nodeTypeDefinition._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this._nodeTypeDefinition._getKeywordIfAny()
   }
 }
 
@@ -1373,6 +1373,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return obj
   }
 
+  _getKeywordIfAny(): string {
+    const matchKeyword = this.get(GrammarConstants.match)
+    return matchKeyword || this._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+  }
+
   _getUniqueConstantNodes(extended = true) {
     const obj: { [key: string]: GrammarNodeTypeConstant } = {}
     const items = extended ? this._getChildrenByNodeConstructorInExtended(GrammarNodeTypeConstant) : this.getChildrenByNodeConstructor(GrammarNodeTypeConstant)
@@ -1402,6 +1407,14 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
   _isAbstract() {
     return this.has(GrammarConstants.abstract)
+  }
+
+  _getConcreteDescendantDefinitions() {
+    const defs = this._getProgramNodeTypeDefinitionCache()
+    const id = this._getId()
+    return Object.values(defs).filter(def => {
+      return def._doesExtend(id) && !def._isAbstract()
+    })
   }
 
   private _cache_definedNodeConstructor: treeNotationTypes.RunTimeNodeConstructor
@@ -1752,19 +1765,42 @@ ${captures}
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
   }
 
+  _generateSimulatedLine(): string {
+    const cells = this._getGrammarBackedCellArray()
+    if (!cells.length) return undefined
+    // todo: generate simulated data from catch all
+    return cells.map(cell => cell.generateSimulatedDataForCell()).join(" ")
+  }
+
   generateSimulatedData(nodeCount = 1, indentCount = -1, nodeTypeChain: string[] = []) {
-    const nodeTypeIds = this._getInScopeNodeTypeIds()
+    let nodeTypeIds = this._getInScopeNodeTypeIds()
     const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
     if (catchAllNodeTypeId) nodeTypeIds.push(catchAllNodeTypeId)
     const thisId = this._getId()
     const lines = []
-    const cells = this._getGrammarBackedCellArray()
     while (nodeCount > 0) {
-      if (cells.length) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + cells.map(cell => cell.generateSimulatedDataForCell()).join(" "))
+      const line = this._generateSimulatedLine()
+      if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
 
+      nodeTypeIds = nodeTypeIds.filter(nodeTypeId => {
+        if (nodeTypeChain.indexOf(nodeTypeId) > -1) return false
+        return true
+      })
+      const concreteNodeTypeDefs: AbstractGrammarDefinitionNode[] = []
       nodeTypeIds.forEach(nodeTypeId => {
-        if (nodeTypeChain.indexOf(nodeTypeId) > -1) return true
         const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
+        if (def._isErrorNodeType()) return true
+        else if (def._isAbstract()) {
+          def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefs.push(def))
+        } else {
+          concreteNodeTypeDefs.push(def)
+        }
+      })
+
+      concreteNodeTypeDefs.forEach(def => {
+        if (def._isAbstract()) return true
+        const nodeTypeId = def._getId()
+        if (nodeTypeChain.indexOf(nodeTypeId) > -1) return false
         const chain = nodeTypeChain.slice(0)
         chain.push(nodeTypeId)
         def.generateSimulatedData(1, indentCount + 1, chain).forEach(line => {

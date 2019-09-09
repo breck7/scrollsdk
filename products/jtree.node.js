@@ -2841,6 +2841,11 @@ class GrammarBackedRootNode extends GrammarBackedNode {
       .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
       .join("\n")
   }
+  getInPlacePreludeCellTypeTreeWithNodeConstructorNames() {
+    return this.getTopDownArray()
+      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellPreludeTypes())
+      .join("\n")
+  }
   getTreeWithNodeTypes() {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
@@ -3053,7 +3058,7 @@ class GrammarIntCell extends AbstractGrammarBackedCell {
     return num.toString() === word
   }
   _generateSimulatedDataForCell() {
-    return TreeUtils.getRandomString(2, "0123456789".split(""))
+    return TreeUtils.getRandomString(2, "123456789".split(""))
   }
   getRegexString() {
     return "-?[0-9]+"
@@ -3089,7 +3094,7 @@ class GrammarFloatCell extends AbstractGrammarBackedCell {
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
   }
   _generateSimulatedDataForCell() {
-    return TreeUtils.getRandomString(2, "0123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
+    return TreeUtils.getRandomString(2, "123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
   }
   getRegexString() {
     return "-?d*(.d+)?"
@@ -3944,6 +3949,8 @@ ${captures}
   }
   generateSimulatedData(nodeCount = 1, indentCount = -1, nodeTypeChain = []) {
     const nodeTypeIds = this._getInScopeNodeTypeIds()
+    const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
+    if (catchAllNodeTypeId) nodeTypeIds.push(catchAllNodeTypeId)
     const thisId = this._getId()
     const lines = []
     const cells = this._getGrammarBackedCellArray()

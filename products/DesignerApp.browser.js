@@ -14,6 +14,7 @@ class DesignerApp {
     this._explainRootsButton = jQuery("#explainRootsButton")
     this._downloadButton = jQuery("#downloadButton")
     this._samplesButtons = jQuery("#samplesButtons")
+    this._resetButton = jQuery("#resetButton")
     this._otherErrorsDiv = jQuery("#otherErrorsDiv")
     this._versionSpan = jQuery("#versionSpan")
     this._shareLink = jQuery("#shareLink")
@@ -61,7 +62,6 @@ class DesignerApp {
   }
   async start() {
     this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))
-    this._samplesButtons.append(` | <a href="#" class="resetButton">Reset</a>`)
     this._bindListeners()
     this._versionSpan.html("Version: " + jtree.getVersion())
     this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
@@ -103,13 +103,12 @@ class DesignerApp {
     this._explainButton.on("click", () => {
       this._setProgramResults(this.program ? this.program.getInPlaceCellTypeTreeWithNodeConstructorNames() : "Program failed to parse")
     })
+    this._resetButton.on("click", () => {
+      this.resetCommand()
+      console.log("reset...")
+      window.location.reload()
+    })
     this._samplesButtons.on("click", "a", function() {
-      if (jQuery(this).hasClass("resetButton")) {
-        that.resetCommand()
-        console.log("reset...")
-        window.location.reload()
-        return
-      }
       that._fetchJTreeStandardGrammar(
         jQuery(this)
           .text()

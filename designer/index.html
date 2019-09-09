@@ -18,23 +18,29 @@
     <title>Tree Language IDE</title>
   </head>
   <body>
-    <h1>Build a Tree Language</h1>
+    <h1>
+      <a href="https://treenotation.org"><img id="logo" src="/helloWorld3D.svg" title="TreeNotation.org" style="width: 80px; vertical-align: middle;"/></a>Tree
+      Language Designer
+    </h1>
     <p>
       <a href="/sandbox/">Tree Notation Sandbox</a> | <a href="/sandbox/test.html">Unit Tests</a> | <a href="/sandbox/perfTests.html">Perf Tests</a> |
-      <a href="http://treenotation.org">TreeNotation.org</a> |
+      <a id="helpToggleButton" onclick="$('#helpSection').toggle(); return false;" href="">Help</a> | <a href="#" id="resetButton">Reset</a> |
       <span id="versionSpan"></span>
     </p>
-    <p>
-      This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on
-      the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell
-      checking, suggested corrections, and more.
-    </p>
+    <div id="helpSection" style="display: none;">
+      <p>
+        This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on
+        the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell
+        checking, suggested corrections, and more.
+      </p>
 
-    <p>
-      Click "New" to create a New Language, or explore existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and
-      program at "app.program". We also have a work-in-progress
-      <a href="https://github.com/breck7/jtree/blob/master/languageChecklist.md">checklist for creating new Tree Languages</a>.
-    </p>
+      <p>
+        Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as
+        "app.grammarProgram" and program at "app.program". We also have a work-in-progress
+        <a href="https://github.com/breck7/jtree/blob/master/languageChecklist.md">checklist for creating new Tree Languages</a>.
+      </p>
+    </div>
+
     <p id="samplesButtons"></p>
     <div id="shareDiv"><span>Share</span><input id="shareLink" readonly /></div>
     <div id="otherErrorsDiv"></div>

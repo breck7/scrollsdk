@@ -3071,7 +3071,7 @@ class GrammarIntCell extends AbstractGrammarBackedCell {
     return num.toString() === word
   }
   _generateSimulatedDataForCell() {
-    return TreeUtils.getRandomString(2, "0123456789".split(""))
+    return TreeUtils.getRandomString(2, "123456789".split(""))
   }
   getRegexString() {
     return "-?[0-9]+"
@@ -3107,7 +3107,7 @@ class GrammarFloatCell extends AbstractGrammarBackedCell {
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
   }
   _generateSimulatedDataForCell() {
-    return TreeUtils.getRandomString(2, "0123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
+    return TreeUtils.getRandomString(2, "123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
   }
   getRegexString() {
     return "-?d*(.d+)?"

@@ -656,7 +656,7 @@ class GrammarIntCell extends AbstractGrammarBackedCell<number> {
   static defaultHighlightScope = "constant.numeric.integer"
 
   _generateSimulatedDataForCell() {
-    return TreeUtils.getRandomString(2, "0123456789".split(""))
+    return TreeUtils.getRandomString(2, "123456789".split(""))
   }
 
   getRegexString() {
@@ -703,7 +703,7 @@ class GrammarFloatCell extends AbstractGrammarBackedCell<number> {
   static defaultHighlightScope = "constant.numeric.float"
 
   _generateSimulatedDataForCell() {
-    return TreeUtils.getRandomString(2, "0123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
+    return TreeUtils.getRandomString(2, "123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
   }
 
   getRegexString() {

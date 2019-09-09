@@ -5,6 +5,31 @@ Below is a list of questions that are commonly asked by people who are new to <a
 
 ## Overview
 
+#### What is Tree Notation?
+
+Tree Notation is a basic building block that you can build higher level Tree Languages on top of. For programmers, this might give you an idea of the structure behind Tree notation:
+
+    YI = "\n" // New lines separate nodes
+    XI = " " // Increasing indent to denote parent/child relationship
+    interface TreeNode {
+     children: TreeNode[]
+     line: string
+    }
+
+Code or information represented in a Tree Language therefore always has a similar appearance - it is indented to show structure, rather than (necessarily) using the symbols you might see in traditional programming languages such as C++ and Java - and languages intended for data storage and communication, such as XML and JSON.
+
+This simple, yet powerful, base structure may looks a little like Python, Visual Basic, YAML - or 'Domain Specific Languages' written 'on top' of existing programming languages. This isn’t by accident: such languages were designed to look similar to natural language, using words over symbols and indentation to denote structure.
+
+Here’s an example of a minimal HTML document represented in a Tree Language:
+
+    html
+     body
+      div おはようございます
+
+One important feature of Tree Notation is that due to its simplicity and consistency, Tree Languages are easy to write - and code or information represented in a Tree Language is easy to syntax check (and highlight) - and autocomplete.
+
+(Thank you to @vakradrz for this answer)
+
 #### There are already over 10,000 programming languages and over 1,000 syntax systems like JSON, XML and BNF, why create another one?
 
 There is only 1 binary. Tree Notation is more like binary than it is like a programming language. Tree Notation is a basic building block that you can build higher level languages on top of. Tree Notation is an error-free base notation like binary.

@@ -3,6 +3,7 @@ Edge / 2019-09-08
 - New: getInPlacePreludeCellTypeTreeWithNodeConstructorNames
 - New: generateSimulatedData
 - New: designer app - simulate data and explain roots buttons
+- Fix: highlighting fix for regression caused by blank cells fix
 
 40.1.0 / 2019-09-08
 ===================

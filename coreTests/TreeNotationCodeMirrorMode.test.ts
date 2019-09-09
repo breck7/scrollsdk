@@ -11,6 +11,7 @@ const irisPath = __dirname + "/../langs/iris/iris.grammar"
 const irisGrammar = Disk.read(irisPath)
 
 const GrammarProgram = jtree.getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
+const DugProgram = jtree.getProgramConstructor(__dirname + "/../langs/dug/dug.grammar")
 
 const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new jtree.GrammarProgram(grammarCode)
@@ -145,6 +146,17 @@ testTree.regressionTest = equal => {
   const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stampNode", () => stamp, () => code))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 217)
+}
+
+testTree.regression2 = equal => {
+  const code = `object
+ prettier
+  object`
+
+  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("dugNode", () => DugProgram, () => code))
+  const tokenLines = mock.getTokenLines(code)
+  equal(tokenLines.length, 3)
+  equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)

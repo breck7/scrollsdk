@@ -334,20 +334,24 @@ class TreeNotationCodeMirrorMode {
   private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string {
     let nextCharacter = stream.next()
     const lineNumber = (<any>stream).lineOracle.line + 1 // state.lineIndex
+    const XI = " "
+    const YI = "\n"
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
-      if (nextCharacter === " ") {
-        if (peek === undefined || peek === "\n") {
+
+      if (nextCharacter === XI) {
+        if (peek === undefined || peek === YI) {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
-        if (peek === " ") {
+        if (peek === XI && state.cellIndex) {
           // If we are missing a cell.
+          // TODO: this is broken for a blank 1st cell. We need to track XI level.
           state.cellIndex++
         }
         return "bracket"
       }
-      if (peek === " ") {
+      if (peek === XI) {
         state.cellIndex++
         return this._getCellStyle(lineNumber, state.cellIndex)
       }

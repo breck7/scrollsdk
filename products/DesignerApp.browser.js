@@ -225,6 +225,8 @@ class DesignerApp {
       const after = this.codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top
       if (info.top + info.clientHeight < after) this.codeInstance.scrollTo(null, after - info.clientHeight + 3)
     })
+    const button = jQuery("input[name=onCodeUp]:checked")
+    if (button.length) button.next().click()
   }
   _setGrammarAndCode(grammar, code) {
     this.grammarInstance.setValue(grammar)

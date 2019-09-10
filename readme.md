@@ -16,6 +16,8 @@ Links
 🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
 🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  
+🌴 [Unit Tests](/sandbox/test.html)  
+🌴 [Perf Tests](/sandbox/perfTests.html)  
 
 Who this package is for
 -----------------------

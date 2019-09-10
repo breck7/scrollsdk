@@ -14,16 +14,94 @@
     <script type="text/javascript" src="/products/dumbdownNode.browser.js"></script>
     <script type="text/javascript" src="/products/DesignerApp.browser.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="/sandbox/favicon.ico" />
-    <link rel="stylesheet" type="text/css" href="DesignerApp.css" />
+    <style>
+body {
+  font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
+  margin: auto;
+  max-width: 1200px;
+  background: #eee;
+        color: rgba(1, 47, 52, 1);
+}
+.CodeMirror { background: transparent;}
+body h1 {
+        font-weight: 300;
+      }
+input, textarea {
+  background: #eee;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+td {
+  vertical-align: top;
+  width: 50%;
+  border: 1px solid gray;
+}
+
+#otherErrorsDiv {
+  color: red;
+}
+
+code {
+  white-space: pre;
+}
+
+pre {
+  overflow: scroll;
+}
+
+a {
+  cursor: pointer;
+}
+
+#shareDiv {
+  font-size: 16px;
+  width: 100%;
+}
+
+#shareDiv span {
+  width: 50px;
+  display: inline-block;
+}
+
+#shareDiv input {
+  font-size: 16px;
+  padding: 5px;
+  width: calc(100% - 70px);
+}
+
+#execResultsTextArea {
+  border: 0;
+  width: 100%;
+}
+
+.LintError,
+.LintErrorWithSuggestion,
+.LintCellTypeHints {
+  white-space: pre;
+  color: red;
+  background: #e5e5e5;
+}
+.LintCellTypeHints {
+  color: black;
+}
+.LintErrorWithSuggestion {
+  cursor: pointer;
+}
+
+    </style>
     <title>Tree Language IDE</title>
   </head>
   <body>
     <h1>
-      <a href="https://treenotation.org"><img id="logo" src="/helloWorld3D.svg" title="TreeNotation.org" style="width: 80px; vertical-align: middle;"/></a>Tree
+      <a href="https://treenotation.org"><img id="logo" src="/helloWorld3D.svg" title="TreeNotation.org" style="width: 100px; vertical-align: middle;"/></a>Tree
       Language Designer
     </h1>
     <p>
-      <a href="/sandbox/">Tree Notation Sandbox</a> | <a href="/sandbox/test.html">Unit Tests</a> | <a href="/sandbox/perfTests.html">Perf Tests</a> |
+      <a href="/sandbox/">Tree Notation Sandbox</a> |
       <a id="helpToggleButton" onclick="$('#helpSection').toggle(); return false;" href="">Help</a> | <a href="#" id="resetButton">Reset</a> |
       <span id="versionSpan"></span>
     </p>
@@ -54,8 +132,8 @@
           <textarea id="grammarConsole"></textarea>
         </td>
         <td>
-          Source Code in your Language <a href="#" id="execButton">Execute</a> | <a href="#" id="compileButton">Compile</a> |
-          <a href="#" id="explainButton">Explain</a> | <a href="#" id="explainRootsButton">Explain Roots</a> <br />
+          Source Code in your Language <input type="radio" name="onCodeUp"><a href="#" id="execButton">Execute</a> | <input type="radio" name="onCodeUp"><a href="#" id="compileButton">Compile</a> |
+          <input type="radio" name="onCodeUp"><a href="#" id="explainButton">Explain</a> | <input type="radio" name="onCodeUp"><a href="#" id="explainRootsButton">Explain Roots</a> <br />
           <textarea id="codeConsole"></textarea>
         </td>
       </tr>

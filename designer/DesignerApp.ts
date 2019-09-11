@@ -91,9 +91,9 @@ class DesignerApp {
   private _execButton = jQuery("#execButton")
   private _readmeComponent = jQuery("#readmeComponent")
   private _execResultsTextArea = jQuery("#execResultsTextArea")
+  private _htmlOutputDiv = jQuery("#htmlOutputDiv")
   private _compileButton = jQuery("#compileButton")
-  private _explainButton = jQuery("#explainButton")
-  private _explainRootsButton = jQuery("#explainRootsButton")
+  private _visualizeButton = jQuery("#visualizeButton")
   private _downloadButton = jQuery("#downloadButton")
   private _samplesButtons = jQuery("#samplesButtons")
   private _resetButton = jQuery("#resetButton")
@@ -103,14 +103,43 @@ class DesignerApp {
   private _inferKeywordGrammarButton = jQuery("#inferKeywordGrammarButton")
   private _simulateDataButton = jQuery("#simulateDataButton")
 
-  private _setProgramResults(results: string) {
+  private _setProgramResults(results: string, htmlResults = "") {
     this._execResultsTextArea.val(results)
-    const el = this._execResultsTextArea[0]
-    el.style.height = el.scrollHeight + "px"
+    if (results) {
+      const el = this._execResultsTextArea[0] // todo: remove
+      el.style.height = el.scrollHeight + "px"
+    }
+    this._htmlOutputDiv.html(htmlResults)
   }
 
   private _clearResults() {
     this._execResultsTextArea.val("")
+  }
+
+  private _visualizeIt(program: any) {
+    const columns = this.program.getProgramWidth()
+
+    const cellTypes = new jtree.TreeNode(this.program.getInPlaceCellTypeTreeWithNodeConstructorNames())
+    const rootCellTypes = new jtree.TreeNode(this.program.getInPlacePreludeCellTypeTreeWithNodeConstructorNames())
+
+    const table = this.program
+      .getProgramAsCells()
+      .map((line: any, lineIndex: number) => {
+        let rows = ""
+        for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
+          const cell = line[cellIndex]
+          if (!cell) rows += `<td>&nbsp;</td>`
+          else {
+            const cellType = cellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
+            const rootCellType = rootCellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
+            const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
+            rows += `<td title="cellType:${cellType} rootCellType:${rootCellType} nodeType:${nodeType}">${cell.getWord()}</td>`
+          }
+        }
+        return `<tr>${rows}</tr>`
+      })
+      .join("\n")
+    return `<table class="iceCubes">${table}</table>`
   }
 
   private _bindListeners() {
@@ -122,12 +151,9 @@ class DesignerApp {
       this._setProgramResults(this.program ? this.program.compile() : "Program failed to execute")
     })
 
-    this._explainRootsButton.on("click", () => {
-      this._setProgramResults(this.program ? this.program.getInPlacePreludeCellTypeTreeWithNodeConstructorNames() : "Program failed to parse")
-    })
-
-    this._explainButton.on("click", () => {
-      this._setProgramResults(this.program ? this.program.getInPlaceCellTypeTreeWithNodeConstructorNames() : "Program failed to parse")
+    this._visualizeButton.on("click", () => {
+      if (!this.program) return this._setProgramResults("Program failed to parse")
+      this._setProgramResults("", this._visualizeIt(this.program))
     })
 
     this._resetButton.on("click", () => {

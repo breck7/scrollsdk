@@ -1,3 +1,5 @@
+"use strict"
+Object.defineProperty(exports, "__esModule", { value: true })
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
@@ -4039,6 +4041,12 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       { regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
       { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
     ])
+  }
+  getProgramAsCells() {
+    return this.map(node => node._getGrammarBackedCellArray())
+  }
+  getProgramWidth() {
+    return Math.max(...this.getProgramAsCells().map(line => line.length))
   }
   _getCompiledLoadedNodeTypes() {
     if (!this._cache_compiledLoadedNodeTypes) {

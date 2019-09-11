@@ -42,6 +42,12 @@ td {
   border: 1px solid gray;
 }
 
+.iceCubes tr, .iceCubes td{
+  margin: 0;
+  box-shadow: rgba(1,1,1,.4) 1px 1px 1px;
+  overflow: scroll;
+}
+
 #otherErrorsDiv {
   color: red;
 }
@@ -136,7 +142,8 @@ a {
         </td>
         <td>
           Source Code in your Language <input type="radio" name="onCodeUp"><a href="#" id="execButton">Execute</a> | <input type="radio" name="onCodeUp"><a href="#" id="compileButton">Compile</a> |
-          <input type="radio" name="onCodeUp"><a href="#" id="explainButton">Explain</a> | <input type="radio" name="onCodeUp"><a href="#" id="explainRootsButton">Explain Roots</a> <br />
+          <input type="radio" name="onCodeUp"><a href="#" id="visualizeButton">Explain</a>
+          <br />
           <textarea id="codeConsole"></textarea>
         </td>
       </tr>
@@ -151,6 +158,7 @@ a {
           <pre id="codeErrorsConsole"></pre>
           Output:<br />
           <textarea id="execResultsTextArea" placeholder="Results..."></textarea>
+          <div id="htmlOutputDiv"></div>
         </td>
       </tr>
     </table>

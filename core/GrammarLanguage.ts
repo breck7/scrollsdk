@@ -157,7 +157,7 @@ abstract class GrammarBackedNode extends TreeNode {
   // todo: rename to something better?
   abstract getRootProgramNode(): GrammarBackedRootNode
 
-  protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
+  _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
     return []
   }
 
@@ -219,6 +219,22 @@ class TypedWord {
 abstract class GrammarBackedRootNode extends GrammarBackedNode {
   getRootProgramNode() {
     return this
+  }
+
+  getProgramAsCells() {
+    return this.getTopDownArray().map(node => {
+      const cells = node._getGrammarBackedCellArray()
+      let indents = node.getIndentLevel()
+      while (indents) {
+        cells.unshift(undefined)
+        indents--
+      }
+      return cells
+    })
+  }
+
+  getProgramWidth() {
+    return Math.max(...this.getProgramAsCells().map(line => line.length))
   }
 
   createParser() {
@@ -428,7 +444,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     return this._getGrammarBackedCellArray().filter(cell => cell.getWord() !== undefined)
   }
 
-  protected _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
+  _getGrammarBackedCellArray(): AbstractGrammarBackedCell<any>[] {
     return this.getDefinition()._getGrammarBackedCellArray(this, this.getWords())
   }
 
@@ -441,7 +457,11 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
 
   getLineCellPreludeTypes() {
     return this._getGrammarBackedCellArray()
-      .map(slot => slot._getCellTypeDefinition()._getPreludeKindId())
+      .map(slot => {
+        const def = slot._getCellTypeDefinition()
+        //todo: cleanup
+        return def ? def._getPreludeKindId() : PreludeCellTypeIds.anyCell
+      })
       .join(" ")
   }
 

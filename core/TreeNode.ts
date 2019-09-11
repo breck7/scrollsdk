@@ -171,6 +171,10 @@ class TreeNode extends AbstractNode {
     return this._getPoint(relativeTo)
   }
 
+  getIndentLevel(relativeTo?: TreeNode) {
+    return this._getXCoordinate(relativeTo) - 1
+  }
+
   getIndentation(relativeTo?: TreeNode) {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }

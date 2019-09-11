@@ -575,6 +575,9 @@ class TreeNode extends AbstractNode {
   getPointRelativeTo(relativeTo) {
     return this._getPoint(relativeTo)
   }
+  getIndentLevel(relativeTo) {
+    return this._getXCoordinate(relativeTo) - 1
+  }
   getIndentation(relativeTo) {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
   }
@@ -2729,6 +2732,20 @@ class GrammarBackedRootNode extends GrammarBackedNode {
   getRootProgramNode() {
     return this
   }
+  getProgramAsCells() {
+    return this.getTopDownArray().map(node => {
+      const cells = node._getGrammarBackedCellArray()
+      let indents = node.getIndentLevel()
+      while (indents) {
+        cells.unshift(undefined)
+        indents--
+      }
+      return cells
+    })
+  }
+  getProgramWidth() {
+    return Math.max(...this.getProgramAsCells().map(line => line.length))
+  }
   createParser() {
     return new TreeNode.Parser(BlobNode)
   }
@@ -2914,7 +2931,10 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
   }
   getLineCellPreludeTypes() {
     return this._getGrammarBackedCellArray()
-      .map(slot => slot._getCellTypeDefinition()._getPreludeKindId())
+      .map(slot => {
+        const def = slot._getCellTypeDefinition()
+        return def ? def._getPreludeKindId() : PreludeCellTypeIds.anyCell
+      })
       .join(" ")
   }
   getLineHighlightScopes(defaultScope = "source") {

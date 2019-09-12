@@ -8,7 +8,7 @@ class DesignerCommander extends AbstractCommander {
 class DesignerApp extends AbstractTreeComponentRootNode {
   constructor() {
     super(...arguments)
-    this.languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
+    this.languages = "newlang hakon stump dumbdown arrow dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
     this._localStorageKeys = {
       grammarConsole: "grammarConsole",
       codeConsole: "codeConsole"
@@ -383,12 +383,10 @@ githubTriangleComponent`
   }
 }
 class samplesComponent extends AbstractTreeComponent {
-  constructor() {
-    super(...arguments)
-    this.languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
-  }
   getStumpCode() {
-    const langs = this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | ")
+    const langs = this.getRootNode()
+      .languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`)
+      .join(" | ")
     return `p Example Languages: ${langs}
  id samplesButtons`
   }

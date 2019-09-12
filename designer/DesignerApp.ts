@@ -30,7 +30,7 @@ class DesignerApp extends AbstractTreeComponentRootNode {
     })
   }
 
-  public languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
+  public languages = "newlang hakon stump dumbdown arrow dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
 
   public program: any
   public grammarProgram: any
@@ -461,12 +461,12 @@ githubTriangleComponent`
 
 class samplesComponent extends AbstractTreeComponent {
   getStumpCode() {
-    const langs = this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | ")
+    const langs = this.getRootNode()
+      .languages.map((lang: string) => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`)
+      .join(" | ")
     return `p Example Languages: ${langs}
  id samplesButtons`
   }
-
-  public languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
 }
 
 class shareComponent extends AbstractTreeComponent {

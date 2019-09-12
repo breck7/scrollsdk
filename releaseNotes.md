@@ -1,3 +1,7 @@
+edge / 2019-09-12
+===================
+- New: added Arrow sample language
+
 40.2.0 / 2019-09-11
 ===================
 - New: getInPlacePreludeCellTypeTreeWithNodeConstructorNames

@@ -1,102 +1,17 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
-    <script type="text/javascript" src="/sandbox/lib/jquery.min.js"></script>
-    <script type="text/javascript" src="/products/jtree.browser.js"></script>
-    <script type="text/javascript" src="/products/SandboxApp.browser.js"></script>
-    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-    <style>body {
-  font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana,
-    sans-serif;
-  margin: auto;
-  max-width: 1200px;
-  background: #eee;
-        color: rgba(1, 47, 52, 1);
-}
-body h1 {
-        font-weight: 300;
-      }
-
-textarea, input {
-  background: #eee;
-}
-
-textarea,
-pre {
-  width: 500px;
-  padding: 5px;
-  margin: 5px;
-  height: 200px;
-  font-size: 14px;
-  white-space: pre;
-  overflow: scroll;
-}
-pre {
-  line-height: 14px;
-}
-
-.keyword {
-  color: green;
-}</style>
     <title>Tree Language Sandbox</title>
   </head>
   <body>
-    <a style="display: block; position: absolute; top: 0; right: 0;" href="https://github.com/treenotation/jtree/tree/master/sandbox"
-      ><img src="/github-fork.svg"
-    /></a>
-    <h1>
-      <a href="https://treenotation.org"><img id="logo" src="/helloWorld3D.svg" title="TreeNotation.org" style="width: 100px; vertical-align: middle;"/></a>Tree
-      Notation Sandbox
-    </h1>
-    <p>
-      <a href="/designer/">Tree Language Designer</a> |
-      <span id="version"></span>
-    </p>
-    <p>
-      This is a simple console for exploring the base Tree Notation. In dev tools, you can access the parsed tree below as "window.tree"
-    </p>
-    <table>
-      <tr>
-        <td>
-          Tree <br />
-          <textarea id="treeConsole"></textarea>
-        </td>
-        <td>
-          toJsonSubset() <a href="#" id="jsonSample">sample</a><br />
-          <textarea id="jsonConsole"></textarea>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          toCsv() <a href="#" id="csvSample">sample</a><br />
-          <textarea id="csvConsole"></textarea>
-        </td>
-        <td>
-          toXml() <br />
-          <textarea id="xmlConsole"></textarea>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          toOutline()<br />
-          <pre id="outlineConsole"></pre>
-        </td>
-        <td>
-          toHtml()<br />
-          <pre id="htmlConsole"></pre>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          toTable()<br />
-          <pre id="tableConsole"></pre>
-        </td>
-        <td>
-          toYaml()<br />
-          <pre id="yamlConsole"></pre>
-        </td>
-      </tr>
-    </table>
+    <script src="../sandbox/lib/jquery.min.js"></script>
+    <script src="../products/jtree.browser.js"></script>
+    <script src="../products/stumpNode.browser.js"></script>
+    <script src="../products/hakonNode.browser.js"></script>
+    <script src="../products/TreeComponentFramework.browser.js"></script>
+    <script src="../products/SandboxApp.browser.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+    <script>
+      AbstractTreeComponentRootNode.startApp(SandboxApp)
+    </script>
   </body>
 </html>

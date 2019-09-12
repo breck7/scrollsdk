@@ -340,9 +340,9 @@ class DesignerApp extends AbstractTreeComponentRootNode {
  h1
   font-weight 300
 .CodeMirror-gutters
- background transparent
+ background transparent !important
 .CodeMirror
- background transparent
+ background transparent !important
 input,textarea
  background transparent
 table

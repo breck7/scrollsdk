@@ -1,16 +1,109 @@
-//tooling onsave jtree build produce DesignerApp.browser.js
+//onsave jtree build produce DesignerApp.browser.js
+
+const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander } = require("../products/TreeComponentFramework.node.js")
+const { jtree } = require("../index.js")
+
+declare var jQuery: any
 
 // todo: get typings in here.
-declare var jtree: any
 declare var CodeMirror: any
 declare var saveAs: any
 declare var JSZip: any
 declare var dumbdownNode: any
 
-class DesignerApp {
-  constructor(grammarSourceCode: string) {
-    this.GrammarConstructor = new jtree.GrammarProgram(grammarSourceCode).getRootConstructor()
+class DesignerCommander extends AbstractCommander {
+  constructor(app: DesignerApp) {
+    super(app)
+    this._app = app
   }
+  private _app: DesignerApp
+}
+
+class DesignerApp extends AbstractTreeComponentRootNode {
+  createParser() {
+    return new jtree.TreeNode.Parser(undefined, {
+      githubTriangleComponent: githubTriangleComponent,
+      samplesComponent: samplesComponent,
+      tableComponent: tableComponent,
+      shareComponent: shareComponent,
+      headerComponent: headerComponent
+    })
+  }
+
+  public languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
+
+  public program: any
+  public grammarProgram: any
+
+  private get _codeErrorsConsole() {
+    return jQuery("#codeErrorsConsole")
+  }
+  private get _codeConsole() {
+    return jQuery("#codeConsole")
+  }
+  private get _grammarConsole() {
+    return jQuery("#grammarConsole")
+  }
+  private get _grammarErrorsConsole() {
+    return jQuery("#grammarErrorsConsole")
+  }
+  private get _execButton() {
+    return jQuery("#execButton")
+  }
+  private get _readmeComponent() {
+    return jQuery("#readmeComponent")
+  }
+  private get _execResultsTextArea() {
+    return jQuery("#execResultsTextArea")
+  }
+  private get _htmlOutputDiv() {
+    return jQuery("#htmlOutputDiv")
+  }
+  private get _compileButton() {
+    return jQuery("#compileButton")
+  }
+  private get _visualizeButton() {
+    return jQuery("#visualizeButton")
+  }
+  private get _downloadButton() {
+    return jQuery("#downloadButton")
+  }
+  private get _samplesButtons() {
+    return jQuery("#samplesButtons")
+  }
+  private get _resetButton() {
+    return jQuery("#resetButton")
+  }
+  private get _otherErrorsDiv() {
+    return jQuery("#otherErrorsDiv")
+  }
+  private get _versionSpan() {
+    return jQuery("#versionSpan")
+  }
+  private get _shareLink() {
+    return jQuery("#shareLink")
+  }
+  private get _inferKeywordGrammarButton() {
+    return jQuery("#inferKeywordGrammarButton")
+  }
+  private get _simulateDataButton() {
+    return jQuery("#simulateDataButton")
+  }
+
+  private _localStorageKeys = {
+    grammarConsole: "grammarConsole",
+    codeConsole: "codeConsole"
+  }
+
+  private GrammarConstructor: any
+  private grammarInstance: any
+  private codeInstance: any
+
+  private _grammarConstructor: any
+  private _cachedGrammarCode: string
+
+  private codeWidgets: any[] = []
+  private _commander = new DesignerCommander(this)
 
   private async _loadFromDeepLink() {
     const hash = location.hash
@@ -38,8 +131,6 @@ class DesignerApp {
     history.replaceState(null, null, " ")
   }
 
-  public languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
-
   private _onGrammarKeyup() {
     this._grammarDidUpdate()
     this._onCodeKeyUp()
@@ -51,57 +142,15 @@ class DesignerApp {
     }
   }
 
-  async start() {
-    this._samplesButtons.html(`Example Languages: ` + this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | "))
-
-    this._bindListeners()
-
-    this._versionSpan.html("Version: " + jtree.getVersion())
-
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
-
-    this.grammarInstance.on("keyup", () => {
-      this._onGrammarKeyup()
-    })
-
-    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(<any>this._codeConsole[0], { lineWrapping: true })
-
-    this.codeInstance.on("keyup", () => this._onCodeKeyUp())
-
-    // loadFromURL
-    const wasLoadedFromDeepLink = await this._loadFromDeepLink()
-    if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
+  async appWillFirstRender() {
+    const willowBrowser = this.getWillowProgram()
+    const result = await willowBrowser.httpGetUrl("/langs/grammar/grammar.grammar")
+    this.GrammarConstructor = new jtree.GrammarProgram(result.text).getRootConstructor()
   }
 
   resetCommand() {
     Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
   }
-
-  public program: any
-  public grammarProgram: any
-
-  private _codeErrorsConsole = jQuery("#codeErrorsConsole")
-  private _codeConsole = jQuery("#codeConsole")
-  private _grammarConsole = jQuery("#grammarConsole")
-  private _grammarErrorsConsole = jQuery("#grammarErrorsConsole")
-  private _execButton = jQuery("#execButton")
-  private _readmeComponent = jQuery("#readmeComponent")
-  private _execResultsTextArea = jQuery("#execResultsTextArea")
-  private _htmlOutputDiv = jQuery("#htmlOutputDiv")
-  private _compileButton = jQuery("#compileButton")
-  private _visualizeButton = jQuery("#visualizeButton")
-  private _downloadButton = jQuery("#downloadButton")
-  private _samplesButtons = jQuery("#samplesButtons")
-  private _resetButton = jQuery("#resetButton")
-  private _otherErrorsDiv = jQuery("#otherErrorsDiv")
-  private _versionSpan = jQuery("#versionSpan")
-  private _shareLink = jQuery("#shareLink")
-  private _inferKeywordGrammarButton = jQuery("#inferKeywordGrammarButton")
-  private _simulateDataButton = jQuery("#simulateDataButton")
 
   private _setProgramResults(results: string, htmlResults = "") {
     this._execResultsTextArea.val(results)
@@ -189,15 +238,6 @@ class DesignerApp {
     this._downloadButton.on("click", () => this._downloadBundleCommand())
   }
 
-  private _localStorageKeys = {
-    grammarConsole: "grammarConsole",
-    codeConsole: "codeConsole"
-  }
-
-  private GrammarConstructor: any
-  private grammarInstance: any
-  private codeInstance: any
-
   // TODO: ADD TESTS!!!!!
   private async _downloadBundleCommand() {
     const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
@@ -232,9 +272,6 @@ class DesignerApp {
     console.log("Local storage updated...")
   }
 
-  private _grammarConstructor: any
-  private _cachedGrammarCode: string
-
   private _getGrammarErrors(grammarCode: string) {
     return new this.GrammarConstructor(grammarCode).getAllErrors()
   }
@@ -266,8 +303,6 @@ class DesignerApp {
     const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
     this._readmeComponent.html(readme)
   }
-
-  private codeWidgets: any[] = []
 
   private _updateShareLink() {
     const url = new URL(location.href)
@@ -336,14 +371,257 @@ class DesignerApp {
 
     this._setGrammarAndCode(grammar, sample)
   }
+
+  treeComponentDidMount() {
+    this._setBodyShadowHandlers()
+  }
+
+  getCommander() {
+    return this._commander
+  }
+
+  async _setBodyShadowHandlers() {
+    // todo: refactor!!! splut these into components
+
+    this._bindListeners()
+
+    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
+      .register()
+      .fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
+
+    this.grammarInstance.on("keyup", () => {
+      this._onGrammarKeyup()
+    })
+
+    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
+      .register()
+      .fromTextAreaWithAutocomplete(<any>this._codeConsole[0], { lineWrapping: true })
+
+    this.codeInstance.on("keyup", () => this._onCodeKeyUp())
+
+    // loadFromURL
+    const wasLoadedFromDeepLink = await this._loadFromDeepLink()
+    if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
+  }
+
+  getHakon() {
+    const theme = this.getTheme()
+    return `body
+ font-family "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
+ margin auto
+ max-width 1200px
+ background #eee
+ color rgba(1, 47, 52, 1)
+ h1
+  font-weight 300
+.CodeMirror-gutters
+ background transparent
+.CodeMirror
+ background transparent
+input,textarea
+ background transparent
+table
+ width 100%
+ table-layout fixed
+td
+ vertical-align top
+ width 50%
+ border 1px solid gray
+.iceCubes
+ tr,td
+  margin 0
+  box-shadow rgba(1,1,1,.4) 1px 1px 1px
+  overflow scroll
+#otherErrorsDiv
+ color red
+code
+ white-space pre
+pre
+ overflow scroll
+a
+ cursor pointer
+ color rgba(1, 47, 52, 1)
+ text-decoration underline
+#shareDiv
+ font-size 16px
+ width 100%
+ span
+  width 50px
+  display inline-block
+ input
+  font-size 16px
+  padding 5px
+  width calc(100% - 70px)
+#execResultsTextArea
+  border 0
+  width 100%
+.LintError,.LintErrorWithSuggestion,.LintCellTypeHints
+ white-space pre
+ color red
+ background #e5e5e5
+.LintCellTypeHints
+ color black
+.LintErrorWithSuggestion
+ cursor pointer`
+  }
+
+  static getDefaultStartState() {
+    return `headerComponent
+samplesComponent
+shareComponent
+tableComponent
+githubTriangleComponent`
+  }
 }
 
-jQuery(document).ready(function() {
-  jQuery.get("/langs/grammar/grammar.grammar").then(grammarSourceCode => {
-    const app = new DesignerApp(grammarSourceCode)
-    ;(<any>window).app = app
-    app.start()
-  })
-})
+class samplesComponent extends AbstractTreeComponent {
+  getStumpCode() {
+    const langs = this.languages.map(lang => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`).join(" | ")
+    return `p Example Languages: ${langs}
+ id samplesButtons`
+  }
+
+  public languages = "newlang hakon stump dumbdown dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
+}
+
+class shareComponent extends AbstractTreeComponent {
+  getStumpCode() {
+    return `div
+ id shareDiv
+ span Share
+ input
+  id shareLink
+  readonly`
+  }
+}
+
+class otherErrorsComponent extends AbstractTreeComponent {
+  getStumpCode() {
+    return `div
+ id otherErrorsDiv`
+  }
+}
+
+class tableComponent extends AbstractTreeComponent {
+  getStumpCode() {
+    return `table
+ tr
+  td
+   span Grammar for your Tree Language
+   a Infer Prefix Grammar
+    id inferKeywordGrammarButton
+   span  | 
+   a Download Bundle
+    id downloadButton
+   span  | 
+   a Generate Random Program
+    id simulateDataButton
+   br
+   textarea
+    id grammarConsole
+  td
+   span Source Code in your Language
+   input
+    name onCodeUp
+    type radio
+   a Execute
+    id execButton
+   span  | 
+   input
+    type radio
+    name onCodeUp
+   a Compile
+    id compileButton
+   span  | 
+   input
+    type radio
+    name onCodeUp
+   a Explain
+    id visualizeButton
+   br
+   textarea
+    id codeConsole
+ tr
+  td
+   div Grammar Errors
+   pre
+    id grammarErrorsConsole
+   div
+    id readmeComponent
+  td
+   div Language Errors
+   pre
+    id codeErrorsConsole
+   div Output:
+   textarea
+    id execResultsTextArea
+    placeholder Results...
+   div
+    id htmlOutputDiv`
+  }
+}
+
+class headerComponent extends AbstractTreeComponent {
+  _getTitle() {
+    return `Tree Notation Sandbox`
+  }
+  getHakon() {
+    return `#logo
+ width 100px
+ vertical-align middle`
+  }
+  getStumpCode() {
+    return `div
+ h1
+  a
+   href https://treenotation.org
+   style text-decoration: none;
+   img
+    id logo
+    src /helloWorld3D.svg
+    title TreeNotation.org
+  span ${this._getTitle()}
+ p
+  a Tree Language Sandbox
+   href /sandbox/
+  span  | 
+  a Help
+   id helpToggleButton
+   onclick $('#helpSection').toggle(); return false;
+  span  | 
+  a Watch the Tutorial Video
+   href https://www.youtube.com/watch?v=UQHaI78jGR0=
+  span  | 
+  a Reset
+   id resetButton
+  span  | Version ${jtree.getVersion()}
+ div
+  id helpSection
+  style display: none;
+  p This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://github.com/breck7/jtree/blob/master/languageChecklist.md">checklist for creating new Tree Languages</a>.`
+  }
+}
+
+class githubTriangleComponent extends AbstractTreeComponent {
+  protected _getGitHubLink() {
+    return `https://github.com/treenotation/jtree/tree/master/designer`
+  }
+
+  getHakon() {
+    return `.githubTriangleComponent
+ display block
+ position absolute
+ top 0
+ right 0`
+  }
+  getStumpCode() {
+    return `a
+ class githubTriangleComponent
+ href ${this._getGitHubLink()}
+ img
+  src /github-fork.svg`
+  }
+}
 
 export { DesignerApp }

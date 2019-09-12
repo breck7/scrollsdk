@@ -1,3 +1,5 @@
+//onsave jtree build produce TreeComponentFramework.browser.js
+
 import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
 
 const { jtree } = require("../index.js")
@@ -431,12 +433,16 @@ class AbstractWillowProgram extends stumpNode {
     return this.getBaseUrl() + url
   }
 
+  async makeUrlAbsoluteAndHttpGetUrl(url: string, queryStringObject: Object, responseClass = WillowHTTPResponse) {
+    return this.httpGetUrl(this._makeRelativeUrlAbsolute(url), queryStringObject, responseClass)
+  }
+
   async httpGetUrl(url: string, queryStringObject: Object, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
 
-    const superagent = require("superagent")
+    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
-      .get(this._makeRelativeUrlAbsolute(url))
+      .get(url)
       .query(queryStringObject)
       .set(this._headers || {})
 
@@ -476,7 +482,7 @@ class AbstractWillowProgram extends stumpNode {
   async httpPostUrl(url: string, data: any) {
     if (this._offlineMode) return new WillowHTTPResponse()
 
-    const superagent = require("superagent")
+    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})
@@ -1559,17 +1565,20 @@ abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
     return this._willowProgram
   }
 
+  protected async appWillFirstRender() {}
+
   abstract getDefaultStartState(): string
 
-  static startApp(appClass: AbstractTreeComponentRootNode) {
+  static async startApp(appClass: AbstractTreeComponentRootNode) {
     document.addEventListener(
       "DOMContentLoaded",
-      () => {
+      async () => {
         const win = <any>window
         if (!win.app) {
           const startState = appClass.getDefaultStartState()
           const anyAppClass = <any>appClass // todo: cleanup
           win.app = new anyAppClass(startState)
+          await win.app.appWillFirstRender()
           win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
         }
       },

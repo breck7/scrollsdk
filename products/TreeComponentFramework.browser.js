@@ -334,11 +334,14 @@ class AbstractWillowProgram extends stumpNode {
     if (url.startsWith("http://") || url.startsWith("https://")) return url
     return this.getBaseUrl() + url
   }
+  async makeUrlAbsoluteAndHttpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
+    return this.httpGetUrl(this._makeRelativeUrlAbsolute(url), queryStringObject, responseClass)
+  }
   async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = require("superagent")
+    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
-      .get(this._makeRelativeUrlAbsolute(url))
+      .get(url)
       .query(queryStringObject)
       .set(this._headers || {})
     return new responseClass(superAgentResponse)
@@ -371,7 +374,7 @@ class AbstractWillowProgram extends stumpNode {
   }
   async httpPostUrl(url, data) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = require("superagent")
+    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})
@@ -1206,15 +1209,17 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
     }
     return this._willowProgram
   }
-  static startApp(appClass) {
+  async appWillFirstRender() {}
+  static async startApp(appClass) {
     document.addEventListener(
       "DOMContentLoaded",
-      () => {
+      async () => {
         const win = window
         if (!win.app) {
           const startState = appClass.getDefaultStartState()
           const anyAppClass = appClass // todo: cleanup
           win.app = new anyAppClass(startState)
+          await win.app.appWillFirstRender()
           win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
         }
       },

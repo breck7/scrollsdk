@@ -1,170 +1,26 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="UTF-8" />
+    <title>Tree Language Designer</title>
+  </head>
+  <body>
     <link rel="stylesheet" type="text/css" href="/sandbox/lib/codemirror.css" />
     <link rel="stylesheet" type="text/css" href="/sandbox/lib/codemirror.show-hint.css" />
     <script type="text/javascript" src="/sandbox/lib/codemirror.js"></script>
+    <script type="text/javascript" src="/sandbox/lib/superagent.min.js"></script>
     <script type="text/javascript" src="/sandbox/lib/show-hint.js"></script>
     <script type="text/javascript" src="/sandbox/lib/javascript.js"></script>
-    <script type="text/javascript" src="/sandbox/lib/jquery.min.js"></script>
     <script type="text/javascript" src="/sandbox/lib/FileSaver.min.js"></script>
     <script type="text/javascript" src="/sandbox/lib/jszip.min.js"></script>
-    <script type="text/javascript" src="/products/jtree.browser.js"></script>
-    <script type="text/javascript" src="/products/dumbdownNode.browser.js"></script>
+    <script src="../sandbox/lib/jquery.min.js"></script>
+    <script src="../products/jtree.browser.js"></script>
+    <script src="../products/stumpNode.browser.js"></script>
+    <script src="../products/hakonNode.browser.js"></script>
+    <script src="/products/dumbdownNode.browser.js"></script>
+    <script src="../products/TreeComponentFramework.browser.js"></script>
     <script type="text/javascript" src="/products/DesignerApp.browser.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="/sandbox/favicon.ico" />
-    <style>
-body {
-  font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
-  margin: auto;
-  max-width: 1200px;
-  background: #eee;
-        color: rgba(1, 47, 52, 1);
-}
-.CodeMirror-gutters { background: transparent; }
-.CodeMirror { background: transparent;}
-body h1 {
-        font-weight: 300;
-      }
-input, textarea {
-  background: transparent;
-}
-
-table {
-  width: 100%;
-  table-layout: fixed;
-}
-
-td {
-  vertical-align: top;
-  width: 50%;
-  border: 1px solid gray;
-}
-
-.iceCubes tr, .iceCubes td{
-  margin: 0;
-  box-shadow: rgba(1,1,1,.4) 1px 1px 1px;
-  overflow: scroll;
-}
-
-#otherErrorsDiv {
-  color: red;
-}
-
-code {
-  white-space: pre;
-}
-
-pre {
-  overflow: scroll;
-}
-
-a {
-  cursor: pointer;
-}
-
-#shareDiv {
-  font-size: 16px;
-  width: 100%;
-}
-
-#shareDiv span {
-  width: 50px;
-  display: inline-block;
-}
-
-#shareDiv input {
-  font-size: 16px;
-  padding: 5px;
-  width: calc(100% - 70px);
-}
-
-#execResultsTextArea {
-  border: 0;
-  width: 100%;
-}
-
-.LintError,
-.LintErrorWithSuggestion,
-.LintCellTypeHints {
-  white-space: pre;
-  color: red;
-  background: #e5e5e5;
-}
-.LintCellTypeHints {
-  color: black;
-}
-.LintErrorWithSuggestion {
-  cursor: pointer;
-}
-
-    </style>
-    <title>Tree Language IDE</title>
-  </head>
-  <body>
-    <h1>
-      <a href="https://treenotation.org"><img id="logo" src="/helloWorld3D.svg" title="TreeNotation.org" style="width: 100px; vertical-align: middle;"/></a>Tree
-      Language Designer
-    </h1>
-    <p>
-      <a href="/sandbox/">Tree Notation Sandbox</a> |
-      <a id="helpToggleButton" onclick="$('#helpSection').toggle(); return false;" href="">Help</a> |
-      <a href="https://www.youtube.com/watch?v=UQHaI78jGR0=">Watch the Tutorial Video</a> |
-      <a href="#" id="resetButton">Reset</a> |
-      <span id="versionSpan"></span>
-    </p>
-    <div id="helpSection" style="display: none;">
-      <p>
-        This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on
-        the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell
-        checking, suggested corrections, and more.
-      </p>
-
-      <p>
-        Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as
-        "app.grammarProgram" and program at "app.program". We also have a work-in-progress
-        <a href="https://github.com/breck7/jtree/blob/master/languageChecklist.md">checklist for creating new Tree Languages</a>.
-      </p>
-    </div>
-
-    <p id="samplesButtons"></p>
-    <div id="shareDiv"><span>Share</span><input id="shareLink" readonly /></div>
-    <div id="otherErrorsDiv"></div>
-    <table>
-      <tr>
-        <td>
-          Grammar for your Tree Language <a href="#" id="inferKeywordGrammarButton">Infer Prefix Grammar</a> |
-          <a href="#" id="downloadButton">Download Bundle</a> |
-          <a href="#" id="simulateDataButton">Generate Random Program</a>
-          <br />
-          <textarea id="grammarConsole"></textarea>
-        </td>
-        <td>
-          Source Code in your Language <input type="radio" name="onCodeUp"><a href="#" id="execButton">Execute</a> | <input type="radio" name="onCodeUp"><a href="#" id="compileButton">Compile</a> |
-          <input type="radio" name="onCodeUp"><a href="#" id="visualizeButton">Explain</a>
-          <br />
-          <textarea id="codeConsole"></textarea>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          Grammar Errors:<br />
-          <pre id="grammarErrorsConsole"></pre>
-          <div id="readmeComponent"></div>
-        </td>
-        <td>
-          Language Errors:<br />
-          <pre id="codeErrorsConsole"></pre>
-          Output:<br />
-          <textarea id="execResultsTextArea" placeholder="Results..."></textarea>
-          <div id="htmlOutputDiv"></div>
-        </td>
-      </tr>
-    </table>
-
-    <a style="display: block; position: absolute; top: 0; right: 0;" href="https://github.com/treenotation/jtree/tree/master/designer"
-      ><img src="/github-fork.svg"
-    /></a>
+    <script>
+      AbstractTreeComponentRootNode.startApp(DesignerApp)
+    </script>
   </body>
 </html>

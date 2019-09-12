@@ -11,10 +11,6 @@ class SandboxCommander extends AbstractCommander {
     this._app = app
   }
   private _app: SandboxApp
-
-  retryGameCommand() {
-    this._getGame().retry()
-  }
 }
 
 class SandboxApp extends AbstractTreeComponentRootNode {
@@ -121,10 +117,7 @@ textarea,pre
 pre
  line-height 14px
 .keyword
- color green
-#logo
- width 100px
- vertical-align middle`
+ color green`
   }
 
   static getDefaultStartState() {
@@ -135,6 +128,12 @@ githubTriangleComponent`
 }
 
 class headerComponent extends AbstractTreeComponent {
+  getHakon() {
+    return `#logo
+ width 100px
+ vertical-align middle`
+  }
+
   getStumpCode() {
     return `div
  h1

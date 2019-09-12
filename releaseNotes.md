@@ -1,4 +1,4 @@
-Edge / 2019-09-08
+40.2.0 / 2019-09-11
 ===================
 - New: getInPlacePreludeCellTypeTreeWithNodeConstructorNames
 - New: generateSimulatedData
@@ -6,6 +6,7 @@ Edge / 2019-09-08
 - New: explain 2D visualizer in designer app
 - Fix: highlighting fix for regression caused by blank cells fix
 - Fix: generateSimulatedData improvements
+- Infra: migrated Sandbox and Designer apps to TCF
 
 40.1.0 / 2019-09-08
 ===================

@@ -1,5 +1,3 @@
-"use strict"
-Object.defineProperty(exports, "__esModule", { value: true })
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
@@ -564,6 +562,9 @@ class TreeNode extends AbstractNode {
   }
   getPointRelativeTo(relativeTo) {
     return this._getPoint(relativeTo)
+  }
+  getIndentLevel(relativeTo) {
+    return this._getXCoordinate(relativeTo) - 1
   }
   getIndentation(relativeTo) {
     return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
@@ -2469,7 +2470,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "40.1.0"
+TreeNode.getVersion = () => "40.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -2716,6 +2717,20 @@ class GrammarBackedRootNode extends GrammarBackedNode {
   getRootProgramNode() {
     return this
   }
+  getProgramAsCells() {
+    return this.getTopDownArray().map(node => {
+      const cells = node._getGrammarBackedCellArray()
+      let indents = node.getIndentLevel()
+      while (indents) {
+        cells.unshift(undefined)
+        indents--
+      }
+      return cells
+    })
+  }
+  getProgramWidth() {
+    return Math.max(...this.getProgramAsCells().map(line => line.length))
+  }
   createParser() {
     return new TreeNode.Parser(BlobNode)
   }
@@ -2901,7 +2916,11 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
   }
   getLineCellPreludeTypes() {
     return this._getGrammarBackedCellArray()
-      .map(slot => slot._getCellTypeDefinition()._getPreludeKindId())
+      .map(slot => {
+        const def = slot._getCellTypeDefinition()
+        //todo: cleanup
+        return def ? def._getPreludeKindId() : PreludeCellTypeIds.anyCell
+      })
       .join(" ")
   }
   getLineHighlightScopes(defaultScope = "source") {
@@ -4041,12 +4060,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       { regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
       { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
     ])
-  }
-  getProgramAsCells() {
-    return this.map(node => node._getGrammarBackedCellArray())
-  }
-  getProgramWidth() {
-    return Math.max(...this.getProgramAsCells().map(line => line.length))
   }
   _getCompiledLoadedNodeTypes() {
     if (!this._cache_compiledLoadedNodeTypes) {

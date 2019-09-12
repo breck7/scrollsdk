@@ -432,8 +432,6 @@ td
   margin 0
   box-shadow rgba(1,1,1,.4) 1px 1px 1px
   overflow scroll
-#otherErrorsDiv
- color red
 code
  white-space pre
 pre
@@ -442,19 +440,6 @@ a
  cursor pointer
  color rgba(1, 47, 52, 1)
  text-decoration underline
-#shareDiv
- font-size 16px
- width 100%
- span
-  width 50px
-  display inline-block
- input
-  font-size 16px
-  padding 5px
-  width calc(100% - 70px)
-#execResultsTextArea
-  border 0
-  width 100%
 .LintError,.LintErrorWithSuggestion,.LintCellTypeHints
  white-space pre
  color red
@@ -493,16 +478,34 @@ class shareComponent extends AbstractTreeComponent {
   id shareLink
   readonly`
   }
+  getHakon() {
+    return `#shareDiv
+ font-size 16px
+ width 100%
+ span
+  width 50px
+  display inline-block
+ input
+  font-size 16px
+  padding 5px
+  width calc(100% - 70px)`
+  }
 }
 
 class otherErrorsComponent extends AbstractTreeComponent {
   getStumpCode() {
     return `div
+ style color: red;
  id otherErrorsDiv`
   }
 }
 
 class tableComponent extends AbstractTreeComponent {
+  getHakon() {
+    return `#execResultsTextArea
+ border 0
+ width 100%`
+  }
   getStumpCode() {
     return `table
  tr
@@ -516,7 +519,6 @@ class tableComponent extends AbstractTreeComponent {
    span  | 
    a Generate Random Program
     id simulateDataButton
-   br
    textarea
     id grammarConsole
   td
@@ -538,7 +540,6 @@ class tableComponent extends AbstractTreeComponent {
     name onCodeUp
    a Explain
     id visualizeButton
-   br
    textarea
     id codeConsole
  tr
@@ -563,7 +564,7 @@ class tableComponent extends AbstractTreeComponent {
 
 class headerComponent extends AbstractTreeComponent {
   _getTitle() {
-    return `Tree Notation Sandbox`
+    return `Tree Notation Designer`
   }
   getHakon() {
     return `#logo

@@ -19,7 +19,10 @@ This framework is currently a **research project**. We expect to have **version 
 
 The [github repo](https://github.com/treenotation/jtree/tree/master/treeComponentFramework/sweepercraft) contains a demonstration game called "SweeperCraft" that let's you design your own Minesweeper board.
 
-This framework also powers [Ohayo](https://github.com/treenotation/ohayo).
+This framework also powers:
+ - [Tree Notation Sandbox](https://github.com/treenotation/jtree/tree/master/sandbox).
+ - [Tree Language Designer](https://github.com/treenotation/jtree/tree/master/designer).
+ - [Ohayo](https://github.com/treenotation/ohayo).
 
 ## Current Architecture
 

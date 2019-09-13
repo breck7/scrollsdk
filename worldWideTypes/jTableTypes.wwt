@@ -1,0 +1,176 @@
+intType
+ extends numberType
+floatType
+ extends numberType
+positiveIntType
+ extends intType
+columnNameType
+ extends stringType
+treeNodeType
+ extends anyType
+nowType
+ extends floatType
+probabilityType
+ extends floatType
+nounClassesType
+ extends stringType
+nounTypeType
+ extends stringType
+rawRowJavascriptObjectType
+ extends ObjectType
+displayFormatType
+ extends stringType
+columnTitleType
+ extends stringType
+reductionEnumType
+ enumOptions count sum mean min max median
+javascriptNativeUnionType
+ unionTypes numberType stringType DateType booleanType
+momentType
+ extends anyType
+vegaTimeUnitUnionType
+ unionTypes vegaYearTimeUnitType vegaQuarterTimeUnitType vegaMonthTimeUnitType vegaDateTimeUnitType vegaDayTimeUnitType vegaHoursTimeUnitType vegaMinutesTimeUnitType vegaSecondsTimeUnitType vegaMillisecondsTimeUnitType
+entropyType
+ comment I belive this is just how many options in domainType
+ extends positiveIntType
+predictionHintsStringType
+ extends stringType
+vegaYearTimeUnitEnumType
+ enumOptions year yearquarter yearquartermonth yearmonth yearmonthdate yearmonthdatehours yearmonthdatehoursminutes yearmonthdatehoursminutesseconds
+vegaQuarterTimeUnitEnumType
+ enumOptions quarter quartermonth
+vegaMonthTimeUnitEnumType
+ enumOptions month monthdate
+vegaDateTimeUnitEnumType
+ comment (Day of month, i.e., 1 - 31)
+ enumOptions date
+vegaDayTimeUnitEnumType
+ comment (Day of week, i.e., Monday - Friday)
+ enumOptions day
+vegaHoursTimeUnitEnumType
+ enumOptions hours hoursminutes hoursminutesseconds
+vegaMinutesTimeUnitEnumType
+ enumOptions minutes minutesseconds
+vegaSecondsTimeUnitEnumType
+ enumOptions seconds secondsmilliseconds
+vegaMillisecondsTimeUnitEnumType
+ enumOptions milliseconds
+propertyNameToColumnNameMapType
+ key propertyName stringType
+ value columnNameType
+objectWithOnlyNativeJavascriptTypesMapType
+ key columnName stringType
+ value javascriptNativeUnionType
+sourceObjectType
+ extends anyType
+primitiveEnumType
+ enumOptions millisecond second date day week month monthDay hour hourMinute minute year feet usd number numberString string text path dir code html url object boolean int
+countMapType
+ key key anyType
+ value valueCountsInterface
+decileMapType
+ key decile numberType
+ value numberType
+columnDefinitionObjectInterface
+ nameField columnNameType
+  optional
+ reductionField reductionTypeType
+  optional
+ typeField primitiveTypeType
+  optional
+ titleField columnTitleType
+  optional
+ formatField displayFormatType
+  optional
+ sourceField columnNameType
+  optional
+ mathFnField FunctionType
+  optional
+ accessorFnField FunctionType
+  optional
+ titlePotentialField probabilityType
+  optional
+ isStringField booleanType
+  optional
+ isTemporalField booleanType
+  optional
+ isLinkField booleanType
+  optional
+ vegaTypeField stringType
+  optional
+ vegaTimeUnitField stringType
+  optional
+ estimatedTextLengthField positiveIntType
+  optional
+ minField numberType
+  optional
+jsonParseAttemptInterface
+ okField booleanType
+ resultField anyType
+  optional
+columnNamePredictionInterface
+ columnNameField columnNameType
+ propertyNameField stringType
+valueCountsInterface
+ countField positiveIntType
+ indexField positiveIntType
+reductionResultInterface
+ comment does this work only for numbers? or do we support text too?
+ incompleteCountField positiveIntType
+  optional
+ uniqueValuesField positiveIntType
+  optional
+ countField positiveIntType
+  optional
+ sumField numberType
+  optional
+ medianField numberType
+  optional
+ meanField numberType
+  optional
+ minField numberType
+  optional
+ maxField numberType
+  optional
+ rangeField numberType
+  optional
+ modeField numberType
+  optional
+ modeSizeField numberType
+  optional
+ decilesField decileMapType
+  optional
+tableInputsInterface
+ rowsField rawRowJavascriptObjectType
+  array
+ columnDefinitionsField columnDefinitionObjectType
+  array
+  optional
+primitiveTypeGuessInterface
+ comment todo: needs to sync with primitiveType
+ numberField probabilityType
+  optional
+ dateField probabilityType
+  optional
+ stringField probabilityType
+  optional
+ feetField probabilityType
+  optional
+ objectField probabilityType
+  optional
+ booleanField probabilityType
+  optional
+ usdField probabilityType
+  optional
+ millisecondField probabilityType
+  optional
+ yearField probabilityType
+  optional
+ secondField probabilityType
+  optional
+summaryVectorInterface
+ mapField countMapType
+ valuesField anyType
+  array
+ incompleteCountField positiveIntType
+ uniqueValuesField positiveIntType

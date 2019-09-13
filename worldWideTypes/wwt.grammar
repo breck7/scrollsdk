@@ -1,0 +1,75 @@
+wwtNode
+ description WorldWideTypes. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
+ root
+ inScope abstractTypeDeclarationNode interfaceDeclarationNode
+ catchAllNodeType errorNode
+keywordCell
+anyCell
+fieldIdCell
+ extends keywordCell
+enumOptionCell
+ extends anyCell
+ highlightScope string
+typeIdCell
+ highlightScope variable
+stringKeyCell
+ highlightScope string
+interfaceIdCell
+ highlightScope variable
+commentKeywordCell
+ extends keywordCell
+ highlightScope comment
+commentCell
+ extends anyCell
+ highlightScope comment
+commentNode
+ baseNodeType blobNode
+ cells commentKeywordCell
+ catchAllCellType commentCell
+errorNode
+ baseNodeType errorNode
+abstractTypeDeclarationNode
+ abstract
+ inScope extendsNode commentNode
+ cells typeIdCell
+extendsNode
+ cells keywordCell typeIdCell
+enumTypeDeclarationNode
+ extends abstractTypeDeclarationNode
+ inScope enumOptionsNode
+ pattern EnumType$
+enumOptionsNode
+ cells keywordCell
+ catchAllCellType enumOptionCell
+unionTypesNode
+ cells keywordCell
+ catchAllCellType typeIdCell
+unionTypeDeclarationNode
+ extends abstractTypeDeclarationNode
+ pattern UnionType$
+ inScope unionTypesNode
+mapTypeDeclarationNode
+ extends abstractTypeDeclarationNode
+ pattern MapType$
+ inScope keyNode valueNode
+keyNode
+ cells keywordCell stringKeyCell typeIdCell
+valueNode
+ cells keywordCell typeIdCell
+typeDeclarationNode
+ extends abstractTypeDeclarationNode
+ pattern Type$
+interfaceDeclarationNode
+ pattern Interface$
+ cells interfaceIdCell
+ inScope commentNode fieldDeclarationNode
+fieldDeclarationNode
+ pattern Field
+ cells fieldIdCell typeIdCell
+ inScope optionalNode arrayNode
+optionalNode
+ description Is this field optional?
+ cells keywordCell
+arrayNode
+ description Does this take an array
+ cells keywordCell

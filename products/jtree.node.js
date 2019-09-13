@@ -1,3 +1,5 @@
+"use strict"
+Object.defineProperty(exports, "__esModule", { value: true })
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
@@ -2946,12 +2948,20 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     const indent = this.getIndentation()
     return indentCharacter !== undefined ? indentCharacter.repeat(indent.length) : indent
   }
+  _getFields() {
+    // fields are like cells
+    const fields = {}
+    this.forEach(node => {
+      const def = node.getDefinition()
+      if (def.isRequired() || def.has(GrammarConstants.single)) fields[node.getWord(0)] = node.getContent()
+    })
+    return fields
+  }
   _getCompiledLine() {
     const compiler = this.getDefinition()._getCompilerObject()
     const catchAllCellDelimiter = compiler[GrammarConstantsCompiler.catchAllCellDelimiter]
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
-    // const vars = this.cells //  Object.assign(this.toObject(), this.cells) // todo: strengthen this
-    return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, this.cells) : this.getLine()
+    return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
   }
   compile() {
     const def = this.getDefinition()

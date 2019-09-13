@@ -1,5 +1,5 @@
 wwtNode
- description WorldWideTypes. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
+ description WorldWideTypes. A work in progress. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
  root
  inScope abstractTypeDeclarationNode interfaceDeclarationNode
  catchAllNodeType errorNode
@@ -33,10 +33,13 @@ errorNode
  baseNodeType errorNode
 abstractTypeDeclarationNode
  abstract
- inScope extendsNode commentNode
+ inScope commentNode
  cells typeIdCell
 extendsNode
  cells keywordCell typeIdCell
+ required
+ compiler
+  stringTemplate
 enumTypeDeclarationNode
  extends abstractTypeDeclarationNode
  inScope enumOptionsNode
@@ -62,6 +65,7 @@ valueNode
 typeDeclarationNode
  extends abstractTypeDeclarationNode
  pattern Type$
+ inScope extendsNode
  compiler
   stringTemplate export declare type {typeIdCell} = {extends}
 interfaceDeclarationNode

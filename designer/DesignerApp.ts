@@ -30,7 +30,7 @@ class DesignerApp extends AbstractTreeComponentRootNode {
     })
   }
 
-  public languages = "newlang hakon stump dumbdown arrow dug iris fire swarm project stamp grammar config jibberish numbers poop".split(" ")
+  public languages = "newlang hakon stump dumbdown arrow dug iris fire wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
 
   public program: any
   public grammarProgram: any

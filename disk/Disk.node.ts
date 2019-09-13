@@ -1,6 +1,6 @@
 const fs = require("fs")
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class Disk {
   static getTreeNode = () => require("../index.js").jtree.TreeNode // todo: cleanup

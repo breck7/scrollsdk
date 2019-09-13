@@ -6,7 +6,7 @@ const mkdirp = require("mkdirp")
 const { jtree } = require("../index.js")
 
 import { CommandLineApp } from "./commandLineApp.node"
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}
 

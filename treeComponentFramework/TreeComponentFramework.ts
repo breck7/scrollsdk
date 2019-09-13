@@ -1,6 +1,6 @@
 //onsave jtree build produce TreeComponentFramework.browser.js
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { jtree } = require("../index.js")
 const stumpNode = require("../langs/stump/stump.node.js")

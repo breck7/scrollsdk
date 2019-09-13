@@ -5,7 +5,7 @@ const { jtree } = require("../index.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const ts = require("typescript")
 

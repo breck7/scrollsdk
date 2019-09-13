@@ -1,5 +1,5 @@
 import { TreeNode } from "./TreeNode"
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 import { TreeUtils } from "./TreeUtils"
 
 interface updatedFile {

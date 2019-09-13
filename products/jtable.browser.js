@@ -1,4 +1,3 @@
-// todo: create a Tree Language for number formatting
 var VegaTypes
 ;(function(VegaTypes) {
   VegaTypes["nominal"] = "nominal"

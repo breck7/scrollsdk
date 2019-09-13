@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 const { jtree } = require("../index.js")
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 

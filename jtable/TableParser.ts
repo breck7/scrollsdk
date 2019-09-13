@@ -1,6 +1,6 @@
 const { jtree } = require("../index.js")
 
-import { jTableTypes } from "../worldWideTypes/jTableTypes"
+import { jTableTypes } from "../products/jTableTypes"
 
 enum TableParserIds {
   csv = "csv",

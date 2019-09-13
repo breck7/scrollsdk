@@ -2,7 +2,7 @@
 
 import { Column } from "./Column"
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { jtree } = require("../index.js")
 

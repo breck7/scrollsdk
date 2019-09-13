@@ -3,6 +3,7 @@ wwtNode
  root
  inScope abstractTypeDeclarationNode interfaceDeclarationNode
  catchAllNodeType errorNode
+ compilesTo ts
 keywordCell
 anyCell
 fieldIdCell
@@ -26,6 +27,8 @@ commentNode
  baseNodeType blobNode
  cells commentKeywordCell
  catchAllCellType commentCell
+ compiler
+  stringTemplate /* {commentCell} */
 errorNode
  baseNodeType errorNode
 abstractTypeDeclarationNode
@@ -59,6 +62,8 @@ valueNode
 typeDeclarationNode
  extends abstractTypeDeclarationNode
  pattern Type$
+ compiler
+  stringTemplate export declare type {typeIdCell} = {extends}
 interfaceDeclarationNode
  pattern Interface$
  cells interfaceIdCell

@@ -3,7 +3,7 @@
 import { Table, ComparisonOperators } from "./Table"
 import { DummyDataSets } from "./DummyDataSets"
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { jtree } = require("../index.js")
 

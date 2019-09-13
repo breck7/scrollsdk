@@ -2,7 +2,7 @@
 
 const { jtree } = require("../index.js")
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { Disk } = require("../products/Disk.node.js")
 

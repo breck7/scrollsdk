@@ -21,7 +21,7 @@ const makeProgram = (grammarCode: string, code: string) => {
 
 const makeIrisProgram = (code: string) => makeProgram(irisGrammar, code)
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
 const TreeUtils = jtree.Utils

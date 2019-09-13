@@ -1,6 +1,6 @@
 const { jtree } = require("../index.js")
 
-import { jTableTypes } from "../worldWideTypes/JTableTypes"
+import { jTableTypes } from "../products/JTableTypes"
 import { Row } from "./Row"
 import { Column } from "./Column"
 

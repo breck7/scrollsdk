@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+//onsave jtree build produce commandLineApp.node.js
 const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
@@ -301,7 +302,7 @@ ${grammars.toTable()}`
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) print(app[partialMatches[0]](paramOne, paramTwo))
       else print(`Multiple matches for '${action}'. Options are:\n${partialMatches.join("\n")}`)
-    } else print(`Unknown command '${action}'. Type 'tree help' to see available commands.`)
+    } else print(`Unknown command '${action}'. Options are:\n${app._getAllCommands().join("\n")}. \nType 'tree help' to see help for commands.`)
   }
 }
 if (!module.parent) CommandLineApp.main()

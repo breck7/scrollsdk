@@ -1,6 +1,6 @@
 const { jtree } = require("../index.js")
 
-import { jTableTypes } from "../worldWideTypes/JTableTypes"
+import { jTableTypes } from "../products/JTableTypes"
 
 // todo: create a Tree Language for number formatting
 const d3format = require("d3-format")

@@ -2965,7 +2965,8 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     const compiler = this.getDefinition()._getCompilerObject()
     const catchAllCellDelimiter = compiler[GrammarConstantsCompiler.catchAllCellDelimiter]
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
-    return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, this.cells) : this.getLine()
+    const vars = Object.assign(this.toObject(), this.cells) // todo: strengthen this
+    return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, vars) : this.getLine()
   }
   compile() {
     const def = this.getDefinition()

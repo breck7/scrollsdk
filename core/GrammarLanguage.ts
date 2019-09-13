@@ -1,6 +1,6 @@
 import { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode } from "./TreeNode"
 import { TreeUtils } from "./TreeUtils"
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {
   new (code?: string): GrammarBackedRootNode
@@ -497,6 +497,7 @@ abstract class GrammarBackedNonRootNode extends GrammarBackedNode {
     const compiler = this.getDefinition()._getCompilerObject()
     const catchAllCellDelimiter = compiler[GrammarConstantsCompiler.catchAllCellDelimiter]
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
+    // const vars = this.cells //  Object.assign(this.toObject(), this.cells) // todo: strengthen this
     return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, this.cells) : this.getLine()
   }
 

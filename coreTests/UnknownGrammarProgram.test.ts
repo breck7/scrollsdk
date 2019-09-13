@@ -4,7 +4,7 @@
 
 const { Disk } = require("../products/Disk.node.js")
 
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 import { UnknownGrammarProgram } from "../core/UnknownGrammarProgram"
 const { jtree } = require("../index.js")
 

@@ -8,11 +8,11 @@ const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { AbstractBuilder } = require("./products/AbstractBuilder.node.js")
 const { Disk } = require("./products/Disk.node.js")
 
-import { treeNotationTypes } from "./worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "./products/treeNotationTypes"
 
 class Builder extends AbstractBuilder {
   private _getTypesPath() {
-    return __dirname + "/worldWideTypes/treeNotationTypes.ts"
+    return __dirname + "/products/treeNotationTypes.ts"
   }
 
   produce(outputFileName: string) {

@@ -1,6 +1,6 @@
 const express = require("express")
 const { readFile } = require("fs")
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 

@@ -1,7 +1,7 @@
 const fs = require("fs")
 
 import { jtree } from "./jtree"
-import { treeNotationTypes } from "../worldWideTypes/treeNotationTypes"
+import { treeNotationTypes } from "../products/treeNotationTypes"
 import { GrammarProgram, GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage"
 import { Upgrader } from "./Upgrader"
 

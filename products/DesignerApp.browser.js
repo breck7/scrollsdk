@@ -483,7 +483,7 @@ class tableComponent extends AbstractTreeComponent {
 }
 class headerComponent extends AbstractTreeComponent {
   _getTitle() {
-    return `Tree Notation Designer`
+    return `Tree Language Designer`
   }
   getHakon() {
     return `#logo
@@ -502,7 +502,7 @@ class headerComponent extends AbstractTreeComponent {
     title TreeNotation.org
   span ${this._getTitle()}
  p
-  a Tree Language Sandbox
+  a Tree Notation Sandbox
    href /sandbox/
   span  | 
   a Help

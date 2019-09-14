@@ -317,5 +317,6 @@ testTree.getNeighbors = (equal: any) => {
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../../index.js").jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+
 export { testTree }

@@ -1669,10 +1669,7 @@ someCode
     win.add = add
     win.lineOfCode = lineOfCode
     // Act
-    const grammarProgram = new jtreeBase.GrammarProgram(
-      jibberishGrammarCode,
-      (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
-    )
+    const grammarProgram = new jtreeBase.GrammarProgram(jibberishGrammarCode, (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar")
     const JibberishProgram = grammarProgram.getRootConstructor()
     const program = new JibberishProgram(code) // error here
     const errs = program.getAllErrors()

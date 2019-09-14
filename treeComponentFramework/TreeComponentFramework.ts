@@ -1582,7 +1582,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   }
 
   getStumpCode() {
-    const app = this.getRootNode()
+    const app: any = this.getRootNode()
     return `div
  class TreeComponentFrameworkDebuggerComponent
  div x

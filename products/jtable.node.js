@@ -978,7 +978,6 @@ const PrimitiveTypes = {
   HourMinute,
   CodeCol
 }
-
 class Row {
   constructor(sourceObject = {}, table) {
     this._puid = this._getUniqueId()
@@ -1017,10 +1016,7 @@ class Row {
     const sourceColName = destColumn.getSourceColumnName()
     const sourceCol = columns[sourceColName]
     // only use source if we still have access to it
-    const val =
-      sourceColName && sourceCol
-        ? this._getRowValueFromOriginalOrSource(sourceColName, sourceCol.getPrimitiveTypeName(), destColumn.getPrimitiveTypeName())
-        : this.getRowOriginalValue(colName)
+    const val = sourceColName && sourceCol ? this._getRowValueFromOriginalOrSource(sourceColName, sourceCol.getPrimitiveTypeName(), destColumn.getPrimitiveTypeName()) : this.getRowOriginalValue(colName)
     const res = destColumn.getPrimitiveTypeObj().getAsNativeJavascriptType(val)
     const mathFn = destColumn.getMathFn()
     if (mathFn) return mathFn(res)
@@ -1059,7 +1055,6 @@ class Row {
   }
 }
 Row._uniqueId = 0
-
 var TableParserIds
 ;(function(TableParserIds) {
   TableParserIds["csv"] = "csv"
@@ -1983,14 +1978,7 @@ And that has made all the difference.`
     ]
   ],
   playerGoals: [["PlayerGoals", "Goals"], ["Player1", 11], ["Player2", 2], ["Player3", 2], ["Player4", 2], ["Player5", 7]],
-  patients: [
-    ["Patient", "Gender", "Weight"],
-    ["Patient1", "Girl", "3.31"],
-    ["Patient2", "Male", "2.8"],
-    ["Patient3", "Male", "3.7"],
-    ["Patient4", "Girl", "2.5"],
-    ["Patient5", "Girl", "2.8"]
-  ],
+  patients: [["Patient", "Gender", "Weight"], ["Patient1", "Girl", "3.31"], ["Patient2", "Male", "2.8"], ["Patient3", "Male", "3.7"], ["Patient4", "Girl", "2.5"], ["Patient5", "Girl", "2.8"]],
   regionalMarkets: [
     ["Location", "Parent", "Market trade volume (size)", "Market increase/decrease (color)"],
     ["Global", null, 0, 0],
@@ -2096,7 +2084,6 @@ And that has made all the difference.`
     [69, 80]
   ]
 }
-
 class PivotTable {
   constructor(rows, inputColumns, outputColumns) {
     this._columns = {}
@@ -2360,8 +2347,7 @@ ${cols}
     const userDefinedColumnName = propertyNameToColumnNameMap[propertyName]
     if (this.getColumnsMap()[userDefinedColumnName]) return [{ propertyName: propertyName, columnName: userDefinedColumnName }] // Table has a column named this, return okay.
     // Table has a lowercase column named this. Return okay. Todo: do we want to do this?
-    if (userDefinedColumnName && this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()])
-      return [this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()]]
+    if (userDefinedColumnName && this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()]) return [this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()]]
     if (predictionHints) {
       const potentialCols = this._predictColumns(predictionHints, propertyNameToColumnNameMap)
       if (potentialCols.length) return [{ propertyName: propertyName, columnName: potentialCols[0].getColumnName() }]

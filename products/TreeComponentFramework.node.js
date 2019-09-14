@@ -879,6 +879,16 @@ class AbstractCommander {
   getTarget() {
     return this._target
   }
+  toggleTreeComponentFrameworkDebuggerCommand() {
+    // todo: cleanup
+    const node = this._app.getNode("TreeComponentFrameworkDebuggerComponent")
+    if (node) {
+      node.unmountAndDestroy()
+    } else {
+      this._app.appendLine("TreeComponentFrameworkDebuggerComponent")
+      this._app.renderAndGetRenderResult()
+    }
+  }
 }
 class AbstractTheme {
   hakonToCss(str) {
@@ -910,9 +920,6 @@ class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   }
   getRootNode() {
     return super.getRootNode()
-  }
-  getCommander() {
-    return new TreeComponentCommander(this)
   }
   getStumpNode() {
     return this._htmlStumpNode
@@ -1019,6 +1026,12 @@ class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   }
   _getCss() {
     return this.getTheme().hakonToCss(this.getHakon())
+  }
+  toPlainHtml(containerId) {
+    return `<div id="${containerId}">
+ <style>${this.getTheme().hakonToCss(this.getHakon())}</style>
+${new stumpNode(this.getStumpCode()).compile()}
+</div>`
   }
   _getCssStumpCode() {
     return `styleTag
@@ -1198,7 +1211,48 @@ class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   }
 }
 AbstractTreeComponent._mountedTreeComponents = 0
+class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
+  getHakon() {
+    return `.TreeComponentFrameworkDebuggerComponent
+ position fixed
+ top 5
+ left 5
+ z-index 1000
+ background rgba(254,255,156, .9)
+ box-shadow 1px 1px 1px rgba(0,0,0,.5)
+ padding 12px
+ overflow scroll
+ max-height 500px
+.TreeComponentFrameworkDebuggerComponentCloseButton
+ position absolute
+ cursor pointer
+ opacity .9
+ top 2px
+ right 2px
+ &:hover
+  opacity 1`
+  }
+  getStumpCode() {
+    const app = this.getRootNode()
+    return `div
+ class TreeComponentFrameworkDebuggerComponent
+ div x
+  class TreeComponentFrameworkDebuggerComponentCloseButton
+  stumpOnClickCommand toggleTreeComponentFrameworkDebuggerCommand
+ div
+  span This app is powered by the
+  a Tree Component Framework
+   href https://github.com/treenotation/jtree/tree/master/treeComponentFramework
+ pre
+  bern
+${app.toString(3)}`
+  }
+}
 class AbstractTreeComponentRootNode extends AbstractTreeComponent {
+  constructor() {
+    super(...arguments)
+    this._commander = new TreeComponentCommander(this)
+  }
   getTheme() {
     if (!this._theme) this._theme = new DefaultTheme()
     return this._theme
@@ -1213,7 +1267,38 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
     }
     return this._willowProgram
   }
+  getCommander() {
+    return this._commander
+  }
+  treeComponentDidMount() {}
+  // todo: remove?
   async appWillFirstRender() {}
+  // todo: remove?
+  async appDidFirstRender() {}
+  _setTreeComponentFrameworkEventListeners() {
+    const willowBrowser = this.getWillowProgram()
+    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
+    const commander = this.getCommander()
+    const checkAndExecute = (el, attr, evt) => {
+      const stumpNode = willowBrowser.getStumpNodeFromElement(el)
+      evt.preventDefault()
+      evt.stopImmediatePropagation()
+      const commandWithArgs = stumpNode.getStumpNodeAttr(attr)
+      const commandArgs = commandWithArgs.split(" ")
+      const command = commandArgs.shift()
+      commander[command](...commandArgs)
+      return false
+    }
+    const DataShadowEvents = WillowConstants.DataShadowEvents
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt) {
+      if (evt.ctrlKey) return true
+      return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
+    })
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt) {
+      if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
+      return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
+    })
+  }
   static async startApp(appClass) {
     document.addEventListener(
       "DOMContentLoaded",
@@ -1223,13 +1308,43 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
           const startState = appClass.getDefaultStartState()
           const anyAppClass = appClass // todo: cleanup
           win.app = new anyAppClass(startState)
+          win.app._setTreeComponentFrameworkEventListeners()
           await win.app.appWillFirstRender()
           win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
+          win.app.appDidFirstRender()
         }
       },
       false
     )
   }
 }
+class AbstractGithubTriangleComponent extends AbstractTreeComponent {
+  constructor() {
+    super(...arguments)
+    this.githubLink = `https://github.com/treenotation/jtree`
+  }
+  getHakon() {
+    return `.AbstractGithubTriangleComponent
+ display block
+ position absolute
+ top 0
+ right 0`
+  }
+  getStumpCode() {
+    return `a
+ class AbstractGithubTriangleComponent
+ href ${this.githubLink}
+ img
+  src /github-fork.svg`
+  }
+}
 
-module.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram }
+module.exports = {
+  AbstractTreeComponentRootNode,
+  AbstractTreeComponent,
+  AbstractCommander,
+  WillowConstants,
+  WillowProgram,
+  AbstractGithubTriangleComponent,
+  TreeComponentFrameworkDebuggerComponent
+}

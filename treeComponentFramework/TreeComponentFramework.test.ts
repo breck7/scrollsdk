@@ -29,5 +29,6 @@ testTree.all = (equal: any) => {
   equal(!!app.getDefaultStartState(), true, "headerComponent")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../products/jtree.node.js").Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+
 export { testTree }

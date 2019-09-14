@@ -647,9 +647,7 @@ class TreeNode extends AbstractNode {
   }
   toString(indentCount = 0, language = this) {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
-    return (
-      language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
-    )
+    return language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
   }
   printLinesFrom(start, quantity) {
     return this._printLinesFrom(start, quantity, false)
@@ -686,9 +684,7 @@ class TreeNode extends AbstractNode {
     // Set up the firstWord part of the node
     const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
     const lineHtml = this._getLineHtml()
-    const childrenHtml = this.length
-      ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
-      : ""
+    const childrenHtml = this.length ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>` : ""
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
   _getWords(startFrom) {
@@ -2702,8 +2698,7 @@ class GrammarBackedNode extends TreeNode {
   _getRequiredNodeErrors(errors = []) {
     Object.values(this.getDefinition().getFirstWordMapWithDefinitions()).forEach(def => {
       if (def.isRequired()) {
-        if (!this.getChildren().some(node => node.getDefinition() === def))
-          errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
+        if (!this.getChildren().some(node => node.getDefinition() === def)) errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
       }
     })
     return errors
@@ -3530,11 +3525,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   getCatchAllGetter(wordIndex) {
     const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
     return `get ${this.getCellTypeId()}() {
-      return ${
-        wordToNativeJavascriptTypeParser
-          ? `this.getWordsFrom(${wordIndex}).map(val => ${wordToNativeJavascriptTypeParser}(val))`
-          : `this.getWordsFrom(${wordIndex})`
-      }
+      return ${wordToNativeJavascriptTypeParser ? `this.getWordsFrom(${wordIndex}).map(val => ${wordToNativeJavascriptTypeParser}(val))` : `this.getWordsFrom(${wordIndex})`}
     }`
   }
   // `this.getWordsFrom(${requireds.length + 1})`
@@ -3718,8 +3709,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     })
   }
   _getConstructorDefinedInGrammar() {
-    if (!this._cache_definedNodeConstructor)
-      this._cache_definedNodeConstructor = this.getLanguageDefinitionProgram()._getCompiledLoadedNodeTypes()[this.getNodeTypeIdFromDefinition()]
+    if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this.getLanguageDefinitionProgram()._getCompiledLoadedNodeTypes()[this.getNodeTypeIdFromDefinition()]
     return this._cache_definedNodeConstructor
   }
   _getFirstWordMatch() {
@@ -3859,9 +3849,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     const catchAllConstructor = this._getCatchAllNodeConstructorToJavascript()
     if (!hasFirstWords && !catchAllConstructor && !regexRules.length) return ""
     const firstWordsStr = hasFirstWords
-      ? `Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {` +
-        firstWords.map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`).join(",\n") +
-        "})"
+      ? `Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {` + firstWords.map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`).join(",\n") + "})"
       : "undefined"
     const regexStr = regexRules.length
       ? `[${regexRules
@@ -3884,22 +3872,13 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     return nodeDef._getGeneratedClassName()
   }
   _nodeDefToJavascriptClass() {
-    const components = [
-      this._getParserToJavascript(),
-      this._getErrorMethodToJavascript(),
-      this._getCellGettersAndNodeTypeConstants(),
-      this._getCustomJavascriptMethods()
-    ].filter(code => code)
+    const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(code => code)
     const extendedDef = this._getExtendedParent()
     const rootNode = this._getLanguageRootNode()
     const amIRoot = this._amIRoot()
     // todo: cleanup? If we have 2 roots, and the latter extends the first, the first should extent GBRootNode. Otherwise, the first should not extend RBRootNode.
     const doesRootExtendMe = this.has(GrammarConstants.root) && rootNode._getAncestorSet().has(this._getGeneratedClassName())
-    const extendsClassName = extendedDef
-      ? extendedDef._getGeneratedClassName()
-      : amIRoot || doesRootExtendMe
-      ? "jtree.GrammarBackedRootNode"
-      : "jtree.GrammarBackedNonRootNode"
+    const extendsClassName = extendedDef ? extendedDef._getGeneratedClassName() : amIRoot || doesRootExtendMe ? "jtree.GrammarBackedRootNode" : "jtree.GrammarBackedNonRootNode"
     if (amIRoot) {
       components.push(`getGrammarProgramRoot() {
         if (!this._cachedGrammarProgramRoot)
@@ -4080,10 +4059,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     const map = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
-    return new TreeNode.Parser(UnknownNodeTypeNode, map, [
-      { regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
-      { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
-    ])
+    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
   _getCompiledLoadedNodeTypes() {
     if (!this._cache_compiledLoadedNodeTypes) {
@@ -4098,8 +4074,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
           console.log(`Error in code: `)
           console.log(code)
         }
-      } else
-        this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getGrammarName()).getNodeTypeMap()
+      } else this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getGrammarName()).getNodeTypeMap()
     }
     return this._cache_compiledLoadedNodeTypes
   }
@@ -4392,10 +4367,8 @@ ${includes}
 ${nodeTypeContexts}`
   }
 }
-GrammarProgram.makeNodeTypeId = str =>
-  TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-GrammarProgram.makeCellTypeId = str =>
-  TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+GrammarProgram.makeNodeTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+GrammarProgram.makeCellTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 GrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
 GrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
 GrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
@@ -4544,9 +4517,7 @@ class UnknownGrammarProgram extends TreeNode {
     globalCellTypeMap.set(PreludeCellTypeIds.keywordCell, undefined)
     const nodeTypeDefs = Object.keys(keywordsToChildKeywords)
       .filter(word => word)
-      .map(firstWord =>
-        this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord])
-      )
+      .map(firstWord => this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord]))
     const cellTypeDefs = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
     const yi = this.getYI()

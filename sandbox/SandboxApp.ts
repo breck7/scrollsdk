@@ -1,6 +1,6 @@
 //onsave jtree build produce SandboxApp.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -10,6 +10,22 @@ class SandboxCommander extends AbstractCommander {
     super(app)
     this._app = app
   }
+  loadJsonSampleCommand() {
+    jQuery("#jsonConsole")
+      .val(
+        `{
+ "name": "jtree",
+ "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
+ "keywords": "jtree"
+}`
+      )
+      .keyup()
+  }
+  loadCsvSampleCommand() {
+    jQuery("#csvConsole")
+      .val(jtree.TreeNode.iris)
+      .keyup()
+  }
   private _app: SandboxApp
 }
 
@@ -18,36 +34,19 @@ class SandboxApp extends AbstractTreeComponentRootNode {
     return new jtree.TreeNode.Parser(undefined, {
       tableComponent: tableComponent,
       githubTriangleComponent: githubTriangleComponent,
-      headerComponent: headerComponent
+      headerComponent: headerComponent,
+      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
     })
-  }
-
-  treeComponentDidMount() {
-    this._setBodyShadowHandlers()
   }
 
   private _commander = new SandboxCommander(this)
 
-  getCommander() {
-    return this._commander
-  }
-
-  _setBodyShadowHandlers() {
+  async appWillFirstRender() {
     // todo: refactor!!! splut these into components
 
     const willowBrowser = this.getWillowProgram()
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
     const commander = this.getCommander()
-
-    const samples: any = {}
-    samples.csv = jtree.TreeNode.iris
-
-    // todo: autogen this.
-    samples.json = `{
- "name": "jtree",
- "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
- "keywords": "jtree"
-}`
 
     jQuery(document).ready(function() {
       const treeConsole = jQuery("#treeConsole")
@@ -58,9 +57,6 @@ class SandboxApp extends AbstractTreeComponentRootNode {
       const htmlConsole = jQuery("#htmlConsole")
       const tableConsole = jQuery("#tableConsole")
       const yamlConsole = jQuery("#yamlConsole")
-
-      jQuery("#jsonSample").on("click", () => jsonConsole.val(samples.json).keyup())
-      jQuery("#csvSample").on("click", () => csvConsole.val(samples.csv).keyup())
 
       // Init vars
       if (localStorage.getItem("tree")) treeConsole.val(localStorage.getItem("tree"))
@@ -148,26 +144,16 @@ class headerComponent extends AbstractTreeComponent {
  p
   a Tree Language Designer
    href /designer/
+  span  | 
+  a Debug
+   ${WillowConstants.DataShadowEvents.onClickCommand} toggleTreeComponentFrameworkDebuggerCommand
   span  | Version ${jtree.getVersion()}
  p This is a simple console for exploring the base Tree Notation. In dev tools, you can access the parsed tree below as "window.tree"`
   }
 }
 
-class githubTriangleComponent extends AbstractTreeComponent {
-  getHakon() {
-    return `.githubTriangleComponent
- display block
- position absolute
- top 0
- right 0`
-  }
-  getStumpCode() {
-    return `a
- class githubTriangleComponent
- href https://github.com/treenotation/jtree/tree/master/sandbox
- img
-  src /github-fork.svg`
-  }
+class githubTriangleComponent extends AbstractGithubTriangleComponent {
+  githubLink = `https://github.com/treenotation/jtree/tree/master/sandbox`
 }
 
 class tableComponent extends AbstractTreeComponent {
@@ -182,7 +168,7 @@ class tableComponent extends AbstractTreeComponent {
    div
     span toJsonSubset()
     a sample
-     id jsonSample
+     ${WillowConstants.DataShadowEvents.onClickCommand} loadJsonSampleCommand
    textarea
     id jsonConsole
  tr
@@ -190,7 +176,7 @@ class tableComponent extends AbstractTreeComponent {
    div
     span toCsv()
     a sample
-     id csvSample
+     ${WillowConstants.DataShadowEvents.onClickCommand} loadCsvSampleCommand
    textarea
     id csvConsole
   td

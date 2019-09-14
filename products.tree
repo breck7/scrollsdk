@@ -7,6 +7,7 @@ browserProduct
  files treeComponentFramework/sweepercraft/SweeperCraft.ts
 browserProduct
  outputFileName TreeComponentFramework.browser.js
+ removeLine window.treeNotationTypes = treeNotationTypes
  files products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
 nodeProduct
  outputFileName TreeComponentFramework.node.js

@@ -52,13 +52,14 @@ class Builder extends AbstractBuilder {
       .getWordsFrom(1)
       .map((path: string) => __dirname + "/" + path)
     const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
-    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName)
-    else
-      this._produceNodeProductFromTypeScript(
-        inputFiles,
-        outputFileName,
-        (code: string) => firstLine + code + "\n" + (productNode.get("lastLine") ? productNode.get("lastLine") : "")
-      )
+    const lastLine = productNode.get("lastLine") ? productNode.get("lastLine") : ""
+    const removeLine = productNode.get("removeLine")
+    const transformFn = (code: string) => {
+      code = removeLine ? code.replace(removeLine, "") : code
+      return firstLine + code + "\n" + lastLine
+    }
+    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
+    else this._produceNodeProductFromTypeScript(inputFiles, outputFileName, transformFn)
     if (productNode.has("executable")) this._makeExecutable(__dirname + "/products/" + outputFileName)
   }
 

@@ -1,6 +1,6 @@
-// jtree build produce SweeperCraft.browser.js
+//onsave jtree build produce SweeperCraft.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, WillowConstants, AbstractCommander } = require("../../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponentRootNode, AbstractTreeComponent, WillowConstants, AbstractCommander, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
 
 declare type int = number
@@ -535,48 +535,13 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
       headerComponent: headerComponent,
       boardComponent: boardComponent,
       controlsComponent: controlsComponent,
-      shortcutsTableComponent: shortcutsTableComponent
+      shortcutsTableComponent: shortcutsTableComponent,
+      githubTriangleComponent: githubTriangleComponent,
+      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
     })
   }
 
-  treeComponentWillMount() {
-    this._setBodyShadowHandlers()
-  }
-
-  private _commander = new SweeperCraftCommander(this)
-
-  getCommander() {
-    return this._commander
-  }
-
-  _setBodyShadowHandlers() {
-    const willowBrowser = this.getWillowProgram()
-    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
-    const commander = this.getCommander()
-
-    const checkAndExecute = (el: any, attr: string, evt: any) => {
-      const stumpNode = willowBrowser.getStumpNodeFromElement(el)
-      evt.preventDefault()
-      evt.stopImmediatePropagation()
-      const commandWithArgs = stumpNode.getStumpNodeAttr(attr)
-      const commandArgs = commandWithArgs.split(" ")
-      const command = commandArgs.shift()
-      commander[command](...commandArgs)
-      return false
-    }
-
-    const DataShadowEvents = WillowConstants.DataShadowEvents
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt: any) {
-      if (evt.ctrlKey) return true
-      return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
-    })
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt: any) {
-      if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
-      return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
-    })
-  }
+  protected _commander = new SweeperCraftCommander(this)
 
   getHakon() {
     const theme = this.getTheme()
@@ -711,7 +676,8 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
     return `headerComponent
 boardComponent
 controlsComponent
-shortcutsTableComponent`
+shortcutsTableComponent
+githubTriangleComponent`
   }
 
   private _isFirstRender = true
@@ -725,6 +691,7 @@ shortcutsTableComponent`
   }
 
   _getKeyboardShortcuts() {
+    const commander = this.getCommander()
     return {
       u: () => this._mainGame.undo(),
       s: () => this._mainGame.win(),
@@ -751,6 +718,9 @@ shortcutsTableComponent`
         const board = SweeperCraftGame.boardFromWords(phrase)
         const link = SweeperCraftGame.toPermalink(board)
         location.hash = link
+      },
+      d: () => {
+        commander.toggleTreeComponentFrameworkDebuggerCommand()
       }
     }
   }
@@ -970,8 +940,15 @@ class shortcutsTableComponent extends AbstractTreeComponent {
     td New hard board
    tr
     td w
-    td New board from word`
+    td New board from word
+   tr
+    td d
+    td Debug`
   }
+}
+
+class githubTriangleComponent extends AbstractGithubTriangleComponent {
+  githubLink = `https://github.com/treenotation/jtree/tree/master/treeComponentFramework/sweepercraft`
 }
 
 export { SweeperCraftApp, SweeperCraftGame }

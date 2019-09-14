@@ -1,4 +1,4 @@
-// jtree build produce SweeperCraft.browser.js
+//onsave jtree build produce SweeperCraft.browser.js
 class SweeperCraftGame {
   constructor(board, renderFn) {
     this._setBoard(board)
@@ -402,37 +402,9 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
       headerComponent: headerComponent,
       boardComponent: boardComponent,
       controlsComponent: controlsComponent,
-      shortcutsTableComponent: shortcutsTableComponent
-    })
-  }
-  treeComponentWillMount() {
-    this._setBodyShadowHandlers()
-  }
-  getCommander() {
-    return this._commander
-  }
-  _setBodyShadowHandlers() {
-    const willowBrowser = this.getWillowProgram()
-    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
-    const commander = this.getCommander()
-    const checkAndExecute = (el, attr, evt) => {
-      const stumpNode = willowBrowser.getStumpNodeFromElement(el)
-      evt.preventDefault()
-      evt.stopImmediatePropagation()
-      const commandWithArgs = stumpNode.getStumpNodeAttr(attr)
-      const commandArgs = commandWithArgs.split(" ")
-      const command = commandArgs.shift()
-      commander[command](...commandArgs)
-      return false
-    }
-    const DataShadowEvents = WillowConstants.DataShadowEvents
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt) {
-      if (evt.ctrlKey) return true
-      return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
-    })
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt) {
-      if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
-      return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
+      shortcutsTableComponent: shortcutsTableComponent,
+      githubTriangleComponent: githubTriangleComponent,
+      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
     })
   }
   getHakon() {
@@ -564,7 +536,8 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
     return `headerComponent
 boardComponent
 controlsComponent
-shortcutsTableComponent`
+shortcutsTableComponent
+githubTriangleComponent`
   }
   renderAndGetRenderResult(stumpNode) {
     if (this._isFirstRender) {
@@ -574,6 +547,7 @@ shortcutsTableComponent`
     return super.renderAndGetRenderResult(stumpNode)
   }
   _getKeyboardShortcuts() {
+    const commander = this.getCommander()
     return {
       u: () => this._mainGame.undo(),
       s: () => this._mainGame.win(),
@@ -599,6 +573,9 @@ shortcutsTableComponent`
         const board = SweeperCraftGame.boardFromWords(phrase)
         const link = SweeperCraftGame.toPermalink(board)
         location.hash = link
+      },
+      d: () => {
+        commander.toggleTreeComponentFrameworkDebuggerCommand()
       }
     }
   }
@@ -791,7 +768,16 @@ class shortcutsTableComponent extends AbstractTreeComponent {
     td New hard board
    tr
     td w
-    td New board from word`
+    td New board from word
+   tr
+    td d
+    td Debug`
+  }
+}
+class githubTriangleComponent extends AbstractGithubTriangleComponent {
+  constructor() {
+    super(...arguments)
+    this.githubLink = `https://github.com/treenotation/jtree/tree/master/treeComponentFramework/sweepercraft`
   }
 }
 window.SweeperCraftApp = SweeperCraftApp

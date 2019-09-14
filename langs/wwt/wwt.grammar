@@ -4,6 +4,8 @@ wwtNode
  inScope abstractTypeDeclarationNode interfaceDeclarationNode
  catchAllNodeType errorNode
  compilesTo ts
+ javascript
+  compile() { return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + '\n}' }
 keywordCell
 anyCell
 fieldIdCell
@@ -39,7 +41,7 @@ extendsNode
  cells keywordCell typeIdCell
  required
  compiler
-  stringTemplate
+  stringTemplate 
 enumTypeDeclarationNode
  extends abstractTypeDeclarationNode
  inScope enumOptionsNode
@@ -72,10 +74,15 @@ interfaceDeclarationNode
  pattern Interface$
  cells interfaceIdCell
  inScope commentNode fieldDeclarationNode
+ compiler
+  stringTemplate export interface {interfaceIdCell} {
+  closeChildren }
 fieldDeclarationNode
  pattern Field
  cells fieldIdCell typeIdCell
  inScope optionalNode arrayNode
+ compiler
+  stringTemplate {fieldIdCell}: {typeIdCell}
 optionalNode
  description Is this field optional?
  cells keywordCell

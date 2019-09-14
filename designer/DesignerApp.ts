@@ -1,6 +1,6 @@
 //onsave jtree build produce DesignerApp.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -10,13 +10,108 @@ declare var CodeMirror: any
 declare var saveAs: any
 declare var JSZip: any
 declare var dumbdownNode: any
+declare type html = string
 
 class DesignerCommander extends AbstractCommander {
   constructor(app: DesignerApp) {
     super(app)
     this._app = app
   }
+
   private _app: DesignerApp
+  get program() {
+    return this._app.program
+  }
+  executeCommand() {
+    const result = this.program.executeSync()
+    jQuery("#executeResultsDiv").val(Array.isArray(result) ? result.join(",") : result)
+  }
+  compileCommand() {
+    jQuery("#compileResultsDiv").val(this.program.compile())
+  }
+
+  visualizeCommand() {
+    jQuery("#explainResultsDiv").html(this._toIceCubes(this.program))
+  }
+
+  inferPrefixGrammarCommand() {
+    this._app.setGrammarCode(new jtree.UnknownGrammarProgram(this._app.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
+    this._app._onGrammarKeyup()
+  }
+
+  simulateDataCommand() {
+    const grammarProgram = new jtree.GrammarProgram(this._app.getGrammarCode())
+    this._app.setCodeCode(
+      grammarProgram
+        ._getRootNodeTypeDefinitionNode()
+        .generateSimulatedData()
+        .join("\n")
+    )
+    this._app._onCodeKeyUp()
+  }
+
+  resetCommand() {
+    Object.values(this._app._localStorageKeys).forEach(val => localStorage.removeItem(val))
+    const willowBrowser = this._app.getWillowProgram()
+    willowBrowser.reload()
+  }
+
+  async fetchAndLoadJtreeShippedLanguageCommand(name: string) {
+    const samplePath = `/langs/${name}/sample.${name}`
+    const grammarPath = `/langs/${name}/${name}.grammar`
+
+    const willowBrowser = this._app.getWillowProgram()
+    const grammar = await willowBrowser.httpGetUrl(grammarPath)
+    const sample = await willowBrowser.httpGetUrl(samplePath)
+
+    this._app._setGrammarAndCode(grammar.text, sample.text)
+  }
+
+  // TODO: ADD TESTS!!!!!
+  async downloadBundleCommand() {
+    const grammarProgram = new jtree.GrammarProgram(this._app.getGrammarCode())
+    const bundle = grammarProgram.toBundle()
+    const languageName = grammarProgram.getExtensionName()
+    return this._makeZipBundle(languageName + ".zip", bundle)
+  }
+
+  private async _makeZipBundle(fileName: string, bundle: any) {
+    const zip = new JSZip()
+    Object.keys(bundle).forEach(key => {
+      zip.file(key, bundle[key])
+    })
+
+    zip.generateAsync({ type: "blob" }).then((content: any) => {
+      // see FileSaver.js
+      saveAs(content, fileName)
+    })
+  }
+
+  private _toIceCubes(program: any) {
+    const columns = program.getProgramWidth()
+
+    const cellTypes = new jtree.TreeNode(program.getInPlaceCellTypeTreeWithNodeConstructorNames())
+    const rootCellTypes = new jtree.TreeNode(program.getInPlacePreludeCellTypeTreeWithNodeConstructorNames())
+
+    const table = program
+      .getProgramAsCells()
+      .map((line: any, lineIndex: number) => {
+        let rows = ""
+        for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
+          const cell = line[cellIndex]
+          if (!cell) rows += `<td>&nbsp;</td>`
+          else {
+            const cellType = cellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
+            const rootCellType = rootCellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
+            const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
+            rows += `<td title="cellType:${cellType} rootCellType:${rootCellType} nodeType:${nodeType}">${cell.getWord()}</td>`
+          }
+        }
+        return `<tr>${rows}</tr>`
+      })
+      .join("\n")
+    return `<table class="iceCubes">${table}</table>`
+  }
 }
 
 class DesignerApp extends AbstractTreeComponentRootNode {
@@ -26,8 +121,14 @@ class DesignerApp extends AbstractTreeComponentRootNode {
       samplesComponent: samplesComponent,
       tableComponent: tableComponent,
       shareComponent: shareComponent,
-      headerComponent: headerComponent
+      headerComponent: headerComponent,
+      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
     })
+  }
+
+  _clearResults() {
+    jQuery(".resultsDiv").html("")
+    jQuery(".resultsDiv").val("")
   }
 
   public languages = "newlang hakon stump dumbdown arrow dug iris fire wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
@@ -47,50 +148,17 @@ class DesignerApp extends AbstractTreeComponentRootNode {
   private get _grammarErrorsConsole() {
     return jQuery("#grammarErrorsConsole")
   }
-  private get _execButton() {
-    return jQuery("#execButton")
-  }
   private get _readmeComponent() {
     return jQuery("#readmeComponent")
-  }
-  private get _execResultsTextArea() {
-    return jQuery("#execResultsTextArea")
-  }
-  private get _htmlOutputDiv() {
-    return jQuery("#htmlOutputDiv")
-  }
-  private get _compileButton() {
-    return jQuery("#compileButton")
-  }
-  private get _visualizeButton() {
-    return jQuery("#visualizeButton")
-  }
-  private get _downloadButton() {
-    return jQuery("#downloadButton")
-  }
-  private get _samplesButtons() {
-    return jQuery("#samplesButtons")
-  }
-  private get _resetButton() {
-    return jQuery("#resetButton")
   }
   private get _otherErrorsDiv() {
     return jQuery("#otherErrorsDiv")
   }
-  private get _versionSpan() {
-    return jQuery("#versionSpan")
-  }
   private get _shareLink() {
     return jQuery("#shareLink")
   }
-  private get _inferKeywordGrammarButton() {
-    return jQuery("#inferKeywordGrammarButton")
-  }
-  private get _simulateDataButton() {
-    return jQuery("#simulateDataButton")
-  }
 
-  private _localStorageKeys = {
+  _localStorageKeys = {
     grammarConsole: "grammarConsole",
     codeConsole: "codeConsole"
   }
@@ -113,7 +181,7 @@ class DesignerApp extends AbstractTreeComponentRootNode {
     const standard = deepLink.get("standard")
     if (standard) {
       console.log("Loading standard from deep link....")
-      await this._fetchJTreeStandardGrammar(standard)
+      await this.getCommander().fetchAndLoadJtreeShippedLanguageCommand(standard)
       return true
     } else {
       const grammarCode = deepLink.getNode("grammar")
@@ -131,14 +199,14 @@ class DesignerApp extends AbstractTreeComponentRootNode {
     history.replaceState(null, null, " ")
   }
 
-  private _onGrammarKeyup() {
+  _onGrammarKeyup() {
     this._grammarDidUpdate()
     this._onCodeKeyUp()
     // Hack to break CM cache:
     if (true) {
-      const val = this.codeInstance.getValue()
-      this.codeInstance.setValue("\n" + val)
-      this.codeInstance.setValue(val)
+      const val = this.getCodeValue()
+      this.setCodeCode("\n" + val)
+      this.setCodeCode(val)
     }
   }
 
@@ -148,111 +216,38 @@ class DesignerApp extends AbstractTreeComponentRootNode {
     this.GrammarConstructor = new jtree.GrammarProgram(result.text).getRootConstructor()
   }
 
-  resetCommand() {
-    Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
-  }
+  async appDidFirstRender() {
+    const commander = this.getCommander()
 
-  private _setProgramResults(results: string, htmlResults = "") {
-    this._execResultsTextArea.val(results)
-    if (results) {
-      const el = this._execResultsTextArea[0] // todo: remove
-      el.style.height = el.scrollHeight + "px"
-    }
-    this._htmlOutputDiv.html(htmlResults)
-  }
+    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
 
-  private _clearResults() {
-    this._execResultsTextArea.val("")
-  }
-
-  private _visualizeIt(program: any) {
-    const columns = this.program.getProgramWidth()
-
-    const cellTypes = new jtree.TreeNode(this.program.getInPlaceCellTypeTreeWithNodeConstructorNames())
-    const rootCellTypes = new jtree.TreeNode(this.program.getInPlacePreludeCellTypeTreeWithNodeConstructorNames())
-
-    const table = this.program
-      .getProgramAsCells()
-      .map((line: any, lineIndex: number) => {
-        let rows = ""
-        for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
-          const cell = line[cellIndex]
-          if (!cell) rows += `<td>&nbsp;</td>`
-          else {
-            const cellType = cellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
-            const rootCellType = rootCellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
-            const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
-            rows += `<td title="cellType:${cellType} rootCellType:${rootCellType} nodeType:${nodeType}">${cell.getWord()}</td>`
-          }
-        }
-        return `<tr>${rows}</tr>`
-      })
-      .join("\n")
-    return `<table class="iceCubes">${table}</table>`
-  }
-
-  private _bindListeners() {
-    const that = this
-    this._execButton.on("click", () => {
-      this._setProgramResults(this.program ? this.program.executeSync() : "Program failed to execute")
-    })
-    this._compileButton.on("click", () => {
-      this._setProgramResults(this.program ? this.program.compile() : "Program failed to execute")
-    })
-
-    this._visualizeButton.on("click", () => {
-      if (!this.program) return this._setProgramResults("Program failed to parse")
-      this._setProgramResults("", this._visualizeIt(this.program))
-    })
-
-    this._resetButton.on("click", () => {
-      this.resetCommand()
-      console.log("reset...")
-      window.location.reload()
-    })
-
-    this._samplesButtons.on("click", "a", function() {
-      that._fetchJTreeStandardGrammar(
-        jQuery(this)
-          .text()
-          .toLowerCase()
-      )
-    })
-
-    this._inferKeywordGrammarButton.on("click", () => {
-      this.grammarInstance.setValue(new jtree.UnknownGrammarProgram(this.codeInstance.getValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
+    this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
 
-    this._simulateDataButton.on("click", () => {
-      const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
-      this.codeInstance.setValue(
-        grammarProgram
-          ._getRootNodeTypeDefinitionNode()
-          .generateSimulatedData()
-          .join("\n")
-      )
-      this._onCodeKeyUp()
-    })
+    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._codeConsole[0], { lineWrapping: true })
 
-    this._downloadButton.on("click", () => this._downloadBundleCommand())
+    this.codeInstance.on("keyup", () => this._onCodeKeyUp())
+
+    // loadFromURL
+    const wasLoadedFromDeepLink = await this._loadFromDeepLink()
+    if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
   }
 
-  // TODO: ADD TESTS!!!!!
-  private async _downloadBundleCommand() {
-    const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
-    const zip = new JSZip()
-    const bundle = grammarProgram.toBundle()
-    Object.keys(bundle).forEach(key => {
-      zip.file(key, bundle[key])
-    })
+  getGrammarCode() {
+    return this.grammarInstance.getValue()
+  }
 
-    const languageName = grammarProgram.getExtensionName()
+  setGrammarCode(code: string) {
+    this.grammarInstance.setValue(code)
+  }
 
-    zip.generateAsync({ type: "blob" }).then((content: any) => {
-      // see FileSaver.js
-      saveAs(content, languageName + ".zip")
-    })
+  setCodeCode(code: string) {
+    this.codeInstance.setValue(code)
+  }
+
+  getCodeValue() {
+    return this.codeInstance.getValue()
   }
 
   private async _restoreFromLocalStorage() {
@@ -266,8 +261,8 @@ class DesignerApp extends AbstractTreeComponentRootNode {
   }
 
   private _updateLocalStorage() {
-    localStorage.setItem(this._localStorageKeys.grammarConsole, this.grammarInstance.getValue())
-    localStorage.setItem(this._localStorageKeys.codeConsole, this.codeInstance.getValue())
+    localStorage.setItem(this._localStorageKeys.grammarConsole, this.getGrammarCode())
+    localStorage.setItem(this._localStorageKeys.codeConsole, this.getCodeValue())
     this._updateShareLink() // todo: where to put this?
     console.log("Local storage updated...")
   }
@@ -277,7 +272,7 @@ class DesignerApp extends AbstractTreeComponentRootNode {
   }
 
   private _getGrammarConstructor() {
-    let currentGrammarCode = this.grammarInstance.getValue()
+    let currentGrammarCode = this.getGrammarCode()
 
     if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
       try {
@@ -294,7 +289,7 @@ class DesignerApp extends AbstractTreeComponentRootNode {
   }
 
   private _grammarDidUpdate() {
-    const grammarCode = this.grammarInstance.getValue()
+    const grammarCode = this.getGrammarCode()
     this._updateLocalStorage()
     this.grammarProgram = new this.GrammarConstructor(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
@@ -313,15 +308,16 @@ class DesignerApp extends AbstractTreeComponentRootNode {
 
   toShareLink() {
     const tree = new jtree.TreeNode()
-    tree.appendLineAndChildren("grammar", this.grammarInstance.getValue())
-    tree.appendLineAndChildren("sample", this.codeInstance.getValue())
+    tree.appendLineAndChildren("grammar", this.getGrammarCode())
+    tree.appendLineAndChildren("sample", this.getCodeValue())
     return "#" + encodeURIComponent(tree.toString())
   }
 
-  private _onCodeKeyUp() {
-    const code = this.codeInstance.getValue()
+  _onCodeKeyUp() {
+    const code = this.getCodeValue()
     this._updateLocalStorage()
     const programConstructor = this._getGrammarConstructor()
+    const commander = this.getCommander()
 
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
@@ -350,58 +346,18 @@ class DesignerApp extends AbstractTreeComponentRootNode {
       if (info.top + info.clientHeight < after) this.codeInstance.scrollTo(null, after - info.clientHeight + 3)
     })
 
-    const button = jQuery("input[name=onCodeUp]:checked")
-    if (button.length) button.next().click()
+    jQuery(".onCodeUp:checked").each(function() {
+      commander[jQuery(this).val()]()
+    })
   }
 
-  private _setGrammarAndCode(grammar: string, code: string) {
-    this.grammarInstance.setValue(grammar)
-    this.codeInstance.setValue(code)
+  _setGrammarAndCode(grammar: string, code: string) {
+    this.setGrammarCode(grammar)
+    this.setCodeCode(code)
     this._clearHash()
     this._grammarDidUpdate()
-    this._onCodeKeyUp()
     this._clearResults()
-  }
-
-  private async _fetchJTreeStandardGrammar(name: string) {
-    const samplePath = `/langs/${name}/sample.${name}`
-    const grammarPath = `/langs/${name}/${name}.grammar`
-    const grammar = await jQuery.get(grammarPath)
-    const sample = await jQuery.get(samplePath)
-
-    this._setGrammarAndCode(grammar, sample)
-  }
-
-  treeComponentDidMount() {
-    this._setBodyShadowHandlers()
-  }
-
-  getCommander() {
-    return this._commander
-  }
-
-  async _setBodyShadowHandlers() {
-    // todo: refactor!!! splut these into components
-
-    this._bindListeners()
-
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
-
-    this.grammarInstance.on("keyup", () => {
-      this._onGrammarKeyup()
-    })
-
-    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(<any>this._codeConsole[0], { lineWrapping: true })
-
-    this.codeInstance.on("keyup", () => this._onCodeKeyUp())
-
-    // loadFromURL
-    const wasLoadedFromDeepLink = await this._loadFromDeepLink()
-    if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
+    this._onCodeKeyUp()
   }
 
   getHakon() {
@@ -455,6 +411,9 @@ a
 samplesComponent
 shareComponent
 tableComponent
+ executionResultsComponent
+ compiledResultsComponent
+ explainResultsComponent
 githubTriangleComponent`
   }
 }
@@ -462,10 +421,15 @@ githubTriangleComponent`
 class samplesComponent extends AbstractTreeComponent {
   getStumpCode() {
     const langs = this.getRootNode()
-      .languages.map((lang: string) => `<a href="#standard%20${lang}">${jtree.Utils.ucfirst(lang)}</a>`)
-      .join(" | ")
-    return `p Example Languages: ${langs}
- id samplesButtons`
+      .languages.map(
+        (lang: string) => ` a ${jtree.Utils.ucfirst(lang)}
+  href #standard%20${lang}
+  ${WillowConstants.DataShadowEvents.onClickCommand} fetchAndLoadJtreeShippedLanguageCommand ${lang}`
+      )
+      .join("\n span  | \n")
+    return `p
+ span Example Languages
+${langs}`
   }
 }
 
@@ -492,6 +456,7 @@ class shareComponent extends AbstractTreeComponent {
   }
 }
 
+// Todo: use these 3
 class otherErrorsComponent extends AbstractTreeComponent {
   getStumpCode() {
     return `div
@@ -499,47 +464,80 @@ class otherErrorsComponent extends AbstractTreeComponent {
  id otherErrorsDiv`
   }
 }
-
-class tableComponent extends AbstractTreeComponent {
+class compiledResultsComponent extends AbstractTreeComponent {}
+class executionResultsComponent extends AbstractTreeComponent {
   getHakon() {
     return `#execResultsTextArea
  border 0
  width 100%`
   }
   getStumpCode() {
+    return `textarea
+ id execResultsTextArea
+ placeholder Results...`
+  }
+}
+
+class explainResultsComponent extends AbstractTreeComponent {
+  getStumpCode() {
+    return `div`
+  }
+}
+
+class tableComponent extends AbstractTreeComponent {
+  createParser() {
+    return new jtree.TreeNode.Parser(undefined, {
+      compiledResultsComponent: compiledResultsComponent,
+      executionResultsComponent: executionResultsComponent,
+      explainResultsComponent: explainResultsComponent
+    })
+  }
+
+  getHakon() {
+    return `textarea.resultsDiv
+ height 120px
+ width 220px`
+  }
+
+  getStumpCode() {
     return `table
  tr
   td
    span Grammar for your Tree Language
    a Infer Prefix Grammar
-    id inferKeywordGrammarButton
-   span  | 
+    ${WillowConstants.DataShadowEvents.onClickCommand} inferPrefixGrammarCommand
+   span  |
    a Download Bundle
-    id downloadButton
-   span  | 
+    ${WillowConstants.DataShadowEvents.onClickCommand} downloadBundleCommand
+   span  |
    a Generate Random Program
-    id simulateDataButton
+    ${WillowConstants.DataShadowEvents.onClickCommand} simulateDataCommand
    textarea
     id grammarConsole
   td
    span Source Code in your Language
    input
-    name onCodeUp
-    type radio
+    type checkbox
+    value executeCommand
+    class onCodeUp
    a Execute
-    id execButton
-   span  | 
+    ${WillowConstants.DataShadowEvents.onClickCommand} executeCommand
+   span  |
    input
-    type radio
-    name onCodeUp
+    type checkbox
+    value compileCommand
+    class onCodeUp
+    checked
    a Compile
-    id compileButton
-   span  | 
+    ${WillowConstants.DataShadowEvents.onClickCommand} compileCommand
+   span  |
    input
-    type radio
-    name onCodeUp
+    type checkbox
+    value visualizeCommand
+    class onCodeUp
+    checked
    a Explain
-    id visualizeButton
+    ${WillowConstants.DataShadowEvents.onClickCommand} visualizeCommand
    textarea
     id codeConsole
  tr
@@ -553,12 +551,17 @@ class tableComponent extends AbstractTreeComponent {
    div Language Errors
    pre
     id codeErrorsConsole
-   div Output:
    textarea
-    id execResultsTextArea
-    placeholder Results...
+    class resultsDiv
+    id executeResultsDiv
+    placeholder Execution results
+   textarea
+    class resultsDiv
+    id compileResultsDiv
+    placeholder Compilation results
    div
-    id htmlOutputDiv`
+    class resultsDiv
+    id explainResultsDiv`
   }
 }
 
@@ -585,16 +588,19 @@ class headerComponent extends AbstractTreeComponent {
  p
   a Tree Notation Sandbox
    href /sandbox/
-  span  | 
+  span  |
   a Help
    id helpToggleButton
    onclick $('#helpSection').toggle(); return false;
-  span  | 
+  span  |
   a Watch the Tutorial Video
    href https://www.youtube.com/watch?v=UQHaI78jGR0=
-  span  | 
+  span  |
   a Reset
-   id resetButton
+   ${WillowConstants.DataShadowEvents.onClickCommand} resetCommand
+  span  |
+  a Debug
+   ${WillowConstants.DataShadowEvents.onClickCommand} toggleTreeComponentFrameworkDebuggerCommand
   span  | Version ${jtree.getVersion()}
  div
   id helpSection
@@ -604,25 +610,8 @@ class headerComponent extends AbstractTreeComponent {
   }
 }
 
-class githubTriangleComponent extends AbstractTreeComponent {
-  protected _getGitHubLink() {
-    return `https://github.com/treenotation/jtree/tree/master/designer`
-  }
-
-  getHakon() {
-    return `.githubTriangleComponent
- display block
- position absolute
- top 0
- right 0`
-  }
-  getStumpCode() {
-    return `a
- class githubTriangleComponent
- href ${this._getGitHubLink()}
- img
-  src /github-fork.svg`
-  }
+class githubTriangleComponent extends AbstractGithubTriangleComponent {
+  githubLink = `https://github.com/treenotation/jtree/tree/master/designer`
 }
 
 export { DesignerApp }

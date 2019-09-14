@@ -3,8 +3,11 @@ edge / 2019-09-12
 - New: added Arrow sample language
 - New: required and single nodeTypes are accessible to compiler string template
 - New: added wwt sample language
+- New: Github triangle and TCF debugger components
 - Infra: wwt types
 - Infra: help show options when invalid command entered
+- Infra: TreeComponentFramework work
+- Infra: builder improvements
 
 40.2.0 / 2019-09-11
 ===================

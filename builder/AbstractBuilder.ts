@@ -61,10 +61,6 @@ class AbstractBuilder extends jtree.TreeNode {
       .join("\n")
   }
 
-  private _buildBrowserTsc(sourceCode: string, outputFilePath: string) {
-    return this._buildTsc(sourceCode, outputFilePath, true)
-  }
-
   private _buildTsc(sourceCode: string, outputFilePath: string, forBrowser = false) {
     Disk.write(outputFilePath, this._typeScriptToJavascript(sourceCode, forBrowser))
   }
@@ -74,9 +70,14 @@ class AbstractBuilder extends jtree.TreeNode {
     return __dirname + "/../products/" + outputFileName
   }
 
-  async _produceBrowserProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[] = [], outputFileName: treeNotationTypes.fileName) {
+  async _produceBrowserProductFromTypeScript(
+    files: treeNotationTypes.absoluteFilePath[] = [],
+    outputFileName: treeNotationTypes.fileName,
+    transformFn: (code: treeNotationTypes.javascriptCode) => string
+  ) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
-    this._buildBrowserTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath)
+    await this._buildTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath, true)
+    Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
     this._prettifyFile(outputFilePath)
   }
 

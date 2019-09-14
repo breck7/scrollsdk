@@ -8,7 +8,7 @@
     "useTabs": false,
     "tabWidth": 2,
     "semi": false,
-    "printWidth": 160
+    "printWidth": 240
   },
   "bin": {
     "jtree": "./products/commandLineApp.node.js"

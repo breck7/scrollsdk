@@ -23,6 +23,11 @@ class TreeUtils {
     }
   }
 
+  static removeNonAscii(str: string) {
+    // https://stackoverflow.com/questions/20856197/remove-non-ascii-character-in-string
+    return str.replace(/[^\x00-\x7F]/g, "")
+  }
+
   //http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links#21925491
   static linkify = (text: string) => {
     let replacedText

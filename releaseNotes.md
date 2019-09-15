@@ -4,6 +4,8 @@ edge / 2019-09-12
 - New: required and single nodeTypes are accessible to compiler string template
 - New: added wwt sample language
 - New: Github triangle and TCF debugger components
+- New: removeNonAscii util method
+- Fix: poop demo language now compiles to csv correctly
 - Infra: wwt types
 - Infra: help show options when invalid command entered
 - Infra: TreeComponentFramework work

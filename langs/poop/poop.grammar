@@ -5,11 +5,14 @@ poopNode
  javascript
   compile() {
     let day = ""
+    let lastTime = ""
     const rows = this.getTopDownArray().map(node => {
       if (node.doesExtend("dayNode")) {
-        day = node.getLine()
+        day = node.getDay()
             return undefined
-              }return node.compile(day)
+              }
+        lastTime = (!node.getTime || node.getTime() === undefined) ? lastTime : node.getTime()
+        return node.compile(day, lastTime)
       }).filter(row => row)
     return `date,time,event,notes\n` + rows.join("\n")
   }
@@ -22,8 +25,15 @@ poopNode
 abstractEventNode
  abstract
  catchAllCellType someCellTypeCell
- compiler
-  stringTemplate 2/2/2,3:33am,bm,notes
+ javascript
+  getTime() {
+    const time= this.getLine().match(/(\d+)/)
+    return time ? time[1] : undefined
+  }
+  getNotes() { return "" }
+  compile(day, lastTime) {
+    return `${day},${lastTime},${this.eventType},${this.getNotes()}`
+  }
  cells timeIntCell
 dateIntCell
  highlightScope constant.numeric.integer
@@ -44,27 +54,37 @@ bowelNode
  pattern 💩
  extends abstractEventNode
  description Bowel movement.
+ string eventType bowelMovement
 bladderNode
  pattern ✨
  description Bladder movement.
  extends abstractEventNode
+ string eventType bladderMovement
 bottleNode
  pattern 🍼
  extends abstractEventNode
  description Feeding.
+ string eventType feeding
 sleep4Node
  pattern 😴
  description Sleep.
  extends abstractEventNode
+ string eventType asleep
 awakeNode
  pattern 😀
  description I'm awake!
  extends abstractEventNode
+ string eventType awoke
 memoryNode
  pattern ❤️
  description Special memory.
  extends abstractEventNode
+ string eventType memory
+ javascript
+  getNotes() { return jtree.Utils.removeNonAscii(this.getLine()).trim()}
 dayNode
  pattern 🌄
  description We survived another day!
  cells symbolCell monthIntCell dayIntCell yearIntCell
+ javascript
+  getDay() { return jtree.Utils.removeNonAscii(this.getLine()).trim().replace(/ /g, "/") }

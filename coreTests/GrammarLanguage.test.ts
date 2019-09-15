@@ -16,6 +16,7 @@ const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = Disk.read(grammarGrammarPath)
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
 const jibberishGrammarCode = Disk.read(jibberishGrammarPath)
+const poopGrammarPath = __dirname + "/../langs/poop/poop.grammar"
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -43,6 +44,11 @@ const makeGrammarProgram = (code: string) => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = (code: string) => {
   const grammarCode = Disk.read(jibberishGrammarPath)
+  return makeProgram(grammarCode, code)
+}
+
+const makePoopProgram = (code: string) => {
+  const grammarCode = Disk.read(poopGrammarPath)
   return makeProgram(grammarCode, code)
 }
 
@@ -416,6 +422,12 @@ faveNumberNode
   // Act/Assert
   equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)
 }
+
+// todo: fix autocomplete for omnifix languages
+// testTree._autocompleteUnicode = equal => {
+//   // Arrange/Act/Assert
+//   equal(makePoopProgram(``).getAutocompleteResultsAt(0, 0).matches.length, 5)
+// }
 
 testTree.autocompleteCustom = equal => {
   // Arrange/Act/Assert

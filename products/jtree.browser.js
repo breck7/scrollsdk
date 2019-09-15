@@ -18,6 +18,10 @@ class TreeUtils {
       })
     }
   }
+  static removeNonAscii(str) {
+    // https://stackoverflow.com/questions/20856197/remove-non-ascii-character-in-string
+    return str.replace(/[^\x00-\x7F]/g, "")
+  }
   static getMethodFromDotPath(context, str) {
     const methodParts = str.split(".")
     while (methodParts.length > 1) {

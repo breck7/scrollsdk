@@ -7,7 +7,7 @@ browserProduct
  files treeComponentFramework/sweepercraft/SweeperCraft.ts
 browserProduct
  outputFileName TreeComponentFramework.browser.js
- removeLine window.treeNotationTypes = treeNotationTypes
+ removeAll window.treeNotationTypes = treeNotationTypes
  files products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
 nodeProduct
  outputFileName TreeComponentFramework.node.js
@@ -15,21 +15,28 @@ nodeProduct
  lastLine module.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
 browserProduct
  outputFileName jtree.browser.js
+ removeAll Object.defineProperty(exports, "__esModule", { value: true })
+ removeAll window.treeNotationTypes = treeNotationTypes
  files products/treeNotationTypes.ts core/TreeUtils.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
 nodeProduct
  outputFileName jtree.node.js
  lastLine module.exports = {jtreeNode}
+ removeAll Object.defineProperty(exports, "__esModule", { value: true })
  files products/treeNotationTypes.ts core/TreeUtils.ts core/AbstractNode.node.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts core/jtree.node.ts
 browserProduct
  outputFileName core.test.browser.js
- removeLine window.treeNotationTypes = treeNotationTypes
+ removeAll window.treeNotationTypes = treeNotationTypes
  files products/treeNotationTypes.ts coreTests/core.test.ts
 nodeProduct
  outputFileName jtable.node.js
+ firstLine const { jtree } = require("../index.js")
+ removeAll const { jtree } = require("../index.js")
  lastLine module.exports = {Table, TableParser, Column, Row, DummyDataSets, PrimitiveTypes }
  files products/treeNotationTypes.ts products/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
 browserProduct
  outputFileName jtable.browser.js
+ removeAll window.jTableTypes = jTableTypes
+ removeAll window.treeNotationTypes = treeNotationTypes
  files products/treeNotationTypes.ts products/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
 nodeProduct
  outputFileName Disk.node.js

@@ -1655,11 +1655,9 @@ lightbulbState off
 saturation 2
 someCode
  echo hello world`
-    // Allow running in both browser and nodejs:
-    const jtreeBase = typeof jtree === "undefined" ? require("../products/jtree.node.js").default : jtree
-    class add extends jtreeBase.GrammarBackedNonRootNode {}
-    class lineOfCode extends jtreeBase.GrammarBackedNonRootNode {}
-    class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
+    class add extends jtree.GrammarBackedNonRootNode {}
+    class lineOfCode extends jtree.GrammarBackedNonRootNode {}
+    class JibberishProgramRoot extends jtree.GrammarBackedRootNode {}
     const JibberishLang = {}
     JibberishLang.add = add
     JibberishLang.lineOfCode = lineOfCode
@@ -1669,7 +1667,7 @@ someCode
     win.add = add
     win.lineOfCode = lineOfCode
     // Act
-    const grammarProgram = new jtreeBase.GrammarProgram(jibberishGrammarCode, (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar")
+    const grammarProgram = new jtree.GrammarProgram(jibberishGrammarCode)
     const JibberishProgram = grammarProgram.getRootConstructor()
     const program = new JibberishProgram(code) // error here
     const errs = program.getAllErrors()

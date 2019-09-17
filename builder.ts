@@ -53,9 +53,11 @@ class Builder extends AbstractBuilder {
       .map((path: string) => __dirname + "/" + path)
     const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
     const lastLine = productNode.get("lastLine") ? productNode.get("lastLine") : ""
-    const removeLine = productNode.get("removeLine")
+    const removeAll = productNode.getNodesByGlobPath("removeAll")
     const transformFn = (code: string) => {
-      code = removeLine ? code.replace(removeLine, "") : code
+      removeAll.forEach((node: any) => {
+        code = jtree.Utils.removeAll(code, node.getContent())
+      })
       return firstLine + code + "\n" + lastLine
     }
     if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)

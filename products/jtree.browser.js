@@ -1,3 +1,4 @@
+"use strict"
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
@@ -381,6 +382,9 @@ class TreeUtils {
       else if (nodeAUniqueId < nodeBUniqueId) return nodeAFirst
       return 0
     }
+  }
+  static removeAll(str, needle) {
+    return str.split(needle).join("")
   }
   static _makeGraphSortFunction(idAccessor, extendsIdAccessor) {
     return (nodeA, nodeB) => {

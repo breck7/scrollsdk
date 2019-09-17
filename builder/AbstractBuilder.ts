@@ -42,7 +42,7 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   private _prettifyFile(path: treeNotationTypes.filepath) {
-    Disk.write(path, require("prettier").format(Disk.read(path), { semi: false, parser: "babel", printWidth: 160 }))
+    Disk.write(path, require("prettier").format(Disk.read(path), { semi: false, parser: "babel", printWidth: 240 }))
   }
 
   private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
@@ -70,11 +70,7 @@ class AbstractBuilder extends jtree.TreeNode {
     return __dirname + "/../products/" + outputFileName
   }
 
-  async _produceBrowserProductFromTypeScript(
-    files: treeNotationTypes.absoluteFilePath[] = [],
-    outputFileName: treeNotationTypes.fileName,
-    transformFn: (code: treeNotationTypes.javascriptCode) => string
-  ) {
+  async _produceBrowserProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[] = [], outputFileName: treeNotationTypes.fileName, transformFn: (code: treeNotationTypes.javascriptCode) => string) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
     await this._buildTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath, true)
     Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
@@ -93,11 +89,7 @@ class AbstractBuilder extends jtree.TreeNode {
     return this._getProductFolder() + `${outputFileName.replace(".js", ".ts")}`
   }
 
-  async _produceNodeProductFromTypeScript(
-    files: treeNotationTypes.absoluteFilePath[],
-    outputFileName: treeNotationTypes.fileName,
-    transformFn: (code: treeNotationTypes.javascriptCode) => string
-  ) {
+  async _produceNodeProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[], outputFileName: treeNotationTypes.fileName, transformFn: (code: treeNotationTypes.javascriptCode) => string) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
 
     try {

@@ -171,15 +171,11 @@ class DesignerApp extends AbstractTreeComponentRootNode {
   }
   async appDidFirstRender() {
     const commander = this.getCommander()
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true })
+    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true })
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
-    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror)
-      .register()
-      .fromTextAreaWithAutocomplete(this._codeConsole[0], { lineWrapping: true })
+    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(this._codeConsole[0], { lineWrapping: true })
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()

@@ -485,6 +485,10 @@ class TreeUtils {
     }
   }
 
+  static removeAll(str: string, needle: string) {
+    return str.split(needle).join("")
+  }
+
   static _makeGraphSortFunction(idAccessor: treeNotationTypes.idAccessorFunction, extendsIdAccessor: treeNotationTypes.idAccessorFunction) {
     return (nodeA: treeNotationTypes.treeNode, nodeB: treeNotationTypes.treeNode) => {
       // -1 === a before b

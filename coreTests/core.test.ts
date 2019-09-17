@@ -1976,12 +1976,9 @@ saturation 2
 someCode
  echo hello world`
 
-    // Allow running in both browser and nodejs:
-    const jtreeBase = typeof jtree === "undefined" ? require("../products/jtree.node.js").default : jtree
-
-    class add extends jtreeBase.GrammarBackedNonRootNode {}
-    class lineOfCode extends jtreeBase.GrammarBackedNonRootNode {}
-    class JibberishProgramRoot extends jtreeBase.GrammarBackedRootNode {}
+    class add extends jtree.GrammarBackedNonRootNode {}
+    class lineOfCode extends jtree.GrammarBackedNonRootNode {}
+    class JibberishProgramRoot extends jtree.GrammarBackedRootNode {}
 
     const JibberishLang: any = {}
     JibberishLang.add = add
@@ -1993,10 +1990,7 @@ someCode
     win.lineOfCode = lineOfCode
 
     // Act
-    const grammarProgram = new jtreeBase.GrammarProgram(
-      jibberishGrammarCode,
-      (typeof __dirname !== "undefined" ? __dirname + "/../langs/" : "") + "/jibberish/jibberish.grammar"
-    )
+    const grammarProgram = new jtree.GrammarProgram(jibberishGrammarCode)
     const JibberishProgram = grammarProgram.getRootConstructor()
     const program = new JibberishProgram(code) // error here
     const errs = program.getAllErrors()
@@ -3054,9 +3048,7 @@ bob
     // Assert
     equal(tree.getFirstWords().join(" "), "john susy bob")
     // Act
-    tree.sort((a: treeNotationTypes.treeNode, b: treeNotationTypes.treeNode) =>
-      b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1
-    )
+    tree.sort((a: treeNotationTypes.treeNode, b: treeNotationTypes.treeNode) => (b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1))
     // Assert
     equal(tree.getFirstWords().join(" "), "bob john susy")
   }
@@ -3303,9 +3295,7 @@ event lala2018
 
     // Act
     const simple = tree.toMarkdownTable()
-    const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value: any, row: any, col: any) =>
-      row ? value : jtree.Utils.ucfirst(value)
-    )
+    const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value: any, row: any, col: any) => (row ? value : jtree.Utils.ucfirst(value)))
 
     // Assert
     equal(table, expected, "markdown ok")

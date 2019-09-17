@@ -35,7 +35,7 @@ class AbstractBuilder extends jtree.TreeNode {
       .join("\n")
   }
   _prettifyFile(path) {
-    Disk.write(path, require("prettier").format(Disk.read(path), { semi: false, parser: "babel", printWidth: 160 }))
+    Disk.write(path, require("prettier").format(Disk.read(path), { semi: false, parser: "babel", printWidth: 240 }))
   }
   _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder) {
     return typeScriptScriptsInOrder

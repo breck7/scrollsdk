@@ -77,9 +77,7 @@ class WillowHTTPResponse {
     return this._superAgentResponse && this._superAgentResponse.body
   }
   get text() {
-    if (this._text === undefined)
-      this._text =
-        this._superAgentResponse && this._superAgentResponse.text ? this._superAgentResponse.text : this.body ? JSON.stringify(this.body, null, 2) : ""
+    if (this._text === undefined) this._text = this._superAgentResponse && this._superAgentResponse.text ? this._superAgentResponse.text : this.body ? JSON.stringify(this.body, null, 2) : ""
     return this._text
   }
   get asJson() {
@@ -1339,12 +1337,4 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   }
 }
 
-module.exports = {
-  AbstractTreeComponentRootNode,
-  AbstractTreeComponent,
-  AbstractCommander,
-  WillowConstants,
-  WillowProgram,
-  AbstractGithubTriangleComponent,
-  TreeComponentFrameworkDebuggerComponent
-}
+module.exports = { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }

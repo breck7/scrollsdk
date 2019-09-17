@@ -43,7 +43,7 @@ enum GrammarBundleFiles {
   testJs = "test.js"
 }
 
-enum GrammarCellOrder {
+enum GrammarCellParser {
   prefix = "prefix",
   postfix = "postfix",
   omnifix = "omnifix"
@@ -83,7 +83,7 @@ enum GrammarConstants {
   inScope = "inScope",
   cells = "cells",
   catchAllCellType = "catchAllCellType",
-  cellOrder = "cellOrder",
+  cellParser = "cellParser",
   catchAllNodeType = "catchAllNodeType",
   constants = "constants",
   required = "required", // Require this nodeType to be present in a node or program
@@ -1306,7 +1306,6 @@ abstract class AbstractCellParser {
   }
 
   // todo: improve layout (use bold?)
-  // // todo: cellOrder
   getLineHints(): string {
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
     const nodeTypeId = this._definition._getId() // todo: cleanup
@@ -1320,17 +1319,13 @@ abstract class AbstractCellParser {
     return parameters ? parameters.split(" ") : []
   }
 
-  protected _getCellTypeId(isCatchAll: boolean, cellIndex: treeNotationTypes.int, cellOrder: GrammarCellOrder, requiredCellTypeIds: string[]) {
+  protected _getCellTypeId(isCatchAll: boolean, cellIndex: treeNotationTypes.int, requiredCellTypeIds: string[]) {
     if (isCatchAll) return this.getCatchAllCellTypeId()
     return requiredCellTypeIds[cellIndex]
   }
 
-  protected _isCatchAllCell(cellIndex: treeNotationTypes.int, numberOfRequiredCells: treeNotationTypes.int, cellOrder: GrammarCellOrder) {
+  protected _isCatchAllCell(cellIndex: treeNotationTypes.int, numberOfRequiredCells: treeNotationTypes.int) {
     return cellIndex >= numberOfRequiredCells
-  }
-
-  protected _getCellOrder(): GrammarCellOrder | undefined {
-    return <GrammarCellOrder>this._definition._getFromExtended(GrammarConstants.cellOrder)
   }
 
   getCellArray(node: GrammarBackedNonRootNode = undefined): AbstractGrammarBackedCell<any>[] {
@@ -1340,17 +1335,14 @@ abstract class AbstractCellParser {
     const requiredCellTypeIds = this.getRequiredCellTypeIds()
     const numberOfRequiredCells = requiredCellTypeIds.length
 
-    // todo: cellOrder
-    const cellOrder = this._getCellOrder()
-
     const actualWordCountOrRequiredCellCount = Math.max(words.length, numberOfRequiredCells)
     const cells: AbstractGrammarBackedCell<any>[] = []
 
     // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
     for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
-      const isCatchAll = this._isCatchAllCell(cellIndex, numberOfRequiredCells, cellOrder)
+      const isCatchAll = this._isCatchAllCell(cellIndex, numberOfRequiredCells)
 
-      let cellTypeId = this._getCellTypeId(isCatchAll, cellIndex, cellOrder, requiredCellTypeIds)
+      let cellTypeId = this._getCellTypeId(isCatchAll, cellIndex, requiredCellTypeIds)
 
       let cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
 
@@ -1438,7 +1430,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.description,
       GrammarConstants.catchAllNodeType,
       GrammarConstants.catchAllCellType,
-      GrammarConstants.cellOrder,
+      GrammarConstants.cellParser,
       GrammarConstants.extensions,
       GrammarConstants.version,
       GrammarConstants.tags,
@@ -1576,8 +1568,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
       return cellTypeDef.getGetter(index)
     })
-
-    // todo: cellOrder
 
     const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType)
     if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
@@ -1769,7 +1759,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   // todo: improve layout (use bold?)
-  // // todo: cellOrder
   getLineHints(): string {
     return this.getCellParser().getLineHints()
   }
@@ -1792,7 +1781,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const match = regexMatch ? `'${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`
     const cellParser = this.getCellParser()
     const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
-    // // todo: cellOrder
     const catchAllCellTypeId = cellParser.getCatchAllCellTypeId()
     const firstCellTypeDef = program.getCellTypeDefinitionById(requiredCellTypeIds[0])
     const firstWordHighlightScope = (firstCellTypeDef ? firstCellTypeDef.getHighlightScope() : defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
@@ -1904,7 +1892,12 @@ ${captures}
   private _cellParser: AbstractCellParser
 
   getCellParser() {
-    if (!this._cellParser) this._cellParser = new PrefixCellParser(this)
+    if (!this._cellParser) {
+      const cellParsingStrategy = this._getFromExtended(GrammarConstants.cellParser)
+      if (cellParsingStrategy === GrammarCellParser.postfix) this._cellParser = new PostfixCellParser(this)
+      else if (cellParsingStrategy === GrammarCellParser.omnifix) this._cellParser = new OmnifixCellParser(this)
+      else this._cellParser = new PrefixCellParser(this)
+    }
     return this._cellParser
   }
 }

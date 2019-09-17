@@ -1,4 +1,4 @@
-edge / 2019-09-12
+40.3.0 / 2019-09-16
 ===================
 - New: added Arrow sample language
 - New: required and single nodeTypes are accessible to compiler string template
@@ -6,8 +6,9 @@ edge / 2019-09-12
 - New: Github triangle and TCF debugger components
 - New: removeNonAscii util method
 - Fix: poop demo language now compiles to csv correctly
+- Infra: build fixes. No more manually fixing TypeScript build artifacts
 - Infra: wwt types
-- Infra: help show options when invalid command entered
+- Infra: command line app now shows options when invalid command entered
 - Infra: TreeComponentFramework work
 - Infra: builder improvements
 

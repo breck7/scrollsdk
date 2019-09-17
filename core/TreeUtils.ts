@@ -23,6 +23,10 @@ class TreeUtils {
     }
   }
 
+  static escapeRegExp(str: string) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+  }
+
   static removeNonAscii(str: string) {
     // https://stackoverflow.com/questions/20856197/remove-non-ascii-character-in-string
     return str.replace(/[^\x00-\x7F]/g, "")

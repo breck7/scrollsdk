@@ -1355,7 +1355,7 @@ abstract class AbstractCellParser {
         cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       }
 
-      cells[cellIndex] = new cellConstructor(node, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll, this._definition)
+      cells[cellIndex] = new cellConstructor(node, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll, def)
     }
     return cells
   }
@@ -1772,13 +1772,13 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return !this._getFromExtended(GrammarConstants.inScope) && !this._getFromExtended(GrammarConstants.catchAllNodeType)
   }
 
+  // todo: refactor. move some parts to cellParser?
   getMatchBlock() {
     const defaultHighlightScope = "source"
     const program = this.getLanguageDefinitionProgram()
-    const escapeRegExp = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
     const regexMatch = this._getRegexMatch()
     const firstWordMatch = this._getFirstWordMatch()
-    const match = regexMatch ? `'${regexMatch}'` : `'^ *${escapeRegExp(firstWordMatch)}(?: |$)'`
+    const match = regexMatch ? `'${regexMatch}'` : `'^ *${TreeUtils.escapeRegExp(firstWordMatch)}(?: |$)'`
     const cellParser = this.getCellParser()
     const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
     const catchAllCellTypeId = cellParser.getCatchAllCellTypeId()

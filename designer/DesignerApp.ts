@@ -31,7 +31,7 @@ class DesignerCommander extends AbstractCommander {
   }
 
   visualizeCommand() {
-    jQuery("#explainResultsDiv").html(this._toIceCubes(this.program))
+    jQuery("#explainResultsDiv").html(this._toIceTray(this.program))
   }
 
   inferPrefixGrammarCommand() {
@@ -87,7 +87,7 @@ class DesignerCommander extends AbstractCommander {
     })
   }
 
-  private _toIceCubes(program: any) {
+  private _toIceTray(program: any) {
     const columns = program.getProgramWidth()
 
     const cellTypes = new jtree.TreeNode(program.getInPlaceCellTypeTreeWithNodeConstructorNames())

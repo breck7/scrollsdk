@@ -24,7 +24,9 @@ poopNode
   💩 630
 abstractEventNode
  abstract
- catchAllCellType someCellTypeCell
+ cellParser omnifix
+ cells eventTypeCell
+ catchAllCellType timeIntCell
  javascript
   getTime() {
     const time= this.getLine().match(/(\d+)/)
@@ -34,22 +36,25 @@ abstractEventNode
   compile(day, lastTime) {
     return `${day},${lastTime},${this.eventType},${this.getNotes()}`
   }
- cells timeIntCell
 dateIntCell
  highlightScope constant.numeric.integer
 monthIntCell
  extends dateIntCell
+intCell
+ regex \d+
 yearIntCell
  extends dateIntCell
 dayIntCell
  extends dateIntCell
 timeIntCell
  highlightScope constant.numeric.integer
-someCellTypeCell
- todo remove once we add omnifix
- highlightScope constant.numeric.integer
+ extends intCell
 anyCell
 symbolCell
+memoryDescriptionCell
+ highlightScope string
+eventTypeCell
+ enum 💩 ✨ 🍼 😴 😀 ❤️
 bowelNode
  pattern 💩
  extends abstractEventNode
@@ -77,13 +82,15 @@ awakeNode
  string eventType awoke
 memoryNode
  pattern ❤️
+ cells eventTypeCell
+ catchAllCellType memoryDescriptionCell
  description Special memory.
  extends abstractEventNode
  string eventType memory
  javascript
   getNotes() { return jtree.Utils.removeNonAscii(this.getLine()).trim()}
 dayNode
- pattern 🌄
+ match 🌄
  description We survived another day!
  cells symbolCell monthIntCell dayIntCell yearIntCell
  javascript

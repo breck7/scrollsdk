@@ -1,3 +1,13 @@
+41.0.0 / 2019-09-17
+===================
+- New: postfix cell parsing
+- New: omnifix cell parsing
+- New: cellParser keyword in Grammar Language
+- New: chuck demo lang demonstrating postfix cell parsing
+- New: improved Explain visualization on designer app
+- Fix: poop demo lang now implements omnifix
+- Breaking: removed _getGrammarBackedCellArray method and replaced with new CellParser class
+
 40.3.0 / 2019-09-16
 ===================
 - New: added Arrow sample language

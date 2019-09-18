@@ -42,7 +42,8 @@ testTree.grammar = equal => {
 
 testTree.compileAll = equal => {
   // Arrange/Act
-  ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "config", "poop", "jibjab", "fire", "stamp", "zin", "newlang"].map(name => {
+  const langs = "hakon swarm dug stump project jibberish config poop jibjab fire stamp zin newlang chuck"
+  langs.split(" ").map(name => {
     try {
       // Act
       const path = __dirname + `/../langs/${name}/${name}.grammar`
@@ -54,6 +55,7 @@ testTree.compileAll = equal => {
       equal(true, true, `Expected to compile and include "${name}" without error.`)
 
       // Act
+      // todo: should we have an example node for all langs?
       const exampleProgram = grammarCode.getNode("grammar example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
@@ -62,6 +64,9 @@ testTree.compileAll = equal => {
         // Assert
         equal(testProgram.getAllErrors().length, 0, `no errors in test ${name} program`)
       }
+
+      // Act/ Assert
+      equal(new rootClass(Disk.read(__dirname + `/../langs/${name}/sample.${name}`)).getAllErrors().length, 0, `no errors in ${name} sample program`)
     } catch (err) {
       console.log(err)
       equal(true, false, "Hit an error")

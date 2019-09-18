@@ -20,18 +20,17 @@ numbersCell
 operatorCell
  highlightScope keyword.operator.arithmetic
 abstractArithmeticReducerNode
- catchAllCellType numbersCell
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   executeSync() {
-    return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.getWord(0)}${tot}`), this.numbersCell[0])
+    return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersCell[0])
   }
   async execute() { return this.executeSync() }
  inScope abstractArithmeticReducerNode commentNode
  abstract
  cells operatorCell
+ catchAllCellType numbersCell
 commentNode
- match #
  description This is a line comment.
  catchAllCellType commentCell
  catchAllNodeType commentNode
@@ -49,15 +48,20 @@ hashBangNode
 modNode
  match %
  extends abstractArithmeticReducerNode
+ string operator %
 timesNode
  match *
  extends abstractArithmeticReducerNode
+ string operator *
 addNode
  match +
  extends abstractArithmeticReducerNode
+ string operator +
 substractNode
  match -
  extends abstractArithmeticReducerNode
+ string operator -
 divideNode
  match /
  extends abstractArithmeticReducerNode
+ string operator /

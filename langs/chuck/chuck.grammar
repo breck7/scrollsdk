@@ -1,0 +1,25 @@
+todo Make this compile and execute
+chuckNode
+ description A useless demo Tree Language inspired by Forth that tests postfix notation.
+ root
+ inScope abstractOperatorNode onlyNumbersNode
+operatorCell
+ highlightScope keyword
+floatCell
+abstractOperatorNode
+ catchAllCellType floatCell
+ cells operatorCell
+ cellParser postfix
+ abstract
+addNode
+ extends abstractOperatorNode
+ pattern \+
+multiplyNode
+ extends abstractOperatorNode
+ pattern \*
+printNode
+ extends abstractOperatorNode
+ pattern print
+onlyNumbersNode
+ catchAllCellType floatCell
+ pattern ^[\d\. ]+$

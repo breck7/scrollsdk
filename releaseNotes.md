@@ -1,3 +1,8 @@
+edge / 2019-09-18
+===================
+- New: error handling in TCF commands
+- Fix: uncaught command error displaying in Designer app
+
 41.0.0 / 2019-09-17
 ===================
 - New: postfix cell parsing

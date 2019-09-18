@@ -1631,6 +1631,10 @@ abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   // todo: remove?
   protected async appDidFirstRender() {}
 
+  protected onCommandError(err: any) {
+    throw new err()
+  }
+
   _setTreeComponentFrameworkEventListeners() {
     const willowBrowser = this.getWillowProgram()
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
@@ -1643,7 +1647,11 @@ abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
       const commandWithArgs = stumpNode.getStumpNodeAttr(attr)
       const commandArgs = commandWithArgs.split(" ")
       const command = commandArgs.shift()
-      commander[command](...commandArgs)
+      try {
+        commander[command](...commandArgs)
+      } catch (err) {
+        this.onCommandError(err)
+      }
       return false
     }
 

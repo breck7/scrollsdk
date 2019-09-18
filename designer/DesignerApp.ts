@@ -123,6 +123,7 @@ class DesignerApp extends AbstractTreeComponentRootNode {
       tableComponent: tableComponent,
       shareComponent: shareComponent,
       headerComponent: headerComponent,
+      otherErrorsComponent: otherErrorsComponent,
       TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
     })
   }
@@ -151,9 +152,6 @@ class DesignerApp extends AbstractTreeComponentRootNode {
   }
   private get _readmeComponent() {
     return jQuery("#readmeComponent")
-  }
-  private get _otherErrorsDiv() {
-    return jQuery("#otherErrorsDiv")
   }
   private get _shareLink() {
     return jQuery("#shareLink")
@@ -280,13 +278,18 @@ class DesignerApp extends AbstractTreeComponentRootNode {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
         this._grammarConstructor = new jtree.GrammarProgram(currentGrammarCode).getRootConstructor()
         this._cachedGrammarCode = currentGrammarCode
-        this._otherErrorsDiv.html("")
+        jQuery("#otherErrorsDiv").html("")
       } catch (err) {
         console.error(err)
-        this._otherErrorsDiv.html(err)
+        jQuery("#otherErrorsDiv").html(err)
       }
     }
     return this._grammarConstructor
+  }
+
+  protected onCommandError(err: any) {
+    console.log(err)
+    jQuery("#otherErrorsDiv").html(err)
   }
 
   private _grammarDidUpdate() {
@@ -433,10 +436,8 @@ a
     return `headerComponent
 samplesComponent
 shareComponent
+otherErrorsComponent
 tableComponent
- executionResultsComponent
- compiledResultsComponent
- explainResultsComponent
 githubTriangleComponent`
   }
 }
@@ -479,14 +480,18 @@ class shareComponent extends AbstractTreeComponent {
   }
 }
 
-// Todo: use these 3
 class otherErrorsComponent extends AbstractTreeComponent {
   getStumpCode() {
     return `div
- style color: red;
  id otherErrorsDiv`
   }
+  getHakon() {
+    return `#otherErrorsDiv
+ color red`
+  }
 }
+
+// Todo: use these 3
 class compiledResultsComponent extends AbstractTreeComponent {}
 class executionResultsComponent extends AbstractTreeComponent {
   getHakon() {

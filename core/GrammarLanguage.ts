@@ -1319,30 +1319,29 @@ abstract class AbstractCellParser {
     return parameters ? parameters.split(" ") : []
   }
 
-  protected _getCellTypeId(isCatchAll: boolean, cellIndex: treeNotationTypes.int, requiredCellTypeIds: string[]) {
-    if (isCatchAll) return this.getCatchAllCellTypeId()
+  protected _getCellTypeId(cellIndex: treeNotationTypes.int, requiredCellTypeIds: string[], totalWordCount: treeNotationTypes.int) {
     return requiredCellTypeIds[cellIndex]
   }
 
-  protected _isCatchAllCell(cellIndex: treeNotationTypes.int, numberOfRequiredCells: treeNotationTypes.int) {
+  protected _isCatchAllCell(cellIndex: treeNotationTypes.int, numberOfRequiredCells: treeNotationTypes.int, totalWordCount: treeNotationTypes.int) {
     return cellIndex >= numberOfRequiredCells
   }
 
   getCellArray(node: GrammarBackedNonRootNode = undefined): AbstractGrammarBackedCell<any>[] {
-    const words: string[] = node.getWords()
+    const wordCount = node.getWords().length
     const def = this._definition
     const grammarProgram = def.getLanguageDefinitionProgram()
     const requiredCellTypeIds = this.getRequiredCellTypeIds()
     const numberOfRequiredCells = requiredCellTypeIds.length
 
-    const actualWordCountOrRequiredCellCount = Math.max(words.length, numberOfRequiredCells)
+    const actualWordCountOrRequiredCellCount = Math.max(wordCount, numberOfRequiredCells)
     const cells: AbstractGrammarBackedCell<any>[] = []
 
     // A for loop instead of map because "numberOfCellsToFill" can be longer than words.length
     for (let cellIndex = 0; cellIndex < actualWordCountOrRequiredCellCount; cellIndex++) {
-      const isCatchAll = this._isCatchAllCell(cellIndex, numberOfRequiredCells)
+      const isCatchAll = this._isCatchAllCell(cellIndex, numberOfRequiredCells, wordCount)
 
-      let cellTypeId = this._getCellTypeId(isCatchAll, cellIndex, requiredCellTypeIds)
+      let cellTypeId = isCatchAll ? this.getCatchAllCellTypeId() : this._getCellTypeId(cellIndex, requiredCellTypeIds, wordCount)
 
       let cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
 
@@ -1363,7 +1362,16 @@ abstract class AbstractCellParser {
 
 class PrefixCellParser extends AbstractCellParser {}
 
-class PostfixCellParser extends AbstractCellParser {}
+class PostfixCellParser extends AbstractCellParser {
+  protected _isCatchAllCell(cellIndex: treeNotationTypes.int, numberOfRequiredCells: treeNotationTypes.int, totalWordCount: treeNotationTypes.int) {
+    return cellIndex < totalWordCount - numberOfRequiredCells
+  }
+
+  protected _getCellTypeId(cellIndex: treeNotationTypes.int, requiredCellTypeIds: string[], totalWordCount: treeNotationTypes.int) {
+    const catchAllWordCount = totalWordCount - requiredCellTypeIds.length
+    return requiredCellTypeIds[cellIndex - catchAllWordCount]
+  }
+}
 
 class OmnifixCellParser extends AbstractCellParser {}
 

@@ -29,7 +29,7 @@ baseNodeTypesCell
 booleanCell
  enum true false
  highlightScope constant.numeric
-cellOrderCell
+cellParserCell
  enum prefix postfix omnifix
  highlightScope constant.numeric
 cellPropertyNameCell
@@ -231,9 +231,9 @@ catchAllCellTypeNode
  cells propertyKeywordCell cellTypeIdCell
  description If there are extra words in the node's line, parse these words as this type.
  extends abstractNodeTypeRuleNode
-cellOrderNode
- cells propertyKeywordCell cellOrderCell
- description Prefix/postfix/or omnifix parsing strategy.
+cellParserNode
+ cells propertyKeywordCell cellParserCell
+ description prefix/postfix/omnifix parsing strategy. If missing, defaults to prefix.
  extends abstractNodeTypeRuleNode
 catchAllNodeTypeNode
  description If a nodeType is not found in the inScope list, instantiate this type of node instead.

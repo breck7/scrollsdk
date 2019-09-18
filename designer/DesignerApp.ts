@@ -132,7 +132,7 @@ class DesignerApp extends AbstractTreeComponentRootNode {
     jQuery(".resultsDiv").val("")
   }
 
-  public languages = "newlang hakon stump dumbdown arrow dug iris fire wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
+  public languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
 
   public program: any
   public grammarProgram: any

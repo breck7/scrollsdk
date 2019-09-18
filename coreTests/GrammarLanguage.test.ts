@@ -148,21 +148,22 @@ missing2 true`)
   )
 }
 
-// tidsable for now
-// testTree.simTests = equal => {
-//   ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "config", "poop", "jibjab", "fire", "stamp", "zin", "newlang"].forEach(lang => {
-//     const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
-//     const grammarProgram = new jtree.GrammarProgram(grammarCode)
-//     const programConstructor = grammarProgram.getRootConstructor()
+testTree.simTests = equal => {
+  // todo: add stump and others back in
+  const langs = ["hakon", "swarm", "dug"]
+  langs.forEach(lang => {
+    const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
+    const grammarProgram = new jtree.GrammarProgram(grammarCode)
+    const programConstructor = grammarProgram.getRootConstructor()
 
-//     // Act
-//     const simulatedProgram = grammarProgram._getRootNodeTypeDefinitionNode().generateSimulatedData()
+    // Act
+    const simulatedProgram = grammarProgram._getRootNodeTypeDefinitionNode().generateSimulatedData()
 
-//     // Assert
-//     console.log(simulatedProgram)
-//     equal(new programConstructor(simulatedProgram.join("\n")).getAllErrors().length, 0, `should be no errors in simulated ${lang} program`)
-//   })
-// }
+    // Assert
+    //console.log(simulatedProgram)
+    equal(new programConstructor(simulatedProgram.join("\n")).getAllErrors().length, 0, `should be no errors in simulated ${lang} program`)
+  })
+}
 
 testTree.iris = equal => {
   // Arrange

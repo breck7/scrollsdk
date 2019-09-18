@@ -2477,7 +2477,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "41.0.0"
+TreeNode.getVersion = () => "41.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3611,7 +3611,7 @@ class AbstractCellParser {
     return cellIndex >= numberOfRequiredCells
   }
   getCellArray(node = undefined) {
-    const wordCount = node.getWords().length
+    const wordCount = node ? node.getWords().length : 0
     const def = this._definition
     const grammarProgram = def.getLanguageDefinitionProgram()
     const requiredCellTypeIds = this.getRequiredCellTypeIds()
@@ -3652,7 +3652,7 @@ class OmnifixCellParser extends AbstractCellParser {
     const def = this._definition
     const program = node ? node.getRootNode() : undefined
     const grammarProgram = def.getLanguageDefinitionProgram()
-    const words = node.getWords()
+    const words = node ? node.getWords() : []
     const requiredCellTypeDefs = this.getRequiredCellTypeIds().map(cellTypeId => grammarProgram.getCellTypeDefinitionById(cellTypeId))
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
     const catchAllCellTypeDef = catchAllCellTypeId && grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId)
@@ -4082,33 +4082,36 @@ ${captures}
     // todo: generate simulated data from catch all
     return cells.map(cell => cell.generateSimulatedDataForCell()).join(" ")
   }
+  // todo: refactor
   generateSimulatedData(nodeCount = 1, indentCount = -1, nodeTypeChain = []) {
     let nodeTypeIds = this._getInScopeNodeTypeIds()
     const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
     if (catchAllNodeTypeId) nodeTypeIds.push(catchAllNodeTypeId)
     const thisId = this._getId()
+    if (!nodeTypeChain.includes(thisId)) nodeTypeChain.push(thisId)
     const lines = []
     while (nodeCount > 0) {
       const line = this._generateSimulatedLine()
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
-      nodeTypeIds = nodeTypeIds.filter(nodeTypeId => {
-        if (nodeTypeChain.indexOf(nodeTypeId) > -1) return false
-        return true
-      })
       const concreteNodeTypeDefs = []
-      nodeTypeIds.forEach(nodeTypeId => {
-        const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
-        if (def._isErrorNodeType()) return true
-        else if (def._isAbstract()) {
-          def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefs.push(def))
-        } else {
-          concreteNodeTypeDefs.push(def)
-        }
-      })
+      nodeTypeIds
+        .filter(nodeTypeId => {
+          if (nodeTypeChain.includes(nodeTypeId)) return false
+          return true
+        })
+        .forEach(nodeTypeId => {
+          const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
+          if (def._isErrorNodeType()) return true
+          else if (def._isAbstract()) {
+            def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefs.push(def))
+          } else {
+            concreteNodeTypeDefs.push(def)
+          }
+        })
       concreteNodeTypeDefs.forEach(def => {
         if (def._isAbstract()) return true
         const nodeTypeId = def._getId()
-        if (nodeTypeChain.indexOf(nodeTypeId) > -1) return false
+        if (nodeTypeChain.includes(nodeTypeId)) return true
         const chain = nodeTypeChain.slice(0)
         chain.push(nodeTypeId)
         def.generateSimulatedData(1, indentCount + 1, chain).forEach(line => {

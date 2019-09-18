@@ -1328,7 +1328,7 @@ abstract class AbstractCellParser {
   }
 
   getCellArray(node: GrammarBackedNonRootNode = undefined): AbstractGrammarBackedCell<any>[] {
-    const wordCount = node.getWords().length
+    const wordCount = node ? node.getWords().length : 0
     const def = this._definition
     const grammarProgram = def.getLanguageDefinitionProgram()
     const requiredCellTypeIds = this.getRequiredCellTypeIds()
@@ -1379,7 +1379,7 @@ class OmnifixCellParser extends AbstractCellParser {
     const def = this._definition
     const program = <GrammarBackedRootNode>(node ? node.getRootNode() : undefined)
     const grammarProgram = def.getLanguageDefinitionProgram()
-    const words = node.getWords()
+    const words = node ? node.getWords() : []
     const requiredCellTypeDefs = this.getRequiredCellTypeIds().map(cellTypeId => grammarProgram.getCellTypeDefinitionById(cellTypeId))
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
     const catchAllCellTypeDef = catchAllCellTypeId && grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId)
@@ -1895,35 +1895,38 @@ ${captures}
     return cells.map(cell => cell.generateSimulatedDataForCell()).join(" ")
   }
 
+  // todo: refactor
   generateSimulatedData(nodeCount = 1, indentCount = -1, nodeTypeChain: string[] = []) {
     let nodeTypeIds = this._getInScopeNodeTypeIds()
     const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
     if (catchAllNodeTypeId) nodeTypeIds.push(catchAllNodeTypeId)
     const thisId = this._getId()
+    if (!nodeTypeChain.includes(thisId)) nodeTypeChain.push(thisId)
     const lines = []
     while (nodeCount > 0) {
       const line = this._generateSimulatedLine()
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
 
-      nodeTypeIds = nodeTypeIds.filter(nodeTypeId => {
-        if (nodeTypeChain.indexOf(nodeTypeId) > -1) return false
-        return true
-      })
       const concreteNodeTypeDefs: AbstractGrammarDefinitionNode[] = []
-      nodeTypeIds.forEach(nodeTypeId => {
-        const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
-        if (def._isErrorNodeType()) return true
-        else if (def._isAbstract()) {
-          def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefs.push(def))
-        } else {
-          concreteNodeTypeDefs.push(def)
-        }
-      })
+      nodeTypeIds
+        .filter(nodeTypeId => {
+          if (nodeTypeChain.includes(nodeTypeId)) return false
+          return true
+        })
+        .forEach(nodeTypeId => {
+          const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
+          if (def._isErrorNodeType()) return true
+          else if (def._isAbstract()) {
+            def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefs.push(def))
+          } else {
+            concreteNodeTypeDefs.push(def)
+          }
+        })
 
       concreteNodeTypeDefs.forEach(def => {
         if (def._isAbstract()) return true
         const nodeTypeId = def._getId()
-        if (nodeTypeChain.indexOf(nodeTypeId) > -1) return false
+        if (nodeTypeChain.includes(nodeTypeId)) return true
         const chain = nodeTypeChain.slice(0)
         chain.push(nodeTypeId)
         def.generateSimulatedData(1, indentCount + 1, chain).forEach(line => {

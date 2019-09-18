@@ -96,18 +96,19 @@ class DesignerCommander extends AbstractCommander {
     const table = program
       .getProgramAsCells()
       .map((line: any, lineIndex: number) => {
-        let rows = ""
+        const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
+        let cells = `<td class="iceTrayNodeType">${nodeType}</td>`
         for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
           const cell = line[cellIndex]
-          if (!cell) rows += `<td>&nbsp;</td>`
+          if (!cell) cells += `<td>&nbsp;</td>`
           else {
             const cellType = cellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
             const rootCellType = rootCellTypes.nodeAt(lineIndex).getWord(cellIndex + 1)
-            const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
-            rows += `<td title="cellType:${cellType} rootCellType:${rootCellType} nodeType:${nodeType}">${cell.getWord()}</td>`
+            const cellTypeDivs = [rootCellType, cellType]
+            cells += `<td><span class="cellTypeSpan">${cellTypeDivs.join(" ")}</span>${cell.getWord()}</td>`
           }
         }
-        return `<tr>${rows}</tr>`
+        return `<tr>${cells}</tr>`
       })
       .join("\n")
     return `<table class="iceCubes">${table}</table>`
@@ -386,8 +387,30 @@ td
 .iceCubes
  tr,td
   margin 0
-  box-shadow rgba(1,1,1,.4) 1px 1px 1px
   overflow scroll
+  border 0
+ td
+  box-shadow rgba(1,1,1,.1) 1px 1px 1px
+  position relative
+  padding 10px 3px 2px 2px
+  .cellTypeSpan
+   position absolute
+   white-space nowrap
+   left 0
+   top 0
+   font-size 8px
+   color rgba(1,1,1,.2)
+ .iceTrayNodeType
+  box-shadow none
+  font-size 8px
+  color rgba(1,1,1,.2)
+ tr
+  &:hover
+   td
+    .iceTrayNodeType
+     color rgba(1,1,1,.5)
+    .cellTypeSpan
+     color rgba(1,1,1,.5)
 code
  white-space pre
 pre

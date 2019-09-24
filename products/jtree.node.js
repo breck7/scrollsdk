@@ -3068,11 +3068,11 @@ class AbstractGrammarBackedCell {
       }
     })
   }
-  generateSimulatedDataForCell() {
+  synthesizeCell() {
     // todo: cleanup
     const cellDef = this._getCellTypeDefinition()
     const enumOptions = cellDef._getFromExtended(GrammarConstants.enum)
-    return enumOptions ? TreeUtils.getRandomString(1, enumOptions.split(" ")) : this._generateSimulatedDataForCell()
+    return enumOptions ? TreeUtils.getRandomString(1, enumOptions.split(" ")) : this._synthesizeCell()
   }
   _getCellTypeDefinition() {
     return this._typeDef
@@ -3104,7 +3104,7 @@ class GrammarIntCell extends AbstractGrammarBackedCell {
     if (isNaN(num)) return false
     return num.toString() === word
   }
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return TreeUtils.getRandomString(2, "123456789".split(""))
   }
   getRegexString() {
@@ -3122,7 +3122,7 @@ class GrammarBitCell extends AbstractGrammarBackedCell {
     const word = this.getWord()
     return word === "0" || word === "1"
   }
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return TreeUtils.getRandomString(1, "01".split(""))
   }
   getRegexString() {
@@ -3140,7 +3140,7 @@ class GrammarFloatCell extends AbstractGrammarBackedCell {
     const num = parseFloat(word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
   }
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return TreeUtils.getRandomString(2, "123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
   }
   getRegexString() {
@@ -3165,7 +3165,7 @@ class GrammarBoolCell extends AbstractGrammarBackedCell {
     const str = word.toLowerCase()
     return this._trues.has(str) || this._falses.has(str)
   }
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
   }
   _getOptions() {
@@ -3184,7 +3184,7 @@ class GrammarAnyCell extends AbstractGrammarBackedCell {
   _isValid() {
     return true
   }
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return this._nodeTypeDefinition._getKeywordIfAny()
   }
   getRegexString() {
@@ -3195,7 +3195,7 @@ class GrammarAnyCell extends AbstractGrammarBackedCell {
   }
 }
 class GrammarKeywordCell extends GrammarAnyCell {
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return this._nodeTypeDefinition._getKeywordIfAny()
   }
 }
@@ -3204,7 +3204,7 @@ class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell {
   _isValid() {
     return false
   }
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return "extraWord" // should never occur?
   }
   getParsed() {
@@ -3218,7 +3218,7 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell {
   _isValid() {
     return false
   }
-  _generateSimulatedDataForCell() {
+  _synthesizeCell() {
     return "unknownCell" // should never occur?
   }
   getParsed() {
@@ -4083,10 +4083,10 @@ ${captures}
     const cells = this.getCellParser().getCellArray()
     if (!cells.length) return undefined
     // todo: generate simulated data from catch all
-    return cells.map(cell => cell.generateSimulatedDataForCell()).join(" ")
+    return cells.map(cell => cell.synthesizeCell()).join(" ")
   }
   // todo: refactor
-  generateSimulatedData(nodeCount = 1, indentCount = -1, nodeTypeChain = []) {
+  synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypeChain = []) {
     let nodeTypeIds = this._getInScopeNodeTypeIds()
     const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
     if (catchAllNodeTypeId) nodeTypeIds.push(catchAllNodeTypeId)
@@ -4117,7 +4117,7 @@ ${captures}
         if (nodeTypeChain.includes(nodeTypeId)) return true
         const chain = nodeTypeChain.slice(0)
         chain.push(nodeTypeId)
-        def.generateSimulatedData(1, indentCount + 1, chain).forEach(line => {
+        def.synthesizeNode(1, indentCount + 1, chain).forEach(line => {
           lines.push(line)
         })
       })

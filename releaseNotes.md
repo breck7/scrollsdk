@@ -1,3 +1,7 @@
+edge / 2019-09-24
+===================
+- Breaking: experimental generateSimulatedData methods are now synthesizeNode and synthesizeCell
+
 41.2.0 / 2019-09-24
 ===================
 - New: without method

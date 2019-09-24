@@ -21,12 +21,12 @@ class DesignerCommander extends AbstractCommander {
     this._app.setGrammarCode(new jtree.UnknownGrammarProgram(this._app.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
     this._app._onGrammarKeyup()
   }
-  simulateDataCommand() {
+  synthesizeProgramCommand() {
     const grammarProgram = new jtree.GrammarProgram(this._app.getGrammarCode())
     this._app.setCodeCode(
       grammarProgram
         ._getRootNodeTypeDefinitionNode()
-        .generateSimulatedData()
+        .synthesizeNode()
         .join("\n")
     )
     this._app._onCodeKeyUp()
@@ -454,8 +454,8 @@ class tableComponent extends AbstractTreeComponent {
    a Download Bundle
     ${WillowConstants.DataShadowEvents.onClickCommand} downloadBundleCommand
    span  |
-   a Generate Random Program
-    ${WillowConstants.DataShadowEvents.onClickCommand} simulateDataCommand
+   a Synthesize Program
+    ${WillowConstants.DataShadowEvents.onClickCommand} synthesizeProgramCommand
    textarea
     id grammarConsole
   td

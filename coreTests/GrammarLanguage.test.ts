@@ -157,7 +157,7 @@ testTree.simTests = equal => {
     const programConstructor = grammarProgram.getRootConstructor()
 
     // Act
-    const simulatedProgram = grammarProgram._getRootNodeTypeDefinitionNode().generateSimulatedData()
+    const simulatedProgram = grammarProgram._getRootNodeTypeDefinitionNode().synthesizeNode()
 
     // Assert
     //console.log(simulatedProgram)

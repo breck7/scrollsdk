@@ -1024,6 +1024,9 @@ class TreeNode extends AbstractNode {
   with(firstWord) {
     return this.filter(node => node.has(firstWord))
   }
+  without(firstWord) {
+    return this.filter(node => !node.has(firstWord))
+  }
   first(quantity = 1) {
     return this.limit(quantity, 0)
   }
@@ -2477,7 +2480,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "41.1.0"
+TreeNode.getVersion = () => "41.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

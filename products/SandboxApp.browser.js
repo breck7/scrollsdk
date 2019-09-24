@@ -127,6 +127,12 @@ class headerComponent extends AbstractTreeComponent {
   a Tree Language Designer
    href /designer/
   span  | 
+  a Unit Tests
+   href test.html
+  span  | 
+  a Perf Tests
+   href perfTests.html
+  span  | 
   a Debug
    ${WillowConstants.DataShadowEvents.onClickCommand} toggleTreeComponentFrameworkDebuggerCommand
   span  | Version ${jtree.getVersion()}

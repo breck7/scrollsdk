@@ -38,11 +38,7 @@ class Parser {
   private _catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor
   private _firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap
   private _regexTests: treeNotationTypes.regexTest[]
-  constructor(
-    catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor,
-    firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap = {},
-    regexTests: treeNotationTypes.regexTest[] = undefined
-  ) {
+  constructor(catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor, firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap = {}, regexTests: treeNotationTypes.regexTest[] = undefined) {
     this._catchAllNodeConstructor = catchAllNodeConstructor
     this._firstWordMap = firstWordMap
     this._regexTests = regexTests
@@ -259,9 +255,7 @@ class TreeNode extends AbstractNode {
 
   toString(indentCount = 0, language = this): string {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
-    return (
-      language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
-    )
+    return language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
   }
 
   printLinesFrom(start: treeNotationTypes.int, quantity: treeNotationTypes.int) {
@@ -303,9 +297,7 @@ class TreeNode extends AbstractNode {
     // Set up the firstWord part of the node
     const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
     const lineHtml = this._getLineHtml()
-    const childrenHtml = this.length
-      ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>`
-      : ""
+    const childrenHtml = this.length ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>` : ""
 
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
@@ -700,6 +692,10 @@ class TreeNode extends AbstractNode {
     return this.filter(node => node.has(firstWord))
   }
 
+  without(firstWord: string) {
+    return this.filter(node => !node.has(firstWord))
+  }
+
   first(quantity = 1) {
     return this.limit(quantity, 0)
   }
@@ -1017,11 +1013,7 @@ class TreeNode extends AbstractNode {
     return ancestorNodes
   }
 
-  protected _getAncestorNodes(
-    getPotentialParentNodesByIdFn: (thisParentNode: TreeNode, id: word) => TreeNode[],
-    getParentIdFn: (thisNode: TreeNode) => word,
-    cannotContainNode: TreeNode
-  ): TreeNode[] {
+  protected _getAncestorNodes(getPotentialParentNodesByIdFn: (thisParentNode: TreeNode, id: word) => TreeNode[], getParentIdFn: (thisNode: TreeNode) => word, cannotContainNode: TreeNode): TreeNode[] {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
 
@@ -2444,7 +2436,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "41.1.0"
+  static getVersion = () => "41.2.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

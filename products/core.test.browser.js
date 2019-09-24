@@ -3055,6 +3055,21 @@ c
     // Cleanup
     console.log = orig
   }
+  testTree.with = equal => {
+    // Arrange
+    const dummy = new jtree.TreeNode(`0
+ color red
+ age 100
+1
+ color blue`)
+    // Act/Assert
+    equal(dummy.with("color").length, 2)
+    equal(dummy.with("age").length, 1)
+    equal(dummy.with("score").length, 0)
+    equal(dummy.without("color").length, 0)
+    equal(dummy.without("age").length, 1)
+    equal(dummy.without("score").length, 2)
+  }
   testTree.extendible = equal => {
     // Arrange
     const a = new jtree.ExtendibleTreeNode(`a

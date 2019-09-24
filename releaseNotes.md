@@ -1,3 +1,7 @@
+41.2.0 / 2019-09-24
+===================
+- New: without method
+
 41.1.0 / 2019-09-18
 ===================
 - New: error handling in TCF commands

@@ -1421,11 +1421,11 @@ ${new stumpNode(this.getStumpCode()).compile()}
   }
 
   _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
-    return this.getDependencies().find(dep => dep.getMTime() > lastRenderedTime)
+    return this.getDependencies().find(dep => dep.getLineModifiedTime() > lastRenderedTime)
   }
 
   _getReasonForUpdatingOrNot(): reasonForUpdatingOrNot {
-    const mTime = this.getMTime()
+    const mTime = this.getLineModifiedTime()
     const lastRenderedTime = this._getLastRenderedTime() || 0
     const staleTime = mTime - lastRenderedTime
     if (lastRenderedTime === 0)
@@ -1448,7 +1448,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
         shouldUpdate: true,
         reason: "A dependency changed",
         dependency: outdatedDependency,
-        staleTime: outdatedDependency.getMTime() - lastRenderedTime
+        staleTime: outdatedDependency.getLineModifiedTime() - lastRenderedTime
       }
     return {
       shouldUpdate: false,

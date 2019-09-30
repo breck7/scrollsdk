@@ -5,6 +5,8 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
 
+const fs = require("fs")
+
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils
 const TreeNode = jtree.TreeNode
@@ -131,7 +133,7 @@ class TreeBaseFolder extends TreeNode {
 
   startExpressApp(port = 8887) {
     this.loadFolder()
-    this._startListeningForFileChanges()
+    this.startListeningForFileChanges()
     this._getExpressApp().listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
   }
@@ -208,17 +210,29 @@ class TreeBaseFolder extends TreeNode {
 
   private _app: any
 
-  private _startListeningForFileChanges() {
-    const fs = require("fs")
-    fs.watch(this._getDir(), (event: any, filename: treeNotationTypes.fileName) => {
+  private _fsWatcher: any
+
+  startListeningForFileChanges() {
+    this._fsWatcher = fs.watch(this._getDir(), (event: any, filename: treeNotationTypes.fileName) => {
       let fullPath = this._getDir() + filename
       fullPath = this._filterFiles([fullPath])[0]
       if (!fullPath) return true
-      const data = Disk.read(fullPath)
+
       const node = <any>this.getNode(fullPath)
+      if (!Disk.exists(fullPath)) {
+        this.delete(fullPath)
+        return
+      }
+
+      const data = Disk.read(fullPath)
       if (!node) this.appendLineAndChildren(fullPath, data)
       else node.setChildren(data)
     })
+  }
+
+  stopListeningForFileChanges() {
+    this._fsWatcher.close()
+    delete this._fsWatcher
   }
 
   private _getStatusMessage() {

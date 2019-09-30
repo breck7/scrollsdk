@@ -447,6 +447,13 @@ TreeUtils.makeSemiRandomFn = (seed = 1) => {
     return semiRand - Math.floor(semiRand)
   }
 }
+TreeUtils.getRange = (startIndex, endIndexExclusive, increment = 1) => {
+  const range = []
+  for (let index = startIndex; index < endIndexExclusive; index = index + increment) {
+    range.push(index)
+  }
+  return range
+}
 TreeUtils.MAX_INT = Math.pow(2, 32) - 1
 class AbstractNode {
   _getProcessTimeInMilliseconds() {
@@ -460,6 +467,15 @@ var FileFormat
   FileFormat["tsv"] = "tsv"
   FileFormat["tree"] = "tree"
 })(FileFormat || (FileFormat = {}))
+class AbstractTreeEvent {
+  constructor(targetNode) {
+    this.targetNode = targetNode
+  }
+}
+class ChildAddedTreeEvent extends AbstractTreeEvent {}
+class ChildRemovedTreeEvent extends AbstractTreeEvent {}
+class DescendantChangedTreeEvent extends AbstractTreeEvent {}
+class LineChangedTreeEvent extends AbstractTreeEvent {}
 var WhereOperators
 ;(function(WhereOperators) {
   WhereOperators["equal"] = "="
@@ -515,6 +531,8 @@ class Parser {
 class TreeNode extends AbstractNode {
   constructor(children, line, parent) {
     super()
+    // BEGIN MUTABLE METHODS BELOw
+    this._nodeCreationTime = this._getProcessTimeInMilliseconds()
     this._parent = parent
     this._setLine(line)
     this._setChildren(children)
@@ -1453,7 +1471,7 @@ class TreeNode extends AbstractNode {
     return output
   }
   copyTo(node, index) {
-    return node._setLineAndChildren(this.getLine(), this.childrenToString(), index)
+    return node._insertLineAndChildren(this.getLine(), this.childrenToString(), index)
   }
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
@@ -1515,21 +1533,25 @@ class TreeNode extends AbstractNode {
     return this
   }
   _clearChildren() {
+    this._deleteByIndexes(TreeUtils.getRange(0, this.length))
     delete this._children
-    this._clearIndex()
     return this
   }
   _setChildren(content, circularCheckArray) {
     this._clearChildren()
     if (!content) return this
     // set from string
-    if (typeof content === "string") return this._parseString(content)
+    if (typeof content === "string") {
+      this._appendChildrenFromString(content)
+      this.forEach(child => {
+        this._trigger(new ChildAddedTreeEvent(child))
+      })
+      this._triggerParent(new DescendantChangedTreeEvent(this))
+      return this
+    }
     // set from tree object
     if (content instanceof TreeNode) {
-      const me = this
-      content.forEach(node => {
-        me._setLineAndChildren(node.getLine(), node.childrenToString())
-      })
+      content.forEach(node => this._insertLineAndChildren(node.getLine(), node.childrenToString()))
       return this
     }
     // If we set from object, create an array of inserted objects to avoid circular loops
@@ -1570,18 +1592,19 @@ class TreeNode extends AbstractNode {
       // iirc this is return early from circular
       return
     }
-    this._setLineAndChildren(line, children)
+    this._insertLineAndChildren(line, children)
   }
-  // todo: protected?
-  _setLineAndChildren(line, children, index = this.length) {
+  _insertLineAndChildren(line, children, index = this.length) {
     const nodeConstructor = this._getParser()._getNodeConstructor(line, this)
     const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getChildrenArray().splice(adjustedIndex, 0, newNode)
     if (this._index) this._makeIndex(adjustedIndex)
+    this._trigger(new ChildAddedTreeEvent(newNode))
+    this._triggerParent(new DescendantChangedTreeEvent(this))
     return newNode
   }
-  _parseString(str) {
+  _appendChildrenFromString(str) {
     const lines = str.split(this.getYIRegex())
     const parentStack = []
     let currentIndentCount = -1
@@ -1604,7 +1627,6 @@ class TreeNode extends AbstractNode {
       lastNode = new nodeConstructor(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })
-    return this
   }
   _getIndex() {
     // StringMap<int> {firstWord: index}
@@ -1618,6 +1640,12 @@ class TreeNode extends AbstractNode {
   // todo: rename to getChildrenByConstructor(?)
   getChildrenByNodeConstructor(constructor) {
     return this.filter(child => child instanceof constructor)
+  }
+  getAncestorByNodeConstructor(constructor) {
+    if (this instanceof constructor) return this
+    if (this.isRoot()) return undefined
+    const parent = this.getParent()
+    return parent instanceof constructor ? parent : parent.getAncestorByNodeConstructor(constructor)
   }
   // todo: rename to getNodeByConstructor(?)
   getNodeByType(constructor) {
@@ -1733,28 +1761,18 @@ class TreeNode extends AbstractNode {
     const format = path.split(".").pop()
     return FileFormat[format] ? format : FileFormat.tree
   }
-  getMTime() {
-    if (!this._mtime) this._updateMTime()
-    return this._mtime
+  getLineModifiedTime() {
+    return this._lineModifiedTime || this._nodeCreationTime
   }
-  _getChildrenMTime() {
-    const mTimes = this.map(child => child.getTreeMTime())
-    const cmTime = this._getCMTime()
-    if (cmTime) mTimes.push(cmTime)
-    const newestTime = Math.max.apply(null, mTimes)
-    return this._setCMTime(newestTime || this._getProcessTimeInMilliseconds())._getCMTime()
+  getChildArrayModifiedTime() {
+    return this._childArrayModifiedTime || this._nodeCreationTime
   }
-  _getCMTime() {
-    return this._cmtime
-  }
-  _setCMTime(value) {
-    this._cmtime = value
+  _setChildArrayMofifiedTime(value) {
+    this._childArrayModifiedTime = value
     return this
   }
-  getTreeMTime() {
-    const mtime = this.getMTime()
-    const cmtime = this._getChildrenMTime()
-    return Math.max(mtime, cmtime)
+  getLineOrChildrenModifiedTime() {
+    return Math.max(this.getLineModifiedTime(), this.getChildArrayModifiedTime(), Math.max.apply(null, this.map(child => child.getLineOrChildrenModifiedTime())))
   }
   _setVirtualParentTree(tree) {
     this._virtualParentTree = tree
@@ -1854,8 +1872,10 @@ class TreeNode extends AbstractNode {
   setChildren(children) {
     return this._setChildren(children)
   }
-  _updateMTime() {
-    this._mtime = this._getProcessTimeInMilliseconds()
+  _updateLineModifiedTimeAndTriggerEvent() {
+    this._lineModifiedTime = this._getProcessTimeInMilliseconds()
+    this._trigger(new LineChangedTreeEvent(this))
+    this._triggerParent(new DescendantChangedTreeEvent(this))
   }
   insertWord(index, word) {
     const wi = this.getZI()
@@ -1891,8 +1911,9 @@ class TreeNode extends AbstractNode {
       if (content.match(this.getYI())) return this.setContentWithChildren(content)
       newArray.push(content)
     }
-    this._updateMTime()
-    return this._setLine(newArray.join(this.getZI()))
+    this._setLine(newArray.join(this.getZI()))
+    this._updateLineModifiedTimeAndTriggerEvent()
+    return this
   }
   prependSibling(line, children) {
     return this.getParent().insertLineAndChildren(line, children, this.getIndex())
@@ -1921,13 +1942,14 @@ class TreeNode extends AbstractNode {
   }
   setLine(line) {
     if (line === this.getLine()) return this
-    this._updateMTime()
     // todo: clear parent TMTimes
     this.getParent()._clearIndex()
-    return this._setLine(line)
+    this._setLine(line)
+    this._updateLineModifiedTimeAndTriggerEvent()
+    return this
   }
   duplicate() {
-    return this.getParent()._setLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
+    return this.getParent()._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
   }
   destroy() {
     this.getParent()._deleteNode(this)
@@ -1943,10 +1965,10 @@ class TreeNode extends AbstractNode {
   }
   // todo: throw error if line contains a \n
   appendLine(line) {
-    return this._setLineAndChildren(line)
+    return this._insertLineAndChildren(line)
   }
   appendLineAndChildren(line, children) {
-    return this._setLineAndChildren(line, children)
+    return this._insertLineAndChildren(line, children)
   }
   getNodesByRegex(regex) {
     const matches = []
@@ -1968,13 +1990,19 @@ class TreeNode extends AbstractNode {
   }
   concat(node) {
     if (typeof node === "string") node = new TreeNode(node)
-    return node.map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
+    return node.map(node => this._insertLineAndChildren(node.getLine(), node.childrenToString()))
   }
   _deleteByIndexes(indexesToDelete) {
+    if (!indexesToDelete.length) return this
     this._clearIndex()
     // note: assumes indexesToDelete is in ascending order
-    indexesToDelete.reverse().forEach(index => this._getChildrenArray().splice(index, 1))
-    return this._setCMTime(this._getProcessTimeInMilliseconds())
+    const deletedNodes = indexesToDelete.reverse().map(index => this._getChildrenArray().splice(index, 1)[0])
+    this._setChildArrayMofifiedTime(this._getProcessTimeInMilliseconds())
+    deletedNodes.forEach(node => {
+      this._trigger(new ChildRemovedTreeEvent(node))
+    })
+    this._triggerParent(new DescendantChangedTreeEvent(this))
+    return this
   }
   _deleteNode(node) {
     const index = this._indexOfNode(node)
@@ -2062,10 +2090,10 @@ class TreeNode extends AbstractNode {
     return returnedNodes
   }
   insertLineAndChildren(line, children, index) {
-    return this._setLineAndChildren(line, children, index)
+    return this._insertLineAndChildren(line, children, index)
   }
   insertLine(line, index) {
-    return this._setLineAndChildren(line, undefined, index)
+    return this._insertLineAndChildren(line, undefined, index)
   }
   prependLine(line) {
     return this.insertLine(line, 0)
@@ -2092,6 +2120,41 @@ class TreeNode extends AbstractNode {
     const words = this.getWords()
     words.splice(wordIndex, 1)
     return this.setWords(words)
+  }
+  _trigger(event) {
+    if (this._listeners && this._listeners.has(event.constructor)) {
+      const listeners = this._listeners.get(event.constructor)
+      const listenersToRemove = []
+      for (let index = 0; index < listeners.length; index++) {
+        const listener = listeners[index]
+        if (listener(event) === true) listenersToRemove.push(index)
+      }
+      listenersToRemove.reverse().forEach(index => listenersToRemove.splice(index, 1))
+    }
+  }
+  _triggerParent(event) {
+    if (this.isRoot()) return
+    const parent = this.getParent()
+    parent._trigger(event)
+    parent._triggerParent(event)
+  }
+  onLineChanged(eventHandler) {
+    return this._addEventListener(LineChangedTreeEvent, eventHandler)
+  }
+  onDescendantChanged(eventHandler) {
+    return this._addEventListener(DescendantChangedTreeEvent, eventHandler)
+  }
+  onChildAdded(eventHandler) {
+    return this._addEventListener(ChildAddedTreeEvent, eventHandler)
+  }
+  onChildRemoved(eventHandler) {
+    return this._addEventListener(ChildRemovedTreeEvent, eventHandler)
+  }
+  _addEventListener(eventClass, eventHandler) {
+    if (!this._listeners) this._listeners = new Map()
+    if (!this._listeners.has(eventClass)) this._listeners.set(eventClass, [])
+    this._listeners.get(eventClass).push(eventHandler)
+    return this
   }
   setWords(words) {
     return this.setLine(words.join(this.getZI()))
@@ -2889,7 +2952,7 @@ class GrammarBackedRootNode extends GrammarBackedNode {
     return typeNode ? typeNode.getWord(wordIndex - 1) : undefined
   }
   _initCellTypeCache() {
-    const treeMTime = this.getTreeMTime()
+    const treeMTime = this.getLineOrChildrenModifiedTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
     this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())
     this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())

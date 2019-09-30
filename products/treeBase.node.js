@@ -1,5 +1,6 @@
 const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
+const fs = require("fs")
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils
 const TreeNode = jtree.TreeNode
@@ -105,7 +106,7 @@ class TreeBaseFolder extends TreeNode {
   }
   startExpressApp(port = 8887) {
     this.loadFolder()
-    this._startListeningForFileChanges()
+    this.startListeningForFileChanges()
     this._getExpressApp().listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
   }
@@ -170,9 +171,8 @@ class TreeBaseFolder extends TreeNode {
     if (!this._app) this._app = this._makeApp()
     return this._app
   }
-  _startListeningForFileChanges() {
-    const fs = require("fs")
-    fs.watch(this._getDir(), (event, filename) => {
+  startListeningForFileChanges() {
+    this._fsWatcher = fs.watch(this._getDir(), (event, filename) => {
       let fullPath = this._getDir() + filename
       fullPath = this._filterFiles([fullPath])[0]
       if (!fullPath) return true
@@ -181,6 +181,10 @@ class TreeBaseFolder extends TreeNode {
       if (!node) this.appendLineAndChildren(fullPath, data)
       else node.setChildren(data)
     })
+  }
+  stopListeningForFileChanges() {
+    this._fsWatcher.close()
+    delete this._fsWatcher
   }
   _getStatusMessage() {
     const paths = this._getExpressApp()

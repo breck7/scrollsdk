@@ -95,6 +95,14 @@ class TreeUtils {
     }
   }
 
+  static getRange = (startIndex: number, endIndexExclusive: number, increment = 1) => {
+    const range = []
+    for (let index = startIndex; index < endIndexExclusive; index = index + increment) {
+      range.push(index)
+    }
+    return range
+  }
+
   static shuffleInPlace(arr: any[]) {
     // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
     for (let index = arr.length - 1; index > 0; index--) {

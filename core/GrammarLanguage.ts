@@ -410,7 +410,7 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
   private _cache_typeTree: TreeNode
 
   protected _initCellTypeCache(): void {
-    const treeMTime = this.getTreeMTime()
+    const treeMTime = this.getLineOrChildrenModifiedTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
 
     this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())

@@ -1274,7 +1274,7 @@ b`
     // Arrange
     const tree = new TreeNode("hello world")
     const node = tree.getNode("hello")
-    const mtime = node.getMTime() || 0
+    const mtime = node.getLineModifiedTime() || 0
 
     // Assert
     equal(node.getLine(), "hello world")
@@ -1285,7 +1285,7 @@ b`
 
     // Assert
     equal(tree.toString(), "hi earth")
-    equal(node.getMTime() > mtime, true)
+    equal(node.getLineModifiedTime() > mtime, true)
     equal(tree.has("hello"), false)
   }
 
@@ -3573,40 +3573,40 @@ c`).deleteDuplicates().length,
     )
   }
 
-  testTree.getTreeMTime = equal => {
+  testTree.getLineOrChildrenModifiedTime = equal => {
     // Arrange
     const a = new TreeNode(`text
  foo
   bar
 some
  other`)
-    const mtime = a.getTreeMTime()
-    const fooTime = a.getNode("text foo").getTreeMTime()
+    const mtime = a.getLineOrChildrenModifiedTime()
+    const fooTime = a.getNode("text foo").getLineOrChildrenModifiedTime()
 
     // Act
     a.delete("some other")
 
     // Assert
-    const newTime = a.getTreeMTime()
+    const newTime = a.getLineOrChildrenModifiedTime()
     equal(newTime > mtime, true, `newtime is greater than mtime ${newTime} ${mtime}`)
-    equal(a.getNode("text foo").getTreeMTime() === fooTime, true, "times are equal")
+    equal(a.getNode("text foo").getLineOrChildrenModifiedTime() === fooTime, true, "times are equal")
 
     // Act
     a.getNode("text foo").setContent("wham")
 
     // Assert
-    equal(a.getNode("text foo").getTreeMTime() > fooTime, true, "mod child updates")
+    equal(a.getNode("text foo").getLineOrChildrenModifiedTime() > fooTime, true, "mod child updates")
 
     // Arrange
     const b = new TreeNode(`foo`)
     b.appendLine("bar")
-    const bTime = b.getTreeMTime()
+    const bTime = b.getLineOrChildrenModifiedTime()
 
     // Act
     b.getNode("foo").destroy()
 
     // Assert
-    equal(b.getTreeMTime() > bTime, true, `time increased from ${bTime} to ${b.getTreeMTime()}`)
+    equal(b.getLineOrChildrenModifiedTime() > bTime, true, `time increased from ${bTime} to ${b.getLineOrChildrenModifiedTime()}`)
   }
 
   testTree.destroyLoop = equal => {
@@ -3747,7 +3747,7 @@ b
     // Arrange
     const a = new TreeNode("text")
     const node = a.nodeAt(0)
-    const originalMtime = node.getMTime()
+    const originalMtime = node.getLineModifiedTime()
 
     // Assert
     equal(originalMtime > 0, true)
@@ -3774,12 +3774,12 @@ b
     equal(a.has("text"), true)
 
     // Act
-    const mtime = node.getMTime()
+    const mtime = node.getLineModifiedTime()
     node.setFirstWord("foo")
 
     // Assert
     equal(a.toString(), "foo hello world\n color blue")
-    equal(node.getMTime() > mtime, true)
+    equal(node.getLineModifiedTime() > mtime, true)
     equal(a.has("text"), false)
     equal(node.has("color"), true)
 
@@ -3794,12 +3794,12 @@ b
   testTree.mTimeNotIncrementingRegressionTest = equal => {
     // Arrange
     const node = new TreeNode("text").nodeAt(0)
-    let lastMTime = node.getMTime()
+    let lastMTime = node.getLineModifiedTime()
     const numOfTrials = 100
     // Previously we would get a flakey test about every 10k trials
     for (let i = 0; i < numOfTrials; i++) {
       node.setContent(i.toString())
-      let newMTime = node.getMTime()
+      let newMTime = node.getLineModifiedTime()
 
       // Assert
       equal(newMTime > lastMTime, true, "mtime should have increased")

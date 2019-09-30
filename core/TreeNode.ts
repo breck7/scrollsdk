@@ -14,6 +14,22 @@ enum FileFormat {
   tree = "tree"
 }
 
+declare type removeAfterRunning = boolean
+
+declare type TreeEventHandler = (event: AbstractTreeEvent) => removeAfterRunning
+
+abstract class AbstractTreeEvent {
+  public targetNode: TreeNode
+  constructor(targetNode: TreeNode) {
+    this.targetNode = targetNode
+  }
+}
+
+class ChildAddedTreeEvent extends AbstractTreeEvent {}
+class ChildRemovedTreeEvent extends AbstractTreeEvent {}
+class DescendantChangedTreeEvent extends AbstractTreeEvent {}
+class LineChangedTreeEvent extends AbstractTreeEvent {}
+
 enum WhereOperators {
   equal = "=",
   notEqual = "!=",
@@ -1207,7 +1223,7 @@ class TreeNode extends AbstractNode {
   }
 
   copyTo(node: TreeNode, index: int) {
-    return node._setLineAndChildren(this.getLine(), this.childrenToString(), index)
+    return node._insertLineAndChildren(this.getLine(), this.childrenToString(), index)
   }
 
   // Note: Splits using a positive lookahead
@@ -1282,8 +1298,8 @@ class TreeNode extends AbstractNode {
   }
 
   protected _clearChildren() {
+    this._deleteByIndexes(TreeUtils.getRange(0, this.length))
     delete this._children
-    this._clearIndex()
     return this
   }
 
@@ -1292,14 +1308,18 @@ class TreeNode extends AbstractNode {
     if (!content) return this
 
     // set from string
-    if (typeof content === "string") return this._parseString(content)
+    if (typeof content === "string") {
+      this._appendChildrenFromString(content)
+      this.forEach(child => {
+        this._trigger(new ChildAddedTreeEvent(child))
+      })
+      this._triggerParent(new DescendantChangedTreeEvent(this))
+      return this
+    }
 
     // set from tree object
     if (content instanceof TreeNode) {
-      const me = this
-      content.forEach(node => {
-        me._setLineAndChildren(node.getLine(), node.childrenToString())
-      })
+      content.forEach(node => this._insertLineAndChildren(node.getLine(), node.childrenToString()))
       return this
     }
 
@@ -1345,11 +1365,10 @@ class TreeNode extends AbstractNode {
       // iirc this is return early from circular
       return
     }
-    this._setLineAndChildren(line, children)
+    this._insertLineAndChildren(line, children)
   }
 
-  // todo: protected?
-  _setLineAndChildren(line: string, children?: treeNotationTypes.children, index = this.length) {
+  protected _insertLineAndChildren(line: string, children?: treeNotationTypes.children, index = this.length) {
     const nodeConstructor: any = this._getParser()._getNodeConstructor(line, this)
     const newNode = new nodeConstructor(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
@@ -1357,10 +1376,12 @@ class TreeNode extends AbstractNode {
     this._getChildrenArray().splice(adjustedIndex, 0, newNode)
 
     if (this._index) this._makeIndex(adjustedIndex)
+    this._trigger(new ChildAddedTreeEvent(newNode))
+    this._triggerParent(new DescendantChangedTreeEvent(this))
     return newNode
   }
 
-  protected _parseString(str: string) {
+  protected _appendChildrenFromString(str: string) {
     const lines = str.split(this.getYIRegex())
     const parentStack: TreeNode[] = []
     let currentIndentCount = -1
@@ -1383,7 +1404,6 @@ class TreeNode extends AbstractNode {
       lastNode = new nodeConstructor(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })
-    return this
   }
 
   protected _getIndex() {
@@ -1400,6 +1420,13 @@ class TreeNode extends AbstractNode {
   // todo: rename to getChildrenByConstructor(?)
   getChildrenByNodeConstructor(constructor: Function) {
     return this.filter(child => child instanceof constructor)
+  }
+
+  getAncestorByNodeConstructor(constructor: Function): TreeNode | undefined {
+    if (this instanceof constructor) return this
+    if (this.isRoot()) return undefined
+    const parent = this.getParent()
+    return parent instanceof constructor ? parent : parent.getAncestorByNodeConstructor(constructor)
   }
 
   // todo: rename to getNodeByConstructor(?)
@@ -1564,35 +1591,25 @@ class TreeNode extends AbstractNode {
 
   // BEGIN MUTABLE METHODS BELOw
 
-  private _mtime: int
-  private _cmtime: int
+  private _nodeCreationTime: number = this._getProcessTimeInMilliseconds()
+  private _lineModifiedTime: number
+  private _childArrayModifiedTime: number
 
-  getMTime(): int {
-    if (!this._mtime) this._updateMTime()
-    return this._mtime
+  getLineModifiedTime(): number {
+    return this._lineModifiedTime || this._nodeCreationTime
   }
 
-  protected _getChildrenMTime() {
-    const mTimes = this.map(child => child.getTreeMTime())
-    const cmTime = this._getCMTime()
-    if (cmTime) mTimes.push(cmTime)
-    const newestTime = Math.max.apply(null, mTimes)
-    return this._setCMTime(newestTime || this._getProcessTimeInMilliseconds())._getCMTime()
+  getChildArrayModifiedTime() {
+    return this._childArrayModifiedTime || this._nodeCreationTime
   }
 
-  protected _getCMTime() {
-    return this._cmtime
-  }
-
-  protected _setCMTime(value: number) {
-    this._cmtime = value
+  protected _setChildArrayMofifiedTime(value: number) {
+    this._childArrayModifiedTime = value
     return this
   }
 
-  getTreeMTime(): int {
-    const mtime = this.getMTime()
-    const cmtime = this._getChildrenMTime()
-    return Math.max(mtime, cmtime)
+  getLineOrChildrenModifiedTime(): number {
+    return Math.max(this.getLineModifiedTime(), this.getChildArrayModifiedTime(), Math.max.apply(null, this.map(child => child.getLineOrChildrenModifiedTime())))
   }
 
   private _virtualParentTree: TreeNode
@@ -1709,8 +1726,10 @@ class TreeNode extends AbstractNode {
     return this._setChildren(children)
   }
 
-  protected _updateMTime() {
-    this._mtime = this._getProcessTimeInMilliseconds()
+  protected _updateLineModifiedTimeAndTriggerEvent() {
+    this._lineModifiedTime = this._getProcessTimeInMilliseconds()
+    this._trigger(new LineChangedTreeEvent(this))
+    this._triggerParent(new DescendantChangedTreeEvent(this))
   }
 
   insertWord(index: int, word: string) {
@@ -1751,8 +1770,9 @@ class TreeNode extends AbstractNode {
       if (content.match(this.getYI())) return this.setContentWithChildren(content)
       newArray.push(content)
     }
-    this._updateMTime()
-    return this._setLine(newArray.join(this.getZI()))
+    this._setLine(newArray.join(this.getZI()))
+    this._updateLineModifiedTimeAndTriggerEvent()
+    return this
   }
 
   prependSibling(line: string, children: string) {
@@ -1788,14 +1808,15 @@ class TreeNode extends AbstractNode {
 
   setLine(line: string) {
     if (line === this.getLine()) return this
-    this._updateMTime()
     // todo: clear parent TMTimes
     this.getParent()._clearIndex()
-    return this._setLine(line)
+    this._setLine(line)
+    this._updateLineModifiedTimeAndTriggerEvent()
+    return this
   }
 
   duplicate() {
-    return this.getParent()._setLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
+    return this.getParent()._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
   }
 
   destroy() {
@@ -1815,11 +1836,11 @@ class TreeNode extends AbstractNode {
 
   // todo: throw error if line contains a \n
   appendLine(line: string) {
-    return this._setLineAndChildren(line)
+    return this._insertLineAndChildren(line)
   }
 
   appendLineAndChildren(line: string, children: treeNotationTypes.children) {
-    return this._setLineAndChildren(line, children)
+    return this._insertLineAndChildren(line, children)
   }
 
   getNodesByRegex(regex: RegExp | RegExp[]) {
@@ -1845,14 +1866,20 @@ class TreeNode extends AbstractNode {
 
   concat(node: string | TreeNode) {
     if (typeof node === "string") node = new TreeNode(node)
-    return node.map(node => this._setLineAndChildren(node.getLine(), node.childrenToString()))
+    return node.map(node => this._insertLineAndChildren(node.getLine(), node.childrenToString()))
   }
 
   protected _deleteByIndexes(indexesToDelete: int[]) {
+    if (!indexesToDelete.length) return this
     this._clearIndex()
     // note: assumes indexesToDelete is in ascending order
-    indexesToDelete.reverse().forEach(index => this._getChildrenArray().splice(index, 1))
-    return this._setCMTime(this._getProcessTimeInMilliseconds())
+    const deletedNodes = indexesToDelete.reverse().map(index => this._getChildrenArray().splice(index, 1)[0])
+    this._setChildArrayMofifiedTime(this._getProcessTimeInMilliseconds())
+    deletedNodes.forEach(node => {
+      this._trigger(new ChildRemovedTreeEvent(node))
+    })
+    this._triggerParent(new DescendantChangedTreeEvent(this))
+    return this
   }
 
   protected _deleteNode(node: TreeNode) {
@@ -1960,11 +1987,11 @@ class TreeNode extends AbstractNode {
   }
 
   insertLineAndChildren(line: string, children: treeNotationTypes.children, index: int) {
-    return this._setLineAndChildren(line, children, index)
+    return this._insertLineAndChildren(line, children, index)
   }
 
   insertLine(line: string, index: int) {
-    return this._setLineAndChildren(line, undefined, index)
+    return this._insertLineAndChildren(line, undefined, index)
   }
 
   prependLine(line: string) {
@@ -1998,6 +2025,50 @@ class TreeNode extends AbstractNode {
     const words = this.getWords()
     words.splice(wordIndex, 1)
     return this.setWords(words)
+  }
+
+  private _listeners: Map<any, TreeEventHandler[]>
+
+  protected _trigger(event: AbstractTreeEvent) {
+    if (this._listeners && this._listeners.has(event.constructor)) {
+      const listeners = this._listeners.get(event.constructor)
+      const listenersToRemove: int[] = []
+      for (let index = 0; index < listeners.length; index++) {
+        const listener = listeners[index]
+        if (listener(event) === true) listenersToRemove.push(index)
+      }
+      listenersToRemove.reverse().forEach(index => listenersToRemove.splice(index, 1))
+    }
+  }
+
+  protected _triggerParent(event: AbstractTreeEvent) {
+    if (this.isRoot()) return
+    const parent = this.getParent()
+    parent._trigger(event)
+    parent._triggerParent(event)
+  }
+
+  onLineChanged(eventHandler: TreeEventHandler) {
+    return this._addEventListener(LineChangedTreeEvent, eventHandler)
+  }
+
+  onDescendantChanged(eventHandler: TreeEventHandler) {
+    return this._addEventListener(DescendantChangedTreeEvent, eventHandler)
+  }
+
+  onChildAdded(eventHandler: TreeEventHandler) {
+    return this._addEventListener(ChildAddedTreeEvent, eventHandler)
+  }
+
+  onChildRemoved(eventHandler: TreeEventHandler) {
+    return this._addEventListener(ChildRemovedTreeEvent, eventHandler)
+  }
+
+  private _addEventListener(eventClass: any, eventHandler: TreeEventHandler) {
+    if (!this._listeners) this._listeners = new Map()
+    if (!this._listeners.has(eventClass)) this._listeners.set(eventClass, [])
+    this._listeners.get(eventClass).push(eventHandler)
+    return this
   }
 
   setWords(words: treeNotationTypes.word[]): this {

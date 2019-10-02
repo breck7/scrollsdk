@@ -1,6 +1,14 @@
-edge / 2019-09-24
+42.0.0 / 2019-10-01
 ===================
+- New: readded event listening code in TreeNode core class
+- New: onLineChanged, onDescendantChanged, onChildAdded, onChildRemoved methods
+- New: getAncestorByNodeConstructor method
+- New: TreeBaseServer exported class
+- Breaking: getMTime is now getLineModifiedTime, getChildArrayModifiedTime, and getLineOrChildrenModifiedTime
+- Breaking: startExpressApp in TreeBase is removed. Now use TreeBaseServer class instead.
+- Breaking: some default routes changed in TreeBase
 - Breaking: experimental generateSimulatedData methods are now synthesizeNode and synthesizeCell
+- Infra: moved papers to treenotation/research
 
 41.2.0 / 2019-09-24
 ===================

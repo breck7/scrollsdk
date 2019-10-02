@@ -1,4 +1,4 @@
-#!/usr/bin/env ts-node
+//onsave jtree build produce treeBase.node.js
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
@@ -105,6 +105,104 @@ class TreeBaseFile extends TreeNode {
   }
 }
 
+class TreeBaseServer {
+  protected _folder: TreeBaseFolder
+  protected _app: any
+  constructor(treeBaseFolder: TreeBaseFolder) {
+    this._folder = treeBaseFolder
+    this._app = this._createExpressApp()
+  }
+
+  listen(port = 4444) {
+    this._app.listen(port, () => console.log(`TreeBaseServer server running: \ncmd+dblclick: http://localhost:${port}/`))
+    return this
+  }
+
+  indexCommand(routes: string[]) {
+    const links = routes.map((path: any) => `<a href="${path}">${path}</a>`) // get all the paths
+    return `<style>body {
+     font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
+     margin: auto;
+     max-width: 1200px;
+     background: #eee;
+     color rgba(1, 47, 52, 1);
+   }h1 {font-size: 1.2em; margin: 0;}</style>
+     <h1>TreeBaseServer running:</h1>
+    <div style="white-space:pre;">
+-- Folder: '${this._folder._getDir()}'
+-- Grammars: '${this._folder._getGrammarPaths().join(",")}'
+-- Files: ${this._folder.length}
+-- Bytes: ${this._folder.toString().length}
+-- Routes: ${links.join("\n ")}</div>`
+  }
+
+  errorsToHtmlCommand() {
+    let end = TreeUtils._tick("Loaded collection....")
+    let lines = this._folder.getNumberOfLines()
+    let lps = lines / (end / 1000)
+    const errors = this._folder._getAsProgram().getAllErrors()
+    return `Total errors: ${errors.length}\n${errors.join("\n")}`
+  }
+
+  errorsToCsvCommand() {
+    return new jtree.TreeNode(
+      this._folder
+        ._getAsProgram()
+        .getAllErrors()
+        .map((err: any) => err.toObject())
+    ).toCsv()
+  }
+
+  listAllFilesCommand() {
+    return this._folder.map((node: treeNotationTypes.treeNode) => `<a href="${node.getFileName()}">${node.getFileName()}</a>`).join("<br>")
+  }
+
+  private _getRoutes(app: any) {
+    return app._router.stack // registered routes
+      .filter((route: any) => route.route && route.route.path.length > 1) // take out all the middleware
+      .map((route: any) => route.route.path)
+  }
+
+  private _createExpressApp() {
+    const path = require("path")
+    const express = require("express")
+    const bodyParser = require("body-parser")
+    const app = express()
+
+    app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.json())
+    app.use((req: any, res: any, next: any) => {
+      res.setHeader("Access-Control-Allow-Origin", "*")
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
+      res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type")
+      res.setHeader("Access-Control-Allow-Credentials", true)
+      next()
+    })
+
+    app.get("/list.html", (req: any, res: any) => res.send(this.listAllFilesCommand()))
+    app.get("/", (req: any, res: any) => res.send(this.indexCommand(this._getRoutes(app))))
+
+    app.use(
+      express.static(this._folder._getDir(), {
+        setHeaders: (res: any, requestPath: string) => {
+          res.setHeader("Content-Type", "text/plain")
+        }
+      })
+    )
+
+    app.get("/errors.html", (req: any, res: any) => {
+      res.send(this.errorsToHtmlCommand())
+    })
+
+    app.get("/errors.csv", (req: any, res: any) => {
+      res.setHeader("Content-Type", "text/plain")
+      res.send(this.errorsToCsvCommand())
+    })
+
+    return app
+  }
+}
+
 class TreeBaseFolder extends TreeNode {
   touch(filename: treeNotationTypes.fileName) {
     // todo: throw if its a folder path, has wrong file extension, or other invalid
@@ -128,13 +226,6 @@ class TreeBaseFolder extends TreeNode {
     this._setDiskVersions()
 
     this._isLoaded = true
-    return this
-  }
-
-  startExpressApp(port = 8887) {
-    this.loadFolder()
-    this.startListeningForFileChanges()
-    this._getExpressApp().listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
   }
 
@@ -178,12 +269,12 @@ class TreeBaseFolder extends TreeNode {
     return totalErrors
   }
 
-  private _getDir() {
+  _getDir() {
     // todo: cache?
     return this.getWord(0).replace(/\/$/, "") + "/"
   }
 
-  private _getGrammarPaths() {
+  _getGrammarPaths() {
     return Disk.getFiles(this._getDir()).filter((file: string) => file.endsWith(GrammarConstants.grammarFileExtension))
   }
 
@@ -203,16 +294,10 @@ class TreeBaseFolder extends TreeNode {
     return files.filter((file: string) => !file.endsWith(GrammarConstants.grammarFileExtension))
   }
 
-  private _getExpressApp() {
-    if (!this._app) this._app = this._makeApp()
-    return this._app
-  }
-
-  private _app: any
-
   private _fsWatcher: any
 
   startListeningForFileChanges() {
+    this.loadFolder()
     this._fsWatcher = fs.watch(this._getDir(), (event: any, filename: treeNotationTypes.fileName) => {
       let fullPath = this._getDir() + filename
       fullPath = this._filterFiles([fullPath])[0]
@@ -233,70 +318,6 @@ class TreeBaseFolder extends TreeNode {
   stopListeningForFileChanges() {
     this._fsWatcher.close()
     delete this._fsWatcher
-  }
-
-  private _getStatusMessage() {
-    const paths = this._getExpressApp()
-      ._router.stack // registered routes
-      .filter((route: any) => route.route && route.route.path.length > 1) // take out all the middleware
-      .map((route: any) => `<a href="${route.route.path}">${route.route.path}</a>`) // get all the paths
-
-    return `<div style="white-space:pre;">TreeBase server running:
--- Folder: '${this._getDir()}'
--- Grammars: '${this._getGrammarPaths().join(",")}'
--- Files: ${this.length}
--- Bytes: ${this.toString().length}
--- Routes: ${paths.join("\n ")}</div>`
-  }
-
-  private _makeApp() {
-    const path = require("path")
-    const express = require("express")
-    const bodyParser = require("body-parser")
-    const app = express()
-    app.use(bodyParser.urlencoded({ extended: false }))
-    app.use(bodyParser.json())
-
-    app.use((req: any, res: any, next: any) => {
-      res.setHeader("Access-Control-Allow-Origin", "*")
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
-      res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type")
-      res.setHeader("Access-Control-Allow-Credentials", true)
-      next()
-    })
-
-    app.get("/list", (req: any, res: any) => {
-      res.send(this.map((node: treeNotationTypes.treeNode) => `<a href="${node.getFileName()}">${node.getFileName()}</a>`).join("<br>"))
-    })
-
-    app.get("/", (req: any, res: any) => {
-      res.send(this._getStatusMessage())
-    })
-
-    app.use(
-      express.static(this._getDir(), {
-        setHeaders: (res: any, requestPath: string) => {
-          res.setHeader("Content-Type", "text/plain")
-        }
-      })
-    )
-
-    app.get("/cellCheck", (req: any, res: any) => {
-      let end = TreeUtils._tick("Loaded collection....")
-      let lines = this.getNumberOfLines()
-      let lps = lines / (end / 1000)
-      const errors = this._getAsProgram().getAllErrors()
-      res.setHeader("Content-Type", "text/plain")
-      res.send(`Total errors: ${errors.length}\n${errors.join("\n")}`)
-    })
-
-    app.get("/errors.csv", (req: any, res: any) => {
-      const errors = this._getAsProgram().getAllErrors()
-      res.setHeader("Content-Type", "text/plain")
-      res.send(new jtree.TreeNode(errors.map((err: any) => err.toObject())).toCsv())
-    })
-
-    return app
   }
 
   private _getTreeBaseGrammarCode() {
@@ -337,4 +358,4 @@ treeBaseErrorNode
   }
 }
 
-export { TreeBaseFile, TreeBaseFolder }
+export { TreeBaseFile, TreeBaseFolder, TreeBaseServer }

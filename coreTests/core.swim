@@ -1,0 +1,99 @@
+aToStringTest
+ arrange
+  hello
+   world
+ act
+  new TreeNode(arrange).toString()
+ assert
+  hello
+   world
+aTotalLineCountTest
+ arrange
+  hello
+   world
+ act
+  new TreeNode(arrange).getNumberOfLines().toString()
+ assert
+  2
+aToCsvTest
+ arrange
+  0
+   team ne
+   score 3
+  1
+   team af
+   score 28
+ act
+  new TreeNode(arrange).toCsv()
+ assert
+  team,score
+  ne,3
+  af,28
+aFromCsvTest
+ arrange
+  team,score
+  ne,3
+  af,28
+ act
+  TreeNode.fromCsv(arrange).toString()
+ assert
+  0
+   team ne
+   score 3
+  1
+   team af
+   score 28
+aGetTest
+ arrange
+  some
+   nested
+    node
+     color blue
+ act
+  new TreeNode(arrange).get("some nested node color")
+ assert
+  blue
+aSetTest
+ arrange
+  message
+   hello world
+ act
+  new TreeNode(arrange).setChildren("aloha world").childrenToString()
+ assert
+  aloha world
+aReverseTest
+ arrange
+  hello
+  world
+ act
+  new TreeNode(arrange).reverse().toString()
+ assert
+  world
+  hello
+aWordCountTest
+ arrange
+  hello
+   brave
+    new world
+ act
+  new TreeNode(arrange).getNumberOfWords().toString()
+ assert
+  4
+aFilterTest
+ arrange
+  keep
+  drop
+  keep
+  keep
+ act
+  new TreeNode(arrange).filter(node => node.getLine() === "keep").length.toString()
+ assert
+  3
+aFromJsonSubsetTest
+ arrange
+  {"message": {"hello": "world"}}
+ act
+  new TreeNode(JSON.parse(arrange)).toString()
+ assert
+  message
+   hello world

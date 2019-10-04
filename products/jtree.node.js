@@ -630,6 +630,13 @@ class TreeNode extends AbstractNode {
     }
     return lineCount
   }
+  getNumberOfWords() {
+    let wordCount = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      wordCount += node.getWords().length
+    }
+    return wordCount
+  }
   _getLineNumber(target = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
     let lineNumber = 1
@@ -2532,7 +2539,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "42.1.0"
+TreeNode.getVersion = () => "42.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

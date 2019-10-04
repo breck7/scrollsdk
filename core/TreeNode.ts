@@ -231,6 +231,14 @@ class TreeNode extends AbstractNode {
     return lineCount
   }
 
+  getNumberOfWords(): int {
+    let wordCount = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      wordCount += node.getWords().length
+    }
+    return wordCount
+  }
+
   protected _cachedLineNumber: int
   _getLineNumber(target: TreeNode = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
@@ -2499,7 +2507,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "42.1.0"
+  static getVersion = () => "42.2.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

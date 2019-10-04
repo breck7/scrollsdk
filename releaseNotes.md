@@ -1,3 +1,8 @@
+42.2.0 / 2019-10-04
+===================
+- New: getNumberOfWords method
+- Infra: added swim tests
+
 42.1.0 / 2019-10-03
 ===================
 - Breaking: reverted the implicit event system. Made trigger and triggerAncestors public methods instead for finer control over events.

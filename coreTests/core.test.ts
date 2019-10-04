@@ -404,6 +404,7 @@ domains
     // Assert
     equal(tree8.getTopDownArray().length, 20)
     equal(tree8.getNumberOfLines(), 20)
+    equal(tree8.getNumberOfWords(), 30)
     equal(tree8.getNode("domains test.test.com pages home settings data title").getContent(), "Hello, World", "Multiline creation should be okay.")
 
     // Arrange

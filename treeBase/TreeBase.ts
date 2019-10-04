@@ -10,6 +10,7 @@ const fs = require("fs")
 const GrammarProgram = jtree.GrammarProgram
 const TreeUtils = jtree.Utils
 const TreeNode = jtree.TreeNode
+const TreeEvents = jtree.TreeEvents
 const GrammarConstants = jtree.GrammarConstants
 
 class TreeBaseFile extends TreeNode {
@@ -306,12 +307,20 @@ class TreeBaseFolder extends TreeNode {
       const node = <any>this.getNode(fullPath)
       if (!Disk.exists(fullPath)) {
         this.delete(fullPath)
+        this.trigger(new TreeEvents.ChildRemovedTreeEvent(node))
+        this.trigger(new TreeEvents.DescendantChangedTreeEvent(node))
         return
       }
 
       const data = Disk.read(fullPath)
-      if (!node) this.appendLineAndChildren(fullPath, data)
-      else node.setChildren(data)
+      if (!node) {
+        const newNode = this.appendLineAndChildren(fullPath, data)
+        this.trigger(new TreeEvents.ChildAddedTreeEvent(newNode))
+        this.trigger(new TreeEvents.DescendantChangedTreeEvent(newNode))
+      } else {
+        node.setChildren(data)
+        this.trigger(new TreeEvents.DescendantChangedTreeEvent(node))
+      }
     })
   }
 

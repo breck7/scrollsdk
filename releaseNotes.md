@@ -1,3 +1,7 @@
+42.1.0 / 2019-10-03
+===================
+- Breaking: reverted the implicit event system. Made trigger and triggerAncestors public methods instead for finer control over events.
+
 42.0.0 / 2019-10-01
 ===================
 - New: readded event listening code in TreeNode core class

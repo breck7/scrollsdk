@@ -488,6 +488,7 @@ class ChildAddedTreeEvent extends AbstractTreeEvent {}
 class ChildRemovedTreeEvent extends AbstractTreeEvent {}
 class DescendantChangedTreeEvent extends AbstractTreeEvent {}
 class LineChangedTreeEvent extends AbstractTreeEvent {}
+const TreeEvents = { ChildAddedTreeEvent, ChildRemovedTreeEvent, DescendantChangedTreeEvent, LineChangedTreeEvent }
 var WhereOperators
 ;(function(WhereOperators) {
   WhereOperators["equal"] = "="
@@ -1555,10 +1556,6 @@ class TreeNode extends AbstractNode {
     // set from string
     if (typeof content === "string") {
       this._appendChildrenFromString(content)
-      this.forEach(child => {
-        this._trigger(new ChildAddedTreeEvent(child))
-      })
-      this._triggerParent(new DescendantChangedTreeEvent(this))
       return this
     }
     // set from tree object
@@ -1612,8 +1609,6 @@ class TreeNode extends AbstractNode {
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getChildrenArray().splice(adjustedIndex, 0, newNode)
     if (this._index) this._makeIndex(adjustedIndex)
-    this._trigger(new ChildAddedTreeEvent(newNode))
-    this._triggerParent(new DescendantChangedTreeEvent(this))
     return newNode
   }
   _appendChildrenFromString(str) {
@@ -1886,8 +1881,6 @@ class TreeNode extends AbstractNode {
   }
   _updateLineModifiedTimeAndTriggerEvent() {
     this._lineModifiedTime = this._getProcessTimeInMilliseconds()
-    this._trigger(new LineChangedTreeEvent(this))
-    this._triggerParent(new DescendantChangedTreeEvent(this))
   }
   insertWord(index, word) {
     const wi = this.getZI()
@@ -2010,10 +2003,6 @@ class TreeNode extends AbstractNode {
     // note: assumes indexesToDelete is in ascending order
     const deletedNodes = indexesToDelete.reverse().map(index => this._getChildrenArray().splice(index, 1)[0])
     this._setChildArrayMofifiedTime(this._getProcessTimeInMilliseconds())
-    deletedNodes.forEach(node => {
-      this._trigger(new ChildRemovedTreeEvent(node))
-    })
-    this._triggerParent(new DescendantChangedTreeEvent(this))
     return this
   }
   _deleteNode(node) {
@@ -2133,7 +2122,7 @@ class TreeNode extends AbstractNode {
     words.splice(wordIndex, 1)
     return this.setWords(words)
   }
-  _trigger(event) {
+  trigger(event) {
     if (this._listeners && this._listeners.has(event.constructor)) {
       const listeners = this._listeners.get(event.constructor)
       const listenersToRemove = []
@@ -2144,11 +2133,11 @@ class TreeNode extends AbstractNode {
       listenersToRemove.reverse().forEach(index => listenersToRemove.splice(index, 1))
     }
   }
-  _triggerParent(event) {
+  triggerAncestors(event) {
     if (this.isRoot()) return
     const parent = this.getParent()
-    parent._trigger(event)
-    parent._triggerParent(event)
+    parent.trigger(event)
+    parent.triggerAncestors(event)
   }
   onLineChanged(eventHandler) {
     return this._addEventListener(LineChangedTreeEvent, eventHandler)
@@ -2555,7 +2544,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "42.0.0"
+TreeNode.getVersion = () => "42.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -2630,6 +2619,7 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
 window.TreeNode = TreeNode
 window.ExtendibleTreeNode = ExtendibleTreeNode
 window.AbstractExtendibleTreeNode = AbstractExtendibleTreeNode
+window.TreeEvents = TreeEvents
 var GrammarConstantsCompiler
 ;(function(GrammarConstantsCompiler) {
   GrammarConstantsCompiler["stringTemplate"] = "stringTemplate"
@@ -5061,6 +5051,7 @@ class jtree {}
 jtree.GrammarBackedRootNode = GrammarBackedRootNode
 jtree.GrammarBackedNonRootNode = GrammarBackedNonRootNode
 jtree.Utils = TreeUtils
+jtree.TreeEvents = TreeEvents
 jtree.TreeNode = TreeNode
 jtree.ExtendibleTreeNode = ExtendibleTreeNode
 jtree.GrammarProgram = GrammarProgram

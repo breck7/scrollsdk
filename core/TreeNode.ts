@@ -1,3 +1,5 @@
+// jtree build produce jtree.node.js
+
 import { AbstractNode } from "./AbstractNode.node"
 import { TreeUtils } from "./TreeUtils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
@@ -29,6 +31,8 @@ class ChildAddedTreeEvent extends AbstractTreeEvent {}
 class ChildRemovedTreeEvent extends AbstractTreeEvent {}
 class DescendantChangedTreeEvent extends AbstractTreeEvent {}
 class LineChangedTreeEvent extends AbstractTreeEvent {}
+
+const TreeEvents = { ChildAddedTreeEvent, ChildRemovedTreeEvent, DescendantChangedTreeEvent, LineChangedTreeEvent }
 
 enum WhereOperators {
   equal = "=",
@@ -1310,10 +1314,6 @@ class TreeNode extends AbstractNode {
     // set from string
     if (typeof content === "string") {
       this._appendChildrenFromString(content)
-      this.forEach(child => {
-        this._trigger(new ChildAddedTreeEvent(child))
-      })
-      this._triggerParent(new DescendantChangedTreeEvent(this))
       return this
     }
 
@@ -1376,8 +1376,6 @@ class TreeNode extends AbstractNode {
     this._getChildrenArray().splice(adjustedIndex, 0, newNode)
 
     if (this._index) this._makeIndex(adjustedIndex)
-    this._trigger(new ChildAddedTreeEvent(newNode))
-    this._triggerParent(new DescendantChangedTreeEvent(this))
     return newNode
   }
 
@@ -1728,8 +1726,6 @@ class TreeNode extends AbstractNode {
 
   protected _updateLineModifiedTimeAndTriggerEvent() {
     this._lineModifiedTime = this._getProcessTimeInMilliseconds()
-    this._trigger(new LineChangedTreeEvent(this))
-    this._triggerParent(new DescendantChangedTreeEvent(this))
   }
 
   insertWord(index: int, word: string) {
@@ -1875,10 +1871,6 @@ class TreeNode extends AbstractNode {
     // note: assumes indexesToDelete is in ascending order
     const deletedNodes = indexesToDelete.reverse().map(index => this._getChildrenArray().splice(index, 1)[0])
     this._setChildArrayMofifiedTime(this._getProcessTimeInMilliseconds())
-    deletedNodes.forEach(node => {
-      this._trigger(new ChildRemovedTreeEvent(node))
-    })
-    this._triggerParent(new DescendantChangedTreeEvent(this))
     return this
   }
 
@@ -2029,7 +2021,7 @@ class TreeNode extends AbstractNode {
 
   private _listeners: Map<any, TreeEventHandler[]>
 
-  protected _trigger(event: AbstractTreeEvent) {
+  trigger(event: AbstractTreeEvent) {
     if (this._listeners && this._listeners.has(event.constructor)) {
       const listeners = this._listeners.get(event.constructor)
       const listenersToRemove: int[] = []
@@ -2041,11 +2033,11 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  protected _triggerParent(event: AbstractTreeEvent) {
+  triggerAncestors(event: AbstractTreeEvent) {
     if (this.isRoot()) return
     const parent = this.getParent()
-    parent._trigger(event)
-    parent._triggerParent(event)
+    parent.trigger(event)
+    parent.triggerAncestors(event)
   }
 
   onLineChanged(eventHandler: TreeEventHandler) {
@@ -2507,7 +2499,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "42.0.0"
+  static getVersion = () => "42.1.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
@@ -2615,4 +2607,4 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   }
 }
 
-export { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode }
+export { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents }

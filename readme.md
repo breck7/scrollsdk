@@ -9,10 +9,10 @@ Links
 -----
 
 🌴 [Tree Notation Homepage](https://treenotation.org/)  
-🌴 [Try Tree Notation](http://jtree.treenotation.org/sandbox/)  
-🌴 [Tree Language Designer](http://jtree.treenotation.org/designer/)  
-🌴 [FAQ](http://jtree.treenotation.org/faq.html)  
-🌴 [TreeBase](http://jtree.treenotation.org/treeBase/)  
+🌴 [Try Tree Notation](https://jtree.treenotation.org/sandbox/)  
+🌴 [Tree Language Designer](https://jtree.treenotation.org/designer/)  
+🌴 [Tree Notation FAQ](http://faq.treenotation.org/)  
+🌴 [TreeBase](https://jtree.treenotation.org/treeBase/)  
 🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
 🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  
@@ -29,7 +29,7 @@ You can think of jtree as similar to the Java Development Kit, except for Tree N
 Grammar Files
 -------------
 
-Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web [Tree Language Builder](http://jtree.treenotation.org/designer/).
+Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web [Tree Language Builder](https://jtree.treenotation.org/designer/).
 
 To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. Jtree lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript. Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
 

@@ -459,6 +459,7 @@ class WillowProgram extends AbstractWillowProgram {
     this._offlineMode = true
   }
 }
+WillowProgram._stumpsOnPage = 0
 class WillowBrowserShadow extends AbstractWillowShadow {
   _getJQElement() {
     // todo: speedup?
@@ -534,6 +535,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     if (index === undefined) jqEl.append(newChildJqElement)
     else if (index === 0) jqEl.prepend(newChildJqElement)
     else jQuery(jqEl.children().get(index - 1)).after(newChildJqElement)
+    WillowProgram._stumpsOnPage++
     this._logMessage("insert")
   }
   addClassToShadow(className) {
@@ -568,6 +570,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   }
   removeShadow() {
     this._getJQElement().remove()
+    WillowProgram._stumpsOnPage--
     this._logMessage("remove")
     return this
   }
@@ -1237,6 +1240,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   span This app is powered by the
   a Tree Component Framework
    href https://github.com/treenotation/jtree/tree/master/treeComponentFramework
+ p ${app.getNumberOfLines()} components loaded. ${WillowProgram._stumpsOnPage} stumps on page.
  pre
   bern
 ${app.toString(3)}`

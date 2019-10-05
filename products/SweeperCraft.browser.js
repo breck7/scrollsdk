@@ -625,15 +625,44 @@ githubTriangleComponent`
     // Initialize first game
     if (SweeperCraftGame.isValidPermalink(location.hash.replace(/^#/, ""))) this._loadFromHash(stumpNode)
     else location.hash = SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10))
-    // Skip reactjs for updating timer
-    setInterval(() => {
-      if (this._mainGame) jQuery(".timer").html(this._mainGame.getGameTime().toString())
-    }, 1000)
   }
 }
 class headerComponent extends AbstractTreeComponent {
+  // mines moves gameTime gameMessage
+  // 10 1 You Lost!
+  treeComponentDidMount() {
+    super.treeComponentDidMount()
+    this._initTimerInterval()
+  }
+  treeComponentWillUnmount() {
+    clearInterval(this._timerInterval)
+    delete this._timerInterval
+  }
+  _initTimerInterval() {
+    // Skip reactjs for updating timer
+    if (!this._timerInterval)
+      this._timerInterval = setInterval(() => {
+        jQuery(".timer").html(this.gameTime)
+      }, 1000)
+  }
+  get gameTime() {
+    return this._getGame()
+      .getGameTime()
+      .toString()
+  }
+  get numberOfMines() {
+    return this._getGame().getNumberOfMines(true)
+  }
+  get gameMessage() {
+    return this._getGame().getGameMessage()
+  }
+  get numberOfMoves() {
+    return this._getGame().getNumberOfMoves()
+  }
+  _getGame() {
+    return this.getRootNode().getGame()
+  }
   getStumpCode() {
-    const game = this.getRootNode().getGame()
     return `div
  class headerComponent
  div
@@ -641,13 +670,13 @@ class headerComponent extends AbstractTreeComponent {
   a SweeperCraft
    href #
  div
-  span ${game.getNumberOfMines(true)}
+  span ${this.numberOfMines}
    id minesLeft
-  span ${game.getNumberOfMoves()}
+  span ${this.numberOfMoves}
    id moves
-  span ${game.getGameTime()}
+  span ${this.gameTime}
    class timer
-  span ${game.getGameMessage()}
+  span ${this.gameMessage}
    id gameStatus`
   }
 }

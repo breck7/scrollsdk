@@ -1,3 +1,8 @@
+43.0.0 / 2019-10-07
+===================
+- Breaking: getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getWordBreakSymbol, getXI is getEdgeSymbol
+- Infra: TCF debugger work
+
 42.2.0 / 2019-10-04
 ===================
 - New: getNumberOfWords method

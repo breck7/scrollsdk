@@ -198,12 +198,7 @@ interface treeNotationCodeMirrorState {
 }
 
 class TreeNotationCodeMirrorMode {
-  constructor(
-    name: string,
-    getProgramConstructorMethod: () => treeNotationTypes.TreeProgramConstructor,
-    getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string,
-    codeMirrorLib: typeof CodeMirrorLib = undefined
-  ) {
+  constructor(name: string, getProgramConstructorMethod: () => treeNotationTypes.TreeProgramConstructor, getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
     this._getProgramConstructorMethod = getProgramConstructorMethod
     this._getProgramCodeMethod = getProgramCodeMethod || (instance => (instance ? <string>instance.getValue() : this._originalValue))
@@ -334,24 +329,24 @@ class TreeNotationCodeMirrorMode {
   private _advanceStreamAndReturnTokenType(stream: CodeMirrorLib.StringStream, state: treeNotationCodeMirrorState): string {
     let nextCharacter = stream.next()
     const lineNumber = (<any>stream).lineOracle.line + 1 // state.lineIndex
-    const XI = " "
-    const YI = "\n"
+    const WordBreakSymbol = " "
+    const NodeBreakSymbol = "\n"
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
 
-      if (nextCharacter === XI) {
-        if (peek === undefined || peek === YI) {
+      if (nextCharacter === WordBreakSymbol) {
+        if (peek === undefined || peek === NodeBreakSymbol) {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
-        if (peek === XI && state.cellIndex) {
+        if (peek === WordBreakSymbol && state.cellIndex) {
           // If we are missing a cell.
-          // TODO: this is broken for a blank 1st cell. We need to track XI level.
+          // TODO: this is broken for a blank 1st cell. We need to track WordBreakSymbol level.
           state.cellIndex++
         }
         return "bracket"
       }
-      if (peek === XI) {
+      if (peek === WordBreakSymbol) {
         state.cellIndex++
         return this._getCellStyle(lineNumber, state.cellIndex)
       }

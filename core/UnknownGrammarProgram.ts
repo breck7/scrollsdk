@@ -48,7 +48,7 @@ class UnknownGrammarProgram extends TreeNode {
   }
 
   private _inferNodeTypeDef(firstWord: string, globalCellTypeMap: Map<string, string>, childFirstWords: string[], instances: TreeNode[]) {
-    const xi = this.getXI()
+    const edgeSymbol = this.getEdgeSymbol()
     const nodeTypeId = GrammarProgram.makeNodeTypeId(firstWord)
     const nodeDefNode = <TreeNode>new TreeNode(nodeTypeId).nodeAt(0)
     const childNodeTypeIds = childFirstWords.map(word => GrammarProgram.makeNodeTypeId(word))
@@ -57,7 +57,7 @@ class UnknownGrammarProgram extends TreeNode {
     const cellsForAllInstances = instances
       .map(line => line.getContent())
       .filter(line => line)
-      .map(line => line.split(xi))
+      .map(line => line.split(edgeSymbol))
     const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))
     const maxCellsOnLine = Math.max(...Array.from(instanceCellCounts))
     const minCellsOnLine = Math.min(...Array.from(instanceCellCounts))
@@ -85,7 +85,7 @@ class UnknownGrammarProgram extends TreeNode {
 
     const cellLine = cellTypeIds.slice()
     cellLine.unshift(PreludeCellTypeIds.keywordCell)
-    if (cellLine.length > 0) nodeDefNode.set(GrammarConstants.cells, cellLine.join(xi))
+    if (cellLine.length > 0) nodeDefNode.set(GrammarConstants.cells, cellLine.join(edgeSymbol))
 
     //if (!catchAllCellType && cellTypeIds.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypeIds[0])
 
@@ -118,24 +118,17 @@ class UnknownGrammarProgram extends TreeNode {
     globalCellTypeMap.set(PreludeCellTypeIds.keywordCell, undefined)
     const nodeTypeDefs = Object.keys(keywordsToChildKeywords)
       .filter(word => word)
-      .map(firstWord =>
-        this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord])
-      )
+      .map(firstWord => this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord]))
 
     const cellTypeDefs: string[] = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
-    const yi = this.getYI()
-    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(yi), nodeTypeDefs.join(yi)].filter(def => def).join("\n")
+    const nodeBreakSymbol = this.getNodeBreakSymbol()
+    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n")
   }
 
-  private _getBestCellType(
-    firstWord: string,
-    instanceCount: treeNotationTypes.int,
-    maxCellsOnLine: treeNotationTypes.int,
-    allValues: any[]
-  ): { cellTypeId: string; cellTypeDefinition?: string } {
+  private _getBestCellType(firstWord: string, instanceCount: treeNotationTypes.int, maxCellsOnLine: treeNotationTypes.int, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)
-    const xi = this.getXI()
+    const edgeSymbol = this.getEdgeSymbol()
     const values = Array.from(asSet).filter(c => c)
     const every = (fn: Function) => {
       for (let index = 0; index < values.length; index++) {
@@ -166,7 +159,7 @@ class UnknownGrammarProgram extends TreeNode {
       return {
         cellTypeId: GrammarProgram.makeCellTypeId(firstWord),
         cellTypeDefinition: `${GrammarProgram.makeCellTypeId(firstWord)}
- enum ${values.join(xi)}`
+ enum ${values.join(edgeSymbol)}`
       }
 
     return { cellTypeId: PreludeCellTypeIds.anyCell }

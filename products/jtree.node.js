@@ -509,8 +509,8 @@ class Parser {
   _getFirstWordMap() {
     return this._firstWordMap
   }
-  _getNodeConstructor(line, contextNode, zi = " ") {
-    return this._firstWordMap[this._getFirstWord(line, zi)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
+  _getNodeConstructor(line, contextNode, wordBreakSymbol = " ") {
+    return this._firstWordMap[this._getFirstWord(line, wordBreakSymbol)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
   }
   _getCatchAllNodeConstructor(contextNode) {
     if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
@@ -524,8 +524,8 @@ class Parser {
     if (hit) return hit.nodeConstructor
     return undefined
   }
-  _getFirstWord(line, zi) {
-    const firstBreak = line.indexOf(zi)
+  _getFirstWord(line, wordBreakSymbol) {
+    const firstBreak = line.indexOf(wordBreakSymbol)
     return line.substr(0, firstBreak > -1 ? firstBreak : undefined)
   }
 }
@@ -597,7 +597,7 @@ class TreeNode extends AbstractNode {
     return this._getXCoordinate(relativeTo) - 1
   }
   getIndentation(relativeTo) {
-    return this.getXI().repeat(this._getXCoordinate(relativeTo) - 1)
+    return this.getEdgeSymbol().repeat(this._getXCoordinate(relativeTo) - 1)
   }
   _getTopDownArray(arr) {
     this.forEach(child => {
@@ -672,7 +672,7 @@ class TreeNode extends AbstractNode {
   }
   toString(indentCount = 0, language = this) {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
-    return language.getXI().repeat(indentCount) + this.getLine(language) + (this.length ? language.getYI() + this._childrenToString(indentCount + 1, language) : "")
+    return language.getEdgeSymbol().repeat(indentCount) + this.getLine(language) + (this.length ? language.getNodeBreakSymbol() + this._childrenToString(indentCount + 1, language) : "")
   }
   printLinesFrom(start, quantity) {
     return this._printLinesFrom(start, quantity, false)
@@ -693,7 +693,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   getWord(index) {
-    const words = this._getLine().split(this.getZI())
+    const words = this._getLine().split(this.getWordBreakSymbol())
     if (index < 0) index = words.length + index
     return words[index]
   }
@@ -701,19 +701,19 @@ class TreeNode extends AbstractNode {
     const path = this.getPathVector().join(" ")
     const classes = {
       nodeLine: "nodeLine",
-      xi: "xIncrement",
-      yi: "yIncrement",
+      edgeSymbol: "edgeSymbol",
+      nodeBreakSymbol: "nodeBreakSymbol",
       nodeChildren: "nodeChildren"
     }
-    const edge = this.getXI().repeat(indentCount)
+    const edge = this.getEdgeSymbol().repeat(indentCount)
     // Set up the firstWord part of the node
-    const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.xi}">${edge}</span>`
+    const edgeHtml = `<span class="${classes.nodeLine}" data-pathVector="${path}"><span class="${classes.edgeSymbol}">${edge}</span>`
     const lineHtml = this._getLineHtml()
-    const childrenHtml = this.length ? `<span class="${classes.yi}">${this.getYI()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>` : ""
+    const childrenHtml = this.length ? `<span class="${classes.nodeBreakSymbol}">${this.getNodeBreakSymbol()}</span>` + `<span class="${classes.nodeChildren}">${this._childrenToHtml(indentCount + 1)}</span>` : ""
     return `${edgeHtml}${lineHtml}${childrenHtml}</span>`
   }
   _getWords(startFrom) {
-    if (!this._words) this._words = this._getLine().split(this.getZI())
+    if (!this._words) this._words = this._getLine().split(this.getWordBreakSymbol())
     return startFrom ? this._words.slice(startFrom) : this._words
   }
   getWords() {
@@ -762,7 +762,7 @@ class TreeNode extends AbstractNode {
     return [oneToTwo, twoToOne]
   }
   _getWordIndexCharacterStartPosition(wordIndex) {
-    const xiLength = this.getXI().length
+    const xiLength = this.getEdgeSymbol().length
     const numIndents = this._getXCoordinate(undefined) - 1
     const indentPosition = xiLength * numIndents
     if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
@@ -770,8 +770,8 @@ class TreeNode extends AbstractNode {
       indentPosition +
       this.getWords()
         .slice(0, wordIndex)
-        .join(this.getZI()).length +
-      this.getZI().length
+        .join(this.getWordBreakSymbol()).length +
+      this.getWordBreakSymbol().length
     )
   }
   getNodeInScopeAtCharIndex(charIndex) {
@@ -818,7 +818,7 @@ class TreeNode extends AbstractNode {
       numberOfIndents--
     }
     // Add columns
-    const ziIncrement = this.getZI().length
+    const ziIncrement = this.getWordBreakSymbol().length
     this.getWords().forEach(word => {
       if (boundaries[boundaries.length - 1] !== start) boundaries.push(start)
       start += word.length
@@ -870,12 +870,12 @@ class TreeNode extends AbstractNode {
   }
   getContent() {
     const words = this.getWordsFrom(1)
-    return words.length ? words.join(this.getZI()) : undefined
+    return words.length ? words.join(this.getWordBreakSymbol()) : undefined
   }
   getContentWithChildren() {
     // todo: deprecate
     const content = this.getContent()
-    return (content ? content : "") + (this.length ? this.getYI() + this._childrenToString() : "")
+    return (content ? content : "") + (this.length ? this.getNodeBreakSymbol() + this._childrenToString() : "")
   }
   getFirstNode() {
     return this.nodeAt(0)
@@ -891,12 +891,12 @@ class TreeNode extends AbstractNode {
   }
   getStackString() {
     return this._getStack()
-      .map((node, index) => this.getXI().repeat(index) + node.getLine())
-      .join(this.getYI())
+      .map((node, index) => this.getEdgeSymbol().repeat(index) + node.getLine())
+      .join(this.getNodeBreakSymbol())
   }
   getLine(language) {
     if (!this._words && !language) return this._getLine() // todo: how does this interact with "language" param?
-    return this.getWords().join((language || this).getZI())
+    return this.getWords().join((language || this).getWordBreakSymbol())
   }
   getColumnNames() {
     return this._getUnionNames()
@@ -917,7 +917,7 @@ class TreeNode extends AbstractNode {
   _getFirstWordPath(relativeTo) {
     if (this.isRoot(relativeTo)) return ""
     else if (this.getParent().isRoot(relativeTo)) return this.getFirstWord()
-    return this.getParent()._getFirstWordPath(relativeTo) + this.getXI() + this.getFirstWord()
+    return this.getParent()._getFirstWordPath(relativeTo) + this.getEdgeSymbol() + this.getFirstWord()
   }
   getFirstWordPathRelativeTo(relativeTo) {
     return this._getFirstWordPath(relativeTo)
@@ -946,7 +946,7 @@ class TreeNode extends AbstractNode {
   _getLineHtml() {
     return this.getWords()
       .map((word, index) => `<span class="word${index}">${TreeUtils.stripHtml(word)}</span>`)
-      .join(`<span class="zIncrement">${this.getZI()}</span>`)
+      .join(`<span class="zIncrement">${this.getWordBreakSymbol()}</span>`)
   }
   _getXmlContent(indentCount) {
     if (this.getContent() !== undefined) return this.getContentWithChildren()
@@ -1140,14 +1140,14 @@ class TreeNode extends AbstractNode {
     return this._childrenToHtml(0)
   }
   _getHtmlJoinByCharacter() {
-    return `<span class="yIncrement">${this.getYI()}</span>`
+    return `<span class="nodeBreakSymbol">${this.getNodeBreakSymbol()}</span>`
   }
   _childrenToHtml(indentCount) {
     const joinBy = this._getHtmlJoinByCharacter()
     return this.map(node => node._toHtml(indentCount)).join(joinBy)
   }
   _childrenToString(indentCount, language = this) {
-    return this.map(node => node.toString(indentCount, language)).join(language.getYI())
+    return this.map(node => node.toString(indentCount, language)).join(language.getNodeBreakSymbol())
   }
   childrenToString(indentCount = 0) {
     return this._childrenToString(indentCount)
@@ -1255,27 +1255,27 @@ class TreeNode extends AbstractNode {
     return this._getNodesByGlobPath(query)
   }
   _getNodesByGlobPath(globPath) {
-    const xi = this.getXI()
-    if (!globPath.includes(xi)) {
+    const edgeSymbol = this.getEdgeSymbol()
+    if (!globPath.includes(edgeSymbol)) {
       if (globPath === "*") return this.getChildren()
       return this.filter(node => node.getFirstWord() === globPath)
     }
-    const parts = globPath.split(xi)
+    const parts = globPath.split(edgeSymbol)
     const current = parts.shift()
-    const rest = parts.join(xi)
+    const rest = parts.join(edgeSymbol)
     const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getFirstWord() === current)
     return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)))
   }
   _getNodeByPath(firstWordPath) {
-    const xi = this.getXI()
-    if (!firstWordPath.includes(xi)) {
+    const edgeSymbol = this.getEdgeSymbol()
+    if (!firstWordPath.includes(edgeSymbol)) {
       const index = this.indexOfLast(firstWordPath)
       return index === -1 ? undefined : this._nodeAt(index)
     }
-    const parts = firstWordPath.split(xi)
+    const parts = firstWordPath.split(edgeSymbol)
     const current = parts.shift()
     const currentNode = this._getChildren()[this._getIndex()[current]]
-    return currentNode ? currentNode._getNodeByPath(parts.join(xi)) : undefined
+    return currentNode ? currentNode._getNodeByPath(parts.join(edgeSymbol)) : undefined
   }
   getNext() {
     if (this.isRoot()) return this
@@ -1485,11 +1485,11 @@ class TreeNode extends AbstractNode {
   // this.split("foo").join("\n") === this.toString()
   split(firstWord) {
     const constructor = this.constructor
-    const YI = this.getYI()
-    const ZI = this.getZI()
+    const NodeBreakSymbol = this.getNodeBreakSymbol()
+    const WordBreakSymbol = this.getWordBreakSymbol()
     // todo: cleanup. the escaping is wierd.
     return this.toString()
-      .split(new RegExp(`\\${YI}(?=${firstWord}(?:${ZI}|\\${YI}))`, "g"))
+      .split(new RegExp(`\\${NodeBreakSymbol}(?=${firstWord}(?:${WordBreakSymbol}|\\${NodeBreakSymbol}))`, "g"))
       .map(str => new constructor(str))
   }
   toMarkdownTable() {
@@ -1509,27 +1509,27 @@ class TreeNode extends AbstractNode {
   toTsv() {
     return this.toDelimited("\t")
   }
-  getYI() {
+  getNodeBreakSymbol() {
     return "\n"
   }
-  getZI() {
+  getWordBreakSymbol() {
     return " "
   }
-  getYIRegex() {
-    return new RegExp(this.getYI(), "g")
+  getNodeBreakSymbolRegex() {
+    return new RegExp(this.getNodeBreakSymbol(), "g")
   }
-  getXI() {
+  getEdgeSymbol() {
     return " "
   }
   _textToContentAndChildrenTuple(text) {
-    const lines = text.split(this.getYIRegex())
+    const lines = text.split(this.getNodeBreakSymbolRegex())
     const firstLine = lines.shift()
     const children = !lines.length
       ? undefined
       : lines
-          .map(line => (line.substr(0, 1) === this.getXI() ? line : this.getXI() + line))
+          .map(line => (line.substr(0, 1) === this.getEdgeSymbol() ? line : this.getEdgeSymbol() + line))
           .map(line => line.substr(1))
-          .join(this.getYI())
+          .join(this.getNodeBreakSymbol())
     return [firstLine, children]
   }
   _getLine() {
@@ -1607,7 +1607,7 @@ class TreeNode extends AbstractNode {
     return newNode
   }
   _appendChildrenFromString(str) {
-    const lines = str.split(this.getYIRegex())
+    const lines = str.split(this.getNodeBreakSymbolRegex())
     const parentStack = []
     let currentIndentCount = -1
     let lastNode = this
@@ -1687,7 +1687,7 @@ class TreeNode extends AbstractNode {
   }
   _getIndentCount(str) {
     let level = 0
-    const edgeChar = this.getXI()
+    const edgeChar = this.getEdgeSymbol()
     while (str[level] === edgeChar) {
       level++
     }
@@ -1851,13 +1851,13 @@ class TreeNode extends AbstractNode {
     const clone = this.clone()
     const defs = clone.findNodes(macroDefinitionWord)
     const allUses = clone.findNodes(macroUsageWord)
-    const zi = clone.getZI()
+    const wordBreakSymbol = clone.getWordBreakSymbol()
     defs.forEach(def => {
       const macroName = def.getWord(1)
       const uses = allUses.filter(node => node.hasWord(1, macroName))
       const params = def.getWordsFrom(2)
       const replaceFn = str => {
-        const paramValues = str.split(zi).slice(2)
+        const paramValues = str.split(wordBreakSymbol).slice(2)
         let newTree = def.childrenToString()
         params.forEach((param, index) => {
           newTree = newTree.replace(new RegExp(param, "g"), paramValues[index])
@@ -1878,7 +1878,7 @@ class TreeNode extends AbstractNode {
     this._lineModifiedTime = this._getProcessTimeInMilliseconds()
   }
   insertWord(index, word) {
-    const wi = this.getZI()
+    const wi = this.getWordBreakSymbol()
     const words = this._getLine().split(wi)
     words.splice(index, 0, word)
     this.setLine(words.join(wi))
@@ -1894,7 +1894,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   setWord(index, word) {
-    const wi = this.getZI()
+    const wi = this.getWordBreakSymbol()
     const words = this._getLine().split(wi)
     words[index] = word
     this.setLine(words.join(wi))
@@ -1908,10 +1908,10 @@ class TreeNode extends AbstractNode {
     const newArray = [this.getFirstWord()]
     if (content !== undefined) {
       content = content.toString()
-      if (content.match(this.getYI())) return this.setContentWithChildren(content)
+      if (content.match(this.getNodeBreakSymbol())) return this.setContentWithChildren(content)
       newArray.push(content)
     }
-    this._setLine(newArray.join(this.getZI()))
+    this._setLine(newArray.join(this.getWordBreakSymbol()))
     this._updateLineModifiedTimeAndTriggerEvent()
     return this
   }
@@ -1923,15 +1923,15 @@ class TreeNode extends AbstractNode {
   }
   setContentWithChildren(text) {
     // todo: deprecate
-    if (!text.includes(this.getYI())) {
+    if (!text.includes(this.getNodeBreakSymbol())) {
       this._clearChildren()
       return this.setContent(text)
     }
-    const lines = text.split(this.getYIRegex())
+    const lines = text.split(this.getNodeBreakSymbolRegex())
     const firstLine = lines.shift()
     this.setContent(firstLine)
     // tood: cleanup.
-    const remainingString = lines.join(this.getYI())
+    const remainingString = lines.join(this.getNodeBreakSymbol())
     const children = new TreeNode(remainingString)
     if (!remainingString) children.appendLine("")
     this.setChildren(children)
@@ -2057,11 +2057,11 @@ class TreeNode extends AbstractNode {
     return this._deleteByIndexes(indexesToDelete)
   }
   delete(path = "") {
-    const xi = this.getXI()
-    if (!path.includes(xi)) return this._deleteAllChildNodesWithFirstWord(path)
-    const parts = path.split(xi)
+    const edgeSymbol = this.getEdgeSymbol()
+    if (!path.includes(edgeSymbol)) return this._deleteAllChildNodesWithFirstWord(path)
+    const parts = path.split(edgeSymbol)
     const nextFirstWord = parts.pop()
-    const targetNode = this.getNode(parts.join(xi))
+    const targetNode = this.getNode(parts.join(edgeSymbol))
     return targetNode ? targetNode._deleteAllChildNodesWithFirstWord(nextFirstWord) : 0
   }
   deleteColumn(firstWord = "") {
@@ -2099,7 +2099,7 @@ class TreeNode extends AbstractNode {
     while (this.has(index.toString())) {
       index++
     }
-    const line = index.toString() + (content === undefined ? "" : this.getZI() + content)
+    const line = index.toString() + (content === undefined ? "" : this.getWordBreakSymbol() + content)
     return this.appendLineAndChildren(line, children)
   }
   deleteBlanks() {
@@ -2153,7 +2153,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   setWords(words) {
-    return this.setLine(words.join(this.getZI()))
+    return this.setLine(words.join(this.getWordBreakSymbol()))
   }
   setWordsFrom(index, words) {
     this.setWords(
@@ -2192,8 +2192,8 @@ class TreeNode extends AbstractNode {
     return contextNode
   }
   _touchNodeByString(str) {
-    str = str.replace(this.getYIRegex(), "") // todo: do we want to do this sanitization?
-    return this._touchNode(str.split(this.getZI()))
+    str = str.replace(this.getNodeBreakSymbolRegex(), "") // todo: do we want to do this sanitization?
+    return this._touchNode(str.split(this.getWordBreakSymbol()))
   }
   touchNode(str) {
     return this._touchNodeByString(str)
@@ -2494,11 +2494,11 @@ class TreeNode extends AbstractNode {
   static _getHeader(rows, hasHeaders) {
     const numberOfColumns = rows[0].length
     const headerRow = hasHeaders ? rows[0] : []
-    const ZI = " "
-    const ziRegex = new RegExp(ZI, "g")
+    const WordBreakSymbol = " "
+    const ziRegex = new RegExp(WordBreakSymbol, "g")
     if (hasHeaders) {
-      // Strip any ZIs from column names in the header row.
-      // This makes the mapping not quite 1 to 1 if there are any ZIs in names.
+      // Strip any WordBreakSymbols from column names in the header row.
+      // This makes the mapping not quite 1 to 1 if there are any WordBreakSymbols in names.
       for (let index = 0; index < numberOfColumns; index++) {
         headerRow[index] = headerRow[index].replace(ziRegex, "")
       }
@@ -2511,9 +2511,9 @@ class TreeNode extends AbstractNode {
     return headerRow
   }
   static nest(str, xValue) {
-    const YI = "\n"
-    const XI = " "
-    const indent = YI + XI.repeat(xValue)
+    const NodeBreakSymbol = "\n"
+    const WordBreakSymbol = " "
+    const indent = NodeBreakSymbol + WordBreakSymbol.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
   static fromDisk(path) {
@@ -2929,17 +2929,17 @@ class GrammarBackedRootNode extends GrammarBackedNode {
   }
   getInPlaceCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
+      .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellTypes())
       .join("\n")
   }
   getInPlacePreludeCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellPreludeTypes())
+      .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellPreludeTypes())
       .join("\n")
   }
   getTreeWithNodeTypes() {
     return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
+      .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLine())
       .join("\n")
   }
   getCellHighlightScopeAtPosition(lineIndex, wordIndex) {
@@ -3140,7 +3140,7 @@ class AbstractGrammarBackedCell {
     return this.getNode().getLine()
   }
   _getErrorContext() {
-    return this._getFullLine().split(" ")[0] // todo: XI
+    return this._getFullLine().split(" ")[0] // todo: WordBreakSymbol
   }
   isValid() {
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
@@ -4599,7 +4599,7 @@ class UnknownGrammarProgram extends TreeNode {
     return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToNodeInstances: keywordsToNodeInstances }
   }
   _inferNodeTypeDef(firstWord, globalCellTypeMap, childFirstWords, instances) {
-    const xi = this.getXI()
+    const edgeSymbol = this.getEdgeSymbol()
     const nodeTypeId = GrammarProgram.makeNodeTypeId(firstWord)
     const nodeDefNode = new TreeNode(nodeTypeId).nodeAt(0)
     const childNodeTypeIds = childFirstWords.map(word => GrammarProgram.makeNodeTypeId(word))
@@ -4607,7 +4607,7 @@ class UnknownGrammarProgram extends TreeNode {
     const cellsForAllInstances = instances
       .map(line => line.getContent())
       .filter(line => line)
-      .map(line => line.split(xi))
+      .map(line => line.split(edgeSymbol))
     const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))
     const maxCellsOnLine = Math.max(...Array.from(instanceCellCounts))
     const minCellsOnLine = Math.min(...Array.from(instanceCellCounts))
@@ -4630,7 +4630,7 @@ class UnknownGrammarProgram extends TreeNode {
     if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
     const cellLine = cellTypeIds.slice()
     cellLine.unshift(PreludeCellTypeIds.keywordCell)
-    if (cellLine.length > 0) nodeDefNode.set(GrammarConstants.cells, cellLine.join(xi))
+    if (cellLine.length > 0) nodeDefNode.set(GrammarConstants.cells, cellLine.join(edgeSymbol))
     //if (!catchAllCellType && cellTypeIds.length === 1) nodeDefNode.set(GrammarConstants.cells, cellTypeIds[0])
     // Todo: add conditional frequencies
     return nodeDefNode.getParent().toString()
@@ -4658,12 +4658,12 @@ class UnknownGrammarProgram extends TreeNode {
       .map(firstWord => this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord]))
     const cellTypeDefs = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
-    const yi = this.getYI()
-    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(yi), nodeTypeDefs.join(yi)].filter(def => def).join("\n")
+    const nodeBreakSymbol = this.getNodeBreakSymbol()
+    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n")
   }
   _getBestCellType(firstWord, instanceCount, maxCellsOnLine, allValues) {
     const asSet = new Set(allValues)
-    const xi = this.getXI()
+    const edgeSymbol = this.getEdgeSymbol()
     const values = Array.from(asSet).filter(c => c)
     const every = fn => {
       for (let index = 0; index < values.length; index++) {
@@ -4690,7 +4690,7 @@ class UnknownGrammarProgram extends TreeNode {
       return {
         cellTypeId: GrammarProgram.makeCellTypeId(firstWord),
         cellTypeDefinition: `${GrammarProgram.makeCellTypeId(firstWord)}
- enum ${values.join(xi)}`
+ enum ${values.join(edgeSymbol)}`
       }
     return { cellTypeId: PreludeCellTypeIds.anyCell }
   }
@@ -4985,23 +4985,23 @@ class TreeNotationCodeMirrorMode {
   _advanceStreamAndReturnTokenType(stream, state) {
     let nextCharacter = stream.next()
     const lineNumber = stream.lineOracle.line + 1 // state.lineIndex
-    const XI = " "
-    const YI = "\n"
+    const WordBreakSymbol = " "
+    const NodeBreakSymbol = "\n"
     while (typeof nextCharacter === "string") {
       const peek = stream.peek()
-      if (nextCharacter === XI) {
-        if (peek === undefined || peek === YI) {
+      if (nextCharacter === WordBreakSymbol) {
+        if (peek === undefined || peek === NodeBreakSymbol) {
           stream.skipToEnd() // advance string to end
           this._incrementLine(state)
         }
-        if (peek === XI && state.cellIndex) {
+        if (peek === WordBreakSymbol && state.cellIndex) {
           // If we are missing a cell.
-          // TODO: this is broken for a blank 1st cell. We need to track XI level.
+          // TODO: this is broken for a blank 1st cell. We need to track WordBreakSymbol level.
           state.cellIndex++
         }
         return "bracket"
       }
-      if (peek === XI) {
+      if (peek === WordBreakSymbol) {
         state.cellIndex++
         return this._getCellStyle(lineNumber, state.cellIndex)
       }

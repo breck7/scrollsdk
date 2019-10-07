@@ -383,19 +383,19 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
 
   getInPlaceCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellTypes())
+      .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellTypes())
       .join("\n")
   }
 
   getInPlacePreludeCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLineCellPreludeTypes())
+      .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellPreludeTypes())
       .join("\n")
   }
 
   getTreeWithNodeTypes() {
     return this.getTopDownArray()
-      .map(child => child.constructor.name + this.getZI() + child.getIndentation() + child.getLine())
+      .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLine())
       .join("\n")
   }
 
@@ -656,7 +656,7 @@ abstract class AbstractGrammarBackedCell<T> {
   }
 
   protected _getErrorContext() {
-    return this._getFullLine().split(" ")[0] // todo: XI
+    return this._getFullLine().split(" ")[0] // todo: WordBreakSymbol
   }
 
   protected abstract _isValid(): boolean

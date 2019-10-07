@@ -447,7 +447,7 @@ domains
  :`
     // Act/Assert
     class TestTree extends TreeNode {
-      getZI() {
+      getWordBreakSymbol() {
         return ":"
       }
     }
@@ -1425,15 +1425,15 @@ helpButton abstractButton`
 
   testTree.multiply = equal => {
     class MathNode extends TreeNode {
-      getZI() {
+      getWordBreakSymbol() {
         return " "
       }
 
-      getYI() {
+      getNodeBreakSymbol() {
         return "o"
       }
 
-      getXI() {
+      getEdgeSymbol() {
         return "-"
       }
     }
@@ -3121,15 +3121,15 @@ footer`
     const test2 = `person;=name=Breck;=country=USA;=books;==one=SICP;==two=Pragmatic;=num=12;=multiline=this=is=a=string;==over=multiple=lines.;=====and=this=one=has=extra=indents;=num=12;`
 
     class TestLanguage extends TreeNode {
-      getZI() {
+      getWordBreakSymbol() {
         return "="
       }
 
-      getYI() {
+      getNodeBreakSymbol() {
         return ";"
       }
 
-      getXI() {
+      getEdgeSymbol() {
         return "="
       }
     }

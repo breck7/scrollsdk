@@ -267,13 +267,13 @@ class AbstractWillowProgram extends stumpNode {
   }
   toPrettyDeepLink(treeCode, queryObject) {
     // todo: move things to a constant.
-    const yi = "~"
-    const xi = "_"
+    const nodeBreakSymbol = "~"
+    const edgeSymbol = "_"
     const obj = Object.assign({}, queryObject)
-    if (!treeCode.includes(yi) && !treeCode.includes(xi)) {
-      obj.yi = yi
-      obj.xi = xi
-      obj.data = encodeURIComponent(treeCode.replace(/ /g, xi).replace(/\n/g, yi))
+    if (!treeCode.includes(nodeBreakSymbol) && !treeCode.includes(edgeSymbol)) {
+      obj.nodeBreakSymbol = nodeBreakSymbol
+      obj.edgeSymbol = edgeSymbol
+      obj.data = encodeURIComponent(treeCode.replace(/ /g, edgeSymbol).replace(/\n/g, nodeBreakSymbol))
     } else obj.data = encodeURIComponent(treeCode)
     return this.getBaseUrl() + "?" + this.queryObjectToQueryString(obj)
   }

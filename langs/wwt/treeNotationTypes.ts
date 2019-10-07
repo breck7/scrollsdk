@@ -34,7 +34,7 @@ namespace treeNotationTypes {
   }
 
   export declare type treeNode = any
-  export declare type line = string // no YI (\n)
+  export declare type line = string // no NodeBreakSymbol (\n)
   export declare type int = number
   export declare type positiveInt = number
   export declare type stringMap = { [firstWord: string]: any }
@@ -54,7 +54,7 @@ namespace treeNotationTypes {
   export declare type formatString = string // "Hello {name}! You are {age} years old."
   export declare type firstWordPath = string // user emailAddress
   export declare type pathVector = int[] // example: [0,1,1]
-  export declare type word = string // string that cannot contain the YI, XI or ZI
+  export declare type word = string // string that cannot contain the NodeBreakSymbol, WordBreakSymbol or WordBreakSymbol
   export declare type firstWord = word
   export declare type triInt = int // -1 0 1
   export declare type filepath = string

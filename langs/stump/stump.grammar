@@ -82,7 +82,7 @@ abstractHtmlTagNode
     this.getShadow().addClassToShadow(className)
     if (words.includes(className)) return this
     words.push(className)
-    classNode.setContent(words.join(this.getZI()))
+    classNode.setContent(words.join(this.getWordBreakSymbol()))
     return this
   }
   removeClassFromStumpNode(className) {

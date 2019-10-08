@@ -1268,7 +1268,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     this.treeComponentDidUnmount()
   }
 
-  _removeHtml() {
+  protected _removeHtml() {
     this._htmlStumpNode.removeStumpNode()
     delete this._htmlStumpNode
   }
@@ -1300,7 +1300,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     return this._lastTimeToRender
   }
 
-  _setLastRenderedTime(time: number) {
+  protected _setLastRenderedTime(time: number) {
     this._lastRenderedTime = time
     return this
   }
@@ -1308,17 +1308,11 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   // todo: can this be async?
   treeComponentDidUpdate() {}
 
-  _getChildTreeComponents() {
+  protected _getChildTreeComponents() {
     return this.getChildrenByNodeConstructor(AbstractTreeComponent)
   }
 
-  // todo: delete this
-  makeAllDirty() {
-    this.makeDirty()
-    this._getChildTreeComponents().forEach((child: any) => child.makeAllDirty())
-  }
-
-  _hasChildrenTreeComponents() {
+  protected _hasChildrenTreeComponents() {
     return this._getChildTreeComponents().length > 0
   }
 
@@ -1327,16 +1321,11 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
     return this.getStumpNode()
   }
 
-  _getLastRenderedTime() {
+  protected _getLastRenderedTime() {
     return this._lastRenderedTime
   }
 
-  // todo: delete this
-  makeDirty() {
-    this._setLastRenderedTime(0)
-  }
-
-  _getCss() {
+  protected _getCss() {
     return this.getTheme().hakonToCss(this.getHakon())
   }
 
@@ -1347,7 +1336,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
 </div>`
   }
 
-  _getCssStumpCode() {
+  protected _getCssStumpCode() {
     return `styleTag
  stumpStyleFor ${this.constructor.name}
  bern${jtree.TreeNode.nest(this._getCss(), 2)}`
@@ -1358,7 +1347,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
     return true
   }
 
-  _updateAndGetUpdateResult() {
+  protected _updateAndGetUpdateResult() {
     if (!this._shouldTreeComponentUpdate()) return { treeComponentDidUpdate: false, reason: "_shouldTreeComponentUpdate is false" }
 
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
@@ -1369,21 +1358,21 @@ ${new stumpNode(this.getStumpCode()).compile()}
     // for now
     if (this.isNotATile() && this._hasChildrenTreeComponents()) return { treeComponentDidUpdate: false, reason: "is a parent" }
 
-    this.updateHtml()
+    this._updateHtml()
 
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return { treeComponentDidUpdate: true }
   }
 
-  _getWrappedStumpCode(index: number) {
+  protected _getWrappedStumpCode() {
     return this.getStumpCode()
   }
 
-  updateHtml() {
+  protected _updateHtml() {
     const stumpNodeToMountOn = <abstractHtmlTag>this._htmlStumpNode.getParent()
-    const index = this._htmlStumpNode.getIndex()
+    const currentIndex = this._htmlStumpNode.getIndex()
     this._removeHtml()
-    this._mountHtml(stumpNodeToMountOn, index)
+    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), currentIndex)
   }
 
   unmountAndDestroy() {
@@ -1423,11 +1412,11 @@ ${new stumpNode(this.getStumpCode()).compile()}
     this.getRootNode().renderAndGetRenderResult()
   }
 
-  _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
+  protected _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
     return this.getDependencies().find(dep => dep.getLineModifiedTime() > lastRenderedTime)
   }
 
-  _getReasonForUpdatingOrNot(): reasonForUpdatingOrNot {
+  protected _getReasonForUpdatingOrNot(): reasonForUpdatingOrNot {
     const mTime = this.getLineModifiedTime()
     const lastRenderedTime = this._getLastRenderedTime() || 0
     const staleTime = mTime - lastRenderedTime
@@ -1471,57 +1460,56 @@ ${new stumpNode(this.getStumpCode()).compile()}
     return all
   }
 
-  _shouldTreeComponentUpdate() {
+  protected _shouldTreeComponentUpdate() {
     return this._getReasonForUpdatingOrNot().shouldUpdate
   }
 
-  _getTreeComponentsThatNeedRendering(arr: childShouldUpdateResult[]) {
+  protected _getTreeComponentsThatNeedRendering(arr: childShouldUpdateResult[]) {
     this._getChildTreeComponents().forEach((child: AbstractTreeComponent) => {
       if (!child.isMounted() || child._shouldTreeComponentUpdate()) arr.push({ child: child, childUpdateBecause: child._getReasonForUpdatingOrNot() })
       child._getTreeComponentsThatNeedRendering(arr)
     })
   }
 
-  _mount(stumpNodeToMountOn: abstractHtmlTag, index: number) {
+  protected _mount(stumpNodeToMountOn: abstractHtmlTag, index: number) {
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
 
     this.treeComponentWillMount()
 
     this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, index) // todo: add index back?
+    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), index) // todo: add index back?
 
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return this
   }
 
   // todo: we might be able to squeeze virtual dom in here on the mountCss and mountHtml methods.
-  _mountCss() {
+  protected _mountCss() {
     // todo: only insert css once per class? have a set?
     this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(this._getCssStumpCode())
   }
 
-  _getPageHeadStump(): abstractHtmlTag {
+  protected _getPageHeadStump(): abstractHtmlTag {
     return this.getRootNode()
       .getWillowProgram()
       .getHeadStumpNode()
   }
 
-  _removeCss() {
+  protected _removeCss() {
     this._cssStumpNode.removeCssStumpNode()
     delete this._cssStumpNode
   }
 
-  _mountHtml(stumpNodeToMountOn: abstractHtmlTag, index: number) {
-    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(this._getWrappedStumpCode(index), index)
-    if (!this._htmlStumpNode.setStumpNodeTreeComponent) console.log(this._htmlStumpNode)
+  protected _mountHtml(stumpNodeToMountOn: abstractHtmlTag, htmlCode: string, index: number) {
+    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
     this._htmlStumpNode.setStumpNodeTreeComponent(this)
   }
 
-  _treeComponentDidUpdate() {
+  protected _treeComponentDidUpdate() {
     this.treeComponentDidUpdate()
   }
 
-  _treeComponentDidMount() {
+  protected _treeComponentDidMount() {
     this.treeComponentDidMount()
   }
 

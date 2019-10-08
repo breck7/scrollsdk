@@ -1002,11 +1002,6 @@ class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   _getChildTreeComponents() {
     return this.getChildrenByNodeConstructor(AbstractTreeComponent)
   }
-  // todo: delete this
-  makeAllDirty() {
-    this.makeDirty()
-    this._getChildTreeComponents().forEach(child => child.makeAllDirty())
-  }
   _hasChildrenTreeComponents() {
     return this._getChildTreeComponents().length > 0
   }
@@ -1016,10 +1011,6 @@ class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
   }
   _getLastRenderedTime() {
     return this._lastRenderedTime
-  }
-  // todo: delete this
-  makeDirty() {
-    this._setLastRenderedTime(0)
   }
   _getCss() {
     return this.getTheme().hakonToCss(this.getHakon())
@@ -1048,18 +1039,18 @@ ${new stumpNode(this.getStumpCode()).compile()}
     // okay. i see why we might do that for non tile treeComponents. but for Tile treeComponents, seems like we arent nesting, so why not?
     // for now
     if (this.isNotATile() && this._hasChildrenTreeComponents()) return { treeComponentDidUpdate: false, reason: "is a parent" }
-    this.updateHtml()
+    this._updateHtml()
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return { treeComponentDidUpdate: true }
   }
-  _getWrappedStumpCode(index) {
+  _getWrappedStumpCode() {
     return this.getStumpCode()
   }
-  updateHtml() {
+  _updateHtml() {
     const stumpNodeToMountOn = this._htmlStumpNode.getParent()
-    const index = this._htmlStumpNode.getIndex()
+    const currentIndex = this._htmlStumpNode.getIndex()
     this._removeHtml()
-    this._mountHtml(stumpNodeToMountOn, index)
+    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), currentIndex)
   }
   unmountAndDestroy() {
     this.unmount()
@@ -1146,7 +1137,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
     this.treeComponentWillMount()
     this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, index) // todo: add index back?
+    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), index) // todo: add index back?
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return this
   }
@@ -1164,9 +1155,8 @@ ${new stumpNode(this.getStumpCode()).compile()}
     this._cssStumpNode.removeCssStumpNode()
     delete this._cssStumpNode
   }
-  _mountHtml(stumpNodeToMountOn, index) {
-    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(this._getWrappedStumpCode(index), index)
-    if (!this._htmlStumpNode.setStumpNodeTreeComponent) console.log(this._htmlStumpNode)
+  _mountHtml(stumpNodeToMountOn, htmlCode, index) {
+    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
     this._htmlStumpNode.setStumpNodeTreeComponent(this)
   }
   _treeComponentDidUpdate() {

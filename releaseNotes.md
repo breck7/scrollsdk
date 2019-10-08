@@ -1,3 +1,8 @@
+edge / 2019-10-08
+=================
+- Fix: sweepercraft perf fix
+- Breaking: removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
+
 43.0.0 / 2019-10-07
 ===================
 - Breaking: getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getWordBreakSymbol, getXI is getEdgeSymbol

@@ -30,7 +30,7 @@ class SweeperCraftGame {
   getGameMessage() {
     if (this.isLost()) return "You Lost :("
     else if (this.isWon()) return "You won!"
-    return ""
+    return " "
   }
   getGameStateClass() {
     if (this.isLost()) return "gameLost"
@@ -214,7 +214,7 @@ class SweeperCraftGame {
     const numCols = board[0].length
     const c = board.map(row => row.join("")).join("")
     const strLength = c.length
-    var layout = ""
+    let layout = ""
     for (let i = 0; i < strLength; i = i + 6) {
       layout += SweeperCraftGame._bitsToChar(c.substr(i, 6))
     }
@@ -233,18 +233,18 @@ class SweeperCraftGame {
       return SweeperCraftGame.getRandomBoard(numRows, numCols, numMines)
     }
     const layout = options.layout
-    var board = SweeperCraftGame.getZeroedBoard(numRows, numCols)
+    let board = SweeperCraftGame.getZeroedBoard(numRows, numCols)
     const expectedSquares = numRows * numCols
-    var boardStr = ""
-    for (let i = 0; i < layout.length; i++) {
-      boardStr += SweeperCraftGame._charToSixBits(layout[i])
+    let boardStr = ""
+    for (let rowIndex = 0; rowIndex < layout.length; rowIndex++) {
+      boardStr += SweeperCraftGame._charToSixBits(layout[rowIndex])
     }
     boardStr = boardStr.substr(0, expectedSquares)
     board = []
-    for (var i = 0; i < numRows; i++) {
+    for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
       board.push(
         boardStr
-          .substr(i * numCols, numCols)
+          .substr(rowIndex * numCols, numCols)
           .split("")
           .map(c => parseInt(c))
       )
@@ -329,8 +329,8 @@ class SweeperCraftGame {
   static _getPermalinkMap() {
     if (!this._permalinkMap) {
       this._permalinkMap = {}
-      this._permalinkArr.forEach((l, i) => {
-        this._permalinkMap[l] = i
+      this._permalinkArr.forEach((letter, index) => {
+        this._permalinkMap[letter] = index
       })
     }
     return this._permalinkMap
@@ -350,7 +350,7 @@ const linkToObject = link => {
   const parts = link.replace(/^\//, "").split("/")
   const obj = {}
   const length = parts.length
-  for (var index = 0; index < length; index = index + 2) {
+  for (let index = 0; index < length; index = index + 2) {
     obj[parts[index]] = parts[index + 1]
   }
   return obj
@@ -402,6 +402,7 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
       headerComponent: headerComponent,
       boardComponent: boardComponent,
       controlsComponent: controlsComponent,
+      customLinkComponent: customLinkComponent,
       shortcutsTableComponent: shortcutsTableComponent,
       githubTriangleComponent: githubTriangleComponent,
       TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
@@ -536,6 +537,7 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
     return `headerComponent
 boardComponent
 controlsComponent
+customLinkComponent
 shortcutsTableComponent
 githubTriangleComponent`
   }
@@ -579,13 +581,21 @@ githubTriangleComponent`
       }
     }
   }
+  // todo: there's probably a better pattern than this.
+  _syncBoardToGame() {
+    this.getTopDownArray()
+      .filter(node => node instanceof AbstractSweeperCraftComponent)
+      .forEach(node => {
+        node._syncBoardToGame()
+      })
+  }
   _loadFromHash(stumpNode) {
     const link = location.hash.replace(/^\#/, "")
     let board
     if (!link) board = SweeperCraftGame.getRandomBoard(9, 9, 10)
     else board = SweeperCraftGame.boardFromPermalink(link)
     this._mainGame = new SweeperCraftGame(board, game => {
-      this.makeAllDirty() // todo: cleanup
+      this._syncBoardToGame() // todo: cleanup
       this.renderAndGetRenderResult(stumpNode)
     })
     let boardNode = this.getNode("boardComponent")
@@ -627,9 +637,8 @@ githubTriangleComponent`
     else location.hash = SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10))
   }
 }
-class headerComponent extends AbstractTreeComponent {
-  // mines moves gameTime gameMessage
-  // 10 1 You Lost!
+class AbstractSweeperCraftComponent extends AbstractTreeComponent {}
+class headerComponent extends AbstractSweeperCraftComponent {
   treeComponentDidMount() {
     super.treeComponentDidMount()
     this._initTimerInterval()
@@ -662,6 +671,11 @@ class headerComponent extends AbstractTreeComponent {
   _getGame() {
     return this.getRootNode().getGame()
   }
+  // mines moves gameMessage
+  // 10 1 You Lost!
+  _syncBoardToGame() {
+    this.setContent(`${this.numberOfMines}mines ${this.numberOfMoves}clicks ${this.gameMessage}`)
+  }
   getStumpCode() {
     return `div
  class headerComponent
@@ -680,17 +694,24 @@ class headerComponent extends AbstractTreeComponent {
    id gameStatus`
   }
 }
-class boardComponent extends AbstractTreeComponent {
+class boardComponent extends AbstractSweeperCraftComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       rowComponent: rowComponent
     })
   }
+  _syncBoardToGame() {
+    this.setContent(`${this._getCssGameClass()}`)
+  }
+  _getCssGameClass() {
+    return this.getRootNode()
+      .getGame()
+      .isOver()
+      ? "over"
+      : "playing"
+  }
   getCssClassNames() {
-    const game = this.getRootNode().getGame()
-    const rows = game.getBoard()
-    const className = game.isOver() ? "over" : "playing"
-    return `${className} ${super.getCssClassNames()}`
+    return `${this._getCssGameClass()} ${super.getCssClassNames()}`
   }
 }
 class rowComponent extends AbstractTreeComponent {
@@ -700,22 +721,31 @@ class rowComponent extends AbstractTreeComponent {
     })
   }
 }
-class squareComponent extends AbstractTreeComponent {
+class squareComponent extends AbstractSweeperCraftComponent {
   getStumpCode() {
-    const game = this.getRootNode().getGame()
-    const row = this.getParent().getIndex()
-    const col = this.getIndex()
-    const wasClicked = game.wasClicked(row, col)
-    let content = ""
-    if (wasClicked) {
-      const neighborBombCount = game.getNeighborBombCount(row, col)
-      content = neighborBombCount ? neighborBombCount : " "
-    }
-    return `div${content ? " " + content : ""}
+    const row = this.getRow()
+    const col = this.getColumn()
+    return `div${this.htmlContent}
  stumpOnClickCommand clickSquareCommand ${row} ${col}
  stumpOnShiftClickCommand flagSquareCommand ${row} ${col}
  stumpOnContextMenuCommand flagSquareCommand ${row} ${col}
  class ${this.getCssClassNames()}`
+  }
+  _syncBoardToGame() {
+    this.setContent(`${this.wasClicked ? "clicked" : "notClicked"} ${this.isFlagged ? "flagged" : "notFlagged"}`)
+  }
+  get isFlagged() {
+    return this.game.isFlagged(this.getRow(), this.getColumn())
+  }
+  get htmlContent() {
+    if (!this.wasClicked) return ""
+    return " " + (this.neighborBombCount || "")
+  }
+  get wasClicked() {
+    return this.game.wasClicked(this.getRow(), this.getColumn())
+  }
+  get neighborBombCount() {
+    return this.game.getNeighborBombCount(this.getRow(), this.getColumn())
   }
   getRow() {
     return this.getParent().getIndex()
@@ -723,15 +753,18 @@ class squareComponent extends AbstractTreeComponent {
   getColumn() {
     return this.getIndex()
   }
+  get game() {
+    return this.getRootNode().getGame()
+  }
   getCssClassNames() {
-    const game = this.getRootNode().getGame()
+    const game = this.game
     const row = this.getRow()
     const col = this.getColumn()
-    const wasClicked = game.wasClicked(row, col)
+    const wasClicked = this.wasClicked
     const isLost = game.isLost()
     const shouldReveal = game.shouldReveal()
     const neighborBombCount = game.getNeighborBombCount(row, col)
-    const isFlagged = game.isFlagged(row, col)
+    const isFlagged = this.isFlagged
     const hasBomb = game.hasBomb(row, col)
     let classNames = "squareComponent "
     if (!wasClicked && isLost && shouldReveal) classNames += hasBomb ? "bomb " : ""
@@ -746,7 +779,8 @@ class squareComponent extends AbstractTreeComponent {
     return classNames
   }
 }
-class controlsComponent extends AbstractTreeComponent {
+// todo: STATE
+class controlsComponent extends AbstractSweeperCraftComponent {
   getStumpCode() {
     const parts = []
     const game = this.getRootNode().getGame()
@@ -757,18 +791,31 @@ class controlsComponent extends AbstractTreeComponent {
     if (game.isFlagLockOn()) parts.push(`span Flag lock on`)
     return parts.join("\n") || "div"
   }
+  _syncBoardToGame() {
+    const game = this.getRootNode().getGame()
+    this.setContent(`${game.isOver() ? "over" : "notOver"} ${game.isFlagLockOn() ? "flagLockOn" : "flagLockOff"}`)
+  }
+}
+// todo: STATE
+class customLinkComponent extends AbstractSweeperCraftComponent {
+  getStumpCode() {
+    const craftLink = this._getGameLink()
+    if (craftLink) return `div Your game link: <a href="#${craftLink}">${craftLink}</a>`
+    return `div`
+  }
+  _getGameLink() {
+    const game = this.getRootNode().getGame()
+    if (game.getNumberOfFlags() && !game.getNumberOfMoves()) return game.getCraftPermalink()
+    return ""
+  }
+  _syncBoardToGame() {
+    this.setContent(`${this._getGameLink()}`)
+  }
 }
 class shortcutsTableComponent extends AbstractTreeComponent {
   getStumpCode() {
-    const game = this.getRootNode().getGame()
-    let craftDiv = ""
-    if (game.getNumberOfFlags() && !game.getNumberOfMoves()) {
-      const craftLink = game.getCraftPermalink()
-      craftDiv = `Your game link: <a href="#${craftLink}">${craftLink}</a>`
-    }
     return `div
  id shortcuts
- div ${craftDiv}
  table
   tbody
    tr

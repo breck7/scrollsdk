@@ -5,6 +5,8 @@ TreeComponentFramework is a **research** web framework for building reactive web
 
 ## The Vision
 
+TreeComponentFramework is a step toward a world where web app development and debugging is much simpler! Every app can be dumped to a string and you can see all the state in the app in that string. [See for yourself](https://jtree.treenotation.org/treeComponentFramework/sweepercraft/) in the SweeperCraft app--just press "d" to dump the app to a string.
+
 With TreeComponentFramework, you build your components in Tree Languages: instead of CSS use Hakon; instead of HTML use Stump; and instead of TypeScript/Javascript use TreeScript (coming soon). You define your components in those and then you create a high level Tree Language specifically for your app to stitch those components together.
 
 In the future as Tree Notation and Tree Language tooling improves you will be able to build enormously powerful and complex app webs using a single universal syntax from top to bottom. We think this will greatly simplify and improve the reliability of web apps.

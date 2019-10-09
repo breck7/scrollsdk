@@ -1,5 +1,8 @@
+#! /usr/bin/env node
 {
   ;("use strict")
+
+  const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
   class stumpNode extends jtree.GrammarBackedRootNode {
     createParser() {
@@ -127,7 +130,7 @@
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`stumpNode
  root
- description A Tree Language that compiles to HTML.
+ description A prefix Tree Language that compiles to HTML.
  catchAllNodeType errorNode
  inScope abstractHtmlTagNode
  example
@@ -137,6 +140,7 @@
  javascript
   compile() { return this.toHtml() }
 anyCell
+keywordCell
 extraCell
  highlightScope invalid
 anyHtmlContentCell
@@ -145,12 +149,13 @@ attributeValueCell
  highlightScope constant.language
 htmlTagNameCell
  highlightScope variable.function
+ extends keywordCell
 htmlAttributeNameCell
  highlightScope entity.name.type
+ extends keywordCell
 contentHolderNameCell
  highlightScope keyword
 abstractHtmlTagNode
- firstCellType htmlTagNameCell
  inScope bernNode abstractHtmlTagNode abstractHtmlAttributeNode
  catchAllCellType anyHtmlContentCell
  javascript
@@ -207,7 +212,7 @@ abstractHtmlTagNode
     this.getShadow().addClassToShadow(className)
     if (words.includes(className)) return this
     words.push(className)
-    classNode.setContent(words.join(this.getZI()))
+    classNode.setContent(words.join(this.getWordBreakSymbol()))
     return this
   }
   removeClassFromStumpNode(className) {
@@ -317,10 +322,10 @@ abstractHtmlTagNode
     return this._toHtml()
   }
  abstract
+ cells htmlTagNameCell
 errorNode
  baseNodeType errorNode
 abstractHtmlAttributeNode
- firstCellType htmlAttributeNameCell
  javascript
   _toHtml() { return "" }
   getAttribute() { return \` \${this.getFirstWord()}="\${this.getContent()}"\` }
@@ -328,17 +333,18 @@ abstractHtmlAttributeNode
  catchAllNodeType errorNode
  catchAllCellType attributeValueCell
  abstract
+ cells htmlAttributeNameCell
 lineOfHtmlContentNode
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
- firstCellType anyHtmlContentCell
+ cells anyHtmlContentCell
 bernNode
  todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
- firstCellType contentHolderNameCell
  catchAllNodeType lineOfHtmlContentNode
  javascript
   _toHtml() { return this.childrenToString() }
+ cells contentHolderNameCell
 aNode
  extends abstractHtmlTagNode
 abbrNode
@@ -1506,6 +1512,9 @@ stumpCollapseNode
         undefined
       )
     }
+    get htmlTagNameCell() {
+      return this.getWord(0)
+    }
     get anyHtmlContentCell() {
       return this.getWordsFrom(1)
     }
@@ -1562,7 +1571,7 @@ stumpCollapseNode
       this.getShadow().addClassToShadow(className)
       if (words.includes(className)) return this
       words.push(className)
-      classNode.setContent(words.join(this.getZI()))
+      classNode.setContent(words.join(this.getWordBreakSymbol()))
       return this
     }
     removeClassFromStumpNode(className) {
@@ -1683,6 +1692,9 @@ stumpCollapseNode
     createParser() {
       return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
     }
+    get htmlAttributeNameCell() {
+      return this.getWord(0)
+    }
     get attributeValueCell() {
       return this.getWordsFrom(1)
     }
@@ -1702,6 +1714,9 @@ stumpCollapseNode
       return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
     }
     get anyHtmlContentCell() {
+      return this.getWord(0)
+    }
+    get anyHtmlContentCell() {
       return this.getWordsFrom(1)
     }
   }
@@ -1709,6 +1724,9 @@ stumpCollapseNode
   class bernNode extends jtree.GrammarBackedNonRootNode {
     createParser() {
       return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
+    }
+    get contentHolderNameCell() {
+      return this.getWord(0)
     }
     _toHtml() {
       return this.childrenToString()
@@ -2283,5 +2301,8 @@ stumpCollapseNode
 
   class stumpCollapseNode extends stumpExtendedAttributeNode {}
 
-  window.stumpNode = stumpNode
+  module.exports = stumpNode
+  stumpNode
+
+  if (!module.parent) new stump(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

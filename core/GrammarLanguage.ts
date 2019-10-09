@@ -1988,7 +1988,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
           console.log(`Error in code: `)
           console.log(code)
         }
-      } else this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getGrammarName()).getNodeTypeMap()
+      } else this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
     }
     return this._cache_compiledLoadedNodeTypes
   }
@@ -2209,11 +2209,15 @@ ${testCode}`
   }
 
   getExtensionName() {
-    return this.getGrammarName().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this.getGrammarName()
+  }
+
+  getRootNodeTypeId() {
+    return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
   }
 
   getGrammarName(): string | undefined {
-    return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
+    return this.getRootNodeTypeId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   _getMyInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {

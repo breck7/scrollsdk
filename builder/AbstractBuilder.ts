@@ -7,10 +7,9 @@ const { Disk } = require("../products/Disk.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
-const ts = require("typescript")
-
 class AbstractBuilder extends jtree.TreeNode {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
+    const ts = require("typescript")
     // downlevelIteration: true, // todo: what is this again?
     const tsConfig: any = {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: "es2017", noImplicitAny: true }

@@ -3,7 +3,11 @@
 
   class hakonNode extends jtree.GrammarBackedRootNode {
     createParser() {
-      return new jtree.TreeNode.Parser(selectorNode, undefined, undefined)
+      return new jtree.TreeNode.Parser(
+        selectorNode,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), { comment: commentNode }),
+        undefined
+      )
     }
     getSelector() {
       return ""
@@ -18,8 +22,10 @@
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`hakonNode
  root
- description A Tree Language that compiles to CSS
+ todo Add variables?
+ description A prefix Tree Language that compiles to CSS
  compilesTo css
+ inScope commentNode
  catchAllNodeType selectorNode
  javascript
   getSelector() { return "" }
@@ -39,6 +45,10 @@
     color blue
     font-size 17px
 anyCell
+keywordCell
+commentKeywordCell
+ extends keywordCell
+ highlightScope comment
 extraCell
  highlightScope invalid
 cssValueCell
@@ -47,23 +57,29 @@ selectorCell
  highlightScope keyword.control
 propertyKeywordCell
  highlightScope variable.function
+ extends keywordCell
 errorCell
  highlightScope invalid
 abstractPropertyNode
  catchAllCellType cssValueCell
  catchAllNodeType errorNode
- firstCellType propertyKeywordCell
  javascript
   compile(spaces) { return \`\${spaces}\${this.getFirstWord()}: \${this.getContent()};\` }
  abstract
+ cells propertyKeywordCell
 errorNode
  catchAllNodeType errorNode
  catchAllCellType errorCell
- firstCellType errorCell
  baseNodeType errorNode
+ cells errorCell
+commentCell
+ highlightScope comment
+commentNode
+ catchAllCellType commentCell
+ catchAllNodeType commentNode
+ cells commentCell
 selectorNode
- firstCellType selectorCell
- inScope abstractPropertyNode
+ inScope abstractPropertyNode commentNode
  catchAllNodeType selectorNode
  boolean isSelectorNode true
  javascript
@@ -85,6 +101,7 @@ selectorNode
   \${propertyNodes.map(child => child.compile(spaces)).join("\\n")}
   }\\n\`
     }
+ cells selectorCell
 alignContentNode
  match align-content
  extends abstractPropertyNode
@@ -626,6 +643,7 @@ KhtmlUserSelectNode
         hakonNode: hakonNode,
         abstractPropertyNode: abstractPropertyNode,
         errorNode: errorNode,
+        commentNode: commentNode,
         selectorNode: selectorNode,
         alignContentNode: alignContentNode,
         alignItemsNode: alignItemsNode,
@@ -825,6 +843,9 @@ KhtmlUserSelectNode
     createParser() {
       return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
     }
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
     get cssValueCell() {
       return this.getWordsFrom(1)
     }
@@ -841,6 +862,21 @@ KhtmlUserSelectNode
       return this._getErrorNodeErrors()
     }
     get errorCell() {
+      return this.getWord(0)
+    }
+    get errorCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class commentNode extends jtree.GrammarBackedNonRootNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(commentNode, undefined, undefined)
+    }
+    get commentCell() {
+      return this.getWord(0)
+    }
+    get commentCell() {
       return this.getWordsFrom(1)
     }
   }
@@ -850,6 +886,7 @@ KhtmlUserSelectNode
       return new jtree.TreeNode.Parser(
         selectorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
+          comment: commentNode,
           "align-content": alignContentNode,
           "align-items": alignItemsNode,
           "align-self": alignSelfNode,
@@ -1043,6 +1080,9 @@ KhtmlUserSelectNode
         }),
         undefined
       )
+    }
+    get selectorCell() {
+      return this.getWord(0)
     }
     get isSelectorNode() {
       return true

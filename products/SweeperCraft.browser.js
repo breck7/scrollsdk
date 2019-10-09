@@ -756,16 +756,17 @@ class squareComponent extends AbstractSweeperCraftComponent {
   get game() {
     return this.getRootNode().getGame()
   }
+  get hasBomb() {
+    return this.game.hasBomb(this.getRow(), this.getColumn())
+  }
   getCssClassNames() {
     const game = this.game
-    const row = this.getRow()
-    const col = this.getColumn()
     const wasClicked = this.wasClicked
     const isLost = game.isLost()
     const shouldReveal = game.shouldReveal()
-    const neighborBombCount = game.getNeighborBombCount(row, col)
+    const neighborBombCount = this.neighborBombCount
     const isFlagged = this.isFlagged
-    const hasBomb = game.hasBomb(row, col)
+    const hasBomb = this.hasBomb
     let classNames = "squareComponent "
     if (!wasClicked && isLost && shouldReveal) classNames += hasBomb ? "bomb " : ""
     else if (wasClicked && hasBomb) classNames += "bomb "

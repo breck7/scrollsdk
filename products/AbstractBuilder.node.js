@@ -3,9 +3,9 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const { jtree } = require("../index.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
-const ts = require("typescript")
 class AbstractBuilder extends jtree.TreeNode {
   _typeScriptToJavascript(sourceCode, forBrowser = false) {
+    const ts = require("typescript")
     // downlevelIteration: true, // todo: what is this again?
     const tsConfig = {
       compilerOptions: { module: ts.ModuleKind.CommonJS, target: "es2017", noImplicitAny: true }

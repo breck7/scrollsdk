@@ -371,7 +371,8 @@ class samplesComponent extends AbstractTreeComponent {
       .languages.map(
         lang => ` a ${jtree.Utils.ucfirst(lang)}
   href #standard%20${lang}
-  ${WillowConstants.DataShadowEvents.onClickCommand} fetchAndLoadJtreeShippedLanguageCommand ${lang}`
+  value ${lang}
+  ${WillowConstants.DataShadowEvents.onClickCommand} fetchAndLoadJtreeShippedLanguageCommand`
       )
       .join("\n span  | \n")
     return `p

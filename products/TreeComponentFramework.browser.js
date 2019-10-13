@@ -240,7 +240,7 @@ class WillowMousetrap {
 }
 // this one should have no document, window, $, et cetera.
 class AbstractWillowProgram extends stumpNode {
-  constructor(baseUrl) {
+  constructor(fullHtmlPageUrlIncludingProtocolAndFileName) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
  ${WillowConstants.tags.body}`)
@@ -251,9 +251,8 @@ class AbstractWillowProgram extends stumpNode {
     this._headStumpNode = this.nodeAt(0).nodeAt(0)
     this._bodyStumpNode = this.nodeAt(0).nodeAt(1)
     this.addSuidsToHtmlHeadAndBodyShadows()
-    const baseUrlWithoutTrailingPath = baseUrl.replace(/\/[^\/]*$/, "/")
-    this._baseUrl = baseUrlWithoutTrailingPath
-    const url = new URL(baseUrl)
+    this._fullHtmlPageUrlIncludingProtocolAndFileName = fullHtmlPageUrlIncludingProtocolAndFileName
+    const url = new URL(fullHtmlPageUrlIncludingProtocolAndFileName)
     this.location.port = url.port
     this.location.protocol = url.protocol
     this.location.hostname = url.hostname
@@ -275,7 +274,7 @@ class AbstractWillowProgram extends stumpNode {
       obj.edgeSymbol = edgeSymbol
       obj.data = encodeURIComponent(treeCode.replace(/ /g, edgeSymbol).replace(/\n/g, nodeBreakSymbol))
     } else obj.data = encodeURIComponent(treeCode)
-    return this.getBaseUrl() + "?" + this.queryObjectToQueryString(obj)
+    return this.getAppWebPageUrl() + "?" + this.queryObjectToQueryString(obj)
   }
   getHost() {
     return this.location.host
@@ -325,12 +324,15 @@ class AbstractWillowProgram extends stumpNode {
   }
   copyTextToClipboard(text) {}
   setCopyData(evt, str) {}
-  getBaseUrl() {
-    return this._baseUrl
+  getAppWebPageUrl() {
+    return this._fullHtmlPageUrlIncludingProtocolAndFileName
+  }
+  getAppWebPageParentFolderWithoutTrailingSlash() {
+    return jtree.Utils.getPathWithoutFileName(this._fullHtmlPageUrlIncludingProtocolAndFileName)
   }
   _makeRelativeUrlAbsolute(url) {
     if (url.startsWith("http://") || url.startsWith("https://")) return url
-    return this.getBaseUrl() + url
+    return this.getAppWebPageParentFolderWithoutTrailingSlash() + "/" + url.replace(/^\//, "")
   }
   async makeUrlAbsoluteAndHttpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     return this.httpGetUrl(this._makeRelativeUrlAbsolute(url), queryStringObject, responseClass)
@@ -454,8 +456,8 @@ class AbstractWillowProgram extends stumpNode {
   blurFocusedInput() {}
 }
 class WillowProgram extends AbstractWillowProgram {
-  constructor(baseUrl) {
-    super(baseUrl)
+  constructor(fullHtmlPageUrlIncludingProtocolAndFileName) {
+    super(fullHtmlPageUrlIncludingProtocolAndFileName)
     this._offlineMode = true
   }
 }
@@ -878,12 +880,13 @@ class AbstractCommander {
   }
   toggleTreeComponentFrameworkDebuggerCommand() {
     // todo: cleanup
-    const node = this._app.getNode("TreeComponentFrameworkDebuggerComponent")
+    const app = this._target.getRootNode()
+    const node = app.getNode("TreeComponentFrameworkDebuggerComponent")
     if (node) {
       node.unmountAndDestroy()
     } else {
-      this._app.appendLine("TreeComponentFrameworkDebuggerComponent")
-      this._app.renderAndGetRenderResult()
+      app.appendLine("TreeComponentFrameworkDebuggerComponent")
+      app.renderAndGetRenderResult()
     }
   }
 }
@@ -909,11 +912,18 @@ class TreeComponentCommander extends AbstractCommander {
   }
 }
 class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
+  constructor() {
+    super(...arguments)
+    this._commander = new TreeComponentCommander(this)
+  }
   getParseErrorCount() {
     if (!this.length) return 0
     return this.getTopDownArray()
       .map(child => child.getParseErrorCount())
       .reduce((sum, num) => sum + num)
+  }
+  getCommander() {
+    return this._commander
   }
   getRootNode() {
     return super.getRootNode()
@@ -1202,8 +1212,8 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   getHakon() {
     return `.TreeComponentFrameworkDebuggerComponent
  position fixed
- top 5
- left 5
+ top 5px
+ left 5px
  z-index 1000
  background rgba(254,255,156, .9)
  box-shadow 1px 1px 1px rgba(0,0,0,.5)
@@ -1237,10 +1247,6 @@ ${app.toString(3)}`
   }
 }
 class AbstractTreeComponentRootNode extends AbstractTreeComponent {
-  constructor() {
-    super(...arguments)
-    this._commander = new TreeComponentCommander(this)
-  }
   getTheme() {
     if (!this._theme) this._theme = new DefaultTheme()
     return this._theme
@@ -1248,15 +1254,12 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {
-        this._willowProgram = new WillowProgram("http://localhost:8000/")
+        this._willowProgram = new WillowProgram("http://localhost:8000/index.html")
       } else {
         this._willowProgram = new WillowBrowserProgram(window.location.href)
       }
     }
     return this._willowProgram
-  }
-  getCommander() {
-    return this._commander
   }
   treeComponentDidMount() {}
   // todo: remove?
@@ -1264,34 +1267,98 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   // todo: remove?
   async appDidFirstRender() {}
   onCommandError(err) {
-    throw new err()
+    throw err
+  }
+  _setMouseEvent(evt) {
+    this._mouseEvent = evt
+    return this
+  }
+  getMouseEvent() {
+    return this._mouseEvent || this.getWillowProgram().getMockMouseEvent()
+  }
+  _onCommandWillRun() {
+    // todo: remove. currently used by ohayo
+  }
+  _getCommandArguments(stumpNode) {
+    const shadow = stumpNode.getShadow()
+    let valueParam
+    if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
+    // todo: fix bug if nothing is entered.
+    else if (shadow.getShadowValue() !== undefined) valueParam = shadow.getShadowValue()
+    else valueParam = stumpNode.getStumpNodeAttr("value")
+    const nameParam = stumpNode.getStumpNodeAttr("name")
+    return {
+      uno: valueParam,
+      dos: nameParam
+    }
+  }
+  getStumpNodeString() {
+    return this.getWillowProgram()
+      .getHtmlStumpNode()
+      .toString()
+  }
+  getStumpNodeStringWithoutCssAndSvg() {
+    const clone = new jtree.TreeNode(
+      this.getWillowProgram()
+        .getHtmlStumpNode()
+        .toString()
+    )
+    clone.getTopDownArray().forEach(node => {
+      if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
+    })
+    return clone.toString()
+  }
+  async _executeStumpNodeCommand(stumpNode, commandMethod) {
+    const params = this._getCommandArguments(stumpNode)
+    this.addToCommandLog([commandMethod, params.uno, params.dos].filter(item => item).join(" "))
+    this._onCommandWillRun() // todo: remove. currently used by ohayo
+    let treeComponent = stumpNode.getStumpNodeTreeComponent()
+    let commander = treeComponent.getCommander()
+    while (!commander[commandMethod]) {
+      const parent = treeComponent.getParent()
+      if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
+      if (!parent) debugger
+      treeComponent = parent
+      commander = treeComponent.getCommander()
+    }
+    try {
+      await commander[commandMethod](params.uno, params.dos)
+    } catch (err) {
+      this.onCommandError(err)
+    }
   }
   _setTreeComponentFrameworkEventListeners() {
     const willowBrowser = this.getWillowProgram()
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
     const commander = this.getCommander()
+    const app = this
     const checkAndExecute = (el, attr, evt) => {
       const stumpNode = willowBrowser.getStumpNodeFromElement(el)
       evt.preventDefault()
       evt.stopImmediatePropagation()
-      const commandWithArgs = stumpNode.getStumpNodeAttr(attr)
-      const commandArgs = commandWithArgs.split(" ")
-      const command = commandArgs.shift()
-      try {
-        commander[command](...commandArgs)
-      } catch (err) {
-        this.onCommandError(err)
-      }
+      this._executeStumpNodeCommand(stumpNode, stumpNode.getStumpNodeAttr(attr))
       return false
     }
     const DataShadowEvents = WillowConstants.DataShadowEvents
     bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt) {
       if (evt.ctrlKey) return true
+      app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
     })
     bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt) {
       if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
       return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
+    })
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dblclick, `[${DataShadowEvents.onDblClickCommand}]`, function(evt) {
+      if (evt.target !== evt.currentTarget) return true // direct dblclicks only
+      app._setMouseEvent(evt) // todo: remove?
+      return checkAndExecute(this, DataShadowEvents.onDblClickCommand, evt)
+    })
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.blur, `[${DataShadowEvents.onBlurCommand}]`, function(evt) {
+      return checkAndExecute(this, DataShadowEvents.onBlurCommand, evt)
+    })
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.change, `[${DataShadowEvents.onChangeCommand}]`, function(evt) {
+      return checkAndExecute(this, DataShadowEvents.onChangeCommand, evt)
     })
   }
   static async startApp(appClass) {

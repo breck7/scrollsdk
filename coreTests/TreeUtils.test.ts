@@ -82,6 +82,15 @@ testTree.makeRandomTree = equal => {
   equal(new jtree.TreeNode(jtree.Utils.makeRandomTree(2)).getTopDownArray().length, 3)
 }
 
+testTree.makeSemiRandomFn = equal => {
+  const rand = jtree.Utils.makeSemiRandomFn(1)
+  const first = rand()
+  const expected = 0.7098480789645691
+  equal(first, expected)
+  equal(jtree.Utils.makeSemiRandomFn(1)(), expected)
+  equal(rand() !== first, true)
+}
+
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

@@ -34,3 +34,24 @@ test getRandomString
 test linkify
  linkify http://cnn.com
   stringIs <a href="http://cnn.com" target="_blank">http://cnn.com</a>
+test removeFileExtension
+ removeFileExtension foobar.csv
+  stringIs foobar
+ removeFileExtension none
+  stringIs none
+ removeFileExtension 
+  stringIs 
+test getPathWithoutFileName
+ getPathWithoutFileName /foobar.js
+  stringIs 
+ getPathWithoutFileName /dog/foo.js
+  stringIs /dog
+ getPathWithoutFileName a/b/c/d/
+  stringIs a/b/c/d
+ getPathWithoutFileName a/b/c/d
+  stringIs a/b/c
+test getFileExtension
+ getFileExtension foobar.csv
+  stringIs csv
+ getFileExtension none
+  stringIs 

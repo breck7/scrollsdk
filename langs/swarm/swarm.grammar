@@ -51,7 +51,7 @@ abstractAssertionNode
  abstract
  javascript
   async execute(testSubject) {
-    const finalParts = abstractAssertion._getMethodFromDotPath(testSubject, this.getWord(1))
+    const finalParts = jtree.Utils.getMethodFromDotPath(testSubject, this.getWord(1))
     const subject = finalParts[0]
     const command = finalParts[1]
     const actual = subject[command]()
@@ -97,14 +97,6 @@ abstractAssertionNode
   }
   getSyncExpected() {
     return this.getContent()
-  }
-  static _getMethodFromDotPath(context, str) {
-    const methodParts = str.split(".")
-    while (methodParts.length > 1) {
-      context = context[methodParts.shift()]()
-    }
-    const final = methodParts.shift()
-    return [context, final]
   }
  cells assertCell
 terminalNode

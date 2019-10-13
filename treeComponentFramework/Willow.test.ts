@@ -6,7 +6,7 @@ const testTree: any = {}
 
 testTree.all = (equal: any) => {
   // Arrange
-  const willow2 = new WillowProgram("http://localhost:8000/")
+  const willow2 = new WillowProgram("http://localhost:8000/index.html")
 
   // Act
   willow2.setWindowTitle("willow2")

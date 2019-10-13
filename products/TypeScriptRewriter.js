@@ -8,6 +8,14 @@ class TypeScriptRewriter {
     this._str = `"use strict";\n` + this._str
     return this
   }
+  removeRequireTrees() {
+    this._str = this._str.replace(/(\n|^)const .* \= requireTree\(.*/g, "$1")
+    return this
+  }
+  removeTsGeneratedCrap() {
+    this._str = this._str.replace(`Object.defineProperty(exports, "__esModule", { value: true })`, "")
+    return this
+  }
   removeRequires() {
     this._str = this._str.replace(/(\n|^)const .* \= require\(.*/g, "$1")
     return this

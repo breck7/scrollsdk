@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 {
-  ;("use strict")
-
   const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
   class stumpNode extends jtree.GrammarBackedRootNode {
@@ -179,7 +177,7 @@ abstractHtmlTagNode
     return oneLinerWords.length ? oneLinerWords.join(" ") : ""
   }
   shouldCollapse() {
-    return this.has("stumpCollapseNode")
+    return this.has("stumpCollapse")
   }
   _toHtml(indentCount, withSuid) {
     const tag = this.getTag()
@@ -337,7 +335,6 @@ abstractHtmlAttributeNode
 lineOfHtmlContentNode
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
- cells anyHtmlContentCell
 bernNode
  todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
@@ -1538,7 +1535,7 @@ stumpCollapseNode
       return oneLinerWords.length ? oneLinerWords.join(" ") : ""
     }
     shouldCollapse() {
-      return this.has("stumpCollapseNode")
+      return this.has("stumpCollapse")
     }
     _toHtml(indentCount, withSuid) {
       const tag = this.getTag()
@@ -1714,10 +1711,7 @@ stumpCollapseNode
       return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
     }
     get anyHtmlContentCell() {
-      return this.getWord(0)
-    }
-    get anyHtmlContentCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
 
@@ -2304,5 +2298,5 @@ stumpCollapseNode
   module.exports = stumpNode
   stumpNode
 
-  if (!module.parent) new stump(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new stumpNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

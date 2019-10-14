@@ -49,13 +49,11 @@ errorNode
  catchAllNodeType errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
- cells errorCell
 commentCell
  highlightScope comment
 commentNode
  catchAllCellType commentCell
  catchAllNodeType commentNode
- cells commentCell
 selectorNode
  inScope abstractPropertyNode commentNode
  catchAllNodeType selectorNode

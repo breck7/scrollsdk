@@ -10,10 +10,14 @@ projectNode
     let lastLength
     while (cloned.length) {
       if (lastLength === cloned.length) {
-        cloned.forEach(file => {
-          console.log(`'${file.getLine()}' is missing '${file.getMissingDependencies(included).join(",")}'`)
-        })
-        throw new Error(`Circular dependency or other error detected with ${cloned.length} remaining. ${cloned.toString()}`)
+        const missing = cloned.map(file => `${file.getLine()}
+   missing ${file.getMissingDependencies(included).join("\n missing ")}`)
+        throw new Error(`Circular dependency or other error detected with ${cloned.length} remaining
+  ${cloned.toString()}
+  
+  ${missing.join("\n")}
+  
+  `)
       }
       lastLength = cloned.length
       for (let index = 0; index < cloned.length; index++) {

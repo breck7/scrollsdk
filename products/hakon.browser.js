@@ -1,6 +1,4 @@
 {
-  ;("use strict")
-
   class hakonNode extends jtree.GrammarBackedRootNode {
     createParser() {
       return new jtree.TreeNode.Parser(
@@ -71,13 +69,11 @@ errorNode
  catchAllNodeType errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
- cells errorCell
 commentCell
  highlightScope comment
 commentNode
  catchAllCellType commentCell
  catchAllNodeType commentNode
- cells commentCell
 selectorNode
  inScope abstractPropertyNode commentNode
  catchAllNodeType selectorNode
@@ -862,10 +858,7 @@ KhtmlUserSelectNode
       return this._getErrorNodeErrors()
     }
     get errorCell() {
-      return this.getWord(0)
-    }
-    get errorCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
 
@@ -874,10 +867,7 @@ KhtmlUserSelectNode
       return new jtree.TreeNode.Parser(commentNode, undefined, undefined)
     }
     get commentCell() {
-      return this.getWord(0)
-    }
-    get commentCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
 

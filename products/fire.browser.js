@@ -1,6 +1,4 @@
 {
-  ;("use strict")
-
   class fireNode extends jtree.GrammarBackedRootNode {
     createParser() {
       return new jtree.TreeNode.Parser(

@@ -2302,8 +2302,6 @@ ${rootName}`
 
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
-"use strict";
-
 ${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
 
 ${nodeTypeClasses}

@@ -1,6 +1,4 @@
 {
-  ;("use strict")
-
   class stumpNode extends jtree.GrammarBackedRootNode {
     createParser() {
       return new jtree.TreeNode.Parser(
@@ -176,7 +174,7 @@ abstractHtmlTagNode
     return oneLinerWords.length ? oneLinerWords.join(" ") : ""
   }
   shouldCollapse() {
-    return this.has("stumpCollapseNode")
+    return this.has("stumpCollapse")
   }
   _toHtml(indentCount, withSuid) {
     const tag = this.getTag()
@@ -334,7 +332,6 @@ abstractHtmlAttributeNode
 lineOfHtmlContentNode
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
- cells anyHtmlContentCell
 bernNode
  todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
@@ -1535,7 +1532,7 @@ stumpCollapseNode
       return oneLinerWords.length ? oneLinerWords.join(" ") : ""
     }
     shouldCollapse() {
-      return this.has("stumpCollapseNode")
+      return this.has("stumpCollapse")
     }
     _toHtml(indentCount, withSuid) {
       const tag = this.getTag()
@@ -1711,10 +1708,7 @@ stumpCollapseNode
       return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
     }
     get anyHtmlContentCell() {
-      return this.getWord(0)
-    }
-    get anyHtmlContentCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
 

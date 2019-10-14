@@ -14,16 +14,14 @@ class jtreeNode extends jtree {
   static Upgrader = Upgrader
   static GrammarConstants = GrammarConstants
 
-  static executeFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): Promise<any> =>
-    jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
+  static executeFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): Promise<any> => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 
   static executeFiles = (programPaths: treeNotationTypes.filepath[], grammarPath: treeNotationTypes.filepath): Promise<any>[] => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
     return programPaths.map(programPath => new programConstructor(fs.readFileSync(programPath, "utf8")).execute(programPath))
   }
 
-  static executeFileSync = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): any =>
-    jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
+  static executeFileSync = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): any => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 
   static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedRootNode => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
@@ -34,18 +32,12 @@ class jtreeNode extends jtree {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
   }
 
-  private static _compileGrammar(
-    pathToGrammar: treeNotationTypes.absoluteFilePath,
-    outputFolder: treeNotationTypes.absoluteFolderPath,
-    target: CompileTarget,
-    usePrettier: boolean
-  ) {
+  private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new GrammarProgram(grammarCode.toString())
-    let name = program.getGrammarName()
     const pathToJtree = __dirname + "/../index.js"
-    const outputFilePath = outputFolder + `${name}.${target}.js`
+    const outputFilePath = outputFolder + `${program.getGrammarName()}.${target}.js`
 
     let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
 
@@ -55,7 +47,7 @@ class jtreeNode extends jtree {
         result.replace(
           /}\s*$/,
           `
-if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }
 `
         )

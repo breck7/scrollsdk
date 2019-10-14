@@ -1,5 +1,5 @@
-edge / 2019-10-08
-=================
+44.0.0 / 2019-10-13
+===================
 - Fix: sweepercraft perf fix
 - Breaking: removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
 

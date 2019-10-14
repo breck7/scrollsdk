@@ -40,7 +40,7 @@ WillowConstants.tags = {}
 WillowConstants.tags.html = "html"
 WillowConstants.tags.head = "head"
 WillowConstants.tags.body = "body"
-WillowConstants.stumpCollapseNode = "stumpCollapseNode"
+WillowConstants.stumpCollapse = "stumpCollapse"
 WillowConstants.uidAttribute = "stumpUid"
 WillowConstants.class = "class"
 WillowConstants.type = "type"
@@ -1215,7 +1215,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
  top 5px
  left 5px
  z-index 1000
- background rgba(254,255,156, .9)
+ background rgba(254,255,156, .95)
  box-shadow 1px 1px 1px rgba(0,0,0,.5)
  padding 12px
  overflow scroll

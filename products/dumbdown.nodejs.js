@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 {
-  ;("use strict")
-
   const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
   class dumbdownNode extends jtree.GrammarBackedRootNode {
@@ -204,5 +202,5 @@ dashNode
   module.exports = dumbdownNode
   dumbdownNode
 
-  if (!module.parent) new dumbdown(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new dumbdownNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

@@ -2539,7 +2539,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "43.0.0"
+TreeNode.getVersion = () => "44.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -4480,8 +4480,6 @@ ${rootName}`
     }
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
-"use strict";
-
 ${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
 
 ${nodeTypeClasses}
@@ -5058,9 +5056,8 @@ class jtreeNode extends jtree {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new GrammarProgram(grammarCode.toString())
-    let name = program.getGrammarName()
     const pathToJtree = __dirname + "/../index.js"
-    const outputFilePath = outputFolder + `${name}.${target}.js`
+    const outputFilePath = outputFolder + `${program.getGrammarName()}.${target}.js`
     let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
     if (isNodeJs)
       result =
@@ -5068,7 +5065,7 @@ class jtreeNode extends jtree {
         result.replace(
           /}\s*$/,
           `
-if (!module.parent) new ${name}(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }
 `
         )

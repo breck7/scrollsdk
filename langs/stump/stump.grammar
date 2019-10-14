@@ -49,7 +49,7 @@ abstractHtmlTagNode
     return oneLinerWords.length ? oneLinerWords.join(" ") : ""
   }
   shouldCollapse() {
-    return this.has("stumpCollapseNode")
+    return this.has("stumpCollapse")
   }
   _toHtml(indentCount, withSuid) {
     const tag = this.getTag()
@@ -207,7 +207,6 @@ abstractHtmlAttributeNode
 lineOfHtmlContentNode
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
- cells anyHtmlContentCell
 bernNode
  todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.

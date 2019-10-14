@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 {
-  ;("use strict")
-
   const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
   class hakonNode extends jtree.GrammarBackedRootNode {
@@ -74,13 +72,11 @@ errorNode
  catchAllNodeType errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
- cells errorCell
 commentCell
  highlightScope comment
 commentNode
  catchAllCellType commentCell
  catchAllNodeType commentNode
- cells commentCell
 selectorNode
  inScope abstractPropertyNode commentNode
  catchAllNodeType selectorNode
@@ -865,10 +861,7 @@ KhtmlUserSelectNode
       return this._getErrorNodeErrors()
     }
     get errorCell() {
-      return this.getWord(0)
-    }
-    get errorCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
 
@@ -877,10 +870,7 @@ KhtmlUserSelectNode
       return new jtree.TreeNode.Parser(commentNode, undefined, undefined)
     }
     get commentCell() {
-      return this.getWord(0)
-    }
-    get commentCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
 
@@ -1493,5 +1483,5 @@ ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
   module.exports = hakonNode
   hakonNode
 
-  if (!module.parent) new hakon(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new hakonNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

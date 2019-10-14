@@ -1,7 +1,5 @@
 #! /usr/bin/env node
 {
-  ;("use strict")
-
   const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
   class fireNode extends jtree.GrammarBackedRootNode {
@@ -814,5 +812,5 @@ returnNode
   module.exports = fireNode
   fireNode
 
-  if (!module.parent) new fire(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new fireNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

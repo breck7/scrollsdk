@@ -9,14 +9,21 @@
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <script type="text/javascript">
       QUnit.config.autostart = false
-      $(document).ready(function() {
+      jQuery(document).ready(function() {
         QUnit.module("jtree")
         Object.keys(testTree)
           .filter(key => !key.startsWith("_"))
           .forEach(key => {
-            QUnit.test(key, assert => {
+            // todo: cleanup. We specifically run the async b/c otherwise it takes a long time to run the non-async fns.
+            if (key.startsWith("async")) {
+              QUnit.test(key, async (assert) => {
+              await testTree[key]((expected, actual, message) => assert.strictEqual(expected, actual, message))
+            })
+            } else {
+              QUnit.test(key, (assert) => {
               testTree[key]((expected, actual, message) => assert.strictEqual(expected, actual, message))
             })
+            }
           })
         QUnit.start()
       })

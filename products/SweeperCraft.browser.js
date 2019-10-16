@@ -391,7 +391,7 @@ class SweeperCraftCommander extends AbstractCommander {
     game.toggleFlag(row, col)
   }
 }
-class SweeperCraftApp extends AbstractTreeComponentRootNode {
+class SweeperCraftApp extends AbstractTreeComponent {
   constructor() {
     super(...arguments)
     this._commander = new SweeperCraftCommander(this)

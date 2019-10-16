@@ -1098,7 +1098,7 @@ abstract class AbstractCommander {
     this._target = target
   }
 
-  private _app: AbstractTreeComponentRootNode
+  private _app: AbstractTreeComponent
 
   getTarget() {
     return this._target
@@ -1199,6 +1199,169 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   private _lastTimeToRender: number
   static _mountedTreeComponents = 0
 
+  private _willowProgram: any
+  private _theme: AbstractTheme
+
+  getDefinition() {
+    return this.getGrammarProgram()
+  }
+
+  getWillowProgram() {
+    if (!this._willowProgram) {
+      if (this.isNodeJs()) {
+        this._willowProgram = new WillowProgram("http://localhost:8000/index.html")
+      } else {
+        this._willowProgram = new WillowBrowserProgram(window.location.href)
+      }
+    }
+    return this._willowProgram
+  }
+
+  // todo: remove?
+  protected async appWillFirstRender() {}
+  // todo: remove?
+  protected async appDidFirstRender() {}
+
+  protected onCommandError(err: any) {
+    throw err
+  }
+
+  private _mouseEvent: any
+
+  private _setMouseEvent(evt: any) {
+    this._mouseEvent = evt
+    return this
+  }
+
+  getMouseEvent() {
+    return this._mouseEvent || this.getWillowProgram().getMockMouseEvent()
+  }
+
+  protected _onCommandWillRun() {
+    // todo: remove. currently used by ohayo
+  }
+
+  _getCommandArguments(stumpNode: any) {
+    const shadow = stumpNode.getShadow()
+    let valueParam
+    if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
+    // todo: fix bug if nothing is entered.
+    else if (shadow.getShadowValue() !== undefined) valueParam = shadow.getShadowValue()
+    else valueParam = stumpNode.getStumpNodeAttr("value")
+    const nameParam = stumpNode.getStumpNodeAttr("name")
+
+    return {
+      uno: valueParam,
+      dos: nameParam
+    }
+  }
+
+  getStumpNodeString() {
+    return this.getWillowProgram()
+      .getHtmlStumpNode()
+      .toString()
+  }
+
+  getStumpNodeStringWithoutCssAndSvg() {
+    const clone = new jtree.TreeNode(
+      this.getWillowProgram()
+        .getHtmlStumpNode()
+        .toString()
+    )
+
+    clone.getTopDownArray().forEach((node: any) => {
+      if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
+    })
+    return clone.toString()
+  }
+
+  async _executeStumpNodeCommand(stumpNode: any, commandMethod: string) {
+    const params = this._getCommandArguments(stumpNode)
+    this.addToCommandLog([commandMethod, params.uno, params.dos].filter(item => item).join(" "))
+    this._onCommandWillRun() // todo: remove. currently used by ohayo
+
+    let treeComponent = stumpNode.getStumpNodeTreeComponent()
+    let commander = treeComponent.getCommander()
+    while (!commander[commandMethod]) {
+      const parent = treeComponent.getParent()
+      if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
+      if (!parent) debugger
+      treeComponent = parent
+      commander = treeComponent.getCommander()
+    }
+
+    try {
+      await commander[commandMethod](params.uno, params.dos)
+    } catch (err) {
+      this.onCommandError(err)
+    }
+  }
+
+  _setTreeComponentFrameworkEventListeners() {
+    const willowBrowser = this.getWillowProgram()
+    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
+    const commander = <any>this.getCommander()
+    const app = this
+
+    const checkAndExecute = (el: any, attr: string, evt: any) => {
+      const stumpNode = willowBrowser.getStumpNodeFromElement(el)
+      evt.preventDefault()
+      evt.stopImmediatePropagation()
+      this._executeStumpNodeCommand(stumpNode, stumpNode.getStumpNodeAttr(attr))
+      return false
+    }
+
+    const DataShadowEvents = WillowConstants.DataShadowEvents
+
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt: any) {
+      if (evt.ctrlKey) return true
+      app._setMouseEvent(evt) // todo: remove?
+      return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
+    })
+
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt: any) {
+      if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
+      return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
+    })
+
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dblclick, `[${DataShadowEvents.onDblClickCommand}]`, function(evt: any) {
+      if (evt.target !== evt.currentTarget) return true // direct dblclicks only
+      app._setMouseEvent(evt) // todo: remove?
+      return checkAndExecute(this, DataShadowEvents.onDblClickCommand, evt)
+    })
+
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.blur, `[${DataShadowEvents.onBlurCommand}]`, function(evt: any) {
+      return checkAndExecute(this, DataShadowEvents.onBlurCommand, evt)
+    })
+
+    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.change, `[${DataShadowEvents.onChangeCommand}]`, function(evt: any) {
+      return checkAndExecute(this, DataShadowEvents.onChangeCommand, evt)
+    })
+  }
+
+  getDefaultStartState() {
+    return ""
+  }
+
+  static async startApp(appClass: AbstractTreeComponent) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+        const win = <any>window
+        if (!win.app) {
+          const startState = appClass.getDefaultStartState()
+          const anyAppClass = <any>appClass // todo: cleanup
+          win.app = new anyAppClass(startState)
+          win.app._setTreeComponentFrameworkEventListeners()
+          await win.app.appWillFirstRender()
+          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
+          win.app.appDidFirstRender()
+        }
+      },
+      false
+    )
+  }
+
   getParseErrorCount() {
     if (!this.length) return 0
     return this.getTopDownArray()
@@ -1212,10 +1375,6 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return this._commander
   }
 
-  getRootNode(): AbstractTreeComponentRootNode {
-    return <AbstractTreeComponentRootNode>super.getRootNode()
-  }
-
   getStumpNode() {
     return this._htmlStumpNode
   }
@@ -1225,7 +1384,9 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   getTheme(): AbstractTheme {
-    return this.getRootNode().getTheme()
+    if (!this.isRoot()) return this.getRootNode().getTheme()
+    if (!this._theme) this._theme = new DefaultTheme()
+    return this._theme
   }
 
   getCommandsBuffer() {
@@ -1600,176 +1761,6 @@ ${app.toString(3)}`
   }
 }
 
-abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
-  private _willowProgram: any
-  private _theme: AbstractTheme
-
-  getTheme(): AbstractTheme {
-    if (!this._theme) this._theme = new DefaultTheme()
-    return this._theme
-  }
-
-  getDefinition() {
-    return this.getGrammarProgram()
-  }
-
-  getWillowProgram() {
-    if (!this._willowProgram) {
-      if (this.isNodeJs()) {
-        this._willowProgram = new WillowProgram("http://localhost:8000/index.html")
-      } else {
-        this._willowProgram = new WillowBrowserProgram(window.location.href)
-      }
-    }
-    return this._willowProgram
-  }
-
-  treeComponentDidMount() {}
-
-  // todo: remove?
-  protected async appWillFirstRender() {}
-  // todo: remove?
-  protected async appDidFirstRender() {}
-
-  protected onCommandError(err: any) {
-    throw err
-  }
-
-  private _mouseEvent: any
-
-  private _setMouseEvent(evt: any) {
-    this._mouseEvent = evt
-    return this
-  }
-
-  getMouseEvent() {
-    return this._mouseEvent || this.getWillowProgram().getMockMouseEvent()
-  }
-
-  protected _onCommandWillRun() {
-    // todo: remove. currently used by ohayo
-  }
-
-  _getCommandArguments(stumpNode: any) {
-    const shadow = stumpNode.getShadow()
-    let valueParam
-    if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
-    // todo: fix bug if nothing is entered.
-    else if (shadow.getShadowValue() !== undefined) valueParam = shadow.getShadowValue()
-    else valueParam = stumpNode.getStumpNodeAttr("value")
-    const nameParam = stumpNode.getStumpNodeAttr("name")
-
-    return {
-      uno: valueParam,
-      dos: nameParam
-    }
-  }
-
-  getStumpNodeString() {
-    return this.getWillowProgram()
-      .getHtmlStumpNode()
-      .toString()
-  }
-
-  getStumpNodeStringWithoutCssAndSvg() {
-    const clone = new jtree.TreeNode(
-      this.getWillowProgram()
-        .getHtmlStumpNode()
-        .toString()
-    )
-
-    clone.getTopDownArray().forEach((node: any) => {
-      if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
-    })
-    return clone.toString()
-  }
-
-  async _executeStumpNodeCommand(stumpNode: any, commandMethod: string) {
-    const params = this._getCommandArguments(stumpNode)
-    this.addToCommandLog([commandMethod, params.uno, params.dos].filter(item => item).join(" "))
-    this._onCommandWillRun() // todo: remove. currently used by ohayo
-
-    let treeComponent = stumpNode.getStumpNodeTreeComponent()
-    let commander = treeComponent.getCommander()
-    while (!commander[commandMethod]) {
-      const parent = treeComponent.getParent()
-      if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
-      if (!parent) debugger
-      treeComponent = parent
-      commander = treeComponent.getCommander()
-    }
-
-    try {
-      await commander[commandMethod](params.uno, params.dos)
-    } catch (err) {
-      this.onCommandError(err)
-    }
-  }
-
-  _setTreeComponentFrameworkEventListeners() {
-    const willowBrowser = this.getWillowProgram()
-    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
-    const commander = <any>this.getCommander()
-    const app = this
-
-    const checkAndExecute = (el: any, attr: string, evt: any) => {
-      const stumpNode = willowBrowser.getStumpNodeFromElement(el)
-      evt.preventDefault()
-      evt.stopImmediatePropagation()
-      this._executeStumpNodeCommand(stumpNode, stumpNode.getStumpNodeAttr(attr))
-      return false
-    }
-
-    const DataShadowEvents = WillowConstants.DataShadowEvents
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt: any) {
-      if (evt.ctrlKey) return true
-      app._setMouseEvent(evt) // todo: remove?
-      return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
-    })
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt: any) {
-      if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
-      return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
-    })
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dblclick, `[${DataShadowEvents.onDblClickCommand}]`, function(evt: any) {
-      if (evt.target !== evt.currentTarget) return true // direct dblclicks only
-      app._setMouseEvent(evt) // todo: remove?
-      return checkAndExecute(this, DataShadowEvents.onDblClickCommand, evt)
-    })
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.blur, `[${DataShadowEvents.onBlurCommand}]`, function(evt: any) {
-      return checkAndExecute(this, DataShadowEvents.onBlurCommand, evt)
-    })
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.change, `[${DataShadowEvents.onChangeCommand}]`, function(evt: any) {
-      return checkAndExecute(this, DataShadowEvents.onChangeCommand, evt)
-    })
-  }
-
-  abstract getDefaultStartState(): string
-
-  static async startApp(appClass: AbstractTreeComponentRootNode) {
-    document.addEventListener(
-      "DOMContentLoaded",
-      async () => {
-        const win = <any>window
-        if (!win.app) {
-          const startState = appClass.getDefaultStartState()
-          const anyAppClass = <any>appClass // todo: cleanup
-          win.app = new anyAppClass(startState)
-          win.app._setTreeComponentFrameworkEventListeners()
-          await win.app.appWillFirstRender()
-          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
-          win.app.appDidFirstRender()
-        }
-      },
-      false
-    )
-  }
-}
-
 abstract class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   githubLink = `https://github.com/treenotation/jtree`
 
@@ -1789,4 +1780,4 @@ abstract class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   }
 }
 
-export { AbstractTreeComponentRootNode, AbstractGithubTriangleComponent, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram, TreeComponentFrameworkDebuggerComponent }
+export { AbstractGithubTriangleComponent, AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram, TreeComponentFrameworkDebuggerComponent }

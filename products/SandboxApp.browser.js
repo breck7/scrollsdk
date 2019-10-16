@@ -21,7 +21,7 @@ class SandboxCommander extends AbstractCommander {
       .keyup()
   }
 }
-class SandboxApp extends AbstractTreeComponentRootNode {
+class SandboxApp extends AbstractTreeComponent {
   constructor() {
     super(...arguments)
     this._commander = new SandboxCommander(this)

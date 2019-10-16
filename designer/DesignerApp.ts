@@ -1,6 +1,6 @@
 //onsave jtree build produce DesignerApp.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -115,7 +115,7 @@ class DesignerCommander extends AbstractCommander {
   }
 }
 
-class DesignerApp extends AbstractTreeComponentRootNode {
+class DesignerApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       githubTriangleComponent: githubTriangleComponent,

@@ -1,11 +1,11 @@
 #!/usr/bin/env ts-node
 
-import { AbstractTreeComponentRootNode, AbstractTreeComponent } from "./TreeComponentFramework"
+import { AbstractTreeComponent } from "./TreeComponentFramework"
 const { jtree } = require("../index.js")
 
 const testTree: any = {}
 
-class TestApp extends AbstractTreeComponentRootNode {
+class TestApp extends AbstractTreeComponent {
   getDefaultStartState() {
     return "headerComponent"
   }

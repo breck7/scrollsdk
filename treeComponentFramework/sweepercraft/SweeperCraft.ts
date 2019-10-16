@@ -1,6 +1,6 @@
 //onsave jtree build produce SweeperCraft.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, WillowConstants, AbstractCommander, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, WillowConstants, AbstractCommander, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
 
 declare type int = number
@@ -529,7 +529,7 @@ class SweeperCraftCommander extends AbstractCommander {
   }
 }
 
-class SweeperCraftApp extends AbstractTreeComponentRootNode {
+class SweeperCraftApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       headerComponent: headerComponent,

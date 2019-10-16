@@ -1,6 +1,6 @@
 //onsave jtree build produce SandboxApp.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -29,7 +29,7 @@ class SandboxCommander extends AbstractCommander {
   private _app: SandboxApp
 }
 
-class SandboxApp extends AbstractTreeComponentRootNode {
+class SandboxApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       tableComponent: tableComponent,

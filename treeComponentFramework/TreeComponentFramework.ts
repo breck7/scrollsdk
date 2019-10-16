@@ -1609,6 +1609,14 @@ abstract class AbstractTreeComponentRootNode extends AbstractTreeComponent {
     return this._theme
   }
 
+  getRootProgramNode() {
+    return this
+  }
+
+  getDefinition() {
+    return this.getGrammarProgramRoot()
+  }
+
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {

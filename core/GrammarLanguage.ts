@@ -90,6 +90,9 @@ enum GrammarConstants {
   single = "single", // Have at most 1 of these
   tags = "tags",
 
+  _extendsJsClass = "_extendsJsClass", // todo: remove
+  _rootNodeJsHeader = "_rootNodeJsHeader", // todo: remove
+
   // default catchAll nodeType
   BlobNode = "BlobNode",
   defaultRootNode = "defaultRootNode",
@@ -195,37 +198,6 @@ abstract class GrammarBackedNode extends TreeNode {
     })
     return errors
   }
-}
-
-class TypedWord {
-  private _node: TreeNode
-  private _cellIndex: number
-  private _type: string
-  constructor(node: TreeNode, cellIndex: number, type: string) {
-    this._node = node
-    this._cellIndex = cellIndex
-    this._type = type
-  }
-  replace(newWord: string) {
-    this._node.setWord(this._cellIndex, newWord)
-  }
-  get word() {
-    return this._node.getWord(this._cellIndex)
-  }
-
-  get type() {
-    return this._type
-  }
-
-  toString() {
-    return this.word + ":" + this.type
-  }
-}
-
-abstract class GrammarBackedRootNode extends GrammarBackedNode {
-  getRootProgramNode() {
-    return this
-  }
 
   getProgramAsCells() {
     return this.getTopDownArray().map((node: GrammarBackedNode) => {
@@ -241,10 +213,6 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
 
   getProgramWidth() {
     return Math.max(...this.getProgramAsCells().map(line => line.length))
-  }
-
-  createParser() {
-    return new TreeNode.Parser(BlobNode)
   }
 
   getAllTypedWords() {
@@ -263,10 +231,6 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
 
   findAllNodesWithNodeType(nodeTypeId: treeNotationTypes.nodeTypeId) {
     return this.getTopDownArray().filter((node: GrammarBackedNonRootNode) => node.getDefinition().getNodeTypeIdFromDefinition() === nodeTypeId)
-  }
-
-  getDefinition(): GrammarProgram {
-    return this.getGrammarProgramRoot()
   }
 
   getInPlaceCellTypeTree() {
@@ -293,6 +257,10 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
         return obj
       })
     ).toFormattedTable(maxColumnWidth)
+  }
+
+  createParser() {
+    return new TreeNode.Parser(BlobNode)
   }
 
   getErrors(): treeNotationTypes.TreeError[] {
@@ -416,6 +384,42 @@ abstract class GrammarBackedRootNode extends GrammarBackedNode {
     this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())
     this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
     this._cache_programCellTypeStringMTime = treeMTime
+  }
+}
+
+class TypedWord {
+  private _node: TreeNode
+  private _cellIndex: number
+  private _type: string
+  constructor(node: TreeNode, cellIndex: number, type: string) {
+    this._node = node
+    this._cellIndex = cellIndex
+    this._type = type
+  }
+  replace(newWord: string) {
+    this._node.setWord(this._cellIndex, newWord)
+  }
+  get word() {
+    return this._node.getWord(this._cellIndex)
+  }
+
+  get type() {
+    return this._type
+  }
+
+  toString() {
+    return this.word + ":" + this.type
+  }
+}
+
+// todo: minimize differences between root and non-root. what is the pattern we should be using here?
+abstract class GrammarBackedRootNode extends GrammarBackedNode {
+  getRootProgramNode() {
+    return this
+  }
+
+  getDefinition(): GrammarProgram {
+    return this.getGrammarProgramRoot()
   }
 }
 
@@ -1760,14 +1764,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   _nodeDefToJavascriptClass(): treeNotationTypes.javascriptCode {
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(code => code)
 
-    const extendedDef = <AbstractGrammarDefinitionNode>this._getExtendedParent()
-    const rootNode = this._getLanguageRootNode()
-    const amIRoot = this._amIRoot()
-    // todo: cleanup? If we have 2 roots, and the latter extends the first, the first should extent GBRootNode. Otherwise, the first should not extend RBRootNode.
-    const doesRootExtendMe = this.has(GrammarConstants.root) && rootNode._getAncestorSet().has(this._getGeneratedClassName())
-    const extendsClassName = extendedDef ? extendedDef._getGeneratedClassName() : amIRoot || doesRootExtendMe ? "jtree.GrammarBackedRootNode" : "jtree.GrammarBackedNonRootNode"
-
-    if (amIRoot) {
+    if (this._amIRoot()) {
       components.push(`getGrammarProgramRoot() {
         if (!this._cachedGrammarProgramRoot)
           this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(
@@ -1789,9 +1786,21 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       components.push(`static getNodeTypeMap() { return {${nodeTypeMap} }}`)
     }
 
-    return `class ${this._getGeneratedClassName()} extends ${extendsClassName} {
+    return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName()} {
       ${components.join("\n")}
     }`
+  }
+
+  private _getExtendsClassName() {
+    // todo: this is hopefully a temporary line in place for now for the case where you want your base class to extend something other than another treeclass
+    const hardCodedExtend = this.get(GrammarConstants._extendsJsClass)
+    if (hardCodedExtend) return hardCodedExtend
+
+    const extendedDef = <AbstractGrammarDefinitionNode>this._getExtendedParent()
+    const rootNode = this._getLanguageRootNode()
+    // todo: cleanup? If we have 2 roots, and the latter extends the first, the first should extent GBRootNode. Otherwise, the first should not extend RBRootNode.
+    const doesRootExtendMe = this.has(GrammarConstants.root) && rootNode._getAncestorSet().has(this._getGeneratedClassName())
+    return extendedDef ? extendedDef._getGeneratedClassName() : this._amIRoot() || doesRootExtendMe ? "jtree.GrammarBackedRootNode" : "jtree.GrammarBackedNonRootNode"
   }
 
   _getCompilerObject(): treeNotationTypes.stringMap {
@@ -2288,7 +2297,9 @@ ${testCode}`
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
-    const rootName = this._getRootNodeTypeDefinitionNode()._getGeneratedClassName()
+    const rootDef = this._getRootNodeTypeDefinitionNode()
+    const rootNodeJsHeader = forNodeJs && rootDef.getNode(GrammarConstants._rootNodeJsHeader)
+    const rootName = rootDef._getGeneratedClassName()
 
     if (!rootName) throw new Error(`Root Node Type Has No Name`)
 
@@ -2303,7 +2314,7 @@ ${rootName}`
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
 ${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
-
+${rootNodeJsHeader ? rootNodeJsHeader.childrenToString() : ""}
 ${nodeTypeClasses}
 
 ${exportScript}

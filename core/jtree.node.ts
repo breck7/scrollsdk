@@ -2,7 +2,7 @@ const fs = require("fs")
 
 import { jtree } from "./jtree"
 import { treeNotationTypes } from "../products/treeNotationTypes"
-import { GrammarProgram, GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage"
+import { GrammarProgram, GrammarBackedNode, GrammarConstants } from "./GrammarLanguage"
 import { Upgrader } from "./Upgrader"
 
 enum CompileTarget {
@@ -23,7 +23,7 @@ class jtreeNode extends jtree {
 
   static executeFileSync = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): any => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 
-  static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedRootNode => {
+  static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }

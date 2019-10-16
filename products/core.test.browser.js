@@ -1656,9 +1656,9 @@ lightbulbState off
 saturation 2
 someCode
  echo hello world`
-    class add extends jtree.GrammarBackedNonRootNode {}
-    class lineOfCode extends jtree.GrammarBackedNonRootNode {}
-    class JibberishProgramRoot extends jtree.GrammarBackedRootNode {}
+    class add extends jtree.GrammarBackedNode {}
+    class lineOfCode extends jtree.GrammarBackedNode {}
+    class JibberishProgramRoot extends jtree.GrammarBackedNode {}
     const JibberishLang = {}
     JibberishLang.add = add
     JibberishLang.lineOfCode = lineOfCode

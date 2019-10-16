@@ -911,7 +911,7 @@ class TreeComponentCommander extends AbstractCommander {
     treeComponent.unmountAndDestroy()
   }
 }
-class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
+class AbstractTreeComponent extends jtree.GrammarBackedNode {
   constructor() {
     super(...arguments)
     this._commander = new TreeComponentCommander(this)
@@ -1251,11 +1251,8 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
     if (!this._theme) this._theme = new DefaultTheme()
     return this._theme
   }
-  getRootProgramNode() {
-    return this
-  }
   getDefinition() {
-    return this.getGrammarProgramRoot()
+    return this.getGrammarProgram()
   }
   getWillowProgram() {
     if (!this._willowProgram) {

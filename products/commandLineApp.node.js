@@ -66,7 +66,7 @@ class CommandLineApp {
   // todo: improve or remove
   cases(folder, grammarName) {
     const files = recursiveReadSync(folder).filter(file => file.endsWith("." + grammarName))
-    const grammarProgram = this._getGrammarProgramRoot(grammarName)
+    const grammarProgram = this._getGrammarProgram(grammarName)
     files.map(filename => {
       const errors = this._check(filename)
       if (errors.length) {
@@ -167,7 +167,7 @@ ${grammars.toTable()}`
     this._write(outputPath, grammarProgram.toSublimeSyntaxFile())
     return `Saved: ${outputPath}`
   }
-  _getGrammarProgramRoot(grammarName) {
+  _getGrammarProgram(grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     return new GrammarProgram(this._read(grammarPath))
   }

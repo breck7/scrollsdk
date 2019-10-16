@@ -2706,6 +2706,10 @@ var GrammarConstants
 })(GrammarConstants || (GrammarConstants = {}))
 // todo: can we merge these methods into base TreeNode and ditch this class?
 class GrammarBackedNode extends TreeNode {
+  getDefinition() {
+    const grammarProgram = this.getGrammarProgram()
+    return this.isRoot() ? grammarProgram : grammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+  }
   getAutocompleteResults(partialWord, cellIndex) {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
@@ -2742,8 +2746,10 @@ class GrammarBackedNode extends TreeNode {
     const cell = this._getParsedCells()[cellIndex]
     return cell ? cell.getAutoCompleteWords(partialWord) : []
   }
-  _getParsedCells() {
-    return []
+  // note: this is overwritten by the root node of a runtime grammar program.
+  // some of the magic that makes this all work. but maybe there's a better way.
+  getGrammarProgram() {
+    return this.getRootNode().getGrammarProgram()
   }
   getRunTimeEnumOptions(cell) {
     return undefined
@@ -2823,12 +2829,6 @@ class GrammarBackedNode extends TreeNode {
       })
     ).toFormattedTable(maxColumnWidth)
   }
-  createParser() {
-    return new TreeNode.Parser(BlobNode)
-  }
-  getErrors() {
-    return this._getRequiredNodeErrors(super.getErrors())
-  }
   // Helper method for selecting potential nodeTypes needed to update grammar file.
   getInvalidNodeTypes() {
     return Array.from(
@@ -2847,7 +2847,7 @@ class GrammarBackedNode extends TreeNode {
           line: coordinate.y,
           char: coordinate.x,
           word: results.word,
-          suggestions: results.matches.map(m => m.text).join(" ")
+          suggestions: results.matches.map(node => node.text).join(" ")
         }
       })
     ).toTable()
@@ -2886,7 +2886,7 @@ class GrammarBackedNode extends TreeNode {
   getNodeTypeUsage(filepath = "") {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
-    const grammarProgram = this.getGrammarProgramRoot()
+    const grammarProgram = this.getGrammarProgram()
     grammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
       const requiredCellTypeIds = def.getCellParser().getRequiredCellTypeIds()
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", "nodeType", requiredCellTypeIds.join(" ")].join(" "))
@@ -2929,60 +2929,34 @@ class GrammarBackedNode extends TreeNode {
     this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
     this._cache_programCellTypeStringMTime = treeMTime
   }
-}
-class TypedWord {
-  constructor(node, cellIndex, type) {
-    this._node = node
-    this._cellIndex = cellIndex
-    this._type = type
-  }
-  replace(newWord) {
-    this._node.setWord(this._cellIndex, newWord)
-  }
-  get word() {
-    return this._node.getWord(this._cellIndex)
-  }
-  get type() {
-    return this._type
-  }
-  toString() {
-    return this.word + ":" + this.type
-  }
-}
-// todo: minimize differences between root and non-root. what is the pattern we should be using here?
-class GrammarBackedRootNode extends GrammarBackedNode {
-  getRootProgramNode() {
-    return this
-  }
-  getDefinition() {
-    return this.getGrammarProgramRoot()
-  }
-}
-class GrammarBackedNonRootNode extends GrammarBackedNode {
-  getRootProgramNode() {
-    return this.getParent().getRootProgramNode()
-  }
   createParser() {
-    return new TreeNode.Parser(
-      this.getParent()
-        ._getParser()
-        ._getCatchAllNodeConstructor(this.getParent()),
-      {}
-    )
+    return this.isRoot()
+      ? new TreeNode.Parser(BlobNode)
+      : new TreeNode.Parser(
+          this.getParent()
+            ._getParser()
+            ._getCatchAllNodeConstructor(this.getParent()),
+          {}
+        )
   }
   getNodeTypeId() {
     return this.getDefinition().getNodeTypeIdFromDefinition()
   }
-  getDefinition() {
-    return this.getRootProgramNode()
-      .getGrammarProgramRoot()
-      .getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
-  }
-  getGrammarProgramRoot() {
-    return this.getRootProgramNode().getGrammarProgramRoot()
-  }
   getWordTypes() {
     return this._getParsedCells().filter(cell => cell.getWord() !== undefined)
+  }
+  getErrors() {
+    const errors = this._getParsedCells()
+      .map(check => check.getErrorIfAny())
+      .filter(i => i)
+    const firstWord = this.getFirstWord()
+    if (this.getDefinition().has(GrammarConstants.single))
+      this.getParent()
+        .findNodes(firstWord)
+        .forEach((node, index) => {
+          if (index) errors.push(new NodeTypeUsedMultipleTimesError(node))
+        })
+    return this._getRequiredNodeErrors(errors)
   }
   _getParsedCells() {
     return this.getDefinition()
@@ -3009,19 +2983,6 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
       .map(slot => slot.getHighlightScope() || defaultScope)
       .join(" ")
   }
-  getErrors() {
-    const errors = this._getParsedCells()
-      .map(check => check.getErrorIfAny())
-      .filter(i => i)
-    const firstWord = this.getFirstWord()
-    if (this.getDefinition().has(GrammarConstants.single))
-      this.getParent()
-        .findNodes(firstWord)
-        .forEach((node, index) => {
-          if (index) errors.push(new NodeTypeUsedMultipleTimesError(node))
-        })
-    return this._getRequiredNodeErrors(errors)
-  }
   _getCompiledIndentation() {
     const indentCharacter = this.getDefinition()._getCompilerObject()[GrammarConstantsCompiler.indentCharacter]
     const indent = this.getIndentation()
@@ -3043,6 +3004,7 @@ class GrammarBackedNonRootNode extends GrammarBackedNode {
     return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
   }
   compile() {
+    if (this.isRoot()) return super.compile()
     const def = this.getDefinition()
     if (def.isTerminalNodeType()) return this._getCompiledIndentation() + this._getCompiledLine()
     const compiler = def._getCompilerObject()
@@ -3070,7 +3032,26 @@ ${indent}${closeChildrenString}`
     return cells
   }
 }
-class BlobNode extends GrammarBackedNonRootNode {
+class TypedWord {
+  constructor(node, cellIndex, type) {
+    this._node = node
+    this._cellIndex = cellIndex
+    this._type = type
+  }
+  replace(newWord) {
+    this._node.setWord(this._cellIndex, newWord)
+  }
+  get word() {
+    return this._node.getWord(this._cellIndex)
+  }
+  get type() {
+    return this._type
+  }
+  toString() {
+    return this.word + ":" + this.type
+  }
+}
+class BlobNode extends GrammarBackedNode {
   createParser() {
     return new TreeNode.Parser(BlobNode, {})
   }
@@ -3078,7 +3059,7 @@ class BlobNode extends GrammarBackedNonRootNode {
     return []
   }
 }
-class UnknownNodeTypeNode extends GrammarBackedNonRootNode {
+class UnknownNodeTypeNode extends GrammarBackedNode {
   createParser() {
     return new TreeNode.Parser(UnknownNodeTypeNode, {})
   }
@@ -3119,7 +3100,7 @@ class AbstractGrammarBackedCell {
   }
   getAutoCompleteWords(partialWord = "") {
     const cellDef = this._getCellTypeDefinition()
-    let words = cellDef ? cellDef._getAutocompleteWordOptions(this.getNode().getRootProgramNode()) : []
+    let words = cellDef ? cellDef._getAutocompleteWordOptions(this.getNode().getRootNode()) : []
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     if (runTimeOptions) words = runTimeOptions.concat(words)
     if (partialWord) words = words.filter(word => word.includes(partialWord))
@@ -3149,7 +3130,7 @@ class AbstractGrammarBackedCell {
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
-    return this._getCellTypeDefinition().isValid(word, this.getNode().getRootProgramNode()) && this._isValid()
+    return this._getCellTypeDefinition().isValid(word, this.getNode().getRootNode()) && this._isValid()
   }
   getErrorIfAny() {
     const word = this.getWord()
@@ -3362,7 +3343,7 @@ class AbstractTreeError {
   }
   getExtension() {
     return this.getNode()
-      .getGrammarProgramRoot()
+      .getGrammarProgram()
       .getExtensionName()
   }
   getNode() {
@@ -3585,7 +3566,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     return this.getWord(0)
   }
   _getIdToNodeMap() {
-    return this._getRootProgramNode().getCellTypeDefinitions()
+    return this.getParent().getCellTypeDefinitions()
   }
   getGetter(wordIndex) {
     const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
@@ -3633,9 +3614,6 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   _getEnumFromCellTypeOptions(program) {
     const node = this._getNodeFromExtended(GrammarConstants.enumFromCellTypes)
     return node ? Object.keys(node.getNode(GrammarConstants.enumFromCellTypes)._getEnumFromCellTypes(program)) : undefined
-  }
-  _getRootProgramNode() {
-    return this.getParent()
   }
   _getAutocompleteWordOptions(program) {
     return this._getEnumOptions() || this._getEnumFromCellTypeOptions(program) || []
@@ -4035,7 +4013,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   _nodeDefToJavascriptClass() {
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(code => code)
     if (this._amIRoot()) {
-      components.push(`getGrammarProgramRoot() {
+      components.push(`getGrammarProgram() {
         if (!this._cachedGrammarProgramRoot)
           this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(
             this.getParent()
@@ -4062,10 +4040,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     const hardCodedExtend = this.get(GrammarConstants._extendsJsClass)
     if (hardCodedExtend) return hardCodedExtend
     const extendedDef = this._getExtendedParent()
-    const rootNode = this._getLanguageRootNode()
-    // todo: cleanup? If we have 2 roots, and the latter extends the first, the first should extent GBRootNode. Otherwise, the first should not extend RBRootNode.
-    const doesRootExtendMe = this.has(GrammarConstants.root) && rootNode._getAncestorSet().has(this._getGeneratedClassName())
-    return extendedDef ? extendedDef._getGeneratedClassName() : this._amIRoot() || doesRootExtendMe ? "jtree.GrammarBackedRootNode" : "jtree.GrammarBackedNonRootNode"
+    return extendedDef ? extendedDef._getGeneratedClassName() : "jtree.GrammarBackedNode"
   }
   _getCompilerObject() {
     let obj = {}
@@ -5041,8 +5016,7 @@ class TreeNotationCodeMirrorMode {
   }
 }
 class jtree {}
-jtree.GrammarBackedRootNode = GrammarBackedRootNode
-jtree.GrammarBackedNonRootNode = GrammarBackedNonRootNode
+jtree.GrammarBackedNode = GrammarBackedNode
 jtree.Utils = TreeUtils
 jtree.TreeEvents = TreeEvents
 jtree.TreeNode = TreeNode

@@ -2,7 +2,7 @@
 {
   const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
-  class hakonNode extends jtree.GrammarBackedRootNode {
+  class hakonNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         selectorNode,
@@ -19,7 +19,7 @@
         .map(child => child.compile())
         .join("")
     }
-    getGrammarProgramRoot() {
+    getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`hakonNode
  root
@@ -838,7 +838,7 @@ KhtmlUserSelectNode
     }
   }
 
-  class abstractPropertyNode extends jtree.GrammarBackedNonRootNode {
+  class abstractPropertyNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
     }
@@ -853,7 +853,7 @@ KhtmlUserSelectNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNonRootNode {
+  class errorNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
     }
@@ -865,7 +865,7 @@ KhtmlUserSelectNode
     }
   }
 
-  class commentNode extends jtree.GrammarBackedNonRootNode {
+  class commentNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(commentNode, undefined, undefined)
     }
@@ -874,7 +874,7 @@ KhtmlUserSelectNode
     }
   }
 
-  class selectorNode extends jtree.GrammarBackedNonRootNode {
+  class selectorNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         selectorNode,

@@ -1,5 +1,5 @@
 {
-  class fireNode extends jtree.GrammarBackedRootNode {
+  class fireNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         errorNode,
@@ -54,7 +54,7 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    getGrammarProgramRoot() {
+    getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`todo Explore best ways to add polymorphism
 fireNode
@@ -425,7 +425,7 @@ returnNode
     }
   }
 
-  class abstractNonTerminalNode extends jtree.GrammarBackedNonRootNode {
+  class abstractNonTerminalNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         undefined,
@@ -470,7 +470,7 @@ returnNode
     }
   }
 
-  class abstractTerminalNode extends jtree.GrammarBackedNonRootNode {
+  class abstractTerminalNode extends jtree.GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -494,7 +494,7 @@ returnNode
 
   class abstractBooleanOperatorNode extends abstractAssignmentNode {}
 
-  class hashbangNode extends jtree.GrammarBackedNonRootNode {
+  class hashbangNode extends jtree.GrammarBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -503,7 +503,7 @@ returnNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNonRootNode {
+  class errorNode extends jtree.GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }

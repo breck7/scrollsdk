@@ -88,7 +88,7 @@ class CommandLineApp {
   // todo: improve or remove
   cases(folder: treeNotationTypes.filepath, grammarName: treeNotationTypes.grammarName) {
     const files = recursiveReadSync(folder).filter((file: treeNotationTypes.filepath) => file.endsWith("." + grammarName))
-    const grammarProgram = this._getGrammarProgramRoot(grammarName)
+    const grammarProgram = this._getGrammarProgram(grammarName)
     files.map((filename: treeNotationTypes.filepath) => {
       const errors = this._check(filename)
       if (errors.length) {
@@ -210,7 +210,7 @@ ${grammars.toTable()}`
     return `Saved: ${outputPath}`
   }
 
-  _getGrammarProgramRoot(grammarName: treeNotationTypes.grammarName) {
+  _getGrammarProgram(grammarName: treeNotationTypes.grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
     return new GrammarProgram(this._read(grammarPath))
   }

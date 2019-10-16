@@ -2,7 +2,7 @@
 {
   const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
-  class dumbdownNode extends jtree.GrammarBackedRootNode {
+  class dumbdownNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         blankLineNode,
@@ -17,7 +17,7 @@
         undefined
       )
     }
-    getGrammarProgramRoot() {
+    getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`dumbdownNode
  extensions dd dumbdown
@@ -124,13 +124,13 @@ dashNode
     }
   }
 
-  class abstractTopLevelNode extends jtree.GrammarBackedNonRootNode {
+  class abstractTopLevelNode extends jtree.GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class blankLineNode extends jtree.GrammarBackedNonRootNode {
+  class blankLineNode extends jtree.GrammarBackedNode {
     get blankCell() {
       return this.getWord(0)
     }
@@ -169,7 +169,7 @@ dashNode
     }
   }
 
-  class lineOfCodeNode extends jtree.GrammarBackedNonRootNode {
+  class lineOfCodeNode extends jtree.GrammarBackedNode {
     get codeCell() {
       return this.getWord(0)
     }
@@ -190,7 +190,7 @@ dashNode
     }
   }
 
-  class dashNode extends jtree.GrammarBackedNonRootNode {
+  class dashNode extends jtree.GrammarBackedNode {
     get dashCell() {
       return this.getWord(0)
     }

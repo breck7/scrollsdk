@@ -1977,9 +1977,9 @@ saturation 2
 someCode
  echo hello world`
 
-    class add extends jtree.GrammarBackedNonRootNode {}
-    class lineOfCode extends jtree.GrammarBackedNonRootNode {}
-    class JibberishProgramRoot extends jtree.GrammarBackedRootNode {}
+    class add extends jtree.GrammarBackedNode {}
+    class lineOfCode extends jtree.GrammarBackedNode {}
+    class JibberishProgramRoot extends jtree.GrammarBackedNode {}
 
     const JibberishLang: any = {}
     JibberishLang.add = add

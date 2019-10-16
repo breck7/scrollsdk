@@ -2,7 +2,7 @@
 {
   const { jtree } = require("/Users/breck/jtree/products/../index.js")
 
-  class stumpNode extends jtree.GrammarBackedRootNode {
+  class stumpNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         errorNode,
@@ -124,7 +124,7 @@
     compile() {
       return this.toHtml()
     }
-    getGrammarProgramRoot() {
+    getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`stumpNode
  root
@@ -1216,7 +1216,7 @@ stumpCollapseNode
     }
   }
 
-  class abstractHtmlTagNode extends jtree.GrammarBackedNonRootNode {
+  class abstractHtmlTagNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         undefined,
@@ -1679,13 +1679,13 @@ stumpCollapseNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNonRootNode {
+  class errorNode extends jtree.GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class abstractHtmlAttributeNode extends jtree.GrammarBackedNonRootNode {
+  class abstractHtmlAttributeNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
     }
@@ -1706,7 +1706,7 @@ stumpCollapseNode
     }
   }
 
-  class lineOfHtmlContentNode extends jtree.GrammarBackedNonRootNode {
+  class lineOfHtmlContentNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
     }
@@ -1715,7 +1715,7 @@ stumpCollapseNode
     }
   }
 
-  class bernNode extends jtree.GrammarBackedNonRootNode {
+  class bernNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
     }

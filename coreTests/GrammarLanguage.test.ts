@@ -76,7 +76,7 @@ testTree.jibberish = equal => {
   if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
 
   const defNode = program
-    .getGrammarProgramRoot()
+    .getGrammarProgram()
     .getNodeTypeFamilyTree()
     .getNode("topLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
@@ -494,7 +494,7 @@ anyNode
 anyCell`
   ).getRootConstructor()
   const program = new programConstructor()
-  const grammarProgram = program.getGrammarProgramRoot()
+  const grammarProgram = program.getGrammarProgram()
 
   // Assert
   let errors = grammarProgram.getAllErrors()

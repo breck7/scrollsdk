@@ -2320,6 +2320,64 @@ class TreeNode extends AbstractNode {
     })
     return this
   }
+  async saveVersion() {
+    const newVersion = this.toString()
+    const topUndoVersion = this._getTopUndoVersion()
+    if (newVersion === topUndoVersion) return undefined
+    this._recordChange(newVersion)
+    this._setSavedVersion(this.toString())
+    return this
+  }
+  hasUnsavedChanges() {
+    return this.toString() !== this._getSavedVersion()
+  }
+  async redo() {
+    const undoStack = this._getUndoStack()
+    const redoStack = this._getRedoStack()
+    if (!redoStack.length) return undefined
+    undoStack.push(redoStack.pop())
+    return this._reloadFromUndoTop()
+  }
+  async undo() {
+    const undoStack = this._getUndoStack()
+    const redoStack = this._getRedoStack()
+    if (undoStack.length === 1) return undefined
+    redoStack.push(undoStack.pop())
+    return this._reloadFromUndoTop()
+  }
+  _getSavedVersion() {
+    return this._savedVersion
+  }
+  _setSavedVersion(str) {
+    this._savedVersion = str
+    return this
+  }
+  _clearRedoStack() {
+    const redoStack = this._getRedoStack()
+    redoStack.splice(0, redoStack.length)
+  }
+  getChangeHistory() {
+    return this._getUndoStack().slice(0)
+  }
+  _getUndoStack() {
+    if (!this._undoStack) this._undoStack = []
+    return this._undoStack
+  }
+  _getRedoStack() {
+    if (!this._redoStack) this._redoStack = []
+    return this._redoStack
+  }
+  _getTopUndoVersion() {
+    const undoStack = this._getUndoStack()
+    return undoStack[undoStack.length - 1]
+  }
+  async _reloadFromUndoTop() {
+    this.setChildren(this._getTopUndoVersion())
+  }
+  _recordChange(newVersion) {
+    this._clearRedoStack()
+    this._getUndoStack().push(newVersion) // todo: use diffs?
+  }
   static fromCsv(str) {
     return this.fromDelimited(str, ",", '"')
   }

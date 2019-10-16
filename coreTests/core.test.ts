@@ -220,8 +220,8 @@ mike,321,blue
 al,1214,green`
 
   testStrings.toTableLeft = `name score color
-bob  12    red  
-mike 321   blue 
+bob  12    red
+mike 321   blue
 al   1214  green`
 
   testStrings.toTable = `name score color
@@ -426,15 +426,15 @@ domains
 
     // Arrange
     let s = `
- 
- 
+
+
  `
     // Act/Assert
     equal(new TreeNode(s).nodeAt(0).length, 3)
 
     // Arrange
     s = `
-  
+
  `
     // Act/Assert
     equal(new TreeNode(s).nodeAt(0).length, 2)
@@ -3806,6 +3806,42 @@ b
       equal(newMTime > lastMTime, true, "mtime should have increased")
       lastMTime = newMTime
     }
+  }
+
+  testTree.undoRedo = async equal => {
+    // Arrange
+    const node = new TreeNode("hello world")
+
+    // Assert
+    await node.saveVersion()
+    equal(node.getChangeHistory().length, 1)
+    equal(node.hasUnsavedChanges(), false)
+
+    // Act
+    node.set("hello", "earth")
+    equal(node.hasUnsavedChanges(), true)
+    await node.saveVersion()
+    // Assert
+    equal(node.getChangeHistory().length, 2)
+    equal(node.get("hello"), "earth")
+    equal(node.hasUnsavedChanges(), false)
+    // Act
+    await node.undo()
+    // Assert
+    equal(node.get("hello"), "world")
+    equal(node.hasUnsavedChanges(), true)
+    // Act
+    await node.undo()
+    // Assert
+    equal(node.get("hello"), "world")
+    // Act
+    await node.redo()
+    // Assert
+    equal(node.get("hello"), "earth")
+    // Act
+    await node.redo()
+    // Assert
+    equal(node.get("hello"), "earth")
   }
 
   testTree.queryMethods = equal => {

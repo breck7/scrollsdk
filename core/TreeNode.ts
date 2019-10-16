@@ -2261,6 +2261,82 @@ class TreeNode extends AbstractNode {
     return this
   }
 
+  async saveVersion() {
+    const newVersion = this.toString()
+    const topUndoVersion = this._getTopUndoVersion()
+    if (newVersion === topUndoVersion) return undefined
+    this._recordChange(newVersion)
+    this._setSavedVersion(this.toString())
+    return this
+  }
+
+  hasUnsavedChanges() {
+    return this.toString() !== this._getSavedVersion()
+  }
+
+  async redo() {
+    const undoStack = this._getUndoStack()
+    const redoStack = this._getRedoStack()
+    if (!redoStack.length) return undefined
+    undoStack.push(redoStack.pop())
+    return this._reloadFromUndoTop()
+  }
+
+  async undo() {
+    const undoStack = this._getUndoStack()
+    const redoStack = this._getRedoStack()
+    if (undoStack.length === 1) return undefined
+    redoStack.push(undoStack.pop())
+    return this._reloadFromUndoTop()
+  }
+
+  private _savedVersion: string
+
+  private _getSavedVersion() {
+    return this._savedVersion
+  }
+
+  private _setSavedVersion(str: string) {
+    this._savedVersion = str
+    return this
+  }
+
+  private _clearRedoStack() {
+    const redoStack = this._getRedoStack()
+    redoStack.splice(0, redoStack.length)
+  }
+
+  private _undoStack: string[]
+  private _redoStack: string[]
+
+  getChangeHistory() {
+    return this._getUndoStack().slice(0)
+  }
+
+  private _getUndoStack() {
+    if (!this._undoStack) this._undoStack = []
+    return this._undoStack
+  }
+
+  private _getRedoStack() {
+    if (!this._redoStack) this._redoStack = []
+    return this._redoStack
+  }
+
+  private _getTopUndoVersion() {
+    const undoStack = this._getUndoStack()
+    return undoStack[undoStack.length - 1]
+  }
+
+  private async _reloadFromUndoTop() {
+    this.setChildren(this._getTopUndoVersion())
+  }
+
+  private _recordChange(newVersion: string) {
+    this._clearRedoStack()
+    this._getUndoStack().push(newVersion) // todo: use diffs?
+  }
+
   static fromCsv(str: string) {
     return this.fromDelimited(str, ",", '"')
   }

@@ -1202,10 +1202,6 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   private _willowProgram: any
   private _theme: AbstractTheme
 
-  getDefinition() {
-    return this.getGrammarProgram()
-  }
-
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {

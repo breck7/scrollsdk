@@ -2308,6 +2308,15 @@ class TreeNode extends AbstractNode {
     })
     return this
   }
+  selectNode() {
+    this._selected = true
+  }
+  unselectNode() {
+    delete this._selected
+  }
+  isSelected() {
+    return !!this._selected
+  }
   async saveVersion() {
     const newVersion = this.toString()
     const topUndoVersion = this._getTopUndoVersion()

@@ -920,9 +920,6 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     super(...arguments)
     this._commander = new TreeComponentCommander(this)
   }
-  getDefinition() {
-    return this.getGrammarProgram()
-  }
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {

@@ -1,4 +1,10 @@
 // todo: create a Tree Language for number formatting
+// https://github.com/gentooboontoo/js-quantities
+// https://github.com/moment/moment/issues/2469
+// todo: ugly. how do we ditch this or test?
+moment.createFromInputFallback = function(momentConfig) {
+  momentConfig._d = new Date(momentConfig._i)
+}
 var VegaTypes
 ;(function(VegaTypes) {
   VegaTypes["nominal"] = "nominal"
@@ -14,12 +20,6 @@ var JavascriptNativeTypeNames
   JavascriptNativeTypeNames["Date"] = "Date"
   JavascriptNativeTypeNames["boolean"] = "boolean"
 })(JavascriptNativeTypeNames || (JavascriptNativeTypeNames = {}))
-// https://github.com/gentooboontoo/js-quantities
-// https://github.com/moment/moment/issues/2469
-// todo: ugly. how do we ditch this or test?
-moment.createFromInputFallback = function(momentConfig) {
-  momentConfig._d = new Date(momentConfig._i)
-}
 class AbstractPrimitiveType {
   constructor(typeName) {
     this._name = typeName

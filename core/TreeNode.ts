@@ -195,15 +195,15 @@ class TreeNode extends AbstractNode {
     return this.getEdgeSymbol().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
-  protected _getTopDownArray(arr: TreeNode[]) {
+  protected _getTopDownArray<NodeType = TreeNode>(arr: NodeType[]) {
     this.forEach(child => {
       arr.push(child)
       child._getTopDownArray(arr)
     })
   }
 
-  getTopDownArray(): treeNotationTypes.treeNode[] {
-    const arr: TreeNode[] = []
+  getTopDownArray<NodeType = TreeNode>(): NodeType[] {
+    const arr: NodeType[] = []
     this._getTopDownArray(arr)
     return arr
   }
@@ -756,7 +756,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  protected _getXCoordinate(relativeTo: TreeNode) {
+  protected _getXCoordinate(relativeTo?: TreeNode) {
     return this._getStack(relativeTo).length
   }
 
@@ -1821,6 +1821,12 @@ class TreeNode extends AbstractNode {
 
   duplicate() {
     return this.getParent()._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
+  }
+
+  trim() {
+    // todo: could do this so only the trimmed rows are deleted.
+    this.setChildren(this.childrenToString().trim())
+    return this
   }
 
   destroy() {

@@ -1,6 +1,14 @@
 const { jtree } = require("../index.js")
 // todo: create a Tree Language for number formatting
 const d3format = require("d3-format")
+const moment = require("moment")
+const parseFormat = require("moment-parseformat")
+// https://github.com/gentooboontoo/js-quantities
+// https://github.com/moment/moment/issues/2469
+// todo: ugly. how do we ditch this or test?
+moment.createFromInputFallback = function(momentConfig) {
+  momentConfig._d = new Date(momentConfig._i)
+}
 var VegaTypes
 ;(function(VegaTypes) {
   VegaTypes["nominal"] = "nominal"
@@ -16,14 +24,6 @@ var JavascriptNativeTypeNames
   JavascriptNativeTypeNames["Date"] = "Date"
   JavascriptNativeTypeNames["boolean"] = "boolean"
 })(JavascriptNativeTypeNames || (JavascriptNativeTypeNames = {}))
-const moment = require("moment")
-const parseFormat = require("moment-parseformat")
-// https://github.com/gentooboontoo/js-quantities
-// https://github.com/moment/moment/issues/2469
-// todo: ugly. how do we ditch this or test?
-moment.createFromInputFallback = function(momentConfig) {
-  momentConfig._d = new Date(momentConfig._i)
-}
 class AbstractPrimitiveType {
   constructor(typeName) {
     this._name = typeName

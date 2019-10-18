@@ -3845,6 +3845,16 @@ testTree.asyncUndoRedo = async equal => {
   equal(node.get("hello"), "earth")
 }
 
+testTree.trim = equal => {
+  // Arrange/Act/Assert
+  const tree = new jtree.TreeNode("\n\n\n")
+  equal(tree.length, 4)
+  equal(tree.trim().length, 0)
+
+  const tree2 = new jtree.TreeNode(testStrings.webpage)
+  equal(tree2.length, tree2.trim().length)
+}
+
 testTree.queryMethods = equal => {
   // Arrange
   const tree = <any>TreeNode.fromCsv(TreeNode.iris)

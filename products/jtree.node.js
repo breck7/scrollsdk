@@ -447,6 +447,13 @@ TreeUtils.makeSemiRandomFn = (seed = 1) => {
     return semiRand - Math.floor(semiRand)
   }
 }
+TreeUtils.randomUniformInt = (min, max, seed = 1) => {
+  return Math.round(TreeUtils.randomUniformFloat(min, max, seed))
+}
+TreeUtils.randomUniformFloat = (min, max, seed = 1) => {
+  const rand = TreeUtils.makeSemiRandomFn(seed)
+  return min + (max - min) * rand()
+}
 TreeUtils.getRange = (startIndex, endIndexExclusive, increment = 1) => {
   const range = []
   for (let index = startIndex; index < endIndexExclusive; index = index + increment) {
@@ -1950,6 +1957,11 @@ class TreeNode extends AbstractNode {
   }
   duplicate() {
     return this.getParent()._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
+  }
+  trim() {
+    // todo: could do this so only the trimmed rows are deleted.
+    this.setChildren(this.childrenToString().trim())
+    return this
   }
   destroy() {
     this.getParent()._deleteNode(this)

@@ -95,6 +95,15 @@ class TreeUtils {
     }
   }
 
+  static randomUniformInt = (min: treeNotationTypes.int, max: treeNotationTypes.int, seed = 1) => {
+    return Math.round(TreeUtils.randomUniformFloat(min, max, seed))
+  }
+
+  static randomUniformFloat = (min: number, max: number, seed = 1) => {
+    const rand = TreeUtils.makeSemiRandomFn(seed)
+    return min + (max - min) * rand()
+  }
+
   static getRange = (startIndex: number, endIndexExclusive: number, increment = 1) => {
     const range = []
     for (let index = startIndex; index < endIndexExclusive; index = index + increment) {

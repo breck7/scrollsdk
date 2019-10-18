@@ -89,6 +89,9 @@ testTree.makeSemiRandomFn = equal => {
   equal(first, expected)
   equal(jtree.Utils.makeSemiRandomFn(1)(), expected)
   equal(rand() !== first, true)
+
+  equal(jtree.Utils.randomUniformFloat(0, 100, 2), 97.42682568175951)
+  equal(jtree.Utils.randomUniformInt(0, 100, 2), 97)
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)

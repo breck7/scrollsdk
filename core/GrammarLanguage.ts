@@ -326,15 +326,15 @@ abstract class GrammarBackedNode extends TreeNode {
       const requiredCellTypeIds = def.getCellParser().getRequiredCellTypeIds()
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", "nodeType", requiredCellTypeIds.join(" ")].join(" "))
     })
-    this.getTopDownArray().forEach((node, lineNumber) => {
-      const stats = <TreeNode>usage.getNode(node.getNodeTypeId())
+    this.getTopDownArray<GrammarBackedNode>().forEach((node, lineNumber) => {
+      const stats = usage.getNode(node.getNodeTypeId())
       stats.appendLine([filepath + "-" + lineNumber, node.getWords().join(" ")].join(" "))
     })
     return usage
   }
 
   getInPlaceHighlightScopeTree() {
-    return this.getTopDownArray()
+    return this.getTopDownArray<GrammarBackedNode>()
       .map(child => child.getIndentation() + child.getLineHighlightScopes())
       .join("\n")
   }
@@ -346,7 +346,7 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   getInPlacePreludeCellTypeTreeWithNodeConstructorNames() {
-    return this.getTopDownArray()
+    return this.getTopDownArray<GrammarBackedNode>()
       .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellPreludeTypes())
       .join("\n")
   }

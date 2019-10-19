@@ -1111,21 +1111,18 @@ class TreeNode extends AbstractNode {
     if (!this._children) this._children = []
     return this._children
   }
-  _getChildren() {
-    return this._getChildrenArray()
-  }
   getLines() {
     return this.map(node => node.getLine())
   }
   getChildren() {
-    return this._getChildren().slice(0)
+    return this._getChildrenArray().slice(0)
   }
   get length() {
-    return this._getChildren().length
+    return this._getChildrenArray().length
   }
   _nodeAt(index) {
     if (index < 0) index = this.length + index
-    return this._getChildren()[index]
+    return this._getChildrenArray()[index]
   }
   nodeAt(indexOrIndexArray) {
     if (typeof indexOrIndexArray === "number") return this._nodeAt(indexOrIndexArray)
@@ -1281,7 +1278,7 @@ class TreeNode extends AbstractNode {
     }
     const parts = firstWordPath.split(edgeSymbol)
     const current = parts.shift()
-    const currentNode = this._getChildren()[this._getIndex()[current]]
+    const currentNode = this._getChildrenArray()[this._getIndex()[current]]
     return currentNode ? currentNode._getNodeByPath(parts.join(edgeSymbol)) : undefined
   }
   getNext() {
@@ -1290,7 +1287,7 @@ class TreeNode extends AbstractNode {
     const parent = this.getParent()
     const length = parent.length
     const next = index + 1
-    return next === length ? parent._getChildren()[0] : parent._getChildren()[next]
+    return next === length ? parent._getChildrenArray()[0] : parent._getChildrenArray()[next]
   }
   getPrevious() {
     if (this.isRoot()) return this
@@ -1298,7 +1295,7 @@ class TreeNode extends AbstractNode {
     const parent = this.getParent()
     const length = parent.length
     const prev = index - 1
-    return prev === -1 ? parent._getChildren()[length - 1] : parent._getChildren()[prev]
+    return prev === -1 ? parent._getChildrenArray()[length - 1] : parent._getChildrenArray()[prev]
   }
   _getUnionNames() {
     if (!this.length) return []
@@ -1668,7 +1665,7 @@ class TreeNode extends AbstractNode {
   indexOf(firstWord) {
     if (!this.has(firstWord)) return -1
     const length = this.length
-    const nodes = this._getChildren()
+    const nodes = this._getChildrenArray()
     for (let index = 0; index < length; index++) {
       if (nodes[index].getFirstWord() === firstWord) return index
     }
@@ -1681,7 +1678,7 @@ class TreeNode extends AbstractNode {
   }
   _makeIndex(startAt = 0) {
     if (!this._index || !startAt) this._index = {}
-    const nodes = this._getChildren()
+    const nodes = this._getChildrenArray()
     const newIndex = this._index
     const length = nodes.length
     for (let index = startAt; index < length; index++) {
@@ -2038,7 +2035,7 @@ class TreeNode extends AbstractNode {
   _rename(oldFirstWord, newFirstWord) {
     const index = this.indexOf(oldFirstWord)
     if (index === -1) return this
-    const node = this._getChildren()[index]
+    const node = this._getChildrenArray()[index]
     node.setFirstWord(newFirstWord)
     this._clearIndex()
     return this
@@ -2061,7 +2058,7 @@ class TreeNode extends AbstractNode {
   }
   _deleteAllChildNodesWithFirstWord(firstWord) {
     if (!this.has(firstWord)) return this
-    const allNodes = this._getChildren()
+    const allNodes = this._getChildrenArray()
     const indexesToDelete = []
     allNodes.forEach((node, index) => {
       if (node.getFirstWord() === firstWord) indexesToDelete.push(index)

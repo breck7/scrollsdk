@@ -23,6 +23,24 @@ class TreeUtils {
     }
   }
 
+  static findProjectRoot(dirName: string, projectName: string) {
+    const fs = require("fs")
+    const getProjectName = (dirName: string) => {
+      const parts = dirName.split("/")
+      const filename = parts.join("/") + "/" + "package.json"
+      if (fs.existsSync(filename) && JSON.parse(fs.readFileSync(filename, "utf8")).name === projectName) return parts.join("/") + "/"
+      parts.pop()
+      return parts
+    }
+
+    let result = getProjectName(dirName)
+    while (typeof result !== "string" && result.length > 0) {
+      result = getProjectName(result.join("/"))
+    }
+    if (result.length === 0) throw new Error(`Project root for folder ${dirName} not found.`)
+    return result
+  }
+
   static escapeRegExp(str: string) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   }

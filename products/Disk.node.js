@@ -13,6 +13,9 @@ Disk.readJson = path => JSON.parse(Disk.read(path))
 Disk.getFileNameWithoutExtension = path => Disk.getFileName(path).replace(/\.[^\.]+$/, "")
 Disk.write = (path, content) => fs.writeFileSync(path, content, "utf8")
 Disk.writeJson = (path, content) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
+Disk.createFileIfDoesNotExist = (path, initialString = "") => {
+  if (!fs.existsSync(path)) Disk.write(path, initialString)
+}
 Disk.exists = path => fs.existsSync(path)
 Disk.dir = dir => fs.readdirSync(dir).filter(file => file !== ".DS_Store")
 Disk.getFullPaths = dir => Disk.dir(dir).map(file => dir.replace(/\/$/, "") + "/" + file)
@@ -20,6 +23,7 @@ Disk.getFiles = dir => Disk.getFullPaths(dir).filter(file => fs.statSync(file).i
 Disk.getFolders = dir => Disk.getFullPaths(dir).filter(file => fs.statSync(file).isDirectory())
 Disk.getFileName = path => path.split("/").pop()
 Disk.append = (path, content) => fs.appendFileSync(path, content, "utf8")
+Disk.appendAsync = (path, content, callback) => fs.appendFile(path, content, "utf8", callback)
 Disk.readCsvAsTree = path => Disk.getTreeNode().fromCsv(Disk.read(path))
 Disk.readSsvAsTree = path => Disk.getTreeNode().fromSsv(Disk.read(path))
 Disk.readTsvAsTree = path => Disk.getTreeNode().fromTsv(Disk.read(path))

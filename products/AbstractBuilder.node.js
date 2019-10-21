@@ -23,7 +23,7 @@ class AbstractBuilder extends jtree.TreeNode {
   _combineTypeScriptFilesForNode(typeScriptScriptsInOrder) {
     // todo: prettify
     return typeScriptScriptsInOrder
-      .map(src => this._read(src))
+      .map(src => Disk.read(src))
       .map(content =>
         new TypeScriptRewriter(content)
           //.removeRequires()
@@ -39,7 +39,7 @@ class AbstractBuilder extends jtree.TreeNode {
   }
   _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder) {
     return typeScriptScriptsInOrder
-      .map(src => this._read(src))
+      .map(src => Disk.read(src))
       .map(content =>
         new TypeScriptRewriter(content)
           .removeRequires()
@@ -65,9 +65,6 @@ class AbstractBuilder extends jtree.TreeNode {
     Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
     this._prettifyFile(outputFilePath)
   }
-  _makeExecutable(file) {
-    Disk.makeExecutable(file)
-  }
   _getProductFolder() {
     return __dirname
   }
@@ -85,21 +82,11 @@ class AbstractBuilder extends jtree.TreeNode {
     }
     return outputFilePath
   }
-  _readJson(path) {
-    return JSON.parse(this._read(path))
-  }
-  _writeJson(path, obj) {
-    this._write(path, JSON.stringify(obj, null, 2))
-  }
   _updatePackageJson(packagePath, newVersion) {
-    const packageJson = this._readJson(packagePath)
+    const packageJson = Disk.readJson(packagePath)
     packageJson.version = newVersion
-    this._writeJson(packagePath, packageJson)
+    Disk.writeJson(packagePath, packageJson)
     console.log(`Updated ${packagePath} to ${newVersion}`)
-  }
-  _read(path) {
-    const fs = this.require("fs")
-    return fs.readFileSync(path, "utf8")
   }
   _mochaTest(filepath) {
     const reporter = require("tap-mocha-reporter")
@@ -107,16 +94,12 @@ class AbstractBuilder extends jtree.TreeNode {
     proc.stdout.pipe(reporter("dot"))
     proc.stderr.on("data", data => console.error("stderr: " + data.toString()))
   }
-  _write(path, str) {
-    const fs = this.require("fs")
-    return fs.writeFileSync(path, str, "utf8")
-  }
   _checkGrammarFile(grammarPath) {
     // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
     const testTree = {}
     testTree[`hardCodedGrammarCheckOf${grammarPath}`] = equal => {
       // Arrange/Act
-      const program = new jtree.GrammarProgram(this._read(grammarPath))
+      const program = new jtree.GrammarProgram(Disk.read(grammarPath))
       const errs = program.getAllErrors()
       const exampleErrors = program.getErrorsInGrammarExamples()
       //Assert

@@ -16,25 +16,24 @@ class Disk {
   static getFileNameWithoutExtension = (path: treeNotationTypes.filepath) => Disk.getFileName(path).replace(/\.[^\.]+$/, "")
   static write = (path: treeNotationTypes.filepath, content: string) => fs.writeFileSync(path, content, "utf8")
   static writeJson = (path: treeNotationTypes.filepath, content: any) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
+  static createFileIfDoesNotExist = (path: treeNotationTypes.filepath, initialString = "") => {
+    if (!fs.existsSync(path)) Disk.write(path, initialString)
+  }
   static exists = (path: treeNotationTypes.filepath) => fs.existsSync(path)
   static dir = (dir: treeNotationTypes.absoluteFolderPath) => fs.readdirSync(dir).filter((file: treeNotationTypes.filepath) => file !== ".DS_Store")
-  static getFullPaths = (dir: treeNotationTypes.absoluteFolderPath) =>
-    Disk.dir(dir).map((file: treeNotationTypes.filepath) => dir.replace(/\/$/, "") + "/" + file)
-  static getFiles = (dir: treeNotationTypes.absoluteFolderPath) =>
-    Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isFile())
-  static getFolders = (dir: treeNotationTypes.absoluteFolderPath) =>
-    Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isDirectory())
+  static getFullPaths = (dir: treeNotationTypes.absoluteFolderPath) => Disk.dir(dir).map((file: treeNotationTypes.filepath) => dir.replace(/\/$/, "") + "/" + file)
+  static getFiles = (dir: treeNotationTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isFile())
+  static getFolders = (dir: treeNotationTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isDirectory())
   static getFileName = (path: treeNotationTypes.filepath) => path.split("/").pop()
   static append = (path: treeNotationTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
+  static appendAsync = (path: treeNotationTypes.filepath, content: string, callback: Function) => fs.appendFile(path, content, "utf8", callback)
   static readCsvAsTree = (path: treeNotationTypes.filepath) => Disk.getTreeNode().fromCsv(Disk.read(path))
   static readSsvAsTree = (path: treeNotationTypes.filepath) => Disk.getTreeNode().fromSsv(Disk.read(path))
   static readTsvAsTree = (path: treeNotationTypes.filepath) => Disk.getTreeNode().fromTsv(Disk.read(path))
-  static insertIntoFile = (path: treeNotationTypes.filepath, content: string, delimiter: string) =>
-    Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
+  static insertIntoFile = (path: treeNotationTypes.filepath, content: string, delimiter: string) => Disk.write(path, Disk.stickBetween(content, Disk.read(path), delimiter))
   static detectAndReadAsTree = (path: treeNotationTypes.filepath) => Disk.detectDelimiterAndReadAsTree(Disk.read(path))
   static getAllOf = (node: treeNotationTypes.treeNode, prop: string) => node.filter((node: treeNotationTypes.treeNode) => node.getWord(0) === prop)
-  static getDelimitedChildrenAsTree = (node: treeNotationTypes.treeNode, delimiter: string = undefined) =>
-    Disk.detectDelimiterAndReadAsTree(node.childrenToString())
+  static getDelimitedChildrenAsTree = (node: treeNotationTypes.treeNode, delimiter: string = undefined) => Disk.detectDelimiterAndReadAsTree(node.childrenToString())
   static sleep = (ms: treeNotationTypes.int) => new Promise(resolve => setTimeout(resolve, ms))
   static readTree = (path: treeNotationTypes.filepath) => new (Disk.getTreeNode())(Disk.read(path))
   static sizeOf = (path: treeNotationTypes.filepath) => fs.statSync(path).size

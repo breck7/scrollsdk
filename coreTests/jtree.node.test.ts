@@ -39,6 +39,26 @@ testTree.diskTests = equal => {
   equal(Disk.exists(path), false, "file does not exist")
 }
 
+testTree.findProjectRoot = equal => {
+  const dir = jtree.Utils.findProjectRoot(__dirname, "jtree")
+  equal(typeof dir, "string")
+  equal(dir.includes("coreTests"), false, "correct parent dir selected")
+
+  try {
+    const result = jtree.Utils.findProjectRoot("/foo/bar/", "jtree")
+    equal(result, false, "error should have been thrown")
+  } catch (err) {
+    equal(true, true, "error thrown")
+  }
+
+  try {
+    jtree.Utils.findProjectRoot(__dirname + "/../", "fakeproject")
+    equal(true, false, "error should have been thrown")
+  } catch (err) {
+    equal(true, true, "error thrown")
+  }
+}
+
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
 
 export { testTree }

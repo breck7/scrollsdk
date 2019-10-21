@@ -64,7 +64,7 @@ class Builder extends AbstractBuilder {
     }
     if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
     else this._produceNodeProductFromTypeScript(inputFiles, outputFileName, transformFn)
-    if (productNode.has("executable")) this._makeExecutable(__dirname + "/products/" + outputFileName)
+    if (productNode.has("executable")) Disk.makeExecutable(__dirname + "/products/" + outputFileName)
   }
 
   buildJibJab() {
@@ -90,8 +90,8 @@ class Builder extends AbstractBuilder {
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
     const codePath = __dirname + "/core/TreeNode.ts"
-    const code = this._read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
-    this._write(codePath, code)
+    const code = Disk.read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
+    Disk.write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
     this.produceAll()
     console.log("Don't forget to update releaseNotes.md!")

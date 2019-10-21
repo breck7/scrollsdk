@@ -1,20 +1,20 @@
 #!/usr/bin/env ts-node
 //onsave jtree build produce commandLineApp.node.js
 
-const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
 const { execSync } = require("child_process")
 
 const { jtree } = require("../index.js")
 const { TreeNode, GrammarProgram, Utils } = jtree
+const { Disk } = require("../products/Disk.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class CommandLineApp {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
     this._grammarsPath = grammarsPath
-    this._initFile(grammarsPath, "name filepath")
+    Disk.createFileIfDoesNotExist(grammarsPath, "name filepath")
     this._reload() // todo: cleanup
     this._cwd = cwd
   }
@@ -29,7 +29,7 @@ class CommandLineApp {
 
   // todo: cleanup.
   _reload() {
-    this._grammarsTree = TreeNode.fromSsv(this._read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
+    this._grammarsTree = TreeNode.fromSsv(Disk.read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
   }
 
   build(commandName: string, argument: any) {
@@ -37,10 +37,10 @@ class CommandLineApp {
     let filePath = ""
     while (dir !== "/") {
       filePath = dir + "builder.ts"
-      if (fs.existsSync(filePath)) break
+      if (Disk.exists(filePath)) break
       dir = Utils._getParentFolder(dir)
     }
-    if (!fs.existsSync(filePath)) throw new Error(`No '${filePath}' found.`)
+    if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
 
     return execSync([filePath, commandName, argument].filter(f => f).join(" "), { encoding: "utf8" })
   }
@@ -50,7 +50,7 @@ class CommandLineApp {
       .split(" ")
       .map(path => {
         const distributeLine = true ? `#file ${path}\n` : ""
-        return distributeLine + " " + this._read(path).replace(/\n/g, "\n ")
+        return distributeLine + " " + Disk.read(path).replace(/\n/g, "\n ")
       })
       .join("\n")
 
@@ -59,7 +59,7 @@ class CommandLineApp {
 
   distribute(combinedFilePath: treeNotationTypes.filepath) {
     if (!combinedFilePath) throw new Error(`No combinedFilePath provided`)
-    const masterFile = new TreeNode(this._read(combinedFilePath))
+    const masterFile = new TreeNode(Disk.read(combinedFilePath))
     return masterFile.split("#file").map((file: treeNotationTypes.treeNode) => {
       const firstLine = file.nodeAt(0)
       if (firstLine.getFirstWord() !== "#file") return undefined
@@ -68,21 +68,9 @@ class CommandLineApp {
       const needsShift = !firstLine.length
       if (needsShift) firstLine.shiftYoungerSibsRight()
 
-      this._write(filepath, firstLine.childrenToString())
+      Disk.write(filepath, firstLine.childrenToString())
       return filepath
     })
-  }
-
-  _initFile(path: treeNotationTypes.filepath, initialString = "") {
-    if (!fs.existsSync(path)) this._write(path, initialString)
-  }
-
-  _write(path: treeNotationTypes.filepath, content: string) {
-    return fs.writeFileSync(path, content, "utf8")
-  }
-
-  _read(path: treeNotationTypes.filepath) {
-    return fs.readFileSync(path, "utf8")
   }
 
   // todo: improve or remove
@@ -96,7 +84,7 @@ class CommandLineApp {
       }
       const actual = this.compile(filename)
       const expectedPath = filename.replace("." + grammarName, ".compiled")
-      const expected = this._read(expectedPath)
+      const expected = Disk.read(expectedPath)
       if (expected !== actual) {
         const errorTree = new TreeNode()
         errorTree.appendLineAndChildren("expected", expected)
@@ -112,7 +100,7 @@ class CommandLineApp {
   }
 
   help() {
-    const help = this._read(__dirname + "/../commandLineApp/help.ssv") // note: we do the parent indirection for compiled reasons.
+    const help = Disk.read(__dirname + "/../commandLineApp/help.ssv") // note: we do the parent indirection for compiled reasons.
     return TreeNode.fromSsv(help).toTable()
   }
 
@@ -188,38 +176,38 @@ ${grammars.toTable()}`
 
   prettify(programPath: treeNotationTypes.treeProgramFilePath) {
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
-    const program = new programConstructor(this._read(programPath))
+    const program = new programConstructor(Disk.read(programPath))
     const original = program.toString()
     const pretty = program.sortNodesByInScopeOrder().getSortedByInheritance()
-    this._write(programPath, pretty)
+    Disk.write(programPath, pretty)
     return original === pretty ? "No change" : "File updated"
   }
 
   parse(programPath: treeNotationTypes.treeProgramFilePath) {
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
-    const program = new programConstructor(this._read(programPath))
+    const program = new programConstructor(Disk.read(programPath))
     return program.getParseTable(35)
   }
 
   sublime(grammarName: treeNotationTypes.grammarName, outputDirectory: treeNotationTypes.absoluteFolderPath = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
+    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
 
-    this._write(outputPath, grammarProgram.toSublimeSyntaxFile())
+    Disk.write(outputPath, grammarProgram.toSublimeSyntaxFile())
     return `Saved: ${outputPath}`
   }
 
   _getGrammarProgram(grammarName: treeNotationTypes.grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    return new GrammarProgram(this._read(grammarPath))
+    return new GrammarProgram(Disk.read(grammarPath))
   }
 
   compile(programPath: treeNotationTypes.treeProgramFilePath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    const grammarProgram = new GrammarProgram(this._read(grammarPath))
+    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
     return program.compile()
   }
 
@@ -236,8 +224,8 @@ ${grammars.toTable()}`
   }
 
   _getHistoryFile() {
-    this._initFile(this._getLogFilePath(), "command paramOne paramTwo timestamp\n")
-    return this._read(this._getLogFilePath())
+    Disk.createFileIfDoesNotExist(this._getLogFilePath(), "command paramOne paramTwo timestamp\n")
+    return Disk.read(this._getLogFilePath())
   }
 
   _history(grammarName: treeNotationTypes.grammarName) {
@@ -258,7 +246,7 @@ ${grammars.toTable()}`
       })
       .map((node: treeNotationTypes.treeNode) => node.get("paramOne"))
     const items = Object.keys(new TreeNode(files.join("\n")).toObject())
-    return items.filter(file => file.endsWith(grammarName)).filter(file => fs.existsSync(file))
+    return items.filter(file => file.endsWith(grammarName)).filter(file => Disk.exists(file))
   }
 
   register(grammarPath: treeNotationTypes.grammarFilePath) {
@@ -268,9 +256,9 @@ ${grammars.toTable()}`
 
   _register(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
-    const grammarProgram = new GrammarProgram(this._read(grammarPath))
+    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
     const extension = grammarProgram.getExtensionName()
-    fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${grammarPath}`, "utf8")
+    Disk.append(this._getRegistryPath(), `\n${extension} ${grammarPath}`)
     this._reload()
     return extension
   }
@@ -282,8 +270,8 @@ ${grammars.toTable()}`
     // also the usage data can be used to improve the commandLineApp app
     const line = `${one || ""} ${two || ""} ${three || ""} ${Date.now()}\n`
     const logFilePath = this._getLogFilePath()
-    this._initFile(logFilePath, "command paramOne paramTwo timestamp\n")
-    fs.appendFile(logFilePath, line, "utf8", () => {})
+    Disk.createFileIfDoesNotExist(logFilePath, "command paramOne paramTwo timestamp\n")
+    Disk.appendAsync(logFilePath, line, () => {})
   }
 
   async _run(programPath: treeNotationTypes.treeProgramFilePath) {
@@ -313,7 +301,7 @@ ${grammars.toTable()}`
     const report = new TreeNode()
     files.forEach(path => {
       try {
-        const code = this._read(path)
+        const code = Disk.read(path)
         const program = new programConstructor(code)
         const usage = program.getNodeTypeUsage(path)
         report.extend(usage.toString())
@@ -360,7 +348,7 @@ ${grammars.toTable()}`
     } else if (!action) {
       app.addToHistory()
       print(app.help())
-    } else if (fs.existsSync(action)) {
+    } else if (Disk.exists(action)) {
       app.addToHistory(undefined, action)
       const result = await app.run(action)
       print(result)

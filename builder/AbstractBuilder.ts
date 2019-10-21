@@ -28,7 +28,7 @@ class AbstractBuilder extends jtree.TreeNode {
   private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
     // todo: prettify
     return typeScriptScriptsInOrder
-      .map(src => this._read(src))
+      .map(src => Disk.read(src))
       .map(content =>
         new TypeScriptRewriter(content)
           //.removeRequires()
@@ -46,7 +46,7 @@ class AbstractBuilder extends jtree.TreeNode {
 
   private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
     return typeScriptScriptsInOrder
-      .map(src => this._read(src))
+      .map(src => Disk.read(src))
       .map(content =>
         new TypeScriptRewriter(content)
           .removeRequires()
@@ -76,10 +76,6 @@ class AbstractBuilder extends jtree.TreeNode {
     this._prettifyFile(outputFilePath)
   }
 
-  _makeExecutable(file: treeNotationTypes.filepath) {
-    Disk.makeExecutable(file)
-  }
-
   _getProductFolder() {
     return __dirname
   }
@@ -102,24 +98,11 @@ class AbstractBuilder extends jtree.TreeNode {
     return outputFilePath
   }
 
-  _readJson(path: treeNotationTypes.filepath) {
-    return JSON.parse(this._read(path))
-  }
-
-  _writeJson(path: treeNotationTypes.filepath, obj: any) {
-    this._write(path, JSON.stringify(obj, null, 2))
-  }
-
-  _updatePackageJson(packagePath: treeNotationTypes.filepath, newVersion: treeNotationTypes.semanticVersion) {
-    const packageJson = this._readJson(packagePath)
+  protected _updatePackageJson(packagePath: treeNotationTypes.filepath, newVersion: treeNotationTypes.semanticVersion) {
+    const packageJson = Disk.readJson(packagePath)
     packageJson.version = newVersion
-    this._writeJson(packagePath, packageJson)
+    Disk.writeJson(packagePath, packageJson)
     console.log(`Updated ${packagePath} to ${newVersion}`)
-  }
-
-  _read(path: treeNotationTypes.filepath) {
-    const fs = this.require("fs")
-    return fs.readFileSync(path, "utf8")
   }
 
   _mochaTest(filepath: treeNotationTypes.filepath) {
@@ -130,17 +113,12 @@ class AbstractBuilder extends jtree.TreeNode {
     proc.stderr.on("data", (data: any) => console.error("stderr: " + data.toString()))
   }
 
-  _write(path: treeNotationTypes.filepath, str: string) {
-    const fs = this.require("fs")
-    return fs.writeFileSync(path, str, "utf8")
-  }
-
   _checkGrammarFile(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
     const testTree: any = {}
     testTree[`hardCodedGrammarCheckOf${grammarPath}`] = (equal: Function) => {
       // Arrange/Act
-      const program = new jtree.GrammarProgram(this._read(grammarPath))
+      const program = new jtree.GrammarProgram(Disk.read(grammarPath))
       const errs = program.getAllErrors()
       const exampleErrors = program.getErrorsInGrammarExamples()
 

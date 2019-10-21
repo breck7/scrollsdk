@@ -344,12 +344,16 @@ class TreeNode extends AbstractNode {
   }
 
   require(moduleName: string, filePath?: string): any {
-    if (this.isNodeJs()) return require(filePath || moduleName)
-    return (<any>window)[moduleName]
+    if (!this.isNodeJs()) return (<any>window)[moduleName]
+    return require(filePath || moduleName)
   }
 
   getWordsFrom(startFrom: int) {
     return this._getWords(startFrom)
+  }
+
+  _getProjectRoot() {
+    return this.isRoot() ? "" : this.getRootNode()._getProjectRoot()
   }
 
   getSparsity() {

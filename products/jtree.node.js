@@ -20,20 +20,21 @@ class Timer {
 // TestRacer organizes things into:
 // FileCollections (sessions?)
 //  Files
-//   Methods
+//   Blocks
 //    Assertions
 class TestRacer {
-  constructor(logFunction = console.log) {
+  constructor(logFunction = console.log, customTestBlockFn) {
     this._timer = new Timer()
-    this._filesPassed = 0
-    this._filesFailed = 0
-    this._methodsFailed = 0
-    this._methodsPassed = 0
-    this._assertionsFailed = 0
-    this._assertionsPassed = 0
+    this._sessionFilesPassed = 0
+    this._sessionFilesFailed = 0
+    this._sessionBlocksFailed = 0
+    this._sessionBlocksPassed = 0
+    this._sessionAssertionsFailed = 0
+    this._sessionAssertionsPassed = 0
     this._logFunction = logFunction
+    this._customTestBlockFn = customTestBlockFn
   }
-  async _runTestMethod(testName, fn) {
+  async getTestBlockResults(testName, fn) {
     let passes = []
     let failures = []
     const assertEqual = (actual, expected, message) => {
@@ -49,66 +50,107 @@ class TestRacer {
       failures
     }
   }
-  _emitMessage(message) {
-    this._logFunction(message)
-  }
   finish() {
-    this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
- passed
-  ${this._filesPassed} files
-  ${this._methodsPassed} methods
-  ${this._assertionsPassed} assertions
- failed
-  ${this._filesFailed} files
-  ${this._methodsFailed} methods
-  ${this._assertionsFailed} assertions`)
+    this._emitSessionFinishMessage()
   }
   async runAndDone(fileName, testTree) {
     await this.runTestTree(fileName, testTree)
     this.finish()
   }
   async runTestTree(fileName, testTree) {
-    const runOnlyTheseTest = Object.keys(testTree).filter(key => key.startsWith("_"))
-    const testsToRun = runOnlyTheseTest.length ? runOnlyTheseTest : Object.keys(testTree)
-    this._emitMessage(`ready go ${testsToRun.length} test methods in file ${fileName}`)
-    const timer = new Timer()
-    let assertionsPassed = 0
-    let assertionsFailed = 0
-    let methodsFailed = 0
-    for (let testName of testsToRun) {
-      const results = await this._runTestMethod(testName, testTree[testName])
-      assertionsPassed += results.passes.length
-      assertionsFailed += results.failures.length
-      this._assertionsPassed += results.passes.length
-      this._assertionsFailed += results.failures.length
-      if (!results.failures.length) {
-        this._emitMessage(`ok method ${testName} - ${results.passes.length} passed`)
-        this._methodsPassed++
-      } else {
-        methodsFailed++
-        this._methodsFailed++
-        this._emitMessage(`failed method ${testName}`)
-        // todo: should replace not replace last newline?
-        this._emitMessage(
-          results.failures
-            .map(failure => {
-              return ` assertion ${failure[2]}
+    const testBlocksToRun = this._getTestBlocksToRun(testTree)
+    const blockCount = testBlocksToRun.length
+    this._emitStartFileMessage(blockCount, fileName)
+    const fileTimer = new Timer()
+    const fileBlockResults = await this._getAllBlockResults(testBlocksToRun, testTree)
+    const fileStats = this._aggregateBlockResultsIntoFileResults(fileBlockResults)
+    this._addFileResultsToSessionResults(fileStats)
+    this._emitEndFileMessage(fileStats, fileTimer.tick(), blockCount, fileName)
+    return this
+  }
+  async _getAllBlockResults(testBlocksToRun, testTree) {
+    const blockResults = []
+    const blockPromises = testBlocksToRun.map(async testName => {
+      const results = await this.getTestBlockResults(testName, testTree[testName])
+      this._emitBlockResultsMessage(results, testName)
+      blockResults.push(results)
+    })
+    await Promise.all(blockPromises)
+    return blockResults
+  }
+  _emitMessage(message) {
+    this._logFunction(message)
+  }
+  _getTestBlocksToRun(testTree) {
+    const runOnlyTheseTestBlocks = Object.keys(testTree).filter(key => key.startsWith("_"))
+    return runOnlyTheseTestBlocks.length ? runOnlyTheseTestBlocks : Object.keys(testTree)
+  }
+  _aggregateBlockResultsIntoFileResults(fileBlockResults) {
+    const fileStats = {
+      assertionsPassed: 0,
+      assertionsFailed: 0,
+      blocksPassed: 0,
+      blocksFailed: 0
+    }
+    fileBlockResults.forEach(results => {
+      fileStats.assertionsPassed += results.passes.length
+      fileStats.assertionsFailed += results.failures.length
+      if (results.failures.length) fileStats.blocksFailed++
+      else fileStats.blocksPassed++
+    })
+    return fileStats
+  }
+  _addFileResultsToSessionResults(fileStats) {
+    this._sessionAssertionsPassed += fileStats.assertionsPassed
+    this._sessionAssertionsFailed += fileStats.assertionsFailed
+    this._sessionBlocksPassed += fileStats.blocksPassed
+    this._sessionBlocksFailed += fileStats.blocksFailed
+    if (!fileStats.blocksFailed) this._sessionFilesPassed++
+    else this._sessionFilesFailed++
+  }
+  _emitStartFileMessage(blockCount, fileName) {
+    this._emitMessage(`start file ${blockCount} test blocks in file ${fileName}`)
+  }
+  _emitBlockResultsMessage(blockResults, testName) {
+    blockResults.failures.length ? this._emitBlockFailedMessage(blockResults, testName) : this._emitBlockPassedMessage(blockResults, testName)
+  }
+  _emitBlockPassedMessage(blockResults, testName) {
+    this._emitMessage(`ok block ${testName} - ${blockResults.passes.length} passed`)
+  }
+  _emitBlockFailedMessage(blockResults, testName) {
+    // todo: should replace not replace last newline?
+    this._emitMessage(`failed block ${testName}`)
+    this._emitMessage(
+      blockResults.failures
+        .map(failure => {
+          return ` assertion ${failure[2]}
  actual ${failure[0].toString().replace(/\n/g, "\n  ")}
  expected ${failure[1].toString().replace(/\n/g, "\n  ")}`
-            })
-            .join("\n")
-        )
-      }
-    }
-    const elapsed = timer.tick()
-    if (!methodsFailed) {
-      this._filesPassed++
-      this._emitMessage(`won ${fileName} in ${elapsed}ms. ${testsToRun.length} methods and ${assertionsPassed} assertions passed.`)
-    } else {
-      this._filesFailed++
-      this._emitMessage(`lost ${fileName} over ${elapsed}ms. ${methodsFailed} methods and ${assertionsFailed} failed. ${testsToRun.length - methodsFailed} methods and ${assertionsPassed} assertions passed`)
-    }
-    return this
+        })
+        .join("\n")
+    )
+  }
+  _emitFilePassedMessage(fileStats, fileTimeElapsed, blockCount, fileName) {
+    this._emitMessage(`ok file ${fileName} in ${fileTimeElapsed}ms. ${blockCount} blocks and ${fileStats.assertionsPassed} assertions passed.`)
+  }
+  _emitFileFailedMessage(fileStats, fileTimeElapsed, blockCount, fileName) {
+    this._emitMessage(
+      `failed file ${fileName} over ${fileTimeElapsed}ms. ${fileStats.blocksFailed} blocks and ${fileStats.assertionsFailed} failed. ${blockCount - fileStats.blocksFailed} blocks and ${fileStats.assertionsPassed} assertions passed`
+    )
+  }
+  _emitEndFileMessage(fileStats, fileTimeElapsed, blockCount, fileName) {
+    fileStats.blocksFailed ? this._emitFileFailedMessage(fileStats, fileTimeElapsed, blockCount, fileName) : this._emitFilePassedMessage(fileStats, fileTimeElapsed, blockCount, fileName)
+  }
+  _emitSessionFinishMessage() {
+    this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
+ passed
+  ${this._sessionFilesPassed} files
+  ${this._sessionBlocksPassed} blocks
+  ${this._sessionAssertionsPassed} assertions
+ failed
+  ${this._sessionFilesFailed} files
+  ${this._sessionBlocksFailed} blocks
+  ${this._sessionAssertionsFailed} assertions`)
   }
 }
 class TreeUtils {

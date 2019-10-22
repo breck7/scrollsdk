@@ -2,8 +2,12 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class Timer {
   constructor() {
-    this._tickTime = Date.now() - 1000 * process.uptime()
+    this._tickTime = Date.now() - (this.isNodeJs() ? 1000 * process.uptime() : 0)
     this._firstTickTime = this._tickTime
+  }
+
+  isNodeJs() {
+    return typeof exports !== "undefined"
   }
 
   private _tickTime: number
@@ -27,16 +31,21 @@ class Timer {
 //   Methods
 //    Assertions
 class TestRacer {
+  constructor(logFunction = console.log) {
+    this._logFunction = logFunction
+  }
+
+  private _logFunction: Function
   private _timer = new Timer()
 
   private async _runTestMethod(testName: string, fn: Function) {
     let passes: string[] = []
     let failures: string[][] = []
-    const assertEqual = (expected: any, actual: any, message: string) => {
+    const assertEqual = (actual: any, expected: any, message: string) => {
       if (expected === actual) {
         passes.push(message)
       } else {
-        failures.push([expected, actual, message])
+        failures.push([actual, expected, message])
       }
     }
     await fn(assertEqual)
@@ -47,7 +56,7 @@ class TestRacer {
   }
 
   private _emitMessage(message: string) {
-    console.log(message)
+    this._logFunction(message)
   }
 
   finish() {
@@ -100,8 +109,8 @@ class TestRacer {
           results.failures
             .map(failure => {
               return ` assertion ${failure[2]}
- actual ${failure[0].replace(/\n/g, "\n  ")}
- expected ${failure[0].replace(/\n/g, "\n  ")}`
+ actual ${failure[0].toString().replace(/\n/g, "\n  ")}
+ expected ${failure[1].toString().replace(/\n/g, "\n  ")}`
             })
             .join("\n")
         )

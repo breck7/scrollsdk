@@ -2,38 +2,29 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <script type="text/javascript" src="/sandbox/lib/jquery.min.js"></script>
-    <script type="text/javascript" src="/sandbox/lib/qunit.js"></script>
     <script type="text/javascript" src="/products/jtree.browser.js"></script>
     <script type="text/javascript" src="/products/core.test.browser.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-    <script type="text/javascript">
-      QUnit.config.autostart = false
-      jQuery(document).ready(function() {
-        QUnit.module("jtree")
-        Object.keys(testTree)
-          .filter(key => !key.startsWith("_"))
-          .forEach(key => {
-            // todo: cleanup. We specifically run the async b/c otherwise it takes a long time to run the non-async fns.
-            if (key.startsWith("async")) {
-              QUnit.test(key, async (assert) => {
-              await testTree[key]((expected, actual, message) => assert.strictEqual(expected, actual, message))
-            })
-            } else {
-              QUnit.test(key, (assert) => {
-              testTree[key]((expected, actual, message) => assert.strictEqual(expected, actual, message))
-            })
-            }
-          })
-        QUnit.start()
-      })
-    </script>
-    <link rel="stylesheet" type="text/css" href="/sandbox/lib/qunit.css" />
   </head>
   <body>
-    <h1 id="qunit-header"></h1>
-    <h2 id="qunit-banner"></h2>
-    <h2 id="qunit-userAgent"></h2>
-    <ol id="qunit-tests"></ol>
+    <style>
+      body {
+        white-space: pre;
+      }
+    </style>
+    <script type="text/javascript">
+      const runTestMethod = new URLSearchParams(new URL(location.href).search).get("runTestMethod")
+      let testsToRun = testTree
+      if (runTestMethod) {
+        testsToRun = {}
+        testsToRun[runTestMethod] = testTree[runTestMethod]
+      }
+      const bodyTag = document.getElementsByTagName("body")[0]
+      new jtree.Utils.TestRacer(message => {
+        const result = document.createElement("div")
+        result.innerHTML = message.replace(/ method (\w+)/, " method <a href='?runTestMethod=$1'>$1</a>")
+        bodyTag.prepend(result)
+      }).runAndDone("core.test.browser.js", testsToRun)
+    </script>
   </body>
 </html>

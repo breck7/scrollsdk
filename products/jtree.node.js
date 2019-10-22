@@ -1,8 +1,11 @@
 "use strict"
 class Timer {
   constructor() {
-    this._tickTime = Date.now() - 1000 * process.uptime()
+    this._tickTime = Date.now() - (this.isNodeJs() ? 1000 * process.uptime() : 0)
     this._firstTickTime = this._tickTime
+  }
+  isNodeJs() {
+    return typeof exports !== "undefined"
   }
   tick(msg) {
     const elapsed = Date.now() - this._tickTime
@@ -20,7 +23,7 @@ class Timer {
 //   Methods
 //    Assertions
 class TestRacer {
-  constructor() {
+  constructor(logFunction = console.log) {
     this._timer = new Timer()
     this._filesPassed = 0
     this._filesFailed = 0
@@ -28,15 +31,16 @@ class TestRacer {
     this._methodsPassed = 0
     this._assertionsFailed = 0
     this._assertionsPassed = 0
+    this._logFunction = logFunction
   }
   async _runTestMethod(testName, fn) {
     let passes = []
     let failures = []
-    const assertEqual = (expected, actual, message) => {
+    const assertEqual = (actual, expected, message) => {
       if (expected === actual) {
         passes.push(message)
       } else {
-        failures.push([expected, actual, message])
+        failures.push([actual, expected, message])
       }
     }
     await fn(assertEqual)
@@ -46,7 +50,7 @@ class TestRacer {
     }
   }
   _emitMessage(message) {
-    console.log(message)
+    this._logFunction(message)
   }
   finish() {
     this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
@@ -89,8 +93,8 @@ class TestRacer {
           results.failures
             .map(failure => {
               return ` assertion ${failure[2]}
- actual ${failure[0].replace(/\n/g, "\n  ")}
- expected ${failure[0].replace(/\n/g, "\n  ")}`
+ actual ${failure[0].toString().replace(/\n/g, "\n  ")}
+ expected ${failure[1].toString().replace(/\n/g, "\n  ")}`
             })
             .join("\n")
         )

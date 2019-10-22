@@ -105,15 +105,7 @@ class AbstractBuilder extends jtree.TreeNode {
     console.log(`Updated ${packagePath} to ${newVersion}`)
   }
 
-  _mochaTest(filepath: treeNotationTypes.filepath) {
-    const reporter = require("tap-mocha-reporter")
-    const proc = exec(`${filepath} _test`)
-
-    proc.stdout.pipe(reporter("dot"))
-    proc.stderr.on("data", (data: any) => console.error("stderr: " + data.toString()))
-  }
-
-  _checkGrammarFile(grammarPath: treeNotationTypes.grammarFilePath) {
+  _checkGrammarFile(grammarPath: treeNotationTypes.grammarFilePath, testRunner: any) {
     // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
     const testTree: any = {}
     testTree[`hardCodedGrammarCheckOf${grammarPath}`] = (equal: Function) => {
@@ -141,7 +133,7 @@ class AbstractBuilder extends jtree.TreeNode {
       if (errs.length) console.log(errs.join("\n"))
     }
 
-    jtree.Utils.runTestTree(testTree)
+    testRunner.runTestTree(grammarPath, testTree)
   }
 
   _help(filePath = process.argv[1]) {

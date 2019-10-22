@@ -138,7 +138,8 @@ class TreeBaseServer {
   }
 
   errorsToHtmlCommand() {
-    let end = TreeUtils._tick("Loaded collection....")
+    const timer = new TreeUtils.Timer()
+    let end = timer.tick("Loaded collection....")
     let lines = this._folder.getNumberOfLines()
     let lps = lines / (end / 1000)
     const errors = this._folder._getAsProgram().getAllErrors()
@@ -231,10 +232,11 @@ class TreeBaseFolder extends TreeNode {
   }
 
   cellCheckWithProgressBar(printLimit = 100) {
-    TreeUtils._tick("start...")
+    const timer = new TreeUtils.Timer()
+    timer.tick("start...")
     const program = this._getAsProgram()
     let lines = this.getNumberOfLines()
-    let lps = lines / (TreeUtils._tick("End parser") / 1000)
+    let lps = lines / (timer.tick("End parser") / 1000)
     console.log(`Parsed ${lines} line program at ${lps} lines per second`)
 
     const ProgressBar = require("progress")

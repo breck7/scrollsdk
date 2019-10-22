@@ -352,7 +352,7 @@ class TreeNode extends AbstractNode {
     return this._getWords(startFrom)
   }
 
-  _getProjectRoot() {
+  _getProjectRoot(): string {
     return this.isRoot() ? "" : this.getRootNode()._getProjectRoot()
   }
 

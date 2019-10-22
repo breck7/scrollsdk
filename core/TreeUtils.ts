@@ -1,27 +1,132 @@
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
+class Timer {
+  constructor() {
+    this._tickTime = Date.now() - 1000 * process.uptime()
+    this._firstTickTime = this._tickTime
+  }
+
+  private _tickTime: number
+  private _firstTickTime: number
+
+  tick(msg?: string) {
+    const elapsed = Date.now() - this._tickTime
+    if (msg) console.log(`${elapsed}ms ${msg}`)
+    this._tickTime = Date.now()
+    return elapsed
+  }
+
+  getTotalElapsedTime() {
+    return Date.now() - this._firstTickTime
+  }
+}
+
+// TestRacer organizes things into:
+// FileCollections (sessions?)
+//  Files
+//   Methods
+//    Assertions
+class TestRacer {
+  private _timer = new Timer()
+
+  private async _runTestMethod(testName: string, fn: Function) {
+    let passes: string[] = []
+    let failures: string[][] = []
+    const assertEqual = (expected: any, actual: any, message: string) => {
+      if (expected === actual) {
+        passes.push(message)
+      } else {
+        failures.push([expected, actual, message])
+      }
+    }
+    await fn(assertEqual)
+    return {
+      passes,
+      failures
+    }
+  }
+
+  private _emitMessage(message: string) {
+    console.log(message)
+  }
+
+  finish() {
+    this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
+ passed
+  ${this._filesPassed} files
+  ${this._methodsPassed} methods
+  ${this._assertionsPassed} assertions
+ failed
+  ${this._filesFailed} files
+  ${this._methodsFailed} methods
+  ${this._assertionsFailed} assertions`)
+  }
+
+  private _filesPassed = 0
+  private _filesFailed = 0
+  private _methodsFailed = 0
+  private _methodsPassed = 0
+  private _assertionsFailed = 0
+  private _assertionsPassed = 0
+
+  async runAndDone(fileName: string, testTree: treeNotationTypes.testTree) {
+    await this.runTestTree(fileName, testTree)
+    this.finish()
+  }
+
+  async runTestTree(fileName: string, testTree: treeNotationTypes.testTree) {
+    const runOnlyTheseTest = Object.keys(testTree).filter(key => key.startsWith("_"))
+    const testsToRun = runOnlyTheseTest.length ? runOnlyTheseTest : Object.keys(testTree)
+    this._emitMessage(`ready go ${testsToRun.length} test methods in file ${fileName}`)
+    const timer = new Timer()
+    let assertionsPassed = 0
+    let assertionsFailed = 0
+    let methodsFailed = 0
+    for (let testName of testsToRun) {
+      const results = await this._runTestMethod(testName, testTree[testName])
+      assertionsPassed += results.passes.length
+      assertionsFailed += results.failures.length
+      this._assertionsPassed += results.passes.length
+      this._assertionsFailed += results.failures.length
+      if (!results.failures.length) {
+        this._emitMessage(`ok method ${testName}`)
+        this._methodsPassed++
+      } else {
+        methodsFailed++
+        this._methodsFailed++
+        this._emitMessage(`failed method ${testName}`)
+        // todo: should replace not replace last newline?
+        this._emitMessage(
+          results.failures
+            .map(failure => {
+              return ` assertion ${failure[2]}
+ actual ${failure[0].replace(/\n/g, "\n  ")}
+ expected ${failure[0].replace(/\n/g, "\n  ")}`
+            })
+            .join("\n")
+        )
+      }
+    }
+    const elapsed = timer.tick()
+    if (!methodsFailed) {
+      this._filesPassed++
+      this._emitMessage(`won ${fileName} in ${elapsed}ms. ${testsToRun.length} methods and ${assertionsPassed} assertions passed.`)
+    } else {
+      this._filesFailed++
+      this._emitMessage(`lost ${fileName} over ${elapsed}ms. ${methodsFailed} methods and ${assertionsFailed} failed. ${testsToRun.length - methodsFailed} methods and ${assertionsPassed} assertions passed`)
+    }
+    return this
+  }
+}
+
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
   }
 
-  static async runTestTree(testTree: treeNotationTypes.testTree) {
-    // todo: browser version
-    const tap = require("tap")
-    const runOnlyTheseTest = Object.keys(testTree).filter(key => key.startsWith("_"))
-    const testsToRun = runOnlyTheseTest.length ? runOnlyTheseTest : Object.keys(testTree)
-
-    for (let testName of testsToRun) {
-      await new Promise((resolve, reject) => {
-        tap.test(testName, async (childTest: any) => {
-          await testTree[testName](childTest.equal)
-          childTest.end()
-          resolve()
-        })
-      })
-    }
-  }
+  static TestRacer = TestRacer
+  static Timer = Timer
 
   static findProjectRoot(dirName: string, projectName: string) {
     const fs = require("fs")
@@ -423,16 +528,6 @@ class TreeUtils {
       seed = Math.imul(48271, seed) | 0 % 2147483647
       return (seed & 2147483647) / 2147483648
     }
-  }
-
-  private static _tickTime: number
-  // todo: clean up verbose/console log
-  static _tick(msg: string, verbose = true) {
-    if (this._tickTime === undefined) this._tickTime = Date.now() - 1000 * process.uptime()
-    const elapsed = Date.now() - this._tickTime
-    if (verbose) console.log(`${elapsed}ms ${msg}`)
-    this._tickTime = Date.now()
-    return elapsed
   }
 
   static sampleWithoutReplacement(population: any[] = [], quantity: number, seed: number) {

@@ -97,28 +97,21 @@ class Builder extends AbstractBuilder {
     console.log("Don't forget to update releaseNotes.md!")
   }
 
-  test() {
-    this._mochaTest(__filename)
-  }
-
-  async _testDir(dir: treeNotationTypes.absoluteFolderPath) {
+  async _testDir(testRunner: any, dir: treeNotationTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
-    allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
+    const proms = allTestFiles.filter(file => file.endsWith(".grammar")).map(file => this._checkGrammarFile(file, testRunner))
+    const proms2 = allTestFiles.filter(file => file.endsWith(".test.js")).map(file => testRunner.runTestTree(file, require(file).testTree))
+    const proms3 = allTestFiles.filter(file => file.endsWith(".test.ts")).map(file => testRunner.runTestTree(file, require(file).testTree))
 
-    for (let file of allTestFiles.filter(file => file.endsWith(".test.js"))) {
-      await jtree.Utils.runTestTree(require(file))
-    }
-
-    for (let file of allTestFiles.filter(file => file.endsWith(".test.ts"))) {
-      await jtree.Utils.runTestTree(require(file).testTree)
-    }
-
-    for (let file of allTestFiles.filter(file => file.endsWith(".swarm"))) {
-      await jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar")
-    }
+    // for (let file of allTestFiles.filter(file => file.endsWith(".swarm"))) {
+    //   await jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar")
+    // }
+    await Promise.all(proms)
+    await Promise.all(proms2)
+    await Promise.all(proms3)
   }
 
-  async _test() {
+  async test() {
     let folders = `jtable
 langs
 builder
@@ -130,9 +123,10 @@ core
 coreTests
 treeBase
 treeComponentFramework`.split("\n")
-    for (let folder of folders) {
-      await this._testDir(__dirname + `/${folder}/`)
-    }
+    const testRunner = new jtree.Utils.TestRacer()
+    const proms = folders.map(folder => this._testDir(testRunner, __dirname + `/${folder}/`))
+    await Promise.all(proms)
+    testRunner.finish()
   }
 }
 

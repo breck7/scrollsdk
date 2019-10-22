@@ -18,6 +18,6 @@ testTree.runSwimTests = equal => {
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) new jtree.Utils.TestRacer().runAndDone(__filename, testTree)
 
 export { testTree }

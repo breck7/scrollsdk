@@ -98,7 +98,7 @@ class TestRacer {
       this._assertionsPassed += results.passes.length
       this._assertionsFailed += results.failures.length
       if (!results.failures.length) {
-        this._emitMessage(`ok method ${testName}`)
+        this._emitMessage(`ok method ${testName} - ${results.passes.length} passed`)
         this._methodsPassed++
       } else {
         methodsFailed++

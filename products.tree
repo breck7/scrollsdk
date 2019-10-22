@@ -17,12 +17,12 @@ browserProduct
  outputFileName jtree.browser.js
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
  removeAll window.treeNotationTypes = treeNotationTypes
- files products/treeNotationTypes.ts core/TreeUtils.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
+ files products/treeNotationTypes.ts core/TreeUtils.ts core/TestRacer.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
 nodeProduct
  outputFileName jtree.node.js
  lastLine module.exports = {jtreeNode}
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
- files products/treeNotationTypes.ts core/TreeUtils.ts core/AbstractNode.node.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts core/jtree.node.ts
+ files products/treeNotationTypes.ts core/TreeUtils.ts core/TestRacer.ts core/AbstractNode.node.ts core/TreeNode.ts core/GrammarLanguage.ts core/Upgrader.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts core/jtree.node.ts
 browserProduct
  outputFileName core.test.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes

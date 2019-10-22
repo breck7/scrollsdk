@@ -17,142 +17,6 @@ class Timer {
     return Date.now() - this._firstTickTime
   }
 }
-// TestRacer organizes things into:
-// FileCollections (sessions?)
-//  Files
-//   Blocks
-//    Assertions
-class TestRacer {
-  constructor(logFunction = console.log, customTestBlockFn) {
-    this._timer = new Timer()
-    this._sessionFilesPassed = 0
-    this._sessionFilesFailed = 0
-    this._sessionBlocksFailed = 0
-    this._sessionBlocksPassed = 0
-    this._sessionAssertionsFailed = 0
-    this._sessionAssertionsPassed = 0
-    this._logFunction = logFunction
-    this._customTestBlockFn = customTestBlockFn
-  }
-  async getTestBlockResults(testName, fn) {
-    let passes = []
-    let failures = []
-    const assertEqual = (actual, expected, message) => {
-      if (expected === actual) {
-        passes.push(message)
-      } else {
-        failures.push([actual, expected, message])
-      }
-    }
-    await fn(assertEqual)
-    return {
-      passes,
-      failures
-    }
-  }
-  finish() {
-    this._emitSessionFinishMessage()
-  }
-  async runAndDone(fileName, testTree) {
-    await this.runTestTree(fileName, testTree)
-    this.finish()
-  }
-  async runTestTree(fileName, testTree) {
-    const testBlocksToRun = this._getTestBlocksToRun(testTree)
-    const blockCount = testBlocksToRun.length
-    this._emitStartFileMessage(blockCount, fileName)
-    const fileTimer = new Timer()
-    const fileBlockResults = await this._getAllBlockResults(testBlocksToRun, testTree)
-    const fileStats = this._aggregateBlockResultsIntoFileResults(fileBlockResults)
-    this._addFileResultsToSessionResults(fileStats)
-    this._emitEndFileMessage(fileStats, fileTimer.tick(), blockCount, fileName)
-    return this
-  }
-  async _getAllBlockResults(testBlocksToRun, testTree) {
-    const blockResults = []
-    const blockPromises = testBlocksToRun.map(async testName => {
-      const results = await this.getTestBlockResults(testName, testTree[testName])
-      this._emitBlockResultsMessage(results, testName)
-      blockResults.push(results)
-    })
-    await Promise.all(blockPromises)
-    return blockResults
-  }
-  _emitMessage(message) {
-    this._logFunction(message)
-  }
-  _getTestBlocksToRun(testTree) {
-    const runOnlyTheseTestBlocks = Object.keys(testTree).filter(key => key.startsWith("_"))
-    return runOnlyTheseTestBlocks.length ? runOnlyTheseTestBlocks : Object.keys(testTree)
-  }
-  _aggregateBlockResultsIntoFileResults(fileBlockResults) {
-    const fileStats = {
-      assertionsPassed: 0,
-      assertionsFailed: 0,
-      blocksPassed: 0,
-      blocksFailed: 0
-    }
-    fileBlockResults.forEach(results => {
-      fileStats.assertionsPassed += results.passes.length
-      fileStats.assertionsFailed += results.failures.length
-      if (results.failures.length) fileStats.blocksFailed++
-      else fileStats.blocksPassed++
-    })
-    return fileStats
-  }
-  _addFileResultsToSessionResults(fileStats) {
-    this._sessionAssertionsPassed += fileStats.assertionsPassed
-    this._sessionAssertionsFailed += fileStats.assertionsFailed
-    this._sessionBlocksPassed += fileStats.blocksPassed
-    this._sessionBlocksFailed += fileStats.blocksFailed
-    if (!fileStats.blocksFailed) this._sessionFilesPassed++
-    else this._sessionFilesFailed++
-  }
-  _emitStartFileMessage(blockCount, fileName) {
-    this._emitMessage(`start file ${blockCount} test blocks in file ${fileName}`)
-  }
-  _emitBlockResultsMessage(blockResults, testName) {
-    blockResults.failures.length ? this._emitBlockFailedMessage(blockResults, testName) : this._emitBlockPassedMessage(blockResults, testName)
-  }
-  _emitBlockPassedMessage(blockResults, testName) {
-    this._emitMessage(`ok block ${testName} - ${blockResults.passes.length} passed`)
-  }
-  _emitBlockFailedMessage(blockResults, testName) {
-    // todo: should replace not replace last newline?
-    this._emitMessage(`failed block ${testName}`)
-    this._emitMessage(
-      blockResults.failures
-        .map(failure => {
-          return ` assertion ${failure[2]}
- actual ${failure[0].toString().replace(/\n/g, "\n  ")}
- expected ${failure[1].toString().replace(/\n/g, "\n  ")}`
-        })
-        .join("\n")
-    )
-  }
-  _emitFilePassedMessage(fileStats, fileTimeElapsed, blockCount, fileName) {
-    this._emitMessage(`ok file ${fileName} in ${fileTimeElapsed}ms. ${blockCount} blocks and ${fileStats.assertionsPassed} assertions passed.`)
-  }
-  _emitFileFailedMessage(fileStats, fileTimeElapsed, blockCount, fileName) {
-    this._emitMessage(
-      `failed file ${fileName} over ${fileTimeElapsed}ms. ${fileStats.blocksFailed} blocks and ${fileStats.assertionsFailed} failed. ${blockCount - fileStats.blocksFailed} blocks and ${fileStats.assertionsPassed} assertions passed`
-    )
-  }
-  _emitEndFileMessage(fileStats, fileTimeElapsed, blockCount, fileName) {
-    fileStats.blocksFailed ? this._emitFileFailedMessage(fileStats, fileTimeElapsed, blockCount, fileName) : this._emitFilePassedMessage(fileStats, fileTimeElapsed, blockCount, fileName)
-  }
-  _emitSessionFinishMessage() {
-    this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
- passed
-  ${this._sessionFilesPassed} files
-  ${this._sessionBlocksPassed} blocks
-  ${this._sessionAssertionsPassed} assertions
- failed
-  ${this._sessionFilesFailed} files
-  ${this._sessionBlocksFailed} blocks
-  ${this._sessionAssertionsFailed} assertions`)
-  }
-}
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
@@ -570,7 +434,6 @@ class TreeUtils {
     }
   }
 }
-TreeUtils.TestRacer = TestRacer
 TreeUtils.Timer = Timer
 //http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links#21925491
 TreeUtils.linkify = text => {
@@ -612,6 +475,170 @@ TreeUtils.getRange = (startIndex, endIndexExclusive, increment = 1) => {
 }
 TreeUtils.MAX_INT = Math.pow(2, 32) - 1
 window.TreeUtils = TreeUtils
+class TestRacerTestBlock {
+  constructor(testFile, testName, fn) {
+    this._parentFile = testFile
+    this._testName = testName
+    this._testFn = fn
+  }
+  _emitMessage(message) {
+    this._parentFile.getRunner()._emitMessage(message)
+  }
+  async execute() {
+    let passes = []
+    let failures = []
+    const assertEqual = (actual, expected, message) => {
+      if (expected === actual) {
+        passes.push(message)
+      } else {
+        failures.push([actual, expected, message])
+      }
+    }
+    await this._testFn(assertEqual)
+    failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
+    return {
+      passes,
+      failures
+    }
+  }
+  _emitBlockPassedMessage(passes) {
+    this._emitMessage(`ok block ${this._testName} - ${passes.length} passed`)
+  }
+  _emitBlockFailedMessage(failures) {
+    // todo: should replace not replace last newline?
+    this._emitMessage(`failed block ${this._testName}`)
+    this._emitMessage(
+      failures
+        .map(failure => {
+          return ` assertion ${failure[2]}
+ actual ${failure[0].toString().replace(/\n/g, "\n  ")}
+ expected ${failure[1].toString().replace(/\n/g, "\n  ")}`
+        })
+        .join("\n")
+    )
+  }
+}
+class TestRacerFile {
+  constructor(runner, testTree, fileName) {
+    this._runner = runner
+    this._testTree = {}
+    this._fileName = fileName
+    Object.keys(testTree).forEach(key => {
+      this._testTree[key] = new TestRacerTestBlock(this, key, testTree[key])
+    })
+  }
+  getRunner() {
+    return this._runner
+  }
+  _emitMessage(message) {
+    this.getRunner()._emitMessage(message)
+  }
+  _filterSkippedTests() {
+    const runOnlyTheseTestBlocks = Object.keys(this._testTree).filter(key => key.startsWith("_"))
+    return runOnlyTheseTestBlocks.length ? runOnlyTheseTestBlocks : Object.keys(this._testTree)
+  }
+  async execute() {
+    const tests = this._filterSkippedTests()
+    this._emitStartFileMessage(tests.length)
+    const fileTimer = new TreeUtils.Timer()
+    const blockResults = []
+    const blockPromises = tests.map(async testName => {
+      const results = await this._testTree[testName].execute()
+      blockResults.push(results)
+    })
+    await Promise.all(blockPromises)
+    const fileStats = this._aggregateBlockResultsIntoFileResults(blockResults)
+    const fileTimeElapsed = fileTimer.tick()
+    fileStats.blocksFailed ? this._emitFileFailedMessage(fileStats, fileTimeElapsed, tests.length) : this._emitFilePassedMessage(fileStats, fileTimeElapsed, tests.length)
+    return fileStats
+  }
+  _aggregateBlockResultsIntoFileResults(fileBlockResults) {
+    const fileStats = {
+      assertionsPassed: 0,
+      assertionsFailed: 0,
+      blocksPassed: 0,
+      blocksFailed: 0
+    }
+    fileBlockResults.forEach(results => {
+      fileStats.assertionsPassed += results.passes.length
+      fileStats.assertionsFailed += results.failures.length
+      if (results.failures.length) fileStats.blocksFailed++
+      else fileStats.blocksPassed++
+    })
+    return fileStats
+  }
+  _emitStartFileMessage(blockCount) {
+    this._emitMessage(`start file ${blockCount} test blocks in file ${this._fileName}`)
+  }
+  _emitFilePassedMessage(fileStats, fileTimeElapsed, blockCount) {
+    this._emitMessage(`ok file ${this._fileName} in ${fileTimeElapsed}ms. ${blockCount} blocks and ${fileStats.assertionsPassed} assertions passed.`)
+  }
+  _emitFileFailedMessage(fileStats, fileTimeElapsed, blockCount) {
+    this._emitMessage(
+      `failed file ${this._fileName} over ${fileTimeElapsed}ms. ${fileStats.blocksFailed} blocks and ${fileStats.assertionsFailed} failed. ${blockCount - fileStats.blocksFailed} blocks and ${fileStats.assertionsPassed} assertions passed`
+    )
+  }
+}
+class TestRacer {
+  constructor(fileTestTree) {
+    this._logFunction = console.log
+    this._timer = new TreeUtils.Timer()
+    this._sessionFilesPassed = 0
+    this._sessionFilesFailed = 0
+    this._sessionBlocksFailed = 0
+    this._sessionBlocksPassed = 0
+    this._sessionAssertionsFailed = 0
+    this._sessionAssertionsPassed = 0
+    this._fileTestTree = {}
+    Object.keys(fileTestTree).forEach(fileName => {
+      this._fileTestTree[fileName] = new TestRacerFile(this, fileTestTree[fileName], fileName)
+    })
+  }
+  setLogFunction(logFunction) {
+    this._logFunction = logFunction
+  }
+  _addFileResultsToSessionResults(fileStats) {
+    this._sessionAssertionsPassed += fileStats.assertionsPassed
+    this._sessionAssertionsFailed += fileStats.assertionsFailed
+    this._sessionBlocksPassed += fileStats.blocksPassed
+    this._sessionBlocksFailed += fileStats.blocksFailed
+    if (!fileStats.blocksFailed) this._sessionFilesPassed++
+    else this._sessionFilesFailed++
+  }
+  async execute() {
+    const proms = Object.values(this._fileTestTree).map(async testFile => {
+      const results = await testFile.execute()
+      this._addFileResultsToSessionResults(results)
+    })
+    await Promise.all(proms)
+    return this
+  }
+  finish() {
+    this._emitSessionFinishMessage()
+  }
+  _emitMessage(message) {
+    this._logFunction(message)
+  }
+  _emitSessionFinishMessage() {
+    this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
+ passed
+  ${this._sessionFilesPassed} files
+  ${this._sessionBlocksPassed} blocks
+  ${this._sessionAssertionsPassed} assertions
+ failed
+  ${this._sessionFilesFailed} files
+  ${this._sessionBlocksFailed} blocks
+  ${this._sessionAssertionsFailed} assertions`)
+  }
+  static async testSingleFile(fileName, testTree) {
+    const obj = {}
+    obj[fileName] = testTree
+    const session = new TestRacer(obj)
+    await session.execute()
+    session.finish()
+  }
+}
+window.TestRacer = TestRacer
 let _jtreeLatestTime = 0
 let _jtreeMinTimeIncrement = 0.000000000001
 class AbstractNode {
@@ -5269,6 +5296,7 @@ window.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
 class jtree {}
 jtree.GrammarBackedNode = GrammarBackedNode
 jtree.Utils = TreeUtils
+jtree.TestRacer = TestRacer
 jtree.TreeEvents = TreeEvents
 jtree.TreeNode = TreeNode
 jtree.ExtendibleTreeNode = ExtendibleTreeNode

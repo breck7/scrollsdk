@@ -105,7 +105,7 @@ class AbstractBuilder extends jtree.TreeNode {
     console.log(`Updated ${packagePath} to ${newVersion}`)
   }
 
-  _checkGrammarFile(grammarPath: treeNotationTypes.grammarFilePath, testRunner: any) {
+  makeGrammarFileTestTree(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
     const testTree: any = {}
     testTree[`hardCodedGrammarCheckOf${grammarPath}`] = (equal: Function) => {
@@ -133,7 +133,7 @@ class AbstractBuilder extends jtree.TreeNode {
       if (errs.length) console.log(errs.join("\n"))
     }
 
-    testRunner.runTestTree(grammarPath, testTree)
+    return testTree
   }
 
   _help(filePath = process.argv[1]) {

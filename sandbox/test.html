@@ -25,11 +25,13 @@
         testsToRun[runTestMethod] = testTree[runTestMethod]
       }
       const bodyTag = document.getElementsByTagName("body")[0]
-      new jtree.Utils.TestRacer(message => {
+      const fileTree = {}
+      fileTree.core = testsToRun
+      new jtree.TestRacer(fileTree).setLogFunction(message => {
         const result = document.createElement("div")
         result.innerHTML = message.replace(/ method (\w+)/, " method <a href='?runTestMethod=$1'>$1</a>")
         bodyTag.prepend(result)
-      }).runAndDone("core.test.browser.js", testsToRun)
+      }).execute()
     </script>
   </body>
 </html>

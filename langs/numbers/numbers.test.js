@@ -18,5 +18,5 @@ testTree.all = equal => {
   equal(new numbers(`+ 2 2 1 1`).executeSync().join(""), `6`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new jtree.Utils.TestRacer().runAndDone(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 module.exports = { testTree }

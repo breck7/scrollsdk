@@ -3896,6 +3896,6 @@ testTree.queryMethods = equal => {
   )
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new jtree.Utils.TestRacer().runAndDone(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

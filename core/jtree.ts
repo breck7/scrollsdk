@@ -1,5 +1,6 @@
 import { TreeUtils } from "./TreeUtils"
 import { TreeNode, ExtendibleTreeNode, TreeEvents } from "./TreeNode"
+import { TestRacer } from "./TestRacer"
 
 import { GrammarProgram, GrammarBackedNode } from "./GrammarLanguage"
 import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
@@ -8,6 +9,7 @@ import { TreeNotationCodeMirrorMode } from "./TreeNotationCodeMirrorMode"
 class jtree {
   static GrammarBackedNode = GrammarBackedNode
   static Utils = TreeUtils
+  static TestRacer = TestRacer
   static TreeEvents = TreeEvents
   static TreeNode = TreeNode
   static ExtendibleTreeNode = ExtendibleTreeNode

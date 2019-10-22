@@ -58,7 +58,7 @@ testTree.emojis = equal => {
   equal(grammarFile, Disk.read(__dirname + "/UnknownGrammar.expectedEmoji.grammar"), "predicted grammar correct")
 }
 
-testTree._inferAll = equal => {
+testTree.inferAll = equal => {
   // Arrange/Act
   ;["hakon", "swarm", "dug", "stump", "project", "jibberish", "config", "iris", "dumbdown", "jibjab", "fire", "stamp", "zin", "newlang"].map(name => {
     // Arrange

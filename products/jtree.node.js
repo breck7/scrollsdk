@@ -529,6 +529,12 @@ class TestRacerFile {
   getRunner() {
     return this._runner
   }
+  get length() {
+    return Object.values(this._testTree).length
+  }
+  get skippedLength() {
+    return this.length - this._filterSkippedTests().length
+  }
   _emitMessage(message) {
     this.getRunner()._emitMessage(message)
   }
@@ -605,6 +611,7 @@ class TestRacer {
     else this._sessionFilesFailed++
   }
   async execute() {
+    this._emitSessionPlanMessage()
     const proms = Object.values(this._fileTestTree).map(async testFile => {
       const results = await testFile.execute()
       this._addFileResultsToSessionResults(results)
@@ -617,6 +624,16 @@ class TestRacer {
   }
   _emitMessage(message) {
     this._logFunction(message)
+  }
+  get length() {
+    return Object.values(this._fileTestTree).length
+  }
+  _emitSessionPlanMessage() {
+    let blocks = 0
+    let skippedLength = 0
+    Object.values(this._fileTestTree).forEach(value => (blocks += value.length))
+    Object.values(this._fileTestTree).forEach(value => (skippedLength += value.skippedLength))
+    this._emitMessage(`${this.length} files and ${blocks} blocks to run. ${skippedLength} skipped blocks.`)
   }
   _emitSessionFinishMessage() {
     this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms

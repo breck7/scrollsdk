@@ -1,6 +1,9 @@
 import { TreeUtils } from "./TreeUtils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
+// todo: ensure we have key features from http://testanything.org/tap-version-13-specification.html
+// todo: be able to compile to TAP 13?
+
 declare type fileTestTree = { [fileName: string]: treeNotationTypes.testTree }
 
 class TestRacerTestBlock {
@@ -67,6 +70,14 @@ class TestRacerFile {
 
   getRunner() {
     return this._runner
+  }
+
+  get length() {
+    return Object.values(this._testTree).length
+  }
+
+  get skippedLength() {
+    return this.length - this._filterSkippedTests().length
   }
 
   private _emitMessage(message: string) {
@@ -162,6 +173,7 @@ class TestRacer {
   }
 
   async execute() {
+    this._emitSessionPlanMessage()
     const proms = Object.values(this._fileTestTree).map(async testFile => {
       const results = await testFile.execute()
       this._addFileResultsToSessionResults(results)
@@ -176,6 +188,18 @@ class TestRacer {
 
   _emitMessage(message: string) {
     this._logFunction(message)
+  }
+
+  get length() {
+    return Object.values(this._fileTestTree).length
+  }
+
+  private _emitSessionPlanMessage() {
+    let blocks = 0
+    let skippedLength = 0
+    Object.values(this._fileTestTree).forEach(value => (blocks += value.length))
+    Object.values(this._fileTestTree).forEach(value => (skippedLength += value.skippedLength))
+    this._emitMessage(`${this.length} files and ${blocks} blocks to run. ${skippedLength} skipped blocks.`)
   }
 
   private _emitSessionFinishMessage() {

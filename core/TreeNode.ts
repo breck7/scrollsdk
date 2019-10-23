@@ -851,6 +851,11 @@ class TreeNode extends AbstractNode {
     return "\n"
   }
 
+  format() {
+    this.forEach(child => child.format())
+    return this
+  }
+
   compile(): string {
     return this.map(child => child.compile()).join(this._getChildJoinCharacter())
   }
@@ -937,7 +942,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  format(str: treeNotationTypes.formatString): string {
+  evalTemplateString(str: treeNotationTypes.templateString): string {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }

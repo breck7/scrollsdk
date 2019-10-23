@@ -2,6 +2,9 @@
 ===================
 - Fix: sweepercraft perf fix
 - Breaking: removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
+- Breaking: format() is now evalTemplateString()
+- Infra: Created TestRacer and moved tests and swarm to that
+- Infra: removed qunit, tap, and tap mocha dependencies
 
 43.0.0 / 2019-10-07
 ===================

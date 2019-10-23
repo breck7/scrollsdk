@@ -174,7 +174,7 @@ abstract class GrammarBackedNode extends TreeNode {
     return undefined
   }
 
-  sortNodesByInScopeOrder() {
+  private _sortNodesByInScopeOrder() {
     const nodeTypeOrder = this.getDefinition()._getMyInScopeNodeTypeIds()
     if (!nodeTypeOrder.length) return this
     const orderMap: treeNotationTypes.stringMap = {}
@@ -301,22 +301,24 @@ abstract class GrammarBackedNode extends TreeNode {
     }
   }
 
-  getSortedByInheritance() {
-    const clone = new ExtendibleTreeNode(this.clone())
-    const familyTree = new GrammarProgram(clone.toString()).getNodeTypeFamilyTree()
+  private _sortWithParentNodeTypesUpTop() {
+    const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree()
     const rank: treeNotationTypes.stringMap = {}
     familyTree.getTopDownArray().forEach((node, index) => {
       rank[node.getWord(0)] = index
     })
     const nodeAFirst = -1
     const nodeBFirst = 1
-    clone.sort((nodeA, nodeB) => {
+    this.sort((nodeA, nodeB) => {
       const nodeARank = rank[nodeA.getWord(0)]
       const nodeBRank = rank[nodeB.getWord(0)]
       return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst
     })
+    return this
+  }
 
-    return clone
+  format() {
+    return this._sortNodesByInScopeOrder()._sortWithParentNodeTypesUpTop()
   }
 
   getNodeTypeUsage(filepath = "") {
@@ -1432,6 +1434,21 @@ class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantBoolean extends GrammarNodeTypeConstant {}
 
+class JavascriptCustomMethodsBlock extends TreeNode {
+  format() {
+    if (this.isNodeJs()) {
+      const template = `class FOO{ ${this.childrenToString()}}`
+      this.setChildren(
+        require("prettier")
+          .format(template, { semi: false, parser: "babel", printWidth: 240 })
+          .replace("class FOO {", "")
+          .replace(/\s+\}\s+$/, "")
+      )
+    }
+    return this
+  }
+}
+
 abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   createParser() {
     // todo: some of these should just be on nonRootNodes
@@ -1469,6 +1486,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.example] = GrammarExampleNode
+    map[GrammarConstants.javascript] = JavascriptCustomMethodsBlock
     return new TreeNode.Parser(undefined, map)
   }
 
@@ -1988,6 +2006,14 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     script.innerHTML = code
     document.head.appendChild(script)
     return (<any>window)[name]
+  }
+
+  format() {
+    super.format()
+    this.getTopDownArray().forEach(child => {
+      child.format()
+    })
+    return this
   }
 
   // todo: better formalize the source maps pattern somewhat used here by getAllErrors

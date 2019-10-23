@@ -236,7 +236,7 @@ testTree.preludeTypes = equal => {
   )
 }
 
-testTree.prettify = equal => {
+testTree.format = equal => {
   // Arrange
   const normalCode = `someLangNode
  root
@@ -258,14 +258,11 @@ hueNode
 saturationNode
  extends colorPropertiesNode`
   const grammarProgram = makeGrammarProgram(normalCode)
-  const pretty = grammarProgram
-    .sortNodesByInScopeOrder()
-    .getSortedByInheritance()
-    .toString()
-  equal(pretty, normalCode, "code is already in pretty form")
+  const formatted = grammarProgram.format().toString()
+  equal(formatted, normalCode, "code is already in formatted form")
 }
 
-testTree.prettifyDo = equal => {
+testTree.formatDo = equal => {
   // Arrange
   const unsortedCode = `someLangNode
  root
@@ -294,8 +291,7 @@ h1Node
   // Act/Assert
   equal(
     makeGrammarProgram(unsortedCode)
-      .sortNodesByInScopeOrder()
-      .getSortedByInheritance()
+      .format()
       .toString(),
     sortedCode,
     "code was fixed"

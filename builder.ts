@@ -73,7 +73,7 @@ class Builder extends AbstractBuilder {
     combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
-    new CommandLineApp().prettify(path)
+    new CommandLineApp().format(path)
   }
 
   _getProductFolder() {

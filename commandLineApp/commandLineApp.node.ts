@@ -174,13 +174,13 @@ ${grammars.toTable()}`
     return `Starting sandbox on port ${port}`
   }
 
-  prettify(programPath: treeNotationTypes.treeProgramFilePath) {
+  format(programPath: treeNotationTypes.treeProgramFilePath) {
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
     const program = new programConstructor(Disk.read(programPath))
     const original = program.toString()
-    const pretty = program.sortNodesByInScopeOrder().getSortedByInheritance()
-    Disk.write(programPath, pretty)
-    return original === pretty ? "No change" : "File updated"
+    const formatted = program.format().toString()
+    Disk.write(programPath, formatted)
+    return original === formatted ? "No change" : "File updated"
   }
 
   parse(programPath: treeNotationTypes.treeProgramFilePath) {

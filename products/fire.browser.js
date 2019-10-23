@@ -104,17 +104,19 @@ fireNode
  inScope hashbangNode abstractTerminalNode abstractNonTerminalNode
  catchAllNodeType errorNode
  javascript
-  async execute() { return this.executeSync() }
+  async execute() {
+   return this.executeSync()
+  }
   executeSync() {
-    let outputLines = []
-    const _originalConsoleLog = console.log
-    const tempConsoleLog = (...params) => outputLines.push(params)
-    console.log = tempConsoleLog
-    const compiled = this.compile("js")
-    eval(compiled)
-    console.log = _originalConsoleLog
-    console.log(outputLines.join("\\n"))
-    return outputLines
+   let outputLines = []
+   const _originalConsoleLog = console.log
+   const tempConsoleLog = (...params) => outputLines.push(params)
+   console.log = tempConsoleLog
+   const compiled = this.compile("js")
+   eval(compiled)
+   console.log = _originalConsoleLog
+   console.log(outputLines.join("\\n"))
+   return outputLines
   }
 abstractNonTerminalNode
  inScope abstractTerminalNode abstractNonTerminalNode

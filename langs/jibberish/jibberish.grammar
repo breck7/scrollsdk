@@ -16,7 +16,9 @@ jibberishNode
  root
  description A useless Tree Language built for testing Tree Notation code.
  javascript
-  executeSync() { return 42 }
+  executeSync() {
+   return 42
+  }
  compilesTo txt
  catchAllNodeType errorNode
  inScope topLevelNode textNode someAbstractClassNode
@@ -74,7 +76,7 @@ xColumnNameNode
  cells topLevelPropertyCell columnNameEnumCell
  javascript
   getRunTimeEnumOptions(cell) {
-    return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
+   return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
  extends topLevelNode
 lightbulbStateNode

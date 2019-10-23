@@ -22,7 +22,7 @@ arrowNode
  inScope chargeNode
  javascript
   compile() {
-    return this.toJsonSubset()
+   return this.toJsonSubset()
   }
 chargeNode
  inScope amountNode currencyNode descriptionNode tokenNode cardNumberNode
@@ -30,10 +30,12 @@ chargeNode
  cells keywordCell
  javascript
   executeSync() {
-    const card = this.get("cardNumber")
-    return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
+   const card = this.get("cardNumber")
+   return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
   }
-  async execute() { return this.executeSync() }
+  async execute() {
+   return this.executeSync()
+  }
 cardNumberNode
  cells keywordCell cardNumberCell
  required

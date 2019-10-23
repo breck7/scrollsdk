@@ -23,9 +23,11 @@ abstractArithmeticReducerNode
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   executeSync() {
-    return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersCell[0])
+   return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersCell[0])
   }
-  async execute() { return this.executeSync() }
+  async execute() {
+   return this.executeSync()
+  }
  inScope abstractArithmeticReducerNode commentNode
  abstract
  cells operatorCell

@@ -47,12 +47,14 @@ hakonNode
  inScope commentNode
  catchAllNodeType selectorNode
  javascript
-  getSelector() { return "" }
+  getSelector() {
+   return ""
+  }
   compile() {
-    return this.getTopDownArray()
-      .filter(node => node.isSelectorNode)
-      .map(child => child.compile())
-      .join("")
+   return this.getTopDownArray()
+    .filter(node => node.isSelectorNode)
+    .map(child => child.compile())
+    .join("")
   }
  example A basic example
   body
@@ -67,7 +69,9 @@ abstractPropertyNode
  catchAllCellType cssValueCell
  catchAllNodeType errorNode
  javascript
-  compile(spaces) { return \`\${spaces}\${this.getFirstWord()}: \${this.getContent()};\` }
+  compile(spaces) {
+   return \`\${spaces}\${this.getFirstWord()}: \${this.getContent()};\`
+  }
  abstract
  cells propertyKeywordCell
 alignContentNode
@@ -617,23 +621,23 @@ selectorNode
  boolean isSelectorNode true
  javascript
   getSelector() {
-    const parentSelector = this.getParent().getSelector()
-    return this.getFirstWord()
-      .split(",")
-      .map(part => {
-        if (part.startsWith("&")) return parentSelector + part.substr(1)
-        return parentSelector ? parentSelector + " " + part : part
-      })
-      .join(",")
+   const parentSelector = this.getParent().getSelector()
+   return this.getFirstWord()
+    .split(",")
+    .map(part => {
+     if (part.startsWith("&")) return parentSelector + part.substr(1)
+     return parentSelector ? parentSelector + " " + part : part
+    })
+    .join(",")
   }
   compile() {
-    const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
-    if (!propertyNodes.length) return ""
-    const spaces = "  "
-    return \`\${this.getSelector()} {
+   const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
+   if (!propertyNodes.length) return ""
+   const spaces = "  "
+   return \`\${this.getSelector()} {
   \${propertyNodes.map(child => child.compile(spaces)).join("\\n")}
   }\\n\`
-    }
+  }
  cells selectorCell`)
       return this._cachedGrammarProgramRoot
     }

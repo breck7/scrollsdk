@@ -212,6 +212,21 @@ javascriptNode
  description Provide raw javascript code that will be inserted into a node type's class.
  catchAllNodeType catchAllJavascriptCodeLineNode
  extends abstractNodeTypeRuleNode
+ javascript
+  format() {
+   if (this.isNodeJs()) {
+    const template = `class FOO{ ${this.childrenToString()}}`
+    this.setChildren(
+     require("prettier")
+      .format(template, { semi: false, useTabs: true, parser: "babel", printWidth: 240 })
+      .replace(/class FOO \{\s+/, "")
+      .replace(/\s+\}\s+$/, "")
+      .replace(/\n\t/g, "\n") // drop one level of indent
+      .replace(/\t/g, " ") // we used tabs instead of spaces to be able to dedent without breaking literals.
+    )
+   }
+   return this
+  }
 matchNode
  cells propertyKeywordCell stringCell
  description If present, this word will be used as the first word instead of the nodeTypeId.

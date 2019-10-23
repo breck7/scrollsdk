@@ -17,8 +17,8 @@ dugNode
  catchAllNodeType errorNode
  javascript
   compile() {
-    const res = super.compile()
-    return JSON.stringify(JSON.parse(res), null, 2)
+   const res = super.compile()
+   return JSON.stringify(JSON.parse(res), null, 2)
   }
 valueNode
  cells keywordCell

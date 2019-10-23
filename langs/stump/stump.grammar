@@ -24,172 +24,174 @@ stumpNode
    h1 hello world
  compilesTo html
  javascript
-  compile() { return this.toHtml() }
+  compile() {
+   return this.toHtml()
+  }
 abstractHtmlTagNode
  inScope bernNode abstractHtmlTagNode abstractHtmlAttributeNode
  catchAllCellType anyHtmlContentCell
  javascript
   getTag() {
-    // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
-    const firstWord = this.getFirstWord()
-    const map = {
-      titleTag: "title",
-      styleTag: "style"
-    }
-    return map[firstWord] || firstWord
+   // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
+   const firstWord = this.getFirstWord()
+   const map = {
+    titleTag: "title",
+    styleTag: "style"
+   }
+   return map[firstWord] || firstWord
   }
   _getHtmlJoinByCharacter() {
-    return ``
+   return ``
   }
   toHtmlWithSuids() {
-    return this._toHtml(undefined, true)
+   return this._toHtml(undefined, true)
   }
   _getOneLiner() {
-    const oneLinerWords = this.getWordsFrom(1)
-    return oneLinerWords.length ? oneLinerWords.join(" ") : ""
+   const oneLinerWords = this.getWordsFrom(1)
+   return oneLinerWords.length ? oneLinerWords.join(" ") : ""
   }
   shouldCollapse() {
-    return this.has("stumpCollapse")
+   return this.has("stumpCollapse")
   }
   _toHtml(indentCount, withSuid) {
-    const tag = this.getTag()
-    const children = this.map(child => child._toHtml(indentCount + 1, withSuid)).join("")
-    const attributesStr = this.filter(node => node.isAttributeNode)
-      .map(child => child.getAttribute())
-      .join("")
-    const indent = " ".repeat(indentCount)
-    const collapse = this.shouldCollapse()
-    const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").length > 0
-    const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
-    const oneLiner = this._getOneLiner()
-    return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
+   const tag = this.getTag()
+   const children = this.map(child => child._toHtml(indentCount + 1, withSuid)).join("")
+   const attributesStr = this.filter(node => node.isAttributeNode)
+    .map(child => child.getAttribute())
+    .join("")
+   const indent = " ".repeat(indentCount)
+   const collapse = this.shouldCollapse()
+   const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").length > 0
+   const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
+   const oneLiner = this._getOneLiner()
+   return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
   }
   removeCssStumpNode() {
-    return this.removeStumpNode()
+   return this.removeStumpNode()
   }
   removeStumpNode() {
-    this.getShadow().removeShadow()
-    return this.destroy()
+   this.getShadow().removeShadow()
+   return this.destroy()
   }
   getNodeByGuid(guid) {
-    return this.getTopDownArray().find(node => node._getUid() === guid)
+   return this.getTopDownArray().find(node => node._getUid() === guid)
   }
   addClassToStumpNode(className) {
-    const classNode = this.touchNode("class")
-    const words = classNode.getWordsFrom(1)
-    // note: we call add on shadow regardless, because at the moment stump may have gotten out of
-    // sync with shadow, if things modified the dom. todo: cleanup.
-    this.getShadow().addClassToShadow(className)
-    if (words.includes(className)) return this
-    words.push(className)
-    classNode.setContent(words.join(this.getWordBreakSymbol()))
-    return this
+   const classNode = this.touchNode("class")
+   const words = classNode.getWordsFrom(1)
+   // note: we call add on shadow regardless, because at the moment stump may have gotten out of
+   // sync with shadow, if things modified the dom. todo: cleanup.
+   this.getShadow().addClassToShadow(className)
+   if (words.includes(className)) return this
+   words.push(className)
+   classNode.setContent(words.join(this.getWordBreakSymbol()))
+   return this
   }
   removeClassFromStumpNode(className) {
-    const classNode = this.getNode("class")
-    if (!classNode) return this
-    const newClasses = classNode.getWords().filter(word => word !== className)
-    if (!newClasses.length) classNode.destroy()
-    else classNode.setContent(newClasses.join(" "))
-    this.getShadow().removeClassFromShadow(className)
-    return this
+   const classNode = this.getNode("class")
+   if (!classNode) return this
+   const newClasses = classNode.getWords().filter(word => word !== className)
+   if (!newClasses.length) classNode.destroy()
+   else classNode.setContent(newClasses.join(" "))
+   this.getShadow().removeClassFromShadow(className)
+   return this
   }
   stumpNodeHasClass(className) {
-    const classNode = this.getNode("class")
-    return classNode && classNode.getWords().includes(className) ? true : false
+   const classNode = this.getNode("class")
+   return classNode && classNode.getWords().includes(className) ? true : false
   }
   isStumpNodeCheckbox() {
-    return this.get("type") === "checkbox"
+   return this.get("type") === "checkbox"
   }
   getShadow() {
-    if (!this._shadow) {
-      const shadowClass = this.getShadowClass()
-      this._shadow = new shadowClass(this)
-    }
-    return this._shadow
+   if (!this._shadow) {
+    const shadowClass = this.getShadowClass()
+    this._shadow = new shadowClass(this)
+   }
+   return this._shadow
   }
   insertCssChildNode(text, index) {
-    return this.insertChildNode(text, index)
+   return this.insertChildNode(text, index)
   }
   insertChildNode(text, index) {
-    const singleNode = new jtree.TreeNode(text).getChildren()[0]
-    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-    const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").indexOf(newNode)
-    this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
-    return newNode
+   const singleNode = new jtree.TreeNode(text).getChildren()[0]
+   const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
+   const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").indexOf(newNode)
+   this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
+   return newNode
   }
   isInputType() {
-    return ["input", "textarea"].includes(this.getTag()) || this.get("contenteditable") === "true"
+   return ["input", "textarea"].includes(this.getTag()) || this.get("contenteditable") === "true"
   }
   findStumpNodeByChild(line) {
-    return this.findStumpNodesByChild(line)[0]
+   return this.findStumpNodesByChild(line)[0]
   }
   findStumpNodeByChildString(line) {
-    return this.getTopDownArray().find(node =>
-      node
-        .map(child => child.getLine())
-        .join("\n")
-        .includes(line)
-    )
+   return this.getTopDownArray().find(node =>
+    node
+     .map(child => child.getLine())
+     .join("\n")
+     .includes(line)
+   )
   }
   findStumpNodeByFirstWord(firstWord) {
-    return this._findStumpNodesByBase(firstWord)[0]
+   return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-    return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.getFirstWord() === firstWord)
+   return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.getFirstWord() === firstWord)
   }
   hasLine(line) {
-    return this.getChildren().some(node => node.getLine() === line)
+   return this.getChildren().some(node => node.getLine() === line)
   }
   findStumpNodesByChild(line) {
-    return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.hasLine(line))
+   return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.hasLine(line))
   }
   findStumpNodesWithClass(className) {
-    return this.getTopDownArray().filter(
-      node =>
-        node.doesExtend("abstractHtmlTagNode") &&
-        node.has("class") &&
-        node
-          .getNode("class")
-          .getWords()
-          .includes(className)
-    )
+   return this.getTopDownArray().filter(
+    node =>
+     node.doesExtend("abstractHtmlTagNode") &&
+     node.has("class") &&
+     node
+      .getNode("class")
+      .getWords()
+      .includes(className)
+   )
   }
   getShadowClass() {
-    return this.getParent().getShadowClass()
+   return this.getParent().getShadowClass()
   }
   // todo: whats this? move to base?
   getLines(start = 0, end) {
-    return this.toString()
-      .split("\n")
-      .slice(start, end)
-      .join("\n")
+   return this.toString()
+    .split("\n")
+    .slice(start, end)
+    .join("\n")
   }
   // todo: should not be here
   getStumpNodeTreeComponent() {
-    return this._treeComponent || this.getParent().getStumpNodeTreeComponent()
+   return this._treeComponent || this.getParent().getStumpNodeTreeComponent()
   }
   // todo: should not be here
   setStumpNodeTreeComponent(treeComponent) {
-    this._treeComponent = treeComponent
-    return this
+   this._treeComponent = treeComponent
+   return this
   }
   setStumpNodeCss(css) {
-    this.getShadow().setShadowCss(css)
-    return this
+   this.getShadow().setShadowCss(css)
+   return this
   }
   getStumpNodeCss(prop) {
-    return this.getShadow().getShadowCss(prop)
+   return this.getShadow().getShadowCss(prop)
   }
   getStumpNodeAttr(key) {
-    return this.get(key)
+   return this.get(key)
   }
   setStumpNodeAttr(key, value) {
-    // todo
-    return this
+   // todo
+   return this
   }
   toHtml() {
-    return this._toHtml()
+   return this._toHtml()
   }
  abstract
  cells htmlTagNameCell
@@ -418,8 +420,12 @@ errorNode
  baseNodeType errorNode
 abstractHtmlAttributeNode
  javascript
-  _toHtml() { return "" }
-  getAttribute() { return ` ${this.getFirstWord()}="${this.getContent()}"` }
+  _toHtml() {
+   return ""
+  }
+  getAttribute() {
+   return ` ${this.getFirstWord()}="${this.getContent()}"`
+  }
  boolean isAttributeNode true
  catchAllNodeType errorNode
  catchAllCellType attributeValueCell
@@ -788,5 +794,7 @@ bernNode
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
  catchAllNodeType lineOfHtmlContentNode
  javascript
-  _toHtml() { return this.childrenToString() }
+  _toHtml() {
+   return this.childrenToString()
+  }
  cells contentHolderNameCell

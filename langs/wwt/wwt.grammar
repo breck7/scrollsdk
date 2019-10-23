@@ -24,7 +24,9 @@ wwtNode
  catchAllNodeType errorNode
  compilesTo ts
  javascript
-  compile() { return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + '\n}' }
+  compile() {
+   return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + "\n}"
+  }
 commentNode
  baseNodeType blobNode
  cells commentKeywordCell

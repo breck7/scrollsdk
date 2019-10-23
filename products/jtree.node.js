@@ -3164,7 +3164,13 @@ class GrammarBackedNode extends TreeNode {
     return this
   }
   format() {
-    return this._sortNodesByInScopeOrder()._sortWithParentNodeTypesUpTop()
+    if (this.isRoot()) {
+      this._sortNodesByInScopeOrder()._sortWithParentNodeTypesUpTop()
+    }
+    this.getTopDownArray().forEach(child => {
+      child.format()
+    })
+    return this
   }
   getNodeTypeUsage(filepath = "") {
     // returns a report on what nodeTypes from its language the program uses
@@ -4053,20 +4059,6 @@ class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantBoolean extends GrammarNodeTypeConstant {}
-class JavascriptCustomMethodsBlock extends TreeNode {
-  format() {
-    if (this.isNodeJs()) {
-      const template = `class FOO{ ${this.childrenToString()}}`
-      this.setChildren(
-        require("prettier")
-          .format(template, { semi: false, parser: "babel", printWidth: 240 })
-          .replace("class FOO {", "")
-          .replace(/\s+\}\s+$/, "")
-      )
-    }
-    return this
-  }
-}
 class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   createParser() {
     // todo: some of these should just be on nonRootNodes
@@ -4087,6 +4079,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
       GrammarConstants.root,
+      GrammarConstants.javascript,
       GrammarConstants.compilesTo,
       GrammarConstants.abstract,
       GrammarConstants.javascript,
@@ -4103,7 +4096,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.example] = GrammarExampleNode
-    map[GrammarConstants.javascript] = JavascriptCustomMethodsBlock
     return new TreeNode.Parser(undefined, map)
   }
   _getId() {
@@ -4527,13 +4519,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     script.innerHTML = code
     document.head.appendChild(script)
     return window[name]
-  }
-  format() {
-    super.format()
-    this.getTopDownArray().forEach(child => {
-      child.format()
-    })
-    return this
   }
   // todo: better formalize the source maps pattern somewhat used here by getAllErrors
   // todo: move this to Grammar.grammar (or just get the bootstrapping done.)

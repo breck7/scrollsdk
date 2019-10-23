@@ -23,17 +23,19 @@ poopNode
  compilesTo csv
  javascript
   compile() {
-    let day = ""
-    let lastTime = ""
-    const rows = this.getTopDownArray().map(node => {
-      if (node.doesExtend("dayNode")) {
-        day = node.getDay()
-            return undefined
-              }
-        lastTime = (!node.getTime || node.getTime() === undefined) ? lastTime : node.getTime()
-        return node.compile(day, lastTime)
-      }).filter(row => row)
-    return `date,time,event,notes\n` + rows.join("\n")
+   let day = ""
+   let lastTime = ""
+   const rows = this.getTopDownArray()
+    .map(node => {
+     if (node.doesExtend("dayNode")) {
+      day = node.getDay()
+      return undefined
+     }
+     lastTime = !node.getTime || node.getTime() === undefined ? lastTime : node.getTime()
+     return node.compile(day, lastTime)
+    })
+    .filter(row => row)
+   return `date,time,event,notes\n` + rows.join("\n")
   }
  inScope abstractEventNode dayNode
  example
@@ -48,12 +50,14 @@ abstractEventNode
  catchAllCellType timeIntCell
  javascript
   getTime() {
-    const time= this.getLine().match(/(\d+)/)
-    return time ? time[1] : undefined
+   const time = this.getLine().match(/(\d+)/)
+   return time ? time[1] : undefined
   }
-  getNotes() { return "" }
+  getNotes() {
+   return ""
+  }
   compile(day, lastTime) {
-    return `${day},${lastTime},${this.eventType},${this.getNotes()}`
+   return `${day},${lastTime},${this.eventType},${this.getNotes()}`
   }
 bowelNode
  pattern 💩
@@ -88,10 +92,16 @@ memoryNode
  extends abstractEventNode
  string eventType memory
  javascript
-  getNotes() { return jtree.Utils.removeNonAscii(this.getLine()).trim()}
+  getNotes() {
+   return jtree.Utils.removeNonAscii(this.getLine()).trim()
+  }
 dayNode
  match 🌄
  description We survived another day!
  cells symbolCell monthIntCell dayIntCell yearIntCell
  javascript
-  getDay() { return jtree.Utils.removeNonAscii(this.getLine()).trim().replace(/ /g, "/") }
+  getDay() {
+   return jtree.Utils.removeNonAscii(this.getLine())
+    .trim()
+    .replace(/ /g, "/")
+  }

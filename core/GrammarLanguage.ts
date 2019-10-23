@@ -166,6 +166,7 @@ abstract class GrammarBackedNode extends TreeNode {
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
   getGrammarProgram(): GrammarProgram {
+    if (this.isRoot()) throw new Error(`Root node without getGrammarProgram defined.`)
     return (<any>this.getRootNode()).getGrammarProgram()
   }
 

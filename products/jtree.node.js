@@ -493,7 +493,12 @@ class TestRacerTestBlock {
         failures.push([actual, expected, message])
       }
     }
-    await this._testFn(assertEqual)
+    try {
+      await this._testFn(assertEqual)
+    } catch (err) {
+      failures.push(["1", "0", `Should not have uncaught errors but got: ${err}`])
+      throw err
+    }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {
       passes,
@@ -3020,6 +3025,7 @@ class GrammarBackedNode extends TreeNode {
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
   getGrammarProgram() {
+    if (this.isRoot()) throw new Error(`Root node without getGrammarProgram defined.`)
     return this.getRootNode().getGrammarProgram()
   }
   getRunTimeEnumOptions(cell) {

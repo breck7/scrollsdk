@@ -5,7 +5,6 @@ test basics column
   require ../products/jtable.node.js Column
  getColumnName
   typeIs undefined
-arrangeTestSubject
 test Boolean
  arrangeTestSubject
   require ../products/jtable.node.js PrimitiveTypes.BooleanType

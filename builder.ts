@@ -100,23 +100,24 @@ class Builder extends AbstractBuilder {
   _makeTestTreeForFolder(dir: treeNotationTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
 
-    const testTree: any = {}
+    const fileTestTree: any = {}
 
     allTestFiles
       .filter(file => file.endsWith(".grammar"))
       .forEach(file => {
-        testTree[file] = this.makeGrammarFileTestTree(file)
+        fileTestTree[file] = this.makeGrammarFileTestTree(file)
       })
     allTestFiles
       .filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts"))
       .forEach(file => {
-        testTree[file] = require(file).testTree
+        fileTestTree[file] = require(file).testTree
       })
-
-    // for (let file of allTestFiles.filter(file => file.endsWith(".swarm"))) {
-    //   await jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar")
-    // }
-    return testTree
+    allTestFiles
+      .filter(file => file.endsWith(".swarm"))
+      .forEach(file => {
+        Object.assign(fileTestTree, jtree.makeProgram(file, __dirname + "/langs/swarm/swarm.grammar").compileToRacer(file))
+      })
+    return fileTestTree
   }
 
   async test() {

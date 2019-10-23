@@ -12,9 +12,18 @@ swarmNode
     return this.getChildInstancesOfNodeTypeId("arrangeTestSubjectNode")[0]
   }
   async execute(filepath) {
-    const tests = this.getTestsToRun()
-    await Promise.all(tests.map(test => test.execute(filepath)))
-    return `${tests.length} tests started.`
+    const tree = new jtree.TestRacer(this.compileToRacer(filepath))
+    await tree.execute()
+    tree.finish()
+  }
+  compileToRacer(filepath) {
+    const testBlocks = {}
+    this.getTestsToRun().forEach(testNode => {
+      testBlocks[testNode.getContent()] = testNode.execute(filepath)
+    })
+    const files = {}
+    files[filepath] = testBlocks
+    return files
   }
   getTestsToRun() {
     const solos = this.getChildInstancesOfNodeTypeId("testOnlyNode")
@@ -119,49 +128,18 @@ testBlockNode
   getEqualFn() {
     return this._equal
   }
-  async _executeNode(programFilepath) {
-    // todo: use runTestTree from jtree lib
+  execute(programFilepath) {
     const testSubject = this.getTestSetupNode().getTestSubject(programFilepath)
     const isAsync = this.isAsync()
     const executeMethod = isAsync ? "execute" : "executeSync"
-    const tap = require("tap") // todo: make work with browser
-    return new Promise((resolve, reject) => {
-      const testName = this.getLine()
-      tap.test(testName, async childTest => {
-        this.setEqualMethod(childTest.equal)
-        const promises = this.map(async child => {
-          const result = await child[executeMethod](testSubject)
-          return result
-        })
-        await Promise.all(promises)
-        resolve()
-        childTest.end()
+    return async equal => {
+      this.setEqualMethod(equal)
+      const promises = this.map(async child => {
+        const result = await child[executeMethod](testSubject)
+        return result
       })
-    })
-  }
-  async _executeBrowser() {
-    const testSubject = this.getTestSetupNode().getTestSubject()
-    const isAsync = this.isAsync()
-    const executeMethod = isAsync ? "execute" : "executeSync"
-    const testName = this.getLine()
-    console.log("testing: " + testName)
-    this.setEqualMethod((actual, expected, message) => {
-      if (actual !== expected) console.log("fail")
-      else console.log("pass")
-    })
-    const promises = this.map(child => {
-      const result = child[executeMethod](testSubject)
-      return isAsync ? Promise.resolve(result) : result
-    })
-    await Promise.all(promises)
-  }
-  async execute(programFilepath) {
-    let res
-    if (this.isNodeJs())
-      res = await this._executeNode(programFilepath)
-    else
-      res = await this._executeBrowser()
-    return res
+      await Promise.all(promises)
+    }
   }
  inScope arrangeTestSubjectNode
  catchAllNodeType commandNode

@@ -319,7 +319,13 @@ abstract class GrammarBackedNode extends TreeNode {
 
   format() {
     if (this.isRoot()) {
-      this._sortNodesByInScopeOrder()._sortWithParentNodeTypesUpTop()
+      this._sortNodesByInScopeOrder()
+
+      try {
+        this._sortWithParentNodeTypesUpTop()
+      } catch (err) {
+        console.log(`Warning: ${err}`)
+      }
     }
     this.getTopDownArray().forEach(child => {
       child.format()

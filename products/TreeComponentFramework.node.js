@@ -2,6 +2,7 @@
 const { jtree } = require("../index.js")
 const stumpNode = require("../langs/stump/stump.node.js")
 const hakonNode = require("../langs/hakon/hakon.node.js")
+const superagent = require("superagent")
 const WillowConstants = {}
 WillowConstants.ShadowEvents = {}
 WillowConstants.ShadowEvents.click = "click"
@@ -343,7 +344,6 @@ class AbstractWillowProgram extends stumpNode {
   }
   async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .get(url)
       .query(queryStringObject)
@@ -378,7 +378,6 @@ class AbstractWillowProgram extends stumpNode {
   }
   async httpPostUrl(url, data) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})

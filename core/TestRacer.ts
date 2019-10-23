@@ -35,7 +35,7 @@ class TestRacerTestBlock {
       await this._testFn(assertEqual)
     } catch (err) {
       failures.push(["1", "0", `Should not have uncaught errors but got: ${err}`])
-      throw err
+      // throw err
     }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {

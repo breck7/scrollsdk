@@ -5,6 +5,7 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 const { jtree } = require("../index.js")
 const stumpNode = require("../langs/stump/stump.node.js")
 const hakonNode = require("../langs/hakon/hakon.node.js")
+const superagent = require("superagent")
 
 declare var jQuery: any
 
@@ -441,7 +442,6 @@ class AbstractWillowProgram extends stumpNode {
   async httpGetUrl(url: string, queryStringObject: Object, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
 
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .get(url)
       .query(queryStringObject)
@@ -483,7 +483,6 @@ class AbstractWillowProgram extends stumpNode {
   async httpPostUrl(url: string, data: any) {
     if (this._offlineMode) return new WillowHTTPResponse()
 
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})

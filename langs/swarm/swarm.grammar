@@ -68,19 +68,7 @@ abstractAssertionNode
    const actual = subject[command]()
    const actualAsString = this.parseActual(actual).toString()
    const expected = this.getExpected()
-   const isPassed = this.getTestResult(actualAsString, expected, this.getLine())
-   if (!isPassed) {
-    this.printFailureMessage(actual)
-    debugger
-   }
-  }
-  printFailureMessage() {
-   const line = this.getLine()
-   this.setLine(`FAILED:${line}`)
-   this.setLine(line)
-   console.log(this.getStackString())
-   const lineNumber = this.getPoint()
-   console.log(`Line number ${lineNumber.y}`)
+   this.getTestResult(actualAsString, expected, this.getLine())
   }
   equal(actual, expected, message) {
    this.getParent().getEqualFn()(actual, expected, message)
@@ -97,11 +85,7 @@ abstractAssertionNode
    const actual = this.parseActual(result)
    const actualIsUndefined = actual === undefined
    const actualAsString = actualIsUndefined ? "undefined" : actual.toString()
-   const isPassed = this.getTestResult(actualAsString, expected, this.getLine())
-   if (!isPassed) {
-    this.printFailureMessage(result)
-    debugger
-   }
+   this.getTestResult(actualAsString, expected, this.getLine())
   }
   getExpected() {
    return this.getWordsFrom(2).join(" ")
@@ -127,10 +111,6 @@ lengthIsNode
  javascript
   parseActual(actual) {
    return actual.length
-  }
-  printFailureMessage(actual) {
-   super.printFailureMessage()
-   console.log(actual.join("\n"))
   }
  extends abstractAssertionNode
 stringExcludesNode

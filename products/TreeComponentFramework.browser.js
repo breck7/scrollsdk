@@ -339,7 +339,6 @@ class AbstractWillowProgram extends stumpNode {
   }
   async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .get(url)
       .query(queryStringObject)
@@ -374,7 +373,6 @@ class AbstractWillowProgram extends stumpNode {
   }
   async httpPostUrl(url, data) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})

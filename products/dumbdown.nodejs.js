@@ -19,7 +19,19 @@
     }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`dumbdownNode
+        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`anyCell
+blankCell
+dashCell
+ highlightScope constant.language
+codeCell
+ highlightScope comment
+keywordCell
+ highlightScope keyword
+textCell
+ highlightScope string
+urlCell
+ highlightScope constant.language
+dumbdownNode
  extensions dd dumbdown
  description A prefix Tree Language that compiles to HTML. An alternative to Markdown.
  root
@@ -41,23 +53,6 @@
 abstractTopLevelNode
  abstract
  cells keywordCell
-anyCell
-blankCell
-dashCell
- highlightScope constant.language
-codeCell
- highlightScope comment
-keywordCell
- highlightScope keyword
-textCell
- highlightScope string
-urlCell
- highlightScope constant.language
-blankLineNode
- description Blank lines compile to a br in the HTML.
- cells blankCell
- compiler
-  stringTemplate <br>
 titleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
@@ -80,9 +75,6 @@ subtitleNode
  extends abstractTopLevelNode
  compiler
   stringTemplate <h2>{textCell}</h2>
-lineOfCodeNode
- catchAllCellType codeCell
- cells codeCell
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
@@ -99,6 +91,14 @@ listNode
   stringTemplate 
   openChildren <ul>
   closeChildren </ul>
+blankLineNode
+ description Blank lines compile to a br in the HTML.
+ cells blankCell
+ compiler
+  stringTemplate <br>
+lineOfCodeNode
+ catchAllCellType codeCell
+ cells codeCell
 dashNode
  match -
  catchAllCellType textCell
@@ -111,14 +111,14 @@ dashNode
       return {
         dumbdownNode: dumbdownNode,
         abstractTopLevelNode: abstractTopLevelNode,
-        blankLineNode: blankLineNode,
         titleNode: titleNode,
         linkNode: linkNode,
         paragraphNode: paragraphNode,
         subtitleNode: subtitleNode,
-        lineOfCodeNode: lineOfCodeNode,
         codeNode: codeNode,
         listNode: listNode,
+        blankLineNode: blankLineNode,
+        lineOfCodeNode: lineOfCodeNode,
         dashNode: dashNode
       }
     }
@@ -126,12 +126,6 @@ dashNode
 
   class abstractTopLevelNode extends jtree.GrammarBackedNode {
     get keywordCell() {
-      return this.getWord(0)
-    }
-  }
-
-  class blankLineNode extends jtree.GrammarBackedNode {
-    get blankCell() {
       return this.getWord(0)
     }
   }
@@ -169,15 +163,6 @@ dashNode
     }
   }
 
-  class lineOfCodeNode extends jtree.GrammarBackedNode {
-    get codeCell() {
-      return this.getWord(0)
-    }
-    get codeCell() {
-      return this.getWordsFrom(1)
-    }
-  }
-
   class codeNode extends abstractTopLevelNode {
     createParser() {
       return new jtree.TreeNode.Parser(lineOfCodeNode, undefined, undefined)
@@ -187,6 +172,21 @@ dashNode
   class listNode extends abstractTopLevelNode {
     createParser() {
       return new jtree.TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), { "-": dashNode }), undefined)
+    }
+  }
+
+  class blankLineNode extends jtree.GrammarBackedNode {
+    get blankCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class lineOfCodeNode extends jtree.GrammarBackedNode {
+    get codeCell() {
+      return this.getWord(0)
+    }
+    get codeCell() {
+      return this.getWordsFrom(1)
     }
   }
 

@@ -1,11 +1,3 @@
-arrowNode
- description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
- root
- inScope chargeNode
- javascript
-  compile() {
-    return this.toJsonSubset()
-  }
 keywordCell
 floatCell
 intCell
@@ -24,6 +16,14 @@ tokenCell
 currencyCell
  enum usd cad jpy
  highlightScope constant.numeric
+arrowNode
+ description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
+ root
+ inScope chargeNode
+ javascript
+  compile() {
+    return this.toJsonSubset()
+  }
 chargeNode
  inScope amountNode currencyNode descriptionNode tokenNode cardNumberNode
  description A credit card charge

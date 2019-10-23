@@ -123,7 +123,18 @@ class UnknownGrammarProgram extends TreeNode {
     const cellTypeDefs: string[] = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
     const nodeBreakSymbol = this.getNodeBreakSymbol()
-    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n")
+
+    return this._formatCode([this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n"))
+  }
+
+  private _formatCode(code: string) {
+    // todo: make this run in browser too
+    if (!this.isNodeJs()) return code
+
+    const grammarProgram = new GrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
+    const programConstructor = <any>grammarProgram.getRootConstructor()
+    const program = new programConstructor(code)
+    return program.format().toString()
   }
 
   private _getBestCellType(firstWord: string, instanceCount: treeNotationTypes.int, maxCellsOnLine: treeNotationTypes.int, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {

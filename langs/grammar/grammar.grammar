@@ -2,19 +2,6 @@ todo Add imports nodeTypes, along with source maps, so we can correctly support 
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
 todo Add omnifix support
-grammarNode
- root
- description Grammar is a Tree Language for creating new Tree Languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Grammar uses both postfix and prefix language features.
- catchAllNodeType catchAllErrorNode
- extensions grammar gram
- example A grammar that parses anything:
-  latinNode
-   root
-   catchAllNodeType anyNode
-  anyNode
-   baseNodeType blobNode
- version 3.0.0
- inScope toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
 abstractConstantCell
  highlightScope entity.name.tag
 javascriptSafeAlphaNumericIdentifierCell
@@ -94,94 +81,23 @@ wordCell
 exampleCell
  highlightScope comment
  extends stringCell
+grammarNode
+ root
+ description Grammar is a Tree Language for creating new Tree Languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Grammar uses both postfix and prefix language features.
+ catchAllNodeType catchAllErrorNode
+ extensions grammar gram
+ example A grammar that parses anything:
+  latinNode
+   root
+   catchAllNodeType anyNode
+  anyNode
+   baseNodeType blobNode
+ version 3.0.0
+ inScope toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
 abstractCompilerRuleNode
  abstract
  catchAllCellType anyCell
  cells propertyKeywordCell
-abstractConstantNode
- abstract
- description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
- cells propertyKeywordCell
-abstractNodeTypeRuleNode
- abstract
- single
- cells propertyKeywordCell
-catchAllErrorNode
- baseNodeType errorNode
-catchAllExampleLineNode
- catchAllCellType exampleCell
- catchAllNodeType catchAllExampleLineNode
- cells exampleCell
-catchAllJavascriptCodeLineNode
- catchAllCellType javascriptCodeCell
- catchAllNodeType catchAllJavascriptCodeLineNode
-catchAllMultilineStringConstantNode
- description String constants can span multiple lines.
- catchAllCellType stringCell
- catchAllNodeType catchAllMultilineStringConstantNode
- cells stringCell
-cellTypeDefinitionNode
- todo Generate a class for each cell type?
- todo Allow abstract cell types?
- todo Change pattern to postfix.
- pattern ^[a-zA-Z0-9_]+Cell$
- inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode
- cells cellTypeIdCell
-compilesToNode
- cells propertyKeywordCell fileExtensionCell
- extends abstractNodeTypeRuleNode
- description Optionally specify a file extension that will be used when compiling your language to a file. Generally used on nodeTypes marked root.
-enumFromCellTypesNode
- catchAllCellType cellTypeIdCell
- cells cellPropertyNameCell
-enumNode
- todo Change match to prefix.
- match enum
- catchAllCellType enumOptionCell
- cells cellPropertyNameCell
-extensionsNode
- extends abstractNodeTypeRuleNode
- catchAllCellType fileExtensionCell
- description File extensions of your language. Generally used for nodeTypes marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's nodeTypeId will be used as the default file extension.
-highlightScopeNode
- cells propertyKeywordCell scopeNameCell
- description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
- single
-rootFlagNode
- match root
- description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
- cells propertyKeywordCell
-nodeTypeDefinitionNode
- todo Add multiple dispatch?
- pattern ^[a-zA-Z0-9_]+Node$
- description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
- catchAllNodeType catchAllErrorNode
- inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
- cells nodeTypeIdCell
-regexNode
- catchAllCellType regexCell
- description The word must match this pattern or it shall be marked as an error.
- single
- cells cellPropertyNameCell
-reservedWordsNode
- single
- description A list of words that a cell cannot contain.
- catchAllCellType reservedWordCell
- cells cellPropertyNameCell
-todoNode
- description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
- catchAllCellType todoCell
- catchAllNodeType todoNode
- cells todoCell
-toolingNode
- description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
- catchAllCellType toolingDirectiveCell
- catchAllNodeType toolingNode
- cells toolingDirectiveCell
-versionNode
- cells propertyKeywordCell semanticVersionCell
- description Version number of your language. Generally used on nodeTypes marked root.
- extends abstractNodeTypeRuleNode
 closeChildrenNode
  extends abstractCompilerRuleNode
  description When compiling a parent node to a string, this string is appended to the compiled and joined children. Default is blank.
@@ -200,6 +116,10 @@ stringTemplateNode
 joinChildrenWithNode
  description When compiling a parent node to a string, child nodes are compiled to strings and joined by this character. Default is a newline.
  extends abstractCompilerRuleNode
+abstractConstantNode
+ abstract
+ description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
+ cells propertyKeywordCell
 booleanNode
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType booleanCell
@@ -217,6 +137,22 @@ stringNode
  catchAllCellType stringCell
  catchAllNodeType catchAllMultilineStringConstantNode
  extends abstractConstantNode
+abstractNodeTypeRuleNode
+ abstract
+ single
+ cells propertyKeywordCell
+compilesToNode
+ cells propertyKeywordCell fileExtensionCell
+ extends abstractNodeTypeRuleNode
+ description Optionally specify a file extension that will be used when compiling your language to a file. Generally used on nodeTypes marked root.
+extensionsNode
+ extends abstractNodeTypeRuleNode
+ catchAllCellType fileExtensionCell
+ description File extensions of your language. Generally used for nodeTypes marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's nodeTypeId will be used as the default file extension.
+versionNode
+ cells propertyKeywordCell semanticVersionCell
+ description Version number of your language. Generally used on nodeTypes marked root.
+ extends abstractNodeTypeRuleNode
 abstractNode
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
  extends abstractNodeTypeRuleNode
@@ -263,12 +199,6 @@ extendsNodeTypeNode
  todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell nodeTypeIdCell
  extends abstractNodeTypeRuleNode
-extendsCellTypeNode
- match extends
- description cellType definitions can extend others.
- todo Add mixin support in addition to/in place of extends?
- cells propertyKeywordCell cellTypeIdCell
- single
 frequencyNode
  todo Remove this nodeType. Switch to conditional frequencies.
  cells propertyKeywordCell floatCell
@@ -299,3 +229,73 @@ singleNode
 tagsNode
  catchAllCellType tagCell
  extends abstractNodeTypeRuleNode
+catchAllErrorNode
+ baseNodeType errorNode
+catchAllExampleLineNode
+ catchAllCellType exampleCell
+ catchAllNodeType catchAllExampleLineNode
+ cells exampleCell
+catchAllJavascriptCodeLineNode
+ catchAllCellType javascriptCodeCell
+ catchAllNodeType catchAllJavascriptCodeLineNode
+catchAllMultilineStringConstantNode
+ description String constants can span multiple lines.
+ catchAllCellType stringCell
+ catchAllNodeType catchAllMultilineStringConstantNode
+ cells stringCell
+cellTypeDefinitionNode
+ todo Generate a class for each cell type?
+ todo Allow abstract cell types?
+ todo Change pattern to postfix.
+ pattern ^[a-zA-Z0-9_]+Cell$
+ inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode
+ cells cellTypeIdCell
+enumFromCellTypesNode
+ catchAllCellType cellTypeIdCell
+ cells cellPropertyNameCell
+enumNode
+ todo Change match to prefix.
+ match enum
+ catchAllCellType enumOptionCell
+ cells cellPropertyNameCell
+highlightScopeNode
+ cells propertyKeywordCell scopeNameCell
+ description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
+ single
+rootFlagNode
+ match root
+ description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
+ cells propertyKeywordCell
+nodeTypeDefinitionNode
+ todo Add multiple dispatch?
+ pattern ^[a-zA-Z0-9_]+Node$
+ description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
+ catchAllNodeType catchAllErrorNode
+ inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
+ cells nodeTypeIdCell
+regexNode
+ catchAllCellType regexCell
+ description The word must match this pattern or it shall be marked as an error.
+ single
+ cells cellPropertyNameCell
+reservedWordsNode
+ single
+ description A list of words that a cell cannot contain.
+ catchAllCellType reservedWordCell
+ cells cellPropertyNameCell
+todoNode
+ description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
+ catchAllCellType todoCell
+ catchAllNodeType todoNode
+ cells todoCell
+toolingNode
+ description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
+ catchAllCellType toolingDirectiveCell
+ catchAllNodeType toolingNode
+ cells toolingDirectiveCell
+extendsCellTypeNode
+ match extends
+ description cellType definitions can extend others.
+ todo Add mixin support in addition to/in place of extends?
+ cells propertyKeywordCell cellTypeIdCell
+ single

@@ -1,3 +1,15 @@
+anyCell
+blankCell
+dashCell
+ highlightScope constant.language
+codeCell
+ highlightScope comment
+keywordCell
+ highlightScope keyword
+textCell
+ highlightScope string
+urlCell
+ highlightScope constant.language
 dumbdownNode
  extensions dd dumbdown
  description A prefix Tree Language that compiles to HTML. An alternative to Markdown.
@@ -20,23 +32,6 @@ dumbdownNode
 abstractTopLevelNode
  abstract
  cells keywordCell
-anyCell
-blankCell
-dashCell
- highlightScope constant.language
-codeCell
- highlightScope comment
-keywordCell
- highlightScope keyword
-textCell
- highlightScope string
-urlCell
- highlightScope constant.language
-blankLineNode
- description Blank lines compile to a br in the HTML.
- cells blankCell
- compiler
-  stringTemplate <br>
 titleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
@@ -59,9 +54,6 @@ subtitleNode
  extends abstractTopLevelNode
  compiler
   stringTemplate <h2>{textCell}</h2>
-lineOfCodeNode
- catchAllCellType codeCell
- cells codeCell
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
@@ -78,6 +70,14 @@ listNode
   stringTemplate 
   openChildren <ul>
   closeChildren </ul>
+blankLineNode
+ description Blank lines compile to a br in the HTML.
+ cells blankCell
+ compiler
+  stringTemplate <br>
+lineOfCodeNode
+ catchAllCellType codeCell
+ cells codeCell
 dashNode
  match -
  catchAllCellType textCell

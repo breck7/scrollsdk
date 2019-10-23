@@ -1,11 +1,3 @@
-wwtNode
- description WorldWideTypes. A work in progress. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
- root
- inScope abstractTypeDeclarationNode interfaceDeclarationNode
- catchAllNodeType errorNode
- compilesTo ts
- javascript
-  compile() { return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + '\n}' }
 keywordCell
 anyCell
 fieldIdCell
@@ -25,6 +17,14 @@ commentKeywordCell
 commentCell
  extends anyCell
  highlightScope comment
+wwtNode
+ description WorldWideTypes. A work in progress. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
+ root
+ inScope abstractTypeDeclarationNode interfaceDeclarationNode
+ catchAllNodeType errorNode
+ compilesTo ts
+ javascript
+  compile() { return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + '\n}' }
 commentNode
  baseNodeType blobNode
  cells commentKeywordCell
@@ -37,21 +37,10 @@ abstractTypeDeclarationNode
  abstract
  inScope commentNode
  cells typeIdCell
-extendsNode
- cells keywordCell typeIdCell
- required
- compiler
-  stringTemplate 
 enumTypeDeclarationNode
  extends abstractTypeDeclarationNode
  inScope enumOptionsNode
  pattern EnumType$
-enumOptionsNode
- cells keywordCell
- catchAllCellType enumOptionCell
-unionTypesNode
- cells keywordCell
- catchAllCellType typeIdCell
 unionTypeDeclarationNode
  extends abstractTypeDeclarationNode
  pattern UnionType$
@@ -60,16 +49,27 @@ mapTypeDeclarationNode
  extends abstractTypeDeclarationNode
  pattern MapType$
  inScope keyNode valueNode
-keyNode
- cells keywordCell stringKeyCell typeIdCell
-valueNode
- cells keywordCell typeIdCell
 typeDeclarationNode
  extends abstractTypeDeclarationNode
  pattern Type$
  inScope extendsNode
  compiler
   stringTemplate export declare type {typeIdCell} = {extends}
+extendsNode
+ cells keywordCell typeIdCell
+ required
+ compiler
+  stringTemplate 
+enumOptionsNode
+ cells keywordCell
+ catchAllCellType enumOptionCell
+unionTypesNode
+ cells keywordCell
+ catchAllCellType typeIdCell
+keyNode
+ cells keywordCell stringKeyCell typeIdCell
+valueNode
+ cells keywordCell typeIdCell
 interfaceDeclarationNode
  pattern Interface$
  cells interfaceIdCell

@@ -13,8 +13,8 @@
             "shell_cmd": "./tasks/unit.js"
         },
         {
-            "name": "prettifyFile",
-            "shell_cmd": "jtree prettify ${file}"
+            "name": "formatFile",
+            "shell_cmd": "jtree format ${file}"
         },
         {
             "name": "executeFile",

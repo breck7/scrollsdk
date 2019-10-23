@@ -1,3 +1,10 @@
+anyCell
+filepathCell
+ highlightScope string
+termCell
+ highlightScope variable.parameter
+fileConstantCell
+ highlightScope keyword.control
 projectNode
  root
  version 2.0.0
@@ -68,17 +75,16 @@ projectNode
   }
  inScope fileNode
  catchAllNodeType errorNode
-anyCell
-filepathCell
- highlightScope string
-termCell
- highlightScope variable.parameter
-fileConstantCell
- highlightScope keyword.control
 termNode
  catchAllCellType filepathCell
  abstract
  cells termCell
+absoluteNode
+ extends termNode
+externalNode
+ extends termNode
+relativeNode
+ extends termNode
 errorNode
  baseNodeType errorNode
 fileNode
@@ -106,9 +112,3 @@ fileNode
     return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
  cells fileConstantCell
-absoluteNode
- extends termNode
-externalNode
- extends termNode
-relativeNode
- extends termNode

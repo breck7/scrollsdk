@@ -123,18 +123,7 @@
     }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`stumpNode
- root
- description A prefix Tree Language that compiles to HTML.
- catchAllNodeType errorNode
- inScope abstractHtmlTagNode
- example
-  div
-   h1 hello world
- compilesTo html
- javascript
-  compile() { return this.toHtml() }
-anyCell
+        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`anyCell
 keywordCell
 extraCell
  highlightScope invalid
@@ -150,6 +139,17 @@ htmlAttributeNameCell
  extends keywordCell
 contentHolderNameCell
  highlightScope keyword
+stumpNode
+ root
+ description A prefix Tree Language that compiles to HTML.
+ catchAllNodeType errorNode
+ inScope abstractHtmlTagNode
+ example
+  div
+   h1 hello world
+ compilesTo html
+ javascript
+  compile() { return this.toHtml() }
 abstractHtmlTagNode
  inScope bernNode abstractHtmlTagNode abstractHtmlAttributeNode
  catchAllCellType anyHtmlContentCell
@@ -318,27 +318,6 @@ abstractHtmlTagNode
   }
  abstract
  cells htmlTagNameCell
-errorNode
- baseNodeType errorNode
-abstractHtmlAttributeNode
- javascript
-  _toHtml() { return "" }
-  getAttribute() { return \` \${this.getFirstWord()}="\${this.getContent()}"\` }
- boolean isAttributeNode true
- catchAllNodeType errorNode
- catchAllCellType attributeValueCell
- abstract
- cells htmlAttributeNameCell
-lineOfHtmlContentNode
- catchAllNodeType lineOfHtmlContentNode
- catchAllCellType anyHtmlContentCell
-bernNode
- todo Rename this node type
- description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
- catchAllNodeType lineOfHtmlContentNode
- javascript
-  _toHtml() { return this.childrenToString() }
- cells contentHolderNameCell
 aNode
  extends abstractHtmlTagNode
 abbrNode
@@ -560,6 +539,17 @@ videoNode
  extends abstractHtmlTagNode
 wbrNode
  extends abstractHtmlTagNode
+errorNode
+ baseNodeType errorNode
+abstractHtmlAttributeNode
+ javascript
+  _toHtml() { return "" }
+  getAttribute() { return \` \${this.getFirstWord()}="\${this.getContent()}"\` }
+ boolean isAttributeNode true
+ catchAllNodeType errorNode
+ catchAllCellType attributeValueCell
+ abstract
+ cells htmlAttributeNameCell
 acceptNode
  extends abstractHtmlAttributeNode
 accesskeyNode
@@ -914,17 +904,23 @@ stumpOnChangeCommandNode
 stumpOnDblClickCommandNode
  extends stumpExtendedAttributeNode
 stumpCollapseNode
- extends stumpExtendedAttributeNode`)
+ extends stumpExtendedAttributeNode
+lineOfHtmlContentNode
+ catchAllNodeType lineOfHtmlContentNode
+ catchAllCellType anyHtmlContentCell
+bernNode
+ todo Rename this node type
+ description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
+ catchAllNodeType lineOfHtmlContentNode
+ javascript
+  _toHtml() { return this.childrenToString() }
+ cells contentHolderNameCell`)
       return this._cachedGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {
         stumpNode: stumpNode,
         abstractHtmlTagNode: abstractHtmlTagNode,
-        errorNode: errorNode,
-        abstractHtmlAttributeNode: abstractHtmlAttributeNode,
-        lineOfHtmlContentNode: lineOfHtmlContentNode,
-        bernNode: bernNode,
         aNode: aNode,
         abbrNode: abbrNode,
         addressNode: addressNode,
@@ -1035,6 +1031,8 @@ stumpCollapseNode
         varNode: varNode,
         videoNode: videoNode,
         wbrNode: wbrNode,
+        errorNode: errorNode,
+        abstractHtmlAttributeNode: abstractHtmlAttributeNode,
         acceptNode: acceptNode,
         accesskeyNode: accesskeyNode,
         actionNode: actionNode,
@@ -1208,7 +1206,9 @@ stumpCollapseNode
         stumpOnContextMenuCommandNode: stumpOnContextMenuCommandNode,
         stumpOnChangeCommandNode: stumpOnChangeCommandNode,
         stumpOnDblClickCommandNode: stumpOnDblClickCommandNode,
-        stumpCollapseNode: stumpCollapseNode
+        stumpCollapseNode: stumpCollapseNode,
+        lineOfHtmlContentNode: lineOfHtmlContentNode,
+        bernNode: bernNode
       }
     }
   }
@@ -1218,7 +1218,6 @@ stumpCollapseNode
       return new jtree.TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
-          bern: bernNode,
           a: aNode,
           abbr: abbrNode,
           address: addressNode,
@@ -1501,7 +1500,8 @@ stumpCollapseNode
           stumpOnContextMenuCommand: stumpOnContextMenuCommandNode,
           stumpOnChangeCommand: stumpOnChangeCommandNode,
           stumpOnDblClickCommand: stumpOnDblClickCommandNode,
-          stumpCollapse: stumpCollapseNode
+          stumpCollapse: stumpCollapseNode,
+          bern: bernNode
         }),
         undefined
       )
@@ -1673,54 +1673,6 @@ stumpCollapseNode
     }
     toHtml() {
       return this._toHtml()
-    }
-  }
-
-  class errorNode extends jtree.GrammarBackedNode {
-    getErrors() {
-      return this._getErrorNodeErrors()
-    }
-  }
-
-  class abstractHtmlAttributeNode extends jtree.GrammarBackedNode {
-    createParser() {
-      return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
-    }
-    get htmlAttributeNameCell() {
-      return this.getWord(0)
-    }
-    get attributeValueCell() {
-      return this.getWordsFrom(1)
-    }
-    get isAttributeNode() {
-      return true
-    }
-    _toHtml() {
-      return ""
-    }
-    getAttribute() {
-      return ` ${this.getFirstWord()}="${this.getContent()}"`
-    }
-  }
-
-  class lineOfHtmlContentNode extends jtree.GrammarBackedNode {
-    createParser() {
-      return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
-    }
-    get anyHtmlContentCell() {
-      return this.getWordsFrom(0)
-    }
-  }
-
-  class bernNode extends jtree.GrammarBackedNode {
-    createParser() {
-      return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
-    }
-    get contentHolderNameCell() {
-      return this.getWord(0)
-    }
-    _toHtml() {
-      return this.childrenToString()
     }
   }
 
@@ -1943,6 +1895,33 @@ stumpCollapseNode
   class videoNode extends abstractHtmlTagNode {}
 
   class wbrNode extends abstractHtmlTagNode {}
+
+  class errorNode extends jtree.GrammarBackedNode {
+    getErrors() {
+      return this._getErrorNodeErrors()
+    }
+  }
+
+  class abstractHtmlAttributeNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
+    }
+    get htmlAttributeNameCell() {
+      return this.getWord(0)
+    }
+    get attributeValueCell() {
+      return this.getWordsFrom(1)
+    }
+    get isAttributeNode() {
+      return true
+    }
+    _toHtml() {
+      return ""
+    }
+    getAttribute() {
+      return ` ${this.getFirstWord()}="${this.getContent()}"`
+    }
+  }
 
   class acceptNode extends abstractHtmlAttributeNode {}
 
@@ -2291,6 +2270,27 @@ stumpCollapseNode
   class stumpOnDblClickCommandNode extends stumpExtendedAttributeNode {}
 
   class stumpCollapseNode extends stumpExtendedAttributeNode {}
+
+  class lineOfHtmlContentNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
+    }
+    get anyHtmlContentCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class bernNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
+    }
+    get contentHolderNameCell() {
+      return this.getWord(0)
+    }
+    _toHtml() {
+      return this.childrenToString()
+    }
+  }
 
   window.stumpNode = stumpNode
 }

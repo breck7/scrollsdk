@@ -175,12 +175,11 @@ ${grammars.toTable()}`
   }
 
   format(programPath: treeNotationTypes.treeProgramFilePath) {
-    const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
-    const program = new programConstructor(Disk.read(programPath))
-    const original = program.toString()
-    const formatted = program.format().toString()
+    const original = Disk.read(programPath)
+    const formatted = jtree.formatProgram(original, this._getGrammarPathOrThrow(programPath))
+    if (original === formatted) return "No change"
     Disk.write(programPath, formatted)
-    return original === formatted ? "No change" : "File updated"
+    return "File updated"
   }
 
   parse(programPath: treeNotationTypes.treeProgramFilePath) {

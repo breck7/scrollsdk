@@ -7,12 +7,19 @@
       return new jtree.TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
-          "#!": hashbangNode,
+          block: blockNode,
+          function: functionNode,
+          if: ifNode,
+          while: whileNode,
           divide: divideNode,
           modulo: moduloNode,
           multiply: multiplyNode,
           substract: substractNode,
           add: addNode,
+          greaterThan: greaterThanNode,
+          greaterThanOrEqual: greaterThanOrEqualNode,
+          lessThan: lessThanNode,
+          lessThanOrEqual: lessThanOrEqualNode,
           sum: sumNode,
           boolean: booleanNode,
           callFunctionAndSet: callFunctionAndSetNode,
@@ -22,14 +29,6 @@
           number: numberNode,
           numbers: numbersNode,
           string: stringNode,
-          greaterThan: greaterThanNode,
-          greaterThanOrEqual: greaterThanOrEqualNode,
-          lessThan: lessThanNode,
-          lessThanOrEqual: lessThanOrEqualNode,
-          block: blockNode,
-          function: functionNode,
-          if: ifNode,
-          while: whileNode,
           callFunction: callFunctionNode,
           decrement: decrementNode,
           dumpIdentifier: dumpIdentifierNode,
@@ -38,7 +37,8 @@
           printNumber: printNumberNode,
           printString: printStringNode,
           require: requireNode,
-          return: returnNode
+          return: returnNode,
+          "#!": hashbangNode
         }),
         undefined
       )
@@ -60,25 +60,6 @@
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`todo Explore best ways to add polymorphism
-fireNode
- root
- description A useless prefix Tree Language that compiles to Javascript for testing Tree Notation features.
- compilesTo js
- inScope hashbangNode abstractTerminalNode abstractNonTerminalNode
- catchAllNodeType errorNode
- javascript
-  async execute() { return this.executeSync() }
-  executeSync() {
-    let outputLines = []
-    const _originalConsoleLog = console.log
-    const tempConsoleLog = (...params) => outputLines.push(params)
-    console.log = tempConsoleLog
-    const compiled = this.compile("js")
-    eval(compiled)
-    console.log = _originalConsoleLog
-    console.log(outputLines.join("\\n"))
-    return outputLines
-  }
 anyCell
 booleanCell
  regex (false|true)
@@ -115,10 +96,71 @@ stringIdentifierCell
  extends identifierCell
 stringCellsCell
  extends stringCell
+leftNumberCell
+ extends numberCell
+leftAnyCell
+ extends anyCell
+fireNode
+ root
+ description A useless prefix Tree Language that compiles to Javascript for testing Tree Notation features.
+ compilesTo js
+ inScope hashbangNode abstractTerminalNode abstractNonTerminalNode
+ catchAllNodeType errorNode
+ javascript
+  async execute() { return this.executeSync() }
+  executeSync() {
+    let outputLines = []
+    const _originalConsoleLog = console.log
+    const tempConsoleLog = (...params) => outputLines.push(params)
+    console.log = tempConsoleLog
+    const compiled = this.compile("js")
+    eval(compiled)
+    console.log = _originalConsoleLog
+    console.log(outputLines.join("\\n"))
+    return outputLines
+  }
 abstractNonTerminalNode
  inScope abstractTerminalNode abstractNonTerminalNode
  abstract
  cells keywordCell
+abstractJsblockNode
+ compiler
+  openChildren  {
+  closeChildren }
+ extends abstractNonTerminalNode
+ abstract
+blockNode
+ description block of code
+ frequency .2
+ compiler
+  stringTemplate /* {identifierCell} */
+ extends abstractJsblockNode
+functionNode
+ match function
+ description Function Assignment
+ cells keywordCell functionIdentifierCell
+ catchAllCellType anyCell
+ compiler
+  stringTemplate const {functionIdentifierCell} = ({anyCell}) =>
+  catchAllCellDelimiter , 
+ frequency .1
+ extends abstractJsblockNode
+ifNode
+ match if
+ description If tile
+ cells keywordCell identifierCell
+ frequency .2
+ compiler
+  stringTemplate if ({identifierCell})
+ extends abstractJsblockNode
+whileNode
+ match while
+ description While tile
+ cells keywordCell identifierCell
+ frequency .1
+ compiler
+  stringTemplate while ({identifierCell})
+ extends abstractJsblockNode
 abstractTerminalNode
  abstract
  cells keywordCell
@@ -133,27 +175,6 @@ abstractArithmeticNode
  frequency .2
  extends abstractAssignmentNode
  abstract
-abstractJsblockNode
- compiler
-  openChildren  {
-  closeChildren }
- extends abstractNonTerminalNode
- abstract
-abstractBooleanOperatorNode
- description Runs a boolean test and saves result.
- extends abstractAssignmentNode
- abstract
-hashbangNode
- match #!
- description Standard bash hashbang line.
- catchAllCellType hashBangCell
- compiler
-  stringTemplate // #! {hashBangCell}
- cells hashBangKeywordCell
-errorNode
- baseNodeType errorNode
- compiler
-  stringTemplate // error
 divideNode
  description Divide Numbers
  compiler
@@ -179,6 +200,38 @@ addNode
  compiler
   catchAllCellDelimiter  + 
  extends abstractArithmeticNode
+abstractBooleanOperatorNode
+ description Runs a boolean test and saves result.
+ extends abstractAssignmentNode
+ abstract
+greaterThanNode
+ description Greater than test
+ cells keywordCell identifierCell leftNumberCell numberCell
+ compiler
+  stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
+ frequency .1
+ extends abstractBooleanOperatorNode
+greaterThanOrEqualNode
+ description Greater than or equal to test
+ cells keywordCell identifierCell leftNumberCell numberCell
+ compiler
+  stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
+ frequency .1
+ extends abstractBooleanOperatorNode
+lessThanNode
+ description Less than test
+ cells keywordCell identifierCell leftAnyCell anyCell
+ compiler
+  stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
+ frequency .1
+ extends abstractBooleanOperatorNode
+lessThanOrEqualNode
+ description Less than or equal to test
+ cells keywordCell identifierCell leftAnyCell anyCell
+ compiler
+  stringTemplate const {identifierCell} = {leftAnyCell} <= {anyCell}
+ frequency .1
+ extends abstractBooleanOperatorNode
 sumNode
  description Add numbers and store result
  cells keywordCell numberIdentifierCell
@@ -251,70 +304,6 @@ stringNode
   stringTemplate const {stringIdentifierCell} = "{anyCell}"
  frequency .2
  extends abstractAssignmentNode
-leftNumberCell
- extends numberCell
-leftAnyCell
- extends anyCell
-greaterThanNode
- description Greater than test
- cells keywordCell identifierCell leftNumberCell numberCell
- compiler
-  stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
- frequency .1
- extends abstractBooleanOperatorNode
-greaterThanOrEqualNode
- description Greater than or equal to test
- cells keywordCell identifierCell leftNumberCell numberCell
- compiler
-  stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
- frequency .1
- extends abstractBooleanOperatorNode
-lessThanNode
- description Less than test
- cells keywordCell identifierCell leftAnyCell anyCell
- compiler
-  stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
- frequency .1
- extends abstractBooleanOperatorNode
-lessThanOrEqualNode
- description Less than or equal to test
- cells keywordCell identifierCell leftAnyCell anyCell
- compiler
-  stringTemplate const {identifierCell} = {leftAnyCell} <= {anyCell}
- frequency .1
- extends abstractBooleanOperatorNode
-blockNode
- description block of code
- frequency .2
- compiler
-  stringTemplate /* {identifierCell} */
- extends abstractJsblockNode
-functionNode
- match function
- description Function Assignment
- cells keywordCell functionIdentifierCell
- catchAllCellType anyCell
- compiler
-  stringTemplate const {functionIdentifierCell} = ({anyCell}) =>
-  catchAllCellDelimiter , 
- frequency .1
- extends abstractJsblockNode
-ifNode
- match if
- description If tile
- cells keywordCell identifierCell
- frequency .2
- compiler
-  stringTemplate if ({identifierCell})
- extends abstractJsblockNode
-whileNode
- match while
- description While tile
- cells keywordCell identifierCell
- frequency .1
- compiler
-  stringTemplate while ({identifierCell})
- extends abstractJsblockNode
 callFunctionNode
  description Function call ignore result.
  frequency .1
@@ -379,25 +368,42 @@ returnNode
  compiler
   stringTemplate return {anyCell}
  frequency .1
- extends abstractTerminalNode`)
+ extends abstractTerminalNode
+hashbangNode
+ match #!
+ description Standard bash hashbang line.
+ catchAllCellType hashBangCell
+ compiler
+  stringTemplate // #! {hashBangCell}
+ cells hashBangKeywordCell
+errorNode
+ baseNodeType errorNode
+ compiler
+  stringTemplate // error`)
       return this._cachedGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {
         fireNode: fireNode,
         abstractNonTerminalNode: abstractNonTerminalNode,
+        abstractJsblockNode: abstractJsblockNode,
+        blockNode: blockNode,
+        functionNode: functionNode,
+        ifNode: ifNode,
+        whileNode: whileNode,
         abstractTerminalNode: abstractTerminalNode,
         abstractAssignmentNode: abstractAssignmentNode,
         abstractArithmeticNode: abstractArithmeticNode,
-        abstractJsblockNode: abstractJsblockNode,
-        abstractBooleanOperatorNode: abstractBooleanOperatorNode,
-        hashbangNode: hashbangNode,
-        errorNode: errorNode,
         divideNode: divideNode,
         moduloNode: moduloNode,
         multiplyNode: multiplyNode,
         substractNode: substractNode,
         addNode: addNode,
+        abstractBooleanOperatorNode: abstractBooleanOperatorNode,
+        greaterThanNode: greaterThanNode,
+        greaterThanOrEqualNode: greaterThanOrEqualNode,
+        lessThanNode: lessThanNode,
+        lessThanOrEqualNode: lessThanOrEqualNode,
         sumNode: sumNode,
         booleanNode: booleanNode,
         callFunctionAndSetNode: callFunctionAndSetNode,
@@ -407,14 +413,6 @@ returnNode
         numberNode: numberNode,
         numbersNode: numbersNode,
         stringNode: stringNode,
-        greaterThanNode: greaterThanNode,
-        greaterThanOrEqualNode: greaterThanOrEqualNode,
-        lessThanNode: lessThanNode,
-        lessThanOrEqualNode: lessThanOrEqualNode,
-        blockNode: blockNode,
-        functionNode: functionNode,
-        ifNode: ifNode,
-        whileNode: whileNode,
         callFunctionNode: callFunctionNode,
         decrementNode: decrementNode,
         dumpIdentifierNode: dumpIdentifierNode,
@@ -423,7 +421,9 @@ returnNode
         printNumberNode: printNumberNode,
         printStringNode: printStringNode,
         requireNode: requireNode,
-        returnNode: returnNode
+        returnNode: returnNode,
+        hashbangNode: hashbangNode,
+        errorNode: errorNode
       }
     }
   }
@@ -433,11 +433,19 @@ returnNode
       return new jtree.TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
+          block: blockNode,
+          function: functionNode,
+          if: ifNode,
+          while: whileNode,
           divide: divideNode,
           modulo: moduloNode,
           multiply: multiplyNode,
           substract: substractNode,
           add: addNode,
+          greaterThan: greaterThanNode,
+          greaterThanOrEqual: greaterThanOrEqualNode,
+          lessThan: lessThanNode,
+          lessThanOrEqual: lessThanOrEqualNode,
           sum: sumNode,
           boolean: booleanNode,
           callFunctionAndSet: callFunctionAndSetNode,
@@ -447,14 +455,6 @@ returnNode
           number: numberNode,
           numbers: numbersNode,
           string: stringNode,
-          greaterThan: greaterThanNode,
-          greaterThanOrEqual: greaterThanOrEqualNode,
-          lessThan: lessThanNode,
-          lessThanOrEqual: lessThanOrEqualNode,
-          block: blockNode,
-          function: functionNode,
-          if: ifNode,
-          while: whileNode,
           callFunction: callFunctionNode,
           decrement: decrementNode,
           dumpIdentifier: dumpIdentifierNode,
@@ -470,6 +470,40 @@ returnNode
     }
     get keywordCell() {
       return this.getWord(0)
+    }
+  }
+
+  class abstractJsblockNode extends abstractNonTerminalNode {}
+
+  class blockNode extends abstractJsblockNode {}
+
+  class functionNode extends abstractJsblockNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get functionIdentifierCell() {
+      return this.getWord(1)
+    }
+    get anyCell() {
+      return this.getWordsFrom(2)
+    }
+  }
+
+  class ifNode extends abstractJsblockNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get identifierCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class whileNode extends abstractJsblockNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get identifierCell() {
+      return this.getWord(1)
     }
   }
 
@@ -493,25 +527,6 @@ returnNode
     }
   }
 
-  class abstractJsblockNode extends abstractNonTerminalNode {}
-
-  class abstractBooleanOperatorNode extends abstractAssignmentNode {}
-
-  class hashbangNode extends jtree.GrammarBackedNode {
-    get hashBangKeywordCell() {
-      return this.getWord(0)
-    }
-    get hashBangCell() {
-      return this.getWordsFrom(1)
-    }
-  }
-
-  class errorNode extends jtree.GrammarBackedNode {
-    getErrors() {
-      return this._getErrorNodeErrors()
-    }
-  }
-
   class divideNode extends abstractArithmeticNode {}
 
   class moduloNode extends abstractArithmeticNode {}
@@ -521,6 +536,68 @@ returnNode
   class substractNode extends abstractArithmeticNode {}
 
   class addNode extends abstractArithmeticNode {}
+
+  class abstractBooleanOperatorNode extends abstractAssignmentNode {}
+
+  class greaterThanNode extends abstractBooleanOperatorNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get identifierCell() {
+      return this.getWord(1)
+    }
+    get leftNumberCell() {
+      return parseFloat(this.getWord(2))
+    }
+    get numberCell() {
+      return parseFloat(this.getWord(3))
+    }
+  }
+
+  class greaterThanOrEqualNode extends abstractBooleanOperatorNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get identifierCell() {
+      return this.getWord(1)
+    }
+    get leftNumberCell() {
+      return parseFloat(this.getWord(2))
+    }
+    get numberCell() {
+      return parseFloat(this.getWord(3))
+    }
+  }
+
+  class lessThanNode extends abstractBooleanOperatorNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get identifierCell() {
+      return this.getWord(1)
+    }
+    get leftAnyCell() {
+      return this.getWord(2)
+    }
+    get anyCell() {
+      return this.getWord(3)
+    }
+  }
+
+  class lessThanOrEqualNode extends abstractBooleanOperatorNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get identifierCell() {
+      return this.getWord(1)
+    }
+    get leftAnyCell() {
+      return this.getWord(2)
+    }
+    get anyCell() {
+      return this.getWord(3)
+    }
+  }
 
   class sumNode extends abstractAssignmentNode {
     get keywordCell() {
@@ -639,98 +716,6 @@ returnNode
     }
   }
 
-  class greaterThanNode extends abstractBooleanOperatorNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get identifierCell() {
-      return this.getWord(1)
-    }
-    get leftNumberCell() {
-      return parseFloat(this.getWord(2))
-    }
-    get numberCell() {
-      return parseFloat(this.getWord(3))
-    }
-  }
-
-  class greaterThanOrEqualNode extends abstractBooleanOperatorNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get identifierCell() {
-      return this.getWord(1)
-    }
-    get leftNumberCell() {
-      return parseFloat(this.getWord(2))
-    }
-    get numberCell() {
-      return parseFloat(this.getWord(3))
-    }
-  }
-
-  class lessThanNode extends abstractBooleanOperatorNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get identifierCell() {
-      return this.getWord(1)
-    }
-    get leftAnyCell() {
-      return this.getWord(2)
-    }
-    get anyCell() {
-      return this.getWord(3)
-    }
-  }
-
-  class lessThanOrEqualNode extends abstractBooleanOperatorNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get identifierCell() {
-      return this.getWord(1)
-    }
-    get leftAnyCell() {
-      return this.getWord(2)
-    }
-    get anyCell() {
-      return this.getWord(3)
-    }
-  }
-
-  class blockNode extends abstractJsblockNode {}
-
-  class functionNode extends abstractJsblockNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get functionIdentifierCell() {
-      return this.getWord(1)
-    }
-    get anyCell() {
-      return this.getWordsFrom(2)
-    }
-  }
-
-  class ifNode extends abstractJsblockNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get identifierCell() {
-      return this.getWord(1)
-    }
-  }
-
-  class whileNode extends abstractJsblockNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get identifierCell() {
-      return this.getWord(1)
-    }
-  }
-
   class callFunctionNode extends abstractTerminalNode {
     get keywordCell() {
       return this.getWord(0)
@@ -806,6 +791,21 @@ returnNode
     }
     get anyCell() {
       return this.getWord(1)
+    }
+  }
+
+  class hashbangNode extends jtree.GrammarBackedNode {
+    get hashBangKeywordCell() {
+      return this.getWord(0)
+    }
+    get hashBangCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class errorNode extends jtree.GrammarBackedNode {
+    getErrors() {
+      return this._getErrorNodeErrors()
     }
   }
 

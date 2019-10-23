@@ -1,7 +1,3 @@
-configNode
- description A simple Tree Language for config files. Stores recursive maps with keys as strings and values as strings.
- root
- catchAllNodeType pairNode
 anyCell
 valueCell
  highlightScope string
@@ -9,6 +5,10 @@ valueCell
 keywordCell
  description Allows any character except a space.
  highlightScope keyword
+configNode
+ description A simple Tree Language for config files. Stores recursive maps with keys as strings and values as strings.
+ root
+ catchAllNodeType pairNode
 pairNode
  description Holds a key/value pair
  catchAllCellType valueCell

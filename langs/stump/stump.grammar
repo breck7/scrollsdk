@@ -1,14 +1,3 @@
-stumpNode
- root
- description A prefix Tree Language that compiles to HTML.
- catchAllNodeType errorNode
- inScope abstractHtmlTagNode
- example
-  div
-   h1 hello world
- compilesTo html
- javascript
-  compile() { return this.toHtml() }
 anyCell
 keywordCell
 extraCell
@@ -25,6 +14,17 @@ htmlAttributeNameCell
  extends keywordCell
 contentHolderNameCell
  highlightScope keyword
+stumpNode
+ root
+ description A prefix Tree Language that compiles to HTML.
+ catchAllNodeType errorNode
+ inScope abstractHtmlTagNode
+ example
+  div
+   h1 hello world
+ compilesTo html
+ javascript
+  compile() { return this.toHtml() }
 abstractHtmlTagNode
  inScope bernNode abstractHtmlTagNode abstractHtmlAttributeNode
  catchAllCellType anyHtmlContentCell
@@ -193,27 +193,6 @@ abstractHtmlTagNode
   }
  abstract
  cells htmlTagNameCell
-errorNode
- baseNodeType errorNode
-abstractHtmlAttributeNode
- javascript
-  _toHtml() { return "" }
-  getAttribute() { return ` ${this.getFirstWord()}="${this.getContent()}"` }
- boolean isAttributeNode true
- catchAllNodeType errorNode
- catchAllCellType attributeValueCell
- abstract
- cells htmlAttributeNameCell
-lineOfHtmlContentNode
- catchAllNodeType lineOfHtmlContentNode
- catchAllCellType anyHtmlContentCell
-bernNode
- todo Rename this node type
- description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
- catchAllNodeType lineOfHtmlContentNode
- javascript
-  _toHtml() { return this.childrenToString() }
- cells contentHolderNameCell
 aNode
  extends abstractHtmlTagNode
 abbrNode
@@ -435,6 +414,17 @@ videoNode
  extends abstractHtmlTagNode
 wbrNode
  extends abstractHtmlTagNode
+errorNode
+ baseNodeType errorNode
+abstractHtmlAttributeNode
+ javascript
+  _toHtml() { return "" }
+  getAttribute() { return ` ${this.getFirstWord()}="${this.getContent()}"` }
+ boolean isAttributeNode true
+ catchAllNodeType errorNode
+ catchAllCellType attributeValueCell
+ abstract
+ cells htmlAttributeNameCell
 acceptNode
  extends abstractHtmlAttributeNode
 accesskeyNode
@@ -790,3 +780,13 @@ stumpOnDblClickCommandNode
  extends stumpExtendedAttributeNode
 stumpCollapseNode
  extends stumpExtendedAttributeNode
+lineOfHtmlContentNode
+ catchAllNodeType lineOfHtmlContentNode
+ catchAllCellType anyHtmlContentCell
+bernNode
+ todo Rename this node type
+ description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
+ catchAllNodeType lineOfHtmlContentNode
+ javascript
+  _toHtml() { return this.childrenToString() }
+ cells contentHolderNameCell

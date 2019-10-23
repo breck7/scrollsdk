@@ -1,3 +1,21 @@
+anyCell
+keywordCell
+commentKeywordCell
+ extends keywordCell
+ highlightScope comment
+extraCell
+ highlightScope invalid
+cssValueCell
+ highlightScope constant.numeric
+selectorCell
+ highlightScope keyword.control
+propertyKeywordCell
+ highlightScope variable.function
+ extends keywordCell
+errorCell
+ highlightScope invalid
+commentCell
+ highlightScope comment
 hakonNode
  root
  todo Add variables?
@@ -22,22 +40,6 @@ hakonNode
    &:hover
     color blue
     font-size 17px
-anyCell
-keywordCell
-commentKeywordCell
- extends keywordCell
- highlightScope comment
-extraCell
- highlightScope invalid
-cssValueCell
- highlightScope constant.numeric
-selectorCell
- highlightScope keyword.control
-propertyKeywordCell
- highlightScope variable.function
- extends keywordCell
-errorCell
- highlightScope invalid
 abstractPropertyNode
  catchAllCellType cssValueCell
  catchAllNodeType errorNode
@@ -45,39 +47,6 @@ abstractPropertyNode
   compile(spaces) { return `${spaces}${this.getFirstWord()}: ${this.getContent()};` }
  abstract
  cells propertyKeywordCell
-errorNode
- catchAllNodeType errorNode
- catchAllCellType errorCell
- baseNodeType errorNode
-commentCell
- highlightScope comment
-commentNode
- catchAllCellType commentCell
- catchAllNodeType commentNode
-selectorNode
- inScope abstractPropertyNode commentNode
- catchAllNodeType selectorNode
- boolean isSelectorNode true
- javascript
-  getSelector() {
-    const parentSelector = this.getParent().getSelector()
-    return this.getFirstWord()
-      .split(",")
-      .map(part => {
-        if (part.startsWith("&")) return parentSelector + part.substr(1)
-        return parentSelector ? parentSelector + " " + part : part
-      })
-      .join(",")
-  }
-  compile() {
-    const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
-    if (!propertyNodes.length) return ""
-    const spaces = "  "
-    return `${this.getSelector()} {
-  ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
-  }\n`
-    }
- cells selectorCell
 alignContentNode
  match align-content
  extends abstractPropertyNode
@@ -612,3 +581,34 @@ MsUserSelectNode
 KhtmlUserSelectNode
  match -khtml-user-select
  extends abstractPropertyNode
+errorNode
+ catchAllNodeType errorNode
+ catchAllCellType errorCell
+ baseNodeType errorNode
+commentNode
+ catchAllCellType commentCell
+ catchAllNodeType commentNode
+selectorNode
+ inScope abstractPropertyNode commentNode
+ catchAllNodeType selectorNode
+ boolean isSelectorNode true
+ javascript
+  getSelector() {
+    const parentSelector = this.getParent().getSelector()
+    return this.getFirstWord()
+      .split(",")
+      .map(part => {
+        if (part.startsWith("&")) return parentSelector + part.substr(1)
+        return parentSelector ? parentSelector + " " + part : part
+      })
+      .join(",")
+  }
+  compile() {
+    const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
+    if (!propertyNodes.length) return ""
+    const spaces = "  "
+    return `${this.getSelector()} {
+  ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
+  }\n`
+    }
+ cells selectorCell

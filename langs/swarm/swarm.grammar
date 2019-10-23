@@ -1,6 +1,33 @@
 todo Add comments?
 todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
+anyCell
+ highlightScope string
+arrangeCell
+ highlightScope constant.language
+assertCell
+ highlightScope keyword.operator
+commandCell
+ highlightScope variable.function
+controlCell
+ highlightScope keyword.control
+extraCell
+ highlightScope invalid
+filepathCell
+ highlightScope string
+hashBangCell
+ highlightScope comment
+intCell
+ regex \-?[0-9]+
+ highlightScope constant.numeric.integer
+parameterCell
+ highlightScope variable.parameter
+todoCell
+ highlightScope comment
+typeOfOptionCell
+ description The 6 possible results for Javascript's typeof.
+ highlightScope constant.language
+ enum object boolean function number string undefined
 swarmNode
  root
  description A prefix Tree Language for unit testing.
@@ -29,33 +56,6 @@ swarmNode
     const solos = this.getChildInstancesOfNodeTypeId("testOnlyNode")
     return solos.length ? solos : this.getChildInstancesOfNodeTypeId("testBlockNode").filter(test => !(test.doesExtend("skipTestNode")))
   }
-anyCell
- highlightScope string
-arrangeCell
- highlightScope constant.language
-assertCell
- highlightScope keyword.operator
-commandCell
- highlightScope variable.function
-controlCell
- highlightScope keyword.control
-extraCell
- highlightScope invalid
-filepathCell
- highlightScope string
-hashBangCell
- highlightScope comment
-intCell
- regex \-?[0-9]+
- highlightScope constant.numeric.integer
-parameterCell
- highlightScope variable.parameter
-todoCell
- highlightScope comment
-typeOfOptionCell
- description The 6 possible results for Javascript's typeof.
- highlightScope constant.language
- enum object boolean function number string undefined
 abstractAssertionNode
  abstract
  javascript
@@ -101,16 +101,79 @@ abstractAssertionNode
       debugger
     }
   }
-  getExpected() {
-    return this.getWordsFrom(2).join(" ")
+  getExpected() { return this.getWordsFrom(2).join(" ")
   }
   getSyncExpected() {
     return this.getContent()
   }
  cells assertCell
+blockStringIsNode
+ description When your expected value is a multiline string.
+ catchAllNodeType textBlockNode
+ javascript
+  getExpected() { return this.childrenToString() }
+  getSyncExpected() { return this.childrenToString() }
+ extends abstractAssertionNode
+lengthIsNode
+ description Intake is an array, and checks if the length of array matches expected.
+ cells assertCell intCell
+ javascript
+  parseActual(actual) { return actual.length }
+  printFailureMessage(actual) {
+    super.printFailureMessage()
+    console.log(actual.join("\n"))
+  }
+ extends abstractAssertionNode
+stringExcludesNode
+ description Converts the input to string and ensure the string does NOT contain the provided string
+ catchAllCellType anyCell
+ javascript
+   getTestResult(actualAsString, expected, message) {
+    const result = !actualAsString.includes(expected)
+    if (!result) {
+      const index = actualAsString.indexOf(expected)
+      const start = Math.max(0, index - 50)
+      message += ` Found ${expected} in: ` + actualAsString.substr(start, index + 50 + expected.length)
+    }
+    this.equal(result, true, message)
+    return result
+  }
+ extends abstractAssertionNode
+stringIncludesNode
+ catchAllCellType anyCell
+ description Converts the input to string and see if the string contains the provided string
+ javascript
+   getTestResult(actualAsString, expected, message) {
+    const result = actualAsString.includes(expected)
+    this.equal(result, true, message)
+    return result
+  }
+ extends abstractAssertionNode
+stringIsNode
+ description Intake is anything with a toString method, and compares that to provided expected value.
+ catchAllCellType anyCell
+ extends abstractAssertionNode
+typeIsNode
+ description Assert result is one of Javascript's 6 typeof types.
+ cells assertCell typeOfOptionCell
+ javascript
+  parseActual(actual) { return typeof actual }
+ extends abstractAssertionNode
 terminalNode
  abstract
  cells arrangeCell
+asyncNode
+ description Set this in setup to test async methods.
+ extends terminalNode
+requireNode
+ match require
+ cells arrangeCell filepathCell
+ catchAllCellType anyCell
+ extends terminalNode
+staticNode
+ match static
+ description Add this to setup node to import class directly without initiating it, for static method testing.
+ extends terminalNode
 testBlockNode
  catchAllCellType anyCell
  javascript
@@ -145,6 +208,17 @@ testBlockNode
  catchAllNodeType commandNode
  abstract
  cells controlCell
+testNode
+ description Basic test block.
+ extends testBlockNode
+testOnlyNode
+ description If set, only this test block will be run.
+ extends testBlockNode
+skipTestNode
+ description If you want to skip running a test.
+ javascript
+  async execute() { console.log(`Skipped test ${this.getLine()}`) }
+ extends testBlockNode
 hashbangNode
  match #!
  description Standard bash hashbang line.
@@ -177,16 +251,6 @@ arrangeTestSubjectNode
   executeSync() {}
  inScope asyncNode requireNode staticNode constructWithBlockStringNode todoNode
  cells arrangeCell
-asyncNode
- description Set this in setup to test async methods.
- extends terminalNode
-blockStringIsNode
- description When your expected value is a multiline string.
- catchAllNodeType textBlockNode
- javascript
-  getExpected() { return this.childrenToString() }
-  getSyncExpected() { return this.childrenToString() }
- extends abstractAssertionNode
 abstractCommandArgNode
  abstract
  javascript
@@ -237,65 +301,6 @@ constructWithBlockStringNode
  cells arrangeCell
 errorNode
  baseNodeType errorNode
-lengthIsNode
- description Intake is an array, and checks if the length of array matches expected.
- cells assertCell intCell
- javascript
-  parseActual(actual) { return actual.length }
-  printFailureMessage(actual) {
-    super.printFailureMessage()
-    console.log(actual.join("\n"))
-  }
- extends abstractAssertionNode
-requireNode
- match require
- cells arrangeCell filepathCell
- catchAllCellType anyCell
- extends terminalNode
-staticNode
- match static
- description Add this to setup node to import class directly without initiating it, for static method testing.
- extends terminalNode
-stringExcludesNode
- description Converts the input to string and ensure the string does NOT contain the provided string
- catchAllCellType anyCell
- javascript
-   getTestResult(actualAsString, expected, message) {
-    const result = !actualAsString.includes(expected)
-    if (!result) {
-      const index = actualAsString.indexOf(expected)
-      const start = Math.max(0, index - 50)
-      message += ` Found ${expected} in: ` + actualAsString.substr(start, index + 50 + expected.length)
-    }
-    this.equal(result, true, message)
-    return result
-  }
- extends abstractAssertionNode
-stringIncludesNode
- catchAllCellType anyCell
- description Converts the input to string and see if the string contains the provided string
- javascript
-   getTestResult(actualAsString, expected, message) {
-    const result = actualAsString.includes(expected)
-    this.equal(result, true, message)
-    return result
-  }
- extends abstractAssertionNode
-stringIsNode
- description Intake is anything with a toString method, and compares that to provided expected value.
- catchAllCellType anyCell
- extends abstractAssertionNode
-testNode
- description Basic test block.
- extends testBlockNode
-testOnlyNode
- description If set, only this test block will be run.
- extends testBlockNode
-skipTestNode
- description If you want to skip running a test.
- javascript
-  async execute() { console.log(`Skipped test ${this.getLine()}`) }
- extends testBlockNode
 textBlockNode
  catchAllCellType anyCell
  catchAllNodeType textBlockNode
@@ -305,9 +310,3 @@ todoNode
  catchAllCellType todoCell
  catchAllNodeType todoNode
  cells todoCell
-typeIsNode
- description Assert result is one of Javascript's 6 typeof types.
- cells assertCell typeOfOptionCell
- javascript
-  parseActual(actual) { return typeof actual }
- extends abstractAssertionNode

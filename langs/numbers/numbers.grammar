@@ -1,8 +1,3 @@
-numbersNode
- root
- description A useless Tree Language for testing Tree Notation features.
- inScope abstractArithmeticReducerNode commentNode hashBangNode
- catchAllNodeType errorNode
 floatCell
 commentCell
  highlightScope comment
@@ -19,6 +14,11 @@ numbersCell
  extends numberCell
 operatorCell
  highlightScope keyword.operator.arithmetic
+numbersNode
+ root
+ description A useless Tree Language for testing Tree Notation features.
+ inScope abstractArithmeticReducerNode commentNode hashBangNode
+ catchAllNodeType errorNode
 abstractArithmeticReducerNode
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
@@ -30,21 +30,6 @@ abstractArithmeticReducerNode
  abstract
  cells operatorCell
  catchAllCellType numbersCell
-commentNode
- description This is a line comment.
- catchAllCellType commentCell
- catchAllNodeType commentNode
- cells commentKeywordCell
-simpleCommentNode
- match comment
- extends commentNode
-errorNode
- catchAllCellType errorCell
- baseNodeType errorNode
- cells errorCell
-hashBangNode
- match #!
- extends commentNode
 modNode
  match %
  extends abstractArithmeticReducerNode
@@ -65,3 +50,18 @@ divideNode
  match /
  extends abstractArithmeticReducerNode
  string operator /
+commentNode
+ description This is a line comment.
+ catchAllCellType commentCell
+ catchAllNodeType commentNode
+ cells commentKeywordCell
+simpleCommentNode
+ match comment
+ extends commentNode
+hashBangNode
+ match #!
+ extends commentNode
+errorNode
+ catchAllCellType errorCell
+ baseNodeType errorNode
+ cells errorCell

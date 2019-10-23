@@ -32,6 +32,12 @@ class jtreeNode extends jtree {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
   }
 
+  static formatProgram = (programCode: string, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
+    const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
+    const program = new programConstructor(programCode)
+    return program.format().toString()
+  }
+
   private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)

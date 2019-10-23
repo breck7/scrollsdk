@@ -18,7 +18,25 @@
     }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`hakonNode
+        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`anyCell
+keywordCell
+commentKeywordCell
+ extends keywordCell
+ highlightScope comment
+extraCell
+ highlightScope invalid
+cssValueCell
+ highlightScope constant.numeric
+selectorCell
+ highlightScope keyword.control
+propertyKeywordCell
+ highlightScope variable.function
+ extends keywordCell
+errorCell
+ highlightScope invalid
+commentCell
+ highlightScope comment
+hakonNode
  root
  todo Add variables?
  description A prefix Tree Language that compiles to CSS
@@ -42,22 +60,6 @@
    &:hover
     color blue
     font-size 17px
-anyCell
-keywordCell
-commentKeywordCell
- extends keywordCell
- highlightScope comment
-extraCell
- highlightScope invalid
-cssValueCell
- highlightScope constant.numeric
-selectorCell
- highlightScope keyword.control
-propertyKeywordCell
- highlightScope variable.function
- extends keywordCell
-errorCell
- highlightScope invalid
 abstractPropertyNode
  catchAllCellType cssValueCell
  catchAllNodeType errorNode
@@ -65,39 +67,6 @@ abstractPropertyNode
   compile(spaces) { return \`\${spaces}\${this.getFirstWord()}: \${this.getContent()};\` }
  abstract
  cells propertyKeywordCell
-errorNode
- catchAllNodeType errorNode
- catchAllCellType errorCell
- baseNodeType errorNode
-commentCell
- highlightScope comment
-commentNode
- catchAllCellType commentCell
- catchAllNodeType commentNode
-selectorNode
- inScope abstractPropertyNode commentNode
- catchAllNodeType selectorNode
- boolean isSelectorNode true
- javascript
-  getSelector() {
-    const parentSelector = this.getParent().getSelector()
-    return this.getFirstWord()
-      .split(",")
-      .map(part => {
-        if (part.startsWith("&")) return parentSelector + part.substr(1)
-        return parentSelector ? parentSelector + " " + part : part
-      })
-      .join(",")
-  }
-  compile() {
-    const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
-    if (!propertyNodes.length) return ""
-    const spaces = "  "
-    return \`\${this.getSelector()} {
-  \${propertyNodes.map(child => child.compile(spaces)).join("\\n")}
-  }\\n\`
-    }
- cells selectorCell
 alignContentNode
  match align-content
  extends abstractPropertyNode
@@ -631,16 +600,44 @@ MsUserSelectNode
  extends abstractPropertyNode
 KhtmlUserSelectNode
  match -khtml-user-select
- extends abstractPropertyNode`)
+ extends abstractPropertyNode
+errorNode
+ catchAllNodeType errorNode
+ catchAllCellType errorCell
+ baseNodeType errorNode
+commentNode
+ catchAllCellType commentCell
+ catchAllNodeType commentNode
+selectorNode
+ inScope abstractPropertyNode commentNode
+ catchAllNodeType selectorNode
+ boolean isSelectorNode true
+ javascript
+  getSelector() {
+    const parentSelector = this.getParent().getSelector()
+    return this.getFirstWord()
+      .split(",")
+      .map(part => {
+        if (part.startsWith("&")) return parentSelector + part.substr(1)
+        return parentSelector ? parentSelector + " " + part : part
+      })
+      .join(",")
+  }
+  compile() {
+    const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
+    if (!propertyNodes.length) return ""
+    const spaces = "  "
+    return \`\${this.getSelector()} {
+  \${propertyNodes.map(child => child.compile(spaces)).join("\\n")}
+  }\\n\`
+    }
+ cells selectorCell`)
       return this._cachedGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {
         hakonNode: hakonNode,
         abstractPropertyNode: abstractPropertyNode,
-        errorNode: errorNode,
-        commentNode: commentNode,
-        selectorNode: selectorNode,
         alignContentNode: alignContentNode,
         alignItemsNode: alignItemsNode,
         alignSelfNode: alignSelfNode,
@@ -830,7 +827,10 @@ KhtmlUserSelectNode
         MozUserSelectNode: MozUserSelectNode,
         touchActionNode: touchActionNode,
         MsUserSelectNode: MsUserSelectNode,
-        KhtmlUserSelectNode: KhtmlUserSelectNode
+        KhtmlUserSelectNode: KhtmlUserSelectNode,
+        errorNode: errorNode,
+        commentNode: commentNode,
+        selectorNode: selectorNode
       }
     }
   }
@@ -847,253 +847,6 @@ KhtmlUserSelectNode
     }
     compile(spaces) {
       return `${spaces}${this.getFirstWord()}: ${this.getContent()};`
-    }
-  }
-
-  class errorNode extends jtree.GrammarBackedNode {
-    createParser() {
-      return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
-    }
-    getErrors() {
-      return this._getErrorNodeErrors()
-    }
-    get errorCell() {
-      return this.getWordsFrom(0)
-    }
-  }
-
-  class commentNode extends jtree.GrammarBackedNode {
-    createParser() {
-      return new jtree.TreeNode.Parser(commentNode, undefined, undefined)
-    }
-    get commentCell() {
-      return this.getWordsFrom(0)
-    }
-  }
-
-  class selectorNode extends jtree.GrammarBackedNode {
-    createParser() {
-      return new jtree.TreeNode.Parser(
-        selectorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
-          comment: commentNode,
-          "align-content": alignContentNode,
-          "align-items": alignItemsNode,
-          "align-self": alignSelfNode,
-          all: allNode,
-          animation: animationNode,
-          "animation-delay": animationDelayNode,
-          "animation-direction": animationDirectionNode,
-          "animation-duration": animationDurationNode,
-          "animation-fill-mode": animationFillModeNode,
-          "animation-iteration-count": animationIterationCountNode,
-          "animation-name": animationNameNode,
-          "animation-play-state": animationPlayStateNode,
-          "animation-timing-function": animationTimingFunctionNode,
-          "backface-visibility": backfaceVisibilityNode,
-          background: backgroundNode,
-          "background-attachment": backgroundAttachmentNode,
-          "background-blend-mode": backgroundBlendModeNode,
-          "background-clip": backgroundClipNode,
-          "background-color": backgroundColorNode,
-          "background-image": backgroundImageNode,
-          "background-origin": backgroundOriginNode,
-          "background-position": backgroundPositionNode,
-          "background-repeat": backgroundRepeatNode,
-          "background-size": backgroundSizeNode,
-          border: borderNode,
-          "border-bottom": borderBottomNode,
-          "border-bottom-color": borderBottomColorNode,
-          "border-bottom-left-radius": borderBottomLeftRadiusNode,
-          "border-bottom-right-radius": borderBottomRightRadiusNode,
-          "border-bottom-style": borderBottomStyleNode,
-          "border-bottom-width": borderBottomWidthNode,
-          "border-collapse": borderCollapseNode,
-          "border-color": borderColorNode,
-          "border-image": borderImageNode,
-          "border-image-outset": borderImageOutsetNode,
-          "border-image-repeat": borderImageRepeatNode,
-          "border-image-slice": borderImageSliceNode,
-          "border-image-source": borderImageSourceNode,
-          "border-image-width": borderImageWidthNode,
-          "border-left": borderLeftNode,
-          "border-left-color": borderLeftColorNode,
-          "border-left-style": borderLeftStyleNode,
-          "border-left-width": borderLeftWidthNode,
-          "border-radius": borderRadiusNode,
-          "border-right": borderRightNode,
-          "border-right-color": borderRightColorNode,
-          "border-right-style": borderRightStyleNode,
-          "border-right-width": borderRightWidthNode,
-          "border-spacing": borderSpacingNode,
-          "border-style": borderStyleNode,
-          "border-top": borderTopNode,
-          "border-top-color": borderTopColorNode,
-          "border-top-left-radius": borderTopLeftRadiusNode,
-          "border-top-right-radius": borderTopRightRadiusNode,
-          "border-top-style": borderTopStyleNode,
-          "border-top-width": borderTopWidthNode,
-          "border-width": borderWidthNode,
-          bottom: bottomNode,
-          "box-shadow": boxShadowNode,
-          "box-sizing": boxSizingNode,
-          "caption-side": captionSideNode,
-          clear: clearNode,
-          clip: clipNode,
-          color: colorNode,
-          "column-count": columnCountNode,
-          "column-fill": columnFillNode,
-          "column-gap": columnGapNode,
-          "column-rule": columnRuleNode,
-          "column-rule-color": columnRuleColorNode,
-          "column-rule-style": columnRuleStyleNode,
-          "column-rule-width": columnRuleWidthNode,
-          "column-span": columnSpanNode,
-          "column-width": columnWidthNode,
-          columns: columnsNode,
-          content: contentNode,
-          "counter-increment": counterIncrementNode,
-          "counter-reset": counterResetNode,
-          cursor: cursorNode,
-          direction: directionNode,
-          display: displayNode,
-          "empty-cells": emptyCellsNode,
-          fill: fillNode,
-          filter: filterNode,
-          flex: flexNode,
-          "flex-basis": flexBasisNode,
-          "flex-direction": flexDirectionNode,
-          "flex-flow": flexFlowNode,
-          "flex-grow": flexGrowNode,
-          "flex-shrink": flexShrinkNode,
-          "flex-wrap": flexWrapNode,
-          float: floatNode,
-          font: fontNode,
-          "@font-face": fontFaceNode,
-          "font-family": fontFamilyNode,
-          "font-size": fontSizeNode,
-          "font-size-adjust": fontSizeAdjustNode,
-          "font-stretch": fontStretchNode,
-          "font-style": fontStyleNode,
-          "font-variant": fontVariantNode,
-          "font-weight": fontWeightNode,
-          "hanging-punctuation": hangingPunctuationNode,
-          height: heightNode,
-          "justify-content": justifyContentNode,
-          "@keyframes": keyframesNode,
-          left: leftNode,
-          "letter-spacing": letterSpacingNode,
-          "line-height": lineHeightNode,
-          "list-style": listStyleNode,
-          "list-style-image": listStyleImageNode,
-          "list-style-position": listStylePositionNode,
-          "list-style-type": listStyleTypeNode,
-          margin: marginNode,
-          "margin-bottom": marginBottomNode,
-          "margin-left": marginLeftNode,
-          "margin-right": marginRightNode,
-          "margin-top": marginTopNode,
-          "max-height": maxHeightNode,
-          "max-width": maxWidthNode,
-          "@media": mediaNode,
-          "min-height": minHeightNode,
-          "min-width": minWidthNode,
-          "nav-down": navDownNode,
-          "nav-index": navIndexNode,
-          "nav-left": navLeftNode,
-          "nav-right": navRightNode,
-          "nav-up": navUpNode,
-          opacity: opacityNode,
-          order: orderNode,
-          outline: outlineNode,
-          "outline-color": outlineColorNode,
-          "outline-offset": outlineOffsetNode,
-          "outline-style": outlineStyleNode,
-          "outline-width": outlineWidthNode,
-          overflow: overflowNode,
-          "overflow-x": overflowXNode,
-          "overflow-y": overflowYNode,
-          padding: paddingNode,
-          "padding-bottom": paddingBottomNode,
-          "padding-left": paddingLeftNode,
-          "padding-right": paddingRightNode,
-          "padding-top": paddingTopNode,
-          "page-break-after": pageBreakAfterNode,
-          "page-break-before": pageBreakBeforeNode,
-          "page-break-inside": pageBreakInsideNode,
-          perspective: perspectiveNode,
-          "perspective-origin": perspectiveOriginNode,
-          position: positionNode,
-          quotes: quotesNode,
-          resize: resizeNode,
-          right: rightNode,
-          "tab-size": tabSizeNode,
-          "table-layout": tableLayoutNode,
-          "text-align": textAlignNode,
-          "text-align-last": textAlignLastNode,
-          "text-decoration": textDecorationNode,
-          "text-decoration-color": textDecorationColorNode,
-          "text-decoration-line": textDecorationLineNode,
-          "text-decoration-style": textDecorationStyleNode,
-          "text-indent": textIndentNode,
-          "text-justify": textJustifyNode,
-          "text-overflow": textOverflowNode,
-          "text-shadow": textShadowNode,
-          "text-transform": textTransformNode,
-          top: topNode,
-          transform: transformNode,
-          "transform-origin": transformOriginNode,
-          "transform-style": transformStyleNode,
-          transition: transitionNode,
-          "transition-delay": transitionDelayNode,
-          "transition-duration": transitionDurationNode,
-          "transition-property": transitionPropertyNode,
-          "transition-timing-function": transitionTimingFunctionNode,
-          "unicode-bidi": unicodeBidiNode,
-          "vertical-align": verticalAlignNode,
-          visibility: visibilityNode,
-          "white-space": whiteSpaceNode,
-          width: widthNode,
-          "word-break": wordBreakNode,
-          "word-spacing": wordSpacingNode,
-          "word-wrap": wordWrapNode,
-          "z-index": zIndexNode,
-          "overscroll-behavior-x": overscrollBehaviorXNode,
-          "user-select": userSelectNode,
-          "-ms-touch-action": MsTouchActionNode,
-          "-webkit-user-select": WebkitUserSelectNode,
-          "-webkit-touch-callout": WebkitTouchCalloutNode,
-          "-moz-user-select": MozUserSelectNode,
-          "touch-action": touchActionNode,
-          "-ms-user-select": MsUserSelectNode,
-          "-khtml-user-select": KhtmlUserSelectNode
-        }),
-        undefined
-      )
-    }
-    get selectorCell() {
-      return this.getWord(0)
-    }
-    get isSelectorNode() {
-      return true
-    }
-    getSelector() {
-      const parentSelector = this.getParent().getSelector()
-      return this.getFirstWord()
-        .split(",")
-        .map(part => {
-          if (part.startsWith("&")) return parentSelector + part.substr(1)
-          return parentSelector ? parentSelector + " " + part : part
-        })
-        .join(",")
-    }
-    compile() {
-      const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
-      if (!propertyNodes.length) return ""
-      const spaces = "  "
-      return `${this.getSelector()} {
-${propertyNodes.map(child => child.compile(spaces)).join("\n")}
-}\n`
     }
   }
 
@@ -1476,6 +1229,253 @@ ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
   class MsUserSelectNode extends abstractPropertyNode {}
 
   class KhtmlUserSelectNode extends abstractPropertyNode {}
+
+  class errorNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
+    }
+    getErrors() {
+      return this._getErrorNodeErrors()
+    }
+    get errorCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class commentNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(commentNode, undefined, undefined)
+    }
+    get commentCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class selectorNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(
+        selectorNode,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
+          "align-content": alignContentNode,
+          "align-items": alignItemsNode,
+          "align-self": alignSelfNode,
+          all: allNode,
+          animation: animationNode,
+          "animation-delay": animationDelayNode,
+          "animation-direction": animationDirectionNode,
+          "animation-duration": animationDurationNode,
+          "animation-fill-mode": animationFillModeNode,
+          "animation-iteration-count": animationIterationCountNode,
+          "animation-name": animationNameNode,
+          "animation-play-state": animationPlayStateNode,
+          "animation-timing-function": animationTimingFunctionNode,
+          "backface-visibility": backfaceVisibilityNode,
+          background: backgroundNode,
+          "background-attachment": backgroundAttachmentNode,
+          "background-blend-mode": backgroundBlendModeNode,
+          "background-clip": backgroundClipNode,
+          "background-color": backgroundColorNode,
+          "background-image": backgroundImageNode,
+          "background-origin": backgroundOriginNode,
+          "background-position": backgroundPositionNode,
+          "background-repeat": backgroundRepeatNode,
+          "background-size": backgroundSizeNode,
+          border: borderNode,
+          "border-bottom": borderBottomNode,
+          "border-bottom-color": borderBottomColorNode,
+          "border-bottom-left-radius": borderBottomLeftRadiusNode,
+          "border-bottom-right-radius": borderBottomRightRadiusNode,
+          "border-bottom-style": borderBottomStyleNode,
+          "border-bottom-width": borderBottomWidthNode,
+          "border-collapse": borderCollapseNode,
+          "border-color": borderColorNode,
+          "border-image": borderImageNode,
+          "border-image-outset": borderImageOutsetNode,
+          "border-image-repeat": borderImageRepeatNode,
+          "border-image-slice": borderImageSliceNode,
+          "border-image-source": borderImageSourceNode,
+          "border-image-width": borderImageWidthNode,
+          "border-left": borderLeftNode,
+          "border-left-color": borderLeftColorNode,
+          "border-left-style": borderLeftStyleNode,
+          "border-left-width": borderLeftWidthNode,
+          "border-radius": borderRadiusNode,
+          "border-right": borderRightNode,
+          "border-right-color": borderRightColorNode,
+          "border-right-style": borderRightStyleNode,
+          "border-right-width": borderRightWidthNode,
+          "border-spacing": borderSpacingNode,
+          "border-style": borderStyleNode,
+          "border-top": borderTopNode,
+          "border-top-color": borderTopColorNode,
+          "border-top-left-radius": borderTopLeftRadiusNode,
+          "border-top-right-radius": borderTopRightRadiusNode,
+          "border-top-style": borderTopStyleNode,
+          "border-top-width": borderTopWidthNode,
+          "border-width": borderWidthNode,
+          bottom: bottomNode,
+          "box-shadow": boxShadowNode,
+          "box-sizing": boxSizingNode,
+          "caption-side": captionSideNode,
+          clear: clearNode,
+          clip: clipNode,
+          color: colorNode,
+          "column-count": columnCountNode,
+          "column-fill": columnFillNode,
+          "column-gap": columnGapNode,
+          "column-rule": columnRuleNode,
+          "column-rule-color": columnRuleColorNode,
+          "column-rule-style": columnRuleStyleNode,
+          "column-rule-width": columnRuleWidthNode,
+          "column-span": columnSpanNode,
+          "column-width": columnWidthNode,
+          columns: columnsNode,
+          content: contentNode,
+          "counter-increment": counterIncrementNode,
+          "counter-reset": counterResetNode,
+          cursor: cursorNode,
+          direction: directionNode,
+          display: displayNode,
+          "empty-cells": emptyCellsNode,
+          fill: fillNode,
+          filter: filterNode,
+          flex: flexNode,
+          "flex-basis": flexBasisNode,
+          "flex-direction": flexDirectionNode,
+          "flex-flow": flexFlowNode,
+          "flex-grow": flexGrowNode,
+          "flex-shrink": flexShrinkNode,
+          "flex-wrap": flexWrapNode,
+          float: floatNode,
+          font: fontNode,
+          "@font-face": fontFaceNode,
+          "font-family": fontFamilyNode,
+          "font-size": fontSizeNode,
+          "font-size-adjust": fontSizeAdjustNode,
+          "font-stretch": fontStretchNode,
+          "font-style": fontStyleNode,
+          "font-variant": fontVariantNode,
+          "font-weight": fontWeightNode,
+          "hanging-punctuation": hangingPunctuationNode,
+          height: heightNode,
+          "justify-content": justifyContentNode,
+          "@keyframes": keyframesNode,
+          left: leftNode,
+          "letter-spacing": letterSpacingNode,
+          "line-height": lineHeightNode,
+          "list-style": listStyleNode,
+          "list-style-image": listStyleImageNode,
+          "list-style-position": listStylePositionNode,
+          "list-style-type": listStyleTypeNode,
+          margin: marginNode,
+          "margin-bottom": marginBottomNode,
+          "margin-left": marginLeftNode,
+          "margin-right": marginRightNode,
+          "margin-top": marginTopNode,
+          "max-height": maxHeightNode,
+          "max-width": maxWidthNode,
+          "@media": mediaNode,
+          "min-height": minHeightNode,
+          "min-width": minWidthNode,
+          "nav-down": navDownNode,
+          "nav-index": navIndexNode,
+          "nav-left": navLeftNode,
+          "nav-right": navRightNode,
+          "nav-up": navUpNode,
+          opacity: opacityNode,
+          order: orderNode,
+          outline: outlineNode,
+          "outline-color": outlineColorNode,
+          "outline-offset": outlineOffsetNode,
+          "outline-style": outlineStyleNode,
+          "outline-width": outlineWidthNode,
+          overflow: overflowNode,
+          "overflow-x": overflowXNode,
+          "overflow-y": overflowYNode,
+          padding: paddingNode,
+          "padding-bottom": paddingBottomNode,
+          "padding-left": paddingLeftNode,
+          "padding-right": paddingRightNode,
+          "padding-top": paddingTopNode,
+          "page-break-after": pageBreakAfterNode,
+          "page-break-before": pageBreakBeforeNode,
+          "page-break-inside": pageBreakInsideNode,
+          perspective: perspectiveNode,
+          "perspective-origin": perspectiveOriginNode,
+          position: positionNode,
+          quotes: quotesNode,
+          resize: resizeNode,
+          right: rightNode,
+          "tab-size": tabSizeNode,
+          "table-layout": tableLayoutNode,
+          "text-align": textAlignNode,
+          "text-align-last": textAlignLastNode,
+          "text-decoration": textDecorationNode,
+          "text-decoration-color": textDecorationColorNode,
+          "text-decoration-line": textDecorationLineNode,
+          "text-decoration-style": textDecorationStyleNode,
+          "text-indent": textIndentNode,
+          "text-justify": textJustifyNode,
+          "text-overflow": textOverflowNode,
+          "text-shadow": textShadowNode,
+          "text-transform": textTransformNode,
+          top: topNode,
+          transform: transformNode,
+          "transform-origin": transformOriginNode,
+          "transform-style": transformStyleNode,
+          transition: transitionNode,
+          "transition-delay": transitionDelayNode,
+          "transition-duration": transitionDurationNode,
+          "transition-property": transitionPropertyNode,
+          "transition-timing-function": transitionTimingFunctionNode,
+          "unicode-bidi": unicodeBidiNode,
+          "vertical-align": verticalAlignNode,
+          visibility: visibilityNode,
+          "white-space": whiteSpaceNode,
+          width: widthNode,
+          "word-break": wordBreakNode,
+          "word-spacing": wordSpacingNode,
+          "word-wrap": wordWrapNode,
+          "z-index": zIndexNode,
+          "overscroll-behavior-x": overscrollBehaviorXNode,
+          "user-select": userSelectNode,
+          "-ms-touch-action": MsTouchActionNode,
+          "-webkit-user-select": WebkitUserSelectNode,
+          "-webkit-touch-callout": WebkitTouchCalloutNode,
+          "-moz-user-select": MozUserSelectNode,
+          "touch-action": touchActionNode,
+          "-ms-user-select": MsUserSelectNode,
+          "-khtml-user-select": KhtmlUserSelectNode,
+          comment: commentNode
+        }),
+        undefined
+      )
+    }
+    get selectorCell() {
+      return this.getWord(0)
+    }
+    get isSelectorNode() {
+      return true
+    }
+    getSelector() {
+      const parentSelector = this.getParent().getSelector()
+      return this.getFirstWord()
+        .split(",")
+        .map(part => {
+          if (part.startsWith("&")) return parentSelector + part.substr(1)
+          return parentSelector ? parentSelector + " " + part : part
+        })
+        .join(",")
+    }
+    compile() {
+      const propertyNodes = this.getChildren().filter(node => node.doesExtend("abstractPropertyNode"))
+      if (!propertyNodes.length) return ""
+      const spaces = "  "
+      return `${this.getSelector()} {
+${propertyNodes.map(child => child.compile(spaces)).join("\n")}
+}\n`
+    }
+  }
 
   window.hakonNode = hakonNode
 }

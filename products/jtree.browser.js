@@ -1373,6 +1373,10 @@ class TreeNode extends AbstractNode {
   _getChildJoinCharacter() {
     return "\n"
   }
+  format() {
+    this.forEach(child => child.format())
+    return this
+  }
   compile() {
     return this.map(child => child.compile()).join(this._getChildJoinCharacter())
   }
@@ -1445,7 +1449,7 @@ class TreeNode extends AbstractNode {
       return false
     })
   }
-  format(str) {
+  evalTemplateString(str) {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }
@@ -3048,7 +3052,7 @@ class GrammarBackedNode extends TreeNode {
   getRunTimeEnumOptions(cell) {
     return undefined
   }
-  sortNodesByInScopeOrder() {
+  _sortNodesByInScopeOrder() {
     const nodeTypeOrder = this.getDefinition()._getMyInScopeNodeTypeIds()
     if (!nodeTypeOrder.length) return this
     const orderMap = {}
@@ -3161,21 +3165,23 @@ class GrammarBackedNode extends TreeNode {
       matches: nodeInScope.getAutocompleteResults(wordProperties.word, wordIndex)
     }
   }
-  getSortedByInheritance() {
-    const clone = new ExtendibleTreeNode(this.clone())
-    const familyTree = new GrammarProgram(clone.toString()).getNodeTypeFamilyTree()
+  _sortWithParentNodeTypesUpTop() {
+    const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree()
     const rank = {}
     familyTree.getTopDownArray().forEach((node, index) => {
       rank[node.getWord(0)] = index
     })
     const nodeAFirst = -1
     const nodeBFirst = 1
-    clone.sort((nodeA, nodeB) => {
+    this.sort((nodeA, nodeB) => {
       const nodeARank = rank[nodeA.getWord(0)]
       const nodeBRank = rank[nodeB.getWord(0)]
       return nodeARank < nodeBRank ? nodeAFirst : nodeBFirst
     })
-    return clone
+    return this
+  }
+  format() {
+    return this._sortNodesByInScopeOrder()._sortWithParentNodeTypesUpTop()
   }
   getNodeTypeUsage(filepath = "") {
     // returns a report on what nodeTypes from its language the program uses
@@ -4064,6 +4070,20 @@ class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
 }
 class GrammarNodeTypeConstantFloat extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantBoolean extends GrammarNodeTypeConstant {}
+class JavascriptCustomMethodsBlock extends TreeNode {
+  format() {
+    if (this.isNodeJs()) {
+      const template = `class FOO{ ${this.childrenToString()}}`
+      this.setChildren(
+        require("prettier")
+          .format(template, { semi: false, parser: "babel", printWidth: 240 })
+          .replace("class FOO {", "")
+          .replace(/\s+\}\s+$/, "")
+      )
+    }
+    return this
+  }
+}
 class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   createParser() {
     // todo: some of these should just be on nonRootNodes
@@ -4100,6 +4120,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.example] = GrammarExampleNode
+    map[GrammarConstants.javascript] = JavascriptCustomMethodsBlock
     return new TreeNode.Parser(undefined, map)
   }
   _getId() {
@@ -4524,6 +4545,13 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     document.head.appendChild(script)
     return window[name]
   }
+  format() {
+    super.format()
+    this.getTopDownArray().forEach(child => {
+      child.format()
+    })
+    return this
+  }
   // todo: better formalize the source maps pattern somewhat used here by getAllErrors
   // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
   getErrorsInGrammarExamples() {
@@ -4943,7 +4971,15 @@ class UnknownGrammarProgram extends TreeNode {
     const cellTypeDefs = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
     const nodeBreakSymbol = this.getNodeBreakSymbol()
-    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n")
+    return this._formatCode([this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n"))
+  }
+  _formatCode(code) {
+    // todo: make this run in browser too
+    if (!this.isNodeJs()) return code
+    const grammarProgram = new GrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
+    const programConstructor = grammarProgram.getRootConstructor()
+    const program = new programConstructor(code)
+    return program.format().toString()
   }
   _getBestCellType(firstWord, instanceCount, maxCellsOnLine, allValues) {
     const asSet = new Set(allValues)

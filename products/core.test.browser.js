@@ -875,12 +875,12 @@ testTree.toggleLine = equal => {
   equal(node.hasLine("hidden"), false)
   equal(node.has("hidden"), false)
 }
-testTree.format = equal => {
+testTree.evalTemplateString = equal => {
   // Arrange
-  const str = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"
+  const templateString = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"
   const person = new TreeNode("firstName Tom\nlastName B\naddress\n city Boston")
   // Act
-  const result = person.format(str)
+  const result = person.evalTemplateString(templateString)
   // Assert
   equal(result, "Hi Tom B! I hope you are enjoying the weather in Boston!")
 }

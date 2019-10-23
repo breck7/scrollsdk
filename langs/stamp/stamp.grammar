@@ -1,4 +1,20 @@
 todo File permissions
+anyCell
+extraCell
+ highlightScope invalid
+anyCell
+ highlightScope string
+promptWordsCell
+ highlightScope string
+filepathCell
+varNameCell
+ highlightScope string
+commentCell
+ highlightScope comment
+inputTypeCell
+ regex (string|int|any|lowercase)
+keywordCell
+ highlightScope keyword.control
 stampNode
  root
  description A prefix Tree Language for creating distributable text template files that expand to folders and files.
@@ -47,22 +63,6 @@ stampNode
     return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
   }
  inScope hashbangNode promptNode folderNode fileNode
-anyCell
-extraCell
- highlightScope invalid
-anyCell
- highlightScope string
-promptWordsCell
- highlightScope string
-filepathCell
-varNameCell
- highlightScope string
-commentCell
- highlightScope comment
-inputTypeCell
- regex (string|int|any|lowercase)
-keywordCell
- highlightScope keyword.control
 hashbangNode
  match #!
  catchAllCellType commentCell

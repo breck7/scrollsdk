@@ -18,20 +18,25 @@
       }
     </style>
     <script type="text/javascript">
-      const runTestMethod = new URLSearchParams(new URL(location.href).search).get("runTestMethod")
-      let testsToRun = testTree
-      if (runTestMethod) {
-        testsToRun = {}
-        testsToRun[runTestMethod] = testTree[runTestMethod]
+      const main = async () => {
+        const runTestMethod = new URLSearchParams(new URL(location.href).search).get("runTestMethod")
+        let testsToRun = testTree
+        if (runTestMethod) {
+          testsToRun = {}
+          testsToRun[runTestMethod] = testTree[runTestMethod]
+        }
+        const bodyTag = document.getElementsByTagName("body")[0]
+        const fileTree = {}
+        fileTree.core = testsToRun
+        const racer = new jtree.TestRacer(fileTree).setLogFunction(message => {
+          const result = document.createElement("div")
+          result.innerHTML = message.replace(/ method (\w+)/, " method <a href='?runTestMethod=$1'>$1</a>")
+          bodyTag.prepend(result)
+        })
+        await racer.execute()
+        racer.finish()
       }
-      const bodyTag = document.getElementsByTagName("body")[0]
-      const fileTree = {}
-      fileTree.core = testsToRun
-      new jtree.TestRacer(fileTree).setLogFunction(message => {
-        const result = document.createElement("div")
-        result.innerHTML = message.replace(/ method (\w+)/, " method <a href='?runTestMethod=$1'>$1</a>")
-        bodyTag.prepend(result)
-      }).execute()
+      main()
     </script>
   </body>
 </html>

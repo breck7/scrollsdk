@@ -223,20 +223,20 @@ ${grammars.toTable()}`
     Disk.createFileIfDoesNotExist(logFilePath, "command paramOne paramTwo timestamp\n")
     Disk.appendAsync(logFilePath, line, () => {})
   }
-  async _run(programPath) {
+  async _executeFile(programPath) {
     const result = await jtree.executeFile(programPath, this._getGrammarPathOrThrow(programPath))
     return result
   }
-  _runSync(programPath) {
+  _executeSync(programPath) {
     return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
   }
   async run(programPathOrGrammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._run(programPathOrGrammarName)
-    return Promise.all(this._history(programPathOrGrammarName).map(file => this._run(file)))
+    if (programPathOrGrammarName.includes(".")) return this._executeFile(programPathOrGrammarName)
+    return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
   }
   runSync(programPathOrGrammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._runSync(programPathOrGrammarName)
-    return this._history(programPathOrGrammarName).map(file => this._runSync(file))
+    if (programPathOrGrammarName.includes(".")) return this._executeSync(programPathOrGrammarName)
+    return this._history(programPathOrGrammarName).map(file => this._executeSync(file))
   }
   usage(grammarName) {
     const files = this._history(grammarName)

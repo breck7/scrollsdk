@@ -35,7 +35,8 @@ class TestRacerTestBlock {
       await this._testFn(assertEqual)
     } catch (err) {
       failures.push(["1", "0", `Should not have uncaught errors but got: ${err}`])
-      // throw err
+      // todo: figure out the strategy here to get call stack and all that. what do other things do?
+      //throw err
     }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {
@@ -156,6 +157,7 @@ class TestRacer {
 
   setLogFunction(logFunction: Function) {
     this._logFunction = logFunction
+    return this
   }
 
   private _fileTestTree: { [fileName: string]: TestRacerFile }

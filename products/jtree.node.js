@@ -497,7 +497,8 @@ class TestRacerTestBlock {
       await this._testFn(assertEqual)
     } catch (err) {
       failures.push(["1", "0", `Should not have uncaught errors but got: ${err}`])
-      // throw err
+      // todo: figure out the strategy here to get call stack and all that. what do other things do?
+      //throw err
     }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {
@@ -606,6 +607,7 @@ class TestRacer {
   }
   setLogFunction(logFunction) {
     this._logFunction = logFunction
+    return this
   }
   _addFileResultsToSessionResults(fileStats) {
     this._sessionAssertionsPassed += fileStats.assertionsPassed
@@ -932,6 +934,10 @@ class TreeNode extends AbstractNode {
   }
   getWordsFrom(startFrom) {
     return this._getWords(startFrom)
+  }
+  getFirstAncestor() {
+    const parent = this.getParent()
+    return parent.isRoot() ? this : parent.getFirstAncestor()
   }
   _getProjectRoot() {
     return this.isRoot() ? "" : this.getRootNode()._getProjectRoot()
@@ -5320,6 +5326,7 @@ class TreeNotationCodeMirrorMode {
 }
 class jtree {}
 jtree.GrammarBackedNode = GrammarBackedNode
+jtree.GrammarConstants = GrammarConstants
 jtree.Utils = TreeUtils
 jtree.TestRacer = TestRacer
 jtree.TreeEvents = TreeEvents
@@ -5366,7 +5373,6 @@ if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(p
   }
 }
 jtreeNode.Upgrader = Upgrader
-jtreeNode.GrammarConstants = GrammarConstants
 jtreeNode.executeFile = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 jtreeNode.executeFiles = (programPaths, grammarPath) => {
   const programConstructor = jtreeNode.getProgramConstructor(grammarPath)

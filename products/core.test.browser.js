@@ -1969,6 +1969,18 @@ chart2
   node.destroy()
   equal(value.toString(), expected2)
 }
+testTree.braid = equal => {
+  // Arrange
+  const tree = new TreeNode(`score 1`)
+  const tree2 = new TreeNode(`keyword number`)
+  // Act/Assert
+  equal(
+    tree.toBraid([tree2]).toString(),
+    `score 1
+keyword number`
+  )
+  equal(tree.toSideBySide([tree2]).toString(), `score 1 keyword number`)
+}
 testTree.copyToRegression = equal => {
   // Arrange
   const tree = new TreeNode(`>something

@@ -1,5 +1,6 @@
 44.0.0 / 2019-10-13
 ===================
+- New: toBraid and toSideBySide methods
 - Fix: sweepercraft perf fix
 - Breaking: removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
 - Breaking: format() is now evalTemplateString()

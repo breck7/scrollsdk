@@ -364,6 +364,17 @@ class TreeUtils {
       return obj
     })
   }
+  static interweave(arrayOfArrays) {
+    const lineCount = Math.max(...arrayOfArrays.map(arr => arr.length))
+    const totalArrays = arrayOfArrays.length
+    const result = []
+    arrayOfArrays.forEach((lineArray, arrayIndex) => {
+      for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+        result[lineIndex * totalArrays + arrayIndex] = lineArray[lineIndex]
+      }
+    })
+    return result
+  }
   static makeSortByFn(accessorOrAccessors) {
     const arrayOfFns = Array.isArray(accessorOrAccessors) ? accessorOrAccessors : [accessorOrAccessors]
     return (objectA, objectB) => {
@@ -1189,6 +1200,51 @@ class TreeNode extends AbstractNode {
       }
     })
     return result
+  }
+  getMaxLineWidth() {
+    let maxWidth = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      const lineWidth = node.getLine().length
+      if (lineWidth > maxWidth) maxWidth = lineWidth
+    }
+    return maxWidth
+  }
+  toTreeNode() {
+    return new TreeNode(this.toString())
+  }
+  _rightPad(newWidth, padCharacter) {
+    const line = this.getLine()
+    this.setLine(line + padCharacter.repeat(newWidth - line.length))
+    return this
+  }
+  rightPad(padCharacter = " ") {
+    const newWidth = this.getMaxLineWidth()
+    this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
+    return this
+  }
+  toSideBySide(treesOrStrings, delimiter = " ") {
+    const clone = this.toTreeNode()
+    let next
+    while ((next = treesOrStrings.shift())) {
+      clone.rightPad()
+      next
+        .toString()
+        .split("\n")
+        .forEach((line, index) => {
+          const node = clone.nodeAtLine(index)
+          node.setLine(node.getLine() + delimiter + line)
+        })
+    }
+    return clone
+  }
+  toBraid(treesOrStrings) {
+    treesOrStrings.unshift(this)
+    const nodeDelimiter = this.getNodeBreakSymbol()
+    return new TreeNode(
+      TreeUtils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
+        .map(line => (line === undefined ? "" : line))
+        .join(nodeDelimiter)
+    )
   }
   getSlice(startIndexInclusive, stopIndexExclusive) {
     return new TreeNode(

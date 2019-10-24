@@ -646,6 +646,57 @@ class TreeNode extends AbstractNode {
     return result
   }
 
+  getMaxLineWidth() {
+    let maxWidth = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      const lineWidth = node.getLine().length
+      if (lineWidth > maxWidth) maxWidth = lineWidth
+    }
+    return maxWidth
+  }
+
+  toTreeNode() {
+    return new TreeNode(this.toString())
+  }
+
+  protected _rightPad(newWidth: number, padCharacter: string) {
+    const line = this.getLine()
+    this.setLine(line + padCharacter.repeat(newWidth - line.length))
+    return this
+  }
+
+  rightPad(padCharacter = " ") {
+    const newWidth = this.getMaxLineWidth()
+    this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
+    return this
+  }
+
+  toSideBySide(treesOrStrings: (TreeNode | string)[], delimiter = " ") {
+    const clone = this.toTreeNode()
+    let next
+    while ((next = treesOrStrings.shift())) {
+      clone.rightPad()
+      next
+        .toString()
+        .split("\n")
+        .forEach((line, index) => {
+          const node = clone.nodeAtLine(index)
+          node.setLine(node.getLine() + delimiter + line)
+        })
+    }
+    return clone
+  }
+
+  toBraid(treesOrStrings: (TreeNode | string)[]) {
+    treesOrStrings.unshift(this)
+    const nodeDelimiter = this.getNodeBreakSymbol()
+    return new TreeNode(
+      TreeUtils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
+        .map(line => (line === undefined ? "" : line))
+        .join(nodeDelimiter)
+    )
+  }
+
   getSlice(startIndexInclusive: int, stopIndexExclusive: int) {
     return new TreeNode(
       this.slice(startIndexInclusive, stopIndexExclusive)

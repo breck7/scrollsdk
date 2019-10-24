@@ -482,6 +482,18 @@ class TreeUtils {
     })
   }
 
+  static interweave(arrayOfArrays: any[][]) {
+    const lineCount = Math.max(...arrayOfArrays.map(arr => arr.length))
+    const totalArrays = arrayOfArrays.length
+    const result: any[] = []
+    arrayOfArrays.forEach((lineArray, arrayIndex) => {
+      for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+        result[lineIndex * totalArrays + arrayIndex] = lineArray[lineIndex]
+      }
+    })
+    return result
+  }
+
   static makeSortByFn(accessorOrAccessors: Function | Function[]): treeNotationTypes.sortFn {
     const arrayOfFns = Array.isArray(accessorOrAccessors) ? accessorOrAccessors : [accessorOrAccessors]
     return (objectA: Object, objectB: Object) => {

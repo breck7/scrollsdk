@@ -5444,6 +5444,13 @@ jtreeNode.formatProgram = (programCode, grammarPath) => {
   const program = new programConstructor(programCode)
   return program.format().toString()
 }
+jtreeNode.formatFile = (programPath, grammarPath) => {
+  const original = jtree.TreeNode.fromDisk(programPath)
+  const formatted = jtreeNode.formatProgram(original.toString(), grammarPath)
+  if (original === formatted) return false
+  new jtree.TreeNode(formatted).toDisk(programPath)
+  return true
+}
 // returns GrammarBackedProgramClass
 jtreeNode.getProgramConstructor = grammarPath => {
   if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)

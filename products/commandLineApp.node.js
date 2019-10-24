@@ -144,11 +144,7 @@ ${grammars.toTable()}`
     return `Starting sandbox on port ${port}`
   }
   format(programPath) {
-    const original = Disk.read(programPath)
-    const formatted = jtree.formatProgram(original, this._getGrammarPathOrThrow(programPath))
-    if (original === formatted) return "No change"
-    Disk.write(programPath, formatted)
-    return "File updated"
+    return jtree.formatFile(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
   }
   parse(programPath) {
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))

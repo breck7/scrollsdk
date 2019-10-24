@@ -37,6 +37,14 @@ class jtreeNode extends jtree {
     return program.format().toString()
   }
 
+  static formatFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath) => {
+    const original = jtree.TreeNode.fromDisk(programPath)
+    const formatted = jtreeNode.formatProgram(original.toString(), grammarPath)
+    if (original === formatted) return false
+    new jtree.TreeNode(formatted).toDisk(programPath)
+    return true
+  }
+
   private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)

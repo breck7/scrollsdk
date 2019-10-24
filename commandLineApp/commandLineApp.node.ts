@@ -32,17 +32,22 @@ class CommandLineApp {
     this._grammarsTree = TreeNode.fromSsv(Disk.read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
   }
 
-  build(commandName: string, argument: any) {
+  build(buildCommandName: string, argument: any) {
     let dir = Utils._removeLastSlash(this._cwd) + "/"
     let filePath = ""
     while (dir !== "/") {
       filePath = dir + "builder.ts"
+      const jsPath = dir + "builder.js"
+      if (Disk.exists(jsPath)) {
+        const { Builder } = require(jsPath)
+        return new Builder().main(buildCommandName, argument)
+      }
       if (Disk.exists(filePath)) break
       dir = Utils._getParentFolder(dir)
     }
     if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
 
-    return execSync([filePath, commandName, argument].filter(f => f).join(" "), { encoding: "utf8" })
+    return execSync([filePath, buildCommandName, argument].filter(commandWord => commandWord).join(" "), { encoding: "utf8" })
   }
 
   combine(grammarName: treeNotationTypes.grammarName) {
@@ -331,33 +336,30 @@ ${grammars.toTable()}`
     return this._getAllCommands().filter(item => item.startsWith(commandName))
   }
 
-  static async main() {
+  static async main(command?: string, paramOne?: string, paramTwo?: string) {
     const app = <any>new CommandLineApp()
 
-    const action = process.argv[2]
-    const paramOne = process.argv[3]
-    const paramTwo = process.argv[4]
     const print = console.log
-    const partialMatches = app._getPartialMatches(action)
+    const partialMatches = app._getPartialMatches(command)
 
-    if (app[action]) {
-      app.addToHistory(action, paramOne, paramTwo)
-      const result = app[action](paramOne, paramTwo)
+    if (app[command]) {
+      app.addToHistory(command, paramOne, paramTwo)
+      const result = app[command](paramOne, paramTwo)
       if (result !== undefined) print(result)
-    } else if (!action) {
+    } else if (!command) {
       app.addToHistory()
       print(app.help())
-    } else if (Disk.exists(action)) {
-      app.addToHistory(undefined, action)
-      const result = await app.run(action)
+    } else if (Disk.exists(command)) {
+      app.addToHistory(undefined, command)
+      const result = await app.run(command)
       print(result)
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) print(app[partialMatches[0]](paramOne, paramTwo))
-      else print(`Multiple matches for '${action}'. Options are:\n${partialMatches.join("\n")}`)
-    } else print(`Unknown command '${action}'. Options are:\n${app._getAllCommands().join("\n")}. \nType 'tree help' to see help for commands.`)
+      else print(`Multiple matches for '${command}'. Options are:\n${partialMatches.join("\n")}`)
+    } else print(`Unknown command '${command}'. Options are:\n${app._getAllCommands().join("\n")}. \nType 'tree help' to see help for commands.`)
   }
 }
 
-if (!module.parent) CommandLineApp.main()
+if (!module.parent) CommandLineApp.main(process.argv[2], process.argv[3], process.argv[4])
 
 export { CommandLineApp }

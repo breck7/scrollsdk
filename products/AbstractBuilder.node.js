@@ -124,21 +124,18 @@ class AbstractBuilder extends jtree.TreeNode {
   _getPartialMatches(commandName) {
     return this._getAllCommands().filter(item => item.startsWith(commandName))
   }
-  _main() {
-    const action = process.argv[2]
-    const paramOne = process.argv[3]
-    const paramTwo = process.argv[4]
+  main(command, paramOne, paramTwo) {
     const print = console.log
     const builder = this
-    const partialMatches = this._getPartialMatches(action)
-    if (builder[action]) {
-      builder[action](paramOne, paramTwo)
-    } else if (!action) {
+    const partialMatches = this._getPartialMatches(command)
+    if (builder[command]) {
+      builder[command](paramOne, paramTwo)
+    } else if (!command) {
       print(this._help())
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) builder[partialMatches[0]](paramOne, paramTwo)
-      else print(`Multiple matches for '${action}'. Options are:\n${partialMatches.join("\n")}`)
-    } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
+      else print(`Multiple matches for '${command}'. Options are:\n${partialMatches.join("\n")}`)
+    } else print(`Unknown command '${command}'. Type 'jtree build' to see available commands.`)
   }
 }
 

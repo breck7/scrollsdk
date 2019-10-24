@@ -67,6 +67,10 @@ class Builder extends AbstractBuilder {
     if (productNode.has("executable")) Disk.makeExecutable(__dirname + "/products/" + outputFileName)
   }
 
+  buildBuilder() {
+    this._buildTsc(Disk.read(__filename), __dirname + "/builder.js")
+  }
+
   buildJibJab() {
     const CommandLineApp = require("./products/commandLineApp.node.js")
     const combined = jtree.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
@@ -142,4 +146,4 @@ treeComponentFramework`.split("\n")
 
 export { Builder }
 
-if (!module.parent) new Builder()._main()
+if (!module.parent) new Builder().main(process.argv[2], process.argv[3], process.argv[4])

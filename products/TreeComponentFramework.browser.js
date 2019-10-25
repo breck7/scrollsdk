@@ -1056,7 +1056,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
   getStumpNode() {
     return this._htmlStumpNode
   }
-  getHakon() {
+  toHakonCode() {
     return ""
   }
   getTheme() {
@@ -1111,7 +1111,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     this._htmlStumpNode.removeStumpNode()
     delete this._htmlStumpNode
   }
-  getStumpCode() {
+  toStumpCode() {
     return `div
  class ${this.getCssClassNames()}`
   }
@@ -1150,12 +1150,12 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return this._lastRenderedTime
   }
   _getCss() {
-    return this.getTheme().hakonToCss(this.getHakon())
+    return this.getTheme().hakonToCss(this.toHakonCode())
   }
   toPlainHtml(containerId) {
     return `<div id="${containerId}">
- <style>${this.getTheme().hakonToCss(this.getHakon())}</style>
-${new stumpNode(this.getStumpCode()).compile()}
+ <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
+${new stumpNode(this.toStumpCode()).compile()}
 </div>`
   }
   _getCssStumpCode() {
@@ -1181,7 +1181,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
     return { treeComponentDidUpdate: true }
   }
   _getWrappedStumpCode() {
-    return this.getStumpCode()
+    return this.toStumpCode()
   }
   _updateHtml() {
     const stumpNodeToMountOn = this._htmlStumpNode.getParent()
@@ -1336,7 +1336,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
 }
 AbstractTreeComponent._mountedTreeComponents = 0
 class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
-  getHakon() {
+  toHakonCode() {
     return `.TreeComponentFrameworkDebuggerComponent
  position fixed
  top 5px
@@ -1356,7 +1356,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
  &:hover
   opacity 1`
   }
-  getStumpCode() {
+  toStumpCode() {
     const app = this.getRootNode()
     return `div
  class TreeComponentFrameworkDebuggerComponent
@@ -1378,14 +1378,14 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
     super(...arguments)
     this.githubLink = `https://github.com/treenotation/jtree`
   }
-  getHakon() {
+  toHakonCode() {
     return `.AbstractGithubTriangleComponent
  display block
  position absolute
  top 0
  right 0`
   }
-  getStumpCode() {
+  toStumpCode() {
     return `a
  class AbstractGithubTriangleComponent
  href ${this.githubLink}

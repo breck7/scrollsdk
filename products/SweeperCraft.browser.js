@@ -408,7 +408,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
       TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
     })
   }
-  getHakon() {
+  toHakonCode() {
     const theme = this.getTheme()
     return `body
  font-family "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
@@ -676,7 +676,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
   _syncBoardToGame() {
     this.setContent(`${this.numberOfMines}mines ${this.numberOfMoves}clicks ${this.gameMessage}`)
   }
-  getStumpCode() {
+  toStumpCode() {
     return `div
  class headerComponent
  div
@@ -722,7 +722,7 @@ class rowComponent extends AbstractTreeComponent {
   }
 }
 class squareComponent extends AbstractSweeperCraftComponent {
-  getStumpCode() {
+  toStumpCode() {
     const row = this.getRow()
     const col = this.getColumn()
     return `div${this.htmlContent}
@@ -782,7 +782,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
 }
 // todo: STATE
 class controlsComponent extends AbstractSweeperCraftComponent {
-  getStumpCode() {
+  toStumpCode() {
     const parts = []
     const game = this.getRootNode().getGame()
     if (game.isOver())
@@ -799,7 +799,7 @@ class controlsComponent extends AbstractSweeperCraftComponent {
 }
 // todo: STATE
 class customLinkComponent extends AbstractSweeperCraftComponent {
-  getStumpCode() {
+  toStumpCode() {
     const craftLink = this._getGameLink()
     if (craftLink) return `div Your game link: <a href="#${craftLink}">${craftLink}</a>`
     return `div`
@@ -814,7 +814,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
   }
 }
 class shortcutsTableComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     return `div
  id shortcuts
  table

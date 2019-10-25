@@ -1374,7 +1374,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return this._htmlStumpNode
   }
 
-  getHakon() {
+  toHakonCode() {
     return ""
   }
 
@@ -1439,7 +1439,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     delete this._htmlStumpNode
   }
 
-  getStumpCode() {
+  toStumpCode() {
     return `div
  class ${this.getCssClassNames()}`
   }
@@ -1492,13 +1492,13 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   protected _getCss() {
-    return this.getTheme().hakonToCss(this.getHakon())
+    return this.getTheme().hakonToCss(this.toHakonCode())
   }
 
   toPlainHtml(containerId: string) {
     return `<div id="${containerId}">
- <style>${this.getTheme().hakonToCss(this.getHakon())}</style>
-${new stumpNode(this.getStumpCode()).compile()}
+ <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
+${new stumpNode(this.toStumpCode()).compile()}
 </div>`
   }
 
@@ -1531,7 +1531,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
   }
 
   protected _getWrappedStumpCode() {
-    return this.getStumpCode()
+    return this.toStumpCode()
   }
 
   protected _updateHtml() {
@@ -1717,7 +1717,7 @@ ${new stumpNode(this.getStumpCode()).compile()}
 }
 
 class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
-  getHakon() {
+  toHakonCode() {
     return `.TreeComponentFrameworkDebuggerComponent
  position fixed
  top 5px
@@ -1738,7 +1738,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   opacity 1`
   }
 
-  getStumpCode() {
+  toStumpCode() {
     const app: any = this.getRootNode()
     return `div
  class TreeComponentFrameworkDebuggerComponent
@@ -1759,14 +1759,14 @@ ${app.toString(3)}`
 abstract class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   githubLink = `https://github.com/treenotation/jtree`
 
-  getHakon() {
+  toHakonCode() {
     return `.AbstractGithubTriangleComponent
  display block
  position absolute
  top 0
  right 0`
   }
-  getStumpCode() {
+  toStumpCode() {
     return `a
  class AbstractGithubTriangleComponent
  href ${this.githubLink}

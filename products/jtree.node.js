@@ -758,6 +758,9 @@ class TreeNode extends AbstractNode {
   execute(context) {
     return Promise.all(this.map(child => child.execute(context)))
   }
+  async loadDependencies(loadingPromiseMap) {
+    await Promise.all(this.map(node => node.loadDependencies(loadingPromiseMap)))
+  }
   getErrors() {
     return []
   }
@@ -950,8 +953,8 @@ class TreeNode extends AbstractNode {
     const parent = this.getParent()
     return parent.isRoot() ? this : parent.getFirstAncestor()
   }
-  _getProjectRoot() {
-    return this.isRoot() ? "" : this.getRootNode()._getProjectRoot()
+  _getProjectRootDir() {
+    return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
   }
   getSparsity() {
     const nodes = this.getChildren()
@@ -1281,6 +1284,17 @@ class TreeNode extends AbstractNode {
       })
     })
     return result
+  }
+  selectionToString() {
+    return this.getSelectedNodes()
+      .map(node => node.toString())
+      .join("\n")
+  }
+  getSelectedNodes() {
+    return this.getTopDownArray().filter(node => node.isSelected())
+  }
+  clearSelection() {
+    this.getSelectedNodes().forEach(node => node.unselectNode())
   }
   // Note: this is for debugging select chains
   print(message = "") {

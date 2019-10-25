@@ -289,7 +289,7 @@ class DesignerApp extends AbstractTreeComponent {
     this._clearResults()
     this._onCodeKeyUp()
   }
-  getHakon() {
+  toHakonCode() {
     const theme = this.getTheme()
     return `body
  font-family "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
@@ -366,7 +366,7 @@ githubTriangleComponent`
   }
 }
 class samplesComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     const langs = this.getRootNode()
       .languages.map(
         lang => ` a ${jtree.Utils.ucfirst(lang)}
@@ -381,7 +381,7 @@ ${langs}`
   }
 }
 class shareComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     return `div
  id shareDiv
  span Share
@@ -389,7 +389,7 @@ class shareComponent extends AbstractTreeComponent {
   id shareLink
   readonly`
   }
-  getHakon() {
+  toHakonCode() {
     return `#shareDiv
  font-size 16px
  width 100%
@@ -403,11 +403,11 @@ class shareComponent extends AbstractTreeComponent {
   }
 }
 class otherErrorsComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     return `div
  id otherErrorsDiv`
   }
-  getHakon() {
+  toHakonCode() {
     return `#otherErrorsDiv
  color red`
   }
@@ -415,19 +415,19 @@ class otherErrorsComponent extends AbstractTreeComponent {
 // Todo: use these 3
 class compiledResultsComponent extends AbstractTreeComponent {}
 class executionResultsComponent extends AbstractTreeComponent {
-  getHakon() {
+  toHakonCode() {
     return `#execResultsTextArea
  border 0
  width 100%`
   }
-  getStumpCode() {
+  toStumpCode() {
     return `textarea
  id execResultsTextArea
  placeholder Results...`
   }
 }
 class explainResultsComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     return `div`
   }
 }
@@ -439,12 +439,12 @@ class tableComponent extends AbstractTreeComponent {
       explainResultsComponent: explainResultsComponent
     })
   }
-  getHakon() {
+  toHakonCode() {
     return `textarea.resultsDiv
  height 120px
  width 220px`
   }
-  getStumpCode() {
+  toStumpCode() {
     return `table
  tr
   td
@@ -513,12 +513,12 @@ class headerComponent extends AbstractTreeComponent {
   _getTitle() {
     return `Tree Language Designer`
   }
-  getHakon() {
+  toHakonCode() {
     return `#logo
  width 100px
  vertical-align middle`
   }
-  getStumpCode() {
+  toStumpCode() {
     return `div
  h1
   a

@@ -121,6 +121,10 @@ class TreeNode extends AbstractNode {
     return Promise.all(this.map(child => child.execute(context)))
   }
 
+  async loadDependencies(loadingPromiseMap: Map<any, any>) {
+    await Promise.all(this.map(node => node.loadDependencies(loadingPromiseMap)))
+  }
+
   getErrors(): treeNotationTypes.TreeError[] {
     return []
   }
@@ -357,8 +361,8 @@ class TreeNode extends AbstractNode {
     return parent.isRoot() ? this : parent.getFirstAncestor()
   }
 
-  _getProjectRoot(): string {
-    return this.isRoot() ? "" : this.getRootNode()._getProjectRoot()
+  _getProjectRootDir(): string {
+    return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
   }
 
   getSparsity() {
@@ -738,6 +742,20 @@ class TreeNode extends AbstractNode {
       })
     })
     return result
+  }
+
+  selectionToString() {
+    return this.getSelectedNodes()
+      .map(node => node.toString())
+      .join("\n")
+  }
+
+  getSelectedNodes() {
+    return this.getTopDownArray().filter(node => node.isSelected())
+  }
+
+  clearSelection() {
+    this.getSelectedNodes().forEach(node => node.unselectNode())
   }
 
   // Note: this is for debugging select chains

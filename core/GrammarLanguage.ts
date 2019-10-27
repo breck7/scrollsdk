@@ -1968,9 +1968,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
           this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
           if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
         } catch (err) {
+          // todo: figure out best error pattern here for debugging
           console.log(err)
-          console.log(`Error in code: `)
-          console.log(code)
+          // console.log(`Error in code: `)
+          // console.log(new TreeNode(code).toStringWithLineNumbers())
         }
       } else this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
     }
@@ -1986,13 +1987,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       ;(<any>global).module = {}
       return vm.runInThisContext(code)
     } catch (err) {
-      console.log(`Error in compiled grammar code for language "${this.getGrammarName()}":`)
-      console.log(
-        code
-          .split("\n")
-          .map((line, index) => index + 1 + " " + line)
-          .join("\n")
-      )
+      // todo: figure out best error pattern here for debugging
+      console.log(`Error in compiled grammar code for language "${this.getGrammarName()}"`)
+      // console.log(new TreeNode(code).toStringWithLineNumbers())
       console.log(err)
       throw err
     }
@@ -2273,7 +2270,7 @@ ${testCode}`
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
     const rootDef = this._getRootNodeTypeDefinitionNode()
-    const rootNodeJsHeader = forNodeJs && rootDef.getNode(GrammarConstants._rootNodeJsHeader)
+    const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(GrammarConstants._rootNodeJsHeader)
     const rootName = rootDef._getGeneratedClassName()
 
     if (!rootName) throw new Error(`Root Node Type Has No Name`)
@@ -2289,7 +2286,7 @@ ${rootName}`
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
 ${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
-${rootNodeJsHeader ? rootNodeJsHeader.childrenToString() : ""}
+${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${nodeTypeClasses}
 
 ${exportScript}

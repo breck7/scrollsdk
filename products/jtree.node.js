@@ -1303,6 +1303,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   // todo: preserve subclasses!
+  // todo: preserve links back to parent so you could edit as normal?
   where(columnName, operator, fixedValue) {
     const isArray = Array.isArray(fixedValue)
     const valueType = isArray ? typeof fixedValue[0] : typeof fixedValue
@@ -1516,6 +1517,9 @@ class TreeNode extends AbstractNode {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }
+  emitLogMessage(message) {
+    console.log(message)
+  }
   getColumn(path) {
     return this.map(node => node.get(path))
   }
@@ -1622,6 +1626,12 @@ class TreeNode extends AbstractNode {
       node = node.nodeAt(path.shift())
     }
     return names
+  }
+  toStringWithLineNumbers() {
+    return this.toString()
+      .split("\n")
+      .map((line, index) => `${index + 1} ${line}`)
+      .join("\n")
   }
   toCsv() {
     return this.toDelimited(",")
@@ -2922,6 +2932,13 @@ class AbstractExtendibleTreeNode extends TreeNode {
   }
   _getNodeFromExtended(firstWordPath) {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
+  }
+  _getConcatBlockStringFromExtended(firstWordPath) {
+    return this._getAncestorsArray()
+      .filter(node => node.has(firstWordPath))
+      .map(node => node.getNode(firstWordPath).childrenToString())
+      .reverse()
+      .join("\n")
   }
   _doesExtend(nodeTypeId) {
     return this._getAncestorSet().has(nodeTypeId)
@@ -4567,9 +4584,10 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
           this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
           if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
         } catch (err) {
+          // todo: figure out best error pattern here for debugging
           console.log(err)
-          console.log(`Error in code: `)
-          console.log(code)
+          // console.log(`Error in code: `)
+          // console.log(new TreeNode(code).toStringWithLineNumbers())
         }
       } else this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
     }
@@ -4584,13 +4602,9 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       global.module = {}
       return vm.runInThisContext(code)
     } catch (err) {
-      console.log(`Error in compiled grammar code for language "${this.getGrammarName()}":`)
-      console.log(
-        code
-          .split("\n")
-          .map((line, index) => index + 1 + " " + line)
-          .join("\n")
-      )
+      // todo: figure out best error pattern here for debugging
+      console.log(`Error in compiled grammar code for language "${this.getGrammarName()}"`)
+      // console.log(new TreeNode(code).toStringWithLineNumbers())
       console.log(err)
       throw err
     }
@@ -4823,7 +4837,7 @@ ${testCode}`
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
     const rootDef = this._getRootNodeTypeDefinitionNode()
-    const rootNodeJsHeader = forNodeJs && rootDef.getNode(GrammarConstants._rootNodeJsHeader)
+    const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(GrammarConstants._rootNodeJsHeader)
     const rootName = rootDef._getGeneratedClassName()
     if (!rootName) throw new Error(`Root Node Type Has No Name`)
     let exportScript = ""
@@ -4836,7 +4850,7 @@ ${rootName}`
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
 ${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
-${rootNodeJsHeader ? rootNodeJsHeader.childrenToString() : ""}
+${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${nodeTypeClasses}
 
 ${exportScript}

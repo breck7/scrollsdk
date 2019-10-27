@@ -766,6 +766,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: preserve subclasses!
+  // todo: preserve links back to parent so you could edit as normal?
   where(columnName: string, operator: WhereOperators, fixedValue?: string | number | string[] | number[]) {
     const isArray = Array.isArray(fixedValue)
     const valueType = isArray ? typeof (<Array<string | number>>fixedValue)[0] : typeof fixedValue
@@ -1021,6 +1022,10 @@ class TreeNode extends AbstractNode {
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }
 
+  emitLogMessage(message: string) {
+    console.log(message)
+  }
+
   getColumn(path: word): string[] {
     return this.map(node => node.get(path))
   }
@@ -1149,6 +1154,13 @@ class TreeNode extends AbstractNode {
       node = node.nodeAt(path.shift())
     }
     return names
+  }
+
+  toStringWithLineNumbers() {
+    return this.toString()
+      .split("\n")
+      .map((line, index) => `${index + 1} ${line}`)
+      .join("\n")
   }
 
   toCsv(): string {
@@ -2728,6 +2740,14 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   _getNodeFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
+  }
+
+  _getConcatBlockStringFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+    return this._getAncestorsArray()
+      .filter(node => node.has(firstWordPath))
+      .map(node => node.getNode(firstWordPath).childrenToString())
+      .reverse()
+      .join("\n")
   }
 
   _doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {

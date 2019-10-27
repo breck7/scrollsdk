@@ -2757,6 +2757,7 @@ testTree.toStringMethod = equal => {
   const tree = new TreeNode("hello world")
   // Assert
   equal(tree.toString(), "hello world", "Expected correct string.")
+  equal(tree.toStringWithLineNumbers(), "1 hello world")
   // Act
   tree.touchNode("foo").setContent("bar")
   // Assert

@@ -172,6 +172,7 @@ abstractTerminalNode
 asyncNode
  description Set this in setup to test async methods.
  extends abstractTerminalNode
+ crux async
 requireNode
  crux require
  cells keywordCell filepathCell

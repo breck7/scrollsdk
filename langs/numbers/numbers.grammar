@@ -5,6 +5,7 @@ keywordCell
 commentKeywordCell
  extends keywordCell
  highlightScope comment
+ enum comment
 errorCell
  highlightScope invalid
 numberCell
@@ -55,11 +56,11 @@ divideNode
 commentNode
  description This is a line comment.
  catchAllCellType commentCell
- catchAllNodeType commentNode
+ catchAllNodeType commentContentNode
  cells commentKeywordCell
-simpleCommentNode
- crux comment
- extends commentNode
+commentContentNode
+ catchAllCellType commentCell
+ catchAllNodeType commentContentNode
 hashBangNode
  crux #!
  extends commentNode

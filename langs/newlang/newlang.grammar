@@ -11,5 +11,6 @@ newlangNode
 helloNode
  catchAllCellType nameCell
  cells keywordCell
+ crux hello
 catchAllErrorNode
  baseNodeType errorNode

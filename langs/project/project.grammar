@@ -83,10 +83,13 @@ termNode
  cells termCell
 absoluteNode
  extends termNode
+ crux absolute
 externalNode
  extends termNode
+ crux external
 relativeNode
  extends termNode
+ crux relative
 errorNode
  baseNodeType errorNode
 fileNode
@@ -114,3 +117,4 @@ fileNode
    return this._getDependencies().filter(file => includedMap[file] === undefined)
   }
  cells fileConstantCell
+ crux file

@@ -11,11 +11,14 @@ test grammarSample
    wordCell
     extends anyCell
    baseNode
+    crux base
    keywordCell
    blockNode
+    crux block
     extends baseNode
     inScope baseNode
    toNode
+    crux to
     extends blockNode
     cells keywordCell wordCell
     tags test

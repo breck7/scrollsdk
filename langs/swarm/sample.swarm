@@ -14,10 +14,13 @@ test swarmSample
    errorNode
     baseNodeType errorNode
    baseNode
+    crux base
    blockNode
+    crux block
     extends baseNode
     inScope baseNode
    toNode
+    crux to
     extends blockNode
     cells wordCell
     tags test

@@ -3055,7 +3055,7 @@ var GrammarConstants
   GrammarConstants["reservedWords"] = "reservedWords"
   GrammarConstants["enumFromCellTypes"] = "enumFromCellTypes"
   GrammarConstants["enum"] = "enum"
-  GrammarConstants["synthesisOptions"] = "synthesisOptions"
+  GrammarConstants["examples"] = "examples"
   // baseNodeTypes
   GrammarConstants["baseNodeType"] = "baseNodeType"
   GrammarConstants["blobNode"] = "blobNode"
@@ -3626,9 +3626,9 @@ class GrammarAnyCell extends AbstractGrammarBackedCell {
     return true
   }
   _synthesizeCell() {
-    const synthOptions = this._getCellTypeDefinition()._getFromExtended(GrammarConstants.synthesisOptions)
-    if (synthOptions) return TreeUtils.getRandomString(1, synthOptions.split(" "))
-    return this._nodeTypeDefinition.getNodeTypeIdFromDefinition() + this.constructor.name
+    const examples = this._getCellTypeDefinition()._getFromExtended(GrammarConstants.examples)
+    if (examples) return TreeUtils.getRandomString(1, examples.split(" "))
+    return this._nodeTypeDefinition.getNodeTypeIdFromDefinition() + "-" + this.constructor.name
   }
   getRegexString() {
     return "[^ ]+"
@@ -3966,7 +3966,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
     types[GrammarConstants.todoComment] = TreeNode
-    types[GrammarConstants.synthesisOptions] = TreeNode
+    types[GrammarConstants.examples] = TreeNode
     types[GrammarConstants.description] = TreeNode
     types[GrammarConstants.extends] = TreeNode
     return new TreeNode.Parser(undefined, types)
@@ -4542,47 +4542,54 @@ ${captures}
   }
   _generateSimulatedLine() {
     // todo: generate simulated data from catch all
+    const crux = this._getCruxIfAny()
     return this.getCellParser()
       .getCellArray()
-      .map(cell => cell.synthesizeCell())
+      .map((cell, index) => (!index && crux ? crux : cell.synthesizeCell()))
       .join(" ")
   }
+  _shouldSynthesize(def, nodeTypeChain) {
+    if (def._isErrorNodeType() || def._isAbstract()) return false
+    if (nodeTypeChain.includes(def._getId())) return false
+    const tags = def.get(GrammarConstants.tags)
+    if (tags && tags.includes("doNotSynthesize")) return false
+    return true
+  }
   // todo: refactor
-  synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypeChain = []) {
-    let nodeTypeIds = this._getInScopeNodeTypeIds()
+  synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypesAlreadySynthesized = []) {
+    let inScopeNodeTypeIds = this._getInScopeNodeTypeIds()
     const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
-    if (catchAllNodeTypeId) nodeTypeIds.push(catchAllNodeTypeId)
+    if (catchAllNodeTypeId) inScopeNodeTypeIds.push(catchAllNodeTypeId)
     const thisId = this._getId()
-    if (!nodeTypeChain.includes(thisId)) nodeTypeChain.push(thisId)
+    if (!nodeTypesAlreadySynthesized.includes(thisId)) nodeTypesAlreadySynthesized.push(thisId)
     const lines = []
     while (nodeCount) {
       const line = this._generateSimulatedLine()
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
-      const concreteNodeTypeDefs = []
-      nodeTypeIds
+      const concreteNodeTypeDefsToSynthesize = []
+      inScopeNodeTypeIds
         .filter(nodeTypeId => {
-          if (nodeTypeChain.includes(nodeTypeId)) return false
+          if (nodeTypesAlreadySynthesized.includes(nodeTypeId)) return false
           return true
         })
         .forEach(nodeTypeId => {
           const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
           if (def._isErrorNodeType()) return true
           else if (def._isAbstract()) {
-            def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefs.push(def))
+            def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefsToSynthesize.push(def))
           } else {
-            concreteNodeTypeDefs.push(def)
+            concreteNodeTypeDefsToSynthesize.push(def)
           }
         })
-      concreteNodeTypeDefs.forEach(def => {
-        if (def._isAbstract()) return true
-        const nodeTypeId = def._getId()
-        if (nodeTypeChain.includes(nodeTypeId)) return true
-        const chain = nodeTypeChain.slice(0)
-        chain.push(nodeTypeId)
-        def.synthesizeNode(1, indentCount + 1, chain).forEach(line => {
-          lines.push(line)
+      concreteNodeTypeDefsToSynthesize
+        .filter(def => this._shouldSynthesize(def, nodeTypesAlreadySynthesized))
+        .forEach(def => {
+          const chain = nodeTypesAlreadySynthesized // .slice(0)
+          chain.push(def._getId())
+          def.synthesizeNode(1, indentCount + 1, chain).forEach(line => {
+            lines.push(line)
+          })
         })
-      })
       nodeCount--
     }
     return lines

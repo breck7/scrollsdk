@@ -2,6 +2,7 @@ todo Add imports nodeTypes, along with source maps, so we can correctly support 
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
 todo Add omnifix support
+todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
 abstractConstantCell
  highlightScope entity.name.tag
 javascriptSafeAlphaNumericIdentifierCell
@@ -22,10 +23,12 @@ cellParserCell
 cellPropertyNameCell
  highlightScope variable.parameter
 cellTypeIdCell
+ examples intCell keywordCell someCustomCell
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes cellTypeIdCell
  highlightScope storage
 constantIdentifierCell
+ examples someId myVar
  todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\w+
  highlightScope constant.other
@@ -34,11 +37,13 @@ constructorFilePathCell
 enumOptionCell
  todo Add an enumOption top level type, so we can add data to an enum option such as a description.
  highlightScope string
-synthOptionCell
+cellExampleCell
+ description Holds an example for a cell with a wide range of options.
  highlightScope string
 extraCell
  highlightScope invalid
 fileExtensionCell
+ examples js txt doc exe
  regex [a-zA-Z0-9]+
  highlightScope string
 floatCell
@@ -51,6 +56,7 @@ javascriptCodeCell
 lowercaseCell
  regex [a-z]+
 nodeTypeIdCell
+ examples commentNode addNode
  description This doubles as the class name in Javascript.
  highlightScope variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
@@ -67,10 +73,12 @@ scopeNameCell
  highlightScope string
 scriptUrlCell
 semanticVersionCell
+ examples 1.0.0 2.2.1
  regex [0-9]+\.[0-9]+\.[0-9]+
  highlightScope constant.numeric
 stringCell
  highlightScope string
+ examples lorem ipsum
 tagCell
  highlightScope string
 todoCell
@@ -80,7 +88,9 @@ toolingDirectiveCell
 wordCell
  regex [a-zA-Z]+
  highlightScope variable.parameter
-exampleCell
+exampleAnyCell
+ examples lorem ipsem
+ todo Eventually we want to be able to parse correctly the examples.
  highlightScope comment
  extends stringCell
 grammarNode
@@ -213,7 +223,7 @@ descriptionNode
 exampleNode
  todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.
- catchAllCellType exampleCell
+ catchAllCellType exampleAnyCell
  catchAllNodeType catchAllExampleLineNode
  extends abstractNodeTypeRuleNode
  crux example
@@ -283,9 +293,9 @@ tagsNode
 catchAllErrorNode
  baseNodeType errorNode
 catchAllExampleLineNode
- catchAllCellType exampleCell
+ catchAllCellType exampleAnyCell
  catchAllNodeType catchAllExampleLineNode
- cells exampleCell
+ cells exampleAnyCell
 catchAllJavascriptCodeLineNode
  catchAllCellType javascriptCodeCell
  catchAllNodeType catchAllJavascriptCodeLineNode
@@ -299,7 +309,7 @@ cellTypeDefinitionNode
  todo Allow abstract cell types?
  todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Cell$
- inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode synthesisOptionsNode
+ inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode examplesNode
  cells cellTypeIdCell
 enumFromCellTypesNode
  catchAllCellType cellTypeIdCell
@@ -309,9 +319,10 @@ enumNode
  crux enum
  catchAllCellType enumOptionCell
  cells cellPropertyNameCell
-synthesisOptionsNode
- crux synthesisOptions
- catchAllCellType synthOptionCell
+examplesNode
+ description If the domain of possible cell values is large, such as a string type, it can help certain methods—such as program synthesis—to provide a few examples.
+ crux examples
+ catchAllCellType cellExampleCell
  cells cellPropertyNameCell
 highlightScopeNode
  cells propertyKeywordCell scopeNameCell

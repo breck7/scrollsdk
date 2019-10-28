@@ -3,18 +3,18 @@ todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
 anyCell
  highlightScope string
- synthesisOptions lorem ipsum
+ examples lorem ipsum
 assertionKeywordCell
  highlightScope keyword.operator
  extends keywordCell
 commandCell
  extends keywordCell
  highlightScope variable.function
- synthesisOptions someCommand
+ examples someCommand
 extraCell
  highlightScope invalid
 filepathCell
- synthesisOptions foobar.foo someFile.foo
+ examples foobar.foo someFile.foo
  highlightScope string
 keywordCell
 hashBangKeywordCell

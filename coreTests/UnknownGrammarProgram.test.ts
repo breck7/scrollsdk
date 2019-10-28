@@ -34,14 +34,15 @@ testTree.emojis = equal => {
   equal(grammarFile, Disk.read(__dirname + "/UnknownGrammar.expectedEmoji.grammar"), "predicted emoji grammar correct")
 }
 
-testTree.inferPrefixGrammar = equal => {
-  // Arrange/Act
-  // Disk.dir(__dirname + `/../langs/`)
-  const prefixGrammars = ["hakon", "arrow", "swarm", "dug", "stump", "project", "jibberish", "config", "iris", "dumbdown", "jibjab", "fire", "stamp", "zin", "newlang"]
-  prefixGrammars.map(name => {
+const langs = Disk.dir(__dirname + `/../langs/`)
+langs.forEach((name: string) => {
+  testTree[`${name}InferPrefixGrammar`] = equal => {
     // Arrange
     const path = __dirname + `/../langs/${name}/sample.${name}`
     const sampleCode = jtree.TreeNode.fromDisk(path).toString()
+
+    // todo: cleanup
+    if (Disk.read(__dirname + `/../langs/${name}/${name}.grammar`).includes("nonPrefixGrammar")) return equal(true, true, `skipped ${name} beause not prefix grammar`)
 
     // Act
     const inferredPrefixGrammarCode = new UnknownGrammarProgram(sampleCode).inferGrammarFileForAKeywordLanguage("foobar")
@@ -52,8 +53,8 @@ testTree.inferPrefixGrammar = equal => {
     // Assert
     equal(inferredPrefixGrammarProgram.getAllErrors().length, 0, `no errors in inferred grammar program for language ${name}`)
     equal(programParsedWithInferredGrammar.getAllErrors().length, 0, `no errors in program from inferred grammar for ${name}`)
-  })
-}
+  }
+})
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 

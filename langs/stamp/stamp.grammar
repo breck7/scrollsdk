@@ -12,7 +12,7 @@ varNameCell
 commentCell
  highlightScope comment
 inputTypeCell
- regex (string|int|any|lowercase)
+ enum string int any lowercase
 keywordCell
  highlightScope keyword.control
 stampNode

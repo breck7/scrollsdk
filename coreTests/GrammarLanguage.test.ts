@@ -148,8 +148,7 @@ missing2 true`)
   )
 }
 
-// todo: add stump and others back in
-const langs = Disk.dir(__dirname + `/../langs/`) // ["hakon", "swarm", "dug", "arrow"]
+const langs = Disk.dir(__dirname + `/../langs/`)
 langs.forEach((lang: string) => {
   testTree[`${lang}SimTest`] = equal => {
     const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)

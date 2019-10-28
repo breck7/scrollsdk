@@ -8,12 +8,16 @@ topLevelComponentNode
 headerComponentNode
  description Header contains basic game state
  extends topLevelComponentNode
+ crux headerComponent
 boardComponentNode
  description Contains the main board
  extends topLevelComponentNode
+ crux boardComponent
 controlsComponentNode
  description Contains the restart button
  extends topLevelComponentNode
+ crux controlsComponent
 shortcutsTableComponentNode
  description Contains help for the keyboard shortcuts
  extends topLevelComponentNode
+ crux shortcutsTableComponent

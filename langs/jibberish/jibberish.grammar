@@ -83,6 +83,7 @@ fooNode
 xColumnNameNode
  description The name of the column to use for the x axis
  cells topLevelPropertyCell columnNameEnumCell
+ tags doNotSynthesize
  javascript
   getRunTimeEnumOptions(cell) {
    return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined

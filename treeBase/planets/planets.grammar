@@ -20,12 +20,16 @@ abstractIntPropertyNode
  abstract
 surfaceGravityNode
  extends abstractIntPropertyNode
+ crux surfaceGravity
 diameterNode
  extends abstractIntPropertyNode
+ crux diameter
 moonsNode
  extends abstractIntPropertyNode
+ crux moons
 abstractFloatPropertyNode
  cells keywordCell floatCell
  abstract
 yearsToOrbitSunNode
  extends abstractFloatPropertyNode
+ crux yearsToOrbitSun

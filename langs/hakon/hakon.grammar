@@ -10,7 +10,7 @@ cssValueCell
  highlightScope constant.numeric
 selectorCell
  highlightScope keyword.control
- synthesisOptions body h1
+ examples body h1
  todo add html tags, css and ids selector regexes, etc
 propertyKeywordCell
  highlightScope variable.function

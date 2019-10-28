@@ -2,6 +2,9 @@ floatCell
 commentCell
  highlightScope comment
 keywordCell
+hashBangKeywordCell
+ extends keywordCell
+ highlightScope comment
 commentKeywordCell
  extends keywordCell
  highlightScope comment
@@ -63,7 +66,8 @@ commentContentNode
  catchAllNodeType commentContentNode
 hashBangNode
  crux #!
- extends commentNode
+ cells hashBangKeywordCell
+ catchAllCellType commentCell
 errorNode
  catchAllCellType errorCell
  baseNodeType errorNode

@@ -1,16 +1,31 @@
 keywordCell
 anyCell
 fieldIdCell
- extends keywordCell
+ examples titleField
+ highlightScope keyword
 enumOptionCell
  extends anyCell
  highlightScope string
 typeIdCell
  highlightScope variable
+ examples intType
+enumTypeIdCell
+ extends typeIdCell
+ examples reductionEnumType
+unionTypeIdCell
+ examples timeUnitUnionType
+ extends typeIdCell
+mapTypeIdCell
+ examples countMapType
+ extends typeIdCell
+typeDecIdCell
+ examples intType
+ extends typeIdCell
 stringKeyCell
  highlightScope string
 interfaceIdCell
  highlightScope variable
+ examples storeInterface
 commentKeywordCell
  extends keywordCell
  highlightScope comment
@@ -39,25 +54,28 @@ errorNode
 abstractTypeDeclarationNode
  abstract
  inScope commentNode
- cells typeIdCell
 enumTypeDeclarationNode
  extends abstractTypeDeclarationNode
+ cells enumTypeIdCell
  inScope enumOptionsNode
  pattern EnumType$
 unionTypeDeclarationNode
+ cells unionTypeIdCell
  extends abstractTypeDeclarationNode
  pattern UnionType$
  inScope unionTypesNode
 mapTypeDeclarationNode
+ cells mapTypeIdCell
  extends abstractTypeDeclarationNode
  pattern MapType$
  inScope keyNode valueNode
 typeDeclarationNode
+ cells typeDecIdCell
  extends abstractTypeDeclarationNode
  pattern Type$
  inScope extendsNode
  compiler
-  stringTemplate export declare type {typeIdCell} = {extends}
+  stringTemplate export declare type {typeDecIdCell} = {extends}
 extendsNode
  cells keywordCell typeIdCell
  required

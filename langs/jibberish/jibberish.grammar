@@ -27,6 +27,7 @@ someAbstractClassNode
 extendsAbstractNode
  cells topLevelPropertyCell intCell
  extends someAbstractClassNode
+ crux extendsAbstract
 topLevelNode
  abstract
  cells topLevelPropertyCell
@@ -36,10 +37,13 @@ colorPropertiesNode
  abstract
 hueNode
  extends colorPropertiesNode
+ crux hue
 saturationNode
  extends colorPropertiesNode
+ crux saturation
 constrastNode
  extends colorPropertiesNode
+ crux constrast
 abstractHtmlNode
  inScope contentNode
  extends topLevelNode
@@ -49,6 +53,7 @@ h1Node
  extends abstractHtmlNode
 addNode
  extends topLevelNode
+ crux add
 plusNode
  crux +
  extends addNode
@@ -59,18 +64,22 @@ plusNode
 blockNode
  inScope topLevelNode scoreBlockNode
  extends topLevelNode
+ crux block
 scoreBlockNode
  description Test that inscope extends and does not overwrite.
  extends blockNode
  inScope scoresNode
+ crux scoreBlock
 toNode
  cells topLevelPropertyCell wordCell
  compiler
   stringTemplate to {word}
   closeChildren end
  extends blockNode
+ crux to
 fooNode
  extends topLevelNode
+ crux foo
 xColumnNameNode
  description The name of the column to use for the x axis
  cells topLevelPropertyCell columnNameEnumCell
@@ -79,11 +88,14 @@ xColumnNameNode
    return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
  extends topLevelNode
+ crux xColumnName
 lightbulbStateNode
  cells topLevelPropertyCell onoffCell
  extends topLevelNode
+ crux lightbulbState
 nestedNode
  extends topLevelNode
+ crux nested
 nodeWithConstsNode
  string greeting hello world
  string singleCell hello
@@ -96,18 +108,23 @@ nodeWithConstsNode
  float score2 3.01
  boolean win true
  extends topLevelNode
+ crux nodeWithConsts
 nodeExpandsConstsNode
  string greeting hola
  extends nodeWithConstsNode
+ crux nodeExpandsConsts
 someCodeNode
  catchAllNodeType lineOfCodeNode
  extends topLevelNode
+ crux someCode
 typeNode
  cells topLevelPropertyCell wordCell
  single
  extends topLevelNode
+ crux type
 contentNode
  baseNodeType blobNode
+ crux content
 errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
@@ -116,6 +133,8 @@ lineOfCodeNode
  catchAllCellType wordCell
 textNode
  baseNodeType blobNode
+ crux text
 scoresNode
  catchAllCellType intCell
  cells topLevelPropertyCell
+ crux scores

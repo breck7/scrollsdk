@@ -72,12 +72,11 @@ class Builder extends AbstractBuilder {
   }
 
   buildJibJab() {
-    const CommandLineApp = require("./products/commandLineApp.node.js")
     const combined = jtree.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
     combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
-    new CommandLineApp().format(path)
+    jtree.formatFile(path, __dirname + "/langs/grammar/grammar.grammar")
   }
 
   _getProductFolder() {

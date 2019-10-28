@@ -33,6 +33,7 @@ commentNode
  catchAllCellType commentCell
  compiler
   stringTemplate /* {commentCell} */
+ crux comment
 errorNode
  baseNodeType errorNode
 abstractTypeDeclarationNode
@@ -62,16 +63,21 @@ extendsNode
  required
  compiler
   stringTemplate 
+ crux extends
 enumOptionsNode
  cells keywordCell
  catchAllCellType enumOptionCell
+ crux enumOptions
 unionTypesNode
  cells keywordCell
  catchAllCellType typeIdCell
+ crux unionTypes
 keyNode
  cells keywordCell stringKeyCell typeIdCell
+ crux key
 valueNode
  cells keywordCell typeIdCell
+ crux value
 interfaceDeclarationNode
  pattern Interface$
  cells interfaceIdCell
@@ -88,6 +94,8 @@ fieldDeclarationNode
 optionalNode
  description Is this field optional?
  cells keywordCell
+ crux optional
 arrayNode
  description Does this take an array
  cells keywordCell
+ crux array

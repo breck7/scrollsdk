@@ -76,10 +76,12 @@ catchAllAnyLineNode
 dataNode
  catchAllNodeType catchAllAnyLineNode
  cells keywordCell
+ crux data
 errorNode
  baseNodeType errorNode
 executableNode
  cells keywordCell
+ crux executable
 fileNode
  cells keywordCell filepathCell
  javascript
@@ -101,6 +103,7 @@ fileNode
    if (isExecutable) fs.chmodSync(path, "755")
   }
  inScope dataNode executableNode
+ crux file
 folderNode
  cells keywordCell filepathCell
  javascript
@@ -115,6 +118,7 @@ folderNode
    console.log(`Creating folder ${path}`)
    require("mkdirp").sync(path)
   }
+ crux folder
 promptNode
  cells keywordCell varNameCell inputTypeCell
  catchAllCellType promptWordsCell
@@ -138,3 +142,4 @@ promptNode
     })
    })
   }
+ crux prompt

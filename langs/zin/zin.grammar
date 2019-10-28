@@ -12,5 +12,6 @@ alohaNode
  description Say aloha to a person.
  catchAllCellType nameCell
  cells keywordCell
+ crux aloha
 catchAllErrorNode
  baseNodeType errorNode

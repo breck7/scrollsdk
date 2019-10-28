@@ -9,16 +9,19 @@ attributeValueCell
 htmlTagNameCell
  highlightScope variable.function
  extends keywordCell
+ enum a abbr address area article aside b base bdi bdo blockquote body br button canvas caption code col colgroup datalist dd del details dfn dialog div dl dt em embed fieldset figure footer form h1 h2 h3 h4 h5 h6 head header hgroup hr html i iframe img input ins kbd keygen label legend li link main map mark menu menuitem meta meter nav noscript object ol optgroup option output p param pre progress q rb rp rt rtc ruby s samp script section select small source span strong styleTag sub summary sup table tbody td template textarea tfoot th thead time titleTag tr track u ul var video wbr
 htmlAttributeNameCell
  highlightScope entity.name.type
  extends keywordCell
-contentHolderNameCell
- highlightScope keyword
+ enum accept accept-charset accesskey action align alt async autocomplete autofocus autoplay bgcolor border charset checked class color cols colspan content contenteditable controls coords datetime default defer dir dirname disabled download draggable dropzone enctype for formaction headers height hidden high href hreflang http-equiv id ismap kind lang list loop low max maxlength media method min multiple muted name novalidate onabort onafterprint onbeforeprint onbeforeunload onblur oncanplay oncanplaythrough onchange onclick oncontextmenu oncopy oncuechange oncut ondblclick ondrag ondragend ondragenter ondragleave ondragover ondragstart ondrop ondurationchange onemptied onended onerror onfocus onhashchange oninput oninvalid onkeydown onkeypress onkeyup onload onloadeddata onloadedmetadata onloadstart onmousedown onmousemove onmouseout onmouseover onmouseup onmousewheel onoffline ononline onpagehide onpageshow onpaste onpause onplay onplaying onpopstate onprogress onratechange onreset onresize onscroll onsearch onseeked onseeking onselect onstalled onstorage onsubmit onsuspend ontimeupdate ontoggle onunload onvolumechange onwaiting onwheel open optimum pattern placeholder poster preload readonly rel required reversed rows rowspan sandbox scope selected shape size sizes spellcheck src srcdoc srclang srcset start step style tabindex target title translate type usemap value width wrap
+bernKeywordCell
+ enum bern
+ extends keywordCell
 stumpNode
  root
  description A prefix Tree Language that compiles to HTML.
  catchAllNodeType errorNode
- inScope abstractHtmlTagNode
+ inScope htmlTagNode
  example
   div
    h1 hello world
@@ -27,9 +30,10 @@ stumpNode
   compile() {
    return this.toHtml()
   }
-abstractHtmlTagNode
- inScope bernNode abstractHtmlTagNode abstractHtmlAttributeNode
+htmlTagNode
+ inScope bernNode htmlTagNode htmlAttributeNode
  catchAllCellType anyHtmlContentCell
+ cells htmlTagNameCell
  javascript
   getTag() {
    // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
@@ -61,7 +65,7 @@ abstractHtmlTagNode
     .join("")
    const indent = " ".repeat(indentCount)
    const collapse = this.shouldCollapse()
-   const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").length > 0
+   const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("htmlTagNode").length > 0
    const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
    const oneLiner = this._getOneLiner()
    return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
@@ -116,7 +120,7 @@ abstractHtmlTagNode
   insertChildNode(text, index) {
    const singleNode = new jtree.TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-   const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("abstractHtmlTagNode").indexOf(newNode)
+   const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("htmlTagNode").indexOf(newNode)
    this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
    return newNode
   }
@@ -138,18 +142,18 @@ abstractHtmlTagNode
    return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-   return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.getFirstWord() === firstWord)
+   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.getFirstWord() === firstWord)
   }
   hasLine(line) {
    return this.getChildren().some(node => node.getLine() === line)
   }
   findStumpNodesByChild(line) {
-   return this.getTopDownArray().filter(node => node.doesExtend("abstractHtmlTagNode") && node.hasLine(line))
+   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
   }
   findStumpNodesWithClass(className) {
    return this.getTopDownArray().filter(
     node =>
-     node.doesExtend("abstractHtmlTagNode") &&
+     node.doesExtend("htmlTagNode") &&
      node.has("class") &&
      node
       .getNode("class")
@@ -193,232 +197,9 @@ abstractHtmlTagNode
   toHtml() {
    return this._toHtml()
   }
- abstract
- cells htmlTagNameCell
-aNode
- extends abstractHtmlTagNode
-abbrNode
- extends abstractHtmlTagNode
-addressNode
- extends abstractHtmlTagNode
-areaNode
- extends abstractHtmlTagNode
-articleNode
- extends abstractHtmlTagNode
-asideNode
- extends abstractHtmlTagNode
-bNode
- extends abstractHtmlTagNode
-baseNode
- extends abstractHtmlTagNode
-bdiNode
- extends abstractHtmlTagNode
-bdoNode
- extends abstractHtmlTagNode
-blockquoteNode
- extends abstractHtmlTagNode
-bodyNode
- extends abstractHtmlTagNode
-brNode
- extends abstractHtmlTagNode
-buttonNode
- extends abstractHtmlTagNode
-canvasNode
- extends abstractHtmlTagNode
-captionNode
- extends abstractHtmlTagNode
-codeNode
- extends abstractHtmlTagNode
-colNode
- extends abstractHtmlTagNode
-colgroupNode
- extends abstractHtmlTagNode
-datalistNode
- extends abstractHtmlTagNode
-ddNode
- extends abstractHtmlTagNode
-delNode
- extends abstractHtmlTagNode
-detailsNode
- extends abstractHtmlTagNode
-dfnNode
- extends abstractHtmlTagNode
-dialogNode
- extends abstractHtmlTagNode
-divNode
- extends abstractHtmlTagNode
-dlNode
- extends abstractHtmlTagNode
-dtNode
- extends abstractHtmlTagNode
-emNode
- extends abstractHtmlTagNode
-embedNode
- extends abstractHtmlTagNode
-fieldsetNode
- extends abstractHtmlTagNode
-figureNode
- extends abstractHtmlTagNode
-footerNode
- extends abstractHtmlTagNode
-formNode
- extends abstractHtmlTagNode
-h1Node
- extends abstractHtmlTagNode
-h2Node
- extends abstractHtmlTagNode
-h3Node
- extends abstractHtmlTagNode
-h4Node
- extends abstractHtmlTagNode
-h5Node
- extends abstractHtmlTagNode
-h6Node
- extends abstractHtmlTagNode
-headNode
- extends abstractHtmlTagNode
-headerNode
- extends abstractHtmlTagNode
-hgroupNode
- extends abstractHtmlTagNode
-hrNode
- extends abstractHtmlTagNode
-htmlNode
- extends abstractHtmlTagNode
-iNode
- extends abstractHtmlTagNode
-iframeNode
- extends abstractHtmlTagNode
-imgNode
- extends abstractHtmlTagNode
-inputNode
- extends abstractHtmlTagNode
-insNode
- extends abstractHtmlTagNode
-kbdNode
- extends abstractHtmlTagNode
-keygenNode
- extends abstractHtmlTagNode
-labelNode
- extends abstractHtmlTagNode
-legendNode
- extends abstractHtmlTagNode
-liNode
- extends abstractHtmlTagNode
-linkNode
- extends abstractHtmlTagNode
-mainNode
- extends abstractHtmlTagNode
-mapNode
- extends abstractHtmlTagNode
-markNode
- extends abstractHtmlTagNode
-menuNode
- extends abstractHtmlTagNode
-menuitemNode
- extends abstractHtmlTagNode
-metaNode
- extends abstractHtmlTagNode
-meterNode
- extends abstractHtmlTagNode
-navNode
- extends abstractHtmlTagNode
-noscriptNode
- extends abstractHtmlTagNode
-objectNode
- extends abstractHtmlTagNode
-olNode
- extends abstractHtmlTagNode
-optgroupNode
- extends abstractHtmlTagNode
-optionNode
- extends abstractHtmlTagNode
-outputNode
- extends abstractHtmlTagNode
-pNode
- extends abstractHtmlTagNode
-paramNode
- extends abstractHtmlTagNode
-preNode
- extends abstractHtmlTagNode
-progressNode
- extends abstractHtmlTagNode
-qNode
- extends abstractHtmlTagNode
-rbNode
- extends abstractHtmlTagNode
-rpNode
- extends abstractHtmlTagNode
-rtNode
- extends abstractHtmlTagNode
-rtcNode
- extends abstractHtmlTagNode
-rubyNode
- extends abstractHtmlTagNode
-sNode
- extends abstractHtmlTagNode
-sampNode
- extends abstractHtmlTagNode
-scriptNode
- extends abstractHtmlTagNode
-sectionNode
- extends abstractHtmlTagNode
-selectNode
- extends abstractHtmlTagNode
-smallNode
- extends abstractHtmlTagNode
-sourceNode
- extends abstractHtmlTagNode
-spanNode
- extends abstractHtmlTagNode
-strongNode
- extends abstractHtmlTagNode
-styleTagNode
- extends abstractHtmlTagNode
-subNode
- extends abstractHtmlTagNode
-summaryNode
- extends abstractHtmlTagNode
-supNode
- extends abstractHtmlTagNode
-tableNode
- extends abstractHtmlTagNode
-tbodyNode
- extends abstractHtmlTagNode
-tdNode
- extends abstractHtmlTagNode
-templateNode
- extends abstractHtmlTagNode
-textareaNode
- extends abstractHtmlTagNode
-tfootNode
- extends abstractHtmlTagNode
-thNode
- extends abstractHtmlTagNode
-theadNode
- extends abstractHtmlTagNode
-timeNode
- extends abstractHtmlTagNode
-titleTagNode
- extends abstractHtmlTagNode
-trNode
- extends abstractHtmlTagNode
-trackNode
- extends abstractHtmlTagNode
-uNode
- extends abstractHtmlTagNode
-ulNode
- extends abstractHtmlTagNode
-varNode
- match var
- extends abstractHtmlTagNode
-videoNode
- extends abstractHtmlTagNode
-wbrNode
- extends abstractHtmlTagNode
 errorNode
  baseNodeType errorNode
-abstractHtmlAttributeNode
+htmlAttributeNode
  javascript
   _toHtml() {
    return ""
@@ -429,363 +210,14 @@ abstractHtmlAttributeNode
  boolean isAttributeNode true
  catchAllNodeType errorNode
  catchAllCellType attributeValueCell
- abstract
  cells htmlAttributeNameCell
-acceptNode
- extends abstractHtmlAttributeNode
-accesskeyNode
- extends abstractHtmlAttributeNode
-actionNode
- extends abstractHtmlAttributeNode
-alignNode
- extends abstractHtmlAttributeNode
-altNode
- extends abstractHtmlAttributeNode
-asyncNode
- extends abstractHtmlAttributeNode
-autocompleteNode
- extends abstractHtmlAttributeNode
-autofocusNode
- extends abstractHtmlAttributeNode
-autoplayNode
- extends abstractHtmlAttributeNode
-bgcolorNode
- extends abstractHtmlAttributeNode
-borderNode
- extends abstractHtmlAttributeNode
-charsetNode
- extends abstractHtmlAttributeNode
-checkedNode
- extends abstractHtmlAttributeNode
-classNode
- match class
- extends abstractHtmlAttributeNode
-colorNode
- extends abstractHtmlAttributeNode
-colsNode
- extends abstractHtmlAttributeNode
-colspanNode
- extends abstractHtmlAttributeNode
-contentNode
- extends abstractHtmlAttributeNode
-contenteditableNode
- extends abstractHtmlAttributeNode
-controlsNode
- extends abstractHtmlAttributeNode
-coordsNode
- extends abstractHtmlAttributeNode
-datetimeNode
- extends abstractHtmlAttributeNode
-defaultNode
- match default
- extends abstractHtmlAttributeNode
-deferNode
- extends abstractHtmlAttributeNode
-dirNode
- extends abstractHtmlAttributeNode
-dirnameNode
- extends abstractHtmlAttributeNode
-disabledNode
- extends abstractHtmlAttributeNode
-downloadNode
- extends abstractHtmlAttributeNode
-draggableNode
- extends abstractHtmlAttributeNode
-dropzoneNode
- extends abstractHtmlAttributeNode
-enctypeNode
- extends abstractHtmlAttributeNode
-forNode
- match for
- extends abstractHtmlAttributeNode
-formactionNode
- extends abstractHtmlAttributeNode
-headersNode
- extends abstractHtmlAttributeNode
-heightNode
- extends abstractHtmlAttributeNode
-hiddenNode
- extends abstractHtmlAttributeNode
-highNode
- extends abstractHtmlAttributeNode
-hrefNode
- extends abstractHtmlAttributeNode
-hreflangNode
- extends abstractHtmlAttributeNode
-idNode
- extends abstractHtmlAttributeNode
-ismapNode
- extends abstractHtmlAttributeNode
-kindNode
- extends abstractHtmlAttributeNode
-langNode
- extends abstractHtmlAttributeNode
-listNode
- extends abstractHtmlAttributeNode
-loopNode
- extends abstractHtmlAttributeNode
-lowNode
- extends abstractHtmlAttributeNode
-maxNode
- extends abstractHtmlAttributeNode
-maxlengthNode
- extends abstractHtmlAttributeNode
-mediaNode
- extends abstractHtmlAttributeNode
-methodNode
- extends abstractHtmlAttributeNode
-minNode
- extends abstractHtmlAttributeNode
-multipleNode
- extends abstractHtmlAttributeNode
-mutedNode
- extends abstractHtmlAttributeNode
-nameNode
- extends abstractHtmlAttributeNode
-novalidateNode
- extends abstractHtmlAttributeNode
-onabortNode
- extends abstractHtmlAttributeNode
-onafterprintNode
- extends abstractHtmlAttributeNode
-onbeforeprintNode
- extends abstractHtmlAttributeNode
-onbeforeunloadNode
- extends abstractHtmlAttributeNode
-onblurNode
- extends abstractHtmlAttributeNode
-oncanplayNode
- extends abstractHtmlAttributeNode
-oncanplaythroughNode
- extends abstractHtmlAttributeNode
-onchangeNode
- extends abstractHtmlAttributeNode
-onclickNode
- extends abstractHtmlAttributeNode
-oncontextmenuNode
- extends abstractHtmlAttributeNode
-oncopyNode
- extends abstractHtmlAttributeNode
-oncuechangeNode
- extends abstractHtmlAttributeNode
-oncutNode
- extends abstractHtmlAttributeNode
-ondblclickNode
- extends abstractHtmlAttributeNode
-ondragNode
- extends abstractHtmlAttributeNode
-ondragendNode
- extends abstractHtmlAttributeNode
-ondragenterNode
- extends abstractHtmlAttributeNode
-ondragleaveNode
- extends abstractHtmlAttributeNode
-ondragoverNode
- extends abstractHtmlAttributeNode
-ondragstartNode
- extends abstractHtmlAttributeNode
-ondropNode
- extends abstractHtmlAttributeNode
-ondurationchangeNode
- extends abstractHtmlAttributeNode
-onemptiedNode
- extends abstractHtmlAttributeNode
-onendedNode
- extends abstractHtmlAttributeNode
-onerrorNode
- extends abstractHtmlAttributeNode
-onfocusNode
- extends abstractHtmlAttributeNode
-onhashchangeNode
- extends abstractHtmlAttributeNode
-oninputNode
- extends abstractHtmlAttributeNode
-oninvalidNode
- extends abstractHtmlAttributeNode
-onkeydownNode
- extends abstractHtmlAttributeNode
-onkeypressNode
- extends abstractHtmlAttributeNode
-onkeyupNode
- extends abstractHtmlAttributeNode
-onloadNode
- extends abstractHtmlAttributeNode
-onloadeddataNode
- extends abstractHtmlAttributeNode
-onloadedmetadataNode
- extends abstractHtmlAttributeNode
-onloadstartNode
- extends abstractHtmlAttributeNode
-onmousedownNode
- extends abstractHtmlAttributeNode
-onmousemoveNode
- extends abstractHtmlAttributeNode
-onmouseoutNode
- extends abstractHtmlAttributeNode
-onmouseoverNode
- extends abstractHtmlAttributeNode
-onmouseupNode
- extends abstractHtmlAttributeNode
-onmousewheelNode
- extends abstractHtmlAttributeNode
-onofflineNode
- extends abstractHtmlAttributeNode
-ononlineNode
- extends abstractHtmlAttributeNode
-onpagehideNode
- extends abstractHtmlAttributeNode
-onpageshowNode
- extends abstractHtmlAttributeNode
-onpasteNode
- extends abstractHtmlAttributeNode
-onpauseNode
- extends abstractHtmlAttributeNode
-onplayNode
- extends abstractHtmlAttributeNode
-onplayingNode
- extends abstractHtmlAttributeNode
-onpopstateNode
- extends abstractHtmlAttributeNode
-onprogressNode
- extends abstractHtmlAttributeNode
-onratechangeNode
- extends abstractHtmlAttributeNode
-onresetNode
- extends abstractHtmlAttributeNode
-onresizeNode
- extends abstractHtmlAttributeNode
-onscrollNode
- extends abstractHtmlAttributeNode
-onsearchNode
- extends abstractHtmlAttributeNode
-onseekedNode
- extends abstractHtmlAttributeNode
-onseekingNode
- extends abstractHtmlAttributeNode
-onselectNode
- extends abstractHtmlAttributeNode
-onstalledNode
- extends abstractHtmlAttributeNode
-onstorageNode
- extends abstractHtmlAttributeNode
-onsubmitNode
- extends abstractHtmlAttributeNode
-onsuspendNode
- extends abstractHtmlAttributeNode
-ontimeupdateNode
- extends abstractHtmlAttributeNode
-ontoggleNode
- extends abstractHtmlAttributeNode
-onunloadNode
- extends abstractHtmlAttributeNode
-onvolumechangeNode
- extends abstractHtmlAttributeNode
-onwaitingNode
- extends abstractHtmlAttributeNode
-onwheelNode
- extends abstractHtmlAttributeNode
-openNode
- extends abstractHtmlAttributeNode
-optimumNode
- extends abstractHtmlAttributeNode
-patternNode
- extends abstractHtmlAttributeNode
-placeholderNode
- extends abstractHtmlAttributeNode
-posterNode
- extends abstractHtmlAttributeNode
-preloadNode
- extends abstractHtmlAttributeNode
-readonlyNode
- extends abstractHtmlAttributeNode
-relNode
- extends abstractHtmlAttributeNode
-requiredNode
- extends abstractHtmlAttributeNode
-reversedNode
- extends abstractHtmlAttributeNode
-rowsNode
- extends abstractHtmlAttributeNode
-rowspanNode
- extends abstractHtmlAttributeNode
-sandboxNode
- extends abstractHtmlAttributeNode
-scopeNode
- extends abstractHtmlAttributeNode
-selectedNode
- extends abstractHtmlAttributeNode
-shapeNode
- extends abstractHtmlAttributeNode
-sizeNode
- extends abstractHtmlAttributeNode
-sizesNode
- extends abstractHtmlAttributeNode
-spellcheckNode
- extends abstractHtmlAttributeNode
-srcNode
- extends abstractHtmlAttributeNode
-srcdocNode
- extends abstractHtmlAttributeNode
-srclangNode
- extends abstractHtmlAttributeNode
-srcsetNode
- extends abstractHtmlAttributeNode
-startNode
- extends abstractHtmlAttributeNode
-stepNode
- extends abstractHtmlAttributeNode
-acceptCharsetNode
- match accept-charset
- extends abstractHtmlAttributeNode
-httpEquivNode
- match http-equiv
- extends abstractHtmlAttributeNode
-styleNode
- extends abstractHtmlAttributeNode
-tabindexNode
- extends abstractHtmlAttributeNode
-targetNode
- extends abstractHtmlAttributeNode
-titleNode
- extends abstractHtmlAttributeNode
-translateNode
- extends abstractHtmlAttributeNode
-typeNode
- extends abstractHtmlAttributeNode
-usemapNode
- extends abstractHtmlAttributeNode
-valueNode
- extends abstractHtmlAttributeNode
-widthNode
- extends abstractHtmlAttributeNode
-wrapNode
- extends abstractHtmlAttributeNode
+stumpExtendedAttributeNameCell
+ extends htmlAttributeNameCell
+ enum stumpCollapse stumpNoOp stumpOnBlurCommand stumpOnChangeCommand stumpOnClickCommand stumpOnContextMenuCommand stumpOnDblClickCommand stumpOnLineClick stumpOnLineShiftClick stumpOnShiftClickCommand stumpStyleFor
 stumpExtendedAttributeNode
- abstract
  description Node types not present in HTML but included in stump.
- extends abstractHtmlAttributeNode
-stumpNoOpNode
- extends stumpExtendedAttributeNode
-stumpStyleForNode
- extends stumpExtendedAttributeNode
-stumpOnBlurCommandNode
- extends stumpExtendedAttributeNode
-stumpOnLineClickNode
- extends stumpExtendedAttributeNode
-stumpOnLineShiftClickNode
- extends stumpExtendedAttributeNode
-stumpOnClickCommandNode
- extends stumpExtendedAttributeNode
-stumpOnShiftClickCommandNode
- extends stumpExtendedAttributeNode
-stumpOnContextMenuCommandNode
- extends stumpExtendedAttributeNode
-stumpOnChangeCommandNode
- extends stumpExtendedAttributeNode
-stumpOnDblClickCommandNode
- extends stumpExtendedAttributeNode
-stumpCollapseNode
- extends stumpExtendedAttributeNode
+ extends htmlAttributeNode
+ cells stumpExtendedAttributeNameCell
 lineOfHtmlContentNode
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
@@ -797,4 +229,4 @@ bernNode
   _toHtml() {
    return this.childrenToString()
   }
- cells contentHolderNameCell
+ cells bernKeywordCell

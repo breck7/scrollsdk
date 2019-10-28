@@ -8,32 +8,44 @@ foobarNode
  inScope fileNode
 fileNode
  inScope sizeNode digitsNode openNode tempNode descriptionNode editsNode accountNode
+ crux file
  cells keywordCell anyCell
 sizeNode
+ crux size
  cells keywordCell intCell
 digitsNode
+ crux digits
  cells keywordCell intCell intCell
 openNode
+ crux open
  cells keywordCell boolCell
 tempNode
+ crux temp
  cells keywordCell floatCell
 descriptionNode
+ crux description
  catchAllCellType anyCell
  cells keywordCell
 editsNode
  inScope editsChildNode
+ crux edits
  cells keywordCell
 editsChildNode
  inScope dataNode
  cells keywordCell
 dataNode
+ crux data
  cells keywordCell anyCell
 accountNode
  inScope balanceNode transactionsNode sourceNode
+ crux account
  cells keywordCell
 balanceNode
+ crux balance
  cells keywordCell floatCell
 transactionsNode
+ crux transactions
  cells keywordCell intCell
 sourceNode
+ crux source
  cells keywordCell boolCell anyCell intCell

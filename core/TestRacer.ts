@@ -1,3 +1,4 @@
+import { TreeNode } from "./TreeNode"
 import { TreeUtils } from "./TreeUtils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
@@ -34,9 +35,9 @@ class TestRacerTestBlock {
     try {
       await this._testFn(assertEqual)
     } catch (err) {
-      failures.push(["1", "0", `Should not have uncaught errors but got: ${err}`])
+      failures.push(["1", "0", `Should not have uncaught errors but in ${this._testName} got: ${err}`])
       // todo: figure out the strategy here to get call stack and all that. what do other things do?
-      //throw err
+      // throw err
     }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {
@@ -51,13 +52,16 @@ class TestRacerTestBlock {
 
   private _emitBlockFailedMessage(failures: any) {
     // todo: should replace not replace last newline?
+    // todo: do side by side.
+    // todo: add diff.
     this._emitMessage(`failed block ${this._testName}`)
     this._emitMessage(
       failures
         .map((failure: any) => {
-          return ` assertion ${failure[2]}
- actual ${failure[0].toString().replace(/\n/g, "\n  ")}
- expected ${failure[1].toString().replace(/\n/g, "\n  ")}`
+          const actual = new jtree.TreeNode(`actual\n${new jtree.TreeNode(failure[0].toString()).toString(1)}`)
+          const expected = new jtree.TreeNode(`expected\n${new jtree.TreeNode(failure[1].toString()).toString(1)}`)
+          const comparison = actual.toComparison(expected)
+          return new jtree.TreeNode(` assertion ${failure[2]}\n${comparison.toSideBySide([actual, expected]).toString(2)}`)
         })
         .join("\n")
     )

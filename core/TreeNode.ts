@@ -691,6 +691,17 @@ class TreeNode extends AbstractNode {
     return clone
   }
 
+  toComparison(treeNode: TreeNode | string) {
+    const nodeBreakSymbol = "\n"
+    const lines = treeNode.toString().split(nodeBreakSymbol)
+    return new TreeNode(
+      this.toString()
+        .split(nodeBreakSymbol)
+        .map((line, index) => (lines[index] === line ? "" : "x"))
+        .join(nodeBreakSymbol)
+    )
+  }
+
   toBraid(treesOrStrings: (TreeNode | string)[]) {
     treesOrStrings.unshift(this)
     const nodeDelimiter = this.getNodeBreakSymbol()

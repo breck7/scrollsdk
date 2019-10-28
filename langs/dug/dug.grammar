@@ -26,27 +26,27 @@ nullNode
  compiler
   stringTemplate null
  extends valueNode
- match null
+ crux null
 numberNode
- match number
+ crux number
  extends valueNode
  cells keywordCell numberCell
  compiler
   stringTemplate {numberCell}
 stringNode
- match string
+ crux string
  catchAllCellType stringCell
  compiler
   stringTemplate "{stringCell}"
  extends valueNode
 booleanNode
- match boolean
+ crux boolean
  extends valueNode
  cells keywordCell booleanCell
  compiler
   stringTemplate {booleanCell}
 objectNode
- match object
+ crux object
  catchAllNodeType memberNode
  extends valueNode
  compiler
@@ -55,7 +55,7 @@ objectNode
   openChildren {
   closeChildren }
 arrayNode
- match array
+ crux array
  extends valueNode
  inScope valueNode
  compiler

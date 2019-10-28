@@ -148,22 +148,26 @@ missing2 true`)
   )
 }
 
-testTree.simTests = equal => {
-  // todo: add stump and others back in
-  const langs = ["hakon", "swarm", "dug"]
-  langs.forEach(lang => {
+// todo: add stump and others back in
+const langs = Disk.dir(__dirname + `/../langs/`) // ["hakon", "swarm", "dug", "arrow"]
+langs.forEach((lang: string) => {
+  testTree[`${lang}SimTest`] = equal => {
     const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
     const grammarProgram = new jtree.GrammarProgram(grammarCode)
     const programConstructor = grammarProgram.getRootConstructor()
 
     // Act
-    const simulatedProgram = grammarProgram._getRootNodeTypeDefinitionNode().synthesizeNode()
+    const simulatedProgram = grammarProgram
+      ._getRootNodeTypeDefinitionNode()
+      .synthesizeNode()
+      .join("\n")
 
     // Assert
-    //console.log(simulatedProgram)
-    equal(new programConstructor(simulatedProgram.join("\n")).getAllErrors().length, 0, `should be no errors in simulated ${lang} program`)
-  })
-}
+    const errors = new programConstructor(simulatedProgram).getAllErrors()
+    //if (errors.length) console.log(simulatedProgram)
+    equal(errors.length, 0, `should be no errors in simulated ${lang} program`)
+  }
+})
 
 testTree.iris = equal => {
   // Arrange
@@ -246,7 +250,7 @@ abstractHtmlNode
  extends topLevelNode
  abstract
 h1Node
- match html.h1
+ crux html.h1
  extends abstractHtmlNode
 colorPropertiesNode
  extends topLevelNode
@@ -270,7 +274,7 @@ testTree.formatDo = equal => {
 topLevelNode
  abstract
 h1Node
- match html.h1
+ crux html.h1
  extends abstractHtmlNode
 abstractHtmlNode
  extends topLevelNode
@@ -286,7 +290,7 @@ abstractHtmlNode
  extends topLevelNode
  abstract
 h1Node
- match html.h1
+ crux html.h1
  extends abstractHtmlNode`
   // Act/Assert
   equal(
@@ -639,7 +643,7 @@ testTree.examples = equal => {
  root
  inScope addNode
 addNode
- match +
+ crux +
  catchAllCellType intCell
  cells keywordCell
  example This is a bad example.

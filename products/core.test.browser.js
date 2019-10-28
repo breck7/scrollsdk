@@ -1637,7 +1637,7 @@ textNode
  blobNode
 addNode
  extends topLevelNode
- match +
+ crux +
  catchAllCellType intCell
 lightbulbStateNode
  extends topLevelNode
@@ -3095,6 +3095,16 @@ b
     a._getFamilyTree().toString(),
     `a
  b`
+  )
+}
+testTree.toComparison = equal => {
+  equal(
+    new TreeNode(testStrings.webpage)
+      .toComparison(testStrings.webpage)
+      .toString()
+      .trim().length,
+    0,
+    "should be equal"
   )
 }
 testTree.isBlank = equal => {

@@ -23,12 +23,14 @@ class UnknownGrammarProgram extends TreeNode {
     return rootNode
   }
 
+  private static _childSuffix = "Child"
+
   private _renameIntegerKeywords(clone: UnknownGrammarProgram) {
     // todo: why are we doing this?
     for (let node of clone.getTopDownArrayIterator()) {
       const firstWordIsAnInteger = !!node.getFirstWord().match(/^\d+$/)
       const parentFirstWord = node.getParent().getFirstWord()
-      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + "Child"))
+      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + UnknownGrammarProgram._childSuffix))
     }
   }
 
@@ -77,9 +79,8 @@ class UnknownGrammarProgram extends TreeNode {
       }
     }
 
-    const needsMatchProperty = TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(firstWord) !== firstWord
-
-    if (needsMatchProperty) nodeDefNode.set(GrammarConstants.match, firstWord)
+    const needsCruxProperty = !firstWord.endsWith(UnknownGrammarProgram._childSuffix + "Node") // todo: cleanup
+    if (needsCruxProperty) nodeDefNode.set(GrammarConstants.crux, firstWord)
 
     if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
 

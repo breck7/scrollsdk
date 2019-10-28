@@ -1,6 +1,7 @@
 todo Make this compile and execute
 operatorCell
  highlightScope keyword
+ enum + * print
 floatCell
 chuckNode
  description A useless demo Tree Language inspired by Forth that tests postfix notation.

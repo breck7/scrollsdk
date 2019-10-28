@@ -34,6 +34,8 @@ constructorFilePathCell
 enumOptionCell
  todo Add an enumOption top level type, so we can add data to an enum option such as a description.
  highlightScope string
+synthOptionCell
+ highlightScope string
 extraCell
  highlightScope invalid
 fileExtensionCell
@@ -194,7 +196,7 @@ exampleNode
  catchAllNodeType catchAllExampleLineNode
  extends abstractNodeTypeRuleNode
 extendsNodeTypeNode
- match extends
+ crux extends
  description nodeType definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell nodeTypeIdCell
@@ -227,14 +229,18 @@ javascriptNode
    }
    return this
   }
-matchNode
- cells propertyKeywordCell stringCell
- description If present, this word will be used as the first word instead of the nodeTypeId.
+abstractParseRuleNode
+ description Each node should have a pattern that it matches on unless it's a catch all node.
+ abstract
  extends abstractNodeTypeRuleNode
+cruxNode
+ cells propertyKeywordCell stringCell
+ description Use this property for prefix languages where the first word is the keyword.
+ extends abstractParseRuleNode
 patternNode
  catchAllCellType regexCell
- description If present, this regex will be used to determine the nodeType instead of the nodeTypeId or matchNode.
- extends abstractNodeTypeRuleNode
+ description If present, this regex will be used to determine the nodeType instead of the cruxNode.
+ extends abstractParseRuleNode
 requiredNode
  description If present, the parent node will have an error if one of these nodes is not provided.
  extends abstractNodeTypeRuleNode
@@ -263,22 +269,25 @@ cellTypeDefinitionNode
  todo Allow abstract cell types?
  todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Cell$
- inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode
+ inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode synthesisOptionsNode
  cells cellTypeIdCell
 enumFromCellTypesNode
  catchAllCellType cellTypeIdCell
  cells cellPropertyNameCell
 enumNode
- todo Change match to prefix.
- match enum
+ crux enum
  catchAllCellType enumOptionCell
+ cells cellPropertyNameCell
+synthesisOptionsNode
+ crux synthesisOptions
+ catchAllCellType synthOptionCell
  cells cellPropertyNameCell
 highlightScopeNode
  cells propertyKeywordCell scopeNameCell
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
 rootFlagNode
- match root
+ crux root
  description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
  cells propertyKeywordCell
 nodeTypeDefinitionNode
@@ -309,7 +318,7 @@ toolingNode
  catchAllNodeType toolingNode
  cells toolingDirectiveCell
 extendsCellTypeNode
- match extends
+ crux extends
  description cellType definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell cellTypeIdCell

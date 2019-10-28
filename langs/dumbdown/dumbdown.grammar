@@ -79,7 +79,7 @@ lineOfCodeNode
  catchAllCellType codeCell
  cells codeCell
 dashNode
- match -
+ crux -
  catchAllCellType textCell
  compiler
   stringTemplate <li>{textCell}</li>

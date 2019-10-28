@@ -45,12 +45,12 @@ abstractHtmlNode
  extends topLevelNode
  abstract
 h1Node
- match html.h1
+ crux html.h1
  extends abstractHtmlNode
 addNode
  extends topLevelNode
 plusNode
- match +
+ crux +
  extends addNode
  example Adding two numbers:
   + 1 2

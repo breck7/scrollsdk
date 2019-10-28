@@ -68,6 +68,7 @@ enum GrammarConstants {
   reservedWords = "reservedWords", // temporary?
   enumFromCellTypes = "enumFromCellTypes", // temporary?
   enum = "enum", // temporary?
+  synthesisOptions = "synthesisOptions",
 
   // baseNodeTypes
   baseNodeType = "baseNodeType",
@@ -78,7 +79,7 @@ enum GrammarConstants {
   extends = "extends",
   abstract = "abstract",
   root = "root",
-  match = "match",
+  crux = "crux",
   pattern = "pattern",
   inScope = "inScope",
   cells = "cells",
@@ -139,20 +140,17 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   private _getAutocompleteResultsForFirstWord(partialWord: string) {
-    let defs: nodeTypeDefinitionNode[] = Object.values(this.getDefinition().getFirstWordMapWithDefinitions())
+    const keywordMap = this.getDefinition().getFirstWordMapWithDefinitions()
+    let keywords: string[] = Object.keys(keywordMap)
 
-    if (partialWord)
-      defs = defs.filter(def => {
-        const word = def._getFirstWordMatch()
-        return word ? word.includes(partialWord) : false
-      })
+    if (partialWord) keywords = keywords.filter(keyword => keyword.includes(partialWord))
 
-    return defs.map(def => {
-      const id = def._getFirstWordMatch()
+    return keywords.map(keyword => {
+      const def = keywordMap[keyword]
       const description = def.getDescription()
       return {
-        text: id,
-        displayText: id + (description ? " " + description : "")
+        text: keyword,
+        displayText: keyword + (description ? " " + description : "")
       }
     })
   }
@@ -773,7 +771,9 @@ class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
   }
 
   _synthesizeCell() {
-    return this._nodeTypeDefinition._getKeywordIfAny()
+    const synthOptions = this._getCellTypeDefinition()._getFromExtended(GrammarConstants.synthesisOptions)
+    if (synthOptions) return TreeUtils.getRandomString(1, synthOptions.split(" "))
+    return this._nodeTypeDefinition.getNodeTypeIdFromDefinition() + this.constructor.name
   }
 
   getRegexString() {
@@ -789,13 +789,18 @@ class GrammarKeywordCell extends GrammarAnyCell {
   static defaultHighlightScope = "keyword"
 
   _synthesizeCell() {
-    return this._nodeTypeDefinition._getKeywordIfAny()
+    return this._nodeTypeDefinition._getCruxIfAny()
   }
 }
 
 class GrammarExtraWordCellTypeCell extends AbstractGrammarBackedCell<string> {
   _isValid() {
     return false
+  }
+
+  synthesizeCell() {
+    throw new Error(`Trying to synthesize a GrammarExtraWordCellTypeCell`)
+    return this._synthesizeCell()
   }
 
   _synthesizeCell() {
@@ -816,8 +821,13 @@ class GrammarUnknownCellTypeCell extends AbstractGrammarBackedCell<string> {
     return false
   }
 
+  synthesizeCell() {
+    throw new Error(`Trying to synthesize an GrammarUnknownCellTypeCell`)
+    return this._synthesizeCell()
+  }
+
   _synthesizeCell() {
-    return "unknownCell" // should never occur?
+    return "extraWord" // should never occur?
   }
 
   getParsed() {
@@ -1184,6 +1194,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
     types[GrammarConstants.todoComment] = TreeNode
+    types[GrammarConstants.synthesisOptions] = TreeNode
     types[GrammarConstants.description] = TreeNode
     types[GrammarConstants.extends] = TreeNode
     return new TreeNode.Parser(undefined, types)
@@ -1240,7 +1251,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     if (preludeKind) return preludeKind.defaultHighlightScope
   }
 
-  private _getEnumOptions() {
+  _getEnumOptions() {
     const enumNode = this._getNodeFromExtended(GrammarConstants.enum)
     if (!enumNode) return undefined
 
@@ -1349,7 +1360,7 @@ class PostfixCellParser extends AbstractCellParser {
   }
 
   protected _getCellTypeId(cellIndex: treeNotationTypes.int, requiredCellTypeIds: string[], totalWordCount: treeNotationTypes.int) {
-    const catchAllWordCount = totalWordCount - requiredCellTypeIds.length
+    const catchAllWordCount = Math.max(totalWordCount - requiredCellTypeIds.length, 0)
     return requiredCellTypeIds[cellIndex - catchAllWordCount]
   }
 }
@@ -1461,7 +1472,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.extensions,
       GrammarConstants.version,
       GrammarConstants.tags,
-      GrammarConstants.match,
+      GrammarConstants.crux,
       GrammarConstants.pattern,
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
@@ -1497,11 +1508,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       obj[key] = obj[key].getConstantValue()
     })
     return obj
-  }
-
-  _getKeywordIfAny(): string {
-    const matchKeyword = this.get(GrammarConstants.match)
-    return matchKeyword || this._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   _getUniqueConstantNodes(extended = true) {
@@ -1550,19 +1556,17 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this._cache_definedNodeConstructor
   }
 
-  _getFirstWordMatch() {
-    if (this._getRegexMatch())
-      // todo: enforce firstWordMatch and regexMatch as being XOR
-      return undefined
-    return this.get(GrammarConstants.match) || this._getNodeTypeIdWithoutNodeTypeSuffix()
-  }
-
-  private _getNodeTypeIdWithoutNodeTypeSuffix() {
-    return this.getNodeTypeIdFromDefinition().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+  _getCruxIfAny(): string {
+    return this.get(GrammarConstants.crux)
   }
 
   _getRegexMatch() {
     return this.get(GrammarConstants.pattern)
+  }
+
+  _getFirstCellEnumOptions() {
+    const firstCellDef = this._getCellTypeDefs()[0]
+    return firstCellDef ? firstCellDef._getEnumOptions() : undefined
   }
 
   getLanguageDefinitionProgram(): GrammarProgram {
@@ -1586,16 +1590,22 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this._getParser().getFirstWordOptions()
   }
 
-  // todo: what happens when you have a cell getter and constant with same name?
-  _getCellGettersAndNodeTypeConstants() {
-    // todo: add cellType parsings
+  private _getCellTypeDefs() {
     const grammarProgram = this.getLanguageDefinitionProgram()
     const requiredCells = this.get(GrammarConstants.cells)
-    const getters = (requiredCells ? requiredCells.split(" ") : []).map((cellTypeId, index) => {
+    if (!requiredCells) return []
+    return requiredCells.split(" ").map(cellTypeId => {
       const cellTypeDef = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
-      return cellTypeDef.getGetter(index)
+      return cellTypeDef
     })
+  }
+
+  // todo: what happens when you have a cell getter and constant with same name?
+  private _getCellGettersAndNodeTypeConstants() {
+    // todo: add cellType parsings
+    const grammarProgram = this.getLanguageDefinitionProgram()
+    const getters = this._getCellTypeDefs().map((cellTypeDef, index) => cellTypeDef.getGetter(index))
 
     const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType)
     if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
@@ -1623,9 +1633,15 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       .forEach(nodeTypeId => {
         const def = allProgramNodeTypeDefinitionsMap[nodeTypeId]
         const regex = def._getRegexMatch()
-        const firstWord = def._getFirstWordMatch()
+        const crux = def._getCruxIfAny()
+        const enumOptions = def._getFirstCellEnumOptions()
         if (regex) result.regexTests.push({ regex: regex, nodeConstructor: def.getNodeTypeIdFromDefinition() })
-        else result.firstWordMap[firstWord] = def
+        else if (crux) result.firstWordMap[crux] = def
+        else if (enumOptions) {
+          enumOptions.forEach(option => {
+            result.firstWordMap[option] = def
+          })
+        }
       })
     return result
   }
@@ -1802,20 +1818,26 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return !this._getFromExtended(GrammarConstants.inScope) && !this._getFromExtended(GrammarConstants.catchAllNodeType)
   }
 
+  private _getSublimeMatchLine() {
+    const regexMatch = this._getRegexMatch()
+    if (regexMatch) return `'${regexMatch}'`
+    const cruxMatch = this._getCruxIfAny()
+    if (cruxMatch) return `'^ *${TreeUtils.escapeRegExp(cruxMatch)}(?: |$)'`
+    const enumOptions = this._getFirstCellEnumOptions()
+    if (enumOptions) return `'^ *(${TreeUtils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
+  }
+
   // todo: refactor. move some parts to cellParser?
-  getMatchBlock() {
+  _toSublimeMatchBlock() {
     const defaultHighlightScope = "source"
     const program = this.getLanguageDefinitionProgram()
-    const regexMatch = this._getRegexMatch()
-    const firstWordMatch = this._getFirstWordMatch()
-    const match = regexMatch ? `'${regexMatch}'` : `'^ *${TreeUtils.escapeRegExp(firstWordMatch)}(?: |$)'`
     const cellParser = this.getCellParser()
     const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
     const catchAllCellTypeId = cellParser.getCatchAllCellTypeId()
     const firstCellTypeDef = program.getCellTypeDefinitionById(requiredCellTypeIds[0])
     const firstWordHighlightScope = (firstCellTypeDef ? firstCellTypeDef.getHighlightScope() : defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const topHalf = ` '${this.getNodeTypeIdFromDefinition()}':
-  - match: ${match}
+  - match: ${this._getSublimeMatchLine()}
     scope: ${firstWordHighlightScope}`
     if (catchAllCellTypeId) requiredCellTypeIds.push(catchAllCellTypeId)
     if (!requiredCellTypeIds.length) return topHalf
@@ -1872,11 +1894,12 @@ ${captures}
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
   }
 
-  _generateSimulatedLine(): string {
-    const cells = this.getCellParser().getCellArray()
-    if (!cells.length) return undefined
+  private _generateSimulatedLine(): string {
     // todo: generate simulated data from catch all
-    return cells.map(cell => cell.synthesizeCell()).join(" ")
+    return this.getCellParser()
+      .getCellArray()
+      .map(cell => cell.synthesizeCell())
+      .join(" ")
   }
 
   // todo: refactor
@@ -1887,7 +1910,7 @@ ${captures}
     const thisId = this._getId()
     if (!nodeTypeChain.includes(thisId)) nodeTypeChain.push(thisId)
     const lines = []
-    while (nodeCount > 0) {
+    while (nodeCount) {
       const line = this._generateSimulatedLine()
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
 
@@ -2301,7 +2324,7 @@ ${exportScript}
       .join("\n")
 
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions().filter(kw => !kw._isAbstract())
-    const nodeTypeContexts = defs.map(def => def.getMatchBlock()).join("\n\n")
+    const nodeTypeContexts = defs.map(def => def._toSublimeMatchBlock()).join("\n\n")
     const includes = defs.map(nodeTypeDef => `  - include: '${nodeTypeDef.getNodeTypeIdFromDefinition()}'`).join("\n")
 
     return `%YAML 1.2

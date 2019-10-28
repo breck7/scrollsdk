@@ -33,23 +33,23 @@ abstractArithmeticReducerNode
  cells operatorCell
  catchAllCellType numbersCell
 modNode
- match %
+ crux %
  extends abstractArithmeticReducerNode
  string operator %
 timesNode
- match *
+ crux *
  extends abstractArithmeticReducerNode
  string operator *
 addNode
- match +
+ crux +
  extends abstractArithmeticReducerNode
  string operator +
 substractNode
- match -
+ crux -
  extends abstractArithmeticReducerNode
  string operator -
 divideNode
- match /
+ crux /
  extends abstractArithmeticReducerNode
  string operator /
 commentNode
@@ -58,10 +58,10 @@ commentNode
  catchAllNodeType commentNode
  cells commentKeywordCell
 simpleCommentNode
- match comment
+ crux comment
  extends commentNode
 hashBangNode
- match #!
+ crux #!
  extends commentNode
 errorNode
  catchAllCellType errorCell

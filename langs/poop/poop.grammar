@@ -60,31 +60,37 @@ abstractEventNode
    return `${day},${lastTime},${this.eventType},${this.getNotes()}`
   }
 bowelNode
+ crux 💩
  pattern 💩
  extends abstractEventNode
  description Bowel movement.
  string eventType bowelMovement
 bladderNode
+ crux ✨
  pattern ✨
  description Bladder movement.
  extends abstractEventNode
  string eventType bladderMovement
 bottleNode
+ crux 🍼
  pattern 🍼
  extends abstractEventNode
  description Feeding.
  string eventType feeding
 sleep4Node
+ crux 😴
  pattern 😴
  description Sleep.
  extends abstractEventNode
  string eventType asleep
 awakeNode
+ crux 😀
  pattern 😀
  description I'm awake!
  extends abstractEventNode
  string eventType awoke
 memoryNode
+ crux ❤️
  pattern ❤️
  cells eventTypeCell
  catchAllCellType memoryDescriptionCell
@@ -96,7 +102,7 @@ memoryNode
    return jtree.Utils.removeNonAscii(this.getLine()).trim()
   }
 dayNode
- match 🌄
+ crux 🌄
  description We survived another day!
  cells symbolCell monthIntCell dayIntCell yearIntCell
  javascript

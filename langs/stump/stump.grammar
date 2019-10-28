@@ -208,6 +208,7 @@ htmlAttributeNode
    return ` ${this.getFirstWord()}="${this.getContent()}"`
   }
  boolean isAttributeNode true
+ boolean isTileAttribute true
  catchAllNodeType errorNode
  catchAllCellType attributeValueCell
  cells htmlAttributeNameCell
@@ -219,9 +220,11 @@ stumpExtendedAttributeNode
  extends htmlAttributeNode
  cells stumpExtendedAttributeNameCell
 lineOfHtmlContentNode
+ boolean isTileAttribute true
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
 bernNode
+ boolean isTileAttribute true
  todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
  catchAllNodeType lineOfHtmlContentNode

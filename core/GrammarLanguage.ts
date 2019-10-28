@@ -2009,12 +2009,19 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._cache_compiledLoadedNodeTypes
   }
 
+  private _dirName: string
+  _setDirName(name: string) {
+    this._dirName = name
+    return this
+  }
+
   private _importNodeJsRootNodeTypeConstructor(code: treeNotationTypes.javascriptCode): any {
     const vm = require("vm")
     // todo: cleanup up
     try {
       ;(<any>global).jtree = require(__dirname + "/../index.js")
       ;(<any>global).require = require
+      ;(<any>global).__dirname = this._dirName
       ;(<any>global).module = {}
       return vm.runInThisContext(code)
     } catch (err) {

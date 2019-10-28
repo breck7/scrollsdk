@@ -35,7 +35,7 @@ class TreeUtils {
     while (typeof result !== "string" && result.length > 0) {
       result = getProjectName(result.join("/"))
     }
-    if (result.length === 0) throw new Error(`Project root for folder ${dirName} not found.`)
+    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${dirName} not found.`)
     return result
   }
   static escapeRegExp(str) {
@@ -510,7 +510,7 @@ class TestRacerTestBlock {
     } catch (err) {
       failures.push(["1", "0", `Should not have uncaught errors but in ${this._testName} got: ${err}`])
       // todo: figure out the strategy here to get call stack and all that. what do other things do?
-      // throw err
+      throw err
     }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {
@@ -4650,12 +4650,17 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
     return this._cache_compiledLoadedNodeTypes
   }
+  _setDirName(name) {
+    this._dirName = name
+    return this
+  }
   _importNodeJsRootNodeTypeConstructor(code) {
     const vm = require("vm")
     // todo: cleanup up
     try {
       global.jtree = require(__dirname + "/../index.js")
       global.require = require
+      global.__dirname = this._dirName
       global.module = {}
       return vm.runInThisContext(code)
     } catch (err) {

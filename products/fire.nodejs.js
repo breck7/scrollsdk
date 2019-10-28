@@ -62,11 +62,12 @@
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`todo Explore best ways to add polymorphism
 anyCell
 booleanCell
- regex (false|true)
+ enum false true
 filepathCell
 identifierCell
  regex [$A-Za-z_][0-9a-zA-Z_$]*
  highlightScope variable
+ examples myVarA someVarB
 numberCell
  regex \\-?[0-9]*\\.?[0-9]*
  highlightScope constant.numeric
@@ -137,8 +138,9 @@ blockNode
  compiler
   stringTemplate /* {identifierCell} */
  extends abstractJsblockNode
+ crux block
 functionNode
- match function
+ crux function
  description Function Assignment
  cells keywordCell functionIdentifierCell
  catchAllCellType anyCell
@@ -148,7 +150,7 @@ functionNode
  frequency .1
  extends abstractJsblockNode
 ifNode
- match if
+ crux if
  description If tile
  cells keywordCell identifierCell
  frequency .2
@@ -156,7 +158,7 @@ ifNode
   stringTemplate if ({identifierCell})
  extends abstractJsblockNode
 whileNode
- match while
+ crux while
  description While tile
  cells keywordCell identifierCell
  frequency .1
@@ -182,22 +184,27 @@ divideNode
  compiler
   catchAllCellDelimiter  / 
  extends abstractArithmeticNode
+ crux divide
 moduloNode
  description Modulo Numbers
  compiler
   catchAllCellDelimiter %
  extends abstractArithmeticNode
+ crux modulo
 multiplyNode
  description Multiply Numbers
  compiler
   catchAllCellDelimiter  * 
  extends abstractArithmeticNode
+ crux multiply
 substractNode
  description Subtract Numbers
  compiler
   catchAllCellDelimiter  - 
  extends abstractArithmeticNode
+ crux substract
 addNode
+ crux add
  description Add numbers and store result
  compiler
   catchAllCellDelimiter  + 
@@ -213,6 +220,7 @@ greaterThanNode
   stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
  frequency .1
  extends abstractBooleanOperatorNode
+ crux greaterThan
 greaterThanOrEqualNode
  description Greater than or equal to test
  cells keywordCell identifierCell leftNumberCell numberCell
@@ -220,6 +228,7 @@ greaterThanOrEqualNode
   stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
  frequency .1
  extends abstractBooleanOperatorNode
+ crux greaterThanOrEqual
 lessThanNode
  description Less than test
  cells keywordCell identifierCell leftAnyCell anyCell
@@ -227,7 +236,9 @@ lessThanNode
   stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
  frequency .1
  extends abstractBooleanOperatorNode
+ crux lessThan
 lessThanOrEqualNode
+ crux lessThanOrEqual
  description Less than or equal to test
  cells keywordCell identifierCell leftAnyCell anyCell
  compiler
@@ -235,6 +246,7 @@ lessThanOrEqualNode
  frequency .1
  extends abstractBooleanOperatorNode
 sumNode
+ crux sum
  description Add numbers and store result
  cells keywordCell numberIdentifierCell
  catchAllCellType numberCell
@@ -244,12 +256,14 @@ sumNode
  frequency .1
  extends abstractAssignmentNode
 booleanNode
+ crux boolean
  description Boolean Assignment
  cells keywordCell booleanIdentifierCell booleanCell
  compiler
   stringTemplate const {booleanIdentifierCell} = {booleanCell}
  extends abstractAssignmentNode
 callFunctionAndSetNode
+ crux callFunctionAndSet
  description Function Call
  frequency .5
  cells keywordCell resultIdentifierCell functionIdentifierCell
@@ -259,6 +273,7 @@ callFunctionAndSetNode
   catchAllCellDelimiter , 
  extends abstractAssignmentNode
 callMethodAndSetNode
+ crux callMethodAndSet
  description Method Call
  frequency .5
  cells keywordCell resultIdentifierCell instanceIdentifierCell methodIdentifierCell
@@ -268,6 +283,7 @@ callMethodAndSetNode
   catchAllCellDelimiter , 
  extends abstractAssignmentNode
 joinNode
+ crux join
  description Join strings to form new string
  cells keywordCell identifierCell
  catchAllCellType identifiersCell
@@ -277,12 +293,14 @@ joinNode
  frequency .2
  extends abstractAssignmentNode
 mutableNumberNode
+ crux mutableNumber
  description Mutable Number Assignment
  cells keywordCell identifierCell numberCell
  compiler
   stringTemplate let {identifierCell} = {numberCell}
  extends abstractAssignmentNode
 numberNode
+ crux number
  description Number Assignment
  cells keywordCell identifierCell numberCell
  compiler
@@ -290,6 +308,7 @@ numberNode
  frequency .3
  extends abstractAssignmentNode
 numbersNode
+ crux numbers
  description Number Array Assignment
  cells keywordCell identifierCell
  catchAllCellType numberCell
@@ -299,6 +318,7 @@ numbersNode
   catchAllCellDelimiter , 
  extends abstractAssignmentNode
 stringNode
+ crux string
  description String Assignment
  cells keywordCell stringIdentifierCell
  catchAllCellType anyCell
@@ -307,6 +327,7 @@ stringNode
  frequency .2
  extends abstractAssignmentNode
 callFunctionNode
+ crux callFunction
  description Function call ignore result.
  frequency .1
  cells keywordCell functionIdentifierCell
@@ -316,6 +337,7 @@ callFunctionNode
   catchAllCellDelimiter , 
  extends abstractTerminalNode
 decrementNode
+ crux decrement
  description Decrement
  cells keywordCell numberIdentifierCell
  compiler
@@ -323,6 +345,7 @@ decrementNode
  frequency .1
  extends abstractTerminalNode
 dumpIdentifierNode
+ crux dumpIdentifier
  description Dump variable(s) to console
  catchAllCellType identifierCell
  compiler
@@ -331,7 +354,7 @@ dumpIdentifierNode
  frequency .5
  extends abstractTerminalNode
 exportNode
- match export
+ crux export
  description Export This
  cells keywordCell identifierCell
  compiler
@@ -339,6 +362,7 @@ exportNode
  frequency .1
  extends abstractTerminalNode
 incrementNode
+ crux increment
  description Increment
  frequency .3
  cells keywordCell numberIdentifierCell
@@ -346,18 +370,20 @@ incrementNode
   stringTemplate {numberIdentifierCell}++
  extends abstractTerminalNode
 printNumberNode
+ crux printNumber
  extends abstractTerminalNode
  catchAllCellType numberIdentifierCell
  compiler
   stringTemplate console.log({numberIdentifierCell})
 printStringNode
+ crux printString
  todo Allow printing of multiline strings
  extends abstractTerminalNode
  catchAllCellType stringCellsCell
  compiler
   stringTemplate console.log("{stringCells}")
 requireNode
- match require
+ crux require
  description Require Something
  cells keywordCell identifierCell filepathCell
  compiler
@@ -365,14 +391,14 @@ requireNode
  frequency .1
  extends abstractTerminalNode
 returnNode
- match return
+ crux return
  cells keywordCell anyCell
  compiler
   stringTemplate return {anyCell}
  frequency .1
  extends abstractTerminalNode
 hashbangNode
- match #!
+ crux #!
  description Standard bash hashbang line.
  catchAllCellType hashBangCell
  compiler

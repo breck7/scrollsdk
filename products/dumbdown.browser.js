@@ -55,23 +55,27 @@ titleNode
  extends abstractTopLevelNode
  compiler
   stringTemplate <h1>{textCell}</h1>
+ crux title
 linkNode
  cells keywordCell urlCell
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <a href="{urlCell}">{textCell}</a>
+ crux link
 paragraphNode
  inScope linkNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <p>{textCell}</p>
+ crux paragraph
 subtitleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <h2>{textCell}</h2>
+ crux subtitle
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
@@ -81,6 +85,7 @@ codeNode
   openChildren <code>
   closeChildren </code>
   stringTemplate 
+ crux code
 listNode
  inScope dashNode
  extends abstractTopLevelNode
@@ -88,6 +93,7 @@ listNode
   stringTemplate 
   openChildren <ul>
   closeChildren </ul>
+ crux list
 blankLineNode
  description Blank lines compile to a br in the HTML.
  cells blankCell
@@ -97,7 +103,7 @@ lineOfCodeNode
  catchAllCellType codeCell
  cells codeCell
 dashNode
- match -
+ crux -
  catchAllCellType textCell
  compiler
   stringTemplate <li>{textCell}</li>

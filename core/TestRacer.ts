@@ -37,7 +37,7 @@ class TestRacerTestBlock {
     } catch (err) {
       failures.push(["1", "0", `Should not have uncaught errors but in ${this._testName} got: ${err}`])
       // todo: figure out the strategy here to get call stack and all that. what do other things do?
-      // throw err
+      throw err
     }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {

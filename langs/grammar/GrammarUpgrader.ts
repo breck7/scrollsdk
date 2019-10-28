@@ -9,8 +9,11 @@ class GrammarUpgrader extends jtree.Upgrader {
       "5.0.0": {
         "6.0.0": (tree: any) => {
           tree = new jtree.TreeNode(tree.toString().replace(/^ match /g, " crux "))
-          const mayNeed = tree.filter((node: any) => node.getLine().endsWith("Node") && !node.has("abstract") && !node.has("crux") && !node.has("pattern"))
-
+          const mayNeed = tree.filter((node: any) => node.getLine().endsWith("Node") && !node.has("root") && node.get("baseNodeType") !== "errorNode" && !node.has("abstract") && !node.has("crux") && !node.has("pattern"))
+          mayNeed.forEach((node: any) => {
+            node.set("crux", node.getLine().replace("Node", ""))
+          })
+          return tree
           // if it was using an implicit firstWord, and not abstract, add an explicit one, unless its a catchall.
         }
       },
@@ -183,6 +186,6 @@ class GrammarUpgrader extends jtree.Upgrader {
   }
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar"], "4.0.0", "5.0.0").forEach((item: any) => console.log(item.path, item.tree.toString()))
+/*NODE_JS_ONLY*/ if (!module.parent) new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar", __dirname + "/../*/*.gram"], "5.0.0", "6.0.0").forEach((item: any) => console.log(item.path, item.tree.toString()))
 
 export { GrammarUpgrader }

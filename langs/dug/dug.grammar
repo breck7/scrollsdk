@@ -13,23 +13,24 @@ numberCell
 dugNode
  root
  description A demonstration prefix Tree Language that compiles to JSON.
- inScope valueNode
+ inScope abstractValueNode
  catchAllNodeType errorNode
  javascript
   compile() {
    const res = super.compile()
    return JSON.stringify(JSON.parse(res), null, 2)
   }
-valueNode
+abstractValueNode
  cells keywordCell
+ abstract
 nullNode
  compiler
   stringTemplate null
- extends valueNode
+ extends abstractValueNode
  crux null
 numberNode
  crux number
- extends valueNode
+ extends abstractValueNode
  cells keywordCell numberCell
  compiler
   stringTemplate {numberCell}
@@ -38,17 +39,17 @@ stringNode
  catchAllCellType stringCell
  compiler
   stringTemplate "{stringCell}"
- extends valueNode
+ extends abstractValueNode
 booleanNode
  crux boolean
- extends valueNode
+ extends abstractValueNode
  cells keywordCell booleanCell
  compiler
   stringTemplate {booleanCell}
 objectNode
  crux object
  catchAllNodeType memberNode
- extends valueNode
+ extends abstractValueNode
  compiler
   stringTemplate  
   joinChildrenWith , 
@@ -56,15 +57,15 @@ objectNode
   closeChildren }
 arrayNode
  crux array
- extends valueNode
- inScope valueNode
+ extends abstractValueNode
+ inScope abstractValueNode
  compiler
   stringTemplate  
   joinChildrenWith , 
   openChildren [
   closeChildren ]
 memberNode
- inScope valueNode
+ inScope abstractValueNode
  compiler
   stringTemplate "{stringCell}" :
  cells stringCell

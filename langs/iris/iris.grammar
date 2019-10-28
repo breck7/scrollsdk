@@ -2,6 +2,11 @@ anyCell
 floatCell
  highlightScope constant.numeric.float
 intCell
+keywordCell
+commentKeywordCell
+ extends keywordCell
+ highlightScope comment
+ enum comment
 headerCell
  highlightScope string
 commentCell
@@ -24,6 +29,7 @@ irisNode
  catchAllNodeType rowNode
 commentNode
  catchAllCellType commentCell
+ cells commentKeywordCell
 headerNode
  todo get this working? should we do a catchAllNodeStack?
  catchAllCellType headerCell

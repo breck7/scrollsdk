@@ -26,18 +26,18 @@ test grammarSample
      stringTemplate to {wordCell}
      closeChildren end
  getRunTimeFirstWordsInScope
-  lengthIs 2
+  assertLengthIs 2
  getNodeTypeDefinitionByNodeTypeId toNode
-  typeIs object
+  assertTypeIs object
  getTopNodeTypeIds
-  lengthIs 3
+  assertLengthIs 3
  getExtensionName
-  stringIs testlang
+  assertStringIs testlang
  toSublimeSyntaxFile
-  typeIs string
+  assertTypeIs string
  isDefined notDefined
-  stringIs false
+  assertStringIs false
  isDefined toNode
-  stringIs true
+  assertStringIs true
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0

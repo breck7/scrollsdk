@@ -6,9 +6,9 @@ test getTypeScriptAndJavaScriptImportsFromSourceCodeTest
  getTypeScriptAndJavaScriptImportsFromSourceCode
   blockStringParam
    foobar
-  lengthIs 0
+  assertLengthIs 0
  getTypeScriptAndJavaScriptImportsFromSourceCode
   blockStringParam
    const Foobar = require("foobar")
    import FamBam from "../fambam.js"
-  lengthIs 2
+  assertLengthIs 2

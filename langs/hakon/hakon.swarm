@@ -15,9 +15,9 @@ test compileHakon
      font-size 17px
    comment hello world
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  compile
-  blockStringIs
+  assertParagraphIs
    body {
      font-size: 12px;
    }

@@ -6,23 +6,23 @@ test willowBasics
   constructWith
    http://localhost:8000/
  someInputHasFocus
-  stringIs false
+  assertStringIs false
  isNodeJs
-  stringIs true
+  assertStringIs true
  getPageHtml
-  stringIncludes <body
+  assertStringIncludes <body
  getWindowTitle
-  stringIs 
+  assertStringIs 
  setWindowTitle
   blockStringParam
    new page title
  getWindowTitle
-  stringIs new page title
+  assertStringIs new page title
  isExternalLink /
-  stringIs false
+  assertStringIs false
  isExternalLink https://cnn.com/
-  stringIs true
+  assertStringIs true
  isExternalLink http://localhost:8000/foobar
-  stringIs false
+  assertStringIs false
  isExternalLink http://localhot:8000/
-  stringIs true
+  assertStringIs true

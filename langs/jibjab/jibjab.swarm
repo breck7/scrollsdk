@@ -8,7 +8,7 @@ test jibjab
    nested
    comment Hello world. this is a comment.
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
 test errors
  arrange
   require ./jibjab.node.js
@@ -16,4 +16,4 @@ test errors
    ERRRORRRRR
    comment Hello world. this is a comment.
  getAllErrors
-  lengthIs 1
+  assertLengthIs 1

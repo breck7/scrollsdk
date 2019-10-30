@@ -28,10 +28,10 @@ test swarmSample
      stringTemplate to {wordCell}
      closeChildren end
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  getRunTimeFirstWordsInScope
-  lengthIs 2
+  assertLengthIs 2
  getNodeTypeDefinitionByNodeTypeId toNode
-  typeIs object
+  assertTypeIs object
  getTopNodeTypeIds
-  lengthIs 3
+  assertLengthIs 3

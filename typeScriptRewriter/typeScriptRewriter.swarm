@@ -10,22 +10,22 @@ test browserScriptBasics
    module.exports = Foobar
    export default Testing
  getString
-  typeIs string
-  stringIncludes require
+  assertTypeIs string
+  assertStringIncludes require
  removeRequires
   getString
-   stringExcludes require
-   stringIncludes import
+   assertStringExcludes require
+   assertStringIncludes import
  removeImports
-  stringExcludes import
-  stringExcludes strict
+  assertStringExcludes import
+  assertStringExcludes strict
  addUseStrict
   getString
-   stringIncludes strict
-   stringExcludes window
+   assertStringIncludes strict
+   assertStringExcludes window
  changeNodeExportsToWindowExports
   getString
-   stringIncludes window
+   assertStringIncludes window
  changeDefaultExportsToWindowExports
   getString
-   stringIncludes window.Testing
+   assertStringIncludes window.Testing

@@ -14,4 +14,4 @@ test basics jibberish
     echo hello world
    xColumnName gender
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0

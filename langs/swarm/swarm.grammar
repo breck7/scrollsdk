@@ -104,8 +104,8 @@ abstractAssertionNode
    return this.getContent()
   }
  cells assertionKeywordCell
-blockStringIsNode
- crux blockStringIs
+assertParagraphIsNode
+ crux assertParagraphIs
  description When your expected value is a multiline string.
  catchAllNodeType textBlockNode
  javascript
@@ -116,8 +116,8 @@ blockStringIsNode
    return this.childrenToString()
   }
  extends abstractAssertionNode
-lengthIsNode
- crux lengthIs
+assertLengthIsNode
+ crux assertLengthIs
  description Intake is an array, and checks if the length of array matches expected.
  cells assertionKeywordCell intCell
  javascript
@@ -125,8 +125,8 @@ lengthIsNode
    return actual.length
   }
  extends abstractAssertionNode
-stringExcludesNode
- crux stringExcludes
+assertStringExcludesNode
+ crux assertStringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyCell
  javascript
@@ -141,8 +141,8 @@ stringExcludesNode
    return result
   }
  extends abstractAssertionNode
-stringIncludesNode
- crux stringIncludes
+assertStringIncludesNode
+ crux assertStringIncludes
  catchAllCellType anyCell
  description Converts the input to string and see if the string contains the provided string
  javascript
@@ -152,13 +152,13 @@ stringIncludesNode
    return result
   }
  extends abstractAssertionNode
-stringIsNode
- crux stringIs
+assertStringIsNode
+ crux assertStringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllCellType anyCell
  extends abstractAssertionNode
-typeIsNode
- crux typeIs
+assertTypeIsNode
+ crux assertTypeIs
  description Assert result is one of Javascript's 6 typeof types.
  cells assertionKeywordCell typeOfOptionCell
  javascript

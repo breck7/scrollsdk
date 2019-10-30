@@ -6,7 +6,7 @@ test dumbdownRegression
    code
     a b
  compile
-  blockStringIs
+  assertParagraphIs
    <code>
     a b
    </code>

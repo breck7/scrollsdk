@@ -14,9 +14,9 @@ test stumpBasics
        This is some text
      span Hello more
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  toHtml
-  blockStringIs
+  assertParagraphIs
    <html id="bam" class="someClass">
     <body>
      <div type="foo">Hello world
@@ -33,7 +33,7 @@ test div
     id bam
     class someClass
  toHtml
-  blockStringIs
+  assertParagraphIs
    <div id="bam" class="someClass">hello world</div>
    
 test uids
@@ -45,16 +45,16 @@ test uids
     class someClass
  getFirstNode
   toHtmlWithSuids
-   typeIs string
-   stringIncludes stumpUid
+   assertTypeIs string
+   assertStringIncludes stumpUid
   isStumpNodeCheckbox
-   stringIs false
+   assertStringIs false
   toHtml
-   typeIs string
+   assertTypeIs string
   isInputType
-   stringIs false
+   assertStringIs false
   getStumpNodeAttr id
-   stringIs bam
+   assertStringIs bam
 test syntax
  arrange
   require ./stump.node.js
@@ -63,7 +63,7 @@ test syntax
     bern
      Hello world
  getInPlaceCellTypeTree
-  blockStringIs
+  assertParagraphIs
    htmlTagNameCell
     bernKeywordCell
      anyHtmlContentCell anyHtmlContentCell

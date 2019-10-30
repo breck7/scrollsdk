@@ -5,7 +5,7 @@ test swarm base
   constructWith
    hello world
  getChildren
-  lengthIs 1
+  assertLengthIs 1
  nodeAt 0
   getContent
-   stringIs world
+   assertStringIs world

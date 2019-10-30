@@ -9,12 +9,12 @@ test stampBasics
      echo Hello world
     executable
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
 skipTest staticReenableOncePathFix
  arrange
   require ../stamp.node.js
   static
  dirToStamp ./cases
-  blockStringIs
+  assertParagraphIs
    file cases/executable.stamp
    file cases/test.stamp

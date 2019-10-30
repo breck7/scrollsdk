@@ -6,6 +6,6 @@ test compilePoop
    🌄 8 29 2019
    😀 4
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  compile
-  typeIs string
+  assertTypeIs string

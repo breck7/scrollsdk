@@ -8,4 +8,4 @@ test basics Numbers
    comment Should be 0:
    - 3 2 1
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0

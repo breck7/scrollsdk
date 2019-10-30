@@ -3,7 +3,7 @@ todo Make it easier in swarm to pass in commmon input/expected pairs
 test compileToJSON
  arrange
   require ./dug.node.js
-  constructWithBlockString
+  constructWith
    object
     name
      string jtree
@@ -36,7 +36,7 @@ test compileToJSON
 test testErrors
  arrange
   require ./dug.node.js
-  constructWithBlockString
+  constructWith
    strin foo
  getAllErrors
   lengthIs 1

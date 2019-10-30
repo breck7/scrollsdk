@@ -2,7 +2,7 @@
 test stumpBasics
  arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWith
    html
     id bam
     class someClass
@@ -28,7 +28,7 @@ test stumpBasics
 test div
  arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWith
    div hello world
     id bam
     class someClass
@@ -39,7 +39,7 @@ test div
 test uids
  arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWith
    div hello world
     id bam
     class someClass
@@ -58,7 +58,7 @@ test uids
 test syntax
  arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWith
    div
     bern
      Hello world

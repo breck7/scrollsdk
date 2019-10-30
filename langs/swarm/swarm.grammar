@@ -241,7 +241,7 @@ arrangeNode
  javascript
   arrange(programFilepath) {
    const requiredClass = this._getRequiredClass(programFilepath)
-   const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithBlockStringNode")[0]
+   const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithNode")[0]
    const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
    return this.has("static") ? requiredClass : new requiredClass(param)
   }
@@ -261,7 +261,7 @@ arrangeNode
    return theClass
   }
   executeSync() {}
- inScope arrangeAsyncNode arrangeRequireNode arrangeStaticNode constructWithBlockStringNode todoNode
+ inScope arrangeAsyncNode arrangeRequireNode arrangeStaticNode constructWithNode todoNode
  cells keywordCell
 abstractCommandArgNode
  abstract
@@ -306,13 +306,13 @@ actNode
  catchAllNodeType actNode
  inScope blockStringParamNode abstractAssertionNode
  cells commandCell
-constructWithBlockStringNode
+constructWithNode
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
  catchAllNodeType textBlockNode
  cells keywordCell
- crux constructWithBlockString
+ crux constructWith
 errorNode
  baseNodeType errorNode
 textBlockNode

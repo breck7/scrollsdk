@@ -2,7 +2,7 @@
 test swarmSample
  arrange
   require ../../index.js jtree.GrammarProgram
-  constructWithBlockString
+  constructWith
    testlangNode
     root
     compilesTo txt

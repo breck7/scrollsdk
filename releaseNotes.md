@@ -482,7 +482,7 @@
 - Breaking: in Swarm, createTestDummy is now getTestSubject
 - Breaking: Swarm grammar changed. Use code below to update programs:
 swarmProgram.updateNodeTypeIds(`#setup arrange
-%%| constructWithBlockString
+%%| constructWith
 %| blockStringParam
 =# lengthIs
 =+ stringIncludes

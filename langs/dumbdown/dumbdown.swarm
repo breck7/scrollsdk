@@ -2,7 +2,7 @@
 test dumbdownRegression
  arrange
   require ./dumbdown.node.js
-  constructWithBlockString
+  constructWith
    code
     a b
  compile

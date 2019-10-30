@@ -3,7 +3,7 @@ arrange
  require ./project.node.js
 test projectBasics
  arrange
-  constructWithBlockString
+  constructWith
    file /foobar/foobar.js
    file /foobar/bam.js
    file /foo/c.js
@@ -23,7 +23,7 @@ test projectBasics
     /foobar/foobar.js /foobar/bam.js /foobar/after.js /foo/c.js
 test spaces
  arrange
-  constructWithBlockString
+  constructWith
    file /foobar/f oobar.js
    file /foobar/after.js
     relative ./f oobar.js
@@ -37,7 +37,7 @@ test spaces
     /foobar/f oobar.js /foobar/after.js
 test error
  arrange
-  constructWithBlockString
+  constructWith
    relative foobar.js
  getAllErrors
   lengthIs 1

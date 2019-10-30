@@ -3,7 +3,7 @@ arrange
  require ../products/TypeScriptRewriter.js TypeScriptRewriter
 test browserScriptBasics
  arrange
-  constructWithBlockString
+  constructWith
    const Foobar = require("foobar")
    import FamBar from "../FamBar.js"
    class Foobar extends FamBar {}

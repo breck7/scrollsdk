@@ -2,7 +2,7 @@
 test basics jibberish
  arrange
   require ./jibberish.node.js
-  constructWithBlockString
+  constructWith
    foo
    nodeWithConsts
    nested

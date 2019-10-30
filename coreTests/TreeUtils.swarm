@@ -1,5 +1,5 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
+arrange
  require ../index.js jtree.Utils
  static
 test stringToPermalink

@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test stumpBasics
- arrangeTestSubject
+ arrange
   require ./stump.node.js
   constructWithBlockString
    html
@@ -26,7 +26,7 @@ test stumpBasics
    </html>
    
 test div
- arrangeTestSubject
+ arrange
   require ./stump.node.js
   constructWithBlockString
    div hello world
@@ -37,7 +37,7 @@ test div
    <div id="bam" class="someClass">hello world</div>
    
 test uids
- arrangeTestSubject
+ arrange
   require ./stump.node.js
   constructWithBlockString
    div hello world
@@ -56,7 +56,7 @@ test uids
   getStumpNodeAttr id
    stringIs bam
 test syntax
- arrangeTestSubject
+ arrange
   require ./stump.node.js
   constructWithBlockString
    div

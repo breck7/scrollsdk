@@ -481,7 +481,7 @@
 - Infra: added prettier config to package.json
 - Breaking: in Swarm, createTestDummy is now getTestSubject
 - Breaking: Swarm grammar changed. Use code below to update programs:
-swarmProgram.updateNodeTypeIds(`#setup arrangeTestSubject
+swarmProgram.updateNodeTypeIds(`#setup arrange
 %%| constructWithBlockString
 %| blockStringParam
 =# lengthIs

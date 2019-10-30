@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 todo Make it easier in swarm to pass in commmon input/expected pairs
 test compileToJSON
- arrangeTestSubject
+ arrange
   require ./dug.node.js
   constructWithBlockString
    object
@@ -34,7 +34,7 @@ test compileToJSON
  getAllErrors
   lengthIs 0
 test testErrors
- arrangeTestSubject
+ arrange
   require ./dug.node.js
   constructWithBlockString
    strin foo

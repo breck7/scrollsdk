@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test swarm base
- arrangeTestSubject
+ arrange
   require ../index.js jtree.TreeNode
   constructWithBlockString
    hello world

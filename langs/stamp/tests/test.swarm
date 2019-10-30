@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test stampBasics
- arrangeTestSubject
+ arrange
   require ../stamp.node.js
   constructWithBlockString
    folder testEx
@@ -11,7 +11,7 @@ test stampBasics
  getAllErrors
   lengthIs 0
 skipTest staticReenableOncePathFix
- arrangeTestSubject
+ arrange
   require ../stamp.node.js
   static
  dirToStamp ./cases

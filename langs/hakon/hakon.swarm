@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test compileHakon
- arrangeTestSubject
+ arrange
   require ./hakon.node.js
   todo Have a way to get the first root example instead of duplicating it here.
   constructWithBlockString

@@ -41,14 +41,14 @@ typeOfOptionCell
 swarmNode
  root
  description A prefix Tree Language for unit testing.
- inScope hashbangNode arrangeTestSubjectNode abstractTestBlockNode
+ inScope hashbangNode arrangeNode abstractTestBlockNode
  catchAllNodeType errorNode
  javascript
   getCommandParent(testSubject) {
    return testSubject
   }
   getTestSetupNode() {
-   return this.getChildInstancesOfNodeTypeId("arrangeTestSubjectNode")[0]
+   return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
   }
   async execute(filepath) {
    const tree = new jtree.TestRacer(this.compileToRacer(filepath))
@@ -186,7 +186,7 @@ abstractTestBlockNode
  catchAllCellType anyCell
  javascript
   getTestSetupNode() {
-   return this.getNode("arrangeTestSubject") || this.getParent().getTestSetupNode()
+   return this.getNode("arrange") || this.getParent().getTestSetupNode()
   }
   isAsync() {
    return this.getTestSetupNode().has("async")
@@ -214,7 +214,7 @@ abstractTestBlockNode
     await Promise.all(promises)
    }
   }
- inScope arrangeTestSubjectNode
+ inScope arrangeNode
  catchAllNodeType commandNode
  abstract
  cells keywordCell
@@ -239,8 +239,8 @@ hashbangNode
  description Standard bash hashbang line.
  cells hashBangKeywordCell hashBangCell
  catchAllCellType hashBangCell
-arrangeTestSubjectNode
- crux arrangeTestSubject
+arrangeNode
+ crux arrange
  javascript
   getTestSubject(programFilepath) {
    const requiredClass = this._getRequiredClass(programFilepath)
@@ -252,7 +252,7 @@ arrangeTestSubjectNode
    let requiredClass =
     this.get("require") ||
     this.getRootNode()
-     .getNode("arrangeTestSubject")
+     .getNode("arrange")
      .get("require")
    const requiredClassParts = requiredClass.split(" ") // Allows for ./ExportsClasses.js ChildClass
    requiredClass = requiredClassParts[0]

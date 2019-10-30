@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test compilePoop
- arrangeTestSubject
+ arrange
   require ./poop.node.js
   constructWithBlockString
    🌄 8 29 2019

@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
+arrange
 test willowBasics
- arrangeTestSubject
+ arrange
   require ../products/TreeComponentFramework.node.js WillowProgram
   constructWithBlockString
    http://localhost:8000/

@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test compileFire
- arrangeTestSubject
+ arrange
   require ./fire.node.js
   constructWithBlockString
    sum ten 2 3 5
@@ -14,7 +14,7 @@ test compileFire
  getAllErrors
   lengthIs 0
 test compileRegression
- arrangeTestSubject
+ arrange
   require ./fire.node.js
   constructWithBlockString
    #! /usr/bin/env node /usr/local/bin/jtree

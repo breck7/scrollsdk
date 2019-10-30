@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test basics jibberish
- arrangeTestSubject
+ arrange
   require ./jibberish.node.js
   constructWithBlockString
    foo

@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test dumbdownRegression
- arrangeTestSubject
+ arrange
   require ./dumbdown.node.js
   constructWithBlockString
    code

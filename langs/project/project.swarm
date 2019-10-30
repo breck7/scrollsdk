@@ -1,8 +1,8 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
+arrange
  require ./project.node.js
 test projectBasics
- arrangeTestSubject
+ arrange
   constructWithBlockString
    file /foobar/foobar.js
    file /foobar/bam.js
@@ -22,7 +22,7 @@ test projectBasics
    blockStringIs
     /foobar/foobar.js /foobar/bam.js /foobar/after.js /foo/c.js
 test spaces
- arrangeTestSubject
+ arrange
   constructWithBlockString
    file /foobar/f oobar.js
    file /foobar/after.js
@@ -36,7 +36,7 @@ test spaces
    blockStringIs
     /foobar/f oobar.js /foobar/after.js
 test error
- arrangeTestSubject
+ arrange
   constructWithBlockString
    relative foobar.js
  getAllErrors

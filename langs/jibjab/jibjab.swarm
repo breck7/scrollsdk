@@ -1,6 +1,6 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test jibjab
- arrangeTestSubject
+ arrange
   require ./jibjab.node.js
   constructWithBlockString
    foo
@@ -10,7 +10,7 @@ test jibjab
  getAllErrors
   lengthIs 0
 test errors
- arrangeTestSubject
+ arrange
   require ./jibjab.node.js
   constructWithBlockString
    ERRRORRRRR

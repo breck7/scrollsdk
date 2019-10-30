@@ -2,7 +2,7 @@
 test compilePoop
  arrange
   require ./poop.node.js
-  constructWith
+  constructWithParagraph
    🌄 8 29 2019
    😀 4
  getAllErrors

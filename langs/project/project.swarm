@@ -3,7 +3,7 @@ arrange
  require ./project.node.js
 test projectBasics
  arrange
-  constructWith
+  constructWithParagraph
    file /foobar/foobar.js
    file /foobar/bam.js
    file /foo/c.js
@@ -17,13 +17,13 @@ test projectBasics
  getScriptPathsInCorrectDependencyOrder
   assertLengthIs 4
   join
-   blockStringParam
+   withParagraph
      
    assertParagraphIs
     /foobar/foobar.js /foobar/bam.js /foobar/after.js /foo/c.js
 test spaces
  arrange
-  constructWith
+  constructWithParagraph
    file /foobar/f oobar.js
    file /foobar/after.js
     relative ./f oobar.js
@@ -31,13 +31,13 @@ test spaces
   assertLengthIs 0
  getScriptPathsInCorrectDependencyOrder
   join
-   blockStringParam
+   withParagraph
      
    assertParagraphIs
     /foobar/f oobar.js /foobar/after.js
 test error
  arrange
-  constructWith
+  constructWithParagraph
    relative foobar.js
  getAllErrors
   assertLengthIs 1

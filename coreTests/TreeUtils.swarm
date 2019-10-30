@@ -6,7 +6,7 @@ test stringToPermalink
  stringToPermalink 
   assertStringIs 
  stringToPermalink
-  blockStringParam
+  withParagraph
    hello%> world
   assertStringIs hello-world
  stringToPermalink hello.world
@@ -16,7 +16,7 @@ test stripHtml
   assertStringIs hello
 test strip2
  stripHtml
-  blockStringParam
+  withParagraph
    some text
     if
      we

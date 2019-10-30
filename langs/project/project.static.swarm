@@ -4,11 +4,11 @@ arrange
  static
 test getTypeScriptAndJavaScriptImportsFromSourceCodeTest
  getTypeScriptAndJavaScriptImportsFromSourceCode
-  blockStringParam
+  withParagraph
    foobar
   assertLengthIs 0
  getTypeScriptAndJavaScriptImportsFromSourceCode
-  blockStringParam
+  withParagraph
    const Foobar = require("foobar")
    import FamBam from "../fambam.js"
   assertLengthIs 2

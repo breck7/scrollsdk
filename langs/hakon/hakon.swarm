@@ -3,7 +3,7 @@ test compileHakon
  arrange
   require ./hakon.node.js
   todo Have a way to get the first root example instead of duplicating it here.
-  constructWith
+  constructWithParagraph
    body
     font-size 12px
     h1,h2

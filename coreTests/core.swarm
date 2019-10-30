@@ -2,7 +2,7 @@
 test swarm base
  arrange
   require ../index.js jtree.TreeNode
-  constructWith
+  constructWithParagraph
    hello world
  getChildren
   assertLengthIs 1

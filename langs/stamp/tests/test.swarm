@@ -2,7 +2,7 @@
 test stampBasics
  arrange
   require ../stamp.node.js
-  constructWith
+  constructWithParagraph
    folder testEx
    file testEx/hi.sh
     data

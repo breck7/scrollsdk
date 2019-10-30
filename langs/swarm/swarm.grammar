@@ -107,7 +107,7 @@ abstractAssertionNode
 assertParagraphIsNode
  crux assertParagraphIs
  description When your expected value is a multiline string.
- catchAllNodeType textBlockNode
+ catchAllNodeType paragraphLineNode
  javascript
   getExpected() {
    return this.childrenToString()
@@ -166,23 +166,22 @@ assertTypeIsNode
    return typeof actual
   }
  extends abstractAssertionNode
-abstractTerminalNode
+abstractArrangeFlagNode
  abstract
  cells keywordCell
 arrangeAsyncNode
  description Add this flag in the arrange node to test async methods.
- extends abstractTerminalNode
+ extends abstractArrangeFlagNode
  crux async
 arrangeRequireNode
  description Pass in the filename to require for nodejs tests.
  crux require
  cells keywordCell filepathCell
  catchAllCellType anyCell
- extends abstractTerminalNode
 arrangeStaticNode
  crux static
  description Add this to the arrange node to import class directly without initiating it for static method testing.
- extends abstractTerminalNode
+ extends abstractArrangeFlagNode
 abstractTestBlockNode
  catchAllCellType anyCell
  javascript
@@ -208,8 +207,8 @@ abstractTestBlockNode
    const executeMethod = isAsync ? "execute" : "executeSync"
    return async equal => {
     this.setEqualMethod(equal)
-    const promises = this.map(async child => {
-     const result = await child[executeMethod](arrangeResult)
+    const promises = this.map(async childAction => {
+     const result = await childAction[executeMethod](arrangeResult)
      return result
     })
     await Promise.all(promises)
@@ -241,7 +240,7 @@ arrangeNode
  javascript
   arrange(programFilepath) {
    const requiredClass = this._getRequiredClass(programFilepath)
-   const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithNode")[0]
+   const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithParagraphNode")[0]
    const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
    return this.has("static") ? requiredClass : new requiredClass(param)
   }
@@ -261,18 +260,15 @@ arrangeNode
    return theClass
   }
   executeSync() {}
- inScope arrangeAsyncNode arrangeRequireNode arrangeStaticNode constructWithNode todoNode
+ inScope arrangeAsyncNode arrangeRequireNode arrangeStaticNode constructWithParagraphNode todoNode
  cells keywordCell
-abstractCommandArgNode
- abstract
+withParagraphNode
+ description Pass in a multiline string as a command arg.
  javascript
   executeSync() {}
-blockStringParamNode
- description Pass in a multiline string as a command arg. #todo: rename
- extends abstractCommandArgNode
- catchAllNodeType textBlockNode
+ catchAllNodeType paragraphLineNode
  cells parameterKeywordCell
- crux blockStringParam
+ crux withParagraph
 actNode
  javascript
   getTestBlock() {
@@ -281,9 +277,9 @@ actNode
   getEqualFn() {
    return this.getTestBlock().getEqualFn()
   }
-  _getArgs() {
-   const argNodes = this.getChildInstancesOfNodeTypeId("abstractCommandArgNode")
-   if (argNodes.length) return argNodes.map(arg => arg.childrenToString())
+  _getActArgs() {
+   const paragraphActNodes = this.getChildInstancesOfNodeTypeId("withParagraphNode")
+   if (paragraphActNodes.length) return paragraphActNodes.map(arg => arg.childrenToString())
    return this.getWordsFrom(1)
   }
   _act(arrangeResult) {
@@ -291,11 +287,11 @@ actNode
    const commandParent = this.getRootNode().getCommandParent(arrangeResult) // todo: hacky.
    const commandFn = commandParent[commandName]
    if (!commandFn) throw new Error(`No function "${commandName}" on "${commandParent.constructor.name}"`)
-   return commandFn.apply(commandParent, this._getArgs())
+   return commandFn.apply(commandParent, this._getActArgs())
   }
   async execute(arrangeResult) {
    await this._act(arrangeResult)
-   return super.execute(arrangeResult) // note: this might not work with closure compiler b/c of bug #2652
+   return Promise.all(this.map(child => child.execute(arrangeResult)))
   }
   executeSync(arrangeResult) {
    const newTestSubject = this._act(arrangeResult)
@@ -304,20 +300,20 @@ actNode
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyCell
  catchAllNodeType actNode
- inScope blockStringParamNode abstractAssertionNode
+ inScope withParagraphNode abstractAssertionNode
  cells commandCell
-constructWithNode
+constructWithParagraphNode
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
- catchAllNodeType textBlockNode
+ catchAllNodeType paragraphLineNode
  cells keywordCell
- crux constructWith
+ crux constructWithParagraph
 errorNode
  baseNodeType errorNode
-textBlockNode
+paragraphLineNode
  catchAllCellType anyCell
- catchAllNodeType textBlockNode
+ catchAllNodeType paragraphLineNode
  cells anyCell
 todoNode
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.

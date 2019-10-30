@@ -3,7 +3,7 @@ arrange
 test willowBasics
  arrange
   require ../products/TreeComponentFramework.node.js WillowProgram
-  constructWith
+  constructWithParagraph
    http://localhost:8000/
  someInputHasFocus
   assertStringIs false
@@ -14,7 +14,7 @@ test willowBasics
  getWindowTitle
   assertStringIs 
  setWindowTitle
-  blockStringParam
+  withParagraph
    new page title
  getWindowTitle
   assertStringIs new page title

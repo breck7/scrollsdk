@@ -2,7 +2,7 @@
 test dumbdownRegression
  arrange
   require ./dumbdown.node.js
-  constructWith
+  constructWithParagraph
    code
     a b
  compile

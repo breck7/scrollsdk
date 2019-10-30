@@ -2,7 +2,7 @@
 test jibjab
  arrange
   require ./jibjab.node.js
-  constructWith
+  constructWithParagraph
    foo
    nodeWithConsts
    nested
@@ -12,7 +12,7 @@ test jibjab
 test errors
  arrange
   require ./jibjab.node.js
-  constructWith
+  constructWithParagraph
    ERRRORRRRR
    comment Hello world. this is a comment.
  getAllErrors

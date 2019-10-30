@@ -2,7 +2,7 @@
 test basics Numbers
  arrange
   require ./numbers.node.js
-  constructWith
+  constructWithParagraph
    comment Should be 5:
    + 2 3
    comment Should be 0:

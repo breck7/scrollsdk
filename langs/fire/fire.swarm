@@ -2,7 +2,7 @@
 test compileFire
  arrange
   require ./fire.node.js
-  constructWith
+  constructWithParagraph
    sum ten 2 3 5
    add ten2 2 3 5
    dumpIdentifier ten
@@ -16,7 +16,7 @@ test compileFire
 test compileRegression
  arrange
   require ./fire.node.js
-  constructWith
+  constructWithParagraph
    #! /usr/bin/env node /usr/local/bin/jtree
  compile
  getAllErrors

@@ -44,8 +44,9 @@ swarmNode
  inScope hashbangNode arrangeNode abstractTestBlockNode
  catchAllNodeType errorNode
  javascript
-  getCommandParent(testSubject) {
-   return testSubject
+  processArranged(arrangedInstance) {
+   // todo: a hacky way to allow extending this language to access any commander on the arranged instance
+   return arrangedInstance
   }
   getArrangeNode() {
    return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
@@ -71,19 +72,19 @@ swarmNode
 abstractAssertionNode
  abstract
  javascript
-  async execute(testSubject) {
-   const finalParts = jtree.Utils.getMethodFromDotPath(testSubject, this.getWord(1))
+  async execute(arrangedInstance) {
+   const finalParts = jtree.Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
    const subject = finalParts[0]
    const command = finalParts[1]
    const actual = subject[command]()
    const actualAsString = this.parseActual(actual).toString()
    const expected = this.getExpected()
-   this.getTestResult(actualAsString, expected, this.getLine())
+   this.getAssertionResult(actualAsString, expected, this.getLine())
   }
   equal(actual, expected, message) {
    this.getParent().getEqualFn()(actual, expected, message)
   }
-  getTestResult(actualAsString, expected, message) {
+  getAssertionResult(actualAsString, expected, message) {
    this.equal(actualAsString, expected, message)
    return actualAsString === expected
   }
@@ -95,7 +96,7 @@ abstractAssertionNode
    const actual = this.parseActual(result)
    const actualIsUndefined = actual === undefined
    const actualAsString = actualIsUndefined ? "undefined" : actual.toString()
-   this.getTestResult(actualAsString, expected, this.getLine())
+   this.getAssertionResult(actualAsString, expected, this.getLine())
   }
   getExpected() {
    return this.getWordsFrom(2).join(" ")
@@ -130,7 +131,7 @@ assertStringExcludesNode
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyCell
  javascript
-  getTestResult(actualAsString, expected, message) {
+  getAssertionResult(actualAsString, expected, message) {
    const result = !actualAsString.includes(expected)
    if (!result) {
     const index = actualAsString.indexOf(expected)
@@ -146,7 +147,7 @@ assertStringIncludesNode
  catchAllCellType anyCell
  description Converts the input to string and see if the string contains the provided string
  javascript
-  getTestResult(actualAsString, expected, message) {
+  getAssertionResult(actualAsString, expected, message) {
    const result = actualAsString.includes(expected)
    this.equal(result, true, message)
    return result
@@ -188,9 +189,6 @@ abstractTestBlockNode
   getArrangeNode() {
    return this.getNode("arrange") || this.getParent().getArrangeNode()
   }
-  isAsync() {
-   return this.getArrangeNode().has("async")
-  }
   setEqualMethod(equal) {
    this._equal = equal
    return this
@@ -202,13 +200,13 @@ abstractTestBlockNode
    return this._equal
   }
   toTestRacerFunction(programFilepath) {
-   const arrangeResult = this.getArrangeNode().arrange(programFilepath)
-   const isAsync = this.isAsync()
-   const executeMethod = isAsync ? "execute" : "executeSync"
+   const arrangeNode = this.getArrangeNode()
+   const arrangedInstance = arrangeNode.arrange(programFilepath)
+   const executeMethod = arrangeNode.isAsync() ? "execute" : "executeSync"
    return async equal => {
     this.setEqualMethod(equal)
     const promises = this.map(async childAction => {
-     const result = await childAction[executeMethod](arrangeResult)
+     const result = await childAction[executeMethod](arrangedInstance)
      return result
     })
     await Promise.all(promises)
@@ -238,6 +236,9 @@ hashbangNode
 arrangeNode
  crux arrange
  javascript
+  isAsync() {
+    return this.has("async")
+  }
   arrange(programFilepath) {
    const requiredClass = this._getRequiredClass(programFilepath)
    const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithParagraphNode")[0]
@@ -282,19 +283,19 @@ actNode
    if (paragraphActNodes.length) return paragraphActNodes.map(arg => arg.childrenToString())
    return this.getWordsFrom(1)
   }
-  _act(arrangeResult) {
-   const commandName = this.getFirstWord()
-   const commandParent = this.getRootNode().getCommandParent(arrangeResult) // todo: hacky.
-   const commandFn = commandParent[commandName]
-   if (!commandFn) throw new Error(`No function "${commandName}" on "${commandParent.constructor.name}"`)
-   return commandFn.apply(commandParent, this._getActArgs())
+  _act(arrangedInstance) {
+   const arrangedInstanceCommander = this.getRootNode().processArranged(arrangedInstance) // todo: hacky.
+   const actionMethodName = this.getFirstWord()
+   const actionMethod = arrangedInstanceCommander[actionMethodName]
+   if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstanceCommander.constructor.name}"`)
+   return actionMethod.apply(arrangedInstanceCommander, this._getActArgs())
   }
-  async execute(arrangeResult) {
-   await this._act(arrangeResult)
-   return Promise.all(this.map(child => child.execute(arrangeResult)))
+  async execute(arrangedInstance) {
+   await this._act(arrangedInstance)
+   return Promise.all(this.map(child => child.execute(arrangedInstance)))
   }
-  executeSync(arrangeResult) {
-   const newTestSubject = this._act(arrangeResult)
+  executeSync(arrangedInstance) {
+   const newTestSubject = this._act(arrangedInstance)
    return this.map(child => child.executeSync(newTestSubject))
   }
  description Input is an object, and calls some method with an optional array of string args.

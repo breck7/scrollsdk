@@ -106,32 +106,28 @@ class AbstractBuilder extends jtree.TreeNode {
   }
 
   makeGrammarFileTestTree(grammarPath: treeNotationTypes.grammarFilePath) {
-    // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
+    // todo: can we ditch these dual tests at some point? ideally Grammar should be bootstrapped correct?
     const testTree: any = {}
-    testTree[`hardCodedGrammarCheckOf${grammarPath}`] = (equal: Function) => {
-      // Arrange/Act
-      const program = new jtree.GrammarProgram(Disk.read(grammarPath))
+    const checkGrammarFile = (equal: Function, program: any) => {
+      // Act
       const errs = program.getAllErrors()
-      const exampleErrors = program.getErrorsInGrammarExamples()
-
+      if (errs.length) console.log(errs.join("\n"))
       //Assert
       equal(errs.length, 0, "should be no errors")
-      if (errs.length) console.log(errs.join("\n"))
+    }
 
+    const checkGrammarExamples = (equal: Function, program: any) => {
+      // Act
+      const exampleErrors = program.getErrorsInGrammarExamples()
       if (exampleErrors.length) console.log(exampleErrors)
+
+      // Assert
       equal(exampleErrors.length, 0, exampleErrors.length ? "examples errs: " + exampleErrors : "no example errors")
     }
 
-    testTree[`grammarGrammarCheckOf${grammarPath}`] = (equal: Function) => {
-      // Arrange/Act
-      const program = jtree.makeProgram(grammarPath, __dirname + "/../langs/grammar/grammar.grammar")
-      const errs = program.getAllErrors()
-
-      //Assert
-
-      equal(errs.length, 0, "should be no errors")
-      if (errs.length) console.log(errs.join("\n"))
-    }
+    testTree[`grammarTypeScriptImplementationCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, new jtree.GrammarProgram(Disk.read(grammarPath)))
+    testTree[`grammarGrammarImplementationCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, jtree.makeProgram(grammarPath, __dirname + "/../langs/grammar/grammar.grammar"))
+    testTree[`examplesInGrammarCheckForGrammarTypeScriptImplementationCheckOf${grammarPath}`] = (equal: Function) => checkGrammarExamples(equal, new jtree.GrammarProgram(Disk.read(grammarPath)))
 
     return testTree
   }

@@ -676,7 +676,7 @@ class TestRacer {
     if (!Object.keys(this._sessionFilesFailed).length) return ""
     return `
  failures
-${new TreeNode(this._sessionFilesFailed).toString(2)}`
+${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach(line => line.deleteWordAt(0))).toString(2)}`
   }
   _emitSessionFinishMessage() {
     this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
@@ -4237,6 +4237,8 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
       GrammarConstants.root,
+      GrammarConstants._extendsJsClass,
+      GrammarConstants._rootNodeJsHeader,
       GrammarConstants.javascript,
       GrammarConstants.compilesTo,
       GrammarConstants.abstract,

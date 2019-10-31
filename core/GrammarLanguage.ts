@@ -1477,6 +1477,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
       GrammarConstants.root,
+      GrammarConstants._extendsJsClass,
+      GrammarConstants._rootNodeJsHeader,
       GrammarConstants.javascript,
       GrammarConstants.compilesTo,
       GrammarConstants.abstract,

@@ -124,7 +124,7 @@ ${grammars.toTable()}`
   _checkAndLog(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const errors = this._check(programPath)
-    return `Checking "${programPath}" with grammar "${grammarPath}"...
+    return `Checking "${programPath}" with grammar "${grammarPath}"
 ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
   _check(programPath) {

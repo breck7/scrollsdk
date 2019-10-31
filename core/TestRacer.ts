@@ -35,9 +35,15 @@ class TestRacerTestBlock {
     try {
       await this._testFn(assertEqual)
     } catch (err) {
-      failures.push(["1", "0", `Should not have uncaught errors but in ${this._testName} got: ${err}`])
-      // todo: figure out the strategy here to get call stack and all that. what do other things do?
-      throw err
+      failures.push([
+        "1",
+        "0",
+        `Should not have uncaught errors but in ${this._testName} got error:
+ toString:
+  ${new TreeNode(err.toString()).toString(2)}
+ stack:
+  ${new TreeNode(err.stack).toString(2)}`
+      ])
     }
     failures.length ? this._emitBlockFailedMessage(failures) : this._emitBlockPassedMessage(passes)
     return {
@@ -82,6 +88,10 @@ class TestRacerFile {
     return this._runner
   }
 
+  getFileName() {
+    return this._fileName
+  }
+
   get length() {
     return Object.values(this._testTree).length
   }
@@ -107,10 +117,10 @@ class TestRacerFile {
     const tests = this._filterSkippedTests()
     this._emitStartFileMessage(tests.length)
     const fileTimer = new TreeUtils.Timer()
-    const blockResults: any[] = []
+    const blockResults: { [blockName: string]: Object } = {}
     const blockPromises = tests.map(async testName => {
       const results = await this._testTree[testName].execute()
-      blockResults.push(results)
+      blockResults[testName] = results
     })
 
     await Promise.all(blockPromises)
@@ -120,18 +130,22 @@ class TestRacerFile {
     return fileStats
   }
 
-  private _aggregateBlockResultsIntoFileResults(fileBlockResults: any[]) {
-    const fileStats = {
+  private _aggregateBlockResultsIntoFileResults(fileBlockResults: { [blockName: string]: Object }) {
+    const fileStats: any = {
       assertionsPassed: 0,
       assertionsFailed: 0,
       blocksPassed: 0,
-      blocksFailed: 0
+      blocksFailed: 0,
+      failedBlocks: []
     }
-    fileBlockResults.forEach((results: any) => {
+    Object.keys(fileBlockResults).forEach((blockName: string) => {
+      const results: any = fileBlockResults[blockName]
       fileStats.assertionsPassed += results.passes.length
       fileStats.assertionsFailed += results.failures.length
-      if (results.failures.length) fileStats.blocksFailed++
-      else fileStats.blocksPassed++
+      if (results.failures.length) {
+        fileStats.blocksFailed++
+        fileStats.failedBlocks.push(blockName)
+      } else fileStats.blocksPassed++
     })
     return fileStats
   }
@@ -168,26 +182,28 @@ class TestRacer {
   private _logFunction: Function = console.log
   private _timer = new TreeUtils.Timer()
   private _sessionFilesPassed = 0
-  private _sessionFilesFailed = 0
+  private _sessionFilesFailed: any = {}
   private _sessionBlocksFailed = 0
   private _sessionBlocksPassed = 0
   private _sessionAssertionsFailed = 0
   private _sessionAssertionsPassed = 0
 
-  _addFileResultsToSessionResults(fileStats: any) {
+  private _addFileResultsToSessionResults(fileStats: any, fileName: string) {
     this._sessionAssertionsPassed += fileStats.assertionsPassed
     this._sessionAssertionsFailed += fileStats.assertionsFailed
     this._sessionBlocksPassed += fileStats.blocksPassed
     this._sessionBlocksFailed += fileStats.blocksFailed
     if (!fileStats.blocksFailed) this._sessionFilesPassed++
-    else this._sessionFilesFailed++
+    else {
+      this._sessionFilesFailed[fileName] = fileStats.failedBlocks
+    }
   }
 
   async execute() {
     this._emitSessionPlanMessage()
     const proms = Object.values(this._fileTestTree).map(async testFile => {
       const results = await testFile.execute()
-      this._addFileResultsToSessionResults(results)
+      this._addFileResultsToSessionResults(results, testFile.getFileName())
     })
     await Promise.all(proms)
     return this
@@ -213,6 +229,13 @@ class TestRacer {
     this._emitMessage(`${this.length} files and ${blocks} blocks to run. ${skippedLength} skipped blocks.`)
   }
 
+  private _getFailures() {
+    if (!Object.keys(this._sessionFilesFailed).length) return ""
+    return `
+ failures
+${new TreeNode(this._sessionFilesFailed).toString(2)}`
+  }
+
   private _emitSessionFinishMessage() {
     this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
  passed
@@ -220,9 +243,9 @@ class TestRacer {
   ${this._sessionBlocksPassed} blocks
   ${this._sessionAssertionsPassed} assertions
  failed
-  ${this._sessionFilesFailed} files
+  ${Object.keys(this._sessionFilesFailed).length} files
   ${this._sessionBlocksFailed} blocks
-  ${this._sessionAssertionsFailed} assertions`)
+  ${this._sessionAssertionsFailed} assertions${this._getFailures()}`)
   }
 
   static async testSingleFile(fileName: string, testTree: treeNotationTypes.testTree) {

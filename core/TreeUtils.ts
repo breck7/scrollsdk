@@ -36,6 +36,7 @@ class TreeUtils {
   static findProjectRoot(dirName: string, projectName: string) {
     const fs = require("fs")
     const getProjectName = (dirName: string) => {
+      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}"`)
       const parts = dirName.split("/")
       const filename = parts.join("/") + "/" + "package.json"
       if (fs.existsSync(filename) && JSON.parse(fs.readFileSync(filename, "utf8")).name === projectName) return parts.join("/") + "/"
@@ -85,7 +86,9 @@ class TreeUtils {
   static getMethodFromDotPath(context: any, str: string) {
     const methodParts = str.split(".")
     while (methodParts.length > 1) {
-      context = context[methodParts.shift()]()
+      const methodName = methodParts.shift()
+      if (!context[methodName]) throw new Error(`${methodName} is not a method on ${context}`)
+      context = context[methodName]()
     }
     const final = methodParts.shift()
     return [context, final]
@@ -205,7 +208,7 @@ class TreeUtils {
     })
     return Object.values(rows)
   }
-  static _getParentFolder(path: string) {
+  static getParentFolder(path: string) {
     if (path.endsWith("/")) path = this._removeLastSlash(path)
     return path.replace(/\/[^\/]*$/, "") + "/"
   }

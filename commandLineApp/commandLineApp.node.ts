@@ -43,7 +43,7 @@ class CommandLineApp {
         return new Builder().main(buildCommandName, argument)
       }
       if (Disk.exists(filePath)) break
-      dir = Utils._getParentFolder(dir)
+      dir = Utils.getParentFolder(dir)
     }
     if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
 
@@ -175,6 +175,14 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return this._getGrammarPathByGrammarNameOrThrow(extension)
   }
 
+  _getGrammarCompiledExecutablePath(programPath: treeNotationTypes.treeProgramFilePath) {
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
+    const extension = Utils.getFileExtension(programPath)
+    const dir = Utils.getParentFolder(grammarPath)
+    const compiledPath = dir + extension + ".nodejs.js"
+    if (Disk.exists(compiledPath)) return compiledPath
+  }
+
   sandbox(port = 3333) {
     const { SandboxServer } = require("../products/SandboxServer.node.js")
     const server = new SandboxServer()
@@ -278,7 +286,15 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   private async _executeFile(programPath: treeNotationTypes.treeProgramFilePath) {
-    const result = await jtree.executeFile(programPath, this._getGrammarPathOrThrow(programPath))
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
+    const executablePath = this._getGrammarCompiledExecutablePath(programPath)
+    if (executablePath) {
+      const programConstructor = require(executablePath)
+      const program = new programConstructor(Disk.read(programPath))
+      const result = await program.execute()
+      return result
+    }
+    const result = await jtree.executeFile(programPath, grammarPath)
     return result
   }
 

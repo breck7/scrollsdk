@@ -31,7 +31,7 @@ class CommandLineApp {
         return new Builder().main(buildCommandName, argument)
       }
       if (Disk.exists(filePath)) break
-      dir = Utils._getParentFolder(dir)
+      dir = Utils.getParentFolder(dir)
     }
     if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
     return execSync([filePath, buildCommandName, argument].filter(commandWord => commandWord).join(" "), { encoding: "utf8" })
@@ -139,6 +139,13 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     const extension = Utils.getFileExtension(programPath)
     return this._getGrammarPathByGrammarNameOrThrow(extension)
   }
+  _getGrammarCompiledExecutablePath(programPath) {
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
+    const extension = Utils.getFileExtension(programPath)
+    const dir = Utils.getParentFolder(grammarPath)
+    const compiledPath = dir + extension + ".nodejs.js"
+    if (Disk.exists(compiledPath)) return compiledPath
+  }
   sandbox(port = 3333) {
     const { SandboxServer } = require("../products/SandboxServer.node.js")
     const server = new SandboxServer()
@@ -227,7 +234,15 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     Disk.appendAsync(logFilePath, line, () => {})
   }
   async _executeFile(programPath) {
-    const result = await jtree.executeFile(programPath, this._getGrammarPathOrThrow(programPath))
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
+    const executablePath = this._getGrammarCompiledExecutablePath(programPath)
+    if (executablePath) {
+      const programConstructor = require(executablePath)
+      const program = new programConstructor(Disk.read(programPath))
+      const result = await program.execute()
+      return result
+    }
+    const result = await jtree.executeFile(programPath, grammarPath)
     return result
   }
   _executeSync(programPath) {

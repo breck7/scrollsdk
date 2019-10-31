@@ -2011,6 +2011,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this._cache_compiledLoadedNodeTypes
   }
 
+  // todo: hacky, remove
   private _dirName: string
   _setDirName(name: string) {
     this._dirName = name

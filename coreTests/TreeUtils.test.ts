@@ -28,13 +28,13 @@ testTree.getLineIndexAtCharacterPosition = equal => {
 
 testTree.getParentFolder = equal => {
   // Arrange/Act/Assert
-  equal(jtree.Utils._getParentFolder(`foobar/FooBam.js`), "foobar/")
-  equal(jtree.Utils._getParentFolder(`/`), "/")
-  equal(jtree.Utils._getParentFolder(`/bam`), "/")
-  equal(jtree.Utils._getParentFolder(`/bam/`), "/")
-  equal(jtree.Utils._getParentFolder(`/bam/boom`), "/bam/")
-  equal(jtree.Utils._getParentFolder(`/bam/boom/`), "/bam/")
-  equal(jtree.Utils._getParentFolder(`/bam/boom/bah`), "/bam/boom/")
+  equal(jtree.Utils.getParentFolder(`foobar/FooBam.js`), "foobar/")
+  equal(jtree.Utils.getParentFolder(`/`), "/")
+  equal(jtree.Utils.getParentFolder(`/bam`), "/")
+  equal(jtree.Utils.getParentFolder(`/bam/`), "/")
+  equal(jtree.Utils.getParentFolder(`/bam/boom`), "/bam/")
+  equal(jtree.Utils.getParentFolder(`/bam/boom/`), "/bam/")
+  equal(jtree.Utils.getParentFolder(`/bam/boom/bah`), "/bam/boom/")
 }
 
 testTree.getUniqueWordsArray = equal => {

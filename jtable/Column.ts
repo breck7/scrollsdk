@@ -962,7 +962,6 @@ class Column {
 
   private _createSummaryVector(): jTableTypes.summaryVector {
     const values: any = []
-    const name = this.getColumnName()
     const map = new Map()
     let incompleteCount = 0
     let uniques = 0

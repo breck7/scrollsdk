@@ -3,8 +3,10 @@
 - New: toBraid and toSideBySide methods
 - New: toStringWithLineNumbers method
 - Fix: sweepercraft perf fix
+- Fix: table derived tables from column filtering fix
 - Breaking: removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
 - Breaking: format() is now evalTemplateString()
+- Breaking: getTopNodeTypeIds is now getTopNodeTypeDefinitions
 - Breaking: commandLineApp.prettify is now format
 - Breaking: in swarm: blockStringParam is now withParagraph. blockStringIs to assertParagraphIs, lengthIs:assertLengthIs, stringExcludes:assertStringExcludes, stringIncludes:assertStringIncludes, typeIs:assertTypeIs. constructWithBlockString to constructWithParagraph. arrangeTestSubject to arrange.
 - Infra: Created TestRacer and moved tests and swarm to that

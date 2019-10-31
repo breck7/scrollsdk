@@ -51,11 +51,16 @@ testTree.vegaTest = equal => {
 
 testTree.filterTest = equal => {
   // Arrange
-  const table = new Table(jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.waterBill), [{ source: "PaidOn", name: "year", type: "year" }])
-  // Act
-  const res = table.filterClonedRowsByScalar("year", ComparisonOperators.greaterThan, "2018")
+  const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.waterBill)
+  const table = new Table(data, [{ source: "PaidOn", name: "year", type: "year" }])
+
   // Assert
-  equal(res.getRowCount(), 3)
+  equal(table.getTableColumnByName("year").getReductions().count, 16, "expected rows")
+  // Act
+  const newTable = table.filterClonedRowsByScalar("year", ComparisonOperators.greaterThan, "2018")
+  // Assert
+  equal(newTable.getRowCount(), 3, "rows filtered")
+  equal(newTable.getTableColumnByName("year").getReductions().count, 3, "reductions should be correct")
 }
 
 testTree.timeTest = equal => {

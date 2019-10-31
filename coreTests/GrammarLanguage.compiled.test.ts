@@ -123,7 +123,7 @@ testTree.numbers = equal => {
     equal(program.getAllErrors().length, 0, "no errors found")
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 
-    equal(firstNode.getDefinition().getLineHints(), "addNode: operatorCell numbersCell...", "line hints work")
+    equal(firstNode.getDefinition().getLineHints(), "+: operatorCell numbersCell...", "line hints work")
     equal(program.getInPlaceCellTypeTree(), runtimeProgram.getInPlaceCellTypeTree(), "cell types worked")
 
     // Arrange/Act/Assert

@@ -33,5 +33,5 @@ test swarmSample
   assertLengthIs 2
  getNodeTypeDefinitionByNodeTypeId toNode
   assertTypeIs object
- getTopNodeTypeIds
+ getTopNodeTypeDefinitions
   assertLengthIs 3

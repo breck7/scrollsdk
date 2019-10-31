@@ -1300,7 +1300,7 @@ abstract class AbstractCellParser {
   // todo: improve layout (use bold?)
   getLineHints(): string {
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
-    const nodeTypeId = this._definition._getId() // todo: cleanup
+    const nodeTypeId = this._definition.get(GrammarConstants.crux) || this._definition._getId() // todo: cleanup
     return `${nodeTypeId}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
 
@@ -1648,11 +1648,11 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return result
   }
 
-  getTopNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
+  getTopNodeTypeDefinitions(): nodeTypeDefinitionNode[] {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
     arr.sort(TreeUtils.makeSortByFn((definition: nodeTypeDefinitionNode) => definition.getFrequency()))
     arr.reverse()
-    return arr.map(definition => definition.getNodeTypeIdFromDefinition())
+    return arr
   }
 
   _getMyInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {

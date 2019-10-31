@@ -29,7 +29,7 @@ test grammarSample
   assertLengthIs 2
  getNodeTypeDefinitionByNodeTypeId toNode
   assertTypeIs object
- getTopNodeTypeIds
+ getTopNodeTypeDefinitions
   assertLengthIs 3
  getExtensionName
   assertStringIs testlang

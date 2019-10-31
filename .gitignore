@@ -12,3 +12,4 @@ jtree.browser.ts
 syntax.sh
 *.d.ts
 builder.js
+sublime/

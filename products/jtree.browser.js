@@ -538,7 +538,8 @@ class TestRacerTestBlock {
     this._emitMessage(
       failures
         .map(failure => {
-          const actual = new jtree.TreeNode(`actual\n${new jtree.TreeNode(failure[0].toString()).toString(1)}`)
+          const actualVal = failure[0] === undefined ? "undefined" : failure[0].toString()
+          const actual = new jtree.TreeNode(`actual\n${new jtree.TreeNode(actualVal).toString(1)}`)
           const expected = new jtree.TreeNode(`expected\n${new jtree.TreeNode(failure[1].toString()).toString(1)}`)
           const comparison = actual.toComparison(expected)
           return new jtree.TreeNode(` assertion ${failure[2]}\n${comparison.toSideBySide([actual, expected]).toString(2)}`)
@@ -4090,7 +4091,7 @@ class AbstractCellParser {
   // todo: improve layout (use bold?)
   getLineHints() {
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
-    const nodeTypeId = this._definition._getId() // todo: cleanup
+    const nodeTypeId = this._definition.get(GrammarConstants.crux) || this._definition._getId() // todo: cleanup
     return `${nodeTypeId}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
   getRequiredCellTypeIds() {
@@ -4380,11 +4381,11 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       })
     return result
   }
-  getTopNodeTypeIds() {
+  getTopNodeTypeDefinitions() {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
     arr.sort(TreeUtils.makeSortByFn(definition => definition.getFrequency()))
     arr.reverse()
-    return arr.map(definition => definition.getNodeTypeIdFromDefinition())
+    return arr
   }
   _getMyInScopeNodeTypeIds() {
     const nodeTypesNode = this.getNode(GrammarConstants.inScope)

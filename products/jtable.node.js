@@ -758,7 +758,6 @@ class Column {
   }
   _createSummaryVector() {
     const values = []
-    const name = this.getColumnName()
     const map = new Map()
     let incompleteCount = 0
     let uniques = 0
@@ -2172,7 +2171,7 @@ class Table {
     return Table._uniqueId
   }
   _registerColumn(col) {
-    this._columnsMap[col.name] = new Column(col, this._getColumnValuesFromSourceAsAnyVector(col.name))
+    this._columnsMap[col.name] = new Column(col, this._getColumnValuesFromSourceAsAnyVector(col.source || col.name))
     return this
   }
   _getColumnValuesFromSourceAsAnyVector(columnName) {
@@ -2252,7 +2251,7 @@ class Table {
         if (comparisonOperator === ComparisonOperators.lessThanOrEqual) return rowTypedValue <= typedScalarValue
         if (comparisonOperator === ComparisonOperators.greaterThanOrEqual) return rowTypedValue >= typedScalarValue
       }),
-      this.getColumnsMap(),
+      this.getColumnsArrayOfObjects(),
       undefined,
       false
     )

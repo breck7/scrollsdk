@@ -941,7 +941,16 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
   _onCommandWillRun() {
     // todo: remove. currently used by ohayo
   }
-  _getCommandArguments(stumpNode) {
+  _getCommandArguments(stumpNode, commandMethod) {
+    if (commandMethod.includes(" ")) {
+      // todo: cleanup and document
+      // It seems the command arguments can from the method string or from form values.
+      const parts = commandMethod.split(" ")
+      return {
+        uno: parts[1],
+        dos: parts[2]
+      }
+    }
     const shadow = stumpNode.getShadow()
     let valueParam
     if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
@@ -971,7 +980,10 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return clone.toString()
   }
   async _executeStumpNodeCommand(stumpNode, commandMethod) {
-    const params = this._getCommandArguments(stumpNode)
+    const params = this._getCommandArguments(stumpNode, commandMethod)
+    if (commandMethod.includes(" "))
+      // todo: cleanup
+      commandMethod = commandMethod.split(" ")[0]
     this.addToCommandLog([commandMethod, params.uno, params.dos].filter(item => item).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
     let treeComponent = stumpNode.getStumpNodeTreeComponent()
@@ -1116,7 +1128,11 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
  class ${this.getCssClassNames()}`
   }
   getCssClassNames() {
-    return this.constructor.name
+    const classes = this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent").concat(this.getAdditionalCssClasses())
+    return classes.join(" ")
+  }
+  getAdditionalCssClasses() {
+    return []
   }
   treeComponentWillMount() {}
   treeComponentDidMount() {

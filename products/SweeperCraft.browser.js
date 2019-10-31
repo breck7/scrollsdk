@@ -32,11 +32,6 @@ class SweeperCraftGame {
     else if (this.isWon()) return "You won!"
     return " "
   }
-  getGameStateClass() {
-    if (this.isLost()) return "gameLost"
-    else if (this.isWon()) return "gameWon"
-    return ""
-  }
   getBoard() {
     return this._board
   }
@@ -609,8 +604,10 @@ githubTriangleComponent`
     }
     this._mainGame._render()
   }
-  getCssClassNames() {
-    return `${this._mainGame.getGameStateClass()} ${super.getCssClassNames()}`
+  getAdditionalCssClasses() {
+    if (this._mainGame.isLost()) return ["gameLost"]
+    else if (this._mainGame.isWon()) return ["gameWon"]
+    return []
   }
   _firstRender(stumpNode) {
     window.addEventListener("error", err => {
@@ -710,8 +707,8 @@ class boardComponent extends AbstractSweeperCraftComponent {
       ? "over"
       : "playing"
   }
-  getCssClassNames() {
-    return `${this._getCssGameClass()} ${super.getCssClassNames()}`
+  getAdditionalCssClasses() {
+    return [this._getCssGameClass()]
   }
 }
 class rowComponent extends AbstractTreeComponent {
@@ -759,7 +756,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
   get hasBomb() {
     return this.game.hasBomb(this.getRow(), this.getColumn())
   }
-  getCssClassNames() {
+  getAdditionalCssClasses() {
     const game = this.game
     const wasClicked = this.wasClicked
     const isLost = game.isLost()
@@ -767,16 +764,14 @@ class squareComponent extends AbstractSweeperCraftComponent {
     const neighborBombCount = this.neighborBombCount
     const isFlagged = this.isFlagged
     const hasBomb = this.hasBomb
-    let classNames = "squareComponent "
-    if (!wasClicked && isLost && shouldReveal) classNames += hasBomb ? "bomb " : ""
-    else if (wasClicked && hasBomb) classNames += "bomb "
+    let classNames = []
+    if (!wasClicked && isLost && shouldReveal && hasBomb) classNames.push("bomb")
+    else if (wasClicked && hasBomb) classNames.push("bomb")
     if (wasClicked) {
-      classNames += "clicked "
-      if (!hasBomb) {
-        classNames += "b" + neighborBombCount + " "
-      }
+      classNames.push("clicked")
+      if (!hasBomb) classNames.push("b" + neighborBombCount)
     }
-    if (isFlagged && !wasClicked) classNames += "flagged "
+    if (isFlagged && !wasClicked) classNames.push("flagged")
     return classNames
   }
 }

@@ -1236,7 +1236,16 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     // todo: remove. currently used by ohayo
   }
 
-  _getCommandArguments(stumpNode: any) {
+  private _getCommandArguments(stumpNode: any, commandMethod: string) {
+    if (commandMethod.includes(" ")) {
+      // todo: cleanup and document
+      // It seems the command arguments can from the method string or from form values.
+      const parts = commandMethod.split(" ")
+      return {
+        uno: parts[1],
+        dos: parts[2]
+      }
+    }
     const shadow = stumpNode.getShadow()
     let valueParam
     if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
@@ -1271,7 +1280,10 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   async _executeStumpNodeCommand(stumpNode: any, commandMethod: string) {
-    const params = this._getCommandArguments(stumpNode)
+    const params = this._getCommandArguments(stumpNode, commandMethod)
+    if (commandMethod.includes(" "))
+      // todo: cleanup
+      commandMethod = commandMethod.split(" ")[0]
     this.addToCommandLog([commandMethod, params.uno, params.dos].filter(item => item).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
 
@@ -1445,7 +1457,12 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   getCssClassNames() {
-    return this.constructor.name
+    const classes = this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent").concat(this.getAdditionalCssClasses())
+    return classes.join(" ")
+  }
+
+  getAdditionalCssClasses(): string[] {
+    return []
   }
 
   treeComponentWillMount() {}

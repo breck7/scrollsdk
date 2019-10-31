@@ -361,6 +361,18 @@ class TreeNode extends AbstractNode {
     return parent.isRoot() ? this : parent.getFirstAncestor()
   }
 
+  _getJavascriptPrototypeChainUpTo(stopAtClassName = "TreeNode") {
+    // todo: cross browser test this
+    let constructor: any = this.constructor
+    const chain: string[] = []
+    while (constructor.name !== stopAtClassName) {
+      chain.unshift(constructor.name)
+      constructor = constructor.__proto__
+    }
+    chain.unshift(stopAtClassName)
+    return chain
+  }
+
   _getProjectRootDir(): string {
     return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
   }

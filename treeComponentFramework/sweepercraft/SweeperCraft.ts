@@ -752,10 +752,11 @@ githubTriangleComponent`
     this._mainGame._render()
   }
 
-  getAdditionalCssClasses() {
-    if (this._mainGame.isLost()) return ["gameLost"]
-    else if (this._mainGame.isWon()) return ["gameWon"]
-    return []
+  getCssClasses() {
+    const classes = super.getCssClasses()
+    if (this._mainGame.isLost()) classes.push("gameLost")
+    else if (this._mainGame.isWon()) classes.push("gameWon")
+    return classes
   }
 
   private _firstRender(stumpNode: any) {
@@ -879,8 +880,8 @@ class boardComponent extends AbstractSweeperCraftComponent {
       : "playing"
   }
 
-  getAdditionalCssClasses() {
-    return [this._getCssGameClass()]
+  getCssClasses() {
+    return super.getCssClasses().concat([this._getCssGameClass()])
   }
 }
 
@@ -901,7 +902,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
  stumpOnClickCommand clickSquareCommand ${row} ${col}
  stumpOnShiftClickCommand flagSquareCommand ${row} ${col}
  stumpOnContextMenuCommand flagSquareCommand ${row} ${col}
- class ${this.getCssClassNames()}`
+ class ${this.getCssClassNames().join(" ")}`
   }
 
   _syncBoardToGame() {
@@ -942,7 +943,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
     return this.game.hasBomb(this.getRow(), this.getColumn())
   }
 
-  getAdditionalCssClasses() {
+  getCssClassNames() {
     const game = this.game
     const wasClicked = this.wasClicked
     const isLost = game.isLost()
@@ -963,7 +964,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
 
     if (isFlagged && !wasClicked) classNames.push("flagged")
 
-    return classNames
+    return super.getCssClassNames().concat(classNames)
   }
 }
 

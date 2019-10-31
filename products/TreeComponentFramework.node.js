@@ -1130,14 +1130,10 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
   toStumpCode() {
     return `div
- class ${this.getCssClassNames()}`
+ class ${this.getCssClassNames().join(" ")}`
   }
   getCssClassNames() {
-    const classes = this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent").concat(this.getAdditionalCssClasses())
-    return classes.join(" ")
-  }
-  getAdditionalCssClasses() {
-    return []
+    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent")
   }
   treeComponentWillMount() {}
   treeComponentDidMount() {

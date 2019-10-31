@@ -153,8 +153,11 @@ ${grammars.toTable()}`
   }
 
   _checkAndLog(programPath: treeNotationTypes.treeProgramFilePath) {
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
     const errors = this._check(programPath)
-    return `${errors.length} errors for ${programPath}${errors.length ? "\n" + errors.join("\n") : ""}`
+
+    return `Checking "${programPath}" with grammar "${grammarPath}"
+${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   _check(programPath: treeNotationTypes.treeProgramFilePath) {

@@ -6,7 +6,7 @@
 - Breaking: removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
 - Breaking: format() is now evalTemplateString()
 - Breaking: commandLineApp.prettify is now format
-- Breaking: in swarm: blockStringParam is now withParagraph. Added assert prefix to all assertion nodes. constructWithBlockString to constructWithParagraph. arrangeTestSubject to arrange.
+- Breaking: in swarm: blockStringParam is now withParagraph. blockStringIs to assertParagraphIs, lengthIs:assertLengthIs, stringExcludes:assertStringExcludes, stringIncludes:assertStringIncludes, typeIs:assertTypeIs. constructWithBlockString to constructWithParagraph. arrangeTestSubject to arrange.
 - Infra: Created TestRacer and moved tests and swarm to that
 - Infra: removed qunit, tap, and tap mocha dependencies
 

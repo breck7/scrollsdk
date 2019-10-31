@@ -340,6 +340,18 @@ nodeTypeDefinitionNode
  catchAllNodeType catchAllErrorNode
  inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
  cells nodeTypeIdCell
+_extendsJsClassNode
+ extends abstractNodeTypeRuleNode
+ todo remove
+ description Deprecated
+ cells propertyKeywordCell anyCell
+ crux _extendsJsClass
+_rootNodeJsHeaderNode
+ extends abstractNodeTypeRuleNode
+ todo remove
+ description Deprecated
+ catchAllNodeType catchAllJavascriptCodeLineNode
+ crux _rootNodeJsHeader
 regexNode
  catchAllCellType regexCell
  description The word must match this pattern or it shall be marked as an error.

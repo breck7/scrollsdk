@@ -122,8 +122,10 @@ ${grammars.toTable()}`
     return files.map(file => this._checkAndLog(file)).join("\n")
   }
   _checkAndLog(programPath) {
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
     const errors = this._check(programPath)
-    return `${errors.length} errors for ${programPath}${errors.length ? "\n" + errors.join("\n") : ""}`
+    return `Checking "${programPath}" with grammar "${grammarPath}"...
+${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
   _check(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)

@@ -73,6 +73,9 @@ abstractAssertionNode
  abstract
  javascript
   async execute(arrangedInstance) {
+   //todo: refactor. there is clearly a difference between sync and async that we are not
+   // documenting. seems like async and sync have different cellTypes. the former requires
+   // a method to get the result.
    const finalParts = jtree.Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
    const subject = finalParts[0]
    const command = finalParts[1]

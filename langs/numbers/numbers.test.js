@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 const numbers = require("./numbers.node.js")
+const { jtree } = require("../../index.js")
 
 const testTree = {}
 
@@ -17,5 +18,5 @@ testTree.all = equal => {
   equal(new numbers(`+ 2 2 1 1`).executeSync().join(""), `6`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../../index.js").jtree.Utils.runTestTree(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+module.exports = { testTree }

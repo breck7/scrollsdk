@@ -1,8 +1,8 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test basics jibberish
- arrangeTestSubject
+ arrange
   require ./jibberish.node.js
-  constructWithBlockString
+  constructWithParagraph
    foo
    nodeWithConsts
    nested
@@ -14,4 +14,4 @@ test basics jibberish
     echo hello world
    xColumnName gender
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0

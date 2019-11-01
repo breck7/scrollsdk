@@ -14,7 +14,7 @@ testTree.combineTests = equal => {
   const combined = jtree.combineFiles([__dirname + "/*.swarm"])
 
   // Act/Assert
-  equal(combined.toString().includes("constructWithBlockString"), true, "Included something from a swarm file")
+  equal(combined.toString().includes("constructWithParagraph"), true, "Included something from a swarm file")
 }
 
 testTree.diskTests = equal => {
@@ -39,6 +39,26 @@ testTree.diskTests = equal => {
   equal(Disk.exists(path), false, "file does not exist")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+testTree.findProjectRoot = equal => {
+  const dir = jtree.Utils.findProjectRoot(__dirname, "jtree")
+  equal(typeof dir, "string")
+  equal(dir.includes("coreTests"), false, "correct parent dir selected")
+
+  try {
+    const result = jtree.Utils.findProjectRoot("/foo/bar/", "jtree")
+    equal(result, false, "error should have been thrown")
+  } catch (err) {
+    equal(true, true, "error thrown")
+  }
+
+  try {
+    jtree.Utils.findProjectRoot(__dirname + "/../", "fakeproject")
+    equal(true, false, "error should have been thrown")
+  } catch (err) {
+    equal(true, true, "error thrown")
+  }
+}
+
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

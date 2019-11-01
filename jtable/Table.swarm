@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
+arrange
 test basics
- arrangeTestSubject
+ arrange
   require ../products/jtable.node.js Table
  getRows
-  lengthIs 0
+  assertLengthIs 0

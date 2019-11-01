@@ -9,15 +9,15 @@ compile programPath targetExtension Compile a file
 compileCheck folderPath grammarName Test all compiler test cases in a given folder
 create   Create a new Grammar
 distribute combinedFilePath  Distribute a 'combined' file into multiple destination files
-sublime grammarName outputPath Generate sublime syntax highlighting files
+format programPath  Format a tree program in place
 help   Show this help
 list   List installed Grammars
 parse programPath  Parse and print the nodeTypes and cellTypes in a program
-prettify programPath  Prettify a tree program in place
 programs grammarName  List all files for a grammar ever parsed with this cli tool
 register grammarPath  Register a new grammar
 run programPath  Execute a Tree Language Program
 runSync programPath  Sync Execute a Tree Language Program
 sandbox port=3333  Start the Tree Sandbox web app
+sublime grammarName outputPath Generate sublime syntax highlighting files
 usage grammarName  Analyze Global Keyword Usage for a given grammar
 version   List installed Tree Notation version and location

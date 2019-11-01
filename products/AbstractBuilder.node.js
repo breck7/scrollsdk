@@ -23,7 +23,7 @@ class AbstractBuilder extends jtree.TreeNode {
   _combineTypeScriptFilesForNode(typeScriptScriptsInOrder) {
     // todo: prettify
     return typeScriptScriptsInOrder
-      .map(src => this._read(src))
+      .map(src => Disk.read(src))
       .map(content =>
         new TypeScriptRewriter(content)
           //.removeRequires()
@@ -39,7 +39,7 @@ class AbstractBuilder extends jtree.TreeNode {
   }
   _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder) {
     return typeScriptScriptsInOrder
-      .map(src => this._read(src))
+      .map(src => Disk.read(src))
       .map(content =>
         new TypeScriptRewriter(content)
           .removeRequires()
@@ -65,9 +65,6 @@ class AbstractBuilder extends jtree.TreeNode {
     Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
     this._prettifyFile(outputFilePath)
   }
-  _makeExecutable(file) {
-    Disk.makeExecutable(file)
-  }
   _getProductFolder() {
     return __dirname
   }
@@ -85,55 +82,33 @@ class AbstractBuilder extends jtree.TreeNode {
     }
     return outputFilePath
   }
-  _readJson(path) {
-    return JSON.parse(this._read(path))
-  }
-  _writeJson(path, obj) {
-    this._write(path, JSON.stringify(obj, null, 2))
-  }
   _updatePackageJson(packagePath, newVersion) {
-    const packageJson = this._readJson(packagePath)
+    const packageJson = Disk.readJson(packagePath)
     packageJson.version = newVersion
-    this._writeJson(packagePath, packageJson)
+    Disk.writeJson(packagePath, packageJson)
     console.log(`Updated ${packagePath} to ${newVersion}`)
   }
-  _read(path) {
-    const fs = this.require("fs")
-    return fs.readFileSync(path, "utf8")
-  }
-  _mochaTest(filepath) {
-    const reporter = require("tap-mocha-reporter")
-    const proc = exec(`${filepath} _test`)
-    proc.stdout.pipe(reporter("dot"))
-    proc.stderr.on("data", data => console.error("stderr: " + data.toString()))
-  }
-  _write(path, str) {
-    const fs = this.require("fs")
-    return fs.writeFileSync(path, str, "utf8")
-  }
-  _checkGrammarFile(grammarPath) {
-    // todo: test both with grammar.grammar and hard coded grammar program (eventually the latter should be generated from the former).
+  makeGrammarFileTestTree(grammarPath) {
+    // todo: can we ditch these dual tests at some point? ideally Grammar should be bootstrapped correct?
     const testTree = {}
-    testTree[`hardCodedGrammarCheckOf${grammarPath}`] = equal => {
-      // Arrange/Act
-      const program = new jtree.GrammarProgram(this._read(grammarPath))
+    const checkGrammarFile = (equal, program) => {
+      // Act
       const errs = program.getAllErrors()
-      const exampleErrors = program.getErrorsInGrammarExamples()
+      if (errs.length) console.log(errs.join("\n"))
       //Assert
       equal(errs.length, 0, "should be no errors")
-      if (errs.length) console.log(errs.join("\n"))
+    }
+    const checkGrammarExamples = (equal, program) => {
+      // Act
+      const exampleErrors = program.getErrorsInGrammarExamples()
       if (exampleErrors.length) console.log(exampleErrors)
+      // Assert
       equal(exampleErrors.length, 0, exampleErrors.length ? "examples errs: " + exampleErrors : "no example errors")
     }
-    testTree[`grammarGrammarCheckOf${grammarPath}`] = equal => {
-      // Arrange/Act
-      const program = jtree.makeProgram(grammarPath, __dirname + "/../langs/grammar/grammar.grammar")
-      const errs = program.getAllErrors()
-      //Assert
-      equal(errs.length, 0, "should be no errors")
-      if (errs.length) console.log(errs.join("\n"))
-    }
-    jtree.Utils.runTestTree(testTree)
+    testTree[`grammarTypeScriptImplementationCheckOf${grammarPath}`] = equal => checkGrammarFile(equal, new jtree.GrammarProgram(Disk.read(grammarPath)))
+    testTree[`grammarGrammarImplementationCheckOf${grammarPath}`] = equal => checkGrammarFile(equal, jtree.makeProgram(grammarPath, __dirname + "/../langs/grammar/grammar.grammar"))
+    testTree[`examplesInGrammarCheckForGrammarTypeScriptImplementationCheckOf${grammarPath}`] = equal => checkGrammarExamples(equal, new jtree.GrammarProgram(Disk.read(grammarPath)))
+    return testTree
   }
   _help(filePath = process.argv[1]) {
     const commands = this._getAllCommands()
@@ -147,21 +122,18 @@ class AbstractBuilder extends jtree.TreeNode {
   _getPartialMatches(commandName) {
     return this._getAllCommands().filter(item => item.startsWith(commandName))
   }
-  _main() {
-    const action = process.argv[2]
-    const paramOne = process.argv[3]
-    const paramTwo = process.argv[4]
+  main(command, paramOne, paramTwo) {
     const print = console.log
     const builder = this
-    const partialMatches = this._getPartialMatches(action)
-    if (builder[action]) {
-      builder[action](paramOne, paramTwo)
-    } else if (!action) {
+    const partialMatches = this._getPartialMatches(command)
+    if (builder[command]) {
+      builder[command](paramOne, paramTwo)
+    } else if (!command) {
       print(this._help())
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) builder[partialMatches[0]](paramOne, paramTwo)
-      else print(`Multiple matches for '${action}'. Options are:\n${partialMatches.join("\n")}`)
-    } else print(`Unknown command '${action}'. Type 'jtree build' to see available commands.`)
+      else print(`Multiple matches for '${command}'. Options are:\n${partialMatches.join("\n")}`)
+    } else print(`Unknown command '${command}'. Type 'jtree build' to see available commands.`)
   }
 }
 

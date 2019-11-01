@@ -6,6 +6,17 @@ class GrammarUpgrader extends jtree.Upgrader {
   private static _jtree34grammarProgram: any
   getUpgradeFromMap() {
     return {
+      "5.0.0": {
+        "6.0.0": (tree: any) => {
+          tree = new jtree.TreeNode(tree.toString().replace(/^ match /g, " crux "))
+          const mayNeed = tree.filter((node: any) => node.getLine().endsWith("Node") && !node.has("root") && node.get("baseNodeType") !== "errorNode" && !node.has("abstract") && !node.has("crux") && !node.has("pattern"))
+          mayNeed.forEach((node: any) => {
+            node.set("crux", node.getLine().replace("Node", ""))
+          })
+          return tree
+          // if it was using an implicit firstWord, and not abstract, add an explicit one, unless its a catchall.
+        }
+      },
       "4.0.0": {
         "5.0.0": (tree: any) => {
           const extTree = new jtree.ExtendibleTreeNode(tree.toString())
@@ -52,8 +63,7 @@ class GrammarUpgrader extends jtree.Upgrader {
         "4.0.0": (tree: any) => {
           const makeNewId = (currentId: string, suffix: string) => currentId.replace(new RegExp(suffix + "$"), "") + suffix
           // todo: require jtree 34 to do this upgrade.
-          if (!GrammarUpgrader._jtree34grammarProgram)
-            GrammarUpgrader._jtree34grammarProgram = new jtree.GrammarProgram(jtree.TreeNode.fromDisk(__dirname + "/grammar.grammar")).getRootConstructor()
+          if (!GrammarUpgrader._jtree34grammarProgram) GrammarUpgrader._jtree34grammarProgram = new jtree.GrammarProgram(jtree.TreeNode.fromDisk(__dirname + "/grammar.grammar")).getRootConstructor()
           // For all grammar files
           //  find all cells having type nodeTypeId
           //   apply makeNewId
@@ -176,9 +186,6 @@ class GrammarUpgrader extends jtree.Upgrader {
   }
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent)
-  new GrammarUpgrader()
-    .upgradeManyInPlace([__dirname + "/../*/*.grammar"], "4.0.0", "5.0.0")
-    .forEach((item: any) => console.log(item.path, item.tree.toString()))
+/*NODE_JS_ONLY*/ if (!module.parent) new GrammarUpgrader().upgradeManyInPlace([__dirname + "/../*/*.grammar", __dirname + "/../*/*.gram"], "5.0.0", "6.0.0").forEach((item: any) => console.log(item.path, item.tree.toString()))
 
 export { GrammarUpgrader }

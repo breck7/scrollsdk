@@ -1,8 +1,8 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test stumpBasics
- arrangeTestSubject
+ arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWithParagraph
    html
     id bam
     class someClass
@@ -14,9 +14,9 @@ test stumpBasics
        This is some text
      span Hello more
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  toHtml
-  blockStringIs
+  assertParagraphIs
    <html id="bam" class="someClass">
     <body>
      <div type="foo">Hello world
@@ -26,44 +26,44 @@ test stumpBasics
    </html>
    
 test div
- arrangeTestSubject
+ arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWithParagraph
    div hello world
     id bam
     class someClass
  toHtml
-  blockStringIs
+  assertParagraphIs
    <div id="bam" class="someClass">hello world</div>
    
 test uids
- arrangeTestSubject
+ arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWithParagraph
    div hello world
     id bam
     class someClass
  getFirstNode
   toHtmlWithSuids
-   typeIs string
-   stringIncludes stumpUid
+   assertTypeIs string
+   assertStringIncludes stumpUid
   isStumpNodeCheckbox
-   stringIs false
+   assertStringIs false
   toHtml
-   typeIs string
+   assertTypeIs string
   isInputType
-   stringIs false
+   assertStringIs false
   getStumpNodeAttr id
-   stringIs bam
+   assertStringIs bam
 test syntax
- arrangeTestSubject
+ arrange
   require ./stump.node.js
-  constructWithBlockString
+  constructWithParagraph
    div
     bern
      Hello world
  getInPlaceCellTypeTree
-  blockStringIs
+  assertParagraphIs
    htmlTagNameCell
-    contentHolderNameCell
+    bernKeywordCell
      anyHtmlContentCell anyHtmlContentCell

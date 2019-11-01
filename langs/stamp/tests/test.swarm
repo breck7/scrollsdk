@@ -1,20 +1,20 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test stampBasics
- arrangeTestSubject
+ arrange
   require ../stamp.node.js
-  constructWithBlockString
+  constructWithParagraph
    folder testEx
    file testEx/hi.sh
     data
      echo Hello world
     executable
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
 skipTest staticReenableOncePathFix
- arrangeTestSubject
+ arrange
   require ../stamp.node.js
   static
  dirToStamp ./cases
-  blockStringIs
+  assertParagraphIs
    file cases/executable.stamp
    file cases/test.stamp

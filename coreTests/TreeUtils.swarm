@@ -1,57 +1,57 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
+arrange
  require ../index.js jtree.Utils
  static
 test stringToPermalink
  stringToPermalink 
-  stringIs 
+  assertStringIs 
  stringToPermalink
-  blockStringParam
+  withParagraph
    hello%> world
-  stringIs hello-world
+  assertStringIs hello-world
  stringToPermalink hello.world
-  stringIs hello.world
+  assertStringIs hello.world
 test stripHtml
  stripHtml <b>hello</b>
-  stringIs hello
+  assertStringIs hello
 test strip2
  stripHtml
-  blockStringParam
+  withParagraph
    some text
     if
      we
       have
-  blockStringIs
+  assertParagraphIs
    some text
     if
      we
       have
 test getRandomString
  getRandomString 12
-  lengthIs 12
+  assertLengthIs 12
  getRandomString 13
-  lengthIs 13
+  assertLengthIs 13
 test linkify
  linkify http://cnn.com
-  stringIs <a href="http://cnn.com" target="_blank">http://cnn.com</a>
+  assertStringIs <a href="http://cnn.com" target="_blank">http://cnn.com</a>
 test removeFileExtension
  removeFileExtension foobar.csv
-  stringIs foobar
+  assertStringIs foobar
  removeFileExtension none
-  stringIs none
+  assertStringIs none
  removeFileExtension 
-  stringIs 
+  assertStringIs 
 test getPathWithoutFileName
  getPathWithoutFileName /foobar.js
-  stringIs 
+  assertStringIs 
  getPathWithoutFileName /dog/foo.js
-  stringIs /dog
+  assertStringIs /dog
  getPathWithoutFileName a/b/c/d/
-  stringIs a/b/c/d
+  assertStringIs a/b/c/d
  getPathWithoutFileName a/b/c/d
-  stringIs a/b/c
+  assertStringIs a/b/c
 test getFileExtension
  getFileExtension foobar.csv
-  stringIs csv
+  assertStringIs csv
  getFileExtension none
-  stringIs 
+  assertStringIs 

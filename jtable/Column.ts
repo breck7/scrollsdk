@@ -3,7 +3,17 @@ const { jtree } = require("../index.js")
 import { jTableTypes } from "../products/JTableTypes"
 
 // todo: create a Tree Language for number formatting
+
 const d3format = require("d3-format")
+const moment = require("moment")
+const parseFormat = require("moment-parseformat")
+
+// https://github.com/gentooboontoo/js-quantities
+// https://github.com/moment/moment/issues/2469
+// todo: ugly. how do we ditch this or test?
+moment.createFromInputFallback = function(momentConfig: any) {
+  momentConfig._d = new Date(momentConfig._i)
+}
 
 enum VegaTypes {
   nominal = "nominal",
@@ -18,16 +28,6 @@ enum JavascriptNativeTypeNames {
   string = "string",
   Date = "Date",
   boolean = "boolean"
-}
-
-const moment = require("moment")
-const parseFormat = require("moment-parseformat")
-
-// https://github.com/gentooboontoo/js-quantities
-// https://github.com/moment/moment/issues/2469
-// todo: ugly. how do we ditch this or test?
-moment.createFromInputFallback = function(momentConfig: any) {
-  momentConfig._d = new Date(momentConfig._i)
 }
 
 interface TemporalType {
@@ -962,7 +962,6 @@ class Column {
 
   private _createSummaryVector(): jTableTypes.summaryVector {
     const values: any = []
-    const name = this.getColumnName()
     const map = new Map()
     let incompleteCount = 0
     let uniques = 0
@@ -1177,12 +1176,7 @@ class Column {
   }
 
   // Note: If it returns a string removes spaces
-  static convertValueToNumeric(
-    value: any,
-    sourceType: jTableTypes.primitiveType,
-    destinationType: jTableTypes.primitiveType,
-    mathFn?: Function
-  ): number | string | any {
+  static convertValueToNumeric(value: any, sourceType: jTableTypes.primitiveType, destinationType: jTableTypes.primitiveType, mathFn?: Function): number | string | any {
     const destType = this.getPrimitiveTypeByName(destinationType)
     if (value === undefined || !destType || value === "") return ""
     const conversionFn = this._getConversionFn(sourceType, destinationType, value)
@@ -1196,8 +1190,7 @@ class Column {
     const destinationCol = this.getPrimitiveTypeByName(destinationType)
     if (!sourceCol || !destinationCol) return destinationCol.fromStringToNumeric
 
-    if (destinationCol.isTemporal() && sourceCol.isTemporal())
-      return (val: string) => (<AbstractTemporal>destinationCol).fromDateToNumeric((<AbstractTemporal>sourceCol)._fromStringToDate(val))
+    if (destinationCol.isTemporal() && sourceCol.isTemporal()) return (val: string) => (<AbstractTemporal>destinationCol).fromDateToNumeric((<AbstractTemporal>sourceCol)._fromStringToDate(val))
 
     return destinationCol.fromStringToNumeric
   }

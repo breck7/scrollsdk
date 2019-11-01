@@ -64,16 +64,19 @@ class Builder extends AbstractBuilder {
     }
     if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
     else this._produceNodeProductFromTypeScript(inputFiles, outputFileName, transformFn)
-    if (productNode.has("executable")) this._makeExecutable(__dirname + "/products/" + outputFileName)
+    if (productNode.has("executable")) Disk.makeExecutable(__dirname + "/products/" + outputFileName)
+  }
+
+  buildBuilder() {
+    this._buildTsc(Disk.read(__filename), __dirname + "/builder.js")
   }
 
   buildJibJab() {
-    const CommandLineApp = require("./products/commandLineApp.node.js")
     const combined = jtree.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
     combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
-    new CommandLineApp().prettify(path)
+    jtree.formatFile(path, __dirname + "/langs/grammar/grammar.grammar")
   }
 
   _getProductFolder() {
@@ -90,35 +93,37 @@ class Builder extends AbstractBuilder {
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
     const codePath = __dirname + "/core/TreeNode.ts"
-    const code = this._read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
-    this._write(codePath, code)
+    const code = Disk.read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
+    Disk.write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
     this.produceAll()
     console.log("Don't forget to update releaseNotes.md!")
   }
 
-  test() {
-    this._mochaTest(__filename)
-  }
-
-  async _testDir(dir: treeNotationTypes.absoluteFolderPath) {
+  _makeTestTreeForFolder(dir: treeNotationTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
-    allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => this._checkGrammarFile(file))
 
-    for (let file of allTestFiles.filter(file => file.endsWith(".test.js"))) {
-      await jtree.Utils.runTestTree(require(file))
-    }
+    const fileTestTree: any = {}
 
-    for (let file of allTestFiles.filter(file => file.endsWith(".test.ts"))) {
-      await jtree.Utils.runTestTree(require(file).testTree)
-    }
-
-    for (let file of allTestFiles.filter(file => file.endsWith(".swarm"))) {
-      await jtree.executeFile(file, __dirname + "/langs/swarm/swarm.grammar")
-    }
+    allTestFiles
+      .filter(file => file.endsWith(".grammar"))
+      .forEach(file => {
+        fileTestTree[file] = this.makeGrammarFileTestTree(file)
+      })
+    allTestFiles
+      .filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts"))
+      .forEach(file => {
+        fileTestTree[file] = require(file).testTree
+      })
+    allTestFiles
+      .filter(file => file.endsWith(".swarm"))
+      .forEach(file => {
+        Object.assign(fileTestTree, jtree.makeProgram(file, __dirname + "/langs/swarm/swarm.grammar").compileToRacer(file))
+      })
+    return fileTestTree
   }
 
-  async _test() {
+  async test() {
     let folders = `jtable
 langs
 builder
@@ -130,12 +135,14 @@ core
 coreTests
 treeBase
 treeComponentFramework`.split("\n")
-    for (let folder of folders) {
-      await this._testDir(__dirname + `/${folder}/`)
-    }
+    const fileTree = {}
+    folders.forEach(folder => Object.assign(fileTree, this._makeTestTreeForFolder(__dirname + `/${folder}/`)))
+    const runner = new jtree.TestRacer(fileTree)
+    await runner.execute()
+    runner.finish()
   }
 }
 
 export { Builder }
 
-if (!module.parent) new Builder()._main()
+if (!module.parent) new Builder().main(process.argv[2], process.argv[3], process.argv[4])

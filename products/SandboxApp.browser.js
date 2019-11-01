@@ -21,7 +21,7 @@ class SandboxCommander extends AbstractCommander {
       .keyup()
   }
 }
-class SandboxApp extends AbstractTreeComponentRootNode {
+class SandboxApp extends AbstractTreeComponent {
   constructor() {
     super(...arguments)
     this._commander = new SandboxCommander(this)
@@ -72,7 +72,7 @@ class SandboxApp extends AbstractTreeComponentRootNode {
       treeConsole.keyup()
     })
   }
-  getHakon() {
+  toHakonCode() {
     const theme = this.getTheme()
     return `body
  font-family "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
@@ -107,12 +107,12 @@ githubTriangleComponent`
   }
 }
 class headerComponent extends AbstractTreeComponent {
-  getHakon() {
+  toHakonCode() {
     return `#logo
  width 100px
  vertical-align middle`
   }
-  getStumpCode() {
+  toStumpCode() {
     return `div
  h1
   a
@@ -146,7 +146,7 @@ class githubTriangleComponent extends AbstractGithubTriangleComponent {
   }
 }
 class tableComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     return `table
  tr
   td

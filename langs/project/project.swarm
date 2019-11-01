@@ -1,9 +1,9 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
+arrange
  require ./project.node.js
 test projectBasics
- arrangeTestSubject
-  constructWithBlockString
+ arrange
+  constructWithParagraph
    file /foobar/foobar.js
    file /foobar/bam.js
    file /foo/c.js
@@ -13,31 +13,31 @@ test projectBasics
    file /foobar/after.js
     relative ./foobar.js
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  getScriptPathsInCorrectDependencyOrder
-  lengthIs 4
+  assertLengthIs 4
   join
-   blockStringParam
+   withParagraph
      
-   blockStringIs
+   assertParagraphIs
     /foobar/foobar.js /foobar/bam.js /foobar/after.js /foo/c.js
 test spaces
- arrangeTestSubject
-  constructWithBlockString
+ arrange
+  constructWithParagraph
    file /foobar/f oobar.js
    file /foobar/after.js
     relative ./f oobar.js
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  getScriptPathsInCorrectDependencyOrder
   join
-   blockStringParam
+   withParagraph
      
-   blockStringIs
+   assertParagraphIs
     /foobar/f oobar.js /foobar/after.js
 test error
- arrangeTestSubject
-  constructWithBlockString
+ arrange
+  constructWithParagraph
    relative foobar.js
  getAllErrors
-  lengthIs 1
+  assertLengthIs 1

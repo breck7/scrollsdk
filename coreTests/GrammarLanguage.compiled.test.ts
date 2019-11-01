@@ -9,7 +9,6 @@ const { Disk } = require("../products/Disk.node.js")
 const testTree: treeNotationTypes.testTree = {}
 
 // todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
-
 // todo: setup: make vms dir. cleanup? delete grammar file when done?
 
 const outputDir = __dirname + `/../ignore/vms/`
@@ -124,40 +123,17 @@ testTree.numbers = equal => {
     equal(program.getAllErrors().length, 0, "no errors found")
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 
-    equal(firstNode.getDefinition().getLineHints(), "addNode: operatorCell numbersCell...", "line hints work")
+    equal(firstNode.getDefinition().getLineHints(), "+: operatorCell numbersCell...", "line hints work")
     equal(program.getInPlaceCellTypeTree(), runtimeProgram.getInPlaceCellTypeTree(), "cell types worked")
 
     // Arrange/Act/Assert
     equal(new numbers(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")
-
-    // program errors
-    // autocomplete
-    // line hints
-    // syntax highlighting
-    // examples
-
-    // [] todo: test that groups work in compiled
-
-    // [~] cell typings
-    // [] cell constants
-    // [] cell defaults
-    // [] cell improvs
-    // [] typescript autocomplete when extending
-    // [] init speed (no more compiling grammar every time)
-    // [] parse speed (can do further optimizations perhaps? might not. doesnt seemt o be a bottleneck)
-    // [] packaging for browser/node.js
-    // [] swarm in browser
-    // [] might eliminate need for constructor paths in grammar files
-    // [~] easily have native javascript types
-    // [] easier to build new runtimes like golang, etc
-    // [~] we can also hopefully do it without breaking much/anything existing
-    // [] would perhaps make imports easier (because just done once at compile time)
   } catch (err) {
     console.error(err)
   } finally {
   }
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

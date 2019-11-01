@@ -5,11 +5,7 @@ import { Row } from "./Row"
 import { Column } from "./Column"
 
 class PivotTable {
-  constructor(
-    rows: jTableTypes.objectWithOnlyNativeJavascriptTypes[],
-    inputColumns: jTableTypes.columnDefinitionObject[],
-    outputColumns: jTableTypes.columnDefinitionObject[]
-  ) {
+  constructor(rows: jTableTypes.objectWithOnlyNativeJavascriptTypes[], inputColumns: jTableTypes.columnDefinitionObject[], outputColumns: jTableTypes.columnDefinitionObject[]) {
     this._rows = rows
     inputColumns.forEach(col => (this._columns[col.name] = col))
     outputColumns.forEach(col => (this._columns[col.name] = col))
@@ -95,12 +91,7 @@ declare type columnsMap = { [columnName: string]: Column }
 // todo: remove detectAndAddParam?
 // todo: remove rowclass param?
 class Table {
-  constructor(
-    rowsArray: (Row | jTableTypes.rawRowJavascriptObject)[] = [],
-    columnsArrayOrMap: jTableTypes.columnDefinitionObject[] | columnsMap = [],
-    rowClass = Row,
-    detectAndAddColumns = true
-  ) {
+  constructor(rowsArray: (Row | jTableTypes.rawRowJavascriptObject)[] = [], columnsArrayOrMap: jTableTypes.columnDefinitionObject[] | columnsMap = [], rowClass = Row, detectAndAddColumns = true) {
     this._ctime = new jtree.TreeNode()._getProcessTimeInMilliseconds()
     this._tableId = this._getUniqueId()
 
@@ -128,7 +119,7 @@ class Table {
   private _columnsMap: columnsMap = {}
 
   private _registerColumn(col: any) {
-    this._columnsMap[col.name] = new Column(col, this._getColumnValuesFromSourceAsAnyVector(col.name))
+    this._columnsMap[col.name] = new Column(col, this._getColumnValuesFromSourceAsAnyVector(col.source || col.name))
     return this
   }
 
@@ -228,7 +219,7 @@ class Table {
         if (comparisonOperator === ComparisonOperators.lessThanOrEqual) return rowTypedValue <= typedScalarValue
         if (comparisonOperator === ComparisonOperators.greaterThanOrEqual) return rowTypedValue >= typedScalarValue
       }),
-      this.getColumnsMap(),
+      this.getColumnsArrayOfObjects(),
       undefined,
       false
     )
@@ -322,15 +313,10 @@ ${cols}
     })
   }
 
-  getPredictionsForAPropertyNameToColumnNameMapGivenHintsNode(
-    hintsNode: jTableTypes.treeNode,
-    propertyNameToColumnNameMap: jTableTypes.propertyNameToColumnNameMap
-  ): jTableTypes.propertyNameToColumnNameMap {
+  getPredictionsForAPropertyNameToColumnNameMapGivenHintsNode(hintsNode: jTableTypes.treeNode, propertyNameToColumnNameMap: jTableTypes.propertyNameToColumnNameMap): jTableTypes.propertyNameToColumnNameMap {
     const results: jTableTypes.propertyNameToColumnNameMap = {}
     hintsNode
-      .map((columnHintNode: any) =>
-        this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.getContent(), propertyNameToColumnNameMap)
-      )
+      .map((columnHintNode: any) => this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.getContent(), propertyNameToColumnNameMap))
       .filter((pred: any) => pred.length)
       .forEach((predictions: any) => {
         const topPrediction = predictions[0]
@@ -340,18 +326,13 @@ ${cols}
     return results
   }
 
-  getColumnNamePredictionsForProperty(
-    propertyName: string,
-    predictionHints: jTableTypes.predictionHintsString,
-    propertyNameToColumnNameMap: jTableTypes.propertyNameToColumnNameMap
-  ): jTableTypes.columnNamePrediction[] {
+  getColumnNamePredictionsForProperty(propertyName: string, predictionHints: jTableTypes.predictionHintsString, propertyNameToColumnNameMap: jTableTypes.propertyNameToColumnNameMap): jTableTypes.columnNamePrediction[] {
     const userDefinedColumnName: jTableTypes.columnName = propertyNameToColumnNameMap[propertyName]
 
     if (this.getColumnsMap()[userDefinedColumnName]) return [{ propertyName: propertyName, columnName: userDefinedColumnName }] // Table has a column named this, return okay.
 
     // Table has a lowercase column named this. Return okay. Todo: do we want to do this?
-    if (userDefinedColumnName && this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()])
-      return [this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()]]
+    if (userDefinedColumnName && this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()]) return [this._getLowerCaseColumnsMap()[userDefinedColumnName.toLowerCase()]]
 
     if (predictionHints) {
       const potentialCols = this._predictColumns(predictionHints, propertyNameToColumnNameMap)

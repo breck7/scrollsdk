@@ -76,7 +76,7 @@ testTree.jibberish = equal => {
   if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
 
   const defNode = program
-    .getGrammarProgramRoot()
+    .getGrammarProgram()
     .getNodeTypeFamilyTree()
     .getNode("topLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
@@ -148,22 +148,25 @@ missing2 true`)
   )
 }
 
-testTree.simTests = equal => {
-  // todo: add stump and others back in
-  const langs = ["hakon", "swarm", "dug"]
-  langs.forEach(lang => {
+const langs = Disk.dir(__dirname + `/../langs/`)
+langs.forEach((lang: string) => {
+  testTree[`${lang}SimTest`] = equal => {
     const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
     const grammarProgram = new jtree.GrammarProgram(grammarCode)
     const programConstructor = grammarProgram.getRootConstructor()
 
     // Act
-    const simulatedProgram = grammarProgram._getRootNodeTypeDefinitionNode().synthesizeNode()
+    const simulatedProgram = grammarProgram
+      ._getRootNodeTypeDefinitionNode()
+      .synthesizeNode()
+      .join("\n")
 
     // Assert
-    //console.log(simulatedProgram)
-    equal(new programConstructor(simulatedProgram.join("\n")).getAllErrors().length, 0, `should be no errors in simulated ${lang} program`)
-  })
-}
+    const errors = new programConstructor(simulatedProgram).getAllErrors()
+    //if (errors.length) console.log(simulatedProgram)
+    equal(errors.length, 0, `should be no errors in simulated ${lang} program`)
+  }
+})
 
 testTree.iris = equal => {
   // Arrange
@@ -236,7 +239,7 @@ testTree.preludeTypes = equal => {
   )
 }
 
-testTree.prettify = equal => {
+testTree.format = equal => {
   // Arrange
   const normalCode = `someLangNode
  root
@@ -246,7 +249,7 @@ abstractHtmlNode
  extends topLevelNode
  abstract
 h1Node
- match html.h1
+ crux html.h1
  extends abstractHtmlNode
 colorPropertiesNode
  extends topLevelNode
@@ -258,14 +261,11 @@ hueNode
 saturationNode
  extends colorPropertiesNode`
   const grammarProgram = makeGrammarProgram(normalCode)
-  const pretty = grammarProgram
-    .sortNodesByInScopeOrder()
-    .getSortedByInheritance()
-    .toString()
-  equal(pretty, normalCode, "code is already in pretty form")
+  const formatted = grammarProgram.format().toString()
+  equal(formatted, normalCode, "code is already in formatted form")
 }
 
-testTree.prettifyDo = equal => {
+testTree.formatDo = equal => {
   // Arrange
   const unsortedCode = `someLangNode
  root
@@ -273,7 +273,7 @@ testTree.prettifyDo = equal => {
 topLevelNode
  abstract
 h1Node
- match html.h1
+ crux html.h1
  extends abstractHtmlNode
 abstractHtmlNode
  extends topLevelNode
@@ -289,13 +289,12 @@ abstractHtmlNode
  extends topLevelNode
  abstract
 h1Node
- match html.h1
+ crux html.h1
  extends abstractHtmlNode`
   // Act/Assert
   equal(
     makeGrammarProgram(unsortedCode)
-      .sortNodesByInScopeOrder()
-      .getSortedByInheritance()
+      .format()
       .toString(),
     sortedCode,
     "code was fixed"
@@ -494,7 +493,7 @@ anyNode
 anyCell`
   ).getRootConstructor()
   const program = new programConstructor()
-  const grammarProgram = program.getGrammarProgramRoot()
+  const grammarProgram = program.getGrammarProgram()
 
   // Assert
   let errors = grammarProgram.getAllErrors()
@@ -643,7 +642,7 @@ testTree.examples = equal => {
  root
  inScope addNode
 addNode
- match +
+ crux +
  catchAllCellType intCell
  cells keywordCell
  example This is a bad example.
@@ -657,6 +656,6 @@ intCell`
   equal(errors.length, 1)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

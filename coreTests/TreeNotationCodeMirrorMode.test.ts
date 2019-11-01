@@ -121,9 +121,7 @@ testTree.iris = equal => {
   equal(tokenLines.join(" "), `number bracket number bracket number bracket number bracket atom`)
 
   // Act
-  const tokenLines2 = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("irisNode", () => irisConstructor, () => codeWithMissingCell)).getTokenLines(
-    codeWithMissingCell
-  )
+  const tokenLines2 = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("irisNode", () => irisConstructor, () => codeWithMissingCell)).getTokenLines(codeWithMissingCell)
   // Assert
   equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
 }
@@ -159,6 +157,6 @@ testTree.regression2 = equal => {
   equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

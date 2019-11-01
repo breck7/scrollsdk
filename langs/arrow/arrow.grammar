@@ -1,12 +1,5 @@
-arrowNode
- description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
- root
- inScope chargeNode
- javascript
-  compile() {
-    return this.toJsonSubset()
-  }
 keywordCell
+ enum charge cardNumber amount currency description token
 floatCell
 intCell
 cardNumberCell
@@ -24,28 +17,47 @@ tokenCell
 currencyCell
  enum usd cad jpy
  highlightScope constant.numeric
+arrowNode
+ description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
+ root
+ inScope chargeNode
+ catchAllNodeType errorNode
+ javascript
+  compile() {
+   return this.toJsonSubset()
+  }
+errorNode
+ baseNodeType errorNode
 chargeNode
  inScope amountNode currencyNode descriptionNode tokenNode cardNumberNode
  description A credit card charge
+ crux charge
  cells keywordCell
  javascript
   executeSync() {
-    const card = this.get("cardNumber")
-    return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
+   const card = this.get("cardNumber")
+   return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
   }
-  async execute() { return this.executeSync() }
+  async execute() {
+   return this.executeSync()
+  }
 cardNumberNode
+ crux cardNumber
  cells keywordCell cardNumberCell
  required
 amountNode
+ crux amount
  cells keywordCell amountCell
  required
 currencyNode
+ crux currency
  cells keywordCell currencyCell
  required
 descriptionNode
+ crux description
  cells keywordCell
  catchAllCellType descriptionCell
  required
 tokenNode
+ crux token
  cells keywordCell tokenCell

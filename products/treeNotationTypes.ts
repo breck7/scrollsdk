@@ -51,7 +51,7 @@ namespace treeNotationTypes {
   // For closer fidelity to JSON, use a tree language.
   export declare type jsonSubset = string
 
-  export declare type formatString = string // "Hello {name}! You are {age} years old."
+  export declare type templateString = string // "Hello {name}! You are {age} years old."
   export declare type firstWordPath = string // user emailAddress
   export declare type pathVector = int[] // example: [0,1,1]
   export declare type word = string // string that cannot contain the YI, XI or ZI

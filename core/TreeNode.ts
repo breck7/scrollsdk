@@ -121,6 +121,10 @@ class TreeNode extends AbstractNode {
     return Promise.all(this.map(child => child.execute(context)))
   }
 
+  async loadRequirements(context: any) {
+    await Promise.all(this.map(node => node.loadRequirements(context)))
+  }
+
   getErrors(): treeNotationTypes.TreeError[] {
     return []
   }
@@ -195,15 +199,15 @@ class TreeNode extends AbstractNode {
     return this.getEdgeSymbol().repeat(this._getXCoordinate(relativeTo) - 1)
   }
 
-  protected _getTopDownArray(arr: TreeNode[]) {
+  protected _getTopDownArray<NodeType = TreeNode>(arr: NodeType[]) {
     this.forEach(child => {
       arr.push(child)
       child._getTopDownArray(arr)
     })
   }
 
-  getTopDownArray(): treeNotationTypes.treeNode[] {
-    const arr: TreeNode[] = []
+  getTopDownArray<NodeType = TreeNode>(): NodeType[] {
+    const arr: NodeType[] = []
     this._getTopDownArray(arr)
     return arr
   }
@@ -344,12 +348,50 @@ class TreeNode extends AbstractNode {
   }
 
   require(moduleName: string, filePath?: string): any {
-    if (this.isNodeJs()) return require(filePath || moduleName)
-    return (<any>window)[moduleName]
+    if (!this.isNodeJs()) return (<any>window)[moduleName]
+    return require(filePath || moduleName)
   }
 
   getWordsFrom(startFrom: int) {
     return this._getWords(startFrom)
+  }
+
+  getFirstAncestor(): TreeNode {
+    const parent = this.getParent()
+    return parent.isRoot() ? this : parent.getFirstAncestor()
+  }
+
+  isLoaded() {
+    return true
+  }
+
+  private _runTimePhaseErrors: { [phase: string]: any }
+
+  getRunTimePhaseErrors() {
+    if (!this._runTimePhaseErrors) this._runTimePhaseErrors = {}
+    return this._runTimePhaseErrors
+  }
+
+  setRunTimePhaseError(phase: string, errorObject: any) {
+    if (errorObject === undefined) delete this.getRunTimePhaseErrors()[phase]
+    else this.getRunTimePhaseErrors()[phase] = errorObject
+    return this
+  }
+
+  _getJavascriptPrototypeChainUpTo(stopAtClassName = "TreeNode") {
+    // todo: cross browser test this
+    let constructor: any = this.constructor
+    const chain: string[] = []
+    while (constructor.name !== stopAtClassName) {
+      chain.unshift(constructor.name)
+      constructor = constructor.__proto__
+    }
+    chain.unshift(stopAtClassName)
+    return chain
+  }
+
+  _getProjectRootDir(): string {
+    return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
   }
 
   getSparsity() {
@@ -637,6 +679,68 @@ class TreeNode extends AbstractNode {
     return result
   }
 
+  getMaxLineWidth() {
+    let maxWidth = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      const lineWidth = node.getLine().length
+      if (lineWidth > maxWidth) maxWidth = lineWidth
+    }
+    return maxWidth
+  }
+
+  toTreeNode() {
+    return new TreeNode(this.toString())
+  }
+
+  protected _rightPad(newWidth: number, padCharacter: string) {
+    const line = this.getLine()
+    this.setLine(line + padCharacter.repeat(newWidth - line.length))
+    return this
+  }
+
+  rightPad(padCharacter = " ") {
+    const newWidth = this.getMaxLineWidth()
+    this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
+    return this
+  }
+
+  toSideBySide(treesOrStrings: (TreeNode | string)[], delimiter = " ") {
+    const clone = this.toTreeNode()
+    let next
+    while ((next = treesOrStrings.shift())) {
+      clone.rightPad()
+      next
+        .toString()
+        .split("\n")
+        .forEach((line, index) => {
+          const node = clone.nodeAtLine(index)
+          node.setLine(node.getLine() + delimiter + line)
+        })
+    }
+    return clone
+  }
+
+  toComparison(treeNode: TreeNode | string) {
+    const nodeBreakSymbol = "\n"
+    const lines = treeNode.toString().split(nodeBreakSymbol)
+    return new TreeNode(
+      this.toString()
+        .split(nodeBreakSymbol)
+        .map((line, index) => (lines[index] === line ? "" : "x"))
+        .join(nodeBreakSymbol)
+    )
+  }
+
+  toBraid(treesOrStrings: (TreeNode | string)[]) {
+    treesOrStrings.unshift(this)
+    const nodeDelimiter = this.getNodeBreakSymbol()
+    return new TreeNode(
+      TreeUtils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
+        .map(line => (line === undefined ? "" : line))
+        .join(nodeDelimiter)
+    )
+  }
+
   getSlice(startIndexInclusive: int, stopIndexExclusive: int) {
     return new TreeNode(
       this.slice(startIndexInclusive, stopIndexExclusive)
@@ -680,6 +784,20 @@ class TreeNode extends AbstractNode {
     return result
   }
 
+  selectionToString() {
+    return this.getSelectedNodes()
+      .map(node => node.toString())
+      .join("\n")
+  }
+
+  getSelectedNodes() {
+    return this.getTopDownArray().filter(node => node.isSelected())
+  }
+
+  clearSelection() {
+    this.getSelectedNodes().forEach(node => node.unselectNode())
+  }
+
   // Note: this is for debugging select chains
   print(message = "") {
     if (message) console.log(message)
@@ -688,6 +806,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: preserve subclasses!
+  // todo: preserve links back to parent so you could edit as normal?
   where(columnName: string, operator: WhereOperators, fixedValue?: string | number | string[] | number[]) {
     const isArray = Array.isArray(fixedValue)
     const valueType = isArray ? typeof (<Array<string | number>>fixedValue)[0] : typeof fixedValue
@@ -756,7 +875,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  protected _getXCoordinate(relativeTo: TreeNode) {
+  protected _getXCoordinate(relativeTo?: TreeNode) {
     return this._getStack(relativeTo).length
   }
 
@@ -784,25 +903,21 @@ class TreeNode extends AbstractNode {
     return this._children
   }
 
-  protected _getChildren() {
-    return this._getChildrenArray()
-  }
-
   getLines(): string[] {
     return this.map(node => node.getLine())
   }
 
   getChildren(): any[] {
-    return this._getChildren().slice(0)
+    return this._getChildrenArray().slice(0)
   }
 
   get length(): treeNotationTypes.positiveInt {
-    return this._getChildren().length
+    return this._getChildrenArray().length
   }
 
   protected _nodeAt(index: int) {
     if (index < 0) index = this.length + index
-    return this._getChildren()[index]
+    return this._getChildrenArray()[index]
   }
 
   nodeAt(indexOrIndexArray: int | int[]): TreeNode | undefined {
@@ -849,6 +964,11 @@ class TreeNode extends AbstractNode {
   // todo: implement
   protected _getChildJoinCharacter() {
     return "\n"
+  }
+
+  format() {
+    this.forEach(child => child.format())
+    return this
   }
 
   compile(): string {
@@ -937,9 +1057,13 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  format(str: treeNotationTypes.formatString): string {
+  evalTemplateString(str: treeNotationTypes.templateString): string {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
+  }
+
+  emitLogMessage(message: string) {
+    console.log(message)
   }
 
   getColumn(path: word): string[] {
@@ -993,7 +1117,7 @@ class TreeNode extends AbstractNode {
 
     const parts = firstWordPath.split(edgeSymbol)
     const current = parts.shift()
-    const currentNode = this._getChildren()[this._getIndex()[current]]
+    const currentNode = this._getChildrenArray()[this._getIndex()[current]]
     return currentNode ? currentNode._getNodeByPath(parts.join(edgeSymbol)) : undefined
   }
 
@@ -1003,7 +1127,7 @@ class TreeNode extends AbstractNode {
     const parent = this.getParent()
     const length = parent.length
     const next = index + 1
-    return next === length ? parent._getChildren()[0] : parent._getChildren()[next]
+    return next === length ? parent._getChildrenArray()[0] : parent._getChildrenArray()[next]
   }
 
   getPrevious() {
@@ -1012,7 +1136,7 @@ class TreeNode extends AbstractNode {
     const parent = this.getParent()
     const length = parent.length
     const prev = index - 1
-    return prev === -1 ? parent._getChildren()[length - 1] : parent._getChildren()[prev]
+    return prev === -1 ? parent._getChildrenArray()[length - 1] : parent._getChildrenArray()[prev]
   }
 
   protected _getUnionNames() {
@@ -1070,6 +1194,13 @@ class TreeNode extends AbstractNode {
       node = node.nodeAt(path.shift())
     }
     return names
+  }
+
+  toStringWithLineNumbers() {
+    return this.toString()
+      .split("\n")
+      .map((line, index) => `${index + 1} ${line}`)
+      .join("\n")
   }
 
   toCsv(): string {
@@ -1450,7 +1581,7 @@ class TreeNode extends AbstractNode {
     if (!this.has(firstWord)) return -1
 
     const length = this.length
-    const nodes = this._getChildren()
+    const nodes = this._getChildrenArray()
 
     for (let index = 0; index < length; index++) {
       if (nodes[index].getFirstWord() === firstWord) return index
@@ -1467,7 +1598,7 @@ class TreeNode extends AbstractNode {
 
   protected _makeIndex(startAt = 0) {
     if (!this._index || !startAt) this._index = {}
-    const nodes = this._getChildren()
+    const nodes = this._getChildrenArray()
     const newIndex = this._index
     const length = nodes.length
 
@@ -1823,6 +1954,12 @@ class TreeNode extends AbstractNode {
     return this.getParent()._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
   }
 
+  trim() {
+    // todo: could do this so only the trimmed rows are deleted.
+    this.setChildren(this.childrenToString().trim())
+    return this
+  }
+
   destroy() {
     ;(this.getParent() as TreeNode)._deleteNode(this)
   }
@@ -1915,7 +2052,7 @@ class TreeNode extends AbstractNode {
 
     if (index === -1) return this
 
-    const node = <TreeNode>this._getChildren()[index]
+    const node = <TreeNode>this._getChildrenArray()[index]
 
     node.setFirstWord(newFirstWord)
     this._clearIndex()
@@ -1943,7 +2080,7 @@ class TreeNode extends AbstractNode {
 
   protected _deleteAllChildNodesWithFirstWord(firstWord: word) {
     if (!this.has(firstWord)) return this
-    const allNodes = this._getChildren()
+    const allNodes = this._getChildrenArray()
     const indexesToDelete: int[] = []
     allNodes.forEach((node, index) => {
       if (node.getFirstWord() === firstWord) indexesToDelete.push(index)
@@ -2261,6 +2398,96 @@ class TreeNode extends AbstractNode {
     return this
   }
 
+  private _selected: boolean
+
+  selectNode() {
+    this._selected = true
+  }
+
+  unselectNode() {
+    delete this._selected
+  }
+
+  isSelected() {
+    return !!this._selected
+  }
+
+  async saveVersion() {
+    const newVersion = this.toString()
+    const topUndoVersion = this._getTopUndoVersion()
+    if (newVersion === topUndoVersion) return undefined
+    this._recordChange(newVersion)
+    this._setSavedVersion(this.toString())
+    return this
+  }
+
+  hasUnsavedChanges() {
+    return this.toString() !== this._getSavedVersion()
+  }
+
+  async redo() {
+    const undoStack = this._getUndoStack()
+    const redoStack = this._getRedoStack()
+    if (!redoStack.length) return undefined
+    undoStack.push(redoStack.pop())
+    return this._reloadFromUndoTop()
+  }
+
+  async undo() {
+    const undoStack = this._getUndoStack()
+    const redoStack = this._getRedoStack()
+    if (undoStack.length === 1) return undefined
+    redoStack.push(undoStack.pop())
+    return this._reloadFromUndoTop()
+  }
+
+  private _savedVersion: string
+
+  private _getSavedVersion() {
+    return this._savedVersion
+  }
+
+  private _setSavedVersion(str: string) {
+    this._savedVersion = str
+    return this
+  }
+
+  private _clearRedoStack() {
+    const redoStack = this._getRedoStack()
+    redoStack.splice(0, redoStack.length)
+  }
+
+  private _undoStack: string[]
+  private _redoStack: string[]
+
+  getChangeHistory() {
+    return this._getUndoStack().slice(0)
+  }
+
+  private _getUndoStack() {
+    if (!this._undoStack) this._undoStack = []
+    return this._undoStack
+  }
+
+  private _getRedoStack() {
+    if (!this._redoStack) this._redoStack = []
+    return this._redoStack
+  }
+
+  private _getTopUndoVersion() {
+    const undoStack = this._getUndoStack()
+    return undoStack[undoStack.length - 1]
+  }
+
+  private async _reloadFromUndoTop() {
+    this.setChildren(this._getTopUndoVersion())
+  }
+
+  private _recordChange(newVersion: string) {
+    this._clearRedoStack()
+    this._getUndoStack().push(newVersion) // todo: use diffs?
+  }
+
   static fromCsv(str: string) {
     return this.fromDelimited(str, ",", '"')
   }
@@ -2553,6 +2780,14 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   _getNodeFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
+  }
+
+  _getConcatBlockStringFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+    return this._getAncestorsArray()
+      .filter(node => node.has(firstWordPath))
+      .map(node => node.getNode(firstWordPath).childrenToString())
+      .reverse()
+      .join("\n")
   }
 
   _doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {

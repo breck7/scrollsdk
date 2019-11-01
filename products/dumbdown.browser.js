@@ -1,5 +1,5 @@
 {
-  class dumbdownNode extends jtree.GrammarBackedRootNode {
+  class dumbdownNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
         blankLineNode,
@@ -14,9 +14,21 @@
         undefined
       )
     }
-    getGrammarProgramRoot() {
+    getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`dumbdownNode
+        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`anyCell
+blankCell
+dashCell
+ highlightScope constant.language
+codeCell
+ highlightScope comment
+keywordCell
+ highlightScope keyword
+textCell
+ highlightScope string
+urlCell
+ highlightScope constant.language
+dumbdownNode
  extensions dd dumbdown
  description A prefix Tree Language that compiles to HTML. An alternative to Markdown.
  root
@@ -38,48 +50,32 @@
 abstractTopLevelNode
  abstract
  cells keywordCell
-anyCell
-blankCell
-dashCell
- highlightScope constant.language
-codeCell
- highlightScope comment
-keywordCell
- highlightScope keyword
-textCell
- highlightScope string
-urlCell
- highlightScope constant.language
-blankLineNode
- description Blank lines compile to a br in the HTML.
- cells blankCell
- compiler
-  stringTemplate <br>
 titleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <h1>{textCell}</h1>
+ crux title
 linkNode
  cells keywordCell urlCell
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <a href="{urlCell}">{textCell}</a>
+ crux link
 paragraphNode
  inScope linkNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <p>{textCell}</p>
+ crux paragraph
 subtitleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <h2>{textCell}</h2>
-lineOfCodeNode
- catchAllCellType codeCell
- cells codeCell
+ crux subtitle
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
@@ -89,6 +85,7 @@ codeNode
   openChildren <code>
   closeChildren </code>
   stringTemplate 
+ crux code
 listNode
  inScope dashNode
  extends abstractTopLevelNode
@@ -96,8 +93,17 @@ listNode
   stringTemplate 
   openChildren <ul>
   closeChildren </ul>
+ crux list
+blankLineNode
+ description Blank lines compile to a br in the HTML.
+ cells blankCell
+ compiler
+  stringTemplate <br>
+lineOfCodeNode
+ catchAllCellType codeCell
+ cells codeCell
 dashNode
- match -
+ crux -
  catchAllCellType textCell
  compiler
   stringTemplate <li>{textCell}</li>
@@ -108,27 +114,21 @@ dashNode
       return {
         dumbdownNode: dumbdownNode,
         abstractTopLevelNode: abstractTopLevelNode,
-        blankLineNode: blankLineNode,
         titleNode: titleNode,
         linkNode: linkNode,
         paragraphNode: paragraphNode,
         subtitleNode: subtitleNode,
-        lineOfCodeNode: lineOfCodeNode,
         codeNode: codeNode,
         listNode: listNode,
+        blankLineNode: blankLineNode,
+        lineOfCodeNode: lineOfCodeNode,
         dashNode: dashNode
       }
     }
   }
 
-  class abstractTopLevelNode extends jtree.GrammarBackedNonRootNode {
+  class abstractTopLevelNode extends jtree.GrammarBackedNode {
     get keywordCell() {
-      return this.getWord(0)
-    }
-  }
-
-  class blankLineNode extends jtree.GrammarBackedNonRootNode {
-    get blankCell() {
       return this.getWord(0)
     }
   }
@@ -166,15 +166,6 @@ dashNode
     }
   }
 
-  class lineOfCodeNode extends jtree.GrammarBackedNonRootNode {
-    get codeCell() {
-      return this.getWord(0)
-    }
-    get codeCell() {
-      return this.getWordsFrom(1)
-    }
-  }
-
   class codeNode extends abstractTopLevelNode {
     createParser() {
       return new jtree.TreeNode.Parser(lineOfCodeNode, undefined, undefined)
@@ -187,7 +178,22 @@ dashNode
     }
   }
 
-  class dashNode extends jtree.GrammarBackedNonRootNode {
+  class blankLineNode extends jtree.GrammarBackedNode {
+    get blankCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class lineOfCodeNode extends jtree.GrammarBackedNode {
+    get codeCell() {
+      return this.getWord(0)
+    }
+    get codeCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class dashNode extends jtree.GrammarBackedNode {
     get dashCell() {
       return this.getWord(0)
     }

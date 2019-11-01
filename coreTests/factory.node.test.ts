@@ -3,12 +3,11 @@
 const { jtree } = require("../index.js")
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
-const jibberishRootDir = __dirname + "/../langs/jibberish/"
-
 const testTree: treeNotationTypes.testTree = {}
 
 testTree.makeProgram = equal => {
   // Arrange
+  const jibberishRootDir = __dirname + "/../langs/jibberish/"
   const programPath = jibberishRootDir + "sample.jibberish"
   const grammarPath = jibberishRootDir + "jibberish.grammar"
 
@@ -19,10 +18,8 @@ testTree.makeProgram = equal => {
   // Assert
   equal(program.constructor.name, "jibberishNode", "parent program class parsed correctly")
   equal(result, 42)
-
-  // jtree.getProgramClassFromGrammarFile
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

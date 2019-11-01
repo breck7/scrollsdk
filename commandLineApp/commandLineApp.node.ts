@@ -1,20 +1,20 @@
 #!/usr/bin/env ts-node
 //onsave jtree build produce commandLineApp.node.js
 
-const fs = require("fs")
 const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
 const { execSync } = require("child_process")
 
 const { jtree } = require("../index.js")
 const { TreeNode, GrammarProgram, Utils } = jtree
+const { Disk } = require("../products/Disk.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class CommandLineApp {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
     this._grammarsPath = grammarsPath
-    this._initFile(grammarsPath, "name filepath")
+    Disk.createFileIfDoesNotExist(grammarsPath, "name filepath")
     this._reload() // todo: cleanup
     this._cwd = cwd
   }
@@ -29,20 +29,25 @@ class CommandLineApp {
 
   // todo: cleanup.
   _reload() {
-    this._grammarsTree = TreeNode.fromSsv(this._read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
+    this._grammarsTree = TreeNode.fromSsv(Disk.read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
   }
 
-  build(commandName: string, argument: any) {
+  build(buildCommandName: string, argument: any) {
     let dir = Utils._removeLastSlash(this._cwd) + "/"
     let filePath = ""
     while (dir !== "/") {
       filePath = dir + "builder.ts"
-      if (fs.existsSync(filePath)) break
-      dir = Utils._getParentFolder(dir)
+      const jsPath = dir + "builder.js"
+      if (Disk.exists(jsPath)) {
+        const { Builder } = require(jsPath)
+        return new Builder().main(buildCommandName, argument)
+      }
+      if (Disk.exists(filePath)) break
+      dir = Utils.getParentFolder(dir)
     }
-    if (!fs.existsSync(filePath)) throw new Error(`No '${filePath}' found.`)
+    if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
 
-    return execSync([filePath, commandName, argument].filter(f => f).join(" "), { encoding: "utf8" })
+    return execSync([filePath, buildCommandName, argument].filter(commandWord => commandWord).join(" "), { encoding: "utf8" })
   }
 
   combine(grammarName: treeNotationTypes.grammarName) {
@@ -50,7 +55,7 @@ class CommandLineApp {
       .split(" ")
       .map(path => {
         const distributeLine = true ? `#file ${path}\n` : ""
-        return distributeLine + " " + this._read(path).replace(/\n/g, "\n ")
+        return distributeLine + " " + Disk.read(path).replace(/\n/g, "\n ")
       })
       .join("\n")
 
@@ -59,7 +64,7 @@ class CommandLineApp {
 
   distribute(combinedFilePath: treeNotationTypes.filepath) {
     if (!combinedFilePath) throw new Error(`No combinedFilePath provided`)
-    const masterFile = new TreeNode(this._read(combinedFilePath))
+    const masterFile = new TreeNode(Disk.read(combinedFilePath))
     return masterFile.split("#file").map((file: treeNotationTypes.treeNode) => {
       const firstLine = file.nodeAt(0)
       if (firstLine.getFirstWord() !== "#file") return undefined
@@ -68,27 +73,15 @@ class CommandLineApp {
       const needsShift = !firstLine.length
       if (needsShift) firstLine.shiftYoungerSibsRight()
 
-      this._write(filepath, firstLine.childrenToString())
+      Disk.write(filepath, firstLine.childrenToString())
       return filepath
     })
-  }
-
-  _initFile(path: treeNotationTypes.filepath, initialString = "") {
-    if (!fs.existsSync(path)) this._write(path, initialString)
-  }
-
-  _write(path: treeNotationTypes.filepath, content: string) {
-    return fs.writeFileSync(path, content, "utf8")
-  }
-
-  _read(path: treeNotationTypes.filepath) {
-    return fs.readFileSync(path, "utf8")
   }
 
   // todo: improve or remove
   cases(folder: treeNotationTypes.filepath, grammarName: treeNotationTypes.grammarName) {
     const files = recursiveReadSync(folder).filter((file: treeNotationTypes.filepath) => file.endsWith("." + grammarName))
-    const grammarProgram = this._getGrammarProgramRoot(grammarName)
+    const grammarProgram = this._getGrammarProgram(grammarName)
     files.map((filename: treeNotationTypes.filepath) => {
       const errors = this._check(filename)
       if (errors.length) {
@@ -96,7 +89,7 @@ class CommandLineApp {
       }
       const actual = this.compile(filename)
       const expectedPath = filename.replace("." + grammarName, ".compiled")
-      const expected = this._read(expectedPath)
+      const expected = Disk.read(expectedPath)
       if (expected !== actual) {
         const errorTree = new TreeNode()
         errorTree.appendLineAndChildren("expected", expected)
@@ -112,7 +105,7 @@ class CommandLineApp {
   }
 
   help() {
-    const help = this._read(__dirname + "/../commandLineApp/help.ssv") // note: we do the parent indirection for compiled reasons.
+    const help = Disk.read(__dirname + "/../commandLineApp/help.ssv") // note: we do the parent indirection for compiled reasons.
     return TreeNode.fromSsv(help).toTable()
   }
 
@@ -160,8 +153,11 @@ ${grammars.toTable()}`
   }
 
   _checkAndLog(programPath: treeNotationTypes.treeProgramFilePath) {
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
     const errors = this._check(programPath)
-    return `${errors.length} errors for ${programPath}${errors.length ? "\n" + errors.join("\n") : ""}`
+
+    return `Checking "${programPath}" with grammar "${grammarPath}"
+${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   _check(programPath: treeNotationTypes.treeProgramFilePath) {
@@ -179,6 +175,14 @@ ${grammars.toTable()}`
     return this._getGrammarPathByGrammarNameOrThrow(extension)
   }
 
+  _getGrammarCompiledExecutablePath(programPath: treeNotationTypes.treeProgramFilePath) {
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
+    const extension = Utils.getFileExtension(programPath)
+    const dir = Utils.getParentFolder(grammarPath)
+    const compiledPath = dir + extension + ".nodejs.js"
+    if (Disk.exists(compiledPath)) return compiledPath
+  }
+
   sandbox(port = 3333) {
     const { SandboxServer } = require("../products/SandboxServer.node.js")
     const server = new SandboxServer()
@@ -186,40 +190,35 @@ ${grammars.toTable()}`
     return `Starting sandbox on port ${port}`
   }
 
-  prettify(programPath: treeNotationTypes.treeProgramFilePath) {
-    const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
-    const program = new programConstructor(this._read(programPath))
-    const original = program.toString()
-    const pretty = program.sortNodesByInScopeOrder().getSortedByInheritance()
-    this._write(programPath, pretty)
-    return original === pretty ? "No change" : "File updated"
+  format(programPath: treeNotationTypes.treeProgramFilePath) {
+    return jtree.formatFile(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
   }
 
   parse(programPath: treeNotationTypes.treeProgramFilePath) {
     const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
-    const program = new programConstructor(this._read(programPath))
+    const program = new programConstructor(Disk.read(programPath))
     return program.getParseTable(35)
   }
 
   sublime(grammarName: treeNotationTypes.grammarName, outputDirectory: treeNotationTypes.absoluteFolderPath = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new GrammarProgram(fs.readFileSync(grammarPath, "utf8"))
+    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
 
-    this._write(outputPath, grammarProgram.toSublimeSyntaxFile())
+    Disk.write(outputPath, grammarProgram.toSublimeSyntaxFile())
     return `Saved: ${outputPath}`
   }
 
-  _getGrammarProgramRoot(grammarName: treeNotationTypes.grammarName) {
+  _getGrammarProgram(grammarName: treeNotationTypes.grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    return new GrammarProgram(this._read(grammarPath))
+    return new GrammarProgram(Disk.read(grammarPath))
   }
 
   compile(programPath: treeNotationTypes.treeProgramFilePath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    const grammarProgram = new GrammarProgram(this._read(grammarPath))
+    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
     return program.compile()
   }
 
@@ -236,8 +235,8 @@ ${grammars.toTable()}`
   }
 
   _getHistoryFile() {
-    this._initFile(this._getLogFilePath(), "command paramOne paramTwo timestamp\n")
-    return this._read(this._getLogFilePath())
+    Disk.createFileIfDoesNotExist(this._getLogFilePath(), "command paramOne paramTwo timestamp\n")
+    return Disk.read(this._getLogFilePath())
   }
 
   _history(grammarName: treeNotationTypes.grammarName) {
@@ -258,7 +257,7 @@ ${grammars.toTable()}`
       })
       .map((node: treeNotationTypes.treeNode) => node.get("paramOne"))
     const items = Object.keys(new TreeNode(files.join("\n")).toObject())
-    return items.filter(file => file.endsWith(grammarName)).filter(file => fs.existsSync(file))
+    return items.filter(file => file.endsWith(grammarName)).filter(file => Disk.exists(file))
   }
 
   register(grammarPath: treeNotationTypes.grammarFilePath) {
@@ -268,9 +267,9 @@ ${grammars.toTable()}`
 
   _register(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
-    const grammarProgram = new GrammarProgram(this._read(grammarPath))
+    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
     const extension = grammarProgram.getExtensionName()
-    fs.appendFileSync(this._getRegistryPath(), `\n${extension} ${grammarPath}`, "utf8")
+    Disk.append(this._getRegistryPath(), `\n${extension} ${grammarPath}`)
     this._reload()
     return extension
   }
@@ -282,27 +281,35 @@ ${grammars.toTable()}`
     // also the usage data can be used to improve the commandLineApp app
     const line = `${one || ""} ${two || ""} ${three || ""} ${Date.now()}\n`
     const logFilePath = this._getLogFilePath()
-    this._initFile(logFilePath, "command paramOne paramTwo timestamp\n")
-    fs.appendFile(logFilePath, line, "utf8", () => {})
+    Disk.createFileIfDoesNotExist(logFilePath, "command paramOne paramTwo timestamp\n")
+    Disk.appendAsync(logFilePath, line, () => {})
   }
 
-  async _run(programPath: treeNotationTypes.treeProgramFilePath) {
-    const result = await jtree.executeFile(programPath, this._getGrammarPathOrThrow(programPath))
+  private async _executeFile(programPath: treeNotationTypes.treeProgramFilePath) {
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
+    const executablePath = this._getGrammarCompiledExecutablePath(programPath)
+    if (executablePath) {
+      const programConstructor = require(executablePath)
+      const program = new programConstructor(Disk.read(programPath))
+      const result = await program.execute()
+      return result
+    }
+    const result = await jtree.executeFile(programPath, grammarPath)
     return result
   }
 
-  _runSync(programPath: treeNotationTypes.treeProgramFilePath) {
+  private _executeSync(programPath: treeNotationTypes.treeProgramFilePath) {
     return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
   }
 
   async run(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._run(programPathOrGrammarName)
-    return Promise.all(this._history(programPathOrGrammarName).map(file => this._run(file)))
+    if (programPathOrGrammarName.includes(".")) return this._executeFile(programPathOrGrammarName)
+    return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
   }
 
   runSync(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._runSync(programPathOrGrammarName)
-    return this._history(programPathOrGrammarName).map(file => this._runSync(file))
+    if (programPathOrGrammarName.includes(".")) return this._executeSync(programPathOrGrammarName)
+    return this._history(programPathOrGrammarName).map(file => this._executeSync(file))
   }
 
   usage(grammarName: treeNotationTypes.grammarName) {
@@ -313,7 +320,7 @@ ${grammars.toTable()}`
     const report = new TreeNode()
     files.forEach(path => {
       try {
-        const code = this._read(path)
+        const code = Disk.read(path)
         const program = new programConstructor(code)
         const usage = program.getNodeTypeUsage(path)
         report.extend(usage.toString())
@@ -344,33 +351,30 @@ ${grammars.toTable()}`
     return this._getAllCommands().filter(item => item.startsWith(commandName))
   }
 
-  static async main() {
+  static async main(command?: string, paramOne?: string, paramTwo?: string) {
     const app = <any>new CommandLineApp()
 
-    const action = process.argv[2]
-    const paramOne = process.argv[3]
-    const paramTwo = process.argv[4]
     const print = console.log
-    const partialMatches = app._getPartialMatches(action)
+    const partialMatches = app._getPartialMatches(command)
 
-    if (app[action]) {
-      app.addToHistory(action, paramOne, paramTwo)
-      const result = app[action](paramOne, paramTwo)
+    if (app[command]) {
+      app.addToHistory(command, paramOne, paramTwo)
+      const result = app[command](paramOne, paramTwo)
       if (result !== undefined) print(result)
-    } else if (!action) {
+    } else if (!command) {
       app.addToHistory()
       print(app.help())
-    } else if (fs.existsSync(action)) {
-      app.addToHistory(undefined, action)
-      const result = await app.run(action)
+    } else if (Disk.exists(command)) {
+      app.addToHistory(undefined, command)
+      const result = await app.run(command)
       print(result)
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) print(app[partialMatches[0]](paramOne, paramTwo))
-      else print(`Multiple matches for '${action}'. Options are:\n${partialMatches.join("\n")}`)
-    } else print(`Unknown command '${action}'. Options are:\n${app._getAllCommands().join("\n")}. \nType 'tree help' to see help for commands.`)
+      else print(`Multiple matches for '${command}'. Options are:\n${partialMatches.join("\n")}`)
+    } else print(`Unknown command '${command}'. Options are:\n${app._getAllCommands().join("\n")}. \nType 'tree help' to see help for commands.`)
   }
 }
 
-if (!module.parent) CommandLineApp.main()
+if (!module.parent) CommandLineApp.main(process.argv[2], process.argv[3], process.argv[4])
 
 export { CommandLineApp }

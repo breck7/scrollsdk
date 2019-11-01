@@ -28,13 +28,13 @@ testTree.getLineIndexAtCharacterPosition = equal => {
 
 testTree.getParentFolder = equal => {
   // Arrange/Act/Assert
-  equal(jtree.Utils._getParentFolder(`foobar/FooBam.js`), "foobar/")
-  equal(jtree.Utils._getParentFolder(`/`), "/")
-  equal(jtree.Utils._getParentFolder(`/bam`), "/")
-  equal(jtree.Utils._getParentFolder(`/bam/`), "/")
-  equal(jtree.Utils._getParentFolder(`/bam/boom`), "/bam/")
-  equal(jtree.Utils._getParentFolder(`/bam/boom/`), "/bam/")
-  equal(jtree.Utils._getParentFolder(`/bam/boom/bah`), "/bam/boom/")
+  equal(jtree.Utils.getParentFolder(`foobar/FooBam.js`), "foobar/")
+  equal(jtree.Utils.getParentFolder(`/`), "/")
+  equal(jtree.Utils.getParentFolder(`/bam`), "/")
+  equal(jtree.Utils.getParentFolder(`/bam/`), "/")
+  equal(jtree.Utils.getParentFolder(`/bam/boom`), "/bam/")
+  equal(jtree.Utils.getParentFolder(`/bam/boom/`), "/bam/")
+  equal(jtree.Utils.getParentFolder(`/bam/boom/bah`), "/bam/boom/")
 }
 
 testTree.getUniqueWordsArray = equal => {
@@ -89,8 +89,11 @@ testTree.makeSemiRandomFn = equal => {
   equal(first, expected)
   equal(jtree.Utils.makeSemiRandomFn(1)(), expected)
   equal(rand() !== first, true)
+
+  equal(jtree.Utils.randomUniformFloat(0, 100, 2), 97.42682568175951)
+  equal(jtree.Utils.randomUniformInt(0, 100, 2), 97)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

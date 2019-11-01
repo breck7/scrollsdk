@@ -1,11 +1,11 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test compilePoop
- arrangeTestSubject
+ arrange
   require ./poop.node.js
-  constructWithBlockString
+  constructWithParagraph
    🌄 8 29 2019
    😀 4
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  compile
-  typeIs string
+  assertTypeIs string

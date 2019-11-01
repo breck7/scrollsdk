@@ -1,4 +1,10 @@
 // todo: create a Tree Language for number formatting
+// https://github.com/gentooboontoo/js-quantities
+// https://github.com/moment/moment/issues/2469
+// todo: ugly. how do we ditch this or test?
+moment.createFromInputFallback = function(momentConfig) {
+  momentConfig._d = new Date(momentConfig._i)
+}
 var VegaTypes
 ;(function(VegaTypes) {
   VegaTypes["nominal"] = "nominal"
@@ -14,12 +20,6 @@ var JavascriptNativeTypeNames
   JavascriptNativeTypeNames["Date"] = "Date"
   JavascriptNativeTypeNames["boolean"] = "boolean"
 })(JavascriptNativeTypeNames || (JavascriptNativeTypeNames = {}))
-// https://github.com/gentooboontoo/js-quantities
-// https://github.com/moment/moment/issues/2469
-// todo: ugly. how do we ditch this or test?
-moment.createFromInputFallback = function(momentConfig) {
-  momentConfig._d = new Date(momentConfig._i)
-}
 class AbstractPrimitiveType {
   constructor(typeName) {
     this._name = typeName
@@ -754,7 +754,6 @@ class Column {
   }
   _createSummaryVector() {
     const values = []
-    const name = this.getColumnName()
     const map = new Map()
     let incompleteCount = 0
     let uniques = 0
@@ -2173,7 +2172,7 @@ class Table {
     return Table._uniqueId
   }
   _registerColumn(col) {
-    this._columnsMap[col.name] = new Column(col, this._getColumnValuesFromSourceAsAnyVector(col.name))
+    this._columnsMap[col.name] = new Column(col, this._getColumnValuesFromSourceAsAnyVector(col.source || col.name))
     return this
   }
   _getColumnValuesFromSourceAsAnyVector(columnName) {
@@ -2253,7 +2252,7 @@ class Table {
         if (comparisonOperator === ComparisonOperators.lessThanOrEqual) return rowTypedValue <= typedScalarValue
         if (comparisonOperator === ComparisonOperators.greaterThanOrEqual) return rowTypedValue >= typedScalarValue
       }),
-      this.getColumnsMap(),
+      this.getColumnsArrayOfObjects(),
       undefined,
       false
     )

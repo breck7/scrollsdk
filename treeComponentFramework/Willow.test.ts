@@ -2,6 +2,8 @@
 
 import { WillowProgram } from "./TreeComponentFramework"
 
+const { jtree } = require("../index.js")
+
 const testTree: any = {}
 
 testTree.all = (equal: any) => {
@@ -36,5 +38,5 @@ testTree.all = (equal: any) => {
   equal(bodyStumpNode.findStumpNodeByFirstWord("h6").getLine(), "h6 Hello world")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) require("../products/jtree.node.js").Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 export { testTree }

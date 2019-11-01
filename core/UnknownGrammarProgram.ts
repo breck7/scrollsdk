@@ -23,12 +23,14 @@ class UnknownGrammarProgram extends TreeNode {
     return rootNode
   }
 
+  private static _childSuffix = "Child"
+
   private _renameIntegerKeywords(clone: UnknownGrammarProgram) {
     // todo: why are we doing this?
     for (let node of clone.getTopDownArrayIterator()) {
       const firstWordIsAnInteger = !!node.getFirstWord().match(/^\d+$/)
       const parentFirstWord = node.getParent().getFirstWord()
-      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + "Child"))
+      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + UnknownGrammarProgram._childSuffix))
     }
   }
 
@@ -77,9 +79,8 @@ class UnknownGrammarProgram extends TreeNode {
       }
     }
 
-    const needsMatchProperty = TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(firstWord) !== firstWord
-
-    if (needsMatchProperty) nodeDefNode.set(GrammarConstants.match, firstWord)
+    const needsCruxProperty = !firstWord.endsWith(UnknownGrammarProgram._childSuffix + "Node") // todo: cleanup
+    if (needsCruxProperty) nodeDefNode.set(GrammarConstants.crux, firstWord)
 
     if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)
 
@@ -123,7 +124,18 @@ class UnknownGrammarProgram extends TreeNode {
     const cellTypeDefs: string[] = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
     const nodeBreakSymbol = this.getNodeBreakSymbol()
-    return [this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n")
+
+    return this._formatCode([this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n"))
+  }
+
+  private _formatCode(code: string) {
+    // todo: make this run in browser too
+    if (!this.isNodeJs()) return code
+
+    const grammarProgram = new GrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
+    const programConstructor = <any>grammarProgram.getRootConstructor()
+    const program = new programConstructor(code)
+    return program.format().toString()
   }
 
   private _getBestCellType(firstWord: string, instanceCount: treeNotationTypes.int, maxCellsOnLine: treeNotationTypes.int, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {

@@ -1,3 +1,15 @@
+anyCell
+blankCell
+dashCell
+ highlightScope constant.language
+codeCell
+ highlightScope comment
+keywordCell
+ highlightScope keyword
+textCell
+ highlightScope string
+urlCell
+ highlightScope constant.language
 dumbdownNode
  extensions dd dumbdown
  description A prefix Tree Language that compiles to HTML. An alternative to Markdown.
@@ -20,48 +32,32 @@ dumbdownNode
 abstractTopLevelNode
  abstract
  cells keywordCell
-anyCell
-blankCell
-dashCell
- highlightScope constant.language
-codeCell
- highlightScope comment
-keywordCell
- highlightScope keyword
-textCell
- highlightScope string
-urlCell
- highlightScope constant.language
-blankLineNode
- description Blank lines compile to a br in the HTML.
- cells blankCell
- compiler
-  stringTemplate <br>
 titleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <h1>{textCell}</h1>
+ crux title
 linkNode
  cells keywordCell urlCell
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <a href="{urlCell}">{textCell}</a>
+ crux link
 paragraphNode
  inScope linkNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <p>{textCell}</p>
+ crux paragraph
 subtitleNode
  catchAllCellType textCell
  extends abstractTopLevelNode
  compiler
   stringTemplate <h2>{textCell}</h2>
-lineOfCodeNode
- catchAllCellType codeCell
- cells codeCell
+ crux subtitle
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
@@ -71,6 +67,7 @@ codeNode
   openChildren <code>
   closeChildren </code>
   stringTemplate 
+ crux code
 listNode
  inScope dashNode
  extends abstractTopLevelNode
@@ -78,8 +75,17 @@ listNode
   stringTemplate 
   openChildren <ul>
   closeChildren </ul>
+ crux list
+blankLineNode
+ description Blank lines compile to a br in the HTML.
+ cells blankCell
+ compiler
+  stringTemplate <br>
+lineOfCodeNode
+ catchAllCellType codeCell
+ cells codeCell
 dashNode
- match -
+ crux -
  catchAllCellType textCell
  compiler
   stringTemplate <li>{textCell}</li>

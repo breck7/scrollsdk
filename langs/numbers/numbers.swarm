@@ -1,11 +1,11 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test basics Numbers
- arrangeTestSubject
+ arrange
   require ./numbers.node.js
-  constructWithBlockString
+  constructWithParagraph
    comment Should be 5:
    + 2 3
    comment Should be 0:
    - 3 2 1
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0

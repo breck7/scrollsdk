@@ -1,8 +1,8 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test swarmSample
- arrangeTestSubject
+ arrange
   require ../../index.js jtree.GrammarProgram
-  constructWithBlockString
+  constructWithParagraph
    testlangNode
     root
     compilesTo txt
@@ -14,10 +14,13 @@ test swarmSample
    errorNode
     baseNodeType errorNode
    baseNode
+    crux base
    blockNode
+    crux block
     extends baseNode
     inScope baseNode
    toNode
+    crux to
     extends blockNode
     cells wordCell
     tags test
@@ -25,10 +28,10 @@ test swarmSample
      stringTemplate to {wordCell}
      closeChildren end
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
  getRunTimeFirstWordsInScope
-  lengthIs 2
+  assertLengthIs 2
  getNodeTypeDefinitionByNodeTypeId toNode
-  typeIs object
- getTopNodeTypeIds
-  lengthIs 3
+  assertTypeIs object
+ getTopNodeTypeDefinitions
+  assertLengthIs 3

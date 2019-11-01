@@ -1,6 +1,6 @@
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
-/*FOR_TYPES_ONLY*/ import { GrammarBackedRootNode } from "./GrammarLanguage"
+/*FOR_TYPES_ONLY*/ import { GrammarBackedNode } from "./GrammarLanguage"
 /* Used for Types Only, but we want this line to remain in the combined intermediate TS program */ import * as CodeMirrorLib from "codemirror"
 
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
@@ -214,7 +214,7 @@ class TreeNotationCodeMirrorMode {
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
-  _getParsedProgram(): GrammarBackedRootNode {
+  _getParsedProgram(): GrammarBackedNode {
     const source = this._getProgramCodeMethod(this._cmInstance) || ""
     if (!this._cachedProgram || this._cachedSource !== source) {
       this._cachedSource = source

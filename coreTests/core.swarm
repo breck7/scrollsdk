@@ -1,11 +1,11 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test swarm base
- arrangeTestSubject
+ arrange
   require ../index.js jtree.TreeNode
-  constructWithBlockString
+  constructWithParagraph
    hello world
  getChildren
-  lengthIs 1
+  assertLengthIs 1
  nodeAt 0
   getContent
-   stringIs world
+   assertStringIs world

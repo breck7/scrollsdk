@@ -1,7 +1,23 @@
-44.0.0 / 2019-10-13
+44.0.0 / 2019-11-01
 ===================
+- New: toBraid and toSideBySide and toComparison methods
+- New: toStringWithLineNumbers method
+- New: loadRequirements, runTimePhaseError methods
+- New: selection methods
+- New: undo/redo/save methods
 - Fix: sweepercraft perf fix
+- Fix: table derived tables from column filtering fix
 - Breaking: removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
+- Breaking: format() is now evalTemplateString()
+- Breaking: in Grammar: match is now "crux" for now
+- Breaking: getTopNodeTypeIds is now getTopNodeTypeDefinitions
+- Breaking: commandLineApp.prettify is now format
+- Breaking: changed getCssClassNames behavior in TCF
+- Breaking: in swarm: blockStringParam is now withParagraph. blockStringIs to assertParagraphIs, lengthIs:assertLengthIs, stringExcludes:assertStringExcludes, stringIncludes:assertStringIncludes, typeIs:assertTypeIs. constructWithBlockString to constructWithParagraph. arrangeTestSubject to arrange.
+- Infra: Created TestRacer and moved tests and swarm to that
+- Infra: builder will now look for compiled builder.js first
+- Infra: commandLineapp will now will first look for compiled grammar when executing a Tree program
+- Infra: removed qunit, tap, and tap mocha dependencies
 
 43.0.0 / 2019-10-07
 ===================
@@ -475,8 +491,8 @@
 - Infra: added prettier config to package.json
 - Breaking: in Swarm, createTestDummy is now getTestSubject
 - Breaking: Swarm grammar changed. Use code below to update programs:
-swarmProgram.updateNodeTypeIds(`#setup arrangeTestSubject
-%%| constructWithBlockString
+swarmProgram.updateNodeTypeIds(`#setup arrange
+%%| constructWith
 %| blockStringParam
 =# lengthIs
 =+ stringIncludes

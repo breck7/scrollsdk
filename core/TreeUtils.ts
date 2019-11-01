@@ -1,26 +1,55 @@
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
+class Timer {
+  constructor() {
+    this._tickTime = Date.now() - (this.isNodeJs() ? 1000 * process.uptime() : 0)
+    this._firstTickTime = this._tickTime
+  }
+
+  isNodeJs() {
+    return typeof exports !== "undefined"
+  }
+
+  private _tickTime: number
+  private _firstTickTime: number
+
+  tick(msg?: string) {
+    const elapsed = Date.now() - this._tickTime
+    if (msg) console.log(`${elapsed}ms ${msg}`)
+    this._tickTime = Date.now()
+    return elapsed
+  }
+
+  getTotalElapsedTime() {
+    return Date.now() - this._firstTickTime
+  }
+}
+
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
   }
 
-  static async runTestTree(testTree: treeNotationTypes.testTree) {
-    // todo: browser version
-    const tap = require("tap")
-    const runOnlyTheseTest = Object.keys(testTree).filter(key => key.startsWith("_"))
-    const testsToRun = runOnlyTheseTest.length ? runOnlyTheseTest : Object.keys(testTree)
+  static Timer = Timer
 
-    for (let testName of testsToRun) {
-      await new Promise((resolve, reject) => {
-        tap.test(testName, async (childTest: any) => {
-          await testTree[testName](childTest.equal)
-          childTest.end()
-          resolve()
-        })
-      })
+  static findProjectRoot(dirName: string, projectName: string) {
+    const fs = require("fs")
+    const getProjectName = (dirName: string) => {
+      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}"`)
+      const parts = dirName.split("/")
+      const filename = parts.join("/") + "/" + "package.json"
+      if (fs.existsSync(filename) && JSON.parse(fs.readFileSync(filename, "utf8")).name === projectName) return parts.join("/") + "/"
+      parts.pop()
+      return parts
     }
+
+    let result = getProjectName(dirName)
+    while (typeof result !== "string" && result.length > 0) {
+      result = getProjectName(result.join("/"))
+    }
+    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${dirName} not found.`)
+    return result
   }
 
   static escapeRegExp(str: string) {
@@ -57,7 +86,9 @@ class TreeUtils {
   static getMethodFromDotPath(context: any, str: string) {
     const methodParts = str.split(".")
     while (methodParts.length > 1) {
-      context = context[methodParts.shift()]()
+      const methodName = methodParts.shift()
+      if (!context[methodName]) throw new Error(`${methodName} is not a method on ${context}`)
+      context = context[methodName]()
     }
     const final = methodParts.shift()
     return [context, final]
@@ -93,6 +124,15 @@ class TreeUtils {
       const semiRand = Math.sin(seed++) * 10000
       return semiRand - Math.floor(semiRand)
     }
+  }
+
+  static randomUniformInt = (min: treeNotationTypes.int, max: treeNotationTypes.int, seed = 1) => {
+    return Math.round(TreeUtils.randomUniformFloat(min, max, seed))
+  }
+
+  static randomUniformFloat = (min: number, max: number, seed = 1) => {
+    const rand = TreeUtils.makeSemiRandomFn(seed)
+    return min + (max - min) * rand()
   }
 
   static getRange = (startIndex: number, endIndexExclusive: number, increment = 1) => {
@@ -168,7 +208,7 @@ class TreeUtils {
     })
     return Object.values(rows)
   }
-  static _getParentFolder(path: string) {
+  static getParentFolder(path: string) {
     if (path.endsWith("/")) path = this._removeLastSlash(path)
     return path.replace(/\/[^\/]*$/, "") + "/"
   }
@@ -398,16 +438,6 @@ class TreeUtils {
     }
   }
 
-  private static _tickTime: number
-  // todo: clean up verbose/console log
-  static _tick(msg: string, verbose = true) {
-    if (this._tickTime === undefined) this._tickTime = Date.now() - 1000 * process.uptime()
-    const elapsed = Date.now() - this._tickTime
-    if (verbose) console.log(`${elapsed}ms ${msg}`)
-    this._tickTime = Date.now()
-    return elapsed
-  }
-
   static sampleWithoutReplacement(population: any[] = [], quantity: number, seed: number) {
     const prng = this._getPRNG(seed)
     const sampled: { [index: number]: boolean } = {}
@@ -453,6 +483,18 @@ class TreeUtils {
       header.forEach((colName: string, index: treeNotationTypes.int) => (obj[colName] = row[index]))
       return obj
     })
+  }
+
+  static interweave(arrayOfArrays: any[][]) {
+    const lineCount = Math.max(...arrayOfArrays.map(arr => arr.length))
+    const totalArrays = arrayOfArrays.length
+    const result: any[] = []
+    arrayOfArrays.forEach((lineArray, arrayIndex) => {
+      for (let lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+        result[lineIndex * totalArrays + arrayIndex] = lineArray[lineIndex]
+      }
+    })
+    return result
   }
 
   static makeSortByFn(accessorOrAccessors: Function | Function[]): treeNotationTypes.sortFn {

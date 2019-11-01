@@ -1,4 +1,4 @@
-tooling onsave ../../tasks/buildJibJab.js
+tooling onsave jtree build buildJibJab
 jibjabNode
  root
  description Adds a comment node to Jibberish
@@ -9,3 +9,4 @@ commentNode
  extends topLevelNode
  catchAllCellType commentCell
  catchAllNodeType commentNode
+ crux comment

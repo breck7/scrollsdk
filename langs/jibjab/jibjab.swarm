@@ -1,19 +1,19 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test jibjab
- arrangeTestSubject
+ arrange
   require ./jibjab.node.js
-  constructWithBlockString
+  constructWithParagraph
    foo
    nodeWithConsts
    nested
    comment Hello world. this is a comment.
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
 test errors
- arrangeTestSubject
+ arrange
   require ./jibjab.node.js
-  constructWithBlockString
+  constructWithParagraph
    ERRRORRRRR
    comment Hello world. this is a comment.
  getAllErrors
-  lengthIs 1
+  assertLengthIs 1

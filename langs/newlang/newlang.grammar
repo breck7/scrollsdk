@@ -1,15 +1,16 @@
-newlangNode
- root
- description This is the basic root node for your new prefix Tree Language.
- catchAllNodeType catchAllErrorNode
- inScope helloNode
 nameCell
  description A person's name
  highlightScope string
 keywordCell
  highlightScope keyword
+newlangNode
+ root
+ description This is the basic root node for your new prefix Tree Language.
+ catchAllNodeType catchAllErrorNode
+ inScope helloNode
 helloNode
  catchAllCellType nameCell
  cells keywordCell
+ crux hello
 catchAllErrorNode
  baseNodeType errorNode

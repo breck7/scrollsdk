@@ -2,6 +2,8 @@
 
 const hakon = require("./hakon.node.js")
 
+const { jtree } = require("../../index.js")
+
 const testTree = {}
 
 testTree.all = equal => {
@@ -19,5 +21,5 @@ testTree.all = equal => {
 `
   )
 }
-/*NODE_JS_ONLY*/ if (!module.parent) require("../../index.js").jtree.Utils.runTestTree(testTree)
-module.exports = testTree
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+module.exports = { testTree }

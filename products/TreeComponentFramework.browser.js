@@ -339,7 +339,6 @@ class AbstractWillowProgram extends stumpNode {
   }
   async httpGetUrl(url, queryStringObject, responseClass = WillowHTTPResponse) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .get(url)
       .query(queryStringObject)
@@ -374,7 +373,6 @@ class AbstractWillowProgram extends stumpNode {
   }
   async httpPostUrl(url, data) {
     if (this._offlineMode) return new WillowHTTPResponse()
-    const superagent = this.require("superagent")
     const superAgentResponse = await superagent
       .post(this._makeRelativeUrlAbsolute(url))
       .set(this._headers || {})
@@ -886,7 +884,7 @@ class AbstractCommander {
       node.unmountAndDestroy()
     } else {
       app.appendLine("TreeComponentFrameworkDebuggerComponent")
-      app.renderAndGetRenderResult()
+      app.renderAndGetRenderReport()
     }
   }
 }
@@ -911,345 +909,10 @@ class TreeComponentCommander extends AbstractCommander {
     treeComponent.unmountAndDestroy()
   }
 }
-class AbstractTreeComponent extends jtree.GrammarBackedNonRootNode {
+class AbstractTreeComponent extends jtree.GrammarBackedNode {
   constructor() {
     super(...arguments)
     this._commander = new TreeComponentCommander(this)
-  }
-  getParseErrorCount() {
-    if (!this.length) return 0
-    return this.getTopDownArray()
-      .map(child => child.getParseErrorCount())
-      .reduce((sum, num) => sum + num)
-  }
-  getCommander() {
-    return this._commander
-  }
-  getRootNode() {
-    return super.getRootNode()
-  }
-  getStumpNode() {
-    return this._htmlStumpNode
-  }
-  getHakon() {
-    return ""
-  }
-  getTheme() {
-    return this.getRootNode().getTheme()
-  }
-  getCommandsBuffer() {
-    if (!this._commandsBuffer) this._commandsBuffer = []
-    return this._commandsBuffer
-  }
-  addToCommandLog(command) {
-    this.getCommandsBuffer().push({
-      command: command,
-      time: this._getProcessTimeInMilliseconds()
-    })
-  }
-  getMessageBuffer() {
-    if (!this._messageBuffer) this._messageBuffer = new jtree.TreeNode()
-    return this._messageBuffer
-  }
-  // todo: move this to tree class? or other higher level class?
-  addStumpCodeMessageToLog(message) {
-    // note: we have 1 parameter, and are going to do type inference first.
-    // Todo: add actions that can be taken from a message?
-    // todo: add tests
-    this.getMessageBuffer().appendLineAndChildren("message", message)
-  }
-  addStumpErrorMessageToLog(errorMessage) {
-    return this.addStumpCodeMessageToLog(`div
- class OhayoError
- bern${jtree.TreeNode.nest(errorMessage, 2)}`)
-  }
-  logMessageText(message = "") {
-    const pre = `pre
- bern${jtree.TreeNode.nest(message, 2)}`
-    return this.addStumpCodeMessageToLog(pre)
-  }
-  unmount() {
-    if (
-      !this.isMounted() // todo: why do we need this check?
-    )
-      return undefined
-    this._getChildTreeComponents().forEach(child => child.unmount())
-    this.treeComponentWillUnmount()
-    this._removeCss()
-    this._removeHtml()
-    delete this._lastRenderedTime
-    this.treeComponentDidUnmount()
-  }
-  _removeHtml() {
-    this._htmlStumpNode.removeStumpNode()
-    delete this._htmlStumpNode
-  }
-  getStumpCode() {
-    return `div
- class ${this.getCssClassNames()}`
-  }
-  getCssClassNames() {
-    return this.constructor.name
-  }
-  treeComponentWillMount() {}
-  treeComponentDidMount() {
-    AbstractTreeComponent._mountedTreeComponents++
-  }
-  treeComponentDidUnmount() {
-    AbstractTreeComponent._mountedTreeComponents--
-  }
-  treeComponentWillUnmount() {}
-  forceUpdate() {}
-  getNewestTimeToRender() {
-    return this._lastTimeToRender
-  }
-  _setLastRenderedTime(time) {
-    this._lastRenderedTime = time
-    return this
-  }
-  // todo: can this be async?
-  treeComponentDidUpdate() {}
-  _getChildTreeComponents() {
-    return this.getChildrenByNodeConstructor(AbstractTreeComponent)
-  }
-  _hasChildrenTreeComponents() {
-    return this._getChildTreeComponents().length > 0
-  }
-  // todo: this is hacky. we do it so we can just mount all tiles to wall.
-  getStumpNodeForChildren() {
-    return this.getStumpNode()
-  }
-  _getLastRenderedTime() {
-    return this._lastRenderedTime
-  }
-  _getCss() {
-    return this.getTheme().hakonToCss(this.getHakon())
-  }
-  toPlainHtml(containerId) {
-    return `<div id="${containerId}">
- <style>${this.getTheme().hakonToCss(this.getHakon())}</style>
-${new stumpNode(this.getStumpCode()).compile()}
-</div>`
-  }
-  _getCssStumpCode() {
-    return `styleTag
- stumpStyleFor ${this.constructor.name}
- bern${jtree.TreeNode.nest(this._getCss(), 2)}`
-  }
-  isNotATile() {
-    // quick hacky way to get around children problem
-    return true
-  }
-  _updateAndGetUpdateResult() {
-    if (!this._shouldTreeComponentUpdate()) return { treeComponentDidUpdate: false, reason: "_shouldTreeComponentUpdate is false" }
-    this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
-    this._removeCss()
-    this._mountCss()
-    // todo: fucking switch to react? looks like we don't update parent because we dont want to nuke children.
-    // okay. i see why we might do that for non tile treeComponents. but for Tile treeComponents, seems like we arent nesting, so why not?
-    // for now
-    if (this.isNotATile() && this._hasChildrenTreeComponents()) return { treeComponentDidUpdate: false, reason: "is a parent" }
-    this._updateHtml()
-    this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
-    return { treeComponentDidUpdate: true }
-  }
-  _getWrappedStumpCode() {
-    return this.getStumpCode()
-  }
-  _updateHtml() {
-    const stumpNodeToMountOn = this._htmlStumpNode.getParent()
-    const currentIndex = this._htmlStumpNode.getIndex()
-    this._removeHtml()
-    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), currentIndex)
-  }
-  unmountAndDestroy() {
-    this.unmount()
-    return this.destroy()
-  }
-  // todo: move to keyword node class?
-  toggle(firstWord, contentOptions) {
-    const currentNode = this.getNode(firstWord)
-    if (!contentOptions) return currentNode ? currentNode.unmountAndDestroy() : this.appendLine(firstWord)
-    const currentContent = currentNode === undefined ? undefined : currentNode.getContent()
-    const index = contentOptions.indexOf(currentContent)
-    const newContent = index === -1 || index + 1 === contentOptions.length ? contentOptions[0] : contentOptions[index + 1]
-    this.delete(firstWord)
-    if (newContent) this.touchNode(firstWord).setContent(newContent)
-    return newContent
-  }
-  isMounted() {
-    return !!this._htmlStumpNode
-  }
-  // todo: move to base TreeNode?
-  getNextOrPrevious(arr) {
-    const length = arr.length
-    const index = arr.indexOf(this)
-    if (length === 1) return undefined
-    if (index === length - 1) return arr[index - 1]
-    return arr[index + 1]
-  }
-  toggleAndRender(firstWord, contentOptions) {
-    this.toggle(firstWord, contentOptions)
-    this.getRootNode().renderAndGetRenderResult()
-  }
-  _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
-    return this.getDependencies().find(dep => dep.getLineModifiedTime() > lastRenderedTime)
-  }
-  _getReasonForUpdatingOrNot() {
-    const mTime = this.getLineModifiedTime()
-    const lastRenderedTime = this._getLastRenderedTime() || 0
-    const staleTime = mTime - lastRenderedTime
-    if (lastRenderedTime === 0)
-      return {
-        shouldUpdate: true,
-        reason: "TreeComponent hasn't been rendered yet",
-        staleTime: staleTime
-      }
-    if (staleTime > 0)
-      return {
-        shouldUpdate: true,
-        reason: "TreeComponent itself changed",
-        staleTime: staleTime
-      }
-    const outdatedDependency = this._getFirstOutdatedDependency(lastRenderedTime)
-    if (outdatedDependency)
-      return {
-        shouldUpdate: true,
-        reason: "A dependency changed",
-        dependency: outdatedDependency,
-        staleTime: outdatedDependency.getLineModifiedTime() - lastRenderedTime
-      }
-    return {
-      shouldUpdate: false,
-      reason: "No render needed",
-      lastRenderedTime: lastRenderedTime,
-      mTime: mTime
-    }
-  }
-  getDependencies() {
-    return []
-  }
-  getChildrenThatNeedRendering() {
-    const all = []
-    this._getTreeComponentsThatNeedRendering(all)
-    return all
-  }
-  _shouldTreeComponentUpdate() {
-    return this._getReasonForUpdatingOrNot().shouldUpdate
-  }
-  _getTreeComponentsThatNeedRendering(arr) {
-    this._getChildTreeComponents().forEach(child => {
-      if (!child.isMounted() || child._shouldTreeComponentUpdate()) arr.push({ child: child, childUpdateBecause: child._getReasonForUpdatingOrNot() })
-      child._getTreeComponentsThatNeedRendering(arr)
-    })
-  }
-  _mount(stumpNodeToMountOn, index) {
-    this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
-    this.treeComponentWillMount()
-    this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), index) // todo: add index back?
-    this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
-    return this
-  }
-  // todo: we might be able to squeeze virtual dom in here on the mountCss and mountHtml methods.
-  _mountCss() {
-    // todo: only insert css once per class? have a set?
-    this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(this._getCssStumpCode())
-  }
-  _getPageHeadStump() {
-    return this.getRootNode()
-      .getWillowProgram()
-      .getHeadStumpNode()
-  }
-  _removeCss() {
-    this._cssStumpNode.removeCssStumpNode()
-    delete this._cssStumpNode
-  }
-  _mountHtml(stumpNodeToMountOn, htmlCode, index) {
-    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
-    this._htmlStumpNode.setStumpNodeTreeComponent(this)
-  }
-  _treeComponentDidUpdate() {
-    this.treeComponentDidUpdate()
-  }
-  _treeComponentDidMount() {
-    this.treeComponentDidMount()
-  }
-  renderAndGetRenderResult(stumpNode, index) {
-    const isUpdateOp = this.isMounted()
-    let treeComponentUpdateResult = {
-      treeComponentDidUpdate: false
-    }
-    if (isUpdateOp) treeComponentUpdateResult = this._updateAndGetUpdateResult()
-    else this._mount(stumpNode, index)
-    const stumpNodeForChildren = this.getStumpNodeForChildren()
-    // Todo: insert delayed rendering?
-    const childResults = this._getChildTreeComponents().map((child, index) => child.renderAndGetRenderResult(stumpNodeForChildren, index))
-    if (isUpdateOp) {
-      if (treeComponentUpdateResult.treeComponentDidUpdate) {
-        try {
-          this._treeComponentDidUpdate()
-        } catch (err) {
-          console.error(err)
-        }
-      }
-    } else {
-      try {
-        this._treeComponentDidMount()
-      } catch (err) {
-        console.error(err)
-      }
-    }
-    return {
-      type: isUpdateOp ? "update" : "mount",
-      treeComponentUpdateResult: treeComponentUpdateResult,
-      children: childResults
-    }
-  }
-}
-AbstractTreeComponent._mountedTreeComponents = 0
-class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
-  getHakon() {
-    return `.TreeComponentFrameworkDebuggerComponent
- position fixed
- top 5px
- left 5px
- z-index 1000
- background rgba(254,255,156, .95)
- box-shadow 1px 1px 1px rgba(0,0,0,.5)
- padding 12px
- overflow scroll
- max-height 500px
-.TreeComponentFrameworkDebuggerComponentCloseButton
- position absolute
- cursor pointer
- opacity .9
- top 2px
- right 2px
- &:hover
-  opacity 1`
-  }
-  getStumpCode() {
-    const app = this.getRootNode()
-    return `div
- class TreeComponentFrameworkDebuggerComponent
- div x
-  class TreeComponentFrameworkDebuggerComponentCloseButton
-  stumpOnClickCommand toggleTreeComponentFrameworkDebuggerCommand
- div
-  span This app is powered by the
-  a Tree Component Framework
-   href https://github.com/treenotation/jtree/tree/master/treeComponentFramework
- p ${app.getNumberOfLines()} components loaded. ${WillowProgram._stumpsOnPage} stumps on page.
- pre
-  bern
-${app.toString(3)}`
-  }
-}
-class AbstractTreeComponentRootNode extends AbstractTreeComponent {
-  getTheme() {
-    if (!this._theme) this._theme = new DefaultTheme()
-    return this._theme
   }
   getWillowProgram() {
     if (!this._willowProgram) {
@@ -1261,7 +924,6 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
     }
     return this._willowProgram
   }
-  treeComponentDidMount() {}
   // todo: remove?
   async appWillFirstRender() {}
   // todo: remove?
@@ -1279,7 +941,16 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
   _onCommandWillRun() {
     // todo: remove. currently used by ohayo
   }
-  _getCommandArguments(stumpNode) {
+  _getCommandArguments(stumpNode, commandMethod) {
+    if (commandMethod.includes(" ")) {
+      // todo: cleanup and document
+      // It seems the command arguments can from the method string or from form values.
+      const parts = commandMethod.split(" ")
+      return {
+        uno: parts[1],
+        dos: parts[2]
+      }
+    }
     const shadow = stumpNode.getShadow()
     let valueParam
     if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
@@ -1309,7 +980,10 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
     return clone.toString()
   }
   async _executeStumpNodeCommand(stumpNode, commandMethod) {
-    const params = this._getCommandArguments(stumpNode)
+    const params = this._getCommandArguments(stumpNode, commandMethod)
+    if (commandMethod.includes(" "))
+      // todo: cleanup
+      commandMethod = commandMethod.split(" ")[0]
     this.addToCommandLog([commandMethod, params.uno, params.dos].filter(item => item).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
     let treeComponent = stumpNode.getStumpNodeTreeComponent()
@@ -1361,6 +1035,9 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
       return checkAndExecute(this, DataShadowEvents.onChangeCommand, evt)
     })
   }
+  getDefaultStartState() {
+    return ""
+  }
   static async startApp(appClass) {
     document.addEventListener(
       "DOMContentLoaded",
@@ -1372,12 +1049,350 @@ class AbstractTreeComponentRootNode extends AbstractTreeComponent {
           win.app = new anyAppClass(startState)
           win.app._setTreeComponentFrameworkEventListeners()
           await win.app.appWillFirstRender()
-          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
+          win.app.renderAndGetRenderReport(win.app.getWillowProgram().getBodyStumpNode())
           win.app.appDidFirstRender()
         }
       },
       false
     )
+  }
+  getCommander() {
+    return this._commander
+  }
+  getStumpNode() {
+    return this._htmlStumpNode
+  }
+  toHakonCode() {
+    return ""
+  }
+  getTheme() {
+    if (!this.isRoot()) return this.getRootNode().getTheme()
+    if (!this._theme) this._theme = new DefaultTheme()
+    return this._theme
+  }
+  getCommandsBuffer() {
+    if (!this._commandsBuffer) this._commandsBuffer = []
+    return this._commandsBuffer
+  }
+  addToCommandLog(command) {
+    this.getCommandsBuffer().push({
+      command: command,
+      time: this._getProcessTimeInMilliseconds()
+    })
+  }
+  getMessageBuffer() {
+    if (!this._messageBuffer) this._messageBuffer = new jtree.TreeNode()
+    return this._messageBuffer
+  }
+  // todo: move this to tree class? or other higher level class?
+  addStumpCodeMessageToLog(message) {
+    // note: we have 1 parameter, and are going to do type inference first.
+    // Todo: add actions that can be taken from a message?
+    // todo: add tests
+    this.getMessageBuffer().appendLineAndChildren("message", message)
+  }
+  addStumpErrorMessageToLog(errorMessage) {
+    return this.addStumpCodeMessageToLog(`div
+ class OhayoError
+ bern${jtree.TreeNode.nest(errorMessage, 2)}`)
+  }
+  logMessageText(message = "") {
+    const pre = `pre
+ bern${jtree.TreeNode.nest(message, 2)}`
+    return this.addStumpCodeMessageToLog(pre)
+  }
+  unmount() {
+    if (
+      !this.isMounted() // todo: why do we need this check?
+    )
+      return undefined
+    this._getChildTreeComponents().forEach(child => child.unmount())
+    this.treeComponentWillUnmount()
+    this._removeCss()
+    this._removeHtml()
+    delete this._lastRenderedTime
+    this.treeComponentDidUnmount()
+  }
+  _removeHtml() {
+    this._htmlStumpNode.removeStumpNode()
+    delete this._htmlStumpNode
+  }
+  toStumpCode() {
+    return `div
+ class ${this.getCssClassNames().join(" ")}`
+  }
+  getCssClassNames() {
+    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent")
+  }
+  treeComponentWillMount() {}
+  treeComponentDidMount() {
+    AbstractTreeComponent._mountedTreeComponents++
+  }
+  treeComponentDidUnmount() {
+    AbstractTreeComponent._mountedTreeComponents--
+  }
+  treeComponentWillUnmount() {}
+  forceUpdate() {}
+  getNewestTimeToRender() {
+    return this._lastTimeToRender
+  }
+  _setLastRenderedTime(time) {
+    this._lastRenderedTime = time
+    return this
+  }
+  // todo: can this be async?
+  treeComponentDidUpdate() {}
+  _getChildTreeComponents() {
+    return this.getChildrenByNodeConstructor(AbstractTreeComponent)
+  }
+  _hasChildrenTreeComponents() {
+    return this._getChildTreeComponents().length > 0
+  }
+  // todo: this is hacky. we do it so we can just mount all tiles to wall.
+  getStumpNodeForChildren() {
+    return this.getStumpNode()
+  }
+  _getLastRenderedTime() {
+    return this._lastRenderedTime
+  }
+  _getCss() {
+    return this.getTheme().hakonToCss(this.toHakonCode())
+  }
+  toPlainHtml(containerId) {
+    return `<div id="${containerId}">
+ <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
+${new stumpNode(this.toStumpCode()).compile()}
+</div>`
+  }
+  _getCssStumpCode() {
+    return `styleTag
+ stumpStyleFor ${this.constructor.name}
+ bern${jtree.TreeNode.nest(this._getCss(), 2)}`
+  }
+  _updateAndGetUpdateReport() {
+    const reasonForUpdatingOrNot = this.getWhetherToUpdateAndReason()
+    if (!reasonForUpdatingOrNot.shouldUpdate) return reasonForUpdatingOrNot
+    this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
+    this._removeCss()
+    this._mountCss()
+    // todo: fucking switch to react? looks like we don't update parent because we dont want to nuke children.
+    // okay. i see why we might do that for non tile treeComponents. but for Tile treeComponents, seems like we arent nesting, so why not?
+    // for now
+    if (this._hasChildrenTreeComponents()) return { shouldUpdate: false, reason: "did not update because is a parent" }
+    this._updateHtml()
+    this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
+    return reasonForUpdatingOrNot
+  }
+  _updateHtml() {
+    const stumpNodeToMountOn = this._htmlStumpNode.getParent()
+    const currentIndex = this._htmlStumpNode.getIndex()
+    this._removeHtml()
+    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
+  }
+  unmountAndDestroy() {
+    this.unmount()
+    return this.destroy()
+  }
+  // todo: move to keyword node class?
+  toggle(firstWord, contentOptions) {
+    const currentNode = this.getNode(firstWord)
+    if (!contentOptions) return currentNode ? currentNode.unmountAndDestroy() : this.appendLine(firstWord)
+    const currentContent = currentNode === undefined ? undefined : currentNode.getContent()
+    const index = contentOptions.indexOf(currentContent)
+    const newContent = index === -1 || index + 1 === contentOptions.length ? contentOptions[0] : contentOptions[index + 1]
+    this.delete(firstWord)
+    if (newContent) this.touchNode(firstWord).setContent(newContent)
+    return newContent
+  }
+  isMounted() {
+    return !!this._htmlStumpNode
+  }
+  // todo: move to base TreeNode?
+  getNextOrPrevious(arr) {
+    const length = arr.length
+    const index = arr.indexOf(this)
+    if (length === 1) return undefined
+    if (index === length - 1) return arr[index - 1]
+    return arr[index + 1]
+  }
+  toggleAndRender(firstWord, contentOptions) {
+    this.toggle(firstWord, contentOptions)
+    this.getRootNode().renderAndGetRenderReport()
+  }
+  _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
+    return this.getDependencies().find(dep => dep.getLineModifiedTime() > lastRenderedTime)
+  }
+  getWhetherToUpdateAndReason() {
+    const mTime = this.getLineModifiedTime()
+    const lastRenderedTime = this._getLastRenderedTime() || 0
+    const staleTime = mTime - lastRenderedTime
+    if (lastRenderedTime === 0)
+      return {
+        shouldUpdate: true,
+        reason: "shouldUpdate because this TreeComponent hasn't been rendered yet",
+        staleTime: staleTime
+      }
+    if (staleTime > 0)
+      return {
+        shouldUpdate: true,
+        reason: "shouldUpdate because this TreeComponent changed",
+        staleTime: staleTime
+      }
+    const outdatedDependency = this._getFirstOutdatedDependency(lastRenderedTime)
+    if (outdatedDependency)
+      return {
+        shouldUpdate: true,
+        reason: "Should update because a dependency updated",
+        dependency: outdatedDependency,
+        staleTime: outdatedDependency.getLineModifiedTime() - lastRenderedTime
+      }
+    return {
+      shouldUpdate: false,
+      reason: "Should NOT update because no dependency changed",
+      lastRenderedTime: lastRenderedTime,
+      mTime: mTime
+    }
+  }
+  getDependencies() {
+    return []
+  }
+  getChildrenThatNeedRendering() {
+    const all = []
+    this._getTreeComponentsThatNeedRendering(all)
+    return all
+  }
+  _getTreeComponentsThatNeedRendering(arr) {
+    this._getChildTreeComponents().forEach(child => {
+      const reasonForUpdatingOrNot = child.getWhetherToUpdateAndReason()
+      if (!child.isMounted() || reasonForUpdatingOrNot.shouldUpdate) arr.push({ child: child, childUpdateBecause: reasonForUpdatingOrNot })
+      child._getTreeComponentsThatNeedRendering(arr)
+    })
+  }
+  toStumpLoadingCode() {
+    return `div Loading ${this.getFirstWord()}...
+ class ${this.getCssClassNames().join(" ")}
+ id ${this.getTreeComponentId()}`
+  }
+  getTreeComponentId() {
+    // html ids can't begin with a number
+    return "treeComponent" + this._getUid()
+  }
+  _toLoadedOrLoadingStumpCode() {
+    if (!this.isLoaded()) return this.toStumpLoadingCode()
+    this.setRunTimePhaseError("renderPhase")
+    try {
+      return this.toStumpCode()
+    } catch (err) {
+      console.error(err)
+      this.setRunTimePhaseError("renderPhase", err)
+      return this.toStumpErrorStateCode(err)
+    }
+  }
+  toStumpErrorStateCode(err) {
+    return `div ${err}
+ class ${this.getCssClassNames().join(" ")}
+ id ${this.getTreeComponentId()}`
+  }
+  _mount(stumpNodeToMountOn, index) {
+    this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
+    this.treeComponentWillMount()
+    this._mountCss()
+    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
+    this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
+    return this
+  }
+  // todo: we might be able to squeeze virtual dom in here on the mountCss and mountHtml methods.
+  _mountCss() {
+    // todo: only insert css once per class? have a set?
+    this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(this._getCssStumpCode())
+  }
+  _getPageHeadStump() {
+    return this.getRootNode()
+      .getWillowProgram()
+      .getHeadStumpNode()
+  }
+  _removeCss() {
+    this._cssStumpNode.removeCssStumpNode()
+    delete this._cssStumpNode
+  }
+  _mountHtml(stumpNodeToMountOn, htmlCode, index) {
+    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
+    this._htmlStumpNode.setStumpNodeTreeComponent(this)
+  }
+  _treeComponentDidUpdate() {
+    this.treeComponentDidUpdate()
+  }
+  _treeComponentDidMount() {
+    this.treeComponentDidMount()
+  }
+  renderAndGetRenderReport(stumpNode, index) {
+    const isUpdateOp = this.isMounted()
+    let treeComponentUpdateReport = {
+      shouldUpdate: false,
+      reason: ""
+    }
+    if (isUpdateOp) treeComponentUpdateReport = this._updateAndGetUpdateReport()
+    else this._mount(stumpNode, index)
+    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    // Todo: insert delayed rendering?
+    const childResults = this._getChildTreeComponents().map((child, index) => child.renderAndGetRenderReport(stumpNodeForChildren, index))
+    if (isUpdateOp) {
+      if (treeComponentUpdateReport.shouldUpdate) {
+        try {
+          this._treeComponentDidUpdate()
+        } catch (err) {
+          console.error(err)
+        }
+      }
+    } else {
+      try {
+        this._treeComponentDidMount()
+      } catch (err) {
+        console.error(err)
+      }
+    }
+    let str = `${this.getWord(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${treeComponentUpdateReport.shouldUpdate} ${treeComponentUpdateReport.reason}`
+    childResults.forEach(child => (str += "\n" + child.toString(1)))
+    return new jtree.TreeNode(str)
+  }
+}
+AbstractTreeComponent._mountedTreeComponents = 0
+class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
+  toHakonCode() {
+    return `.TreeComponentFrameworkDebuggerComponent
+ position fixed
+ top 5px
+ left 5px
+ z-index 1000
+ background rgba(254,255,156, .95)
+ box-shadow 1px 1px 1px rgba(0,0,0,.5)
+ padding 12px
+ overflow scroll
+ max-height 500px
+.TreeComponentFrameworkDebuggerComponentCloseButton
+ position absolute
+ cursor pointer
+ opacity .9
+ top 2px
+ right 2px
+ &:hover
+  opacity 1`
+  }
+  toStumpCode() {
+    const app = this.getRootNode()
+    return `div
+ class TreeComponentFrameworkDebuggerComponent
+ div x
+  class TreeComponentFrameworkDebuggerComponentCloseButton
+  stumpOnClickCommand toggleTreeComponentFrameworkDebuggerCommand
+ div
+  span This app is powered by the
+  a Tree Component Framework
+   href https://github.com/treenotation/jtree/tree/master/treeComponentFramework
+ p ${app.getNumberOfLines()} components loaded. ${WillowProgram._stumpsOnPage} stumps on page.
+ pre
+  bern
+${app.toString(3)}`
   }
 }
 class AbstractGithubTriangleComponent extends AbstractTreeComponent {
@@ -1385,14 +1400,14 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
     super(...arguments)
     this.githubLink = `https://github.com/treenotation/jtree`
   }
-  getHakon() {
+  toHakonCode() {
     return `.AbstractGithubTriangleComponent
  display block
  position absolute
  top 0
  right 0`
   }
-  getStumpCode() {
+  toStumpCode() {
     return `a
  class AbstractGithubTriangleComponent
  href ${this.githubLink}
@@ -1400,7 +1415,6 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   src /github-fork.svg`
   }
 }
-window.AbstractTreeComponentRootNode = AbstractTreeComponentRootNode
 window.AbstractGithubTriangleComponent = AbstractGithubTriangleComponent
 window.AbstractTreeComponent = AbstractTreeComponent
 window.AbstractCommander = AbstractCommander

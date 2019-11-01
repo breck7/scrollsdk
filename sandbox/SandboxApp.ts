@@ -1,6 +1,6 @@
 //onsave jtree build produce SandboxApp.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -29,7 +29,7 @@ class SandboxCommander extends AbstractCommander {
   private _app: SandboxApp
 }
 
-class SandboxApp extends AbstractTreeComponentRootNode {
+class SandboxApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       tableComponent: tableComponent,
@@ -87,7 +87,7 @@ class SandboxApp extends AbstractTreeComponentRootNode {
     })
   }
 
-  getHakon() {
+  toHakonCode() {
     const theme = this.getTheme()
     return `body
  font-family "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
@@ -124,13 +124,13 @@ githubTriangleComponent`
 }
 
 class headerComponent extends AbstractTreeComponent {
-  getHakon() {
+  toHakonCode() {
     return `#logo
  width 100px
  vertical-align middle`
   }
 
-  getStumpCode() {
+  toStumpCode() {
     return `div
  h1
   a
@@ -163,7 +163,7 @@ class githubTriangleComponent extends AbstractGithubTriangleComponent {
 }
 
 class tableComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     return `table
  tr
   td

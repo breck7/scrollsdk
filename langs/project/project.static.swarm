@@ -1,14 +1,14 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-arrangeTestSubject
+arrange
  require ./project.node.js
  static
 test getTypeScriptAndJavaScriptImportsFromSourceCodeTest
  getTypeScriptAndJavaScriptImportsFromSourceCode
-  blockStringParam
+  withParagraph
    foobar
-  lengthIs 0
+  assertLengthIs 0
  getTypeScriptAndJavaScriptImportsFromSourceCode
-  blockStringParam
+  withParagraph
    const Foobar = require("foobar")
    import FamBam from "../fambam.js"
-  lengthIs 2
+  assertLengthIs 2

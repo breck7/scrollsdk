@@ -39,22 +39,7 @@ testTree.all = equal => {
 
 testTree.vegaTest = equal => {
   // Arrange
-  const rows = [
-    ["appeared", "count", "total"],
-    [1941, 1, 1],
-    [1943, 1, 2],
-    [1947, 2, 4],
-    [1948, 1, 5],
-    [1949, 1, 6],
-    [1950, 3, 9],
-    [1951, 4, 13],
-    [1952, 2, 15],
-    [1953, 5, 20],
-    [1954, 3, 23],
-    [1955, 9, 32],
-    [1956, 5, 37],
-    [1957, 8, 45]
-  ]
+  const rows = [["appeared", "count", "total"], [1941, 1, 1], [1943, 1, 2], [1947, 2, 4], [1948, 1, 5], [1949, 1, 6], [1950, 3, 9], [1951, 4, 13], [1952, 2, 15], [1953, 5, 20], [1954, 3, 23], [1955, 9, 32], [1956, 5, 37], [1957, 8, 45]]
   const table = new Table(jtree.Utils.javascriptTableWithHeaderRowToObjects(rows), [{ source: "appeared", name: "year", type: "year" }])
 
   // Assert
@@ -66,11 +51,16 @@ testTree.vegaTest = equal => {
 
 testTree.filterTest = equal => {
   // Arrange
-  const table = new Table(jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.waterBill), [{ source: "PaidOn", name: "year", type: "year" }])
-  // Act
-  const res = table.filterClonedRowsByScalar("year", ComparisonOperators.greaterThan, "2018")
+  const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.waterBill)
+  const table = new Table(data, [{ source: "PaidOn", name: "year", type: "year" }])
+
   // Assert
-  equal(res.getRowCount(), 3)
+  equal(table.getTableColumnByName("year").getReductions().count, 16, "expected rows")
+  // Act
+  const newTable = table.filterClonedRowsByScalar("year", ComparisonOperators.greaterThan, "2018")
+  // Assert
+  equal(newTable.getRowCount(), 3, "rows filtered")
+  equal(newTable.getTableColumnByName("year").getReductions().count, 3, "reductions should be correct")
 }
 
 testTree.timeTest = equal => {
@@ -84,5 +74,5 @@ testTree.timeTest = equal => {
   equal(column.getPrimitiveTypeName(), "second")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 export { testTree }

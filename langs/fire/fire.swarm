@@ -1,23 +1,23 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test compileFire
- arrangeTestSubject
+ arrange
   require ./fire.node.js
-  constructWithBlockString
+  constructWithParagraph
    sum ten 2 3 5
    add ten2 2 3 5
    dumpIdentifier ten
  compile
-  blockStringIs
+  assertParagraphIs
    const ten = [2, 3, 5].reduce((sum, num) => sum + num)
    const ten2 = 2 + 3 + 5
    console.log(ten)
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
 test compileRegression
- arrangeTestSubject
+ arrange
   require ./fire.node.js
-  constructWithBlockString
+  constructWithParagraph
    #! /usr/bin/env node /usr/local/bin/jtree
  compile
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0

@@ -1,4 +1,4 @@
-const log = msg => {
+const logFn = msg => {
   jQuery("body").append(`<div>${msg}</div>`)
   console.log(msg)
 }
@@ -14,7 +14,7 @@ text
 thisShouldErrorError1
 to fillThis`
   const code = new jtree.TreeNode(programCode)
-  let long = jtree.TreeNode.toString().repeat(20)
+  let long = jtree.Utils.toString().repeat(20)
   code.getNode("text").setChildren(long)
 
   long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
@@ -23,14 +23,14 @@ to fillThis`
 }
 
 const main = (grammarCode, code) => {
-  log("Building language...")
+  logFn("Building language...")
   const programClass = new GrammarProgram(grammarCode).getRootConstructor()
 
-  log("Loading program...")
+  logFn("Loading program...")
 
   const program = new programClass(code)
 
-  log("Checking errors...")
+  logFn("Checking errors...")
   const startTime = Date.now()
   const errors = program.getAllErrors()
   //const errors = []
@@ -41,10 +41,10 @@ const main = (grammarCode, code) => {
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
   let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Expected ${expected} errors. Actual errors: ${errors.length}.`
 
-  log(msg)
-  log("")
-  log("First five errors:")
-  log(
+  logFn(msg)
+  logFn("")
+  logFn("First five errors:")
+  logFn(
     errors
       .slice(0, 5)
       .map(e => e.getMessage())
@@ -70,7 +70,7 @@ const parseStringTest = () => {
 
   let totalLines = lineLength * trials
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
-  log(`parsed ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second<br><br>`)
+  logFn(`parsed ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second<br><br>`)
 }
 
 const toStringTest = () => {
@@ -82,7 +82,7 @@ const toStringTest = () => {
 
   let totalLines = data.getNumberOfLines()
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
-  log(`toString ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`)
+  logFn(`toString ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`)
 }
 
 jQuery(async () => {

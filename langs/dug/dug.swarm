@@ -1,9 +1,9 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 todo Make it easier in swarm to pass in commmon input/expected pairs
 test compileToJSON
- arrangeTestSubject
+ arrange
   require ./dug.node.js
-  constructWithBlockString
+  constructWithParagraph
    object
     name
      string jtree
@@ -20,7 +20,7 @@ test compileToJSON
       printWidth
        number 160
  compile
-  blockStringIs
+  assertParagraphIs
    {
      "name": "jtree",
      "version": "30",
@@ -32,11 +32,11 @@ test compileToJSON
      }
    }
  getAllErrors
-  lengthIs 0
+  assertLengthIs 0
 test testErrors
- arrangeTestSubject
+ arrange
   require ./dug.node.js
-  constructWithBlockString
+  constructWithParagraph
    strin foo
  getAllErrors
-  lengthIs 1
+  assertLengthIs 1

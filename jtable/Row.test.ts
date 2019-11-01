@@ -27,5 +27,5 @@ testTree.all = equal => {
   equal(arr.length, 2)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.Utils.runTestTree(testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 export { testTree }

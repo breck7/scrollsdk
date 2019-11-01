@@ -2,7 +2,7 @@ const fs = require("fs")
 
 import { jtree } from "./jtree"
 import { treeNotationTypes } from "../products/treeNotationTypes"
-import { GrammarProgram, GrammarBackedRootNode, GrammarConstants } from "./GrammarLanguage"
+import { GrammarProgram, GrammarBackedNode } from "./GrammarLanguage"
 import { Upgrader } from "./Upgrader"
 
 enum CompileTarget {
@@ -12,7 +12,6 @@ enum CompileTarget {
 
 class jtreeNode extends jtree {
   static Upgrader = Upgrader
-  static GrammarConstants = GrammarConstants
 
   static executeFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): Promise<any> => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 
@@ -23,13 +22,27 @@ class jtreeNode extends jtree {
 
   static executeFileSync = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): any => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 
-  static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedRootNode => {
+  static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
     const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
   static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true) {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
+  }
+
+  static formatProgram = (programCode: string, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
+    const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
+    const program = new programConstructor(programCode)
+    return program.format().toString()
+  }
+
+  static formatFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath) => {
+    const original = jtree.TreeNode.fromDisk(programPath)
+    const formatted = jtreeNode.formatProgram(original.toString(), grammarPath)
+    if (original === formatted) return false
+    new jtree.TreeNode(formatted).toDisk(programPath)
+    return true
   }
 
   private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean) {

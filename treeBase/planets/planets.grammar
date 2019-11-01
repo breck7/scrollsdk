@@ -1,3 +1,11 @@
+anyCell
+filenameCell
+intCell
+ highlightScope constant.numeric.integer
+floatCell
+ highlightScope constant.numeric.float
+keywordCell
+ highlightScope keyword
 planetNode
  root
  todo Change pattern to postfix.
@@ -5,27 +13,23 @@ planetNode
  cells filenameCell
  inScope abstractIntPropertyNode abstractFloatPropertyNode
  catchAllNodeType errorNode
-anyCell
-filenameCell
 errorNode
  baseNodeType errorNode
-intCell
- highlightScope constant.numeric.integer
-floatCell
- highlightScope constant.numeric.float
-keywordCell
- highlightScope keyword
 abstractIntPropertyNode
  cells keywordCell intCell
  abstract
+surfaceGravityNode
+ extends abstractIntPropertyNode
+ crux surfaceGravity
+diameterNode
+ extends abstractIntPropertyNode
+ crux diameter
+moonsNode
+ extends abstractIntPropertyNode
+ crux moons
 abstractFloatPropertyNode
  cells keywordCell floatCell
  abstract
-surfaceGravityNode
- extends abstractIntPropertyNode
-diameterNode
- extends abstractIntPropertyNode
-moonsNode
- extends abstractIntPropertyNode
 yearsToOrbitSunNode
  extends abstractFloatPropertyNode
+ crux yearsToOrbitSun

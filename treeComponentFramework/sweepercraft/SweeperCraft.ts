@@ -1,6 +1,6 @@
 //onsave jtree build produce SweeperCraft.browser.js
 
-const { AbstractTreeComponentRootNode, AbstractTreeComponent, WillowConstants, AbstractCommander, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, WillowConstants, AbstractCommander, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
 
 declare type int = number
@@ -80,12 +80,6 @@ class SweeperCraftGame {
     if (this.isLost()) return "You Lost :("
     else if (this.isWon()) return "You won!"
     return " "
-  }
-
-  getGameStateClass() {
-    if (this.isLost()) return "gameLost"
-    else if (this.isWon()) return "gameWon"
-    return ""
   }
 
   getBoard() {
@@ -529,7 +523,7 @@ class SweeperCraftCommander extends AbstractCommander {
   }
 }
 
-class SweeperCraftApp extends AbstractTreeComponentRootNode {
+class SweeperCraftApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       headerComponent: headerComponent,
@@ -544,7 +538,7 @@ class SweeperCraftApp extends AbstractTreeComponentRootNode {
 
   protected _commander = new SweeperCraftCommander(this)
 
-  getHakon() {
+  toHakonCode() {
     const theme = this.getTheme()
     return `body
  font-family "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif
@@ -683,13 +677,13 @@ githubTriangleComponent`
   }
 
   private _isFirstRender = true
-  renderAndGetRenderResult(stumpNode?: any) {
+  renderAndGetRenderReport(stumpNode?: any) {
     if (this._isFirstRender) {
       this._isFirstRender = false
       this._firstRender(stumpNode)
     }
 
-    return super.renderAndGetRenderResult(stumpNode)
+    return super.renderAndGetRenderReport(stumpNode)
   }
 
   _getKeyboardShortcuts() {
@@ -744,7 +738,7 @@ githubTriangleComponent`
     this._mainGame = new SweeperCraftGame(board, game => {
       this._syncBoardToGame() // todo: cleanup
 
-      this.renderAndGetRenderResult(stumpNode)
+      this.renderAndGetRenderReport(stumpNode)
     })
     let boardNode = this.getNode("boardComponent")
     if (boardNode) {
@@ -758,8 +752,11 @@ githubTriangleComponent`
     this._mainGame._render()
   }
 
-  getCssClassNames() {
-    return `${this._mainGame.getGameStateClass()} ${super.getCssClassNames()}`
+  getCssClasses() {
+    const classes = super.getCssClasses()
+    if (this._mainGame.isLost()) classes.push("gameLost")
+    else if (this._mainGame.isWon()) classes.push("gameWon")
+    return classes
   }
 
   private _firstRender(stumpNode: any) {
@@ -845,7 +842,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
     this.setContent(`${this.numberOfMines}mines ${this.numberOfMoves}clicks ${this.gameMessage}`)
   }
 
-  getStumpCode() {
+  toStumpCode() {
     return `div
  class headerComponent
  div
@@ -883,8 +880,8 @@ class boardComponent extends AbstractSweeperCraftComponent {
       : "playing"
   }
 
-  getCssClassNames() {
-    return `${this._getCssGameClass()} ${super.getCssClassNames()}`
+  getCssClasses() {
+    return super.getCssClasses().concat([this._getCssGameClass()])
   }
 }
 
@@ -897,7 +894,7 @@ class rowComponent extends AbstractTreeComponent {
 }
 
 class squareComponent extends AbstractSweeperCraftComponent {
-  getStumpCode() {
+  toStumpCode() {
     const row = this.getRow()
     const col = this.getColumn()
 
@@ -905,7 +902,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
  stumpOnClickCommand clickSquareCommand ${row} ${col}
  stumpOnShiftClickCommand flagSquareCommand ${row} ${col}
  stumpOnContextMenuCommand flagSquareCommand ${row} ${col}
- class ${this.getCssClassNames()}`
+ class ${this.getCssClassNames().join(" ")}`
   }
 
   _syncBoardToGame() {
@@ -955,27 +952,25 @@ class squareComponent extends AbstractSweeperCraftComponent {
     const isFlagged = this.isFlagged
     const hasBomb = this.hasBomb
 
-    let classNames = "squareComponent "
+    let classNames: string[] = []
 
-    if (!wasClicked && isLost && shouldReveal) classNames += hasBomb ? "bomb " : ""
-    else if (wasClicked && hasBomb) classNames += "bomb "
+    if (!wasClicked && isLost && shouldReveal && hasBomb) classNames.push("bomb")
+    else if (wasClicked && hasBomb) classNames.push("bomb")
 
     if (wasClicked) {
-      classNames += "clicked "
-      if (!hasBomb) {
-        classNames += "b" + neighborBombCount + " "
-      }
+      classNames.push("clicked")
+      if (!hasBomb) classNames.push("b" + neighborBombCount)
     }
 
-    if (isFlagged && !wasClicked) classNames += "flagged "
+    if (isFlagged && !wasClicked) classNames.push("flagged")
 
-    return classNames
+    return super.getCssClassNames().concat(classNames)
   }
 }
 
 // todo: STATE
 class controlsComponent extends AbstractSweeperCraftComponent {
-  getStumpCode() {
+  toStumpCode() {
     const parts = []
     const game = this.getRootNode().getGame()
 
@@ -997,7 +992,7 @@ class controlsComponent extends AbstractSweeperCraftComponent {
 
 // todo: STATE
 class customLinkComponent extends AbstractSweeperCraftComponent {
-  getStumpCode() {
+  toStumpCode() {
     const craftLink = this._getGameLink()
     if (craftLink) return `div Your game link: <a href="#${craftLink}">${craftLink}</a>`
     return `div`
@@ -1015,7 +1010,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
 }
 
 class shortcutsTableComponent extends AbstractTreeComponent {
-  getStumpCode() {
+  toStumpCode() {
     return `div
  id shortcuts
  table

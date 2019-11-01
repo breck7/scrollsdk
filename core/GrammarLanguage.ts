@@ -546,6 +546,7 @@ class BlobNode extends GrammarBackedNode {
   }
 }
 
+// todo: can we remove this? hard to extend.
 class UnknownNodeTypeNode extends GrammarBackedNode {
   createParser() {
     return new TreeNode.Parser(UnknownNodeTypeNode, {})
@@ -2371,4 +2372,4 @@ PreludeKinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
 PreludeKinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
 PreludeKinds[PreludeCellTypeIds.intCell] = GrammarIntCell
 
-export { GrammarConstants, PreludeCellTypeIds, GrammarProgram, GrammarBackedNode }
+export { GrammarConstants, PreludeCellTypeIds, GrammarProgram, GrammarBackedNode, UnknownNodeTypeError }

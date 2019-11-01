@@ -786,8 +786,8 @@ class TreeNode extends AbstractNode {
   execute(context) {
     return Promise.all(this.map(child => child.execute(context)))
   }
-  async loadDependencies(loadingPromiseMap) {
-    await Promise.all(this.map(node => node.loadDependencies(loadingPromiseMap)))
+  async loadRequirements(context) {
+    await Promise.all(this.map(node => node.loadRequirements(context)))
   }
   getErrors() {
     return []
@@ -980,6 +980,18 @@ class TreeNode extends AbstractNode {
   getFirstAncestor() {
     const parent = this.getParent()
     return parent.isRoot() ? this : parent.getFirstAncestor()
+  }
+  isLoaded() {
+    return true
+  }
+  getRunTimePhaseErrors() {
+    if (!this._runTimePhaseErrors) this._runTimePhaseErrors = {}
+    return this._runTimePhaseErrors
+  }
+  setRunTimePhaseError(phase, errorObject) {
+    if (errorObject === undefined) delete this.getRunTimePhaseErrors()[phase]
+    else this.getRunTimePhaseErrors()[phase] = errorObject
+    return this
   }
   _getJavascriptPrototypeChainUpTo(stopAtClassName = "TreeNode") {
     // todo: cross browser test this
@@ -3493,6 +3505,7 @@ class BlobNode extends GrammarBackedNode {
     return []
   }
 }
+// todo: can we remove this? hard to extend.
 class UnknownNodeTypeNode extends GrammarBackedNode {
   createParser() {
     return new TreeNode.Parser(UnknownNodeTypeNode, {})
@@ -5496,6 +5509,7 @@ class jtree {}
 jtree.GrammarBackedNode = GrammarBackedNode
 jtree.GrammarConstants = GrammarConstants
 jtree.Utils = TreeUtils
+jtree.UnknownNodeTypeError = UnknownNodeTypeError
 jtree.TestRacer = TestRacer
 jtree.TreeEvents = TreeEvents
 jtree.TreeNode = TreeNode

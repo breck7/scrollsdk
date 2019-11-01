@@ -1111,7 +1111,7 @@ abstract class AbstractCommander {
       node.unmountAndDestroy()
     } else {
       app.appendLine("TreeComponentFrameworkDebuggerComponent")
-      app.renderAndGetRenderResult()
+      app.renderAndGetRenderReport()
     }
   }
 }
@@ -1361,19 +1361,12 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
           win.app = new anyAppClass(startState)
           win.app._setTreeComponentFrameworkEventListeners()
           await win.app.appWillFirstRender()
-          win.app.renderAndGetRenderResult(win.app.getWillowProgram().getBodyStumpNode())
+          win.app.renderAndGetRenderReport(win.app.getWillowProgram().getBodyStumpNode())
           win.app.appDidFirstRender()
         }
       },
       false
     )
-  }
-
-  getParseErrorCount() {
-    if (!this.length) return 0
-    return this.getTopDownArray()
-      .map((child: any) => child.getParseErrorCount())
-      .reduce((sum: number, num: number) => sum + num)
   }
 
   protected _commander: AbstractCommander = new TreeComponentCommander(this)
@@ -1520,13 +1513,9 @@ ${new stumpNode(this.toStumpCode()).compile()}
  bern${jtree.TreeNode.nest(this._getCss(), 2)}`
   }
 
-  isNotATile() {
-    // quick hacky way to get around children problem
-    return true
-  }
-
-  protected _updateAndGetUpdateResult() {
-    if (!this._shouldTreeComponentUpdate()) return { treeComponentDidUpdate: false, reason: "_shouldTreeComponentUpdate is false" }
+  protected _updateAndGetUpdateReport() {
+    const reasonForUpdatingOrNot = this.getWhetherToUpdateAndReason()
+    if (!reasonForUpdatingOrNot.shouldUpdate) return reasonForUpdatingOrNot
 
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
     this._removeCss()
@@ -1534,23 +1523,19 @@ ${new stumpNode(this.toStumpCode()).compile()}
     // todo: fucking switch to react? looks like we don't update parent because we dont want to nuke children.
     // okay. i see why we might do that for non tile treeComponents. but for Tile treeComponents, seems like we arent nesting, so why not?
     // for now
-    if (this.isNotATile() && this._hasChildrenTreeComponents()) return { treeComponentDidUpdate: false, reason: "is a parent" }
+    if (this._hasChildrenTreeComponents()) return { shouldUpdate: false, reason: "did not update because is a parent" }
 
     this._updateHtml()
 
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
-    return { treeComponentDidUpdate: true }
-  }
-
-  protected _getWrappedStumpCode() {
-    return this.toStumpCode()
+    return reasonForUpdatingOrNot
   }
 
   protected _updateHtml() {
     const stumpNodeToMountOn = <abstractHtmlTag>this._htmlStumpNode.getParent()
     const currentIndex = this._htmlStumpNode.getIndex()
     this._removeHtml()
-    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), currentIndex)
+    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
   }
 
   unmountAndDestroy() {
@@ -1587,28 +1572,28 @@ ${new stumpNode(this.toStumpCode()).compile()}
 
   toggleAndRender(firstWord: string, contentOptions: string[]) {
     this.toggle(firstWord, contentOptions)
-    this.getRootNode().renderAndGetRenderResult()
+    this.getRootNode().renderAndGetRenderReport()
   }
 
   protected _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
     return this.getDependencies().find(dep => dep.getLineModifiedTime() > lastRenderedTime)
   }
 
-  protected _getReasonForUpdatingOrNot(): reasonForUpdatingOrNot {
+  getWhetherToUpdateAndReason(): reasonForUpdatingOrNot {
     const mTime = this.getLineModifiedTime()
     const lastRenderedTime = this._getLastRenderedTime() || 0
     const staleTime = mTime - lastRenderedTime
     if (lastRenderedTime === 0)
       return {
         shouldUpdate: true,
-        reason: "TreeComponent hasn't been rendered yet",
+        reason: "shouldUpdate because this TreeComponent hasn't been rendered yet",
         staleTime: staleTime
       }
 
     if (staleTime > 0)
       return {
         shouldUpdate: true,
-        reason: "TreeComponent itself changed",
+        reason: "shouldUpdate because this TreeComponent changed",
         staleTime: staleTime
       }
 
@@ -1616,13 +1601,13 @@ ${new stumpNode(this.toStumpCode()).compile()}
     if (outdatedDependency)
       return {
         shouldUpdate: true,
-        reason: "A dependency changed",
+        reason: "Should update because a dependency updated",
         dependency: outdatedDependency,
         staleTime: outdatedDependency.getLineModifiedTime() - lastRenderedTime
       }
     return {
       shouldUpdate: false,
-      reason: "No render needed",
+      reason: "Should NOT update because no dependency changed",
       lastRenderedTime: lastRenderedTime,
       mTime: mTime
     }
@@ -1638,15 +1623,41 @@ ${new stumpNode(this.toStumpCode()).compile()}
     return all
   }
 
-  protected _shouldTreeComponentUpdate() {
-    return this._getReasonForUpdatingOrNot().shouldUpdate
-  }
-
   protected _getTreeComponentsThatNeedRendering(arr: childShouldUpdateResult[]) {
     this._getChildTreeComponents().forEach((child: AbstractTreeComponent) => {
-      if (!child.isMounted() || child._shouldTreeComponentUpdate()) arr.push({ child: child, childUpdateBecause: child._getReasonForUpdatingOrNot() })
+      const reasonForUpdatingOrNot = child.getWhetherToUpdateAndReason()
+      if (!child.isMounted() || reasonForUpdatingOrNot.shouldUpdate) arr.push({ child: child, childUpdateBecause: reasonForUpdatingOrNot })
       child._getTreeComponentsThatNeedRendering(arr)
     })
+  }
+
+  toStumpLoadingCode() {
+    return `div Loading ${this.getFirstWord()}...
+ class ${this.getCssClassNames().join(" ")}
+ id ${this.getTreeComponentId()}`
+  }
+
+  getTreeComponentId() {
+    // html ids can't begin with a number
+    return "treeComponent" + this._getUid()
+  }
+
+  private _toLoadedOrLoadingStumpCode() {
+    if (!this.isLoaded()) return this.toStumpLoadingCode()
+    this.setRunTimePhaseError("renderPhase")
+    try {
+      return this.toStumpCode()
+    } catch (err) {
+      console.error(err)
+      this.setRunTimePhaseError("renderPhase", err)
+      return this.toStumpErrorStateCode(err)
+    }
+  }
+
+  toStumpErrorStateCode(err: any) {
+    return `div ${err}
+ class ${this.getCssClassNames().join(" ")}
+ id ${this.getTreeComponentId()}`
   }
 
   protected _mount(stumpNodeToMountOn: abstractHtmlTag, index: number) {
@@ -1655,7 +1666,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
     this.treeComponentWillMount()
 
     this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, this._getWrappedStumpCode(), index) // todo: add index back?
+    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
 
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return this
@@ -1691,21 +1702,22 @@ ${new stumpNode(this.toStumpCode()).compile()}
     this.treeComponentDidMount()
   }
 
-  renderAndGetRenderResult(stumpNode?: abstractHtmlTag, index?: number) {
+  renderAndGetRenderReport(stumpNode?: abstractHtmlTag, index?: number) {
     const isUpdateOp = this.isMounted()
-    let treeComponentUpdateResult = {
-      treeComponentDidUpdate: false
+    let treeComponentUpdateReport: reasonForUpdatingOrNot = {
+      shouldUpdate: false,
+      reason: ""
     }
-    if (isUpdateOp) treeComponentUpdateResult = this._updateAndGetUpdateResult()
+    if (isUpdateOp) treeComponentUpdateReport = this._updateAndGetUpdateReport()
     else this._mount(stumpNode, index)
 
     const stumpNodeForChildren = this.getStumpNodeForChildren()
 
     // Todo: insert delayed rendering?
-    const childResults = this._getChildTreeComponents().map((child: any, index: number) => child.renderAndGetRenderResult(stumpNodeForChildren, index))
+    const childResults = this._getChildTreeComponents().map((child: any, index: number) => child.renderAndGetRenderReport(stumpNodeForChildren, index))
 
     if (isUpdateOp) {
-      if (treeComponentUpdateResult.treeComponentDidUpdate) {
+      if (treeComponentUpdateReport.shouldUpdate) {
         try {
           this._treeComponentDidUpdate()
         } catch (err) {
@@ -1720,11 +1732,9 @@ ${new stumpNode(this.toStumpCode()).compile()}
       }
     }
 
-    return {
-      type: isUpdateOp ? "update" : "mount",
-      treeComponentUpdateResult: treeComponentUpdateResult,
-      children: childResults
-    }
+    let str = `${this.getWord(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${treeComponentUpdateReport.shouldUpdate} ${treeComponentUpdateReport.reason}`
+    childResults.forEach((child: any) => (str += "\n" + child.toString(1)))
+    return new jtree.TreeNode(str)
   }
 }
 

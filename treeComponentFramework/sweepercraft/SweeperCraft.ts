@@ -677,13 +677,13 @@ githubTriangleComponent`
   }
 
   private _isFirstRender = true
-  renderAndGetRenderResult(stumpNode?: any) {
+  renderAndGetRenderReport(stumpNode?: any) {
     if (this._isFirstRender) {
       this._isFirstRender = false
       this._firstRender(stumpNode)
     }
 
-    return super.renderAndGetRenderResult(stumpNode)
+    return super.renderAndGetRenderReport(stumpNode)
   }
 
   _getKeyboardShortcuts() {
@@ -738,7 +738,7 @@ githubTriangleComponent`
     this._mainGame = new SweeperCraftGame(board, game => {
       this._syncBoardToGame() // todo: cleanup
 
-      this.renderAndGetRenderResult(stumpNode)
+      this.renderAndGetRenderReport(stumpNode)
     })
     let boardNode = this.getNode("boardComponent")
     if (boardNode) {

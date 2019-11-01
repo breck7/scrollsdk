@@ -536,12 +536,12 @@ customLinkComponent
 shortcutsTableComponent
 githubTriangleComponent`
   }
-  renderAndGetRenderResult(stumpNode) {
+  renderAndGetRenderReport(stumpNode) {
     if (this._isFirstRender) {
       this._isFirstRender = false
       this._firstRender(stumpNode)
     }
-    return super.renderAndGetRenderResult(stumpNode)
+    return super.renderAndGetRenderReport(stumpNode)
   }
   _getKeyboardShortcuts() {
     const commander = this.getCommander()
@@ -591,7 +591,7 @@ githubTriangleComponent`
     else board = SweeperCraftGame.boardFromPermalink(link)
     this._mainGame = new SweeperCraftGame(board, game => {
       this._syncBoardToGame() // todo: cleanup
-      this.renderAndGetRenderResult(stumpNode)
+      this.renderAndGetRenderReport(stumpNode)
     })
     let boardNode = this.getNode("boardComponent")
     if (boardNode) {

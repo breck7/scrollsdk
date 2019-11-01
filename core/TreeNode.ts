@@ -121,8 +121,8 @@ class TreeNode extends AbstractNode {
     return Promise.all(this.map(child => child.execute(context)))
   }
 
-  async loadDependencies(loadingPromiseMap: Map<any, any>) {
-    await Promise.all(this.map(node => node.loadDependencies(loadingPromiseMap)))
+  async loadRequirements(context: any) {
+    await Promise.all(this.map(node => node.loadRequirements(context)))
   }
 
   getErrors(): treeNotationTypes.TreeError[] {
@@ -359,6 +359,23 @@ class TreeNode extends AbstractNode {
   getFirstAncestor(): TreeNode {
     const parent = this.getParent()
     return parent.isRoot() ? this : parent.getFirstAncestor()
+  }
+
+  isLoaded() {
+    return true
+  }
+
+  private _runTimePhaseErrors: { [phase: string]: any }
+
+  getRunTimePhaseErrors() {
+    if (!this._runTimePhaseErrors) this._runTimePhaseErrors = {}
+    return this._runTimePhaseErrors
+  }
+
+  setRunTimePhaseError(phase: string, errorObject: any) {
+    if (errorObject === undefined) delete this.getRunTimePhaseErrors()[phase]
+    else this.getRunTimePhaseErrors()[phase] = errorObject
+    return this
   }
 
   _getJavascriptPrototypeChainUpTo(stopAtClassName = "TreeNode") {

@@ -38,7 +38,7 @@ class Builder extends AbstractBuilder {
     const shipped = ["hakon", "dumbdown", "stump", "fire"]
     shipped.forEach(lang => {
       jtree.compileGrammarForBrowser(`${__dirname}/langs/${lang}/${lang}.grammar`, this._getProductFolder(), true)
-      jtree.compileGrammarForNodeJs(`${__dirname}/langs/${lang}/${lang}.grammar`, this._getProductFolder(), true)
+      jtree.compileGrammarForNodeJs(`${__dirname}/langs/${lang}/${lang}.grammar`, this._getProductFolder(), true, "../index.js")
     })
   }
 

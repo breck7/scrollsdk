@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 {
-  const { jtree } = require("/Users/breck/jtree/products/../index.js")
+  const { jtree } = require("../index.js")
 
   class dumbdownNode extends jtree.GrammarBackedNode {
     createParser() {

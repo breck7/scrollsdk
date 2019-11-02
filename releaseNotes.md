@@ -1,3 +1,7 @@
+44.0.2 / 2019-11-02
+===================
+- Fix: incorrect path in compiled grammars
+
 44.0.1 / 2019-11-02
 ===================
 - Fix: some case insensitive filenames on Mac broke linux build

@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 {
-  const { jtree } = require("/Users/breck/jtree/products/../index.js")
+  const { jtree } = require("../index.js")
 
   class hakonNode extends jtree.GrammarBackedNode {
     createParser() {

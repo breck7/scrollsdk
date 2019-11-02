@@ -27,8 +27,8 @@ class jtreeNode extends jtree {
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true) {
-    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
+  static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true, pathToJtree = __dirname + "/../index.js") {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, pathToJtree)
   }
 
   static formatProgram = (programCode: string, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
@@ -45,11 +45,10 @@ class jtreeNode extends jtree {
     return true
   }
 
-  private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean) {
+  private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean, pathToJtree?: string) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new GrammarProgram(grammarCode.toString())
-    const pathToJtree = __dirname + "/../index.js"
     const outputFilePath = outputFolder + `${program.getGrammarName()}.${target}.js`
 
     let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()

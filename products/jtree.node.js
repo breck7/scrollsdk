@@ -2966,7 +2966,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "44.0.1"
+TreeNode.getVersion = () => "44.0.2"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -5525,14 +5525,13 @@ var CompileTarget
   CompileTarget["browser"] = "browser"
 })(CompileTarget || (CompileTarget = {}))
 class jtreeNode extends jtree {
-  static compileGrammarForNodeJs(pathToGrammar, outputFolder, usePrettier = true) {
-    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier)
+  static compileGrammarForNodeJs(pathToGrammar, outputFolder, usePrettier = true, pathToJtree = __dirname + "/../index.js") {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, pathToJtree)
   }
-  static _compileGrammar(pathToGrammar, outputFolder, target, usePrettier) {
+  static _compileGrammar(pathToGrammar, outputFolder, target, usePrettier, pathToJtree) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new GrammarProgram(grammarCode.toString())
-    const pathToJtree = __dirname + "/../index.js"
     const outputFilePath = outputFolder + `${program.getGrammarName()}.${target}.js`
     let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
     if (isNodeJs)

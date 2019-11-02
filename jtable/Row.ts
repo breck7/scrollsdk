@@ -1,6 +1,6 @@
 const { jtree } = require("../index.js")
 
-import { jTableTypes } from "../products/JTableTypes"
+import { jTableTypes } from "../products/jTableTypes"
 import { Column } from "./Column"
 
 /*FOR_TYPES_ONLY*/ import { Table } from "./Table"
@@ -58,10 +58,7 @@ class Row {
     const sourceCol = columns[sourceColName]
 
     // only use source if we still have access to it
-    const val =
-      sourceColName && sourceCol
-        ? this._getRowValueFromOriginalOrSource(sourceColName, sourceCol.getPrimitiveTypeName(), destColumn.getPrimitiveTypeName())
-        : this.getRowOriginalValue(colName)
+    const val = sourceColName && sourceCol ? this._getRowValueFromOriginalOrSource(sourceColName, sourceCol.getPrimitiveTypeName(), destColumn.getPrimitiveTypeName()) : this.getRowOriginalValue(colName)
 
     const res = destColumn.getPrimitiveTypeObj().getAsNativeJavascriptType(val)
     const mathFn = destColumn.getMathFn()
@@ -69,11 +66,7 @@ class Row {
     return res
   }
 
-  private _getRowValueFromOriginalOrSource(
-    sourceColName: jTableTypes.columnName,
-    sourceColType: jTableTypes.primitiveType,
-    destType: jTableTypes.primitiveType
-  ) {
+  private _getRowValueFromOriginalOrSource(sourceColName: jTableTypes.columnName, sourceColType: jTableTypes.primitiveType, destType: jTableTypes.primitiveType) {
     return Column.convertValueToNumeric(this.getRowOriginalValue(sourceColName), sourceColType, destType)
   }
 

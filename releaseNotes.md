@@ -1,3 +1,8 @@
+44.0.1 / 2019-11-02
+===================
+- Fix: some case insensitive filenames on Mac broke linux build
+- Fix: removed isDesktopVersion from TCF
+
 44.0.0 / 2019-11-01
 ===================
 - New: toBraid and toSideBySide and toComparison methods

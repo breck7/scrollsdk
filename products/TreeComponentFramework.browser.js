@@ -365,7 +365,6 @@ class AbstractWillowProgram extends stumpNode {
     return cacheHit
   }
   async httpGetUrlFromProxyCache(url) {
-    if (!this.isDesktopVersion()) return this.httpGetUrlFromCache(url)
     const queryStringMap = {}
     queryStringMap.url = url
     queryStringMap.cacheOnServer = "true"
@@ -428,10 +427,6 @@ class AbstractWillowProgram extends stumpNode {
   }
   async promptThen(message, value) {
     return value
-  }
-  // todo: refactor. should be able to override this.
-  isDesktopVersion() {
-    return this._getHostname() === "localhost"
   }
   setLoadedDroppedFileHandler(callback, helpText = "") {}
   getWindowSize() {

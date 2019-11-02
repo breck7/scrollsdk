@@ -1,3 +1,7 @@
+44.0.3 / 2019-11-02
+===================
+- Fix: in TCF rewrote queryObjectToQueryString to make working/testable in node
+
 44.0.2 / 2019-11-02
 ===================
 - Fix: incorrect path in compiled grammars

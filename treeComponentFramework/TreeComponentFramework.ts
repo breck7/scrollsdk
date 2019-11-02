@@ -340,7 +340,11 @@ class AbstractWillowProgram extends stumpNode {
   }
 
   queryObjectToQueryString(obj: Object) {
-    return ""
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries(obj)) {
+      params.set(key, String(value))
+    }
+    return params.toString()
   }
 
   toPrettyDeepLink(treeCode: string, queryObject: any) {
@@ -779,10 +783,6 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       stumpNodes.push(that.getStumpNodeFromElement(this))
     })
     return stumpNodes
-  }
-
-  queryObjectToQueryString(obj: any) {
-    return jQuery.param(obj)
   }
 
   addSuidsToHtmlHeadAndBodyShadows() {

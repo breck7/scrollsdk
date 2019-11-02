@@ -267,7 +267,11 @@ class AbstractWillowProgram extends stumpNode {
     return this.location.port ? ":" + this.location.port : ""
   }
   queryObjectToQueryString(obj) {
-    return ""
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries(obj)) {
+      params.set(key, String(value))
+    }
+    return params.toString()
   }
   toPrettyDeepLink(treeCode, queryObject) {
     // todo: move things to a constant.
@@ -610,9 +614,6 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       stumpNodes.push(that.getStumpNodeFromElement(this))
     })
     return stumpNodes
-  }
-  queryObjectToQueryString(obj) {
-    return jQuery.param(obj)
   }
   addSuidsToHtmlHeadAndBodyShadows() {
     jQuery(WillowConstants.tags.html).attr(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())

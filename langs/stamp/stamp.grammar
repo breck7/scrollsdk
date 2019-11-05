@@ -31,7 +31,13 @@ stampNode
   async execute(context) {
    await this.executeSeries(context)
   }
-  static dirToStamp(absPathWithoutEndingSlash, output = "list") {
+  static dirToStampWithContents(absPathWithoutEndingSlash) {
+    return stampNode._dirToStampFn(absPathWithoutEndingSlash, "content")
+  }
+  static dirToStamp(absPathWithoutEndingSlash) {
+    return stampNode._dirToStampFn(absPathWithoutEndingSlash, "list")
+  }
+  static _dirToStampFn(absPathWithoutEndingSlash, output) {
    const fs = require("fs")
    // todo: add chmod, file metadata
    if (absPathWithoutEndingSlash.startsWith(".")) absPathWithoutEndingSlash = jtree.Utils.resolvePath(absPathWithoutEndingSlash, process.cwd() + "/")

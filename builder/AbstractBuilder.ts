@@ -76,6 +76,26 @@ class AbstractBuilder extends jtree.TreeNode {
     this._prettifyFile(outputFilePath)
   }
 
+  produceProductFromInstructionsTree(productNode: any, projectRootPath: string) {
+    const outputFileName = productNode.get("outputFileName")
+    const inputFiles = productNode
+      .getNode("files")
+      .getWordsFrom(1)
+      .map((path: string) => projectRootPath + "/" + path)
+    const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
+    const lastLine = productNode.get("lastLine") ? productNode.get("lastLine") : ""
+    const removeAll = productNode.getNodesByGlobPath("removeAll")
+    const transformFn = (code: string) => {
+      removeAll.forEach((node: any) => {
+        code = jtree.Utils.removeAll(code, node.getContent())
+      })
+      return firstLine + code + "\n" + lastLine
+    }
+    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
+    else this._produceNodeProductFromTypeScript(inputFiles, outputFileName, transformFn)
+    if (productNode.has("executable")) Disk.makeExecutable(projectRootPath + "/products/" + outputFileName)
+  }
+
   _getProductFolder() {
     return __dirname
   }
@@ -103,6 +123,10 @@ class AbstractBuilder extends jtree.TreeNode {
     packageJson.version = newVersion
     Disk.writeJson(packagePath, packageJson)
     console.log(`Updated ${packagePath} to ${newVersion}`)
+  }
+
+  buildBuilder() {
+    this._buildTsc(Disk.read(__filename), __dirname + "/builder.js")
   }
 
   makeGrammarFileTestTree(grammarPath: treeNotationTypes.grammarFilePath) {

@@ -3,7 +3,7 @@
     createParser() {
       return new jtree.TreeNode.Parser(
         blankLineNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           title: titleNode,
           link: linkNode,
           paragraph: paragraphNode,
@@ -153,7 +153,11 @@ dashNode
 
   class paragraphNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), { link: linkNode }), undefined)
+      return new jtree.TreeNode.Parser(
+        undefined,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { link: linkNode }),
+        undefined
+      )
     }
     get textCell() {
       return this.getWordsFrom(0)
@@ -174,7 +178,11 @@ dashNode
 
   class listNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), { "-": dashNode }), undefined)
+      return new jtree.TreeNode.Parser(
+        undefined,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "-": dashNode }),
+        undefined
+      )
     }
   }
 

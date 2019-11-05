@@ -3,7 +3,7 @@
     createParser() {
       return new jtree.TreeNode.Parser(
         errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           blockquote: htmlTagNode,
           colgroup: htmlTagNode,
           datalist: htmlTagNode,
@@ -377,7 +377,7 @@ bernNode
     createParser() {
       return new jtree.TreeNode.Parser(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           blockquote: htmlTagNode,
           colgroup: htmlTagNode,
           datalist: htmlTagNode,

@@ -347,6 +347,17 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
       .sort()
   }
 
+  stamp(providedPath: string) {
+    const path = require("path")
+    const stamp = require("../langs/stamp/stamp.node.js")
+
+    const getAbsPath = (input: string) => (input.startsWith("/") ? input : path.resolve(this._cwd + "/" + input))
+
+    const providedPathWithoutEndingSlash = providedPath && providedPath.replace(/\/$/, "")
+    const absPath = providedPath ? getAbsPath(providedPathWithoutEndingSlash) : this._cwd
+    console.log(stamp.dirToStampWithContents(absPath))
+  }
+
   _getPartialMatches(commandName: string) {
     return this._getAllCommands().filter(item => item.startsWith(commandName))
   }

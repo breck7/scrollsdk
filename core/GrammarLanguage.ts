@@ -1731,7 +1731,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (!hasFirstWords && !catchAllConstructor && !regexRules.length) return ""
 
     const firstWordsStr = hasFirstWords
-      ? `Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {` + firstWords.map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`).join(",\n") + "})"
+      ? `Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {` + firstWords.map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`).join(",\n") + "})"
       : "undefined"
 
     const regexStr = regexRules.length

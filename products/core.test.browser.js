@@ -1842,6 +1842,16 @@ code <p></p>
   const testCase = new TreeNode(testStrings.newLines)
   equal(testCase.toString().split("\n").length, 11, "All blank lines are preserved")
 }
+testTree.protoRegression = equal => {
+  // Arrange
+  const a = `__proto__`
+  const tree = new TreeNode(a)
+  equal(tree.toString(), a, "proto regression fixed")
+  // Arrange
+  const b = `constructor`
+  const tree2 = new TreeNode(b)
+  equal(tree2.toString(), b, "constructor regression fixed")
+}
 testTree.createFromStringExtraTrees = equal => {
   // Arrange
   const d = new TreeNode("one\ntwo\n  three\n    four\nfive six")

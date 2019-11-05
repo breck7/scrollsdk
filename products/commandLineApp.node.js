@@ -288,6 +288,14 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
       .filter(word => !word.startsWith("_") && word !== "constructor")
       .sort()
   }
+  stamp(providedPath) {
+    const path = require("path")
+    const stamp = require("../langs/stamp/stamp.node.js")
+    const getAbsPath = input => (input.startsWith("/") ? input : path.resolve(this._cwd + "/" + input))
+    const providedPathWithoutEndingSlash = providedPath && providedPath.replace(/\/$/, "")
+    const absPath = providedPath ? getAbsPath(providedPathWithoutEndingSlash) : this._cwd
+    console.log(stamp.dirToStampWithContents(absPath))
+  }
   _getPartialMatches(commandName) {
     return this._getAllCommands().filter(item => item.startsWith(commandName))
   }

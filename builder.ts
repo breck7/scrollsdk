@@ -16,7 +16,13 @@ class Builder extends AbstractBuilder {
   }
 
   produce(outputFileName: string) {
-    if (outputFileName) return this._produce(outputFileName)
+    if (outputFileName)
+      return this.produceProductFromInstructionsTree(
+        this._getProductsTree()
+          .where("outputFileName", "=", outputFileName)
+          .nodeAt(0),
+        __dirname
+      )
 
     console.log(
       "Available options:\n" +
@@ -27,11 +33,9 @@ class Builder extends AbstractBuilder {
   }
 
   produceAll() {
-    this._getProductsTree()
-      .getColumn("outputFileName")
-      .forEach((outputFileName: any) => {
-        this._produce(outputFileName)
-      })
+    this._getProductsTree().forEach((node: any) => {
+      this.produceProductFromInstructionsTree(node, __dirname)
+    })
   }
 
   produceLangs() {
@@ -44,31 +48,6 @@ class Builder extends AbstractBuilder {
 
   private _getProductsTree() {
     return jtree.TreeNode.fromDisk(__dirname + "/products.tree")
-  }
-
-  private _produce(outputFileName: string) {
-    const tree = this._getProductsTree()
-    const productNode = tree.where("outputFileName", "=", outputFileName).nodeAt(0)
-    const inputFiles = productNode
-      .getNode("files")
-      .getWordsFrom(1)
-      .map((path: string) => __dirname + "/" + path)
-    const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
-    const lastLine = productNode.get("lastLine") ? productNode.get("lastLine") : ""
-    const removeAll = productNode.getNodesByGlobPath("removeAll")
-    const transformFn = (code: string) => {
-      removeAll.forEach((node: any) => {
-        code = jtree.Utils.removeAll(code, node.getContent())
-      })
-      return firstLine + code + "\n" + lastLine
-    }
-    if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
-    else this._produceNodeProductFromTypeScript(inputFiles, outputFileName, transformFn)
-    if (productNode.has("executable")) Disk.makeExecutable(__dirname + "/products/" + outputFileName)
-  }
-
-  buildBuilder() {
-    this._buildTsc(Disk.read(__filename), __dirname + "/builder.js")
   }
 
   buildJibJab() {

@@ -3,7 +3,7 @@
     createParser() {
       return new jtree.TreeNode.Parser(
         selectorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), { comment: commentNode }),
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }),
         undefined
       )
     }
@@ -156,7 +156,7 @@ selectorNode
     createParser() {
       return new jtree.TreeNode.Parser(
         selectorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           "border-bottom-right-radius": propertyNode,
           "transition-timing-function": propertyNode,
           "animation-iteration-count": propertyNode,

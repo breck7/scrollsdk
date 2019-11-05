@@ -1,3 +1,9 @@
+44.1.0 / 2019-11-05
+===================
+- New: added stamp command to commandLineApp tool
+- New: added produceProductFromInstructionsTree and buildBuilder to abstractBuilder
+- Fix: bug where if a string contained __proto__  or constructor it was parsing incorrectly
+
 44.0.3 / 2019-11-02
 ===================
 - Fix: in TCF rewrote queryObjectToQueryString to make working/testable in node

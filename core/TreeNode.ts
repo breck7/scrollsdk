@@ -56,25 +56,35 @@ enum TreeNotationConstants {
 class Parser {
   // todo: should getErrors be under here? At least for certain types of errors?
   private _catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor
-  private _firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap
+  private _firstWordMap: Map<string, Function>
   private _regexTests: treeNotationTypes.regexTest[]
   constructor(catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor, firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap = {}, regexTests: treeNotationTypes.regexTest[] = undefined) {
     this._catchAllNodeConstructor = catchAllNodeConstructor
-    this._firstWordMap = firstWordMap
+    this._firstWordMap = new Map(Object.entries(firstWordMap))
     this._regexTests = regexTests
   }
 
   getFirstWordOptions() {
-    return Object.keys(this._firstWordMap)
+    return Array.from(this._getFirstWordMap().keys())
   }
 
   // todo: remove
-  _getFirstWordMap() {
+  private _getFirstWordMap() {
     return this._firstWordMap
   }
 
+  // todo: remove
+  _getFirstWordMapAsObject() {
+    let obj: treeNotationTypes.firstWordToNodeConstructorMap = {}
+    const map = this._getFirstWordMap()
+    for (let [key, val] of map.entries()) {
+      obj[key] = val
+    }
+    return obj
+  }
+
   _getNodeConstructor(line: string, contextNode: treeNotationTypes.treeNode, wordBreakSymbol = " "): treeNotationTypes.TreeNodeConstructor {
-    return this._firstWordMap[this._getFirstWord(line, wordBreakSymbol)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
+    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
   }
 
   _getCatchAllNodeConstructor(contextNode: treeNotationTypes.treeNode) {
@@ -2734,7 +2744,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "44.0.3"
+  static getVersion = () => "44.1.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

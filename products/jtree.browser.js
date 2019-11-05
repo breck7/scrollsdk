@@ -757,18 +757,27 @@ var TreeNotationConstants
 class Parser {
   constructor(catchAllNodeConstructor, firstWordMap = {}, regexTests = undefined) {
     this._catchAllNodeConstructor = catchAllNodeConstructor
-    this._firstWordMap = firstWordMap
+    this._firstWordMap = new Map(Object.entries(firstWordMap))
     this._regexTests = regexTests
   }
   getFirstWordOptions() {
-    return Object.keys(this._firstWordMap)
+    return Array.from(this._getFirstWordMap().keys())
   }
   // todo: remove
   _getFirstWordMap() {
     return this._firstWordMap
   }
+  // todo: remove
+  _getFirstWordMapAsObject() {
+    let obj = {}
+    const map = this._getFirstWordMap()
+    for (let [key, val] of map.entries()) {
+      obj[key] = val
+    }
+    return obj
+  }
   _getNodeConstructor(line, contextNode, wordBreakSymbol = " ") {
-    return this._firstWordMap[this._getFirstWord(line, wordBreakSymbol)] || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
+    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
   }
   _getCatchAllNodeConstructor(contextNode) {
     if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
@@ -2979,7 +2988,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "44.0.3"
+TreeNode.getVersion = () => "44.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -4471,7 +4480,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     const catchAllConstructor = this._getCatchAllNodeConstructorToJavascript()
     if (!hasFirstWords && !catchAllConstructor && !regexRules.length) return ""
     const firstWordsStr = hasFirstWords
-      ? `Object.assign(Object.assign({}, super.createParser()._getFirstWordMap()), {` + firstWords.map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`).join(",\n") + "})"
+      ? `Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {` + firstWords.map(firstWord => `"${firstWord}" : ${myFirstWordMap[firstWord].getNodeTypeIdFromDefinition()}`).join(",\n") + "})"
       : "undefined"
     const regexStr = regexRules.length
       ? `[${regexRules

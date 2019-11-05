@@ -14,7 +14,7 @@ text
 thisShouldErrorError1
 to fillThis`
   const code = new jtree.TreeNode(programCode)
-  let long = jtree.Utils.toString().repeat(20)
+  let long = jtree.TreeNode.toString().repeat(20)
   code.getNode("text").setChildren(long)
 
   long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)

@@ -234,6 +234,20 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return this._getHistoryFile()
   }
 
+  webForm(grammarName: treeNotationTypes.grammarName, nodeTypeId?: string) {
+    // webForm grammarName nodeTypeId? Build a web form for the given grammar
+    const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
+    const grammarProgram = new jtree.GrammarProgram(Disk.read(grammarPath)).getRootConstructor()
+
+    let def = new grammarProgram().getDefinition()
+
+    if (nodeTypeId) def = def.getNodeTypeDefinitionByNodeTypeId("chargeNode")
+
+    const stumpCode = def.toStumpString()
+    const stumpNode = require("../products/stump.nodejs.js")
+    return new stumpNode(stumpCode).compile()
+  }
+
   _getHistoryFile() {
     Disk.createFileIfDoesNotExist(this._getLogFilePath(), "command paramOne paramTwo timestamp\n")
     return Disk.read(this._getLogFilePath())

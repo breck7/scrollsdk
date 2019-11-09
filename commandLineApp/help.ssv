@@ -22,3 +22,4 @@ stamp dirPath  Dump a directory as a Stamp program.
 sublime grammarName outputPath Generate sublime syntax highlighting files
 usage grammarName  Analyze Global Keyword Usage for a given grammar
 version   List installed Tree Notation version and location
+webForm grammarName nodeTypeId? Build a web form for the given grammar

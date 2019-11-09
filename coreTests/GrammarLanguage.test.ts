@@ -468,7 +468,7 @@ testTree.sublimeSyntaxFile = equal => {
   equal(code.includes("scope:"), true)
 }
 
-testTree._toStumpString = equal => {
+testTree.toStumpString = equal => {
   // Arrange/Act
   const grammarProgram = new GrammarProgram(arrowGrammar).getRootConstructor()
   const code = new grammarProgram()

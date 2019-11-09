@@ -13,7 +13,7 @@ class UnknownGrammarProgram extends TreeNode {
 
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
     const rootNodeNames = this.getFirstWords()
-      .filter(word => word)
+      .filter(identity => identity)
       .map(word => GrammarProgram.makeNodeTypeId(word))
     rootNode
       .nodeAt(0)
@@ -58,7 +58,7 @@ class UnknownGrammarProgram extends TreeNode {
 
     const cellsForAllInstances = instances
       .map(line => line.getContent())
-      .filter(line => line)
+      .filter(identity => identity)
       .map(line => line.split(edgeSymbol))
     const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))
     const maxCellsOnLine = Math.max(...Array.from(instanceCellCounts))
@@ -118,14 +118,14 @@ class UnknownGrammarProgram extends TreeNode {
     const globalCellTypeMap = new Map()
     globalCellTypeMap.set(PreludeCellTypeIds.keywordCell, undefined)
     const nodeTypeDefs = Object.keys(keywordsToChildKeywords)
-      .filter(word => word)
+      .filter(identity => identity)
       .map(firstWord => this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord]))
 
     const cellTypeDefs: string[] = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
     const nodeBreakSymbol = this.getNodeBreakSymbol()
 
-    return this._formatCode([this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n"))
+    return this._formatCode([this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(identity => identity).join("\n"))
   }
 
   private _formatCode(code: string) {
@@ -141,7 +141,7 @@ class UnknownGrammarProgram extends TreeNode {
   private _getBestCellType(firstWord: string, instanceCount: treeNotationTypes.int, maxCellsOnLine: treeNotationTypes.int, allValues: any[]): { cellTypeId: string; cellTypeDefinition?: string } {
     const asSet = new Set(allValues)
     const edgeSymbol = this.getEdgeSymbol()
-    const values = Array.from(asSet).filter(c => c)
+    const values = Array.from(asSet).filter(identity => identity)
     const every = (fn: Function) => {
       for (let index = 0; index < values.length; index++) {
         if (!fn(values[index])) return false

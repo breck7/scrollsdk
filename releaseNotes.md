@@ -1,6 +1,8 @@
 45.0.0 / 2019-11-08
 ===================
 - New: lengthen core method
+- New: added seeds to all psuedo-stochastic functions and removed all Math.random calls
+- Breaking: getInPlaceCellTypeTree: toCellTypeTree, getInPlaceCellTypeTreeWithNodeConstructorNames: toCellTypeTreeWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeTreeWithNodeConstructorNames: toPreludeCellTypeTreeWithNodeConstructorNames
 - Fix: toSideBySide fix for when later trees are longer than earlier ones
 
 44.1.0 / 2019-11-05

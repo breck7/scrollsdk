@@ -302,7 +302,7 @@ class SweeperCraftGame {
     if (mines > numberOfSquares) throw new Error("Number of mines can't be more than the number of squares.")
     const board = SweeperCraftGame.getZeroedBoard(rows, cols)
     while (mines) {
-      let num = getRandomInt(0, numberOfSquares)
+      let num = jtree.Utils.randomUniformInt(0, numberOfSquares)
       let row = Math.floor(num / cols)
       let col = num % cols
       if (!board[row][col]) {
@@ -350,9 +350,6 @@ const linkToObject = link => {
   }
   return obj
 }
-// Returns a random integer between min (included) and max (excluded)
-// Using Math.round() will give you a non-uniform distribution!
-const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min
 class SweeperCraftCommander extends AbstractCommander {
   constructor(app) {
     super(app)

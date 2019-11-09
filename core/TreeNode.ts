@@ -722,17 +722,17 @@ class TreeNode extends AbstractNode {
   }
 
   toSideBySide(treesOrStrings: (TreeNode | string)[], delimiter = " ") {
-    treesOrStrings = treesOrStrings.map(tree => (tree instanceof TreeNode ? tree : new TreeNode(tree)))
+    treesOrStrings = <TreeNode[]>treesOrStrings.map(tree => (tree instanceof TreeNode ? tree : new TreeNode(tree)))
     const clone = this.toTreeNode()
     const nodeBreakSymbol = "\n"
-    let next
+    let next: any
     while ((next = treesOrStrings.shift())) {
       clone.lengthen(next.getNumberOfLines())
       clone.rightPad()
       next
         .toString()
         .split(nodeBreakSymbol)
-        .forEach((line, index) => {
+        .forEach((line: string, index: number) => {
           const node = clone.nodeAtLine(index)
           node.setLine(node.getLine() + delimiter + line)
         })

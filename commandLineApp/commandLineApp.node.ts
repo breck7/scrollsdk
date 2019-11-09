@@ -47,7 +47,7 @@ class CommandLineApp {
     }
     if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
 
-    return execSync([filePath, buildCommandName, argument].filter(commandWord => commandWord).join(" "), { encoding: "utf8" })
+    return execSync([filePath, buildCommandName, argument].filter(identity => identity).join(" "), { encoding: "utf8" })
   }
 
   combine(grammarName: treeNotationTypes.grammarName) {

@@ -131,8 +131,8 @@ class TreeUtils {
   }
 
   static randomUniformFloat = (min: number, max: number, seed = Date.now()) => {
-    const rand = TreeUtils.makeSemiRandomFn(seed)
-    return min + (max - min) * rand()
+    const randFn = TreeUtils.makeSemiRandomFn(seed)
+    return min + (max - min) * randFn()
   }
 
   static getRange = (startIndex: number, endIndexExclusive: number, increment = 1) => {
@@ -145,9 +145,9 @@ class TreeUtils {
 
   static shuffleInPlace(arr: any[], seed = Date.now()) {
     // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
-    const rand = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     for (let index = arr.length - 1; index > 0; index--) {
-      const tempIndex = Math.floor(rand() * (index + 1))
+      const tempIndex = Math.floor(randFn() * (index + 1))
       ;[arr[index], arr[tempIndex]] = [arr[tempIndex], arr[index]]
     }
     return arr
@@ -401,9 +401,9 @@ class TreeUtils {
 
   static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), seed = Date.now()) {
     let str = ""
-    const rand = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     while (length) {
-      str += letters[Math.round(Math.min(rand() * letters.length, letters.length - 1))]
+      str += letters[Math.round(Math.min(randFn() * letters.length, letters.length - 1))]
       length--
     }
     return str
@@ -413,14 +413,14 @@ class TreeUtils {
   static makeRandomTree(lines = 1000, seed = Date.now()) {
     let str = ""
     let letters = " 123abc".split("")
-    const rand = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     while (lines) {
-      let indent = " ".repeat(Math.round(rand() * 6))
+      let indent = " ".repeat(Math.round(randFn() * 6))
       let bit = indent
-      let rand = Math.floor(rand() * 30)
+      let rand = Math.floor(randFn() * 30)
 
       while (rand) {
-        bit += letters[Math.round(Math.min(rand() * letters.length, letters.length - 1))]
+        bit += letters[Math.round(Math.min(randFn() * letters.length, letters.length - 1))]
         rand--
       }
 

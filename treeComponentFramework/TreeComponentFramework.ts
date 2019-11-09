@@ -1278,7 +1278,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     if (commandMethod.includes(" "))
       // todo: cleanup
       commandMethod = commandMethod.split(" ")[0]
-    this.addToCommandLog([commandMethod, params.uno, params.dos].filter(item => item).join(" "))
+    this.addToCommandLog([commandMethod, params.uno, params.dos].filter(identity => identity).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
 
     let treeComponent = stumpNode.getStumpNodeTreeComponent()

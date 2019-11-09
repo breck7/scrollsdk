@@ -111,7 +111,7 @@ fileNode
      const resolvedPath = require("path").resolve(folderPath + "/" + link)
      return resolvedPath
     })
-    .filter(path => path)
+    .filter(identity => identity)
   }
   getMissingDependencies(includedMap) {
    return this._getDependencies().filter(file => includedMap[file] === undefined)

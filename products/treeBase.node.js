@@ -31,7 +31,7 @@ class TreeBaseFile extends TreeNode {
         const nodes = this.findNodes(this._getFilePath() + " " + term)
         return nodes.map(node => node.childrenToString()).join("\n")
       })
-      .filter(a => a)
+      .filter(identity => identity)
       .join("\n")
   }
   set(keywordPath, content) {

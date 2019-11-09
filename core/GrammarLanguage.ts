@@ -413,7 +413,7 @@ abstract class GrammarBackedNode extends TreeNode {
   getErrors() {
     const errors = this._getParsedCells()
       .map(check => check.getErrorIfAny())
-      .filter(i => i)
+      .filter(identity => identity)
 
     const firstWord = this.getFirstWord()
     if (this.getDefinition().has(GrammarConstants.single))
@@ -745,8 +745,8 @@ class GrammarIntCell extends GrammarNumericCell {
 
   static defaultHighlightScope = "constant.numeric.integer"
 
-  _synthesizeCell(seed) {
-    return TreeUtils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed)
+  _synthesizeCell(seed: number) {
+    return TreeUtils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed).toString()
   }
 
   getRegexString() {
@@ -770,8 +770,8 @@ class GrammarFloatCell extends GrammarNumericCell {
 
   static defaultHighlightScope = "constant.numeric.float"
 
-  _synthesizeCell(seed) {
-    return TreeUtils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed)
+  _synthesizeCell(seed: number) {
+    return TreeUtils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
   }
 
   getRegexString() {
@@ -1248,6 +1248,8 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.highlightScope] = TreeNode
     types[GrammarConstants.todoComment] = TreeNode
     types[GrammarConstants.examples] = TreeNode
+    types[GrammarConstants.min] = TreeNode
+    types[GrammarConstants.max] = TreeNode
     types[GrammarConstants.description] = TreeNode
     types[GrammarConstants.extends] = TreeNode
     return new TreeNode.Parser(undefined, types)
@@ -1811,7 +1813,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   _nodeDefToJavascriptClass(): treeNotationTypes.javascriptCode {
-    const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(code => code)
+    const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
 
     if (this._amIRoot()) {
       components.push(`getGrammarProgram() {
@@ -1880,14 +1882,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (cruxMatch) return `'^ *${TreeUtils.escapeRegExp(cruxMatch)}(?: |$)'`
     const enumOptions = this._getFirstCellEnumOptions()
     if (enumOptions) return `'^ *(${TreeUtils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
-  }
-
-  toStumpString() {
-    const cellParser = this.getCellParser()
-    const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
-    const catchAllCellTypeId = cellParser.getCatchAllCellTypeId()
-    return `div
- label ${this._getCruxIfAny()}`
   }
 
   // todo: refactor. move some parts to cellParser?
@@ -1975,7 +1969,7 @@ ${cells.toString(1)}`
     const nodeBreakSymbol = "\n"
     return this._getInScopeNodeTypeIds()
       .map(nodeTypeId => this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._toStumpString())
-      .filter()
+      .filter(identity => identity)
       .join(nodeBreakSymbol)
   }
 
@@ -1997,7 +1991,7 @@ ${cells.toString(1)}`
   }
 
   // todo: refactor
-  synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypesAlreadySynthesized: string[] = []) {
+  synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypesAlreadySynthesized: string[] = [], seed = Date.now()) {
     let inScopeNodeTypeIds = this._getInScopeNodeTypeIds()
     const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
     if (catchAllNodeTypeId) inScopeNodeTypeIds.push(catchAllNodeTypeId)
@@ -2005,7 +1999,7 @@ ${cells.toString(1)}`
     if (!nodeTypesAlreadySynthesized.includes(thisId)) nodeTypesAlreadySynthesized.push(thisId)
     const lines = []
     while (nodeCount) {
-      const line = this._generateSimulatedLine()
+      const line = this._generateSimulatedLine(seed)
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
 
       const concreteNodeTypeDefsToSynthesize: AbstractGrammarDefinitionNode[] = []
@@ -2029,7 +2023,7 @@ ${cells.toString(1)}`
         .forEach(def => {
           const chain = nodeTypesAlreadySynthesized // .slice(0)
           chain.push(def._getId())
-          def.synthesizeNode(1, indentCount + 1, chain).forEach(line => {
+          def.synthesizeNode(1, indentCount + 1, chain, seed).forEach(line => {
             lines.push(line)
           })
         })

@@ -119,18 +119,18 @@ class TreeUtils {
   }
 
   // todo: switch algo to: http://indiegamr.com/generate-repeatable-random-numbers-in-js/?
-  static makeSemiRandomFn = (seed = 1) => {
+  static makeSemiRandomFn = (seed = Date.now()) => {
     return () => {
       const semiRand = Math.sin(seed++) * 10000
       return semiRand - Math.floor(semiRand)
     }
   }
 
-  static randomUniformInt = (min: treeNotationTypes.int, max: treeNotationTypes.int, seed = 1) => {
+  static randomUniformInt = (min: treeNotationTypes.int, max: treeNotationTypes.int, seed = Date.now()) => {
     return Math.round(TreeUtils.randomUniformFloat(min, max, seed))
   }
 
-  static randomUniformFloat = (min: number, max: number, seed = 1) => {
+  static randomUniformFloat = (min: number, max: number, seed = Date.now()) => {
     const rand = TreeUtils.makeSemiRandomFn(seed)
     return min + (max - min) * rand()
   }
@@ -143,10 +143,11 @@ class TreeUtils {
     return range
   }
 
-  static shuffleInPlace(arr: any[]) {
+  static shuffleInPlace(arr: any[], seed = Date.now()) {
     // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+    const rand = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     for (let index = arr.length - 1; index > 0; index--) {
-      const tempIndex = Math.floor(Math.random() * (index + 1))
+      const tempIndex = Math.floor(rand() * (index + 1))
       ;[arr[index], arr[tempIndex]] = [arr[tempIndex], arr[index]]
     }
     return arr
@@ -398,27 +399,28 @@ class TreeUtils {
     })
   }
 
-  // todo: add seed!
-  static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")) {
+  static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), seed = Date.now()) {
     let str = ""
+    const rand = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     while (length) {
-      str += letters[Math.round(Math.min(Math.random() * letters.length, letters.length - 1))]
+      str += letters[Math.round(Math.min(rand() * letters.length, letters.length - 1))]
       length--
     }
     return str
   }
 
   // todo: add seed!
-  static makeRandomTree(lines = 1000) {
+  static makeRandomTree(lines = 1000, seed = Date.now()) {
     let str = ""
     let letters = " 123abc".split("")
+    const rand = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     while (lines) {
-      let indent = " ".repeat(Math.round(Math.random() * 6))
+      let indent = " ".repeat(Math.round(rand() * 6))
       let bit = indent
-      let rand = Math.floor(Math.random() * 30)
+      let rand = Math.floor(rand() * 30)
 
       while (rand) {
-        bit += letters[Math.round(Math.min(Math.random() * letters.length, letters.length - 1))]
+        bit += letters[Math.round(Math.min(rand() * letters.length, letters.length - 1))]
         rand--
       }
 
@@ -431,7 +433,7 @@ class TreeUtils {
 
   // adapted from https://gist.github.com/blixt/f17b47c62508be59987b
   // 1993 Park-Miller LCG
-  static _getPRNG(seed: number) {
+  static _getPseudoRandom0to1FloatGenerator(seed: number) {
     return function() {
       seed = Math.imul(48271, seed) | 0 % 2147483647
       return (seed & 2147483647) / 2147483648
@@ -439,7 +441,7 @@ class TreeUtils {
   }
 
   static sampleWithoutReplacement(population: any[] = [], quantity: number, seed: number) {
-    const prng = this._getPRNG(seed)
+    const prng = this._getPseudoRandom0to1FloatGenerator(seed)
     const sampled: { [index: number]: boolean } = {}
     const populationSize = population.length
     const picked = []

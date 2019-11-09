@@ -1,3 +1,8 @@
+45.0.0 / 2019-11-08
+===================
+- New: lengthen core method
+- Fix: toSideBySide fix for when later trees are longer than earlier ones
+
 44.1.0 / 2019-11-05
 ===================
 - New: added stamp command to commandLineApp tool

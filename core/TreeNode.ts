@@ -714,14 +714,24 @@ class TreeNode extends AbstractNode {
     return this
   }
 
+  lengthen(numberOfLines: int) {
+    while (this.length < numberOfLines) {
+      this.appendLine("")
+    }
+    return this
+  }
+
   toSideBySide(treesOrStrings: (TreeNode | string)[], delimiter = " ") {
+    treesOrStrings = treesOrStrings.map(tree => (tree instanceof TreeNode ? tree : new TreeNode(tree)))
     const clone = this.toTreeNode()
+    const nodeBreakSymbol = "\n"
     let next
     while ((next = treesOrStrings.shift())) {
+      clone.lengthen(next.getNumberOfLines())
       clone.rightPad()
       next
         .toString()
-        .split("\n")
+        .split(nodeBreakSymbol)
         .forEach((line, index) => {
           const node = clone.nodeAtLine(index)
           node.setLine(node.getLine() + delimiter + line)
@@ -1649,7 +1659,7 @@ class TreeNode extends AbstractNode {
     return this.getChildren().map(fn)
   }
 
-  filter(fn: treeNotationTypes.filterFn) {
+  filter(fn: treeNotationTypes.filterFn = item => item) {
     return this.getChildren().filter(fn)
   }
 

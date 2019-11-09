@@ -124,7 +124,7 @@ testTree.numbers = equal => {
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 
     equal(firstNode.getDefinition().getLineHints(), "+: operatorCell numbersCell...", "line hints work")
-    equal(program.getInPlaceCellTypeTree(), runtimeProgram.getInPlaceCellTypeTree(), "cell types worked")
+    equal(program.toCellTypeTree(), runtimeProgram.toCellTypeTree(), "cell types worked")
 
     // Arrange/Act/Assert
     equal(new numbers(`+ 2 a`).getAllErrors().length, 1, "should be 1 error")

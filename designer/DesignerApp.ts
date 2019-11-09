@@ -90,8 +90,8 @@ class DesignerCommander extends AbstractCommander {
   private _toIceTray(program: any) {
     const columns = program.getProgramWidth()
 
-    const cellTypes = new jtree.TreeNode(program.getInPlaceCellTypeTreeWithNodeConstructorNames())
-    const rootCellTypes = new jtree.TreeNode(program.getInPlacePreludeCellTypeTreeWithNodeConstructorNames())
+    const cellTypes = new jtree.TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
+    const rootCellTypes = new jtree.TreeNode(program.toPreludeCellTypeTreeWithNodeConstructorNames())
 
     const table = program
       .getProgramAsCells()

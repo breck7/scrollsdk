@@ -1049,6 +1049,10 @@ testTree.fromTsv = equal => {
   equal(b.getNode("0 age").getContent(), "2")
   equal(b.getNode("0 height").getContent(), "23")
 }
+testTree.lengthen = equal => {
+  // AAA
+  equal(new TreeNode().lengthen(3).toString(), "\n\n")
+}
 testTree.getLine = equal => {
   // Arrange
   const tree = new TreeNode("hello world")
@@ -1895,6 +1899,18 @@ testTree.braid = equal => {
 keyword number`
   )
   equal(tree.toSideBySide([tree2]).toString(), `score 1 keyword number`)
+  equal(
+    tree
+      .toSideBySide([
+        `foo
+
+bar`
+      ])
+      .toString(),
+    `score 1 foo
+        
+        bar`
+  )
 }
 testTree.copyToRegression = equal => {
   // Arrange

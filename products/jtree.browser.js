@@ -1298,14 +1298,23 @@ class TreeNode extends AbstractNode {
     this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
     return this
   }
+  lengthen(numberOfLines) {
+    while (this.length < numberOfLines) {
+      this.appendLine("")
+    }
+    return this
+  }
   toSideBySide(treesOrStrings, delimiter = " ") {
+    treesOrStrings = treesOrStrings.map(tree => (tree instanceof TreeNode ? tree : new TreeNode(tree)))
     const clone = this.toTreeNode()
+    const nodeBreakSymbol = "\n"
     let next
     while ((next = treesOrStrings.shift())) {
+      clone.lengthen(next.getNumberOfLines())
       clone.rightPad()
       next
         .toString()
-        .split("\n")
+        .split(nodeBreakSymbol)
         .forEach((line, index) => {
           const node = clone.nodeAtLine(index)
           node.setLine(node.getLine() + delimiter + line)
@@ -4561,6 +4570,13 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     if (cruxMatch) return `'^ *${TreeUtils.escapeRegExp(cruxMatch)}(?: |$)'`
     const enumOptions = this._getFirstCellEnumOptions()
     if (enumOptions) return `'^ *(${TreeUtils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
+  }
+  toStumpString() {
+    const cellParser = this.getCellParser()
+    const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
+    const catchAllCellTypeId = cellParser.getCatchAllCellTypeId()
+    return `div
+ label ${this._getCruxIfAny()}`
   }
   // todo: refactor. move some parts to cellParser?
   _toSublimeMatchBlock() {

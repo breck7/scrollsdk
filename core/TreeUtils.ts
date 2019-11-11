@@ -127,7 +127,7 @@ class TreeUtils {
   }
 
   static randomUniformInt = (min: treeNotationTypes.int, max: treeNotationTypes.int, seed = Date.now()) => {
-    return Math.round(TreeUtils.randomUniformFloat(min, max, seed))
+    return Math.floor(TreeUtils.randomUniformFloat(min, max, seed))
   }
 
   static randomUniformFloat = (min: number, max: number, seed = Date.now()) => {

@@ -424,6 +424,8 @@ faveNumberNode
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)
+
+  equal(program.toSideBySide([program.toDefinitionLineNumberTree()]).getNumberOfLines(), 8)
 }
 
 // todo: fix autocomplete for omnifix languages

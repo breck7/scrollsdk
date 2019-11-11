@@ -476,7 +476,7 @@ TreeUtils.makeSemiRandomFn = (seed = Date.now()) => {
   }
 }
 TreeUtils.randomUniformInt = (min, max, seed = Date.now()) => {
-  return Math.round(TreeUtils.randomUniformFloat(min, max, seed))
+  return Math.floor(TreeUtils.randomUniformFloat(min, max, seed))
 }
 TreeUtils.randomUniformFloat = (min, max, seed = Date.now()) => {
   const randFn = TreeUtils.makeSemiRandomFn(seed)
@@ -896,6 +896,10 @@ class TreeNode extends AbstractNode {
     }
     return wordCount
   }
+  getLineNumber() {
+    // todo: remove Y coordinate stuff? Now that we use the more abstract nodeBreakSymbols?
+    return this._getYCoordinate()
+  }
   _getLineNumber(target = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
     let lineNumber = 1
@@ -1288,8 +1292,10 @@ class TreeNode extends AbstractNode {
     return this
   }
   lengthen(numberOfLines) {
-    while (this.length < numberOfLines) {
+    let linesToAdd = numberOfLines - this.getNumberOfLines()
+    while (linesToAdd > 0) {
       this.appendLine("")
+      linesToAdd--
     }
     return this
   }
@@ -2986,7 +2992,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "44.1.0"
+TreeNode.getVersion = () => "45.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3370,6 +3376,11 @@ class GrammarBackedNode extends TreeNode {
       .map(child => child.getIndentation() + child.getLineHighlightScopes())
       .join("\n")
   }
+  toDefinitionLineNumberTree() {
+    return this.getTopDownArray()
+      .map(child => child.getDefinition().getLineNumber() + " " + child.getIndentation() + child.getCellDefinitionLineNumbers().join(" "))
+      .join("\n")
+  }
   toCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellTypes())
@@ -3450,6 +3461,9 @@ class GrammarBackedNode extends TreeNode {
     return this._getParsedCells()
       .map(slot => slot.getHighlightScope() || defaultScope)
       .join(" ")
+  }
+  getCellDefinitionLineNumbers() {
+    return this._getParsedCells().map(cell => cell.getDefinitionLineNumber())
   }
   _getCompiledIndentation() {
     const indentCharacter = this.getDefinition()._getCompilerObject()[GrammarConstantsCompiler.indentCharacter]
@@ -3550,6 +3564,9 @@ class AbstractGrammarBackedCell {
   }
   getWord() {
     return this._node.getWord(this._index)
+  }
+  getDefinitionLineNumber() {
+    return this._typeDef.getLineNumber()
   }
   getCellTypeId() {
     return this._cellTypeId

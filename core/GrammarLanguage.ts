@@ -354,6 +354,12 @@ abstract class GrammarBackedNode extends TreeNode {
       .join("\n")
   }
 
+  toDefinitionLineNumberTree() {
+    return this.getTopDownArray<GrammarBackedNode>()
+      .map(child => child.getDefinition().getLineNumber() + " " + child.getIndentation() + child.getCellDefinitionLineNumbers().join(" "))
+      .join("\n")
+  }
+
   toCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellTypes())
@@ -453,6 +459,10 @@ abstract class GrammarBackedNode extends TreeNode {
     return this._getParsedCells()
       .map(slot => slot.getHighlightScope() || defaultScope)
       .join(" ")
+  }
+
+  getCellDefinitionLineNumbers() {
+    return this._getParsedCells().map(cell => cell.getDefinitionLineNumber())
   }
 
   protected _getCompiledIndentation() {
@@ -574,6 +584,10 @@ abstract class AbstractGrammarBackedCell<T> {
 
   getWord() {
     return this._node.getWord(this._index)
+  }
+
+  getDefinitionLineNumber() {
+    return this._typeDef.getLineNumber()
   }
 
   private _node: GrammarBackedNode

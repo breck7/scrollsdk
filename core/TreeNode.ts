@@ -253,6 +253,11 @@ class TreeNode extends AbstractNode {
     return wordCount
   }
 
+  getLineNumber() {
+    // todo: remove Y coordinate stuff? Now that we use the more abstract nodeBreakSymbols?
+    return this._getYCoordinate()
+  }
+
   protected _cachedLineNumber: int
   _getLineNumber(target: TreeNode = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
@@ -715,8 +720,10 @@ class TreeNode extends AbstractNode {
   }
 
   lengthen(numberOfLines: int) {
-    while (this.length < numberOfLines) {
+    let linesToAdd = numberOfLines - this.getNumberOfLines()
+    while (linesToAdd > 0) {
       this.appendLine("")
+      linesToAdd--
     }
     return this
   }
@@ -2754,7 +2761,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "44.1.0"
+  static getVersion = () => "45.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

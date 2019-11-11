@@ -472,7 +472,6 @@ class tableComponent extends AbstractTreeComponent {
     type checkbox
     value compileCommand
     class onCodeUp
-    checked
    a Compile
     ${WillowConstants.DataShadowEvents.onClickCommand} compileCommand
    span  |
@@ -480,7 +479,6 @@ class tableComponent extends AbstractTreeComponent {
     type checkbox
     value visualizeCommand
     class onCodeUp
-    checked
    a Explain
     ${WillowConstants.DataShadowEvents.onClickCommand} visualizeCommand
    textarea

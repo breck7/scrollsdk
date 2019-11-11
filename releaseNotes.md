@@ -1,7 +1,9 @@
 45.0.0 / 2019-11-08
 ===================
+- New: toDefinitionLineNumberTree method added to Grammar programs
 - New: lengthen core method
 - New: added seeds to all psuedo-stochastic functions and removed all Math.random calls
+- New: toStumpString added to Grammar programs and webForm added to CLI
 - Breaking: getInPlaceCellTypeTree: toCellTypeTree, getInPlaceCellTypeTreeWithNodeConstructorNames: toCellTypeTreeWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeTreeWithNodeConstructorNames: toPreludeCellTypeTreeWithNodeConstructorNames
 - Fix: toSideBySide fix for when later trees are longer than earlier ones
 

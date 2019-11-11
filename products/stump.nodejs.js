@@ -124,6 +124,9 @@
     compile() {
       return this.toHtml()
     }
+    _getHtmlJoinByCharacter() {
+      return ""
+    }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`anyCell
@@ -158,6 +161,9 @@ stumpNode
   compile() {
    return this.toHtml()
   }
+  _getHtmlJoinByCharacter() {
+    return ""
+  }
 htmlTagNode
  inScope bernNode htmlTagNode htmlAttributeNode
  catchAllCellType anyHtmlContentCell
@@ -173,7 +179,7 @@ htmlTagNode
    return map[firstWord] || firstWord
   }
   _getHtmlJoinByCharacter() {
-   return \`\`
+   return ""
   }
   toHtmlWithSuids() {
    return this._toHtml(undefined, true)
@@ -685,7 +691,7 @@ bernNode
       return map[firstWord] || firstWord
     }
     _getHtmlJoinByCharacter() {
-      return ``
+      return ""
     }
     toHtmlWithSuids() {
       return this._toHtml(undefined, true)

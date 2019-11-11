@@ -144,7 +144,7 @@ class Table {
     const notEqualTests = tests
       .filter(test => test.startsWith("!"))
       .map(test => propertyNameToColumnNameMap[test.substr(1)])
-      .filter(i => i)
+      .filter(identity => identity)
       .forEach(name => {
         notIn[name] = true
       })
@@ -278,7 +278,7 @@ class Table {
     // will often miss columns.
     return Object.keys(this._getUnionSample(this._getSampleSet()))
       .map(columnName => columnName.trim()) // todo: why do we filter empties?
-      .filter(col => col)
+      .filter(identity => identity)
       .filter(col => !columns[col]) // do not overwrite any custom columns
   }
 

@@ -46,6 +46,9 @@ fileExtensionCell
  examples js txt doc exe
  regex [a-zA-Z0-9]+
  highlightScope string
+numericCell
+ description A float or an int.
+ highlightScope constant.numeric
 floatCell
  regex \-?[0-9]*\.?[0-9]*
  highlightScope constant.numeric
@@ -309,7 +312,7 @@ cellTypeDefinitionNode
  todo Allow abstract cell types?
  todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Cell$
- inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode examplesNode
+ inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode examplesNode cellMinNode cellMaxNode
  cells cellTypeIdCell
 enumFromCellTypesNode
  catchAllCellType cellTypeIdCell
@@ -324,6 +327,14 @@ examplesNode
  crux examples
  catchAllCellType cellExampleCell
  cells cellPropertyNameCell
+cellMinNode
+ description For numeric cell types you can specify a min
+ crux min
+ cells cellPropertyNameCell numericCell
+cellMaxNode
+ description For numeric cell types you can specify a max
+ crux max
+ cells cellPropertyNameCell numericCell
 highlightScopeNode
  cells propertyKeywordCell scopeNameCell
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.

@@ -47,7 +47,7 @@ class CommandLineApp {
     }
     if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
 
-    return execSync([filePath, buildCommandName, argument].filter(commandWord => commandWord).join(" "), { encoding: "utf8" })
+    return execSync([filePath, buildCommandName, argument].filter(identity => identity).join(" "), { encoding: "utf8" })
   }
 
   combine(grammarName: treeNotationTypes.grammarName) {
@@ -232,6 +232,20 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
   allHistory() {
     return this._getHistoryFile()
+  }
+
+  webForm(grammarName: treeNotationTypes.grammarName, nodeTypeId?: string) {
+    // webForm grammarName nodeTypeId? Build a web form for the given grammar
+    const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
+    const grammarProgram = new jtree.GrammarProgram(Disk.read(grammarPath)).getRootConstructor()
+
+    let def = new grammarProgram().getDefinition()
+
+    if (nodeTypeId) def = def.getNodeTypeDefinitionByNodeTypeId("chargeNode")
+
+    const stumpCode = def.toStumpString()
+    const stumpNode = require("../products/stump.nodejs.js")
+    return new stumpNode(stumpCode).compile()
   }
 
   _getHistoryFile() {

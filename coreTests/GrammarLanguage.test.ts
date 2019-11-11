@@ -12,6 +12,8 @@ const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
 const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
 const numbersGrammar = Disk.read(numbersPath)
+const arrowPath = __dirname + "/../langs/arrow/arrow.grammar"
+const arrowGrammar = Disk.read(arrowPath)
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = Disk.read(grammarGrammarPath)
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
@@ -173,7 +175,7 @@ testTree.iris = equal => {
   const programWithBugs = makeIrisProgram(`6.1 3 4.9  virginica`)
 
   // Act/Assert
-  equal(programWithBugs.getInPlaceCellTypeTree(), `sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell`)
+  equal(programWithBugs.toCellTypeTree(), `sepalLengthCell sepalWidthCell petalLengthCell petalWidthCell speciesCell`)
 }
 
 testTree.jibberishErrors = equal => {
@@ -203,7 +205,7 @@ testTree.cellTypeTree = equal => {
 
   // Assert
   equal(
-    someJibberishProgram.getInPlaceCellTypeTree(),
+    someJibberishProgram.toCellTypeTree(),
     `topLevelPropertyCell
 opSymbolCell intCell intCell intCell`,
     "word types should match"
@@ -211,7 +213,7 @@ opSymbolCell intCell intCell intCell`,
   equal(someJibberishProgram.findAllWordsWithCellType("intCell").length, 3)
 
   // Act
-  const nodeTypes = someJibberishProgram.getInPlaceCellTypeTreeWithNodeConstructorNames()
+  const nodeTypes = someJibberishProgram.toCellTypeTreeWithNodeConstructorNames()
   const treeWithNodeTypes = someJibberishProgram.getTreeWithNodeTypes()
 
   // Assert
@@ -322,7 +324,7 @@ cokes 22 11`
   const errs = program.getAllErrors()
   equal(errs.length, 0)
   if (errs.length) console.log(errs.map((err: any) => err.getMessage()).join("\n"))
-  equal(typeof program.getInPlaceHighlightScopeTree(), "string")
+  equal(typeof program.toHighlightScopeTree(), "string")
 }
 
 testTree.highlightScopes = equal => {
@@ -331,7 +333,7 @@ testTree.highlightScopes = equal => {
 + 2 3 2`)
 
   // Act
-  const scopes = someJibberishProgram.getInPlaceHighlightScopeTree()
+  const scopes = someJibberishProgram.toHighlightScopeTree()
 
   // Assert
   equal(
@@ -341,9 +343,9 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   )
 
   // Arrange/Act/Assert
-  equal(makeJibberishProgram(`fault`).getInPlaceHighlightScopeTree(), `invalid`)
-  equal(makeJibberishProgram(`fault fault`).getInPlaceHighlightScopeTree(), `invalid invalid`)
-  equal(makeNumbersProgram(`+ 2`).getInPlaceHighlightScopeTree(), `keyword.operator.arithmetic constant.numeric`)
+  equal(makeJibberishProgram(`fault`).toHighlightScopeTree(), `invalid`)
+  equal(makeJibberishProgram(`fault fault`).toHighlightScopeTree(), `invalid invalid`)
+  equal(makeNumbersProgram(`+ 2`).toHighlightScopeTree(), `keyword.operator.arithmetic constant.numeric`)
 
   // Arrange
   const program = makeJibberishProgram(`lightbulbState on
@@ -351,7 +353,7 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
 
   // Act/Assert
   equal(
-    program.getInPlaceHighlightScopeTree(),
+    program.toHighlightScopeTree(),
     `constant.language source
  invalid`
   )
@@ -394,7 +396,7 @@ testTree.extraWord = equal => {
   // Act/Assert
   equal(program.getAllErrors().length, 1)
   equal(
-    program.getInPlaceCellTypeTree(),
+    program.toCellTypeTree(),
     `nodeTypeIdCell
  propertyKeywordCell extraWordCell`
   )
@@ -422,6 +424,8 @@ faveNumberNode
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)
+
+  equal(program.toSideBySide([program.toDefinitionLineNumberTree()]).getNumberOfLines(), 8)
 }
 
 // todo: fix autocomplete for omnifix languages
@@ -464,6 +468,43 @@ testTree.sublimeSyntaxFile = equal => {
 
   // Assert
   equal(code.includes("scope:"), true)
+}
+
+testTree.toStumpString = equal => {
+  // Arrange/Act
+  const grammarProgram = new GrammarProgram(arrowGrammar).getRootConstructor()
+  const code = new grammarProgram()
+    .getDefinition()
+    .getNodeTypeDefinitionByNodeTypeId("chargeNode")
+    .toStumpString()
+  const expected = `div
+ label amount
+ input
+  name amount
+  type number
+  placeholder 9.99
+  min 0
+  max 99999
+div
+ label currency
+ select
+  name currency
+  option usd
+  option cad
+  option jpy
+div
+ label cardNumber
+ input
+  name cardNumber
+  placeholder 1111222233334444
+div
+ label token
+ input
+  name token
+  placeholder sk_test_4eC39H`
+
+  // Assert
+  equal(code, expected, "form correct")
 }
 
 // todo: reenable once we have the requirement of at least 1 root node
@@ -515,7 +556,7 @@ testTree.rootCatchAllNode = equal => {
   // Act/Assert
   const program = new abcLang("foobar")
   equal(program.getAllErrors().length, 0)
-  equal(program.getInPlaceCellTypeTree(), "extraWordCell", "one word")
+  equal(program.toCellTypeTree(), "extraWordCell", "one word")
 
   // Arrange
   const abcLangWithErrors = new GrammarProgram(`abcNode

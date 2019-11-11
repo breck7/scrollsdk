@@ -76,10 +76,11 @@ class TreeUtils {
     parts.pop()
     return parts.join("/")
   }
-  static shuffleInPlace(arr) {
+  static shuffleInPlace(arr, seed = Date.now()) {
     // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
+    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     for (let index = arr.length - 1; index > 0; index--) {
-      const tempIndex = Math.floor(Math.random() * (index + 1))
+      const tempIndex = Math.floor(randFn() * (index + 1))
       ;[arr[index], arr[tempIndex]] = [arr[tempIndex], arr[index]]
     }
     return arr
@@ -290,25 +291,26 @@ class TreeUtils {
       }
     })
   }
-  // todo: add seed!
-  static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")) {
+  static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), seed = Date.now()) {
     let str = ""
+    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     while (length) {
-      str += letters[Math.round(Math.min(Math.random() * letters.length, letters.length - 1))]
+      str += letters[Math.round(Math.min(randFn() * letters.length, letters.length - 1))]
       length--
     }
     return str
   }
   // todo: add seed!
-  static makeRandomTree(lines = 1000) {
+  static makeRandomTree(lines = 1000, seed = Date.now()) {
     let str = ""
     let letters = " 123abc".split("")
+    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
     while (lines) {
-      let indent = " ".repeat(Math.round(Math.random() * 6))
+      let indent = " ".repeat(Math.round(randFn() * 6))
       let bit = indent
-      let rand = Math.floor(Math.random() * 30)
+      let rand = Math.floor(randFn() * 30)
       while (rand) {
-        bit += letters[Math.round(Math.min(Math.random() * letters.length, letters.length - 1))]
+        bit += letters[Math.round(Math.min(randFn() * letters.length, letters.length - 1))]
         rand--
       }
       bit += "\n"
@@ -319,14 +321,14 @@ class TreeUtils {
   }
   // adapted from https://gist.github.com/blixt/f17b47c62508be59987b
   // 1993 Park-Miller LCG
-  static _getPRNG(seed) {
+  static _getPseudoRandom0to1FloatGenerator(seed) {
     return function() {
       seed = Math.imul(48271, seed) | 0 % 2147483647
       return (seed & 2147483647) / 2147483648
     }
   }
   static sampleWithoutReplacement(population = [], quantity, seed) {
-    const prng = this._getPRNG(seed)
+    const prng = this._getPseudoRandom0to1FloatGenerator(seed)
     const sampled = {}
     const populationSize = population.length
     const picked = []
@@ -467,18 +469,18 @@ TreeUtils.linkify = text => {
   return replacedText
 }
 // todo: switch algo to: http://indiegamr.com/generate-repeatable-random-numbers-in-js/?
-TreeUtils.makeSemiRandomFn = (seed = 1) => {
+TreeUtils.makeSemiRandomFn = (seed = Date.now()) => {
   return () => {
     const semiRand = Math.sin(seed++) * 10000
     return semiRand - Math.floor(semiRand)
   }
 }
-TreeUtils.randomUniformInt = (min, max, seed = 1) => {
-  return Math.round(TreeUtils.randomUniformFloat(min, max, seed))
+TreeUtils.randomUniformInt = (min, max, seed = Date.now()) => {
+  return Math.floor(TreeUtils.randomUniformFloat(min, max, seed))
 }
-TreeUtils.randomUniformFloat = (min, max, seed = 1) => {
-  const rand = TreeUtils.makeSemiRandomFn(seed)
-  return min + (max - min) * rand()
+TreeUtils.randomUniformFloat = (min, max, seed = Date.now()) => {
+  const randFn = TreeUtils.makeSemiRandomFn(seed)
+  return min + (max - min) * randFn()
 }
 TreeUtils.getRange = (startIndex, endIndexExclusive, increment = 1) => {
   const range = []
@@ -894,6 +896,10 @@ class TreeNode extends AbstractNode {
     }
     return wordCount
   }
+  getLineNumber() {
+    // todo: remove Y coordinate stuff? Now that we use the more abstract nodeBreakSymbols?
+    return this._getYCoordinate()
+  }
   _getLineNumber(target = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
     let lineNumber = 1
@@ -1285,14 +1291,25 @@ class TreeNode extends AbstractNode {
     this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
     return this
   }
+  lengthen(numberOfLines) {
+    let linesToAdd = numberOfLines - this.getNumberOfLines()
+    while (linesToAdd > 0) {
+      this.appendLine("")
+      linesToAdd--
+    }
+    return this
+  }
   toSideBySide(treesOrStrings, delimiter = " ") {
+    treesOrStrings = treesOrStrings.map(tree => (tree instanceof TreeNode ? tree : new TreeNode(tree)))
     const clone = this.toTreeNode()
+    const nodeBreakSymbol = "\n"
     let next
     while ((next = treesOrStrings.shift())) {
+      clone.lengthen(next.getNumberOfLines())
       clone.rightPad()
       next
         .toString()
-        .split("\n")
+        .split(nodeBreakSymbol)
         .forEach((line, index) => {
           const node = clone.nodeAtLine(index)
           node.setLine(node.getLine() + delimiter + line)
@@ -2070,7 +2087,7 @@ class TreeNode extends AbstractNode {
   map(fn) {
     return this.getChildren().map(fn)
   }
-  filter(fn) {
+  filter(fn = item => item) {
     return this.getChildren().filter(fn)
   }
   find(fn) {
@@ -2975,7 +2992,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "44.1.0"
+TreeNode.getVersion = () => "45.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3113,6 +3130,8 @@ var GrammarConstants
   GrammarConstants["enumFromCellTypes"] = "enumFromCellTypes"
   GrammarConstants["enum"] = "enum"
   GrammarConstants["examples"] = "examples"
+  GrammarConstants["min"] = "min"
+  GrammarConstants["max"] = "max"
   // baseNodeTypes
   GrammarConstants["baseNodeType"] = "baseNodeType"
   GrammarConstants["blobNode"] = "blobNode"
@@ -3247,13 +3266,13 @@ class GrammarBackedNode extends TreeNode {
   findAllNodesWithNodeType(nodeTypeId) {
     return this.getTopDownArray().filter(node => node.getDefinition().getNodeTypeIdFromDefinition() === nodeTypeId)
   }
-  getInPlaceCellTypeTree() {
+  toCellTypeTree() {
     return this.getTopDownArray()
       .map(child => child.getIndentation() + child.getLineCellTypes())
       .join("\n")
   }
   getParseTable(maxColumnWidth = 40) {
-    const tree = new TreeNode(this.getInPlaceCellTypeTree())
+    const tree = new TreeNode(this.toCellTypeTree())
     return new TreeNode(
       tree.getTopDownArray().map((node, lineNumber) => {
         const sourceNode = this.nodeAtLine(lineNumber)
@@ -3352,17 +3371,22 @@ class GrammarBackedNode extends TreeNode {
     })
     return usage
   }
-  getInPlaceHighlightScopeTree() {
+  toHighlightScopeTree() {
     return this.getTopDownArray()
       .map(child => child.getIndentation() + child.getLineHighlightScopes())
       .join("\n")
   }
-  getInPlaceCellTypeTreeWithNodeConstructorNames() {
+  toDefinitionLineNumberTree() {
+    return this.getTopDownArray()
+      .map(child => child.getDefinition().getLineNumber() + " " + child.getIndentation() + child.getCellDefinitionLineNumbers().join(" "))
+      .join("\n")
+  }
+  toCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellTypes())
       .join("\n")
   }
-  getInPlacePreludeCellTypeTreeWithNodeConstructorNames() {
+  toPreludeCellTypeTreeWithNodeConstructorNames() {
     return this.getTopDownArray()
       .map(child => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellPreludeTypes())
       .join("\n")
@@ -3380,8 +3404,8 @@ class GrammarBackedNode extends TreeNode {
   _initCellTypeCache() {
     const treeMTime = this.getLineOrChildrenModifiedTime()
     if (this._cache_programCellTypeStringMTime === treeMTime) return undefined
-    this._cache_typeTree = new TreeNode(this.getInPlaceCellTypeTree())
-    this._cache_highlightScopeTree = new TreeNode(this.getInPlaceHighlightScopeTree())
+    this._cache_typeTree = new TreeNode(this.toCellTypeTree())
+    this._cache_highlightScopeTree = new TreeNode(this.toHighlightScopeTree())
     this._cache_programCellTypeStringMTime = treeMTime
   }
   createParser() {
@@ -3403,7 +3427,7 @@ class GrammarBackedNode extends TreeNode {
   getErrors() {
     const errors = this._getParsedCells()
       .map(check => check.getErrorIfAny())
-      .filter(i => i)
+      .filter(identity => identity)
     const firstWord = this.getFirstWord()
     if (this.getDefinition().has(GrammarConstants.single))
       this.getParent()
@@ -3437,6 +3461,9 @@ class GrammarBackedNode extends TreeNode {
     return this._getParsedCells()
       .map(slot => slot.getHighlightScope() || defaultScope)
       .join(" ")
+  }
+  getCellDefinitionLineNumbers() {
+    return this._getParsedCells().map(cell => cell.getDefinitionLineNumber())
   }
   _getCompiledIndentation() {
     const indentCharacter = this.getDefinition()._getCompilerObject()[GrammarConstantsCompiler.indentCharacter]
@@ -3538,6 +3565,9 @@ class AbstractGrammarBackedCell {
   getWord() {
     return this._node.getWord(this._index)
   }
+  getDefinitionLineNumber() {
+    return this._typeDef.getLineNumber()
+  }
   getCellTypeId() {
     return this._cellTypeId
   }
@@ -3549,6 +3579,15 @@ class AbstractGrammarBackedCell {
   }
   isCatchAll() {
     return this._isCatchAll
+  }
+  get min() {
+    return this._getCellTypeDefinition().get(GrammarConstants.min) || "0"
+  }
+  get max() {
+    return this._getCellTypeDefinition().get(GrammarConstants.max) || "100"
+  }
+  get placeholder() {
+    return this._getCellTypeDefinition().get(GrammarConstants.examples) || ""
   }
   getHighlightScope() {
     const definition = this._getCellTypeDefinition()
@@ -3567,11 +3606,35 @@ class AbstractGrammarBackedCell {
       }
     })
   }
-  synthesizeCell() {
+  synthesizeCell(seed = Date.now()) {
     // todo: cleanup
     const cellDef = this._getCellTypeDefinition()
     const enumOptions = cellDef._getFromExtended(GrammarConstants.enum)
-    return enumOptions ? TreeUtils.getRandomString(1, enumOptions.split(" ")) : this._synthesizeCell()
+    if (enumOptions) return TreeUtils.getRandomString(1, enumOptions.split(" "))
+    return this._synthesizeCell(seed)
+  }
+  _getStumpEnumInput(crux) {
+    const cellDef = this._getCellTypeDefinition()
+    const enumOptions = cellDef._getFromExtended(GrammarConstants.enum)
+    if (!enumOptions) return undefined
+    const options = new TreeNode(
+      enumOptions
+        .split(" ")
+        .map(option => `option ${option}`)
+        .join("\n")
+    )
+    return `select
+ name ${crux}
+${options.toString(1)}`
+  }
+  _toStumpInput(crux) {
+    // todo: remove
+    const enumInput = this._getStumpEnumInput(crux)
+    if (enumInput) return enumInput
+    // todo: cleanup. We shouldn't have these dual cellType classes.
+    return `input
+ name ${crux}
+ placeholder ${this.placeholder}`
   }
   _getCellTypeDefinition() {
     return this._typeDef
@@ -3596,26 +3659,6 @@ class AbstractGrammarBackedCell {
   }
 }
 AbstractGrammarBackedCell.parserFunctionName = ""
-class GrammarIntCell extends AbstractGrammarBackedCell {
-  _isValid() {
-    const word = this.getWord()
-    const num = parseInt(word)
-    if (isNaN(num)) return false
-    return num.toString() === word
-  }
-  _synthesizeCell() {
-    return TreeUtils.getRandomString(2, "123456789".split(""))
-  }
-  getRegexString() {
-    return "-?[0-9]+"
-  }
-  getParsed() {
-    const word = this.getWord()
-    return parseInt(word)
-  }
-}
-GrammarIntCell.defaultHighlightScope = "constant.numeric.integer"
-GrammarIntCell.parserFunctionName = "parseInt"
 class GrammarBitCell extends AbstractGrammarBackedCell {
   _isValid() {
     const word = this.getWord()
@@ -3633,14 +3676,44 @@ class GrammarBitCell extends AbstractGrammarBackedCell {
   }
 }
 GrammarBitCell.defaultHighlightScope = "constant.numeric"
-class GrammarFloatCell extends AbstractGrammarBackedCell {
+class GrammarNumericCell extends AbstractGrammarBackedCell {
+  _toStumpInput(crux) {
+    return `input
+ name ${crux}
+ type number
+ placeholder ${this.placeholder}
+ min ${this.min}
+ max ${this.max}`
+  }
+}
+class GrammarIntCell extends GrammarNumericCell {
+  _isValid() {
+    const word = this.getWord()
+    const num = parseInt(word)
+    if (isNaN(num)) return false
+    return num.toString() === word
+  }
+  _synthesizeCell(seed) {
+    return TreeUtils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed).toString()
+  }
+  getRegexString() {
+    return "-?[0-9]+"
+  }
+  getParsed() {
+    const word = this.getWord()
+    return parseInt(word)
+  }
+}
+GrammarIntCell.defaultHighlightScope = "constant.numeric.integer"
+GrammarIntCell.parserFunctionName = "parseInt"
+class GrammarFloatCell extends GrammarNumericCell {
   _isValid() {
     const word = this.getWord()
     const num = parseFloat(word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
   }
-  _synthesizeCell() {
-    return TreeUtils.getRandomString(2, "123456789".split("")) + "." + TreeUtils.getRandomString(2, "0123456789".split(""))
+  _synthesizeCell(seed) {
+    return TreeUtils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
   }
   getRegexString() {
     return "-?d*(.d+)?"
@@ -4025,6 +4098,8 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.highlightScope] = TreeNode
     types[GrammarConstants.todoComment] = TreeNode
     types[GrammarConstants.examples] = TreeNode
+    types[GrammarConstants.min] = TreeNode
+    types[GrammarConstants.max] = TreeNode
     types[GrammarConstants.description] = TreeNode
     types[GrammarConstants.extends] = TreeNode
     return new TreeNode.Parser(undefined, types)
@@ -4486,7 +4561,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     return nodeDef._getGeneratedClassName()
   }
   _nodeDefToJavascriptClass() {
-    const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(code => code)
+    const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
     if (this._amIRoot()) {
       components.push(`getGrammarProgram() {
         if (!this._cachedGrammarProgramRoot)
@@ -4600,12 +4675,32 @@ ${captures}
     const ancestorIds = this.getAncestorNodeTypeIdsArray()
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
   }
-  _generateSimulatedLine() {
+  _toStumpString() {
+    const crux = this._getCruxIfAny()
+    const cellArray = this.getCellParser()
+      .getCellArray()
+      .filter((item, index) => index) // for now this only works for keyword langs
+    if (!cellArray.length)
+      // todo: remove this! just doing it for now until we refactor getCellArray to handle catchAlls better.
+      return ""
+    const cells = new TreeNode(cellArray.map((cell, index) => cell._toStumpInput(crux)).join("\n"))
+    return `div
+ label ${crux}
+${cells.toString(1)}`
+  }
+  toStumpString() {
+    const nodeBreakSymbol = "\n"
+    return this._getInScopeNodeTypeIds()
+      .map(nodeTypeId => this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._toStumpString())
+      .filter(identity => identity)
+      .join(nodeBreakSymbol)
+  }
+  _generateSimulatedLine(seed) {
     // todo: generate simulated data from catch all
     const crux = this._getCruxIfAny()
     return this.getCellParser()
       .getCellArray()
-      .map((cell, index) => (!index && crux ? crux : cell.synthesizeCell()))
+      .map((cell, index) => (!index && crux ? crux : cell.synthesizeCell(seed)))
       .join(" ")
   }
   _shouldSynthesize(def, nodeTypeChain) {
@@ -4616,7 +4711,7 @@ ${captures}
     return true
   }
   // todo: refactor
-  synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypesAlreadySynthesized = []) {
+  synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypesAlreadySynthesized = [], seed = Date.now()) {
     let inScopeNodeTypeIds = this._getInScopeNodeTypeIds()
     const catchAllNodeTypeId = this._getFromExtended(GrammarConstants.catchAllNodeType)
     if (catchAllNodeTypeId) inScopeNodeTypeIds.push(catchAllNodeTypeId)
@@ -4624,7 +4719,7 @@ ${captures}
     if (!nodeTypesAlreadySynthesized.includes(thisId)) nodeTypesAlreadySynthesized.push(thisId)
     const lines = []
     while (nodeCount) {
-      const line = this._generateSimulatedLine()
+      const line = this._generateSimulatedLine(seed)
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
       const concreteNodeTypeDefsToSynthesize = []
       inScopeNodeTypeIds
@@ -4646,7 +4741,7 @@ ${captures}
         .forEach(def => {
           const chain = nodeTypesAlreadySynthesized // .slice(0)
           chain.push(def._getId())
-          def.synthesizeNode(1, indentCount + 1, chain).forEach(line => {
+          def.synthesizeNode(1, indentCount + 1, chain, seed).forEach(line => {
             lines.push(line)
           })
         })
@@ -5043,7 +5138,7 @@ class UnknownGrammarProgram extends TreeNode {
  ${GrammarConstants.root}`)
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
     const rootNodeNames = this.getFirstWords()
-      .filter(word => word)
+      .filter(identity => identity)
       .map(word => GrammarProgram.makeNodeTypeId(word))
     rootNode
       .nodeAt(0)
@@ -5081,7 +5176,7 @@ class UnknownGrammarProgram extends TreeNode {
     if (childNodeTypeIds.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childNodeTypeIds)
     const cellsForAllInstances = instances
       .map(line => line.getContent())
-      .filter(line => line)
+      .filter(identity => identity)
       .map(line => line.split(edgeSymbol))
     const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))
     const maxCellsOnLine = Math.max(...Array.from(instanceCellCounts))
@@ -5129,12 +5224,12 @@ class UnknownGrammarProgram extends TreeNode {
     const globalCellTypeMap = new Map()
     globalCellTypeMap.set(PreludeCellTypeIds.keywordCell, undefined)
     const nodeTypeDefs = Object.keys(keywordsToChildKeywords)
-      .filter(word => word)
+      .filter(identity => identity)
       .map(firstWord => this._inferNodeTypeDef(firstWord, globalCellTypeMap, Object.keys(keywordsToChildKeywords[firstWord]), keywordsToNodeInstances[firstWord]))
     const cellTypeDefs = []
     globalCellTypeMap.forEach((def, id) => cellTypeDefs.push(def ? def : id))
     const nodeBreakSymbol = this.getNodeBreakSymbol()
-    return this._formatCode([this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(def => def).join("\n"))
+    return this._formatCode([this._inferRootNodeForAPrefixLanguage(grammarName).toString(), cellTypeDefs.join(nodeBreakSymbol), nodeTypeDefs.join(nodeBreakSymbol)].filter(identity => identity).join("\n"))
   }
   _formatCode(code) {
     // todo: make this run in browser too
@@ -5147,7 +5242,7 @@ class UnknownGrammarProgram extends TreeNode {
   _getBestCellType(firstWord, instanceCount, maxCellsOnLine, allValues) {
     const asSet = new Set(allValues)
     const edgeSymbol = this.getEdgeSymbol()
-    const values = Array.from(asSet).filter(c => c)
+    const values = Array.from(asSet).filter(identity => identity)
     const every = fn => {
       for (let index = 0; index < values.length; index++) {
         if (!fn(values[index])) return false

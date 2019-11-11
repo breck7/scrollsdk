@@ -62,7 +62,7 @@ test syntax
    div
     bern
      Hello world
- getInPlaceCellTypeTree
+ toCellTypeTree
   assertParagraphIs
    htmlTagNameCell
     bernKeywordCell

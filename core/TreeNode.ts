@@ -253,6 +253,11 @@ class TreeNode extends AbstractNode {
     return wordCount
   }
 
+  getLineNumber() {
+    // todo: remove Y coordinate stuff? Now that we use the more abstract nodeBreakSymbols?
+    return this._getYCoordinate()
+  }
+
   protected _cachedLineNumber: int
   _getLineNumber(target: TreeNode = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
@@ -714,15 +719,27 @@ class TreeNode extends AbstractNode {
     return this
   }
 
+  lengthen(numberOfLines: int) {
+    let linesToAdd = numberOfLines - this.getNumberOfLines()
+    while (linesToAdd > 0) {
+      this.appendLine("")
+      linesToAdd--
+    }
+    return this
+  }
+
   toSideBySide(treesOrStrings: (TreeNode | string)[], delimiter = " ") {
+    treesOrStrings = <TreeNode[]>treesOrStrings.map(tree => (tree instanceof TreeNode ? tree : new TreeNode(tree)))
     const clone = this.toTreeNode()
-    let next
+    const nodeBreakSymbol = "\n"
+    let next: any
     while ((next = treesOrStrings.shift())) {
+      clone.lengthen(next.getNumberOfLines())
       clone.rightPad()
       next
         .toString()
-        .split("\n")
-        .forEach((line, index) => {
+        .split(nodeBreakSymbol)
+        .forEach((line: string, index: number) => {
           const node = clone.nodeAtLine(index)
           node.setLine(node.getLine() + delimiter + line)
         })
@@ -1649,7 +1666,7 @@ class TreeNode extends AbstractNode {
     return this.getChildren().map(fn)
   }
 
-  filter(fn: treeNotationTypes.filterFn) {
+  filter(fn: treeNotationTypes.filterFn = item => item) {
     return this.getChildren().filter(fn)
   }
 
@@ -2744,7 +2761,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "44.1.0"
+  static getVersion = () => "45.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

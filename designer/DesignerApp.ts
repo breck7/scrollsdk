@@ -90,8 +90,8 @@ class DesignerCommander extends AbstractCommander {
   private _toIceTray(program: any) {
     const columns = program.getProgramWidth()
 
-    const cellTypes = new jtree.TreeNode(program.getInPlaceCellTypeTreeWithNodeConstructorNames())
-    const rootCellTypes = new jtree.TreeNode(program.getInPlacePreludeCellTypeTreeWithNodeConstructorNames())
+    const cellTypes = new jtree.TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
+    const rootCellTypes = new jtree.TreeNode(program.toPreludeCellTypeTreeWithNodeConstructorNames())
 
     const table = program
       .getProgramAsCells()
@@ -556,7 +556,6 @@ class tableComponent extends AbstractTreeComponent {
     type checkbox
     value compileCommand
     class onCodeUp
-    checked
    a Compile
     ${WillowConstants.DataShadowEvents.onClickCommand} compileCommand
    span  |
@@ -564,7 +563,6 @@ class tableComponent extends AbstractTreeComponent {
     type checkbox
     value visualizeCommand
     class onCodeUp
-    checked
    a Explain
     ${WillowConstants.DataShadowEvents.onClickCommand} visualizeCommand
    textarea

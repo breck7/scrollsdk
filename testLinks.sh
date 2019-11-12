@@ -1,1 +1,1 @@
-linkinator https://jtree.treenotation.org
+linkinator -r https://jtree.treenotation.org

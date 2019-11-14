@@ -2306,6 +2306,15 @@ bar`
   )
 }
 
+testTree._toPacked = equal => {
+  // Arrange/Act/Assert
+  const str = new TreeNode(testStrings.sortByMultiple.trim()).toPacked().toString()
+  console.log(11111)
+  console.log(str)
+  console.log(22222)
+  equal(str.length, 10)
+}
+
 testTree.copyToRegression = equal => {
   // Arrange
   const tree = new TreeNode(

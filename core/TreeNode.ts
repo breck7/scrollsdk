@@ -713,8 +713,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  rightPad(padCharacter = " ") {
-    const newWidth = this.getMaxLineWidth()
+  rightPad(padCharacter = " ", newWidth = this.getMaxLineWidth()) {
     this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
     return this
   }
@@ -725,6 +724,42 @@ class TreeNode extends AbstractNode {
       this.appendLine("")
       linesToAdd--
     }
+    return this
+  }
+
+  toPacked() {
+    const trees = this.getChildren()
+    const dimensions = trees.map(child => {
+      return {
+      width: child.getMaxLineWidth() + 2,
+      height: child.getNumberOfLines() + 1
+      }
+    })
+    const packed = new TreeNode()
+    const packer = new TreeUtils.BinPacker()
+    const locations = packer.getRectangleLocations(dimensions)
+    trees.forEach((tree, index) => {
+      const location = locations[index]
+      packed.writeTreeAt(tree, location.top, location.left)
+    })
+    return packed
+  }
+
+  writeTreeAt(tree: TreeNode, lineStart: treeNotationTypes.int, charIndex: treeNotationTypes.int) {
+    this.lengthen(lineStart + tree.getNumberOfLines() + 1)
+    this.rightPad(" ", tree.getMaxLineWidth() +  this.getMaxLineWidth())
+    tree.toString().split("\n").forEach((line, index) => {
+      this.nodeAtLine(lineStart + index).writeCharacters(line, charIndex)
+    })
+    return this
+  }
+
+  writeCharacters(str: string, startAt: int) {
+    const chars = this.getLine().split("")
+    str.split("").forEach((char, index) => {
+      chars[startAt + index] = char
+    })
+    this.setLine(chars.join(""))
     return this
   }
 

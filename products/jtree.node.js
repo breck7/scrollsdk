@@ -17,6 +17,73 @@ class Timer {
     return Date.now() - this._firstTickTime
   }
 }
+class BinPacker {
+  getRectangleLocations(rectangles) {
+    rectangles.sort((rectA, rectB) => {
+      const areaA = rectA.width * rectA.height
+      const areaB = rectB.width * rectB.height
+      return areaA > areaB ? 1 : areaA < areaB ? -1 : 0
+    })
+    // Compacts boxes into as efficient a space as possible, in any order.
+    // Does not change box height/width. It assumes an infinite possible area.
+    const { width, height } = rectangles.length ? rectangles[0] : { width: 0, height: 0 }
+    this._rootBin = { left: 0, top: 0, width, height }
+    return rectangles.map(rectangle => {
+      const node = this._findNode(this._rootBin, rectangle.width, rectangle.height)
+      return node ? this._splitNode(node, rectangle.width, rectangle.height) : this._growNode(rectangle.width, rectangle.height)
+    })
+  }
+  _findNode(root, width, height) {
+    if (root.used) return this._findNode(root.right, width, height) || this._findNode(root.down, width, height)
+    return width <= root.width && height <= root.height ? root : null
+  }
+  _splitNode(node, width, height) {
+    node.used = true
+    node.down = { left: node.left, top: node.top + height, width: node.width, height: node.height - height }
+    node.right = { left: node.left + width, top: node.top, width: node.width - width, height: height }
+    return node
+  }
+  _growNode(width, height) {
+    const rootNode = this._rootBin
+    const canGrowDown = width <= rootNode.width
+    const canGrowRight = height <= rootNode.height
+    const shouldGrowRight = canGrowRight && rootNode.height >= rootNode.width + width // attempt to keep square-ish by growing right when height is much greater than width
+    const shouldGrowDown = canGrowDown && rootNode.width >= rootNode.height + height // attempt to keep square-ish by growing down  when width  is much greater than height
+    if (shouldGrowRight) return this._growRight(width, height)
+    else if (shouldGrowDown) return this._growDown(width, height)
+    else if (canGrowRight) return this._growRight(width, height)
+    else if (canGrowDown) return this._growDown(width, height)
+    throw new Error("need to ensure sensible root starting size to avoid this happening")
+  }
+  _growRight(width, height) {
+    const oldRoot = this._rootBin
+    this._rootBin = {
+      used: true,
+      left: 0,
+      top: 0,
+      width: oldRoot.width + width,
+      height: oldRoot.height,
+      down: oldRoot,
+      right: { left: oldRoot.width, top: 0, width: width, height: oldRoot.height }
+    }
+    const node = this._findNode(this._rootBin, width, height)
+    return node ? this._splitNode(node, width, height) : null
+  }
+  _growDown(width, height) {
+    const oldRoot = this._rootBin
+    this._rootBin = {
+      used: true,
+      left: 0,
+      top: 0,
+      width: oldRoot.width,
+      height: oldRoot.height + height,
+      down: { left: 0, top: oldRoot.height, width: oldRoot.width, height: height },
+      right: oldRoot
+    }
+    const node = this._findNode(this._rootBin, width, height)
+    return node ? this._splitNode(node, width, height) : null
+  }
+}
 class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
@@ -450,6 +517,7 @@ class TreeUtils {
     }
   }
 }
+TreeUtils.BinPacker = BinPacker
 TreeUtils.Timer = Timer
 //http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links#21925491
 TreeUtils.linkify = text => {
@@ -1286,8 +1354,7 @@ class TreeNode extends AbstractNode {
     this.setLine(line + padCharacter.repeat(newWidth - line.length))
     return this
   }
-  rightPad(padCharacter = " ") {
-    const newWidth = this.getMaxLineWidth()
+  rightPad(padCharacter = " ", newWidth = this.getMaxLineWidth()) {
     this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
     return this
   }
@@ -1297,6 +1364,42 @@ class TreeNode extends AbstractNode {
       this.appendLine("")
       linesToAdd--
     }
+    return this
+  }
+  toPacked() {
+    const trees = this.getChildren()
+    const dimensions = trees.map(child => {
+      return {
+        width: child.getMaxLineWidth() + 2,
+        height: child.getNumberOfLines() + 1
+      }
+    })
+    const packed = new TreeNode()
+    const packer = new TreeUtils.BinPacker()
+    const locations = packer.getRectangleLocations(dimensions)
+    trees.forEach((tree, index) => {
+      const location = locations[index]
+      packed.writeTreeAt(tree, location.top, location.left)
+    })
+    return packed
+  }
+  writeTreeAt(tree, lineStart, charIndex) {
+    this.lengthen(lineStart + tree.getNumberOfLines() + 1)
+    this.rightPad(" ", tree.getMaxLineWidth() + this.getMaxLineWidth())
+    tree
+      .toString()
+      .split("\n")
+      .forEach((line, index) => {
+        this.nodeAtLine(lineStart + index).writeCharacters(line, charIndex)
+      })
+    return this
+  }
+  writeCharacters(str, startAt) {
+    const chars = this.getLine().split("")
+    str.split("").forEach((char, index) => {
+      chars[startAt + index] = char
+    })
+    this.setLine(chars.join(""))
     return this
   }
   toSideBySide(treesOrStrings, delimiter = " ") {

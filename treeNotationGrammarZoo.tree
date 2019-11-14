@@ -1,0 +1,61 @@
+keywordGrammar
+ description A grammar where each node type is determined by the presence of a keyword
+ prefixKeywordGrammar
+  keyword 1 2 3 foo
+ postfixKeywordGrammar
+  1 2 keyword
+ omnifixKeywordGrammar
+  1 keyword 2
+flatGrammar
+ description A grammar that has only 1 scope
+ example
+singleScopeGrammar
+ description A grammar with multiple scopes
+ benefit Isomorphic to a single table
+ downsides
+staticGrammar
+ description A grammar where the nodeType and cellTypes cannot be changed or defined at runtime
+ example
+  print hello world
+dynamicGrammar
+ description A grammar where new nodeType and/or cellTypes can be defined at runtime
+ example
+  name score
+  string int
+  sandy 123
+identifierGrammar
+ description A grammar where identifiers can be created
+ example
+  score = 10
+  increment score
+anonymousGrammar
+ description A grammar without any identifiers or naming
+ example
+  10
+   increment
+recursiveGrammar
+ description A grammarNode with a scope that eventually includes itself
+ example
+  sum
+   2 3
+    sum
+     4 6
+dagGrammar
+ description A non recursive grammar
+ example
+  person
+   phone
+    cell 123-1234
+multiAnchorGrammars
+ description A grammar where root level nodes (for instance) can be parsed/compiled/executed completely independently
+singleAnchorGrammars
+ description A grammar where parsing/compilation and/or execution must begin from the beginning of the sequence and process sequentially
+orderIsImportantGrammars
+ example
+  add 10
+  checkBalance()
+orderIsNotImportantGrammars
+ description When order is not important and rearranging nodes does not affect meaning. 
+ example
+  name ali
+  score 100

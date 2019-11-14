@@ -1,3 +1,7 @@
+45.0.1 / 2019-11-13
+===================
+- Fix: web form generation fixes
+
 45.0.0 / 2019-11-08
 ===================
 - New: toDefinitionLineNumberTree method added to Grammar programs

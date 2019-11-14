@@ -241,7 +241,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
     let def = new grammarProgram().getDefinition()
 
-    if (nodeTypeId) def = def.getNodeTypeDefinitionByNodeTypeId("chargeNode")
+    if (nodeTypeId) def = def.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
 
     const stumpCode = def.toStumpString()
     const stumpNode = require("../products/stump.nodejs.js")

@@ -3005,7 +3005,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "45.0.0"
+TreeNode.getVersion = () => "45.0.1"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -4707,8 +4707,8 @@ ${cells.toString(1)}`
   }
   toStumpString() {
     const nodeBreakSymbol = "\n"
-    return this._getInScopeNodeTypeIds()
-      .map(nodeTypeId => this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._toStumpString())
+    return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds())
+      .map(def => def._toStumpString())
       .filter(identity => identity)
       .join(nodeBreakSymbol)
   }
@@ -4727,6 +4727,19 @@ ${cells.toString(1)}`
     if (tags && tags.includes("doNotSynthesize")) return false
     return true
   }
+  _getConcreteNonErrorInScopeNodeDefinitions(nodeTypeIds) {
+    const results = []
+    nodeTypeIds.forEach(nodeTypeId => {
+      const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
+      if (def._isErrorNodeType()) return true
+      else if (def._isAbstract()) {
+        def._getConcreteDescendantDefinitions().forEach(def => results.push(def))
+      } else {
+        results.push(def)
+      }
+    })
+    return results
+  }
   // todo: refactor
   synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypesAlreadySynthesized = [], seed = Date.now()) {
     let inScopeNodeTypeIds = this._getInScopeNodeTypeIds()
@@ -4738,22 +4751,7 @@ ${cells.toString(1)}`
     while (nodeCount) {
       const line = this._generateSimulatedLine(seed)
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
-      const concreteNodeTypeDefsToSynthesize = []
-      inScopeNodeTypeIds
-        .filter(nodeTypeId => {
-          if (nodeTypesAlreadySynthesized.includes(nodeTypeId)) return false
-          return true
-        })
-        .forEach(nodeTypeId => {
-          const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
-          if (def._isErrorNodeType()) return true
-          else if (def._isAbstract()) {
-            def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefsToSynthesize.push(def))
-          } else {
-            concreteNodeTypeDefsToSynthesize.push(def)
-          }
-        })
-      concreteNodeTypeDefsToSynthesize
+      this._getConcreteNonErrorInScopeNodeDefinitions(inScopeNodeTypeIds.filter(nodeTypeId => !nodeTypesAlreadySynthesized.includes(nodeTypeId)))
         .filter(def => this._shouldSynthesize(def, nodeTypesAlreadySynthesized))
         .forEach(def => {
           const chain = nodeTypesAlreadySynthesized // .slice(0)

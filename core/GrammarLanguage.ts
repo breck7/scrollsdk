@@ -1981,8 +1981,8 @@ ${cells.toString(1)}`
 
   toStumpString() {
     const nodeBreakSymbol = "\n"
-    return this._getInScopeNodeTypeIds()
-      .map(nodeTypeId => this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)._toStumpString())
+    return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds())
+      .map(def => def._toStumpString())
       .filter(identity => identity)
       .join(nodeBreakSymbol)
   }
@@ -2004,6 +2004,20 @@ ${cells.toString(1)}`
     return true
   }
 
+  private _getConcreteNonErrorInScopeNodeDefinitions(nodeTypeIds: string[]) {
+    const results: AbstractGrammarDefinitionNode[] = []
+    nodeTypeIds.forEach(nodeTypeId => {
+      const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
+      if (def._isErrorNodeType()) return true
+      else if (def._isAbstract()) {
+        def._getConcreteDescendantDefinitions().forEach(def => results.push(def))
+      } else {
+        results.push(def)
+      }
+    })
+    return results
+  }
+
   // todo: refactor
   synthesizeNode(nodeCount = 1, indentCount = -1, nodeTypesAlreadySynthesized: string[] = [], seed = Date.now()) {
     let inScopeNodeTypeIds = this._getInScopeNodeTypeIds()
@@ -2016,23 +2030,7 @@ ${cells.toString(1)}`
       const line = this._generateSimulatedLine(seed)
       if (line) lines.push(" ".repeat(indentCount >= 0 ? indentCount : 0) + line)
 
-      const concreteNodeTypeDefsToSynthesize: AbstractGrammarDefinitionNode[] = []
-      inScopeNodeTypeIds
-        .filter(nodeTypeId => {
-          if (nodeTypesAlreadySynthesized.includes(nodeTypeId)) return false
-          return true
-        })
-        .forEach(nodeTypeId => {
-          const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
-          if (def._isErrorNodeType()) return true
-          else if (def._isAbstract()) {
-            def._getConcreteDescendantDefinitions().forEach(def => concreteNodeTypeDefsToSynthesize.push(def))
-          } else {
-            concreteNodeTypeDefsToSynthesize.push(def)
-          }
-        })
-
-      concreteNodeTypeDefsToSynthesize
+      this._getConcreteNonErrorInScopeNodeDefinitions(inScopeNodeTypeIds.filter(nodeTypeId => !nodeTypesAlreadySynthesized.includes(nodeTypeId)))
         .filter(def => this._shouldSynthesize(def, nodeTypesAlreadySynthesized))
         .forEach(def => {
           const chain = nodeTypesAlreadySynthesized // .slice(0)

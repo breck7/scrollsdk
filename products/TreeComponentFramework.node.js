@@ -882,25 +882,6 @@ class WillowBrowserProgram extends AbstractWillowProgram {
     return stumpNode && stumpNode.getShadow()
   }
 }
-class AbstractCommander {
-  constructor(target) {
-    this._target = target
-  }
-  getTarget() {
-    return this._target
-  }
-  toggleTreeComponentFrameworkDebuggerCommand() {
-    // todo: cleanup
-    const app = this._target.getRootNode()
-    const node = app.getNode("TreeComponentFrameworkDebuggerComponent")
-    if (node) {
-      node.unmountAndDestroy()
-    } else {
-      app.appendLine("TreeComponentFrameworkDebuggerComponent")
-      app.renderAndGetRenderReport()
-    }
-  }
-}
 class AbstractTheme {
   hakonToCss(str) {
     const hakonProgram = new hakonNode(str)
@@ -909,24 +890,7 @@ class AbstractTheme {
   }
 }
 class DefaultTheme extends AbstractTheme {}
-class TreeComponentCommander extends AbstractCommander {
-  stopPropagationCommand() {
-    // intentional noop
-  }
-  async clearMessageBufferCommand() {
-    const treeComponent = this.getTarget()
-    delete treeComponent._messageBuffer
-  }
-  async unmountAndDestroyCommand() {
-    const treeComponent = this.getTarget()
-    treeComponent.unmountAndDestroy()
-  }
-}
 class AbstractTreeComponent extends jtree.GrammarBackedNode {
-  constructor() {
-    super(...arguments)
-    this._commander = new TreeComponentCommander(this)
-  }
   getWillowProgram() {
     if (!this._willowProgram) {
       if (this.isNodeJs()) {
@@ -1009,6 +973,9 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
       .filter(text => text)
       .join("\n")
   }
+  getCommandNames() {
+    return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(word => word.endsWith("Command"))
+  }
   async _executeStumpNodeCommand(stumpNode, commandMethod) {
     const params = this._getCommandArguments(stumpNode, commandMethod)
     if (commandMethod.includes(" "))
@@ -1017,16 +984,14 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     this.addToCommandLog([commandMethod, params.uno, params.dos].filter(identity => identity).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
     let treeComponent = stumpNode.getStumpNodeTreeComponent()
-    let commander = treeComponent.getCommander()
-    while (!commander[commandMethod]) {
+    while (!treeComponent[commandMethod]) {
       const parent = treeComponent.getParent()
       if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
       if (!parent) debugger
       treeComponent = parent
-      commander = treeComponent.getCommander()
     }
     try {
-      await commander[commandMethod](params.uno, params.dos)
+      await treeComponent[commandMethod](params.uno, params.dos)
     } catch (err) {
       this.onCommandError(err)
     }
@@ -1034,7 +999,6 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
   _setTreeComponentFrameworkEventListeners() {
     const willowBrowser = this.getWillowProgram()
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
-    const commander = this.getCommander()
     const app = this
     const checkAndExecute = (el, attr, evt) => {
       const stumpNode = willowBrowser.getStumpNodeFromElement(el)
@@ -1089,8 +1053,29 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
       false
     )
   }
-  getCommander() {
-    return this._commander
+  stopPropagationCommand() {
+    // todo: remove?
+    // intentional noop
+  }
+  // todo: remove?
+  async clearMessageBufferCommand() {
+    delete this._messageBuffer
+  }
+  // todo: remove?
+  async unmountAndDestroyCommand() {
+    this.unmountAndDestroy()
+  }
+  toggleTreeComponentFrameworkDebuggerCommand() {
+    // todo: move somewhere else?
+    // todo: cleanup
+    const app = this.getRootNode()
+    const node = app.getNode("TreeComponentFrameworkDebuggerComponent")
+    if (node) {
+      node.unmountAndDestroy()
+    } else {
+      app.appendLine("TreeComponentFrameworkDebuggerComponent")
+      app.renderAndGetRenderReport()
+    }
   }
   getStumpNode() {
     return this._htmlStumpNode
@@ -1449,4 +1434,4 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   }
 }
 
-module.exports = { AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
+module.exports = { AbstractTreeComponent, WillowConstants, WillowProgram, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }

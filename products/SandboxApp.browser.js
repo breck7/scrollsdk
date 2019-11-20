@@ -1,8 +1,12 @@
 //onsave jtree build produce SandboxApp.browser.js
-class SandboxCommander extends AbstractCommander {
-  constructor(app) {
-    super(app)
-    this._app = app
+class SandboxApp extends AbstractTreeComponent {
+  createParser() {
+    return new jtree.TreeNode.Parser(undefined, {
+      tableComponent: tableComponent,
+      githubTriangleComponent: githubTriangleComponent,
+      headerComponent: headerComponent,
+      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
+    })
   }
   loadJsonSampleCommand() {
     jQuery("#jsonConsole")
@@ -20,25 +24,10 @@ class SandboxCommander extends AbstractCommander {
       .val(jtree.TreeNode.iris)
       .keyup()
   }
-}
-class SandboxApp extends AbstractTreeComponent {
-  constructor() {
-    super(...arguments)
-    this._commander = new SandboxCommander(this)
-  }
-  createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
-      tableComponent: tableComponent,
-      githubTriangleComponent: githubTriangleComponent,
-      headerComponent: headerComponent,
-      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
-    })
-  }
   async appWillFirstRender() {
     // todo: refactor!!! splut these into components
     const willowBrowser = this.getWillowProgram()
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
-    const commander = this.getCommander()
     jQuery(document).ready(function() {
       const treeConsole = jQuery("#treeConsole")
       const jsonConsole = jQuery("#jsonConsole")

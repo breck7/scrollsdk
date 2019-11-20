@@ -1,3 +1,8 @@
+46.0.0 / 2019-11-20
+===================
+- New: getCommandNames method on TCF
+- Breaking: removed AbstractCommander concept from TCF. Move methods with a Command suffix for methods on TCF classes.
+
 45.1.0 / 2019-11-20
 ===================
 - New: TCF added getTextContent to TreeComponent and getHash and setHash methods to WillowBrowser class

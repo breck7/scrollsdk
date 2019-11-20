@@ -1,33 +1,9 @@
 //onsave jtree build produce SandboxApp.browser.js
 
-const { AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
-
-class SandboxCommander extends AbstractCommander {
-  constructor(app: SandboxApp) {
-    super(app)
-    this._app = app
-  }
-  loadJsonSampleCommand() {
-    jQuery("#jsonConsole")
-      .val(
-        `{
- "name": "jtree",
- "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
- "keywords": "jtree"
-}`
-      )
-      .keyup()
-  }
-  loadCsvSampleCommand() {
-    jQuery("#csvConsole")
-      .val(jtree.TreeNode.iris)
-      .keyup()
-  }
-  private _app: SandboxApp
-}
 
 class SandboxApp extends AbstractTreeComponent {
   createParser() {
@@ -39,14 +15,29 @@ class SandboxApp extends AbstractTreeComponent {
     })
   }
 
-  private _commander = new SandboxCommander(this)
+  loadJsonSampleCommand() {
+    jQuery("#jsonConsole")
+      .val(
+        `{
+ "name": "jtree",
+ "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
+ "keywords": "jtree"
+}`
+      )
+      .keyup()
+  }
+
+  loadCsvSampleCommand() {
+    jQuery("#csvConsole")
+      .val(jtree.TreeNode.iris)
+      .keyup()
+  }
 
   async appWillFirstRender() {
     // todo: refactor!!! splut these into components
 
     const willowBrowser = this.getWillowProgram()
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
-    const commander = this.getCommander()
 
     jQuery(document).ready(function() {
       const treeConsole = jQuery("#treeConsole")

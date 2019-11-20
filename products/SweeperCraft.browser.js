@@ -350,43 +350,9 @@ const linkToObject = link => {
   }
   return obj
 }
-class SweeperCraftCommander extends AbstractCommander {
-  constructor(app) {
-    super(app)
-    this._app = app
-  }
-  clickSquareCommand(row, col) {
-    row = typeof row === "string" ? parseInt(row) : row
-    col = typeof col === "string" ? parseInt(col) : col
-    const game = this._getGame()
-    if (game.isOver()) return
-    const wasClicked = game.wasClicked(row, col)
-    if (wasClicked) return
-    const isFlagged = game.isFlagged(row, col)
-    if (game.isFlagLockOn()) game.toggleFlag(row, col)
-    // Don't allow someone to click on a flagged square w/o removing flag first
-    else if (!isFlagged) game.click(row, col)
-  }
-  _getGame() {
-    return this._app.getGame()
-  }
-  retryGameCommand() {
-    this._getGame().retry()
-  }
-  flagSquareCommand(row, col) {
-    row = typeof row === "string" ? parseInt(row) : row
-    col = typeof col === "string" ? parseInt(col) : col
-    const game = this._getGame()
-    if (game.isOver()) return
-    const wasClicked = game.wasClicked(row, col)
-    if (wasClicked) return
-    game.toggleFlag(row, col)
-  }
-}
 class SweeperCraftApp extends AbstractTreeComponent {
   constructor() {
     super(...arguments)
-    this._commander = new SweeperCraftCommander(this)
     this._isFirstRender = true
   }
   createParser() {
@@ -399,6 +365,30 @@ class SweeperCraftApp extends AbstractTreeComponent {
       githubTriangleComponent: githubTriangleComponent,
       TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
     })
+  }
+  clickSquareCommand(row, col) {
+    row = typeof row === "string" ? parseInt(row) : row
+    col = typeof col === "string" ? parseInt(col) : col
+    const game = this.getGame()
+    if (game.isOver()) return
+    const wasClicked = game.wasClicked(row, col)
+    if (wasClicked) return
+    const isFlagged = game.isFlagged(row, col)
+    if (game.isFlagLockOn()) game.toggleFlag(row, col)
+    // Don't allow someone to click on a flagged square w/o removing flag first
+    else if (!isFlagged) game.click(row, col)
+  }
+  retryGameCommand() {
+    this.getGame().retry()
+  }
+  flagSquareCommand(row, col) {
+    row = typeof row === "string" ? parseInt(row) : row
+    col = typeof col === "string" ? parseInt(col) : col
+    const game = this.getGame()
+    if (game.isOver()) return
+    const wasClicked = game.wasClicked(row, col)
+    if (wasClicked) return
+    game.toggleFlag(row, col)
   }
   toHakonCode() {
     const theme = this.getTheme()
@@ -541,7 +531,6 @@ githubTriangleComponent`
     return super.renderAndGetRenderReport(stumpNode)
   }
   _getKeyboardShortcuts() {
-    const commander = this.getCommander()
     return {
       u: () => this._mainGame.undo(),
       s: () => this._mainGame.win(),
@@ -569,7 +558,7 @@ githubTriangleComponent`
         location.hash = link
       },
       d: () => {
-        commander.toggleTreeComponentFrameworkDebuggerCommand()
+        this.toggleTreeComponentFrameworkDebuggerCommand()
       }
     }
   }

@@ -12,7 +12,7 @@ browserProduct
 nodeProduct
  outputFileName TreeComponentFramework.node.js
  files products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
- lastLine module.exports = { AbstractTreeComponent, AbstractCommander, WillowConstants, WillowProgram, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
+ lastLine module.exports = { AbstractTreeComponent, WillowConstants, WillowProgram, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
 browserProduct
  outputFileName jtree.browser.js
  removeAll Object.defineProperty(exports, "__esModule", { value: true })

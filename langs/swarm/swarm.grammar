@@ -44,10 +44,6 @@ swarmNode
  inScope hashbangNode arrangeNode abstractTestBlockNode
  catchAllNodeType errorNode
  javascript
-  processArranged(arrangedInstance) {
-   // todo: a hacky way to allow extending this language to access any commander on the arranged instance
-   return arrangedInstance
-  }
   getArrangeNode() {
    return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
   }
@@ -287,11 +283,10 @@ actNode
    return this.getWordsFrom(1)
   }
   _act(arrangedInstance) {
-   const arrangedInstanceCommander = this.getRootNode().processArranged(arrangedInstance) // todo: hacky.
    const actionMethodName = this.getFirstWord()
-   const actionMethod = arrangedInstanceCommander[actionMethodName]
-   if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstanceCommander.constructor.name}"`)
-   return actionMethod.apply(arrangedInstanceCommander, this._getActArgs())
+   const actionMethod = arrangedInstance[actionMethodName]
+   if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstance.constructor.name}"`)
+   return actionMethod.apply(arrangedInstance, this._getActArgs())
   }
   async execute(arrangedInstance) {
    await this._act(arrangedInstance)

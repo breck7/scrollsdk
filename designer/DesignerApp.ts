@@ -1,6 +1,6 @@
 //onsave jtree build produce DesignerApp.browser.js
 
-const { AbstractTreeComponent, AbstractCommander, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -12,20 +12,30 @@ declare var JSZip: any
 declare var dumbdownNode: any
 declare type html = string
 
-class DesignerCommander extends AbstractCommander {
-  constructor(app: DesignerApp) {
-    super(app)
-    this._app = app
+class DesignerApp extends AbstractTreeComponent {
+  createParser() {
+    return new jtree.TreeNode.Parser(undefined, {
+      githubTriangleComponent: githubTriangleComponent,
+      samplesComponent: samplesComponent,
+      tableComponent: tableComponent,
+      shareComponent: shareComponent,
+      headerComponent: headerComponent,
+      otherErrorsComponent: otherErrorsComponent,
+      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
+    })
   }
 
-  private _app: DesignerApp
-  get program() {
-    return this._app.program
+  _clearResults() {
+    jQuery(".resultsDiv").html("")
+    jQuery(".resultsDiv").val("")
   }
+
+  ///
   executeCommand() {
     const result = this.program.executeSync()
     jQuery("#executeResultsDiv").val(Array.isArray(result) ? result.join(",") : result)
   }
+
   compileCommand() {
     jQuery("#compileResultsDiv").val(this.program.compile())
   }
@@ -35,24 +45,24 @@ class DesignerCommander extends AbstractCommander {
   }
 
   inferPrefixGrammarCommand() {
-    this._app.setGrammarCode(new jtree.UnknownGrammarProgram(this._app.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
-    this._app._onGrammarKeyup()
+    this.setGrammarCode(new jtree.UnknownGrammarProgram(this.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
+    this._onGrammarKeyup()
   }
 
   synthesizeProgramCommand() {
-    const grammarProgram = new jtree.GrammarProgram(this._app.getGrammarCode())
-    this._app.setCodeCode(
+    const grammarProgram = new jtree.GrammarProgram(this.getGrammarCode())
+    this.setCodeCode(
       grammarProgram
         ._getRootNodeTypeDefinitionNode()
         .synthesizeNode()
         .join("\n")
     )
-    this._app._onCodeKeyUp()
+    this._onCodeKeyUp()
   }
 
   resetCommand() {
-    Object.values(this._app._localStorageKeys).forEach(val => localStorage.removeItem(val))
-    const willowBrowser = this._app.getWillowProgram()
+    Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
+    const willowBrowser = this.getWillowProgram()
     willowBrowser.reload()
   }
 
@@ -60,16 +70,16 @@ class DesignerCommander extends AbstractCommander {
     const samplePath = `/langs/${name}/sample.${name}`
     const grammarPath = `/langs/${name}/${name}.grammar`
 
-    const willowBrowser = this._app.getWillowProgram()
+    const willowBrowser = this.getWillowProgram()
     const grammar = await willowBrowser.httpGetUrl(grammarPath)
     const sample = await willowBrowser.httpGetUrl(samplePath)
 
-    this._app._setGrammarAndCode(grammar.text, sample.text)
+    this._setGrammarAndCode(grammar.text, sample.text)
   }
 
   // TODO: ADD TESTS!!!!!
   async downloadBundleCommand() {
-    const grammarProgram = new jtree.GrammarProgram(this._app.getGrammarCode())
+    const grammarProgram = new jtree.GrammarProgram(this.getGrammarCode())
     const bundle = grammarProgram.toBundle()
     const languageName = grammarProgram.getExtensionName()
     return this._makeZipBundle(languageName + ".zip", bundle)
@@ -113,25 +123,7 @@ class DesignerCommander extends AbstractCommander {
       .join("\n")
     return `<table class="iceCubes">${table}</table>`
   }
-}
-
-class DesignerApp extends AbstractTreeComponent {
-  createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
-      githubTriangleComponent: githubTriangleComponent,
-      samplesComponent: samplesComponent,
-      tableComponent: tableComponent,
-      shareComponent: shareComponent,
-      headerComponent: headerComponent,
-      otherErrorsComponent: otherErrorsComponent,
-      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
-    })
-  }
-
-  _clearResults() {
-    jQuery(".resultsDiv").html("")
-    jQuery(".resultsDiv").val("")
-  }
+  ///
 
   public languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
 
@@ -170,7 +162,6 @@ class DesignerApp extends AbstractTreeComponent {
   private _cachedGrammarCode: string
 
   private codeWidgets: any[] = []
-  private _commander = new DesignerCommander(this)
 
   private async _loadFromDeepLink() {
     const hash = location.hash
@@ -180,7 +171,7 @@ class DesignerApp extends AbstractTreeComponent {
     const standard = deepLink.get("standard")
     if (standard) {
       console.log("Loading standard from deep link....")
-      await this.getCommander().fetchAndLoadJtreeShippedLanguageCommand(standard)
+      await this.fetchAndLoadJtreeShippedLanguageCommand(standard)
       return true
     } else {
       const grammarCode = deepLink.getNode("grammar")
@@ -216,8 +207,6 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   async appDidFirstRender() {
-    const commander = this.getCommander()
-
     this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
 
     this.grammarInstance.on("keyup", () => {
@@ -321,7 +310,7 @@ class DesignerApp extends AbstractTreeComponent {
     const code = this.getCodeValue()
     this._updateLocalStorage()
     const programConstructor = this._getGrammarConstructor()
-    const commander = this.getCommander()
+    const that = this
 
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
@@ -351,7 +340,7 @@ class DesignerApp extends AbstractTreeComponent {
     })
 
     jQuery(".onCodeUp:checked").each(function() {
-      commander[jQuery(this).val()]()
+      that[jQuery(this).val()]()
     })
   }
 

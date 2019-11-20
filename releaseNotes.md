@@ -1,3 +1,8 @@
+45.1.0 / 2019-11-20
+===================
+- New: TCF added getTextContent to TreeComponent and getHash and setHash methods to WillowBrowser class
+- New: added deepVisit method to core
+
 45.0.1 / 2019-11-13
 ===================
 - Fix: web form generation fixes

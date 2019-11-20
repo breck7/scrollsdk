@@ -185,6 +185,9 @@ htmlTagNode
    const oneLinerWords = this.getWordsFrom(1)
    return oneLinerWords.length ? oneLinerWords.join(" ") : ""
   }
+  getTextContent() {
+    return this._getOneLiner()
+  }
   shouldCollapse() {
    return this.has("stumpCollapse")
   }
@@ -335,6 +338,7 @@ htmlAttributeNode
   _toHtml() {
    return ""
   }
+  getTextContent() {return ""}
   getAttribute() {
    return \` \${this.getFirstWord()}="\${this.getContent()}"\`
   }
@@ -354,6 +358,8 @@ lineOfHtmlContentNode
  boolean isTileAttribute true
  catchAllNodeType lineOfHtmlContentNode
  catchAllCellType anyHtmlContentCell
+ javascript
+  getTextContent() {return this.getLine()}
 bernNode
  boolean isTileAttribute true
  todo Rename this node type
@@ -363,6 +369,7 @@ bernNode
   _toHtml() {
    return this.childrenToString()
   }
+  getTextContent() {return ""}
  cells bernKeywordCell`)
       return this._cachedGrammarProgramRoot
     }
@@ -697,6 +704,9 @@ bernNode
       const oneLinerWords = this.getWordsFrom(1)
       return oneLinerWords.length ? oneLinerWords.join(" ") : ""
     }
+    getTextContent() {
+      return this._getOneLiner()
+    }
     shouldCollapse() {
       return this.has("stumpCollapse")
     }
@@ -867,6 +877,9 @@ bernNode
     _toHtml() {
       return ""
     }
+    getTextContent() {
+      return ""
+    }
     getAttribute() {
       return ` ${this.getFirstWord()}="${this.getContent()}"`
     }
@@ -888,6 +901,9 @@ bernNode
     get isTileAttribute() {
       return true
     }
+    getTextContent() {
+      return this.getLine()
+    }
   }
 
   class bernNode extends jtree.GrammarBackedNode {
@@ -902,6 +918,9 @@ bernNode
     }
     _toHtml() {
       return this.childrenToString()
+    }
+    getTextContent() {
+      return ""
     }
   }
 

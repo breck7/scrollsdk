@@ -261,6 +261,12 @@ class AbstractWillowProgram extends stumpNode {
   _getPort() {
     return this.location.port ? ":" + this.location.port : ""
   }
+  getHash() {
+    return this.location.hash || ""
+  }
+  setHash(value) {
+    this.location.hash = value
+  }
   queryObjectToQueryString(obj) {
     const params = new URLSearchParams()
     for (const [key, value] of Object.entries(obj)) {
@@ -680,6 +686,12 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   getStore() {
     return window.store
   }
+  getHash() {
+    return location.hash || ""
+  }
+  setHash(value) {
+    location.hash = value
+  }
   getHost() {
     return location.host
   }
@@ -964,7 +976,18 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
       .getHtmlStumpNode()
       .toString()
   }
+  _getHtmlOnlyNodes() {
+    const nodes = []
+    this.getWillowProgram()
+      .getHtmlStumpNode()
+      .deepVisit(node => {
+        if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
+        nodes.push(node)
+      })
+    return nodes
+  }
   getStumpNodeStringWithoutCssAndSvg() {
+    // todo: cleanup. feels hacky.
     const clone = new jtree.TreeNode(
       this.getWillowProgram()
         .getHtmlStumpNode()
@@ -974,6 +997,12 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
       if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
     })
     return clone.toString()
+  }
+  getTextContent() {
+    return this._getHtmlOnlyNodes()
+      .map(node => node.getTextContent())
+      .filter(text => text)
+      .join("\n")
   }
   async _executeStumpNodeCommand(stumpNode, commandMethod) {
     const params = this._getCommandArguments(stumpNode, commandMethod)
@@ -1034,6 +1063,12 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
   getDefaultStartState() {
     return ""
   }
+  async start() {
+    this._setTreeComponentFrameworkEventListeners()
+    await this.appWillFirstRender()
+    this.renderAndGetRenderReport(this.getWillowProgram().getBodyStumpNode())
+    this.appDidFirstRender()
+  }
   static async startApp(appClass) {
     document.addEventListener(
       "DOMContentLoaded",
@@ -1043,10 +1078,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
           const startState = appClass.getDefaultStartState()
           const anyAppClass = appClass // todo: cleanup
           win.app = new anyAppClass(startState)
-          win.app._setTreeComponentFrameworkEventListeners()
-          await win.app.appWillFirstRender()
-          win.app.renderAndGetRenderReport(win.app.getWillowProgram().getBodyStumpNode())
-          win.app.appDidFirstRender()
+          await win.app.start()
         }
       },
       false

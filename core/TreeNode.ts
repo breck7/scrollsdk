@@ -1688,6 +1688,13 @@ class TreeNode extends AbstractNode {
     return this
   }
 
+  // Recurse if predicate passes
+  deepVisit(predicate: (treeNode: any) => boolean) {
+    this.forEach(node => {
+      if (predicate(node) !== false) node.deepVisit(predicate)
+    })
+  }
+
   // todo: protected?
   _clearIndex() {
     delete this._index
@@ -2761,7 +2768,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "45.0.1"
+  static getVersion = () => "45.1.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

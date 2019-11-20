@@ -581,8 +581,7 @@ githubTriangleComponent`
         node._syncBoardToGame()
       })
   }
-  _loadFromHash(stumpNode) {
-    const link = location.hash.replace(/^\#/, "")
+  _loadFromHash(stumpNode, link) {
     let board
     if (!link) board = SweeperCraftGame.getRandomBoard(9, 9, 10)
     else board = SweeperCraftGame.boardFromPermalink(link)
@@ -607,36 +606,39 @@ githubTriangleComponent`
     else if (this._mainGame.isWon()) classes.push("gameWon")
     return classes
   }
-  _firstRender(stumpNode) {
+  _setupBrowser(stumpNode) {
     window.addEventListener("error", err => {
       jQuery("#errors").html(`Something went wrong: ${err.message}. <a href=''>Refresh</a>`)
     })
+    const willowProgram = this.getWillowProgram()
     const keyboardShortcuts = this._getKeyboardShortcuts()
     Object.keys(keyboardShortcuts).forEach(key => {
-      this.getWillowProgram()
-        .getMousetrap()
-        .bind(key, function(evt) {
-          keyboardShortcuts[key]()
-          // todo: handle the below when we need to
-          if (evt.preventDefault) evt.preventDefault()
-          return false
-        })
+      willowProgram.getMousetrap().bind(key, function(evt) {
+        keyboardShortcuts[key]()
+        // todo: handle the below when we need to
+        if (evt.preventDefault) evt.preventDefault()
+        return false
+      })
     })
     Figlet.loadFont("banner", FontsBanner)
     window.addEventListener("hashchange", () => {
       console.log("hashchange")
-      this._loadFromHash(stumpNode)
+      this._loadFromHash(stumpNode, willowProgram.getHash().replace(/^\#/, ""))
     })
+  }
+  _firstRender(stumpNode) {
+    if (!this.isNodeJs()) this._setupBrowser(stumpNode)
+    const willowProgram = this.getWillowProgram()
     // Initialize first game
-    if (SweeperCraftGame.isValidPermalink(location.hash.replace(/^#/, ""))) this._loadFromHash(stumpNode)
-    else location.hash = SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10))
+    if (SweeperCraftGame.isValidPermalink(willowProgram.getHash().replace(/^#/, ""))) this._loadFromHash(stumpNode, willowProgram.getHash().replace(/^#/, ""))
+    else willowProgram.setHash(SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10)))
   }
 }
 class AbstractSweeperCraftComponent extends AbstractTreeComponent {}
 class headerComponent extends AbstractSweeperCraftComponent {
   treeComponentDidMount() {
     super.treeComponentDidMount()
-    this._initTimerInterval()
+    if (!this.isNodeJs()) this._initTimerInterval()
   }
   treeComponentWillUnmount() {
     clearInterval(this._timerInterval)

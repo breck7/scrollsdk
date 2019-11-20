@@ -6,8 +6,12 @@ const { jtree } = require("../../index.js")
 
 const testTree: any = {}
 
-testTree.sweeperCraftBasics = (equal: any) => {
-  const app = new SweeperCraftApp()
+testTree.sweeperCraftBasics = async (equal: any) => {
+  const app = new SweeperCraftApp(SweeperCraftApp.getDefaultStartState())
+  app.getWillowProgram().setHash("rows/9/columns/9/layout/GcmqabaiqaGaGa")
+  await app.start()
+  const text = app.getTextContent()
+  equal(text.includes("New medium board"), true)
   equal(!!app, true)
 }
 

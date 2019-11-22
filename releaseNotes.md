@@ -1,3 +1,7 @@
+46.1.0 / 2019-11-22
+===================
+- New: Swarm tests now execute in browser
+
 46.0.0 / 2019-11-20
 ===================
 - New: getCommandNames method on TCF

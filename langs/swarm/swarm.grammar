@@ -40,7 +40,7 @@ typeOfOptionCell
  enum object boolean function number string undefined
 swarmNode
  root
- description A prefix Tree Language for unit testing.
+ description A prefix Tree Language for unit testing of classes.
  inScope hashbangNode arrangeNode abstractTestBlockNode
  catchAllNodeType errorNode
  javascript
@@ -50,7 +50,7 @@ swarmNode
   async execute(filepath) {
    const tree = new jtree.TestRacer(this.compileToRacer(filepath))
    await tree.execute()
-   tree.finish()
+   return tree.finish()
   }
   compileToRacer(filepath) {
    const testBlocks = {}
@@ -245,16 +245,22 @@ arrangeNode
    return this.has("static") ? requiredClass : new requiredClass(param)
   }
   _getRequiredClass(programFilepath) {
+    // todo: cleanup
    let requiredClass =
     this.get("require") ||
     this.getRootNode()
      .getNode("arrange")
      .get("require")
    const requiredClassParts = requiredClass.split(" ") // Allows for ./ExportsClasses.js ChildClass
-   requiredClass = requiredClassParts[0]
+   const requiredFileNameOrClass = requiredClassParts[0]
    let theClass
-   if (this.isNodeJs()) theClass = require(jtree.Utils.resolvePath(requiredClass, programFilepath))
-   else theClass = window[jtree.Utils.getClassNameFromFilePath(requiredClass)]
+   if (this.isNodeJs()) {
+    if (requiredFileNameOrClass.includes("."))
+      theClass = require(jtree.Utils.resolvePath(requiredFileNameOrClass, programFilepath))
+    else
+      theClass = global[requiredFileNameOrClass]
+   }
+   else theClass = window[jtree.Utils.getClassNameFromFilePath(requiredFileNameOrClass)]
    if (requiredClassParts[1]) theClass = jtree.Utils.resolveProperty(theClass, requiredClassParts[1])
    if (!theClass) throw new Error(`Required class '${requiredClassParts.join(" ")}' not found for ${this.toString()}`)
    return theClass
@@ -286,6 +292,7 @@ actNode
    const actionMethodName = this.getFirstWord()
    const actionMethod = arrangedInstance[actionMethodName]
    if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstance.constructor.name}"`)
+   if (typeof actionMethod !== "function") throw new Error(`"${actionMethodName}" on "${arrangedInstance.constructor.name}" is a property not a method`)
    return actionMethod.apply(arrangedInstance, this._getActArgs())
   }
   async execute(arrangedInstance) {

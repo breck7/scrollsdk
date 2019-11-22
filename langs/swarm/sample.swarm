@@ -1,37 +1,10 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-test swarmSample
+test swarmBrowserSample
  arrange
-  require ../../index.js jtree.GrammarProgram
+  require String
   constructWithParagraph
-   testlangNode
-    root
-    compilesTo txt
-    inScope baseNode
-    catchAllNodeType errorNode
-   anyCell
-   wordCell
-    extends anyCell
-   errorNode
-    baseNodeType errorNode
-   baseNode
-    crux base
-   blockNode
-    crux block
-    extends baseNode
-    inScope baseNode
-   toNode
-    crux to
-    extends blockNode
-    cells wordCell
-    tags test
-    compiler
-     stringTemplate to {wordCell}
-     closeChildren end
- getAllErrors
-  assertLengthIs 0
- getRunTimeFirstWordsInScope
+   hello
+ split e
   assertLengthIs 2
- getNodeTypeDefinitionByNodeTypeId toNode
-  assertTypeIs object
- getTopNodeTypeDefinitions
-  assertLengthIs 3
+ split r
+  assertLengthIs 1

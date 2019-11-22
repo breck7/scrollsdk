@@ -16,6 +16,7 @@ class TestRacerTestBlock {
 
   private _emitMessage(message: string) {
     this._parentFile.getRunner()._emitMessage(message)
+    return message
   }
 
   private _testName: string
@@ -211,11 +212,12 @@ class TestRacer {
   }
 
   finish() {
-    this._emitSessionFinishMessage()
+    return this._emitSessionFinishMessage()
   }
 
   _emitMessage(message: string) {
     this._logFunction(message)
+    return message
   }
 
   get length() {
@@ -238,7 +240,7 @@ ${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach((line: any) 
   }
 
   private _emitSessionFinishMessage() {
-    this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
+    return this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
  passed
   ${this._sessionFilesPassed} files
   ${this._sessionBlocksPassed} blocks

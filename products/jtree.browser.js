@@ -499,6 +499,7 @@ class TestRacerTestBlock {
   }
   _emitMessage(message) {
     this._parentFile.getRunner()._emitMessage(message)
+    return message
   }
   async execute() {
     let passes = []
@@ -663,10 +664,11 @@ class TestRacer {
     return this
   }
   finish() {
-    this._emitSessionFinishMessage()
+    return this._emitSessionFinishMessage()
   }
   _emitMessage(message) {
     this._logFunction(message)
+    return message
   }
   get length() {
     return Object.values(this._fileTestTree).length
@@ -685,7 +687,7 @@ class TestRacer {
 ${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach(line => line.deleteWordAt(0))).toString(2)}`
   }
   _emitSessionFinishMessage() {
-    this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
+    return this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
  passed
   ${this._sessionFilesPassed} files
   ${this._sessionBlocksPassed} blocks
@@ -3011,7 +3013,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "46.0.0"
+TreeNode.getVersion = () => "46.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

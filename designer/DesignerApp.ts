@@ -31,8 +31,8 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   ///
-  executeCommand() {
-    const result = this.program.executeSync()
+  async executeCommand() {
+    const result = await this.program.execute()
     jQuery("#executeResultsDiv").val(Array.isArray(result) ? result.join(",") : result)
   }
 

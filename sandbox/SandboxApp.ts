@@ -47,6 +47,7 @@ class SandboxApp extends AbstractTreeComponent {
       const xmlConsole = jQuery("#xmlConsole")
       const htmlConsole = jQuery("#htmlConsole")
       const tableConsole = jQuery("#tableConsole")
+      const htmlCube = jQuery("#htmlCube")
       const yamlConsole = jQuery("#yamlConsole")
 
       // Init vars
@@ -60,6 +61,7 @@ class SandboxApp extends AbstractTreeComponent {
         if (eventSource !== xmlConsole) xmlConsole.val(tree.toXml())
         if (eventSource !== htmlConsole) htmlConsole.html(tree.toHtml())
         if (eventSource !== tableConsole) tableConsole.html(tree.toTable())
+        if (eventSource !== htmlCube) htmlCube.html(tree.toHtmlCube())
         if (eventSource !== yamlConsole) yamlConsole.html(tree.toYaml())
 
         let win = <any>window
@@ -93,6 +95,29 @@ textarea,input
 a
  text-decoration underline
  cursor pointer
+.htmlCubeSpan
+ --topIncrement 1px
+ --leftIncrement 1px
+ --cellWidth 100px
+ --rowHeight 30px
+ position absolute
+ box-sizing border-box
+ width var(--cellWidth)
+ height var(--rowHeight)
+ overflow hidden
+ text-overflow hidden
+ display inline-block
+ text-align center
+ line-height var(--rowHeight)
+ font-size 12px
+ font-family -apple-system, BlinkMacSystemFont, sans-serif
+ color rgba(0, 0, 0, 0.8)
+ background rgba(255, 255, 255, 1)
+ border 1px solid rgba(0, 0, 0, 0.3)
+ &:hover
+  opacity 1
+  background rgba(255, 255, 255, 1)
+  z-index 2
 textarea,pre
  width 500px
  padding 5px
@@ -198,7 +223,13 @@ class tableComponent extends AbstractTreeComponent {
   td
    div toYaml()
    pre
-    id yamlConsole`
+    id yamlConsole
+ tr
+  td
+   div toHtmlCube()
+   div
+    id htmlCube
+    style position:relative;`
   }
 }
 

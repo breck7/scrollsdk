@@ -33,6 +33,9 @@ class DesignerApp extends AbstractTreeComponent {
   compileCommand() {
     jQuery("#compileResultsDiv").val(this.program.compile())
   }
+  showAutoCompleteCubeCommand() {
+    jQuery("#explainResultsDiv").html(this.program.toAutoCompleteCube().toHtmlCube())
+  }
   visualizeCommand() {
     jQuery("#explainResultsDiv").html(this._toIceTray(this.program))
   }
@@ -334,6 +337,29 @@ code
  white-space pre
 pre
  overflow scroll
+.htmlCubeSpan
+ --topIncrement 1px
+ --leftIncrement 1px
+ --cellWidth 100px
+ --rowHeight 30px
+ position absolute
+ box-sizing border-box
+ width var(--cellWidth)
+ height var(--rowHeight)
+ overflow hidden
+ text-overflow hidden
+ display inline-block
+ text-align center
+ line-height var(--rowHeight)
+ font-size 12px
+ font-family -apple-system, BlinkMacSystemFont, sans-serif
+ color rgba(0, 0, 0, 0.8)
+ background rgba(255, 255, 255, 1)
+ border 1px solid rgba(0, 0, 0, 0.3)
+.htmlCubeSpan:hover
+ opacity 1
+ background rgba(255, 255, 255, 1)
+ z-index 2
 a
  cursor pointer
  color rgba(1, 47, 52, 1)
@@ -495,6 +521,7 @@ class tableComponent extends AbstractTreeComponent {
     placeholder Compilation results
    div
     class resultsDiv
+    style position:relative;
     id explainResultsDiv`
   }
 }

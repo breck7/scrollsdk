@@ -1,8 +1,9 @@
 namespace treeNotationTypes {
-  export interface point {
-    x: int
-    y: int
-  } // Point on the Cartesian plane where the node is located. Assumes canonical whitespace delimiters. -Y = Y.
+  export interface wordBoundary {
+    lineIndex: int
+    charIndex: int
+    wordIndex: int
+  }
 
   export interface inheritanceInfo {
     node: treeNode

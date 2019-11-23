@@ -11,10 +11,6 @@ const { Disk } = require("./products/Disk.node.js")
 import { treeNotationTypes } from "./products/treeNotationTypes"
 
 class Builder extends AbstractBuilder {
-  private _getTypesPath() {
-    return __dirname + "/products/treeNotationTypes.ts"
-  }
-
   produce(outputFileName: string) {
     if (outputFileName)
       return this.produceProductFromInstructionsTree(

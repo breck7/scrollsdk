@@ -1,4 +1,4 @@
-import { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode } from "./TreeNode"
+import { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } from "./TreeNode"
 import { TreeUtils } from "./TreeUtils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
@@ -114,6 +114,20 @@ enum GrammarConstants {
   highlightScope = "highlightScope"
 }
 
+class TypedWord extends TreeWord {
+  private _type: string
+  constructor(node: TreeNode, cellIndex: number, type: string) {
+    super(node, cellIndex)
+    this._type = type
+  }
+  get type() {
+    return this._type
+  }
+  toString() {
+    return this.word + ":" + this.type
+  }
+}
+
 // todo: can we merge these methods into base TreeNode and ditch this class?
 abstract class GrammarBackedNode extends TreeNode {
   getDefinition(): AbstractGrammarDefinitionNode | GrammarProgram | nodeTypeDefinitionNode {
@@ -199,9 +213,10 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   getProgramAsCells() {
+    // todo: what is this?
     return this.getTopDownArray().map((node: GrammarBackedNode) => {
       const cells = node._getParsedCells()
-      let indents = node.getIndentLevel()
+      let indents = node.getIndentLevel() - 1
       while (indents) {
         cells.unshift(undefined)
         indents--
@@ -269,18 +284,36 @@ abstract class GrammarBackedNode extends TreeNode {
     )
   }
 
-  getAllSuggestions() {
-    return new TreeNode(
-      this.getAllWordBoundaryCoordinates().map(coordinate => {
-        const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x)
-        return {
-          line: coordinate.y,
-          char: coordinate.x,
-          word: results.word,
-          suggestions: results.matches.map((node: any) => node.text).join(" ")
-        }
+  private _getAllAutoCompleteWords() {
+    return this.getAllWordBoundaryCoordinates().map(coordinate => {
+      const results = this.getAutocompleteResultsAt(coordinate.lineIndex, coordinate.charIndex)
+      return {
+        lineIndex: coordinate.lineIndex,
+        charIndex: coordinate.charIndex,
+        wordIndex: coordinate.wordIndex,
+        word: results.word,
+        suggestions: results.matches
+      }
+    })
+  }
+
+  toAutoCompleteCube(fillChar = "") {
+    const trees: any[] = [this.clone()]
+    const filled = this.clone().fill(fillChar)
+    this._getAllAutoCompleteWords().forEach(hole => {
+      hole.suggestions.forEach((suggestion, index) => {
+        if (!trees[index + 1]) trees[index + 1] = filled.clone()
+        trees[index + 1].nodeAtLine(hole.lineIndex).setWord(hole.wordIndex, suggestion.text)
       })
-    ).toTable()
+    })
+    return new TreeNode(trees)
+  }
+
+  toAutoCompleteTable() {
+    return new TreeNode(<any>this._getAllAutoCompleteWords().map(result => {
+      result.suggestions = <any>result.suggestions.map((node: any) => node.text).join(" ")
+      return result
+    })).toTable()
   }
 
   getAutocompleteResultsAt(lineIndex: treeNotationTypes.positiveInt, charIndex: treeNotationTypes.positiveInt) {
@@ -520,31 +553,6 @@ ${indent}${closeChildrenString}`
       }
     })
     return cells
-  }
-}
-
-class TypedWord {
-  private _node: TreeNode
-  private _cellIndex: number
-  private _type: string
-  constructor(node: TreeNode, cellIndex: number, type: string) {
-    this._node = node
-    this._cellIndex = cellIndex
-    this._type = type
-  }
-  replace(newWord: string) {
-    this._node.setWord(this._cellIndex, newWord)
-  }
-  get word() {
-    return this._node.getWord(this._cellIndex)
-  }
-
-  get type() {
-    return this._type
-  }
-
-  toString() {
-    return this.word + ":" + this.type
   }
 }
 

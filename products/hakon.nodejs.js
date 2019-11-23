@@ -77,6 +77,9 @@ propertyNode
    return \`\${spaces}\${this.getFirstWord()}: \${this.getContent()};\`
   }
  cells propertyKeywordCell
+variableNode
+ extends propertyNode
+ pattern --
 errorNode
  catchAllNodeType errorNode
  catchAllCellType errorCell
@@ -86,7 +89,7 @@ commentNode
  catchAllCellType commentCell
  catchAllNodeType commentNode
 selectorNode
- inScope propertyNode commentNode
+ inScope propertyNode variableNode commentNode
  catchAllNodeType selectorNode
  boolean isSelectorNode true
  javascript
@@ -112,7 +115,14 @@ selectorNode
       return this._cachedGrammarProgramRoot
     }
     static getNodeTypeMap() {
-      return { hakonNode: hakonNode, propertyNode: propertyNode, errorNode: errorNode, commentNode: commentNode, selectorNode: selectorNode }
+      return {
+        hakonNode: hakonNode,
+        propertyNode: propertyNode,
+        variableNode: variableNode,
+        errorNode: errorNode,
+        commentNode: commentNode,
+        selectorNode: selectorNode
+      }
     }
   }
 
@@ -130,6 +140,8 @@ selectorNode
       return `${spaces}${this.getFirstWord()}: ${this.getContent()};`
     }
   }
+
+  class variableNode extends propertyNode {}
 
   class errorNode extends jtree.GrammarBackedNode {
     createParser() {
@@ -352,7 +364,7 @@ selectorNode
           top: propertyNode,
           comment: commentNode
         }),
-        undefined
+        [{ regex: /--/, nodeConstructor: variableNode }]
       )
     }
     get selectorCell() {

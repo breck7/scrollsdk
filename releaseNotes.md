@@ -1,3 +1,15 @@
+47.0.0 / 2019-11-22
+===================
+- New: toAutoCompleteCube method
+- New: support for CSS variables in Hakon
+- New: fill method
+- New: toHtmlCube method
+- Breaking: getAllSuggestions is now toAutoCompleteTable
+- Breaking: removed getPoint. Use getIndentLevel and getLineNumber
+- Breaking: getAllWordBoundaryCoordinates now returns type with members lineIndex and charIndex instead of y and x
+- Breaking: getWordBoundaryIndices is now getWordBoundaryCharIndices
+- Fix: getIndentLevel now returns correct level
+
 46.1.0 / 2019-11-22
 ===================
 - New: Swarm tests now execute in browser

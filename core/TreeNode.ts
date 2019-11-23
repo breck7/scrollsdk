@@ -32,6 +32,21 @@ class ChildRemovedTreeEvent extends AbstractTreeEvent {}
 class DescendantChangedTreeEvent extends AbstractTreeEvent {}
 class LineChangedTreeEvent extends AbstractTreeEvent {}
 
+class TreeWord {
+  private _node: TreeNode
+  private _cellIndex: number
+  constructor(node: TreeNode, cellIndex: number) {
+    this._node = node
+    this._cellIndex = cellIndex
+  }
+  replace(newWord: string) {
+    this._node.setWord(this._cellIndex, newWord)
+  }
+  get word() {
+    return this._node.getWord(this._cellIndex)
+  }
+}
+
 const TreeEvents = { ChildAddedTreeEvent, ChildRemovedTreeEvent, DescendantChangedTreeEvent, LineChangedTreeEvent }
 
 enum WhereOperators {
@@ -186,27 +201,12 @@ class TreeNode extends AbstractNode {
     return this._parent
   }
 
-  getPoint(): treeNotationTypes.point {
-    return this._getPoint()
-  }
-
-  protected _getPoint(relativeTo?: TreeNode): treeNotationTypes.point {
-    return {
-      x: this._getXCoordinate(relativeTo),
-      y: this._getYCoordinate(relativeTo)
-    }
-  }
-
-  getPointRelativeTo(relativeTo?: TreeNode) {
-    return this._getPoint(relativeTo)
-  }
-
   getIndentLevel(relativeTo?: TreeNode) {
-    return this._getXCoordinate(relativeTo) - 1
+    return this._getIndentLevel(relativeTo)
   }
 
   getIndentation(relativeTo?: TreeNode) {
-    return this.getEdgeSymbol().repeat(this._getXCoordinate(relativeTo) - 1)
+    return this.getEdgeSymbol().repeat(this._getIndentLevel(relativeTo) - 1)
   }
 
   protected _getTopDownArray<NodeType = TreeNode>(arr: NodeType[]) {
@@ -245,6 +245,15 @@ class TreeNode extends AbstractNode {
     return lineCount
   }
 
+  private _getMaxUnitsOnALine() {
+    let max = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      const count = node.getWords().length + node.getIndentLevel()
+      if (count > max) max = count
+    }
+    return max
+  }
+
   getNumberOfWords(): int {
     let wordCount = 0
     for (let node of this.getTopDownArrayIterator()) {
@@ -254,8 +263,7 @@ class TreeNode extends AbstractNode {
   }
 
   getLineNumber() {
-    // todo: remove Y coordinate stuff? Now that we use the more abstract nodeBreakSymbols?
-    return this._getYCoordinate()
+    return this._getLineNumberRelativeTo()
   }
 
   protected _cachedLineNumber: int
@@ -281,7 +289,7 @@ class TreeNode extends AbstractNode {
     return !this.length && !this.getContent()
   }
 
-  protected _getYCoordinate(relativeTo?: TreeNode) {
+  protected _getLineNumberRelativeTo(relativeTo?: TreeNode) {
     if (this.isRoot(relativeTo)) return 0
     const start = relativeTo || this.getRootNode()
     return start._getLineNumber(this)
@@ -446,7 +454,7 @@ class TreeNode extends AbstractNode {
 
   private _getWordIndexCharacterStartPosition(wordIndex: int): treeNotationTypes.positiveInt {
     const xiLength = this.getEdgeSymbol().length
-    const numIndents = this._getXCoordinate(undefined) - 1
+    const numIndents = this._getIndentLevel(undefined) - 1
     const indentPosition = xiLength * numIndents
     if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
     return (
@@ -480,46 +488,47 @@ class TreeNode extends AbstractNode {
     }
   }
 
+  fill(fill = "") {
+    this.getTopDownArray().forEach(line => {
+      line.getWords().forEach((word, index) => {
+        line.setWord(index, fill)
+      })
+    })
+    return this
+  }
+
   getAllWordBoundaryCoordinates() {
-    const coordinates: treeNotationTypes.point[] = []
-    let line = 0
+    const coordinates: treeNotationTypes.wordBoundary[] = []
+    let lineIndex = 0
     for (let node of this.getTopDownArrayIterator()) {
-      ;(<TreeNode>node).getWordBoundaryIndices().forEach(index => {
+      ;(<TreeNode>node).getWordBoundaryCharIndices().forEach((charIndex, wordIndex) => {
         coordinates.push({
-          y: line,
-          x: index
+          lineIndex: lineIndex,
+          charIndex: charIndex,
+          wordIndex: wordIndex
         })
       })
 
-      line++
+      lineIndex++
     }
     return coordinates
   }
 
-  getWordBoundaryIndices(): treeNotationTypes.positiveInt[] {
-    const boundaries = [0]
-    let numberOfIndents = this._getXCoordinate(undefined) - 1
-    let start = numberOfIndents
-    // Add indents
-    while (numberOfIndents) {
-      boundaries.push(boundaries.length)
-      numberOfIndents--
-    }
-    // Add columns
-    const ziIncrement = this.getWordBreakSymbol().length
-    this.getWords().forEach(word => {
-      if (boundaries[boundaries.length - 1] !== start) boundaries.push(start)
-      start += word.length
-      if (boundaries[boundaries.length - 1] !== start) boundaries.push(start)
-      start += ziIncrement
+  getWordBoundaryCharIndices(): treeNotationTypes.positiveInt[] {
+    let indentLevel = this._getIndentLevel()
+    const wordBreakSymbolLength = this.getWordBreakSymbol().length
+    let elapsed = indentLevel
+    return this.getWords().map((word, wordIndex) => {
+      const boundary = elapsed
+      elapsed += word.length + wordBreakSymbolLength
+      return boundary
     })
-    return boundaries
   }
 
   getWordIndexAtCharacterIndex(charIndex: treeNotationTypes.positiveInt): int {
     // todo: is this correct thinking for handling root?
     if (this.isRoot()) return 0
-    const numberOfIndents = this._getXCoordinate(undefined) - 1
+    const numberOfIndents = this._getIndentLevel(undefined) - 1
     // todo: probably want to rewrite this in a performant way.
     const spots = []
     while (spots.length < numberOfIndents) {
@@ -902,7 +911,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  protected _getXCoordinate(relativeTo?: TreeNode) {
+  protected _getIndentLevel(relativeTo?: TreeNode) {
     return this._getStack(relativeTo).length
   }
 
@@ -918,7 +927,7 @@ class TreeNode extends AbstractNode {
   protected _getLevels(): { [level: number]: TreeNode[] } {
     const levels: { [level: number]: TreeNode[] } = {}
     this.getTopDownArray().forEach(node => {
-      const level = node._getXCoordinate()
+      const level = node._getIndentLevel()
       if (!levels[level]) levels[level] = []
       levels[level].push(node)
     })
@@ -969,6 +978,23 @@ class TreeNode extends AbstractNode {
 
   toHtml(): treeNotationTypes.htmlString {
     return this._childrenToHtml(0)
+  }
+
+  protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): treeNotationTypes.htmlString {
+    const getLine = (cellIndex: number, word = "") =>
+      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--cellWidth) * ${cellIndex});">${word}</span>`
+    let cells: string[] = []
+    this.getWords().forEach((word, index) => (word ? cells.push(getLine(index + indents, word)) : ""))
+    return cells.join("")
+  }
+
+  toHtmlCube(): treeNotationTypes.htmlString {
+    return this.map((plane, planeIndex) =>
+      plane
+        .getTopDownArray()
+        .map((line: any, lineIndex: number) => line._toHtmlCubeLine(line.getIndentLevel() - 2, lineIndex, planeIndex))
+        .join("")
+    ).join("")
   }
 
   protected _getHtmlJoinByCharacter() {
@@ -2768,7 +2794,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "46.1.0"
+  static getVersion = () => "47.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
@@ -2884,4 +2910,4 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   }
 }
 
-export { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents }
+export { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }

@@ -468,7 +468,7 @@ testTree.at = equal => {
   equal(value.nodeAt(3), undefined)
   equal(value.nodeAt(-1).getContent(), "friend")
 }
-testTree.getWordBoundaryIndices = equal => {
+testTree.getWordBoundaryCharIndices = equal => {
   // Arrange
   const tree = new TreeNode(`
 a
@@ -477,7 +477,18 @@ web 25 zzzz OK
   // Act
   const boundaries = tree.getAllWordBoundaryCoordinates()
   // Assert
-  equal(boundaries.length, 18)
+  equal(boundaries.length, 9)
+}
+testTree.fill = equal => {
+  Object.keys(testStrings).forEach(key => {
+    // Arrange
+    const tree = new TreeNode(testStrings[key])
+    const filledTree = tree.clone().fill("x")
+    // Act/Assert
+    equal(tree.length, filledTree.length)
+    equal(tree.getNumberOfLines(), filledTree.getNumberOfLines())
+    equal(tree.getNumberOfWords(), filledTree.getNumberOfWords())
+  })
 }
 testTree.getWordProperties = equal => {
   // Arrange
@@ -2091,7 +2102,7 @@ testTree.prependLine = equal => {
   equal(a.toString(), "foo bar\nhello world")
   equal(result instanceof TreeNode, true)
 }
-testTree.getPoint = equal => {
+testTree.getLocations = equal => {
   // Arrange/Act
   const a = new TreeNode(`hello
  world
@@ -2099,13 +2110,12 @@ ohayo
  good
   morning
   sunshine`)
-  const coordinates = a.getPoint()
-  const coordinates2 = a.getNode("ohayo good sunshine").getPoint()
+  const b = a.getNode("ohayo good sunshine")
   // Assert
-  equal(coordinates.x, 0)
-  equal(coordinates.y, 0)
-  equal(coordinates2.x, 3)
-  equal(coordinates2.y, 6)
+  equal(a.getIndentLevel(), 0, "a indent level")
+  equal(a.getLineNumber(), 0)
+  equal(b.getIndentLevel(), 3, "b indent level")
+  equal(b.getLineNumber(), 6)
   // Arrange
   const reg = new TreeNode(`a
  b
@@ -2115,10 +2125,10 @@ d
   // Act/Assert
   const result = reg
     .getTopDownArray()
-    .map(node => node.getPoint().y)
+    .map(node => node.getLineNumber())
     .join(" ")
   equal(result, "1 2 3 4 5")
-  equal(reg.getNode("a").getPoint().y, 1)
+  equal(reg.getNode("a").getLineNumber(), 1)
 }
 testTree.pushContentAndChildren = equal => {
   // Arrange

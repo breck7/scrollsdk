@@ -503,7 +503,7 @@ class TestRacerTestBlock {
   async execute() {
     let passes = []
     let failures = []
-    const assertEqual = (actual, expected, message) => {
+    const assertEqual = (actual, expected, message = "") => {
       if (expected === actual) {
         passes.push(message)
       } else {
@@ -541,8 +541,9 @@ class TestRacerTestBlock {
       failures
         .map(failure => {
           const actualVal = failure[0] === undefined ? "undefined" : failure[0].toString()
+          const expectedVal = failure[1] === undefined ? "undefined" : failure[1].toString()
           const actual = new jtree.TreeNode(`actual\n${new jtree.TreeNode(actualVal).toString(1)}`)
-          const expected = new jtree.TreeNode(`expected\n${new jtree.TreeNode(failure[1].toString()).toString(1)}`)
+          const expected = new jtree.TreeNode(`expected\n${new jtree.TreeNode(expectedVal.toString()).toString(1)}`)
           const comparison = actual.toComparison(expected)
           return new jtree.TreeNode(` assertion ${failure[2]}\n${comparison.toSideBySide([actual, expected]).toString(2)}`)
         })
@@ -725,6 +726,18 @@ class ChildAddedTreeEvent extends AbstractTreeEvent {}
 class ChildRemovedTreeEvent extends AbstractTreeEvent {}
 class DescendantChangedTreeEvent extends AbstractTreeEvent {}
 class LineChangedTreeEvent extends AbstractTreeEvent {}
+class TreeWord {
+  constructor(node, cellIndex) {
+    this._node = node
+    this._cellIndex = cellIndex
+  }
+  replace(newWord) {
+    this._node.setWord(this._cellIndex, newWord)
+  }
+  get word() {
+    return this._node.getWord(this._cellIndex)
+  }
+}
 const TreeEvents = { ChildAddedTreeEvent, ChildRemovedTreeEvent, DescendantChangedTreeEvent, LineChangedTreeEvent }
 var WhereOperators
 ;(function(WhereOperators) {
@@ -842,23 +855,11 @@ class TreeNode extends AbstractNode {
   getParent() {
     return this._parent
   }
-  getPoint() {
-    return this._getPoint()
-  }
-  _getPoint(relativeTo) {
-    return {
-      x: this._getXCoordinate(relativeTo),
-      y: this._getYCoordinate(relativeTo)
-    }
-  }
-  getPointRelativeTo(relativeTo) {
-    return this._getPoint(relativeTo)
-  }
   getIndentLevel(relativeTo) {
-    return this._getXCoordinate(relativeTo) - 1
+    return this._getIndentLevel(relativeTo)
   }
   getIndentation(relativeTo) {
-    return this.getEdgeSymbol().repeat(this._getXCoordinate(relativeTo) - 1)
+    return this.getEdgeSymbol().repeat(this._getIndentLevel(relativeTo) - 1)
   }
   _getTopDownArray(arr) {
     this.forEach(child => {
@@ -891,6 +892,14 @@ class TreeNode extends AbstractNode {
     }
     return lineCount
   }
+  _getMaxUnitsOnALine() {
+    let max = 0
+    for (let node of this.getTopDownArrayIterator()) {
+      const count = node.getWords().length + node.getIndentLevel()
+      if (count > max) max = count
+    }
+    return max
+  }
   getNumberOfWords() {
     let wordCount = 0
     for (let node of this.getTopDownArrayIterator()) {
@@ -899,8 +908,7 @@ class TreeNode extends AbstractNode {
     return wordCount
   }
   getLineNumber() {
-    // todo: remove Y coordinate stuff? Now that we use the more abstract nodeBreakSymbols?
-    return this._getYCoordinate()
+    return this._getLineNumberRelativeTo()
   }
   _getLineNumber(target = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
@@ -920,7 +928,7 @@ class TreeNode extends AbstractNode {
   isEmpty() {
     return !this.length && !this.getContent()
   }
-  _getYCoordinate(relativeTo) {
+  _getLineNumberRelativeTo(relativeTo) {
     if (this.isRoot(relativeTo)) return 0
     const start = relativeTo || this.getRootNode()
     return start._getLineNumber(this)
@@ -1058,7 +1066,7 @@ class TreeNode extends AbstractNode {
   }
   _getWordIndexCharacterStartPosition(wordIndex) {
     const xiLength = this.getEdgeSymbol().length
-    const numIndents = this._getXCoordinate(undefined) - 1
+    const numIndents = this._getIndentLevel(undefined) - 1
     const indentPosition = xiLength * numIndents
     if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
     return (
@@ -1089,43 +1097,43 @@ class TreeNode extends AbstractNode {
       word: word
     }
   }
+  fill(fill = "") {
+    this.getTopDownArray().forEach(line => {
+      line.getWords().forEach((word, index) => {
+        line.setWord(index, fill)
+      })
+    })
+    return this
+  }
   getAllWordBoundaryCoordinates() {
     const coordinates = []
-    let line = 0
+    let lineIndex = 0
     for (let node of this.getTopDownArrayIterator()) {
-      node.getWordBoundaryIndices().forEach(index => {
+      node.getWordBoundaryCharIndices().forEach((charIndex, wordIndex) => {
         coordinates.push({
-          y: line,
-          x: index
+          lineIndex: lineIndex,
+          charIndex: charIndex,
+          wordIndex: wordIndex
         })
       })
-      line++
+      lineIndex++
     }
     return coordinates
   }
-  getWordBoundaryIndices() {
-    const boundaries = [0]
-    let numberOfIndents = this._getXCoordinate(undefined) - 1
-    let start = numberOfIndents
-    // Add indents
-    while (numberOfIndents) {
-      boundaries.push(boundaries.length)
-      numberOfIndents--
-    }
-    // Add columns
-    const ziIncrement = this.getWordBreakSymbol().length
-    this.getWords().forEach(word => {
-      if (boundaries[boundaries.length - 1] !== start) boundaries.push(start)
-      start += word.length
-      if (boundaries[boundaries.length - 1] !== start) boundaries.push(start)
-      start += ziIncrement
+  getWordBoundaryCharIndices() {
+    let indentLevel = this._getIndentLevel()
+    const wordBreakSymbolLength = this.getWordBreakSymbol().length
+    let elapsed = indentLevel
+    return this.getWords().map((word, wordIndex) => {
+      const boundary = elapsed
+      elapsed += word.length + wordBreakSymbolLength
+      return boundary
     })
-    return boundaries
   }
   getWordIndexAtCharacterIndex(charIndex) {
     // todo: is this correct thinking for handling root?
     if (this.isRoot()) return 0
-    const numberOfIndents = this._getXCoordinate(undefined) - 1
+    const numberOfIndents = this._getIndentLevel(undefined) - 1
     // todo: probably want to rewrite this in a performant way.
     const spots = []
     while (spots.length < numberOfIndents) {
@@ -1453,7 +1461,7 @@ class TreeNode extends AbstractNode {
       arr.push(child)
     })
   }
-  _getXCoordinate(relativeTo) {
+  _getIndentLevel(relativeTo) {
     return this._getStack(relativeTo).length
   }
   getParentFirstArray() {
@@ -1467,7 +1475,7 @@ class TreeNode extends AbstractNode {
   _getLevels() {
     const levels = {}
     this.getTopDownArray().forEach(node => {
-      const level = node._getXCoordinate()
+      const level = node._getIndentLevel()
       if (!levels[level]) levels[level] = []
       levels[level].push(node)
     })
@@ -1508,6 +1516,21 @@ class TreeNode extends AbstractNode {
   }
   toHtml() {
     return this._childrenToHtml(0)
+  }
+  _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0) {
+    const getLine = (cellIndex, word = "") =>
+      `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--cellWidth) * ${cellIndex});">${word}</span>`
+    let cells = []
+    this.getWords().forEach((word, index) => (word ? cells.push(getLine(index + indents, word)) : ""))
+    return cells.join("")
+  }
+  toHtmlCube() {
+    return this.map((plane, planeIndex) =>
+      plane
+        .getTopDownArray()
+        .map((line, lineIndex) => line._toHtmlCubeLine(line.getIndentLevel() - 2, lineIndex, planeIndex))
+        .join("")
+    ).join("")
   }
   _getHtmlJoinByCharacter() {
     return `<span class="nodeBreakSymbol">${this.getNodeBreakSymbol()}</span>`
@@ -3000,7 +3023,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "46.1.0"
+TreeNode.getVersion = () => "47.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3175,6 +3198,18 @@ var GrammarConstants
   GrammarConstants["frequency"] = "frequency"
   GrammarConstants["highlightScope"] = "highlightScope"
 })(GrammarConstants || (GrammarConstants = {}))
+class TypedWord extends TreeWord {
+  constructor(node, cellIndex, type) {
+    super(node, cellIndex)
+    this._type = type
+  }
+  get type() {
+    return this._type
+  }
+  toString() {
+    return this.word + ":" + this.type
+  }
+}
 // todo: can we merge these methods into base TreeNode and ditch this class?
 class GrammarBackedNode extends TreeNode {
   getDefinition() {
@@ -3246,9 +3281,10 @@ class GrammarBackedNode extends TreeNode {
     return errors
   }
   getProgramAsCells() {
+    // todo: what is this?
     return this.getTopDownArray().map(node => {
       const cells = node._getParsedCells()
-      let indents = node.getIndentLevel()
+      let indents = node.getIndentLevel() - 1
       while (indents) {
         cells.unshift(undefined)
         indents--
@@ -3308,16 +3344,34 @@ class GrammarBackedNode extends TreeNode {
       )
     )
   }
-  getAllSuggestions() {
+  _getAllAutoCompleteWords() {
+    return this.getAllWordBoundaryCoordinates().map(coordinate => {
+      const results = this.getAutocompleteResultsAt(coordinate.lineIndex, coordinate.charIndex)
+      return {
+        lineIndex: coordinate.lineIndex,
+        charIndex: coordinate.charIndex,
+        wordIndex: coordinate.wordIndex,
+        word: results.word,
+        suggestions: results.matches
+      }
+    })
+  }
+  toAutoCompleteCube(fillChar = "") {
+    const trees = [this.clone()]
+    const filled = this.clone().fill(fillChar)
+    this._getAllAutoCompleteWords().forEach(hole => {
+      hole.suggestions.forEach((suggestion, index) => {
+        if (!trees[index + 1]) trees[index + 1] = filled.clone()
+        trees[index + 1].nodeAtLine(hole.lineIndex).setWord(hole.wordIndex, suggestion.text)
+      })
+    })
+    return new TreeNode(trees)
+  }
+  toAutoCompleteTable() {
     return new TreeNode(
-      this.getAllWordBoundaryCoordinates().map(coordinate => {
-        const results = this.getAutocompleteResultsAt(coordinate.y, coordinate.x)
-        return {
-          line: coordinate.y,
-          char: coordinate.x,
-          word: results.word,
-          suggestions: results.matches.map(node => node.text).join(" ")
-        }
+      this._getAllAutoCompleteWords().map(result => {
+        result.suggestions = result.suggestions.map(node => node.text).join(" ")
+        return result
       })
     ).toTable()
   }
@@ -3520,25 +3574,6 @@ ${indent}${closeChildrenString}`
       }
     })
     return cells
-  }
-}
-class TypedWord {
-  constructor(node, cellIndex, type) {
-    this._node = node
-    this._cellIndex = cellIndex
-    this._type = type
-  }
-  replace(newWord) {
-    this._node.setWord(this._cellIndex, newWord)
-  }
-  get word() {
-    return this._node.getWord(this._cellIndex)
-  }
-  get type() {
-    return this._type
-  }
-  toString() {
-    return this.word + ":" + this.type
   }
 }
 class BlobNode extends GrammarBackedNode {

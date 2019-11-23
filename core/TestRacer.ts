@@ -26,7 +26,7 @@ class TestRacerTestBlock {
   async execute() {
     let passes: string[] = []
     let failures: string[][] = []
-    const assertEqual = (actual: any, expected: any, message: string) => {
+    const assertEqual = (actual: any, expected: any, message: string = "") => {
       if (expected === actual) {
         passes.push(message)
       } else {
@@ -66,8 +66,9 @@ class TestRacerTestBlock {
       failures
         .map((failure: any) => {
           const actualVal = failure[0] === undefined ? "undefined" : failure[0].toString()
+          const expectedVal = failure[1] === undefined ? "undefined" : failure[1].toString()
           const actual = new jtree.TreeNode(`actual\n${new jtree.TreeNode(actualVal).toString(1)}`)
-          const expected = new jtree.TreeNode(`expected\n${new jtree.TreeNode(failure[1].toString()).toString(1)}`)
+          const expected = new jtree.TreeNode(`expected\n${new jtree.TreeNode(expectedVal.toString()).toString(1)}`)
           const comparison = actual.toComparison(expected)
           return new jtree.TreeNode(` assertion ${failure[2]}\n${comparison.toSideBySide([actual, expected]).toString(2)}`)
         })

@@ -2176,7 +2176,7 @@ class TreeNode extends AbstractNode {
     const newNodes = new TreeNode(fn(this.toString()))
     const returnedNodes: TreeNode[] = []
     newNodes.forEach((child, childIndex) => {
-      const newNode = (parent as TreeNode).insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
+      const newNode = parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
       returnedNodes.push(newNode)
     })
     this.destroy()
@@ -2419,6 +2419,36 @@ class TreeNode extends AbstractNode {
     const newNode = grandParent.insertLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined, parentIndex + 1)
     this.destroy()
     return newNode
+  }
+
+  pasteText(text: string) {
+    const parent = this.getParent()
+    const index = this.getIndex()
+    const newNodes = new TreeNode(text)
+    const firstNode = newNodes.nodeAt(0)
+    this.setLine(firstNode.getLine())
+    if (firstNode.length) this.setChildren(firstNode.childrenToString())
+    newNodes.forEach((child, childIndex) => {
+      if (!childIndex)
+        // skip first
+        return true
+      parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
+    })
+    return this
+  }
+
+  templateToString(obj: treeNotationTypes.stringMap): string {
+    // todo: compile/cache for perf?
+    const tree = this.clone()
+    tree.getTopDownArray().forEach(node => {
+      const line = node.getLine().replace(/{([^\}]+)}/g, (match, path) => {
+        const replacement = obj[path]
+        if (!replacement) throw new Error(`In string template no match found on line "${node.getLine()}"`)
+        return replacement
+      })
+      node.pasteText(line)
+    })
+    return tree.toString()
   }
 
   shiftRight(): TreeNode {

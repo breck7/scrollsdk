@@ -1066,6 +1066,53 @@ testTree.toggleLine = equal => {
   equal(node.has("hidden"), false)
 }
 
+testTree.pasteText = equal => {
+  // Arrange
+  const tree = new TreeNode(`a
+ b`)
+  // Act
+  tree.getNode("a b").pasteText(`foo
+ bar`)
+  // Assert
+  equal(
+    tree.toString(),
+    `a
+ foo
+  bar`
+  )
+}
+
+testTree.templateToString = equal => {
+  // Arrange
+  const templateString = new TreeNode(`html
+ head
+  title {title}
+  style {height} {width}
+ body
+  {elements}`)
+  // Act
+  const str = templateString.templateToString({
+    title: "Hello world",
+    height: "10",
+    width: "20",
+    elements: `h1 header
+h2 subheader
+div
+ div Some text`
+  })
+  // Assert
+  const expected = `html
+ head
+  title Hello world
+  style 10 20
+ body
+  h1 header
+  h2 subheader
+  div
+   div Some text`
+  equal(str, expected, "templateToString works")
+}
+
 testTree.evalTemplateString = equal => {
   // Arrange
   const templateString = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"

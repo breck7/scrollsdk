@@ -2426,8 +2426,12 @@ class TreeNode extends AbstractNode {
     const index = this.getIndex()
     const newNodes = new TreeNode(text)
     const firstNode = newNodes.nodeAt(0)
-    this.setLine(firstNode.getLine())
-    if (firstNode.length) this.setChildren(firstNode.childrenToString())
+    if (firstNode) {
+      this.setLine(firstNode.getLine())
+      if (firstNode.length) this.setChildren(firstNode.childrenToString())
+    } else {
+      this.setLine("")
+    }
     newNodes.forEach((child, childIndex) => {
       if (!childIndex)
         // skip first
@@ -2443,7 +2447,7 @@ class TreeNode extends AbstractNode {
     tree.getTopDownArray().forEach(node => {
       const line = node.getLine().replace(/{([^\}]+)}/g, (match, path) => {
         const replacement = obj[path]
-        if (!replacement) throw new Error(`In string template no match found on line "${node.getLine()}"`)
+        if (replacement === undefined) throw new Error(`In string template no match found on line "${node.getLine()}"`)
         return replacement
       })
       node.pasteText(line)

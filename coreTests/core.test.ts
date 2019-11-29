@@ -1111,6 +1111,27 @@ div
   div
    div Some text`
   equal(str, expected, "templateToString works")
+
+  // Act
+  try {
+    templateString.templateToString({})
+    equal(false, true, "template strings currently require all params. should have thrown.")
+  } catch (err) {
+    equal(true, true, "error caught")
+  }
+
+  // Act
+  let str2 = templateString.templateToString({ title: "", height: "", width: "", elements: "" })
+  equal(
+    str2,
+    `html
+ head
+  title 
+  style  
+ body
+  `,
+    "blanks work"
+  )
 }
 
 testTree.evalTemplateString = equal => {

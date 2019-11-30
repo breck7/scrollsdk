@@ -118,7 +118,7 @@
           s: htmlTagNode,
           u: htmlTagNode
         }),
-        undefined
+        [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
     }
     compile() {
@@ -131,6 +131,7 @@
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`anyCell
 keywordCell
+emptyCell
 extraCell
  highlightScope invalid
 anyHtmlContentCell
@@ -152,7 +153,7 @@ stumpNode
  root
  description A prefix Tree Language that compiles to HTML.
  catchAllNodeType errorNode
- inScope htmlTagNode
+ inScope htmlTagNode blankLineNode
  example
   div
    h1 hello world
@@ -164,8 +165,17 @@ stumpNode
   _getHtmlJoinByCharacter() {
     return ""
   }
+blankLineNode
+ pattern ^$
+ tags doNotSynthesize
+ cells emptyCell
+ javascript
+  _toHtml() {
+   return ""
+  }
+  getTextContent() {return ""}
 htmlTagNode
- inScope bernNode htmlTagNode htmlAttributeNode
+ inScope bernNode htmlTagNode htmlAttributeNode blankLineNode
  catchAllCellType anyHtmlContentCell
  cells htmlTagNameCell
  javascript
@@ -301,13 +311,6 @@ htmlTagNode
   getShadowClass() {
    return this.getParent().getShadowClass()
   }
-  // todo: whats this? move to base?
-  getLines(start = 0, end) {
-   return this.toString()
-    .split("\\n")
-    .slice(start, end)
-    .join("\\n")
-  }
   // todo: should not be here
   getStumpNodeTreeComponent() {
    return this._treeComponent || this.getParent().getStumpNodeTreeComponent()
@@ -379,6 +382,7 @@ bernNode
     static getNodeTypeMap() {
       return {
         stumpNode: stumpNode,
+        blankLineNode: blankLineNode,
         htmlTagNode: htmlTagNode,
         errorNode: errorNode,
         htmlAttributeNode: htmlAttributeNode,
@@ -386,6 +390,18 @@ bernNode
         lineOfHtmlContentNode: lineOfHtmlContentNode,
         bernNode: bernNode
       }
+    }
+  }
+
+  class blankLineNode extends jtree.GrammarBackedNode {
+    get emptyCell() {
+      return this.getWord(0)
+    }
+    _toHtml() {
+      return ""
+    }
+    getTextContent() {
+      return ""
     }
   }
 
@@ -679,7 +695,7 @@ bernNode
           stumpNoOp: stumpExtendedAttributeNode,
           bern: bernNode
         }),
-        undefined
+        [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
     }
     get htmlTagNameCell() {
@@ -819,13 +835,6 @@ bernNode
     }
     getShadowClass() {
       return this.getParent().getShadowClass()
-    }
-    // todo: whats this? move to base?
-    getLines(start = 0, end) {
-      return this.toString()
-        .split("\n")
-        .slice(start, end)
-        .join("\n")
     }
     // todo: should not be here
     getStumpNodeTreeComponent() {

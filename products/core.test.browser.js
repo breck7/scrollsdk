@@ -886,6 +886,70 @@ testTree.toggleLine = equal => {
   equal(node.hasLine("hidden"), false)
   equal(node.has("hidden"), false)
 }
+testTree.pasteText = equal => {
+  // Arrange
+  const tree = new TreeNode(`a
+ b`)
+  // Act
+  tree.getNode("a b").pasteText(`foo
+ bar`)
+  // Assert
+  equal(
+    tree.toString(),
+    `a
+ foo
+  bar`
+  )
+}
+testTree.templateToString = equal => {
+  // Arrange
+  const templateString = new TreeNode(`html
+ head
+  title {title}
+  style {height} {width}
+ body
+  {elements}`)
+  // Act
+  const str = templateString.templateToString({
+    title: "Hello world",
+    height: "10",
+    width: "20",
+    elements: `h1 header
+h2 subheader
+div
+ div Some text`
+  })
+  // Assert
+  const expected = `html
+ head
+  title Hello world
+  style 10 20
+ body
+  h1 header
+  h2 subheader
+  div
+   div Some text`
+  equal(str, expected, "templateToString works")
+  // Act
+  try {
+    templateString.templateToString({})
+    equal(false, true, "template strings currently require all params. should have thrown.")
+  } catch (err) {
+    equal(true, true, "error caught")
+  }
+  // Act
+  let str2 = templateString.templateToString({ title: "", height: "", width: "", elements: "" })
+  equal(
+    str2,
+    `html
+ head
+  title 
+  style  
+ body
+  `,
+    "blanks work"
+  )
+}
 testTree.evalTemplateString = equal => {
   // Arrange
   const templateString = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"

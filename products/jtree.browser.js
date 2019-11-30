@@ -2173,8 +2173,8 @@ class TreeNode extends AbstractNode {
     return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
   }
   _getParser() {
-    if (!this._parser) this._parser = this.createParser()
-    return this._parser
+    if (!TreeNode._parsers.has(this.constructor)) TreeNode._parsers.set(this.constructor, this.createParser())
+    return TreeNode._parsers.get(this.constructor)
   }
   createParser() {
     return new Parser(this.constructor)
@@ -2708,6 +2708,38 @@ class TreeNode extends AbstractNode {
     this.destroy()
     return newNode
   }
+  pasteText(text) {
+    const parent = this.getParent()
+    const index = this.getIndex()
+    const newNodes = new TreeNode(text)
+    const firstNode = newNodes.nodeAt(0)
+    if (firstNode) {
+      this.setLine(firstNode.getLine())
+      if (firstNode.length) this.setChildren(firstNode.childrenToString())
+    } else {
+      this.setLine("")
+    }
+    newNodes.forEach((child, childIndex) => {
+      if (!childIndex)
+        // skip first
+        return true
+      parent.insertLineAndChildren(child.getLine(), child.childrenToString(), index + childIndex)
+    })
+    return this
+  }
+  templateToString(obj) {
+    // todo: compile/cache for perf?
+    const tree = this.clone()
+    tree.getTopDownArray().forEach(node => {
+      const line = node.getLine().replace(/{([^\}]+)}/g, (match, path) => {
+        const replacement = obj[path]
+        if (replacement === undefined) throw new Error(`In string template no match found on line "${node.getLine()}"`)
+        return replacement
+      })
+      node.pasteText(line)
+    })
+    return tree.toString()
+  }
   shiftRight() {
     const olderSibling = this._getClosestOlderSibling()
     if (!olderSibling) return this
@@ -3024,6 +3056,7 @@ class TreeNode extends AbstractNode {
     return methods[format](content)
   }
 }
+TreeNode._parsers = new Map()
 TreeNode.Parser = Parser
 TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
@@ -3036,7 +3069,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "47.0.0"
+TreeNode.getVersion = () => "47.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

@@ -1,3 +1,9 @@
+47.1.0 / 2019-11-29
+===================
+- New: pasteText and templateToString methods
+- New: blank lines are now okay in stump to work better with templates
+- Infra: Performance improvements via caching parsers
+
 47.0.0 / 2019-11-22
 ===================
 - New: toAutoCompleteCube method

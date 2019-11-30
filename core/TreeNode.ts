@@ -1748,11 +1748,11 @@ class TreeNode extends AbstractNode {
     return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
   }
 
-  private _parser: Parser
+  private static _parsers = new Map<any, Parser>()
 
   _getParser() {
-    if (!this._parser) this._parser = this.createParser()
-    return this._parser
+    if (!TreeNode._parsers.has(this.constructor)) TreeNode._parsers.set(this.constructor, this.createParser())
+    return TreeNode._parsers.get(this.constructor)
   }
 
   createParser(): Parser {

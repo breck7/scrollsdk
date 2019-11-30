@@ -25,6 +25,15 @@ test stumpBasics
    </body>
    </html>
    
+test blankLines
+ arrange
+  require ./stump.node.js
+  constructWithParagraph
+   html
+    
+    div
+ getAllErrors
+  assertLengthIs 0
 test div
  arrange
   require ./stump.node.js

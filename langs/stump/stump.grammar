@@ -1,5 +1,6 @@
 anyCell
 keywordCell
+emptyCell
 extraCell
  highlightScope invalid
 anyHtmlContentCell
@@ -21,7 +22,7 @@ stumpNode
  root
  description A prefix Tree Language that compiles to HTML.
  catchAllNodeType errorNode
- inScope htmlTagNode
+ inScope htmlTagNode blankLineNode
  example
   div
    h1 hello world
@@ -33,8 +34,17 @@ stumpNode
   _getHtmlJoinByCharacter() {
     return ""
   }
+blankLineNode
+ pattern ^$
+ tags doNotSynthesize
+ cells emptyCell
+ javascript
+  _toHtml() {
+   return ""
+  }
+  getTextContent() {return ""}
 htmlTagNode
- inScope bernNode htmlTagNode htmlAttributeNode
+ inScope bernNode htmlTagNode htmlAttributeNode blankLineNode
  catchAllCellType anyHtmlContentCell
  cells htmlTagNameCell
  javascript
@@ -169,13 +179,6 @@ htmlTagNode
   }
   getShadowClass() {
    return this.getParent().getShadowClass()
-  }
-  // todo: whats this? move to base?
-  getLines(start = 0, end) {
-   return this.toString()
-    .split("\n")
-    .slice(start, end)
-    .join("\n")
   }
   // todo: should not be here
   getStumpNodeTreeComponent() {

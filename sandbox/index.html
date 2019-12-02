@@ -11,7 +11,10 @@
     <script src="../products/SandboxApp.browser.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
     <script>
-      AbstractTreeComponent.startApp(SandboxApp)
+      window.app = new SandboxApp(`headerComponent
+tableComponent
+githubTriangleComponent`)
+      window.app.startWhenReady()
     </script>
   </body>
 </html>

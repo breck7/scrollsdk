@@ -184,6 +184,14 @@ class TreeUtils {
     return filename
   }
 
+  static getNextOrPrevious(arr: any[]) {
+    const length = arr.length
+    const index = arr.indexOf(this)
+    if (length === 1) return undefined
+    if (index === length - 1) return arr[index - 1]
+    return arr[index + 1]
+  }
+
   static toggle(currentValue: any, values: any[]) {
     const index = values.indexOf(currentValue)
     return index === -1 || index + 1 === values.length ? values[0] : values[index + 1]

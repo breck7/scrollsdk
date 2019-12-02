@@ -1,6 +1,6 @@
 //onsave jtree build produce DesignerApp.browser.js
 
-const { AbstractTreeComponent, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -66,7 +66,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   resetCommand() {
     Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
-    const willowBrowser = this.getWillowProgram()
+    const willowBrowser = this.getWillowBrowser()
     willowBrowser.reload()
   }
 
@@ -74,7 +74,7 @@ class DesignerApp extends AbstractTreeComponent {
     const samplePath = `/langs/${name}/sample.${name}`
     const grammarPath = `/langs/${name}/${name}.grammar`
 
-    const willowBrowser = this.getWillowProgram()
+    const willowBrowser = this.getWillowBrowser()
     const grammar = await willowBrowser.httpGetUrl(grammarPath)
     const sample = await willowBrowser.httpGetUrl(samplePath)
 
@@ -204,13 +204,13 @@ class DesignerApp extends AbstractTreeComponent {
     }
   }
 
-  async appWillFirstRender() {
-    const willowBrowser = this.getWillowProgram()
+  async start() {
+    const willowBrowser = this.getWillowBrowser()
     const result = await willowBrowser.httpGetUrl("/langs/grammar/grammar.grammar")
     this.GrammarConstructor = new jtree.GrammarProgram(result.text).getRootConstructor()
-  }
+    this._bindTreeComponentFrameworkCommandListenersOnBody()
+    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
 
-  async appDidFirstRender() {
     this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
 
     this.grammarInstance.on("keyup", () => {
@@ -447,15 +447,6 @@ a
 .LintErrorWithSuggestion
  cursor pointer`
   }
-
-  static getDefaultStartState() {
-    return `headerComponent
-samplesComponent
-shareComponent
-otherErrorsComponent
-tableComponent
-githubTriangleComponent`
-  }
 }
 
 class samplesComponent extends AbstractTreeComponent {
@@ -465,7 +456,7 @@ class samplesComponent extends AbstractTreeComponent {
         (lang: string) => ` a ${jtree.Utils.ucfirst(lang)}
   href #standard%20${lang}
   value ${lang}
-  ${WillowConstants.DataShadowEvents.onClickCommand} fetchAndLoadJtreeShippedLanguageCommand`
+  clickCommand fetchAndLoadJtreeShippedLanguageCommand`
       )
       .join("\n span  | \n")
     return `p
@@ -550,13 +541,13 @@ class tableComponent extends AbstractTreeComponent {
   td
    span Grammar for your Tree Language
    a Infer Prefix Grammar
-    ${WillowConstants.DataShadowEvents.onClickCommand} inferPrefixGrammarCommand
+    clickCommand inferPrefixGrammarCommand
    span  |
    a Download Bundle
-    ${WillowConstants.DataShadowEvents.onClickCommand} downloadBundleCommand
+    clickCommand downloadBundleCommand
    span  |
    a Synthesize Program
-    ${WillowConstants.DataShadowEvents.onClickCommand} synthesizeProgramCommand
+    clickCommand synthesizeProgramCommand
    textarea
     id grammarConsole
   td
@@ -566,21 +557,21 @@ class tableComponent extends AbstractTreeComponent {
     value executeCommand
     class onCodeUp
    a Execute
-    ${WillowConstants.DataShadowEvents.onClickCommand} executeCommand
+    clickCommand executeCommand
    span  |
    input
     type checkbox
     value compileCommand
     class onCodeUp
    a Compile
-    ${WillowConstants.DataShadowEvents.onClickCommand} compileCommand
+    clickCommand compileCommand
    span  |
    input
     type checkbox
     value visualizeCommand
     class onCodeUp
    a Explain
-    ${WillowConstants.DataShadowEvents.onClickCommand} visualizeCommand
+    clickCommand visualizeCommand
    textarea
     id codeConsole
  tr
@@ -641,10 +632,10 @@ class headerComponent extends AbstractTreeComponent {
    href https://www.youtube.com/watch?v=UQHaI78jGR0=
   span  |
   a Reset
-   ${WillowConstants.DataShadowEvents.onClickCommand} resetCommand
+   clickCommand resetCommand
   span  |
   a Debug
-   ${WillowConstants.DataShadowEvents.onClickCommand} toggleTreeComponentFrameworkDebuggerCommand
+   clickCommand toggleTreeComponentFrameworkDebuggerCommand
   span  | Version ${jtree.getVersion()}
  div
   id helpSection

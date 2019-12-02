@@ -1,6 +1,6 @@
 //onsave jtree build produce SandboxApp.browser.js
 
-const { AbstractTreeComponent, WillowConstants, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
 declare var jQuery: any
@@ -33,12 +33,8 @@ class SandboxApp extends AbstractTreeComponent {
       .keyup()
   }
 
-  async appWillFirstRender() {
-    // todo: refactor!!! splut these into components
-
-    const willowBrowser = this.getWillowProgram()
-    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
-
+  async treeComponentDidMount() {
+    // todo: refactor!!! split these into components
     jQuery(document).ready(function() {
       const treeConsole = jQuery("#treeConsole")
       const jsonConsole = jQuery("#jsonConsole")
@@ -131,12 +127,6 @@ pre
 .keyword
  color green`
   }
-
-  static getDefaultStartState() {
-    return `headerComponent
-tableComponent
-githubTriangleComponent`
-  }
 }
 
 class headerComponent extends AbstractTreeComponent {
@@ -168,7 +158,7 @@ class headerComponent extends AbstractTreeComponent {
    href perfTests.html
   span  | 
   a Debug
-   ${WillowConstants.DataShadowEvents.onClickCommand} toggleTreeComponentFrameworkDebuggerCommand
+   clickCommand toggleTreeComponentFrameworkDebuggerCommand
   span  | Version ${jtree.getVersion()}
  p This is a simple console for exploring the base Tree Notation. In dev tools, you can access the parsed tree below as "window.tree"`
   }
@@ -190,7 +180,7 @@ class tableComponent extends AbstractTreeComponent {
    div
     span toJsonSubset()
     a sample
-     ${WillowConstants.DataShadowEvents.onClickCommand} loadJsonSampleCommand
+     clickCommand loadJsonSampleCommand
    textarea
     id jsonConsole
  tr
@@ -198,7 +188,7 @@ class tableComponent extends AbstractTreeComponent {
    div
     span toCsv()
     a sample
-     ${WillowConstants.DataShadowEvents.onClickCommand} loadCsvSampleCommand
+     clickCommand loadCsvSampleCommand
    textarea
     id csvConsole
   td

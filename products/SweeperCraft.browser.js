@@ -1,20 +1,18 @@
 //onsave jtree build produce SweeperCraft.browser.js
 class SweeperCraftGame {
-  constructor(board, renderFn) {
+  constructor(board) {
     this._setBoard(board)
     this._resetBoard()
     this._clicks = []
-    this._renderFn = renderFn
   }
   retry() {
     this._startTime = null
     this._resetBoard()
     this._clicks = []
-    this._render()
   }
-  watchReplay(speedInMs = 250) {
+  watchReplay(speedInMs = 250, renderFn) {
     this._resetBoard()
-    this._render()
+    renderFn()
     let step = 0
     const stepCount = this._clicks.length
     this._replayInterval = setInterval(() => {
@@ -23,7 +21,7 @@ class SweeperCraftGame {
         return
       }
       this._click(this._clicks[step][0], this._clicks[step][1])
-      this._render()
+      renderFn()
       step++
     }, speedInMs)
   }
@@ -46,7 +44,6 @@ class SweeperCraftGame {
   }
   toggleFlag(row, col) {
     this._flags[row][col] = this._flags[row][col] ? 0 : 1
-    this._render()
   }
   // Whether to show all bombs when the game is completed.
   shouldReveal() {
@@ -59,7 +56,6 @@ class SweeperCraftGame {
     if (this.wasClicked(row, column)) return
     this._clicks.push([row, column, Date.now()])
     this._click(row, column)
-    this._render()
   }
   hasBomb(row, column) {
     return this._board[row][column] === 1
@@ -86,7 +82,6 @@ class SweeperCraftGame {
   }
   toggleFlagLock() {
     this._flagLock = !this._flagLock
-    this._render()
   }
   isOver() {
     return this._state > 0
@@ -106,7 +101,6 @@ class SweeperCraftGame {
     this._clicks.forEach(c => {
       this._click(c[0], c[1])
     })
-    this._render()
   }
   // Generates a gameboard link where a bomb represents a flag.
   getCraftPermalink() {
@@ -124,7 +118,6 @@ class SweeperCraftGame {
       }
       row++
     }
-    this._render()
   }
   _setBoard(board) {
     if (!(board instanceof Array)) throw new Error("Invalid Board. Board must be an Array.")
@@ -175,9 +168,6 @@ class SweeperCraftGame {
   }
   getGameAsTree() {
     return ("rowComponent\n" + " squareComponent\n".repeat(this._numberOfColumns)).repeat(this._numberOfRows).trim()
-  }
-  _render() {
-    if (this._renderFn) this._renderFn(this)
   }
   _getNeighbors(row, column) {
     return SweeperCraftGame.getNeighbors(row, column, this._numberOfRows, this._numberOfColumns)
@@ -351,10 +341,6 @@ const linkToObject = link => {
   return obj
 }
 class SweeperCraftApp extends AbstractTreeComponent {
-  constructor() {
-    super(...arguments)
-    this._isFirstRender = true
-  }
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       headerComponent: headerComponent,
@@ -377,9 +363,15 @@ class SweeperCraftApp extends AbstractTreeComponent {
     if (game.isFlagLockOn()) game.toggleFlag(row, col)
     // Don't allow someone to click on a flagged square w/o removing flag first
     else if (!isFlagged) game.click(row, col)
+    this._syncAndRender()
   }
   retryGameCommand() {
     this.getGame().retry()
+    this._syncAndRender()
+  }
+  _syncAndRender() {
+    this._syncBoardToGame()
+    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
   }
   flagSquareCommand(row, col) {
     row = typeof row === "string" ? parseInt(row) : row
@@ -389,6 +381,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
     const wasClicked = game.wasClicked(row, col)
     if (wasClicked) return
     game.toggleFlag(row, col)
+    this._syncAndRender()
   }
   toHakonCode() {
     const theme = this.getTheme()
@@ -515,28 +508,51 @@ class SweeperCraftApp extends AbstractTreeComponent {
   getGame() {
     return this._mainGame
   }
-  static getDefaultStartState() {
-    return `headerComponent
-boardComponent
-controlsComponent
-customLinkComponent
-shortcutsTableComponent
-githubTriangleComponent`
+  _setupBrowser() {
+    window.addEventListener("error", err => {
+      jQuery("#errors").html(`Something went wrong: ${err.message}. <a href=''>Refresh</a>`)
+    })
+    const willowBrowser = this.getWillowBrowser()
+    const keyboardShortcuts = this._getKeyboardShortcuts()
+    Object.keys(keyboardShortcuts).forEach(key => {
+      willowBrowser.getMousetrap().bind(key, function(evt) {
+        keyboardShortcuts[key]()
+        // todo: handle the below when we need to
+        if (evt.preventDefault) evt.preventDefault()
+        return false
+      })
+    })
+    Figlet.loadFont("banner", FontsBanner)
+    window.addEventListener("hashchange", () => {
+      console.log("hashchange")
+      this._restoreStateFromHash(willowBrowser.getHash().replace(/^\#/, ""))
+    })
   }
-  renderAndGetRenderReport(stumpNode) {
-    if (this._isFirstRender) {
-      this._isFirstRender = false
-      this._firstRender(stumpNode)
-    }
-    return super.renderAndGetRenderReport(stumpNode)
+  async start() {
+    this._bindTreeComponentFrameworkCommandListenersOnBody()
+    if (!this.isNodeJs()) this._setupBrowser()
+    const willowBrowser = this.getWillowBrowser()
+    const currentHash = willowBrowser.getHash().replace(/^#/, "")
+    // Initialize first game
+    if (SweeperCraftGame.isValidPermalink(currentHash)) this._restoreStateFromHash(currentHash)
+    else willowBrowser.setHash(SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10)))
   }
   _getKeyboardShortcuts() {
     return {
-      u: () => this._mainGame.undo(),
-      s: () => this._mainGame.win(),
-      l: () => this._mainGame.toggleFlagLock(),
+      u: () => {
+        this._mainGame.undo()
+        this._syncAndRender()
+      },
+      s: () => {
+        this._mainGame.win()
+        this._syncAndRender()
+      },
+      l: () => {
+        this._mainGame.toggleFlagLock()
+        this._syncAndRender()
+      },
       r: () => {
-        if (this._mainGame.isOver()) this._mainGame.watchReplay()
+        if (this._mainGame.isOver()) this._mainGame.watchReplay(250, () => this._syncAndRender())
       },
       "?": () => {
         jQuery("#shortcuts").toggle()
@@ -570,24 +586,18 @@ githubTriangleComponent`
         node._syncBoardToGame()
       })
   }
-  _loadFromHash(stumpNode, link) {
-    let board
-    if (!link) board = SweeperCraftGame.getRandomBoard(9, 9, 10)
-    else board = SweeperCraftGame.boardFromPermalink(link)
-    this._mainGame = new SweeperCraftGame(board, game => {
-      this._syncBoardToGame() // todo: cleanup
-      this.renderAndGetRenderReport(stumpNode)
-    })
+  _restoreStateFromHash(link) {
+    const board = link ? SweeperCraftGame.boardFromPermalink(link) : SweeperCraftGame.getRandomBoard(9, 9, 10)
+    this._mainGame = new SweeperCraftGame(board)
     let boardNode = this.getNode("boardComponent")
     if (boardNode) {
       if (boardNode.isMounted()) {
         boardNode.unmountAndDestroy() // todo: cleanup
-        let headerComponent = this.getNode("headerComponent")
-        boardNode = headerComponent.appendSibling("boardComponent")
+        boardNode = this.getNode("headerComponent").appendSibling("boardComponent")
       }
       boardNode.setChildren(this._mainGame.getGameAsTree())
     }
-    this._mainGame._render()
+    this._syncAndRender()
   }
   getCssClasses() {
     const classes = super.getCssClasses()
@@ -595,38 +605,11 @@ githubTriangleComponent`
     else if (this._mainGame.isWon()) classes.push("gameWon")
     return classes
   }
-  _setupBrowser(stumpNode) {
-    window.addEventListener("error", err => {
-      jQuery("#errors").html(`Something went wrong: ${err.message}. <a href=''>Refresh</a>`)
-    })
-    const willowProgram = this.getWillowProgram()
-    const keyboardShortcuts = this._getKeyboardShortcuts()
-    Object.keys(keyboardShortcuts).forEach(key => {
-      willowProgram.getMousetrap().bind(key, function(evt) {
-        keyboardShortcuts[key]()
-        // todo: handle the below when we need to
-        if (evt.preventDefault) evt.preventDefault()
-        return false
-      })
-    })
-    Figlet.loadFont("banner", FontsBanner)
-    window.addEventListener("hashchange", () => {
-      console.log("hashchange")
-      this._loadFromHash(stumpNode, willowProgram.getHash().replace(/^\#/, ""))
-    })
-  }
-  _firstRender(stumpNode) {
-    if (!this.isNodeJs()) this._setupBrowser(stumpNode)
-    const willowProgram = this.getWillowProgram()
-    // Initialize first game
-    if (SweeperCraftGame.isValidPermalink(willowProgram.getHash().replace(/^#/, ""))) this._loadFromHash(stumpNode, willowProgram.getHash().replace(/^#/, ""))
-    else willowProgram.setHash(SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10)))
-  }
 }
 class AbstractSweeperCraftComponent extends AbstractTreeComponent {}
 class headerComponent extends AbstractSweeperCraftComponent {
-  treeComponentDidMount() {
-    super.treeComponentDidMount()
+  async treeComponentDidMount() {
+    await super.treeComponentDidMount()
     if (!this.isNodeJs()) this._initTimerInterval()
   }
   treeComponentWillUnmount() {
@@ -687,7 +670,7 @@ class boardComponent extends AbstractSweeperCraftComponent {
     })
   }
   _syncBoardToGame() {
-    this.setContent(`${this._getCssGameClass()}`)
+    this.setContent(this._getCssGameClass())
   }
   _getCssGameClass() {
     return this.getRootNode()
@@ -712,9 +695,9 @@ class squareComponent extends AbstractSweeperCraftComponent {
     const row = this.getRow()
     const col = this.getColumn()
     return `div${this.htmlContent}
- stumpOnClickCommand clickSquareCommand ${row} ${col}
- stumpOnShiftClickCommand flagSquareCommand ${row} ${col}
- stumpOnContextMenuCommand flagSquareCommand ${row} ${col}
+ clickCommand clickSquareCommand ${row} ${col}
+ shiftClickCommand flagSquareCommand ${row} ${col}
+ contextMenuCommand flagSquareCommand ${row} ${col}
  class ${this.getCssClassNames().join(" ")}`
   }
   _syncBoardToGame() {
@@ -771,7 +754,7 @@ class controlsComponent extends AbstractSweeperCraftComponent {
     const game = this.getRootNode().getGame()
     if (game.isOver())
       parts.push(`div Restart
- stumpOnClickCommand retryGameCommand
+ clickCommand retryGameCommand
  class button`)
     if (game.isFlagLockOn()) parts.push(`span Flag lock on`)
     return parts.join("\n") || "div"
@@ -794,7 +777,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
     return ""
   }
   _syncBoardToGame() {
-    this.setContent(`${this._getGameLink()}`)
+    this.setContent(this._getGameLink())
   }
 }
 class shortcutsTableComponent extends AbstractTreeComponent {

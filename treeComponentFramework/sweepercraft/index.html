@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>SweeperCraft</title>
+    <meta charset="UTF-8">
   </head>
   <body>
     <script src="../../sandbox/lib/jquery.min.js"></script>
@@ -13,7 +14,13 @@
     <script src="./lib/mousetrap.min.js"></script>
     <script src="../../products/SweeperCraft.browser.js"></script>
     <script>
-      AbstractTreeComponent.startApp(SweeperCraftApp)
+      window.app = new SweeperCraftApp(`headerComponent
+boardComponent
+controlsComponent
+customLinkComponent
+shortcutsTableComponent
+githubTriangleComponent`)
+      window.app.startWhenReady()
     </script>
   </body>
 </html>

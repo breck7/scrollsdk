@@ -9,39 +9,38 @@ const superagent = require("superagent")
 
 declare var jQuery: any
 
-const WillowConstants: treeNotationTypes.stringMap = {}
-WillowConstants.ShadowEvents = {}
-WillowConstants.ShadowEvents.click = "click"
-WillowConstants.ShadowEvents.change = "change"
-WillowConstants.ShadowEvents.mouseover = "mouseover"
-WillowConstants.ShadowEvents.mouseout = "mouseout"
-WillowConstants.ShadowEvents.mousedown = "mousedown"
-WillowConstants.ShadowEvents.contextmenu = "contextmenu"
-WillowConstants.ShadowEvents.keypress = "keypress"
-WillowConstants.ShadowEvents.keyup = "keyup"
-WillowConstants.ShadowEvents.focus = "focus"
-WillowConstants.ShadowEvents.mousemove = "mousemove"
-WillowConstants.ShadowEvents.dblclick = "dblclick"
-WillowConstants.ShadowEvents.submit = "submit"
-WillowConstants.ShadowEvents.blur = "blur"
-WillowConstants.ShadowEvents.paste = "paste"
-WillowConstants.ShadowEvents.copy = "copy"
-WillowConstants.ShadowEvents.resize = "resize"
-WillowConstants.ShadowEvents.cut = "cut"
-WillowConstants.ShadowEvents.drop = "drop"
-WillowConstants.ShadowEvents.dragover = "dragover"
-WillowConstants.ShadowEvents.dragenter = "dragenter"
-WillowConstants.ShadowEvents.dragleave = "dragleave"
-WillowConstants.ShadowEvents.ready = "ready"
+const BrowserEvents: treeNotationTypes.stringMap = {}
+BrowserEvents.click = "click"
+BrowserEvents.change = "change"
+BrowserEvents.mouseover = "mouseover"
+BrowserEvents.mouseout = "mouseout"
+BrowserEvents.mousedown = "mousedown"
+BrowserEvents.contextmenu = "contextmenu"
+BrowserEvents.keypress = "keypress"
+BrowserEvents.keyup = "keyup"
+BrowserEvents.focus = "focus"
+BrowserEvents.mousemove = "mousemove"
+BrowserEvents.dblclick = "dblclick"
+BrowserEvents.submit = "submit"
+BrowserEvents.blur = "blur"
+BrowserEvents.paste = "paste"
+BrowserEvents.copy = "copy"
+BrowserEvents.resize = "resize"
+BrowserEvents.cut = "cut"
+BrowserEvents.drop = "drop"
+BrowserEvents.dragover = "dragover"
+BrowserEvents.dragenter = "dragenter"
+BrowserEvents.dragleave = "dragleave"
+BrowserEvents.ready = "ready"
 
+const WillowConstants: treeNotationTypes.stringMap = {}
 // todo: cleanup
-WillowConstants.DataShadowEvents = {}
-WillowConstants.DataShadowEvents.onClickCommand = "stumpOnClickCommand"
-WillowConstants.DataShadowEvents.onShiftClickCommand = "stumpOnShiftClickCommand"
-WillowConstants.DataShadowEvents.onBlurCommand = "stumpOnBlurCommand"
-WillowConstants.DataShadowEvents.onContextMenuCommand = "stumpOnContextMenuCommand"
-WillowConstants.DataShadowEvents.onChangeCommand = "stumpOnChangeCommand"
-WillowConstants.DataShadowEvents.onDblClickCommand = "stumpOnDblClickCommand"
+WillowConstants.clickCommand = "clickCommand"
+WillowConstants.shiftClickCommand = "shiftClickCommand"
+WillowConstants.blurCommand = "blurCommand"
+WillowConstants.contextMenuCommand = "contextMenuCommand"
+WillowConstants.changeCommand = "changeCommand"
+WillowConstants.doubleClickCommand = "doubleClickCommand"
 
 // todo: cleanup
 WillowConstants.titleTag = "titleTag"
@@ -53,7 +52,7 @@ WillowConstants.tags = {}
 WillowConstants.tags.html = "html"
 WillowConstants.tags.head = "head"
 WillowConstants.tags.body = "body"
-WillowConstants.stumpCollapse = "stumpCollapse"
+WillowConstants.collapse = "collapse"
 WillowConstants.uidAttribute = "stumpUid"
 WillowConstants.class = "class"
 WillowConstants.type = "type"
@@ -308,7 +307,7 @@ class WillowMousetrap {
 }
 
 // this one should have no document, window, $, et cetera.
-class AbstractWillowProgram extends stumpNode {
+class AbstractWillowBrowser extends stumpNode {
   constructor(fullHtmlPageUrlIncludingProtocolAndFileName: string) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
@@ -596,7 +595,7 @@ class AbstractWillowProgram extends stumpNode {
   blurFocusedInput() {}
 }
 
-class WillowProgram extends AbstractWillowProgram {
+class WillowBrowser extends AbstractWillowBrowser {
   constructor(fullHtmlPageUrlIncludingProtocolAndFileName: string) {
     super(fullHtmlPageUrlIncludingProtocolAndFileName)
     this._offlineMode = true
@@ -704,7 +703,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     else if (index === 0) jqEl.prepend(newChildJqElement)
     else jQuery(jqEl.children().get(index - 1)).after(newChildJqElement)
 
-    WillowProgram._stumpsOnPage++
+    WillowBrowser._stumpsOnPage++
     this._logMessage("insert")
   }
 
@@ -746,7 +745,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   removeShadow() {
     this._getJQElement().remove()
-    WillowProgram._stumpsOnPage--
+    WillowBrowser._stumpsOnPage--
     this._logMessage("remove")
     return this
   }
@@ -783,7 +782,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 }
 
 // same thing, except with side effects.
-class WillowBrowserProgram extends AbstractWillowProgram {
+class RealWillowBrowser extends AbstractWillowBrowser {
   findStumpNodesByShadowClass(className: string) {
     const stumpNodes: any[] = []
     const that = this
@@ -804,17 +803,17 @@ class WillowBrowserProgram extends AbstractWillowProgram {
   }
 
   setCopyHandler(fn: Function) {
-    jQuery(document).on(WillowConstants.ShadowEvents.copy, fn)
+    jQuery(document).on(BrowserEvents.copy, fn)
     return this
   }
 
   setCutHandler(fn: Function) {
-    jQuery(document).on(WillowConstants.ShadowEvents.cut, fn)
+    jQuery(document).on(BrowserEvents.cut, fn)
     return this
   }
 
   setPasteHandler(fn: any) {
-    window.addEventListener(WillowConstants.ShadowEvents.paste, fn, false)
+    window.addEventListener(BrowserEvents.paste, fn, false)
     return this
   }
 
@@ -940,7 +939,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
 
   setResizeEndHandler(fn: Function) {
     let resizeTimer: any
-    jQuery(window).on(WillowConstants.ShadowEvents.resize, (evt: any) => {
+    jQuery(window).on(BrowserEvents.resize, (evt: any) => {
       const target = jQuery(evt.target)
       if (target.is("div")) return // dont resize on div resizes
       clearTimeout(resizeTimer)
@@ -1019,7 +1018,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
         // 50ms later, add the dragleave handler, and from now on drag leave will only happen on the help
         // div
         setTimeout(function() {
-          bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dragleave, dragleaveHandler)
+          bodyShadow.onShadowEvent(BrowserEvents.dragleave, dragleaveHandler)
         }, 50)
       }
     }
@@ -1029,7 +1028,7 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       event.stopPropagation()
       bodyStumpNode.removeClassFromStumpNode("dragOver")
       bodyStumpNode.findStumpNodeByChild("id dragOverHelp").removeStumpNode()
-      bodyShadow.offShadowEvent(WillowConstants.ShadowEvents.dragleave, dragleaveHandler)
+      bodyShadow.offShadowEvent(BrowserEvents.dragleave, dragleaveHandler)
     }
 
     const dropHandler = async (event: any) => {
@@ -1051,11 +1050,11 @@ class WillowBrowserProgram extends AbstractWillowProgram {
       callback(results)
     }
 
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dragover, dragoverHandler)
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.drop, dropHandler)
+    bodyShadow.onShadowEvent(BrowserEvents.dragover, dragoverHandler)
+    bodyShadow.onShadowEvent(BrowserEvents.drop, dropHandler)
 
     // todo: why do we do this?
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dragenter, function(event: any) {
+    bodyShadow.onShadowEvent(BrowserEvents.dragenter, function(event: any) {
       event.preventDefault()
       event.stopPropagation()
     })
@@ -1167,24 +1166,35 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   private _lastTimeToRender: number
   static _mountedTreeComponents = 0
 
-  private _willowProgram: any
+  private _willowBrowser: any
   private _theme: AbstractTheme
 
-  getWillowProgram() {
-    if (!this._willowProgram) {
-      if (this.isNodeJs()) {
-        this._willowProgram = new WillowProgram("http://localhost:8000/index.html")
-      } else {
-        this._willowProgram = new WillowBrowserProgram(window.location.href)
-      }
-    }
-    return this._willowProgram
+  async startWhenReady() {
+    if (this.isNodeJs()) return this.start()
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
+        this.start()
+      },
+      false
+    )
   }
 
-  // todo: remove?
-  protected async appWillFirstRender() {}
-  // todo: remove?
-  protected async appDidFirstRender() {}
+  start() {
+    this._bindTreeComponentFrameworkCommandListenersOnBody()
+    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+  }
+
+  getWillowBrowser() {
+    if (!this._willowBrowser) {
+      if (this.isNodeJs()) {
+        this._willowBrowser = new WillowBrowser("http://localhost:8000/index.html")
+      } else {
+        this._willowBrowser = new RealWillowBrowser(window.location.href)
+      }
+    }
+    return this._willowBrowser
+  }
 
   protected onCommandError(err: any) {
     throw err
@@ -1198,14 +1208,14 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   getMouseEvent() {
-    return this._mouseEvent || this.getWillowProgram().getMockMouseEvent()
+    return this._mouseEvent || this.getWillowBrowser().getMockMouseEvent()
   }
 
   protected _onCommandWillRun() {
     // todo: remove. currently used by ohayo
   }
 
-  private _getCommandArguments(stumpNode: any, commandMethod: string) {
+  private _getCommandArgumentsFromStumpNode(stumpNode: any, commandMethod: string) {
     if (commandMethod.includes(" ")) {
       // todo: cleanup and document
       // It seems the command arguments can from the method string or from form values.
@@ -1230,14 +1240,14 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   getStumpNodeString() {
-    return this.getWillowProgram()
+    return this.getWillowBrowser()
       .getHtmlStumpNode()
       .toString()
   }
 
   _getHtmlOnlyNodes() {
     const nodes: any[] = []
-    this.getWillowProgram()
+    this.getWillowBrowser()
       .getHtmlStumpNode()
       .deepVisit((node: any) => {
         if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
@@ -1249,7 +1259,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   getStumpNodeStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
     const clone = new jtree.TreeNode(
-      this.getWillowProgram()
+      this.getWillowBrowser()
         .getHtmlStumpNode()
         .toString()
     )
@@ -1271,8 +1281,8 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(word => word.endsWith("Command"))
   }
 
-  async _executeStumpNodeCommand(stumpNode: any, commandMethod: string) {
-    const params = this._getCommandArguments(stumpNode, commandMethod)
+  private async _executeCommandOnStumpNode(stumpNode: any, commandMethod: string) {
+    const params = this._getCommandArgumentsFromStumpNode(stumpNode, commandMethod)
     if (commandMethod.includes(" "))
       // todo: cleanup
       commandMethod = commandMethod.split(" ")[0]
@@ -1294,8 +1304,8 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     }
   }
 
-  _setTreeComponentFrameworkEventListeners() {
-    const willowBrowser = this.getWillowProgram()
+  private _bindTreeComponentFrameworkCommandListenersOnBody() {
+    const willowBrowser = this.getWillowBrowser()
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
     const app = this
 
@@ -1303,63 +1313,34 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
       const stumpNode = willowBrowser.getStumpNodeFromElement(el)
       evt.preventDefault()
       evt.stopImmediatePropagation()
-      this._executeStumpNodeCommand(stumpNode, stumpNode.getStumpNodeAttr(attr))
+      this._executeCommandOnStumpNode(stumpNode, stumpNode.getStumpNodeAttr(attr))
       return false
     }
 
-    const DataShadowEvents = WillowConstants.DataShadowEvents
-
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.contextmenu, `[${DataShadowEvents.onContextMenuCommand}]`, function(evt: any) {
+    bodyShadow.onShadowEvent(BrowserEvents.contextmenu, `[${WillowConstants.contextMenuCommand}]`, function(evt: any) {
       if (evt.ctrlKey) return true
       app._setMouseEvent(evt) // todo: remove?
-      return checkAndExecute(this, DataShadowEvents.onContextMenuCommand, evt)
+      return checkAndExecute(this, WillowConstants.contextMenuCommand, evt)
     })
 
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.click, `[${DataShadowEvents.onClickCommand}]`, function(evt: any) {
-      if (evt.shiftKey) return checkAndExecute(this, DataShadowEvents.onShiftClickCommand, evt)
-      return checkAndExecute(this, DataShadowEvents.onClickCommand, evt)
+    bodyShadow.onShadowEvent(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function(evt: any) {
+      if (evt.shiftKey) return checkAndExecute(this, WillowConstants.shiftClickCommand, evt)
+      return checkAndExecute(this, WillowConstants.clickCommand, evt)
     })
 
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.dblclick, `[${DataShadowEvents.onDblClickCommand}]`, function(evt: any) {
+    bodyShadow.onShadowEvent(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function(evt: any) {
       if (evt.target !== evt.currentTarget) return true // direct dblclicks only
       app._setMouseEvent(evt) // todo: remove?
-      return checkAndExecute(this, DataShadowEvents.onDblClickCommand, evt)
+      return checkAndExecute(this, WillowConstants.doubleClickCommand, evt)
     })
 
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.blur, `[${DataShadowEvents.onBlurCommand}]`, function(evt: any) {
-      return checkAndExecute(this, DataShadowEvents.onBlurCommand, evt)
+    bodyShadow.onShadowEvent(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function(evt: any) {
+      return checkAndExecute(this, WillowConstants.blurCommand, evt)
     })
 
-    bodyShadow.onShadowEvent(WillowConstants.ShadowEvents.change, `[${DataShadowEvents.onChangeCommand}]`, function(evt: any) {
-      return checkAndExecute(this, DataShadowEvents.onChangeCommand, evt)
+    bodyShadow.onShadowEvent(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function(evt: any) {
+      return checkAndExecute(this, WillowConstants.changeCommand, evt)
     })
-  }
-
-  getDefaultStartState() {
-    return ""
-  }
-
-  async start() {
-    this._setTreeComponentFrameworkEventListeners()
-    await this.appWillFirstRender()
-    this.renderAndGetRenderReport(this.getWillowProgram().getBodyStumpNode())
-    this.appDidFirstRender()
-  }
-
-  static async startApp(appClass: AbstractTreeComponent) {
-    document.addEventListener(
-      "DOMContentLoaded",
-      async () => {
-        const win = <any>window
-        if (!win.app) {
-          const startState = appClass.getDefaultStartState()
-          const anyAppClass = <any>appClass // todo: cleanup
-          win.app = new anyAppClass(startState)
-          await win.app.start()
-        }
-      },
-      false
-    )
   }
 
   stopPropagationCommand() {
@@ -1470,7 +1451,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
 
   treeComponentWillMount() {}
 
-  treeComponentDidMount() {
+  async treeComponentDidMount() {
     AbstractTreeComponent._mountedTreeComponents++
   }
 
@@ -1479,8 +1460,6 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   treeComponentWillUnmount() {}
-
-  forceUpdate() {}
 
   getNewestTimeToRender() {
     return this._lastTimeToRender
@@ -1491,8 +1470,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return this
   }
 
-  // todo: can this be async?
-  treeComponentDidUpdate() {}
+  async treeComponentDidUpdate() {}
 
   protected _getChildTreeComponents() {
     return this.getChildrenByNodeConstructor(AbstractTreeComponent)
@@ -1524,7 +1502,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
 
   protected _getCssStumpCode() {
     return `styleTag
- stumpStyleFor ${this.constructor.name}
+ for ${this.constructor.name}
  bern${jtree.TreeNode.nest(this._getCss(), 2)}`
   }
 
@@ -1576,15 +1554,6 @@ ${new stumpNode(this.toStumpCode()).compile()}
     return !!this._htmlStumpNode
   }
 
-  // todo: move to base TreeNode?
-  getNextOrPrevious(arr: AbstractTreeComponent[]) {
-    const length = arr.length
-    const index = arr.indexOf(this)
-    if (length === 1) return undefined
-    if (index === length - 1) return arr[index - 1]
-    return arr[index + 1]
-  }
-
   toggleAndRender(firstWord: string, contentOptions: string[]) {
     this.toggle(firstWord, contentOptions)
     this.getRootNode().renderAndGetRenderReport()
@@ -1630,12 +1599,6 @@ ${new stumpNode(this.toStumpCode()).compile()}
 
   getDependencies(): AbstractTreeComponent[] {
     return []
-  }
-
-  getChildrenThatNeedRendering() {
-    const all: childShouldUpdateResult[] = []
-    this._getTreeComponentsThatNeedRendering(all)
-    return all
   }
 
   protected _getTreeComponentsThatNeedRendering(arr: childShouldUpdateResult[]) {
@@ -1695,7 +1658,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
 
   protected _getPageHeadStump(): abstractHtmlTag {
     return this.getRootNode()
-      .getWillowProgram()
+      .getWillowBrowser()
       .getHeadStumpNode()
   }
 
@@ -1707,14 +1670,6 @@ ${new stumpNode(this.toStumpCode()).compile()}
   protected _mountHtml(stumpNodeToMountOn: abstractHtmlTag, htmlCode: string, index: number) {
     this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
     this._htmlStumpNode.setStumpNodeTreeComponent(this)
-  }
-
-  protected _treeComponentDidUpdate() {
-    this.treeComponentDidUpdate()
-  }
-
-  protected _treeComponentDidMount() {
-    this.treeComponentDidMount()
   }
 
   renderAndGetRenderReport(stumpNode?: abstractHtmlTag, index?: number) {
@@ -1734,14 +1689,14 @@ ${new stumpNode(this.toStumpCode()).compile()}
     if (isUpdateOp) {
       if (treeComponentUpdateReport.shouldUpdate) {
         try {
-          this._treeComponentDidUpdate()
+          if (this.isLoaded()) this.treeComponentDidUpdate()
         } catch (err) {
           console.error(err)
         }
       }
     } else {
       try {
-        this._treeComponentDidMount()
+        if (this.isLoaded()) this.treeComponentDidMount()
       } catch (err) {
         console.error(err)
       }
@@ -1781,12 +1736,12 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
  class TreeComponentFrameworkDebuggerComponent
  div x
   class TreeComponentFrameworkDebuggerComponentCloseButton
-  stumpOnClickCommand toggleTreeComponentFrameworkDebuggerCommand
+  clickCommand toggleTreeComponentFrameworkDebuggerCommand
  div
   span This app is powered by the
   a Tree Component Framework
    href https://github.com/treenotation/jtree/tree/master/treeComponentFramework
- p ${app.getNumberOfLines()} components loaded. ${WillowProgram._stumpsOnPage} stumps on page.
+ p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern
 ${app.toString(3)}`
@@ -1812,4 +1767,4 @@ abstract class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   }
 }
 
-export { AbstractGithubTriangleComponent, AbstractTreeComponent, WillowConstants, WillowProgram, TreeComponentFrameworkDebuggerComponent }
+export { AbstractGithubTriangleComponent, AbstractTreeComponent, WillowBrowser, TreeComponentFrameworkDebuggerComponent }

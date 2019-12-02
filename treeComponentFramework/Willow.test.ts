@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { WillowProgram } from "./TreeComponentFramework"
+import { WillowBrowser } from "./TreeComponentFramework"
 
 const { jtree } = require("../index.js")
 
@@ -8,7 +8,7 @@ const testTree: any = {}
 
 testTree.all = (equal: any) => {
   // Arrange
-  const willow2 = new WillowProgram("http://localhost:8000/index.html")
+  const willow2 = new WillowBrowser("http://localhost:8000/index.html")
 
   // Act
   willow2.setWindowTitle("willow2")

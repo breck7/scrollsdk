@@ -1,3 +1,15 @@
+48.0.0 / 2019-12-02
+===================
+- Breaking: TCF: removed AbstractTreeComponent.startApp and getDefaultStartState methods. Use startWhenReady and start() pattern instead.
+- Breaking: TCF: getNextOrPrevious is now on TreeUtils
+- Breaking: TCF: no more DataShadowEvents
+- Breaking: TCF: stumpOnClickCommand is now clickCommand, stumpOnBlurCommand is now blurCommand, stumpOnChangeCommand to changeCommand, stumpOnContextMenuCommand to contextMenuCommand, stumpOnShiftClickCommand to shiftClickCommand, stumpOnDblClickCommand to doubleClickCommand, stumpOnLineClick to lineClick, stumpOnLineShiftClick to lineShiftClick
+- Breaking: TCF: no longer exports WillowConstants
+- Breaking: TCF: getWillowProgram is now getWillowBrowser
+- Breaking: TCF: isLoaded() is now checked before calling treeComponentDidUpdate and treeComponentDidMount
+- Breaking: Stump: stumpCollapse is now collapse
+- Breaking: Stump: removed stumpNoOp. Empty lines are fine now.
+
 47.1.0 / 2019-11-29
 ===================
 - New: pasteText and templateToString methods

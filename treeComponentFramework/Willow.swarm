@@ -2,7 +2,7 @@
 arrange
 test willowBasics
  arrange
-  require ../products/TreeComponentFramework.node.js WillowProgram
+  require ../products/TreeComponentFramework.node.js WillowBrowser
   constructWithParagraph
    http://localhost:8000/
  someInputHasFocus

@@ -202,7 +202,7 @@ htmlTagNode
     return this._getOneLiner()
   }
   shouldCollapse() {
-   return this.has("stumpCollapse")
+   return this.has("collapse")
   }
   _toHtml(indentCount, withSuid) {
    const tag = this.getTag()
@@ -355,7 +355,7 @@ htmlAttributeNode
  cells htmlAttributeNameCell
 stumpExtendedAttributeNameCell
  extends htmlAttributeNameCell
- enum stumpCollapse stumpNoOp stumpOnBlurCommand stumpOnChangeCommand stumpOnClickCommand stumpOnContextMenuCommand stumpOnDblClickCommand stumpOnLineClick stumpOnLineShiftClick stumpOnShiftClickCommand stumpStyleFor
+ enum collapse blurCommand changeCommand clickCommand contextMenuCommand doubleClickCommand lineClickCommand lineShiftClickCommand shiftClickCommand
 stumpExtendedAttributeNode
  description Node types not present in HTML but included in stump.
  extends htmlAttributeNode
@@ -682,17 +682,15 @@ bernNode
           rel: htmlAttributeNode,
           src: htmlAttributeNode,
           id: htmlAttributeNode,
-          stumpOnContextMenuCommand: stumpExtendedAttributeNode,
-          stumpOnShiftClickCommand: stumpExtendedAttributeNode,
-          stumpOnDblClickCommand: stumpExtendedAttributeNode,
-          stumpOnLineShiftClick: stumpExtendedAttributeNode,
-          stumpOnChangeCommand: stumpExtendedAttributeNode,
-          stumpOnClickCommand: stumpExtendedAttributeNode,
-          stumpOnBlurCommand: stumpExtendedAttributeNode,
-          stumpOnLineClick: stumpExtendedAttributeNode,
-          stumpCollapse: stumpExtendedAttributeNode,
-          stumpStyleFor: stumpExtendedAttributeNode,
-          stumpNoOp: stumpExtendedAttributeNode,
+          lineShiftClickCommand: stumpExtendedAttributeNode,
+          contextMenuCommand: stumpExtendedAttributeNode,
+          doubleClickCommand: stumpExtendedAttributeNode,
+          shiftClickCommand: stumpExtendedAttributeNode,
+          lineClickCommand: stumpExtendedAttributeNode,
+          changeCommand: stumpExtendedAttributeNode,
+          clickCommand: stumpExtendedAttributeNode,
+          blurCommand: stumpExtendedAttributeNode,
+          collapse: stumpExtendedAttributeNode,
           bern: bernNode
         }),
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
@@ -727,7 +725,7 @@ bernNode
       return this._getOneLiner()
     }
     shouldCollapse() {
-      return this.has("stumpCollapse")
+      return this.has("collapse")
     }
     _toHtml(indentCount, withSuid) {
       const tag = this.getTag()

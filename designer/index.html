@@ -20,7 +20,13 @@
     <script type="text/javascript" src="/products/DesignerApp.browser.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="/sandbox/favicon.ico" />
     <script>
-      AbstractTreeComponent.startApp(DesignerApp)
+      window.app = new DesignerApp(`headerComponent
+samplesComponent
+shareComponent
+otherErrorsComponent
+tableComponent
+githubTriangleComponent`)
+      window.app.startWhenReady()
     </script>
   </body>
 </html>

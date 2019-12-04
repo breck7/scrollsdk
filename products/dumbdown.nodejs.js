@@ -2,10 +2,16 @@
 {
   const { jtree } = require("../index.js")
 
+  class errorNode extends jtree.GrammarBackedNode {
+    getErrors() {
+      return this._getErrorNodeErrors()
+    }
+  }
+
   class dumbdownNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
-        blankLineNode,
+        errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           title: titleNode,
           link: linkNode,
@@ -14,7 +20,7 @@
           code: codeNode,
           list: listNode
         }),
-        undefined
+        [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
     }
     getGrammarProgram() {
@@ -31,12 +37,14 @@ textCell
  highlightScope string
 urlCell
  highlightScope constant.language
+errorNode
+ baseNodeType errorNode
 dumbdownNode
  extensions dd dumbdown
  description A prefix Tree Language that compiles to HTML. An alternative to Markdown.
  root
- inScope abstractTopLevelNode
- catchAllNodeType blankLineNode
+ inScope abstractTopLevelNode blankLineNode
+ catchAllNodeType errorNode
  compilesTo html
  example
   title Hello world
@@ -102,6 +110,8 @@ blankLineNode
  cells blankCell
  compiler
   stringTemplate <br>
+ pattern ^$
+ tags doNotSynthesize
 lineOfCodeNode
  catchAllCellType codeCell
  cells codeCell
@@ -115,6 +125,7 @@ dashNode
     }
     static getNodeTypeMap() {
       return {
+        errorNode: errorNode,
         dumbdownNode: dumbdownNode,
         abstractTopLevelNode: abstractTopLevelNode,
         titleNode: titleNode,

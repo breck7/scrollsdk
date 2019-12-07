@@ -23,6 +23,14 @@ class TreeBaseFile extends TreeNode {
     return this._diskVersion
   }
 
+  getPrimaryKey() {
+    return TreeBaseFile.extractPrimaryKeyFromFilename(this.getWord(0))
+  }
+
+  static extractPrimaryKeyFromFilename(filename: string) {
+    return TreeUtils.getFileName(TreeUtils.removeFileExtension(filename))
+  }
+
   getOneOf(keys: string[]) {
     for (let i = 0; i < keys.length; i++) {
       const value = this.get(keys[i])
@@ -211,6 +219,26 @@ class TreeBaseFolder extends TreeNode {
     return Disk.touch(this._getDir() + filename)
   }
 
+  toSqlLite(): string {
+    return this.toSqlLiteCreateTables() + "\n\n" + this.toSqlLiteInsertRows()
+  }
+
+  toSqlLiteCreateTables(): string {
+    this.loadFolder()
+
+    const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
+    const tableDefinitionNodes = grammarProgram.filter((node: any) => node.getTableNameIfAny && node.getTableNameIfAny())
+    // todo: filter out root root
+
+    return tableDefinitionNodes.map((node: any) => node.toSqlLiteTableSchema()).join("\n")
+  }
+
+  toSqlLiteInsertRows(): string {
+    return this._getAsProgram()
+      .map((node: any) => node.toSqlLiteInsertStatement((node: any) => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
+      .join("\n")
+  }
+
   createParser() {
     return new TreeNode.Parser(TreeBaseFile)
   }
@@ -331,23 +359,24 @@ class TreeBaseFolder extends TreeNode {
     delete this._fsWatcher
   }
 
-  private _getTreeBaseGrammarCode() {
-    const code = new TreeNode(
+  private _getGrammarFilesAsTree() {
+    return new TreeNode(
       this._getGrammarPaths()
         .map(Disk.read)
         .join("\n")
     )
+  }
+
+  private _getTreeBaseGrammarCode() {
+    const code = this._getGrammarFilesAsTree()
     const rootNodes = code.with("root")
-    return (
-      code +
-      "\n" +
-      `treeBaseFolderNode
+    return `${code}
+treeBaseFolderNode
  ${GrammarConstants.root}
  ${GrammarConstants.inScope} ${rootNodes.map((node: treeNotationTypes.treeNode) => node.getWord(0)).join(" ")}
  ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
 treeBaseErrorNode
  ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
-    )
   }
 
   _getAsProgram() {

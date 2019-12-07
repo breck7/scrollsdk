@@ -1137,6 +1137,11 @@ class TreeNode extends AbstractNode {
     return this._getNodeByPath(firstWordPath)
   }
 
+  getFrom(prefix: string) {
+    const hit = this.filter(node => node.getLine().startsWith(prefix))[0]
+    if (hit) return hit.getLine().substr((prefix + this.getWordBreakSymbol()).length)
+  }
+
   get(firstWordPath: treeNotationTypes.firstWordPath) {
     const node = this._getNodeByPath(firstWordPath)
     return node === undefined ? undefined : node.getContent()
@@ -2828,7 +2833,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "48.0.0"
+  static getVersion = () => "48.1.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

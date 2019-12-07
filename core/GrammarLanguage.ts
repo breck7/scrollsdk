@@ -17,6 +17,17 @@ enum GrammarConstantsCompiler {
   closeChildren = "closeChildren"
 }
 
+enum SqlLiteTypes {
+  integer = "INTEGER",
+  float = "FLOAT",
+  text = "TEXT"
+}
+
+enum GrammarConstantsMisc {
+  doNotSynthesize = "doNotSynthesize",
+  tableName = "tableName"
+}
+
 enum PreludeCellTypeIds {
   anyCell = "anyCell",
   keywordCell = "keywordCell",
@@ -133,6 +144,23 @@ abstract class GrammarBackedNode extends TreeNode {
   getDefinition(): AbstractGrammarDefinitionNode | GrammarProgram | nodeTypeDefinitionNode {
     const grammarProgram = this.getGrammarProgram()
     return this.isRoot() ? grammarProgram : grammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+  }
+
+  toSqlLiteInsertStatement(primaryKeyFunction = (node: any) => node.getWord(0)): string {
+    const def = this.getDefinition()
+    const tableName = def.getTableNameIfAny() || def._getId()
+    const columns = def.getSqlLiteTableColumns()
+    const hits = columns.filter(colDef => this.has(colDef.columnName))
+
+    const values = hits.map(colDef => {
+      const node = this.getNode(colDef.columnName)
+      const content = node.getContent()
+      return colDef.type === SqlLiteTypes.text ? `"${content}"` : content
+    })
+
+    hits.unshift({ columnName: "id", type: SqlLiteTypes.text })
+    values.unshift(`"${primaryKeyFunction(this)}"`)
+    return `INSERT INTO ${tableName} (${hits.map(col => col.columnName).join(",")}) VALUES (${values.join(",")});`
   }
 
   getAutocompleteResults(partialWord: string, cellIndex: treeNotationTypes.positiveInt) {
@@ -598,6 +626,10 @@ abstract class AbstractGrammarBackedCell<T> {
     return this._typeDef.getLineNumber()
   }
 
+  getSqlLiteType(): SqlLiteTypes {
+    return SqlLiteTypes.text
+  }
+
   private _node: GrammarBackedNode
   protected _index: treeNotationTypes.int
   private _typeDef: cellTypeDefinitionNode
@@ -775,6 +807,10 @@ class GrammarIntCell extends GrammarNumericCell {
     return "\-?[0-9]+"
   }
 
+  getSqlLiteType() {
+    return SqlLiteTypes.integer
+  }
+
   getParsed() {
     const word = this.getWord()
     return parseInt(word)
@@ -788,6 +824,10 @@ class GrammarFloatCell extends GrammarNumericCell {
     const word = this.getWord()
     const num = parseFloat(word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
+  }
+
+  getSqlLiteType() {
+    return SqlLiteTypes.float
   }
 
   static defaultHighlightScope = "constant.numeric.float"
@@ -1577,8 +1617,36 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return new TreeNode.Parser(undefined, map)
   }
 
+  getTableNameIfAny() {
+    return this.getFrom(`${GrammarConstantsConstantTypes.string} ${GrammarConstantsMisc.tableName}`)
+  }
+
+  getSqlLiteTableColumns() {
+    return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds()).map(node => {
+      const firstNonKeywordCellType = node.getCellParser().getCellArray()[1]
+
+      const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSqlLiteType() : SqlLiteTypes.text
+      return {
+        columnName: node._getIdWithoutSuffix(), // todo: we want the crux instead I think.
+        type
+      }
+    })
+  }
+
+  toSqlLiteTableSchema() {
+    const columns = this.getSqlLiteTableColumns().map(columnDef => `${columnDef.columnName} ${columnDef.type}`)
+    return `create table ${this.getTableNameIfAny() || this._getId()} (
+ id TEXT NOT NULL PRIMARY KEY,
+ ${columns.join(",\n ")}
+);`
+  }
+
   _getId() {
     return this.getWord(0)
+  }
+
+  _getIdWithoutSuffix(): string {
+    return this._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   getConstantsObject() {
@@ -1644,7 +1712,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   _getFirstCellEnumOptions() {
-    const firstCellDef = this._getCellTypeDefs()[0]
+    const firstCellDef = this._getMyCellTypeDefs()[0]
     return firstCellDef ? firstCellDef._getEnumOptions() : undefined
   }
 
@@ -1669,10 +1737,10 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return this._getParser().getFirstWordOptions()
   }
 
-  private _getCellTypeDefs() {
-    const grammarProgram = this.getLanguageDefinitionProgram()
+  private _getMyCellTypeDefs() {
     const requiredCells = this.get(GrammarConstants.cells)
     if (!requiredCells) return []
+    const grammarProgram = this.getLanguageDefinitionProgram()
     return requiredCells.split(" ").map(cellTypeId => {
       const cellTypeDef = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
@@ -1684,7 +1752,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   private _getCellGettersAndNodeTypeConstants() {
     // todo: add cellType parsings
     const grammarProgram = this.getLanguageDefinitionProgram()
-    const getters = this._getCellTypeDefs().map((cellTypeDef, index) => cellTypeDef.getGetter(index))
+    const getters = this._getMyCellTypeDefs().map((cellTypeDef, index) => cellTypeDef.getGetter(index))
 
     const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType)
     if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
@@ -2008,7 +2076,7 @@ ${cells.toString(1)}`
     if (def._isErrorNodeType() || def._isAbstract()) return false
     if (nodeTypeChain.includes(def._getId())) return false
     const tags = def.get(GrammarConstants.tags)
-    if (tags && tags.includes("doNotSynthesize")) return false
+    if (tags && tags.includes(GrammarConstantsMisc.doNotSynthesize)) return false
     return true
   }
 

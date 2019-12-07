@@ -1654,6 +1654,10 @@ class TreeNode extends AbstractNode {
   getNode(firstWordPath) {
     return this._getNodeByPath(firstWordPath)
   }
+  getFrom(prefix) {
+    const hit = this.filter(node => node.getLine().startsWith(prefix))[0]
+    if (hit) return hit.getLine().substr((prefix + this.getWordBreakSymbol()).length)
+  }
   get(firstWordPath) {
     const node = this._getNodeByPath(firstWordPath)
     return node === undefined ? undefined : node.getContent()
@@ -3063,7 +3067,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "48.0.0"
+TreeNode.getVersion = () => "48.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3151,6 +3155,17 @@ var GrammarConstantsCompiler
   GrammarConstantsCompiler["joinChildrenWith"] = "joinChildrenWith"
   GrammarConstantsCompiler["closeChildren"] = "closeChildren"
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}))
+var SqlLiteTypes
+;(function(SqlLiteTypes) {
+  SqlLiteTypes["integer"] = "INTEGER"
+  SqlLiteTypes["float"] = "FLOAT"
+  SqlLiteTypes["text"] = "TEXT"
+})(SqlLiteTypes || (SqlLiteTypes = {}))
+var GrammarConstantsMisc
+;(function(GrammarConstantsMisc) {
+  GrammarConstantsMisc["doNotSynthesize"] = "doNotSynthesize"
+  GrammarConstantsMisc["tableName"] = "tableName"
+})(GrammarConstantsMisc || (GrammarConstantsMisc = {}))
 var PreludeCellTypeIds
 ;(function(PreludeCellTypeIds) {
   PreludeCellTypeIds["anyCell"] = "anyCell"
@@ -3255,6 +3270,20 @@ class GrammarBackedNode extends TreeNode {
   getDefinition() {
     const grammarProgram = this.getGrammarProgram()
     return this.isRoot() ? grammarProgram : grammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+  }
+  toSqlLiteInsertStatement(primaryKeyFunction = node => node.getWord(0)) {
+    const def = this.getDefinition()
+    const tableName = def.getTableNameIfAny() || def._getId()
+    const columns = def.getSqlLiteTableColumns()
+    const hits = columns.filter(colDef => this.has(colDef.columnName))
+    const values = hits.map(colDef => {
+      const node = this.getNode(colDef.columnName)
+      const content = node.getContent()
+      return colDef.type === SqlLiteTypes.text ? `"${content}"` : content
+    })
+    hits.unshift({ columnName: "id", type: SqlLiteTypes.text })
+    values.unshift(`"${primaryKeyFunction(this)}"`)
+    return `INSERT INTO ${tableName} (${hits.map(col => col.columnName).join(",")}) VALUES (${values.join(",")});`
   }
   getAutocompleteResults(partialWord, cellIndex) {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
@@ -3651,6 +3680,9 @@ class AbstractGrammarBackedCell {
   getDefinitionLineNumber() {
     return this._typeDef.getLineNumber()
   }
+  getSqlLiteType() {
+    return SqlLiteTypes.text
+  }
   getCellTypeId() {
     return this._cellTypeId
   }
@@ -3782,6 +3814,9 @@ class GrammarIntCell extends GrammarNumericCell {
   getRegexString() {
     return "-?[0-9]+"
   }
+  getSqlLiteType() {
+    return SqlLiteTypes.integer
+  }
   getParsed() {
     const word = this.getWord()
     return parseInt(word)
@@ -3794,6 +3829,9 @@ class GrammarFloatCell extends GrammarNumericCell {
     const word = this.getWord()
     const num = parseFloat(word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
+  }
+  getSqlLiteType() {
+    return SqlLiteTypes.float
   }
   _synthesizeCell(seed) {
     return TreeUtils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
@@ -4436,8 +4474,31 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     map[GrammarConstants.example] = GrammarExampleNode
     return new TreeNode.Parser(undefined, map)
   }
+  getTableNameIfAny() {
+    return this.getFrom(`${GrammarConstantsConstantTypes.string} ${GrammarConstantsMisc.tableName}`)
+  }
+  getSqlLiteTableColumns() {
+    return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds()).map(node => {
+      const firstNonKeywordCellType = node.getCellParser().getCellArray()[1]
+      const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSqlLiteType() : SqlLiteTypes.text
+      return {
+        columnName: node._getIdWithoutSuffix(),
+        type
+      }
+    })
+  }
+  toSqlLiteTableSchema() {
+    const columns = this.getSqlLiteTableColumns().map(columnDef => `${columnDef.columnName} ${columnDef.type}`)
+    return `create table ${this.getTableNameIfAny() || this._getId()} (
+ id TEXT NOT NULL PRIMARY KEY,
+ ${columns.join(",\n ")}
+);`
+  }
   _getId() {
     return this.getWord(0)
+  }
+  _getIdWithoutSuffix() {
+    return this._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
   }
   getConstantsObject() {
     const obj = this._getUniqueConstantNodes()
@@ -4489,7 +4550,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     return this.get(GrammarConstants.pattern)
   }
   _getFirstCellEnumOptions() {
-    const firstCellDef = this._getCellTypeDefs()[0]
+    const firstCellDef = this._getMyCellTypeDefs()[0]
     return firstCellDef ? firstCellDef._getEnumOptions() : undefined
   }
   getLanguageDefinitionProgram() {
@@ -4507,10 +4568,10 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   getRunTimeFirstWordsInScope() {
     return this._getParser().getFirstWordOptions()
   }
-  _getCellTypeDefs() {
-    const grammarProgram = this.getLanguageDefinitionProgram()
+  _getMyCellTypeDefs() {
     const requiredCells = this.get(GrammarConstants.cells)
     if (!requiredCells) return []
+    const grammarProgram = this.getLanguageDefinitionProgram()
     return requiredCells.split(" ").map(cellTypeId => {
       const cellTypeDef = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       if (!cellTypeDef) throw new Error(`No cellType "${cellTypeId}" found`)
@@ -4521,7 +4582,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   _getCellGettersAndNodeTypeConstants() {
     // todo: add cellType parsings
     const grammarProgram = this.getLanguageDefinitionProgram()
-    const getters = this._getCellTypeDefs().map((cellTypeDef, index) => cellTypeDef.getGetter(index))
+    const getters = this._getMyCellTypeDefs().map((cellTypeDef, index) => cellTypeDef.getGetter(index))
     const catchAllCellTypeId = this.get(GrammarConstants.catchAllCellType)
     if (catchAllCellTypeId) getters.push(grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId).getCatchAllGetter(getters.length))
     // Constants
@@ -4790,7 +4851,7 @@ ${cells.toString(1)}`
     if (def._isErrorNodeType() || def._isAbstract()) return false
     if (nodeTypeChain.includes(def._getId())) return false
     const tags = def.get(GrammarConstants.tags)
-    if (tags && tags.includes("doNotSynthesize")) return false
+    if (tags && tags.includes(GrammarConstantsMisc.doNotSynthesize)) return false
     return true
   }
   _getConcreteNonErrorInScopeNodeDefinitions(nodeTypeIds) {

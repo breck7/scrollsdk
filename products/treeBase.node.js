@@ -15,6 +15,12 @@ class TreeBaseFile extends TreeNode {
   getDiskVersion() {
     return this._diskVersion
   }
+  getPrimaryKey() {
+    return TreeBaseFile.extractPrimaryKeyFromFilename(this.getWord(0))
+  }
+  static extractPrimaryKeyFromFilename(filename) {
+    return TreeUtils.getFileName(TreeUtils.removeFileExtension(filename))
+  }
   getOneOf(keys) {
     for (let i = 0; i < keys.length; i++) {
       const value = this.get(keys[i])
@@ -176,6 +182,21 @@ class TreeBaseFolder extends TreeNode {
     // todo: throw if its a folder path, has wrong file extension, or other invalid
     return Disk.touch(this._getDir() + filename)
   }
+  toSqlLite() {
+    return this.toSqlLiteCreateTables() + "\n\n" + this.toSqlLiteInsertRows()
+  }
+  toSqlLiteCreateTables() {
+    this.loadFolder()
+    const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
+    const tableDefinitionNodes = grammarProgram.filter(node => node.getTableNameIfAny && node.getTableNameIfAny())
+    // todo: filter out root root
+    return tableDefinitionNodes.map(node => node.toSqlLiteTableSchema()).join("\n")
+  }
+  toSqlLiteInsertRows() {
+    return this._getAsProgram()
+      .map(node => node.toSqlLiteInsertStatement(node => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
+      .join("\n")
+  }
   createParser() {
     return new TreeNode.Parser(TreeBaseFile)
   }
@@ -275,23 +296,23 @@ class TreeBaseFolder extends TreeNode {
     this._fsWatcher.close()
     delete this._fsWatcher
   }
-  _getTreeBaseGrammarCode() {
-    const code = new TreeNode(
+  _getGrammarFilesAsTree() {
+    return new TreeNode(
       this._getGrammarPaths()
         .map(Disk.read)
         .join("\n")
     )
+  }
+  _getTreeBaseGrammarCode() {
+    const code = this._getGrammarFilesAsTree()
     const rootNodes = code.with("root")
-    return (
-      code +
-      "\n" +
-      `treeBaseFolderNode
+    return `${code}
+treeBaseFolderNode
  ${GrammarConstants.root}
  ${GrammarConstants.inScope} ${rootNodes.map(node => node.getWord(0)).join(" ")}
  ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
 treeBaseErrorNode
  ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
-    )
   }
   _getAsProgram() {
     this.loadFolder()

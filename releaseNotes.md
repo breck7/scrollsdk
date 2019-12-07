@@ -1,3 +1,8 @@
+48.1.0 / 2019-12-06
+===================
+- New: toSqlLite method on TreeBase
+- New: getFrom core method
+
 48.0.0 / 2019-12-02
 ===================
 - Breaking: TCF: removed AbstractTreeComponent.startApp and getDefaultStartState methods. Use startWhenReady and start() pattern instead.

@@ -8,6 +8,7 @@ keywordCell
  highlightScope keyword
 planetNode
  root
+ string tableName planets
  todo Change pattern to postfix.
  pattern \.planet$
  cells filenameCell

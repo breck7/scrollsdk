@@ -3576,6 +3576,17 @@ testTree.fromShape = equal => {
   )
 }
 
+testTree.getFrom = equal => {
+  // Arrange
+  const treeNode = new TreeNode(
+    `name
+ string title The book of
+ string person Jai`
+  )
+  // Act/Assert
+  equal(treeNode.nodeAt(0).getFrom("string person"), "Jai")
+}
+
 testTree.toOutline = equal => {
   // Arrange
   const treeNode = new TreeNode(

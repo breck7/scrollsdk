@@ -22,21 +22,21 @@ class TreeUtils {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
   }
-  static findProjectRoot(dirName, projectName) {
+  static findProjectRoot(startingDirName, projectName) {
     const fs = require("fs")
     const getProjectName = dirName => {
-      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}"`)
+      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}" starting in "${startingDirName}"`)
       const parts = dirName.split("/")
       const filename = parts.join("/") + "/" + "package.json"
       if (fs.existsSync(filename) && JSON.parse(fs.readFileSync(filename, "utf8")).name === projectName) return parts.join("/") + "/"
       parts.pop()
       return parts
     }
-    let result = getProjectName(dirName)
+    let result = getProjectName(startingDirName)
     while (typeof result !== "string" && result.length > 0) {
       result = getProjectName(result.join("/"))
     }
-    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${dirName} not found.`)
+    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${startingDirName} not found.`)
     return result
   }
   static escapeRegExp(str) {
@@ -4539,10 +4539,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       return def._doesExtend(id) && !def._isAbstract()
     })
   }
-  _getConstructorDefinedInGrammar() {
-    if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this.getLanguageDefinitionProgram()._getCompiledLoadedNodeTypes()[this.getNodeTypeIdFromDefinition()]
-    return this._cache_definedNodeConstructor
-  }
   _getCruxIfAny() {
     return this.get(GrammarConstants.crux)
   }
@@ -4912,7 +4908,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.todoComment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
-  _getCompiledLoadedNodeTypes() {
+  _compileAndReturnNodeTypeMap() {
     if (!this._cache_compiledLoadedNodeTypes) {
       if (this.isNodeJs()) {
         const code = this.toNodeJsJavascript(__dirname + "/../index.js")
@@ -4960,7 +4956,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   // todo: better formalize the source maps pattern somewhat used here by getAllErrors
   // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
   getErrorsInGrammarExamples() {
-    const programConstructor = this.getRootConstructor()
+    const programConstructor = this.compileAndReturnRootConstructor()
     const errors = []
     this.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
@@ -5149,12 +5145,12 @@ ${testCode}`
     this._initProgramNodeTypeDefinitionCache()
     return this._cache_nodeTypeDefinitions
   }
-  _getRootConstructor() {
-    const def = this._getRootNodeTypeDefinitionNode()
-    return def._getConstructorDefinedInGrammar()
-  }
-  getRootConstructor() {
-    if (!this._cache_rootConstructorClass) this._cache_rootConstructorClass = this._getRootConstructor()
+  compileAndReturnRootConstructor() {
+    if (!this._cache_rootConstructorClass) {
+      const def = this._getRootNodeTypeDefinitionNode()
+      const rootNodeTypeId = def.getNodeTypeIdFromDefinition()
+      this._cache_rootConstructorClass = def.getLanguageDefinitionProgram()._compileAndReturnNodeTypeMap()[rootNodeTypeId]
+    }
     return this._cache_rootConstructorClass
   }
   _getFileExtensions() {
@@ -5377,7 +5373,7 @@ class UnknownGrammarProgram extends TreeNode {
     // todo: make this run in browser too
     if (!this.isNodeJs()) return code
     const grammarProgram = new GrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
-    const programConstructor = grammarProgram.getRootConstructor()
+    const programConstructor = grammarProgram.compileAndReturnRootConstructor()
     const program = new programConstructor(code)
     return program.format().toString()
   }
@@ -5827,7 +5823,7 @@ jtreeNode.getProgramConstructor = grammarPath => {
   if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
   const grammarCode = fs.readFileSync(grammarPath, "utf8")
   const grammarProgram = new GrammarProgram(grammarCode)
-  return grammarProgram.getRootConstructor()
+  return grammarProgram.compileAndReturnRootConstructor()
 }
 jtreeNode.combineFiles = globPatterns => {
   const glob = require("glob")

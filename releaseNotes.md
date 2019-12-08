@@ -1,3 +1,7 @@
+edge / 2019-12-08
+===================
+- Breaking: getRootConstructor is now compileAndReturnRootConstructor
+
 48.1.0 / 2019-12-06
 ===================
 - New: toSqlLite method on TreeBase

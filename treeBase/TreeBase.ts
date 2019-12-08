@@ -382,7 +382,7 @@ treeBaseErrorNode
   _getAsProgram() {
     this.loadFolder()
     const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
-    const programConstructor = <any>grammarProgram.getRootConstructor()
+    const programConstructor = <any>grammarProgram.compileAndReturnRootConstructor()
     return new programConstructor(this.toString())
   }
 

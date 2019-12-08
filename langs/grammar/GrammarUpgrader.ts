@@ -63,7 +63,7 @@ class GrammarUpgrader extends jtree.Upgrader {
         "4.0.0": (tree: any) => {
           const makeNewId = (currentId: string, suffix: string) => currentId.replace(new RegExp(suffix + "$"), "") + suffix
           // todo: require jtree 34 to do this upgrade.
-          if (!GrammarUpgrader._jtree34grammarProgram) GrammarUpgrader._jtree34grammarProgram = new jtree.GrammarProgram(jtree.TreeNode.fromDisk(__dirname + "/grammar.grammar")).getRootConstructor()
+          if (!GrammarUpgrader._jtree34grammarProgram) GrammarUpgrader._jtree34grammarProgram = new jtree.GrammarProgram(jtree.TreeNode.fromDisk(__dirname + "/grammar.grammar")).compileAndReturnRootConstructor()
           // For all grammar files
           //  find all cells having type nodeTypeId
           //   apply makeNewId
@@ -71,7 +71,7 @@ class GrammarUpgrader extends jtree.Upgrader {
           //   apply makeNewId
           // saveFile
           //const grammarProgram = new jtree.GrammarProgram(grammarCode)
-          //const rootProgramConstructor = grammarProgram.getRootConstructor()
+          //const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
           const program = new GrammarUpgrader._jtree34grammarProgram(tree.toString())
           program.getAllTypedWords().forEach((typedWord: any) => {
             if (typedWord.type === "nodeTypeId") typedWord.replace(makeNewId(typedWord.word, "Node"))

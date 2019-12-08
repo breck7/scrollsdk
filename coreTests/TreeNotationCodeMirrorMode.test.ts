@@ -15,7 +15,7 @@ const DugProgram = jtree.getProgramConstructor(__dirname + "/../langs/dug/dug.gr
 
 const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new jtree.GrammarProgram(grammarCode)
-  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
   return new rootProgramConstructor(code)
 }
 
@@ -112,7 +112,7 @@ testTree.codeMirrorTest = equal => {
 }
 
 testTree.iris = equal => {
-  const irisConstructor = new jtree.GrammarProgram(irisGrammar).getRootConstructor()
+  const irisConstructor = new jtree.GrammarProgram(irisGrammar).compileAndReturnRootConstructor()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act

@@ -237,7 +237,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   webForm(grammarName: treeNotationTypes.grammarName, nodeTypeId?: string) {
     // webForm grammarName nodeTypeId? Build a web form for the given grammar
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new jtree.GrammarProgram(Disk.read(grammarPath)).getRootConstructor()
+    const grammarProgram = new jtree.GrammarProgram(Disk.read(grammarPath)).compileAndReturnRootConstructor()
 
     let def = new grammarProgram().getDefinition()
 

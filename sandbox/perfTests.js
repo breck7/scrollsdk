@@ -24,11 +24,11 @@ to fillThis`
 
 const main = (grammarCode, code) => {
   logFn("Building language...")
-  const programClass = new GrammarProgram(grammarCode).getRootConstructor()
+  const programConstructor = new GrammarProgram(grammarCode).compileAndReturnRootConstructor()
 
   logFn("Loading program...")
 
-  const program = new programClass(code)
+  const program = new programConstructor(code)
 
   logFn("Checking errors...")
   const startTime = Date.now()

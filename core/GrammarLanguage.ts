@@ -1696,13 +1696,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     })
   }
 
-  private _cache_definedNodeConstructor: treeNotationTypes.RunTimeNodeConstructor
-
-  _getConstructorDefinedInGrammar() {
-    if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this.getLanguageDefinitionProgram()._getCompiledLoadedNodeTypes()[this.getNodeTypeIdFromDefinition()]
-    return this._cache_definedNodeConstructor
-  }
-
   _getCruxIfAny(): string {
     return this.get(GrammarConstants.crux)
   }
@@ -2157,7 +2150,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   private _cache_compiledLoadedNodeTypes: { [nodeTypeId: string]: Function }
 
-  _getCompiledLoadedNodeTypes() {
+  _compileAndReturnNodeTypeMap() {
     if (!this._cache_compiledLoadedNodeTypes) {
       if (this.isNodeJs()) {
         const code = this.toNodeJsJavascript(__dirname + "/../index.js")
@@ -2211,7 +2204,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   // todo: better formalize the source maps pattern somewhat used here by getAllErrors
   // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
   getErrorsInGrammarExamples() {
-    const programConstructor = this.getRootConstructor()
+    const programConstructor = this.compileAndReturnRootConstructor()
     const errors: treeNotationTypes.TreeError[] = []
     this.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
@@ -2438,15 +2431,14 @@ ${testCode}`
   static _languages: any = {}
   static _nodeTypes: any = {}
 
-  private _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
-    const def = this._getRootNodeTypeDefinitionNode()
-    return <AbstractRuntimeProgramConstructorInterface>def._getConstructorDefinedInGrammar()
-  }
-
   private _cache_rootConstructorClass: AbstractRuntimeProgramConstructorInterface
 
-  getRootConstructor() {
-    if (!this._cache_rootConstructorClass) this._cache_rootConstructorClass = this._getRootConstructor()
+  compileAndReturnRootConstructor() {
+    if (!this._cache_rootConstructorClass) {
+      const def = this._getRootNodeTypeDefinitionNode()
+      const rootNodeTypeId = def.getNodeTypeIdFromDefinition()
+      this._cache_rootConstructorClass = <AbstractRuntimeProgramConstructorInterface>def.getLanguageDefinitionProgram()._compileAndReturnNodeTypeMap()[rootNodeTypeId]
+    }
     return this._cache_rootConstructorClass
   }
 

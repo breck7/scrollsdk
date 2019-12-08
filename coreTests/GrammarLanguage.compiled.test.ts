@@ -18,7 +18,7 @@ mkdirp.sync(outputDir)
 
 const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new jtree.GrammarProgram(grammarCode)
-  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
   return new rootProgramConstructor(code)
 }
 

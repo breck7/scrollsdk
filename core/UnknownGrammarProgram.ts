@@ -133,7 +133,7 @@ class UnknownGrammarProgram extends TreeNode {
     if (!this.isNodeJs()) return code
 
     const grammarProgram = new GrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
-    const programConstructor = <any>grammarProgram.getRootConstructor()
+    const programConstructor = <any>grammarProgram.compileAndReturnRootConstructor()
     const program = new programConstructor(code)
     return program.format().toString()
   }

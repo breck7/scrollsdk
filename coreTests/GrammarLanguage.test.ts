@@ -60,7 +60,7 @@ const makeNumbersProgram = (code: string) => makeProgram(numbersGrammar, code)
 
 const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new GrammarProgram(grammarCode)
-  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
   return new rootProgramConstructor(code)
 }
 
@@ -155,7 +155,7 @@ langs.forEach((lang: string) => {
   testTree[`${lang}SimTest`] = equal => {
     const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
     const grammarProgram = new jtree.GrammarProgram(grammarCode)
-    const programConstructor = grammarProgram.getRootConstructor()
+    const programConstructor = grammarProgram.compileAndReturnRootConstructor()
 
     // Act
     const simulatedProgram = grammarProgram
@@ -472,7 +472,7 @@ testTree.sublimeSyntaxFile = equal => {
 
 testTree.toStumpString = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(arrowGrammar).getRootConstructor()
+  const grammarProgram = new GrammarProgram(arrowGrammar).compileAndReturnRootConstructor()
   const code = new grammarProgram()
     .getDefinition()
     .getNodeTypeDefinitionByNodeTypeId("chargeNode")
@@ -532,7 +532,7 @@ testTree.minimumGrammar = equal => {
 anyNode
  catchAllCellType anyCell
 anyCell`
-  ).getRootConstructor()
+  ).compileAndReturnRootConstructor()
   const program = new programConstructor()
   const grammarProgram = program.getGrammarProgram()
 
@@ -543,7 +543,7 @@ anyCell`
   equal(errors.length, 0)
 
   // Arrange/Act/Assert
-  const constructor = new GrammarProgram().getRootConstructor()
+  const constructor = new GrammarProgram().compileAndReturnRootConstructor()
   const errs = new constructor("foobar").getAllErrors()
   equal(errs.length, 0)
 }
@@ -551,7 +551,7 @@ anyCell`
 testTree.rootCatchAllNode = equal => {
   // Arrange
   const abcLang = new GrammarProgram(`abcNode
- root`).getRootConstructor()
+ root`).compileAndReturnRootConstructor()
 
   // Act/Assert
   const program = new abcLang("foobar")
@@ -563,7 +563,7 @@ testTree.rootCatchAllNode = equal => {
  root
  catchAllNodeType errorNode
 errorNode
- baseNodeType errorNode`).getRootConstructor()
+ baseNodeType errorNode`).compileAndReturnRootConstructor()
 
   // Act/Assert
   equal(new abcLangWithErrors("foobar").getAllErrors().length, 1)
@@ -571,7 +571,7 @@ errorNode
 
 testTree.blankNodeId = equal => {
   // Arrange
-  const abcLang = new GrammarProgram(`nodeType `).getRootConstructor()
+  const abcLang = new GrammarProgram(`nodeType `).compileAndReturnRootConstructor()
 
   // Act/Assert
   equal(new abcLang("foobar").getAllErrors().length, 0)
@@ -592,7 +592,7 @@ nodeBNode
 nodeCNode
  extends nodeBNode
 anyCell`
-    ).getRootConstructor()
+    ).compileAndReturnRootConstructor()
 
     new programConstructor("nodeA")
     equal(false, true, "Should have thrown error")

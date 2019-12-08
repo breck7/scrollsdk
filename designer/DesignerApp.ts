@@ -207,7 +207,7 @@ class DesignerApp extends AbstractTreeComponent {
   async start() {
     const willowBrowser = this.getWillowBrowser()
     const result = await willowBrowser.httpGetUrl("/langs/grammar/grammar.grammar")
-    this.GrammarConstructor = new jtree.GrammarProgram(result.text).getRootConstructor()
+    this.GrammarConstructor = new jtree.GrammarProgram(result.text).compileAndReturnRootConstructor()
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
 
@@ -269,7 +269,7 @@ class DesignerApp extends AbstractTreeComponent {
     if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
       try {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
-        this._grammarConstructor = new jtree.GrammarProgram(currentGrammarCode).getRootConstructor()
+        this._grammarConstructor = new jtree.GrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
         this._cachedGrammarCode = currentGrammarCode
         jQuery("#otherErrorsDiv").html("")
       } catch (err) {

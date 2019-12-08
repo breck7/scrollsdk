@@ -81,7 +81,7 @@ if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(p
     if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
     const grammarProgram = new GrammarProgram(grammarCode)
-    return <any>grammarProgram.getRootConstructor()
+    return <any>grammarProgram.compileAndReturnRootConstructor()
   }
 
   static combineFiles = (globPatterns: treeNotationTypes.globPattern[]) => {

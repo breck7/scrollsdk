@@ -187,7 +187,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   format(programPath: treeNotationTypes.treeProgramFilePath) {
-    return jtree.formatFile(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
+    return jtree.formatFileInPlace(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
   }
 
   parse(programPath: treeNotationTypes.treeProgramFilePath) {

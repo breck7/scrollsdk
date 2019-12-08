@@ -23,17 +23,17 @@ class jtreeNode extends jtree {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, pathToJtree)
   }
 
-  static formatProgram = (programCode: string, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
+  static formatCode = (programCode: string, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
     // tod: remove?
     const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     const program = new programConstructor(programCode)
     return program.format().toString()
   }
 
-  static formatFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath) => {
+  static formatFileInPlace = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath) => {
     // tod: remove?
     const original = jtree.TreeNode.fromDisk(programPath)
-    const formatted = jtreeNode.formatProgram(original.toString(), grammarPath)
+    const formatted = jtreeNode.formatCode(original.toString(), grammarPath)
     if (original === formatted) return false
     new jtree.TreeNode(formatted).toDisk(programPath)
     return true

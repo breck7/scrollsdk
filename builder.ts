@@ -48,7 +48,7 @@ class Builder extends AbstractBuilder {
     combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
-    jtree.formatFile(path, __dirname + "/langs/grammar/grammar.grammar")
+    jtree.formatFileInPlace(path, __dirname + "/langs/grammar/grammar.grammar")
   }
 
   _getProductFolder() {

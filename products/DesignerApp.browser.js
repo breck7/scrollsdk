@@ -159,12 +159,9 @@ class DesignerApp extends AbstractTreeComponent {
     }
   }
   async start() {
-    const willowBrowser = this.getWillowBrowser()
-    const result = await willowBrowser.httpGetUrl("/langs/grammar/grammar.grammar")
-    this.GrammarConstructor = new jtree.HandGrammarProgram(result.text).compileAndReturnRootConstructor()
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true })
+    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true })
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
@@ -200,7 +197,7 @@ class DesignerApp extends AbstractTreeComponent {
     console.log("Local storage updated...")
   }
   _getGrammarErrors(grammarCode) {
-    return new this.GrammarConstructor(grammarCode).getAllErrors()
+    return new grammarNode(grammarCode).getAllErrors()
   }
   _getGrammarConstructor() {
     let currentGrammarCode = this.getGrammarCode()
@@ -224,7 +221,7 @@ class DesignerApp extends AbstractTreeComponent {
   _grammarDidUpdate() {
     const grammarCode = this.getGrammarCode()
     this._updateLocalStorage()
-    this.grammarProgram = new this.GrammarConstructor(grammarCode)
+    this.grammarProgram = new grammarNode(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new jtree.HandGrammarProgram(this.grammarInstance.getValue())

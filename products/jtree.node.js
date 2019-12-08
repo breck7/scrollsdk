@@ -5801,9 +5801,7 @@ if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(p
   }
 }
 jtreeNode.Upgrader = Upgrader
-// tod: remove?
-jtreeNode.executeFile = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
-jtreeNode.makeProgram = (programPath, grammarPath) => {
+jtreeNode.compileGrammarAndCreateProgram = (programPath, grammarPath) => {
   // tod: remove?
   const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
   return new programConstructor(fs.readFileSync(programPath, "utf8"))

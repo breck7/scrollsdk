@@ -90,7 +90,7 @@ class Builder extends AbstractBuilder {
     allTestFiles
       .filter(file => file.endsWith(".swarm"))
       .forEach(file => {
-        Object.assign(fileTestTree, jtree.makeProgram(file, __dirname + "/langs/swarm/swarm.grammar").compileToRacer(file))
+        Object.assign(fileTestTree, jtree.compileGrammarAndCreateProgram(file, __dirname + "/langs/swarm/swarm.grammar").compileToRacer(file))
       })
     return fileTestTree
   }

@@ -126,7 +126,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
   _check(programPath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = jtree.makeProgram(programPath, grammarPath)
+    const program = jtree.compileGrammarAndCreateProgram(programPath, grammarPath)
     return program.getAllErrors().map(err => err.getMessage())
   }
   _getRegisteredGrammarNames() {
@@ -171,7 +171,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   compile(programPath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = jtree.makeProgram(programPath, grammarPath)
+    const program = jtree.compileGrammarAndCreateProgram(programPath, grammarPath)
     const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     return program.compile()
   }
@@ -250,7 +250,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
       const result = await program.execute()
       return result
     }
-    const result = await jtree.executeFile(programPath, grammarPath)
+    const result = jtree.compileGrammarAndCreateProgram(programPath, grammarPath).execute(programPath)
     return result
   }
   async run(programPathOrGrammarName) {

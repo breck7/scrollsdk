@@ -5828,8 +5828,8 @@ jtreeNode.formatFile = (programPath, grammarPath) => {
   new jtree.TreeNode(formatted).toDisk(programPath)
   return true
 }
-// returns GrammarBackedProgramClass
 jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor = grammarPath => {
+  // todo: remove
   if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
   const grammarCode = fs.readFileSync(grammarPath, "utf8")
   const grammarProgram = new HandGrammarProgram(grammarCode)

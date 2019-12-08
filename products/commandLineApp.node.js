@@ -111,9 +111,6 @@ ${grammars.toTable()}`
     if (!node) throw new Error(`No registered grammar named '${grammarName}'. Registered grammars are ${this._getRegisteredGrammarNames().join(",")}`)
     return node.getParent().get("filepath")
   }
-  create() {
-    jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarNameOrThrow("stamp"))
-  }
   check(programPath) {
     return this._checkAndLog(programPath)
   }

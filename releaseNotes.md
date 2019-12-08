@@ -4,6 +4,7 @@ edge / 2019-12-08
 - Breaking: jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
 - Breaking: jtree.GrammarProgram is now jtree.HandGrammarProgram
 - Breaking: _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
+- Breaking: removed commandLineApp "create" command. Was broken. Use the Designer app instead.
 
 48.1.0 / 2019-12-06
 ===================

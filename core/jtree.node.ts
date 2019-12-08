@@ -76,8 +76,8 @@ if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(p
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser, usePrettier)
   }
 
-  // returns GrammarBackedProgramClass
   static compileGrammarFileAtPathAndReturnRootConstructor = (grammarPath: treeNotationTypes.filepath) => {
+    // todo: remove
     if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
     const grammarProgram = new HandGrammarProgram(grammarCode)

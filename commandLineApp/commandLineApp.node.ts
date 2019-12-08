@@ -139,10 +139,6 @@ ${grammars.toTable()}`
     return node.getParent().get("filepath")
   }
 
-  create() {
-    jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarNameOrThrow("stamp"))
-  }
-
   check(programPath: treeNotationTypes.treeProgramFilePath) {
     return this._checkAndLog(programPath)
   }

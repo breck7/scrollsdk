@@ -7,7 +7,6 @@ checkAll grammarName  Check all 'grammarName' programs for grammar errors
 combine grammarName  Dump all 'grammarName' programs into 1 'combined' output
 compile programPath targetExtension Compile a file
 compileCheck folderPath grammarName Test all compiler test cases in a given folder
-create   Create a new Grammar
 distribute combinedFilePath  Distribute a 'combined' file into multiple destination files
 format programPath  Format a tree program in place
 help   Show this help

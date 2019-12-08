@@ -2,16 +2,15 @@
 
 // todo: make isomorphic
 
-const stamp = require("../langs/stamp/stamp.node.js")
+const stamp = require("../products/stamp.nodejs.js")
+const GrammarProgram = require("../products/grammar.nodejs.js")
+const DugProgram = require("../products/dug.nodejs.js")
 const { Disk } = require("../products/Disk.node.js")
 
 const { jtree } = require("../index.js")
 
 const irisPath = __dirname + "/../langs/iris/iris.grammar"
 const irisGrammar = Disk.read(irisPath)
-
-const GrammarProgram = jtree.compileGrammarFileAtPathAndReturnRootConstructor(__dirname + "/../langs/grammar/grammar.grammar")
-const DugProgram = jtree.compileGrammarFileAtPathAndReturnRootConstructor(__dirname + "/../langs/dug/dug.grammar")
 
 const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new jtree.HandGrammarProgram(grammarCode)

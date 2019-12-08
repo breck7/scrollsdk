@@ -1,4 +1,15 @@
-tooling onsave jtree build produceLang grammar
+{
+  class grammarNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(
+        catchAllErrorNode,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { todo: todoNode, tooling: toolingNode }),
+        [{ regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode }, { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }]
+      )
+    }
+    getGrammarProgram() {
+      if (!this._cachedGrammarProgramRoot)
+        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang grammar
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
@@ -31,7 +42,7 @@ cellTypeIdCell
 constantIdentifierCell
  examples someId myVar
  todo Extend javascriptSafeAlphaNumericIdentifier
- regex [a-zA-Z]\w+
+ regex [a-zA-Z]\\w+
  highlightScope constant.other
  description A word that can be assigned to the node class in the target language.
 constructorFilePathCell
@@ -51,10 +62,10 @@ numericCell
  description A float or an int.
  highlightScope constant.numeric
 floatCell
- regex \-?[0-9]*\.?[0-9]*
+ regex \\-?[0-9]*\\.?[0-9]*
  highlightScope constant.numeric
 intCell
- regex \-?[0-9]+
+ regex \\-?[0-9]+
  highlightScope constant.numeric
 javascriptCodeCell
 lowercaseCell
@@ -78,7 +89,7 @@ scopeNameCell
 scriptUrlCell
 semanticVersionCell
  examples 1.0.0 2.2.1
- regex [0-9]+\.[0-9]+\.[0-9]+
+ regex [0-9]+\\.[0-9]+\\.[0-9]+
  highlightScope constant.numeric
 stringCell
  highlightScope string
@@ -255,14 +266,14 @@ javascriptNode
  javascript
   format() {
    if (this.isNodeJs()) {
-    const template = `class FOO{ ${this.childrenToString()}}`
+    const template = \`class FOO{ \${this.childrenToString()}}\`
     this.setChildren(
      require("prettier")
       .format(template, { semi: false, useTabs: true, parser: "babel", printWidth: 240 })
-      .replace(/class FOO \{\s+/, "")
-      .replace(/\s+\}\s+$/, "")
-      .replace(/\n\t/g, "\n") // drop one level of indent
-      .replace(/\t/g, " ") // we used tabs instead of spaces to be able to dedent without breaking literals.
+      .replace(/class FOO \\{\\s+/, "")
+      .replace(/\\s+\\}\\s+$/, "")
+      .replace(/\\n\\t/g, "\\n") // drop one level of indent
+      .replace(/\\t/g, " ") // we used tabs instead of spaces to be able to dedent without breaking literals.
     )
    }
    return this
@@ -393,4 +404,561 @@ extendsCellTypeNode
  description cellType definitions can extend others.
  todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell cellTypeIdCell
- single
+ single`)
+      return this._cachedGrammarProgramRoot
+    }
+    static getNodeTypeMap() {
+      return {
+        grammarNode: grammarNode,
+        abstractCompilerRuleNode: abstractCompilerRuleNode,
+        closeChildrenNode: closeChildrenNode,
+        indentCharacterNode: indentCharacterNode,
+        catchAllCellDelimiterNode: catchAllCellDelimiterNode,
+        openChildrenNode: openChildrenNode,
+        stringTemplateNode: stringTemplateNode,
+        joinChildrenWithNode: joinChildrenWithNode,
+        abstractConstantNode: abstractConstantNode,
+        booleanNode: booleanNode,
+        floatNode: floatNode,
+        intNode: intNode,
+        stringNode: stringNode,
+        abstractNodeTypeRuleNode: abstractNodeTypeRuleNode,
+        compilesToNode: compilesToNode,
+        extensionsNode: extensionsNode,
+        versionNode: versionNode,
+        abstractNode: abstractNode,
+        abstractNonTerminalNodeTypeRuleNode: abstractNonTerminalNodeTypeRuleNode,
+        baseNodeTypeNode: baseNodeTypeNode,
+        catchAllCellTypeNode: catchAllCellTypeNode,
+        cellParserNode: cellParserNode,
+        catchAllNodeTypeNode: catchAllNodeTypeNode,
+        cellsNode: cellsNode,
+        compilerNode: compilerNode,
+        descriptionNode: descriptionNode,
+        exampleNode: exampleNode,
+        extendsNodeTypeNode: extendsNodeTypeNode,
+        frequencyNode: frequencyNode,
+        inScopeNode: inScopeNode,
+        javascriptNode: javascriptNode,
+        abstractParseRuleNode: abstractParseRuleNode,
+        cruxNode: cruxNode,
+        patternNode: patternNode,
+        requiredNode: requiredNode,
+        singleNode: singleNode,
+        tagsNode: tagsNode,
+        catchAllErrorNode: catchAllErrorNode,
+        catchAllExampleLineNode: catchAllExampleLineNode,
+        catchAllJavascriptCodeLineNode: catchAllJavascriptCodeLineNode,
+        catchAllMultilineStringConstantNode: catchAllMultilineStringConstantNode,
+        cellTypeDefinitionNode: cellTypeDefinitionNode,
+        enumFromCellTypesNode: enumFromCellTypesNode,
+        enumNode: enumNode,
+        examplesNode: examplesNode,
+        cellMinNode: cellMinNode,
+        cellMaxNode: cellMaxNode,
+        highlightScopeNode: highlightScopeNode,
+        rootFlagNode: rootFlagNode,
+        nodeTypeDefinitionNode: nodeTypeDefinitionNode,
+        _extendsJsClassNode: _extendsJsClassNode,
+        _rootNodeJsHeaderNode: _rootNodeJsHeaderNode,
+        regexNode: regexNode,
+        reservedWordsNode: reservedWordsNode,
+        todoNode: todoNode,
+        toolingNode: toolingNode,
+        extendsCellTypeNode: extendsCellTypeNode
+      }
+    }
+  }
+
+  class abstractCompilerRuleNode extends jtree.GrammarBackedNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get anyCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class closeChildrenNode extends abstractCompilerRuleNode {}
+
+  class indentCharacterNode extends abstractCompilerRuleNode {}
+
+  class catchAllCellDelimiterNode extends abstractCompilerRuleNode {}
+
+  class openChildrenNode extends abstractCompilerRuleNode {}
+
+  class stringTemplateNode extends abstractCompilerRuleNode {}
+
+  class joinChildrenWithNode extends abstractCompilerRuleNode {}
+
+  class abstractConstantNode extends jtree.GrammarBackedNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class booleanNode extends abstractConstantNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get booleanCell() {
+      return this.getWordsFrom(2)
+    }
+  }
+
+  class floatNode extends abstractConstantNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get floatCell() {
+      return this.getWordsFrom(2).map(val => parseFloat(val))
+    }
+  }
+
+  class intNode extends abstractConstantNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get intCell() {
+      return this.getWordsFrom(2).map(val => parseInt(val))
+    }
+  }
+
+  class stringNode extends abstractConstantNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
+    }
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get constantIdentifierCell() {
+      return this.getWord(1)
+    }
+    get stringCell() {
+      return this.getWordsFrom(2)
+    }
+  }
+
+  class abstractNodeTypeRuleNode extends jtree.GrammarBackedNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class compilesToNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get fileExtensionCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class extensionsNode extends abstractNodeTypeRuleNode {
+    get fileExtensionCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class versionNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get semanticVersionCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class abstractNode extends abstractNodeTypeRuleNode {}
+
+  class abstractNonTerminalNodeTypeRuleNode extends abstractNodeTypeRuleNode {}
+
+  class baseNodeTypeNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get baseNodeTypesCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class catchAllCellTypeNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get cellTypeIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class cellParserNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get cellParserCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class catchAllNodeTypeNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get nodeTypeIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class cellsNode extends abstractNodeTypeRuleNode {
+    get cellTypeIdCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class compilerNode extends abstractNodeTypeRuleNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(
+        undefined,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
+          closeChildren: closeChildrenNode,
+          indentCharacter: indentCharacterNode,
+          catchAllCellDelimiter: catchAllCellDelimiterNode,
+          openChildren: openChildrenNode,
+          stringTemplate: stringTemplateNode,
+          joinChildrenWith: joinChildrenWithNode
+        }),
+        undefined
+      )
+    }
+  }
+
+  class descriptionNode extends abstractNodeTypeRuleNode {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class exampleNode extends abstractNodeTypeRuleNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
+    }
+    get exampleAnyCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class extendsNodeTypeNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get nodeTypeIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class frequencyNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get floatCell() {
+      return parseFloat(this.getWord(1))
+    }
+  }
+
+  class inScopeNode extends abstractNodeTypeRuleNode {
+    get nodeTypeIdCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class javascriptNode extends abstractNodeTypeRuleNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+    }
+    format() {
+      if (this.isNodeJs()) {
+        const template = `class FOO{ ${this.childrenToString()}}`
+        this.setChildren(
+          require("prettier")
+            .format(template, { semi: false, useTabs: true, parser: "babel", printWidth: 240 })
+            .replace(/class FOO \{\s+/, "")
+            .replace(/\s+\}\s+$/, "")
+            .replace(/\n\t/g, "\n") // drop one level of indent
+            .replace(/\t/g, " ") // we used tabs instead of spaces to be able to dedent without breaking literals.
+        )
+      }
+      return this
+    }
+  }
+
+  class abstractParseRuleNode extends abstractNodeTypeRuleNode {}
+
+  class cruxNode extends abstractParseRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get stringCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class patternNode extends abstractParseRuleNode {
+    get regexCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class requiredNode extends abstractNodeTypeRuleNode {}
+
+  class singleNode extends abstractNodeTypeRuleNode {}
+
+  class tagsNode extends abstractNodeTypeRuleNode {
+    get tagCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class catchAllErrorNode extends jtree.GrammarBackedNode {
+    getErrors() {
+      return this._getErrorNodeErrors()
+    }
+  }
+
+  class catchAllExampleLineNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
+    }
+    get exampleAnyCell() {
+      return this.getWord(0)
+    }
+    get exampleAnyCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class catchAllJavascriptCodeLineNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+    }
+    get javascriptCodeCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class catchAllMultilineStringConstantNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
+    }
+    get stringCell() {
+      return this.getWord(0)
+    }
+    get stringCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class cellTypeDefinitionNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(
+        undefined,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
+          description: descriptionNode,
+          enumFromCellTypes: enumFromCellTypesNode,
+          enum: enumNode,
+          examples: examplesNode,
+          min: cellMinNode,
+          max: cellMaxNode,
+          highlightScope: highlightScopeNode,
+          regex: regexNode,
+          reservedWords: reservedWordsNode,
+          todo: todoNode,
+          extends: extendsCellTypeNode
+        }),
+        undefined
+      )
+    }
+    get cellTypeIdCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class enumFromCellTypesNode extends jtree.GrammarBackedNode {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get cellTypeIdCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class enumNode extends jtree.GrammarBackedNode {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get enumOptionCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class examplesNode extends jtree.GrammarBackedNode {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get cellExampleCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class cellMinNode extends jtree.GrammarBackedNode {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get numericCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class cellMaxNode extends jtree.GrammarBackedNode {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get numericCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class highlightScopeNode extends jtree.GrammarBackedNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get scopeNameCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class rootFlagNode extends jtree.GrammarBackedNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class nodeTypeDefinitionNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(
+        catchAllErrorNode,
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
+          boolean: booleanNode,
+          float: floatNode,
+          int: intNode,
+          string: stringNode,
+          compilesTo: compilesToNode,
+          extensions: extensionsNode,
+          version: versionNode,
+          abstract: abstractNode,
+          baseNodeType: baseNodeTypeNode,
+          catchAllCellType: catchAllCellTypeNode,
+          cellParser: cellParserNode,
+          catchAllNodeType: catchAllNodeTypeNode,
+          cells: cellsNode,
+          compiler: compilerNode,
+          description: descriptionNode,
+          example: exampleNode,
+          extends: extendsNodeTypeNode,
+          frequency: frequencyNode,
+          inScope: inScopeNode,
+          javascript: javascriptNode,
+          crux: cruxNode,
+          pattern: patternNode,
+          required: requiredNode,
+          single: singleNode,
+          tags: tagsNode,
+          root: rootFlagNode,
+          _extendsJsClass: _extendsJsClassNode,
+          _rootNodeJsHeader: _rootNodeJsHeaderNode,
+          todo: todoNode
+        }),
+        undefined
+      )
+    }
+    get nodeTypeIdCell() {
+      return this.getWord(0)
+    }
+  }
+
+  class _extendsJsClassNode extends abstractNodeTypeRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get anyCell() {
+      return this.getWord(1)
+    }
+  }
+
+  class _rootNodeJsHeaderNode extends abstractNodeTypeRuleNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+    }
+  }
+
+  class regexNode extends jtree.GrammarBackedNode {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get regexCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class reservedWordsNode extends jtree.GrammarBackedNode {
+    get cellPropertyNameCell() {
+      return this.getWord(0)
+    }
+    get reservedWordCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class todoNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(todoNode, undefined, undefined)
+    }
+    get todoCell() {
+      return this.getWord(0)
+    }
+    get todoCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class toolingNode extends jtree.GrammarBackedNode {
+    createParser() {
+      return new jtree.TreeNode.Parser(toolingNode, undefined, undefined)
+    }
+    get toolingDirectiveCell() {
+      return this.getWord(0)
+    }
+    get toolingDirectiveCell() {
+      return this.getWordsFrom(1)
+    }
+  }
+
+  class extendsCellTypeNode extends jtree.GrammarBackedNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+    get cellTypeIdCell() {
+      return this.getWord(1)
+    }
+  }
+
+  window.grammarNode = grammarNode
+}

@@ -309,13 +309,13 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return result
   }
 
-  private _executeSync(programPath: treeNotationTypes.treeProgramFilePath) {
-    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
-  }
-
   async run(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
     if (programPathOrGrammarName.includes(".")) return this._executeFile(programPathOrGrammarName)
     return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
+  }
+
+  private _executeSync(programPath: treeNotationTypes.treeProgramFilePath) {
+    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
   }
 
   runSync(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
@@ -360,7 +360,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
   stamp(providedPath: string) {
     const path = require("path")
-    const stamp = require("../langs/stamp/stamp.node.js")
+    const stamp = require("../products/stamp.nodejs.js")
 
     const getAbsPath = (input: string) => (input.startsWith("/") ? input : path.resolve(this._cwd + "/" + input))
 

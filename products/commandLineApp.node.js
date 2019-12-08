@@ -253,12 +253,12 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     const result = await jtree.executeFile(programPath, grammarPath)
     return result
   }
-  _executeSync(programPath) {
-    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
-  }
   async run(programPathOrGrammarName) {
     if (programPathOrGrammarName.includes(".")) return this._executeFile(programPathOrGrammarName)
     return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
+  }
+  _executeSync(programPath) {
+    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
   }
   runSync(programPathOrGrammarName) {
     if (programPathOrGrammarName.includes(".")) return this._executeSync(programPathOrGrammarName)
@@ -298,7 +298,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
   stamp(providedPath) {
     const path = require("path")
-    const stamp = require("../langs/stamp/stamp.node.js")
+    const stamp = require("../products/stamp.nodejs.js")
     const getAbsPath = input => (input.startsWith("/") ? input : path.resolve(this._cwd + "/" + input))
     const providedPathWithoutEndingSlash = providedPath && providedPath.replace(/\/$/, "")
     const absPath = providedPath ? getAbsPath(providedPathWithoutEndingSlash) : this._cwd

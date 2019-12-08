@@ -1,20 +1,20 @@
 import { TreeNode } from "./TreeNode"
 import { TreeUtils } from "./TreeUtils"
 
-import { GrammarConstants, GrammarProgram, PreludeCellTypeIds } from "./GrammarLanguage"
+import { GrammarConstants, HandGrammarProgram, PreludeCellTypeIds } from "./GrammarLanguage"
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class UnknownGrammarProgram extends TreeNode {
   private _inferRootNodeForAPrefixLanguage(grammarName: string): TreeNode {
-    grammarName = GrammarProgram.makeNodeTypeId(grammarName)
+    grammarName = HandGrammarProgram.makeNodeTypeId(grammarName)
     const rootNode = new TreeNode(`${grammarName}
  ${GrammarConstants.root}`)
 
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
     const rootNodeNames = this.getFirstWords()
       .filter(identity => identity)
-      .map(word => GrammarProgram.makeNodeTypeId(word))
+      .map(word => HandGrammarProgram.makeNodeTypeId(word))
     rootNode
       .nodeAt(0)
       .touchNode(GrammarConstants.inScope)
@@ -30,7 +30,7 @@ class UnknownGrammarProgram extends TreeNode {
     for (let node of clone.getTopDownArrayIterator()) {
       const firstWordIsAnInteger = !!node.getFirstWord().match(/^\d+$/)
       const parentFirstWord = node.getParent().getFirstWord()
-      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + UnknownGrammarProgram._childSuffix))
+      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(HandGrammarProgram.makeNodeTypeId(parentFirstWord + UnknownGrammarProgram._childSuffix))
     }
   }
 
@@ -51,9 +51,9 @@ class UnknownGrammarProgram extends TreeNode {
 
   private _inferNodeTypeDef(firstWord: string, globalCellTypeMap: Map<string, string>, childFirstWords: string[], instances: TreeNode[]) {
     const edgeSymbol = this.getEdgeSymbol()
-    const nodeTypeId = GrammarProgram.makeNodeTypeId(firstWord)
+    const nodeTypeId = HandGrammarProgram.makeNodeTypeId(firstWord)
     const nodeDefNode = <TreeNode>new TreeNode(nodeTypeId).nodeAt(0)
-    const childNodeTypeIds = childFirstWords.map(word => GrammarProgram.makeNodeTypeId(word))
+    const childNodeTypeIds = childFirstWords.map(word => HandGrammarProgram.makeNodeTypeId(word))
     if (childNodeTypeIds.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childNodeTypeIds)
 
     const cellsForAllInstances = instances
@@ -95,12 +95,12 @@ class UnknownGrammarProgram extends TreeNode {
   }
 
   //  inferGrammarFileForAnSSVLanguage(grammarName: string): string {
-  //     grammarName = GrammarProgram.makeNodeTypeId(grammarName)
+  //     grammarName = HandGrammarProgram.makeNodeTypeId(grammarName)
   //    const rootNode = new TreeNode(`${grammarName}
   // ${GrammarConstants.root}`)
 
   //    // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
-  //    const rootNodeNames = this.getFirstWords().map(word => GrammarProgram.makeNodeTypeId(word))
+  //    const rootNodeNames = this.getFirstWords().map(word => HandGrammarProgram.makeNodeTypeId(word))
   //    rootNode
   //      .nodeAt(0)
   //      .touchNode(GrammarConstants.inScope)
@@ -132,7 +132,7 @@ class UnknownGrammarProgram extends TreeNode {
     // todo: make this run in browser too
     if (!this.isNodeJs()) return code
 
-    const grammarProgram = new GrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
+    const grammarProgram = new HandGrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
     const programConstructor = <any>grammarProgram.compileAndReturnRootConstructor()
     const program = new programConstructor(code)
     return program.format().toString()
@@ -169,8 +169,8 @@ class UnknownGrammarProgram extends TreeNode {
     const enumLimit = 30
     if (instanceCount > 1 && maxCellsOnLine === 1 && allValues.length > asSet.size && asSet.size < enumLimit)
       return {
-        cellTypeId: GrammarProgram.makeCellTypeId(firstWord),
-        cellTypeDefinition: `${GrammarProgram.makeCellTypeId(firstWord)}
+        cellTypeId: HandGrammarProgram.makeCellTypeId(firstWord),
+        cellTypeDefinition: `${HandGrammarProgram.makeCellTypeId(firstWord)}
  enum ${values.join(edgeSymbol)}`
       }
 

@@ -1,6 +1,9 @@
 edge / 2019-12-08
 ===================
 - Breaking: getRootConstructor is now compileAndReturnRootConstructor
+- Breaking: jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
+- Breaking: jtree.GrammarProgram is now jtree.HandGrammarProgram
+- Breaking: _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
 
 48.1.0 / 2019-12-06
 ===================

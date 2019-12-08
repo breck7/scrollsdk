@@ -6,7 +6,7 @@ const homedir = require("os").homedir
 const { execSync } = require("child_process")
 
 const { jtree } = require("../index.js")
-const { TreeNode, GrammarProgram, Utils } = jtree
+const { TreeNode, HandGrammarProgram, Utils } = jtree
 const { Disk } = require("../products/Disk.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
@@ -195,14 +195,14 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   parse(programPath: treeNotationTypes.treeProgramFilePath) {
-    const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
+    const programConstructor = jtree.compileGrammarFileAtPathAndReturnRootConstructor(this._getGrammarPathOrThrow(programPath))
     const program = new programConstructor(Disk.read(programPath))
     return program.getParseTable(35)
   }
 
   sublime(grammarName: treeNotationTypes.grammarName, outputDirectory: treeNotationTypes.absoluteFolderPath = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
 
     Disk.write(outputPath, grammarProgram.toSublimeSyntaxFile())
@@ -211,14 +211,14 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
   _getGrammarProgram(grammarName: treeNotationTypes.grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    return new GrammarProgram(Disk.read(grammarPath))
+    return new HandGrammarProgram(Disk.read(grammarPath))
   }
 
   compile(programPath: treeNotationTypes.treeProgramFilePath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     return program.compile()
   }
 
@@ -237,7 +237,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   webForm(grammarName: treeNotationTypes.grammarName, nodeTypeId?: string) {
     // webForm grammarName nodeTypeId? Build a web form for the given grammar
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new jtree.GrammarProgram(Disk.read(grammarPath)).compileAndReturnRootConstructor()
+    const grammarProgram = new jtree.HandGrammarProgram(Disk.read(grammarPath)).compileAndReturnRootConstructor()
 
     let def = new grammarProgram().getDefinition()
 
@@ -282,7 +282,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
   private _register(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     const extension = grammarProgram.getExtensionName()
     Disk.append(this._getRegistryPath(), `\n${extension} ${grammarPath}`)
     this._reload()
@@ -331,7 +331,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     const files = this._history(grammarName)
     if (!files.length) return ""
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const programConstructor = jtree.getProgramConstructor(grammarPath)
+    const programConstructor = jtree.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
       try {

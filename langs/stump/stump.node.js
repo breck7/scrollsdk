@@ -1,1 +1,1 @@
-module.exports = require("../../index.js").jtree.getProgramConstructor(__dirname + "/stump.grammar")
+module.exports = require("../../index.js").jtree.compileGrammarFileAtPathAndReturnRootConstructor(__dirname + "/stump.grammar")

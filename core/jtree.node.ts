@@ -2,7 +2,7 @@ const fs = require("fs")
 
 import { jtree } from "./jtree"
 import { treeNotationTypes } from "../products/treeNotationTypes"
-import { GrammarProgram, GrammarBackedNode } from "./GrammarLanguage"
+import { HandGrammarProgram, GrammarBackedNode } from "./GrammarLanguage"
 import { Upgrader } from "./Upgrader"
 
 enum CompileTarget {
@@ -16,14 +16,14 @@ class jtreeNode extends jtree {
   static executeFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): Promise<any> => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 
   static executeFiles = (programPaths: treeNotationTypes.filepath[], grammarPath: treeNotationTypes.filepath): Promise<any>[] => {
-    const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
+    const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     return programPaths.map(programPath => new programConstructor(fs.readFileSync(programPath, "utf8")).execute(programPath))
   }
 
   static executeFileSync = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): any => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 
   static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
-    const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
+    const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
@@ -32,7 +32,7 @@ class jtreeNode extends jtree {
   }
 
   static formatProgram = (programCode: string, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
-    const programConstructor = jtreeNode.getProgramConstructor(grammarPath)
+    const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     const program = new programConstructor(programCode)
     return program.format().toString()
   }
@@ -48,7 +48,7 @@ class jtreeNode extends jtree {
   private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean, pathToJtree?: string) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
-    const program = new GrammarProgram(grammarCode.toString())
+    const program = new HandGrammarProgram(grammarCode.toString())
     const outputFilePath = outputFolder + `${program.getGrammarName()}.${target}.js`
 
     let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
@@ -77,10 +77,10 @@ if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(p
   }
 
   // returns GrammarBackedProgramClass
-  static getProgramConstructor = (grammarPath: treeNotationTypes.filepath) => {
+  static compileGrammarFileAtPathAndReturnRootConstructor = (grammarPath: treeNotationTypes.filepath) => {
     if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
-    const grammarProgram = new GrammarProgram(grammarCode)
+    const grammarProgram = new HandGrammarProgram(grammarCode)
     return <any>grammarProgram.compileAndReturnRootConstructor()
   }
 

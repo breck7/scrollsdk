@@ -126,7 +126,7 @@
     }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`anyCell
+        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`anyCell
 keywordCell
 emptyCell
 extraCell

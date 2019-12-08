@@ -59,7 +59,7 @@
     }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`todo Explore best ways to add polymorphism
+        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`todo Explore best ways to add polymorphism
 anyCell
 booleanCell
  enum false true

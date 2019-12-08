@@ -44,7 +44,7 @@ class DesignerApp extends AbstractTreeComponent {
     this._onGrammarKeyup()
   }
   synthesizeProgramCommand() {
-    const grammarProgram = new jtree.GrammarProgram(this.getGrammarCode())
+    const grammarProgram = new jtree.HandGrammarProgram(this.getGrammarCode())
     this.setCodeCode(
       grammarProgram
         .getRootNodeTypeDefinitionNode()
@@ -68,7 +68,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
   // TODO: ADD TESTS!!!!!
   async downloadBundleCommand() {
-    const grammarProgram = new jtree.GrammarProgram(this.getGrammarCode())
+    const grammarProgram = new jtree.HandGrammarProgram(this.getGrammarCode())
     const bundle = grammarProgram.toBundle()
     const languageName = grammarProgram.getExtensionName()
     return this._makeZipBundle(languageName + ".zip", bundle)
@@ -161,7 +161,7 @@ class DesignerApp extends AbstractTreeComponent {
   async start() {
     const willowBrowser = this.getWillowBrowser()
     const result = await willowBrowser.httpGetUrl("/langs/grammar/grammar.grammar")
-    this.GrammarConstructor = new jtree.GrammarProgram(result.text).compileAndReturnRootConstructor()
+    this.GrammarConstructor = new jtree.HandGrammarProgram(result.text).compileAndReturnRootConstructor()
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
     this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => this.GrammarConstructor, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true })
@@ -207,7 +207,7 @@ class DesignerApp extends AbstractTreeComponent {
     if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
       try {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
-        this._grammarConstructor = new jtree.GrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
+        this._grammarConstructor = new jtree.HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
         this._cachedGrammarCode = currentGrammarCode
         jQuery("#otherErrorsDiv").html("")
       } catch (err) {
@@ -227,7 +227,7 @@ class DesignerApp extends AbstractTreeComponent {
     this.grammarProgram = new this.GrammarConstructor(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
     this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
-    const grammarProgram = new jtree.GrammarProgram(this.grammarInstance.getValue())
+    const grammarProgram = new jtree.HandGrammarProgram(this.grammarInstance.getValue())
     const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
     this._readmeComponent.html(readme)
   }

@@ -141,7 +141,7 @@ class TypedWord extends TreeWord {
 
 // todo: can we merge these methods into base TreeNode and ditch this class?
 abstract class GrammarBackedNode extends TreeNode {
-  getDefinition(): AbstractGrammarDefinitionNode | GrammarProgram | nodeTypeDefinitionNode {
+  getDefinition(): AbstractGrammarDefinitionNode | HandGrammarProgram | nodeTypeDefinitionNode {
     const grammarProgram = this.getGrammarProgram()
     return this.isRoot() ? grammarProgram : grammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
@@ -207,7 +207,7 @@ abstract class GrammarBackedNode extends TreeNode {
 
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
-  getGrammarProgram(): GrammarProgram {
+  getGrammarProgram(): HandGrammarProgram {
     if (this.isRoot()) throw new Error(`Root node without getGrammarProgram defined.`)
     return (<any>this.getRootNode()).getGrammarProgram()
   }
@@ -363,7 +363,7 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   private _sortWithParentNodeTypesUpTop() {
-    const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree()
+    const familyTree = new HandGrammarProgram(this.toString()).getNodeTypeFamilyTree()
     const rank: treeNotationTypes.stringMap = {}
     familyTree.getTopDownArray().forEach((node, index) => {
       rank[node.getWord(0)] = index
@@ -1322,7 +1322,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   }
 
   _getIdToNodeMap() {
-    return (<GrammarProgram>this.getParent()).getCellTypeDefinitions()
+    return (<HandGrammarProgram>this.getParent()).getCellTypeDefinitions()
   }
 
   getGetter(wordIndex: number) {
@@ -1646,7 +1646,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   _getIdWithoutSuffix(): string {
-    return this._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this._getId().replace(HandGrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   getConstantsObject() {
@@ -1709,8 +1709,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return firstCellDef ? firstCellDef._getEnumOptions() : undefined
   }
 
-  getLanguageDefinitionProgram(): GrammarProgram {
-    return <GrammarProgram>this.getParent()
+  getLanguageDefinitionProgram(): HandGrammarProgram {
+    return <HandGrammarProgram>this.getParent()
   }
 
   protected _getCustomJavascriptMethods(): treeNotationTypes.javascriptCode {
@@ -1834,7 +1834,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   private _getLanguageRootNode() {
-    return (<GrammarProgram>this.getParent()).getRootNodeTypeDefinitionNode()
+    return (<HandGrammarProgram>this.getParent()).getRootNodeTypeDefinitionNode()
   }
 
   private _isErrorNodeType() {
@@ -1901,7 +1901,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     if (this._amIRoot()) {
       components.push(`getGrammarProgram() {
         if (!this._cachedGrammarProgramRoot)
-          this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(
+          this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
             this.getParent()
               .toString()
               .replace(/\\/g, "\\\\")
@@ -2129,18 +2129,18 @@ ${cells.toString(1)}`
 // todo: remove?
 class nodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {}
 
-// GrammarProgram is a constructor that takes a grammar file, and builds a new
+// HandGrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
-class GrammarProgram extends AbstractGrammarDefinitionNode {
+class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   createParser() {
     const map: treeNotationTypes.stringMap = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
-    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
+    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
 
-  static makeNodeTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-  static makeCellTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+  static makeNodeTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+  static makeCellTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 
   static nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
   static nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
@@ -2398,7 +2398,7 @@ ${testCode}`
   }
 
   getGrammarName(): string | undefined {
-    return this.getRootNodeTypeId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this.getRootNodeTypeId().replace(HandGrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   _getMyInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
@@ -2529,4 +2529,4 @@ PreludeKinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
 PreludeKinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
 PreludeKinds[PreludeCellTypeIds.intCell] = GrammarIntCell
 
-export { GrammarConstants, PreludeCellTypeIds, GrammarProgram, GrammarBackedNode, UnknownNodeTypeError }
+export { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError }

@@ -4,7 +4,7 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
 const { execSync } = require("child_process")
 const { jtree } = require("../index.js")
-const { TreeNode, GrammarProgram, Utils } = jtree
+const { TreeNode, HandGrammarProgram, Utils } = jtree
 const { Disk } = require("../products/Disk.node.js")
 class CommandLineApp {
   constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
@@ -156,26 +156,26 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return jtree.formatFile(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
   }
   parse(programPath) {
-    const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
+    const programConstructor = jtree.compileGrammarFileAtPathAndReturnRootConstructor(this._getGrammarPathOrThrow(programPath))
     const program = new programConstructor(Disk.read(programPath))
     return program.getParseTable(35)
   }
   sublime(grammarName, outputDirectory = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
     Disk.write(outputPath, grammarProgram.toSublimeSyntaxFile())
     return `Saved: ${outputPath}`
   }
   _getGrammarProgram(grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    return new GrammarProgram(Disk.read(grammarPath))
+    return new HandGrammarProgram(Disk.read(grammarPath))
   }
   compile(programPath) {
     // todo: allow user to provide destination
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const program = jtree.makeProgram(programPath, grammarPath)
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     return program.compile()
   }
   _getLogFilePath() {
@@ -190,7 +190,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   webForm(grammarName, nodeTypeId) {
     // webForm grammarName nodeTypeId? Build a web form for the given grammar
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new jtree.GrammarProgram(Disk.read(grammarPath)).compileAndReturnRootConstructor()
+    const grammarProgram = new jtree.HandGrammarProgram(Disk.read(grammarPath)).compileAndReturnRootConstructor()
     let def = new grammarProgram().getDefinition()
     if (nodeTypeId) def = def.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
     const stumpCode = def.toStumpString()
@@ -222,12 +222,13 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return items.filter(file => file.endsWith(grammarName)).filter(file => Disk.exists(file))
   }
   register(grammarPath) {
+    // todo: should support compiled grammars.
     const extension = this._register(grammarPath)
     return `Registered ${extension}`
   }
   _register(grammarPath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     const extension = grammarProgram.getExtensionName()
     Disk.append(this._getRegistryPath(), `\n${extension} ${grammarPath}`)
     this._reload()
@@ -270,7 +271,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     const files = this._history(grammarName)
     if (!files.length) return ""
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const programConstructor = jtree.getProgramConstructor(grammarPath)
+    const programConstructor = jtree.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
       try {

@@ -3489,7 +3489,7 @@ class GrammarBackedNode extends TreeNode {
     }
   }
   _sortWithParentNodeTypesUpTop() {
-    const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree()
+    const familyTree = new HandGrammarProgram(this.toString()).getNodeTypeFamilyTree()
     const rank = {}
     familyTree.getTopDownArray().forEach((node, index) => {
       rank[node.getWord(0)] = index
@@ -4527,7 +4527,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     return this.getWord(0)
   }
   _getIdWithoutSuffix() {
-    return this._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this._getId().replace(HandGrammarProgram.nodeTypeSuffixRegex, "")
   }
   getConstantsObject() {
     const obj = this._getUniqueConstantNodes()
@@ -4734,7 +4734,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     if (this._amIRoot()) {
       components.push(`getGrammarProgram() {
         if (!this._cachedGrammarProgramRoot)
-          this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(
+          this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
             this.getParent()
               .toString()
               .replace(/\\/g, "\\\\")
@@ -4928,14 +4928,14 @@ ${cells.toString(1)}`
 }
 // todo: remove?
 class nodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {}
-// GrammarProgram is a constructor that takes a grammar file, and builds a new
+// HandGrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
-class GrammarProgram extends AbstractGrammarDefinitionNode {
+class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   createParser() {
     const map = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
-    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
+    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
   _compileAndEvalGrammar() {
     if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = TreeUtils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
@@ -5152,7 +5152,7 @@ ${testCode}`
     return this.getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
   }
   getGrammarName() {
-    return this.getRootNodeTypeId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this.getRootNodeTypeId().replace(HandGrammarProgram.nodeTypeSuffixRegex, "")
   }
   _getMyInScopeNodeTypeIds() {
     const nodeTypesNode = this.getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
@@ -5247,14 +5247,14 @@ ${includes}
 ${nodeTypeContexts}`
   }
 }
-GrammarProgram.makeNodeTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-GrammarProgram.makeCellTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
-GrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
-GrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
-GrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
-GrammarProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
-GrammarProgram._languages = {}
-GrammarProgram._nodeTypes = {}
+HandGrammarProgram.makeNodeTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+HandGrammarProgram.makeCellTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+HandGrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
+HandGrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
+HandGrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
+HandGrammarProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
+HandGrammarProgram._languages = {}
+HandGrammarProgram._nodeTypes = {}
 const PreludeKinds = {}
 PreludeKinds[PreludeCellTypeIds.anyCell] = GrammarAnyCell
 PreludeKinds[PreludeCellTypeIds.keywordCell] = GrammarKeywordCell
@@ -5265,7 +5265,7 @@ PreludeKinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
 PreludeKinds[PreludeCellTypeIds.intCell] = GrammarIntCell
 window.GrammarConstants = GrammarConstants
 window.PreludeCellTypeIds = PreludeCellTypeIds
-window.GrammarProgram = GrammarProgram
+window.HandGrammarProgram = HandGrammarProgram
 window.GrammarBackedNode = GrammarBackedNode
 window.UnknownNodeTypeError = UnknownNodeTypeError
 class Upgrader extends TreeNode {
@@ -5305,13 +5305,13 @@ class Upgrader extends TreeNode {
 window.Upgrader = Upgrader
 class UnknownGrammarProgram extends TreeNode {
   _inferRootNodeForAPrefixLanguage(grammarName) {
-    grammarName = GrammarProgram.makeNodeTypeId(grammarName)
+    grammarName = HandGrammarProgram.makeNodeTypeId(grammarName)
     const rootNode = new TreeNode(`${grammarName}
  ${GrammarConstants.root}`)
     // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
     const rootNodeNames = this.getFirstWords()
       .filter(identity => identity)
-      .map(word => GrammarProgram.makeNodeTypeId(word))
+      .map(word => HandGrammarProgram.makeNodeTypeId(word))
     rootNode
       .nodeAt(0)
       .touchNode(GrammarConstants.inScope)
@@ -5323,7 +5323,7 @@ class UnknownGrammarProgram extends TreeNode {
     for (let node of clone.getTopDownArrayIterator()) {
       const firstWordIsAnInteger = !!node.getFirstWord().match(/^\d+$/)
       const parentFirstWord = node.getParent().getFirstWord()
-      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(GrammarProgram.makeNodeTypeId(parentFirstWord + UnknownGrammarProgram._childSuffix))
+      if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(HandGrammarProgram.makeNodeTypeId(parentFirstWord + UnknownGrammarProgram._childSuffix))
     }
   }
   _getKeywordMaps(clone) {
@@ -5342,9 +5342,9 @@ class UnknownGrammarProgram extends TreeNode {
   }
   _inferNodeTypeDef(firstWord, globalCellTypeMap, childFirstWords, instances) {
     const edgeSymbol = this.getEdgeSymbol()
-    const nodeTypeId = GrammarProgram.makeNodeTypeId(firstWord)
+    const nodeTypeId = HandGrammarProgram.makeNodeTypeId(firstWord)
     const nodeDefNode = new TreeNode(nodeTypeId).nodeAt(0)
-    const childNodeTypeIds = childFirstWords.map(word => GrammarProgram.makeNodeTypeId(word))
+    const childNodeTypeIds = childFirstWords.map(word => HandGrammarProgram.makeNodeTypeId(word))
     if (childNodeTypeIds.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childNodeTypeIds)
     const cellsForAllInstances = instances
       .map(line => line.getContent())
@@ -5378,11 +5378,11 @@ class UnknownGrammarProgram extends TreeNode {
     return nodeDefNode.getParent().toString()
   }
   //  inferGrammarFileForAnSSVLanguage(grammarName: string): string {
-  //     grammarName = GrammarProgram.makeNodeTypeId(grammarName)
+  //     grammarName = HandGrammarProgram.makeNodeTypeId(grammarName)
   //    const rootNode = new TreeNode(`${grammarName}
   // ${GrammarConstants.root}`)
   //    // note: right now we assume 1 global cellTypeMap and nodeTypeMap per grammar. But we may have scopes in the future?
-  //    const rootNodeNames = this.getFirstWords().map(word => GrammarProgram.makeNodeTypeId(word))
+  //    const rootNodeNames = this.getFirstWords().map(word => HandGrammarProgram.makeNodeTypeId(word))
   //    rootNode
   //      .nodeAt(0)
   //      .touchNode(GrammarConstants.inScope)
@@ -5406,7 +5406,7 @@ class UnknownGrammarProgram extends TreeNode {
   _formatCode(code) {
     // todo: make this run in browser too
     if (!this.isNodeJs()) return code
-    const grammarProgram = new GrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
+    const grammarProgram = new HandGrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
     const programConstructor = grammarProgram.compileAndReturnRootConstructor()
     const program = new programConstructor(code)
     return program.format().toString()
@@ -5438,8 +5438,8 @@ class UnknownGrammarProgram extends TreeNode {
     const enumLimit = 30
     if (instanceCount > 1 && maxCellsOnLine === 1 && allValues.length > asSet.size && asSet.size < enumLimit)
       return {
-        cellTypeId: GrammarProgram.makeCellTypeId(firstWord),
-        cellTypeDefinition: `${GrammarProgram.makeCellTypeId(firstWord)}
+        cellTypeId: HandGrammarProgram.makeCellTypeId(firstWord),
+        cellTypeDefinition: `${HandGrammarProgram.makeCellTypeId(firstWord)}
  enum ${values.join(edgeSymbol)}`
       }
     return { cellTypeId: PreludeCellTypeIds.anyCell }
@@ -5628,17 +5628,17 @@ const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }
 class TreeNotationCodeMirrorMode {
-  constructor(name, getProgramConstructorMethod, getProgramCodeMethod, codeMirrorLib = undefined) {
+  constructor(name, getProgramConstructorFn, getProgramCodeFn, codeMirrorLib = undefined) {
     this._name = name
-    this._getProgramConstructorMethod = getProgramConstructorMethod
-    this._getProgramCodeMethod = getProgramCodeMethod || (instance => (instance ? instance.getValue() : this._originalValue))
+    this._getProgramConstructorFn = getProgramConstructorFn
+    this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? instance.getValue() : this._originalValue))
     this._codeMirrorLib = codeMirrorLib
   }
   _getParsedProgram() {
-    const source = this._getProgramCodeMethod(this._cmInstance) || ""
+    const source = this._getProgramCodeFn(this._cmInstance) || ""
     if (!this._cachedProgram || this._cachedSource !== source) {
       this._cachedSource = source
-      this._cachedProgram = new (this._getProgramConstructorMethod())(source)
+      this._cachedProgram = new (this._getProgramConstructorFn())(source)
     }
     return this._cachedProgram
   }
@@ -5792,7 +5792,7 @@ jtree.TestRacer = TestRacer
 jtree.TreeEvents = TreeEvents
 jtree.TreeNode = TreeNode
 jtree.ExtendibleTreeNode = ExtendibleTreeNode
-jtree.GrammarProgram = GrammarProgram
+jtree.HandGrammarProgram = HandGrammarProgram
 jtree.UnknownGrammarProgram = UnknownGrammarProgram
 jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
 jtree.getVersion = () => TreeNode.getVersion()

@@ -31,7 +31,7 @@ file LANG/nodes.js
   }
 file LANG/index.js
  data
-  module.exports = require("jtree").getProgramConstructor(__dirname + "/LANG.grammar")
+  module.exports = require("jtree").compileGrammarFileAtPathAndReturnRootConstructor(__dirname + "/LANG.grammar")
 file LANG/LANG.grammar
  data
   grammar

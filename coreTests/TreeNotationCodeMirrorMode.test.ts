@@ -10,11 +10,11 @@ const { jtree } = require("../index.js")
 const irisPath = __dirname + "/../langs/iris/iris.grammar"
 const irisGrammar = Disk.read(irisPath)
 
-const GrammarProgram = jtree.getProgramConstructor(__dirname + "/../langs/grammar/grammar.grammar")
-const DugProgram = jtree.getProgramConstructor(__dirname + "/../langs/dug/dug.grammar")
+const GrammarProgram = jtree.compileGrammarFileAtPathAndReturnRootConstructor(__dirname + "/../langs/grammar/grammar.grammar")
+const DugProgram = jtree.compileGrammarFileAtPathAndReturnRootConstructor(__dirname + "/../langs/dug/dug.grammar")
 
 const makeProgram = (grammarCode: string, code: string) => {
-  const grammarProgram = new jtree.GrammarProgram(grammarCode)
+  const grammarProgram = new jtree.HandGrammarProgram(grammarCode)
   const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
   return new rootProgramConstructor(code)
 }
@@ -112,7 +112,7 @@ testTree.codeMirrorTest = equal => {
 }
 
 testTree.iris = equal => {
-  const irisConstructor = new jtree.GrammarProgram(irisGrammar).compileAndReturnRootConstructor()
+  const irisConstructor = new jtree.HandGrammarProgram(irisGrammar).compileAndReturnRootConstructor()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act

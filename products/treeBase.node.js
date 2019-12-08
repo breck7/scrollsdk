@@ -2,7 +2,7 @@
 const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
 const fs = require("fs")
-const GrammarProgram = jtree.GrammarProgram
+const HandGrammarProgram = jtree.HandGrammarProgram
 const TreeUtils = jtree.Utils
 const TreeNode = jtree.TreeNode
 const TreeEvents = jtree.TreeEvents
@@ -187,7 +187,7 @@ class TreeBaseFolder extends TreeNode {
   }
   toSqlLiteCreateTables() {
     this.loadFolder()
-    const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
+    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
     const tableDefinitionNodes = grammarProgram.filter(node => node.getTableNameIfAny && node.getTableNameIfAny())
     // todo: filter out root root
     return tableDefinitionNodes.map(node => node.toSqlLiteTableSchema()).join("\n")
@@ -316,7 +316,7 @@ treeBaseErrorNode
   }
   _getAsProgram() {
     this.loadFolder()
-    const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
+    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
     const programConstructor = grammarProgram.compileAndReturnRootConstructor()
     return new programConstructor(this.toString())
   }

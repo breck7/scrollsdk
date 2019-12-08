@@ -385,7 +385,7 @@ com
 * 2 3 10`)
 
   // Act/Assert
-  equal(program.executeSync().join(" "), "5 60")
+  equal(program.execute().join(" "), "5 60")
 }
 
 testTree.extraWord = equal => {

@@ -142,9 +142,7 @@ class TreeNode extends AbstractNode {
     [firstWord: string]: int
   }
 
-  execute(context: any) {
-    return Promise.all(this.map(child => child.execute(context)))
-  }
+  execute() {}
 
   async loadRequirements(context: any) {
     await Promise.all(this.map(node => node.loadRequirements(context)))
@@ -157,10 +155,6 @@ class TreeNode extends AbstractNode {
   getLineCellTypes() {
     // todo: make this any a constant
     return "undefinedCellType ".repeat(this.getWords().length).trim()
-  }
-
-  executeSync(context?: any) {
-    return this.map(child => child.executeSync(context))
   }
 
   isNodeJs() {

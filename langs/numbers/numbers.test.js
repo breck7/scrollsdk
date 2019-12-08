@@ -12,10 +12,10 @@ testTree.all = equal => {
 
   // Act/Assert
   equal(program.getAllErrors().length, 0)
-  equal(program.executeSync().join(" "), `7 0`)
+  equal(program.execute().join(" "), `7 0`)
 
   // A/A/A
-  equal(new numbers(`+ 2 2 1 1`).executeSync().join(""), `6`)
+  equal(new numbers(`+ 2 2 1 1`).execute().join(""), `6`)
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)

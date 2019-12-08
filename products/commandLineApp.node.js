@@ -257,13 +257,6 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     if (programPathOrGrammarName.includes(".")) return this._executeFile(programPathOrGrammarName)
     return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
   }
-  _executeSync(programPath) {
-    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
-  }
-  runSync(programPathOrGrammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._executeSync(programPathOrGrammarName)
-    return this._history(programPathOrGrammarName).map(file => this._executeSync(file))
-  }
   usage(grammarName) {
     const files = this._history(grammarName)
     if (!files.length) return ""

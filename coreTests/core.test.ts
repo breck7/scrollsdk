@@ -1645,13 +1645,17 @@ testTree.simpleTreeLanguage = equal => {
     createParser() {
       return new TreeNode.Parser(undefined, { "+": AdditionNode, "-": SubstractionNode })
     }
+
+    execute() {
+      return this.map((child: any) => child.execute())
+    }
   }
 
   class SubstractionNode extends TreeNode {}
 
   class AdditionNode extends TreeNode {
     // Look! You created an interpreter!
-    executeSync() {
+    execute() {
       return [this.getNumbers().reduce((prev: number, current: number) => prev + current, 0)]
     }
 
@@ -1684,7 +1688,7 @@ testTree.simpleTreeLanguage = equal => {
   )
 
   // Act
-  const results = program.executeSync()
+  const results = program.execute()
   // Assert
   equal(
     results.join("\n"),

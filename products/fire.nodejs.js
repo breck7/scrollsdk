@@ -44,9 +44,6 @@
       )
     }
     async execute() {
-      return this.executeSync()
-    }
-    executeSync() {
       let outputLines = []
       const _originalConsoleLog = console.log
       const tempConsoleLog = (...params) => outputLines.push(params)
@@ -110,9 +107,6 @@ fireNode
  catchAllNodeType errorNode
  javascript
   async execute() {
-   return this.executeSync()
-  }
-  executeSync() {
    let outputLines = []
    const _originalConsoleLog = console.log
    const tempConsoleLog = (...params) => outputLines.push(params)

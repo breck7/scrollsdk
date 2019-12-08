@@ -13,7 +13,7 @@ testTree.makeProgram = equal => {
 
   // Act
   const program = jtree.makeProgram(programPath, grammarPath)
-  const result = program.executeSync()
+  const result = program.execute()
 
   // Assert
   equal(program.constructor.name, "jibberishNode", "parent program class parsed correctly")

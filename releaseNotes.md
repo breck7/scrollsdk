@@ -6,6 +6,11 @@ edge / 2019-12-08
 - Breaking: _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
 - Breaking: removed commandLineApp "create" command. Was broken. Use the Designer app instead.
 - Breaking: removed jtree.executeFiles
+- Breaking: removed all /langs/lang/lang.node.js files. Use /products/lang.nodejs.js instead.
+- Breaking: removed commandLineApp "runSync" method.
+- Breaking: removed jtree.executeFileSync method
+- Breaking: removed executeSync method on Core. Up to the grammar to define it's own execute methods.
+- Breaking: removed default execute implementation on Core. Up to grammar to specify.
 
 48.1.0 / 2019-12-06
 ===================

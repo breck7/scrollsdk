@@ -1368,11 +1368,14 @@ testTree.simpleTreeLanguage = equal => {
     createParser() {
       return new TreeNode.Parser(undefined, { "+": AdditionNode, "-": SubstractionNode })
     }
+    execute() {
+      return this.map(child => child.execute())
+    }
   }
   class SubstractionNode extends TreeNode {}
   class AdditionNode extends TreeNode {
     // Look! You created an interpreter!
-    executeSync() {
+    execute() {
       return [this.getNumbers().reduce((prev, current) => prev + current, 0)]
     }
     // Look! You created a declarative file format!
@@ -1400,7 +1403,7 @@ testTree.simpleTreeLanguage = equal => {
 15 + 1.1 + 200 + 100`
   )
   // Act
-  const results = program.executeSync()
+  const results = program.execute()
   // Assert
   equal(
     results.join("\n"),

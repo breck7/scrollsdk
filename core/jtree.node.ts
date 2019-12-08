@@ -13,11 +13,11 @@ enum CompileTarget {
 class jtreeNode extends jtree {
   static Upgrader = Upgrader
 
+  // tod: remove?
   static executeFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): Promise<any> => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
 
-  static executeFileSync = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): any => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
-
   static makeProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
+    // tod: remove?
     const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
@@ -27,12 +27,14 @@ class jtreeNode extends jtree {
   }
 
   static formatProgram = (programCode: string, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
+    // tod: remove?
     const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     const program = new programConstructor(programCode)
     return program.format().toString()
   }
 
   static formatFile = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath) => {
+    // tod: remove?
     const original = jtree.TreeNode.fromDisk(programPath)
     const formatted = jtreeNode.formatProgram(original.toString(), grammarPath)
     if (original === formatted) return false

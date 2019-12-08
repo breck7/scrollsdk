@@ -15,6 +15,9 @@
         undefined
       )
     }
+    execute() {
+      return this.map(child => child.execute())
+    }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
         this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang numbers
@@ -43,14 +46,15 @@ numbersNode
  description A useless Tree Language for testing Tree Notation features.
  inScope abstractArithmeticReducerNode commentNode hashBangNode
  catchAllNodeType errorNode
+ javascript
+  execute() {
+   return this.map(child => child.execute())
+  }
 abstractArithmeticReducerNode
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
-  executeSync() {
+  execute() {
    return this.numbersCell.slice(1).reduce((curr, tot) => eval(\`\${curr}\${this.operator}\${tot}\`), this.numbersCell[0])
-  }
-  async execute() {
-   return this.executeSync()
   }
  inScope abstractArithmeticReducerNode commentNode
  abstract
@@ -132,11 +136,8 @@ errorNode
     get numbersCell() {
       return this.getWordsFrom(1).map(val => parseFloat(val))
     }
-    executeSync() {
+    execute() {
       return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersCell[0])
-    }
-    async execute() {
-      return this.executeSync()
     }
   }
 

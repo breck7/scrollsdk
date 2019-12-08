@@ -15,7 +15,6 @@ parse programPath  Parse and print the nodeTypes and cellTypes in a program
 programs grammarName  List all files for a grammar ever parsed with this cli tool
 register grammarPath  Register a new grammar
 run programPath  Execute a Tree Language Program
-runSync programPath  Sync Execute a Tree Language Program
 sandbox port=3333  Start the Tree Sandbox web app
 stamp dirPath  Dump a directory as a Stamp program.
 sublime grammarName outputPath Generate sublime syntax highlighting files

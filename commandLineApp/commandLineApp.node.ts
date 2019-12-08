@@ -314,15 +314,6 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
   }
 
-  private _executeSync(programPath: treeNotationTypes.treeProgramFilePath) {
-    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
-  }
-
-  runSync(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._executeSync(programPathOrGrammarName)
-    return this._history(programPathOrGrammarName).map(file => this._executeSync(file))
-  }
-
   usage(grammarName: treeNotationTypes.grammarName) {
     const files = this._history(grammarName)
     if (!files.length) return ""

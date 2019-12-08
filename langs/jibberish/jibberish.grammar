@@ -16,7 +16,7 @@ jibberishNode
  root
  description A useless Tree Language built for testing Tree Notation code.
  javascript
-  executeSync() {
+  execute() {
    return 42
   }
  compilesTo txt

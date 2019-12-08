@@ -822,9 +822,7 @@ class TreeNode extends AbstractNode {
     this._setLine(line)
     this._setChildren(children)
   }
-  execute(context) {
-    return Promise.all(this.map(child => child.execute(context)))
-  }
+  execute() {}
   async loadRequirements(context) {
     await Promise.all(this.map(node => node.loadRequirements(context)))
   }
@@ -834,9 +832,6 @@ class TreeNode extends AbstractNode {
   getLineCellTypes() {
     // todo: make this any a constant
     return "undefinedCellType ".repeat(this.getWords().length).trim()
-  }
-  executeSync(context) {
-    return this.map(child => child.executeSync(context))
   }
   isNodeJs() {
     return typeof exports !== "undefined"
@@ -5806,18 +5801,21 @@ if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(p
   }
 }
 jtreeNode.Upgrader = Upgrader
+// tod: remove?
 jtreeNode.executeFile = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).execute(programPath)
-jtreeNode.executeFileSync = (programPath, grammarPath) => jtreeNode.makeProgram(programPath, grammarPath).executeSync(programPath)
 jtreeNode.makeProgram = (programPath, grammarPath) => {
+  // tod: remove?
   const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
   return new programConstructor(fs.readFileSync(programPath, "utf8"))
 }
 jtreeNode.formatProgram = (programCode, grammarPath) => {
+  // tod: remove?
   const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
   const program = new programConstructor(programCode)
   return program.format().toString()
 }
 jtreeNode.formatFile = (programPath, grammarPath) => {
+  // tod: remove?
   const original = jtree.TreeNode.fromDisk(programPath)
   const formatted = jtreeNode.formatProgram(original.toString(), grammarPath)
   if (original === formatted) return false

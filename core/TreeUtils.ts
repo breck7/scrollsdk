@@ -33,10 +33,10 @@ class TreeUtils {
 
   static Timer = Timer
 
-  static findProjectRoot(dirName: string, projectName: string) {
+  static findProjectRoot(startingDirName: string, projectName: string) {
     const fs = require("fs")
     const getProjectName = (dirName: string) => {
-      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}"`)
+      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}" starting in "${startingDirName}"`)
       const parts = dirName.split("/")
       const filename = parts.join("/") + "/" + "package.json"
       if (fs.existsSync(filename) && JSON.parse(fs.readFileSync(filename, "utf8")).name === projectName) return parts.join("/") + "/"
@@ -44,11 +44,11 @@ class TreeUtils {
       return parts
     }
 
-    let result = getProjectName(dirName)
+    let result = getProjectName(startingDirName)
     while (typeof result !== "string" && result.length > 0) {
       result = getProjectName(result.join("/"))
     }
-    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${dirName} not found.`)
+    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${startingDirName} not found.`)
     return result
   }
 

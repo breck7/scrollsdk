@@ -25,7 +25,8 @@
     }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`anyCell
+        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dumbdown
+anyCell
 blankCell
 dashCell
  highlightScope constant.language

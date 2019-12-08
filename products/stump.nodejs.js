@@ -129,7 +129,8 @@
     }
     getGrammarProgram() {
       if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`anyCell
+        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang stump
+anyCell
 keywordCell
 emptyCell
 extraCell

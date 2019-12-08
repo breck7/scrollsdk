@@ -34,12 +34,9 @@ class Builder extends AbstractBuilder {
     })
   }
 
-  produceLangs() {
-    const shipped = ["hakon", "dumbdown", "stump", "fire"]
-    shipped.forEach(lang => {
-      jtree.compileGrammarForBrowser(`${__dirname}/langs/${lang}/${lang}.grammar`, this._getProductFolder(), true)
-      jtree.compileGrammarForNodeJs(`${__dirname}/langs/${lang}/${lang}.grammar`, this._getProductFolder(), true, "../index.js")
-    })
+  produceLang(langName: string) {
+    jtree.compileGrammarForBrowser(`${__dirname}/langs/${langName}/${langName}.grammar`, this._getProductFolder(), true)
+    jtree.compileGrammarForNodeJs(`${__dirname}/langs/${langName}/${langName}.grammar`, this._getProductFolder(), true, "../index.js")
   }
 
   private _getProductsTree() {

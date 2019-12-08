@@ -23,16 +23,13 @@
     }
     compileToRacer(filepath) {
       const testBlocks = {}
-      this.getTestsToRun().forEach(testNode => {
-        testBlocks[testNode.getContent()] = testNode.toTestRacerFunction(filepath)
+      this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").forEach(testNode => {
+        const prefix = testNode.racerPrefix || ""
+        testBlocks[prefix + testNode.getContent()] = testNode.toTestRacerFunction(filepath)
       })
       const files = {}
       files[filepath] = testBlocks
       return files
-    }
-    getTestsToRun() {
-      const solos = this.getChildInstancesOfNodeTypeId("testOnlyNode")
-      return solos.length ? solos : this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").filter(test => !test.doesExtend("skipTestNode"))
     }
     getHandGrammarProgram() {
       if (!this._cachedHandGrammarProgramRoot)
@@ -93,16 +90,13 @@ swarmNode
   }
   compileToRacer(filepath) {
    const testBlocks = {}
-   this.getTestsToRun().forEach(testNode => {
-    testBlocks[testNode.getContent()] = testNode.toTestRacerFunction(filepath)
+   this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").forEach(testNode => {
+    const prefix = testNode.racerPrefix || ""
+    testBlocks[prefix + testNode.getContent()] = testNode.toTestRacerFunction(filepath)
    })
    const files = {}
    files[filepath] = testBlocks
    return files
-  }
-  getTestsToRun() {
-   const solos = this.getChildInstancesOfNodeTypeId("testOnlyNode")
-   return solos.length ? solos : this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").filter(test => !test.doesExtend("skipTestNode"))
   }
 abstractAssertionNode
  abstract
@@ -261,10 +255,12 @@ testNode
 testOnlyNode
  description If set, only this test block will be run.
  extends abstractTestBlockNode
+ string racerPrefix _
  crux testOnly
 skipTestNode
  description If you want to skip running a test.
  extends abstractTestBlockNode
+ string racerPrefix $
  crux skipTest
 hashbangNode
  crux #!
@@ -574,9 +570,17 @@ todoNode
 
   class testNode extends abstractTestBlockNode {}
 
-  class testOnlyNode extends abstractTestBlockNode {}
+  class testOnlyNode extends abstractTestBlockNode {
+    get racerPrefix() {
+      return `_`
+    }
+  }
 
-  class skipTestNode extends abstractTestBlockNode {}
+  class skipTestNode extends abstractTestBlockNode {
+    get racerPrefix() {
+      return `$`
+    }
+  }
 
   class hashbangNode extends jtree.GrammarBackedNode {
     get hashBangKeywordCell() {

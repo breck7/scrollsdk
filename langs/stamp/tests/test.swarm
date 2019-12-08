@@ -10,11 +10,3 @@ test stampBasics
     executable
  getAllErrors
   assertLengthIs 0
-skipTest staticReenableOncePathFix
- arrange
-  require ../../../products/stamp.nodejs.js
-  static
- dirToStamp ./cases
-  assertParagraphIs
-   file cases/executable.stamp
-   file cases/test.stamp

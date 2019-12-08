@@ -1,6 +1,7 @@
 edge / 2019-12-08
 ===================
 - Infra: general refactor to prep for switch to have Grammar entirely written in Grammar
+- New: swarm and testRacer now prints number of skipped tests
 - Breaking: getRootConstructor is now compileAndReturnRootConstructor
 - Breaking: jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
 - Breaking: jtree.GrammarProgram is now jtree.HandGrammarProgram

@@ -590,8 +590,11 @@ class TestRacerFile {
     this.getRunner()._emitMessage(message)
   }
   _filterSkippedTests() {
+    // _ prefix = run on these tests block
+    // $ prefix = skip this test
     const runOnlyTheseTestBlocks = Object.keys(this._testTree).filter(key => key.startsWith("_"))
-    return runOnlyTheseTestBlocks.length ? runOnlyTheseTestBlocks : Object.keys(this._testTree)
+    if (runOnlyTheseTestBlocks.length) return runOnlyTheseTestBlocks
+    return Object.keys(this._testTree).filter(key => !key.startsWith("$"))
   }
   async execute() {
     const tests = this._filterSkippedTests()

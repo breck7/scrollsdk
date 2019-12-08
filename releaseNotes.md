@@ -1,8 +1,10 @@
 edge / 2019-12-08
 ===================
+- Infra: general refactor to prep for switch to have Grammar entirely written in Grammar
 - Breaking: getRootConstructor is now compileAndReturnRootConstructor
 - Breaking: jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
 - Breaking: jtree.GrammarProgram is now jtree.HandGrammarProgram
+- Breaking: getGrammarProgram is now getHandGrammarProgram
 - Breaking: _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
 - Breaking: removed commandLineApp "create" command. Was broken. Use the Designer app instead.
 - Breaking: removed jtree.executeFiles

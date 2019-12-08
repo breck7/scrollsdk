@@ -65,9 +65,9 @@
       const pathStartIndex = rootFolderPath.length + 1
       return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
     }
-    getGrammarProgram() {
-      if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang stamp
+    getHandGrammarProgram() {
+      if (!this._cachedHandGrammarProgramRoot)
+        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang stamp
 todo File permissions
 anyCell
 extraCell
@@ -219,7 +219,7 @@ promptNode
    })
   }
  crux prompt`)
-      return this._cachedGrammarProgramRoot
+      return this._cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

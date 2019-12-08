@@ -142,8 +142,8 @@ class TypedWord extends TreeWord {
 // todo: can we merge these methods into base TreeNode and ditch this class?
 abstract class GrammarBackedNode extends TreeNode {
   getDefinition(): AbstractGrammarDefinitionNode | HandGrammarProgram | nodeTypeDefinitionNode {
-    const grammarProgram = this.getGrammarProgram()
-    return this.isRoot() ? grammarProgram : grammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+    const handGrammarProgram = this.getHandGrammarProgram()
+    return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
 
   toSqlLiteInsertStatement(primaryKeyFunction = (node: any) => node.getWord(0)): string {
@@ -207,9 +207,9 @@ abstract class GrammarBackedNode extends TreeNode {
 
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
-  getGrammarProgram(): HandGrammarProgram {
-    if (this.isRoot()) throw new Error(`Root node without getGrammarProgram defined.`)
-    return (<any>this.getRootNode()).getGrammarProgram()
+  getHandGrammarProgram(): HandGrammarProgram {
+    if (this.isRoot()) throw new Error(`Root node without getHandGrammarProgram defined.`)
+    return (<any>this.getRootNode()).getHandGrammarProgram()
   }
 
   getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[] {
@@ -397,8 +397,8 @@ abstract class GrammarBackedNode extends TreeNode {
   getNodeTypeUsage(filepath = "") {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
-    const grammarProgram = this.getGrammarProgram()
-    grammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach((def: AbstractGrammarDefinitionNode) => {
+    const handGrammarProgram = this.getHandGrammarProgram()
+    handGrammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach((def: AbstractGrammarDefinitionNode) => {
       const requiredCellTypeIds = def.getCellParser().getRequiredCellTypeIds()
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", "nodeType", requiredCellTypeIds.join(" ")].join(" "))
     })
@@ -1032,7 +1032,7 @@ abstract class AbstractTreeError implements treeNotationTypes.TreeError {
 
   getExtension() {
     return this.getNode()
-      .getGrammarProgram()
+      .getHandGrammarProgram()
       .getExtensionName()
   }
 
@@ -1899,14 +1899,14 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
 
     if (this._amIRoot()) {
-      components.push(`getGrammarProgram() {
-        if (!this._cachedGrammarProgramRoot)
-          this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
+      components.push(`getHandGrammarProgram() {
+        if (!this._cachedHandGrammarProgramRoot)
+          this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
             this.getParent()
               .toString()
               .replace(/\\/g, "\\\\")
           )}\`)
-        return this._cachedGrammarProgramRoot
+        return this._cachedHandGrammarProgramRoot
       }`)
 
       const nodeTypeMap = this.getLanguageDefinitionProgram()

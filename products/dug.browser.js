@@ -18,9 +18,9 @@
       const res = super.compile()
       return JSON.stringify(JSON.parse(res), null, 2)
     }
-    getGrammarProgram() {
-      if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dug
+    getHandGrammarProgram() {
+      if (!this._cachedHandGrammarProgramRoot)
+        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dug
 todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 anyCell
@@ -94,7 +94,7 @@ memberNode
  cells stringCell
 errorNode
  baseNodeType errorNode`)
-      return this._cachedGrammarProgramRoot
+      return this._cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

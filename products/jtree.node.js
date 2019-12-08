@@ -3274,8 +3274,8 @@ class TypedWord extends TreeWord {
 // todo: can we merge these methods into base TreeNode and ditch this class?
 class GrammarBackedNode extends TreeNode {
   getDefinition() {
-    const grammarProgram = this.getGrammarProgram()
-    return this.isRoot() ? grammarProgram : grammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+    const handGrammarProgram = this.getHandGrammarProgram()
+    return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
   toSqlLiteInsertStatement(primaryKeyFunction = node => node.getWord(0)) {
     const def = this.getDefinition()
@@ -3326,9 +3326,9 @@ class GrammarBackedNode extends TreeNode {
   }
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
-  getGrammarProgram() {
-    if (this.isRoot()) throw new Error(`Root node without getGrammarProgram defined.`)
-    return this.getRootNode().getGrammarProgram()
+  getHandGrammarProgram() {
+    if (this.isRoot()) throw new Error(`Root node without getHandGrammarProgram defined.`)
+    return this.getRootNode().getHandGrammarProgram()
   }
   getRunTimeEnumOptions(cell) {
     return undefined
@@ -3497,8 +3497,8 @@ class GrammarBackedNode extends TreeNode {
   getNodeTypeUsage(filepath = "") {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
-    const grammarProgram = this.getGrammarProgram()
-    grammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
+    const handGrammarProgram = this.getHandGrammarProgram()
+    handGrammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
       const requiredCellTypeIds = def.getCellParser().getRequiredCellTypeIds()
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", "nodeType", requiredCellTypeIds.join(" ")].join(" "))
     })
@@ -4009,7 +4009,7 @@ class AbstractTreeError {
   }
   getExtension() {
     return this.getNode()
-      .getGrammarProgram()
+      .getHandGrammarProgram()
       .getExtensionName()
   }
   getNode() {
@@ -4709,14 +4709,14 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   _nodeDefToJavascriptClass() {
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
     if (this._amIRoot()) {
-      components.push(`getGrammarProgram() {
-        if (!this._cachedGrammarProgramRoot)
-          this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
+      components.push(`getHandGrammarProgram() {
+        if (!this._cachedHandGrammarProgramRoot)
+          this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
             this.getParent()
               .toString()
               .replace(/\\/g, "\\\\")
           )}\`)
-        return this._cachedGrammarProgramRoot
+        return this._cachedHandGrammarProgramRoot
       }`)
       const nodeTypeMap = this.getLanguageDefinitionProgram()
         .getValidConcreteAndAbstractNodeTypeDefinitions()
@@ -5806,16 +5806,16 @@ jtreeNode.compileGrammarAndCreateProgram = (programPath, grammarPath) => {
   const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
   return new programConstructor(fs.readFileSync(programPath, "utf8"))
 }
-jtreeNode.formatProgram = (programCode, grammarPath) => {
+jtreeNode.formatCode = (programCode, grammarPath) => {
   // tod: remove?
   const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
   const program = new programConstructor(programCode)
   return program.format().toString()
 }
-jtreeNode.formatFile = (programPath, grammarPath) => {
+jtreeNode.formatFileInPlace = (programPath, grammarPath) => {
   // tod: remove?
   const original = jtree.TreeNode.fromDisk(programPath)
-  const formatted = jtreeNode.formatProgram(original.toString(), grammarPath)
+  const formatted = jtreeNode.formatCode(original.toString(), grammarPath)
   if (original === formatted) return false
   new jtree.TreeNode(formatted).toDisk(programPath)
   return true

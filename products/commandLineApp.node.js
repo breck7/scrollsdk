@@ -150,7 +150,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return `Starting sandbox on port ${port}`
   }
   format(programPath) {
-    return jtree.formatFile(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
+    return jtree.formatFileInPlace(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
   }
   parse(programPath) {
     const programConstructor = jtree.compileGrammarFileAtPathAndReturnRootConstructor(this._getGrammarPathOrThrow(programPath))

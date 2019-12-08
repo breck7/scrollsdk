@@ -78,7 +78,7 @@ testTree.jibberish = equal => {
   if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
 
   const defNode = program
-    .getGrammarProgram()
+    .getHandGrammarProgram()
     .getNodeTypeFamilyTree()
     .getNode("topLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
@@ -534,10 +534,10 @@ anyNode
 anyCell`
   ).compileAndReturnRootConstructor()
   const program = new programConstructor()
-  const grammarProgram = program.getGrammarProgram()
+  const handGrammarProgram = program.getHandGrammarProgram()
 
   // Assert
-  let errors = grammarProgram.getAllErrors()
+  let errors = handGrammarProgram.getAllErrors()
   equal(errors.length, 0)
   errors = program.getAllErrors()
   equal(errors.length, 0)

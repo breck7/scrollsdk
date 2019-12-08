@@ -7,9 +7,9 @@
         [{ regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode }, { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }]
       )
     }
-    getGrammarProgram() {
-      if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang grammar
+    getHandGrammarProgram() {
+      if (!this._cachedHandGrammarProgramRoot)
+        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang grammar
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
@@ -405,7 +405,7 @@ extendsCellTypeNode
  todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell cellTypeIdCell
  single`)
-      return this._cachedGrammarProgramRoot
+      return this._cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

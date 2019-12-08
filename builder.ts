@@ -74,6 +74,7 @@ class Builder extends AbstractBuilder {
 
   _makeTestTreeForFolder(dir: treeNotationTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
+    const swarm = require("./products/swarm.nodejs.js")
 
     const fileTestTree: any = {}
 
@@ -90,7 +91,7 @@ class Builder extends AbstractBuilder {
     allTestFiles
       .filter(file => file.endsWith(".swarm"))
       .forEach(file => {
-        Object.assign(fileTestTree, jtree.compileGrammarAndCreateProgram(file, __dirname + "/langs/swarm/swarm.grammar").compileToRacer(file))
+        Object.assign(fileTestTree, new swarm(Disk.read(file)).compileToRacer(file))
       })
     return fileTestTree
   }

@@ -99,7 +99,7 @@ class TestRacerFile {
     return Object.values(this._testTree).length
   }
 
-  get skippedLength() {
+  get numberOfSkippedBlocks() {
     return this.length - this._filterSkippedTests().length
   }
 
@@ -227,10 +227,14 @@ class TestRacer {
 
   private _emitSessionPlanMessage() {
     let blocks = 0
-    let skippedLength = 0
     Object.values(this._fileTestTree).forEach(value => (blocks += value.length))
-    Object.values(this._fileTestTree).forEach(value => (skippedLength += value.skippedLength))
-    this._emitMessage(`${this.length} files and ${blocks} blocks to run. ${skippedLength} skipped blocks.`)
+    this._emitMessage(`${this.length} files and ${blocks} blocks to run. ${this._getNumberOfSkippedBlocks()} skipped blocks.`)
+  }
+
+  private _getNumberOfSkippedBlocks() {
+    let skippedBlocks = 0
+    Object.values(this._fileTestTree).forEach(value => (skippedBlocks += value.numberOfSkippedBlocks))
+    return skippedBlocks
   }
 
   private _getFailures() {
@@ -242,6 +246,8 @@ ${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach((line: any) 
 
   private _emitSessionFinishMessage() {
     return this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
+ skipped
+  ${this._getNumberOfSkippedBlocks()} blocks
  passed
   ${this._sessionFilesPassed} files
   ${this._sessionBlocksPassed} blocks

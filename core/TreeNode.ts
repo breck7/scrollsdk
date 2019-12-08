@@ -1705,6 +1705,12 @@ class TreeNode extends AbstractNode {
     return this.getChildren().find(fn)
   }
 
+  findLast(fn: treeNotationTypes.filterFn) {
+    return this.getChildren()
+      .reverse()
+      .find(fn)
+  }
+
   every(fn: treeNotationTypes.everyFn) {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {

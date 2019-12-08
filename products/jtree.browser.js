@@ -1,11 +1,8 @@
 "use strict"
 class Timer {
   constructor() {
-    this._tickTime = Date.now() - (this.isNodeJs() ? 1000 * process.uptime() : 0)
+    this._tickTime = Date.now() - (TreeUtils.isNodeJs() ? 1000 * process.uptime() : 0)
     this._firstTickTime = this._tickTime
-  }
-  isNodeJs() {
-    return typeof exports !== "undefined"
   }
   tick(msg) {
     const elapsed = Date.now() - this._tickTime
@@ -21,6 +18,9 @@ class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
+  }
+  static isNodeJs() {
+    return typeof exports !== "undefined"
   }
   static findProjectRoot(startingDirName, projectName) {
     const fs = require("fs")
@@ -273,6 +273,12 @@ class TreeUtils {
   static resolveProperty(obj, path, separator = ".") {
     const properties = Array.isArray(path) ? path : path.split(separator)
     return properties.reduce((prev, curr) => prev && prev[curr], obj)
+  }
+  static appendCodeAndReturnValueOnWindow(code, name) {
+    const script = document.createElement("script")
+    script.innerHTML = code
+    document.head.appendChild(script)
+    return window[name]
   }
   static formatStr(str, catchAllCellDelimiter = " ", parameterMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
@@ -2141,6 +2147,11 @@ class TreeNode extends AbstractNode {
   }
   find(fn) {
     return this.getChildren().find(fn)
+  }
+  findLast(fn) {
+    return this.getChildren()
+      .reverse()
+      .find(fn)
   }
   every(fn) {
     let index = 0
@@ -4668,7 +4679,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     return this._cache_isRoot
   }
   _getLanguageRootNode() {
-    return this.getParent()._getRootNodeTypeDefinitionNode()
+    return this.getParent().getRootNodeTypeDefinitionNode()
   }
   _isErrorNodeType() {
     return this.get(GrammarConstants.baseNodeType) === GrammarConstants.errorNode
@@ -4926,29 +4937,31 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.todoComment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
-  _compileAndReturnNodeTypeMap() {
-    if (!this._cache_compiledLoadedNodeTypes) {
-      if (this.isNodeJs()) {
-        const code = this.toNodeJsJavascript(__dirname + "/../index.js")
-        try {
-          const rootNode = this._importNodeJsRootNodeTypeConstructor(code)
-          this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
-          if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
-        } catch (err) {
-          // todo: figure out best error pattern here for debugging
-          console.log(err)
-          // console.log(`Error in code: `)
-          // console.log(new TreeNode(code).toStringWithLineNumbers())
-        }
-      } else this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
+  _compileAndEvalGrammar() {
+    if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = TreeUtils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
+    else {
+      const code = this.toNodeJsJavascript(__dirname + "/../index.js")
+      try {
+        const rootNode = this._requireInVmNodeJsRootNodeTypeConstructor(code)
+        this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
+        if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
+      } catch (err) {
+        // todo: figure out best error pattern here for debugging
+        console.log(err)
+        // console.log(`Error in code: `)
+        // console.log(new TreeNode(code).toStringWithLineNumbers())
+      }
     }
+  }
+  _compileAndReturnNodeTypeMap() {
+    if (!this._cache_compiledLoadedNodeTypes) this._compileAndEvalGrammar()
     return this._cache_compiledLoadedNodeTypes
   }
   _setDirName(name) {
     this._dirName = name
     return this
   }
-  _importNodeJsRootNodeTypeConstructor(code) {
+  _requireInVmNodeJsRootNodeTypeConstructor(code) {
     const vm = require("vm")
     // todo: cleanup up
     try {
@@ -4964,12 +4977,6 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
       console.log(err)
       throw err
     }
-  }
-  _importBrowserRootNodeTypeConstructor(code, name) {
-    const script = document.createElement("script")
-    script.innerHTML = code
-    document.head.appendChild(script)
-    return window[name]
   }
   // todo: better formalize the source maps pattern somewhat used here by getAllErrors
   // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
@@ -4988,7 +4995,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
   }
   toReadMe() {
     const languageName = this.getExtensionName()
-    const rootNodeDef = this._getRootNodeTypeDefinitionNode()
+    const rootNodeDef = this.getRootNodeTypeDefinitionNode()
     const cellTypes = this.getCellTypeDefinitions()
     const nodeTypeFamilyTree = this.getNodeTypeFamilyTree()
     const exampleNode = rootNodeDef.getExamples()[0]
@@ -5043,7 +5050,7 @@ paragraph This readme was auto-generated using the
   }
   toBundle() {
     const files = {}
-    const rootNodeDef = this._getRootNodeTypeDefinitionNode()
+    const rootNodeDef = this.getRootNodeTypeDefinitionNode()
     const languageName = this.getExtensionName()
     const example = rootNodeDef.getExamples()[0]
     const sampleCode = example ? example.childrenToString() : ""
@@ -5083,7 +5090,7 @@ ${testCode}`
     return files
   }
   getTargetExtension() {
-    return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo)
+    return this.getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo)
   }
   getCellTypeDefinitions() {
     if (!this._cache_cellTypes) this._cache_cellTypes = this._getCellTypeDefinitions()
@@ -5113,12 +5120,12 @@ ${testCode}`
   getValidConcreteAndAbstractNodeTypeDefinitions() {
     return this.getChildrenByNodeConstructor(nodeTypeDefinitionNode).filter(node => node._hasValidNodeTypeId())
   }
-  _getRootNodeTypeDefinitionNode() {
-    if (!this._cache_rootNodeTypeNode) {
-      this.forEach(def => {
-        if (def instanceof AbstractGrammarDefinitionNode && def.has(GrammarConstants.root) && def._hasValidNodeTypeId()) this._cache_rootNodeTypeNode = def
-      })
-    }
+  _getLastRootNodeTypeDefinitionNode() {
+    return this.findLast(def => def instanceof AbstractGrammarDefinitionNode && def.has(GrammarConstants.root) && def._hasValidNodeTypeId())
+  }
+  _initRootNodeTypeDefinitionNode() {
+    if (this._cache_rootNodeTypeNode) return
+    if (!this._cache_rootNodeTypeNode) this._cache_rootNodeTypeNode = this._getLastRootNodeTypeDefinitionNode()
     // By default, have a very permissive basic root node.
     // todo: whats the best design pattern to use for this sort of thing?
     if (!this._cache_rootNodeTypeNode) {
@@ -5127,6 +5134,9 @@ ${testCode}`
  ${GrammarConstants.catchAllNodeType} ${GrammarConstants.BlobNode}`)[0]
       this._addDefaultCatchAllBlobNode()
     }
+  }
+  getRootNodeTypeDefinitionNode() {
+    this._initRootNodeTypeDefinitionNode()
     return this._cache_rootNodeTypeNode
   }
   // todo: whats the best design pattern to use for this sort of thing?
@@ -5139,17 +5149,17 @@ ${testCode}`
     return this.getGrammarName()
   }
   getRootNodeTypeId() {
-    return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
+    return this.getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
   }
   getGrammarName() {
     return this.getRootNodeTypeId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
   }
   _getMyInScopeNodeTypeIds() {
-    const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
+    const nodeTypesNode = this.getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
   _getInScopeNodeTypeIds() {
-    const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
+    const nodeTypesNode = this.getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
   _initProgramNodeTypeDefinitionCache() {
@@ -5165,15 +5175,15 @@ ${testCode}`
   }
   compileAndReturnRootConstructor() {
     if (!this._cache_rootConstructorClass) {
-      const def = this._getRootNodeTypeDefinitionNode()
+      const def = this.getRootNodeTypeDefinitionNode()
       const rootNodeTypeId = def.getNodeTypeIdFromDefinition()
       this._cache_rootConstructorClass = def.getLanguageDefinitionProgram()._compileAndReturnNodeTypeMap()[rootNodeTypeId]
     }
     return this._cache_rootConstructorClass
   }
   _getFileExtensions() {
-    return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.extensions)
-      ? this._getRootNodeTypeDefinitionNode()
+    return this.getRootNodeTypeDefinitionNode().get(GrammarConstants.extensions)
+      ? this.getRootNodeTypeDefinitionNode()
           .get(GrammarConstants.extensions)
           .split(" ")
           .join(",")
@@ -5192,7 +5202,7 @@ ${testCode}`
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
-    const rootDef = this._getRootNodeTypeDefinitionNode()
+    const rootDef = this.getRootNodeTypeDefinitionNode()
     const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(GrammarConstants._rootNodeJsHeader)
     const rootName = rootDef._getGeneratedClassName()
     if (!rootName) throw new Error(`Root Node Type Has No Name`)

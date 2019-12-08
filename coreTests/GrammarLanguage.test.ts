@@ -159,7 +159,7 @@ langs.forEach((lang: string) => {
 
     // Act
     const simulatedProgram = grammarProgram
-      ._getRootNodeTypeDefinitionNode()
+      .getRootNodeTypeDefinitionNode()
       .synthesizeNode()
       .join("\n")
 

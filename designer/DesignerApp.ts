@@ -57,7 +57,7 @@ class DesignerApp extends AbstractTreeComponent {
     const grammarProgram = new jtree.GrammarProgram(this.getGrammarCode())
     this.setCodeCode(
       grammarProgram
-        ._getRootNodeTypeDefinitionNode()
+        .getRootNodeTypeDefinitionNode()
         .synthesizeNode()
         .join("\n")
     )

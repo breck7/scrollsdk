@@ -275,11 +275,12 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   register(grammarPath: treeNotationTypes.grammarFilePath) {
+    // todo: should support compiled grammars.
     const extension = this._register(grammarPath)
     return `Registered ${extension}`
   }
 
-  _register(grammarPath: treeNotationTypes.grammarFilePath) {
+  private _register(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
     const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
     const extension = grammarProgram.getExtensionName()

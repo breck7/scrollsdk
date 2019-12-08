@@ -2,12 +2,8 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class Timer {
   constructor() {
-    this._tickTime = Date.now() - (this.isNodeJs() ? 1000 * process.uptime() : 0)
+    this._tickTime = Date.now() - (TreeUtils.isNodeJs() ? 1000 * process.uptime() : 0)
     this._firstTickTime = this._tickTime
-  }
-
-  isNodeJs() {
-    return typeof exports !== "undefined"
   }
 
   private _tickTime: number
@@ -29,6 +25,10 @@ class TreeUtils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
+  }
+
+  static isNodeJs() {
+    return typeof exports !== "undefined"
   }
 
   static Timer = Timer
@@ -378,6 +378,13 @@ class TreeUtils {
   static resolveProperty(obj: Object, path: string | string[], separator = ".") {
     const properties = Array.isArray(path) ? path : path.split(separator)
     return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
+  }
+
+  static appendCodeAndReturnValueOnWindow(code: treeNotationTypes.javascriptCode, name: string): any {
+    const script = document.createElement("script")
+    script.innerHTML = code
+    document.head.appendChild(script)
+    return (<any>window)[name]
   }
 
   static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: treeNotationTypes.stringMap) {

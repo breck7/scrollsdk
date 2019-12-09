@@ -2197,20 +2197,19 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     }
   }
 
-  // todo: better formalize the source maps pattern somewhat used here by getAllErrors
-  // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
-  getErrorsInGrammarExamples() {
-    const programConstructor = this.compileAndReturnRootConstructor()
-    const errors: treeNotationTypes.TreeError[] = []
+  examplesToTestBlocks(programConstructor = this.compileAndReturnRootConstructor(), expectedErrorMessage = "") {
+    const testBlocks: { [id: string]: Function } = {}
     this.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
-        const exampleProgram = new programConstructor(example.childrenToString())
-        exampleProgram.getAllErrors(example._getLineNumber() + 1).forEach(err => {
-          errors.push(err)
-        })
+        const id = def._getId() + example.getContent()
+        testBlocks[id] = (equal: Function) => {
+          const exampleProgram = new programConstructor(example.childrenToString())
+          const errors = exampleProgram.getAllErrors(example._getLineNumber() + 1)
+          equal(errors.join("\n"), expectedErrorMessage, `Expected no errors in ${id}`)
+        }
       })
     )
-    return errors
+    return testBlocks
   }
 
   toReadMe() {

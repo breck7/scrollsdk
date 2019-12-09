@@ -16,6 +16,7 @@ edge / 2019-12-08
 - Breaking: removed default execute implementation on Core. Up to grammar to specify.
 - Breaking: jtree.makeProgram is now jtree.compileGrammarAndCreateProgram
 - Breaking: jtree.formatFile is now jtree.formatFileInPlace and jtree.formatProgram is now jtree.formatCode
+- Breaking: removed getErrorsInGrammarExamples. Use examplesToTestBlocks
 
 48.1.0 / 2019-12-06
 ===================

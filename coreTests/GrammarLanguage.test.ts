@@ -669,17 +669,12 @@ testTree.bundler = equal => {
   equal(bundle["readme.md"].includes("Installing"), true)
 }
 
-testTree.examples = equal => {
-  // Arrange/Act
-  const jibberishGrammarProgram = new HandGrammarProgram(jibberishGrammarCode)
+const jibberishGrammarProgram = new HandGrammarProgram(jibberishGrammarCode)
+Object.assign(testTree, jibberishGrammarProgram.examplesToTestBlocks())
 
-  // Assert
-  let errors = jibberishGrammarProgram.getErrorsInGrammarExamples()
-  equal(errors.length, 0)
-
-  // Arrange/Act
-  const badGrammarProgram = new HandGrammarProgram(
-    `badNode
+// Arrange/Act
+const badGrammarProgram = new HandGrammarProgram(
+  `badNode
  root
  inScope addNode
 addNode
@@ -690,12 +685,8 @@ addNode
   + 1 B
 keywordCell
 intCell`
-  )
-
-  // Assert
-  errors = badGrammarProgram.getErrorsInGrammarExamples()
-  equal(errors.length, 1)
-}
+)
+Object.assign(testTree, badGrammarProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 

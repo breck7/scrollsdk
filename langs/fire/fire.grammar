@@ -142,6 +142,8 @@ substractNode
  crux substract
 addNode
  crux add
+ example
+  add ten 2 3 5
  description Add numbers and store result
  compiler
   catchAllCellDelimiter  + 

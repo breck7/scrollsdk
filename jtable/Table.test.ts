@@ -1,6 +1,7 @@
 #!/usr/bin/env ts-node
 
 import { Table, ComparisonOperators } from "./Table"
+import { TableParser } from "./TableParser"
 import { DummyDataSets } from "./DummyDataSets"
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
@@ -10,6 +11,19 @@ const { jtree } = require("../index.js")
 const moment = require("moment")
 
 const testTree: treeNotationTypes.testTree = {}
+
+testTree.missing = equal => {
+  // Arrange
+  const input = `name,age
+bob,
+mike,55`
+  const inputs = new TableParser().parseTableInputsFromString(input)
+  const table = new Table(inputs.rows, undefined, undefined, undefined, 126)
+  const columns = table.getColumnsArray()
+
+  // Assert
+  equal(columns[1].getPrimitiveTypeName(), "number")
+}
 
 testTree.all = equal => {
   // Arrange

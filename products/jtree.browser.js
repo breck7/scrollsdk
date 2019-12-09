@@ -344,8 +344,8 @@ class TreeUtils {
     const prng = this._getPseudoRandom0to1FloatGenerator(seed)
     const sampled = {}
     const populationSize = population.length
+    if (quantity >= populationSize) return population.slice(0)
     const picked = []
-    if (quantity >= populationSize) quantity = populationSize
     while (picked.length < quantity) {
       const index = Math.floor(prng() * populationSize)
       if (sampled[index]) continue
@@ -3100,7 +3100,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "49.0.0"
+TreeNode.getVersion = () => "49.0.1"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

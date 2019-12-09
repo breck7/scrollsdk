@@ -1,3 +1,8 @@
+49.0.1 / 2019-12-09
+===================
+- New: JTable: seed param in Table class
+- Fix: JTable: first non-blank cell now used for column type prediction
+
 49.0.0 / 2019-12-08
 ===================
 - Infra: general refactor to prep for switch to have Grammar entirely written in Grammar

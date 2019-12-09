@@ -459,8 +459,8 @@ class TreeUtils {
     const prng = this._getPseudoRandom0to1FloatGenerator(seed)
     const sampled: { [index: number]: boolean } = {}
     const populationSize = population.length
+    if (quantity >= populationSize) return population.slice(0)
     const picked = []
-    if (quantity >= populationSize) quantity = populationSize
     while (picked.length < quantity) {
       const index = Math.floor(prng() * populationSize)
       if (sampled[index]) continue

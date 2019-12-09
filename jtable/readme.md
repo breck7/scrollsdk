@@ -13,3 +13,8 @@ Features
 - Handles exporting to CSV, TSV, JSON, etc
 - Handles common mutations
 
+Ohayo
+-----
+
+JTable is the underlying data table library used by [Ohayo](https://ohayo.computer/).
+

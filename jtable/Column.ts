@@ -822,10 +822,10 @@ class Column {
     return this.getPrimitiveTypeObj().isInvalidValue(value)
   }
 
-  private _getSample() {
+  private _getFirstNonEmptyValueFromSampleSet() {
     if (this._sample === undefined) {
       const sampleSet = this._getSampleSet()
-      this._sample = sampleSet.length ? sampleSet[0] : ""
+      this._sample = sampleSet.length ? sampleSet.find(value => value !== undefined && value !== null && value !== NaN && value !== "") : ""
     }
     return this._sample
   }
@@ -877,7 +877,7 @@ class Column {
 
   isLink() {
     if (this._isLink !== undefined) return this._isLink
-    const sample = this._getSample()
+    const sample = this._getFirstNonEmptyValueFromSampleSet()
     if (!this.isString() || !sample || !sample.match) this._isLink = false
     else this._isLink = sample.match(/^(https?\:|\/)/) ? true : false
     return this._isLink
@@ -929,7 +929,7 @@ class Column {
 
   getFormat() {
     if (this._getColDefObject().format) return this._getColDefObject().format
-    return this.getPrimitiveTypeObj().getDefaultFormat(this.getColumnName(), this._getSample())
+    return this.getPrimitiveTypeObj().getDefaultFormat(this.getColumnName(), this._getFirstNonEmptyValueFromSampleSet())
   }
 
   getBlankPercentage() {
@@ -1149,10 +1149,10 @@ class Column {
 
   private _inferType() {
     const columnObj = this._getColDefObject()
-    const sample = this._getSample()
+    const sample = this._getFirstNonEmptyValueFromSampleSet()
     if (columnObj && columnObj.type && Column.getPrimitiveTypeByName(columnObj.type)) return Column.getPrimitiveTypeByName(columnObj.type)
 
-    const guesses: any = Column._getColumnProbabilities(this.getColumnName(), this._getSample())
+    const guesses: any = Column._getColumnProbabilities(this.getColumnName(), this._getFirstNonEmptyValueFromSampleSet())
 
     let max = 0
     let bestGuess = null

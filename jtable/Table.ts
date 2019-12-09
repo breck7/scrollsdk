@@ -91,9 +91,10 @@ declare type columnsMap = { [columnName: string]: Column }
 // todo: remove detectAndAddParam?
 // todo: remove rowclass param?
 class Table {
-  constructor(rowsArray: (Row | jTableTypes.rawRowJavascriptObject)[] = [], columnsArrayOrMap: jTableTypes.columnDefinitionObject[] | columnsMap = [], rowClass = Row, detectAndAddColumns = true) {
+  constructor(rowsArray: (Row | jTableTypes.rawRowJavascriptObject)[] = [], columnsArrayOrMap: jTableTypes.columnDefinitionObject[] | columnsMap = [], rowClass = Row, detectAndAddColumns = true, samplingSeed = Date.now()) {
     this._ctime = new jtree.TreeNode()._getProcessTimeInMilliseconds()
     this._tableId = this._getUniqueId()
+    this._samplingSeed = samplingSeed
 
     // if this is ALREADY CARDS, should we be a view?
     this._rows = rowsArray.map(source => (source instanceof Row ? source : new rowClass(source, this)))
@@ -105,6 +106,7 @@ class Table {
     else if (columnsArrayOrMap) this._columnsMap = columnsArrayOrMap
   }
 
+  private _samplingSeed: number
   private static _uniqueId = 0
 
   _getUniqueId() {
@@ -266,7 +268,7 @@ class Table {
 
   private _getSampleSet() {
     const SAMPLE_SET_SIZE = 30 // todo: fix.
-    if (!this._sampleSet) this._sampleSet = jtree.Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, Date.now())
+    if (!this._sampleSet) this._sampleSet = jtree.Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, this._samplingSeed)
     return this._sampleSet
   }
 

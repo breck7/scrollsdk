@@ -635,10 +635,10 @@ class Column {
   isInvalidValue(value) {
     return this.getPrimitiveTypeObj().isInvalidValue(value)
   }
-  _getSample() {
+  _getFirstNonEmptyValueFromSampleSet() {
     if (this._sample === undefined) {
       const sampleSet = this._getSampleSet()
-      this._sample = sampleSet.length ? sampleSet[0] : ""
+      this._sample = sampleSet.length ? sampleSet.find(value => value !== undefined && value !== null && value !== NaN && value !== "") : ""
     }
     return this._sample
   }
@@ -681,7 +681,7 @@ class Column {
   }
   isLink() {
     if (this._isLink !== undefined) return this._isLink
-    const sample = this._getSample()
+    const sample = this._getFirstNonEmptyValueFromSampleSet()
     if (!this.isString() || !sample || !sample.match) this._isLink = false
     else this._isLink = sample.match(/^(https?\:|\/)/) ? true : false
     return this._isLink
@@ -726,7 +726,7 @@ class Column {
   }
   getFormat() {
     if (this._getColDefObject().format) return this._getColDefObject().format
-    return this.getPrimitiveTypeObj().getDefaultFormat(this.getColumnName(), this._getSample())
+    return this.getPrimitiveTypeObj().getDefaultFormat(this.getColumnName(), this._getFirstNonEmptyValueFromSampleSet())
   }
   getBlankPercentage() {
     let blankCount = 0
@@ -908,9 +908,9 @@ class Column {
   }
   _inferType() {
     const columnObj = this._getColDefObject()
-    const sample = this._getSample()
+    const sample = this._getFirstNonEmptyValueFromSampleSet()
     if (columnObj && columnObj.type && Column.getPrimitiveTypeByName(columnObj.type)) return Column.getPrimitiveTypeByName(columnObj.type)
-    const guesses = Column._getColumnProbabilities(this.getColumnName(), this._getSample())
+    const guesses = Column._getColumnProbabilities(this.getColumnName(), this._getFirstNonEmptyValueFromSampleSet())
     let max = 0
     let bestGuess = null
     for (let typeScore in guesses) {
@@ -2156,10 +2156,11 @@ var ComparisonOperators
 // todo: remove detectAndAddParam?
 // todo: remove rowclass param?
 class Table {
-  constructor(rowsArray = [], columnsArrayOrMap = [], rowClass = Row, detectAndAddColumns = true) {
+  constructor(rowsArray = [], columnsArrayOrMap = [], rowClass = Row, detectAndAddColumns = true, samplingSeed = Date.now()) {
     this._columnsMap = {}
     this._ctime = new jtree.TreeNode()._getProcessTimeInMilliseconds()
     this._tableId = this._getUniqueId()
+    this._samplingSeed = samplingSeed
     // if this is ALREADY CARDS, should we be a view?
     this._rows = rowsArray.map(source => (source instanceof Row ? source : new rowClass(source, this)))
     // Add detected columns first, so they can be overwritten
@@ -2291,7 +2292,7 @@ class Table {
   }
   _getSampleSet() {
     const SAMPLE_SET_SIZE = 30 // todo: fix.
-    if (!this._sampleSet) this._sampleSet = jtree.Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, Date.now())
+    if (!this._sampleSet) this._sampleSet = jtree.Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, this._samplingSeed)
     return this._sampleSet
   }
   _getDetectedColumnNames() {

@@ -127,10 +127,10 @@ class AbstractBuilder extends jtree.TreeNode {
       // Assert
       equal(exampleErrors.length, 0, exampleErrors.length ? "examples errs: " + exampleErrors : "no example errors")
     }
-    const grammarProgram = new jtree.HandGrammarProgram(Disk.read(grammarPath))
-    testTree[`grammarTypeScriptImplementationCheckOf${grammarPath}`] = equal => checkGrammarFile(equal, grammarProgram)
-    testTree[`grammarGrammarImplementationCheckOf${grammarPath}`] = equal => checkGrammarFile(equal, jtree.compileGrammarAndCreateProgram(grammarPath, __dirname + "/../langs/grammar/grammar.grammar"))
-    testTree[`examplesInGrammarCheckForGrammarTypeScriptImplementationCheckOf${grammarPath}`] = equal => checkGrammarExamples(equal, grammarProgram)
+    const handGrammarProgram = new jtree.HandGrammarProgram(Disk.read(grammarPath))
+    testTree[`grammarCheckOf${grammarPath}`] = equal => checkGrammarFile(equal, jtree.compileGrammarAndCreateProgram(grammarPath, __dirname + "/../langs/grammar/grammar.grammar"))
+    testTree[`handGrammarCheckOf${grammarPath}`] = equal => checkGrammarFile(equal, handGrammarProgram)
+    testTree[`handGrammarExamplesCheckOf${grammarPath}`] = equal => checkGrammarExamples(equal, handGrammarProgram)
     return testTree
   }
   _help(filePath = process.argv[1]) {

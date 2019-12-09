@@ -582,13 +582,14 @@ class TestRacerFile {
   get length() {
     return Object.values(this._testTree).length
   }
-  get numberOfSkippedBlocks() {
-    return this.length - this._filterSkippedTests().length
+  get skippedTestBlockNames() {
+    const testsToRun = this._filterSkippedTestBlocks()
+    return Object.keys(this._testTree).filter(blockName => !testsToRun.includes(blockName))
   }
   _emitMessage(message) {
     this.getRunner()._emitMessage(message)
   }
-  _filterSkippedTests() {
+  _filterSkippedTestBlocks() {
     // _ prefix = run on these tests block
     // $ prefix = skip this test
     const runOnlyTheseTestBlocks = Object.keys(this._testTree).filter(key => key.startsWith("_"))
@@ -596,18 +597,18 @@ class TestRacerFile {
     return Object.keys(this._testTree).filter(key => !key.startsWith("$"))
   }
   async execute() {
-    const tests = this._filterSkippedTests()
-    this._emitStartFileMessage(tests.length)
+    const testBlockNames = this._filterSkippedTestBlocks()
+    this._emitStartFileMessage(testBlockNames.length)
     const fileTimer = new TreeUtils.Timer()
     const blockResults = {}
-    const blockPromises = tests.map(async testName => {
+    const blockPromises = testBlockNames.map(async testName => {
       const results = await this._testTree[testName].execute()
       blockResults[testName] = results
     })
     await Promise.all(blockPromises)
     const fileStats = this._aggregateBlockResultsIntoFileResults(blockResults)
     const fileTimeElapsed = fileTimer.tick()
-    fileStats.blocksFailed ? this._emitFileFailedMessage(fileStats, fileTimeElapsed, tests.length) : this._emitFilePassedMessage(fileStats, fileTimeElapsed, tests.length)
+    fileStats.blocksFailed ? this._emitFileFailedMessage(fileStats, fileTimeElapsed, testBlockNames.length) : this._emitFilePassedMessage(fileStats, fileTimeElapsed, testBlockNames.length)
     return fileStats
   }
   _aggregateBlockResultsIntoFileResults(fileBlockResults) {
@@ -692,11 +693,15 @@ class TestRacer {
   _emitSessionPlanMessage() {
     let blocks = 0
     Object.values(this._fileTestTree).forEach(value => (blocks += value.length))
-    this._emitMessage(`${this.length} files and ${blocks} blocks to run. ${this._getNumberOfSkippedBlocks()} skipped blocks.`)
+    this._emitMessage(`${this.length} files and ${blocks} blocks to run. ${this._getSkippedBlockNames().length} skipped blocks.`)
   }
-  _getNumberOfSkippedBlocks() {
-    let skippedBlocks = 0
-    Object.values(this._fileTestTree).forEach(value => (skippedBlocks += value.numberOfSkippedBlocks))
+  _getSkippedBlockNames() {
+    const skippedBlocks = []
+    Object.values(this._fileTestTree).forEach(file => {
+      file.skippedTestBlockNames.forEach(blockName => {
+        skippedBlocks.push(blockName)
+      })
+    })
     return skippedBlocks
   }
   _getFailures() {
@@ -706,9 +711,10 @@ class TestRacer {
 ${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach(line => line.deleteWordAt(0))).toString(2)}`
   }
   _emitSessionFinishMessage() {
+    const skipped = this._getSkippedBlockNames()
     return this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
  skipped
-  ${this._getNumberOfSkippedBlocks()} blocks
+  ${skipped.length} blocks${skipped ? " " + skipped.join(" ") : ""}
  passed
   ${this._sessionFilesPassed} files
   ${this._sessionBlocksPassed} blocks

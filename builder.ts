@@ -83,11 +83,13 @@ class Builder extends AbstractBuilder {
       .forEach(file => {
         fileTestTree[file] = this.makeGrammarFileTestTree(file)
       })
+
     allTestFiles
       .filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts"))
       .forEach(file => {
         fileTestTree[file] = require(file).testTree
       })
+
     allTestFiles
       .filter(file => file.endsWith(".swarm"))
       .forEach(file => {

@@ -1,6 +1,6 @@
 #! /usr/bin/env node
 
-const fire = require("./fire.node.js")
+const fire = require("../../products/fire.nodejs.js")
 const { jtree } = require("../../index.js")
 
 const testTree = {}

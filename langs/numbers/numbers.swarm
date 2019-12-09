@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test basics Numbers
  arrange
-  require ./numbers.node.js
+  require ../../products/numbers.nodejs.js
   constructWithParagraph
    comment Should be 5:
    + 2 3

@@ -7,7 +7,7 @@ const { Disk } = require("../products/Disk.node.js")
 
 const fs = require("fs")
 
-const GrammarProgram = jtree.GrammarProgram
+const HandGrammarProgram = jtree.HandGrammarProgram
 const TreeUtils = jtree.Utils
 const TreeNode = jtree.TreeNode
 const TreeEvents = jtree.TreeEvents
@@ -226,7 +226,7 @@ class TreeBaseFolder extends TreeNode {
   toSqlLiteCreateTables(): string {
     this.loadFolder()
 
-    const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
+    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
     const tableDefinitionNodes = grammarProgram.filter((node: any) => node.getTableNameIfAny && node.getTableNameIfAny())
     // todo: filter out root root
 
@@ -381,8 +381,8 @@ treeBaseErrorNode
 
   _getAsProgram() {
     this.loadFolder()
-    const grammarProgram = new GrammarProgram(this._getTreeBaseGrammarCode())
-    const programConstructor = <any>grammarProgram.getRootConstructor()
+    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
+    const programConstructor = <any>grammarProgram.compileAndReturnRootConstructor()
     return new programConstructor(this.toString())
   }
 

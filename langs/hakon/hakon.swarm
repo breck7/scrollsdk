@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test compileHakon
  arrange
-  require ./hakon.node.js
+  require ../../products/hakon.nodejs.js
   todo Have a way to get the first root example instead of duplicating it here.
   constructWithParagraph
    body

@@ -46,8 +46,8 @@ langs.forEach((name: string) => {
 
     // Act
     const inferredPrefixGrammarCode = new UnknownGrammarProgram(sampleCode).inferGrammarFileForAKeywordLanguage("foobar")
-    const inferredPrefixGrammarProgram = new jtree.GrammarProgram(inferredPrefixGrammarCode)
-    const rootProgramConstructor = inferredPrefixGrammarProgram.getRootConstructor()
+    const inferredPrefixGrammarProgram = new jtree.HandGrammarProgram(inferredPrefixGrammarCode)
+    const rootProgramConstructor = inferredPrefixGrammarProgram.compileAndReturnRootConstructor()
     const programParsedWithInferredGrammar = new rootProgramConstructor(sampleCode)
 
     // Assert

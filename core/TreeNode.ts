@@ -142,9 +142,7 @@ class TreeNode extends AbstractNode {
     [firstWord: string]: int
   }
 
-  execute(context: any) {
-    return Promise.all(this.map(child => child.execute(context)))
-  }
+  execute() {}
 
   async loadRequirements(context: any) {
     await Promise.all(this.map(node => node.loadRequirements(context)))
@@ -157,10 +155,6 @@ class TreeNode extends AbstractNode {
   getLineCellTypes() {
     // todo: make this any a constant
     return "undefinedCellType ".repeat(this.getWords().length).trim()
-  }
-
-  executeSync(context?: any) {
-    return this.map(child => child.executeSync(context))
   }
 
   isNodeJs() {
@@ -1705,6 +1699,12 @@ class TreeNode extends AbstractNode {
     return this.getChildren().find(fn)
   }
 
+  findLast(fn: treeNotationTypes.filterFn) {
+    return this.getChildren()
+      .reverse()
+      .find(fn)
+  }
+
   every(fn: treeNotationTypes.everyFn) {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
@@ -2833,7 +2833,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "48.1.0"
+  static getVersion = () => "49.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

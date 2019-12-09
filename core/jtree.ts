@@ -2,7 +2,7 @@ import { TreeUtils } from "./TreeUtils"
 import { TreeNode, ExtendibleTreeNode, TreeEvents } from "./TreeNode"
 import { TestRacer } from "./TestRacer"
 
-import { GrammarProgram, GrammarBackedNode, GrammarConstants, UnknownNodeTypeError } from "./GrammarLanguage"
+import { HandGrammarProgram, GrammarBackedNode, GrammarConstants, UnknownNodeTypeError } from "./GrammarLanguage"
 import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
 import { TreeNotationCodeMirrorMode } from "./TreeNotationCodeMirrorMode"
 
@@ -15,7 +15,7 @@ class jtree {
   static TreeEvents = TreeEvents
   static TreeNode = TreeNode
   static ExtendibleTreeNode = ExtendibleTreeNode
-  static GrammarProgram = GrammarProgram
+  static HandGrammarProgram = HandGrammarProgram
   static UnknownGrammarProgram = UnknownGrammarProgram
   static TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
   static getVersion = () => TreeNode.getVersion()

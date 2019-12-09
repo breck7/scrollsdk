@@ -5,15 +5,15 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}
 
-testTree.makeProgram = equal => {
+testTree.compileGrammarAndCreateProgram = equal => {
   // Arrange
   const jibberishRootDir = __dirname + "/../langs/jibberish/"
   const programPath = jibberishRootDir + "sample.jibberish"
   const grammarPath = jibberishRootDir + "jibberish.grammar"
 
   // Act
-  const program = jtree.makeProgram(programPath, grammarPath)
-  const result = program.executeSync()
+  const program = jtree.compileGrammarAndCreateProgram(programPath, grammarPath)
+  const result = program.execute()
 
   // Assert
   equal(program.constructor.name, "jibberishNode", "parent program class parsed correctly")

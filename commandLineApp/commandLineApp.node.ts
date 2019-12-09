@@ -6,7 +6,7 @@ const homedir = require("os").homedir
 const { execSync } = require("child_process")
 
 const { jtree } = require("../index.js")
-const { TreeNode, GrammarProgram, Utils } = jtree
+const { TreeNode, HandGrammarProgram, Utils } = jtree
 const { Disk } = require("../products/Disk.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
@@ -139,10 +139,6 @@ ${grammars.toTable()}`
     return node.getParent().get("filepath")
   }
 
-  create() {
-    jtree.executeFile(__dirname + "/create.stamp", this._getGrammarPathByGrammarNameOrThrow("stamp"))
-  }
-
   check(programPath: treeNotationTypes.treeProgramFilePath) {
     return this._checkAndLog(programPath)
   }
@@ -161,8 +157,8 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   _check(programPath: treeNotationTypes.treeProgramFilePath) {
-    const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = jtree.makeProgram(programPath, grammarPath)
+    const programConstructor = this._getProgramConstructorFromProgramPath(programPath)
+    const program = new programConstructor(Disk.read(programPath))
     return program.getAllErrors().map((err: any) => err.getMessage())
   }
 
@@ -175,7 +171,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return this._getGrammarPathByGrammarNameOrThrow(extension)
   }
 
-  _getGrammarCompiledExecutablePath(programPath: treeNotationTypes.treeProgramFilePath) {
+  private _getGrammarCompiledExecutablePath(programPath: treeNotationTypes.treeProgramFilePath) {
     const grammarPath = this._getGrammarPathOrThrow(programPath)
     const extension = Utils.getFileExtension(programPath)
     const dir = Utils.getParentFolder(grammarPath)
@@ -191,18 +187,18 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   format(programPath: treeNotationTypes.treeProgramFilePath) {
-    return jtree.formatFile(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
+    return jtree.formatFileInPlace(programPath, this._getGrammarPathOrThrow(programPath)) ? "No change" : "File updated"
   }
 
   parse(programPath: treeNotationTypes.treeProgramFilePath) {
-    const programConstructor = jtree.getProgramConstructor(this._getGrammarPathOrThrow(programPath))
+    const programConstructor = this._getProgramConstructorFromProgramPath(programPath)
     const program = new programConstructor(Disk.read(programPath))
     return program.getParseTable(35)
   }
 
   sublime(grammarName: treeNotationTypes.grammarName, outputDirectory: treeNotationTypes.absoluteFolderPath = ".") {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     const outputPath = outputDirectory + `/${grammarProgram.getExtensionName()}.sublime-syntax`
 
     Disk.write(outputPath, grammarProgram.toSublimeSyntaxFile())
@@ -211,14 +207,13 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
   _getGrammarProgram(grammarName: treeNotationTypes.grammarName) {
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    return new GrammarProgram(Disk.read(grammarPath))
+    return new HandGrammarProgram(Disk.read(grammarPath))
   }
 
   compile(programPath: treeNotationTypes.treeProgramFilePath) {
     // todo: allow user to provide destination
-    const grammarPath = this._getGrammarPathOrThrow(programPath)
-    const program = jtree.makeProgram(programPath, grammarPath)
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const programConstructor = this._getProgramConstructorFromProgramPath(programPath)
+    const program = new programConstructor(Disk.read(programPath))
     return program.compile()
   }
 
@@ -237,7 +232,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   webForm(grammarName: treeNotationTypes.grammarName, nodeTypeId?: string) {
     // webForm grammarName nodeTypeId? Build a web form for the given grammar
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const grammarProgram = new jtree.GrammarProgram(Disk.read(grammarPath)).getRootConstructor()
+    const grammarProgram = new jtree.HandGrammarProgram(Disk.read(grammarPath)).compileAndReturnRootConstructor()
 
     let def = new grammarProgram().getDefinition()
 
@@ -275,13 +270,14 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   register(grammarPath: treeNotationTypes.grammarFilePath) {
+    // todo: should support compiled grammars.
     const extension = this._register(grammarPath)
     return `Registered ${extension}`
   }
 
-  _register(grammarPath: treeNotationTypes.grammarFilePath) {
+  private _register(grammarPath: treeNotationTypes.grammarFilePath) {
     // todo: create RegistryTreeLanguage. Check types, dupes, sort, etc.
-    const grammarProgram = new GrammarProgram(Disk.read(grammarPath))
+    const grammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
     const extension = grammarProgram.getExtensionName()
     Disk.append(this._getRegistryPath(), `\n${extension} ${grammarPath}`)
     this._reload()
@@ -299,21 +295,18 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     Disk.appendAsync(logFilePath, line, () => {})
   }
 
-  private async _executeFile(programPath: treeNotationTypes.treeProgramFilePath) {
-    const grammarPath = this._getGrammarPathOrThrow(programPath)
+  private _getProgramConstructorFromProgramPath(programPath: string) {
     const executablePath = this._getGrammarCompiledExecutablePath(programPath)
-    if (executablePath) {
-      const programConstructor = require(executablePath)
-      const program = new programConstructor(Disk.read(programPath))
-      const result = await program.execute()
-      return result
-    }
-    const result = await jtree.executeFile(programPath, grammarPath)
-    return result
+    if (executablePath) return require(executablePath)
+    const grammarPath = this._getGrammarPathOrThrow(programPath)
+    return jtree.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
   }
 
-  private _executeSync(programPath: treeNotationTypes.treeProgramFilePath) {
-    return jtree.executeFileSync(programPath, this._getGrammarPathOrThrow(programPath))
+  private async _executeFile(programPath: treeNotationTypes.treeProgramFilePath) {
+    const programConstructor = this._getProgramConstructorFromProgramPath(programPath)
+    const program = new programConstructor(Disk.read(programPath))
+    const result = await program.execute(programPath)
+    return result
   }
 
   async run(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
@@ -321,16 +314,11 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
   }
 
-  runSync(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._executeSync(programPathOrGrammarName)
-    return this._history(programPathOrGrammarName).map(file => this._executeSync(file))
-  }
-
   usage(grammarName: treeNotationTypes.grammarName) {
     const files = this._history(grammarName)
     if (!files.length) return ""
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const programConstructor = jtree.getProgramConstructor(grammarPath)
+    const programConstructor = jtree.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
     const report = new TreeNode()
     files.forEach(path => {
       try {
@@ -363,7 +351,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
   stamp(providedPath: string) {
     const path = require("path")
-    const stamp = require("../langs/stamp/stamp.node.js")
+    const stamp = require("../products/stamp.nodejs.js")
 
     const getAbsPath = (input: string) => (input.startsWith("/") ? input : path.resolve(this._cwd + "/" + input))
 
@@ -384,7 +372,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
     if (app[command]) {
       app.addToHistory(command, paramOne, paramTwo)
-      const result = app[command](paramOne, paramTwo)
+      const result = await app[command](paramOne, paramTwo)
       if (result !== undefined) print(result)
     } else if (!command) {
       app.addToHistory()
@@ -392,7 +380,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     } else if (Disk.exists(command)) {
       app.addToHistory(undefined, command)
       const result = await app.run(command)
-      print(result)
+      if (result !== undefined) print(result)
     } else if (partialMatches.length > 0) {
       if (partialMatches.length === 1) print(app[partialMatches[0]](paramOne, paramTwo))
       else print(`Multiple matches for '${command}'. Options are:\n${partialMatches.join("\n")}`)

@@ -34,12 +34,9 @@ class Builder extends AbstractBuilder {
     })
   }
 
-  produceLangs() {
-    const shipped = ["hakon", "dumbdown", "stump", "fire"]
-    shipped.forEach(lang => {
-      jtree.compileGrammarForBrowser(`${__dirname}/langs/${lang}/${lang}.grammar`, this._getProductFolder(), true)
-      jtree.compileGrammarForNodeJs(`${__dirname}/langs/${lang}/${lang}.grammar`, this._getProductFolder(), true, "../index.js")
-    })
+  produceLang(langName: string) {
+    jtree.compileGrammarForBrowser(`${__dirname}/langs/${langName}/${langName}.grammar`, this._getProductFolder(), true)
+    jtree.compileGrammarForNodeJs(`${__dirname}/langs/${langName}/${langName}.grammar`, this._getProductFolder(), true, "../index.js")
   }
 
   private _getProductsTree() {
@@ -51,7 +48,7 @@ class Builder extends AbstractBuilder {
     combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
-    jtree.formatFile(path, __dirname + "/langs/grammar/grammar.grammar")
+    jtree.formatFileInPlace(path, __dirname + "/langs/grammar/grammar.grammar")
   }
 
   _getProductFolder() {
@@ -77,6 +74,7 @@ class Builder extends AbstractBuilder {
 
   _makeTestTreeForFolder(dir: treeNotationTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
+    const swarm = require("./products/swarm.nodejs.js")
 
     const fileTestTree: any = {}
 
@@ -85,15 +83,17 @@ class Builder extends AbstractBuilder {
       .forEach(file => {
         fileTestTree[file] = this.makeGrammarFileTestTree(file)
       })
+
     allTestFiles
       .filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts"))
       .forEach(file => {
         fileTestTree[file] = require(file).testTree
       })
+
     allTestFiles
       .filter(file => file.endsWith(".swarm"))
       .forEach(file => {
-        Object.assign(fileTestTree, jtree.makeProgram(file, __dirname + "/langs/swarm/swarm.grammar").compileToRacer(file))
+        Object.assign(fileTestTree, new swarm(Disk.read(file)).compileToRacer(file))
       })
     return fileTestTree
   }

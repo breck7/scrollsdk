@@ -7,7 +7,7 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { Disk } = require("../products/Disk.node.js")
 
-const GrammarProgram = jtree.GrammarProgram
+const HandGrammarProgram = jtree.HandGrammarProgram
 const jibberishRootDir = __dirname + "/../langs/jibberish/"
 
 const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
@@ -24,7 +24,7 @@ const testTree: treeNotationTypes.testTree = {}
 
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
-  const program = new GrammarProgram()
+  const program = new HandGrammarProgram()
   const errs = program.getAllErrors()
 
   // Assert
@@ -34,7 +34,7 @@ testTree.emptyProgram = equal => {
 
 testTree.grammarLangBasics = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(jibberishGrammarCode)
+  const grammarProgram = new HandGrammarProgram(jibberishGrammarCode)
   const errs = grammarProgram.getAllErrors()
 
   // Assert
@@ -59,8 +59,8 @@ const makeIrisProgram = (code: string) => makeProgram(Disk.read(__dirname + "/..
 const makeNumbersProgram = (code: string) => makeProgram(numbersGrammar, code)
 
 const makeProgram = (grammarCode: string, code: string) => {
-  const grammarProgram = new GrammarProgram(grammarCode)
-  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  const grammarProgram = new HandGrammarProgram(grammarCode)
+  const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
   return new rootProgramConstructor(code)
 }
 
@@ -78,7 +78,7 @@ testTree.jibberish = equal => {
   if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
 
   const defNode = program
-    .getGrammarProgram()
+    .getHandGrammarProgram()
     .getNodeTypeFamilyTree()
     .getNode("topLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
@@ -154,12 +154,12 @@ const langs = Disk.dir(__dirname + `/../langs/`)
 langs.forEach((lang: string) => {
   testTree[`${lang}SimTest`] = equal => {
     const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
-    const grammarProgram = new jtree.GrammarProgram(grammarCode)
-    const programConstructor = grammarProgram.getRootConstructor()
+    const grammarProgram = new jtree.HandGrammarProgram(grammarCode)
+    const programConstructor = grammarProgram.compileAndReturnRootConstructor()
 
     // Act
     const simulatedProgram = grammarProgram
-      ._getRootNodeTypeDefinitionNode()
+      .getRootNodeTypeDefinitionNode()
       .synthesizeNode()
       .join("\n")
 
@@ -385,7 +385,7 @@ com
 * 2 3 10`)
 
   // Act/Assert
-  equal(program.executeSync().join(" "), "5 60")
+  equal(program.execute().join(" "), "5 60")
 }
 
 testTree.extraWord = equal => {
@@ -463,7 +463,7 @@ testTree.blobNodes = equal => {
 
 testTree.sublimeSyntaxFile = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(jibberishGrammarCode)
+  const grammarProgram = new HandGrammarProgram(jibberishGrammarCode)
   const code = grammarProgram.toSublimeSyntaxFile()
 
   // Assert
@@ -472,7 +472,7 @@ testTree.sublimeSyntaxFile = equal => {
 
 testTree.toStumpString = equal => {
   // Arrange/Act
-  const grammarProgram = new GrammarProgram(arrowGrammar).getRootConstructor()
+  const grammarProgram = new HandGrammarProgram(arrowGrammar).compileAndReturnRootConstructor()
   const code = new grammarProgram()
     .getDefinition()
     .getNodeTypeDefinitionByNodeTypeId("chargeNode")
@@ -525,33 +525,33 @@ div
 
 testTree.minimumGrammar = equal => {
   // Arrange/Act
-  const programConstructor = new GrammarProgram(
+  const programConstructor = new HandGrammarProgram(
     `anyLangNode
  root
  catchAllNodeType anyNode
 anyNode
  catchAllCellType anyCell
 anyCell`
-  ).getRootConstructor()
+  ).compileAndReturnRootConstructor()
   const program = new programConstructor()
-  const grammarProgram = program.getGrammarProgram()
+  const handGrammarProgram = program.getHandGrammarProgram()
 
   // Assert
-  let errors = grammarProgram.getAllErrors()
+  let errors = handGrammarProgram.getAllErrors()
   equal(errors.length, 0)
   errors = program.getAllErrors()
   equal(errors.length, 0)
 
   // Arrange/Act/Assert
-  const constructor = new GrammarProgram().getRootConstructor()
+  const constructor = new HandGrammarProgram().compileAndReturnRootConstructor()
   const errs = new constructor("foobar").getAllErrors()
   equal(errs.length, 0)
 }
 
 testTree.rootCatchAllNode = equal => {
   // Arrange
-  const abcLang = new GrammarProgram(`abcNode
- root`).getRootConstructor()
+  const abcLang = new HandGrammarProgram(`abcNode
+ root`).compileAndReturnRootConstructor()
 
   // Act/Assert
   const program = new abcLang("foobar")
@@ -559,11 +559,11 @@ testTree.rootCatchAllNode = equal => {
   equal(program.toCellTypeTree(), "extraWordCell", "one word")
 
   // Arrange
-  const abcLangWithErrors = new GrammarProgram(`abcNode
+  const abcLangWithErrors = new HandGrammarProgram(`abcNode
  root
  catchAllNodeType errorNode
 errorNode
- baseNodeType errorNode`).getRootConstructor()
+ baseNodeType errorNode`).compileAndReturnRootConstructor()
 
   // Act/Assert
   equal(new abcLangWithErrors("foobar").getAllErrors().length, 1)
@@ -571,7 +571,7 @@ errorNode
 
 testTree.blankNodeId = equal => {
   // Arrange
-  const abcLang = new GrammarProgram(`nodeType `).getRootConstructor()
+  const abcLang = new HandGrammarProgram(`nodeType `).compileAndReturnRootConstructor()
 
   // Act/Assert
   equal(new abcLang("foobar").getAllErrors().length, 0)
@@ -580,7 +580,7 @@ testTree.blankNodeId = equal => {
 testTree.grammarWithLoop = equal => {
   // Arrange/Act/Assert
   try {
-    const programConstructor = new GrammarProgram(
+    const programConstructor = new HandGrammarProgram(
       `langWithLoopNode
  root
  catchAllNodeType nodeANode
@@ -592,7 +592,7 @@ nodeBNode
 nodeCNode
  extends nodeBNode
 anyCell`
-    ).getRootConstructor()
+    ).compileAndReturnRootConstructor()
 
     new programConstructor("nodeA")
     equal(false, true, "Should have thrown error")
@@ -641,7 +641,7 @@ foobarCell
 
 testTree.toNodeJsJavascript = equal => {
   // Arrange
-  let program = new GrammarProgram(grammarGrammar)
+  let program = new HandGrammarProgram(grammarGrammar)
   // Act
   let compiledParser = program.toNodeJsJavascript()
   // Assert
@@ -650,7 +650,7 @@ testTree.toNodeJsJavascript = equal => {
 
 testTree.invalidGrammarRegression = equal => {
   // Arrange
-  let program = new GrammarProgram(`oldStyle something
+  let program = new HandGrammarProgram(`oldStyle something
  root`)
   // Act
   let compiledParser = program.toNodeJsJavascript()
@@ -660,7 +660,7 @@ testTree.invalidGrammarRegression = equal => {
 
 testTree.bundler = equal => {
   // Arrange
-  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode)
+  const jibberishGrammarProgram = new HandGrammarProgram(jibberishGrammarCode)
 
   // Act
   const bundle = jibberishGrammarProgram.toBundle()
@@ -669,17 +669,12 @@ testTree.bundler = equal => {
   equal(bundle["readme.md"].includes("Installing"), true)
 }
 
-testTree.examples = equal => {
-  // Arrange/Act
-  const jibberishGrammarProgram = new GrammarProgram(jibberishGrammarCode)
+const jibberishGrammarProgram = new HandGrammarProgram(jibberishGrammarCode)
+Object.assign(testTree, jibberishGrammarProgram.examplesToTestBlocks())
 
-  // Assert
-  let errors = jibberishGrammarProgram.getErrorsInGrammarExamples()
-  equal(errors.length, 0)
-
-  // Arrange/Act
-  const badGrammarProgram = new GrammarProgram(
-    `badNode
+// Arrange/Act
+const badGrammarProgram = new HandGrammarProgram(
+  `badNode
  root
  inScope addNode
 addNode
@@ -690,12 +685,8 @@ addNode
   + 1 B
 keywordCell
 intCell`
-  )
-
-  // Assert
-  errors = badGrammarProgram.getErrorsInGrammarExamples()
-  equal(errors.length, 1)
-}
+)
+Object.assign(testTree, badGrammarProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
 

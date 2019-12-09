@@ -43,7 +43,7 @@ class SandboxApp extends AbstractTreeComponent {
       const xmlConsole = jQuery("#xmlConsole")
       const htmlConsole = jQuery("#htmlConsole")
       const tableConsole = jQuery("#tableConsole")
-      const htmlCube = jQuery("#htmlCube")
+      const htmlCubeConsole = jQuery("#htmlCubeConsole")
       const yamlConsole = jQuery("#yamlConsole")
 
       // Init vars
@@ -57,7 +57,7 @@ class SandboxApp extends AbstractTreeComponent {
         if (eventSource !== xmlConsole) xmlConsole.val(tree.toXml())
         if (eventSource !== htmlConsole) htmlConsole.html(tree.toHtml())
         if (eventSource !== tableConsole) tableConsole.html(tree.toTable())
-        if (eventSource !== htmlCube) htmlCube.html(tree.toHtmlCube())
+        if (eventSource !== htmlCubeConsole) htmlCubeConsole.html(tree.toHtmlCube())
         if (eventSource !== yamlConsole) yamlConsole.html(tree.toYaml())
 
         let win = <any>window
@@ -218,7 +218,7 @@ class tableComponent extends AbstractTreeComponent {
   td
    div toHtmlCube()
    div
-    id htmlCube
+    id htmlCubeConsole
     style position:relative;`
   }
 }

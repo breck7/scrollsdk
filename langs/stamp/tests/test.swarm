@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test stampBasics
  arrange
-  require ../stamp.node.js
+  require ../../../products/stamp.nodejs.js
   constructWithParagraph
    folder testEx
    file testEx/hi.sh
@@ -10,11 +10,3 @@ test stampBasics
     executable
  getAllErrors
   assertLengthIs 0
-skipTest staticReenableOncePathFix
- arrange
-  require ../stamp.node.js
-  static
- dirToStamp ./cases
-  assertParagraphIs
-   file cases/executable.stamp
-   file cases/test.stamp

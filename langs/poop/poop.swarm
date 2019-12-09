@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test compilePoop
  arrange
-  require ./poop.node.js
+  require ../../products/poop.nodejs.js
   constructWithParagraph
    🌄 8 29 2019
    😀 4

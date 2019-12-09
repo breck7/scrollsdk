@@ -1,3 +1,26 @@
+49.0.0 / 2019-12-08
+===================
+- Infra: general refactor to prep for switch to have Grammar entirely written in Grammar
+- Infra: generally use "products/" folder now to use compiled grammars instead of recompiling everytime
+- New: swarm and testRacer now prints number of skipped tests
+- New: examplesToTestBlocks method on grammar programs
+- New: command line app uses compiled grammar files more
+- Breaking: getRootConstructor is now compileAndReturnRootConstructor
+- Breaking: jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
+- Breaking: jtree.GrammarProgram is now jtree.HandGrammarProgram
+- Breaking: getGrammarProgram is now getHandGrammarProgram
+- Breaking: _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
+- Breaking: removed commandLineApp "create" command. Was broken. Use the Designer app instead.
+- Breaking: removed jtree.executeFiles
+- Breaking: removed all /langs/lang/lang.node.js files. Use /products/lang.nodejs.js instead.
+- Breaking: removed commandLineApp "runSync" method.
+- Breaking: removed jtree.executeFileSync and executeFile methods
+- Breaking: removed executeSync method on Core.
+- Breaking: removed default execute implementation on Core. Up to grammar to specify.
+- Breaking: jtree.makeProgram is now jtree.compileGrammarAndCreateProgram
+- Breaking: jtree.formatFile is now jtree.formatFileInPlace and jtree.formatProgram is now jtree.formatCode
+- Breaking: removed getErrorsInGrammarExamples. Use examplesToTestBlocks
+
 48.1.0 / 2019-12-06
 ===================
 - New: toSqlLite method on TreeBase

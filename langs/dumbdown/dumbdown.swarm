@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
 test dumbdownRegression
  arrange
-  require ./dumbdown.node.js
+  require ../../products/dumbdown.nodejs.js
   constructWithParagraph
    code
     a b

@@ -1,7 +1,7 @@
 //onsave jtree build produce TreeComponentFramework.browser.js
 const { jtree } = require("../index.js")
-const stumpNode = require("../langs/stump/stump.node.js")
-const hakonNode = require("../langs/hakon/hakon.node.js")
+const stumpNode = require("../products/stump.nodejs.js")
+const hakonNode = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
 const BrowserEvents = {}
 BrowserEvents.click = "click"

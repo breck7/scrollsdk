@@ -2,12 +2,8 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class Timer {
   constructor() {
-    this._tickTime = Date.now() - (this.isNodeJs() ? 1000 * process.uptime() : 0)
+    this._tickTime = Date.now() - (TreeUtils.isNodeJs() ? 1000 * process.uptime() : 0)
     this._firstTickTime = this._tickTime
-  }
-
-  isNodeJs() {
-    return typeof exports !== "undefined"
   }
 
   private _tickTime: number
@@ -31,12 +27,16 @@ class TreeUtils {
     return (match && match[1]) || ""
   }
 
+  static isNodeJs() {
+    return typeof exports !== "undefined"
+  }
+
   static Timer = Timer
 
-  static findProjectRoot(dirName: string, projectName: string) {
+  static findProjectRoot(startingDirName: string, projectName: string) {
     const fs = require("fs")
     const getProjectName = (dirName: string) => {
-      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}"`)
+      if (!dirName) throw new Error(`dirName undefined when attempting to findProjectRoot for project "${projectName}" starting in "${startingDirName}"`)
       const parts = dirName.split("/")
       const filename = parts.join("/") + "/" + "package.json"
       if (fs.existsSync(filename) && JSON.parse(fs.readFileSync(filename, "utf8")).name === projectName) return parts.join("/") + "/"
@@ -44,11 +44,11 @@ class TreeUtils {
       return parts
     }
 
-    let result = getProjectName(dirName)
+    let result = getProjectName(startingDirName)
     while (typeof result !== "string" && result.length > 0) {
       result = getProjectName(result.join("/"))
     }
-    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${dirName} not found.`)
+    if (result.length === 0) throw new Error(`Project root "${projectName}" in folder ${startingDirName} not found.`)
     return result
   }
 
@@ -378,6 +378,13 @@ class TreeUtils {
   static resolveProperty(obj: Object, path: string | string[], separator = ".") {
     const properties = Array.isArray(path) ? path : path.split(separator)
     return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
+  }
+
+  static appendCodeAndReturnValueOnWindow(code: treeNotationTypes.javascriptCode, name: string): any {
+    const script = document.createElement("script")
+    script.innerHTML = code
+    document.head.appendChild(script)
+    return (<any>window)[name]
   }
 
   static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: treeNotationTypes.stringMap) {

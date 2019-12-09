@@ -141,9 +141,9 @@ class TypedWord extends TreeWord {
 
 // todo: can we merge these methods into base TreeNode and ditch this class?
 abstract class GrammarBackedNode extends TreeNode {
-  getDefinition(): AbstractGrammarDefinitionNode | GrammarProgram | nodeTypeDefinitionNode {
-    const grammarProgram = this.getGrammarProgram()
-    return this.isRoot() ? grammarProgram : grammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+  getDefinition(): AbstractGrammarDefinitionNode | HandGrammarProgram | nodeTypeDefinitionNode {
+    const handGrammarProgram = this.getHandGrammarProgram()
+    return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
 
   toSqlLiteInsertStatement(primaryKeyFunction = (node: any) => node.getWord(0)): string {
@@ -207,9 +207,9 @@ abstract class GrammarBackedNode extends TreeNode {
 
   // note: this is overwritten by the root node of a runtime grammar program.
   // some of the magic that makes this all work. but maybe there's a better way.
-  getGrammarProgram(): GrammarProgram {
-    if (this.isRoot()) throw new Error(`Root node without getGrammarProgram defined.`)
-    return (<any>this.getRootNode()).getGrammarProgram()
+  getHandGrammarProgram(): HandGrammarProgram {
+    if (this.isRoot()) throw new Error(`Root node without getHandGrammarProgram defined.`)
+    return (<any>this.getRootNode()).getHandGrammarProgram()
   }
 
   getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[] {
@@ -363,7 +363,7 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   private _sortWithParentNodeTypesUpTop() {
-    const familyTree = new GrammarProgram(this.toString()).getNodeTypeFamilyTree()
+    const familyTree = new HandGrammarProgram(this.toString()).getNodeTypeFamilyTree()
     const rank: treeNotationTypes.stringMap = {}
     familyTree.getTopDownArray().forEach((node, index) => {
       rank[node.getWord(0)] = index
@@ -397,8 +397,8 @@ abstract class GrammarBackedNode extends TreeNode {
   getNodeTypeUsage(filepath = "") {
     // returns a report on what nodeTypes from its language the program uses
     const usage = new TreeNode()
-    const grammarProgram = this.getGrammarProgram()
-    grammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach((def: AbstractGrammarDefinitionNode) => {
+    const handGrammarProgram = this.getHandGrammarProgram()
+    handGrammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach((def: AbstractGrammarDefinitionNode) => {
       const requiredCellTypeIds = def.getCellParser().getRequiredCellTypeIds()
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", "nodeType", requiredCellTypeIds.join(" ")].join(" "))
     })
@@ -1032,7 +1032,7 @@ abstract class AbstractTreeError implements treeNotationTypes.TreeError {
 
   getExtension() {
     return this.getNode()
-      .getGrammarProgram()
+      .getHandGrammarProgram()
       .getExtensionName()
   }
 
@@ -1322,7 +1322,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
   }
 
   _getIdToNodeMap() {
-    return (<GrammarProgram>this.getParent()).getCellTypeDefinitions()
+    return (<HandGrammarProgram>this.getParent()).getCellTypeDefinitions()
   }
 
   getGetter(wordIndex: number) {
@@ -1646,7 +1646,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   _getIdWithoutSuffix(): string {
-    return this._getId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this._getId().replace(HandGrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   getConstantsObject() {
@@ -1696,13 +1696,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     })
   }
 
-  private _cache_definedNodeConstructor: treeNotationTypes.RunTimeNodeConstructor
-
-  _getConstructorDefinedInGrammar() {
-    if (!this._cache_definedNodeConstructor) this._cache_definedNodeConstructor = this.getLanguageDefinitionProgram()._getCompiledLoadedNodeTypes()[this.getNodeTypeIdFromDefinition()]
-    return this._cache_definedNodeConstructor
-  }
-
   _getCruxIfAny(): string {
     return this.get(GrammarConstants.crux)
   }
@@ -1716,8 +1709,8 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return firstCellDef ? firstCellDef._getEnumOptions() : undefined
   }
 
-  getLanguageDefinitionProgram(): GrammarProgram {
-    return <GrammarProgram>this.getParent()
+  getLanguageDefinitionProgram(): HandGrammarProgram {
+    return <HandGrammarProgram>this.getParent()
   }
 
   protected _getCustomJavascriptMethods(): treeNotationTypes.javascriptCode {
@@ -1841,7 +1834,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
   }
 
   private _getLanguageRootNode() {
-    return (<GrammarProgram>this.getParent())._getRootNodeTypeDefinitionNode()
+    return (<HandGrammarProgram>this.getParent()).getRootNodeTypeDefinitionNode()
   }
 
   private _isErrorNodeType() {
@@ -1906,14 +1899,14 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
 
     if (this._amIRoot()) {
-      components.push(`getGrammarProgram() {
-        if (!this._cachedGrammarProgramRoot)
-          this._cachedGrammarProgramRoot = new jtree.GrammarProgram(\`${TreeUtils.escapeBackTicks(
+      components.push(`getHandGrammarProgram() {
+        if (!this._cachedHandGrammarProgramRoot)
+          this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
             this.getParent()
               .toString()
               .replace(/\\/g, "\\\\")
           )}\`)
-        return this._cachedGrammarProgramRoot
+        return this._cachedHandGrammarProgramRoot
       }`)
 
       const nodeTypeMap = this.getLanguageDefinitionProgram()
@@ -2136,18 +2129,18 @@ ${cells.toString(1)}`
 // todo: remove?
 class nodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {}
 
-// GrammarProgram is a constructor that takes a grammar file, and builds a new
+// HandGrammarProgram is a constructor that takes a grammar file, and builds a new
 // constructor for new language that takes files in that language to execute, compile, etc.
-class GrammarProgram extends AbstractGrammarDefinitionNode {
+class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   createParser() {
     const map: treeNotationTypes.stringMap = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
-    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: GrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: GrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
+    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
 
-  static makeNodeTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-  static makeCellTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(GrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+  static makeNodeTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+  static makeCellTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 
   static nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
   static nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
@@ -2157,22 +2150,25 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
 
   private _cache_compiledLoadedNodeTypes: { [nodeTypeId: string]: Function }
 
-  _getCompiledLoadedNodeTypes() {
-    if (!this._cache_compiledLoadedNodeTypes) {
-      if (this.isNodeJs()) {
-        const code = this.toNodeJsJavascript(__dirname + "/../index.js")
-        try {
-          const rootNode = this._importNodeJsRootNodeTypeConstructor(code)
-          this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
-          if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
-        } catch (err) {
-          // todo: figure out best error pattern here for debugging
-          console.log(err)
-          // console.log(`Error in code: `)
-          // console.log(new TreeNode(code).toStringWithLineNumbers())
-        }
-      } else this._cache_compiledLoadedNodeTypes = this._importBrowserRootNodeTypeConstructor(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
+  private _compileAndEvalGrammar() {
+    if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = TreeUtils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
+    else {
+      const code = this.toNodeJsJavascript(__dirname + "/../index.js")
+      try {
+        const rootNode = this._requireInVmNodeJsRootNodeTypeConstructor(code)
+        this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
+        if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
+      } catch (err) {
+        // todo: figure out best error pattern here for debugging
+        console.log(err)
+        // console.log(`Error in code: `)
+        // console.log(new TreeNode(code).toStringWithLineNumbers())
+      }
     }
+  }
+
+  _compileAndReturnNodeTypeMap() {
+    if (!this._cache_compiledLoadedNodeTypes) this._compileAndEvalGrammar()
     return this._cache_compiledLoadedNodeTypes
   }
 
@@ -2183,7 +2179,7 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     return this
   }
 
-  private _importNodeJsRootNodeTypeConstructor(code: treeNotationTypes.javascriptCode): any {
+  private _requireInVmNodeJsRootNodeTypeConstructor(code: treeNotationTypes.javascriptCode): any {
     const vm = require("vm")
     // todo: cleanup up
     try {
@@ -2201,32 +2197,24 @@ class GrammarProgram extends AbstractGrammarDefinitionNode {
     }
   }
 
-  private _importBrowserRootNodeTypeConstructor(code: treeNotationTypes.javascriptCode, name: string): any {
-    const script = document.createElement("script")
-    script.innerHTML = code
-    document.head.appendChild(script)
-    return (<any>window)[name]
-  }
-
-  // todo: better formalize the source maps pattern somewhat used here by getAllErrors
-  // todo: move this to Grammar.grammar (or just get the bootstrapping done.)
-  getErrorsInGrammarExamples() {
-    const programConstructor = this.getRootConstructor()
-    const errors: treeNotationTypes.TreeError[] = []
+  examplesToTestBlocks(programConstructor = this.compileAndReturnRootConstructor(), expectedErrorMessage = "") {
+    const testBlocks: { [id: string]: Function } = {}
     this.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
-        const exampleProgram = new programConstructor(example.childrenToString())
-        exampleProgram.getAllErrors(example._getLineNumber() + 1).forEach(err => {
-          errors.push(err)
-        })
+        const id = def._getId() + example.getContent()
+        testBlocks[id] = (equal: Function) => {
+          const exampleProgram = new programConstructor(example.childrenToString())
+          const errors = exampleProgram.getAllErrors(example._getLineNumber() + 1)
+          equal(errors.join("\n"), expectedErrorMessage, `Expected no errors in ${id}`)
+        }
       })
     )
-    return errors
+    return testBlocks
   }
 
   toReadMe() {
     const languageName = this.getExtensionName()
-    const rootNodeDef = this._getRootNodeTypeDefinitionNode()
+    const rootNodeDef = this.getRootNodeTypeDefinitionNode()
     const cellTypes = this.getCellTypeDefinitions()
     const nodeTypeFamilyTree = this.getNodeTypeFamilyTree()
     const exampleNode = rootNodeDef.getExamples()[0]
@@ -2282,7 +2270,7 @@ paragraph This readme was auto-generated using the
 
   toBundle() {
     const files: treeNotationTypes.stringMap = {}
-    const rootNodeDef = this._getRootNodeTypeDefinitionNode()
+    const rootNodeDef = this.getRootNodeTypeDefinitionNode()
     const languageName = this.getExtensionName()
     const example = rootNodeDef.getExamples()[0]
     const sampleCode = example ? example.childrenToString() : ""
@@ -2328,7 +2316,7 @@ ${testCode}`
   }
 
   getTargetExtension() {
-    return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo)
+    return this.getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo)
   }
 
   private _cache_cellTypes: {
@@ -2371,12 +2359,13 @@ ${testCode}`
 
   private _cache_rootNodeTypeNode: nodeTypeDefinitionNode
 
-  _getRootNodeTypeDefinitionNode() {
-    if (!this._cache_rootNodeTypeNode) {
-      this.forEach(def => {
-        if (def instanceof AbstractGrammarDefinitionNode && def.has(GrammarConstants.root) && def._hasValidNodeTypeId()) this._cache_rootNodeTypeNode = def
-      })
-    }
+  private _getLastRootNodeTypeDefinitionNode() {
+    return this.findLast(def => def instanceof AbstractGrammarDefinitionNode && def.has(GrammarConstants.root) && def._hasValidNodeTypeId())
+  }
+
+  private _initRootNodeTypeDefinitionNode() {
+    if (this._cache_rootNodeTypeNode) return
+    if (!this._cache_rootNodeTypeNode) this._cache_rootNodeTypeNode = this._getLastRootNodeTypeDefinitionNode()
     // By default, have a very permissive basic root node.
     // todo: whats the best design pattern to use for this sort of thing?
     if (!this._cache_rootNodeTypeNode) {
@@ -2385,6 +2374,10 @@ ${testCode}`
  ${GrammarConstants.catchAllNodeType} ${GrammarConstants.BlobNode}`)[0]
       this._addDefaultCatchAllBlobNode()
     }
+  }
+
+  getRootNodeTypeDefinitionNode() {
+    this._initRootNodeTypeDefinitionNode()
     return this._cache_rootNodeTypeNode
   }
 
@@ -2400,20 +2393,20 @@ ${testCode}`
   }
 
   getRootNodeTypeId() {
-    return this._getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
+    return this.getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
   }
 
   getGrammarName(): string | undefined {
-    return this.getRootNodeTypeId().replace(GrammarProgram.nodeTypeSuffixRegex, "")
+    return this.getRootNodeTypeId().replace(HandGrammarProgram.nodeTypeSuffixRegex, "")
   }
 
   _getMyInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
-    const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
+    const nodeTypesNode = this.getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
 
   protected _getInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
-    const nodeTypesNode = this._getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
+    const nodeTypesNode = this.getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
 
@@ -2438,21 +2431,20 @@ ${testCode}`
   static _languages: any = {}
   static _nodeTypes: any = {}
 
-  private _getRootConstructor(): AbstractRuntimeProgramConstructorInterface {
-    const def = this._getRootNodeTypeDefinitionNode()
-    return <AbstractRuntimeProgramConstructorInterface>def._getConstructorDefinedInGrammar()
-  }
-
   private _cache_rootConstructorClass: AbstractRuntimeProgramConstructorInterface
 
-  getRootConstructor() {
-    if (!this._cache_rootConstructorClass) this._cache_rootConstructorClass = this._getRootConstructor()
+  compileAndReturnRootConstructor() {
+    if (!this._cache_rootConstructorClass) {
+      const def = this.getRootNodeTypeDefinitionNode()
+      const rootNodeTypeId = def.getNodeTypeIdFromDefinition()
+      this._cache_rootConstructorClass = <AbstractRuntimeProgramConstructorInterface>def.getLanguageDefinitionProgram()._compileAndReturnNodeTypeMap()[rootNodeTypeId]
+    }
     return this._cache_rootConstructorClass
   }
 
   private _getFileExtensions(): string {
-    return this._getRootNodeTypeDefinitionNode().get(GrammarConstants.extensions)
-      ? this._getRootNodeTypeDefinitionNode()
+    return this.getRootNodeTypeDefinitionNode().get(GrammarConstants.extensions)
+      ? this.getRootNodeTypeDefinitionNode()
           .get(GrammarConstants.extensions)
           .split(" ")
           .join(",")
@@ -2475,7 +2467,7 @@ ${testCode}`
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
-    const rootDef = this._getRootNodeTypeDefinitionNode()
+    const rootDef = this.getRootNodeTypeDefinitionNode()
     const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(GrammarConstants._rootNodeJsHeader)
     const rootName = rootDef._getGeneratedClassName()
 
@@ -2536,4 +2528,4 @@ PreludeKinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
 PreludeKinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
 PreludeKinds[PreludeCellTypeIds.intCell] = GrammarIntCell
 
-export { GrammarConstants, PreludeCellTypeIds, GrammarProgram, GrammarBackedNode, UnknownNodeTypeError }
+export { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError }

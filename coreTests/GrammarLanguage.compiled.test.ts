@@ -17,8 +17,8 @@ const mkdirp = require("mkdirp")
 mkdirp.sync(outputDir)
 
 const makeProgram = (grammarCode: string, code: string) => {
-  const grammarProgram = new jtree.GrammarProgram(grammarCode)
-  const rootProgramConstructor = grammarProgram.getRootConstructor()
+  const grammarProgram = new jtree.HandGrammarProgram(grammarCode)
+  const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
   return new rootProgramConstructor(code)
 }
 
@@ -119,7 +119,7 @@ testTree.numbers = equal => {
     // Assert
     equal(firstNode.numbersCell.length, 2, "cell getters work")
     equal(firstNode.numbersCell[0], 2, "typings work")
-    equal(program.executeSync().join(" "), "5 60", "execute works")
+    equal(program.execute().join(" "), "5 60", "execute works")
     equal(program.getAllErrors().length, 0, "no errors found")
     if (program.getAllErrors().length) console.log(program.getAllErrors())
 

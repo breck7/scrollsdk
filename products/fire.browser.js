@@ -41,9 +41,6 @@
       )
     }
     async execute() {
-      return this.executeSync()
-    }
-    executeSync() {
       let outputLines = []
       const _originalConsoleLog = console.log
       const tempConsoleLog = (...params) => outputLines.push(params)
@@ -54,9 +51,10 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    getGrammarProgram() {
-      if (!this._cachedGrammarProgramRoot)
-        this._cachedGrammarProgramRoot = new jtree.GrammarProgram(`todo Explore best ways to add polymorphism
+    getHandGrammarProgram() {
+      if (!this._cachedHandGrammarProgramRoot)
+        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang fire
+todo Explore best ways to add polymorphism
 anyCell
 booleanCell
  enum false true
@@ -106,9 +104,6 @@ fireNode
  catchAllNodeType errorNode
  javascript
   async execute() {
-   return this.executeSync()
-  }
-  executeSync() {
    let outputLines = []
    const _originalConsoleLog = console.log
    const tempConsoleLog = (...params) => outputLines.push(params)
@@ -202,6 +197,8 @@ substractNode
  crux substract
 addNode
  crux add
+ example
+  add ten 2 3 5
  description Add numbers and store result
  compiler
   catchAllCellDelimiter  + 
@@ -405,7 +402,7 @@ errorNode
  baseNodeType errorNode
  compiler
   stringTemplate // error`)
-      return this._cachedGrammarProgramRoot
+      return this._cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

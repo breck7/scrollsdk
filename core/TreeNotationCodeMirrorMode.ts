@@ -198,16 +198,16 @@ interface treeNotationCodeMirrorState {
 }
 
 class TreeNotationCodeMirrorMode {
-  constructor(name: string, getProgramConstructorMethod: () => treeNotationTypes.TreeProgramConstructor, getProgramCodeMethod: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
+  constructor(name: string, getProgramConstructorFn: () => treeNotationTypes.TreeProgramConstructor, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
-    this._getProgramConstructorMethod = getProgramConstructorMethod
-    this._getProgramCodeMethod = getProgramCodeMethod || (instance => (instance ? <string>instance.getValue() : this._originalValue))
+    this._getProgramConstructorFn = getProgramConstructorFn
+    this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? <string>instance.getValue() : this._originalValue))
     this._codeMirrorLib = codeMirrorLib
   }
 
   private _name: string
-  private _getProgramCodeMethod: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getProgramConstructorMethod: () => treeNotationTypes.TreeProgramConstructor
+  private _getProgramCodeFn: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
+  private _getProgramConstructorFn: () => treeNotationTypes.TreeProgramConstructor
   private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
   private _cachedProgram: treeNotationTypes.treeProgram
@@ -215,10 +215,10 @@ class TreeNotationCodeMirrorMode {
   private _originalValue: string
 
   _getParsedProgram(): GrammarBackedNode {
-    const source = this._getProgramCodeMethod(this._cmInstance) || ""
+    const source = this._getProgramCodeFn(this._cmInstance) || ""
     if (!this._cachedProgram || this._cachedSource !== source) {
       this._cachedSource = source
-      this._cachedProgram = new (<any>this._getProgramConstructorMethod())(source)
+      this._cachedProgram = new (<any>this._getProgramConstructorFn())(source)
     }
     return this._cachedProgram
   }

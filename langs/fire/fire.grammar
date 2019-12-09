@@ -1,3 +1,4 @@
+tooling onsave jtree build produceLang fire
 todo Explore best ways to add polymorphism
 anyCell
 booleanCell
@@ -48,9 +49,6 @@ fireNode
  catchAllNodeType errorNode
  javascript
   async execute() {
-   return this.executeSync()
-  }
-  executeSync() {
    let outputLines = []
    const _originalConsoleLog = console.log
    const tempConsoleLog = (...params) => outputLines.push(params)
@@ -144,6 +142,8 @@ substractNode
  crux substract
 addNode
  crux add
+ example
+  add ten 2 3 5
  description Add numbers and store result
  compiler
   catchAllCellDelimiter  + 

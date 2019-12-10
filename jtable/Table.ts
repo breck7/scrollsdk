@@ -381,6 +381,32 @@ ${cols}
     return new Table(this.cloneNativeJavascriptTypedRows(), cols, undefined, false)
   }
 
+  renameColumns(nameMap: { [currentName: string]: string }) {
+    const rows = this.getRows()
+      .map((row: any) => row.rowToObjectWithOnlyNativeJavascriptTypes())
+      .map(obj => {
+        const newObj: any = {}
+        Object.keys(nameMap).forEach(oldName => {
+          newObj[nameMap[oldName]] = obj[oldName]
+        })
+        return newObj
+      })
+    const cols = this.getColumnsArrayOfObjects()
+    cols.forEach(col => {
+      col.name = nameMap[col.name]
+    })
+    return new Table(rows, cols, undefined, false)
+  }
+
+  cloneWithCleanColumnNames() {
+    const nameMap: { [currentName: string]: string } = {}
+    const cols = this.getColumnsArrayOfObjects()
+    cols.forEach(col => {
+      nameMap[col.name] = col.name.replace(/[^a-z0-9]/gi, "")
+    })
+    return this.renameColumns(nameMap)
+  }
+
   // todo: can be made more effcicent
   dropAllColumnsExcept(columnsToKeep: jTableTypes.columnName[]): Table {
     return new Table(

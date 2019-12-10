@@ -638,7 +638,7 @@ class Column {
   _getFirstNonEmptyValueFromSampleSet() {
     if (this._sample === undefined) {
       const sampleSet = this._getSampleSet()
-      this._sample = sampleSet.length ? sampleSet.find(value => value !== undefined && value !== null && value !== NaN && value !== "") : ""
+      this._sample = sampleSet.length ? sampleSet.find(value => !jtree.Utils.isValueEmpty(value)) : ""
     }
     return this._sample
   }
@@ -2387,6 +2387,30 @@ ${cols}
       if (col.name === columnName) col.type = newType
     })
     return new Table(this.cloneNativeJavascriptTypedRows(), cols, undefined, false)
+  }
+  renameColumns(nameMap) {
+    const rows = this.getRows()
+      .map(row => row.rowToObjectWithOnlyNativeJavascriptTypes())
+      .map(obj => {
+        const newObj = {}
+        Object.keys(nameMap).forEach(oldName => {
+          newObj[nameMap[oldName]] = obj[oldName]
+        })
+        return newObj
+      })
+    const cols = this.getColumnsArrayOfObjects()
+    cols.forEach(col => {
+      col.name = nameMap[col.name]
+    })
+    return new Table(rows, cols, undefined, false)
+  }
+  cloneWithCleanColumnNames() {
+    const nameMap = {}
+    const cols = this.getColumnsArrayOfObjects()
+    cols.forEach(col => {
+      nameMap[col.name] = col.name.replace(/[^a-z0-9]/gi, "")
+    })
+    return this.renameColumns(nameMap)
   }
   // todo: can be made more effcicent
   dropAllColumnsExcept(columnsToKeep) {

@@ -163,6 +163,10 @@ class TreeUtils {
       : ""
   }
 
+  static isValueEmpty(value: any) {
+    return value === undefined || value === "" || (typeof value === "number" && isNaN(value))
+  }
+
   static stringToPermalink(str: string) {
     return this._permalink(str, /[^a-z0-9- _\.]/gi)
   }

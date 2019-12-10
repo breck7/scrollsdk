@@ -1,3 +1,8 @@
+49.1.0 / 2019-12-09
+===================
+- New: isValueEmpty util method
+- New: JTable: renameColumns and cloneWithCleanColumnNames methods
+
 49.0.1 / 2019-12-09
 ===================
 - New: JTable: seed param in Table class

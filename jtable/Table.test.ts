@@ -25,6 +25,17 @@ mike,55`
   equal(columns[1].getPrimitiveTypeName(), "number")
 }
 
+testTree.renameColumns = equal => {
+  // Arrange
+  const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.regionalMarkets)
+  const table = new Table(data)
+  const newTable = table.cloneWithCleanColumnNames()
+  const columns = newTable.getColumnsArray()
+
+  // Assert
+  equal(columns[2].getColumnName(), "Markettradevolumesize")
+}
+
 testTree.all = equal => {
   // Arrange
   const rows = [{ date: "1/10/2015" }, { date: "1/28/2015" }, { date: "2/26/2015" }, { date: "3/25/2015" }, { date: "4/23/2015" }]

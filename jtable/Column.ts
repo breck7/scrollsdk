@@ -76,6 +76,8 @@ abstract class AbstractPrimitiveType {
 
   abstract isTemporal(): boolean
 
+  abstract synthesizeValue(randomNumberFn: Function): any
+
   abstract isNumeric(): boolean
 
   abstract getStringExamples(): string[]
@@ -87,6 +89,10 @@ class BooleanType extends AbstractPrimitiveType {
   getAsNativeJavascriptType(val: any): number {
     // todo: handle false, etc
     return val ? 1 : 0
+  }
+
+  synthesizeValue(randomNumberFn: Function) {
+    return Math.round(randomNumberFn())
   }
 
   getJavascriptTypeName() {
@@ -121,6 +127,19 @@ class BooleanType extends AbstractPrimitiveType {
 abstract class AbstractNumeric extends AbstractPrimitiveType {
   fromStringToNumeric(value: string): number {
     return parseFloat(value)
+  }
+
+  synthesizeValue(randomNumberFn: Function) {
+    // todo: min/max etc
+    return this.getMin() + Math.floor((this.getMax() - this.getMin()) * randomNumberFn())
+  }
+
+  getMax() {
+    return 100
+  }
+
+  getMin() {
+    return 0
   }
 
   getAsNativeJavascriptType(val: any): number {
@@ -287,6 +306,10 @@ class ObjectType extends AbstractPrimitiveType {
     return ["{score: 10}"]
   }
 
+  synthesizeValue() {
+    return {}
+  }
+
   fromStringToNumeric(): number {
     return undefined
   }
@@ -325,6 +348,10 @@ abstract class AbstractStringCol extends AbstractPrimitiveType {
 
   getVegaType() {
     return VegaTypes.nominal
+  }
+
+  synthesizeValue() {
+    return "randomString"
   }
 
   getJavascriptTypeName() {
@@ -395,6 +422,10 @@ abstract class AbstractTemporal extends AbstractPrimitiveType implements Tempora
 
   getJavascriptTypeName() {
     return JavascriptNativeTypeNames.Date
+  }
+
+  synthesizeValue() {
+    return new Date()
   }
 
   isNumeric() {
@@ -837,6 +868,10 @@ class Column {
   getPrimitiveTypeObj() {
     if (!this._type) this._type = this._inferType()
     return this._type
+  }
+
+  synthesizeValue(randomNumberFn: Function) {
+    return this.getPrimitiveTypeObj().synthesizeValue(randomNumberFn)
   }
 
   isTemporal() {

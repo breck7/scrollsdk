@@ -434,6 +434,24 @@ ${cols}
     return new Table(rows, this.getColumnsMap())
   }
 
+  private _synthesizeRow(randomNumberFn: Function) {
+    const row: any = {}
+    this.getColumnsArray().forEach(column => {
+      row[column.getColumnName()] = column.synthesizeValue(randomNumberFn)
+    })
+    return row
+  }
+
+  synthesizeRows(count: number, seed: number) {
+    const randomNumberFn = jtree.Utils.makeSemiRandomFn(seed)
+    const rows = []
+    while (count) {
+      rows.push(this._synthesizeRow(randomNumberFn))
+      count--
+    }
+    return new Table(rows, this.getColumnsMap())
+  }
+
   // todo: we don't need any cloning here--here create a new sorted array with poitners
   // to same rows
   shuffleRows() {

@@ -51,6 +51,9 @@ class BooleanType extends AbstractPrimitiveType {
     // todo: handle false, etc
     return val ? 1 : 0
   }
+  synthesizeValue(randomNumberFn) {
+    return Math.round(randomNumberFn())
+  }
   getJavascriptTypeName() {
     return JavascriptNativeTypeNames.boolean
   }
@@ -76,6 +79,16 @@ class BooleanType extends AbstractPrimitiveType {
 class AbstractNumeric extends AbstractPrimitiveType {
   fromStringToNumeric(value) {
     return parseFloat(value)
+  }
+  synthesizeValue(randomNumberFn) {
+    // todo: min/max etc
+    return this.getMin() + Math.floor((this.getMax() - this.getMin()) * randomNumberFn())
+  }
+  getMax() {
+    return 100
+  }
+  getMin() {
+    return 0
   }
   getAsNativeJavascriptType(val) {
     if (val === undefined) return NaN
@@ -212,6 +225,9 @@ class ObjectType extends AbstractPrimitiveType {
   getStringExamples() {
     return ["{score: 10}"]
   }
+  synthesizeValue() {
+    return {}
+  }
   fromStringToNumeric() {
     return undefined
   }
@@ -243,6 +259,9 @@ class AbstractStringCol extends AbstractPrimitiveType {
   }
   getVegaType() {
     return VegaTypes.nominal
+  }
+  synthesizeValue() {
+    return "randomString"
   }
   getJavascriptTypeName() {
     return JavascriptNativeTypeNames.string
@@ -296,6 +315,9 @@ class AbstractTemporal extends AbstractPrimitiveType {
   }
   getJavascriptTypeName() {
     return JavascriptNativeTypeNames.Date
+  }
+  synthesizeValue() {
+    return new Date()
   }
   isNumeric() {
     return true
@@ -652,6 +674,9 @@ class Column {
   getPrimitiveTypeObj() {
     if (!this._type) this._type = this._inferType()
     return this._type
+  }
+  synthesizeValue(randomNumberFn) {
+    return this.getPrimitiveTypeObj().synthesizeValue(randomNumberFn)
   }
   isTemporal() {
     return this.getPrimitiveTypeObj().isTemporal()
@@ -2434,6 +2459,22 @@ ${cols}
       newRow[key] = rowWords[index]
     })
     rows.push(newRow)
+    return new Table(rows, this.getColumnsMap())
+  }
+  _synthesizeRow(randomNumberFn) {
+    const row = {}
+    this.getColumnsArray().forEach(column => {
+      row[column.getColumnName()] = column.synthesizeValue(randomNumberFn)
+    })
+    return row
+  }
+  synthesizeRows(count, seed) {
+    const randomNumberFn = jtree.Utils.makeSemiRandomFn(seed)
+    const rows = []
+    while (count) {
+      rows.push(this._synthesizeRow(randomNumberFn))
+      count--
+    }
     return new Table(rows, this.getColumnsMap())
   }
   // todo: we don't need any cloning here--here create a new sorted array with poitners

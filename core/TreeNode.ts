@@ -145,6 +145,7 @@ class TreeNode extends AbstractNode {
   execute() {}
 
   async loadRequirements(context: any) {
+    // todo: remove
     await Promise.all(this.map(node => node.loadRequirements(context)))
   }
 

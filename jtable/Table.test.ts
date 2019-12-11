@@ -25,6 +25,15 @@ mike,55`
   equal(columns[1].getPrimitiveTypeName(), "number")
 }
 
+testTree.synthesize = equal => {
+  // Arrange
+  const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.regionalMarkets)
+  const table = new Table(data)
+  // Act/Assert
+  const synth = table.synthesizeRows(21, 123)
+  equal(synth.getRowCount(), 21)
+}
+
 testTree.renameColumns = equal => {
   // Arrange
   const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.regionalMarkets)

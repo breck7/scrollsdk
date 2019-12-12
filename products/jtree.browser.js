@@ -42,6 +42,20 @@ class TreeUtils {
   static escapeRegExp(str) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   }
+  static sum(arr) {
+    return arr.reduce((curr, next) => curr + next, 0)
+  }
+  static makeVector(length, fill = 0) {
+    return new Array(length).fill(fill)
+  }
+  static makeMatrix(cols, rows, fill = 0) {
+    const matrix = []
+    while (rows) {
+      matrix.push(TreeUtils.makeVector(cols, fill))
+      rows--
+    }
+    return matrix
+  }
   static removeNonAscii(str) {
     // https://stackoverflow.com/questions/20856197/remove-non-ascii-character-in-string
     return str.replace(/[^\x00-\x7F]/g, "")
@@ -3104,7 +3118,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "49.2.0"
+TreeNode.getVersion = () => "49.3.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -4965,6 +4979,65 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
         // console.log(new TreeNode(code).toStringWithLineNumbers())
       }
     }
+  }
+  trainModel(programs, programConstructor = this.compileAndReturnRootConstructor()) {
+    const nodeDefs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
+    const nodeDefCountIncludingRoot = nodeDefs.length + 1
+    const matrix = TreeUtils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
+    const idToIndex = {}
+    const indexToId = {}
+    nodeDefs.forEach((def, index) => {
+      const id = def._getId()
+      idToIndex[id] = index + 1
+      indexToId[index + 1] = id
+    })
+    programs.forEach(code => {
+      const exampleProgram = new programConstructor(code)
+      exampleProgram.getTopDownArray().forEach(node => {
+        const nodeIndex = idToIndex[node.getDefinition()._getId()]
+        const parentNode = node.getParent()
+        if (!nodeIndex) return undefined
+        if (parentNode.isRoot()) matrix[0][nodeIndex]++
+        else {
+          const parentIndex = idToIndex[parentNode.getDefinition()._getId()]
+          if (!parentIndex) return undefined
+          matrix[parentIndex][nodeIndex]++
+        }
+      })
+    })
+    return {
+      idToIndex,
+      indexToId,
+      matrix
+    }
+  }
+  _mapPredictions(predictionsVector, model) {
+    const total = TreeUtils.sum(predictionsVector)
+    const predictions = predictionsVector.slice(1).map((count, index) => {
+      const id = model.indexToId[index + 1]
+      return {
+        id: id,
+        def: this.getNodeTypeDefinitionByNodeTypeId(id),
+        count,
+        prob: count / total
+      }
+    })
+    predictions.sort(TreeUtils.makeSortByFn(prediction => prediction.count)).reverse()
+    return predictions
+  }
+  predictChildren(model, node) {
+    return this._mapPredictions(this._predictChildren(model, node), model)
+  }
+  predictParents(model, node) {
+    return this._mapPredictions(this._predictParents(model, node), model)
+  }
+  _predictChildren(model, node) {
+    return model.matrix[node.isRoot() ? 0 : model.idToIndex[node.getDefinition()._getId()]]
+  }
+  _predictParents(model, node) {
+    if (node.isRoot()) return []
+    const nodeIndex = model.idToIndex[node.getDefinition()._getId()]
+    return model.matrix.map(row => row[nodeIndex])
   }
   _compileAndReturnNodeTypeMap() {
     if (!this._cache_compiledLoadedNodeTypes) this._compileAndEvalGrammar()

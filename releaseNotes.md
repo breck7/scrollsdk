@@ -1,3 +1,7 @@
+49.3.0 / 2019-12-12
+===================
+- New: started trainModel, predictChildren and predictParents methods
+
 49.2.0 / 2019-12-11
 ===================
 - New: JTable synthesizeTable and toSimpleSchema

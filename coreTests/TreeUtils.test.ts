@@ -12,6 +12,11 @@ testTree.version = equal => {
   equal(!!jtree.getVersion(), true)
 }
 
+testTree.vector = equal => {
+  // Arrange/Act/Assert
+  equal(jtree.Utils.sum(jtree.Utils.makeVector(5, 3)), 15)
+}
+
 testTree.didYouMean = equal => {
   // Arrange/Act/Assert
   const didYouMean = jtree.Utils.didYouMean

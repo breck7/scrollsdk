@@ -14,6 +14,8 @@ const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
 const numbersGrammar = Disk.read(numbersPath)
 const arrowPath = __dirname + "/../langs/arrow/arrow.grammar"
 const arrowGrammar = Disk.read(arrowPath)
+const hakonPath = __dirname + "/../langs/hakon/hakon.grammar"
+const hakonGrammar = Disk.read(hakonPath)
 const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
 const grammarGrammar = Disk.read(grammarGrammarPath)
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
@@ -62,6 +64,34 @@ const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new HandGrammarProgram(grammarCode)
   const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
   return new rootProgramConstructor(code)
+}
+
+testTree.trainAndPredict = equal => {
+  // Arrange/Act
+  const grammarProgram = new HandGrammarProgram(hakonGrammar)
+  const hakonNode = grammarProgram.compileAndReturnRootConstructor()
+  const testBlankProgram = new hakonNode()
+  const handGrammarProgram = testBlankProgram.getHandGrammarProgram()
+  const examples = handGrammarProgram.getNodesByGlobPath("* example").map((node: any) => node.childrenToString())
+  const model = grammarProgram.trainModel(examples)
+
+  // Assert
+  const predictions = handGrammarProgram.predictChildren(model, testBlankProgram)
+  equal(predictions[0].id, "selectorNode")
+
+  // Act
+  const bodyNode = testBlankProgram.appendLine("body")
+
+  // Assert
+  const predictions2 = handGrammarProgram.predictChildren(model, bodyNode)
+  equal(predictions2[0].id, "propertyNode")
+
+  // Act
+  const fontSizeNode = testBlankProgram.appendLine("font-size")
+
+  // Assert
+  const predictions3 = handGrammarProgram.predictParents(model, fontSizeNode)
+  equal(predictions3[0].id, "selectorNode")
 }
 
 testTree.jibberish = equal => {

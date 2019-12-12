@@ -8,6 +8,12 @@ interface AbstractRuntimeProgramConstructorInterface {
 
 declare type parserInfo = { firstWordMap: { [firstWord: string]: nodeTypeDefinitionNode }; regexTests: treeNotationTypes.regexTestDef[] }
 
+interface SimplePredictionModel {
+  matrix: treeNotationTypes.int[][]
+  idToIndex: { [id: string]: treeNotationTypes.int }
+  indexToId: { [index: number]: string }
+}
+
 enum GrammarConstantsCompiler {
   stringTemplate = "stringTemplate", // replacement instructions
   indentCharacter = "indentCharacter",
@@ -2165,6 +2171,71 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
         // console.log(new TreeNode(code).toStringWithLineNumbers())
       }
     }
+  }
+
+  trainModel(programs: string[], programConstructor = this.compileAndReturnRootConstructor()): SimplePredictionModel {
+    const nodeDefs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
+    const nodeDefCountIncludingRoot = nodeDefs.length + 1
+    const matrix = TreeUtils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
+    const idToIndex: { [id: string]: number } = {}
+    const indexToId: { [index: number]: string } = {}
+    nodeDefs.forEach((def, index) => {
+      const id = def._getId()
+      idToIndex[id] = index + 1
+      indexToId[index + 1] = id
+    })
+    programs.forEach(code => {
+      const exampleProgram = new programConstructor(code)
+      exampleProgram.getTopDownArray().forEach((node: GrammarBackedNode) => {
+        const nodeIndex = idToIndex[node.getDefinition()._getId()]
+        const parentNode = <GrammarBackedNode>node.getParent()
+        if (!nodeIndex) return undefined
+        if (parentNode.isRoot()) matrix[0][nodeIndex]++
+        else {
+          const parentIndex = idToIndex[parentNode.getDefinition()._getId()]
+          if (!parentIndex) return undefined
+          matrix[parentIndex][nodeIndex]++
+        }
+      })
+    })
+    return {
+      idToIndex,
+      indexToId,
+      matrix
+    }
+  }
+
+  private _mapPredictions(predictionsVector: number[], model: SimplePredictionModel) {
+    const total = TreeUtils.sum(predictionsVector)
+    const predictions = predictionsVector.slice(1).map((count, index) => {
+      const id = model.indexToId[index + 1]
+      return {
+        id: id,
+        def: this.getNodeTypeDefinitionByNodeTypeId(id),
+        count,
+        prob: count / total
+      }
+    })
+    predictions.sort(TreeUtils.makeSortByFn((prediction: any) => prediction.count)).reverse()
+    return predictions
+  }
+
+  predictChildren(model: SimplePredictionModel, node: GrammarBackedNode) {
+    return this._mapPredictions(this._predictChildren(model, node), model)
+  }
+
+  predictParents(model: SimplePredictionModel, node: GrammarBackedNode) {
+    return this._mapPredictions(this._predictParents(model, node), model)
+  }
+
+  private _predictChildren(model: SimplePredictionModel, node: GrammarBackedNode) {
+    return model.matrix[node.isRoot() ? 0 : model.idToIndex[node.getDefinition()._getId()]]
+  }
+
+  private _predictParents(model: SimplePredictionModel, node: GrammarBackedNode) {
+    if (node.isRoot()) return []
+    const nodeIndex = model.idToIndex[node.getDefinition()._getId()]
+    return model.matrix.map(row => row[nodeIndex])
   }
 
   _compileAndReturnNodeTypeMap() {

@@ -18,3 +18,32 @@ Ohayo
 
 JTable is the underlying data table library used by [Ohayo](https://ohayo.computer/).
 
+Related Work
+------------
+
+- https://github.com/edn-format/edn
+- https://github.com/google/flatbuffers
+- https://fsharp.github.io/FSharp.Data/library/CsvProvider.html
+- http://hackage.haskell.org/package/QuickCheck
+- https://developers.google.com/protocol-buffers
+- https://www.oreilly.com/library/view/using-sqlite/9781449394592/ch04s05.html
+- http://schema.org/
+- https://capnproto.org/
+- http://thrift.apache.org/
+- https://heycam.github.io/webidl/
+- https://en.wikipedia.org/wiki/Abstract_Syntax_Notation_One
+- https://cbor.io/
+- https://github.com/gnudatalanguage/gdl
+- https://arrow.apache.org/
+- https://tibble.tidyverse.org/
+- https://cran.r-project.org/web/packages/data.table/vignettes/datatable-intro.html
+- https://www.rdocumentation.org/packages/base/versions/3.6.1/topics/data.frame
+- https://pandas.pydata.org/
+- https://github.com/BurntSushi/xsv
+- https://frictionlessdata.io/specs/tabular-data-package/
+- https://frictionlessdata.io/specs/csv-dialect/
+- https://json-ld.org/
+- https://json-schema.org/
+- https://tools.ietf.org/html/rfc4180
+- https://www.odata.org/
+- https://www.w3.org/DesignIssues/LinkedData.html

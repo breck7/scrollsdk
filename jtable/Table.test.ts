@@ -25,6 +25,31 @@ mike,55`
   equal(columns[1].getPrimitiveTypeName(), "number")
 }
 
+testTree.synthesizeTable = equal => {
+  // Arrange
+  const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.gapMinder)
+  const table = new Table(data)
+  // Act/Assert
+  const synthTable = table.synthesizeTable(21, 123)
+  equal(synthTable.getRowCount(), 21)
+  equal(synthTable.getTableColumnByName("income").getReductions().max, 97)
+
+  // Arrange/Act
+  const schema = table
+    .toSimpleSchema()
+    .split("\n")
+    .map(col => {
+      const words = col.split(" ")
+      return {
+        name: words[0],
+        type: <any>words[1]
+      }
+    })
+  const table2 = new Table([], schema)
+  const synthTable2 = table2.synthesizeTable(21, 123)
+  equal(synthTable2.toDelimited(","), synthTable.toDelimited(","))
+}
+
 testTree.renameColumns = equal => {
   // Arrange
   const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.regionalMarkets)

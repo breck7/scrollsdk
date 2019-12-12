@@ -854,6 +854,7 @@ class TreeNode extends AbstractNode {
   }
   execute() {}
   async loadRequirements(context) {
+    // todo: remove
     await Promise.all(this.map(node => node.loadRequirements(context)))
   }
   getErrors() {
@@ -3103,7 +3104,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "49.1.0"
+TreeNode.getVersion = () => "49.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

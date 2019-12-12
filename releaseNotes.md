@@ -1,3 +1,7 @@
+49.2.0 / 2019-12-11
+===================
+- New: JTable synthesizeTable and toSimpleSchema
+
 49.1.0 / 2019-12-09
 ===================
 - New: isValueEmpty util method

@@ -145,6 +145,7 @@ class TreeNode extends AbstractNode {
   execute() {}
 
   async loadRequirements(context: any) {
+    // todo: remove
     await Promise.all(this.map(node => node.loadRequirements(context)))
   }
 
@@ -2833,7 +2834,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "49.1.0"
+  static getVersion = () => "49.2.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

@@ -434,6 +434,24 @@ ${cols}
     return new Table(rows, this.getColumnsMap())
   }
 
+  private _synthesizeRow(randomNumberFn: Function) {
+    const row: any = {}
+    this.getColumnsArray().forEach(column => {
+      row[column.getColumnName()] = column.synthesizeValue(randomNumberFn)
+    })
+    return row
+  }
+
+  synthesizeTable(rowcount: number, seed: number) {
+    const randomNumberFn = jtree.Utils.makeSemiRandomFn(seed)
+    const rows = []
+    while (rowcount) {
+      rows.push(this._synthesizeRow(randomNumberFn))
+      rowcount--
+    }
+    return new Table(rows, this.getColumnsArray().map(col => col.toObject()))
+  }
+
   // todo: we don't need any cloning here--here create a new sorted array with poitners
   // to same rows
   shuffleRows() {
@@ -469,6 +487,14 @@ ${cols}
   toDelimited(delimiter: string) {
     return this.toTree().toDelimited(delimiter, this.getColumnNames())
   }
+
+  toSimpleSchema(): string {
+    return this.getColumnsArray()
+      .map(col => `${col.getColumnName()} ${col.getPrimitiveTypeName()}`)
+      .join("\n")
+  }
+
+  // todo: toProtoBuf, toSqlLite, toJsonSchema, toJsonLd, toCapnProto, toApacheArrow, toFlatBuffers
 
   // guess which are the more important/informative/interesting columns
   getColumnsByImportance() {

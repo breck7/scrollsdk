@@ -181,7 +181,7 @@ class TreeUtils {
   }
 
   static isValueEmpty(value: any) {
-    return value === undefined || value === "" || (typeof value === "number" && isNaN(value))
+    return value === undefined || value === "" || (typeof value === "number" && isNaN(value)) || (value instanceof Date && isNaN(<any>value))
   }
 
   static stringToPermalink(str: string) {

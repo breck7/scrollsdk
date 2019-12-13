@@ -2300,6 +2300,13 @@ class Table {
       .map(row => row.rowToObjectWithOnlyNativeJavascriptTypes())
       .map(obj => Object.assign({}, obj))
   }
+  fillMissing(columnName, value) {
+    const filled = this.cloneNativeJavascriptTypedRows().map(row => {
+      if (jtree.Utils.isValueEmpty(row[columnName])) row[columnName] = value
+      return row
+    })
+    return new Table(filled, this.getColumnsArrayOfObjects())
+  }
   getTableColumnByName(name) {
     return this.getColumnsMap()[name]
   }
@@ -2417,15 +2424,15 @@ ${cols}
     const rows = this.getRows()
       .map(row => row.rowToObjectWithOnlyNativeJavascriptTypes())
       .map(obj => {
-        const newObj = {}
         Object.keys(nameMap).forEach(oldName => {
-          newObj[nameMap[oldName]] = obj[oldName]
+          obj[nameMap[oldName]] = obj[oldName]
+          delete obj[oldName]
         })
-        return newObj
+        return obj
       })
     const cols = this.getColumnsArrayOfObjects()
     cols.forEach(col => {
-      col.name = nameMap[col.name]
+      if (nameMap[col.name]) col.name = nameMap[col.name]
     })
     return new Table(rows, cols, undefined, false)
   }

@@ -25,6 +25,18 @@ mike,55`
   equal(columns[1].getPrimitiveTypeName(), "number")
 }
 
+testTree.fillMissing = equal => {
+  const table = new Table([{ score: 2 }, {}])
+  equal(table.getTableColumnByName("score").getReductions().min, 2)
+  equal(
+    table
+      .fillMissing("score", 0)
+      .getTableColumnByName("score")
+      .getReductions().min,
+    0
+  )
+}
+
 testTree.synthesizeTable = equal => {
   // Arrange
   const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.gapMinder)

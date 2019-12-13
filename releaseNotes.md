@@ -1,3 +1,8 @@
+49.4.0 / 2019-12-12
+===================
+- New: fillMissing method
+- Fix: fix for Invalid Date
+
 49.3.0 / 2019-12-12
 ===================
 - New: started trainModel, predictChildren and predictParents methods

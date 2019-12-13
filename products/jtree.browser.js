@@ -109,7 +109,7 @@ class TreeUtils {
       : ""
   }
   static isValueEmpty(value) {
-    return value === undefined || value === "" || (typeof value === "number" && isNaN(value))
+    return value === undefined || value === "" || (typeof value === "number" && isNaN(value)) || (value instanceof Date && isNaN(value))
   }
   static stringToPermalink(str) {
     return this._permalink(str, /[^a-z0-9- _\.]/gi)
@@ -3118,7 +3118,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "49.3.0"
+TreeNode.getVersion = () => "49.4.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

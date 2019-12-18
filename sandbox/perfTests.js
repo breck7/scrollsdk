@@ -24,7 +24,7 @@ to fillThis`
 
 const main = (grammarCode, code) => {
   logFn("Building language...")
-  const programConstructor = new GrammarProgram(grammarCode).compileAndReturnRootConstructor()
+  const programConstructor = new jtree.HandGrammarProgram(grammarCode).compileAndReturnRootConstructor()
 
   logFn("Loading program...")
 
@@ -43,13 +43,8 @@ const main = (grammarCode, code) => {
 
   logFn(msg)
   logFn("")
-  logFn("First five errors:")
-  logFn(
-    errors
-      .slice(0, 5)
-      .map(e => e.getMessage())
-      .join("<br>")
-  )
+  logFn("Errors:")
+  logFn(errors.map(e => e.getMessage()).join("<br>"))
 
   parseStringTest()
   toStringTest()

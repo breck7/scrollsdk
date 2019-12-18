@@ -11,9 +11,10 @@ const parseFormat = require("moment-parseformat")
 // https://github.com/gentooboontoo/js-quantities
 // https://github.com/moment/moment/issues/2469
 // todo: ugly. how do we ditch this or test?
-moment.createFromInputFallback = function(momentConfig: any) {
-  momentConfig._d = new Date(momentConfig._i)
-}
+if (typeof moment !== "undefined")
+  moment.createFromInputFallback = function(momentConfig: any) {
+    momentConfig._d = new Date(momentConfig._i)
+  }
 
 enum VegaTypes {
   nominal = "nominal",

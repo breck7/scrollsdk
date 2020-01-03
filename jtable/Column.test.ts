@@ -27,6 +27,17 @@ testTree.quantity = equal => {
   equal(col.getMax(), 7309)
 }
 
+testTree.negatives = equal => {
+  // Arrange
+  const gallons = [-1.0, -2.2, 10.1, -123.2, 0]
+  const col = new Column({ name: "Gallons" }, gallons)
+
+  // Assert
+  equal(col.getColumnName(), "Gallons")
+  equal(col.isNumeric(), true)
+  equal(col.getMin(), -123.2)
+}
+
 testTree.dateColumn = equal => {
   // Arrange
   const dates = ["1/10/2015", "1/28/2015", "2/26/2015", "3/25/2015", "4/23/2015", "5/15/2015", "6/15/2015", "7/10/2015", "8/25/2015", "9/10/2015", "10/14/2015", "11/7/2015", "12/12/2015", "2/3/2016", "3/8/2016", "4/28/2016", "5/19/2016"]

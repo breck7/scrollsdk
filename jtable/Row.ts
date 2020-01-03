@@ -1,3 +1,6 @@
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
+
 const { jtree } = require("../index.js")
 
 import { jTableTypes } from "../products/jTableTypes"
@@ -25,10 +28,6 @@ class Row {
 
   destroy() {}
 
-  _getRowTable() {
-    return this._table
-  }
-
   async destroyRow() {}
 
   getAsArray(headerRow: string[]) {
@@ -40,9 +39,13 @@ class Row {
     return this._sourceObject
   }
 
+  toVector() {
+    return Object.values(this.rowToObjectWithOnlyNativeJavascriptTypes())
+  }
+
   // todo: rowToObjectWithOnlyNativeJavascriptTypes method? Its numerics where we need and strings where we need.
   private _parseIntoObjectWithOnlyNativeJavascriptTypes() {
-    const columns = this._getRowTable().getColumnsMap()
+    const columns = this._table.getColumnsMap()
     const typedNode: any = {}
     Object.keys(columns).forEach(colName => {
       typedNode[colName] = this._getRowValueFromSourceColOrOriginalCol(colName)
@@ -52,7 +55,7 @@ class Row {
 
   // why from source col? if we always copy, we shouldnt need that, correct? perhaps have an audit array of all operations on a row?
   private _getRowValueFromSourceColOrOriginalCol(colName: string) {
-    const columns = this._getRowTable().getColumnsMap()
+    const columns = this._table.getColumnsMap()
     const destColumn = columns[colName]
     const sourceColName = destColumn.getSourceColumnName()
     const sourceCol = columns[sourceColName]

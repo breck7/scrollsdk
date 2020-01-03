@@ -1,3 +1,10 @@
+49.5.0 / 2020-01-03
+===================
+- New: jtable: getMin, toVector, toMatrix, toNumericMatrix methods
+- New: nodesThatStartWith core method
+- New: started build server
+- Fix: clean column names method drop columns fix
+
 49.4.0 / 2019-12-12
 ===================
 - New: fillMissing method

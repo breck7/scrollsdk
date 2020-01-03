@@ -23,6 +23,10 @@ mike,55`
 
   // Assert
   equal(columns[1].getPrimitiveTypeName(), "number")
+
+  // Act
+  const matrix = table.toMatrix()
+  equal(matrix[1][1], 55)
 }
 
 testTree.fillMissing = equal => {

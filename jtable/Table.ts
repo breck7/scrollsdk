@@ -1,3 +1,6 @@
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
+
 const { jtree } = require("../index.js")
 
 import { jTableTypes } from "../products/jTableTypes"
@@ -239,6 +242,21 @@ class Table {
     return this.getRows().map((row: any) => row.rowToObjectWithOnlyNativeJavascriptTypes())
   }
 
+  toMatrix() {
+    return this.getRows().map(row => row.toVector())
+  }
+
+  toNumericMatrix() {
+    // todo: right now it drops them. should we 1 hot them?
+    const numericNames = this.getColumnsArray()
+      .filter(col => col.isNumeric())
+      .map(col => col.getColumnName())
+    return this.getRows().map((row: any) => {
+      const obj = row.rowToObjectWithOnlyNativeJavascriptTypes()
+      return numericNames.map((name: string) => obj[name])
+    })
+  }
+
   clone() {
     return new Table(this.cloneNativeJavascriptTypedRows())
   }
@@ -394,7 +412,9 @@ ${cols}
       .map((row: any) => row.rowToObjectWithOnlyNativeJavascriptTypes())
       .map(obj => {
         Object.keys(nameMap).forEach(oldName => {
-          obj[nameMap[oldName]] = obj[oldName]
+          const newName = nameMap[oldName]
+          if (newName === oldName) return
+          obj[newName] = obj[oldName]
           delete obj[oldName]
         })
         return obj

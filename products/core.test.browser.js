@@ -591,6 +591,9 @@ testTree.getNodesByGlobPath = equal => {
   equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("*").length, new TreeNode(testStrings.webpage).length)
   equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("body div class").length, 2)
 }
+testTree.nodesThatStartWith = equal => {
+  equal(new TreeNode(testStrings.webpage).nodesThatStartWith("body")[0].nodesThatStartWith("div").length, 5)
+}
 testTree.getNodeByColumns = equal => {
   // Arrange
   const test = new TreeNode(testStrings.sortByMultiple)

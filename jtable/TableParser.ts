@@ -1,3 +1,6 @@
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
+
 const { jtree } = require("../index.js")
 
 import { jTableTypes } from "../products/jTableTypes"

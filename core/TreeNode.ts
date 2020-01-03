@@ -2057,10 +2057,15 @@ class TreeNode extends AbstractNode {
     return matches
   }
 
+  // todo: remove?
   getNodesByLinePrefixes(columns: string[]) {
     const matches: TreeNode[] = []
     this._getNodesByLineRegex(matches, columns.map(str => new RegExp("^" + str)))
     return matches
+  }
+
+  nodesThatStartWith(prefix: string) {
+    return this.filter(node => node.getLine().startsWith(prefix))
   }
 
   protected _getNodesByLineRegex(matches: TreeNode[], regs: RegExp[]) {
@@ -2834,7 +2839,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "49.4.0"
+  static getVersion = () => "49.5.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

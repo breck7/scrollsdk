@@ -72,6 +72,10 @@ class Builder extends AbstractBuilder {
     console.log("Don't forget to update releaseNotes.md!")
   }
 
+  startServer() {
+    this._startServer(9999, __dirname + "/")
+  }
+
   _makeTestTreeForFolder(dir: treeNotationTypes.absoluteFolderPath) {
     const allTestFiles = <string[]>recursiveReadSync(dir)
     const swarm = require("./products/swarm.nodejs.js")

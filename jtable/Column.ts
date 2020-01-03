@@ -1,3 +1,6 @@
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
+
 const { jtree } = require("../index.js")
 
 import { jTableTypes } from "../products/jTableTypes"
@@ -1067,6 +1070,10 @@ class Column {
 
   getMax() {
     return this.getReductions().max
+  }
+
+  getMin() {
+    return this.getReductions().min
   }
 
   getMean() {

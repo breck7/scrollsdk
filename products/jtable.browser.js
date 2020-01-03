@@ -1,3 +1,5 @@
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
 // todo: create a Tree Language for number formatting
 // https://github.com/gentooboontoo/js-quantities
 // https://github.com/moment/moment/issues/2469
@@ -840,6 +842,9 @@ class Column {
   getMax() {
     return this.getReductions().max
   }
+  getMin() {
+    return this.getReductions().min
+  }
   getMean() {
     return this.getReductions().mean
   }
@@ -1001,6 +1006,8 @@ const PrimitiveTypes = {
 }
 window.Column = Column
 window.PrimitiveTypes = PrimitiveTypes
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
 class Row {
   constructor(sourceObject = {}, table) {
     this._puid = this._getUniqueId()
@@ -1012,9 +1019,6 @@ class Row {
     return Row._uniqueId
   }
   destroy() {}
-  _getRowTable() {
-    return this._table
-  }
   async destroyRow() {}
   getAsArray(headerRow) {
     const obj = this.rowToObjectWithOnlyNativeJavascriptTypes()
@@ -1023,9 +1027,12 @@ class Row {
   getRowSourceObject() {
     return this._sourceObject
   }
+  toVector() {
+    return Object.values(this.rowToObjectWithOnlyNativeJavascriptTypes())
+  }
   // todo: rowToObjectWithOnlyNativeJavascriptTypes method? Its numerics where we need and strings where we need.
   _parseIntoObjectWithOnlyNativeJavascriptTypes() {
-    const columns = this._getRowTable().getColumnsMap()
+    const columns = this._table.getColumnsMap()
     const typedNode = {}
     Object.keys(columns).forEach(colName => {
       typedNode[colName] = this._getRowValueFromSourceColOrOriginalCol(colName)
@@ -1034,7 +1041,7 @@ class Row {
   }
   // why from source col? if we always copy, we shouldnt need that, correct? perhaps have an audit array of all operations on a row?
   _getRowValueFromSourceColOrOriginalCol(colName) {
-    const columns = this._getRowTable().getColumnsMap()
+    const columns = this._table.getColumnsMap()
     const destColumn = columns[colName]
     const sourceColName = destColumn.getSourceColumnName()
     const sourceCol = columns[sourceColName]
@@ -1079,6 +1086,8 @@ class Row {
 }
 Row._uniqueId = 0
 window.Row = Row
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
 var TableParserIds
 ;(function(TableParserIds) {
   TableParserIds["csv"] = "csv"
@@ -2110,6 +2119,8 @@ And that has made all the difference.`
   ]
 }
 window.DummyDataSets = DummyDataSets
+//onsave jtree build produce jtable.browser.js
+//onsave jtree build produce jtable.node.js
 class PivotTable {
   constructor(rows, inputColumns, outputColumns) {
     this._columns = {}
@@ -2293,6 +2304,19 @@ class Table {
   getJavascriptNativeTypedValues() {
     return this.getRows().map(row => row.rowToObjectWithOnlyNativeJavascriptTypes())
   }
+  toMatrix() {
+    return this.getRows().map(row => row.toVector())
+  }
+  toNumericMatrix() {
+    // todo: right now it drops them. should we 1 hot them?
+    const numericNames = this.getColumnsArray()
+      .filter(col => col.isNumeric())
+      .map(col => col.getColumnName())
+    return this.getRows().map(row => {
+      const obj = row.rowToObjectWithOnlyNativeJavascriptTypes()
+      return numericNames.map(name => obj[name])
+    })
+  }
   clone() {
     return new Table(this.cloneNativeJavascriptTypedRows())
   }
@@ -2426,7 +2450,9 @@ ${cols}
       .map(row => row.rowToObjectWithOnlyNativeJavascriptTypes())
       .map(obj => {
         Object.keys(nameMap).forEach(oldName => {
-          obj[nameMap[oldName]] = obj[oldName]
+          const newName = nameMap[oldName]
+          if (newName === oldName) return
+          obj[newName] = obj[oldName]
           delete obj[oldName]
         })
         return obj

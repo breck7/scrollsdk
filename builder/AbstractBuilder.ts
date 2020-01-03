@@ -1,11 +1,18 @@
+//onsave jtree build produce AbstractBuilder.node.js
+
+const fs = require("fs")
 const { exec, execSync } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
+const express = require("express")
 
 const { jtree } = require("../index.js")
+
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Disk } = require("../products/Disk.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
+
+const registeredExtensions: treeNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", grammar: "tooling ", gram: "tooling " }
 
 class AbstractBuilder extends jtree.TreeNode {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
@@ -62,6 +69,68 @@ class AbstractBuilder extends jtree.TreeNode {
 
   private _buildTsc(sourceCode: string, outputFilePath: string, forBrowser = false) {
     Disk.write(outputFilePath, this._typeScriptToJavascript(sourceCode, forBrowser))
+  }
+
+  private _startServer(port: treeNotationTypes.portNumber, folder: string) {
+    const app = express()
+    app.listen(port, () => {
+      console.log(`Running builder. cmd+dblclick: http://localhost:${port}/`)
+    })
+    this._startListeningForFileChanges(folder)
+  }
+
+  private _isProjectFile(path: string) {
+    return !path.includes("node_modules") && !path.includes("products") && !path.includes(".git")
+  }
+
+  private _onFileChanged(fullPath: string) {
+    console.log(`SAVED ${fullPath}`)
+    if (!this._isProjectFile(fullPath)) {
+      console.log(` SKIP not a project file.`)
+      console.log(` DONE`)
+      return true
+    }
+
+    const fileExtension = jtree.Utils.getFileExtension(fullPath)
+    const commentPrefix = registeredExtensions[fileExtension]
+    if (!commentPrefix) {
+      console.log(` SKIP not a registered extension.`)
+      console.log(` DONE`)
+      return true
+    }
+
+    const prefix = commentPrefix + "onsave"
+
+    if (!Disk.exists(fullPath)) {
+      console.log(` SKIP file deleted`)
+      console.log(` DONE`)
+      return
+    } else {
+      const lines = Disk.read(fullPath).split("\n")
+      let line = lines.shift()
+      if (!line.startsWith(prefix)) console.log(` SKIP no tasks`)
+      while (line.startsWith(prefix)) {
+        const command = line.substr(prefix.length + 1)
+        const folder = jtree.Utils.getParentFolder(fullPath)
+        console.log(` COMMAND ${command}`)
+        const time = Date.now()
+        execSync(command, { cwd: folder, encoding: "utf8" })
+        console.log(` FINISHED ${Date.now() - time}ms`)
+        line = lines.shift()
+      }
+      console.log(` DONE`)
+    }
+  }
+
+  private _fsWatchers: any
+  private _startListeningForFileChanges(folder: string) {
+    const projectFolders = [folder] // todo
+
+    this._fsWatchers = projectFolders.map(folder =>
+      fs.watch(folder, { recursive: true }, (event: any, filename: treeNotationTypes.fileName) => {
+        this._onFileChanged(folder + filename)
+      })
+    )
   }
 
   // todo: cleanup

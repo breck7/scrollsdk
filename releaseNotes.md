@@ -1,3 +1,7 @@
+49.6.0 / 2020-01-24
+===================
+- Fix: windows return characters now stripped in fromDelimited methods
+
 49.5.0 / 2020-01-03
 ===================
 - New: jtable: getMin, toVector, toMatrix, toNumericMatrix methods

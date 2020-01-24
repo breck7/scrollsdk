@@ -1035,6 +1035,17 @@ joe,23`,
   )
   // Assert
 }
+testTree.fromDelimitedWindowsLineEndings = equal => {
+  // Arrange
+  const str = "A,B\n1,3"
+  const str2 = "A,B\n\r1,3"
+  // Act
+  const result = TreeNode.fromCsv(str)
+  const result2 = TreeNode.fromCsv(str2)
+  // Assert
+  equal(result.get("0 B"), "3")
+  equal(result2.get("0 B"), "3")
+}
 testTree.siblings = equal => {
   // Arrange
   const test = new TreeNode(`a

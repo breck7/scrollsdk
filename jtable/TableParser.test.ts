@@ -8,6 +8,21 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}
 
+testTree.windowsLineEndings = equal => {
+  // Arrange
+  const str = "A,B\n1,3"
+  const str2 = "A,B\n\r1,3"
+  // Act
+  const result = new TableParser().parseTableInputsFromString(str, <any>"csv")
+  const result2 = new TableParser().parseTableInputsFromString(str2, <any>"csv")
+
+  // Assert
+  equal((<any>result.rows[0])["A"], "1")
+  equal((<any>result.rows[0])["B"], "3")
+  equal((<any>result2.rows[0])["A"], "1")
+  equal((<any>result2.rows[0])["B"], "3")
+}
+
 testTree.all = equal => {
   // Arrange
   const parser = new TableParser()

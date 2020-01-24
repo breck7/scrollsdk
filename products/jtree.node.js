@@ -2890,6 +2890,7 @@ class TreeNode extends AbstractNode {
     return this.fromDelimited(str, "\t", '"')
   }
   static fromDelimited(str, delimiter, quoteChar = '"') {
+    str = str.replace(/\r/g, "") // remove windows newlines if present
     const rows = this._getEscapedRows(str, delimiter, quoteChar)
     return this._rowsToTreeNode(rows, delimiter, true)
   }
@@ -2897,6 +2898,7 @@ class TreeNode extends AbstractNode {
     return str.includes(quoteChar) ? this._strToRows(str, delimiter, quoteChar) : str.split("\n").map(line => line.split(delimiter))
   }
   static fromDelimitedNoHeaders(str, delimiter, quoteChar) {
+    str = str.replace(/\r/g, "") // remove windows newlines if present
     const rows = this._getEscapedRows(str, delimiter, quoteChar)
     return this._rowsToTreeNode(rows, delimiter, false)
   }
@@ -3109,7 +3111,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "49.5.0"
+TreeNode.getVersion = () => "49.6.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

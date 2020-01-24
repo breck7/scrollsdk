@@ -2610,6 +2610,7 @@ class TreeNode extends AbstractNode {
   }
 
   static fromDelimited(str: string, delimiter: string, quoteChar: string = '"') {
+    str = str.replace(/\r/g, "") // remove windows newlines if present
     const rows = this._getEscapedRows(str, delimiter, quoteChar)
     return this._rowsToTreeNode(rows, delimiter, true)
   }
@@ -2619,6 +2620,7 @@ class TreeNode extends AbstractNode {
   }
 
   static fromDelimitedNoHeaders(str: string, delimiter: string, quoteChar: string) {
+    str = str.replace(/\r/g, "") // remove windows newlines if present
     const rows = this._getEscapedRows(str, delimiter, quoteChar)
     return this._rowsToTreeNode(rows, delimiter, false)
   }
@@ -2839,7 +2841,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "49.5.0"
+  static getVersion = () => "49.6.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

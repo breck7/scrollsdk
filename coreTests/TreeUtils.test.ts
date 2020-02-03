@@ -17,6 +17,11 @@ testTree.vector = equal => {
   equal(jtree.Utils.sum(jtree.Utils.makeVector(5, 3)), 15)
 }
 
+testTree.getNextOrPrevious = equal => {
+  // A/A/A
+  equal(jtree.Utils.getNextOrPrevious([1, 2, 3], 2), 3)
+}
+
 testTree.didYouMean = equal => {
   // Arrange/Act/Assert
   const didYouMean = jtree.Utils.didYouMean

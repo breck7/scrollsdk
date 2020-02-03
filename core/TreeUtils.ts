@@ -205,9 +205,9 @@ class TreeUtils {
     return filename
   }
 
-  static getNextOrPrevious(arr: any[]) {
+  static getNextOrPrevious(arr: any[], item: any) {
     const length = arr.length
-    const index = arr.indexOf(this)
+    const index = arr.indexOf(item)
     if (length === 1) return undefined
     if (index === length - 1) return arr[index - 1]
     return arr[index + 1]

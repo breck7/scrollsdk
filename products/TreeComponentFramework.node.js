@@ -166,9 +166,6 @@ class AbstractWillowShadow {
   getShadowHeight() {
     return 111
   }
-  isShadowResizable() {
-    return false
-  }
   setShadowAttr(name, value) {
     return this
   }
@@ -523,9 +520,6 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   }
   getShadowCss(prop) {
     return this._getJQElement().css(prop)
-  }
-  isShadowResizable() {
-    return this._getJQElement().find(".ui-resizable-handle").length > 0
   }
   triggerShadowEvent(event) {
     this._getJQElement().trigger(event)
@@ -1023,6 +1017,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     })
     bodyShadow.onShadowEvent(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function(evt) {
       if (evt.shiftKey) return checkAndExecute(this, WillowConstants.shiftClickCommand, evt)
+      app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(this, WillowConstants.clickCommand, evt)
     })
     bodyShadow.onShadowEvent(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function(evt) {
@@ -1094,6 +1089,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     this.getMessageBuffer().appendLineAndChildren("message", message)
   }
   addStumpErrorMessageToLog(errorMessage) {
+    // todo: cleanup!
     return this.addStumpCodeMessageToLog(`div
  class OhayoError
  bern${jtree.TreeNode.nest(errorMessage, 2)}`)

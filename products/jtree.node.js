@@ -128,9 +128,9 @@ class TreeUtils {
     }
     return filename
   }
-  static getNextOrPrevious(arr) {
+  static getNextOrPrevious(arr, item) {
     const length = arr.length
-    const index = arr.indexOf(this)
+    const index = arr.indexOf(item)
     if (length === 1) return undefined
     if (index === length - 1) return arr[index - 1]
     return arr[index + 1]
@@ -3111,7 +3111,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "49.6.0"
+TreeNode.getVersion = () => "49.6.1"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

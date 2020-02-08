@@ -121,13 +121,13 @@ class TreeBaseServer {
     let end = timer.tick("Loaded collection....")
     let lines = this._folder.getNumberOfLines()
     let lps = lines / (end / 1000)
-    const errors = this._folder._getAsProgram().getAllErrors()
+    const errors = this._folder.toProgram().getAllErrors()
     return `Total errors: ${errors.length}\n${errors.join("\n")}`
   }
   errorsToCsvCommand() {
     return new jtree.TreeNode(
       this._folder
-        ._getAsProgram()
+        .toProgram()
         .getAllErrors()
         .map(err => err.toObject())
     ).toCsv()
@@ -193,7 +193,7 @@ class TreeBaseFolder extends TreeNode {
     return tableDefinitionNodes.map(node => node.toSqlLiteTableSchema()).join("\n")
   }
   toSqlLiteInsertRows() {
-    return this._getAsProgram()
+    return this.toProgram()
       .map(node => node.toSqlLiteInsertStatement(node => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
       .join("\n")
   }
@@ -213,7 +213,7 @@ class TreeBaseFolder extends TreeNode {
   cellCheckWithProgressBar(printLimit = 100) {
     const timer = new TreeUtils.Timer()
     timer.tick("start...")
-    const program = this._getAsProgram()
+    const program = this.toProgram()
     let lines = this.getNumberOfLines()
     let lps = lines / (timer.tick("End parser") / 1000)
     console.log(`Parsed ${lines} line program at ${lps} lines per second`)
@@ -314,7 +314,7 @@ treeBaseFolderNode
 treeBaseErrorNode
  ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
   }
-  _getAsProgram() {
+  toProgram() {
     this.loadFolder()
     const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
     const programConstructor = grammarProgram.compileAndReturnRootConstructor()

@@ -1,3 +1,8 @@
+49.7.0 / 2020-02-08
+===================
+- New: hasNode method in core
+- New: toProgram method on TreeBase
+
 49.6.1 / 2020-02-03
 ===================
 - Fix: TCF save mouse event on click

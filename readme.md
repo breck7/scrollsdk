@@ -12,7 +12,7 @@ Links
 🌴 [Try Tree Notation](https://jtree.treenotation.org/sandbox/)  
 🌴 [Tree Language Designer](https://jtree.treenotation.org/designer/)  
 🌴 [Tree Notation FAQ](http://faq.treenotation.org/)  
-🌴 [TreeBase](https://jtree.treenotation.org/treeBase/)  
+🌴 [TreeBase](https://treebase.treenotation.org/)  
 🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
 🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
 🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  

@@ -1684,6 +1684,11 @@ class TreeNode extends AbstractNode {
     return this._hasFirstWord(firstWord)
   }
 
+  hasNode(node: TreeNode | string): boolean {
+    const needle = node.toString()
+    return this.getChildren().some(node => node.toString() === needle)
+  }
+
   protected _hasFirstWord(firstWord: string) {
     return this._getIndex()[firstWord] !== undefined
   }

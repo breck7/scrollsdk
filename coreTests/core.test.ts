@@ -1786,6 +1786,20 @@ testTree.has = equal => {
   equal(tree.has("nested"), true)
 }
 
+testTree.hasNode = equal => {
+  // Arrange
+  const tree = new TreeNode(testStrings.every)
+  equal(tree.hasNode(`admin false`), true)
+  equal(
+    tree.hasNode(`stage
+ name home
+ domain test.test.com`),
+    true
+  )
+  equal(tree.hasNode(`name Plato`), false)
+  equal(tree.hasNode(`domain test.test.com`), false)
+}
+
 testTree.getStackString = equal => {
   const tree = new TreeNode(
     `Thing

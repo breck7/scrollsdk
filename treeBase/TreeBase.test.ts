@@ -16,7 +16,7 @@ const getFolder = () => {
 
 testTree.all = (equal: any) => {
   const folder = getFolder()
-  const errs = folder._getAsProgram().getAllErrors()
+  const errs = folder.toProgram().getAllErrors()
   equal(errs.length, 0, "no errors")
   if (errs.length) console.log(errs.join("\n"))
 }

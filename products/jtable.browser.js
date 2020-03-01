@@ -654,7 +654,7 @@ class Column {
   getColumnName() {
     return this._getColDefObject().name
   }
-  getSourceColumnName() {
+  _getSourceColumnName() {
     return this._colDefObject.source
   }
   isInvalidValue(value) {
@@ -772,6 +772,9 @@ class Column {
     if (map) return map
     this._map = this._getSummaryVector().map
     return this._map
+  }
+  getValues() {
+    return this._getSummaryVector().values
   }
   _getSummaryVector() {
     if (!this._summaryVector) this._summaryVector = this._createSummaryVector()
@@ -1043,7 +1046,7 @@ class Row {
   _getRowValueFromSourceColOrOriginalCol(colName) {
     const columns = this._table.getColumnsMap()
     const destColumn = columns[colName]
-    const sourceColName = destColumn.getSourceColumnName()
+    const sourceColName = destColumn._getSourceColumnName()
     const sourceCol = columns[sourceColName]
     // only use source if we still have access to it
     const val = sourceColName && sourceCol ? this._getRowValueFromOriginalOrSource(sourceColName, sourceCol.getPrimitiveTypeName(), destColumn.getPrimitiveTypeName()) : this.getRowOriginalValue(colName)
@@ -2175,9 +2178,15 @@ class PivotTable {
       })
       newRows.push(newRow)
     }
+    // todo: add tests. figure out this api better.
+    Object.values(columns).forEach(col => {
+      // For pivot columns, remove the source and reduction info for now. Treat things as immutable.
+      delete col.source
+      delete col.reduction
+    })
     return {
       rows: newRows,
-      columns: columns
+      columns
     }
   }
 }

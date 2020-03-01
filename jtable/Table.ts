@@ -73,9 +73,16 @@ class PivotTable {
       newRows.push(newRow)
     }
 
+    // todo: add tests. figure out this api better.
+    Object.values(columns).forEach(col => {
+      // For pivot columns, remove the source and reduction info for now. Treat things as immutable.
+      delete col.source
+      delete col.reduction
+    })
+
     return {
       rows: newRows,
-      columns: columns
+      columns
     }
   }
 }

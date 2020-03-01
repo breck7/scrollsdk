@@ -849,7 +849,7 @@ class Column {
     return this._getColDefObject().name
   }
 
-  getSourceColumnName() {
+  _getSourceColumnName() {
     return this._colDefObject.source
   }
 
@@ -988,6 +988,10 @@ class Column {
     if (map) return map
     this._map = this._getSummaryVector().map
     return this._map
+  }
+
+  getValues() {
+    return this._getSummaryVector().values
   }
 
   private _getSummaryVector() {

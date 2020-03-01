@@ -115,6 +115,29 @@ testTree.vegaTest = equal => {
   equal(moment(typedVals[0].year).format("YYYY"), "1941")
 }
 
+testTree.pivotTable = equal => {
+  // Arrange
+  const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.patients)
+  const table = new Table(data)
+
+  // Act
+  const newTable = table.makePivotTable(
+    ["Gender"],
+    [
+      {
+        source: "Weight",
+        reduction: "sum",
+        name: "totalSum"
+      }
+    ]
+  )
+  const newColumn = newTable.getColumnByName("totalSum")
+
+  // Assert
+  equal(newColumn.getValues()[0], 8.61)
+  equal(newColumn.getValues()[1], 6.5)
+}
+
 testTree.filterTest = equal => {
   // Arrange
   const data = jtree.Utils.javascriptTableWithHeaderRowToObjects(DummyDataSets.waterBill)

@@ -1,3 +1,9 @@
+49.8.0 / 2020-03-01
+===================
+- New: jtable: getValues method on columns (use instead of accessing private _getSummaryVector method)
+- Fix: jtable: pivot column generation now operates in a more pass by copy manner and references to source columns are dropped
+- Breaking: unused method getSourceColumnName is now _getSourceColumnName
+
 49.7.0 / 2020-02-08
 ===================
 - New: hasNode method in core

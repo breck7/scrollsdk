@@ -57,7 +57,7 @@ class Row {
   private _getRowValueFromSourceColOrOriginalCol(colName: string) {
     const columns = this._table.getColumnsMap()
     const destColumn = columns[colName]
-    const sourceColName = destColumn.getSourceColumnName()
+    const sourceColName = destColumn._getSourceColumnName()
     const sourceCol = columns[sourceColName]
 
     // only use source if we still have access to it

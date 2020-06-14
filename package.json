@@ -14,7 +14,8 @@
     "jtree": "./products/commandLineApp.node.js"
   },
   "scripts": {
-    "test": "./builder.ts test"
+    "test": "./builder.ts test",
+    "cloc": "cloc --exclude-dir=products $(git ls-files)"
   },
   "repository": {
     "type": "git",

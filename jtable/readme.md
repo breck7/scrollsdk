@@ -21,6 +21,8 @@ JTable is the underlying data table library used by [Ohayo](https://ohayo.comput
 Related Work
 ------------
 
+- https://vega.github.io/vega/docs/data/
+- https://github.com/data-forge/data-forge-ts
 - https://github.com/edn-format/edn
 - https://github.com/google/flatbuffers
 - https://fsharp.github.io/FSharp.Data/library/CsvProvider.html

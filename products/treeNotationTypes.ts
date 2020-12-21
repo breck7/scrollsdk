@@ -39,6 +39,12 @@ namespace treeNotationTypes {
     nodeConstructor: string
   }
 
+  export interface SerializedTreeNode {
+    cells?: string[]
+    children?: SerializedTreeNode[]
+  }
+  export declare type serializedTreeNode = string
+
   export declare type treeNode = any
   export declare type line = string // no NodeBreakSymbol (\n)
   export declare type int = number

@@ -81,6 +81,11 @@ See the "langs/" folder.
 
 If you look at the source, you will also see a set of build tools (such as Builder and TypeScriptRewriter). These are currently undocumented and not recommended for external use.
 
+### Building all tools and running tests
+
+    jtree build produceAll
+    npm test
+
 Monorepo
 --------
 

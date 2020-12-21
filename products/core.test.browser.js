@@ -1,5 +1,6 @@
 const testTree = {}
 const testStrings = {}
+const testObjects = {}
 testStrings.webpage = `head
 body
  div
@@ -73,7 +74,7 @@ state
  date 1/3/32
  key c
 `
-testStrings.json2 = [{ id: 755, settings: "123" }, { id: 756, settings: "456" }]
+testObjects.json2tree = [{ id: 755, settings: "123" }, { id: 756, settings: "456" }]
 testStrings.json2tree = `docs
  0
   id 755
@@ -235,7 +236,7 @@ bush foo
 testStrings.tsv = `id\ttitle\tsummary
 1\tSome book\t\"An expose, on the result of one \"\"plus\"\" one\"
 2\tThe answer, my friend, is...\t\"\"\"Two\"\"\"`
-testStrings.json = {
+testObjects.tsv = {
   firstName: "John",
   lastName: "Smith",
   isAlive: true,
@@ -867,6 +868,22 @@ testTree.hasDuplicates = equal => {
 testTree.toYaml = equal => {
   // Arrange/Act/Assert
   equal(new TreeNode(testStrings.lime).toYaml(), testStrings.limeToYaml)
+}
+testTree.toGridJson = equal => {
+  // Arrange/Act/Assert
+  const tests = Object.keys(testStrings).forEach(key => {
+    const program = testStrings[key]
+    const serialized = new TreeNode(program).toGridJson()
+    equal(TreeNode.fromGridJson(serialized).toString(), program)
+  })
+}
+testTree.toJson = equal => {
+  // Arrange/Act/Assert
+  const tests = Object.keys(testStrings).forEach(key => {
+    const program = testStrings[key]
+    const serialized = new TreeNode(program).toJson()
+    equal(TreeNode.fromJson(serialized).toString(), program)
+  })
 }
 testTree.firstValue = equal => {
   // Arrange
@@ -1847,7 +1864,7 @@ testTree.createFromArray = equal => {
 }
 testTree.createFromObject = equal => {
   // Arrange
-  const tree = new TreeNode(testStrings.json)
+  const tree = new TreeNode(testObjects.tsv)
   const date = new Date()
   const time = date.getTime()
   const treeWithDate = new TreeNode({ name: "John", date: date })
@@ -1867,7 +1884,7 @@ testTree.createFromObject = equal => {
   equal(tree2.getNode("c ref"), undefined)
   // Arrange
   const tree3 = new TreeNode()
-  tree3.touchNode("docs").setChildren(testStrings.json2)
+  tree3.touchNode("docs").setChildren(testObjects.json2tree)
   // Assert
   equal(tree3.toString(), testStrings.json2tree, "expected json2tree")
   // Arrange
@@ -2944,7 +2961,7 @@ testTree.toOutline = equal => {
 }
 testTree.fromJsonSubset = equal => {
   // AAA
-  equal(TreeNode.fromJsonSubset(JSON.stringify(testStrings.json2)).toString(), new TreeNode(testStrings.json2tree).getNode("docs").childrenToString())
+  equal(TreeNode.fromJsonSubset(JSON.stringify(testObjects.json2tree)).toString(), new TreeNode(testStrings.json2tree).getNode("docs").childrenToString())
 }
 testTree.getFiltered = equal => {
   // AAA

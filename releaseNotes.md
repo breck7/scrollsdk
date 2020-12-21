@@ -1,3 +1,8 @@
+50.0.0 / 2020-12-20
+===================
+- New: core: toJson, toGrid, toGridJson, fromJson and fromGridJson methods
+- New: sandbox: added share link and toJson and toGridJson consoles
+
 49.8.0 / 2020-03-01
 ===================
 - New: jtable: getValues method on columns (use instead of accessing private _getSummaryVector method)

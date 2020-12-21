@@ -1655,6 +1655,28 @@ class TreeNode extends AbstractNode {
   toJsonSubset() {
     return JSON.stringify(this.toObject(), null, " ")
   }
+  _toObjectForSerialization() {
+    return this.length
+      ? {
+          cells: this.getWords(),
+          children: this.map(child => child._toObjectForSerialization())
+        }
+      : {
+          cells: this.getWords()
+        }
+  }
+  toJson() {
+    return JSON.stringify({ children: this.map(child => child._toObjectForSerialization()) }, null, " ")
+  }
+  toGrid() {
+    const WordBreakSymbol = this.getWordBreakSymbol()
+    return this.toString()
+      .split(this.getNodeBreakSymbol())
+      .map(line => line.split(WordBreakSymbol))
+  }
+  toGridJson() {
+    return JSON.stringify(this.toGrid(), null, 2)
+  }
   findNodes(firstWordPath) {
     // todo: can easily speed this up
     const map = {}
@@ -2116,6 +2138,7 @@ class TreeNode extends AbstractNode {
       if (nodes[index].getFirstWord() === firstWord) return index
     }
   }
+  // todo: rename this. it is a particular type of object.
   toObject() {
     return this._toObject()
   }
@@ -2884,8 +2907,31 @@ class TreeNode extends AbstractNode {
   static fromCsv(str) {
     return this.fromDelimited(str, ",", '"')
   }
+  // todo: jeez i think we can come up with a better name than "JsonSubset"
   static fromJsonSubset(str) {
     return new TreeNode(JSON.parse(str))
+  }
+  static serializedTreeNodeToTree(treeNode) {
+    const language = new TreeNode()
+    const cellDelimiter = language.getWordBreakSymbol()
+    const nodeDelimiter = language.getNodeBreakSymbol()
+    const line = treeNode.cells ? treeNode.cells.join(cellDelimiter) : undefined
+    const tree = new TreeNode(undefined, line)
+    if (treeNode.children)
+      treeNode.children.forEach(child => {
+        tree.appendNode(this.serializedTreeNodeToTree(child))
+      })
+    return tree
+  }
+  static fromJson(str) {
+    return this.serializedTreeNodeToTree(JSON.parse(str))
+  }
+  static fromGridJson(str) {
+    const lines = JSON.parse(str)
+    const language = new TreeNode()
+    const cellDelimiter = language.getWordBreakSymbol()
+    const nodeDelimiter = language.getNodeBreakSymbol()
+    return new TreeNode(lines.map(line => line.join(cellDelimiter)).join(nodeDelimiter))
   }
   static fromSsv(str) {
     return this.fromDelimited(str, " ", '"')
@@ -3115,7 +3161,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "49.8.0"
+TreeNode.getVersion = () => "50.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

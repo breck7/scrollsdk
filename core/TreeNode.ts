@@ -1094,6 +1094,29 @@ class TreeNode extends AbstractNode {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
+  private _toObjectForSerialization(): treeNotationTypes.SerializedTreeNode {
+  	return this.length ? {
+  			cells: this.getWords(),
+  			children: this.map(child => child._toObjectForSerialization())
+  	} :
+  	{
+  		cells: this.getWords()
+  	}
+  }
+
+  toJson(): string {
+  	return JSON.stringify({children: this.map(child => child._toObjectForSerialization())}, null, " ")
+  }
+
+  toGrid() {
+  	const WordBreakSymbol = this.getWordBreakSymbol()
+    return this.toString().split(this.getNodeBreakSymbol()).map(line => line.split(WordBreakSymbol))
+  }
+
+  toGridJson() {
+  	return JSON.stringify(this.toGrid(), null, 2)
+  }
+
   findNodes(firstWordPath: treeNotationTypes.firstWordPath | treeNotationTypes.firstWordPath[]): TreeNode[] {
     // todo: can easily speed this up
     const map: any = {}
@@ -1641,6 +1664,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
+ // todo: rename this. it is a particular type of object.
   toObject(): treeNotationTypes.stringMap {
     return this._toObject()
   }
@@ -2602,8 +2626,34 @@ class TreeNode extends AbstractNode {
     return this.fromDelimited(str, ",", '"')
   }
 
+  // todo: jeez i think we can come up with a better name than "JsonSubset"
   static fromJsonSubset(str: treeNotationTypes.jsonSubset) {
     return new TreeNode(JSON.parse(str))
+  }
+
+  static serializedTreeNodeToTree(treeNode: treeNotationTypes.SerializedTreeNode) {
+  	const language = new TreeNode()
+  	const cellDelimiter = language.getWordBreakSymbol()
+  	const nodeDelimiter = language.getNodeBreakSymbol()
+  	const line = treeNode.cells ? treeNode.cells.join(cellDelimiter) : undefined
+  	const tree = new TreeNode(undefined, line)
+  	if (treeNode.children)
+  	treeNode.children.forEach(child => {
+  		tree.appendNode(this.serializedTreeNodeToTree(child))
+  	})
+  	return tree
+  }
+
+  static fromJson(str: treeNotationTypes.serializedTreeNode) {
+  	return this.serializedTreeNodeToTree(JSON.parse(str))
+  }
+
+  static fromGridJson(str: string) {
+  	const lines = JSON.parse(str)
+  	const language = new TreeNode()
+  	const cellDelimiter = language.getWordBreakSymbol()
+  	const nodeDelimiter = language.getNodeBreakSymbol()
+    return new TreeNode(lines.map((line: any) => line.join(cellDelimiter)).join(nodeDelimiter))
   }
 
   static fromSsv(str: string) {

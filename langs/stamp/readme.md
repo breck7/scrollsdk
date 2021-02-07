@@ -10,6 +10,10 @@
      data
       # My Readme
 
+You can also play with writing your own stamp files by hand in this
+[web IDE](https://jtree.treenotation.org/designer/#standard%20stamp)
+to see autocomplete, type checking, and the full grammar.
+
 ## QuickStart: How to use Stamp in Node
 
 Stamp can be used in node to turn a folder on disk into a single

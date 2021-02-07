@@ -17,7 +17,7 @@ testTree.executeStamp = equal => {
   // Arrange
   const name = "testFile.okToDelete.txt"
   equal(fs.existsSync(name), false)
-  
+
   // Act
   new stamp(`file ${name}`).execute()
 
@@ -27,6 +27,27 @@ testTree.executeStamp = equal => {
   // Cleanup
   fs.unlinkSync(name)
   equal(fs.existsSync(name), false)
+}
+
+testTree.stampTargetDifferentDir = equal => {
+  // Arrange
+  const newDir = "some-new-dir"
+  const filename = "testFile.okToDelete.txt"
+  const targetDir = __dirname + "/temp"
+  const fullPath = `${targetDir}/${newDir}/${filename}`
+  equal(fs.existsSync(fullPath), false)
+
+  // Act
+  new stamp(`file ${newDir}/${filename}`).execute(targetDir)
+
+  // Assert
+  equal(fs.existsSync(fullPath), true)
+
+  // Cleanup
+  fs.unlinkSync(fullPath)
+  fs.rmdirSync(`${targetDir}/${newDir}`)
+  fs.rmdirSync(targetDir)
+  equal(fs.existsSync(targetDir), false)
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)

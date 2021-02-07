@@ -1,5 +1,31 @@
 # Stamp
 
+## First, show me some code
+
+    folder myProject
+    file myProject/index.js
+     data
+      console.log("Hello world")
+    file myProject/readme.md
+     data
+      # My Readme
+
+## QuickStart: How to use Stamp in Node
+
+Stamp can be used in node to turn a folder on disk into a single
+stamp file, and to expand a single stamp file into a folder
+on disk.
+
+    npm install jtree
+
+    const stamp = require("jtree/products/stamp.nodejs.js")
+    // Convert a folder to a stamp string:
+    const stampString = stamp.dirToStampWithContents(__dirname)
+    // Expand a stamp to disk
+    new stamp(`file hello-world.txt`).execute()
+
+## About
+
 Stamp is an alternative to zip files for sharing a small
 collection of folders and text files.
 
@@ -53,6 +79,13 @@ have people git clone it
 - Downside: no way of doing variable replacement post-clone
 - Downside: no plain text way of distributing the template
 
+## Using Stamp on the command line
+
+    npm install treeprogram
+    npm install stamp-lang
+    # todo: add automatic way to tell tree cli where stamp lang is
+    ./exampleFile.stamp
+
 ## exampleFile.stamp
 
     #! /usr/local/bin/node --use_strict /usr/local/bin/tree
@@ -63,13 +96,6 @@ have people git clone it
     file myProject/readme.md
      data
       # My Readme
-
-## Using Stamp
-
-    npm install treeprogram
-    npm install stamp-lang
-    # todo: add automatic way to tell tree cli where stamp lang is
-    ./exampleFile.stamp
 
 
 ## exampleWithPrompt.stamp
@@ -83,13 +109,6 @@ have people git clone it
     file PROJECTNAME/readme.md
      data
       # PROJECTNAME
-
-
-## Roadmap
-
-- Full examples on how to use this
-- Better names for `execute` methods
-- process.cwd should be default top param, not global
 
 ## Alternatives Considered
 

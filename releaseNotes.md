@@ -1,3 +1,8 @@
+50.2.0 / 2021-02-07
+===================
+- New: Stamp now creates file recursively
+- New: Stamp now accepts a target dir
+
 50.1.0 / 2021-02-07
 ===================
 - Fix: bug fix in executing a stamp file

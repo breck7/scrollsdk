@@ -15,16 +15,16 @@
         undefined
       )
     }
-    async executeSeries(context) {
+    async executeSeries(parentDir) {
       const length = this.length
       for (let index = 0; index < length; index++) {
         const node = this.nodeAt(index)
-        await node.execute(context)
+        await node.execute(parentDir)
       }
-      return context
+      return parentDir
     }
-    async execute(context) {
-      await this.executeSeries(context)
+    async execute(parentDir = process.cwd()) {
+      await this.executeSeries(parentDir)
     }
     static dirToStampWithContents(absPathWithoutEndingSlash) {
       return stampNode._dirToStampFn(absPathWithoutEndingSlash, "content")
@@ -90,16 +90,16 @@ stampNode
  description A prefix Tree Language for creating distributable text template files that expand to folders and files.
  catchAllNodeType errorNode
  javascript
-  async executeSeries(context) {
+  async executeSeries(parentDir) {
    const length = this.length
    for (let index = 0; index < length; index++) {
     const node = this.nodeAt(index)
-    await node.execute(context)
+    await node.execute(parentDir)
    }
-   return context
+   return parentDir
   }
-  async execute(context) {
-   await this.executeSeries(context)
+  async execute(parentDir = process.cwd()) {
+   await this.executeSeries(parentDir)
   }
   static dirToStampWithContents(absPathWithoutEndingSlash) {
     return stampNode._dirToStampFn(absPathWithoutEndingSlash, "content")
@@ -162,21 +162,22 @@ fileNode
  cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {
-   const filePath = this.getAbsolutePath()
+   const filePath = this._getAbsolutePath(parentDir)
    return \`touch \${filePath}\\necho -e "\${this.childrenToString()}" >> \${filePath}\`
   }
-  getAbsolutePath() {
-   return process.cwd() + "/" + this.cells.filepathCell
+  _getAbsolutePath(parentDir = process.cwd()) {
+   return parentDir + "/" + this.cells.filepathCell
   }
-  execute() {
+  execute(parentDir) {
    const fs = require("fs")
-   const path = this.getAbsolutePath()
-   console.log(\`Creating file \${path}\`)
+   const fullPath = this._getAbsolutePath(parentDir)
+   console.log(\`Creating file \${fullPath}\`)
    const data = this.getNode("data")
    const content = data ? data.childrenToString() : ""
-   fs.writeFileSync(path, content, "utf8")
+   require("mkdirp").sync(require("path").dirname(fullPath))
+   fs.writeFileSync(fullPath, content, "utf8")
    const isExecutable = this.has("executable") // todo: allow for all file permissions?
-   if (isExecutable) fs.chmodSync(path, "755")
+   if (isExecutable) fs.chmodSync(fullPath, "755")
   }
  inScope dataNode executableNode
  crux file
@@ -184,13 +185,13 @@ folderNode
  cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {
-   return \`mkdir \${this.getAbsolutePath()}\`
+   return \`mkdir \${this._getAbsolutePath(parentDir)}\`
   }
-  getAbsolutePath() {
-   return process.cwd() + "/" + this.cells.filepathCell
+  _getAbsolutePath(parentDir = process.cwd()) {
+   return parentDir + "/" + this.cells.filepathCell
   }
-  execute() {
-   const path = this.getAbsolutePath()
+  execute(parentDir) {
+   const path = this._getAbsolutePath(parentDir)
    console.log(\`Creating folder \${path}\`)
    require("mkdirp").sync(path)
   }
@@ -293,21 +294,22 @@ promptNode
       return this.getWord(1)
     }
     compileToBash(parentDir) {
-      const filePath = this.getAbsolutePath()
+      const filePath = this._getAbsolutePath(parentDir)
       return `touch ${filePath}\necho -e "${this.childrenToString()}" >> ${filePath}`
     }
-    getAbsolutePath() {
-      return process.cwd() + "/" + this.cells.filepathCell
+    _getAbsolutePath(parentDir = process.cwd()) {
+      return parentDir + "/" + this.cells.filepathCell
     }
-    execute() {
+    execute(parentDir) {
       const fs = require("fs")
-      const path = this.getAbsolutePath()
-      console.log(`Creating file ${path}`)
+      const fullPath = this._getAbsolutePath(parentDir)
+      console.log(`Creating file ${fullPath}`)
       const data = this.getNode("data")
       const content = data ? data.childrenToString() : ""
-      fs.writeFileSync(path, content, "utf8")
+      require("mkdirp").sync(require("path").dirname(fullPath))
+      fs.writeFileSync(fullPath, content, "utf8")
       const isExecutable = this.has("executable") // todo: allow for all file permissions?
-      if (isExecutable) fs.chmodSync(path, "755")
+      if (isExecutable) fs.chmodSync(fullPath, "755")
     }
   }
 
@@ -319,13 +321,13 @@ promptNode
       return this.getWord(1)
     }
     compileToBash(parentDir) {
-      return `mkdir ${this.getAbsolutePath()}`
+      return `mkdir ${this._getAbsolutePath(parentDir)}`
     }
-    getAbsolutePath() {
-      return process.cwd() + "/" + this.cells.filepathCell
+    _getAbsolutePath(parentDir = process.cwd()) {
+      return parentDir + "/" + this.cells.filepathCell
     }
-    execute() {
-      const path = this.getAbsolutePath()
+    execute(parentDir) {
+      const path = this._getAbsolutePath(parentDir)
       console.log(`Creating folder ${path}`)
       require("mkdirp").sync(path)
     }

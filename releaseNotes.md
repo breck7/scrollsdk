@@ -1,3 +1,7 @@
+50.1.0 / 2021-02-07
+===================
+- Fix: bug fix in executing a stamp file
+
 50.0.0 / 2020-12-20
 ===================
 - New: core: toJson, toGrid, toGridJson, fromJson and fromGridJson methods

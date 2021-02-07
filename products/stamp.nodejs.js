@@ -166,7 +166,7 @@ fileNode
    return \`touch \${filePath}\\necho -e "\${this.childrenToString()}" >> \${filePath}\`
   }
   getAbsolutePath() {
-   return process.cwd() + "/" + this.cells.filepath
+   return process.cwd() + "/" + this.cells.filepathCell
   }
   execute() {
    const fs = require("fs")
@@ -187,7 +187,7 @@ folderNode
    return \`mkdir \${this.getAbsolutePath()}\`
   }
   getAbsolutePath() {
-   return process.cwd() + "/" + this.cells.filepath
+   return process.cwd() + "/" + this.cells.filepathCell
   }
   execute() {
    const path = this.getAbsolutePath()
@@ -297,7 +297,7 @@ promptNode
       return `touch ${filePath}\necho -e "${this.childrenToString()}" >> ${filePath}`
     }
     getAbsolutePath() {
-      return process.cwd() + "/" + this.cells.filepath
+      return process.cwd() + "/" + this.cells.filepathCell
     }
     execute() {
       const fs = require("fs")
@@ -322,7 +322,7 @@ promptNode
       return `mkdir ${this.getAbsolutePath()}`
     }
     getAbsolutePath() {
-      return process.cwd() + "/" + this.cells.filepath
+      return process.cwd() + "/" + this.cells.filepathCell
     }
     execute() {
       const path = this.getAbsolutePath()

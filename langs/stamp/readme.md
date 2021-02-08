@@ -120,7 +120,4 @@ have people git clone it
 - ptar (https://github.com/jtvaughan/ptar) - full featured, but difference is the file output is a custom format (not a Tree Language)
 - shar (https://en.wikipedia.org/wiki/Shar) - old school method that has the major security flaw of potentially running any shell command
 - dar (http://dar.linux.free.fr/)
-
-## Unconsidered Alternatives
-
 - metatar (https://github.com/xyproto/metatar)

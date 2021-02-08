@@ -1,6 +1,3 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
-prompt LANG lowercase Enter the file extension of your new language
-prompt DESCRIPTION any Enter a description for LANG
 folder LANG
 file LANG/.gitignore
  data

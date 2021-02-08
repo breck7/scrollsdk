@@ -71,7 +71,7 @@ stampNode
    const pathStartIndex = rootFolderPath.length + 1
    return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
   }
- inScope hashbangNode promptNode folderNode fileNode
+ inScope hashbangNode folderNode fileNode
 hashbangNode
  crux #!
  catchAllCellType commentCell
@@ -127,27 +127,3 @@ folderNode
    require("mkdirp").sync(path)
   }
  crux folder
-promptNode
- cells keywordCell varNameCell inputTypeCell
- catchAllCellType promptWordsCell
- example Ask for a project name and create a new directory.
-  prompt PROJECT_NAME any Enter the name for your new project
-  folder PROJECT_NAME
-  file PROJECT_NAME/.gitignore
- javascript
-  execute() {
-   return new Promise((res, rej) => {
-    const rl = require("readline").createInterface({
-     input: process.stdin,
-     output: process.stdout
-    })
-    rl.question(this.cells.promptWords.join(" ") + " ", answer => {
-     rl.close()
-     // todo: typecheck the response
-     const varName = this.cells.varName
-     this.getYoungerSiblings().forEach(node => node.replaceNode(str => str.replace(new RegExp(varName, "g"), answer)))
-     res()
-    })
-   })
-  }
- crux prompt

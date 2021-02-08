@@ -3,12 +3,7 @@
     createParser() {
       return new jtree.TreeNode.Parser(
         errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          "#!": hashbangNode,
-          file: fileNode,
-          folder: folderNode,
-          prompt: promptNode
-        }),
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "#!": hashbangNode, file: fileNode, folder: folderNode }),
         undefined
       )
     }
@@ -137,7 +132,7 @@ stampNode
    const pathStartIndex = rootFolderPath.length + 1
    return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\\n")
   }
- inScope hashbangNode promptNode folderNode fileNode
+ inScope hashbangNode folderNode fileNode
 hashbangNode
  crux #!
  catchAllCellType commentCell
@@ -192,31 +187,7 @@ folderNode
    console.log(\`Creating folder \${path}\`)
    require("mkdirp").sync(path)
   }
- crux folder
-promptNode
- cells keywordCell varNameCell inputTypeCell
- catchAllCellType promptWordsCell
- example Ask for a project name and create a new directory.
-  prompt PROJECT_NAME any Enter the name for your new project
-  folder PROJECT_NAME
-  file PROJECT_NAME/.gitignore
- javascript
-  execute() {
-   return new Promise((res, rej) => {
-    const rl = require("readline").createInterface({
-     input: process.stdin,
-     output: process.stdout
-    })
-    rl.question(this.cells.promptWords.join(" ") + " ", answer => {
-     rl.close()
-     // todo: typecheck the response
-     const varName = this.cells.varName
-     this.getYoungerSiblings().forEach(node => node.replaceNode(str => str.replace(new RegExp(varName, "g"), answer)))
-     res()
-    })
-   })
-  }
- crux prompt`)
+ crux folder`)
       return this._cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
@@ -228,8 +199,7 @@ promptNode
         errorNode: errorNode,
         executableNode: executableNode,
         fileNode: fileNode,
-        folderNode: folderNode,
-        promptNode: promptNode
+        folderNode: folderNode
       }
     }
   }
@@ -327,36 +297,6 @@ promptNode
       const path = this._getAbsolutePath(parentDir)
       console.log(`Creating folder ${path}`)
       require("mkdirp").sync(path)
-    }
-  }
-
-  class promptNode extends jtree.GrammarBackedNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get varNameCell() {
-      return this.getWord(1)
-    }
-    get inputTypeCell() {
-      return this.getWord(2)
-    }
-    get promptWordsCell() {
-      return this.getWordsFrom(3)
-    }
-    execute() {
-      return new Promise((res, rej) => {
-        const rl = require("readline").createInterface({
-          input: process.stdin,
-          output: process.stdout
-        })
-        rl.question(this.cells.promptWords.join(" ") + " ", answer => {
-          rl.close()
-          // todo: typecheck the response
-          const varName = this.cells.varName
-          this.getYoungerSiblings().forEach(node => node.replaceNode(str => str.replace(new RegExp(varName, "g"), answer)))
-          res()
-        })
-      })
     }
   }
 

@@ -28,6 +28,14 @@ on disk.
     // Expand a stamp to disk
     new stamp(`file hello-world.txt`).execute()
 
+## How to use Stamp with other languages
+
+A Stamp file is a simple declarative file. It should be
+straightforward to write a Stamp "library" (really, 2
+functions should suffice), in other languages. If you
+do that, please send a PR with a link so we can direct
+people without nodejs to other implementations.
+ 
 ## About
 
 Stamp is an alternative to zip files for sharing a small
@@ -36,11 +44,12 @@ collection of folders and text files.
 A Stamp Program is an easily readable plain text program
 that when executed creates the files and folders listed.
 
-Stamp Programs can also prompt the user for input and use
-that input throughout the created files and folders.
+Stamp Programs are great for workflows where you prompt
+a user for input and then do a simple find/replace
+throughout the created files and folders.
 
 Frequently programmers have templates that they start new
-projects with. Those templates can be turned into Stamp programs.
+projects with. Those templates can be turned into Stamp files.
 
 ## The Problem
 
@@ -82,37 +91,6 @@ program that generates new projects*
 have people git clone it
 - Downside: no way of doing variable replacement post-clone
 - Downside: no plain text way of distributing the template
-
-## Using Stamp on the command line
-
-    npm install treeprogram
-    npm install stamp-lang
-    # todo: add automatic way to tell tree cli where stamp lang is
-    ./exampleFile.stamp
-
-## exampleFile.stamp
-
-    #! /usr/local/bin/node --use_strict /usr/local/bin/tree
-    folder myProject
-    file myProject/index.js
-     data
-      console.log("Hello world")
-    file myProject/readme.md
-     data
-      # My Readme
-
-
-## exampleWithPrompt.stamp
-
-    #! /usr/local/bin/node --use_strict /usr/local/bin/tree
-    prompt PROJECTNAME any Enter a name for your project
-    folder PROJECTNAME
-    file PROJECTNAME/index.js
-     data
-      console.log("Hello world")
-    file PROJECTNAME/readme.md
-     data
-      # PROJECTNAME
 
 ## Alternatives Considered
 

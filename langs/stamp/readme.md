@@ -83,7 +83,7 @@ The current options for this situation are:
 program that generates new projects*
 - Downside: No visibility into what is getting created
 - Downside: If the template changes, now author needs to get
-  users to install the new template program 
+  users to install the new template program
 - Downside: Now you have a whole new complicated program to
   write and maintain
 
@@ -98,3 +98,4 @@ have people git clone it
 - ptar (https://github.com/jtvaughan/ptar) - full featured, but difference is the file output is a custom format (not a Tree Language)
 - shar (https://en.wikipedia.org/wiki/Shar) - old school method that has the major security flaw of potentially running any shell command
 - dar (http://dar.linux.free.fr/)
+- metatar (https://github.com/xyproto/metatar)

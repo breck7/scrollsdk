@@ -1,3 +1,8 @@
+51.0.0 / 2021-02-08
+===================
+- Breaking: removed "prompt" node and executable stamps. Almost never used, and
+  make it a lot more confusing to write Stamp libraries in other langs.
+
 50.2.0 / 2021-02-07
 ===================
 - New: Stamp now creates file recursively

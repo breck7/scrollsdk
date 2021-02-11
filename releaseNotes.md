@@ -1,3 +1,7 @@
+51.1.0 / 2021-02-11
+===================
+- New: add missing CSS Grid properties to Hakon
+
 51.0.0 / 2021-02-08
 ===================
 - Breaking: removed "prompt" node and executable stamps. Almost never used, and

@@ -1,3 +1,7 @@
+51.2.1 / 2021-02-13
+===================
+- Fix: removed leftover console.log
+
 51.2.0 / 2021-02-13
 ===================
 - New: Core: expandLastFromTopMatter and lastMode methods

@@ -1941,7 +1941,6 @@ class TreeNode extends AbstractNode {
     const map = new Map()
     const lastNode = clone.lastNode()
     lastNode.getOlderSiblings().forEach(node => map.set(node.getWord(0), node))
-    console.log(lastNode.getOlderSiblings())
     lastNode.getTopDownArray().forEach(node => {
       const replacement = map.get(node.getWord(0))
       if (!replacement) return
@@ -2918,7 +2917,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "51.2.0"
+  static getVersion = () => "51.2.1"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

@@ -8,6 +8,9 @@ anyHtmlContentCell
  highlightScope string
 attributeValueCell
  highlightScope constant.language
+componentTagNameCell
+ highlightScope variable.function
+ extends keywordCell
 htmlTagNameCell
  highlightScope variable.function
  extends keywordCell
@@ -209,6 +212,14 @@ htmlTagNode
   }
 errorNode
  baseNodeType errorNode
+componentDefinitionNode
+ extends htmlTagNode
+ pattern ^[a-zA-Z0-9_]+Component
+ cells componentTagNameCell
+ javascript
+  getTag() {
+   return "div"
+  }
 htmlAttributeNode
  javascript
   _toHtml() {

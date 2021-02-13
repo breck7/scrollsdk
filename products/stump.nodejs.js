@@ -118,7 +118,7 @@
           s: htmlTagNode,
           u: htmlTagNode
         }),
-        [{ regex: /^$/, nodeConstructor: blankLineNode }]
+        [{ regex: /^$/, nodeConstructor: blankLineNode }, { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }]
       )
     }
     compile() {
@@ -139,6 +139,9 @@ anyHtmlContentCell
  highlightScope string
 attributeValueCell
  highlightScope constant.language
+componentTagNameCell
+ highlightScope variable.function
+ extends keywordCell
 htmlTagNameCell
  highlightScope variable.function
  extends keywordCell
@@ -340,6 +343,14 @@ htmlTagNode
   }
 errorNode
  baseNodeType errorNode
+componentDefinitionNode
+ extends htmlTagNode
+ pattern ^[a-zA-Z0-9_]+Component
+ cells componentTagNameCell
+ javascript
+  getTag() {
+   return "div"
+  }
 htmlAttributeNode
  javascript
   _toHtml() {
@@ -386,6 +397,7 @@ bernNode
         blankLineNode: blankLineNode,
         htmlTagNode: htmlTagNode,
         errorNode: errorNode,
+        componentDefinitionNode: componentDefinitionNode,
         htmlAttributeNode: htmlAttributeNode,
         stumpExtendedAttributeNode: stumpExtendedAttributeNode,
         lineOfHtmlContentNode: lineOfHtmlContentNode,
@@ -694,7 +706,7 @@ bernNode
           collapse: stumpExtendedAttributeNode,
           bern: bernNode
         }),
-        [{ regex: /^$/, nodeConstructor: blankLineNode }]
+        [{ regex: /^$/, nodeConstructor: blankLineNode }, { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }]
       )
     }
     get htmlTagNameCell() {
@@ -866,6 +878,15 @@ bernNode
   class errorNode extends jtree.GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
+    }
+  }
+
+  class componentDefinitionNode extends htmlTagNode {
+    get componentTagNameCell() {
+      return this.getWord(0)
+    }
+    getTag() {
+      return "div"
     }
   }
 

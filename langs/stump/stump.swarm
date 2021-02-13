@@ -34,6 +34,14 @@ test blankLines
     div
  getAllErrors
   assertLengthIs 0
+test components
+ arrange
+  require ../../products/stump.nodejs.js
+  constructWithParagraph
+   linksComponent
+    class links
+ getAllErrors
+  assertLengthIs 0
 test div
  arrange
   require ../../products/stump.nodejs.js

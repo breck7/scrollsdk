@@ -1095,26 +1095,29 @@ class TreeNode extends AbstractNode {
   }
 
   private _toObjectForSerialization(): treeNotationTypes.SerializedTreeNode {
-  	return this.length ? {
-  			cells: this.getWords(),
-  			children: this.map(child => child._toObjectForSerialization())
-  	} :
-  	{
-  		cells: this.getWords()
-  	}
+    return this.length
+      ? {
+          cells: this.getWords(),
+          children: this.map(child => child._toObjectForSerialization())
+        }
+      : {
+          cells: this.getWords()
+        }
   }
 
   toJson(): string {
-  	return JSON.stringify({children: this.map(child => child._toObjectForSerialization())}, null, " ")
+    return JSON.stringify({ children: this.map(child => child._toObjectForSerialization()) }, null, " ")
   }
 
   toGrid() {
-  	const WordBreakSymbol = this.getWordBreakSymbol()
-    return this.toString().split(this.getNodeBreakSymbol()).map(line => line.split(WordBreakSymbol))
+    const WordBreakSymbol = this.getWordBreakSymbol()
+    return this.toString()
+      .split(this.getNodeBreakSymbol())
+      .map(line => line.split(WordBreakSymbol))
   }
 
   toGridJson() {
-  	return JSON.stringify(this.toGrid(), null, 2)
+    return JSON.stringify(this.toGrid(), null, 2)
   }
 
   findNodes(firstWordPath: treeNotationTypes.firstWordPath | treeNotationTypes.firstWordPath[]): TreeNode[] {
@@ -1664,7 +1667,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
- // todo: rename this. it is a particular type of object.
+  // todo: rename this. it is a particular type of object.
   toObject(): treeNotationTypes.stringMap {
     return this._toObject()
   }
@@ -1927,6 +1930,25 @@ class TreeNode extends AbstractNode {
       if (sourceNode.length) targetNode.extend(sourceNode)
     })
     return this
+  }
+
+  lastNode(): TreeNode {
+    return this.getChildren()[this.length - 1]
+  }
+
+  expandLastFromTopMatter(): TreeNode {
+    const clone = this.clone()
+    const map = new Map()
+    const lastNode = clone.lastNode()
+    lastNode.getOlderSiblings().forEach(node => map.set(node.getWord(0), node))
+    console.log(lastNode.getOlderSiblings())
+    lastNode.getTopDownArray().forEach(node => {
+      const replacement = map.get(node.getWord(0))
+      if (!replacement) return
+
+      node.replaceNode(str => replacement.toString())
+    })
+    return lastNode
   }
 
   macroExpand(macroDefinitionWord: string, macroUsageWord: string): TreeNode {
@@ -2632,27 +2654,27 @@ class TreeNode extends AbstractNode {
   }
 
   static serializedTreeNodeToTree(treeNode: treeNotationTypes.SerializedTreeNode) {
-  	const language = new TreeNode()
-  	const cellDelimiter = language.getWordBreakSymbol()
-  	const nodeDelimiter = language.getNodeBreakSymbol()
-  	const line = treeNode.cells ? treeNode.cells.join(cellDelimiter) : undefined
-  	const tree = new TreeNode(undefined, line)
-  	if (treeNode.children)
-  	treeNode.children.forEach(child => {
-  		tree.appendNode(this.serializedTreeNodeToTree(child))
-  	})
-  	return tree
+    const language = new TreeNode()
+    const cellDelimiter = language.getWordBreakSymbol()
+    const nodeDelimiter = language.getNodeBreakSymbol()
+    const line = treeNode.cells ? treeNode.cells.join(cellDelimiter) : undefined
+    const tree = new TreeNode(undefined, line)
+    if (treeNode.children)
+      treeNode.children.forEach(child => {
+        tree.appendNode(this.serializedTreeNodeToTree(child))
+      })
+    return tree
   }
 
   static fromJson(str: treeNotationTypes.serializedTreeNode) {
-  	return this.serializedTreeNodeToTree(JSON.parse(str))
+    return this.serializedTreeNodeToTree(JSON.parse(str))
   }
 
   static fromGridJson(str: string) {
-  	const lines = JSON.parse(str)
-  	const language = new TreeNode()
-  	const cellDelimiter = language.getWordBreakSymbol()
-  	const nodeDelimiter = language.getNodeBreakSymbol()
+    const lines = JSON.parse(str)
+    const language = new TreeNode()
+    const cellDelimiter = language.getWordBreakSymbol()
+    const nodeDelimiter = language.getNodeBreakSymbol()
     return new TreeNode(lines.map((line: any) => line.join(cellDelimiter)).join(nodeDelimiter))
   }
 
@@ -2896,7 +2918,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "51.1.0"
+  static getVersion = () => "51.2.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

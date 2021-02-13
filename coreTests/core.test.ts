@@ -1046,18 +1046,18 @@ testTree.toYaml = equal => {
 testTree.toGridJson = equal => {
   // Arrange/Act/Assert
   const tests = Object.keys(testStrings).forEach(key => {
-  	const program =  testStrings[key]
-  	const serialized = new TreeNode(program).toGridJson()
-  	equal(TreeNode.fromGridJson(serialized).toString(), program)
+    const program = testStrings[key]
+    const serialized = new TreeNode(program).toGridJson()
+    equal(TreeNode.fromGridJson(serialized).toString(), program)
   })
 }
 
 testTree.toJson = equal => {
   // Arrange/Act/Assert
   const tests = Object.keys(testStrings).forEach(key => {
-  	const program =  testStrings[key]
-  	const serialized = new TreeNode(program).toJson()
-  	equal(TreeNode.fromJson(serialized).toString(), program)
+    const program = testStrings[key]
+    const serialized = new TreeNode(program).toJson()
+    equal(TreeNode.fromJson(serialized).toString(), program)
   })
 }
 
@@ -1278,6 +1278,20 @@ testTree.fromDelimitedWindowsLineEndings = equal => {
   equal(result2.get("0 B"), "3")
 }
 
+testTree.siblingsWithClone = equal => {
+  // Arrange
+  const test = new TreeNode(`a
+b
+c`)
+
+  // Act
+  const clone = test.clone()
+
+  // Assert
+  equal(test.lastNode().getOlderSiblings().length, 2)
+  equal(clone.lastNode().getOlderSiblings().length, 2)
+}
+
 testTree.siblings = equal => {
   // Arrange
   const test = new TreeNode(`a
@@ -1314,6 +1328,29 @@ a2
  foo
 b
 c`
+  )
+}
+
+testTree.expandLastFromTopMatter = equal => {
+  // Arrange
+  const test = new TreeNode(`titleComponent
+ class title
+articleComponent hi
+ h1 title
+html
+ titleComponent
+ articleComponent`)
+  // Act
+  const expanded = test.expandLastFromTopMatter().toString()
+
+  // Assert
+  equal(
+    expanded,
+    `html
+ titleComponent
+  class title
+ articleComponent hi
+  h1 title`
   )
 }
 

@@ -1,3 +1,8 @@
+51.2.0 / 2021-02-13
+===================
+- New: Core: expandLastFromTopMatter and lastMode methods
+- New: Stump now supports defining components
+
 51.1.0 / 2021-02-11
 ===================
 - New: add missing CSS Grid properties to Hakon

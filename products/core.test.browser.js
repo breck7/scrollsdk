@@ -1063,6 +1063,17 @@ testTree.fromDelimitedWindowsLineEndings = equal => {
   equal(result.get("0 B"), "3")
   equal(result2.get("0 B"), "3")
 }
+testTree.siblingsWithClone = equal => {
+  // Arrange
+  const test = new TreeNode(`a
+b
+c`)
+  // Act
+  const clone = test.clone()
+  // Assert
+  equal(test.lastNode().getOlderSiblings().length, 2)
+  equal(clone.lastNode().getOlderSiblings().length, 2)
+}
 testTree.siblings = equal => {
   // Arrange
   const test = new TreeNode(`a
@@ -1095,6 +1106,27 @@ a2
  foo
 b
 c`
+  )
+}
+testTree.expandLastFromTopMatter = equal => {
+  // Arrange
+  const test = new TreeNode(`titleComponent
+ class title
+articleComponent hi
+ h1 title
+html
+ titleComponent
+ articleComponent`)
+  // Act
+  const expanded = test.expandLastFromTopMatter().toString()
+  // Assert
+  equal(
+    expanded,
+    `html
+ titleComponent
+  class title
+ articleComponent hi
+  h1 title`
   )
 }
 testTree.replaceNode = equal => {

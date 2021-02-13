@@ -2348,6 +2348,22 @@ class TreeNode extends AbstractNode {
     })
     return this
   }
+  lastNode() {
+    return this.getChildren()[this.length - 1]
+  }
+  expandLastFromTopMatter() {
+    const clone = this.clone()
+    const map = new Map()
+    const lastNode = clone.lastNode()
+    lastNode.getOlderSiblings().forEach(node => map.set(node.getWord(0), node))
+    console.log(lastNode.getOlderSiblings())
+    lastNode.getTopDownArray().forEach(node => {
+      const replacement = map.get(node.getWord(0))
+      if (!replacement) return
+      node.replaceNode(str => replacement.toString())
+    })
+    return lastNode
+  }
   macroExpand(macroDefinitionWord, macroUsageWord) {
     const clone = this.clone()
     const defs = clone.findNodes(macroDefinitionWord)
@@ -3174,7 +3190,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "51.1.0"
+TreeNode.getVersion = () => "51.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

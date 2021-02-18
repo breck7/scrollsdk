@@ -1,3 +1,7 @@
+51.3.0 / 2021-02-18
+===================
+- New: added break-inside CSS prop to hakon
+
 51.2.1 / 2021-02-13
 ===================
 - Fix: removed leftover console.log

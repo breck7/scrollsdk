@@ -99,3 +99,4 @@ have people git clone it
 - shar (https://en.wikipedia.org/wiki/Shar) - old school method that has the major security flaw of potentially running any shell command
 - dar (http://dar.linux.free.fr/)
 - metatar (https://github.com/xyproto/metatar)
+- txtar (https://pkg.go.dev/golang.org/x/tools@v0.1.0/txtar)

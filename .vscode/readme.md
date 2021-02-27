@@ -1,0 +1,3 @@
+# VS Code
+
+Todo: is there a way to put all our dotfiles in one folder?

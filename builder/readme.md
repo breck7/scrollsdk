@@ -1,6 +1,12 @@
 # Builder
 
-A simple build class and server to help building projects that use Tree Notation.
+A simple build class and server to help building projects
+that use Tree Notation.
+
+Building is always a critical major set of ongoing tasks in
+any project and projects that utilize Tree Notation have
+some novel needs. This class gives us a starting point for
+addressing those needs.
 
 todo: merge with langs/project?
 

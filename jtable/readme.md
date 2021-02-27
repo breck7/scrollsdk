@@ -1,10 +1,16 @@
 JTable
 ======
 
+**WARNING: JTable will likely be removed in favor of
+<a href="https://github.com/uwdata/arquero">Arquero</a>, <a
+href="https://github.com/data-forge/data-forge-ts">Data
+Forge</a> or <a
+href="https://github.com/owid/owid-grapher/tree/next/coreTable">Our
+World in Data's Grapher</a>.**
+
 JTable is a TypeScript/Javascript library for working with tabular data. JTable is somewhat similar to R libraries like Tibble, DataTable, or the core DataFrame. It is also somewhat similar to Pandas/Numpy in Python.
 
-Features
---------
+## Features
 
 - Dozens of primitive types with future expected support for hundreds, potentially thousands
 - Conversion ops between types
@@ -13,14 +19,14 @@ Features
 - Handles exporting to CSV, TSV, JSON, etc
 - Handles common mutations
 
-Ohayo
------
+## Ohayo
 
 JTable is the underlying data table library used by [Ohayo](https://ohayo.computer/).
 
-Related Work
-------------
+## Alternatives Considered and Related Work
 
+- https://github.com/uwdata/arquero
+- https://github.com/owid/owid-grapher
 - https://vega.github.io/vega/docs/data/
 - https://github.com/data-forge/data-forge-ts
 - https://github.com/edn-format/edn

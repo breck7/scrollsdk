@@ -24,6 +24,7 @@ class Disk {
   static getFullPaths = (dir: treeNotationTypes.absoluteFolderPath) => Disk.dir(dir).map((file: treeNotationTypes.filepath) => dir.replace(/\/$/, "") + "/" + file)
   static getFiles = (dir: treeNotationTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isFile())
   static getFolders = (dir: treeNotationTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isDirectory())
+  static isDir = (path: treeNotationTypes.absoluteFilePath) => fs.statSync(path).isDirectory()
   static getFileName = (path: treeNotationTypes.filepath) => path.split("/").pop()
   static append = (path: treeNotationTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
   static appendAsync = (path: treeNotationTypes.filepath, content: string, callback: Function) => fs.appendFile(path, content, "utf8", callback)

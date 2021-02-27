@@ -182,8 +182,10 @@ missing2 true`)
 
 const langs = Disk.dir(__dirname + `/../langs/`)
 langs.forEach((lang: string) => {
+  const folder = `${__dirname}/../langs/${lang}`
+  if (!Disk.isDir(folder)) return
   testTree[`${lang}SimTest`] = equal => {
-    const grammarCode = Disk.read(__dirname + `/../langs/${lang}/${lang}.grammar`)
+    const grammarCode = Disk.read(`${folder}/${lang}.grammar`)
     const grammarProgram = new jtree.HandGrammarProgram(grammarCode)
     const programConstructor = grammarProgram.compileAndReturnRootConstructor()
 

@@ -36,6 +36,8 @@ testTree.emojis = equal => {
 
 const langs = Disk.dir(__dirname + `/../langs/`)
 langs.forEach((name: string) => {
+  const folder = `${__dirname}/../langs/${name}`
+  if (!Disk.isDir(folder)) return
   testTree[`${name}InferPrefixGrammar`] = equal => {
     // Arrange
     const path = __dirname + `/../langs/${name}/sample.${name}`

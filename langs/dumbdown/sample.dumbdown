@@ -1,8 +1,10 @@
 title This is Dumbdown. The keyword for title is title.
-subtitle Dumbdown compiles to html.
-paragraph Dumbdown is an alternative to Markdown.
+title2 Dumbdown compiles to html.
+paragraph
+ Dumbdown is an alternative to Markdown.
 
-paragraph Blank lines get turned into <br>
+paragraph
+ Blank lines get turned into <br>
 
 link https://treenotation.org/ It is built on Tree Notation
 

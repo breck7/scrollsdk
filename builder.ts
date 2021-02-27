@@ -109,7 +109,7 @@ builder
 commandLineApp
 designer
 sandbox
-sandboxServer
+kitchen
 core
 coreTests
 treeBase

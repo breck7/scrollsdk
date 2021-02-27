@@ -55,9 +55,9 @@ browserProduct
  files sandbox/SandboxApp.ts
  outputFileName SandboxApp.browser.js
 nodeProduct
- outputFileName SandboxServer.node.js
- files products/treeNotationTypes.ts sandboxServer/SandboxServer.node.ts
- lastLine module.exports = {SandboxServer}
+ outputFileName Kitchen.node.js
+ files products/treeNotationTypes.ts kitchen/Kitchen.node.ts
+ lastLine module.exports = {Kitchen}
 nodeProduct
  outputFileName treeBase.node.js
  files products/treeNotationTypes.ts treeBase/TreeBase.ts

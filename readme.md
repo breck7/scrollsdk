@@ -78,12 +78,13 @@ Jtree currently includes around 10 compiled projects (aka
 ### jtree "sandbox" web app for exploring base Tree Notation
 
     npm install -g jtree
-    jtree sandbox
+    jtree kitchen
+    open http://localhost:3333/
 
 ### jtree "Designer" web app for building new Tree Languages
 
     npm install -g jtree
-    jtree sandbox
+    jtree kitchen
     open http://localhost:3333/designer
 
 ### TreeComponentFramework for building web apps

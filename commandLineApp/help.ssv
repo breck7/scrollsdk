@@ -10,12 +10,12 @@ compileCheck folderPath grammarName Test all compiler test cases in a given fold
 distribute combinedFilePath  Distribute a 'combined' file into multiple destination files
 format programPath  Format a tree program in place
 help   Show this help
+kitchen port=3333  Start the Kitchen Express server used by JTree developers
 list   List installed Grammars
 parse programPath  Parse and print the nodeTypes and cellTypes in a program
 programs grammarName  List all files for a grammar ever parsed with this cli tool
 register grammarPath  Register a new grammar
 run programPath  Execute a Tree Language Program
-sandbox port=3333  Start the Tree Sandbox web app
 stamp dirPath  Dump a directory as a Stamp program.
 sublime grammarName outputPath Generate sublime syntax highlighting files
 usage grammarName  Analyze Global Keyword Usage for a given grammar

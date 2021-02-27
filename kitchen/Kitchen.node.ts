@@ -4,7 +4,7 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 
-class SandboxServer {
+class Kitchen {
   start(port: treeNotationTypes.portNumber) {
     const app = express()
 
@@ -26,9 +26,9 @@ class SandboxServer {
     app.use(express.static(__dirname + "/../"))
 
     app.listen(port, () => {
-      console.log(`Running sandbox. cmd+dblclick: http://localhost:${port}/sandbox`)
+      console.log(`Running kitchen. cmd+dblclick: http://localhost:${port}/sandbox`)
     })
   }
 }
 
-export { SandboxServer }
+export { Kitchen }

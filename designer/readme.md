@@ -3,3 +3,15 @@
 This is the folder containing the source code for the Tree Language Designer web app.
 
 [Try it now](https://jtree.treenotation.org/designer/)
+
+## For Designer Developers
+
+### How do I run the tests?
+
+    jtree/designer/DesignerApp.test.ts
+
+## How do I run the Designer locally?
+
+
+    jtree kitchen
+    open http://localhost:3333/designer

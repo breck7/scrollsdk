@@ -179,11 +179,11 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     if (Disk.exists(compiledPath)) return compiledPath
   }
 
-  sandbox(port = 3333) {
-    const { SandboxServer } = require("../products/SandboxServer.node.js")
-    const server = new SandboxServer()
+  kitchen(port = 3333) {
+    const { Kitchen } = require("../products/Kitchen.node.js")
+    const server = new Kitchen()
     server.start(port)
-    return `Starting sandbox on port ${port}`
+    return `Starting kitchen on port ${port}`
   }
 
   format(programPath: treeNotationTypes.treeProgramFilePath) {

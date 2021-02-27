@@ -1,7 +1,7 @@
 const express = require("express")
 const { readFile } = require("fs")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
-class SandboxServer {
+class Kitchen {
   start(port) {
     const app = express()
     app.get("/*.js", (req, res) => {
@@ -20,9 +20,9 @@ class SandboxServer {
     })
     app.use(express.static(__dirname + "/../"))
     app.listen(port, () => {
-      console.log(`Running sandbox. cmd+dblclick: http://localhost:${port}/sandbox`)
+      console.log(`Running kitchen. cmd+dblclick: http://localhost:${port}/sandbox`)
     })
   }
 }
 
-module.exports = { SandboxServer }
+module.exports = { Kitchen }

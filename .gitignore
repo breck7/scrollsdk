@@ -13,3 +13,4 @@ syntax.sh
 *.d.ts
 builder.js
 sublime/
+.DS_Store

@@ -1,3 +1,7 @@
+51.4.0 / 2021-03-12
+===================
+- New: added hyphens prop to hakon
+
 51.3.0 / 2021-02-18
 ===================
 - New: added break-inside CSS prop to hakon

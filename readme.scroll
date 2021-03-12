@@ -152,6 +152,11 @@ paragraph
  language, feel free to post an issue or ask for help in the 
  [TreeNotation subreddit](https://www.reddit.com/r/treenotation/).
 
+title4 How to bump versions
+
+code
+ jtree build updateVersion NEW_NUMBER
+
 title3 Alternatives Considered
 
 paragraph

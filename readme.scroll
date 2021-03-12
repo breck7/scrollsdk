@@ -1,0 +1,173 @@
+title JTree: Tree Notation SDK for TypeScript & Javascript
+
+<a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=master" /></a>
+
+title3 Links
+
+🌴 [Tree Notation Homepage](https://treenotation.org/)  
+🌴 [Try Tree Notation](https://jtree.treenotation.org/sandbox/)  
+🌴 [Tree Language Designer](https://jtree.treenotation.org/designer/)  
+🌴 [Tree Notation FAQ](http://faq.treenotation.org/)  
+🌴 [TreeBase](https://treebase.treenotation.org/)  
+🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
+🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
+🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  
+🌴 [Unit Tests](/sandbox/test.html)  
+🌴 [Perf Tests](/sandbox/perfTests.html)  
+
+title3 Who this package is for
+
+paragraph
+ Jtree is for people who want to design Tree Languages, make
+ Tree editing tools, use TreeBase, or use the Tree Component
+ Web Framework.
+
+paragraph
+ You can think of jtree as similar to the Java Development
+ Kit, except for Tree Notation instead of Java.
+
+title3 Grammar Files
+
+paragraph
+ Jtree contains a Tree Language called "Grammar". You can
+ write new Grammar files to define new languages. By creating
+ a grammar file you get a parser, a type checker, syntax
+ highlighting, autocomplete, a compiler, and virtual machine
+ for executing your new language. Jtree also includes a
+ simple web [Tree Language Builder]
+ (https://jtree.treenotation.org/designer/).
+
+paragraph
+ To make your language do really interesting things, you'll
+ want to write some code to extend your language nodes in
+ another language that you know. Jtree lets you create new
+ languages using just Tree Notation, Tree Notation +
+ TypeScript, or Tree Notation + Javascript. Tree Notation and
+ Tree Languages can be built with any language, however, not
+ just TypeScript and Javascript. We are looking for
+ volunteers to build libraries/sdks in other host languages.
+
+title3 Using Jtree
+
+paragraph
+ Jtree currently includes around 10 compiled projects (aka
+ "products") and more than a dozen Tree Languages.
+
+title4 jtree base library for npm projects:
+
+code
+ const {jtree} = require("jtree")
+ const tree = new jtree.TreeNode("hello world")
+ console.log(tree.toString())
+
+title4 jtree base library for the browser:
+
+code
+ <script src="node_modules/jtree/products/jtree.browser.js"
+
+title4 jtree command line tool
+
+code
+ npm install -g jtree
+ jtree help
+
+title4 TreeBase
+
+code
+ npm install -g jtree
+ jtree base
+
+title4 jtree "sandbox" web app for exploring base Tree Notation
+
+code
+ npm install -g jtree
+ jtree kitchen
+ open http://localhost:3333/
+
+title4 jtree "Designer" web app for building new Tree Languages
+
+code
+ npm install -g jtree
+ jtree kitchen
+ open http://localhost:3333/designer
+
+title4 TreeComponentFramework for building web apps
+
+paragraph
+ (directions coming soon)
+
+paragraph
+ More than 12 example Tree Languages for helping with
+ various tasks
+
+paragraph
+ See the "langs/" folder.
+
+title4  Build Tools
+
+paragraph
+ If you look at the source, you will also see a set of build
+ tools (such as Builder and TypeScriptRewriter). These are
+ currently undocumented and not recommended for external use.
+
+title4 Building all tools and running tests
+
+code
+ jtree build produceAll
+ npm test
+
+title3 Monorepo
+
+paragraph
+ Jtree is a [monorepo]
+ (https://en.wikipedia.org/wiki/Monorepo). With on average
+ over 1 major version released each month for the past 2.5
+ years, it would take a lot of overhead to constantly be
+ updating 10+ different repositories and modules every month.
+ Once we're more confident in the theory and best practices,
+ it might make sense to break this repo into independent modules.
+
+paragraph
+ That being said, we despise unnecessary dependencies as much
+ as anyone. If anyone wants to create some automated
+ submodules built from the projects in this monorepo, to
+ allow for consuming of a smaller subset of the code and
+ dependencies in this module, feel free to do so.
+
+title3 Development Status
+
+paragraph
+ All breaking changes are mentioned in releaseNotes.md. We
+ follow semantic versioning, so breaking changes should not
+ happen if you stay on the same major version.
+
+title3 Tree Notation Libraries in Other Languages
+
+paragraph
+ If you build a Tree Notation library/SDK in another
+ language, let us know and we'll add a link.
+
+paragraph
+ If you are working on a Tree Notation library in a new host
+ language, feel free to post an issue or ask for help in the 
+ [TreeNotation subreddit](https://www.reddit.com/r/treenotation/).
+
+title3 Alternatives Considered
+
+paragraph
+ This is the first Tree Notation library in existence, so
+ there were no alternative implementations. Note and Space
+ were predecessors to Tree Notation.
+
+paragraph
+ If a better alternative low level notation to Tree Notation
+ is possible, it has yet to be discovered.
+
+paragraph
+ All that said, the important part of this repo is not the
+ code but the design patterns. Tree Notation is very simple,
+ and you can implement the patterns contained here in your
+ own code without using this library. In fact, that is often
+ the best way to use Tree Notation!
+
+title2 ❤️❤️❤️ Public Domain ❤️❤️❤️

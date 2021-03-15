@@ -1,0 +1,59 @@
+title poop Readme
+
+link https://jtree.treenotation.org/designer/#standard%20poop Try it now
+
+paragraph
+ POOP is the *Programming Option for Overtired Parents*. It
+ is a Tree Language for sleep deprived parents to log their
+ child's bathroom, feeding, and sleep events. You can use
+ POOP with computers or pen and paper. Each line records an
+ event, a time, and optionally notes.
+
+paragraph
+ POOP is an anyfix language. You can put the time first or
+ the event type first. You can write the actual symbols with
+ pen or pencil, or, if it is 3am, you can just use some of
+ the natural medium to record the event type.
+
+title2 Quick Example
+
+code
+ 🌄 8 29 2019
+ 😀 4
+ ✨ 6
+ 630 💩
+
+
+title2 Quick facts about poop
+
+list
+ - poop has 9 node types.
+ - poop has 3 cell types
+ - The source code for poop is 60 lines long.
+
+title2 Node Types
+
+code
+ poopNode
+ abstractEventNode
+  bowelNode
+  bladderNode
+  bottleNode
+  sleep4Node
+  awakeNode
+  memoryNode
+ dayNode
+
+title2 Cell Types
+
+ dateIntCell
+ timeIntCell
+ anyCell
+
+paragraph
+ This readme was auto-generated using the <a
+ href="https://github.com/treenotation/jtree">JTree
+ library</a>.
+
+paragraph
+ 💩 is just for fun, a demonstration Tree Language. 💩 is hereby dumped into the public domain.

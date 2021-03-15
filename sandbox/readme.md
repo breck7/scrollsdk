@@ -1,8 +1,0 @@
-# Tree Notation Sandbox
-
-This is the folder that contains the source code for the
-Tree Notation Sandbox app.
-
-The Tree Notation Sandbox app is meant to provide some
-simple tools for working with base Tree Notation.
-

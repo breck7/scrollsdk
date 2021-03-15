@@ -1,0 +1,17 @@
+tilte Langs
+
+paragraph
+ This folder contains numerous Tree Languages.
+
+paragraph
+ Some of these languages are just for demonstration and
+ testing purposes.
+
+paragraph
+ Some of them are usable. The recommended way to use the
+ languages in the folder is to search the top level
+ "products/" folder and use the compiled Javascript directly.
+
+paragraph
+ The usuable languages include Stamp, Hakon, Stump, Swarm,
+ Grammar and Dumbdown.

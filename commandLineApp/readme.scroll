@@ -1,0 +1,4 @@
+title CommandLineApp
+
+paragraph
+ This subproject implements the `jtree` command line app.

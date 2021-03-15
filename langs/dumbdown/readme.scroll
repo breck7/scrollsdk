@@ -1,0 +1,42 @@
+title Dumbdown - The dumb alternative to markdown
+
+paragraph
+ The dialect of Dumbdown included in the JTree
+ project is used as a demonstration and to autogenerate
+ readmes from Grammars.
+
+paragraph
+ Dumbdown spawned an official project here:
+
+link https://github.com/treenotation/scroll Scroll
+
+title2 Can you show me some example code?
+
+code
+ title This is Dumbdown. The keyword for title is title.
+ title2 Dumbdown compiles to html.
+ paragraph
+  Dumbdown is an alternative to Markdown.
+ 
+ link https://treenotation.org/ It is built on Tree Notation
+ 
+ code
+  alert(`The keyword for code blocks is "code"`)
+ 
+ list
+  item Dumbdown supports lists
+  item For now the keyword for an item is "item"
+  item This is a very early version
+  item Dumbdown is released to the public domain
+  item If you want to make it better, please do!
+
+
+title2 How can I try the original prototype?
+
+link https://jtree.treenotation.org/designer/#standard%20dumbdown Here
+
+title2 How do I develop this lang?
+
+paragraph
+ Building: [todo]
+ Running tests: [todo]

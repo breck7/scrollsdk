@@ -1,0 +1,12 @@
+title TypeScript Rewriter
+
+paragraph
+ **todo: reexamine and see if this class is still necessary**.
+
+paragraph
+ This class was added in 2019 to work around a few annoyances
+ in TypeScript.
+
+paragraph
+ tsc -b and subprojects may have changed things by now, and
+ this class may no longer be necessary.

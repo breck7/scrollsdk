@@ -1,5 +1,0 @@
-# Disk
-
-This folder contains some simple wrappers around `fs`.
-
-It will likely be removed in the future.

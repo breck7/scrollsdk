@@ -1,8 +1,0 @@
-# Products Folder
-
-This is our take on a "dist" folder. It contains only
-Javascript. Files ending in "browser.js" are for including
-in the browser. File ending in "node.js" are ready to run in
-Node.
-
-

@@ -1,5 +1,0 @@
-# Sandbox Lib
-
-These are the 3rd party external libraries used by the Sandbox.
-
-

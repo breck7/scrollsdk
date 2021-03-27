@@ -1,3 +1,7 @@
+51.5.0 / 2021-03-26
+===================
+- New: silence() method on stamp
+
 51.4.0 / 2021-03-12
 ===================
 - New: added hyphens prop to hakon

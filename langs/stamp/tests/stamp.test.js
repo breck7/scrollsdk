@@ -19,7 +19,7 @@ testTree.executeStamp = equal => {
   equal(fs.existsSync(name), false)
 
   // Act
-  new stamp(`file ${name}`).execute()
+  new stamp(`file ${name}`).silence().execute()
 
   // Assert
   equal(fs.existsSync(name), true)
@@ -38,7 +38,7 @@ testTree.stampTargetDifferentDir = equal => {
   equal(fs.existsSync(fullPath), false)
 
   // Act
-  new stamp(`file ${newDir}/${filename}`).execute(targetDir)
+  new stamp(`file ${newDir}/${filename}`).silence().execute(targetDir)
 
   // Assert
   equal(fs.existsSync(fullPath), true)

@@ -16,6 +16,10 @@
       return parentDir
     }
     verbose = true
+    silence() {
+      this.verbose = false
+      return this
+    }
     log(message) {
       if (this.verbose) console.log(message)
     }
@@ -95,6 +99,10 @@ stampNode
    return parentDir
   }
   verbose = true
+  silence(){
+    this.verbose = false
+    return this
+  }
   log(message) {
     if (this.verbose)
       console.log(message)

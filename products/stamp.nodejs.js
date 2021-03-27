@@ -18,6 +18,10 @@
       }
       return parentDir
     }
+    verbose = true
+    log(message) {
+      if (this.verbose) console.log(message)
+    }
     async execute(parentDir = process.cwd()) {
       await this.executeSeries(parentDir)
     }
@@ -93,6 +97,11 @@ stampNode
    }
    return parentDir
   }
+  verbose = true
+  log(message) {
+    if (this.verbose)
+      console.log(message)
+  }
   async execute(parentDir = process.cwd()) {
    await this.executeSeries(parentDir)
   }
@@ -166,7 +175,7 @@ fileNode
   execute(parentDir) {
    const fs = require("fs")
    const fullPath = this._getAbsolutePath(parentDir)
-   console.log(\`Creating file \${fullPath}\`)
+   this.getRootNode().log(\`Creating file \${fullPath}\`)
    const data = this.getNode("data")
    const content = data ? data.childrenToString() : ""
    require("mkdirp").sync(require("path").dirname(fullPath))
@@ -187,7 +196,7 @@ folderNode
   }
   execute(parentDir) {
    const path = this._getAbsolutePath(parentDir)
-   console.log(\`Creating folder \${path}\`)
+   this.getRootNode().log(\`Creating folder \${path}\`)
    require("mkdirp").sync(path)
   }
  crux folder`)
@@ -273,7 +282,7 @@ folderNode
     execute(parentDir) {
       const fs = require("fs")
       const fullPath = this._getAbsolutePath(parentDir)
-      console.log(`Creating file ${fullPath}`)
+      this.getRootNode().log(`Creating file ${fullPath}`)
       const data = this.getNode("data")
       const content = data ? data.childrenToString() : ""
       require("mkdirp").sync(require("path").dirname(fullPath))
@@ -298,7 +307,7 @@ folderNode
     }
     execute(parentDir) {
       const path = this._getAbsolutePath(parentDir)
-      console.log(`Creating folder ${path}`)
+      this.getRootNode().log(`Creating folder ${path}`)
       require("mkdirp").sync(path)
     }
   }

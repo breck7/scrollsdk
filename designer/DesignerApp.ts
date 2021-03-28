@@ -641,7 +641,7 @@ class headerComponent extends AbstractTreeComponent {
    onclick $('#helpSection').toggle(); return false;
   span  |
   a Watch the Tutorial Video
-   href https://www.youtube.com/watch?v=UQHaI78jGR0=
+   href https://www.youtube.com/watch?v=kf2p8yzThAA
   span  |
   a Reset
    clickCommand resetCommand

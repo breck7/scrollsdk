@@ -330,7 +330,7 @@ class TreeNode extends AbstractNode {
   }
 
   getWord(index: int): word {
-    const words = this._getLine().split(this.getWordBreakSymbol())
+    const words = this._getWords(0)
     if (index < 0) index = words.length + index
     return words[index]
   }

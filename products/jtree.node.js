@@ -1006,7 +1006,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   getWord(index) {
-    const words = this._getLine().split(this.getWordBreakSymbol())
+    const words = this._getWords(0)
     if (index < 0) index = words.length + index
     return words[index]
   }
@@ -3728,15 +3728,15 @@ class GrammarBackedNode extends TreeNode {
   compile() {
     if (this.isRoot()) return super.compile()
     const def = this.getDefinition()
-    if (def.isTerminalNodeType()) return this._getCompiledIndentation() + this._getCompiledLine()
+    const indent = this._getCompiledIndentation()
+    const compiledLine = this._getCompiledLine()
+    if (def.isTerminalNodeType()) return indent + compiledLine
     const compiler = def._getCompilerObject()
     const openChildrenString = compiler[GrammarConstantsCompiler.openChildren] || ""
     const closeChildrenString = compiler[GrammarConstantsCompiler.closeChildren] || ""
     const childJoinCharacter = compiler[GrammarConstantsCompiler.joinChildrenWith] || "\n"
-    const compiledLine = this._getCompiledLine()
-    const indent = this._getCompiledIndentation()
     const compiledChildren = this.map(child => child.compile()).join(childJoinCharacter)
-    return `${indent}${compiledLine}${openChildrenString}
+    return `${indent + compiledLine}${openChildrenString}
 ${compiledChildren}
 ${indent}${closeChildrenString}`
   }

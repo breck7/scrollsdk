@@ -23,6 +23,8 @@ class Kitchen {
       })
     })
 
+    app.get("/", (req: any, res: any) => res.redirect(301, "/sandbox"))
+
     app.use(express.static(__dirname + "/../"))
 
     app.listen(port, () => {

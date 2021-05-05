@@ -1,0 +1,13 @@
+tasks:
+  - openMode: split-right
+    command: gp open readme.scroll
+  - openMode: split-right
+    # todo: remove ts-node dependency
+    command: npm install -g ts-node && npm install -g . && jtree kitchen 3000
+  - openMode: split-right
+    # todo: remove ts-node dependency
+    command: npm test
+
+ports:
+  - port: 3000
+    onOpen: open-preview

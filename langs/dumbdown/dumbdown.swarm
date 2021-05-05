@@ -5,8 +5,10 @@ test dumbdownRegression
   constructWithParagraph
    code
     a b
+     b a
  compile
   assertParagraphIs
    <code>
     a b
+     b a
    </code>

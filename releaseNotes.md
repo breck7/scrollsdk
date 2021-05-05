@@ -1,3 +1,7 @@
+51.5.1 / 2021-05-05
+===================
+- Fix: code cleanup in DD lang
+
 51.5.0 / 2021-03-26
 ===================
 - New: silence() method on stamp

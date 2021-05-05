@@ -11,14 +11,18 @@
   class dumbdownNode extends jtree.GrammarBackedNode {
     createParser() {
       return new jtree.TreeNode.Parser(
-        errorNode,
+        quickParagraphNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          title: titleNode,
           link: linkNode,
           paragraph: paragraphNode,
-          subtitle: subtitleNode,
           code: codeNode,
-          list: listNode
+          list: listNode,
+          title: titleNode,
+          title2: title2Node,
+          title3: title3Node,
+          title4: title4Node,
+          title5: title5Node,
+          title6: title6Node
         }),
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
@@ -42,17 +46,18 @@ errorNode
  baseNodeType errorNode
 dumbdownNode
  extensions dd dumbdown
- description A prefix Tree Language that compiles to HTML. An alternative to Markdown.
+ description A Tree Language that compiles to HTML. An alternative to Markdown.
  root
  inScope abstractTopLevelNode blankLineNode
- catchAllNodeType errorNode
+ catchAllNodeType quickParagraphNode
  compilesTo html
  example
   title Hello world
-  subtitle This is dumbdown
+  title2 This is Dumbdown
   
-  paragraph It compiles to HTML. Blank lines get turned into brs.
-  link https://treenotation.org dumbdown is a Tree Language.
+  paragraph
+   It compiles to HTML. Blank lines get turned into brs.
+  link https://treenotation.org Dumbdown is a Tree Language.
   list
    - It has lists
    - Too!
@@ -62,12 +67,6 @@ dumbdownNode
 abstractTopLevelNode
  abstract
  cells keywordCell
-titleNode
- catchAllCellType textCell
- extends abstractTopLevelNode
- compiler
-  stringTemplate <h1>{textCell}</h1>
- crux title
 linkNode
  cells keywordCell urlCell
  catchAllCellType textCell
@@ -76,27 +75,26 @@ linkNode
   stringTemplate <a href="{urlCell}">{textCell}</a>
  crux link
 paragraphNode
- inScope linkNode
- catchAllCellType textCell
+ catchAllNodeType paragraphContentNode
  extends abstractTopLevelNode
- compiler
-  stringTemplate <p>{textCell}</p>
  crux paragraph
-subtitleNode
- catchAllCellType textCell
- extends abstractTopLevelNode
  compiler
-  stringTemplate <h2>{textCell}</h2>
- crux subtitle
+  openChildren <p>
+  closeChildren </p>
+  stringTemplate 
+paragraphContentNode
+ inScope paragraphContentNode
+ catchAllCellType textCell
+ compiler
+  stringTemplate {textCell}
 codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
  extends abstractTopLevelNode
- todo Fix spacing
- compiler
-  openChildren <code>
-  closeChildren </code>
-  stringTemplate 
+ javascript
+  compile() {
+   return \`<code>\${this.getIndentation() + this.childrenToString()}</code>\`
+  }
  crux code
 listNode
  inScope dashNode
@@ -107,21 +105,63 @@ listNode
   closeChildren </ul>
  crux list
 blankLineNode
- description Blank lines compile to a br in the HTML.
+ description Blank lines compile to nothing in the HTML.
  cells blankCell
  compiler
-  stringTemplate <br>
+  stringTemplate 
  pattern ^$
  tags doNotSynthesize
 lineOfCodeNode
  catchAllCellType codeCell
- cells codeCell
+ catchAllNodeType lineOfCodeNode
 dashNode
  crux -
  catchAllCellType textCell
  compiler
   stringTemplate <li>{textCell}</li>
- cells dashCell`)
+ cells dashCell
+titleNode
+ catchAllCellType textCell
+ extends abstractTopLevelNode
+ compiler
+  stringTemplate 
+ crux title
+ javascript
+  compile(spaces) {
+   const title = this.getContent()
+   const permalink = jtree.Utils.stringToPermalink(this.getContent())
+   return \`<h1 id="\${permalink}"><a href="#\${permalink}">\${title}</a></h1>\`
+  }
+title2Node
+ catchAllCellType textCell
+ extends abstractTopLevelNode
+ compiler
+  stringTemplate <h2>{textCell}</h2>
+ crux title2
+title3Node
+ extends title2Node
+ compiler
+  stringTemplate <h3>{textCell}</h3>
+ crux title3
+title4Node
+ extends title2Node
+ compiler
+  stringTemplate <h4>{textCell}</h4>
+ crux title4
+title5Node
+ extends title2Node
+ compiler
+  stringTemplate <h5>{textCell}</h5>
+ crux title5
+title6Node
+ extends title2Node
+ compiler
+  stringTemplate <h6>{textCell}</h6>
+ crux title6
+quickParagraphNode
+ catchAllCellType textCell
+ compiler
+  stringTemplate <p>{textCell}</p>`)
       return this._cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
@@ -129,15 +169,21 @@ dashNode
         errorNode: errorNode,
         dumbdownNode: dumbdownNode,
         abstractTopLevelNode: abstractTopLevelNode,
-        titleNode: titleNode,
         linkNode: linkNode,
         paragraphNode: paragraphNode,
-        subtitleNode: subtitleNode,
+        paragraphContentNode: paragraphContentNode,
         codeNode: codeNode,
         listNode: listNode,
         blankLineNode: blankLineNode,
         lineOfCodeNode: lineOfCodeNode,
-        dashNode: dashNode
+        dashNode: dashNode,
+        titleNode: titleNode,
+        title2Node: title2Node,
+        title3Node: title3Node,
+        title4Node: title4Node,
+        title5Node: title5Node,
+        title6Node: title6Node,
+        quickParagraphNode: quickParagraphNode
       }
     }
   }
@@ -145,12 +191,6 @@ dashNode
   class abstractTopLevelNode extends jtree.GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
-    }
-  }
-
-  class titleNode extends abstractTopLevelNode {
-    get textCell() {
-      return this.getWordsFrom(0)
     }
   }
 
@@ -168,18 +208,11 @@ dashNode
 
   class paragraphNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
-        undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { link: linkNode }),
-        undefined
-      )
-    }
-    get textCell() {
-      return this.getWordsFrom(0)
+      return new jtree.TreeNode.Parser(paragraphContentNode, undefined, undefined)
     }
   }
 
-  class subtitleNode extends abstractTopLevelNode {
+  class paragraphContentNode extends jtree.GrammarBackedNode {
     get textCell() {
       return this.getWordsFrom(0)
     }
@@ -188,6 +221,9 @@ dashNode
   class codeNode extends abstractTopLevelNode {
     createParser() {
       return new jtree.TreeNode.Parser(lineOfCodeNode, undefined, undefined)
+    }
+    compile() {
+      return `<code>${this.getIndentation() + this.childrenToString()}</code>`
     }
   }
 
@@ -208,11 +244,11 @@ dashNode
   }
 
   class lineOfCodeNode extends jtree.GrammarBackedNode {
-    get codeCell() {
-      return this.getWord(0)
+    createParser() {
+      return new jtree.TreeNode.Parser(lineOfCodeNode, undefined, undefined)
     }
     get codeCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
 
@@ -222,6 +258,37 @@ dashNode
     }
     get textCell() {
       return this.getWordsFrom(1)
+    }
+  }
+
+  class titleNode extends abstractTopLevelNode {
+    get textCell() {
+      return this.getWordsFrom(0)
+    }
+    compile(spaces) {
+      const title = this.getContent()
+      const permalink = jtree.Utils.stringToPermalink(this.getContent())
+      return `<h1 id="${permalink}"><a href="#${permalink}">${title}</a></h1>`
+    }
+  }
+
+  class title2Node extends abstractTopLevelNode {
+    get textCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class title3Node extends title2Node {}
+
+  class title4Node extends title2Node {}
+
+  class title5Node extends title2Node {}
+
+  class title6Node extends title2Node {}
+
+  class quickParagraphNode extends jtree.GrammarBackedNode {
+    get textCell() {
+      return this.getWordsFrom(0)
     }
   }
 

@@ -1,3 +1,4 @@
+tooling onsave jtree build produceLang dumbdown
 anyCell
 blankCell
 dashCell
@@ -59,11 +60,10 @@ codeNode
  description A code block.
  catchAllNodeType lineOfCodeNode
  extends abstractTopLevelNode
- todo Fix spacing
- compiler
-  openChildren <code>
-  closeChildren </code>
-  stringTemplate 
+ javascript
+  compile() {
+   return `<code>${this.getIndentation() + this.childrenToString()}</code>`
+  }
  crux code
 listNode
  inScope dashNode
@@ -83,10 +83,6 @@ blankLineNode
 lineOfCodeNode
  catchAllCellType codeCell
  catchAllNodeType lineOfCodeNode
- javascript
-  compile() {
-    return `<code>${this.getIndentation()}${this.getLine()}</code>${this.map(child => child.compile()).join("\n")}`
-  }
 dashNode
  crux -
  catchAllCellType textCell

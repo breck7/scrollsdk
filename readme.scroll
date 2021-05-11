@@ -4,16 +4,17 @@ title JTree: Tree Notation SDK for TypeScript & Javascript
 
 title3 Links
 
-🌴 [Tree Notation Homepage](https://treenotation.org/)  
-🌴 [Try Tree Notation](https://jtree.treenotation.org/sandbox/)  
-🌴 [Tree Language Designer](https://jtree.treenotation.org/designer/)  
-🌴 [Tree Notation FAQ](http://faq.treenotation.org/)  
-🌴 [TreeBase](https://treebase.treenotation.org/)  
-🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  
-🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  
-🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  
-🌴 [Unit Tests](/sandbox/test.html)  
-🌴 [Perf Tests](/sandbox/perfTests.html)  
+links
+ https://treenotation.org/ Tree Notation Homepage
+ https://jtree.treenotation.org/sandbox/ Try Tree Notation
+ https://jtree.treenotation.org/designer/ Tree Language Designer
+ http://faq.treenotation.org/ Tree Notation FAQ
+ https://treebase.treenotation.org/ TreeBase
+ https://github.com/treenotation/jtree TypeScript Implementation on GitHub
+ https://www.reddit.com/r/treenotation/ Discuss TreeNotation on Reddit
+ https://github.com/treenotation/ohayo Ohayo: A Data Science App Powered By Tree Notation
+ https://jtree.treenotation.org/sandbox/test.html Unit Tests
+ https://jtree.treenotation.org/sandbox/perfTests.html Perf Tests
 
 title3 Who this package is for
 
@@ -34,8 +35,7 @@ paragraph
  a grammar file you get a parser, a type checker, syntax
  highlighting, autocomplete, a compiler, and virtual machine
  for executing your new language. Jtree also includes a
- simple web [Tree Language Builder]
- (https://jtree.treenotation.org/designer/).
+ simple web <a href="https://jtree.treenotation.org/designer/">Tree Language Builder</a>.
 
 paragraph
  To make your language do really interesting things, you'll
@@ -63,7 +63,7 @@ code
 title4 jtree base library for the browser:
 
 code
- <script src="node_modules/jtree/products/jtree.browser.js"
+ <script src="https://jtree.treenotation.org/products/jtree.browser.js" />
 
 title4 jtree command line tool
 
@@ -96,6 +96,8 @@ title4 TreeComponentFramework for building web apps
 paragraph
  (directions coming soon)
 
+title4 Sample Languages
+
 paragraph
  More than 12 example Tree Languages for helping with
  various tasks
@@ -119,8 +121,7 @@ code
 title3 Monorepo
 
 paragraph
- Jtree is a [monorepo]
- (https://en.wikipedia.org/wiki/Monorepo). With on average
+ Jtree is a monorepo. With on average
  over 1 major version released each month for the past 2.5
  years, it would take a lot of overhead to constantly be
  updating 10+ different repositories and modules every month.
@@ -150,7 +151,7 @@ paragraph
 paragraph
  If you are working on a Tree Notation library in a new host
  language, feel free to post an issue or ask for help in the 
- [TreeNotation subreddit](https://www.reddit.com/r/treenotation/).
+ <a href="https://www.reddit.com/r/treenotation/">TreeNotation subreddit</a>.
 
 title4 How to bump versions
 
@@ -175,4 +176,4 @@ paragraph
  own code without using this library. In fact, that is often
  the best way to use Tree Notation!
 
-title2 ❤️❤️❤️ Public Domain ❤️❤️❤️
+title2 ❤️ Public Domain ❤️

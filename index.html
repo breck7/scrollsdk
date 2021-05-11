@@ -7,7 +7,7 @@
  
  Generally you don't want to edit it by hand.
 
- Scroll v8.2.0
+ Scroll v10.1.1
 
 -->
 <html lang="en-US">
@@ -108,20 +108,25 @@ html {
 .scrollArticleCell img {
   max-width: 35ch;
 }
-.scrollArticleCell .scrollArticleCode,.scrollArticleCell table {
-  margin-top: 15px;
-  margin-bottom: 15px;
-  background-color: rgb(234,234,234);
-  padding: 1em;
-  overflow: auto;
-  font-size: 80%;
+.scrollArticleCell .scrollCodeBlock,.scrollArticleCell table,.scrollArticleCell blockquote {
+  display: block;
+  margin: .5em 0;
+  padding: .5em;
+  background: rgba(204,204,204, .5);
   break-inside: avoid;
 }
-.scrollArticleCell .scrollArticleCode,.scrollArticleCell table code {
-  margin: 0;
-  display: block;
+.scrollArticleCell .scrollCodeBlock,.scrollArticleCell table {
+  overflow: auto;
+  font-size: 80%;
+  hyphens: none;
+}
+.scrollArticleCell .scrollCodeBlock {
   white-space: pre;
-  break-inside: avoid;
+  border-left: .5em solid rgba(204,204,204, .8);
+}
+.scrollArticleCell blockquote {
+  white-space: pre-line;
+  border-left: .5em solid rgba(204,204,204, .8);
 }
 .scrollArticleCell h1 {
   margin-bottom: .25em;
@@ -135,9 +140,6 @@ html {
 }
 .scrollArticleCell h2,.scrollArticleCell h3,.scrollArticleCell h4,.scrollArticleCell h5,.scrollArticleCell h6 {
   margin: .2em;
-}
-.scrollArticleCell blockquote {
-  margin: 2ch;
 }
 </style>
 </head>
@@ -162,338 +164,155 @@ html {
 
 <h3>Links</h3>
 
-<p>🌴 [Tree Notation Homepage](https://treenotation.org/)  </p>
-<p>🌴 [Try Tree Notation](https://jtree.treenotation.org/sandbox/)  </p>
-<p>🌴 [Tree Language Designer](https://jtree.treenotation.org/designer/)  </p>
-<p>🌴 [Tree Notation FAQ](http://faq.treenotation.org/)  </p>
-<p>🌴 [TreeBase](https://treebase.treenotation.org/)  </p>
-<p>🌴 [TypeScript Implementation on GitHub](https://github.com/treenotation/jtree)  </p>
-<p>🌴 [Discuss TreeNotation on Reddit](https://www.reddit.com/r/treenotation/)  </p>
-<p>🌴 [Ohayo: A Data Science App Powered By Tree Notation](https://github.com/treenotation/ohayo)  </p>
-<p>🌴 [Unit Tests](/sandbox/test.html)  </p>
-<p>🌴 [Perf Tests](/sandbox/perfTests.html)  </p>
+<ul>
+ <li><a href="https://treenotation.org/">Tree Notation Homepage</a></li>
+ <li><a href="https://jtree.treenotation.org/sandbox/">Try Tree Notation</a></li>
+ <li><a href="https://jtree.treenotation.org/designer/">Tree Language Designer</a></li>
+ <li><a href="http://faq.treenotation.org/">Tree Notation FAQ</a></li>
+ <li><a href="https://treebase.treenotation.org/">TreeBase</a></li>
+ <li><a href="https://github.com/treenotation/jtree">TypeScript Implementation on GitHub</a></li>
+ <li><a href="https://www.reddit.com/r/treenotation/">Discuss TreeNotation on Reddit</a></li>
+ <li><a href="https://github.com/treenotation/ohayo">Ohayo: A Data Science App Powered By Tree Notation</a></li>
+ <li><a href="https://jtree.treenotation.org/sandbox/test.html">Unit Tests</a></li>
+ <li><a href="https://jtree.treenotation.org/sandbox/perfTests.html">Perf Tests</a></li>
+</ul>
 
 <h3>Who this package is for</h3>
 
-<p>
- Jtree is for people who want to design Tree Languages, make
+<p>Jtree is for people who want to design Tree Languages, make
+Tree editing tools, use TreeBase, or use the Tree Component
+Web Framework.</p>
 
- 
- Tree editing tools, use TreeBase, or use the Tree Component
-
- 
- Web Framework.
-
- 
-</p>
-
-<p>
- You can think of jtree as similar to the Java Development
-
- 
- Kit, except for Tree Notation instead of Java.
-
- 
-</p>
+<p>You can think of jtree as similar to the Java Development
+Kit, except for Tree Notation instead of Java.</p>
 
 <h3>Grammar Files</h3>
 
-<p>
- Jtree contains a Tree Language called "Grammar". You can
+<p>Jtree contains a Tree Language called "Grammar". You can
+write new Grammar files to define new languages. By creating
+a grammar file you get a parser, a type checker, syntax
+highlighting, autocomplete, a compiler, and virtual machine
+for executing your new language. Jtree also includes a
+simple web <a href="https://jtree.treenotation.org/designer/">Tree Language Builder</a>.</p>
 
- 
- write new Grammar files to define new languages. By creating
-
- 
- a grammar file you get a parser, a type checker, syntax
-
- 
- highlighting, autocomplete, a compiler, and virtual machine
-
- 
- for executing your new language. Jtree also includes a
-
- 
- simple web [Tree Language Builder]
-
- 
- (https://jtree.treenotation.org/designer/).
-
- 
-</p>
-
-<p>
- To make your language do really interesting things, you'll
-
- 
- want to write some code to extend your language nodes in
-
- 
- another language that you know. Jtree lets you create new
-
- 
- languages using just Tree Notation, Tree Notation +
-
- 
- TypeScript, or Tree Notation + Javascript. Tree Notation and
-
- 
- Tree Languages can be built with any language, however, not
-
- 
- just TypeScript and Javascript. We are looking for
-
- 
- volunteers to build libraries/sdks in other host languages.
-
- 
-</p>
+<p>To make your language do really interesting things, you'll
+want to write some code to extend your language nodes in
+another language that you know. Jtree lets you create new
+languages using just Tree Notation, Tree Notation +
+TypeScript, or Tree Notation + Javascript. Tree Notation and
+Tree Languages can be built with any language, however, not
+just TypeScript and Javascript. We are looking for
+volunteers to build libraries/sdks in other host languages.</p>
 
 <h3>Using Jtree</h3>
 
-<p>
- Jtree currently includes around 10 compiled projects (aka
-
- 
- "products") and more than a dozen Tree Languages.
-
- 
-</p>
+<p>Jtree currently includes around 10 compiled projects (aka
+"products") and more than a dozen Tree Languages.</p>
 
 <h4>jtree base library for npm projects:</h4>
 
-<div class="scrollArticleCode">
-<code> const {jtree} = require("jtree")</code>
-
-<code> const tree = new jtree.TreeNode("hello world")</code>
-
-<code> console.log(tree.toString())</code>
-
-</div>
+<code class="scrollCodeBlock">const {jtree} = require("jtree")
+const tree = new jtree.TreeNode("hello world")
+console.log(tree.toString())</code>
 
 <h4>jtree base library for the browser:</h4>
 
-<div class="scrollArticleCode">
-<code> <script src="node_modules/jtree/products/jtree.browser.js"</code>
-
-</div>
+<code class="scrollCodeBlock">&lt;script src="https://jtree.treenotation.org/products/jtree.browser.js" /></code>
 
 <h4>jtree command line tool</h4>
 
-<div class="scrollArticleCode">
-<code> npm install -g jtree</code>
-
-<code> jtree help</code>
-
-</div>
+<code class="scrollCodeBlock">npm install -g jtree
+jtree help</code>
 
 <h4>TreeBase</h4>
 
-<div class="scrollArticleCode">
-<code> npm install -g jtree</code>
-
-<code> jtree base</code>
-
-</div>
+<code class="scrollCodeBlock">npm install -g jtree
+jtree base</code>
 
 <h4>jtree "sandbox" web app for exploring base Tree Notation</h4>
 
-<div class="scrollArticleCode">
-<code> npm install -g jtree</code>
-
-<code> jtree kitchen</code>
-
-<code> open http://localhost:3333/</code>
-
-</div>
+<code class="scrollCodeBlock">npm install -g jtree
+jtree kitchen
+open http://localhost:3333/</code>
 
 <h4>jtree "Designer" web app for building new Tree Languages</h4>
 
-<div class="scrollArticleCode">
-<code> npm install -g jtree</code>
-
-<code> jtree kitchen</code>
-
-<code> open http://localhost:3333/designer</code>
-
-</div>
+<code class="scrollCodeBlock">npm install -g jtree
+jtree kitchen
+open http://localhost:3333/designer</code>
 
 <h4>TreeComponentFramework for building web apps</h4>
 
-<p>
- (directions coming soon)
+<p>(directions coming soon)</p>
 
- 
-</p>
+<h4>Sample Languages</h4>
 
-<p>
- More than 12 example Tree Languages for helping with
+<p>More than 12 example Tree Languages for helping with
+various tasks</p>
 
- 
- various tasks
-
- 
-</p>
-
-<p>
- See the "langs/" folder.
-
- 
-</p>
+<p>See the "langs/" folder.</p>
 
 <h4> Build Tools</h4>
 
-<p>
- If you look at the source, you will also see a set of build
-
- 
- tools (such as Builder and TypeScriptRewriter). These are
-
- 
- currently undocumented and not recommended for external use.
-
- 
-</p>
+<p>If you look at the source, you will also see a set of build
+tools (such as Builder and TypeScriptRewriter). These are
+currently undocumented and not recommended for external use.</p>
 
 <h4>Building all tools and running tests</h4>
 
-<div class="scrollArticleCode">
-<code> jtree build produceAll</code>
-
-<code> npm test</code>
-
-</div>
+<code class="scrollCodeBlock">jtree build produceAll
+npm test</code>
 
 <h3>Monorepo</h3>
 
-<p>
- Jtree is a [monorepo]
+<p>Jtree is a monorepo. With on average
+over 1 major version released each month for the past 2.5
+years, it would take a lot of overhead to constantly be
+updating 10+ different repositories and modules every month.
+Once we're more confident in the theory and best practices,
+it might make sense to break this repo into independent modules.</p>
 
- 
- (https://en.wikipedia.org/wiki/Monorepo). With on average
-
- 
- over 1 major version released each month for the past 2.5
-
- 
- years, it would take a lot of overhead to constantly be
-
- 
- updating 10+ different repositories and modules every month.
-
- 
- Once we're more confident in the theory and best practices,
-
- 
- it might make sense to break this repo into independent modules.
-
- 
-</p>
-
-<p>
- That being said, we despise unnecessary dependencies as much
-
- 
- as anyone. If anyone wants to create some automated
-
- 
- submodules built from the projects in this monorepo, to
-
- 
- allow for consuming of a smaller subset of the code and
-
- 
- dependencies in this module, feel free to do so.
-
- 
-</p>
+<p>That being said, we despise unnecessary dependencies as much
+as anyone. If anyone wants to create some automated
+submodules built from the projects in this monorepo, to
+allow for consuming of a smaller subset of the code and
+dependencies in this module, feel free to do so.</p>
 
 <h3>Development Status</h3>
 
-<p>
- All breaking changes are mentioned in releaseNotes.md. We
-
- 
- follow semantic versioning, so breaking changes should not
-
- 
- happen if you stay on the same major version.
-
- 
-</p>
+<p>All breaking changes are mentioned in releaseNotes.md. We
+follow semantic versioning, so breaking changes should not
+happen if you stay on the same major version.</p>
 
 <h3>Tree Notation Libraries in Other Languages</h3>
 
-<p>
- If you build a Tree Notation library/SDK in another
+<p>If you build a Tree Notation library/SDK in another
+language, let us know and we'll add a link.</p>
 
- 
- language, let us know and we'll add a link.
-
- 
-</p>
-
-<p>
- If you are working on a Tree Notation library in a new host
-
- 
- language, feel free to post an issue or ask for help in the 
-
- 
- [TreeNotation subreddit](https://www.reddit.com/r/treenotation/).
-
- 
-</p>
+<p>If you are working on a Tree Notation library in a new host
+language, feel free to post an issue or ask for help in the 
+<a href="https://www.reddit.com/r/treenotation/">TreeNotation subreddit</a>.</p>
 
 <h4>How to bump versions</h4>
 
-<div class="scrollArticleCode">
-<code> jtree build updateVersion NEW_NUMBER</code>
-
-</div>
+<code class="scrollCodeBlock">jtree build updateVersion NEW_NUMBER</code>
 
 <h3>Alternatives Considered</h3>
 
-<p>
- This is the first Tree Notation library in existence, so
+<p>This is the first Tree Notation library in existence, so
+there were no alternative implementations. Note and Space
+were predecessors to Tree Notation.</p>
 
- 
- there were no alternative implementations. Note and Space
+<p>If a better alternative low level notation to Tree Notation
+is possible, it has yet to be discovered.</p>
 
- 
- were predecessors to Tree Notation.
+<p>All that said, the important part of this repo is not the
+code but the design patterns. Tree Notation is very simple,
+and you can implement the patterns contained here in your
+own code without using this library. In fact, that is often
+the best way to use Tree Notation!</p>
 
- 
-</p>
-
-<p>
- If a better alternative low level notation to Tree Notation
-
- 
- is possible, it has yet to be discovered.
-
- 
-</p>
-
-<p>
- All that said, the important part of this repo is not the
-
- 
- code but the design patterns. Tree Notation is very simple,
-
- 
- and you can implement the patterns contained here in your
-
- 
- own code without using this library. In fact, that is often
-
- 
- the best way to use Tree Notation!
-
- 
-</p>
-
-<h2>❤️❤️❤️ Public Domain ❤️❤️❤️</h2>
+<h2>❤️ Public Domain ❤️</h2>
 <p class="scrollArticleSourceLink"><a href="https://github.com/publicdomaincompany/jtree/readme.scroll">Article source</a></p></div>
 </div>
   <div class="scrollFooter">

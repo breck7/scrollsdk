@@ -60,11 +60,11 @@ paragraph
 paragraph
  This framework also powers:
 
-list
- - [Tree Notation Sandbox](https://github.com/treenotation/jtree/tree/master/sandbox)
- - [Tree Language Designer](https://github.com/treenotation/jtree/tree/master/designer)
- - [Ohayo](https://github.com/treenotation/ohayo)
- - [PauSynth](https://pau.treenotation.org/synth/)
+links
+ https://github.com/treenotation/jtree/tree/master/sandbox Tree Notation Sandbox
+ https://github.com/treenotation/jtree/tree/master/designer Tree Language Designer
+ https://github.com/treenotation/ohayo Ohayo
+ https://pau.treenotation.org/synth/ PauSynth
 
 title3 Current Architecture
 

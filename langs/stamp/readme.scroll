@@ -74,6 +74,7 @@ paragraph
  The current options for this situation are:
 
 title4 The Recipe Method - explain each step
+
 - Downside: If your basic project layout requires 10 files,
   that's 10 separate steps the reader has to do just to get
   started.
@@ -84,6 +85,7 @@ title4 The Recipe Method - explain each step
   author
 
 title4 The Zip Method - zip the template directory
+
 - Downside: zip files are opaque and a user has no
   visibility into what they are creating
 - Downside: everytime the template changes, author has to
@@ -93,6 +95,7 @@ title4 The Zip Method - zip the template directory
 
 title4 The Custom Utility Method - implement a custom command line
  program that generates new projects*
+
 - Downside: No visibility into what is getting created
 - Downside: If the template changes, now author needs to get
   users to install the new template program
@@ -101,21 +104,22 @@ title4 The Custom Utility Method - implement a custom command line
 
 title4 The GitHub method - create a repo for your template and
  have people git clone it
+
 - Downside: no way of doing variable replacement post-clone
 - Downside: no plain text way of distributing the template
 
 title2 Alternatives Considered
 
-list
- - Wikipedia list of archive formats (https://en.wikipedia.org/wiki/List_of_archive_formats)
- - ptar (https://github.com/jtvaughan/ptar) - full featured, but difference is the file output is a custom format (not a Tree Language)
- - shar (https://en.wikipedia.org/wiki/Shar) - old school method that has the major security flaw of potentially running any shell command
- - dar (http://dar.linux.free.fr/)
- - metatar (https://github.com/xyproto/metatar)
- - txtar (https://pkg.go.dev/golang.org/x/tools@v0.1.0/txtar)
+links
+ https://en.wikipedia.org/wiki/List_of_archive_formats Wikipedia list of archive formats
+ https://github.com/jtvaughan/ptar ptar full featured, but difference is the file output is a custom format (not a Tree Language)
+ https://en.wikipedia.org/wiki/Shar shar old school method that has the major security flaw of potentially running any shell command
+ http://dar.linux.free.fr/ dar
+ https://github.com/xyproto/metatar metatar
+ https://pkg.go.dev/golang.org/x/tools@v0.1.0/txtar txtar
 
  title2 Directory Editors
 
- list
- - https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html
- - https://github.com/thameera/vimv
+ links
+  https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html Dired
+  https://github.com/thameera/vimv vimv

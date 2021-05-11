@@ -3,6 +3,5 @@ title SweeperCraft
 paragraph
  A sample app for the <a href="https://github.com/treenotation/jtree/tree/master/treeComponentFramework">TreeComponentFramework</a>
 
-
-link https://jtree.treenotation.org/treeComponentFramework/sweepercraft/ Play SweeperCraft
-
+links
+ https://jtree.treenotation.org/treeComponentFramework/sweepercraft/ Play SweeperCraft

@@ -1,6 +1,7 @@
 title poop Readme
 
-link https://jtree.treenotation.org/designer/#standard%20poop Try it now
+links
+ https://jtree.treenotation.org/designer/#standard%20poop Try it now
 
 paragraph
  POOP is the *Programming Option for Overtired Parents*. It
@@ -26,10 +27,9 @@ code
 
 title2 Quick facts about poop
 
-list
- - poop has 9 node types.
- - poop has 3 cell types
- - The source code for poop is 60 lines long.
+- poop has 9 node types.
+- poop has 3 cell types
+- The source code for poop is 60 lines long.
 
 title2 Node Types
 

@@ -1,20 +1,21 @@
 title JTree: Tree Notation SDK for TypeScript & Javascript
+permalink index
 
 <a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=master" /></a> <a href="https://gitpod.io/#https://github.com/publicdomaincompany/jtree"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod"/></a>
 
 title3 Links
 
-links
- https://treenotation.org/ Tree Notation Homepage
- https://jtree.treenotation.org/sandbox/ Try Tree Notation
- https://jtree.treenotation.org/designer/ Tree Language Designer
- http://faq.treenotation.org/ Tree Notation FAQ
- https://treebase.treenotation.org/ TreeBase
- https://github.com/treenotation/jtree TypeScript Implementation on GitHub
- https://www.reddit.com/r/treenotation/ Discuss TreeNotation on Reddit
- https://github.com/treenotation/ohayo Ohayo: A Data Science App Powered By Tree Notation
- https://jtree.treenotation.org/sandbox/test.html Unit Tests
- https://jtree.treenotation.org/sandbox/perfTests.html Perf Tests
+list
+ - Tree Notation Homepage🔗treenotation.org
+ - Tree Notation Sandbox🔗jtree.treenotation.org/sandbox
+ - Tree Language Designer🔗jtree.treenotation.org/designer
+ - Tree Notation FAQ🔗faq.treenotation.org
+ - TreeBase🔗treebase.treenotation.org
+ - TypeScript Library🔗github.com/treenotation/jtree
+ - Tree Notation Subreddit🔗reddit.com/r/treenotation
+ - Ohayo🔗github.com/treenotation/ohayo A Data Science App Powered By Tree Notation
+ - UnitTests🔗jtree.treenotation.org/sandbox/test.html
+ - PerfTests🔗jtree.treenotation.org/sandbox/perfTests.html
 
 title3 Who this package is for
 
@@ -35,7 +36,7 @@ paragraph
  a grammar file you get a parser, a type checker, syntax
  highlighting, autocomplete, a compiler, and virtual machine
  for executing your new language. Jtree also includes a
- simple web <a href="https://jtree.treenotation.org/designer/">Tree Language Builder</a>.
+ simple web Tree Language Designer🔗jtree.treenotation.org/designer.
 
 paragraph
  To make your language do really interesting things, you'll
@@ -151,7 +152,7 @@ paragraph
 paragraph
  If you are working on a Tree Notation library in a new host
  language, feel free to post an issue or ask for help in the 
- <a href="https://www.reddit.com/r/treenotation/">TreeNotation subreddit</a>.
+ reeNotation subreddit🔗reddit.com/r/treenotation.
 
 title4 How to bump versions
 

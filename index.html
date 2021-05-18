@@ -7,7 +7,7 @@
  
  Generally you don't want to edit it by hand.
 
- Scroll v11.1.0
+ Scroll v13.1.0
 
 -->
 <html lang="en-US">
@@ -29,6 +29,26 @@ html {
 }
 .scrollHeader,.scrollFooter {
   text-align: center;
+}
+.scrollChat span {
+  font-family: Verdana;
+  margin-top: 5px;
+  padding: 5px 20px;
+  border-radius: 15px;
+  display: inline-block;
+}
+.scrollChat0 {
+  text-align: left;
+}
+.scrollChat0 span {
+  background: rgba(204,204,204, .5);
+}
+.scrollChat1 {
+  text-align: right;
+}
+.scrollChat1 span {
+  color: white;
+  background: rgb(0,132,255);
 }
 .scrollTitle a {
   text-decoration: none;
@@ -166,23 +186,24 @@ html {
    <div class="scrollDescription">Build your own language using Tree Notation.</div>
 </div>
   <div class="scrollPage scrollSingleArticle">
-   <div class="scrollArticleCell"><h1><a href="jtree-tree-notation-sdk-for-typescript--javascript.html">JTree: Tree Notation SDK for TypeScript & Javascript</a></h1>
+   <div class="scrollArticleCell"><h1><a href="index.html">JTree: Tree Notation SDK for TypeScript & Javascript</a></h1>
+
 
 <p><a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=master" /></a> <a href="https://gitpod.io/#https://github.com/publicdomaincompany/jtree"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod"/></a></p>
 
 <h3>Links</h3>
 
 <ul>
- <li><a href="https://treenotation.org/">Tree Notation Homepage</a></li>
- <li><a href="https://jtree.treenotation.org/sandbox/">Try Tree Notation</a></li>
- <li><a href="https://jtree.treenotation.org/designer/">Tree Language Designer</a></li>
- <li><a href="http://faq.treenotation.org/">Tree Notation FAQ</a></li>
- <li><a href="https://treebase.treenotation.org/">TreeBase</a></li>
- <li><a href="https://github.com/treenotation/jtree">TypeScript Implementation on GitHub</a></li>
- <li><a href="https://www.reddit.com/r/treenotation/">Discuss TreeNotation on Reddit</a></li>
- <li><a href="https://github.com/treenotation/ohayo">Ohayo: A Data Science App Powered By Tree Notation</a></li>
- <li><a href="https://jtree.treenotation.org/sandbox/test.html">Unit Tests</a></li>
- <li><a href="https://jtree.treenotation.org/sandbox/perfTests.html">Perf Tests</a></li>
+<li>Tree Notation <a href="https://treenotation.org">Homepage</a></li>
+<li>Tree Notation <a href="https://jtree.treenotation.org/sandbox">Sandbox</a></li>
+<li>Tree Language <a href="https://jtree.treenotation.org/designer">Designer</a></li>
+<li>Tree Notation <a href="https://faq.treenotation.org">FAQ</a></li>
+<li><a href="https://treebase.treenotation.org">TreeBase</a></li>
+<li>TypeScript <a href="https://github.com/treenotation/jtree">Library</a></li>
+<li>Tree Notation <a href="https://reddit.com/r/treenotation">Subreddit</a></li>
+<li><a href="https://github.com/treenotation/ohayo">Ohayo</a> A Data Science App Powered By Tree Notation</li>
+<li><a href="https://jtree.treenotation.org/sandbox/test.html">UnitTests</a></li>
+<li><a href="https://jtree.treenotation.org/sandbox/perfTests.html">PerfTests</a></li>
 </ul>
 
 <h3>Who this package is for</h3>
@@ -201,7 +222,7 @@ write new Grammar files to define new languages. By creating
 a grammar file you get a parser, a type checker, syntax
 highlighting, autocomplete, a compiler, and virtual machine
 for executing your new language. Jtree also includes a
-simple web <a href="https://jtree.treenotation.org/designer/">Tree Language Builder</a>.</p>
+simple web Tree Language <a href="https://jtree.treenotation.org/designer">Designer</a>.</p>
 
 <p>To make your language do really interesting things, you'll
 want to write some code to extend your language nodes in
@@ -299,7 +320,7 @@ language, let us know and we'll add a link.</p>
 
 <p>If you are working on a Tree Notation library in a new host
 language, feel free to post an issue or ask for help in the 
-<a href="https://www.reddit.com/r/treenotation/">TreeNotation subreddit</a>.</p>
+reeNotation <a href="https://reddit.com/r/treenotation">subreddit</a>.</p>
 
 <h4>How to bump versions</h4>
 

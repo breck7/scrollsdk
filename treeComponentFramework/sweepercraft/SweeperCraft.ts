@@ -499,7 +499,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
 
   private _syncAndRender() {
     this._syncBoardToGame()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyComponentsNode())
   }
 
   flagSquareCommand(row: int | string, col: int | string) {
@@ -810,7 +810,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
     this.setContent(`${this.numberOfMines}mines ${this.numberOfMoves}clicks ${this.gameMessage}`)
   }
 
-  toStumpCode() {
+  toComponentsCode() {
     return `div
  class headerComponent
  div
@@ -862,7 +862,7 @@ class rowComponent extends AbstractTreeComponent {
 }
 
 class squareComponent extends AbstractSweeperCraftComponent {
-  toStumpCode() {
+  toComponentsCode() {
     const row = this.getRow()
     const col = this.getColumn()
 
@@ -938,7 +938,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
 
 // todo: STATE
 class controlsComponent extends AbstractSweeperCraftComponent {
-  toStumpCode() {
+  toComponentsCode() {
     const parts = []
     const game = this.getRootNode().getGame()
 
@@ -960,7 +960,7 @@ class controlsComponent extends AbstractSweeperCraftComponent {
 
 // todo: STATE
 class customLinkComponent extends AbstractSweeperCraftComponent {
-  toStumpCode() {
+  toComponentsCode() {
     const craftLink = this._getGameLink()
     if (craftLink) return `div Your game link: <a href="#${craftLink}">${craftLink}</a>`
     return `div`
@@ -978,7 +978,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
 }
 
 class shortcutsTableComponent extends AbstractTreeComponent {
-  toStumpCode() {
+  toComponentsCode() {
     return `div
  id shortcuts
  table

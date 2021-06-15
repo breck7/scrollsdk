@@ -705,7 +705,7 @@ abstract class AbstractGrammarBackedCell<T> {
     return this._synthesizeCell(seed)
   }
 
-  _getStumpEnumInput(crux: string): string {
+  _getComponentsEnumInput(crux: string): string {
     const cellDef = this._getCellTypeDefinition()
     const enumOptions = cellDef._getFromExtended(GrammarConstants.enum)
     if (!enumOptions) return undefined
@@ -720,9 +720,9 @@ abstract class AbstractGrammarBackedCell<T> {
 ${options.toString(1)}`
   }
 
-  _toStumpInput(crux: string): string {
+  _toComponentsInput(crux: string): string {
     // todo: remove
-    const enumInput = this._getStumpEnumInput(crux)
+    const enumInput = this._getComponentsEnumInput(crux)
     if (enumInput) return enumInput
     // todo: cleanup. We shouldn't have these dual cellType classes.
     return `input
@@ -785,7 +785,7 @@ class GrammarBitCell extends AbstractGrammarBackedCell<boolean> {
 }
 
 abstract class GrammarNumericCell extends AbstractGrammarBackedCell<number> {
-  _toStumpInput(crux: string): string {
+  _toComponentsInput(crux: string): string {
     return `input
  name ${crux}
  type number
@@ -2040,7 +2040,7 @@ ${captures}
     if (ancestorIds.length > 1) return ancestorIds[ancestorIds.length - 2]
   }
 
-  protected _toStumpString() {
+  protected _toComponentsString() {
     const crux = this._getCruxIfAny()
     const cellArray = this.getCellParser()
       .getCellArray()
@@ -2048,16 +2048,16 @@ ${captures}
     if (!cellArray.length)
       // todo: remove this! just doing it for now until we refactor getCellArray to handle catchAlls better.
       return ""
-    const cells = new TreeNode(cellArray.map((cell, index) => cell._toStumpInput(crux)).join("\n"))
+    const cells = new TreeNode(cellArray.map((cell, index) => cell._toComponentsInput(crux)).join("\n"))
     return `div
  label ${crux}
 ${cells.toString(1)}`
   }
 
-  toStumpString() {
+  toComponentsString() {
     const nodeBreakSymbol = "\n"
     return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds())
-      .map(def => def._toStumpString())
+      .map(def => def._toComponentsString())
       .filter(identity => identity)
       .join(nodeBreakSymbol)
   }

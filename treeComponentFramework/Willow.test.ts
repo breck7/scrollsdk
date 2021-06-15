@@ -16,26 +16,26 @@ testTree.all = (equal: any) => {
   equal(willow2.getWindowTitle(), "willow2", "set title works")
 
   // Act
-  const bodyStumpNode = willow2.getBodyStumpNode()
-  bodyStumpNode.addClassToStumpNode("someClass")
+  const bodyComponentsNode = willow2.getBodyComponentsNode()
+  bodyComponentsNode.addClassToComponentsNode("someClass")
   // Assert
-  equal(bodyStumpNode.get("class"), "someClass")
-  equal(bodyStumpNode.stumpNodeHasClass("someClass"), true)
+  equal(bodyComponentsNode.get("class"), "someClass")
+  equal(bodyComponentsNode.componentsNodeHasClass("someClass"), true)
 
   // Act
-  bodyStumpNode.removeClassFromStumpNode("someClass")
+  bodyComponentsNode.removeClassFromComponentsNode("someClass")
   // Assert
-  equal(bodyStumpNode.stumpNodeHasClass("someClass"), false)
+  equal(bodyComponentsNode.componentsNodeHasClass("someClass"), false)
 
   // Act
-  bodyStumpNode.insertChildNode(`h6 Hello world
+  bodyComponentsNode.insertChildNode(`h6 Hello world
  class header`)
   const html = willow2.getPageHtml()
 
   // Assert
   equal(html.includes(`Hello world</h6>`), true, "hello world included")
-  equal(bodyStumpNode.findStumpNodesByChild("class header").length, 1, "found stumpNodes")
-  equal(bodyStumpNode.findStumpNodeByFirstWord("h6").getLine(), "h6 Hello world")
+  equal(bodyComponentsNode.findComponentsNodesByChild("class header").length, 1, "found componentsNodes")
+  equal(bodyComponentsNode.findComponentsNodeByFirstWord("h6").getLine(), "h6 Hello world")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)

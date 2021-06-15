@@ -1,4 +1,4 @@
-tooling onsave jtree build produceLang stump
+tooling onsave jtree build produceLang components
 anyCell
 keywordCell
 emptyCell
@@ -22,7 +22,7 @@ htmlAttributeNameCell
 bernKeywordCell
  enum bern
  extends keywordCell
-stumpNode
+componentsNode
  root
  description A prefix Tree Language that compiles to HTML.
  catchAllNodeType errorNode
@@ -86,24 +86,24 @@ htmlTagNode
    const indent = " ".repeat(indentCount)
    const collapse = this.shouldCollapse()
    const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("htmlTagNode").length > 0
-   const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
+   const suid = withSuid ? ` componentsUid="${this._getUid()}"` : ""
    const oneLiner = this._getOneLiner()
    return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
   }
-  removeCssStumpNode() {
-   return this.removeStumpNode()
+  removeCssComponentsNode() {
+   return this.removeComponentsNode()
   }
-  removeStumpNode() {
+  removeComponentsNode() {
    this.getShadow().removeShadow()
    return this.destroy()
   }
   getNodeByGuid(guid) {
    return this.getTopDownArray().find(node => node._getUid() === guid)
   }
-  addClassToStumpNode(className) {
+  addClassToComponentsNode(className) {
    const classNode = this.touchNode("class")
    const words = classNode.getWordsFrom(1)
-   // note: we call add on shadow regardless, because at the moment stump may have gotten out of
+   // note: we call add on shadow regardless, because at the moment components may have gotten out of
    // sync with shadow, if things modified the dom. todo: cleanup.
    this.getShadow().addClassToShadow(className)
    if (words.includes(className)) return this
@@ -111,7 +111,7 @@ htmlTagNode
    classNode.setContent(words.join(this.getWordBreakSymbol()))
    return this
   }
-  removeClassFromStumpNode(className) {
+  removeClassFromComponentsNode(className) {
    const classNode = this.getNode("class")
    if (!classNode) return this
    const newClasses = classNode.getWords().filter(word => word !== className)
@@ -120,11 +120,11 @@ htmlTagNode
    this.getShadow().removeClassFromShadow(className)
    return this
   }
-  stumpNodeHasClass(className) {
+  componentsNodeHasClass(className) {
    const classNode = this.getNode("class")
    return classNode && classNode.getWords().includes(className) ? true : false
   }
-  isStumpNodeCheckbox() {
+  isComponentsNodeCheckbox() {
    return this.get("type") === "checkbox"
   }
   getShadow() {
@@ -140,17 +140,17 @@ htmlTagNode
   insertChildNode(text, index) {
    const singleNode = new jtree.TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-   const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("htmlTagNode").indexOf(newNode)
-   this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
+   const componentsNodeIndex = this.getChildInstancesOfNodeTypeId("htmlTagNode").indexOf(newNode)
+   this.getShadow().insertHtmlNode(newNode, componentsNodeIndex)
    return newNode
   }
   isInputType() {
    return ["input", "textarea"].includes(this.getTag()) || this.get("contenteditable") === "true"
   }
-  findStumpNodeByChild(line) {
-   return this.findStumpNodesByChild(line)[0]
+  findComponentsNodeByChild(line) {
+   return this.findComponentsNodesByChild(line)[0]
   }
-  findStumpNodeByChildString(line) {
+  findComponentsNodeByChildString(line) {
    return this.getTopDownArray().find(node =>
     node
      .map(child => child.getLine())
@@ -158,19 +158,19 @@ htmlTagNode
      .includes(line)
    )
   }
-  findStumpNodeByFirstWord(firstWord) {
-   return this._findStumpNodesByBase(firstWord)[0]
+  findComponentsNodeByFirstWord(firstWord) {
+   return this._findComponentsNodesByBase(firstWord)[0]
   }
-  _findStumpNodesByBase(firstWord) {
+  _findComponentsNodesByBase(firstWord) {
    return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.getFirstWord() === firstWord)
   }
   hasLine(line) {
    return this.getChildren().some(node => node.getLine() === line)
   }
-  findStumpNodesByChild(line) {
+  findComponentsNodesByChild(line) {
    return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
   }
-  findStumpNodesWithClass(className) {
+  findComponentsNodesWithClass(className) {
    return this.getTopDownArray().filter(
     node =>
      node.doesExtend("htmlTagNode") &&
@@ -185,25 +185,25 @@ htmlTagNode
    return this.getParent().getShadowClass()
   }
   // todo: should not be here
-  getStumpNodeTreeComponent() {
-   return this._treeComponent || this.getParent().getStumpNodeTreeComponent()
+  getComponentsNodeTreeComponent() {
+   return this._treeComponent || this.getParent().getComponentsNodeTreeComponent()
   }
   // todo: should not be here
-  setStumpNodeTreeComponent(treeComponent) {
+  setComponentsNodeTreeComponent(treeComponent) {
    this._treeComponent = treeComponent
    return this
   }
-  setStumpNodeCss(css) {
+  setComponentsNodeCss(css) {
    this.getShadow().setShadowCss(css)
    return this
   }
-  getStumpNodeCss(prop) {
+  getComponentsNodeCss(prop) {
    return this.getShadow().getShadowCss(prop)
   }
-  getStumpNodeAttr(key) {
+  getComponentsNodeAttr(key) {
    return this.get(key)
   }
-  setStumpNodeAttr(key, value) {
+  setComponentsNodeAttr(key, value) {
    // todo
    return this
   }
@@ -234,13 +234,13 @@ htmlAttributeNode
  catchAllNodeType errorNode
  catchAllCellType attributeValueCell
  cells htmlAttributeNameCell
-stumpExtendedAttributeNameCell
+componentsExtendedAttributeNameCell
  extends htmlAttributeNameCell
  enum collapse blurCommand changeCommand clickCommand contextMenuCommand doubleClickCommand lineClickCommand lineShiftClickCommand shiftClickCommand
-stumpExtendedAttributeNode
- description Node types not present in HTML but included in stump.
+componentsExtendedAttributeNode
+ description Node types not present in HTML but included in components.
  extends htmlAttributeNode
- cells stumpExtendedAttributeNameCell
+ cells componentsExtendedAttributeNameCell
 lineOfHtmlContentNode
  boolean isTileAttribute true
  catchAllNodeType lineOfHtmlContentNode

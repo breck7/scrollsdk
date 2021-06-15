@@ -238,9 +238,9 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
 
     if (nodeTypeId) def = def.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
 
-    const stumpCode = def.toStumpString()
-    const stumpNode = require("../products/stump.nodejs.js")
-    return new stumpNode(stumpCode).compile()
+    const componentsCode = def.toComponentsString()
+    const componentsNode = require("../products/components.nodejs.js")
+    return new componentsNode(componentsCode).compile()
   }
 
   _getHistoryFile() {

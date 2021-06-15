@@ -18,7 +18,7 @@ paragraph
 paragraph
  With TreeComponentFramework, you build your components in
  Tree Languages: instead of CSS use Hakon; instead of HTML
- use Stump; and instead of TypeScript/Javascript use
+ use Components; and instead of TypeScript/Javascript use
  TreeScript (coming soon). You define your components in
  those and then you create a high level Tree Language
  specifically for your app to stitch those components
@@ -94,7 +94,7 @@ code
                   |                                   |             
                   |    +----------------------------+ |             
                   |    | Tree Dependencies:         | |             
-                  +----| JTree, Stump, Hakon        |-+             
+                  +----| JTree, Components, Hakon   |-+             
                        +----------------------------+               
                                       |                             
                                       |                             
@@ -117,7 +117,7 @@ paragraph
  web apps using only one single syntax, Tree Notation. This
  is an experiment.
 
-title4 I see the Hakon and Stump but then I see mostly
+title4 I see the Hakon and Components but then I see mostly
  TypeScript/Javascript, so how is this different?
 
 paragraph

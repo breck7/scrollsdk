@@ -502,13 +502,13 @@ testTree.sublimeSyntaxFile = equal => {
   equal(code.includes("scope:"), true)
 }
 
-testTree.toStumpString = equal => {
+testTree.toComponentsString = equal => {
   // Arrange/Act
   const grammarProgram = new HandGrammarProgram(arrowGrammar).compileAndReturnRootConstructor()
   const code = new grammarProgram()
     .getDefinition()
     .getNodeTypeDefinitionByNodeTypeId("chargeNode")
-    .toStumpString()
+    .toComponentsString()
   const expected = `div
  label amount
  input

@@ -3,7 +3,7 @@
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { jtree } = require("../index.js")
-const stumpNode = require("../products/stump.nodejs.js")
+const componentsNode = require("../products/components.nodejs.js")
 const hakonNode = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
 
@@ -53,7 +53,7 @@ WillowConstants.tags.html = "html"
 WillowConstants.tags.head = "head"
 WillowConstants.tags.body = "body"
 WillowConstants.collapse = "collapse"
-WillowConstants.uidAttribute = "stumpUid"
+WillowConstants.uidAttribute = "componentsUid"
 WillowConstants.class = "class"
 WillowConstants.type = "type"
 WillowConstants.value = "value"
@@ -129,15 +129,15 @@ class WillowHTTPProxyCacheResponse extends WillowHTTPResponse {
 }
 
 class AbstractWillowShadow {
-  constructor(stumpNode: any) {
-    this._stumpNode = stumpNode
+  constructor(componentsNode: any) {
+    this._componentsNode = componentsNode
   }
 
-  private _stumpNode: any // todo: add stump type
+  private _componentsNode: any // todo: add components type
   private _val: string
 
-  getShadowStumpNode() {
-    return this._stumpNode
+  getShadowComponentsNode() {
+    return this._componentsNode
   }
 
   getShadowValue() {
@@ -154,7 +154,7 @@ class AbstractWillowShadow {
   }
 
   getShadowParent() {
-    return this.getShadowStumpNode()
+    return this.getShadowComponentsNode()
       .getParent()
       .getShadow()
   }
@@ -303,14 +303,14 @@ class WillowMousetrap {
 }
 
 // this one should have no document, window, $, et cetera.
-class AbstractWillowBrowser extends stumpNode {
+class AbstractWillowBrowser extends componentsNode {
   constructor(fullHtmlPageUrlIncludingProtocolAndFileName: string) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
  ${WillowConstants.tags.body}`)
-    this._htmlStumpNode = this.nodeAt(0)
-    this._headStumpNode = this.nodeAt(0).nodeAt(0)
-    this._bodyStumpNode = this.nodeAt(0).nodeAt(1)
+    this._htmlComponentsNode = this.nodeAt(0)
+    this._headComponentsNode = this.nodeAt(0).nodeAt(0)
+    this._bodyComponentsNode = this.nodeAt(0).nodeAt(1)
     this.addSuidsToHtmlHeadAndBodyShadows()
     this._fullHtmlPageUrlIncludingProtocolAndFileName = fullHtmlPageUrlIncludingProtocolAndFileName
     const url = new URL(fullHtmlPageUrlIncludingProtocolAndFileName)
@@ -320,9 +320,9 @@ class AbstractWillowBrowser extends stumpNode {
     this.location.host = url.host
   }
 
-  private _htmlStumpNode: any
-  private _headStumpNode: any
-  private _bodyStumpNode: any
+  private _htmlComponentsNode: any
+  private _headComponentsNode: any
+  private _bodyComponentsNode: any
   protected _offlineMode = false
   private _fullHtmlPageUrlIncludingProtocolAndFileName: string
   private _httpGetResponseCache: any = {}
@@ -398,19 +398,19 @@ class AbstractWillowBrowser extends stumpNode {
   }
 
   _getFocusedShadow() {
-    return this._focusedShadow || this.getBodyStumpNode().getShadow()
+    return this._focusedShadow || this.getBodyComponentsNode().getShadow()
   }
 
-  getHeadStumpNode() {
-    return this._headStumpNode
+  getHeadComponentsNode() {
+    return this._headComponentsNode
   }
 
-  getBodyStumpNode() {
-    return this._bodyStumpNode
+  getBodyComponentsNode() {
+    return this._bodyComponentsNode
   }
 
-  getHtmlStumpNode() {
-    return this._htmlStumpNode
+  getHtmlComponentsNode() {
+    return this._htmlComponentsNode
   }
 
   getStore() {
@@ -421,8 +421,8 @@ class AbstractWillowBrowser extends stumpNode {
   someInputHasFocus() {
     const focusedShadow = this._getFocusedShadow()
     if (!focusedShadow) return false
-    const stumpNode = focusedShadow.getShadowStumpNode()
-    return stumpNode && stumpNode.isInputType()
+    const componentsNode = focusedShadow.getShadowComponentsNode()
+    return componentsNode && componentsNode.isInputType()
   }
 
   copyTextToClipboard(text: string) {}
@@ -530,10 +530,10 @@ class AbstractWillowBrowser extends stumpNode {
   }
 
   getPageHtml() {
-    return this.getHtmlStumpNode().toHtmlWithSuids()
+    return this.getHtmlComponentsNode().toHtmlWithSuids()
   }
 
-  getStumpNodeFromElement(el: any) {}
+  getComponentsNodeFromElement(el: any) {}
 
   setPasteHandler(fn: Function) {
     return this
@@ -596,14 +596,14 @@ class WillowBrowser extends AbstractWillowBrowser {
     super(fullHtmlPageUrlIncludingProtocolAndFileName)
     this._offlineMode = true
   }
-  static _stumpsOnPage = 0
+  static _componentsOnPage = 0
 }
 
 class WillowBrowserShadow extends AbstractWillowShadow {
   static _shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
   _getJQElement() {
     // todo: speedup?
-    if (!this._cachedEl) this._cachedEl = jQuery(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
+    if (!this._cachedEl) this._cachedEl = jQuery(`[${WillowConstants.uidAttribute}="${this.getShadowComponentsNode()._getUid()}"]`)
     return this._cachedEl
   }
 
@@ -627,7 +627,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   getShadowValue() {
     // todo: cleanup, add tests
-    if (this.getShadowStumpNode().isInputType()) return this._getJQElement().val()
+    if (this.getShadowComponentsNode().isInputType()) return this._getJQElement().val()
     return this._getJQElement().val() || this.getShadowValueFromAttr()
   }
 
@@ -683,9 +683,9 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   // todo: add tests
   // todo: idea, don't "paint" wall (dont append it to parent, until done.)
-  insertHtmlNode(childStumpNode: any, index: number) {
-    const newChildJqElement = jQuery(childStumpNode.toHtmlWithSuids())
-    newChildJqElement.data("stumpNode", childStumpNode) // todo: what do we use this for?
+  insertHtmlNode(childComponentsNode: any, index: number) {
+    const newChildJqElement = jQuery(childComponentsNode.toHtmlWithSuids())
+    newChildJqElement.data("componentsNode", childComponentsNode) // todo: what do we use this for?
 
     const jqEl = this._getJQElement()
 
@@ -695,7 +695,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     else if (index === 0) jqEl.prepend(newChildJqElement)
     else jQuery(jqEl.children().get(index - 1)).after(newChildJqElement)
 
-    WillowBrowser._stumpsOnPage++
+    WillowBrowser._componentsOnPage++
     this._logMessage("insert")
   }
 
@@ -737,7 +737,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   removeShadow() {
     this._getJQElement().remove()
-    WillowBrowser._stumpsOnPage--
+    WillowBrowser._componentsOnPage--
     this._logMessage("remove")
     return this
   }
@@ -775,19 +775,19 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
 // same thing, except with side effects.
 class RealWillowBrowser extends AbstractWillowBrowser {
-  findStumpNodesByShadowClass(className: string) {
-    const stumpNodes: any[] = []
+  findComponentsNodesByShadowClass(className: string) {
+    const componentsNodes: any[] = []
     const that = this
     jQuery("." + className).each(function() {
-      stumpNodes.push(that.getStumpNodeFromElement(this))
+      componentsNodes.push(that.getComponentsNodeFromElement(this))
     })
-    return stumpNodes
+    return componentsNodes
   }
 
   addSuidsToHtmlHeadAndBodyShadows() {
-    jQuery(WillowConstants.tags.html).attr(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
-    jQuery(WillowConstants.tags.head).attr(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
-    jQuery(WillowConstants.tags.body).attr(WillowConstants.uidAttribute, this.getBodyStumpNode()._getUid())
+    jQuery(WillowConstants.tags.html).attr(WillowConstants.uidAttribute, this.getHtmlComponentsNode()._getUid())
+    jQuery(WillowConstants.tags.head).attr(WillowConstants.uidAttribute, this.getHeadComponentsNode()._getUid())
+    jQuery(WillowConstants.tags.body).attr(WillowConstants.uidAttribute, this.getBodyComponentsNode()._getUid())
   }
 
   getShadowClass() {
@@ -942,9 +942,9 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     return this
   }
 
-  getStumpNodeFromElement(el: any) {
+  getComponentsNodeFromElement(el: any) {
     const jqEl: any = jQuery(el)
-    return this.getHtmlStumpNode().getNodeByGuid(parseInt(jqEl.attr(WillowConstants.uidAttribute)))
+    return this.getHtmlComponentsNode().getNodeByGuid(parseInt(jqEl.attr(WillowConstants.uidAttribute)))
   }
 
   forceRepaint() {
@@ -964,18 +964,18 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   getWindowSize() {
-    const windowStumpNode = jQuery(window)
+    const windowComponentsNode = jQuery(window)
     return {
-      width: windowStumpNode.width(),
-      height: windowStumpNode.height()
+      width: windowComponentsNode.width(),
+      height: windowComponentsNode.height()
     }
   }
 
   getDocumentSize() {
-    const documentStumpNode = jQuery(document)
+    const documentComponentsNode = jQuery(document)
     return {
-      width: documentStumpNode.width(),
-      height: documentStumpNode.height()
+      width: documentComponentsNode.width(),
+      height: documentComponentsNode.height()
     }
   }
 
@@ -986,8 +986,8 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   setLoadedDroppedFileHandler(callback: Function, helpText = "") {
-    const bodyStumpNode = this.getBodyStumpNode()
-    const bodyShadow = bodyStumpNode.getShadow()
+    const bodyComponentsNode = this.getBodyComponentsNode()
+    const bodyShadow = bodyComponentsNode.getShadow()
 
     // Added the below to ensure dragging from the chrome downloads bar works
     // http://stackoverflow.com/questions/19526430/drag-and-drop-file-uploads-from-chrome-downloads-bar
@@ -1002,10 +1002,10 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 
       event.preventDefault()
       event.stopPropagation()
-      if (!bodyStumpNode.stumpNodeHasClass("dragOver")) {
-        bodyStumpNode.insertChildNode(`div ${helpText}
+      if (!bodyComponentsNode.componentsNodeHasClass("dragOver")) {
+        bodyComponentsNode.insertChildNode(`div ${helpText}
  id dragOverHelp`)
-        bodyStumpNode.addClassToStumpNode("dragOver")
+        bodyComponentsNode.addClassToComponentsNode("dragOver")
         // Add the help, and then hopefull we'll get a dragover event on the dragOverHelp, then
         // 50ms later, add the dragleave handler, and from now on drag leave will only happen on the help
         // div
@@ -1018,16 +1018,16 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     const dragleaveHandler = (event: any) => {
       event.preventDefault()
       event.stopPropagation()
-      bodyStumpNode.removeClassFromStumpNode("dragOver")
-      bodyStumpNode.findStumpNodeByChild("id dragOverHelp").removeStumpNode()
+      bodyComponentsNode.removeClassFromComponentsNode("dragOver")
+      bodyComponentsNode.findComponentsNodeByChild("id dragOverHelp").removeComponentsNode()
       bodyShadow.offShadowEvent(BrowserEvents.dragleave, dragleaveHandler)
     }
 
     const dropHandler = async (event: any) => {
       event.preventDefault()
       event.stopPropagation()
-      bodyStumpNode.removeClassFromStumpNode("dragOver")
-      bodyStumpNode.findStumpNodeByChild("id dragOverHelp").removeStumpNode()
+      bodyComponentsNode.removeClassFromComponentsNode("dragOver")
+      bodyComponentsNode.findComponentsNodeByChild("id dragOverHelp").removeComponentsNode()
 
       const droppedItems = event.originalEvent.dataTransfer.items
       // NOTE: YOU NEED TO STAY IN THE "DROP" EVENT, OTHERWISE THE DATATRANSFERITEMS MUTATE
@@ -1087,8 +1087,8 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   _getFocusedShadow() {
-    const stumpNode = this.getStumpNodeFromElement(document.activeElement)
-    return stumpNode && stumpNode.getShadow()
+    const componentsNode = this.getComponentsNodeFromElement(document.activeElement)
+    return componentsNode && componentsNode.getShadow()
   }
 }
 
@@ -1121,39 +1121,39 @@ interface childShouldUpdateResult {
 // Todo: clean up declaration file generation
 declare class abstractHtmlTag extends jtree.GrammarBackedNode {
   constructor(...args: any[])
-  addClassToStumpNode(...args: any[]): void
-  findStumpNodeByChild(...args: any[]): void
-  findStumpNodeByChildString(...args: any[]): void
-  findStumpNodeByFirstWord(...args: any[]): void
-  findStumpNodesByChild(...args: any[]): void
-  findStumpNodesWithClass(...args: any[]): void
+  addClassToComponentsNode(...args: any[]): void
+  findComponentsNodeByChild(...args: any[]): void
+  findComponentsNodeByChildString(...args: any[]): void
+  findComponentsNodeByFirstWord(...args: any[]): void
+  findComponentsNodesByChild(...args: any[]): void
+  findComponentsNodesWithClass(...args: any[]): void
   getNodeByGuid(...args: any[]): void
   getShadow(...args: any[]): void
   getShadowClass(...args: any[]): void
-  getStumpNodeAttr(...args: any[]): void
-  getStumpNodeTreeComponent(...args: any[]): void
-  getStumpNodeCss(...args: any[]): void
+  getComponentsNodeAttr(...args: any[]): void
+  getComponentsNodeTreeComponent(...args: any[]): void
+  getComponentsNodeCss(...args: any[]): void
   getTag(...args: any[]): void
   insertChildNode(...args: any[]): abstractHtmlTag
   insertCssChildNode(...args: any[]): abstractHtmlTag
   isInputType(...args: any[]): void
-  isStumpNodeCheckbox(...args: any[]): void
-  removeClassFromStumpNode(...args: any[]): void
-  removeCssStumpNode(...args: any[]): void
-  removeStumpNode(...args: any[]): void
-  setStumpNodeAttr(...args: any[]): void
-  setStumpNodeTreeComponent(...args: any[]): void
-  setStumpNodeCss(...args: any[]): void
+  isComponentsNodeCheckbox(...args: any[]): void
+  removeClassFromComponentsNode(...args: any[]): void
+  removeCssComponentsNode(...args: any[]): void
+  removeComponentsNode(...args: any[]): void
+  setComponentsNodeAttr(...args: any[]): void
+  setComponentsNodeTreeComponent(...args: any[]): void
+  setComponentsNodeCss(...args: any[]): void
   shouldCollapse(...args: any[]): void
-  stumpNodeHasClass(...args: any[]): void
+  componentsNodeHasClass(...args: any[]): void
   toHtmlWithSuids(...args: any[]): void
 }
 
 abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   private _commandsBuffer: treeNotationTypes.treeNode[]
   private _messageBuffer: treeNotationTypes.treeNode
-  private _htmlStumpNode: abstractHtmlTag
-  private _cssStumpNode: abstractHtmlTag
+  private _htmlComponentsNode: abstractHtmlTag
+  private _cssComponentsNode: abstractHtmlTag
   private _lastRenderedTime: number
   private _lastTimeToRender: number
   static _mountedTreeComponents = 0
@@ -1174,7 +1174,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
 
   start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyComponentsNode())
   }
 
   getWillowBrowser() {
@@ -1207,7 +1207,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     // todo: remove. currently used by ohayo
   }
 
-  private _getCommandArgumentsFromStumpNode(stumpNode: any, commandMethod: string) {
+  private _getCommandArgumentsFromComponentsNode(componentsNode: any, commandMethod: string) {
     if (commandMethod.includes(" ")) {
       // todo: cleanup and document
       // It seems the command arguments can from the method string or from form values.
@@ -1217,13 +1217,13 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
         dos: parts[2]
       }
     }
-    const shadow = stumpNode.getShadow()
+    const shadow = componentsNode.getShadow()
     let valueParam
-    if (stumpNode.isStumpNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
+    if (componentsNode.isComponentsNodeCheckbox()) valueParam = shadow.isShadowChecked() ? true : false
     // todo: fix bug if nothing is entered.
     else if (shadow.getShadowValue() !== undefined) valueParam = shadow.getShadowValue()
-    else valueParam = stumpNode.getStumpNodeAttr("value")
-    const nameParam = stumpNode.getStumpNodeAttr("name")
+    else valueParam = componentsNode.getComponentsNodeAttr("value")
+    const nameParam = componentsNode.getComponentsNodeAttr("name")
 
     return {
       uno: valueParam,
@@ -1231,16 +1231,16 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     }
   }
 
-  getStumpNodeString() {
+  getComponentsNodeString() {
     return this.getWillowBrowser()
-      .getHtmlStumpNode()
+      .getHtmlComponentsNode()
       .toString()
   }
 
   _getHtmlOnlyNodes() {
     const nodes: any[] = []
     this.getWillowBrowser()
-      .getHtmlStumpNode()
+      .getHtmlComponentsNode()
       .deepVisit((node: any) => {
         if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
         nodes.push(node)
@@ -1248,11 +1248,11 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return nodes
   }
 
-  getStumpNodeStringWithoutCssAndSvg() {
+  getComponentsNodeStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
     const clone = new jtree.TreeNode(
       this.getWillowBrowser()
-        .getHtmlStumpNode()
+        .getHtmlComponentsNode()
         .toString()
     )
 
@@ -1273,15 +1273,15 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(word => word.endsWith("Command"))
   }
 
-  private async _executeCommandOnStumpNode(stumpNode: any, commandMethod: string) {
-    const params = this._getCommandArgumentsFromStumpNode(stumpNode, commandMethod)
+  private async _executeCommandOnComponentsNode(componentsNode: any, commandMethod: string) {
+    const params = this._getCommandArgumentsFromComponentsNode(componentsNode, commandMethod)
     if (commandMethod.includes(" "))
       // todo: cleanup
       commandMethod = commandMethod.split(" ")[0]
     this.addToCommandLog([commandMethod, params.uno, params.dos].filter(identity => identity).join(" "))
     this._onCommandWillRun() // todo: remove. currently used by ohayo
 
-    let treeComponent = stumpNode.getStumpNodeTreeComponent()
+    let treeComponent = componentsNode.getComponentsNodeTreeComponent()
     while (!treeComponent[commandMethod]) {
       const parent = treeComponent.getParent()
       if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
@@ -1298,14 +1298,14 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
 
   private _bindTreeComponentFrameworkCommandListenersOnBody() {
     const willowBrowser = this.getWillowBrowser()
-    const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
+    const bodyShadow = willowBrowser.getBodyComponentsNode().getShadow()
     const app = this
 
     const checkAndExecute = (el: any, attr: string, evt: any) => {
-      const stumpNode = willowBrowser.getStumpNodeFromElement(el)
+      const componentsNode = willowBrowser.getComponentsNodeFromElement(el)
       evt.preventDefault()
       evt.stopImmediatePropagation()
-      this._executeCommandOnStumpNode(stumpNode, stumpNode.getStumpNodeAttr(attr))
+      this._executeCommandOnComponentsNode(componentsNode, componentsNode.getComponentsNodeAttr(attr))
       return false
     }
 
@@ -1364,8 +1364,8 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     }
   }
 
-  getStumpNode() {
-    return this._htmlStumpNode
+  getComponentsNode() {
+    return this._htmlComponentsNode
   }
 
   toHakonCode() {
@@ -1396,16 +1396,16 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   // todo: move this to tree class? or other higher level class?
-  addStumpCodeMessageToLog(message: string) {
+  addComponentsCodeMessageToLog(message: string) {
     // note: we have 1 parameter, and are going to do type inference first.
     // Todo: add actions that can be taken from a message?
     // todo: add tests
     this.getMessageBuffer().appendLineAndChildren("message", message)
   }
 
-  addStumpErrorMessageToLog(errorMessage: string) {
+  addComponentsErrorMessageToLog(errorMessage: string) {
     // todo: cleanup!
-    return this.addStumpCodeMessageToLog(`div
+    return this.addComponentsCodeMessageToLog(`div
  class OhayoError
  bern${jtree.TreeNode.nest(errorMessage, 2)}`)
   }
@@ -1413,7 +1413,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   logMessageText(message = "") {
     const pre = `pre
  bern${jtree.TreeNode.nest(message, 2)}`
-    return this.addStumpCodeMessageToLog(pre)
+    return this.addComponentsCodeMessageToLog(pre)
   }
 
   unmount(): any {
@@ -1430,11 +1430,11 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   protected _removeHtml() {
-    this._htmlStumpNode.removeStumpNode()
-    delete this._htmlStumpNode
+    this._htmlComponentsNode.removeComponentsNode()
+    delete this._htmlComponentsNode
   }
 
-  toStumpCode() {
+  toComponentsCode() {
     return `div
  class ${this.getCssClassNames().join(" ")}`
   }
@@ -1475,8 +1475,8 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   // todo: this is hacky. we do it so we can just mount all tiles to wall.
-  getStumpNodeForChildren() {
-    return this.getStumpNode()
+  getComponentsNodeForChildren() {
+    return this.getComponentsNode()
   }
 
   protected _getLastRenderedTime() {
@@ -1490,11 +1490,11 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   toPlainHtml(containerId: string) {
     return `<div id="${containerId}">
  <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
-${new stumpNode(this.toStumpCode()).compile()}
+${new componentsNode(this.toComponentsCode()).compile()}
 </div>`
   }
 
-  protected _getCssStumpCode() {
+  protected _getCssComponentsCode() {
     return `styleTag
  for ${this.constructor.name}
  bern${jtree.TreeNode.nest(this._getCss(), 2)}`
@@ -1519,10 +1519,10 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 
   protected _updateHtml() {
-    const stumpNodeToMountOn = <abstractHtmlTag>this._htmlStumpNode.getParent()
-    const currentIndex = this._htmlStumpNode.getIndex()
+    const componentsNodeToMountOn = <abstractHtmlTag>this._htmlComponentsNode.getParent()
+    const currentIndex = this._htmlComponentsNode.getIndex()
     this._removeHtml()
-    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
+    this._mountHtml(componentsNodeToMountOn, this._toLoadedOrLoadingComponentsCode(), currentIndex)
   }
 
   unmountAndDestroy() {
@@ -1545,7 +1545,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 
   isMounted() {
-    return !!this._htmlStumpNode
+    return !!this._htmlComponentsNode
   }
 
   toggleAndRender(firstWord: string, contentOptions: string[]) {
@@ -1603,7 +1603,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
     })
   }
 
-  toStumpLoadingCode() {
+  toComponentsLoadingCode() {
     return `div Loading ${this.getFirstWord()}...
  class ${this.getCssClassNames().join(" ")}
  id ${this.getTreeComponentId()}`
@@ -1614,31 +1614,31 @@ ${new stumpNode(this.toStumpCode()).compile()}
     return "treeComponent" + this._getUid()
   }
 
-  private _toLoadedOrLoadingStumpCode() {
-    if (!this.isLoaded()) return this.toStumpLoadingCode()
+  private _toLoadedOrLoadingComponentsCode() {
+    if (!this.isLoaded()) return this.toComponentsLoadingCode()
     this.setRunTimePhaseError("renderPhase")
     try {
-      return this.toStumpCode()
+      return this.toComponentsCode()
     } catch (err) {
       console.error(err)
       this.setRunTimePhaseError("renderPhase", err)
-      return this.toStumpErrorStateCode(err)
+      return this.toComponentsErrorStateCode(err)
     }
   }
 
-  toStumpErrorStateCode(err: any) {
+  toComponentsErrorStateCode(err: any) {
     return `div ${err}
  class ${this.getCssClassNames().join(" ")}
  id ${this.getTreeComponentId()}`
   }
 
-  protected _mount(stumpNodeToMountOn: abstractHtmlTag, index: number) {
+  protected _mount(componentsNodeToMountOn: abstractHtmlTag, index: number) {
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
 
     this.treeComponentWillMount()
 
     this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
+    this._mountHtml(componentsNodeToMountOn, this._toLoadedOrLoadingComponentsCode(), index) // todo: add index back?
 
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return this
@@ -1647,38 +1647,38 @@ ${new stumpNode(this.toStumpCode()).compile()}
   // todo: we might be able to squeeze virtual dom in here on the mountCss and mountHtml methods.
   protected _mountCss() {
     // todo: only insert css once per class? have a set?
-    this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(this._getCssStumpCode())
+    this._cssComponentsNode = this._getPageHeadComponents().insertCssChildNode(this._getCssComponentsCode())
   }
 
-  protected _getPageHeadStump(): abstractHtmlTag {
+  protected _getPageHeadComponents(): abstractHtmlTag {
     return this.getRootNode()
       .getWillowBrowser()
-      .getHeadStumpNode()
+      .getHeadComponentsNode()
   }
 
   protected _removeCss() {
-    this._cssStumpNode.removeCssStumpNode()
-    delete this._cssStumpNode
+    this._cssComponentsNode.removeCssComponentsNode()
+    delete this._cssComponentsNode
   }
 
-  protected _mountHtml(stumpNodeToMountOn: abstractHtmlTag, htmlCode: string, index: number) {
-    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
-    this._htmlStumpNode.setStumpNodeTreeComponent(this)
+  protected _mountHtml(componentsNodeToMountOn: abstractHtmlTag, htmlCode: string, index: number) {
+    this._htmlComponentsNode = componentsNodeToMountOn.insertChildNode(htmlCode, index)
+    this._htmlComponentsNode.setComponentsNodeTreeComponent(this)
   }
 
-  renderAndGetRenderReport(stumpNode?: abstractHtmlTag, index?: number) {
+  renderAndGetRenderReport(componentsNode?: abstractHtmlTag, index?: number) {
     const isUpdateOp = this.isMounted()
     let treeComponentUpdateReport: reasonForUpdatingOrNot = {
       shouldUpdate: false,
       reason: ""
     }
     if (isUpdateOp) treeComponentUpdateReport = this._updateAndGetUpdateReport()
-    else this._mount(stumpNode, index)
+    else this._mount(componentsNode, index)
 
-    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    const componentsNodeForChildren = this.getComponentsNodeForChildren()
 
     // Todo: insert delayed rendering?
-    const childResults = this._getChildTreeComponents().map((child: any, index: number) => child.renderAndGetRenderReport(stumpNodeForChildren, index))
+    const childResults = this._getChildTreeComponents().map((child: any, index: number) => child.renderAndGetRenderReport(componentsNodeForChildren, index))
 
     if (isUpdateOp) {
       if (treeComponentUpdateReport.shouldUpdate) {
@@ -1724,7 +1724,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   opacity 1`
   }
 
-  toStumpCode() {
+  toComponentsCode() {
     const app: any = this.getRootNode()
     return `div
  class TreeComponentFrameworkDebuggerComponent
@@ -1735,7 +1735,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   span This app is powered by the
   a Tree Component Framework
    href https://github.com/treenotation/jtree/tree/master/treeComponentFramework
- p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
+ p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._componentsOnPage} components on page.
  pre
   bern
 ${app.toString(3)}`
@@ -1752,7 +1752,7 @@ abstract class AbstractGithubTriangleComponent extends AbstractTreeComponent {
  top 0
  right 0`
   }
-  toStumpCode() {
+  toComponentsCode() {
     return `a
  class AbstractGithubTriangleComponent
  href ${this.githubLink}

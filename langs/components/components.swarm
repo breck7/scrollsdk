@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/jtree
-test stumpBasics
+test componentsBasics
  arrange
-  require ../../products/stump.nodejs.js
+  require ../../products/components.nodejs.js
   constructWithParagraph
    html
     id bam
@@ -27,7 +27,7 @@ test stumpBasics
    
 test blankLines
  arrange
-  require ../../products/stump.nodejs.js
+  require ../../products/components.nodejs.js
   constructWithParagraph
    html
     
@@ -36,7 +36,7 @@ test blankLines
   assertLengthIs 0
 test components
  arrange
-  require ../../products/stump.nodejs.js
+  require ../../products/components.nodejs.js
   constructWithParagraph
    linksComponent
     class links
@@ -44,7 +44,7 @@ test components
   assertLengthIs 0
 test div
  arrange
-  require ../../products/stump.nodejs.js
+  require ../../products/components.nodejs.js
   constructWithParagraph
    div hello world
     id bam
@@ -55,7 +55,7 @@ test div
    
 test uids
  arrange
-  require ../../products/stump.nodejs.js
+  require ../../products/components.nodejs.js
   constructWithParagraph
    div hello world
     id bam
@@ -63,18 +63,18 @@ test uids
  getFirstNode
   toHtmlWithSuids
    assertTypeIs string
-   assertStringIncludes stumpUid
-  isStumpNodeCheckbox
+   assertStringIncludes componentsUid
+  isComponentsNodeCheckbox
    assertStringIs false
   toHtml
    assertTypeIs string
   isInputType
    assertStringIs false
-  getStumpNodeAttr id
+  getComponentsNodeAttr id
    assertStringIs bam
 test syntax
  arrange
-  require ../../products/stump.nodejs.js
+  require ../../products/components.nodejs.js
   constructWithParagraph
    div
     bern

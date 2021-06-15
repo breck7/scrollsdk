@@ -140,7 +140,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
   ///
 
-  public languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
+  public languages = "newlang hakon components dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
 
   public program: any
   public grammarProgram: any
@@ -221,7 +221,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   async start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyComponentsNode())
 
     this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
 
@@ -462,7 +462,7 @@ a
 }
 
 class samplesComponent extends AbstractTreeComponent {
-  toStumpCode() {
+  toComponentsCode() {
     const langs = this.getRootNode()
       .languages.map(
         (lang: string) => ` a ${jtree.Utils.ucfirst(lang)}
@@ -478,7 +478,7 @@ ${langs}`
 }
 
 class shareComponent extends AbstractTreeComponent {
-  toStumpCode() {
+  toComponentsCode() {
     return `div
  id shareDiv
  span Share
@@ -501,7 +501,7 @@ class shareComponent extends AbstractTreeComponent {
 }
 
 class otherErrorsComponent extends AbstractTreeComponent {
-  toStumpCode() {
+  toComponentsCode() {
     return `div
  id otherErrorsDiv`
   }
@@ -519,7 +519,7 @@ class executionResultsComponent extends AbstractTreeComponent {
  border 0
  width 100%`
   }
-  toStumpCode() {
+  toComponentsCode() {
     return `textarea
  id execResultsTextArea
  placeholder Results...`
@@ -527,7 +527,7 @@ class executionResultsComponent extends AbstractTreeComponent {
 }
 
 class explainResultsComponent extends AbstractTreeComponent {
-  toStumpCode() {
+  toComponentsCode() {
     return `div`
   }
 }
@@ -547,7 +547,7 @@ class tableComponent extends AbstractTreeComponent {
  width 220px`
   }
 
-  toStumpCode() {
+  toComponentsCode() {
     return `table
  tr
   td
@@ -621,7 +621,7 @@ class headerComponent extends AbstractTreeComponent {
  width 100px
  vertical-align middle`
   }
-  toStumpCode() {
+  toComponentsCode() {
     return `div
  h1
   a

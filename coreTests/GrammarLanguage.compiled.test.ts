@@ -41,7 +41,7 @@ testTree.grammar = equal => {
 
 testTree.compileAll = equal => {
   // Arrange/Act
-  const langs = "hakon swarm dug stump project jibberish config poop jibjab fire stamp zin newlang chuck"
+  const langs = "hakon swarm dug components project jibberish config poop jibjab fire stamp zin newlang chuck"
   langs.split(" ").map(name => {
     try {
       // Act

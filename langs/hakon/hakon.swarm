@@ -29,3 +29,17 @@ test compileHakon
      font-size: 17px;
    }
    
+test browserPrefixes
+ arrange
+  require ../../products/hakon.nodejs.js
+  constructWithParagraph
+   body
+    -moz-column-count 2
+ getAllErrors
+  assertLengthIs 0
+ compile
+  assertParagraphIs
+   body {
+     -moz-column-count: 2;
+   }
+   

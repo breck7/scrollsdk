@@ -36,6 +36,10 @@ selectorCell
  highlightScope keyword.control
  examples body h1
  todo add html tags, css and ids selector regexes, etc
+vendorPrefixPropertyKeywordCell
+ description Properties like -moz-column-fill
+ highlightScope variable.function
+ extends keywordCell
 propertyKeywordCell
  highlightScope variable.function
  extends keywordCell
@@ -82,6 +86,10 @@ propertyNode
 variableNode
  extends propertyNode
  pattern --
+browserPrefixPropertyNode
+ extends propertyNode
+ pattern ^\\-\\w.+
+ cells vendorPrefixPropertyKeywordCell
 errorNode
  catchAllNodeType errorNode
  catchAllCellType errorCell
@@ -121,6 +129,7 @@ selectorNode
         hakonNode: hakonNode,
         propertyNode: propertyNode,
         variableNode: variableNode,
+        browserPrefixPropertyNode: browserPrefixPropertyNode,
         errorNode: errorNode,
         commentNode: commentNode,
         selectorNode: selectorNode
@@ -144,6 +153,12 @@ selectorNode
   }
 
   class variableNode extends propertyNode {}
+
+  class browserPrefixPropertyNode extends propertyNode {
+    get vendorPrefixPropertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
 
   class errorNode extends jtree.GrammarBackedNode {
     createParser() {
@@ -384,7 +399,7 @@ selectorNode
           "": propertyNode,
           comment: commentNode
         }),
-        [{ regex: /--/, nodeConstructor: variableNode }]
+        [{ regex: /--/, nodeConstructor: variableNode }, { regex: /^\-\w.+/, nodeConstructor: browserPrefixPropertyNode }]
       )
     }
     get selectorCell() {

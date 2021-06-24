@@ -11,7 +11,7 @@ paragraph
 links
  https://github.com/treenotation/scroll Scroll
 
-title2 Can you show me some example code?
+question Can you show me some example code?
 
 code
  title This is Dumbdown. The keyword for title is title.
@@ -32,11 +32,11 @@ code
   item If you want to make it better, please do!
 
 
-title2 How can I try the original prototype?
+question How can I try the original prototype?
 
 link https://jtree.treenotation.org/designer/#standard%20dumbdown Here
 
-title2 How do I develop this lang?
+question How do I develop this lang?
 
 paragraph
  Building: [todo]

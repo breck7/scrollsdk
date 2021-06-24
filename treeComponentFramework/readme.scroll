@@ -4,7 +4,7 @@ paragraph
  TreeComponentFramework is a **research** web framework for
  building reactive web apps using entirely Tree Notation.
 
-title2 The Vision
+section The Vision
 
 paragraph
  TreeComponentFramework is a step toward a world where web
@@ -40,7 +40,7 @@ paragraph
  on hardware. In the long run if people build Tree Machines
  your code could be run directly as is on those.
 
-title2 Using it
+section Using it
 
 paragraph
  This framework is currently a **research project**. We
@@ -49,7 +49,7 @@ paragraph
  experiment, but it is not recommended for production use at
  this time.
 
-title2 Examples
+section Examples
 
 paragraph
  The <a
@@ -66,7 +66,7 @@ links
  https://github.com/treenotation/ohayo Ohayo
  https://pau.treenotation.org/synth/ PauSynth
 
-title3 Current Architecture
+section Current Architecture
 
 paragraph
  TreeComponentFramework is designed to run in the browser
@@ -108,16 +108,16 @@ code
                        |Your App                    |               
                        +----------------------------+               
 
-title2 FAQ
+section FAQ
 
-title4 Why build another web framework?
+question Why build another web framework?
 
 paragraph
  No one has built a web framework that allows you to build
  web apps using only one single syntax, Tree Notation. This
  is an experiment.
 
-title4 I see the Hakon and Stump but then I see mostly
+section I see the Hakon and Stump but then I see mostly
  TypeScript/Javascript, so how is this different?
 
 paragraph
@@ -125,7 +125,7 @@ paragraph
  TypeScript/Javascript converted to TreeScript. The design
  of TreeScript is still in heavy flux.
 
-title4 How can I help?
+question How can I help?
 
 paragraph
  We are trying to combine Tree Notation with the best ideas

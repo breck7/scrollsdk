@@ -7,14 +7,14 @@ paragraph
 links
  https://jtree.treenotation.org/designer/ Try it Now
 
-title2 For Designer Developers
+section For Designer Developers
 
-title3 How do I run the tests?
+question How do I run the tests?
 
 code
  jtree/designer/DesignerApp.test.ts
 
-title2 How do I run the Designer locally?
+question How do I run the Designer locally?
 
 code
  jtree kitchen

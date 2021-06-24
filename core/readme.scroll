@@ -4,7 +4,7 @@ paragraph
  This folder contains the core JTree code. This core code is
  used in both the browser lib and node.js lib. 
 
-title2 What are the differences between browser lib and node lib?
+question What are the differences between browser lib and node lib?
 
 paragraph
  The Node lib contains a dozen or so extra static methods.

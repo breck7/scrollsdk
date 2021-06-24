@@ -226,7 +226,7 @@ html {
 
 <a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=main" height="20" width="90"/></a> <a href="https://gitpod.io/#https://github.com/publicdomaincompany/jtree"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod"/ height="20" width="153"></a>
 
-<p>title3 Links</p>
+<h3>Links</h3>
 
 <ul>
 <li>Tree Notation <a href="https://treenotation.org">Homepage</a></li>
@@ -241,7 +241,7 @@ html {
 <li><a href="https://jtree.treenotation.org/sandbox/perfTests.html">PerfTests</a></li>
 </ul>
 
-<p>title3 Who this package is for</p>
+<h4>Who is this package built for?</h4>
 
 <p>Jtree is for people who want to design Tree Languages, make
 Tree editing tools, use TreeBase, or use the Tree Component
@@ -250,7 +250,7 @@ Web Framework.</p>
 <p>You can think of jtree as similar to the Java Development
 Kit, except for Tree Notation instead of Java.</p>
 
-<p>title3 Grammar Files</p>
+<h3>Grammar Files</h3>
 
 <p>Jtree contains a Tree Language called "Grammar". You can
 write new Grammar files to define new languages. By creating
@@ -268,66 +268,66 @@ Tree Languages can be built with any language, however, not
 just TypeScript and Javascript. We are looking for
 volunteers to build libraries/sdks in other host languages.</p>
 
-<p>title3 Using Jtree</p>
+<h3>Using Jtree</h3>
 
 <p>Jtree currently includes around 10 compiled projects (aka
 "products") and more than a dozen Tree Languages.</p>
 
-<p>title4 jtree base library for npm projects:</p>
+<h4>jtree base library for npm projects:</h4>
 
 <code class="scrollCodeBlock">const {jtree} = require("jtree")
 const tree = new jtree.TreeNode("hello world")
 console.log(tree.toString())</code>
 
-<p>title4 jtree base library for the browser:</p>
+<h4>jtree base library for the browser:</h4>
 
 <code class="scrollCodeBlock">&lt;script src="https://jtree.treenotation.org/products/jtree.browser.js" /></code>
 
-<p>title4 jtree command line tool</p>
+<h4>jtree command line tool</h4>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree help</code>
 
-<p>title4 TreeBase</p>
+<h4>TreeBase</h4>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree base</code>
 
-<p>title4 jtree "sandbox" web app for exploring base Tree Notation</p>
+<h4>jtree "sandbox" web app for exploring base Tree Notation</h4>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree kitchen
 open http://localhost:3333/</code>
 
-<p>title4 jtree "Designer" web app for building new Tree Languages</p>
+<h4>jtree "Designer" web app for building new Tree Languages</h4>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree kitchen
 open http://localhost:3333/designer</code>
 
-<p>title4 TreeComponentFramework for building web apps</p>
+<h4>TreeComponentFramework for building web apps</h4>
 
 <p>(directions coming soon)</p>
 
-<p>title4 Sample Languages</p>
+<h4>Sample Languages</h4>
 
 <p>More than 12 example Tree Languages for helping with
 various tasks</p>
 
 <p>See the "langs/" folder.</p>
 
-<p>title4  Build Tools</p>
+<h4> Build Tools</h4>
 
 <p>If you look at the source, you will also see a set of build
 tools (such as Builder and TypeScriptRewriter). These are
 currently undocumented and not recommended for external use.</p>
 
-<p>title4 Building all tools and running tests</p>
+<h4>Building all tools and running tests</h4>
 
 <code class="scrollCodeBlock">jtree build produceAll
 npm test</code>
 
-<p>title3 Monorepo</p>
+<h3>Monorepo</h3>
 
 <p>Jtree is a monorepo. With on average
 over 1 major version released each month for the past 2.5
@@ -342,13 +342,13 @@ submodules built from the projects in this monorepo, to
 allow for consuming of a smaller subset of the code and
 dependencies in this module, feel free to do so.</p>
 
-<p>title3 Development Status</p>
+<h3>Development Status</h3>
 
 <p>All breaking changes are mentioned in releaseNotes.md. We
 follow semantic versioning, so breaking changes should not
 happen if you stay on the same major version.</p>
 
-<p>title3 Tree Notation Libraries in Other Languages</p>
+<h3>Tree Notation Libraries in Other Languages</h3>
 
 <p>If you build a Tree Notation library/SDK in another
 language, let us know and we'll add a link.</p>
@@ -357,11 +357,11 @@ language, let us know and we'll add a link.</p>
 language, feel free to post an issue or ask for help in the 
 reeNotation <a href="https://reddit.com/r/treenotation">subreddit</a>.</p>
 
-<p>title4 How to bump versions</p>
+<h4>How to bump versions</h4>
 
 <code class="scrollCodeBlock">jtree build updateVersion NEW_NUMBER</code>
 
-<p>title3 Alternatives Considered</p>
+<h3>Alternatives Considered</h3>
 
 <p>This is the first Tree Notation library in existence, so
 there were no alternative implementations. Note and Space
@@ -376,7 +376,7 @@ and you can implement the patterns contained here in your
 own code without using this library. In fact, that is often
 the best way to use Tree Notation!</p>
 
-<p>title2 ❤️ Public Domain ❤️</p>
+<h3>❤️ Public Domain ❤️</h3>
 <p class="scrollArticleSourceLink"><a href="https://github.com/publicdomaincompany/jtree/readme.scroll">Article source</a></p></div>
   <div class="scrollFooter">
    <div class="scrollSocialMediaIcons">

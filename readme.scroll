@@ -4,7 +4,7 @@ permalink index
 html
  <a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=main" height="20" width="90"/></a> <a href="https://gitpod.io/#https://github.com/publicdomaincompany/jtree"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod"/ height="20" width="153"></a>
 
-title3 Links
+section Links
 
 list
  - Tree Notation Homepage🔗treenotation.org
@@ -18,7 +18,7 @@ list
  - UnitTests🔗jtree.treenotation.org/sandbox/test.html
  - PerfTests🔗jtree.treenotation.org/sandbox/perfTests.html
 
-title3 Who this package is for
+question Who is this package built for?
 
 paragraph
  Jtree is for people who want to design Tree Languages, make
@@ -29,7 +29,7 @@ paragraph
  You can think of jtree as similar to the Java Development
  Kit, except for Tree Notation instead of Java.
 
-title3 Grammar Files
+section Grammar Files
 
 paragraph
  Jtree contains a Tree Language called "Grammar". You can
@@ -49,56 +49,56 @@ paragraph
  just TypeScript and Javascript. We are looking for
  volunteers to build libraries/sdks in other host languages.
 
-title3 Using Jtree
+section Using Jtree
 
 paragraph
  Jtree currently includes around 10 compiled projects (aka
  "products") and more than a dozen Tree Languages.
 
-title4 jtree base library for npm projects:
+subsection jtree base library for npm projects:
 
 code
  const {jtree} = require("jtree")
  const tree = new jtree.TreeNode("hello world")
  console.log(tree.toString())
 
-title4 jtree base library for the browser:
+subsection jtree base library for the browser:
 
 code
  <script src="https://jtree.treenotation.org/products/jtree.browser.js" />
 
-title4 jtree command line tool
+subsection jtree command line tool
 
 code
  npm install -g jtree
  jtree help
 
-title4 TreeBase
+subsection TreeBase
 
 code
  npm install -g jtree
  jtree base
 
-title4 jtree "sandbox" web app for exploring base Tree Notation
+subsection jtree "sandbox" web app for exploring base Tree Notation
 
 code
  npm install -g jtree
  jtree kitchen
  open http://localhost:3333/
 
-title4 jtree "Designer" web app for building new Tree Languages
+subsection jtree "Designer" web app for building new Tree Languages
 
 code
  npm install -g jtree
  jtree kitchen
  open http://localhost:3333/designer
 
-title4 TreeComponentFramework for building web apps
+subsection TreeComponentFramework for building web apps
 
 paragraph
  (directions coming soon)
 
-title4 Sample Languages
+subsection Sample Languages
 
 paragraph
  More than 12 example Tree Languages for helping with
@@ -107,20 +107,20 @@ paragraph
 paragraph
  See the "langs/" folder.
 
-title4  Build Tools
+subsection  Build Tools
 
 paragraph
  If you look at the source, you will also see a set of build
  tools (such as Builder and TypeScriptRewriter). These are
  currently undocumented and not recommended for external use.
 
-title4 Building all tools and running tests
+subsection Building all tools and running tests
 
 code
  jtree build produceAll
  npm test
 
-title3 Monorepo
+section Monorepo
 
 paragraph
  Jtree is a monorepo. With on average
@@ -137,14 +137,14 @@ paragraph
  allow for consuming of a smaller subset of the code and
  dependencies in this module, feel free to do so.
 
-title3 Development Status
+section Development Status
 
 paragraph
  All breaking changes are mentioned in releaseNotes.md. We
  follow semantic versioning, so breaking changes should not
  happen if you stay on the same major version.
 
-title3 Tree Notation Libraries in Other Languages
+section Tree Notation Libraries in Other Languages
 
 paragraph
  If you build a Tree Notation library/SDK in another
@@ -155,12 +155,12 @@ paragraph
  language, feel free to post an issue or ask for help in the 
  reeNotation subreddit🔗reddit.com/r/treenotation.
 
-title4 How to bump versions
+subsection How to bump versions
 
 code
  jtree build updateVersion NEW_NUMBER
 
-title3 Alternatives Considered
+section Alternatives Considered
 
 paragraph
  This is the first Tree Notation library in existence, so
@@ -178,4 +178,4 @@ paragraph
  own code without using this library. In fact, that is often
  the best way to use Tree Notation!
 
-title2 ❤️ Public Domain ❤️
+section ❤️ Public Domain ❤️

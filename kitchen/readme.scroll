@@ -8,7 +8,7 @@ paragraph
  With Kitchen you can run Tree Notation
  sandbox, Tree Notation Desginer, and other tools locally.
 
-title2 How do I start it?
+question How do I start it?
 
 code
  jtree kitchen

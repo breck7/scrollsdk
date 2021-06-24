@@ -3,7 +3,7 @@ title A Tree Language for project dependency management.
 paragraph
  Helps with building and serving Javascript and TypeScript projects.
 
-title2 Release Notes
+section Release Notes
 
 version 2.0.0 2019-07-31
  

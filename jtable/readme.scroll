@@ -14,7 +14,7 @@ paragraph
  like Tibble, DataTable, or the core DataFrame. It is also
  somewhat similar to Pandas/Numpy in Python.
 
-title2 Features
+section Features
 
 - Dozens of primitive types with future expected support for hundreds, potentially thousands
 - Conversion ops between types
@@ -23,13 +23,13 @@ title2 Features
 - Handles exporting to CSV, TSV, JSON, etc
 - Handles common mutations
 
-title2 Ohayo
+section Ohayo
 
 paragraph
  JTable is the underlying data table library used by <a
  href="https://ohayo.computer/">Ohayo</a>
 
-title2 Alternatives Considered and Related Work
+section Alternatives Considered and Related Work
 
 links
  https://github.com/uwdata/arquero

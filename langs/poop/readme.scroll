@@ -16,7 +16,7 @@ paragraph
  pen or pencil, or, if it is 3am, you can just use some of
  the natural medium to record the event type.
 
-title2 Quick Example
+section Quick Example
 
 code
  🌄 8 29 2019
@@ -25,13 +25,13 @@ code
  630 💩
 
 
-title2 Quick facts about poop
+section Quick facts about poop
 
 - poop has 9 node types.
 - poop has 3 cell types
 - The source code for poop is 60 lines long.
 
-title2 Node Types
+section Node Types
 
 code
  poopNode
@@ -44,7 +44,7 @@ code
   memoryNode
  dayNode
 
-title2 Cell Types
+section Cell Types
 
  dateIntCell
  timeIntCell

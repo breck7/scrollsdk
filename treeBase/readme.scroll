@@ -1,6 +1,6 @@
 title TypeScript TreeBase Implementation
 
-title2 What is TreeBase?
+question What is TreeBase?
 
 paragraph
  TreeBase is a system for long-term, collaborative, semantic
@@ -10,7 +10,7 @@ paragraph
 paragraph
  This is a TypeScript library for working with a TreeBase.
 
-title2 Try It
+section Try It
 
 paragraph
  This will launch a TreeBase server on port 4444 using the
@@ -20,7 +20,7 @@ code
  npm install -g jtree
  jtree base
 
-title2 Do I need to use this library to use TreeBase?
+question Do I need to use this library to use TreeBase?
 
 paragraph
  No. This library gives you some convenient functionality,

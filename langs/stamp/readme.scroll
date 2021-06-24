@@ -16,7 +16,7 @@ paragraph
  <a href="https://jtree.treenotation.org/designer/#standard%20stamp">web IDE</a>
  to see autocomplete, type checking, and the full grammar.
 
-title2 QuickStart: How to use Stamp in Node
+section QuickStart: How to use Stamp in Node
 
 paragraph
  Stamp can be used in node to turn a folder on disk into a single
@@ -33,7 +33,7 @@ code
  // Expand a stamp to disk
  new stamp(`file hello-world.txt`).execute()
 
-title2 How to use Stamp with other languages
+section How to use Stamp with other languages
 
 paragraph
  A Stamp file is a simple declarative file. It should be
@@ -42,7 +42,7 @@ paragraph
  do that, please send a PR with a link so we can direct
  people without nodejs to other implementations.
  
-title2 About
+section About
 
 paragraph
  Stamp is an alternative to zip files for sharing a small
@@ -61,7 +61,7 @@ paragraph
  Frequently programmers have templates that they start new
  projects with. Those templates can be turned into Stamp files.
 
-title2 The Problem
+section The Problem
 
 paragraph
  The web is full of project tutorials like <a
@@ -73,7 +73,7 @@ paragraph
 paragraph
  The current options for this situation are:
 
-title4 The Recipe Method - explain each step
+section The Recipe Method - explain each step
 
 - Downside: If your basic project layout requires 10 files,
   that's 10 separate steps the reader has to do just to get
@@ -84,7 +84,7 @@ title4 The Recipe Method - explain each step
   that narrative if things change is time consuming as an
   author
 
-title4 The Zip Method - zip the template directory
+section The Zip Method - zip the template directory
 
 - Downside: zip files are opaque and a user has no
   visibility into what they are creating
@@ -93,7 +93,7 @@ title4 The Zip Method - zip the template directory
 - Downside: once unzipped, user has to manually change names
   to match the name of their project
 
-title4 The Custom Utility Method - implement a custom command line
+section The Custom Utility Method - implement a custom command line
  program that generates new projects*
 
 - Downside: No visibility into what is getting created
@@ -102,13 +102,13 @@ title4 The Custom Utility Method - implement a custom command line
 - Downside: Now you have a whole new complicated program to
   write and maintain
 
-title4 The GitHub method - create a repo for your template and
+section The GitHub method - create a repo for your template and
  have people git clone it
 
 - Downside: no way of doing variable replacement post-clone
 - Downside: no plain text way of distributing the template
 
-title2 Alternatives Considered
+section Alternatives Considered
 
 links
  https://en.wikipedia.org/wiki/List_of_archive_formats Wikipedia list of archive formats
@@ -118,8 +118,8 @@ links
  https://github.com/xyproto/metatar metatar
  https://pkg.go.dev/golang.org/x/tools@v0.1.0/txtar txtar
 
- title2 Directory Editors
+section Directory Editors
 
- links
-  https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html Dired
-  https://github.com/thameera/vimv vimv
+links
+ https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html Dired
+ https://github.com/thameera/vimv vimv

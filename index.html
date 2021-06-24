@@ -3,25 +3,31 @@
  This page was compiled by 📜 Scroll, the public domain
  static site publishing software.
  
- http://scroll.publicdomaincompany.com/
+ https://scroll.pub
  
  Generally you don't want to edit it by hand.
 
- Scroll v17.5.0
+ Scroll v21.1.0
 
 -->
 <!doctype html>
 <html lang="en-US">
  <head>
   <meta charset="utf-8"></meta>
-  <title>JTree</title>
+  <title>JTree: Tree Notation SDK for TypeScript & Javascript - JTree</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
   <meta name="description" content="Build your own language using Tree Notation."></meta>
-  <style>html,body,div,span,h1,h2,h3,h4,h5,h6,p,ol,ul {
+  <meta name="generator" content="Scroll v21.1.0"></meta>
+  <meta property="og:title" content="JTree: Tree Notation SDK for TypeScript & Javascript"></meta>
+  <meta property="og:description" content="Jtree is for people who want to design Tree Languages, make Tree editing tools, use TreeBase, or use the Tree Component Web Framework."></meta>
+  <meta property="og:image" content=""></meta>
+  <meta name="twitter:card" content="summary_large_image"></meta>
+  <style>html,body,div,span,h1,h2,h3,h4,h5,h6,p,ol,ul,table {
   margin: 0;
   padding: 0;
   border: 0;
   vertical-align: baseline;
+  border-spacing: 0;
 }
 html {
   background-color: rgb(244,244,244);
@@ -29,9 +35,6 @@ html {
   color: #000;
   font-size: 14px;
   hyphens: auto;
-}
-.scrollHeader,.scrollFooter {
-  text-align: center;
 }
 .scrollChat span {
   font-family: Verdana;
@@ -80,17 +83,111 @@ html {
   right: 25px;
   top: 3px;
 }
+.scrollFooter {
+  border-top: 1px solid rgb(204,204,204);
+  margin-top: 8px;
+  padding-top: 8px;
+  text-align: center;
+}
+.scrollHeader {
+  border-bottom: 1px solid rgb(204,204,204);
+  text-align: center;
+  padding-bottom: 8px;
+}
+.scrollArticleCell {
+  border-bottom: 1px solid rgb(204,204,204);
+  padding: 1ch 0;
+  break-inside: avoid;
+  text-align: justify;
+  margin-bottom: .5em;
+}
+.scrollImage {
+  display: block;
+  text-align: center;
+}
+.scrollImage img {
+  max-width: 35ch;
+  height: auto;
+}
 .scrollPage {
   column-count: auto;
+  column-fill: balance;
   column-width: 35ch;
   column-gap: 20px;
   column-rule: 1px solid rgb(204,204,204);
   padding-left: 20px;
   padding-right: 20px;
-  border-top: 1px solid rgb(204,204,204);
-  border-bottom: 1px solid rgb(204,204,204);
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin: auto;
+}
+.scrollPage table {
+  table-layout: fixed;
+  margin: .5em 0;
+  overflow: hidden;
+  font-size: 80%;
+  width: 100%;
+  hyphens: none;
+  border: 1px solid rgba(224,224,224,.8);
+}
+.scrollPage table td,.scrollPage table th {
+  padding: 3px;
+  overflow: hidden;
+}
+.scrollPage table th {
+  border-bottom: 2px solid rgba(0,0,0,.6);
+  text-align: left;
+}
+.scrollPage table tr:nth-child(even) {
+  background: rgba(224,224,224,.6);
+}
+.scrollPage ul,.scrollPage ol {
+  text-align: left;
+  line-height: 1.4em;
+  padding-left: 1em;
+  margin-top: 0.4em;
+}
+.scrollPage p {
+  text-indent: 1em;
+  margin-top: 0.4em;
+  line-height: 1.4em;
+}
+.scrollPage p:first-of-type {
+  display: inline;
+}
+.scrollPage .scrollCodeBlock,.scrollPage blockquote {
+  break-inside: avoid;
+}
+.scrollPage .scrollCodeBlock,.scrollPage blockquote {
+  display: block;
+  margin: .5em 0;
+  padding: .5em;
+  background: rgba(204,204,204,.5);
+}
+.scrollPage .scrollCodeBlock {
+  overflow: auto;
+  font-size: 80%;
+  hyphens: none;
+}
+.scrollPage .scrollCodeBlock {
+  white-space: pre;
+  border-left: .5em solid rgba(204,204,204, .8);
+}
+.scrollPage blockquote {
+  white-space: pre-line;
+  border-left: .5em solid rgba(204,204,204, .8);
+}
+.scrollPage h1 {
+  font-size: 24px;
+  margin-bottom: .25em;
+}
+.scrollPage h1 a {
+  text-decoration: none;
+  color: #000;
+}
+.scrollPage h1,.scrollPage h2,.scrollPage h3,.scrollPage h4,.scrollPage h5,.scrollPage h6 {
+  text-align: center;
+}
+.scrollPage h2,.scrollPage h3,.scrollPage h4 {
+  margin: .2em;
 }
 .scrollArticleDate {
   font-style: italic;
@@ -107,76 +204,8 @@ html {
   text-decoration: none;
 }
 .scrollSingleArticle {
-  padding-top: 10px;
-  padding-bottom: 10px;
   column-rule: none;
-}
-.scrollSingleArticle .scrollArticleCell {
-  break-inside: avoid-page;
-  border-bottom: none;
-}
-.scrollArticleCell {
-  border-bottom: 1px solid rgb(204,204,204);
-  width: 35ch;
-  padding: 1ch;
-  break-inside: avoid;
-  text-align: justify;
-  margin: auto;
-  margin-bottom: .5em;
-}
-.scrollArticleCell ul,.scrollArticleCell ol {
-  text-align: left;
-  line-height: 1.4em;
-  padding-left: 1em;
-  margin-top: 0.4em;
-}
-.scrollArticleCell p {
-  text-indent: 1em;
-  margin-top: 0.4em;
-  line-height: 1.4em;
-}
-.scrollArticleCell p:first-of-type {
-  display: inline;
-}
-.scrollArticleCell img {
-  max-width: 35ch;
-  height: auto;
-}
-.scrollArticleCell .scrollCodeBlock,.scrollArticleCell blockquote {
-  break-inside: avoid;
-}
-.scrollArticleCell .scrollCodeBlock,.scrollArticleCell table,.scrollArticleCell blockquote {
-  display: block;
-  margin: .5em 0;
-  padding: .5em;
-  background: rgba(204,204,204, .5);
-}
-.scrollArticleCell .scrollCodeBlock,.scrollArticleCell table {
-  overflow: auto;
-  font-size: 80%;
-  hyphens: none;
-}
-.scrollArticleCell .scrollCodeBlock {
-  white-space: pre;
-  border-left: .5em solid rgba(204,204,204, .8);
-}
-.scrollArticleCell blockquote {
-  white-space: pre-line;
-  border-left: .5em solid rgba(204,204,204, .8);
-}
-.scrollArticleCell h1 {
-  font-size: 24px;
-  margin-bottom: .25em;
-}
-.scrollArticleCell h1 a {
-  text-decoration: none;
-  color: #000;
-}
-.scrollArticleCell h1,.scrollArticleCell h2,.scrollArticleCell h3,.scrollArticleCell h4,.scrollArticleCell h5,.scrollArticleCell h6 {
-  text-align: center;
-}
-.scrollArticleCell h2,.scrollArticleCell h3,.scrollArticleCell h4 {
-  margin: .2em;
+  padding-top: 8px;
 }
 </style>
 </head>
@@ -187,18 +216,17 @@ html {
      <a href="https://github.com/publicdomaincompany/jtree"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
 </div>
 </div>
-   <h1 class="scrollTitle">
-    <a href="./">JTree</a>
-</h1>
+   <h2 class="scrollTitle">
+    <a href="index.html">JTree</a>
+</h2>
    <div class="scrollDescription">Build your own language using Tree Notation.</div>
 </div>
-  <div class="scrollPage scrollSingleArticle">
-   <div class="scrollArticleCell"><h1><a href="index.html">JTree: Tree Notation SDK for TypeScript & Javascript</a></h1>
+  <div class="scrollPage scrollSingleArticle" style=""><h1><a href="index.html">JTree: Tree Notation SDK for TypeScript & Javascript</a></h1>
 
 
-<a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=master" height="20" width="90"/></a> <a href="https://gitpod.io/#https://github.com/publicdomaincompany/jtree"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod"/ height="20" width="153"></a>
+<a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=main" height="20" width="90"/></a> <a href="https://gitpod.io/#https://github.com/publicdomaincompany/jtree"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod"/ height="20" width="153"></a>
 
-<h3>Links</h3>
+<p>title3 Links</p>
 
 <ul>
 <li>Tree Notation <a href="https://treenotation.org">Homepage</a></li>
@@ -213,7 +241,7 @@ html {
 <li><a href="https://jtree.treenotation.org/sandbox/perfTests.html">PerfTests</a></li>
 </ul>
 
-<h3>Who this package is for</h3>
+<p>title3 Who this package is for</p>
 
 <p>Jtree is for people who want to design Tree Languages, make
 Tree editing tools, use TreeBase, or use the Tree Component
@@ -222,7 +250,7 @@ Web Framework.</p>
 <p>You can think of jtree as similar to the Java Development
 Kit, except for Tree Notation instead of Java.</p>
 
-<h3>Grammar Files</h3>
+<p>title3 Grammar Files</p>
 
 <p>Jtree contains a Tree Language called "Grammar". You can
 write new Grammar files to define new languages. By creating
@@ -240,66 +268,66 @@ Tree Languages can be built with any language, however, not
 just TypeScript and Javascript. We are looking for
 volunteers to build libraries/sdks in other host languages.</p>
 
-<h3>Using Jtree</h3>
+<p>title3 Using Jtree</p>
 
 <p>Jtree currently includes around 10 compiled projects (aka
 "products") and more than a dozen Tree Languages.</p>
 
-<h4>jtree base library for npm projects:</h4>
+<p>title4 jtree base library for npm projects:</p>
 
 <code class="scrollCodeBlock">const {jtree} = require("jtree")
 const tree = new jtree.TreeNode("hello world")
 console.log(tree.toString())</code>
 
-<h4>jtree base library for the browser:</h4>
+<p>title4 jtree base library for the browser:</p>
 
 <code class="scrollCodeBlock">&lt;script src="https://jtree.treenotation.org/products/jtree.browser.js" /></code>
 
-<h4>jtree command line tool</h4>
+<p>title4 jtree command line tool</p>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree help</code>
 
-<h4>TreeBase</h4>
+<p>title4 TreeBase</p>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree base</code>
 
-<h4>jtree "sandbox" web app for exploring base Tree Notation</h4>
+<p>title4 jtree "sandbox" web app for exploring base Tree Notation</p>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree kitchen
 open http://localhost:3333/</code>
 
-<h4>jtree "Designer" web app for building new Tree Languages</h4>
+<p>title4 jtree "Designer" web app for building new Tree Languages</p>
 
 <code class="scrollCodeBlock">npm install -g jtree
 jtree kitchen
 open http://localhost:3333/designer</code>
 
-<h4>TreeComponentFramework for building web apps</h4>
+<p>title4 TreeComponentFramework for building web apps</p>
 
 <p>(directions coming soon)</p>
 
-<h4>Sample Languages</h4>
+<p>title4 Sample Languages</p>
 
 <p>More than 12 example Tree Languages for helping with
 various tasks</p>
 
 <p>See the "langs/" folder.</p>
 
-<h4> Build Tools</h4>
+<p>title4  Build Tools</p>
 
 <p>If you look at the source, you will also see a set of build
 tools (such as Builder and TypeScriptRewriter). These are
 currently undocumented and not recommended for external use.</p>
 
-<h4>Building all tools and running tests</h4>
+<p>title4 Building all tools and running tests</p>
 
 <code class="scrollCodeBlock">jtree build produceAll
 npm test</code>
 
-<h3>Monorepo</h3>
+<p>title3 Monorepo</p>
 
 <p>Jtree is a monorepo. With on average
 over 1 major version released each month for the past 2.5
@@ -314,13 +342,13 @@ submodules built from the projects in this monorepo, to
 allow for consuming of a smaller subset of the code and
 dependencies in this module, feel free to do so.</p>
 
-<h3>Development Status</h3>
+<p>title3 Development Status</p>
 
 <p>All breaking changes are mentioned in releaseNotes.md. We
 follow semantic versioning, so breaking changes should not
 happen if you stay on the same major version.</p>
 
-<h3>Tree Notation Libraries in Other Languages</h3>
+<p>title3 Tree Notation Libraries in Other Languages</p>
 
 <p>If you build a Tree Notation library/SDK in another
 language, let us know and we'll add a link.</p>
@@ -329,11 +357,11 @@ language, let us know and we'll add a link.</p>
 language, feel free to post an issue or ask for help in the 
 reeNotation <a href="https://reddit.com/r/treenotation">subreddit</a>.</p>
 
-<h4>How to bump versions</h4>
+<p>title4 How to bump versions</p>
 
 <code class="scrollCodeBlock">jtree build updateVersion NEW_NUMBER</code>
 
-<h3>Alternatives Considered</h3>
+<p>title3 Alternatives Considered</p>
 
 <p>This is the first Tree Notation library in existence, so
 there were no alternative implementations. Note and Space
@@ -348,16 +376,15 @@ and you can implement the patterns contained here in your
 own code without using this library. In fact, that is often
 the best way to use Tree Notation!</p>
 
-<h2>❤️ Public Domain ❤️</h2>
+<p>title2 ❤️ Public Domain ❤️</p>
 <p class="scrollArticleSourceLink"><a href="https://github.com/publicdomaincompany/jtree/readme.scroll">Article source</a></p></div>
-</div>
   <div class="scrollFooter">
    <div class="scrollSocialMediaIcons">
     <a href="mailto:jtree@treenotation.org"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
     <a href="https://twitter.com/treenotation"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
     <a href="https://github.com/publicdomaincompany/jtree"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
 </div>
-   <a href="https://scroll.publicdomaincompany.com/" class="scrollCommunityLink">Built with Scroll</a>
+   <a href="https://scroll.pub" class="scrollCommunityLink">Built with Scroll v21.1.0</a>
 </div>
 </body>
 </html>

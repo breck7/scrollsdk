@@ -5,7 +5,6 @@ const { jtree } = require("../index.js")
 
 declare var jQuery: any
 
-
 // Todo: add inputs at the top to change the edge, node, and cell delimiters.
 
 class SandboxApp extends AbstractTreeComponent {
@@ -49,9 +48,8 @@ class SandboxApp extends AbstractTreeComponent {
   }
 
   toShareLink() {
-  	const treeCode = localStorage.getItem("tree")
-  	if (!treeCode)
-  		return ""
+    const treeCode = localStorage.getItem("tree")
+    if (!treeCode) return ""
     const tree = new jtree.TreeNode()
     tree.appendLineAndChildren("tree", treeCode)
     return "#" + encodeURIComponent(tree.toString())
@@ -65,7 +63,7 @@ class SandboxApp extends AbstractTreeComponent {
   }
 
   async treeComponentDidMount() {
-  	const app = this
+    const app = this
     // todo: refactor!!! split these into components
     jQuery(document).ready(function() {
       const treeConsole = jQuery("#treeConsole")
@@ -82,8 +80,7 @@ class SandboxApp extends AbstractTreeComponent {
 
       // Init vars
       const deepLink = app.treeFromDeepLink()
-      if (deepLink)
-      		treeConsole.val(deepLink.childrenToString())
+      if (deepLink) treeConsole.val(deepLink.childrenToString())
       else if (localStorage.getItem("tree")) treeConsole.val(localStorage.getItem("tree"))
 
       const updateAll = (tree: any, eventSource: any) => {
@@ -231,7 +228,7 @@ class shareComponent extends AbstractTreeComponent {
 }
 
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
-  githubLink = `https://github.com/treenotation/jtree/tree/master/sandbox`
+  githubLink = `https://github.com/treenotation/jtree/tree/main/sandbox`
 }
 
 class tableComponent extends AbstractTreeComponent {

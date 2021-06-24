@@ -1017,7 +1017,7 @@ class shortcutsTableComponent extends AbstractTreeComponent {
 }
 
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
-  githubLink = `https://github.com/treenotation/jtree/tree/master/treeComponentFramework/sweepercraft`
+  githubLink = `https://github.com/treenotation/jtree/tree/main/treeComponentFramework/sweepercraft`
 }
 
 export { SweeperCraftApp, SweeperCraftGame }

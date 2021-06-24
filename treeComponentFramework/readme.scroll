@@ -53,7 +53,7 @@ title2 Examples
 
 paragraph
  The <a
- href="https://github.com/treenotation/jtree/tree/master/treeComponentFramework/sweepercraft">github repo</a>
+ href="https://github.com/treenotation/jtree/tree/main/treeComponentFramework/sweepercraft">github repo</a>
  contains a demonstration game called "SweeperCraft" that
  let's you design your own Minesweeper board.
 
@@ -61,8 +61,8 @@ paragraph
  This framework also powers:
 
 links
- https://github.com/treenotation/jtree/tree/master/sandbox Tree Notation Sandbox
- https://github.com/treenotation/jtree/tree/master/designer Tree Language Designer
+ https://github.com/treenotation/jtree/tree/main/sandbox Tree Notation Sandbox
+ https://github.com/treenotation/jtree/tree/main/designer Tree Language Designer
  https://github.com/treenotation/ohayo Ohayo
  https://pau.treenotation.org/synth/ PauSynth
 

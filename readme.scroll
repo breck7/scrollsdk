@@ -29,6 +29,11 @@ paragraph
  You can think of jtree as similar to the Java Development
  Kit, except for Tree Notation instead of Java.
 
+question How do I build a new language?
+
+paragraph
+ You can try the checklist🔗jtree.treenotation.org/languageChecklist.html.
+
 section Grammar Files
 
 paragraph

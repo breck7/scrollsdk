@@ -14,12 +14,12 @@
 <html lang="en-US">
  <head>
   <meta charset="utf-8"></meta>
-  <title>JTree: Tree Notation SDK for TypeScript & Javascript - JTree</title>
+  <title>A checklist for creating a new Tree Language from Scratch - JTree</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
   <meta name="description" content="Build your own language using Tree Notation."></meta>
   <meta name="generator" content="Scroll v21.1.0"></meta>
-  <meta property="og:title" content="JTree: Tree Notation SDK for TypeScript & Javascript"></meta>
-  <meta property="og:description" content="Jtree is for people who want to design Tree Languages, make Tree editing tools, use TreeBase, or use the Tree Component Web Framework."></meta>
+  <meta property="og:title" content="A checklist for creating a new Tree Language from Scratch"></meta>
+  <meta property="og:description" content="That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format."></meta>
   <meta property="og:image" content=""></meta>
   <meta name="twitter:card" content="summary_large_image"></meta>
   <style>html,body,div,span,h1,h2,h3,h4,h5,h6,p,ol,ul,table {
@@ -221,167 +221,123 @@ html {
 </h2>
    <div class="scrollDescription">Build your own language using Tree Notation.</div>
 </div>
-  <div class="scrollPage scrollSingleArticle" style=""><h1><a href="index.html">JTree: Tree Notation SDK for TypeScript & Javascript</a></h1>
-
-
-<a href="https://travis-ci.org/treenotation/jtree"><img src="https://travis-ci.org/treenotation/jtree.svg?branch=main" height="20" width="90"/></a> <a href="https://gitpod.io/#https://github.com/publicdomaincompany/jtree"><img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod"/ height="20" width="153"></a>
-
-<h3>Links</h3>
+  <div class="scrollPage scrollSingleArticle" style=""><h1><a href="languageChecklist.html">A checklist for creating a new Tree Language from Scratch</a></h1>
 
 <ul>
-<li>Tree Notation <a href="https://treenotation.org">Homepage</a></li>
-<li>Tree Notation <a href="https://jtree.treenotation.org/sandbox">Sandbox</a></li>
-<li>Tree Language <a href="https://jtree.treenotation.org/designer">Designer</a></li>
-<li>Tree Notation <a href="https://faq.treenotation.org">FAQ</a></li>
-<li><a href="https://treebase.treenotation.org">TreeBase</a></li>
-<li>TypeScript <a href="https://github.com/treenotation/jtree">Library</a></li>
-<li>Tree Notation <a href="https://reddit.com/r/treenotation">Subreddit</a></li>
-<li><a href="https://github.com/treenotation/ohayo">Ohayo</a> A Data Science App Powered By Tree Notation</li>
-<li><a href="https://jtree.treenotation.org/sandbox/test.html">UnitTests</a></li>
-<li><a href="https://jtree.treenotation.org/sandbox/perfTests.html">PerfTests</a></li>
+<li>☑️ Know where to get help. GitHub <a href="https://github.com/treenotation/jtree/issues">issues</a>, Tree Notation <a href="https://reddit.com/r/treenotation">subreddit</a>, <a href="mailto:treenotation@googlegroups.com">Google Groups</a>, or <a href="mailto:breck7@gmail.com">email Breck</a>.</li>
+<li>☑️ Take a look at some of the sample languages in the simple web Tree Language <a href="https://jtree.treenotation.org/designer/">builder</a>. You might be able to use these as a reference if you get stuck.</li>
+<li>☑️ Open the Tree Language <a href="https://jtree.treenotation.org/designer/">builder</a> or use your own editor (note: only <a href="https://sublimetext.com">SublimeText4</a> currently has syntax highlighting for Grammar Languages).</li>
+<li>☑️ Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.</li>
+<li>☑️ If you are using the Tree Language <a href="https://jtree.treenotation.org/designer/">builder</a>, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name "{yourLanguageNameGoesHere}.grammar"</li>
+<li>☑️ Create a root nodeType. This will be the root node for your language. It should like this:</li>
 </ul>
 
-<h4>Who is this package built for?</h4>
+<code class="scrollCodeBlock">{yourLanguageNameGoesHere}Node
+root</code>
 
-<p>Jtree is for people who want to design Tree Languages, make
-Tree editing tools, use TreeBase, or use the Tree Component
-Web Framework.</p>
+<ul>
+<li>☑️ Add a description line to your new root nodeType. This should describe what the purpose of your language is:</li>
+</ul>
 
-<p>You can think of jtree as similar to the Java Development
-Kit, except for Tree Notation instead of Java.</p>
+<code class="scrollCodeBlock">{yourLanguageNameGoesHere}Node
+ root
+ description {thisIsALangageToHelpYouDoX}</code>
 
-<h4>How do I build a new language?</h4>
+<ul>
+<li>☑️ Add a top level nodeType to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" nodeType.</li>
+</ul>
 
-<p>You can try the <a href="https://jtree.treenotation.org/languageChecklist.html">checklist</a>.</p>
+<code class="scrollCodeBlock">birthdaysNode
+ root
+ description A language for storing your friend's birthdays.
+friendNode
+ description Store information about a friend.</code>
 
-<h3>Grammar Files</h3>
+<ul>
+<li>☑️ Now let's add an inScope line to the root node so that the friend node is in scope:</li>
+</ul>
 
-<p>Jtree contains a Tree Language called "Grammar". You can
-write new Grammar files to define new languages. By creating
-a grammar file you get a parser, a type checker, syntax
-highlighting, autocomplete, a compiler, and virtual machine
-for executing your new language. Jtree also includes a
-simple web Tree Language <a href="https://jtree.treenotation.org/designer">Designer</a>.</p>
+<code class="scrollCodeBlock">birthdaysNode
+ root
+ description A language for storing your friend's birthdays.
+ inScope friendNode
+friendNode
+ description Store information about a friend.</code>
 
-<p>To make your language do really interesting things, you'll
-want to write some code to extend your language nodes in
-another language that you know. Jtree lets you create new
-languages using just Tree Notation, Tree Notation +
-TypeScript, or Tree Notation + Javascript. Tree Notation and
-Tree Languages can be built with any language, however, not
-just TypeScript and Javascript. We are looking for
-volunteers to build libraries/sdks in other host languages.</p>
+<ul>
+<li>☑️ Now the following is a valid program in your language:</li>
+</ul>
 
-<h3>Using Jtree</h3>
+<code class="scrollCodeBlock">friend
+friend
+friend</code>
 
-<p>Jtree currently includes around 10 compiled projects (aka
-"products") and more than a dozen Tree Languages.</p>
+<ul>
+<li>☑️ Now let's add a "name" nodeType under the friend nodeType's scope. We're start hiding some already mentioned code with "..." </li>
+</ul>
 
-<h4>jtree base library for npm projects:</h4>
+<code class="scrollCodeBlock">...
+friendNode
+ description Store information about a friend.
+ inScope nameNode
+nameNode</code>
 
-<code class="scrollCodeBlock">const {jtree} = require("jtree")
-const tree = new jtree.TreeNode("hello world")
-console.log(tree.toString())</code>
+<ul>
+<li>☑️ Now the following is a valid program in your language:</li>
+</ul>
 
-<h4>jtree base library for the browser:</h4>
+<code class="scrollCodeBlock">friend
+ name
+friend
+ name
+...</code>
 
-<code class="scrollCodeBlock">&lt;script src="https://jtree.treenotation.org/products/jtree.browser.js" /></code>
+<ul>
+<li>☑️ Now let's add a "cellType", which let's us start getting things like type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the cellTypes at the top of our grammar file.</li>
+</ul>
 
-<h4>jtree command line tool</h4>
+<code class="scrollCodeBlock">nameCell
+ highlightScope string
+...</code>
 
-<code class="scrollCodeBlock">npm install -g jtree
-jtree help</code>
+<ul>
+<li>☑️ Now let's make the name nodeType accept a "catch all" cellType of the nameCell.</li>
+</ul>
 
-<h4>TreeBase</h4>
+<code class="scrollCodeBlock">...
+nameNode
+ catchAllCellType nameCell</code>
 
-<code class="scrollCodeBlock">npm install -g jtree
-jtree base</code>
+<ul>
+<li>☑️ Now the following is a valid program in your language:</li>
+</ul>
 
-<h4>jtree "sandbox" web app for exploring base Tree Notation</h4>
+<code class="scrollCodeBlock">friend
+ name Ben Franklin
+friend
+ name Ada Lovelace</code>
 
-<code class="scrollCodeBlock">npm install -g jtree
-jtree kitchen
-open http://localhost:3333/</code>
+<ul>
+<li>☑️ Now let's add an error nodeType, and link it to the rootNode, to catch errors:</li>
+</ul>
 
-<h4>jtree "Designer" web app for building new Tree Languages</h4>
+<code class="scrollCodeBlock">birthdaysNode
+ root
+ description A language for storing your friend's birthdays.
+ inScope friendNode
+ catchAllNodeType errorNode
+errorNode
+ baseNodeType errorNode</code>
 
-<code class="scrollCodeBlock">npm install -g jtree
-jtree kitchen
-open http://localhost:3333/designer</code>
+<ul>
+<li>☑️ Now you should get an error for a program like this:</li>
+</ul>
 
-<h4>TreeComponentFramework for building web apps</h4>
+<code class="scrollCodeBlock">frieeeend
+ name Ben Franklin</code>
 
-<p>(directions coming soon)</p>
-
-<h4>Sample Languages</h4>
-
-<p>More than 12 example Tree Languages for helping with
-various tasks</p>
-
-<p>See the "langs/" folder.</p>
-
-<h4> Build Tools</h4>
-
-<p>If you look at the source, you will also see a set of build
-tools (such as Builder and TypeScriptRewriter). These are
-currently undocumented and not recommended for external use.</p>
-
-<h4>Building all tools and running tests</h4>
-
-<code class="scrollCodeBlock">jtree build produceAll
-npm test</code>
-
-<h3>Monorepo</h3>
-
-<p>Jtree is a monorepo. With on average
-over 1 major version released each month for the past 2.5
-years, it would take a lot of overhead to constantly be
-updating 10+ different repositories and modules every month.
-Once we're more confident in the theory and best practices,
-it might make sense to break this repo into independent modules.</p>
-
-<p>That being said, we despise unnecessary dependencies as much
-as anyone. If anyone wants to create some automated
-submodules built from the projects in this monorepo, to
-allow for consuming of a smaller subset of the code and
-dependencies in this module, feel free to do so.</p>
-
-<h3>Development Status</h3>
-
-<p>All breaking changes are mentioned in releaseNotes.md. We
-follow semantic versioning, so breaking changes should not
-happen if you stay on the same major version.</p>
-
-<h3>Tree Notation Libraries in Other Languages</h3>
-
-<p>If you build a Tree Notation library/SDK in another
-language, let us know and we'll add a link.</p>
-
-<p>If you are working on a Tree Notation library in a new host
-language, feel free to post an issue or ask for help in the 
-reeNotation <a href="https://reddit.com/r/treenotation">subreddit</a>.</p>
-
-<h4>How to bump versions</h4>
-
-<code class="scrollCodeBlock">jtree build updateVersion NEW_NUMBER</code>
-
-<h3>Alternatives Considered</h3>
-
-<p>This is the first Tree Notation library in existence, so
-there were no alternative implementations. Note and Space
-were predecessors to Tree Notation.</p>
-
-<p>If a better alternative low level notation to Tree Notation
-is possible, it has yet to be discovered.</p>
-
-<p>All that said, the important part of this repo is not the
-code but the design patterns. Tree Notation is very simple,
-and you can implement the patterns contained here in your
-own code without using this library. In fact, that is often
-the best way to use Tree Notation!</p>
-
-<h3>❤️ Public Domain ❤️</h3>
-<p class="scrollArticleSourceLink"><a href="https://github.com/publicdomaincompany/jtree/readme.scroll">Article source</a></p></div>
+<p>That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format.</p>
+<p class="scrollArticleSourceLink"><a href="https://github.com/publicdomaincompany/jtree/languageChecklist.scroll">Article source</a></p></div>
   <div class="scrollFooter">
    <div class="scrollSocialMediaIcons">
     <a href="mailto:jtree@treenotation.org"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>

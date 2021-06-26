@@ -568,13 +568,13 @@ class headerComponent extends AbstractTreeComponent {
   id helpSection
   style display: none;
   p This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://github.com/breck7/jtree/blob/master/languageChecklist.md">checklist for creating new Tree Languages</a>.`
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://jtree.treenotation.org/languageChecklist.html">checklist for creating new Tree Languages</a>.`
   }
 }
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/treenotation/jtree/tree/master/designer`
+    this.githubLink = `https://github.com/treenotation/jtree/tree/main/designer`
   }
 }
 window.DesignerApp = DesignerApp

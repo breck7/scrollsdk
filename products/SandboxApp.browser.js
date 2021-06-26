@@ -205,7 +205,7 @@ class shareComponent extends AbstractTreeComponent {
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/treenotation/jtree/tree/master/sandbox`
+    this.githubLink = `https://github.com/treenotation/jtree/tree/main/sandbox`
   }
 }
 class tableComponent extends AbstractTreeComponent {

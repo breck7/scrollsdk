@@ -525,6 +525,46 @@ testTree.getWord = equal => {
   equal(aNode.getWord(-1), "c")
 }
 
+testTree.getOneOf = equal => {
+  // Arrange
+  const tree = new TreeNode(`tint blue\nColor red`)
+
+  // Act/Assert
+  equal(tree.getOneOf(["Color", "tint"]), "red")
+  equal(tree.getOneOf(["tint", "Color"]), "blue")
+  equal(tree.getOneOf(["height"]), "")
+}
+
+testTree.pick = equal => {
+  // Arrange
+  const tree = new TreeNode(`tint blue\nColor red`)
+
+  // Act/Assert
+  equal(tree.pick(["Color", "tint"]).toString(), `tint blue\nColor red`)
+  equal(tree.getOneOf(["height"]).toString(), "")
+}
+
+testTree.setProperties = equal => {
+  // Arrange
+  const tree = new TreeNode(``)
+  tree.setProperties({ foo: "bar", one: "2" })
+
+  // Act/Assert
+  equal(tree.get("one"), "2")
+}
+
+testTree.setPropertyIfMissing = equal => {
+  // Arrange
+  const tree = new TreeNode(``)
+  tree.setProperties({ foo: "bar", one: "2" })
+  tree.setPropertyIfMissing("one", "3")
+  tree.setPropertyIfMissing("two", "a")
+
+  // Act/Assert
+  equal(tree.get("one"), "2")
+  equal(tree.get("two"), "a")
+}
+
 testTree.setWords = equal => {
   // Arrange
   const tree = new TreeNode("a b c")

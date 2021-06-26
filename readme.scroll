@@ -145,7 +145,7 @@ paragraph
 section Development Status
 
 paragraph
- All breaking changes are mentioned in releaseNotes.md. We
+ All breaking changes are mentioned in the releaseNotes🔗./releaseNotes.html. We
  follow semantic versioning, so breaking changes should not
  happen if you stay on the same major version.
 

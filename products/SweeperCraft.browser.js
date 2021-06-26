@@ -821,7 +821,7 @@ class shortcutsTableComponent extends AbstractTreeComponent {
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/treenotation/jtree/tree/master/treeComponentFramework/sweepercraft`
+    this.githubLink = `https://github.com/treenotation/jtree/tree/main/treeComponentFramework/sweepercraft`
   }
 }
 window.SweeperCraftApp = SweeperCraftApp

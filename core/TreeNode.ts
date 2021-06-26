@@ -1168,6 +1168,25 @@ class TreeNode extends AbstractNode {
     return node === undefined ? undefined : node.getContent()
   }
 
+  getOneOf(keys: string[]) {
+    for (let i = 0; i < keys.length; i++) {
+      const value = this.get(keys[i])
+      if (value) return value
+    }
+    return ""
+  }
+
+  // move to treenode
+  pick(fields: string[]) {
+    const newTree = new TreeNode(this.toString()) // todo: why not clone?
+    const map = TreeUtils.arrayToMap(fields)
+    newTree.nodeAt(0).forEach((node: treeNotationTypes.treeNode) => {
+      if (!map[node.getWord(0)]) node.destroy()
+    })
+
+    return newTree
+  }
+
   getNodesByGlobPath(query: treeNotationTypes.globPath): TreeNode[] {
     return this._getNodesByGlobPath(query)
   }
@@ -2091,6 +2110,24 @@ class TreeNode extends AbstractNode {
     return this._setChildren(tuple[1])
   }
 
+  setPropertyIfMissing(prop: string, value: string) {
+    if (this.has(prop)) return true
+    return this.touchNode(prop).setContent(value)
+  }
+
+  setProperties(propMap: treeNotationTypes.stringMap) {
+    const props = Object.keys(propMap)
+    const values = Object.values(propMap)
+    // todo: is there a built in tree method to do this?
+    props.forEach((prop, index) => {
+      const value = <string>values[index]
+      if (!value) return true
+      if (this.get(prop) === value) return true
+      this.touchNode(prop).setContent(value)
+    })
+    return this
+  }
+
   // todo: throw error if line contains a \n
   appendLine(line: string) {
     return this._insertLineAndChildren(line)
@@ -2917,7 +2954,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "51.6.1"
+  static getVersion = () => "51.6.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

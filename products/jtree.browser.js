@@ -1730,6 +1730,22 @@ class TreeNode extends AbstractNode {
     const node = this._getNodeByPath(firstWordPath)
     return node === undefined ? undefined : node.getContent()
   }
+  getOneOf(keys) {
+    for (let i = 0; i < keys.length; i++) {
+      const value = this.get(keys[i])
+      if (value) return value
+    }
+    return ""
+  }
+  // move to treenode
+  pick(fields) {
+    const newTree = new TreeNode(this.toString()) // todo: why not clone?
+    const map = TreeUtils.arrayToMap(fields)
+    newTree.nodeAt(0).forEach(node => {
+      if (!map[node.getWord(0)]) node.destroy()
+    })
+    return newTree
+  }
   getNodesByGlobPath(query) {
     return this._getNodesByGlobPath(query)
   }
@@ -2484,6 +2500,22 @@ class TreeNode extends AbstractNode {
     this.setLine(tuple[0])
     return this._setChildren(tuple[1])
   }
+  setPropertyIfMissing(prop, value) {
+    if (this.has(prop)) return true
+    return this.touchNode(prop).setContent(value)
+  }
+  setProperties(propMap) {
+    const props = Object.keys(propMap)
+    const values = Object.values(propMap)
+    // todo: is there a built in tree method to do this?
+    props.forEach((prop, index) => {
+      const value = values[index]
+      if (!value) return true
+      if (this.get(prop) === value) return true
+      this.touchNode(prop).setContent(value)
+    })
+    return this
+  }
   // todo: throw error if line contains a \n
   appendLine(line) {
     return this._insertLineAndChildren(line)
@@ -3189,7 +3221,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "51.6.1"
+TreeNode.getVersion = () => "51.6.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

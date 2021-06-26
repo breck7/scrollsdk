@@ -21,16 +21,6 @@ class TreeBaseFile extends TreeNode {
   static extractPrimaryKeyFromFilename(filename) {
     return TreeUtils.getFileName(TreeUtils.removeFileExtension(filename))
   }
-  getOneOf(keys) {
-    for (let i = 0; i < keys.length; i++) {
-      const value = this.get(keys[i])
-      if (value) return value
-    }
-    return ""
-  }
-  toExpandedColumns() {
-    // todo: do things like wp_example_2 wp_example_3 ...
-  }
   getDoc(terms) {
     return terms
       .map(term => {
@@ -42,30 +32,6 @@ class TreeBaseFile extends TreeNode {
   }
   set(keywordPath, content) {
     return typeof keywordPath === "object" ? this.setProperties(keywordPath) : super.set(keywordPath, content)
-  }
-  setPropertyIfMissing(prop, value) {
-    if (this.has(prop)) return true
-    return this.touchNode(prop).setContent(value)
-  }
-  setProperties(propMap) {
-    const props = Object.keys(propMap)
-    const values = Object.values(propMap)
-    // todo: is there a built in tree method to do this?
-    props.forEach((prop, index) => {
-      const value = values[index]
-      if (!value) return true
-      if (this.get(prop) === value) return true
-      this.touchNode(prop).setContent(value)
-    })
-    return this
-  }
-  extract(fields) {
-    const newTree = new TreeNode(this.toString()) // todo: why not clone?
-    const map = TreeUtils.arrayToMap(fields)
-    newTree.nodeAt(0).forEach(node => {
-      if (!map[node.getWord(0)]) node.destroy()
-    })
-    return newTree
   }
   save() {
     const str = this.childrenToString()

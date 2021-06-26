@@ -1365,7 +1365,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
  div
   span This app is powered by the
   a Tree Component Framework
-   href https://github.com/treenotation/jtree/tree/master/treeComponentFramework
+   href https://github.com/treenotation/jtree/tree/main/treeComponentFramework
  p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern

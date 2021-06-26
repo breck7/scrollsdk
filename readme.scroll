@@ -11,7 +11,6 @@ list
  - Tree Notation Sandbox🔗jtree.treenotation.org/sandbox
  - Tree Language Designer🔗jtree.treenotation.org/designer
  - Tree Notation FAQ🔗faq.treenotation.org
- - TreeBase🔗treebase.treenotation.org
  - TypeScript Library🔗github.com/treenotation/jtree
  - Tree Notation Subreddit🔗reddit.com/r/treenotation
  - Ohayo🔗github.com/treenotation/ohayo A Data Science App Powered By Tree Notation
@@ -22,7 +21,7 @@ question Who is this package built for?
 
 paragraph
  Jtree is for people who want to design Tree Languages, make
- Tree editing tools, use TreeBase, or use the Tree Component
+ Tree editing tools, or use the Tree Component
  Web Framework.
 
 paragraph
@@ -77,12 +76,6 @@ subsection jtree command line tool
 code
  npm install -g jtree
  jtree help
-
-subsection TreeBase
-
-code
- npm install -g jtree
- jtree base
 
 subsection jtree "sandbox" web app for exploring base Tree Notation
 

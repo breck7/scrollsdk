@@ -525,6 +525,16 @@ testTree.getWord = equal => {
   equal(aNode.getWord(-1), "c")
 }
 
+testTree.getOneOf = equal => {
+  // Arrange
+  const tree = new TreeNode(`tint blue\nColor red`)
+
+  // Act/Assert
+  equal(tree.getOneOf(["Color", "tint"]), "red")
+  equal(tree.getOneOf(["tint", "Color"]), "blue")
+  equal(tree.getOneOf(["height"]), "")
+}
+
 testTree.setWords = equal => {
   // Arrange
   const tree = new TreeNode("a b c")

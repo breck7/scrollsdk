@@ -31,18 +31,7 @@ class TreeBaseFile extends TreeNode {
     return TreeUtils.getFileName(TreeUtils.removeFileExtension(filename))
   }
 
-  getOneOf(keys: string[]) {
-    for (let i = 0; i < keys.length; i++) {
-      const value = this.get(keys[i])
-      if (value) return value
-    }
-    return ""
-  }
-
-  toExpandedColumns() {
-    // todo: do things like wp_example_2 wp_example_3 ...
-  }
-
+  // what is this?
   getDoc(terms: string[]) {
     return terms
       .map(term => {
@@ -53,28 +42,12 @@ class TreeBaseFile extends TreeNode {
       .join("\n")
   }
 
+  // move to treenode
   set(keywordPath: any, content: any) {
     return typeof keywordPath === "object" ? this.setProperties(keywordPath) : super.set(keywordPath, content)
   }
 
-  setPropertyIfMissing(prop: string, value: string) {
-    if (this.has(prop)) return true
-    return this.touchNode(prop).setContent(value)
-  }
-
-  setProperties(propMap: treeNotationTypes.stringMap) {
-    const props = Object.keys(propMap)
-    const values = Object.values(propMap)
-    // todo: is there a built in tree method to do this?
-    props.forEach((prop, index) => {
-      const value = <string>values[index]
-      if (!value) return true
-      if (this.get(prop) === value) return true
-      this.touchNode(prop).setContent(value)
-    })
-    return this
-  }
-
+  // move to treenode
   extract(fields: string[]) {
     const newTree = new TreeNode(this.toString()) // todo: why not clone?
     const map = TreeUtils.arrayToMap(fields)
@@ -94,6 +67,7 @@ class TreeBaseFile extends TreeNode {
     return this
   }
 
+  // move to treenode
   appendUniqueLine(line: string) {
     const file = this.toString()
     if (file.match(new RegExp("^" + Disk.escape(line), "m"))) return true
@@ -219,10 +193,12 @@ class TreeBaseFolder extends TreeNode {
     return Disk.touch(this._getDir() + filename)
   }
 
+  // move to grammar
   toSqlLite(): string {
     return this.toSqlLiteCreateTables() + "\n\n" + this.toSqlLiteInsertRows()
   }
 
+  // move to grammar
   toSqlLiteCreateTables(): string {
     this.loadFolder()
 
@@ -233,6 +209,7 @@ class TreeBaseFolder extends TreeNode {
     return tableDefinitionNodes.map((node: any) => node.toSqlLiteTableSchema()).join("\n")
   }
 
+  // move to grammar
   toSqlLiteInsertRows(): string {
     return this.toProgram()
       .map((node: any) => node.toSqlLiteInsertStatement((node: any) => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
@@ -367,6 +344,7 @@ class TreeBaseFolder extends TreeNode {
     )
   }
 
+  // move to grammar?
   private _getTreeBaseGrammarCode() {
     const code = this._getGrammarFilesAsTree()
     const rootNodes = code.with("root")

@@ -1168,6 +1168,14 @@ class TreeNode extends AbstractNode {
     return node === undefined ? undefined : node.getContent()
   }
 
+  getOneOf(keys: string[]) {
+    for (let i = 0; i < keys.length; i++) {
+      const value = this.get(keys[i])
+      if (value) return value
+    }
+    return ""
+  }
+
   getNodesByGlobPath(query: treeNotationTypes.globPath): TreeNode[] {
     return this._getNodesByGlobPath(query)
   }
@@ -2089,6 +2097,24 @@ class TreeNode extends AbstractNode {
     const tuple = this._textToContentAndChildrenTuple(text)
     this.setLine(tuple[0])
     return this._setChildren(tuple[1])
+  }
+
+  setPropertyIfMissing(prop: string, value: string) {
+    if (this.has(prop)) return true
+    return this.touchNode(prop).setContent(value)
+  }
+
+  setProperties(propMap: treeNotationTypes.stringMap) {
+    const props = Object.keys(propMap)
+    const values = Object.values(propMap)
+    // todo: is there a built in tree method to do this?
+    props.forEach((prop, index) => {
+      const value = <string>values[index]
+      if (!value) return true
+      if (this.get(prop) === value) return true
+      this.touchNode(prop).setContent(value)
+    })
+    return this
   }
 
   // todo: throw error if line contains a \n

@@ -59,10 +59,6 @@ nodeProduct
  files products/treeNotationTypes.ts kitchen/Kitchen.node.ts
  lastLine module.exports = {Kitchen}
 nodeProduct
- outputFileName treeBase.node.js
- files products/treeNotationTypes.ts treeBase/TreeBase.ts
- lastLine module.exports = {TreeBaseFile, TreeBaseFolder, TreeBaseServer}
-nodeProduct
  outputFileName TypeScriptRewriter.js
  files typeScriptRewriter/TypeScriptRewriter.ts
  lastLine module.exports = {TypeScriptRewriter}

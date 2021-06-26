@@ -1,6 +1,5 @@
 command paramOne paramTwo description
 allHistory   List all parse times and filepaths for this cli tool
-base folderPath port=4444 Start a TreeBase server for the given folder
 build commandName param? Run a jBuild command with 0 or 1 param.
 check programPath  Check a file for grammar errors
 checkAll grammarName  Check all 'grammarName' programs for grammar errors

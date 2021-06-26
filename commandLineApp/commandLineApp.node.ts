@@ -109,17 +109,6 @@ class CommandLineApp {
     return TreeNode.fromSsv(help).toTable()
   }
 
-  base(folderPath: treeNotationTypes.absoluteFolderPath = undefined, port = 4444) {
-    const { TreeBaseFolder, TreeBaseServer } = require("../products/treeBase.node.js")
-    if (!folderPath) {
-      folderPath = require("path").resolve(__dirname + "/../treeBase/planets/")
-      console.log(`No path to a TreeBase folder provided. Defaulting to '${folderPath}'`)
-    }
-    const folder = new TreeBaseFolder(undefined, folderPath)
-    folder.startListeningForFileChanges()
-    new TreeBaseServer(folder).listen(port)
-  }
-
   list() {
     const grammars = this.getGrammars().clone()
     grammars.sortBy("name")

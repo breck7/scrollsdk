@@ -69,7 +69,7 @@ class Builder extends AbstractBuilder {
     Disk.write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
     this.produceAll()
-    console.log("Don't forget to update releaseNotes.md!")
+    console.log("Don't forget to update releaseNotes.scroll!")
   }
 
   startServer() {

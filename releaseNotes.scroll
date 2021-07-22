@@ -4,6 +4,10 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 51.7.0 2021-07-22
+list
+ - 🎉 perf improvement in TCF—don't insert CSS nodes if no CSS
+
 section 51.6.0 2021-06-25
 list
  - 🎉 bumped pick, setProperties, getOneOf, and setPropertyIfMissing to root TreeNodeClass

@@ -1483,7 +1483,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return this._lastRenderedTime
   }
 
-  protected _getCss() {
+  protected get _css() {
     return this.getTheme().hakonToCss(this.toHakonCode())
   }
 
@@ -1492,12 +1492,6 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
  <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
 ${new stumpNode(this.toStumpCode()).compile()}
 </div>`
-  }
-
-  protected _getCssStumpCode() {
-    return `styleTag
- for ${this.constructor.name}
- bern${jtree.TreeNode.nest(this._getCss(), 2)}`
   }
 
   protected _updateAndGetUpdateReport() {
@@ -1646,8 +1640,13 @@ ${new stumpNode(this.toStumpCode()).compile()}
 
   // todo: we might be able to squeeze virtual dom in here on the mountCss and mountHtml methods.
   protected _mountCss() {
+    const css = this._css
+    if (!css) return this
+
     // todo: only insert css once per class? have a set?
-    this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(this._getCssStumpCode())
+    this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(`styleTag
+ for ${this.constructor.name}
+ bern${jtree.TreeNode.nest(css, 2)}`)
   }
 
   protected _getPageHeadStump(): abstractHtmlTag {
@@ -1657,6 +1656,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 
   protected _removeCss() {
+    if (!this._cssStumpNode) return this
     this._cssStumpNode.removeCssStumpNode()
     delete this._cssStumpNode
   }

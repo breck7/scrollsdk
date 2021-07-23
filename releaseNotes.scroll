@@ -4,6 +4,10 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 52.1.0 2021-07-22
+list
+ - 🏥 tcf bug fix
+
 section 52.0.0 2021-07-22
 list
  - 🎉 stump/tcf: ~200% faster when inserting lots of elements

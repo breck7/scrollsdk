@@ -673,7 +673,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   /* Likely deprecated jQuery methods below */
 
   private _getJQElement() {
-    return jQuery(this._cachedEl)
+    return jQuery(this.element)
   }
 
   getShadowCss(prop: string) {

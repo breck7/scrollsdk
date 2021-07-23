@@ -12,32 +12,32 @@ class DesignerApp extends AbstractTreeComponent {
   }
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
-      githubTriangleComponent: githubTriangleComponent,
-      samplesComponent: samplesComponent,
-      tableComponent: tableComponent,
-      shareComponent: shareComponent,
-      headerComponent: headerComponent,
-      otherErrorsComponent: otherErrorsComponent,
-      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
+      githubTriangleComponent,
+      samplesComponent,
+      tableComponent,
+      shareComponent,
+      headerComponent,
+      otherErrorsComponent,
+      TreeComponentFrameworkDebuggerComponent
     })
   }
   _clearResults() {
-    jQuery(".resultsDiv").html("")
-    jQuery(".resultsDiv").val("")
+    this.willowBrowser.setHtmlOfElementsWithClassHack("resultsDiv")
+    this.willowBrowser.setValueOfElementsWithClassHack("resultsDiv")
   }
   ///
   async executeCommand() {
     const result = await this.program.execute()
-    jQuery("#executeResultsDiv").val(Array.isArray(result) ? result.join(",") : result)
+    this.willowBrowser.setValueOfElementWithIdHack("executeResultsDiv", Array.isArray(result) ? result.join(",") : result)
   }
   compileCommand() {
-    jQuery("#compileResultsDiv").val(this.program.compile())
+    this.willowBrowser.setValueOfElementWithIdHack("compileResultsDiv", this.program.compile())
   }
   showAutoCompleteCubeCommand() {
-    jQuery("#explainResultsDiv").html(this.program.toAutoCompleteCube().toHtmlCube())
+    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this.program.toAutoCompleteCube().toHtmlCube())
   }
   visualizeCommand() {
-    jQuery("#explainResultsDiv").html(this._toIceTray(this.program))
+    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
   }
   inferPrefixGrammarCommand() {
     this.setGrammarCode(new jtree.UnknownGrammarProgram(this.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
@@ -55,19 +55,19 @@ class DesignerApp extends AbstractTreeComponent {
   }
   resetCommand() {
     Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     willowBrowser.reload()
   }
   async fetchAndLoadJtreeShippedLanguageCommand(name) {
     const samplePath = `/langs/${name}/sample.${name}`
     const grammarPath = `/langs/${name}/${name}.grammar`
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(grammarPath)
     const sample = await willowBrowser.httpGetUrl(samplePath)
     this._setGrammarAndCode(grammar.text, sample.text)
   }
   async fetchAndLoadGrammarFromUrlCommand(url) {
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(url)
     const grammarProgram = new jtree.HandGrammarProgram(grammar.text)
     const rootNodeDef = grammarProgram.getRootNodeTypeDefinitionNode()
@@ -115,24 +115,6 @@ class DesignerApp extends AbstractTreeComponent {
       .join("\n")
     return `<table class="iceCubes">${table}</table>`
   }
-  get _codeErrorsConsole() {
-    return jQuery("#codeErrorsConsole")
-  }
-  get _codeConsole() {
-    return jQuery("#codeConsole")
-  }
-  get _grammarConsole() {
-    return jQuery("#grammarConsole")
-  }
-  get _grammarErrorsConsole() {
-    return jQuery("#grammarErrorsConsole")
-  }
-  get _readmeComponent() {
-    return jQuery("#readmeComponent")
-  }
-  get _shareLink() {
-    return jQuery("#shareLink")
-  }
   async _loadFromDeepLink() {
     const hash = location.hash
     if (hash.length < 2) return false
@@ -173,12 +155,12 @@ class DesignerApp extends AbstractTreeComponent {
   }
   async start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(this._grammarConsole[0], { lineWrapping: true })
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
-    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(this._codeConsole[0], { lineWrapping: true })
+    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
@@ -219,33 +201,33 @@ class DesignerApp extends AbstractTreeComponent {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
         this._grammarConstructor = new jtree.HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
         this._cachedGrammarCode = currentGrammarCode
-        jQuery("#otherErrorsDiv").html("")
+        this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
       } catch (err) {
         console.error(err)
-        jQuery("#otherErrorsDiv").html(err)
+        this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
       }
     }
     return this._grammarConstructor
   }
   onCommandError(err) {
     console.log(err)
-    jQuery("#otherErrorsDiv").html(err)
+    this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
   }
   _grammarDidUpdate() {
     const grammarCode = this.getGrammarCode()
     this._updateLocalStorage()
     this.grammarProgram = new grammarNode(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
-    this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
+    this.willowBrowser.setHtmlOfElementWithIdHack("grammarConsole", errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new jtree.HandGrammarProgram(this.grammarInstance.getValue())
     const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
-    this._readmeComponent.html(readme)
+    this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
   _updateShareLink() {
     const url = new URL(location.href)
     url.hash = ""
     const base = url.toString()
-    this._shareLink.val(base + this.toShareLink())
+    this.willowBrowser.setValueOfElementWithIdHack("shareLink", base + this.toShareLink())
   }
   toShareLink() {
     const tree = new jtree.TreeNode()
@@ -254,13 +236,14 @@ class DesignerApp extends AbstractTreeComponent {
     return "#" + encodeURIComponent(tree.toString())
   }
   _onCodeKeyUp() {
+    const { willowBrowser } = this
     const code = this.getCodeValue()
     this._updateLocalStorage()
     const programConstructor = this._getGrammarConstructor()
     const that = this
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
-    this._codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
+    willowBrowser.setValueOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
     const cursor = this.codeInstance.getCursor()
     // todo: what if 2 errors?
     this.codeInstance.operation(() => {
@@ -281,9 +264,9 @@ class DesignerApp extends AbstractTreeComponent {
       const after = this.codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top
       if (info.top + info.clientHeight < after) this.codeInstance.scrollTo(null, after - info.clientHeight + 3)
     })
-    jQuery(".onCodeUp:checked").each(function() {
-      that[jQuery(this).val()]()
-    })
+    if (willowBrowser.getElementById("visualizeCommand").checked) this.visualizeCommand()
+    if (willowBrowser.getElementById("compileCommand").checked) this.compileCommand()
+    if (willowBrowser.getElementById("executeCommand").checked) this.executeCommand()
   }
   _setGrammarAndCode(grammar, code) {
     this.setGrammarCode(grammar)
@@ -482,22 +465,19 @@ class tableComponent extends AbstractTreeComponent {
    span Source Code in your Language
    input
     type checkbox
-    value executeCommand
-    class onCodeUp
+    id executeCommand
    a Execute
     clickCommand executeCommand
    span  |
    input
     type checkbox
-    value compileCommand
-    class onCodeUp
+    id compileCommand
    a Compile
     clickCommand compileCommand
    span  |
    input
     type checkbox
-    value visualizeCommand
-    class onCodeUp
+    id visualizeCommand
    a Explain
     clickCommand visualizeCommand
    textarea

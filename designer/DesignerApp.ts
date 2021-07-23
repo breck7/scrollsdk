@@ -3,7 +3,6 @@
 const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
-declare var jQuery: any
 declare var grammarNode: any
 
 // todo: get typings in here.
@@ -145,25 +144,6 @@ class DesignerApp extends AbstractTreeComponent {
   public program: any
   public grammarProgram: any
 
-  private get _codeErrorsConsole() {
-    return jQuery("#codeErrorsConsole")
-  }
-  private get _codeConsole() {
-    return jQuery("#codeConsole")
-  }
-  private get _grammarConsole() {
-    return jQuery("#grammarConsole")
-  }
-  private get _grammarErrorsConsole() {
-    return jQuery("#grammarErrorsConsole")
-  }
-  private get _readmeComponent() {
-    return jQuery("#readmeComponent")
-  }
-  private get _shareLink() {
-    return jQuery("#shareLink")
-  }
-
   _localStorageKeys = {
     grammarConsole: "grammarConsole",
     codeConsole: "codeConsole"
@@ -223,13 +203,13 @@ class DesignerApp extends AbstractTreeComponent {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
 
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
+    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
 
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
 
-    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._codeConsole[0], { lineWrapping: true })
+    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
 
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
 
@@ -302,17 +282,19 @@ class DesignerApp extends AbstractTreeComponent {
     this._updateLocalStorage()
     this.grammarProgram = new grammarNode(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
-    this._grammarErrorsConsole.html(errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
+    this.willowBrowser.setHtmlOfElementWithIdHack("grammarConsole", errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
+
     const grammarProgram = new jtree.HandGrammarProgram(this.grammarInstance.getValue())
     const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
-    this._readmeComponent.html(readme)
+
+    this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
 
   private _updateShareLink() {
     const url = new URL(location.href)
     url.hash = ""
     const base = url.toString()
-    this._shareLink.val(base + this.toShareLink())
+    this.willowBrowser.setValueOfElementWithIdHack("shareLink", base + this.toShareLink())
   }
 
   toShareLink() {
@@ -323,6 +305,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   _onCodeKeyUp() {
+    const { willowBrowser } = this
     const code = this.getCodeValue()
     this._updateLocalStorage()
     const programConstructor = this._getGrammarConstructor()
@@ -330,7 +313,8 @@ class DesignerApp extends AbstractTreeComponent {
 
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
-    this._codeErrorsConsole.html(errs.length ? new jtree.TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
+
+    willowBrowser.setValueOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
 
     const cursor = this.codeInstance.getCursor()
 
@@ -355,9 +339,9 @@ class DesignerApp extends AbstractTreeComponent {
       if (info.top + info.clientHeight < after) this.codeInstance.scrollTo(null, after - info.clientHeight + 3)
     })
 
-    jQuery(".onCodeUp:checked").each(function() {
-      that[jQuery(this).val()]()
-    })
+    if (willowBrowser.getElementById("visualizeCommand").checked) this.visualizeCommand()
+    if (willowBrowser.getElementById("compileCommand").checked) this.compileCommand()
+    if (willowBrowser.getElementById("executeCommand").checked) this.executeCommand()
   }
 
   _setGrammarAndCode(grammar: string, code: string) {
@@ -566,22 +550,19 @@ class tableComponent extends AbstractTreeComponent {
    span Source Code in your Language
    input
     type checkbox
-    value executeCommand
-    class onCodeUp
+    id executeCommand
    a Execute
     clickCommand executeCommand
    span  |
    input
     type checkbox
-    value compileCommand
-    class onCodeUp
+    id compileCommand
    a Compile
     clickCommand compileCommand
    span  |
    input
     type checkbox
-    value visualizeCommand
-    class onCodeUp
+    id visualizeCommand
    a Explain
     clickCommand visualizeCommand
    textarea

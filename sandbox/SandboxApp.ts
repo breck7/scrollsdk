@@ -37,15 +37,11 @@ class SandboxApp extends AbstractTreeComponent {
     jQuery("#csvConsole").keyup()
   }
 
-  private get _shareLink() {
-    return jQuery("#shareLink")
-  }
-
   private _updateShareLink() {
     const url = new URL(location.href)
     url.hash = ""
     const base = url.toString()
-    this._shareLink.val(base + this.toShareLink())
+    this.willowBrowser.setValueOfElementWithIdHack("shareLink", base + this.toShareLink())
   }
 
   toShareLink() {

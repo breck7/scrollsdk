@@ -346,6 +346,7 @@ class AbstractWillowBrowser extends stumpNode {
   setHtmlOfElementsWithClassHack(id: string, html: string) {}
   setValueOfElementWithIdHack(id: string, value: string) {}
   setValueOfElementWithClassHack(id: string, value: string) {}
+  getElementById(id: string) {}
 
   queryObjectToQueryString(obj: Object) {
     const params = new URLSearchParams()
@@ -787,6 +788,10 @@ class RealWillowBrowser extends AbstractWillowBrowser {
       stumpNodes.push(that.getStumpNodeFromElement(this))
     })
     return stumpNodes
+  }
+
+  getElementById(id: string) {
+    return document.getElementById(id)
   }
 
   setHtmlOfElementWithIdHack(id: string, html = "") {

@@ -193,10 +193,6 @@ class AbstractWillowShadow {
     return false
   }
 
-  getShadowHtml() {
-    return ""
-  }
-
   getShadowOffset() {
     return { left: 111, top: 111 }
   }
@@ -264,7 +260,9 @@ class AbstractWillowShadow {
 
   insertHtmlNode(childNode: any, index?: number) {}
 
-  getShadowElement() {}
+  get element() {
+    return {}
+  }
 }
 
 class WillowShadow extends AbstractWillowShadow {}
@@ -608,66 +606,24 @@ class WillowBrowser extends AbstractWillowBrowser {
 
 class WillowBrowserShadow extends AbstractWillowShadow {
   static _shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
-  _getJQElement() {
-    // todo: speedup?
-    if (!this._cachedEl) this._cachedEl = jQuery(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
-    return this._cachedEl
-  }
 
   private _cachedEl: any // todo: add typings.
 
-  getShadowElement() {
-    return this._getJQElement()[0]
-  }
-
-  getShadowPosition() {
-    return this._getJQElement().position()
-  }
-
-  shadowHasClass(name: string) {
-    return this._getJQElement().hasClass(name)
-  }
-
-  getShadowHtml() {
-    return this._getJQElement().html()
-  }
-
-  getShadowValue() {
-    // todo: cleanup, add tests
-    if (this.getShadowStumpNode().isInputType()) return this._getJQElement().val()
-    return this._getJQElement().val() || this.getShadowValueFromAttr()
+  get element() {
+    if (!this._cachedEl) this._cachedEl = document.querySelector(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
+    return this._cachedEl
   }
 
   getShadowValueFromAttr() {
-    return this._getJQElement().attr(WillowConstants.value)
-  }
-
-  getShadowOuterHeight() {
-    return this._getJQElement().outerHeight()
-  }
-
-  getShadowOuterWidth() {
-    return this._getJQElement().outerWidth()
+    return this.element.getAttribute(WillowConstants.value)
   }
 
   isShadowChecked() {
-    return this._getJQElement().is(WillowConstants.checkedSelector)
-  }
-
-  getShadowWidth() {
-    return this._getJQElement().width()
-  }
-
-  getShadowHeight() {
-    return this._getJQElement().height()
-  }
-
-  getShadowOffset() {
-    return this._getJQElement().offset()
+    return this.element.checked
   }
 
   getShadowAttr(name: string) {
-    return this._getJQElement().attr(name)
+    return this.element.getAttribute(name)
   }
 
   _logMessage(type: string) {
@@ -676,23 +632,12 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     console.log(`DOM Update ${WillowBrowserShadow._shadowUpdateNumber}: ${type}`)
   }
 
-  getShadowCss(prop: string) {
-    return this._getJQElement().css(prop)
-  }
-
-  triggerShadowEvent(event: string) {
-    this._getJQElement().trigger(event)
-    this._logMessage("trigger")
-    return this
-  }
-
   // BEGIN MUTABLE METHODS:
 
   // todo: add tests
   // todo: idea, don't "paint" wall (dont append it to parent, until done.)
   insertHtmlNode(childStumpNode: any, index: number) {
     const newChildJqElement = jQuery(childStumpNode.toHtmlWithSuids())
-    newChildJqElement.data("stumpNode", childStumpNode) // todo: what do we use this for?
 
     const jqEl = this._getJQElement()
 
@@ -704,6 +649,55 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
     WillowBrowser._stumpsOnPage++
     this._logMessage("insert")
+  }
+
+  removeShadow() {
+    this.element.remove()
+    WillowBrowser._stumpsOnPage--
+    this._logMessage("remove")
+    return this
+  }
+
+  setInputOrTextAreaValue(value: string) {
+    this.element.value = value
+    this._logMessage("val")
+    return this
+  }
+
+  setShadowAttr(name: string, value: string) {
+    this.element.setAttribute(name, value)
+    this._logMessage("attr")
+    return this
+  }
+
+  /* Likely deprecated jQuery methods below */
+
+  private _getJQElement() {
+    return jQuery(this._cachedEl)
+  }
+
+  getShadowCss(prop: string) {
+    return this._getJQElement().css(prop)
+  }
+
+  getShadowPosition() {
+    return this._getJQElement().position()
+  }
+
+  shadowHasClass(name: string) {
+    return this._getJQElement().hasClass(name)
+  }
+
+  getShadowValue() {
+    // todo: cleanup, add tests
+    if (this.getShadowStumpNode().isInputType()) return this._getJQElement().val()
+    return (this.element as any).value || this.getShadowValueFromAttr()
+  }
+
+  triggerShadowEvent(event: string) {
+    this._getJQElement().trigger(event)
+    this._logMessage("trigger")
+    return this
   }
 
   addClassToShadow(className: string) {
@@ -742,25 +736,6 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     return this
   }
 
-  removeShadow() {
-    this._getJQElement().remove()
-    WillowBrowser._stumpsOnPage--
-    this._logMessage("remove")
-    return this
-  }
-
-  setInputOrTextAreaValue(value: string) {
-    this._getJQElement().val(value)
-    this._logMessage("val")
-    return this
-  }
-
-  setShadowAttr(name: string, value: string) {
-    this._getJQElement().attr(name, value)
-    this._logMessage("attr")
-    return this
-  }
-
   makeDraggable(options: any) {
     this._logMessage("draggable")
     this._getJQElement().draggable(options)
@@ -777,6 +752,26 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     this._getJQElement().selectable(options)
     this._logMessage("selectable")
     return this
+  }
+
+  getShadowOuterHeight() {
+    return this._getJQElement().outerHeight()
+  }
+
+  getShadowOuterWidth() {
+    return this._getJQElement().outerWidth()
+  }
+
+  getShadowWidth() {
+    return this._getJQElement().width()
+  }
+
+  getShadowHeight() {
+    return this._getJQElement().height()
+  }
+
+  getShadowOffset() {
+    return this._getJQElement().offset()
   }
 }
 

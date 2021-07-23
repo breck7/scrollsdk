@@ -31,6 +31,7 @@ const WillowConstants = {}
 WillowConstants.clickCommand = "clickCommand"
 WillowConstants.shiftClickCommand = "shiftClickCommand"
 WillowConstants.blurCommand = "blurCommand"
+WillowConstants.keyUpCommand = "keyUpCommand"
 WillowConstants.contextMenuCommand = "contextMenuCommand"
 WillowConstants.changeCommand = "changeCommand"
 WillowConstants.doubleClickCommand = "doubleClickCommand"
@@ -154,9 +155,6 @@ class AbstractWillowShadow {
   isShadowChecked() {
     return false
   }
-  getShadowHtml() {
-    return ""
-  }
   getShadowOffset() {
     return { left: 111, top: 111 }
   }
@@ -207,7 +205,9 @@ class AbstractWillowShadow {
     return this
   }
   insertHtmlNode(childNode, index) {}
-  getShadowElement() {}
+  get element() {
+    return {}
+  }
 }
 class WillowShadow extends AbstractWillowShadow {}
 class WillowStore {
@@ -268,6 +268,11 @@ class AbstractWillowBrowser extends stumpNode {
   setHash(value) {
     this.location.hash = value
   }
+  setHtmlOfElementWithIdHack(id, html) {}
+  setHtmlOfElementsWithClassHack(id, html) {}
+  setValueOfElementWithIdHack(id, value) {}
+  setValueOfElementWithClassHack(id, value) {}
+  getElementById(id) {}
   queryObjectToQueryString(obj) {
     const params = new URLSearchParams()
     for (const [key, value] of Object.entries(obj)) {
@@ -467,71 +472,29 @@ class WillowBrowser extends AbstractWillowBrowser {
 }
 WillowBrowser._stumpsOnPage = 0
 class WillowBrowserShadow extends AbstractWillowShadow {
-  _getJQElement() {
-    // todo: speedup?
-    if (!this._cachedEl) this._cachedEl = jQuery(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
+  get element() {
+    if (!this._cachedEl) this._cachedEl = document.querySelector(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
     return this._cachedEl
   }
-  getShadowElement() {
-    return this._getJQElement()[0]
-  }
-  getShadowPosition() {
-    return this._getJQElement().position()
-  }
-  shadowHasClass(name) {
-    return this._getJQElement().hasClass(name)
-  }
-  getShadowHtml() {
-    return this._getJQElement().html()
-  }
-  getShadowValue() {
-    // todo: cleanup, add tests
-    if (this.getShadowStumpNode().isInputType()) return this._getJQElement().val()
-    return this._getJQElement().val() || this.getShadowValueFromAttr()
-  }
   getShadowValueFromAttr() {
-    return this._getJQElement().attr(WillowConstants.value)
-  }
-  getShadowOuterHeight() {
-    return this._getJQElement().outerHeight()
-  }
-  getShadowOuterWidth() {
-    return this._getJQElement().outerWidth()
+    return this.element.getAttribute(WillowConstants.value)
   }
   isShadowChecked() {
-    return this._getJQElement().is(WillowConstants.checkedSelector)
-  }
-  getShadowWidth() {
-    return this._getJQElement().width()
-  }
-  getShadowHeight() {
-    return this._getJQElement().height()
-  }
-  getShadowOffset() {
-    return this._getJQElement().offset()
+    return this.element.checked
   }
   getShadowAttr(name) {
-    return this._getJQElement().attr(name)
+    return this.element.getAttribute(name)
   }
   _logMessage(type) {
     if (true) return true
     WillowBrowserShadow._shadowUpdateNumber++
     console.log(`DOM Update ${WillowBrowserShadow._shadowUpdateNumber}: ${type}`)
   }
-  getShadowCss(prop) {
-    return this._getJQElement().css(prop)
-  }
-  triggerShadowEvent(event) {
-    this._getJQElement().trigger(event)
-    this._logMessage("trigger")
-    return this
-  }
   // BEGIN MUTABLE METHODS:
   // todo: add tests
   // todo: idea, don't "paint" wall (dont append it to parent, until done.)
   insertHtmlNode(childStumpNode, index) {
     const newChildJqElement = jQuery(childStumpNode.toHtmlWithSuids())
-    newChildJqElement.data("stumpNode", childStumpNode) // todo: what do we use this for?
     const jqEl = this._getJQElement()
     // todo: can we virtualize this?
     // would it be a "virtual shadow?"
@@ -540,6 +503,45 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     else jQuery(jqEl.children().get(index - 1)).after(newChildJqElement)
     WillowBrowser._stumpsOnPage++
     this._logMessage("insert")
+  }
+  removeShadow() {
+    this.element.remove()
+    WillowBrowser._stumpsOnPage--
+    this._logMessage("remove")
+    return this
+  }
+  setInputOrTextAreaValue(value) {
+    this.element.value = value
+    this._logMessage("val")
+    return this
+  }
+  setShadowAttr(name, value) {
+    this.element.setAttribute(name, value)
+    this._logMessage("attr")
+    return this
+  }
+  /* Likely deprecated jQuery methods below */
+  _getJQElement() {
+    return jQuery(this._cachedEl)
+  }
+  getShadowCss(prop) {
+    return this._getJQElement().css(prop)
+  }
+  getShadowPosition() {
+    return this._getJQElement().position()
+  }
+  shadowHasClass(name) {
+    return this._getJQElement().hasClass(name)
+  }
+  getShadowValue() {
+    // todo: cleanup, add tests
+    if (this.getShadowStumpNode().isInputType()) return this._getJQElement().val()
+    return this.element.value || this.getShadowValueFromAttr()
+  }
+  triggerShadowEvent(event) {
+    this._getJQElement().trigger(event)
+    this._logMessage("trigger")
+    return this
   }
   addClassToShadow(className) {
     this._getJQElement().addClass(className)
@@ -571,22 +573,6 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     this._logMessage("resizable")
     return this
   }
-  removeShadow() {
-    this._getJQElement().remove()
-    WillowBrowser._stumpsOnPage--
-    this._logMessage("remove")
-    return this
-  }
-  setInputOrTextAreaValue(value) {
-    this._getJQElement().val(value)
-    this._logMessage("val")
-    return this
-  }
-  setShadowAttr(name, value) {
-    this._getJQElement().attr(name, value)
-    this._logMessage("attr")
-    return this
-  }
   makeDraggable(options) {
     this._logMessage("draggable")
     this._getJQElement().draggable(options)
@@ -602,32 +588,76 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     this._logMessage("selectable")
     return this
   }
+  getShadowOuterHeight() {
+    return this._getJQElement().outerHeight()
+  }
+  getShadowOuterWidth() {
+    return this._getJQElement().outerWidth()
+  }
+  getShadowWidth() {
+    return this._getJQElement().width()
+  }
+  getShadowHeight() {
+    return this._getJQElement().height()
+  }
+  getShadowOffset() {
+    return this._getJQElement().offset()
+  }
 }
 WillowBrowserShadow._shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
 // same thing, except with side effects.
 class RealWillowBrowser extends AbstractWillowBrowser {
   findStumpNodesByShadowClass(className) {
     const stumpNodes = []
-    const that = this
-    jQuery("." + className).each(function() {
-      stumpNodes.push(that.getStumpNodeFromElement(this))
-    })
+    const els = document.getElementsByClassName(className)
+    for (let el of els) {
+      stumpNodes.push(this.getStumpNodeFromElement(this))
+    }
     return stumpNodes
   }
+  getElementById(id) {
+    return document.getElementById(id)
+  }
+  setHtmlOfElementWithIdHack(id, html = "") {
+    document.getElementById(id).innerHTML = html
+  }
+  setHtmlOfElementsWithClassHack(className, html = "") {
+    const els = document.getElementsByClassName(className)
+    for (let el of els) {
+      el.innerHTML = html
+    }
+  }
+  setValueOfElementWithIdHack(id, value = "") {
+    const el = document.getElementById(id)
+    el.value = value
+  }
+  setValueOfElementsWithClassHack(className, value = "") {
+    const els = document.getElementsByClassName(className)
+    for (let el of els) {
+      el.value = value
+    }
+  }
+  getElementByTagName(tagName) {
+    return document.getElementsByTagName(tagName)[0]
+  }
   addSuidsToHtmlHeadAndBodyShadows() {
-    jQuery(WillowConstants.tags.html).attr(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
-    jQuery(WillowConstants.tags.head).attr(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
-    jQuery(WillowConstants.tags.body).attr(WillowConstants.uidAttribute, this.getBodyStumpNode()._getUid())
+    this.getElementByTagName(WillowConstants.tags.html).setAttribute(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
+    this.getElementByTagName(WillowConstants.tags.head).setAttribute(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
+    this.getElementByTagName(WillowConstants.tags.body).setAttribute(WillowConstants.uidAttribute, this.getBodyStumpNode()._getUid())
   }
   getShadowClass() {
     return WillowBrowserShadow
   }
   setCopyHandler(fn) {
-    jQuery(document).on(BrowserEvents.copy, fn)
+    document.addEventListener(BrowserEvents.copy, event => {
+      fn(event)
+    })
     return this
   }
   setCutHandler(fn) {
-    jQuery(document).on(BrowserEvents.cut, fn)
+    document.addEventListener(BrowserEvents.cut, event => {
+      fn(event)
+    })
     return this
   }
   setPasteHandler(fn) {
@@ -736,22 +766,21 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
   setResizeEndHandler(fn) {
     let resizeTimer
-    jQuery(window).on(BrowserEvents.resize, evt => {
-      const target = jQuery(evt.target)
-      if (target.is("div")) return // dont resize on div resizes
+    window.addEventListener(BrowserEvents.resize, evt => {
+      const target = evt.target
+      if (target !== window) return // dont resize on div resizes
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
-        fn({ width: target.width(), height: target.height() })
+        fn(this.getWindowSize())
       }, 100)
     })
     return this
   }
   getStumpNodeFromElement(el) {
-    const jqEl = jQuery(el)
-    return this.getHtmlStumpNode().getNodeByGuid(parseInt(jqEl.attr(WillowConstants.uidAttribute)))
+    return this.getHtmlStumpNode().getNodeByGuid(parseInt(el.getAttribute(WillowConstants.uidAttribute)))
   }
   forceRepaint() {
-    jQuery(window).width()
+    // todo:
   }
   getBrowserHtml() {
     return document.documentElement.outerHTML
@@ -763,17 +792,9 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     return prompt(message, value)
   }
   getWindowSize() {
-    const windowStumpNode = jQuery(window)
     return {
-      width: windowStumpNode.width(),
-      height: windowStumpNode.height()
-    }
-  }
-  getDocumentSize() {
-    const documentStumpNode = jQuery(document)
-    return {
-      width: documentStumpNode.width(),
-      height: documentStumpNode.height()
+      width: window.innerWidth,
+      height: window.innerHeight
     }
   }
   // todo: denote the side effect
@@ -896,9 +917,9 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
   start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
   }
-  getWillowBrowser() {
+  get willowBrowser() {
     if (!this._willowBrowser) {
       if (this.isNodeJs()) {
         this._willowBrowser = new WillowBrowser("http://localhost:8000/index.html")
@@ -916,7 +937,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return this
   }
   getMouseEvent() {
-    return this._mouseEvent || this.getWillowBrowser().getMockMouseEvent()
+    return this._mouseEvent || this.willowBrowser.getMockMouseEvent()
   }
   _onCommandWillRun() {
     // todo: remove. currently used by ohayo
@@ -944,27 +965,19 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     }
   }
   getStumpNodeString() {
-    return this.getWillowBrowser()
-      .getHtmlStumpNode()
-      .toString()
+    return this.willowBrowser.getHtmlStumpNode().toString()
   }
   _getHtmlOnlyNodes() {
     const nodes = []
-    this.getWillowBrowser()
-      .getHtmlStumpNode()
-      .deepVisit(node => {
-        if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
-        nodes.push(node)
-      })
+    this.willowBrowser.getHtmlStumpNode().deepVisit(node => {
+      if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
+      nodes.push(node)
+    })
     return nodes
   }
   getStumpNodeStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
-    const clone = new jtree.TreeNode(
-      this.getWillowBrowser()
-        .getHtmlStumpNode()
-        .toString()
-    )
+    const clone = new jtree.TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
     clone.getTopDownArray().forEach(node => {
       if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
     })
@@ -1000,7 +1013,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     }
   }
   _bindTreeComponentFrameworkCommandListenersOnBody() {
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
     const app = this
     const checkAndExecute = (el, attr, evt) => {
@@ -1027,6 +1040,9 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     })
     bodyShadow.onShadowEvent(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function(evt) {
       return checkAndExecute(this, WillowConstants.blurCommand, evt)
+    })
+    bodyShadow.onShadowEvent(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function(evt) {
+      return checkAndExecute(this, WillowConstants.keyUpCommand, evt)
     })
     bodyShadow.onShadowEvent(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function(evt) {
       return checkAndExecute(this, WillowConstants.changeCommand, evt)
@@ -1289,9 +1305,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
  bern${jtree.TreeNode.nest(css, 2)}`)
   }
   _getPageHeadStump() {
-    return this.getRootNode()
-      .getWillowBrowser()
-      .getHeadStumpNode()
+    return this.getRootNode().willowBrowser.getHeadStumpNode()
   }
   _removeCss() {
     if (!this._cssStumpNode) return this

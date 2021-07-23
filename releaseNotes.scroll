@@ -10,6 +10,8 @@ list
  - ⚠️ tcf: forceRepaint function now a no-op
  - ⚠️ tcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change
  - ⚠️ tcf: getWillowBrowser is now the `willowBrowser` getter
+ - ⚠️ tcf: getShadowElement is now shadowElement getter
+ - ⚠️ tcf: removed getShadowHtml
 
 section 51.7.0 2021-07-22
 list

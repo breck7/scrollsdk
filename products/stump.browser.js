@@ -180,6 +180,7 @@ htmlTagNode
  catchAllCellType anyHtmlContentCell
  cells htmlTagNameCell
  javascript
+  isHtmlTagNode = true
   getTag() {
    // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
    const firstWord = this.getFirstWord()
@@ -204,6 +205,16 @@ htmlTagNode
   }
   shouldCollapse() {
    return this.has("collapse")
+  }
+  get domElement() {
+    var elem = document.createElement(this.getTag())
+    elem.setAttribute("stumpUid", this._getUid())
+    this.filter(node => node.isAttributeNode)
+      .forEach(child => elem.setAttribute(child.getFirstWord(), child.getContent()))
+    elem.innerHTML = this._getOneLiner()
+    this.filter(node => node.isHtmlTagNode)
+      .forEach(child => elem.appendChild(domElement))
+    return elem
   }
   _toHtml(indentCount, withSuid) {
    const tag = this.getTag()
@@ -268,6 +279,7 @@ htmlTagNode
   insertChildNode(text, index) {
    const singleNode = new jtree.TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
+   // this.filter(node => node.isHtmlTagNode)
    const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("htmlTagNode").indexOf(newNode)
    this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
    return newNode
@@ -714,6 +726,7 @@ bernNode
     get anyHtmlContentCell() {
       return this.getWordsFrom(1)
     }
+    isHtmlTagNode = true
     getTag() {
       // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
       const firstWord = this.getFirstWord()
@@ -738,6 +751,14 @@ bernNode
     }
     shouldCollapse() {
       return this.has("collapse")
+    }
+    get domElement() {
+      var elem = document.createElement(this.getTag())
+      elem.setAttribute("stumpUid", this._getUid())
+      this.filter(node => node.isAttributeNode).forEach(child => elem.setAttribute(child.getFirstWord(), child.getContent()))
+      elem.innerHTML = this._getOneLiner()
+      this.filter(node => node.isHtmlTagNode).forEach(child => elem.appendChild(domElement))
+      return elem
     }
     _toHtml(indentCount, withSuid) {
       const tag = this.getTag()
@@ -802,6 +823,7 @@ bernNode
     insertChildNode(text, index) {
       const singleNode = new jtree.TreeNode(text).getChildren()[0]
       const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
+      // this.filter(node => node.isHtmlTagNode)
       const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("htmlTagNode").indexOf(newNode)
       this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
       return newNode

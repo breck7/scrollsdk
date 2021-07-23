@@ -26,6 +26,7 @@ const WillowConstants = {}
 WillowConstants.clickCommand = "clickCommand"
 WillowConstants.shiftClickCommand = "shiftClickCommand"
 WillowConstants.blurCommand = "blurCommand"
+WillowConstants.keyUpCommand = "keyUpCommand"
 WillowConstants.contextMenuCommand = "contextMenuCommand"
 WillowConstants.changeCommand = "changeCommand"
 WillowConstants.doubleClickCommand = "doubleClickCommand"
@@ -1041,6 +1042,9 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     })
     bodyShadow.onShadowEvent(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function(evt) {
       return checkAndExecute(this, WillowConstants.blurCommand, evt)
+    })
+    bodyShadow.onShadowEvent(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function(evt) {
+      return checkAndExecute(this, WillowConstants.keyUpCommand, evt)
     })
     bodyShadow.onShadowEvent(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function(evt) {
       return checkAndExecute(this, WillowConstants.changeCommand, evt)

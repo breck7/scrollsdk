@@ -3,8 +3,6 @@
 const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
 
-declare var jQuery: any
-
 // Todo: add inputs at the top to change the edge, node, and cell delimiters.
 
 class SandboxApp extends AbstractTreeComponent {
@@ -87,14 +85,6 @@ class SandboxApp extends AbstractTreeComponent {
     const deepLink = this.treeFromDeepLink()
     if (deepLink) treeConsoleEl.value = deepLink.childrenToString()
     else if (localStorage.getItem("tree")) treeConsoleEl.value = localStorage.getItem("tree")
-
-    // Bind listeners
-    jQuery("#treeConsole").on("keyup", () => this.updateFromTreeConsoleCommand())
-    jQuery("#toJsonSubset").on("keyup", () => this.updateFromJsonSubsetCommand())
-    jQuery("#csvConsole").on("keyup", () => this.updateFromCsvConsoleCommand())
-    jQuery("#xmlConsole").on("keyup", () => this.updateFromXmlConsoleCommand())
-    jQuery("#gridJsonConsole").on("keyup", () => this.updateFromGridJsonConsoleCommand())
-    jQuery("#jsonConsole").on("keyup", () => this.updateFromJsonConsoleCommand())
 
     // Trigger start
     this.updateFromTreeConsoleCommand()
@@ -252,15 +242,18 @@ class tableComponent extends AbstractTreeComponent {
    div Tree Notation
    textarea
     id treeConsole
+    keyUpCommand updateFromTreeConsoleCommand
   td
    div toGridJson()
    textarea
     id gridJsonConsole
+    keyUpCommand updateFromGridJsonConsoleCommand
  tr
   td
    div toJson()
    textarea
     id jsonConsole
+    keyUpCommand updateFromJsonConsoleCommand
   td
    div
     span toJsonSubset()
@@ -268,6 +261,7 @@ class tableComponent extends AbstractTreeComponent {
      clickCommand loadJsonSampleCommand
    textarea
     id toJsonSubset
+    keyUpCommand updateFromJsonSubsetCommand
  tr
   td
    div
@@ -276,11 +270,13 @@ class tableComponent extends AbstractTreeComponent {
      clickCommand loadCsvSampleCommand
    textarea
     id csvConsole
+    keyUpCommand updateFromCsvConsoleCommand
   td
    div
     span toXml()
    textarea
     id xmlConsole
+    keyUpCommand updateFromXmlConsoleCommand
  tr
   td
    div toOutline()

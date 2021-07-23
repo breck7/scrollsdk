@@ -364,7 +364,7 @@ htmlAttributeNode
  cells htmlAttributeNameCell
 stumpExtendedAttributeNameCell
  extends htmlAttributeNameCell
- enum collapse blurCommand changeCommand clickCommand contextMenuCommand doubleClickCommand lineClickCommand lineShiftClickCommand shiftClickCommand
+ enum collapse blurCommand changeCommand clickCommand contextMenuCommand doubleClickCommand keyUpCommand lineClickCommand lineShiftClickCommand shiftClickCommand
 stumpExtendedAttributeNode
  description Node types not present in HTML but included in stump.
  extends htmlAttributeNode
@@ -700,6 +700,7 @@ bernNode
           lineClickCommand: stumpExtendedAttributeNode,
           changeCommand: stumpExtendedAttributeNode,
           clickCommand: stumpExtendedAttributeNode,
+          keyUpCommand: stumpExtendedAttributeNode,
           blurCommand: stumpExtendedAttributeNode,
           collapse: stumpExtendedAttributeNode,
           bern: bernNode

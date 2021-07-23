@@ -6,11 +6,12 @@ paragraph
 
 section 52.0.0 2021-07-22
 list
+ - 🎉 stump/tcf: ~200% faster when inserting lots of elements
  - 🎉 tcf: added keyUpCommand support
  - ⚠️ tcf: forceRepaint function now a no-op
  - ⚠️ tcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change
- - ⚠️ tcf: getWillowBrowser is now the `willowBrowser` getter
- - ⚠️ tcf: getShadowElement is now shadowElement getter
+ - ⚠️ tcf: getWillowBrowser is now "willowBrowser" getter
+ - ⚠️ tcf: getShadowElement is now "shadowElement" getter
  - ⚠️ tcf: removed getShadowHtml
 
 section 51.7.0 2021-07-22

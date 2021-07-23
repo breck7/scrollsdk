@@ -279,8 +279,7 @@ htmlTagNode
   insertChildNode(text, index) {
    const singleNode = new jtree.TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-   // this.filter(node => node.isHtmlTagNode)
-   const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("htmlTagNode").indexOf(newNode)
+   const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
    this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
    return newNode
   }
@@ -823,8 +822,7 @@ bernNode
     insertChildNode(text, index) {
       const singleNode = new jtree.TreeNode(text).getChildren()[0]
       const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-      // this.filter(node => node.isHtmlTagNode)
-      const stumpNodeIndex = this.getChildInstancesOfNodeTypeId("htmlTagNode").indexOf(newNode)
+      const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
       this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
       return newNode
     }

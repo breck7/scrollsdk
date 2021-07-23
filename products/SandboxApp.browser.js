@@ -19,20 +19,17 @@ class SandboxApp extends AbstractTreeComponent {
  "keywords": "jtree"
 }`
     )
-    jQuery("#toJsonSubset").keyup()
+    this.updateFromJsonSubsetCommand()
   }
   loadCsvSampleCommand() {
     this.willowBrowser.setValueOfElementWithIdHack("csvConsole", jtree.TreeNode.iris)
-    jQuery("#csvConsole").keyup()
-  }
-  get _shareLink() {
-    return jQuery("#shareLink")
+    this.updateFromCsvConsoleCommand()
   }
   _updateShareLink() {
     const url = new URL(location.href)
     url.hash = ""
     const base = url.toString()
-    this._shareLink.val(base + this.toShareLink())
+    this.willowBrowser.setValueOfElementWithIdHack("shareLink", base + this.toShareLink())
   }
   toShareLink() {
     const treeCode = localStorage.getItem("tree")
@@ -46,52 +43,61 @@ class SandboxApp extends AbstractTreeComponent {
     if (hash.length < 2) return ""
     return new jtree.TreeNode(decodeURIComponent(hash.substr(1))).getNode("tree")
   }
+  updateAllCommand(tree, eventSource) {
+    const { willowBrowser } = this
+    if (eventSource !== "treeConsole") willowBrowser.setValueOfElementWithIdHack("treeConsole", tree.toString())
+    if (eventSource !== "toJsonSubset") willowBrowser.setValueOfElementWithIdHack("toJsonSubset", tree.toJsonSubset())
+    if (eventSource !== "csvConsole") willowBrowser.setValueOfElementWithIdHack("csvConsole", tree.toCsv())
+    if (eventSource !== "xmlConsole") willowBrowser.setValueOfElementWithIdHack("xmlConsole", tree.toXml())
+    if (eventSource !== "gridJsonConsole") willowBrowser.setValueOfElementWithIdHack("gridJsonConsole", tree.toGridJson())
+    if (eventSource !== "jsonConsole") willowBrowser.setValueOfElementWithIdHack("jsonConsole", tree.toJson())
+    if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", tree.toOutline())
+    if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", tree.toHtml())
+    if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", tree.toTable())
+    if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", tree.toHtmlCube())
+    if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", tree.toYaml())
+    let win = window
+    win.tree = tree
+    localStorage.setItem("tree", tree.toString())
+    this._updateShareLink() // todo: where to put this?
+  }
   async treeComponentDidMount() {
-    const app = this
     // todo: refactor!!! split these into components
-    jQuery(document).ready(function() {
-      const treeConsole = jQuery("#treeConsole")
-      const toJsonSubset = jQuery("#toJsonSubset")
-      const outlineConsole = jQuery("#outlineConsole")
-      const csvConsole = jQuery("#csvConsole")
-      const xmlConsole = jQuery("#xmlConsole")
-      const htmlConsole = jQuery("#htmlConsole")
-      const tableConsole = jQuery("#tableConsole")
-      const htmlCubeConsole = jQuery("#htmlCubeConsole")
-      const gridJsonConsole = jQuery("#gridJsonConsole")
-      const jsonConsole = jQuery("#jsonConsole")
-      const yamlConsole = jQuery("#yamlConsole")
-      // Init vars
-      const deepLink = app.treeFromDeepLink()
-      if (deepLink) treeConsole.val(deepLink.childrenToString())
-      else if (localStorage.getItem("tree")) treeConsole.val(localStorage.getItem("tree"))
-      const updateAll = (tree, eventSource) => {
-        if (eventSource !== treeConsole) treeConsole.val(tree.toString())
-        if (eventSource !== toJsonSubset) toJsonSubset.val(tree.toJsonSubset())
-        if (eventSource !== outlineConsole) outlineConsole.html(tree.toOutline())
-        if (eventSource !== csvConsole) csvConsole.val(tree.toCsv())
-        if (eventSource !== xmlConsole) xmlConsole.val(tree.toXml())
-        if (eventSource !== htmlConsole) htmlConsole.html(tree.toHtml())
-        if (eventSource !== tableConsole) tableConsole.html(tree.toTable())
-        if (eventSource !== gridJsonConsole) gridJsonConsole.val(tree.toGridJson())
-        if (eventSource !== jsonConsole) jsonConsole.val(tree.toJson())
-        if (eventSource !== htmlCubeConsole) htmlCubeConsole.html(tree.toHtmlCube())
-        if (eventSource !== yamlConsole) yamlConsole.html(tree.toYaml())
-        let win = window
-        win.tree = tree
-        localStorage.setItem("tree", tree.toString())
-        app._updateShareLink() // todo: where to put this?
-      }
-      // Bind listeners
-      treeConsole.on("keyup", () => updateAll(new jtree.TreeNode(treeConsole.val()), treeConsole))
-      toJsonSubset.on("keyup", () => updateAll(jtree.TreeNode.fromJsonSubset(toJsonSubset.val()), toJsonSubset))
-      csvConsole.on("keyup", () => updateAll(jtree.TreeNode.fromCsv(csvConsole.val()), csvConsole))
-      xmlConsole.on("keyup", () => updateAll(jtree.TreeNode.fromXml(xmlConsole.val()), xmlConsole))
-      gridJsonConsole.on("keyup", () => updateAll(jtree.TreeNode.fromGridJson(gridJsonConsole.val()), gridJsonConsole))
-      jsonConsole.on("keyup", () => updateAll(jtree.TreeNode.fromJson(jsonConsole.val()), jsonConsole))
-      // Trigger start
-      treeConsole.keyup()
-    })
+    const treeConsoleEl = this.willowBrowser.getElementById("treeConsole")
+    // Init vars
+    const deepLink = this.treeFromDeepLink()
+    if (deepLink) treeConsoleEl.value = deepLink.childrenToString()
+    else if (localStorage.getItem("tree")) treeConsoleEl.value = localStorage.getItem("tree")
+    // Bind listeners
+    jQuery("#treeConsole").on("keyup", () => this.updateFromTreeConsoleCommand())
+    jQuery("#toJsonSubset").on("keyup", () => this.updateFromJsonSubsetCommand())
+    jQuery("#csvConsole").on("keyup", () => this.updateFromCsvConsoleCommand())
+    jQuery("#xmlConsole").on("keyup", () => this.updateFromXmlConsoleCommand())
+    jQuery("#gridJsonConsole").on("keyup", () => this.updateFromGridJsonConsoleCommand())
+    jQuery("#jsonConsole").on("keyup", () => this.updateFromJsonConsoleCommand())
+    // Trigger start
+    this.updateFromTreeConsoleCommand()
+  }
+  valueOf(id) {
+    return this.willowBrowser.getElementById(id).value
+  }
+  updateFromXmlConsoleCommand() {
+    this.updateAllCommand(jtree.TreeNode.fromXml(this.valueOf("xmlConsole")), "xmlConsole")
+  }
+  updateFromGridJsonConsoleCommand() {
+    this.updateAllCommand(jtree.TreeNode.fromGridJson(this.valueOf("gridJsonConsole")), "gridJsonConsole")
+  }
+  updateFromJsonConsoleCommand() {
+    this.updateAllCommand(jtree.TreeNode.fromJson(this.valueOf("jsonConsole")), "jsonConsole")
+  }
+  updateFromCsvConsoleCommand() {
+    this.updateAllCommand(jtree.TreeNode.fromCsv(this.valueOf("csvConsole")), "csvConsole")
+  }
+  updateFromJsonSubsetCommand() {
+    this.updateAllCommand(jtree.TreeNode.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
+  }
+  updateFromTreeConsoleCommand() {
+    this.updateAllCommand(new jtree.TreeNode(this.valueOf("treeConsole")), "treeConsole")
   }
   toHakonCode() {
     const theme = this.getTheme()

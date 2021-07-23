@@ -11,7 +11,6 @@ declare type gameState = 0 | 1 | 2
 declare type char = string
 
 declare var Figlet: any
-declare var jQuery: any
 declare var FontsBanner: any
 
 // A fn which renders a view. Otherwise runs headless.
@@ -464,13 +463,13 @@ const linkToObject = (link: string): Object => {
 class SweeperCraftApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
-      headerComponent: headerComponent,
-      boardComponent: boardComponent,
-      controlsComponent: controlsComponent,
-      customLinkComponent: customLinkComponent,
-      shortcutsTableComponent: shortcutsTableComponent,
-      githubTriangleComponent: githubTriangleComponent,
-      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
+      headerComponent,
+      boardComponent,
+      controlsComponent,
+      customLinkComponent,
+      shortcutsTableComponent,
+      githubTriangleComponent,
+      TreeComponentFrameworkDebuggerComponent
     })
   }
 
@@ -530,7 +529,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
   font-size 30px
 .headerComponent
  margin-bottom 10px
-#minesLeft,#moves,.timer
+#minesLeft,#moves,#timer
  background-position left center
  background-size contain
  background-repeat no-repeat
@@ -540,7 +539,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
  content "💣"
 #moves:before
  content "🔘"
-.timer:before
+#timer:before
  content "⌚️"
 #gameStatus
  font-weight bold
@@ -618,7 +617,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
   color #57bbdc
 .logo
  color #333
-#shortcuts
+#shortcutsTableComponent
  table
   margin-top 15px
  td
@@ -630,8 +629,6 @@ class SweeperCraftApp extends AbstractTreeComponent {
   background-color #44a450
  &:active
   background-color #3c9247
-#errors
- color #da3c38
 .rowComponent:first-child
  .squareComponent
   border-top 1px solid #757575
@@ -646,10 +643,6 @@ class SweeperCraftApp extends AbstractTreeComponent {
   }
 
   private _setupBrowser() {
-    window.addEventListener("error", err => {
-      jQuery("#errors").html(`Something went wrong: ${err.message}. <a href=''>Refresh</a>`)
-    })
-
     const willowBrowser = this.getWillowBrowser()
 
     const keyboardShortcuts: any = this._getKeyboardShortcuts()
@@ -700,7 +693,12 @@ class SweeperCraftApp extends AbstractTreeComponent {
         if (this._mainGame.isOver()) this._mainGame.watchReplay(250, () => this._syncAndRender())
       },
       "?": () => {
-        jQuery("#shortcuts").toggle()
+        const table = this.getNode("shortcutsTableComponent")
+        if (table) table.unmountAndDestroy()
+        else {
+          this.appendLine("shortcutsTableComponent")
+          this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+        }
       },
       e: () => {
         location.hash = SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10))
@@ -778,7 +776,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
     // Skip reactjs for updating timer
     if (!this._timerInterval)
       this._timerInterval = setInterval(() => {
-        jQuery(".timer").html(this.gameTime)
+        document.getElementById("timer").innerHTML = `${this.gameTime}`
       }, 1000)
   }
 
@@ -823,7 +821,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
   span ${this.numberOfMoves}
    id moves
   span ${this.gameTime}
-   class timer
+   id timer
   span ${this.gameMessage}
    id gameStatus`
   }
@@ -980,7 +978,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
 class shortcutsTableComponent extends AbstractTreeComponent {
   toStumpCode() {
     return `div
- id shortcuts
+ id shortcutsTableComponent
  table
   tbody
    tr

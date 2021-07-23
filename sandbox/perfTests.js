@@ -1,5 +1,7 @@
 const logFn = msg => {
-  jQuery("body").append(`<div>${msg}</div>`)
+  var elem = document.createElement("div")
+  elem.innerHTML = msg
+  document.body.appendChild(elem)
   console.log(msg)
 }
 
@@ -80,7 +82,10 @@ const toStringTest = () => {
   logFn(`toString ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`)
 }
 
-jQuery(async () => {
-  const grammarCode = await jQuery.get("/langs/jibberish/jibberish.grammar")
+const fetchAndRun = async () => {
+  const result = await fetch("/langs/jibberish/jibberish.grammar")
+  const grammarCode = await result.text()
   main(grammarCode, getBigCode())
-})
+}
+
+fetchAndRun()

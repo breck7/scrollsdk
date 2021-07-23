@@ -371,7 +371,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
   }
   _syncAndRender() {
     this._syncBoardToGame()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
   }
   flagSquareCommand(row, col) {
     row = typeof row === "string" ? parseInt(row) : row
@@ -507,7 +507,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
     return this._mainGame
   }
   _setupBrowser() {
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const keyboardShortcuts = this._getKeyboardShortcuts()
     Object.keys(keyboardShortcuts).forEach(key => {
       willowBrowser.getMousetrap().bind(key, function(evt) {
@@ -526,7 +526,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
   async start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     if (!this.isNodeJs()) this._setupBrowser()
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const currentHash = willowBrowser.getHash().replace(/^#/, "")
     // Initialize first game
     if (SweeperCraftGame.isValidPermalink(currentHash)) this._restoreStateFromHash(currentHash)
@@ -554,7 +554,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
         if (table) table.unmountAndDestroy()
         else {
           this.appendLine("shortcutsTableComponent")
-          this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+          this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
         }
       },
       e: () => {
@@ -620,8 +620,8 @@ class headerComponent extends AbstractSweeperCraftComponent {
     // Skip reactjs for updating timer
     if (!this._timerInterval)
       this._timerInterval = setInterval(() => {
+        this.willowBrowser.setHtmlOfElementWithIdHack("timer", this.gameTime)
         console.log(this.gameTime)
-        document.getElementById("timer").innerHTML = `${this.gameTime}`
       }, 1000)
   }
   get gameTime() {

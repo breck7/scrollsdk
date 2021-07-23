@@ -21,9 +21,9 @@ testTree.all = (equal: any) => {
 
   // Assert
   equal(!!app.getTheme(), true, "get theme")
-  equal(!!app.getWillowBrowser(), true, "get willow")
+  equal(!!app.willowBrowser, true, "get willow")
 
-  equal(app.getWillowBrowser().toPrettyDeepLink(`foo bar`, { filename: "bam.foo" }), "http://localhost:8000/index.html?filename=bam.foo&nodeBreakSymbol=%7E&edgeSymbol=_&data=foo_bar")
+  equal(app.willowBrowser.toPrettyDeepLink(`foo bar`, { filename: "bam.foo" }), "http://localhost:8000/index.html?filename=bam.foo&nodeBreakSymbol=%7E&edgeSymbol=_&data=foo_bar")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)

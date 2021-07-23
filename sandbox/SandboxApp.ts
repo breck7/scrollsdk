@@ -10,30 +10,31 @@ declare var jQuery: any
 class SandboxApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
-      tableComponent: tableComponent,
-      shareComponent: shareComponent,
-      githubTriangleComponent: githubTriangleComponent,
-      headerComponent: headerComponent,
-      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
+      tableComponent,
+      shareComponent,
+      githubTriangleComponent,
+      headerComponent,
+      TreeComponentFrameworkDebuggerComponent
     })
   }
 
   loadJsonSampleCommand() {
-    jQuery("#toJsonSubset")
-      .val(
-        `{
+    this.willowBrowser.setValueOfElementWithIdHack(
+      "toJsonSubset",
+      `{
  "name": "jtree",
  "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
  "keywords": "jtree"
 }`
-      )
-      .keyup()
+    )
+
+    jQuery("#toJsonSubset").keyup()
   }
 
   loadCsvSampleCommand() {
-    jQuery("#csvConsole")
-      .val(jtree.TreeNode.iris)
-      .keyup()
+    this.willowBrowser.setValueOfElementWithIdHack("csvConsole", jtree.TreeNode.iris)
+
+    jQuery("#csvConsole").keyup()
   }
 
   private get _shareLink() {

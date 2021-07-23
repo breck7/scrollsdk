@@ -16,37 +16,37 @@ declare type html = string
 class DesignerApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
-      githubTriangleComponent: githubTriangleComponent,
-      samplesComponent: samplesComponent,
-      tableComponent: tableComponent,
-      shareComponent: shareComponent,
-      headerComponent: headerComponent,
-      otherErrorsComponent: otherErrorsComponent,
-      TreeComponentFrameworkDebuggerComponent: TreeComponentFrameworkDebuggerComponent
+      githubTriangleComponent,
+      samplesComponent,
+      tableComponent,
+      shareComponent,
+      headerComponent,
+      otherErrorsComponent,
+      TreeComponentFrameworkDebuggerComponent
     })
   }
 
   _clearResults() {
-    jQuery(".resultsDiv").html("")
-    jQuery(".resultsDiv").val("")
+    this.willowBrowser.setHtmlOfElementsWithClassHack("resultsDiv")
+    this.willowBrowser.setValueOfElementsWithClassHack("resultsDiv")
   }
 
   ///
   async executeCommand() {
     const result = await this.program.execute()
-    jQuery("#executeResultsDiv").val(Array.isArray(result) ? result.join(",") : result)
+    this.willowBrowser.setValueOfElementWithIdHack("executeResultsDiv", Array.isArray(result) ? result.join(",") : result)
   }
 
   compileCommand() {
-    jQuery("#compileResultsDiv").val(this.program.compile())
+    this.willowBrowser.setValueOfElementWithIdHack("compileResultsDiv", this.program.compile())
   }
 
   showAutoCompleteCubeCommand() {
-    jQuery("#explainResultsDiv").html(this.program.toAutoCompleteCube().toHtmlCube())
+    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this.program.toAutoCompleteCube().toHtmlCube())
   }
 
   visualizeCommand() {
-    jQuery("#explainResultsDiv").html(this._toIceTray(this.program))
+    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
   }
 
   inferPrefixGrammarCommand() {
@@ -67,7 +67,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   resetCommand() {
     Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     willowBrowser.reload()
   }
 
@@ -75,7 +75,7 @@ class DesignerApp extends AbstractTreeComponent {
     const samplePath = `/langs/${name}/sample.${name}`
     const grammarPath = `/langs/${name}/${name}.grammar`
 
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(grammarPath)
     const sample = await willowBrowser.httpGetUrl(samplePath)
 
@@ -83,7 +83,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   async fetchAndLoadGrammarFromUrlCommand(url: string) {
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(url)
     const grammarProgram = new jtree.HandGrammarProgram(grammar.text)
     const rootNodeDef = grammarProgram.getRootNodeTypeDefinitionNode()
@@ -221,7 +221,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   async start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
 
     this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(<any>this._grammarConsole[0], { lineWrapping: true })
 
@@ -283,10 +283,10 @@ class DesignerApp extends AbstractTreeComponent {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
         this._grammarConstructor = new jtree.HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
         this._cachedGrammarCode = currentGrammarCode
-        jQuery("#otherErrorsDiv").html("")
+        this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
       } catch (err) {
         console.error(err)
-        jQuery("#otherErrorsDiv").html(err)
+        this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
       }
     }
     return this._grammarConstructor
@@ -294,7 +294,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   protected onCommandError(err: any) {
     console.log(err)
-    jQuery("#otherErrorsDiv").html(err)
+    this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
   }
 
   private _grammarDidUpdate() {

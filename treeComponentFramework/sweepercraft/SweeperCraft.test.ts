@@ -13,7 +13,7 @@ controlsComponent
 customLinkComponent
 shortcutsTableComponent
 githubTriangleComponent`)
-  app.getWillowBrowser().setHash("rows/9/columns/9/layout/GcmqabaiqaGaGa")
+  app.willowBrowser.setHash("rows/9/columns/9/layout/GcmqabaiqaGaGa")
   await app.startWhenReady()
   const text = app.getTextContent()
   equal(text.includes("New medium board"), true)

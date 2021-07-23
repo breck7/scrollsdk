@@ -342,6 +342,11 @@ class AbstractWillowBrowser extends stumpNode {
     this.location.hash = value
   }
 
+  setHtmlOfElementWithIdHack(id: string, html: string) {}
+  setHtmlOfElementsWithClassHack(id: string, html: string) {}
+  setValueOfElementWithIdHack(id: string, value: string) {}
+  setValueOfElementWithClassHack(id: string, value: string) {}
+
   queryObjectToQueryString(obj: Object) {
     const params = new URLSearchParams()
     for (const [key, value] of Object.entries(obj)) {
@@ -784,6 +789,29 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     return stumpNodes
   }
 
+  setHtmlOfElementWithIdHack(id: string, html = "") {
+    document.getElementById(id).innerHTML = html
+  }
+
+  setHtmlOfElementsWithClassHack(className: string, html = "") {
+    const els: any = document.getElementsByClassName(className)
+    for (let el of els) {
+      el.innerHTML = html
+    }
+  }
+
+  setValueOfElementWithIdHack(id: string, value = "") {
+    const el = document.getElementById(id) as any
+    el.value = value
+  }
+
+  setValueOfElementsWithClassHack(className: string, value = "") {
+    const els: any = document.getElementsByClassName(className)
+    for (let el of els) {
+      el.value = value
+    }
+  }
+
   addSuidsToHtmlHeadAndBodyShadows() {
     jQuery(WillowConstants.tags.html).attr(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
     jQuery(WillowConstants.tags.head).attr(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
@@ -1174,10 +1202,10 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
 
   start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
-    this.renderAndGetRenderReport(this.getWillowBrowser().getBodyStumpNode())
+    this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
   }
 
-  getWillowBrowser() {
+  get willowBrowser() {
     if (!this._willowBrowser) {
       if (this.isNodeJs()) {
         this._willowBrowser = new WillowBrowser("http://localhost:8000/index.html")
@@ -1200,7 +1228,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   getMouseEvent() {
-    return this._mouseEvent || this.getWillowBrowser().getMockMouseEvent()
+    return this._mouseEvent || this.willowBrowser.getMockMouseEvent()
   }
 
   protected _onCommandWillRun() {
@@ -1232,29 +1260,21 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   getStumpNodeString() {
-    return this.getWillowBrowser()
-      .getHtmlStumpNode()
-      .toString()
+    return this.willowBrowser.getHtmlStumpNode().toString()
   }
 
   _getHtmlOnlyNodes() {
     const nodes: any[] = []
-    this.getWillowBrowser()
-      .getHtmlStumpNode()
-      .deepVisit((node: any) => {
-        if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
-        nodes.push(node)
-      })
+    this.willowBrowser.getHtmlStumpNode().deepVisit((node: any) => {
+      if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
+      nodes.push(node)
+    })
     return nodes
   }
 
   getStumpNodeStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
-    const clone = new jtree.TreeNode(
-      this.getWillowBrowser()
-        .getHtmlStumpNode()
-        .toString()
-    )
+    const clone = new jtree.TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
 
     clone.getTopDownArray().forEach((node: any) => {
       if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
@@ -1297,7 +1317,7 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
 
   private _bindTreeComponentFrameworkCommandListenersOnBody() {
-    const willowBrowser = this.getWillowBrowser()
+    const willowBrowser = this.willowBrowser
     const bodyShadow = willowBrowser.getBodyStumpNode().getShadow()
     const app = this
 
@@ -1650,9 +1670,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 
   protected _getPageHeadStump(): abstractHtmlTag {
-    return this.getRootNode()
-      .getWillowBrowser()
-      .getHeadStumpNode()
+    return this.getRootNode().willowBrowser.getHeadStumpNode()
   }
 
   protected _removeCss() {

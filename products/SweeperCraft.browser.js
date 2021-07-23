@@ -621,7 +621,6 @@ class headerComponent extends AbstractSweeperCraftComponent {
     if (!this._timerInterval)
       this._timerInterval = setInterval(() => {
         this.willowBrowser.setHtmlOfElementWithIdHack("timer", this.gameTime)
-        console.log(this.gameTime)
       }, 1000)
   }
   get gameTime() {

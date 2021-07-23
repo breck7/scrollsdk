@@ -784,10 +784,12 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 class RealWillowBrowser extends AbstractWillowBrowser {
   findStumpNodesByShadowClass(className: string) {
     const stumpNodes: any[] = []
-    const that = this
-    jQuery("." + className).each(function() {
-      stumpNodes.push(that.getStumpNodeFromElement(this))
-    })
+
+    const els: any = document.getElementsByClassName(className)
+    for (let el of els) {
+      stumpNodes.push(this.getStumpNodeFromElement(this))
+    }
+
     return stumpNodes
   }
 
@@ -818,10 +820,14 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     }
   }
 
+  private getElementByTagName(tagName: string) {
+    return document.getElementsByTagName(tagName)[0]
+  }
+
   addSuidsToHtmlHeadAndBodyShadows() {
-    jQuery(WillowConstants.tags.html).attr(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
-    jQuery(WillowConstants.tags.head).attr(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
-    jQuery(WillowConstants.tags.body).attr(WillowConstants.uidAttribute, this.getBodyStumpNode()._getUid())
+    this.getElementByTagName(WillowConstants.tags.html).setAttribute(WillowConstants.uidAttribute, this.getHtmlStumpNode()._getUid())
+    this.getElementByTagName(WillowConstants.tags.head).setAttribute(WillowConstants.uidAttribute, this.getHeadStumpNode()._getUid())
+    this.getElementByTagName(WillowConstants.tags.body).setAttribute(WillowConstants.uidAttribute, this.getBodyStumpNode()._getUid())
   }
 
   getShadowClass() {
@@ -829,12 +835,16 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   setCopyHandler(fn: Function) {
-    jQuery(document).on(BrowserEvents.copy, fn)
+    document.addEventListener(BrowserEvents.copy, event => {
+      fn(event)
+    })
     return this
   }
 
   setCutHandler(fn: Function) {
-    jQuery(document).on(BrowserEvents.cut, fn)
+    document.addEventListener(BrowserEvents.cut, event => {
+      fn(event)
+    })
     return this
   }
 
@@ -965,24 +975,23 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 
   setResizeEndHandler(fn: Function) {
     let resizeTimer: any
-    jQuery(window).on(BrowserEvents.resize, (evt: any) => {
-      const target = jQuery(evt.target)
-      if (target.is("div")) return // dont resize on div resizes
+    window.addEventListener(BrowserEvents.resize, (evt: any) => {
+      const target = evt.target
+      if (target !== window) return // dont resize on div resizes
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
-        fn({ width: target.width(), height: target.height() })
+        fn(this.getWindowSize())
       }, 100)
     })
     return this
   }
 
   getStumpNodeFromElement(el: any) {
-    const jqEl: any = jQuery(el)
-    return this.getHtmlStumpNode().getNodeByGuid(parseInt(jqEl.attr(WillowConstants.uidAttribute)))
+    return this.getHtmlStumpNode().getNodeByGuid(parseInt(el.getAttribute(WillowConstants.uidAttribute)))
   }
 
   forceRepaint() {
-    jQuery(window).width()
+    // todo:
   }
 
   getBrowserHtml() {
@@ -998,18 +1007,9 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
 
   getWindowSize() {
-    const windowStumpNode = jQuery(window)
     return {
-      width: windowStumpNode.width(),
-      height: windowStumpNode.height()
-    }
-  }
-
-  getDocumentSize() {
-    const documentStumpNode = jQuery(document)
-    return {
-      width: documentStumpNode.width(),
-      height: documentStumpNode.height()
+      width: window.innerWidth,
+      height: window.innerHeight
     }
   }
 

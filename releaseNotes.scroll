@@ -4,6 +4,13 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 52.0.0 2021-07-22
+list
+ - 🎉 tcf: added keyUpCommand support
+ - ⚠️ tcf: forceRepaint function now a no-op
+ - ⚠️ tcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change
+ - ⚠️ tcf: getWillowBrowser is now the `willowBrowser` getter
+
 section 51.7.0 2021-07-22
 list
  - 🎉 perf improvement in TCF—don't insert CSS nodes if no CSS

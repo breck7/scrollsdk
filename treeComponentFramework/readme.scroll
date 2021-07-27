@@ -89,7 +89,7 @@ code
                   |                                   |             
     +--------------------------+        +--------------------------+
     |  External Dependencies:  |        |    External Dependencies:|
-    |   jQuery, SuperAgent     |        |         Superagent       |
+    |           SuperAgent     |        |         Superagent       |
     +--------------------------+        +--------------------------+
                   |                                   |             
                   |    +----------------------------+ |             

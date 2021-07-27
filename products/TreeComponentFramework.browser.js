@@ -1,3 +1,4 @@
+//onsave jtree build produce TreeComponentFramework.browser.js
 const BrowserEvents = {}
 BrowserEvents.click = "click"
 BrowserEvents.change = "change"
@@ -170,7 +171,11 @@ class AbstractWillowShadow {
   removeClassFromShadow(className) {
     return this
   }
-  onShadowEvent(event, selector, fn) {
+  onShadowEvent(event, fn) {
+    // todo:
+    return this
+  }
+  onShadowEventWithSelector(event, selector, fn) {
     // todo:
     return this
   }
@@ -195,9 +200,6 @@ class AbstractWillowShadow {
   }
   getShadowCss(property) {
     return ""
-  }
-  setShadowCss(css) {
-    return this
   }
   insertHtmlNode(childNode, index) {}
   get element() {
@@ -489,13 +491,13 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   // todo: add tests
   // todo: idea, don't "paint" wall (dont append it to parent, until done.)
   insertHtmlNode(childStumpNode, index) {
-    const newChildJqElement = jQuery(childStumpNode.toHtmlWithSuids())
-    const jqEl = this._getJQElement()
+    const { domElement } = childStumpNode
+    const { element } = this
     // todo: can we virtualize this?
     // would it be a "virtual shadow?"
-    if (index === undefined) jqEl.append(newChildJqElement)
-    else if (index === 0) jqEl.prepend(newChildJqElement)
-    else jQuery(jqEl.children().get(index - 1)).after(newChildJqElement)
+    if (index === undefined) element.appendChild(domElement)
+    else if (index === 0) element.prepend(domElement)
+    else element.insertBefore(domElement, element.children[index])
     WillowBrowser._stumpsOnPage++
     this._logMessage("insert")
   }
@@ -515,88 +517,88 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     this._logMessage("attr")
     return this
   }
-  /* Likely deprecated jQuery methods below */
-  _getJQElement() {
-    return jQuery(this.element)
-  }
   getShadowCss(prop) {
-    return this._getJQElement().css(prop)
+    const { element } = this
+    const compStyles = window.getComputedStyle(element)
+    return compStyles.getPropertyValue(prop)
   }
   getShadowPosition() {
-    return this._getJQElement().position()
+    return this.element.getBoundingClientRect()
   }
   shadowHasClass(name) {
-    return this._getJQElement().hasClass(name)
+    return this.element.classList.contains(name)
   }
   getShadowValue() {
     // todo: cleanup, add tests
-    if (this.getShadowStumpNode().isInputType()) return this._getJQElement().val()
+    if (this.getShadowStumpNode().isInputType()) return this.element.value
     return this.element.value || this.getShadowValueFromAttr()
   }
-  triggerShadowEvent(event) {
-    this._getJQElement().trigger(event)
-    this._logMessage("trigger")
-    return this
-  }
   addClassToShadow(className) {
-    this._getJQElement().addClass(className)
+    this.element.classList.add(className)
     this._logMessage("addClass")
     return this
   }
   removeClassFromShadow(className) {
-    this._getJQElement().removeClass(className)
+    this.element.classList.remove(className)
     this._logMessage("removeClass")
     return this
   }
-  onShadowEvent(event, two, three) {
-    this._getJQElement().on(event, two, three)
+  toggleShadow() {
+    const { element } = this
+    element.style.display = element.style.display == "none" ? "block" : "none"
+    this._logMessage("toggle")
+    return this
+  }
+  getShadowOuterHeight() {
+    return this.element.outerHeight
+  }
+  getShadowOuterWidth() {
+    return this.element.outerWidth
+  }
+  getShadowWidth() {
+    return this.element.innerWidth
+  }
+  getShadowHeight() {
+    return this.element.innerHeight
+  }
+  getShadowOffset() {
+    const element = this.element
+    if (!element.getClientRects().length) return { top: 0, left: 0 }
+    const rect = element.getBoundingClientRect()
+    const win = element.ownerDocument.defaultView
+    return {
+      top: rect.top + win.pageYOffset,
+      left: rect.left + win.pageXOffset
+    }
+  }
+  triggerShadowEvent(event) {
+    this.element.dispatchEvent(new Event(event))
+    this._logMessage("trigger")
+    return this
+  }
+  onShadowEvent(event, fn) {
+    this.element.addEventListener(event, fn)
+    this._logMessage("bind on")
+    return this
+  }
+  onShadowEventWithSelector(event, selector, fn) {
+    this.element.addEventListener(event, function(evt) {
+      let target = evt.target
+      while (target !== null) {
+        if (target.matches(selector)) {
+          fn(target, evt)
+          return
+        }
+        target = target.parentElement
+      }
+    })
     this._logMessage("bind on")
     return this
   }
   offShadowEvent(event, fn) {
-    this._getJQElement().off(event, fn)
+    this.element.removeEventListener(event, fn)
     this._logMessage("bind off")
     return this
-  }
-  toggleShadow() {
-    this._getJQElement().toggle()
-    this._logMessage("toggle")
-    return this
-  }
-  makeResizable(options) {
-    this._getJQElement().resizable(options)
-    this._logMessage("resizable")
-    return this
-  }
-  makeDraggable(options) {
-    this._logMessage("draggable")
-    this._getJQElement().draggable(options)
-    return this
-  }
-  setShadowCss(css) {
-    this._getJQElement().css(css)
-    this._logMessage("css")
-    return this
-  }
-  makeSelectable(options) {
-    this._getJQElement().selectable(options)
-    this._logMessage("selectable")
-    return this
-  }
-  getShadowOuterHeight() {
-    return this._getJQElement().outerHeight()
-  }
-  getShadowOuterWidth() {
-    return this._getJQElement().outerWidth()
-  }
-  getShadowWidth() {
-    return this._getJQElement().width()
-  }
-  getShadowHeight() {
-    return this._getJQElement().height()
-  }
-  getShadowOffset() {
-    return this._getJQElement().offset()
   }
 }
 WillowBrowserShadow._shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
@@ -1018,29 +1020,29 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
       this._executeCommandOnStumpNode(stumpNode, stumpNode.getStumpNodeAttr(attr))
       return false
     }
-    bodyShadow.onShadowEvent(BrowserEvents.contextmenu, `[${WillowConstants.contextMenuCommand}]`, function(evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.contextmenu, `[${WillowConstants.contextMenuCommand}]`, function(target, evt) {
       if (evt.ctrlKey) return true
       app._setMouseEvent(evt) // todo: remove?
-      return checkAndExecute(this, WillowConstants.contextMenuCommand, evt)
+      return checkAndExecute(target, WillowConstants.contextMenuCommand, evt)
     })
-    bodyShadow.onShadowEvent(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function(evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function(target, evt) {
       if (evt.shiftKey) return checkAndExecute(this, WillowConstants.shiftClickCommand, evt)
       app._setMouseEvent(evt) // todo: remove?
-      return checkAndExecute(this, WillowConstants.clickCommand, evt)
+      return checkAndExecute(target, WillowConstants.clickCommand, evt)
     })
-    bodyShadow.onShadowEvent(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function(evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function(target, evt) {
       if (evt.target !== evt.currentTarget) return true // direct dblclicks only
       app._setMouseEvent(evt) // todo: remove?
-      return checkAndExecute(this, WillowConstants.doubleClickCommand, evt)
+      return checkAndExecute(target, WillowConstants.doubleClickCommand, evt)
     })
-    bodyShadow.onShadowEvent(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function(evt) {
-      return checkAndExecute(this, WillowConstants.blurCommand, evt)
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function(target, evt) {
+      return checkAndExecute(target, WillowConstants.blurCommand, evt)
     })
-    bodyShadow.onShadowEvent(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function(evt) {
-      return checkAndExecute(this, WillowConstants.keyUpCommand, evt)
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function(target, evt) {
+      return checkAndExecute(target, WillowConstants.keyUpCommand, evt)
     })
-    bodyShadow.onShadowEvent(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function(evt) {
-      return checkAndExecute(this, WillowConstants.changeCommand, evt)
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function(target, evt) {
+      return checkAndExecute(target, WillowConstants.changeCommand, evt)
     })
   }
   stopPropagationCommand() {

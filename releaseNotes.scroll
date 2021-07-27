@@ -4,6 +4,14 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 53.0.0 2021-07-27
+list
+ - ⚠️ stump: removed `setStumpNodeCss`
+ - ⚠️ tcf: removed `setShadowCss`
+ - ⚠️ tcf: triggerShadowEvent implementations changed
+ - ⚠️ tcf: removed makeResizable, makeDraggable, makeSelectable
+ - ⚠️ tcf: middle param to onShadowEvent dropped. use onShadowEventWithSelector instead.
+
 section 52.1.0 2021-07-22
 list
  - 🏥 tcf bug fix

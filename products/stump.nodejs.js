@@ -214,9 +214,9 @@ htmlTagNode
     elem.setAttribute("stumpUid", this._getUid())
     this.filter(node => node.isAttributeNode)
       .forEach(child => elem.setAttribute(child.getFirstWord(), child.getContent()))
-    elem.innerHTML = this._getOneLiner()
+    elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
     this.filter(node => node.isHtmlTagNode)
-      .forEach(child => elem.appendChild(domElement))
+      .forEach(child => elem.appendChild(child.domElement))
     return elem
   }
   _toHtml(indentCount, withSuid) {
@@ -333,10 +333,6 @@ htmlTagNode
   // todo: should not be here
   setStumpNodeTreeComponent(treeComponent) {
    this._treeComponent = treeComponent
-   return this
-  }
-  setStumpNodeCss(css) {
-   this.getShadow().setShadowCss(css)
    return this
   }
   getStumpNodeCss(prop) {
@@ -758,8 +754,8 @@ bernNode
       var elem = document.createElement(this.getTag())
       elem.setAttribute("stumpUid", this._getUid())
       this.filter(node => node.isAttributeNode).forEach(child => elem.setAttribute(child.getFirstWord(), child.getContent()))
-      elem.innerHTML = this._getOneLiner()
-      this.filter(node => node.isHtmlTagNode).forEach(child => elem.appendChild(domElement))
+      elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
+      this.filter(node => node.isHtmlTagNode).forEach(child => elem.appendChild(child.domElement))
       return elem
     }
     _toHtml(indentCount, withSuid) {
@@ -876,10 +872,6 @@ bernNode
     // todo: should not be here
     setStumpNodeTreeComponent(treeComponent) {
       this._treeComponent = treeComponent
-      return this
-    }
-    setStumpNodeCss(css) {
-      this.getShadow().setShadowCss(css)
       return this
     }
     getStumpNodeCss(prop) {

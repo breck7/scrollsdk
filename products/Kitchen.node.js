@@ -21,7 +21,7 @@ class Kitchen {
     app.get("/", (req, res) => res.redirect(301, "/sandbox"))
     app.use(express.static(__dirname + "/../"))
     app.listen(port, () => {
-      console.log(`Running kitchen. cmd+dblclick: http://localhost:${port}/sandbox`)
+      console.log(`Running kitchen from '${__dirname}'. cmd+dblclick: http://localhost:${port}/sandbox`)
     })
   }
 }

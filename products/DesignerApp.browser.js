@@ -218,7 +218,7 @@ class DesignerApp extends AbstractTreeComponent {
     this._updateLocalStorage()
     this.grammarProgram = new grammarNode(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
-    this.willowBrowser.setHtmlOfElementWithIdHack("grammarConsole", errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
+    this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new jtree.HandGrammarProgram(this.grammarInstance.getValue())
     const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
@@ -243,7 +243,7 @@ class DesignerApp extends AbstractTreeComponent {
     const that = this
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
-    willowBrowser.setValueOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
+    willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
     const cursor = this.codeInstance.getCursor()
     // todo: what if 2 errors?
     this.codeInstance.operation(() => {
@@ -378,7 +378,7 @@ class samplesComponent extends AbstractTreeComponent {
       )
       .join("\n span  | \n")
     return `p
- span Example Languages
+ span Example Languages 
 ${langs}`
   }
 }
@@ -450,7 +450,7 @@ class tableComponent extends AbstractTreeComponent {
     return `table
  tr
   td
-   span Grammar for your Tree Language
+   span Grammar for your Tree Language 
    a Infer Prefix Grammar
     clickCommand inferPrefixGrammarCommand
    span  |
@@ -516,6 +516,10 @@ class headerComponent extends AbstractTreeComponent {
  width 100px
  vertical-align middle`
   }
+  toggleHelpCommand() {
+    const element = document.getElementById("helpSection")
+    element.style.display = element.style.display == "none" ? "block" : "none"
+  }
   toStumpCode() {
     return `div
  h1
@@ -530,17 +534,17 @@ class headerComponent extends AbstractTreeComponent {
  p
   a Tree Notation Sandbox
    href /sandbox/
-  span  |
+  span  | 
   a Help
    id helpToggleButton
-   onclick $('#helpSection').toggle(); return false;
-  span  |
+   clickCommand toggleHelpCommand
+  span  | 
   a Watch the Tutorial Video
    href https://www.youtube.com/watch?v=kf2p8yzThAA
-  span  |
+  span  | 
   a Reset
    clickCommand resetCommand
-  span  |
+  span  | 
   a Debug
    clickCommand toggleTreeComponentFrameworkDebuggerCommand
   span  | Version ${jtree.getVersion()}

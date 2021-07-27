@@ -6,11 +6,18 @@ paragraph
 
 section 53.0.0 2021-07-27
 list
+ - 🎉 tcf: 60% faster rendering
+ - 🎉 tcf/stump: removed jquery dependency
+ - 🏥 designer & sandbox regression fixes
  - ⚠️ stump: removed `setStumpNodeCss`
+ - ⚠️ tcf: by default html elements are now added w/o surrounding whitespace when mounted
  - ⚠️ tcf: removed `setShadowCss`
- - ⚠️ tcf: triggerShadowEvent implementations changed
- - ⚠️ tcf: removed makeResizable, makeDraggable, makeSelectable
+ - ⚠️ tcf: removed makeResizable, makeDraggable, makeSelectable, _getJQElement
  - ⚠️ tcf: middle param to onShadowEvent dropped. use onShadowEventWithSelector instead.
+ - ⚠️ tcf: triggerShadowEvent, insertHtmlNode, getShadowCss, getShadowPosition implementations changed
+ - ⚠️ tcf: shadowHasClass, getShadowValue, triggerShadowEvent, addClassToShadow, removeClassFromShadow implementations changed
+ - ⚠️ tcf: onShadowEvent, offShadowEvent, toggleShadow, setShadowCss implementations changed
+ - ⚠️ tcf: getShadowOuterHeight, getShadowOuterWidth, getShadowWidth, getShadowHeight, getShadowOffset implementations changed
 
 section 52.1.0 2021-07-22
 list

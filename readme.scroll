@@ -144,8 +144,7 @@ paragraph
 
 subsection Visualization of the code base
 
-html
- <img src="diagram.svg" />
+image diagram.svg
 
 section Development Status
 

@@ -142,6 +142,11 @@ paragraph
  allow for consuming of a smaller subset of the code and
  dependencies in this module, feel free to do so.
 
+subsection Visualization of the code base
+
+html
+ <img src="diagram.svg" />
+
 section Development Status
 
 paragraph

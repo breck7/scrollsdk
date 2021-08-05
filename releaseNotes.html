@@ -1,3 +1,4 @@
+<!doctype html>
 <!--
 
  This page was compiled by 📜 Scroll, the public domain
@@ -7,22 +8,21 @@
  
  Generally you don't want to edit it by hand.
 
- Scroll v21.1.0
+ Scroll v22.1.0
 
 -->
-<!doctype html>
 <html lang="en-US">
  <head>
   <meta charset="utf-8"></meta>
   <title>Release Notes - JTree</title>
   <meta name="viewport" content="width=device-width,initial-scale=1"></meta>
   <meta name="description" content="Build your own language using Tree Notation."></meta>
-  <meta name="generator" content="Scroll v21.1.0"></meta>
+  <meta name="generator" content="Scroll v22.1.0"></meta>
   <meta property="og:title" content="Release Notes"></meta>
   <meta property="og:description" content="Here's a list of the notable changes in JTree."></meta>
   <meta property="og:image" content=""></meta>
   <meta name="twitter:card" content="summary_large_image"></meta>
-  <style>html,body,div,span,h1,h2,h3,h4,h5,h6,p,ol,ul,table {
+  <style>html,body,div,span,h1,h2,h3,h4,p,ol,ul,table {
   margin: 0;
   padding: 0;
   border: 0;
@@ -36,80 +36,45 @@ html {
   font-size: 14px;
   hyphens: auto;
 }
-.scrollChat span {
-  font-family: Verdana;
-  margin-top: 5px;
-  padding: 5px 20px;
-  border-radius: 15px;
-  display: inline-block;
+.scrollHeaderComponent {
+  border-bottom: 1px solid rgb(204,204,204);
+  text-align: center;
+  padding-bottom: 8px;
 }
-.scrollChat0 {
-  text-align: left;
-}
-.scrollChat0 span {
-  background: rgba(204,204,204, .5);
-}
-.scrollChat1 {
-  text-align: right;
-}
-.scrollChat1 span {
-  color: white;
-  background: rgb(0,132,255);
-}
-.scrollTitle a {
+.scrollNameComponent a {
   text-decoration: none;
   color: #000;
 }
-.scrollSocialMediaIcons svg {
+.scrollTopRightBarComponent {
+  text-align: right;
+  position: absolute;
+  right: 25px;
+  top: 3px;
+}
+.scrollSocialMediaIconsComponent svg {
   width: 30px;
   fill: rgba(204,204,204, .5);
   margin-left: 15px;
 }
-.scrollSocialMediaIcons svg:hover {
+.scrollSocialMediaIconsComponent svg:hover {
   fill: #333;
 }
-.scrollCommunityLink {
+.scrollFooterComponent {
+  border-top: 1px solid rgb(204,204,204);
+  margin-top: 8px;
+  padding-top: 8px;
+  text-align: center;
+}
+.scrollCommunityLinkComponent {
   display: block;
   font-family: Verdana;
   font-weight: 100;
   margin: .5em;
   padding-bottom: 1em;
   text-decoration: none;
-  color: rgba(204,204,204, .5);
+  color: rgba(204,204,204,.5);
 }
-.scrollTopRightBar {
-  text-align: right;
-  position: absolute;
-  right: 25px;
-  top: 3px;
-}
-.scrollFooter {
-  border-top: 1px solid rgb(204,204,204);
-  margin-top: 8px;
-  padding-top: 8px;
-  text-align: center;
-}
-.scrollHeader {
-  border-bottom: 1px solid rgb(204,204,204);
-  text-align: center;
-  padding-bottom: 8px;
-}
-.scrollArticleCell {
-  border-bottom: 1px solid rgb(204,204,204);
-  padding: 1ch 0;
-  break-inside: avoid;
-  text-align: justify;
-  margin-bottom: .5em;
-}
-.scrollImage {
-  display: block;
-  text-align: center;
-}
-.scrollImage img {
-  max-width: 35ch;
-  height: auto;
-}
-.scrollPage {
+.scrollIndexPageComponent,.scrollArticlePageComponent {
   column-count: auto;
   column-fill: balance;
   column-width: 35ch;
@@ -119,7 +84,61 @@ html {
   padding-right: 20px;
   margin: auto;
 }
-.scrollPage table {
+.scrollArticlePageComponent {
+  column-rule: none;
+  padding-top: 8px;
+}
+.scrollIndexPageArticleContainerComponent {
+  border-bottom: 1px solid rgb(204,204,204);
+  padding: 1ch 0;
+  break-inside: avoid;
+  text-align: justify;
+  margin-bottom: .5em;
+}
+.scrollTitleComponent {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: .25em;
+}
+.scrollTitleComponent a {
+  text-decoration: none;
+  color: #000;
+}
+.scrollArticleDateComponent {
+  font-style: italic;
+  font-size: 80%;
+}
+.scrollParagraphComponent {
+  text-indent: 1em;
+  margin-top: 0.4em;
+  line-height: 1.4em;
+}
+.scrollQuoteComponent {
+  break-inside: avoid;
+  display: block;
+  margin: .5em 0;
+  padding: .5em;
+  background: rgba(204,204,204,.5);
+  white-space: pre-line;
+  border-left: .5em solid rgba(204,204,204,.8);
+}
+.scrollQuestionComponent,.scrollSectionComponent,.scrollSubsectionComponent {
+  text-align: center;
+  margin: .2em;
+}
+.scrollCodeBlockComponent {
+  overflow: auto;
+  font-size: 80%;
+  hyphens: none;
+  white-space: pre;
+  border-left: .5em solid rgba(204,204,204,.8);
+  break-inside: avoid;
+  display: block;
+  margin: .5em 0;
+  padding: .5em;
+  background: rgba(204,204,204,.5);
+}
+.scrollTableComponent {
   table-layout: fixed;
   margin: .5em 0;
   overflow: hidden;
@@ -128,231 +147,245 @@ html {
   hyphens: none;
   border: 1px solid rgba(224,224,224,.8);
 }
-.scrollPage table td,.scrollPage table th {
+.scrollTableComponent td,.scrollTableComponent th {
   padding: 3px;
   overflow: hidden;
 }
-.scrollPage table th {
+.scrollTableComponent th {
   border-bottom: 2px solid rgba(0,0,0,.6);
   text-align: left;
 }
-.scrollPage table tr:nth-child(even) {
+.scrollTableComponent tr:nth-child(even) {
   background: rgba(224,224,224,.6);
 }
-.scrollPage ul,.scrollPage ol {
+.scrollUnorderedListComponent,.scrollOrderedListComponent {
   text-align: left;
   line-height: 1.4em;
   padding-left: 1em;
   margin-top: 0.4em;
 }
-.scrollPage p {
-  text-indent: 1em;
-  margin-top: 0.4em;
-  line-height: 1.4em;
-}
-.scrollPage p:first-of-type {
-  display: inline;
-}
-.scrollPage .scrollCodeBlock,.scrollPage blockquote {
-  break-inside: avoid;
-}
-.scrollPage .scrollCodeBlock,.scrollPage blockquote {
-  display: block;
-  margin: .5em 0;
-  padding: .5em;
-  background: rgba(204,204,204,.5);
-}
-.scrollPage .scrollCodeBlock {
-  overflow: auto;
-  font-size: 80%;
-  hyphens: none;
-}
-.scrollPage .scrollCodeBlock {
-  white-space: pre;
-  border-left: .5em solid rgba(204,204,204, .8);
-}
-.scrollPage blockquote {
-  white-space: pre-line;
-  border-left: .5em solid rgba(204,204,204, .8);
-}
-.scrollPage h1 {
-  font-size: 24px;
-  margin-bottom: .25em;
-}
-.scrollPage h1 a {
-  text-decoration: none;
-  color: #000;
-}
-.scrollPage h1,.scrollPage h2,.scrollPage h3,.scrollPage h4,.scrollPage h5,.scrollPage h6 {
-  text-align: center;
-}
-.scrollPage h2,.scrollPage h3,.scrollPage h4 {
-  margin: .2em;
-}
-.scrollArticleDate {
-  font-style: italic;
-  font-size: 80%;
-  display: inline;
-}
-.scrollArticleSourceLink {
+.scrollArticleSourceLinkComponent {
   text-align: center;
   font-size: 80%;
   margin: 0;
+  margin-top: 0.4em;
+  line-height: 1.4em;
 }
-.scrollArticleSourceLink a {
+.scrollArticleSourceLinkComponent a {
   color: #000;
   text-decoration: none;
 }
-.scrollSingleArticle {
-  column-rule: none;
-  padding-top: 8px;
+.scrollDialogueComponent span {
+  font-family: Verdana;
+  margin-top: 5px;
+  padding: 5px 20px;
+  border-radius: 15px;
+  display: inline-block;
+}
+.scrollDialogueComponentLeft {
+  text-align: left;
+}
+.scrollDialogueComponentLeft span {
+  background: rgba(204,204,204, .5);
+}
+.scrollDialogueComponentRight {
+  text-align: right;
+}
+.scrollDialogueComponentRight span {
+  color: white;
+  background: rgb(0,132,255);
+}
+.scrollImageComponent {
+  display: block;
+  text-align: center;
+}
+.scrollImageComponent img {
+  max-width: 35ch;
+  height: auto;
 }
 </style>
 </head>
  <body>
-  <div class="scrollHeader">
-   <div class="scrollTopRightBar">
-    <div class="scrollSocialMediaIcons">
+  <div class="scrollHeaderComponent">
+   <div class="scrollTopRightBarComponent">
+    <div class="scrollSocialMediaIconsComponent">
      <a href="https://github.com/publicdomaincompany/jtree"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
 </div>
 </div>
-   <h2 class="scrollTitle">
+   <h2 class="scrollNameComponent">
     <a href="index.html">JTree</a>
 </h2>
-   <div class="scrollDescription">Build your own language using Tree Notation.</div>
+   <div>Build your own language using Tree Notation.</div>
 </div>
-  <div class="scrollPage scrollSingleArticle" style=""><h1><a href="releaseNotes.html">Release Notes</a></h1>
+  <div class="scrollArticlePageComponent" style=""><h1 class="scrollTitleComponent"><a href="releaseNotes.html">Release Notes</a></h1>
 
 
-<p>Here's a list of the notable changes in JTree.</p>
+<p class="scrollParagraphComponent">Here's a list of the notable changes in JTree.</p>
 
-<h3>51.6.0 2021-06-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">53.0.0 2021-07-27</h3>
+<ul class="scrollUnorderedListComponent">
+<li>🎉 tcf: 60% faster rendering</li>
+<li>🎉 tcf/stump: removed jquery dependency</li>
+<li>🏥 designer & sandbox regression fixes</li>
+<li>⚠️ stump: removed `setStumpNodeCss`</li>
+<li>⚠️ tcf: by default html elements are now added w/o surrounding whitespace when mounted</li>
+<li>⚠️ tcf: removed `setShadowCss`</li>
+<li>⚠️ tcf: removed makeResizable, makeDraggable, makeSelectable, _getJQElement</li>
+<li>⚠️ tcf: middle param to onShadowEvent dropped. use onShadowEventWithSelector instead.</li>
+<li>⚠️ tcf: triggerShadowEvent, insertHtmlNode, getShadowCss, getShadowPosition implementations changed</li>
+<li>⚠️ tcf: shadowHasClass, getShadowValue, triggerShadowEvent, addClassToShadow, removeClassFromShadow implementations changed</li>
+<li>⚠️ tcf: onShadowEvent, offShadowEvent, toggleShadow, setShadowCss implementations changed</li>
+<li>⚠️ tcf: getShadowOuterHeight, getShadowOuterWidth, getShadowWidth, getShadowHeight, getShadowOffset implementations changed</li>
+</ul>
+
+<h3 class="scrollSectionComponent">52.1.0 2021-07-22</h3>
+<ul class="scrollUnorderedListComponent">
+<li>🏥 tcf bug fix</li>
+</ul>
+
+<h3 class="scrollSectionComponent">52.0.0 2021-07-22</h3>
+<ul class="scrollUnorderedListComponent">
+<li>🎉 stump/tcf: ~200% faster when inserting lots of elements</li>
+<li>🎉 tcf: added keyUpCommand support</li>
+<li>⚠️ tcf: forceRepaint function now a no-op</li>
+<li>⚠️ tcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change</li>
+<li>⚠️ tcf: getWillowBrowser is now "willowBrowser" getter</li>
+<li>⚠️ tcf: getShadowElement is now "shadowElement" getter</li>
+<li>⚠️ tcf: removed getShadowHtml</li>
+</ul>
+
+<h3 class="scrollSectionComponent">51.7.0 2021-07-22</h3>
+<ul class="scrollUnorderedListComponent">
+<li>🎉 perf improvement in TCF—don't insert CSS nodes if no CSS</li>
+</ul>
+
+<h3 class="scrollSectionComponent">51.6.0 2021-06-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 bumped pick, setProperties, getOneOf, and setPropertyIfMissing to root TreeNodeClass</li>
 <li>⚠️ extract method on TreeBase is now "pick" on TreeNode</li>
 </ul>
 
-<h3>51.5.1 2021-05-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.5.1 2021-05-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 code cleanup in DD lang</li>
 </ul>
 
-<h3>51.5.0 2021-03-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.5.0 2021-03-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 silence() method on stamp</li>
 </ul>
 
-<h3>51.4.0 2021-03-12</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.4.0 2021-03-12</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added hyphens prop to hakon</li>
 </ul>
 
-<h3>51.3.0 2021-02-18</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.3.0 2021-02-18</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added break-inside CSS prop to hakon</li>
 </ul>
 
-<h3>51.2.1 2021-02-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.2.1 2021-02-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 removed leftover console.log</li>
 </ul>
 
-<h3>51.2.0 2021-02-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.2.0 2021-02-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Core: expandLastFromTopMatter and lastMode methods</li>
 <li>🎉 Stump now supports defining components</li>
 </ul>
 
-<h3>51.1.0 2021-02-11</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.1.0 2021-02-11</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 add missing CSS Grid properties to Hakon</li>
 </ul>
 
-<h3>51.0.0 2021-02-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">51.0.0 2021-02-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ removed "prompt" node and executable stamps. Almost never used, and</li>
 </ul>
 
-<h3>50.2.0 2021-02-07</h3>
-<ul>
+<h3 class="scrollSectionComponent">50.2.0 2021-02-07</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Stamp now creates file recursively</li>
 <li>🎉 Stamp now accepts a target dir</li>
 </ul>
 
-<h3>50.1.0 2021-02-07</h3>
-<ul>
+<h3 class="scrollSectionComponent">50.1.0 2021-02-07</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 bug fix in executing a stamp file</li>
 </ul>
 
-<h3>50.0.0 2020-12-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">50.0.0 2020-12-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 core: toJson, toGrid, toGridJson, fromJson and fromGridJson methods</li>
 <li>🎉 sandbox: added share link and toJson and toGridJson consoles</li>
 </ul>
 
-<h3>49.8.0 2020-03-01</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.8.0 2020-03-01</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 jtable: getValues method on columns (use instead of accessing private _getSummaryVector method)</li>
 <li>🏥 jtable: pivot column generation now operates in a more pass by copy manner and references to source columns are dropped</li>
 <li>⚠️ unused method getSourceColumnName is now _getSourceColumnName</li>
 </ul>
 
-<h3>49.7.0 2020-02-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.7.0 2020-02-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 hasNode method in core</li>
 <li>🎉 toProgram method on TreeBase</li>
 </ul>
 
-<h3>49.6.1 2020-02-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.6.1 2020-02-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 TCF save mouse event on click</li>
 <li>🏥 getNextOrPrevious test and fix</li>
 <li>⚠️ unused isShadowResizable method</li>
 </ul>
 
-<h3>49.6.0 2020-01-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.6.0 2020-01-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 windows return characters now stripped in fromDelimited methods</li>
 </ul>
 
-<h3>49.5.0 2020-01-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.5.0 2020-01-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 jtable: getMin, toVector, toMatrix, toNumericMatrix methods</li>
 <li>🎉 nodesThatStartWith core method</li>
 <li>🎉 started build server</li>
 <li>🏥 clean column names method drop columns fix</li>
 </ul>
 
-<h3>49.4.0 2019-12-12</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.4.0 2019-12-12</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 fillMissing method</li>
 <li>🏥 fix for Invalid Date</li>
 </ul>
 
-<h3>49.3.0 2019-12-12</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.3.0 2019-12-12</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 started trainModel, predictChildren and predictParents methods</li>
 </ul>
 
-<h3>49.2.0 2019-12-11</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.2.0 2019-12-11</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 JTable synthesizeTable and toSimpleSchema</li>
 </ul>
 
-<h3>49.1.0 2019-12-09</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.1.0 2019-12-09</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 isValueEmpty util method</li>
 <li>🎉 JTable: renameColumns and cloneWithCleanColumnNames methods</li>
 </ul>
 
-<h3>49.0.1 2019-12-09</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.0.1 2019-12-09</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 JTable: seed param in Table class</li>
 <li>🏥 JTable: first non-blank cell now used for column type prediction</li>
 </ul>
 
-<h3>49.0.0 2019-12-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">49.0.0 2019-12-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 general refactor to prep for switch to have Grammar entirely written in Grammar</li>
 <li>🧹 generally use "products/" folder now to use compiled grammars instead of recompiling everytime</li>
 <li>🎉 swarm and testRacer now prints number of skipped tests</li>
@@ -375,14 +408,14 @@ html {
 <li>⚠️ removed getErrorsInGrammarExamples. Use examplesToTestBlocks</li>
 </ul>
 
-<h3>48.1.0 2019-12-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">48.1.0 2019-12-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 toSqlLite method on TreeBase</li>
 <li>🎉 getFrom core method</li>
 </ul>
 
-<h3>48.0.0 2019-12-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">48.0.0 2019-12-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ TCF: removed AbstractTreeComponent.startApp and getDefaultStartState methods. Use startWhenReady and start() pattern instead.</li>
 <li>⚠️ TCF: getNextOrPrevious is now on TreeUtils</li>
 <li>⚠️ TCF: no more DataShadowEvents</li>
@@ -394,15 +427,15 @@ html {
 <li>⚠️ Stump: removed stumpNoOp. Empty lines are fine now.</li>
 </ul>
 
-<h3>47.1.0 2019-11-29</h3>
-<ul>
+<h3 class="scrollSectionComponent">47.1.0 2019-11-29</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 pasteText and templateToString methods</li>
 <li>🎉 blank lines are now okay in stump to work better with templates</li>
 <li>🧹 Performance improvements via caching parsers</li>
 </ul>
 
-<h3>47.0.0 2019-11-22</h3>
-<ul>
+<h3 class="scrollSectionComponent">47.0.0 2019-11-22</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 toAutoCompleteCube method</li>
 <li>🎉 support for CSS variables in Hakon</li>
 <li>🎉 fill method</li>
@@ -414,30 +447,30 @@ html {
 <li>🏥 getIndentLevel now returns correct level</li>
 </ul>
 
-<h3>46.1.0 2019-11-22</h3>
-<ul>
+<h3 class="scrollSectionComponent">46.1.0 2019-11-22</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Swarm tests now execute in browser</li>
 </ul>
 
-<h3>46.0.0 2019-11-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">46.0.0 2019-11-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getCommandNames method on TCF</li>
 <li>⚠️ removed AbstractCommander concept from TCF. Move methods with a Command suffix for methods on TCF classes.</li>
 </ul>
 
-<h3>45.1.0 2019-11-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">45.1.0 2019-11-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 TCF added getTextContent to TreeComponent and getHash and setHash methods to WillowBrowser class</li>
 <li>🎉 added deepVisit method to core</li>
 </ul>
 
-<h3>45.0.1 2019-11-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">45.0.1 2019-11-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 web form generation fixes</li>
 </ul>
 
-<h3>45.0.0 2019-11-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">45.0.0 2019-11-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 toDefinitionLineNumberTree method added to Grammar programs</li>
 <li>🎉 lengthen core method</li>
 <li>🎉 added seeds to all psuedo-stochastic functions and removed all Math.random calls</li>
@@ -446,31 +479,31 @@ html {
 <li>🏥 toSideBySide fix for when later trees are longer than earlier ones</li>
 </ul>
 
-<h3>44.1.0 2019-11-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">44.1.0 2019-11-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added stamp command to commandLineApp tool</li>
 <li>🎉 added produceProductFromInstructionsTree and buildBuilder to abstractBuilder</li>
 <li>🏥 bug where if a string contained __proto__  or constructor it was parsing incorrectly</li>
 </ul>
 
-<h3>44.0.3 2019-11-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">44.0.3 2019-11-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 in TCF rewrote queryObjectToQueryString to make working/testable in node</li>
 </ul>
 
-<h3>44.0.2 2019-11-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">44.0.2 2019-11-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 incorrect path in compiled grammars</li>
 </ul>
 
-<h3>44.0.1 2019-11-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">44.0.1 2019-11-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 some case insensitive filenames on Mac broke linux build</li>
 <li>🏥 removed isDesktopVersion from TCF</li>
 </ul>
 
-<h3>44.0.0 2019-11-01</h3>
-<ul>
+<h3 class="scrollSectionComponent">44.0.0 2019-11-01</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 toBraid and toSideBySide and toComparison methods</li>
 <li>🎉 toStringWithLineNumbers method</li>
 <li>🎉 loadRequirements, runTimePhaseError methods</li>
@@ -491,25 +524,25 @@ html {
 <li>🧹 removed qunit, tap, and tap mocha dependencies</li>
 </ul>
 
-<h3>43.0.0 2019-10-07</h3>
-<ul>
+<h3 class="scrollSectionComponent">43.0.0 2019-10-07</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getWordBreakSymbol, getXI is getEdgeSymbol</li>
 <li>🧹 TCF debugger work</li>
 </ul>
 
-<h3>42.2.0 2019-10-04</h3>
-<ul>
+<h3 class="scrollSectionComponent">42.2.0 2019-10-04</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getNumberOfWords method</li>
 <li>🧹 added swim tests</li>
 </ul>
 
-<h3>42.1.0 2019-10-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">42.1.0 2019-10-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ reverted the implicit event system. Made trigger and triggerAncestors public methods instead for finer control over events.</li>
 </ul>
 
-<h3>42.0.0 2019-10-01</h3>
-<ul>
+<h3 class="scrollSectionComponent">42.0.0 2019-10-01</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 readded event listening code in TreeNode core class</li>
 <li>🎉 onLineChanged, onDescendantChanged, onChildAdded, onChildRemoved methods</li>
 <li>🎉 getAncestorByNodeConstructor method</li>
@@ -521,20 +554,20 @@ html {
 <li>🧹 moved papers to treenotation/research</li>
 </ul>
 
-<h3>41.2.0 2019-09-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">41.2.0 2019-09-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 without method</li>
 </ul>
 
-<h3>41.1.0 2019-09-18</h3>
-<ul>
+<h3 class="scrollSectionComponent">41.1.0 2019-09-18</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 error handling in TCF commands</li>
 <li>🏥 uncaught command error displaying in Designer app</li>
 <li>🏥 generateSimulatedData regression fix and tests</li>
 </ul>
 
-<h3>41.0.0 2019-09-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">41.0.0 2019-09-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 postfix cell parsing</li>
 <li>🎉 omnifix cell parsing</li>
 <li>🎉 cellParser keyword in Grammar Language</li>
@@ -544,8 +577,8 @@ html {
 <li>⚠️ removed _getGrammarBackedCellArray method and replaced with new CellParser class</li>
 </ul>
 
-<h3>40.3.0 2019-09-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">40.3.0 2019-09-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added Arrow sample language</li>
 <li>🎉 required and single nodeTypes are accessible to compiler string template</li>
 <li>🎉 added wwt sample language</li>
@@ -559,8 +592,8 @@ html {
 <li>🧹 builder improvements</li>
 </ul>
 
-<h3>40.2.0 2019-09-11</h3>
-<ul>
+<h3 class="scrollSectionComponent">40.2.0 2019-09-11</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getInPlacePreludeCellTypeTreeWithNodeConstructorNames</li>
 <li>🎉 generateSimulatedData</li>
 <li>🎉 designer app - simulate data and explain roots buttons</li>
@@ -570,33 +603,33 @@ html {
 <li>🧹 migrated Sandbox and Designer apps to TCF</li>
 </ul>
 
-<h3>40.1.0 2019-09-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">40.1.0 2019-09-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 missing words now trigger "MissingWord" error instead of "InvalidWord"</li>
 <li>🏥 fixed bug in codemirror where a missing word would break syntax highlighting of remaining words</li>
 <li>🏥 bug fix in Disk</li>
 <li>🏥 added GitHub link and show keyboard shortcuts by default in SweeperCraft</li>
 </ul>
 
-<h3>40.0.0 2019-09-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">40.0.0 2019-09-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Tree Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.</li>
 <li>🎉 default highlightScopes for basic cellTypes</li>
 <li>🏥 fixes from reducing complexity of ExtendibleTreeNode and firstCellType</li>
 </ul>
 
-<h3>39.6.0 2019-09-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">39.6.0 2019-09-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added jtable</li>
 </ul>
 
-<h3>39.5.0 2019-09-01</h3>
-<ul>
+<h3 class="scrollSectionComponent">39.5.0 2019-09-01</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added comments to hakon</li>
 </ul>
 
-<h3>39.4.0 2019-08-31</h3>
-<ul>
+<h3 class="scrollSectionComponent">39.4.0 2019-08-31</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ toReadme now generates Dumbdown instead of markdown</li>
 <li>🎉 added dumbdown language</li>
 <li>🎉 toReadme now generates roadmap from todos</li>
@@ -604,26 +637,26 @@ html {
 <li>🏥 fix for compiling with an empty stringTemplate</li>
 </ul>
 
-<h3>39.3.0 2019-08-31</h3>
-<ul>
+<h3 class="scrollSectionComponent">39.3.0 2019-08-31</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added "Explain" button to Designer</li>
 <li>🎉 renamed poop node types</li>
 </ul>
 
-<h3>39.2.0 2019-08-31</h3>
-<ul>
+<h3 class="scrollSectionComponent">39.2.0 2019-08-31</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 new layout for Designer app from feedback</li>
 <li>🎉 show readme for Grammars in Designer app</li>
 </ul>
 
-<h3>39.1.0 2019-08-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">39.1.0 2019-08-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added "config" sample language</li>
 <li>🎉 added "poop" sample language</li>
 </ul>
 
-<h3>39.0.0 2019-08-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">39.0.0 2019-08-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ we now export {jtree} instead of jtree. We removed all TypeScript export default.</li>
 <li>🎉 added "map" demo language</li>
 <li>🧹 refactored build system</li>
@@ -634,27 +667,27 @@ html {
 <li>🧹 TCF tests now included in npm test</li>
 </ul>
 
-<h3>38.2.0 2019-08-28</h3>
-<ul>
+<h3 class="scrollSectionComponent">38.2.0 2019-08-28</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 appendSibling base method</li>
 <li>🎉 TreeComponentFramework added to products</li>
 <li>🎉 added SweeperCraft demo to products</li>
 <li>🎉 added hakon and stump to products</li>
 </ul>
 
-<h3>38.1.0 2019-08-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">38.1.0 2019-08-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 errors.csv route to TreeBase</li>
 </ul>
 
-<h3>38.0.1 2019-08-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">38.0.1 2019-08-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 cleanup to bundle filenames</li>
 <li>🏥 sample code fix in bundle files</li>
 </ul>
 
-<h3>38.0.0 2019-08-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">38.0.0 2019-08-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 toReadMe method on GrammarProgram</li>
 <li>🎉 toBundle method on GrammarProgram</li>
 <li>⚠️ removed "anyFirstCell". Now just use "anyCell"</li>
@@ -664,14 +697,14 @@ html {
 <li>🧹 builder is now compiled into a product</li>
 </ul>
 
-<h3>37.1.0 2019-08-10</h3>
-<ul>
+<h3 class="scrollSectionComponent">37.1.0 2019-08-10</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 support for inference of prefix languages with unicode characters (emojis)</li>
 <li>⚠️ UnknownGrammarProgram "getPredictedGrammarFile" is now "inferGrammarFileForAPrefixLanguage" to be more precise about what the method does</li>
 </ul>
 
-<h3>37.0.0 2019-08-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">37.0.0 2019-08-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ No more "dist" folder. Use files in "/products/" folder instead.</li>
 <li>🏥 Grammar inference (UnknownGrammarProgram) now predicts base cell types</li>
 <li>🧹 switched to TypeScript for all JS src files and test files.</li>
@@ -679,30 +712,30 @@ html {
 <li>🧹 "products" folder. Currently checking in compiled versions as this makes distribution simpler. In the future maybe move products to separate repo.</li>
 </ul>
 
-<h3>36.2.0 2019-08-01</h3>
-<ul>
+<h3 class="scrollSectionComponent">36.2.0 2019-08-01</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ builder refactor. Instead "jbuild.js" now do "builder.js".</li>
 </ul>
 
-<h3>36.1.0 2019-07-31</h3>
-<ul>
+<h3 class="scrollSectionComponent">36.1.0 2019-07-31</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 jBuild</li>
 <li>🧹 improved error messaging for invalid nodeType.</li>
 <li>⚠️ some method names changed in Project Tree Language. See that readme for details.</li>
 </ul>
 
-<h3>36.0.2 2019-07-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">36.0.2 2019-07-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 TreeBase Disk path fix</li>
 </ul>
 
-<h3>36.0.1 2019-07-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">36.0.1 2019-07-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 TreeBase path fix</li>
 </ul>
 
-<h3>36.0.0 2019-07-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">36.0.0 2019-07-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added TreeBase and "base" command to CLI</li>
 <li>🎉 added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setChildrenAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity</li>
 <li>🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode</li>
@@ -712,21 +745,21 @@ html {
 <li>🧹 moved repo from breck7/jtree to treenotation/jtree</li>
 </ul>
 
-<h3>35.1.0 2019-07-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">35.1.0 2019-07-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 printLinesFrom and printLinesWithLineNumbersFrom methods</li>
 <li>🏥 fix for npm install -g dependency issues</li>
 </ul>
 
-<h3>35.0.1 2019-07-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">35.0.1 2019-07-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 fixed uncaught error when an old grammar is used with a "root" subnode</li>
 <li>🏥 more precise pattern matching in Grammar Language</li>
 <li>🏥 improved highlight scopes for Grammar Language</li>
 </ul>
 
-<h3>35.0.0 2019-07-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">35.0.0 2019-07-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.</li>
 <li>🎉 polymorphism and symbol tables via enumFromCellTypes</li>
 <li>🎉 Grammar Language now uses suffix notation instead of prefix notation for root node types.</li>
@@ -744,19 +777,19 @@ html {
 <li>⚠️ use createParser() instead of getNodeConstructor</li>
 </ul>
 
-<h3>34.2.0 2019-07-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">34.2.0 2019-07-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 compiled nodejs grammar files are now executables and accept an input filepath</li>
 <li>🏥 switched all hashbangs to "#! /usr/bin/env node" for better cross platform support</li>
 </ul>
 
-<h3>34.1.0 2019-07-19</h3>
-<ul>
+<h3 class="scrollSectionComponent">34.1.0 2019-07-19</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 root nodes can now extend other root nodes for easier grammar combinations and extensions</li>
 </ul>
 
-<h3>34.0.0 2019-07-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">34.0.0 2019-07-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 the empty Grammar "" is now a valid Grammar and works properly</li>
 <li>🎉 the default catch all node for Grammar Backed Languages is now Blob Node, and not Error Node</li>
 <li>🏥 now the empty Grammar language returns a forgiving grammar by default.</li>
@@ -768,21 +801,21 @@ html {
 <li>⚠️ the default catch all node is now Blob node, not error node.</li>
 </ul>
 
-<h3>33.0.2 2019-07-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">33.0.2 2019-07-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added "infer" button to Grammar Builder</li>
 <li>🏥 polyfill flat method</li>
 <li>🏥 CLI fixes</li>
 <li>🧹 upgrade version script</li>
 </ul>
 
-<h3>33.0.1 2019-07-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">33.0.1 2019-07-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 changed browser target to es2016 to fix the "flat" bug in Linux Chrome</li>
 </ul>
 
-<h3>33.0.0 2019-07-10</h3>
-<ul>
+<h3 class="scrollSectionComponent">33.0.0 2019-07-10</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can still access the others via that.</li>
 <li>⚠️ removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.</li>
 <li>⚠️ removed unused getTheGrammarFilePath method</li>
@@ -795,8 +828,8 @@ html {
 <li>🧹 compiled grammar vs runtime code paths are largely merged</li>
 </ul>
 
-<h3>32.0.0 2019-07-07</h3>
-<ul>
+<h3 class="scrollSectionComponent">32.0.0 2019-07-07</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getParseTable method on Grammar backed programs</li>
 <li>🎉 CLI "parse" command</li>
 <li>🏥 fixed blobNode and errorNode regressions</li>
@@ -807,8 +840,8 @@ html {
 <li>🧹 fixed 2.5x test speed regression and got them back down to 2s</li>
 </ul>
 
-<h3>31.0.0 2019-07-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">31.0.0 2019-07-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added "joinChildrenWith" word to compiler nodeTypes in grammar language</li>
 <li>🎉 added "dug" language which compiles to JSON</li>
 <li>🎉 improved documentation for grammar compiler nodeTypes</li>
@@ -818,8 +851,8 @@ html {
 <li>⚠️ Terminal vs NonTerminal nodeTypes are now determined by duck typing. Use GrammarBackedNonRootNode in place of those now.</li>
 </ul>
 
-<h3>30.0.0 2019-07-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">30.0.0 2019-07-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 much easier way to do Grammar Composition => simple concatenate strings & define a new nodeType as root!</li>
 <li>⚠️ removed newFromCondensed method, which became a noOp. Use new GrammarProgram(grammarCode, grammarPath) instead</li>
 <li>⚠️ removed "grammar" root node type in GrammarLanguage. Add a "root" property to a nodeType for the new root node.</li>
@@ -827,16 +860,16 @@ html {
 <li>⚠️ paths to shipped language program constructors are now like "fire.js" instead of "FireProgram.js"</li>
 </ul>
 
-<h3>29.0.0 2019-07-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">29.0.0 2019-07-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 doesExtend and getChildInstancesOfNodeTypeId methods on Extendible nodes</li>
 <li>🎉 GrammarUpgrader additions</li>
 <li>🧹 refactor of Swarm/Stamp/Project/Jibberish/Stump to be 1 file.</li>
 <li>⚠️ no more "constructors" node for nodeTypes or root programs.</li>
 </ul>
 
-<h3>28.0.0 2019-07-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">28.0.0 2019-07-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match</li>
 <li>🎉 "reservedWords" attribute on cellTypes in Grammar Language</li>
 <li>⚠️ removed "abstract" nodeType in Grammar Language. now its a property of nodeType</li>
@@ -849,8 +882,8 @@ html {
 <li>⚠️ "constructors" now no longer take a class name. The class name must be identical to nodeTypeId.</li>
 </ul>
 
-<h3>27.2.0 2019-06-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">27.2.0 2019-06-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 /sandbox/build/ => refactored Tree Language IDE</li>
 <li>🎉 added "New" simple grammar language template</li>
 <li>🎉 added deep linking to /sandbox/build/</li>
@@ -858,13 +891,13 @@ html {
 <li>🏥 stump compile fix</li>
 </ul>
 
-<h3>27.1.0 2019-06-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">27.1.0 2019-06-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 appendNode, select, where, limit, first, last, and print methods</li>
 </ul>
 
-<h3>27.0.0 2019-06-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">27.0.0 2019-06-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 simplified compile method to take 0 params</li>
 <li>🎉 refactored Fire language</li>
 <li>🎉 compilesTo property on grammar node in GrammarLanguage</li>
@@ -877,56 +910,56 @@ html {
 <li>⚠️ for internal use only makeGraphSortFunction util function is now _makeGraphSortFunction and method signature changed</li>
 </ul>
 
-<h3>26.5.0 2019-06-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.5.0 2019-06-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 todos in swarm</li>
 <li>🏥 escaping backslash fix for compiled files</li>
 <li>🧹 more testing of compiled code</li>
 </ul>
 
-<h3>26.4.0 2019-06-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.4.0 2019-06-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ moved getLineHints back to definition node</li>
 </ul>
 
-<h3>26.3.0 2019-06-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.3.0 2019-06-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 extension bug in classes with more than 1 ancestor</li>
 <li>⚠️ getNodeTypeDefintions is now getConcreteAndAbstractNodeTypeDefinitions</li>
 </ul>
 
-<h3>26.2.0 2019-06-22</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.2.0 2019-06-22</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 extends now works correctly</li>
 <li>🎉 added "todo" nodeType to grammar language</li>
 <li>🎉 added "extends" keyword in place of previous one line method</li>
 <li>⚠️ instead of "nodeType/cellType foo extendsFoo" now do "nodeType foo\n extends extendsFoo"</li>
 </ul>
 
-<h3>26.1.1 2019-06-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.1.1 2019-06-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 support for mutliline strings in getConstantsObject</li>
 </ul>
 
-<h3>26.1.0 2019-06-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.1.0 2019-06-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 restored getConstantsObject on definition nodes</li>
 </ul>
 
-<h3>26.0.2 2019-06-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.0.2 2019-06-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 backtick escaping in getter generation</li>
 <li>🏥 migrate constants in grammar updater</li>
 <li>🎉 dump generated code for more information when something goes wrong</li>
 </ul>
 
-<h3>26.0.1 2019-06-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.0.1 2019-06-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 fixed require bug</li>
 </ul>
 
-<h3>26.0.0 2019-06-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">26.0.0 2019-06-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>Warning: this was a major refactor that may have introduced new bugs, so if using please be ready to ping me with bug reports</li>
 <li>🎉 ability to compile grammar files to Javascript</li>
 <li>🎉 grammar sandbox now has "download bundle"</li>
@@ -967,18 +1000,18 @@ html {
 <li>⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.</li>
 </ul>
 
-<p>A regex for finding breaks in untyped code:</p>
+<p class="scrollParagraphComponent">A regex for finding breaks in untyped code:</p>
 
-<code class="scrollCodeBlock">\b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getGrammarProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b</code>
+<code class="scrollCodeBlockComponent">\b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getGrammarProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b</code>
 
-<h3>25.2.0 2019-05-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">25.2.0 2019-05-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds</li>
 <li>🏥 Stump div is now no longer an inputType unless it has contenteditable</li>
 </ul>
 
-<h3>25.1.0 2019-05-29</h3>
-<ul>
+<h3 class="scrollSectionComponent">25.1.0 2019-05-29</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added BlankLineError type.</li>
 <li>🎉 Added inline syntax highlighting with error correction suggestions to grammar sandbox.</li>
 <li>🎉 Added parameters hints for nodeTypes with required cells in codeMirror</li>
@@ -986,8 +1019,8 @@ html {
 <li>🎉 ErrorType messaging improvments</li>
 </ul>
 
-<h3>25.0.0 2019-05-28</h3>
-<ul>
+<h3 class="scrollSectionComponent">25.0.0 2019-05-28</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 standardized error messages with suggested fixes!</li>
 <li>🎉 added deleteWordAt method</li>
 <li>🏥 minor fixes to grammar sandbox and updated to use new error message code</li>
@@ -997,32 +1030,32 @@ html {
 <li>🧹 fixed TypeScript browser target build issues</li>
 </ul>
 
-<h3>24.2.0 2019-05-27</h3>
-<ul>
+<h3 class="scrollSectionComponent">24.2.0 2019-05-27</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 extraWord syntax highlighting</li>
 <li>🎉 improved syntax highlighting for Hakon, Stump, and others</li>
 </ul>
 
-<h3>24.1.0 2019-05-27</h3>
-<ul>
+<h3 class="scrollSectionComponent">24.1.0 2019-05-27</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getAncestorNodeTypeNamesArray method on definition nodes</li>
 <li>🎉 getNodeTypeFamilyTree method on grammarPrograms</li>
 <li>🎉 setWords, setWordsFrom and appendWord methods on base tree</li>
 </ul>
 
-<h3>24.0.0 2019-05-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">24.0.0 2019-05-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 targeting es2017</li>
 <li>🏥 sandbox onload fix</li>
 </ul>
 
-<h3>23.2.1 2019-05-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">23.2.1 2019-05-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 fix for updateNodeTypeIds recursion bug</li>
 </ul>
 
-<h3>23.2.0 2019-05-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">23.2.0 2019-05-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 updateNodeTypeIds method</li>
 <li>🎉 Swarm files now no longer require a root level setup node.</li>
 <li>🧹 added prettier config to package.json</li>
@@ -1030,9 +1063,9 @@ html {
 <li>⚠️ Swarm grammar changed.</li>
 </ul>
 
-<p>Use code below to update programs:</p>
+<p class="scrollParagraphComponent">Use code below to update programs:</p>
 
-<code class="scrollCodeBlock">swarmProgram.updateNodeTypeIds(`#setup arrange
+<code class="scrollCodeBlockComponent">swarmProgram.updateNodeTypeIds(`#setup arrange
 %%| constructWith
 %| blockStringParam
 =# lengthIs
@@ -1045,22 +1078,22 @@ html {
 +#test testOnly
 -#test skipTest`)</code>
 
-<h3>23.1.0 2019-05-21</h3>
-<ul>
+<h3 class="scrollSectionComponent">23.1.0 2019-05-21</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 executeFiles method</li>
 <li>🎉 50% speed improvement in getExpanded and extend and GrammarProgram.newFromCondensed</li>
 <li>⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyword</li>
 <li>⚠️ getGraph is now getAncestorNodesByInheritanceViaColumnIndices</li>
 </ul>
 
-<h3>23.0.1 2019-05-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">23.0.1 2019-05-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 sublime syntax regression fix</li>
 <li>🏥 small lang regression fixes</li>
 </ul>
 
-<h3>23.0.0 2019-05-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">23.0.0 2019-05-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ highlightScope is now defined only on cellTypes (no longer on nodeTypes)</li>
 <li>⚠️ "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode</li>
 <li>⚠️ grammars should all define a "cellType any" if they have leave any firstCellTypes undefined</li>
@@ -1072,30 +1105,30 @@ html {
 <li>⚠️ getLineSyntax is now getLineCellTypes</li>
 </ul>
 
-<h3>22.3.0 2019-05-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">22.3.0 2019-05-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ instead of FireProgram.js do Fire.js Program and same for Hakon and Numbers and Project and Stump and Swarm</li>
 </ul>
 
-<h3>22.2.0 2019-05-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">22.2.0 2019-05-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ jtree.program is now jtree.programRoot</li>
 <li>⚠️ renamed root program lang nodes so things like StumpProgram now refer to the grammar generated constructor and StumpProgramRoot to the program root instance</li>
 <li>⚠️ instead of "index.js" files in the langs packages, we now have FireProgram.js, HakonProgram.js, ProjectProgram.js, StampProgram.js, StumpProgram.js, and SwarmProgram.js</li>
 </ul>
 
-<h3>22.1.1 2019-05-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">22.1.1 2019-05-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 missing constant</li>
 </ul>
 
-<h3>22.1.0 2019-05-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">22.1.0 2019-05-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 expand will append rather than set if a node is obviously not a map</li>
 </ul>
 
-<h3>22.0.0 2019-05-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">22.0.0 2019-05-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Hakon, Stump and Fire languages moved into this repo, monorepo style</li>
 <li>🎉 wrote grammars for Hakon and Stump</li>
 <li>🎉 getNodesByGlobPath, every, hasLine, getNodesByLine, toggleLine methods</li>
@@ -1113,8 +1146,8 @@ html {
 <li>⚠️ fire has been refactored a bit</li>
 </ul>
 
-<h3>21.0.0 2019-05-04</h3>
-<ul>
+<h3 class="scrollSectionComponent">21.0.0 2019-05-04</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getRunTimeEnumOptions method allows for run time autocomplete and run time validation</li>
 <li>🎉 autocomplete for grammar cellTypes</li>
 <li>🎉 grammar name keyword</li>
@@ -1133,8 +1166,8 @@ html {
 <li>🧹 repo folder cleanup</li>
 </ul>
 
-<h3>20.0.0 2019-04-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">20.0.0 2019-04-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 simpler grammar files (no more @ prefix)</li>
 <li>🎉 catchAllColumn grammar keyword</li>
 <li>🎉 new methods shiftLeft, shiftRight, shiftYoungerSibsRight, split</li>
@@ -1147,36 +1180,36 @@ html {
 <li>⚠️ removed getNodeColumnRegexes method</li>
 </ul>
 
-<h3>19.5.1 2019-04-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.5.1 2019-04-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 codeMirror autocomplete will now close if 1 option matching input text</li>
 <li>🏥 fixed 0 autocomplete results when at position 0,0 on a blank line</li>
 <li>🏥 fixed codeMirror bug in long documents</li>
 </ul>
 
-<h3>19.5.0 2019-04-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.5.0 2019-04-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 @example keyword in grammar</li>
 <li>🎉 getErrorsInGrammarExamples method on GrammarProgram</li>
 </ul>
 
-<h3>19.4.0 2019-04-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.4.0 2019-04-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getKeywordInheritanceSet method</li>
 </ul>
 
-<h3>19.3.2 2019-04-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.3.2 2019-04-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 better error handling for incomplete grammars</li>
 </ul>
 
-<h3>19.3.1 2019-04-22</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.3.1 2019-04-22</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 grammar checking of grammar files now only checks constructors if in correct env</li>
 </ul>
 
-<h3>19.3.0 2019-04-22</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.3.0 2019-04-22</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 autocomplete for words beyond keywords</li>
 <li>🎉 new base methods nodeAtLine, getNodeInScopeAtCharIndex, getWordIndexAtCharacterIndex, getWordProperties, getWordBoundaryIndices,   getAllWordBoundaryCoordinates</li>
 <li>🎉 on runtime programs: getAutocompleteWordsAt and getAllSuggestions</li>
@@ -1185,13 +1218,13 @@ html {
 <li>⚠️ instead of getAutocompleteWords use getAutocompleteWordsAt</li>
 </ul>
 
-<h3>19.2.1 2019-04-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.2.1 2019-04-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 grammar sandbox bug on first visit</li>
 </ul>
 
-<h3>19.2.0 2019-04-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.2.0 2019-04-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 @highlightScope is now an enum for better checking and autocomplete</li>
 <li>🎉 CodeMirror now uses @highlightScope for styles.</li>
 <li>🏥 we sort @enum options to now match largest hit first</li>
@@ -1199,47 +1232,47 @@ html {
 <li>⚠️ CodeMirror now uses @highlightScope for styles so colors may have changed.</li>
 </ul>
 
-<h3>19.1.0 2019-04-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.1.0 2019-04-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 custom constructors can now specify a "." nested path to the JS constructor</li>
 <li>🎉 added error printing in Grammar sandbox</li>
 </ul>
 
-<h3>19.0.0 2019-04-19</h3>
-<ul>
+<h3 class="scrollSectionComponent">19.0.0 2019-04-19</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 CodeMirror support</li>
 <li>🎉 Tree Language Sandbox webpage using CodeMirror</li>
 <li>🎉 in Grammar files we now have support for different constructors for node and browser environments</li>
 <li>⚠️ in grammar files @constructor is now @constructors. Browser and nodejs constructors must be specified separately.</li>
 </ul>
 
-<h3>18.2.0 2019-04-11</h3>
-<ul>
+<h3 class="scrollSectionComponent">18.2.0 2019-04-11</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 very basic toYaml method</li>
 </ul>
 
-<h3>18.1.3 2019-03-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">18.1.3 2019-03-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 more TypeScript typings</li>
 </ul>
 
-<h3>18.1.2 2019-03-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">18.1.2 2019-03-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 more TypeScript typings</li>
 </ul>
 
-<h3>18.1.1 2019-03-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">18.1.1 2019-03-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 added "types" field to package.json</li>
 </ul>
 
-<h3>18.1.0 2019-03-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">18.1.0 2019-03-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 now with d.ts files</li>
 </ul>
 
-<h3>18.0.0 2019-03-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">18.0.0 2019-03-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 basic .sublime-syntax file generation works. Scopes not yet integrated.</li>
 <li>🎉 added gen command to cli.js for generating syntax files</li>
 <li>🎉 added @highlightScope property to @keyword and @wordType in grammar language</li>
@@ -1252,23 +1285,23 @@ html {
 <li>⚠️ _isOrExtendsAKeywordInScope is now isOrExtendsAKeywordInScope</li>
 </ul>
 
-<h3>17.1.3 2019-03-14</h3>
-<ul>
+<h3 class="scrollSectionComponent">17.1.3 2019-03-14</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 added support for constructors with nested paths in grammar languages in browser</li>
 </ul>
 
-<h3>17.1.2 2019-03-14</h3>
-<ul>
+<h3 class="scrollSectionComponent">17.1.2 2019-03-14</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 added support for spaces in filenames in langs-project</li>
 </ul>
 
-<h3>17.1.1 2019-03-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">17.1.1 2019-03-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 circular array check false positives when creating tree from Javascript object.</li>
 </ul>
 
-<h3>17.1.0 2019-03-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">17.1.0 2019-03-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getCatchAllNodeClass is now getCatchAllNodeConstructor</li>
 <li>⚠️ getRunTimeCatchAllNodeClass is now getRunTimeCatchAllNodeConstructor</li>
 <li>🏥 catchAllKeywords can now instantiate a custom class</li>
@@ -1276,8 +1309,8 @@ html {
 <li>🧹 added tap-mocha-reporter for clearer test run output</li>
 </ul>
 
-<h3>17.0.0 2019-03-11</h3>
-<ul>
+<h3 class="scrollSectionComponent">17.0.0 2019-03-11</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ In TreeNode, parseNodeType is now getNodeConstructor</li>
 <li>⚠️ jtree.getParser is now jtree.getProgramConstructor</li>
 <li>⚠️ In .grammar files @parser is now @constructor</li>
@@ -1290,18 +1323,18 @@ html {
 <li>🧹 minor CLI app refactor</li>
 </ul>
 
-<h3>16.0.1 2019-03-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">16.0.1 2019-03-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 minor migration fix</li>
 </ul>
 
-<h3>16.0.0 2019-03-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">16.0.0 2019-03-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 migrated to TypeScript</li>
 </ul>
 
-<h3>15.3.0 2019-03-01</h3>
-<ul>
+<h3 class="scrollSectionComponent">15.3.0 2019-03-01</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 for convenience added map, forEach, filter, find and slice methods aliasing getChildren().map ...</li>
 <li>🎉 sortByColumns method</li>
 <li>🎉 predictGrammarFile method</li>
@@ -1329,16 +1362,16 @@ html {
 <li>🧹 Default sandbox port now 3333</li>
 </ul>
 
-<h3>15.2.0 2019-02-10</h3>
-<ul>
+<h3 class="scrollSectionComponent">15.2.0 2019-02-10</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added getNumberOfLines() method</li>
 <li>🎉 GrammarProgram speedup 20%+</li>
 <li>🎉 getProgramErrors speedup 10x+</li>
 <li>🎉 toString speedup 5%+</li>
 </ul>
 
-<h3>15.1.0 2019-02-10</h3>
-<ul>
+<h3 class="scrollSectionComponent">15.1.0 2019-02-10</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 10x+ faster typechecking of "any" nodes</li>
 <li>🎉 60% faster typechecking of other types</li>
 <li>🎉 50% faster parsing for large trees</li>
@@ -1347,19 +1380,19 @@ html {
 <li>🎉 experimental _getSyntaxTreeHtml() method</li>
 </ul>
 
-<h3>15.0.2 2019-02-07</h3>
-<ul>
+<h3 class="scrollSectionComponent">15.0.2 2019-02-07</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 setChildren wasn't clearing cache</li>
 <li>🏥 findNodes wasn't recursing</li>
 </ul>
 
-<h3>15.0.1 2019-01-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">15.0.1 2019-01-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Chrome wasn't always monotonically increasing perf.now due to precision</li>
 </ul>
 
-<h3>15.0.0 2018-12-01</h3>
-<ul>
+<h3 class="scrollSectionComponent">15.0.0 2018-12-01</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added toDataTable and fromDataTable methods</li>
 <li>🎉 added getSlice method</li>
 <li>🎉 added set method (to revert to original get/set behavior)</li>
@@ -1371,107 +1404,107 @@ html {
 <li>🧹 moved "papers" to one folder</li>
 </ul>
 
-<h3>14.6.0 2018-09-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.6.0 2018-09-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Fix for browsers removing monotonically increasing perf.now</li>
 <li>🎉 getChildren() now returns a copy of array enabling in loop deletes</li>
 </ul>
 
-<h3>14.5.1 2017-11-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.5.1 2017-11-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 removed dead code</li>
 </ul>
 
-<h3>14.5.0 2017-11-23</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.5.0 2017-11-23</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 standardized error messages into a grammar</li>
 <li>🎉 @parseWith wordType property</li>
 </ul>
 
-<h3>14.4.0 2017-11-19</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.4.0 2017-11-19</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added @enum wordType</li>
 </ul>
 
-<h3>14.3.3 2017-11-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.3.3 2017-11-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added toMarkdownTable methods</li>
 </ul>
 
-<h3>14.3.2 2017-11-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.3.2 2017-11-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getNodesByLinePrefixes method</li>
 </ul>
 
-<h3>14.3.1 2017-11-14</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.3.1 2017-11-14</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 cases cli command</li>
 </ul>
 
-<h3>14.3.0 2017-11-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.3.0 2017-11-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added macroExpand method</li>
 <li>🎉 hasWord method</li>
 </ul>
 
-<h3>14.2.0 2017-11-12</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.2.0 2017-11-12</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added @version keyword to grammar</li>
 <li>🧹 renamed TreeGrammar.grammar to grammar.grammar</li>
 <li>🧹 removed ohayo constants</li>
 </ul>
 
-<h3>14.1.0 2017-11-11</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.1.0 2017-11-11</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 split check into check and checkAll commands</li>
 <li>🎉 compile cli command can now take a target extension</li>
 </ul>
 
-<h3>14.0.1 2017-11-11</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.0.1 2017-11-11</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 Moved dependencies to devDependencies</li>
 </ul>
 
-<h3>14.0.0 2017-11-10</h3>
-<ul>
+<h3 class="scrollSectionComponent">14.0.0 2017-11-10</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ renamed otree to jtree</li>
 </ul>
 
-<h3>13.0.0 2017-11-09</h3>
-<ul>
+<h3 class="scrollSectionComponent">13.0.0 2017-11-09</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ Tree Grammar switched to @wordType nodes for defining word types, no more implicit types</li>
 <li>⚠️ replaceNode now returns an array</li>
 </ul>
 
-<h3>12.2.1 2017-11-09</h3>
-<ul>
+<h3 class="scrollSectionComponent">12.2.1 2017-11-09</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 bug fix in getExpanded</li>
 </ul>
 
-<h3>12.2.0 2017-11-09</h3>
-<ul>
+<h3 class="scrollSectionComponent">12.2.0 2017-11-09</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 insertWord method</li>
 <li>🏥 fixes to usage reports</li>
 <li>⚠️ renamed getBeamParameters to getNodeColumnTypes</li>
 </ul>
 
-<h3>12.1.0 2017-11-09</h3>
-<ul>
+<h3 class="scrollSectionComponent">12.1.0 2017-11-09</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getWordTypeLine is now getLineSyntax</li>
 <li>⚠️ getProgramWordTypeString is now getInPlaceSyntaxTree</li>
 <li>🎉 getTreeWithNodeTypes and getInPlaceSyntaxTreeWithNodeTypes methods for inspecting the parse</li>
 </ul>
 
-<h3>12.0.0 2017-11-09</h3>
-<ul>
+<h3 class="scrollSectionComponent">12.0.0 2017-11-09</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ grammar file grammar change, first node should be @grammar, keywords should be @keyword</li>
 <li>⚠️ getGraph now takes 2 params, use getGraph(0, 1) for previous behavior</li>
 <li>⚠️ getExpanded now takes 2 params, use getExpanded(0, 1) for previous behavior</li>
 <li>🎉 getNodeByColumn method</li>
 </ul>
 
-<h3>11.5.0 2017-11-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.5.0 2017-11-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 appendLine method</li>
 <li>🎉 insertLine method</li>
 <li>⚠️ append is now appendLineAndChildren</li>
@@ -1489,100 +1522,100 @@ html {
 <li>⚠️ use getGraphByKey to getGraphByKey</li>
 </ul>
 
-<h3>11.4.1 2017-11-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.4.1 2017-11-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 export GrammarProgram</li>
 </ul>
 
-<h3>11.4.0 2017-11-08</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.4.0 2017-11-08</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getGrammarUsage is now getKeywordUsage</li>
 <li>⚠️ removed undocumented getNodeClasses, run, and getErrorCount methods</li>
 </ul>
 
-<h3>11.3.0 2017-11-07</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.3.0 2017-11-07</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added support for putting multiple parse nodes in one file</li>
 </ul>
 
-<h3>11.2.3 2017-11-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.2.3 2017-11-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 TestCoverage 90.44% Smt 2137/2363 72.32% Brnch 384/531 85.37% Fn 496/581 91.89% Loc 2017/2195</li>
 </ul>
 
-<h3>11.2.2 2017-11-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.2.2 2017-11-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 updated ProjectLang</li>
 </ul>
 
-<h3>11.2.1 2017-11-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.2.1 2017-11-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 path fixes</li>
 </ul>
 
-<h3>11.2.0 2017-11-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.2.0 2017-11-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ otree.getProgramClassFromGrammarFile is now otree.getParser</li>
 <li>⚠️ otree.AbstractGrammarBackedProgram is now otree.program</li>
 </ul>
 
-<h3>11.1.0 2017-11-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.1.0 2017-11-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 path and other fixes from otree move</li>
 </ul>
 
-<h3>11.0.0 2017-11-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">11.0.0 2017-11-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ renamed TreeProgram to otree</li>
 </ul>
 
-<h3>10.1.2 2017-11-06</h3>
-<ul>
+<h3 class="scrollSectionComponent">10.1.2 2017-11-06</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 rearranged code into base node and grammar backed folders</li>
 </ul>
 
-<h3>10.1.1 2017-11-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">10.1.1 2017-11-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 started Tree Garden web console</li>
 <li>🏥 Fixed create command line tool</li>
 </ul>
 
-<h3>10.1.0 2017-11-04</h3>
-<ul>
+<h3 class="scrollSectionComponent">10.1.0 2017-11-04</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 parsing top level program class fix</li>
 <li>🏥 getNodeByColumns now works when search and target have different # of columns</li>
 <li>🧹 started tests for console, static, and grammar classes</li>
 </ul>
 
-<h3>10.0.1 2017-11-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">10.0.1 2017-11-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 static method path bug fixes</li>
 </ul>
 
-<h3>10.0.0 2017-11-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">10.0.0 2017-11-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getNodeByColumns method</li>
 <li>⚠️ grammar file is now primary file, use static getProgramClassFromGrammarFile method to create a VM/compiler</li>
 <li>⚠️ languages.tree => grammars.tree</li>
 <li>⚠️ grammars.tree now points to grammar files, not index files</li>
 </ul>
 
-<h3>9.2.0 2017-11-03</h3>
-<ul>
+<h3 class="scrollSectionComponent">9.2.0 2017-11-03</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ TreeProgram.getGrammarErrors => TreeProgram.Tools.getGrammarErrors</li>
 <li>⚠️ TreeProgram.executeFile => TreeProgram.Tools.executeFile</li>
 <li>🧹 cleanup for making grammar files source of truth</li>
 </ul>
 
-<h3>9.1.0 2017-11-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">9.1.0 2017-11-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 refactored Tree Grammar to support compiler-compilers and vms in languages other than ES6</li>
 <li>⚠️ "@parseClass" => "@constructor js"</li>
 <li>🏥 @ char is now acceptable in filepaths</li>
 </ul>
 
-<h3>9.0.0 2017-11-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">9.0.0 2017-11-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 support for multiple compile targets</li>
 <li>🎉 CLI history command can show all history</li>
 <li>🎉 CLI check command now alternately accepts a language extension to check a collection</li>
@@ -1592,97 +1625,97 @@ html {
 <li>🧹 renamed slot types to columnTypes and better error messaging for when graph expansion fails</li>
 </ul>
 
-<h3>8.6.0 2017-10-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.6.0 2017-10-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ renamed @parameters to @columns in Grammar Tree Language</li>
 </ul>
 
-<h3>8.5.0 2017-10-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.5.0 2017-10-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 New usage command line tool</li>
 <li>🎉 New getGrammarUsage method</li>
 </ul>
 
-<h3>8.4.1 2017-10-28</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.4.1 2017-10-28</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 init the languages and history file on cli first use</li>
 <li>🧹 added a tiny bit of documentation to readme</li>
 </ul>
 
-<h3>8.4.0 2017-10-28</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.4.0 2017-10-28</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added getNodeClasses method to TreeProgram to support multiple node classes in 1 file</li>
 </ul>
 
-<h3>8.3.1 2017-10-28</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.3.1 2017-10-28</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 expose TerminalNode and NonTerminalNode in browser distribution</li>
 </ul>
 
-<h3>8.3.0 2017-10-27</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.3.0 2017-10-27</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 replaceNode method</li>
 <li>🎉 getSiblings, getYoungerSiblings, getOlderSiblings methods</li>
 </ul>
 
-<h3>8.2.3 2017-10-27</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.2.3 2017-10-27</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 export TreeTerminalNode class</li>
 <li>🧹 minor cleanup of cli app</li>
 </ul>
 
-<h3>8.2.2 2017-10-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.2.2 2017-10-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🧹 recursive dependency fix and console code cleanup</li>
 </ul>
 
-<h3>8.2.1 2017-10-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.2.1 2017-10-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 support absolute paths in grammar files</li>
 </ul>
 
-<h3>8.2.0 2017-10-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.2.0 2017-10-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 export TreeNonTerminalNode class</li>
 <li>🎉 support for relative paths in grammar files</li>
 </ul>
 
-<h3>8.1.0 2017-10-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.1.0 2017-10-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ renamed fixedWidthTable method to toTable and changed default to left aligned.</li>
 </ul>
 
-<h3>8.0.1 2017-10-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.0.1 2017-10-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 fixed browser version</li>
 </ul>
 
-<h3>8.0.0 2017-10-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">8.0.0 2017-10-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Create new Tree Languages using a tree grammar file</li>
 <li>🎉 Tree Console app</li>
 <li>⚠️ ImmutableNode no longer exposed on TreeProgram</li>
 </ul>
 
-<h3>7.2.0 2017-10-14</h3>
-<ul>
+<h3 class="scrollSectionComponent">7.2.0 2017-10-14</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ for use in browser, now use treeprogram.browser.js instead of treeprogram.js</li>
 <li>🧹 prep work for grammar and blaze library merger -- consoleApp and src directory</li>
 </ul>
 
-<h3>7.1.1 2017-9-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">7.1.1 2017-9-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getErrors and getWordTypeLine methods</li>
 <li>🏥 fix for executeFile static method when more than one #! line.</li>
 </ul>
 
-<h3>7.1.0 2017-9-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">7.1.0 2017-9-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ Symbol is now Keyword throughout. Same changes at 7.0.0, except substitute keyword for symbol.</li>
 </ul>
 
-<h3>7.0.0 2017-9-14</h3>
-<ul>
+<h3 class="scrollSectionComponent">7.0.0 2017-9-14</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getNodeTypes is now getSymbolMap</li>
 <li>⚠️ getDefaultNodeType is now getCatchAllNodeClass</li>
 <li>⚠️ getBase is now getSymbol</li>
@@ -1692,92 +1725,92 @@ html {
 <li>⚠️ setBase is now setSymbol</li>
 </ul>
 
-<h3>6.1.3 2017-9-8</h3>
-<ul>
+<h3 class="scrollSectionComponent">6.1.3 2017-9-8</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added executeSync method</li>
 <li>🧹 removed outdated ETNs</li>
 <li>🧹 switched to Tap from Tape to get code coverage working again with nyc</li>
 </ul>
 
-<h3>6.1.2 2017-9-6</h3>
-<ul>
+<h3 class="scrollSectionComponent">6.1.2 2017-9-6</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 bug fix in getCMTime</li>
 </ul>
 
-<h3>6.1.1 2017-8-27</h3>
-<ul>
+<h3 class="scrollSectionComponent">6.1.1 2017-8-27</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added getExpanded method</li>
 </ul>
 
-<h3>6.1.0 2017-8-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">6.1.0 2017-8-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 added getDefaultNodeType and getNodeTypes methods</li>
 <li>🎉 added default compile method</li>
 <li>🏥 updated outdated code in readme</li>
 </ul>
 
-<h3>6.0.0 2017-8-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">6.0.0 2017-8-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ Renamed TreeNotation to TreeProgram.</li>
 <li>⚠️ github is now at breck7/treeprogram</li>
 <li>⚠️ npm install treenotation is now npm install treeprogram</li>
 <li>🏥 fixed timing bug in getTreeMTime</li>
 </ul>
 
-<h3>5.7.0 2017-8-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.7.0 2017-8-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getWord can now take a negative int</li>
 <li>🎉 added static method executeFile and cli.js</li>
 </ul>
 
-<h3>5.6.2 2017-8-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.6.2 2017-8-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 child nodes can now inspect their parent's line at parse time to enable dependent types</li>
 </ul>
 
-<h3>5.6.1 2017-8-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.6.1 2017-8-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 stale index when using setLine or setBase methods</li>
 </ul>
 
-<h3>5.6.0 2017-8-18</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.6.0 2017-8-18</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ base execute now returns a Promise.all that resolves when all children have resolves</li>
 <li>🎉 Added getIndentation method</li>
 </ul>
 
-<h3>5.5.0 2017-8-8</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.5.0 2017-8-8</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getTreeMTime method</li>
 </ul>
 
-<h3>5.4.0 2017-8-8</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.4.0 2017-8-8</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getMTime now always returns a number (previously it could return undefined). Initializes lazily on first call.</li>
 </ul>
 
-<h3>5.3.0 2017-8-3</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.3.0 2017-8-3</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added nest static method</li>
 </ul>
 
-<h3>5.2.0 2017-8-1</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.2.0 2017-8-1</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getInheritanceTree method</li>
 </ul>
 
-<h3>5.1.0 2017-7-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.1.0 2017-7-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added "relativeTo" parameter to: getPoint, isRoot, getRootNode, getStack, getStackString, getBasePath, getPathVector</li>
 </ul>
 
-<h3>5.0.1 2017-7-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.0.1 2017-7-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 getBasePath works</li>
 </ul>
 
-<h3>5.0.0 2017-7-24</h3>
-<ul>
+<h3 class="scrollSectionComponent">5.0.0 2017-7-24</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getWI is now getZI for consistency with X,Y,Z convention.</li>
 <li>⚠️ getHead is now getBase</li>
 <li>⚠️ setHead is now setBase</li>
@@ -1792,93 +1825,93 @@ html {
 <li>⚠️ getTails is now getBeams</li>
 </ul>
 
-<h3>4.1.2 2017-6-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">4.1.2 2017-6-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added setWord method</li>
 </ul>
 
-<h3>4.1.1 2017-6-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">4.1.1 2017-6-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Bug fix in getPoint method</li>
 </ul>
 
-<h3>4.1.0 2017-6-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">4.1.0 2017-6-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ removed toJavascript method on base class.</li>
 </ul>
 
-<h3>4.0.3 2017-6-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">4.0.3 2017-6-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Reverted last.</li>
 </ul>
 
-<h3>4.0.2 2017-6-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">4.0.2 2017-6-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Fix so Hakon works in browser</li>
 </ul>
 
-<h3>4.0.1 2017-6-20</h3>
-<ul>
+<h3 class="scrollSectionComponent">4.0.1 2017-6-20</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added HTML, CSS and Unit Testing ETNs (I named them Bray, Hakon, and Wall).</li>
 </ul>
 
-<h3>4.0.0 2017-6-18</h3>
-<ul>
+<h3 class="scrollSectionComponent">4.0.0 2017-6-18</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ removed _getSize if any ETNs were using that</li>
 <li>⚠️ changes some output classes in toHtml() method</li>
 <li>🎉 getWords() now takes an optional starting WI location</li>
 <li>🎉 Final version of paper, mistakes and all.</li>
 </ul>
 
-<h3>3.10.0 2017-6-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.10.0 2017-6-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ getAncestorNodes is now getStack</li>
 <li>🎉 Added getStackString method</li>
 </ul>
 
-<h3>3.9.2 2017-6-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.9.2 2017-6-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 getGraph method now also takes 0 params, in which case it uses word1.</li>
 </ul>
 
-<h3>3.9.1 2017-6-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.9.1 2017-6-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getGraph method</li>
 </ul>
 
-<h3>3.9.0 2017-6-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.9.0 2017-6-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ Removed TreeNode.ExecutableTreeNode. TreeNotation now has execute method by default.</li>
 <li>⚠️ getWord now ignores getSize. In fact, we'll probably ditch getSize.</li>
 </ul>
 
-<h3>3.8.0 2017-6-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.8.0 2017-6-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 toOutline now takes an optional mapping fn</li>
 </ul>
 
-<h3>3.7.4 2017-6-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.7.4 2017-6-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 setTailWithChildren Regression fix.</li>
 </ul>
 
-<h3>3.7.3 2017-6-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.7.3 2017-6-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Fix for closure compiler</li>
 </ul>
 
-<h3>3.7.2 2017-6-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.7.2 2017-6-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 setChildren regression fix</li>
 </ul>
 
-<h3>3.7.1 2017-6-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.7.1 2017-6-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 ETN parsing regression fix</li>
 </ul>
 
-<h3>3.7.0 2017-6-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.7.0 2017-6-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ expose TreeNotation now and not TreeNode</li>
 <li>⚠️ TreeNode.ExecutableTreeNode is now TreeNotation.ExecutableETN</li>
 <li>⚠️ TreeNotation.ImmutableTreeNode is now TreeNotation.ImmutableNode</li>
@@ -1886,77 +1919,77 @@ html {
 <li>🎉 Updated readme with an ETN example</li>
 </ul>
 
-<h3>3.6.0 2017-6-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.6.0 2017-6-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ parseNode is now parseNodeType and only takes a line param.</li>
 <li>⚠️ getMTime() now returns undefined if the node hasn't been modified.</li>
 <li>🎉 Added more laziness to get a ~2.5x improvement in parse time. Parses about ~1M loc of basic TN a sec on test machine</li>
 </ul>
 
-<h3>3.5.3 2017-6-14</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.5.3 2017-6-14</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getChildrenByNodeType method</li>
 <li>🎉 Expose a simple ExecutableTreeNode class</li>
 <li>🏥 Fixed bug when initiating from an ETN</li>
 </ul>
 
-<h3>3.5.2 2017-6-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.5.2 2017-6-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getNext and getPrevious methods</li>
 </ul>
 
-<h3>3.5.1 2017-6-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.5.1 2017-6-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getPoint method</li>
 </ul>
 
-<h3>3.5.0 2017-6-9</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.5.0 2017-6-9</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ changed parseNode method to just return the new node class.</li>
 </ul>
 
-<h3>3.4.0 2017-6-6</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.4.0 2017-6-6</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ removed reload method</li>
 </ul>
 
-<h3>3.3.0 2017-6-5</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.3.0 2017-6-5</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ in the toHtml() method, the child nodes div now has class nodeChildren instead of nodeTree</li>
 <li>⚠️ pushTailAndTree is now pushTailAndChildren</li>
 </ul>
 
-<h3>3.2.1 2017-6-5</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.2.1 2017-6-5</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getMTime method</li>
 </ul>
 
-<h3>3.2.0 2017-6-5</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.2.0 2017-6-5</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ removed moveTo method. Use the new copyTo method follow by destroy.</li>
 <li>⚠️ destroy no longer returns the detached node.</li>
 <li>🎉 Experimental: expose ImmutableTreeNode</li>
 <li>🎉 Improvements to _parseNode(), increased test coverage, and reduced test code size</li>
 </ul>
 
-<h3>3.1.1 2017-6-2</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.1.1 2017-6-2</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Regression fix in extend method</li>
 </ul>
 
-<h3>3.1.0 2017-6-1</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.1.0 2017-6-1</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ removed every() method</li>
 <li>🎉 Added getTopDownArray (preorder), getChildrenFirstArray (postorder), getParentFirstArray(breadth first) methods</li>
 </ul>
 
-<h3>3.0.1 2017-5-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.0.1 2017-5-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added findTail method</li>
 </ul>
 
-<h3>3.0.0 2017-5-30</h3>
-<ul>
+<h3 class="scrollSectionComponent">3.0.0 2017-5-30</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ merged all subclasses into one TreeNode class.</li>
 <li>⚠️ getNodes is now getChildren</li>
 <li>⚠️ setName > setHead, setValue > setTail, getName > getHead, getValue > getTail</li>
@@ -1986,67 +2019,67 @@ html {
 <li>🏥 Bug fix: toString no longer returns an empty line after you delete last node in a nested tree</li>
 </ul>
 
-<h3>2.3.0 2017-5-9</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.3.0 2017-5-9</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ created abstract classes and language classes. PairTree = require("treenotation").PairTreeLanguage.PairTree</li>
 <li>⚠️ fromCsv and other from methods are now static methods on PairTreeLanguage, not PairTree.</li>
 </ul>
 
-<h3>2.2.4 2017-4-28</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.2.4 2017-4-28</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Dist npm fix</li>
 </ul>
 
-<h3>2.2.3 2017-4-28</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.2.3 2017-4-28</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Started using Prettier</li>
 <li>🎉 Swapped out Browserfy in favor of simple express router transform flow</li>
 <li>🎉 Created tasks folder in place of npm scripts</li>
 <li>🎉 Code cleanup: turned helper methods into statics</li>
 </ul>
 
-<h3>2.2.2 2017-4-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.2.2 2017-4-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getAncestorTrees method to node.</li>
 </ul>
 
-<h3>2.2.1 2017-4-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.2.1 2017-4-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added getRootTree method to node.</li>
 </ul>
 
-<h3>2.2.0 2017-4-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.2.0 2017-4-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ extend method on PairTree is now recursive.</li>
 </ul>
 
-<h3>2.1.1 2017-4-16</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.1.1 2017-4-16</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Bug fix: fixed uncaught error when parsing malformed delimited input</li>
 </ul>
 
-<h3>2.1.0 2017-4-13</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.1.0 2017-4-13</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ in base and pair, values are now converted to strings. Use a higher level language to preserve types.</li>
 </ul>
 
-<h3>2.0.3 2017-4-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.0.3 2017-4-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added prepublish hook</li>
 </ul>
 
-<h3>2.0.2 2017-4-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.0.2 2017-4-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Bug fix in node.setTree method</li>
 </ul>
 
-<h3>2.0.1 2017-4-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.0.1 2017-4-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 NPM bundle fix</li>
 </ul>
 
-<h3>2.0.0 2017-4-05</h3>
-<ul>
+<h3 class="scrollSectionComponent">2.0.0 2017-4-05</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Made TreeNotation the root namespace and separated PairTree out as a sublanguage</li>
 <li>⚠️ new Tree() now needs to be new TreeNotation.PairTree() or just add a Tree = TreeNotation.PairTree</li>
 <li>⚠️ node.getPath is now node.getPathName</li>
@@ -2064,58 +2097,58 @@ html {
 <li>🎉 Removed gulp devDependency. Switched to browserify.</li>
 </ul>
 
-<h3>1.2.2 2017-4-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.2.2 2017-4-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Removed package.tree and fixed gulp version update script</li>
 </ul>
 
-<h3>1.2.1 2017-3-31</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.2.1 2017-3-31</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ append, insert, prepend, push, and shift now return the new Tree Nodes.</li>
 </ul>
 
-<h3>1.1.1 2017-3-26</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.1.1 2017-3-26</h3>
+<ul class="scrollUnorderedListComponent">
 <li>⚠️ Removed each method</li>
 </ul>
 
-<h3>1.0.7 2017-3-25</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.0.7 2017-3-25</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added moveTo method on TreeNode</li>
 </ul>
 
-<h3>1.0.6 2017-3-19</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.0.6 2017-3-19</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added isTerminal, fromSeed, seedToTree, invert, remap, and toSeed methods</li>
 </ul>
 
-<h3>1.0.5 2017-3-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.0.5 2017-3-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Version number generator fix.</li>
 </ul>
 
-<h3>1.0.4 2017-3-17</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.0.4 2017-3-17</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🏥 Bug fix in node.setFromText</li>
 </ul>
 
-<h3>1.0.3 2017-3-15</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.0.3 2017-3-15</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Added extend method</li>
 </ul>
 
-<h3>1.0.2 2017-3-02</h3>
-<ul>
+<h3 class="scrollSectionComponent">1.0.2 2017-3-02</h3>
+<ul class="scrollUnorderedListComponent">
 <li>🎉 Initial release</li>
 </ul>
-<p class="scrollArticleSourceLink"><a href="https://github.com/publicdomaincompany/jtree/releaseNotes.scroll">Article source</a></p></div>
-  <div class="scrollFooter">
-   <div class="scrollSocialMediaIcons">
+<p class="scrollArticleSourceLinkComponent"><a href="https://github.com/publicdomaincompany/jtree/releaseNotes.scroll">Article source</a></p></div>
+  <div class="scrollFooterComponent">
+   <div class="scrollSocialMediaIconsComponent">
     <a href="mailto:jtree@treenotation.org"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Gmail icon</title><path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/></svg></a>
     <a href="https://twitter.com/treenotation"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>Twitter icon</title><path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/></svg></a>
     <a href="https://github.com/publicdomaincompany/jtree"><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub icon</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
 </div>
-   <a href="https://scroll.pub" class="scrollCommunityLink">Built with Scroll v21.1.0</a>
+   <a href="https://scroll.pub" class="scrollCommunityLinkComponent">Built with Scroll v22.1.0</a>
 </div>
 </body>
 </html>

@@ -1013,7 +1013,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
       event.preventDefault()
       event.stopPropagation()
       if (!bodyStumpNode.stumpNodeHasClass("dragOver")) {
-        bodyStumpNode.insertChildNode(`div ${helpText}
+        bodyStumpNode.insertAndPaintChildNode(`div ${helpText}
  id dragOverHelp`)
         bodyStumpNode.addClassToStumpNode("dragOver")
         // Add the help, and then hopefull we'll get a dragover event on the dragOverHelp, then
@@ -1516,6 +1516,8 @@ ${new stumpNode(this.toStumpCode()).compile()}
   protected _updateHtml() {
     const stumpNodeToMountOn = <abstractHtmlTag>this._htmlStumpNode.getParent()
     const currentIndex = this._htmlStumpNode.getIndex()
+
+    // todo: el.replaceWith
     this._removeHtml()
     this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
   }
@@ -1627,13 +1629,13 @@ ${new stumpNode(this.toStumpCode()).compile()}
  id ${this.getTreeComponentId()}`
   }
 
-  protected _mount(stumpNodeToMountOn: abstractHtmlTag, index: number) {
+  protected _mount(stumpNodeToMountOn: abstractHtmlTag, treeComponentIndex: number) {
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
 
     this.treeComponentWillMount()
 
     this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
+    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), treeComponentIndex)
 
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return this
@@ -1660,24 +1662,28 @@ ${new stumpNode(this.toStumpCode()).compile()}
     delete this._cssStumpNode
   }
 
-  protected _mountHtml(stumpNodeToMountOn: abstractHtmlTag, htmlCode: string, index: number) {
-    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
+  protected _mountHtml(stumpNodeToMountOn: abstractHtmlTag, stumpCode: string, treeComponentIndex: number) {
+    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(stumpCode, treeComponentIndex)
+    stumpNodeToMountOn.paintNode(this._htmlStumpNode)
     this._htmlStumpNode.setStumpNodeTreeComponent(this)
   }
 
-  renderAndGetRenderReport(stumpNode?: abstractHtmlTag, index?: number) {
+  _renderChildTreeComponents(isUpdateOp: boolean) {
+    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    return this._getChildTreeComponents().map((child: any, treeComponentIndex: number) => child.renderAndGetRenderReport(stumpNodeForChildren, treeComponentIndex))
+  }
+
+  renderAndGetRenderReport(stumpNode?: abstractHtmlTag, treeComponentIndex?: number) {
     const isUpdateOp = this.isMounted()
     let treeComponentUpdateReport: reasonForUpdatingOrNot = {
       shouldUpdate: false,
       reason: ""
     }
     if (isUpdateOp) treeComponentUpdateReport = this._updateAndGetUpdateReport()
-    else this._mount(stumpNode, index)
-
-    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    else this._mount(stumpNode, treeComponentIndex)
 
     // Todo: insert delayed rendering?
-    const childResults = this._getChildTreeComponents().map((child: any, index: number) => child.renderAndGetRenderReport(stumpNodeForChildren, index))
+    const childResults = this._renderChildTreeComponents(isUpdateOp)
 
     if (isUpdateOp) {
       if (treeComponentUpdateReport.shouldUpdate) {

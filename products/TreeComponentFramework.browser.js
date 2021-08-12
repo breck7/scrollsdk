@@ -259,6 +259,9 @@ class AbstractWillowBrowser extends stumpNode {
   _getPort() {
     return this.location.port ? ":" + this.location.port : ""
   }
+  get stumpsOnPage() {
+    return 0
+  }
   getHash() {
     return this.location.hash || ""
   }
@@ -467,7 +470,6 @@ class WillowBrowser extends AbstractWillowBrowser {
     this._offlineMode = true
   }
 }
-WillowBrowser._stumpsOnPage = 0
 class WillowBrowserShadow extends AbstractWillowShadow {
   get element() {
     if (!this._cachedEl) this._cachedEl = document.querySelector(`[${WillowConstants.uidAttribute}="${this.getShadowStumpNode()._getUid()}"]`)
@@ -482,11 +484,6 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   getShadowAttr(name) {
     return this.element.getAttribute(name)
   }
-  _logMessage(type) {
-    if (true) return true
-    WillowBrowserShadow._shadowUpdateNumber++
-    console.log(`DOM Update ${WillowBrowserShadow._shadowUpdateNumber}: ${type}`)
-  }
   // BEGIN MUTABLE METHODS:
   // todo: add tests
   // todo: idea, don't "paint" wall (dont append it to parent, until done.)
@@ -498,23 +495,17 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     if (index === undefined) element.appendChild(domElement)
     else if (index === 0) element.prepend(domElement)
     else element.insertBefore(domElement, element.children[index])
-    WillowBrowser._stumpsOnPage++
-    this._logMessage("insert")
   }
   removeShadow() {
     this.element.remove()
-    WillowBrowser._stumpsOnPage--
-    this._logMessage("remove")
     return this
   }
   setInputOrTextAreaValue(value) {
     this.element.value = value
-    this._logMessage("val")
     return this
   }
   setShadowAttr(name, value) {
     this.element.setAttribute(name, value)
-    this._logMessage("attr")
     return this
   }
   getShadowCss(prop) {
@@ -535,18 +526,15 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   }
   addClassToShadow(className) {
     this.element.classList.add(className)
-    this._logMessage("addClass")
     return this
   }
   removeClassFromShadow(className) {
     this.element.classList.remove(className)
-    this._logMessage("removeClass")
     return this
   }
   toggleShadow() {
     const { element } = this
     element.style.display = element.style.display == "none" ? "block" : "none"
-    this._logMessage("toggle")
     return this
   }
   getShadowOuterHeight() {
@@ -573,12 +561,10 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   }
   triggerShadowEvent(event) {
     this.element.dispatchEvent(new Event(event))
-    this._logMessage("trigger")
     return this
   }
   onShadowEvent(event, fn) {
     this.element.addEventListener(event, fn)
-    this._logMessage("bind on")
     return this
   }
   onShadowEventWithSelector(event, selector, fn) {
@@ -592,16 +578,13 @@ class WillowBrowserShadow extends AbstractWillowShadow {
         target = target.parentElement
       }
     })
-    this._logMessage("bind on")
     return this
   }
   offShadowEvent(event, fn) {
     this.element.removeEventListener(event, fn)
-    this._logMessage("bind off")
     return this
   }
 }
-WillowBrowserShadow._shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
 // same thing, except with side effects.
 class RealWillowBrowser extends AbstractWillowBrowser {
   findStumpNodesByShadowClass(className) {
@@ -611,6 +594,9 @@ class RealWillowBrowser extends AbstractWillowBrowser {
       stumpNodes.push(this.getStumpNodeFromElement(this))
     }
     return stumpNodes
+  }
+  get stumpsOnPage() {
+    return document.querySelectorAll(`[${WillowConstants.uidAttribute}]`).length
   }
   getElementById(id) {
     return document.getElementById(id)
@@ -814,7 +800,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
       event.preventDefault()
       event.stopPropagation()
       if (!bodyStumpNode.stumpNodeHasClass("dragOver")) {
-        bodyStumpNode.insertChildNode(`div ${helpText}
+        bodyStumpNode.insertAndPaintChildNode(`div ${helpText}
  id dragOverHelp`)
         bodyStumpNode.addClassToStumpNode("dragOver")
         // Add the help, and then hopefull we'll get a dragover event on the dragOverHelp, then
@@ -1136,12 +1122,8 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent")
   }
   treeComponentWillMount() {}
-  async treeComponentDidMount() {
-    AbstractTreeComponent._mountedTreeComponents++
-  }
-  treeComponentDidUnmount() {
-    AbstractTreeComponent._mountedTreeComponents--
-  }
+  async treeComponentDidMount() {}
+  treeComponentDidUnmount() {}
   treeComponentWillUnmount() {}
   getNewestTimeToRender() {
     return this._lastTimeToRender
@@ -1190,6 +1172,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   _updateHtml() {
     const stumpNodeToMountOn = this._htmlStumpNode.getParent()
     const currentIndex = this._htmlStumpNode.getIndex()
+    // todo: el.replaceWith
     this._removeHtml()
     this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)
   }
@@ -1284,11 +1267,11 @@ ${new stumpNode(this.toStumpCode()).compile()}
  class ${this.getCssClassNames().join(" ")}
  id ${this.getTreeComponentId()}`
   }
-  _mount(stumpNodeToMountOn, index) {
+  _mount(stumpNodeToMountOn, treeComponentIndex) {
     this._setLastRenderedTime(this._getProcessTimeInMilliseconds())
     this.treeComponentWillMount()
     this._mountCss()
-    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), index) // todo: add index back?
+    this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), treeComponentIndex)
     this._lastTimeToRender = this._getProcessTimeInMilliseconds() - this._getLastRenderedTime()
     return this
   }
@@ -1309,21 +1292,25 @@ ${new stumpNode(this.toStumpCode()).compile()}
     this._cssStumpNode.removeCssStumpNode()
     delete this._cssStumpNode
   }
-  _mountHtml(stumpNodeToMountOn, htmlCode, index) {
-    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(htmlCode, index)
+  _mountHtml(stumpNodeToMountOn, stumpCode, treeComponentIndex) {
+    this._htmlStumpNode = stumpNodeToMountOn.insertChildNode(stumpCode, treeComponentIndex)
+    stumpNodeToMountOn.paintNode(this._htmlStumpNode)
     this._htmlStumpNode.setStumpNodeTreeComponent(this)
   }
-  renderAndGetRenderReport(stumpNode, index) {
+  _renderChildTreeComponents(isUpdateOp) {
+    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    return this._getChildTreeComponents().map((child, treeComponentIndex) => child.renderAndGetRenderReport(stumpNodeForChildren, treeComponentIndex))
+  }
+  renderAndGetRenderReport(stumpNode, treeComponentIndex) {
     const isUpdateOp = this.isMounted()
     let treeComponentUpdateReport = {
       shouldUpdate: false,
       reason: ""
     }
     if (isUpdateOp) treeComponentUpdateReport = this._updateAndGetUpdateReport()
-    else this._mount(stumpNode, index)
-    const stumpNodeForChildren = this.getStumpNodeForChildren()
+    else this._mount(stumpNode, treeComponentIndex)
     // Todo: insert delayed rendering?
-    const childResults = this._getChildTreeComponents().map((child, index) => child.renderAndGetRenderReport(stumpNodeForChildren, index))
+    const childResults = this._renderChildTreeComponents(isUpdateOp)
     if (isUpdateOp) {
       if (treeComponentUpdateReport.shouldUpdate) {
         try {
@@ -1344,7 +1331,6 @@ ${new stumpNode(this.toStumpCode()).compile()}
     return new jtree.TreeNode(str)
   }
 }
-AbstractTreeComponent._mountedTreeComponents = 0
 class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   toHakonCode() {
     return `.TreeComponentFrameworkDebuggerComponent
@@ -1377,7 +1363,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   span This app is powered by the
   a Tree Component Framework
    href https://github.com/treenotation/jtree/tree/main/treeComponentFramework
- p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
+ p ${app.getNumberOfLines()} components loaded. ${this.willowBrowser.stumpsOnPage} stumps on page.
  pre
   bern
 ${app.toString(3)}`

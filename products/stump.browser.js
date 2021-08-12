@@ -274,14 +274,19 @@ htmlTagNode
    return this._shadow
   }
   insertCssChildNode(text, index) {
-   return this.insertChildNode(text, index)
+   return this.insertAndPaintChildNode(text, index)
+  }
+  insertAndPaintChildNode(text, index) {
+    const newNode = this.insertChildNode(text, index)
+    this.paintNode(newNode)
+    return newNode
   }
   insertChildNode(text, index) {
    const singleNode = new jtree.TreeNode(text).getChildren()[0]
-   const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-   const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
-   this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
-   return newNode
+   return this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
+  }
+  paintNode(newNode) {
+    this.getShadow().insertHtmlNode(newNode, this.filter(node => node.isHtmlTagNode).indexOf(newNode))
   }
   isInputType() {
    return ["input", "textarea"].includes(this.getTag()) || this.get("contenteditable") === "true"
@@ -813,14 +818,19 @@ bernNode
       return this._shadow
     }
     insertCssChildNode(text, index) {
-      return this.insertChildNode(text, index)
+      return this.insertAndPaintChildNode(text, index)
+    }
+    insertAndPaintChildNode(text, index) {
+      const newNode = this.insertChildNode(text, index)
+      this.paintNode(newNode)
+      return newNode
     }
     insertChildNode(text, index) {
       const singleNode = new jtree.TreeNode(text).getChildren()[0]
-      const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-      const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
-      this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
-      return newNode
+      return this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
+    }
+    paintNode(newNode) {
+      this.getShadow().insertHtmlNode(newNode, this.filter(node => node.isHtmlTagNode).indexOf(newNode))
     }
     isInputType() {
       return ["input", "textarea"].includes(this.getTag()) || this.get("contenteditable") === "true"

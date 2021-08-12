@@ -28,7 +28,7 @@ testTree.all = (equal: any) => {
   equal(bodyStumpNode.stumpNodeHasClass("someClass"), false)
 
   // Act
-  bodyStumpNode.insertChildNode(`h6 Hello world
+  bodyStumpNode.insertAndPaintChildNode(`h6 Hello world
  class header`)
   const html = willow2.getPageHtml()
 

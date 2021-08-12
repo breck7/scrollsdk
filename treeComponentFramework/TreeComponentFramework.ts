@@ -1166,7 +1166,6 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
   private _cssStumpNode: abstractHtmlTag
   private _lastRenderedTime: number
   private _lastTimeToRender: number
-  static _mountedTreeComponents = 0
 
   private _willowBrowser: any
   private _theme: AbstractTheme
@@ -1451,13 +1450,9 @@ abstract class AbstractTreeComponent extends jtree.GrammarBackedNode {
 
   treeComponentWillMount() {}
 
-  async treeComponentDidMount() {
-    AbstractTreeComponent._mountedTreeComponents++
-  }
+  async treeComponentDidMount() {}
 
-  treeComponentDidUnmount() {
-    AbstractTreeComponent._mountedTreeComponents--
-  }
+  treeComponentDidUnmount() {}
 
   treeComponentWillUnmount() {}
 

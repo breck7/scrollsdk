@@ -607,8 +607,6 @@ class WillowBrowser extends AbstractWillowBrowser {
 }
 
 class WillowBrowserShadow extends AbstractWillowShadow {
-  static _shadowUpdateNumber = 0 // todo: what is this for, debugging perf?
-
   private _cachedEl: any // todo: add typings.
 
   get element() {
@@ -628,12 +626,6 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     return this.element.getAttribute(name)
   }
 
-  _logMessage(type: string) {
-    if (true) return true
-    WillowBrowserShadow._shadowUpdateNumber++
-    console.log(`DOM Update ${WillowBrowserShadow._shadowUpdateNumber}: ${type}`)
-  }
-
   // BEGIN MUTABLE METHODS:
 
   // todo: add tests
@@ -647,25 +639,20 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     if (index === undefined) element.appendChild(domElement)
     else if (index === 0) element.prepend(domElement)
     else element.insertBefore(domElement, element.children[index])
-
-    this._logMessage("insert")
   }
 
   removeShadow() {
     this.element.remove()
-    this._logMessage("remove")
     return this
   }
 
   setInputOrTextAreaValue(value: string) {
     this.element.value = value
-    this._logMessage("val")
     return this
   }
 
   setShadowAttr(name: string, value: string) {
     this.element.setAttribute(name, value)
-    this._logMessage("attr")
     return this
   }
 
@@ -691,21 +678,17 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   addClassToShadow(className: string) {
     this.element.classList.add(className)
-    this._logMessage("addClass")
     return this
   }
 
   removeClassFromShadow(className: string) {
     this.element.classList.remove(className)
-    this._logMessage("removeClass")
     return this
   }
 
   toggleShadow() {
     const { element } = this
     element.style.display = element.style.display == "none" ? "block" : "none"
-
-    this._logMessage("toggle")
     return this
   }
 
@@ -740,13 +723,11 @@ class WillowBrowserShadow extends AbstractWillowShadow {
 
   triggerShadowEvent(event: string) {
     this.element.dispatchEvent(new Event(event))
-    this._logMessage("trigger")
     return this
   }
 
   onShadowEvent(event: string, fn: any) {
     this.element.addEventListener(event, fn)
-    this._logMessage("bind on")
     return this
   }
 
@@ -762,13 +743,11 @@ class WillowBrowserShadow extends AbstractWillowShadow {
       }
     })
 
-    this._logMessage("bind on")
     return this
   }
 
   offShadowEvent(event: string, fn: Function) {
     this.element.removeEventListener(event, fn)
-    this._logMessage("bind off")
     return this
   }
 }

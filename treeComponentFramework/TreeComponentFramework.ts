@@ -332,6 +332,10 @@ class AbstractWillowBrowser extends stumpNode {
     return this.location.port ? ":" + this.location.port : ""
   }
 
+  get stumpsOnPage() {
+    return 0
+  }
+
   getHash() {
     return this.location.hash || ""
   }
@@ -600,7 +604,6 @@ class WillowBrowser extends AbstractWillowBrowser {
     super(fullHtmlPageUrlIncludingProtocolAndFileName)
     this._offlineMode = true
   }
-  static _stumpsOnPage = 0
 }
 
 class WillowBrowserShadow extends AbstractWillowShadow {
@@ -645,13 +648,11 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     else if (index === 0) element.prepend(domElement)
     else element.insertBefore(domElement, element.children[index])
 
-    WillowBrowser._stumpsOnPage++
     this._logMessage("insert")
   }
 
   removeShadow() {
     this.element.remove()
-    WillowBrowser._stumpsOnPage--
     this._logMessage("remove")
     return this
   }
@@ -783,6 +784,10 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     }
 
     return stumpNodes
+  }
+
+  get stumpsOnPage() {
+    return document.querySelectorAll(`[${WillowConstants.uidAttribute}]`).length
   }
 
   getElementById(id: string) {
@@ -1755,7 +1760,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   span This app is powered by the
   a Tree Component Framework
    href https://github.com/treenotation/jtree/tree/main/treeComponentFramework
- p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
+ p ${app.getNumberOfLines()} components loaded. ${this.willowBrowser.stumpsOnPage} stumps on page.
  pre
   bern
 ${app.toString(3)}`

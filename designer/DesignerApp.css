@@ -1,0 +1,38 @@
+.CellHasErrorsClass {
+  color: #b13507;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+}
+
+.CellHasErrorsClass.htCommentCell:after {
+  content: "✗" !important;
+  color: #b13507 !important;
+}
+
+.keywordCell {
+  color: purple;
+}
+
+.constantnumericfloatCell {
+  color: blue;
+}
+
+.stringCell {
+  color: red;
+}
+
+.constantnumericCell {
+  color: green;
+}
+
+.commentCell {
+  color: grey;
+}
+
+.variableCell {
+  color: blue;
+}
+
+.constantlanguageCell {
+  color: green;
+}

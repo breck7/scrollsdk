@@ -1,9 +1,8 @@
 //onsave jtree build produce DesignerApp.browser.js
+const isEmpty = val => val === ""
 class DesignerApp extends AbstractTreeComponent {
   constructor() {
     super(...arguments)
-    ///
-    this.languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
     this._localStorageKeys = {
       grammarConsole: "grammarConsole",
       codeConsole: "codeConsole"
@@ -14,6 +13,7 @@ class DesignerApp extends AbstractTreeComponent {
     return new jtree.TreeNode.Parser(undefined, {
       githubTriangleComponent,
       samplesComponent,
+      codeSheetComponent,
       tableComponent,
       shareComponent,
       headerComponent,
@@ -165,6 +165,10 @@ class DesignerApp extends AbstractTreeComponent {
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
+    this.codeSheet.initHot().loadData()
+  }
+  get codeSheet() {
+    return this.getNode("codeSheetComponent")
   }
   getGrammarCode() {
     return this.grammarInstance.getValue()
@@ -174,6 +178,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
   setCodeCode(code) {
     this.codeInstance.setValue(code)
+    this.codeSheet.loadData()
   }
   getCodeValue() {
     return this.codeInstance.getValue()
@@ -368,9 +373,13 @@ a
   }
 }
 class samplesComponent extends AbstractTreeComponent {
+  constructor() {
+    super(...arguments)
+    this.languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
+  }
   toStumpCode() {
-    const langs = this.getRootNode()
-      .languages.map(
+    const langs = this.languages
+      .map(
         lang => ` a ${jtree.Utils.ucfirst(lang)}
   href #standard%20${lang}
   value ${lang}
@@ -380,6 +389,100 @@ class samplesComponent extends AbstractTreeComponent {
     return `p
  span Example Languages 
 ${langs}`
+  }
+}
+class codeSheetComponent extends AbstractTreeComponent {
+  updateProgramFromHot() {}
+  loadData() {
+    if (this.hotInstance) this.hotInstance.loadData(this.grid)
+  }
+  get grid() {
+    return new jtree.TreeNode(this.getRootNode().getCodeValue()).toGrid()
+  }
+  initHot() {
+    const example = document.getElementById("codeSheetComponent")
+    this.hotInstance = new Handsontable(example, this.hotSettings)
+    return this
+  }
+  get program() {
+    return this.getRootNode().program
+  }
+  getParsedCell(row, column) {
+    const theRow = this.program.getProgramAsCells()[row]
+    const cell = theRow ? theRow[column] : undefined
+    if (!cell) return {}
+    const cssClasses = [(cell.getHighlightScope() || "").replaceAll(".", "") + "Cell"]
+    if (!cell.isValid()) cssClasses.push("CellHasErrorsClass")
+    const contents = cell.getWord()
+    return {
+      optionKeywords: cell.getAutoCompleteWords().map(word => word.text),
+      placeholder: isEmpty(contents) ? `eg "${cell.placeholder}"` : "",
+      contents,
+      cssClasses
+    }
+    return cell
+  }
+  get hotSettings() {
+    const that = this
+    const cells = function(row, column) {
+      const { comment, cssClasses, optionKeywords, placeholder } = that.getParsedCell(row, column)
+      const cellProperties = {}
+      const allClasses = cssClasses ? cssClasses.slice() : []
+      cellProperties.className = allClasses.join(" ")
+      cellProperties.comment = comment ? { value: comment } : undefined
+      cellProperties.placeholder = placeholder
+      if (optionKeywords && optionKeywords.length) {
+        cellProperties.type = "autocomplete"
+        cellProperties.source = optionKeywords
+      }
+      return cellProperties
+    }
+    const hotSettings = {
+      afterChange: () => this.updateProgramFromHot(),
+      afterRemoveRow: () => this.updateProgramFromHot(),
+      afterRemoveCol: () => this.updateProgramFromHot(),
+      allowInsertColumn: false,
+      allowInsertRow: true,
+      autoRowSize: false,
+      autoColumnSize: false,
+      colHeaders: true,
+      comments: true,
+      cells,
+      contextMenu: {
+        items: {
+          sp0: { name: "---------" },
+          row_above: {},
+          row_below: {},
+          sp1: { name: "---------" },
+          remove_row: {},
+          remove_col: {},
+          sp2: { name: "---------" },
+          undo: {},
+          redo: {},
+          sp3: { name: "---------" },
+          copy: {},
+          cut: {}
+        }
+      },
+      licenseKey: "non-commercial-and-evaluation",
+      height: 250,
+      manualColumnResize: true,
+      manualRowMove: true,
+      minCols: Math.max(...this.grid.map(arr => arr.length)) + 3,
+      minSpareCols: 2,
+      minRows: 40,
+      minSpareRows: 20,
+      rowHeaders: true,
+      search: true,
+      stretchH: "all",
+      width: "100%",
+      wordWrap: false
+    }
+    return hotSettings
+  }
+  toStumpCode() {
+    return `div CODESHEET GOES HERE
+ id codeSheetComponent`
   }
 }
 class shareComponent extends AbstractTreeComponent {

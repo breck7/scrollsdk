@@ -9,14 +9,18 @@ declare var grammarNode: any
 declare var CodeMirror: any
 declare var saveAs: any
 declare var JSZip: any
+declare var Handsontable: any
 declare var dumbdownNode: any
 declare type html = string
+
+const isEmpty = (val: any) => val === ""
 
 class DesignerApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       githubTriangleComponent,
       samplesComponent,
+      codeSheetComponent,
       tableComponent,
       shareComponent,
       headerComponent,
@@ -137,9 +141,6 @@ class DesignerApp extends AbstractTreeComponent {
       .join("\n")
     return `<table class="iceCubes">${table}</table>`
   }
-  ///
-
-  public languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
 
   public program: any
   public grammarProgram: any
@@ -216,6 +217,12 @@ class DesignerApp extends AbstractTreeComponent {
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
+
+    this.codeSheet.initHot().loadData()
+  }
+
+  get codeSheet() {
+    return this.getNode("codeSheetComponent")
   }
 
   getGrammarCode() {
@@ -228,6 +235,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   setCodeCode(code: string) {
     this.codeInstance.setValue(code)
+    this.codeSheet.loadData()
   }
 
   getCodeValue() {
@@ -445,9 +453,11 @@ a
 }
 
 class samplesComponent extends AbstractTreeComponent {
+  languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
+
   toStumpCode() {
-    const langs = this.getRootNode()
-      .languages.map(
+    const langs = this.languages
+      .map(
         (lang: string) => ` a ${jtree.Utils.ucfirst(lang)}
   href #standard%20${lang}
   value ${lang}
@@ -457,6 +467,125 @@ class samplesComponent extends AbstractTreeComponent {
     return `p
  span Example Languages 
 ${langs}`
+  }
+}
+
+interface ParsedCell {
+  cssClasses?: string[]
+  optionKeywords?: string[]
+  comment?: string
+  placeholder?: string
+  contents?: string
+}
+
+class codeSheetComponent extends AbstractTreeComponent {
+  updateProgramFromHot() {}
+
+  hotInstance: any
+
+  loadData() {
+    if (this.hotInstance) this.hotInstance.loadData(this.grid)
+  }
+
+  get grid() {
+    return new jtree.TreeNode(this.getRootNode().getCodeValue()).toGrid()
+  }
+
+  initHot() {
+    const example = document.getElementById("codeSheetComponent")
+    this.hotInstance = new Handsontable(example, this.hotSettings)
+    return this
+  }
+
+  get program() {
+    return this.getRootNode().program
+  }
+
+  getParsedCell(row: number, column: number): ParsedCell {
+    const theRow = this.program.getProgramAsCells()[row]
+    const cell = theRow ? theRow[column] : undefined
+    if (!cell) return {}
+    const cssClasses: string[] = [(cell.getHighlightScope() || "").replaceAll(".", "") + "Cell"]
+    if (!cell.isValid()) cssClasses.push("CellHasErrorsClass")
+    const contents = cell.getWord()
+    return {
+      optionKeywords: cell.getAutoCompleteWords().map((word: any) => word.text),
+      placeholder: isEmpty(contents) ? `eg "${cell.placeholder}"` : "",
+      contents,
+      cssClasses
+    }
+    return cell
+  }
+
+  private get hotSettings() {
+    const that = this
+
+    const cells = function(row: number, column: number) {
+      const { comment, cssClasses, optionKeywords, placeholder } = that.getParsedCell(row, column)
+      const cellProperties: Partial<any> = {}
+
+      const allClasses = cssClasses ? cssClasses.slice() : []
+
+      cellProperties.className = allClasses.join(" ")
+      cellProperties.comment = comment ? { value: comment } : undefined
+      cellProperties.placeholder = placeholder
+
+      if (optionKeywords && optionKeywords.length) {
+        cellProperties.type = "autocomplete"
+        cellProperties.source = optionKeywords
+      }
+
+      return cellProperties
+    }
+
+    const hotSettings: any = {
+      afterChange: () => this.updateProgramFromHot(),
+      afterRemoveRow: () => this.updateProgramFromHot(),
+      afterRemoveCol: () => this.updateProgramFromHot(),
+      allowInsertColumn: false,
+      allowInsertRow: true,
+      autoRowSize: false,
+      autoColumnSize: false,
+      colHeaders: true,
+      comments: true,
+      cells,
+      contextMenu: {
+        items: {
+          sp0: { name: "---------" },
+          row_above: {},
+          row_below: {},
+          sp1: { name: "---------" },
+          remove_row: {},
+          remove_col: {},
+          sp2: { name: "---------" },
+          undo: {},
+          redo: {},
+          sp3: { name: "---------" },
+          copy: {},
+          cut: {}
+        }
+      },
+      licenseKey: "non-commercial-and-evaluation",
+      height: 250,
+      manualColumnResize: true,
+      manualRowMove: true,
+      minCols: Math.max(...this.grid.map((arr: any) => arr.length)) + 3,
+      minSpareCols: 2,
+      minRows: 40,
+      minSpareRows: 20,
+      rowHeaders: true,
+      search: true,
+      stretchH: "all",
+      width: "100%",
+      wordWrap: false
+    }
+
+    return hotSettings
+  }
+
+  toStumpCode() {
+    return `div CODESHEET GOES HERE
+ id codeSheetComponent`
   }
 }
 

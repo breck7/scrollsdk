@@ -235,7 +235,6 @@ class DesignerApp extends AbstractTreeComponent {
 
   setCodeCode(code: string) {
     this.codeInstance.setValue(code)
-    this.codeSheet.loadData()
   }
 
   getCodeValue() {
@@ -358,6 +357,10 @@ class DesignerApp extends AbstractTreeComponent {
     this._grammarDidUpdate()
     this._clearResults()
     this._onCodeKeyUp()
+    this.codeSheet
+      .destroy()
+      .initHot()
+      .loadData()
   }
 
   toHakonCode() {
@@ -484,16 +487,31 @@ class codeSheetComponent extends AbstractTreeComponent {
   hotInstance: any
 
   loadData() {
-    if (this.hotInstance) this.hotInstance.loadData(this.grid)
+    if (this.hotInstance) this.hotInstance.loadData(this.rectangularGrid)
   }
 
   get grid() {
     return new jtree.TreeNode(this.getRootNode().getCodeValue()).toGrid()
   }
 
+  get rectangularGrid() {
+    const { grid } = this
+    const minWidth = this.program.getProgramWidth()
+    grid.forEach((line: any) => {
+      // workaround for: https://github.com/handsontable/handsontable/issues/7361
+      while (line.length < minWidth) line.push("")
+    })
+    return grid
+  }
+
+  destroy() {
+    if (this.hotInstance) this.hotInstance.destroy()
+    return this
+  }
+
   initHot() {
-    const example = document.getElementById("codeSheetComponent")
-    this.hotInstance = new Handsontable(example, this.hotSettings)
+    if (!this.program) return this
+    this.hotInstance = new Handsontable(document.getElementById("codeSheetComponent"), this.hotSettings)
     return this
   }
 
@@ -502,17 +520,22 @@ class codeSheetComponent extends AbstractTreeComponent {
   }
 
   getParsedCell(row: number, column: number): ParsedCell {
-    const theRow = this.program.getProgramAsCells()[row]
+    const { program } = this
+    const theRow = program.getProgramAsCells()[row]
+    const cellTypes = new jtree.TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
+
     const cell = theRow ? theRow[column] : undefined
     if (!cell) return {}
     const cssClasses: string[] = [(cell.getHighlightScope() || "").replaceAll(".", "") + "Cell"]
     if (!cell.isValid()) cssClasses.push("CellHasErrorsClass")
     const contents = cell.getWord()
+    const cellTypeNames = cellTypes.nodeAt(row).getWord(column + 1)
     return {
       optionKeywords: cell.getAutoCompleteWords().map((word: any) => word.text),
       placeholder: isEmpty(contents) ? `eg "${cell.placeholder}"` : "",
       contents,
-      cssClasses
+      cssClasses,
+      comment: contents ? cellTypeNames : undefined
     }
     return cell
   }
@@ -566,11 +589,13 @@ class codeSheetComponent extends AbstractTreeComponent {
         }
       },
       licenseKey: "non-commercial-and-evaluation",
-      height: 250,
+      height: 500,
       manualColumnResize: true,
       manualRowMove: true,
-      minCols: Math.max(...this.grid.map((arr: any) => arr.length)) + 3,
+
+      minCols: this.program.getProgramWidth() + 3,
       minSpareCols: 2,
+
       minRows: 40,
       minSpareRows: 20,
       rowHeaders: true,
@@ -647,9 +672,9 @@ class explainResultsComponent extends AbstractTreeComponent {
 class tableComponent extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
-      compiledResultsComponent: compiledResultsComponent,
-      executionResultsComponent: executionResultsComponent,
-      explainResultsComponent: explainResultsComponent
+      compiledResultsComponent,
+      executionResultsComponent,
+      explainResultsComponent
     })
   }
 

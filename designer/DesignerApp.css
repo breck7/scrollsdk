@@ -4,7 +4,7 @@
   text-decoration-style: wavy;
 }
 
-.CellHasErrorsClass.htCommentCell:after {
+.handsontable .CellHasErrorsClass.htCommentCell:after {
   content: "✗" !important;
   color: #b13507 !important;
 }
@@ -35,4 +35,87 @@
 
 .constantlanguageCell {
   color: green;
+}
+
+.handsontable .htAutocompleteArrow {
+  font-size: 0 !important;
+}
+
+.handsontable .htPlaceholder {
+  font-style: italic;
+}
+
+.handsontable .ShowDropdownArrow .htAutocompleteArrow:before {
+  content: "+" !important;
+  color: green !important;
+  font-size: 14px !important;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cellCreated {
+  background-color: rgba(0, 150, 0, 0.1) !important;
+}
+.cellChanged {
+  background-color: rgba(180, 186, 43, 0.1) !important;
+}
+.cellDeleted {
+  background-color: rgba(150, 0, 0, 0.1) !important;
+}
+
+.handsontable .htCommentCell:after {
+  content: "✓" !important;
+  color: #ccc !important;
+  border: 0 !important;
+  font-size: 8px;
+}
+
+.handsontable .htCommentCell.HasSuggestions:after {
+  content: "⚡✓" !important;
+}
+
+.KeywordCellDef {
+  color: #3c4e66;
+}
+
+.BooleanCellDef {
+  color: #00847e;
+}
+
+.EnumCellDef {
+  color: #00847e;
+}
+
+.IntegerCellDef,
+.NumericCellDef {
+  color: #578145;
+}
+
+.SubTableHeaderCellDef {
+  color: #4c6a9c;
+  border-bottom: 1px solid #4c6a9c;
+  background-color: #eee;
+}
+
+.SubTableValueCellDef {
+  color: #287669;
+  background-color: #eee;
+}
+
+.UrlCellDef,
+.QueryStringCellDef {
+  color: #00823f;
+}
+
+.SlugDeclarationType {
+  color: #00823f;
+}
+
+.CommentType {
+  color: #999;
+  font-style: italic;
+}
+
+.WorkInProgressCellDef {
+  color: #777;
 }

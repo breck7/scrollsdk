@@ -18,7 +18,7 @@
 }
 
 .stringCell {
-  color: red;
+  color: #a11;
 }
 
 .constantnumericCell {
@@ -26,7 +26,7 @@
 }
 
 .commentCell {
-  color: grey;
+  color: #a50;
 }
 
 .variableCell {

@@ -435,7 +435,7 @@ class codeSheetComponent extends AbstractTreeComponent {
     const cellTypeNames = cellTypes.nodeAt(row).getWord(column + 1)
     return {
       optionKeywords: cell.getAutoCompleteWords().map(word => word.text),
-      placeholder: isEmpty(contents) ? `eg "${cell.placeholder}"` : "",
+      placeholder: isEmpty(contents) && cell.placeholder ? `eg "${cell.placeholder}"` : "",
       contents,
       cssClasses,
       comment: contents ? cellTypeNames : undefined

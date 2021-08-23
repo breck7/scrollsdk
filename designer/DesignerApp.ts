@@ -1,31 +1,35 @@
 //onsave jtree build produce DesignerApp.browser.js
 
-const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent } = require("../products/TreeComponentFramework.node.js")
 const { jtree } = require("../index.js")
+
+const { GithubTriangleComponent } = require("./components/GitHubTriangle.ts")
+const { SamplesComponent } = require("./components/Samples.ts")
+const { CodeSheetComponent } = require("./components/CodeSheet.ts")
+const { ShareComponent } = require("./components/Share.ts")
+const { HeaderComponent } = require("./components/Header.ts")
+const { ErrorDisplayComponent } = require("./components/ErrorDisplay.ts")
+const { GrammarWorkspaceComponent } = require("./components/GrammarWorkspace.ts")
+const { CodeWorkspaceComponent } = require("./components/CodeWorkspace.ts")
 
 declare var grammarNode: any
 
 // todo: get typings in here.
 declare var CodeMirror: any
-declare var saveAs: any
-declare var JSZip: any
-declare var Handsontable: any
 declare var dumbdownNode: any
-declare type html = string
-
-const isEmpty = (val: any) => val === ""
 
 class DesignerApp extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
-      githubTriangleComponent,
-      samplesComponent,
-      codeSheetComponent,
-      tableComponent,
-      shareComponent,
-      headerComponent,
-      otherErrorsComponent,
-      TreeComponentFrameworkDebuggerComponent
+      TreeComponentFrameworkDebuggerComponent,
+      GithubTriangleComponent,
+      SamplesComponent,
+      CodeSheetComponent,
+      ShareComponent,
+      HeaderComponent,
+      ErrorDisplayComponent,
+      GrammarWorkspaceComponent,
+      CodeWorkspaceComponent
     })
   }
 
@@ -50,22 +54,6 @@ class DesignerApp extends AbstractTreeComponent {
 
   visualizeCommand() {
     this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
-  }
-
-  inferPrefixGrammarCommand() {
-    this.setGrammarCode(new jtree.UnknownGrammarProgram(this.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
-    this._onGrammarKeyup()
-  }
-
-  synthesizeProgramCommand() {
-    const grammarProgram = new jtree.HandGrammarProgram(this.getGrammarCode())
-    this.setCodeCode(
-      grammarProgram
-        .getRootNodeTypeDefinitionNode()
-        .synthesizeNode()
-        .join("\n")
-    )
-    this._onCodeKeyUp()
   }
 
   resetCommand() {
@@ -93,26 +81,6 @@ class DesignerApp extends AbstractTreeComponent {
     const sample = rootNodeDef.getNode("example").childrenToString()
 
     this._setGrammarAndCode(grammar.text, sample)
-  }
-
-  // TODO: ADD TESTS!!!!!
-  async downloadBundleCommand() {
-    const grammarProgram = new jtree.HandGrammarProgram(this.getGrammarCode())
-    const bundle = grammarProgram.toBundle()
-    const languageName = grammarProgram.getExtensionName()
-    return this._makeZipBundle(languageName + ".zip", bundle)
-  }
-
-  private async _makeZipBundle(fileName: string, bundle: any) {
-    const zip = new JSZip()
-    Object.keys(bundle).forEach(key => {
-      zip.file(key, bundle[key])
-    })
-
-    zip.generateAsync({ type: "blob" }).then((content: any) => {
-      // see FileSaver.js
-      saveAs(content, fileName)
-    })
   }
 
   private _toIceTray(program: any) {
@@ -222,7 +190,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   get codeSheet() {
-    return this.getNode("codeSheetComponent")
+    return this.getNode("CodeSheetComponent")
   }
 
   getGrammarCode() {
@@ -267,13 +235,12 @@ class DesignerApp extends AbstractTreeComponent {
 
     if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
       try {
-        const grammarErrors = this._getGrammarErrors(currentGrammarCode)
         this._grammarConstructor = new jtree.HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
         this._cachedGrammarCode = currentGrammarCode
-        this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
+        this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent")
       } catch (err) {
         console.error(err)
-        this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
+        this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent", err)
       }
     }
     return this._grammarConstructor
@@ -281,7 +248,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   protected onCommandError(err: any) {
     console.log(err)
-    this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
+    this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent", err)
   }
 
   private _grammarDidUpdate() {
@@ -315,7 +282,6 @@ class DesignerApp extends AbstractTreeComponent {
     const code = this.getCodeValue()
     this._updateLocalStorage()
     const programConstructor = this._getGrammarConstructor()
-    const that = this
 
     this.program = new programConstructor(code)
     const errs = this.program.getAllErrors()
@@ -364,7 +330,6 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   toHakonCode() {
-    const theme = this.getTheme()
     return `body
  font-family "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
  margin auto
@@ -453,350 +418,6 @@ a
 .LintErrorWithSuggestion
  cursor pointer`
   }
-}
-
-class samplesComponent extends AbstractTreeComponent {
-  languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
-
-  toStumpCode() {
-    const langs = this.languages
-      .map(
-        (lang: string) => ` a ${jtree.Utils.ucfirst(lang)}
-  href #standard%20${lang}
-  value ${lang}
-  clickCommand fetchAndLoadJtreeShippedLanguageCommand`
-      )
-      .join("\n span  | \n")
-    return `p
- span Example Languages 
-${langs}`
-  }
-}
-
-interface ParsedCell {
-  cssClasses?: string[]
-  optionKeywords?: string[]
-  comment?: string
-  placeholder?: string
-  contents?: string
-}
-
-class codeSheetComponent extends AbstractTreeComponent {
-  updateProgramFromHot() {}
-
-  hotInstance: any
-
-  loadData() {
-    if (this.hotInstance) this.hotInstance.loadData(this.rectangularGrid)
-  }
-
-  get grid() {
-    return new jtree.TreeNode(this.getRootNode().getCodeValue()).toGrid()
-  }
-
-  get rectangularGrid() {
-    const { grid } = this
-    const minWidth = this.program.getProgramWidth()
-    grid.forEach((line: any) => {
-      // workaround for: https://github.com/handsontable/handsontable/issues/7361
-      while (line.length < minWidth) line.push("")
-    })
-    return grid
-  }
-
-  destroy() {
-    if (this.hotInstance) this.hotInstance.destroy()
-    return this
-  }
-
-  initHot() {
-    if (!this.program) return this
-    this.hotInstance = new Handsontable(document.getElementById("codeSheetComponent"), this.hotSettings)
-    return this
-  }
-
-  get program() {
-    return this.getRootNode().program
-  }
-
-  getParsedCell(row: number, column: number): ParsedCell {
-    const { program } = this
-    const theRow = program.getProgramAsCells()[row]
-    const cellTypes = new jtree.TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
-
-    const cell = theRow ? theRow[column] : undefined
-    if (!cell) return {}
-    const cssClasses: string[] = [(cell.getHighlightScope() || "").replaceAll(".", "") + "Cell"]
-    if (!cell.isValid()) cssClasses.push("CellHasErrorsClass")
-    const contents = cell.getWord()
-    const cellTypeNames = cellTypes.nodeAt(row).getWord(column + 1)
-    return {
-      optionKeywords: cell.getAutoCompleteWords().map((word: any) => word.text),
-      placeholder: isEmpty(contents) && cell.placeholder ? `eg "${cell.placeholder}"` : "",
-      contents,
-      cssClasses,
-      comment: contents ? cellTypeNames : undefined
-    }
-    return cell
-  }
-
-  private get hotSettings() {
-    const that = this
-
-    const cells = function(row: number, column: number) {
-      const { comment, cssClasses, optionKeywords, placeholder } = that.getParsedCell(row, column)
-      const cellProperties: Partial<any> = {}
-
-      const allClasses = cssClasses ? cssClasses.slice() : []
-
-      cellProperties.className = allClasses.join(" ")
-      cellProperties.comment = comment ? { value: comment } : undefined
-      cellProperties.placeholder = placeholder
-
-      if (optionKeywords && optionKeywords.length) {
-        cellProperties.type = "autocomplete"
-        cellProperties.source = optionKeywords
-      }
-
-      return cellProperties
-    }
-
-    const hotSettings: any = {
-      afterChange: () => this.updateProgramFromHot(),
-      afterRemoveRow: () => this.updateProgramFromHot(),
-      afterRemoveCol: () => this.updateProgramFromHot(),
-      allowInsertColumn: false,
-      allowInsertRow: true,
-      autoRowSize: false,
-      autoColumnSize: false,
-      colHeaders: true,
-      comments: true,
-      cells,
-      contextMenu: {
-        items: {
-          sp0: { name: "---------" },
-          row_above: {},
-          row_below: {},
-          sp1: { name: "---------" },
-          remove_row: {},
-          remove_col: {},
-          sp2: { name: "---------" },
-          undo: {},
-          redo: {},
-          sp3: { name: "---------" },
-          copy: {},
-          cut: {}
-        }
-      },
-      licenseKey: "non-commercial-and-evaluation",
-      height: 500,
-      manualColumnResize: true,
-      manualRowMove: true,
-
-      minCols: this.program.getProgramWidth() + 3,
-      minSpareCols: 2,
-
-      minRows: 40,
-      minSpareRows: 20,
-      rowHeaders: true,
-      search: true,
-      stretchH: "all",
-      width: "100%",
-      wordWrap: false
-    }
-
-    return hotSettings
-  }
-
-  toStumpCode() {
-    return `div CODESHEET GOES HERE
- id codeSheetComponent`
-  }
-}
-
-class shareComponent extends AbstractTreeComponent {
-  toStumpCode() {
-    return `div
- id shareDiv
- span Share
- input
-  id shareLink
-  readonly`
-  }
-  toHakonCode() {
-    return `#shareDiv
- font-size 16px
- width 100%
- span
-  width 50px
-  display inline-block
- input
-  font-size 16px
-  padding 5px
-  width calc(100% - 70px)`
-  }
-}
-
-class otherErrorsComponent extends AbstractTreeComponent {
-  toStumpCode() {
-    return `div
- id otherErrorsDiv`
-  }
-  toHakonCode() {
-    return `#otherErrorsDiv
- color red`
-  }
-}
-
-// Todo: use these 3
-class compiledResultsComponent extends AbstractTreeComponent {}
-class executionResultsComponent extends AbstractTreeComponent {
-  toHakonCode() {
-    return `#execResultsTextArea
- border 0
- width 100%`
-  }
-  toStumpCode() {
-    return `textarea
- id execResultsTextArea
- placeholder Results...`
-  }
-}
-
-class explainResultsComponent extends AbstractTreeComponent {
-  toStumpCode() {
-    return `div`
-  }
-}
-
-class tableComponent extends AbstractTreeComponent {
-  createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
-      compiledResultsComponent,
-      executionResultsComponent,
-      explainResultsComponent
-    })
-  }
-
-  toHakonCode() {
-    return `textarea.resultsDiv
- height 120px
- width 220px`
-  }
-
-  toStumpCode() {
-    return `table
- tr
-  td
-   span Grammar for your Tree Language 
-   a Infer Prefix Grammar
-    clickCommand inferPrefixGrammarCommand
-   span  |
-   a Download Bundle
-    clickCommand downloadBundleCommand
-   span  |
-   a Synthesize Program
-    clickCommand synthesizeProgramCommand
-   textarea
-    id grammarConsole
-  td
-   span Source Code in your Language
-   input
-    type checkbox
-    id executeCommand
-   a Execute
-    clickCommand executeCommand
-   span  |
-   input
-    type checkbox
-    id compileCommand
-   a Compile
-    clickCommand compileCommand
-   span  |
-   input
-    type checkbox
-    id visualizeCommand
-   a Explain
-    clickCommand visualizeCommand
-   textarea
-    id codeConsole
- tr
-  td
-   div Grammar Errors
-   pre
-    id grammarErrorsConsole
-   div
-    id readmeComponent
-  td
-   div Language Errors
-   pre
-    id codeErrorsConsole
-   textarea
-    class resultsDiv
-    id executeResultsDiv
-    placeholder Execution results
-   textarea
-    class resultsDiv
-    id compileResultsDiv
-    placeholder Compilation results
-   div
-    class resultsDiv
-    style position:relative;
-    id explainResultsDiv`
-  }
-}
-
-class headerComponent extends AbstractTreeComponent {
-  _getTitle() {
-    return `Tree Language Designer`
-  }
-  toHakonCode() {
-    return `#logo
- width 100px
- vertical-align middle`
-  }
-  toggleHelpCommand() {
-    const element = document.getElementById("helpSection")
-    element.style.display = element.style.display == "none" ? "block" : "none"
-  }
-  toStumpCode() {
-    return `div
- h1
-  a
-   href https://treenotation.org
-   style text-decoration: none;
-   img
-    id logo
-    src /helloWorld3D.svg
-    title TreeNotation.org
-  span ${this._getTitle()}
- p
-  a Tree Notation Sandbox
-   href /sandbox/
-  span  | 
-  a Help
-   id helpToggleButton
-   clickCommand toggleHelpCommand
-  span  | 
-  a Watch the Tutorial Video
-   href https://www.youtube.com/watch?v=kf2p8yzThAA
-  span  | 
-  a Reset
-   clickCommand resetCommand
-  span  | 
-  a Debug
-   clickCommand toggleTreeComponentFrameworkDebuggerCommand
-  span  | Version ${jtree.getVersion()}
- div
-  id helpSection
-  style display: none;
-  p This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://jtree.treenotation.org/languageChecklist.html">checklist for creating new Tree Languages</a>.`
-  }
-}
-
-class githubTriangleComponent extends AbstractGithubTriangleComponent {
-  githubLink = `https://github.com/treenotation/jtree/tree/main/designer`
 }
 
 export { DesignerApp }

@@ -119,3 +119,41 @@
 .WorkInProgressCellDef {
   color: #777;
 }
+
+.SamplesComponent {
+  font-size: 12px;
+}
+
+.GrammarWorkspaceComponent {
+  width: 50%;
+  float: left;
+}
+
+.CodeWorkspaceComponent {
+  width: 50%;
+  float: right;
+}
+
+.FooterComponent {
+  clear: both;
+  border-top: 1px solid #ddd;
+  text-align: center;
+  color: #ccc;
+  font-size: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.HeaderComponent {
+  font-size: 12px;
+}
+
+.ProductName {
+  font-size: 16px;
+  display: inline-block;
+  margin-right: 20px;
+}
+
+.GrammarToolbarComponent {
+  font-size: 12px;
+}

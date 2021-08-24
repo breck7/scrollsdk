@@ -5,14 +5,19 @@ export interface GrammarProvider {
 export interface EditorWorkspace {
   setCode(str: string): any
   code: string
+  initCodeMirror(): any
 }
 
 export interface CodeAndGrammarApp {
   postGrammarKeyup(): any
   postCodeKeyup(): any
+  codeCode: string
+  grammarCode: string
 }
 
-export enum LocalStorageKeys {
-  grammarConsole = "grammarConsole",
-  codeConsole = "codeConsole"
+const LocalStorageKeys = {
+  grammarConsole: "grammarConsole",
+  codeConsole: "codeConsole"
 }
+
+export { LocalStorageKeys }

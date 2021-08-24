@@ -1,18 +1,24 @@
 const { AbstractTreeComponent } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
 
+import { CodeAndGrammarApp } from "./Types"
+
 class ShareComponent extends AbstractTreeComponent {
-  private _updateShareLink() {
+  updateShareLink() {
     const url = new URL(location.href)
     url.hash = ""
     const base = url.toString()
     this.willowBrowser.setValueOfElementWithIdHack("shareLink", base + this.toShareLink())
   }
 
+  get app() {
+    return <CodeAndGrammarApp>this.getParent()
+  }
+
   toShareLink() {
     const tree = new jtree.TreeNode()
-    tree.appendLineAndChildren("grammar", this.getGrammarCode())
-    tree.appendLineAndChildren("sample", this.getCodeValue())
+    tree.appendLineAndChildren("grammar", this.app.grammarCode)
+    tree.appendLineAndChildren("sample", this.app.codeCode)
     return "#" + encodeURIComponent(tree.toString())
   }
 
@@ -32,8 +38,12 @@ class ShareComponent extends AbstractTreeComponent {
   width 50px
   display inline-block
  input
-  font-size 16px
+  font-size 14px
+  color #222
   padding 5px
+  background-color #ddd
+  border-radius 5px
+  border 0
   width calc(100% - 70px)`
   }
 }

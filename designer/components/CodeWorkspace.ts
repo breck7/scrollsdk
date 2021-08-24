@@ -42,29 +42,25 @@ class CodeEditorComponent extends AbstractTreeComponent {
     return <CodeWorkspaceComponent>this.getParent()
   }
 
-  private initCodeMirror() {
+  initCodeMirror() {
     this.codeMirrorInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this.workspace.grammarConstructor, undefined, CodeMirror)
       .register()
       .fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
-  }
 
-  start() {
-    this.initCodeMirror()
     this.codeMirrorInstance.on("keyup", () => this.onCodeKeyUp())
-    this.codeSheet.initHot().loadData()
   }
 
   private onCodeKeyUp() {
     const { workspace, willowBrowser } = this
     workspace.onCodeKeyUp()
 
-    const cursor = this.codeInstance.getCursor()
+    const cursor = this.codeMirrorInstance.getCursor()
 
     const errs = workspace.program.getAllErrors()
 
     // todo: what if 2 errors?
-    this.codeInstance.operation(() => {
-      this.codeWidgets.forEach(widget => this.codeInstance.removeLineWidget(widget))
+    this.codeMirrorInstance.operation(() => {
+      this.codeWidgets.forEach(widget => this.codeMirrorInstance.removeLineWidget(widget))
       this.codeWidgets.length = 0
 
       errs
@@ -73,25 +69,26 @@ class CodeEditorComponent extends AbstractTreeComponent {
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach((err: any) => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
-            this.codeInstance.setValue(this.program.toString())
-            this._onCodeKeyUp()
+            this.codeMirrorInstance.setValue(this.program.toString())
+            this.onCodeKeyUp()
           })
-          this.codeWidgets.push(this.codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
+          this.codeWidgets.push(this.codeMirrorInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
         })
-      const info = this.codeInstance.getScrollInfo()
-      const after = this.codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top
-      if (info.top + info.clientHeight < after) this.codeInstance.scrollTo(null, after - info.clientHeight + 3)
+      const info = this.codeMirrorInstance.getScrollInfo()
+      const after = this.codeMirrorInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top
+      if (info.top + info.clientHeight < after) this.codeMirrorInstance.scrollTo(null, after - info.clientHeight + 3)
     })
 
-    willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
+    willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? `${errs.length} language errors\n` + new jtree.TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 language errors")
 
     if (willowBrowser.getElementById("visualizeCommand").checked) this.visualizeCommand()
     if (willowBrowser.getElementById("compileCommand").checked) this.compileCommand()
     if (willowBrowser.getElementById("executeCommand").checked) this.executeCommand()
   }
 
-  setCodeCode(code: string) {
+  setCode(code: string) {
     this.codeMirrorInstance.setValue(code)
+    this.onCodeKeyUp()
   }
 
   get code() {
@@ -101,9 +98,8 @@ class CodeEditorComponent extends AbstractTreeComponent {
 
 class CodeErrorBarComponent extends AbstractTreeComponent {
   toStumpCode() {
-    return `div Language Errors
- pre
-  id codeErrorsConsole`
+    return `pre
+ id codeErrorsConsole`
   }
 }
 
@@ -142,12 +138,19 @@ class ExplainResultsComponent extends AbstractTreeComponent {
 class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWorkspace {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
+      CodeEditorComponent,
       CodeToolbarComponent,
       CodeErrorBarComponent,
+      CodeSheetComponent,
       CompiledResultsComponent,
       ExecutionResultsComponent,
       ExplainResultsComponent
     })
+  }
+
+  initCodeMirror() {
+    this.editor.initCodeMirror()
+    this.codeSheet.initHot().loadData()
   }
 
   private _updateLocalStorage() {
@@ -183,6 +186,11 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
 
   setCode(str: string) {
     this.editor.setCode(str)
+    this._clearResults()
+    this.codeSheet
+      .destroy()
+      .initHot()
+      .loadData()
   }
 
   _clearResults() {

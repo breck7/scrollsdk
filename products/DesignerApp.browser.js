@@ -1,3 +1,4 @@
+"use strict"
 const isEmpty = val => val === ""
 class CodeSheetComponent extends AbstractTreeComponent {
   updateProgramFromHot() {}
@@ -114,23 +115,23 @@ window.CodeSheetComponent = CodeSheetComponent
 class CodeToolbarComponent extends AbstractTreeComponent {
   toStumpCode() {
     return `span Source Code in your Language
-   input
-    type checkbox
-    id executeCommand
-   a Execute
-    clickCommand executeCommand
-   span  |
-   input
-    type checkbox
-    id compileCommand
-   a Compile
-    clickCommand compileCommand
-   span  |
-   input
-    type checkbox
-    id visualizeCommand
-   a Explain
-    clickCommand visualizeCommand`
+ input
+  type checkbox
+  id executeCommand
+ a Execute
+  clickCommand executeCommand
+ span  |
+ input
+  type checkbox
+  id compileCommand
+ a Compile
+  clickCommand compileCommand
+ span  |
+ input
+  type checkbox
+  id visualizeCommand
+ a Explain
+  clickCommand visualizeCommand`
   }
 }
 class CodeEditorComponent extends AbstractTreeComponent {
@@ -142,29 +143,23 @@ class CodeEditorComponent extends AbstractTreeComponent {
     return `textarea
  id codeConsole`
   }
-  start() {
-    this.codeInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
-    this.codeInstance.on("keyup", () => this._onCodeKeyUp())
-    this.codeSheet.initHot().loadData()
+  get workspace() {
+    return this.getParent()
   }
-  setCodeCode(code) {
-    this.codeInstance.setValue(code)
+  initCodeMirror() {
+    this.codeMirrorInstance = new jtree.TreeNotationCodeMirrorMode("custom", () => this.workspace.grammarConstructor, undefined, CodeMirror)
+      .register()
+      .fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeMirrorInstance.on("keyup", () => this.onCodeKeyUp())
   }
-  getCodeValue() {
-    return this.codeInstance.getValue()
-  }
-  _onCodeKeyUp() {
-    const { willowBrowser } = this
-    const code = this.getCodeValue()
-    this._updateLocalStorage()
-    const programConstructor = this._getGrammarConstructor()
-    this.program = new programConstructor(code)
-    const errs = this.program.getAllErrors()
-    willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
-    const cursor = this.codeInstance.getCursor()
+  onCodeKeyUp() {
+    const { workspace, willowBrowser } = this
+    workspace.onCodeKeyUp()
+    const cursor = this.codeMirrorInstance.getCursor()
+    const errs = workspace.program.getAllErrors()
     // todo: what if 2 errors?
-    this.codeInstance.operation(() => {
-      this.codeWidgets.forEach(widget => this.codeInstance.removeLineWidget(widget))
+    this.codeMirrorInstance.operation(() => {
+      this.codeWidgets.forEach(widget => this.codeMirrorInstance.removeLineWidget(widget))
       this.codeWidgets.length = 0
       errs
         .filter(err => !err.isBlankLineError())
@@ -172,25 +167,32 @@ class CodeEditorComponent extends AbstractTreeComponent {
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach(err => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
-            this.codeInstance.setValue(this.program.toString())
-            this._onCodeKeyUp()
+            this.codeMirrorInstance.setValue(this.program.toString())
+            this.onCodeKeyUp()
           })
-          this.codeWidgets.push(this.codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
+          this.codeWidgets.push(this.codeMirrorInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
         })
-      const info = this.codeInstance.getScrollInfo()
-      const after = this.codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top
-      if (info.top + info.clientHeight < after) this.codeInstance.scrollTo(null, after - info.clientHeight + 3)
+      const info = this.codeMirrorInstance.getScrollInfo()
+      const after = this.codeMirrorInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top
+      if (info.top + info.clientHeight < after) this.codeMirrorInstance.scrollTo(null, after - info.clientHeight + 3)
     })
+    willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? `${errs.length} language errors\n` + new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 language errors")
     if (willowBrowser.getElementById("visualizeCommand").checked) this.visualizeCommand()
     if (willowBrowser.getElementById("compileCommand").checked) this.compileCommand()
     if (willowBrowser.getElementById("executeCommand").checked) this.executeCommand()
   }
+  setCode(code) {
+    this.codeMirrorInstance.setValue(code)
+    this.onCodeKeyUp()
+  }
+  get code() {
+    return this.codeMirrorInstance.getValue()
+  }
 }
 class CodeErrorBarComponent extends AbstractTreeComponent {
   toStumpCode() {
-    return `div Language Errors
- pre
-  id codeErrorsConsole`
+    return `pre
+ id codeErrorsConsole`
   }
 }
 class CompiledResultsComponent extends AbstractTreeComponent {
@@ -225,12 +227,54 @@ class ExplainResultsComponent extends AbstractTreeComponent {
 class CodeWorkspaceComponent extends AbstractTreeComponent {
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
+      CodeEditorComponent,
       CodeToolbarComponent,
       CodeErrorBarComponent,
+      CodeSheetComponent,
       CompiledResultsComponent,
       ExecutionResultsComponent,
       ExplainResultsComponent
     })
+  }
+  initCodeMirror() {
+    this.editor.initCodeMirror()
+    this.codeSheet.initHot().loadData()
+  }
+  _updateLocalStorage() {
+    localStorage.setItem(LocalStorageKeys.codeConsole, this.code)
+  }
+  // todo: figure out how to type this, where we can specify an interface a root parent must implement.
+  // it is a little messy with the typescript/js/tree notation spaghettiness.
+  // Assumes root parent has a getter `grammarConstructor`
+  get grammarProvider() {
+    return this.getParent()
+  }
+  get grammarConstructor() {
+    return this.grammarProvider.grammarConstructor
+  }
+  onCodeKeyUp() {
+    const { willowBrowser, code } = this
+    this._updateLocalStorage()
+    const programConstructor = this.grammarConstructor
+    this.program = new programConstructor(code)
+  }
+  get editor() {
+    return this.getNode("CodeEditorComponent")
+  }
+  get code() {
+    return this.editor.code
+  }
+  setCode(str) {
+    this.editor.setCode(str)
+    this._clearResults()
+    this.codeSheet
+      .destroy()
+      .initHot()
+      .loadData()
+  }
+  _clearResults() {
+    this.willowBrowser.setHtmlOfElementsWithClassHack("resultsDiv")
+    this.willowBrowser.setValueOfElementsWithClassHack("resultsDiv")
   }
   async executeCommand() {
     const result = await this.program.execute()
@@ -306,14 +350,8 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
   }
 }
 window.CodeWorkspaceComponent = CodeWorkspaceComponent
+//onsave jtree build produce DesignerApp.browser.js
 class DesignerApp extends AbstractTreeComponent {
-  constructor() {
-    super(...arguments)
-    this._localStorageKeys = {
-      grammarConsole: "grammarConsole",
-      codeConsole: "codeConsole"
-    }
-  }
   createParser() {
     return new jtree.TreeNode.Parser(undefined, {
       TreeComponentFrameworkDebuggerComponent,
@@ -323,15 +361,12 @@ class DesignerApp extends AbstractTreeComponent {
       HeaderComponent,
       ErrorDisplayComponent,
       GrammarWorkspaceComponent,
-      CodeWorkspaceComponent
+      CodeWorkspaceComponent,
+      FooterComponent
     })
   }
-  _clearResults() {
-    this.willowBrowser.setHtmlOfElementsWithClassHack("resultsDiv")
-    this.willowBrowser.setValueOfElementsWithClassHack("resultsDiv")
-  }
   resetCommand() {
-    Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
+    Object.values(LocalStorageKeys).forEach(val => localStorage.removeItem(val))
     const willowBrowser = this.willowBrowser
     willowBrowser.reload()
   }
@@ -382,73 +417,73 @@ class DesignerApp extends AbstractTreeComponent {
   async start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
+    this.grammarWorkspace.initCodeMirror()
+    this.codeWorkspace.initCodeMirror()
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
   }
   async _restoreFromLocalStorage() {
     console.log("Restoring from local storage....")
-    const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole)
-    const code = localStorage.getItem(this._localStorageKeys.codeConsole)
+    const grammarCode = localStorage.getItem(LocalStorageKeys.grammarConsole)
+    const code = localStorage.getItem(LocalStorageKeys.codeConsole)
     if (typeof grammarCode === "string" && typeof code === "string") this._setGrammarAndCode(grammarCode, code)
     return grammarCode || code
-  }
-  _updateLocalStorage() {
-    localStorage.setItem(this._localStorageKeys.grammarConsole, this.getGrammarCode())
-    localStorage.setItem(this._localStorageKeys.codeConsole, this.getCodeValue())
-    this._updateShareLink() // todo: where to put this?
-    console.log("Local storage updated...")
-  }
-  _getGrammarErrors(grammarCode) {
-    return new grammarNode(grammarCode).getAllErrors()
-  }
-  _getGrammarConstructor() {
-    let currentGrammarCode = this.getGrammarCode()
-    if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
-      try {
-        this._grammarConstructor = new jtree.HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
-        this._cachedGrammarCode = currentGrammarCode
-        this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent")
-      } catch (err) {
-        console.error(err)
-        this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent", err)
-      }
-    }
-    return this._grammarConstructor
   }
   onCommandError(err) {
     console.log(err)
     this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent", err)
   }
-  _grammarDidUpdate() {
-    const grammarCode = this.getGrammarCode()
-    this._updateLocalStorage()
-    this.grammarProgram = new grammarNode(grammarCode)
-    const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
-    this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
-    const grammarProgram = new jtree.HandGrammarProgram(this.grammarInstance.getValue())
-    const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
-    this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
+  get grammarConstructor() {
+    return this.grammarWorkspace.grammarConstructor
+  }
+  get grammarWorkspace() {
+    return this.getNode("GrammarWorkspaceComponent")
+  }
+  get codeWorkspace() {
+    return this.getNode("CodeWorkspaceComponent")
+  }
+  get codeCode() {
+    return this.codeWorkspace.code
+  }
+  get grammarCode() {
+    return this.grammarWorkspace.code
+  }
+  synthesizeProgramCommand() {
+    this.codeWorkspace.setCode(
+      new jtree.HandGrammarProgram(this.grammarCode)
+        .getRootNodeTypeDefinitionNode()
+        .synthesizeNode()
+        .join("\n")
+    )
+  }
+  updateShareLink() {
+    this.getNode("ShareComponent").updateShareLink()
+  }
+  postCodeKeyup() {
+    this.updateShareLink()
+  }
+  postGrammarKeyup() {
+    // Hack to break CM cache:
+    const val = this.codeWorkspace.code
+    this.codeWorkspace.setCode("\n" + val)
+    this.codeWorkspace.setCode(val)
+    this.updateShareLink()
   }
   _setGrammarAndCode(grammar, code) {
-    this.setGrammarCode(grammar)
-    this.setCodeCode(code)
+    this.grammarWorkspace.setCode(grammar)
+    this.codeWorkspace.setCode(code)
     this._clearHash()
-    this._grammarDidUpdate()
-    this._clearResults()
-    this._onCodeKeyUp()
-    this.codeSheet
-      .destroy()
-      .initHot()
-      .loadData()
   }
   toHakonCode() {
     return `body
  font-family "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
  margin auto
- max-width 1200px
+ max-width 1400px
+ font-size 14px
  background #eee
  color rgba(1, 47, 52, 1)
+ padding-top 5px
  h1
   font-weight 300
 .CodeMirror-gutters
@@ -517,6 +552,13 @@ class ErrorDisplayComponent extends AbstractTreeComponent {
   }
 }
 window.ErrorDisplayComponent = ErrorDisplayComponent
+class FooterComponent extends AbstractTreeComponent {
+  toStumpCode() {
+    return `div Made with <3 for the Public Domain
+ class FooterComponent`
+  }
+}
+window.FooterComponent = FooterComponent
 class GithubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
@@ -527,33 +569,30 @@ window.GithubTriangleComponent = GithubTriangleComponent
 class GrammarToolbarComponent extends AbstractTreeComponent {
   toStumpCode() {
     return `div
+ class GrammarToolbarComponent
  span Grammar for your Tree Language 
  a Infer Prefix Grammar
   clickCommand inferPrefixGrammarCommand
- span  |
+ span  | 
  a Download Bundle
   clickCommand downloadBundleCommand
- span  |
+ span  | 
  a Synthesize Program
   clickCommand synthesizeProgramCommand`
   }
-  inferPrefixGrammarCommand() {
-    this.setGrammarCode(new jtree.UnknownGrammarProgram(this.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
-    this._onGrammarKeyup()
+  get grammarWorkspace() {
+    return this.getParent()
   }
-  synthesizeProgramCommand() {
-    const grammarProgram = new jtree.HandGrammarProgram(this.getGrammarCode())
-    this.setCodeCode(
-      grammarProgram
-        .getRootNodeTypeDefinitionNode()
-        .synthesizeNode()
-        .join("\n")
-    )
-    this._onCodeKeyUp()
+  get code() {
+    return this.grammarWorkspace.code
+  }
+  inferPrefixGrammarCommand() {
+    this.grammarWorkspace.setCode(new jtree.UnknownGrammarProgram(this.code).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
+    this._onGrammarKeyup()
   }
   // TODO: ADD TESTS!!!!!
   async downloadBundleCommand() {
-    const grammarProgram = new jtree.HandGrammarProgram(this.getGrammarCode())
+    const grammarProgram = new jtree.HandGrammarProgram(this.code)
     const bundle = grammarProgram.toBundle()
     const languageName = grammarProgram.getExtensionName()
     return this._makeZipBundle(languageName + ".zip", bundle)
@@ -574,34 +613,26 @@ class GrammarEditorComponent extends AbstractTreeComponent {
     return `textarea
  id grammarConsole`
   }
-  _onGrammarKeyup() {
-    this._grammarDidUpdate()
-    this._onCodeKeyUp()
-    // Hack to break CM cache:
-    if (true) {
-      const val = this.getCodeValue()
-      this.setCodeCode("\n" + val)
-      this.setCodeCode(val)
-    }
-  }
-  start() {
-    this.grammarInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
-    this.grammarInstance.on("keyup", () => {
-      this._onGrammarKeyup()
+  initCodeMirror() {
+    this.codeMirrorInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
+    this.codeMirrorInstance.on("keyup", () => {
+      this.workspace.onKeyUp()
     })
   }
-  getGrammarCode() {
-    return this.grammarInstance.getValue()
+  get workspace() {
+    return this.getParent()
   }
-  setGrammarCode(code) {
-    this.grammarInstance.setValue(code)
+  get code() {
+    return this.codeMirrorInstance.getValue()
+  }
+  setCode(code) {
+    this.codeMirrorInstance.setValue(code)
   }
 }
 class GrammarErrorBarComponent extends AbstractTreeComponent {
   toStumpCode() {
-    return `div Grammar Errors
- pre
-  id grammarErrorsConsole`
+    return `pre
+ id grammarErrorsConsole`
   }
 }
 class GrammarReadmeComponent extends AbstractTreeComponent {
@@ -618,6 +649,61 @@ class GrammarWorkspaceComponent extends AbstractTreeComponent {
       GrammarErrorBarComponent,
       GrammarReadmeComponent
     })
+  }
+  initCodeMirror() {
+    this.editor.initCodeMirror()
+  }
+  onKeyUp() {
+    this._grammarDidUpdate()
+    this.designerApp.postGrammarKeyup()
+  }
+  get code() {
+    return this.editor.code
+  }
+  setCode(str) {
+    this.editor.setCode(str)
+    this._grammarDidUpdate()
+  }
+  get designerApp() {
+    return this.getParent()
+  }
+  get grammarConstructor() {
+    let currentGrammarCode = this.code
+    if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
+      try {
+        this._grammarConstructor = new jtree.HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
+        this._cachedGrammarCode = currentGrammarCode
+        this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent")
+      } catch (err) {
+        console.error(err)
+        this.willowBrowser.setHtmlOfElementWithIdHack("ErrorDisplayComponent", err)
+      }
+    }
+    return this._grammarConstructor
+  }
+  get editor() {
+    return this.getNode("GrammarEditorComponent")
+  }
+  _getGrammarErrors(grammarCode) {
+    return new grammarNode(grammarCode).getAllErrors()
+  }
+  _updateLocalStorage() {
+    localStorage.setItem(LocalStorageKeys.grammarConsole, this.code)
+  }
+  _grammarDidUpdate() {
+    this._updateLocalStorage()
+    this.grammarProgram = new grammarNode(this.code)
+    this._updateErrorConsole()
+    this._updateReadme()
+  }
+  _updateErrorConsole() {
+    const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
+    this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? `${errs.length} grammar errors\n` + new jtree.TreeNode(errs).toFormattedTable(200) : "0 grammar errors")
+  }
+  _updateReadme() {
+    const grammarProgram = new jtree.HandGrammarProgram(this.code)
+    const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
+    this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
 }
 window.GrammarWorkspaceComponent = GrammarWorkspaceComponent
@@ -636,16 +722,10 @@ class HeaderComponent extends AbstractTreeComponent {
   }
   toStumpCode() {
     return `div
- h1
-  a
-   href https://treenotation.org
-   style text-decoration: none;
-   img
-    id logo
-    src /helloWorld3D.svg
-    title TreeNotation.org
+ class HeaderComponent
+ div
   span ${this._getTitle()}
- p
+   class ProductName
   a Tree Notation Sandbox
    href /sandbox/
   span  | 
@@ -685,22 +765,26 @@ class SamplesComponent extends AbstractTreeComponent {
       )
       .join("\n span  | \n")
     return `p
+ class SamplesComponent
  span Example Languages 
 ${langs}`
   }
 }
 window.SamplesComponent = SamplesComponent
 class ShareComponent extends AbstractTreeComponent {
-  _updateShareLink() {
+  updateShareLink() {
     const url = new URL(location.href)
     url.hash = ""
     const base = url.toString()
     this.willowBrowser.setValueOfElementWithIdHack("shareLink", base + this.toShareLink())
   }
+  get app() {
+    return this.getParent()
+  }
   toShareLink() {
     const tree = new jtree.TreeNode()
-    tree.appendLineAndChildren("grammar", this.getGrammarCode())
-    tree.appendLineAndChildren("sample", this.getCodeValue())
+    tree.appendLineAndChildren("grammar", this.app.grammarCode)
+    tree.appendLineAndChildren("sample", this.app.codeCode)
     return "#" + encodeURIComponent(tree.toString())
   }
   toStumpCode() {
@@ -719,9 +803,18 @@ class ShareComponent extends AbstractTreeComponent {
   width 50px
   display inline-block
  input
-  font-size 16px
+  font-size 14px
+  color #222
   padding 5px
+  background-color #ddd
+  border-radius 5px
+  border 0
   width calc(100% - 70px)`
   }
 }
 window.ShareComponent = ShareComponent
+const LocalStorageKeys = {
+  grammarConsole: "grammarConsole",
+  codeConsole: "codeConsole"
+}
+window.LocalStorageKeys = LocalStorageKeys

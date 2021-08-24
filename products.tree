@@ -43,6 +43,7 @@ nodeProduct
  lastLine module.exports = {Disk}
  files disk/Disk.node.ts
 browserProduct
+ removeAll Object.defineProperty(exports, "__esModule", { value: true })
  outputFileName DesignerApp.browser.js
  folder designer/components
 nodeProduct

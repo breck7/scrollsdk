@@ -16,16 +16,10 @@ class HeaderComponent extends AbstractTreeComponent {
   }
   toStumpCode() {
     return `div
- h1
-  a
-   href https://treenotation.org
-   style text-decoration: none;
-   img
-    id logo
-    src /helloWorld3D.svg
-    title TreeNotation.org
+ class HeaderComponent
+ div
   span ${this._getTitle()}
- p
+   class ProductName
   a Tree Notation Sandbox
    href /sandbox/
   span  | 

@@ -10,8 +10,9 @@ const { HeaderComponent } = require("./Header.ts")
 const { ErrorDisplayComponent } = require("./ErrorDisplay.ts")
 const { GrammarWorkspaceComponent } = require("./GrammarWorkspace.ts")
 const { CodeWorkspaceComponent } = require("./CodeWorkspace.ts")
+const { FooterComponent } = require("./Footer.ts")
 
-import { GrammarProvider, CodeAndGrammarApp } from "./Types"
+import { GrammarProvider, CodeAndGrammarApp, LocalStorageKeys } from "./Types"
 
 class DesignerApp extends AbstractTreeComponent implements GrammarProvider, CodeAndGrammarApp {
   createParser() {
@@ -23,12 +24,13 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
       HeaderComponent,
       ErrorDisplayComponent,
       GrammarWorkspaceComponent,
-      CodeWorkspaceComponent
+      CodeWorkspaceComponent,
+      FooterComponent
     })
   }
 
   resetCommand() {
-    Object.values(this._localStorageKeys).forEach(val => localStorage.removeItem(val))
+    Object.values(LocalStorageKeys).forEach(val => localStorage.removeItem(val))
     const willowBrowser = this.willowBrowser
     willowBrowser.reload()
   }
@@ -91,6 +93,9 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
 
+    this.grammarWorkspace.initCodeMirror()
+    this.codeWorkspace.initCodeMirror()
+
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
@@ -98,8 +103,8 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
 
   private async _restoreFromLocalStorage() {
     console.log("Restoring from local storage....")
-    const grammarCode: any = localStorage.getItem(this._localStorageKeys.grammarConsole)
-    const code = localStorage.getItem(this._localStorageKeys.codeConsole)
+    const grammarCode: any = localStorage.getItem(LocalStorageKeys.grammarConsole)
+    const code = localStorage.getItem(LocalStorageKeys.codeConsole)
 
     if (typeof grammarCode === "string" && typeof code === "string") this._setGrammarAndCode(grammarCode, code)
 
@@ -131,40 +136,46 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
     return this.grammarWorkspace.code
   }
 
+  synthesizeProgramCommand() {
+    this.codeWorkspace.setCode(
+      new jtree.HandGrammarProgram(this.grammarCode)
+        .getRootNodeTypeDefinitionNode()
+        .synthesizeNode()
+        .join("\n")
+    )
+  }
+
+  updateShareLink() {
+    this.getNode("ShareComponent").updateShareLink()
+  }
+
   postCodeKeyup() {
-    this._updateShareLink()
+    this.updateShareLink()
   }
 
   postGrammarKeyup() {
-    this._onCodeKeyUp()
     // Hack to break CM cache:
-    if (true) {
-      const val = this.codeWorkspace.code
-      this.codeWorkspace.setCode("\n" + val)
-      this.codeWorkspace.setCode(val)
-    }
-    this._updateShareLink()
+    const val = this.codeWorkspace.code
+    this.codeWorkspace.setCode("\n" + val)
+    this.codeWorkspace.setCode(val)
+    this.updateShareLink()
   }
 
   _setGrammarAndCode(grammar: string, code: string) {
     this.grammarWorkspace.setCode(grammar)
     this.codeWorkspace.setCode(code)
     this._clearHash()
-    this._clearResults()
-    this._onCodeKeyUp()
-    this.codeSheet
-      .destroy()
-      .initHot()
-      .loadData()
   }
 
   toHakonCode() {
     return `body
  font-family "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif
  margin auto
- max-width 1200px
+ max-width 1400px
+ font-size 14px
  background #eee
  color rgba(1, 47, 52, 1)
+ padding-top 5px
  h1
   font-weight 300
 .CodeMirror-gutters

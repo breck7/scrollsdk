@@ -14,6 +14,7 @@ class SamplesComponent extends AbstractTreeComponent {
       )
       .join("\n span  | \n")
     return `p
+ class SamplesComponent
  span Example Languages 
 ${langs}`
   }

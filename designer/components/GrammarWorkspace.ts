@@ -15,13 +15,14 @@ import { GrammarProvider, EditorWorkspace, CodeAndGrammarApp, LocalStorageKeys }
 class GrammarToolbarComponent extends AbstractTreeComponent {
   toStumpCode() {
     return `div
+ class GrammarToolbarComponent
  span Grammar for your Tree Language 
  a Infer Prefix Grammar
   clickCommand inferPrefixGrammarCommand
- span  |
+ span  | 
  a Download Bundle
   clickCommand downloadBundleCommand
- span  |
+ span  | 
  a Synthesize Program
   clickCommand synthesizeProgramCommand`
   }
@@ -37,17 +38,6 @@ class GrammarToolbarComponent extends AbstractTreeComponent {
   inferPrefixGrammarCommand() {
     this.grammarWorkspace.setCode(new jtree.UnknownGrammarProgram(this.code).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
     this._onGrammarKeyup()
-  }
-
-  synthesizeProgramCommand() {
-    const grammarProgram = new jtree.HandGrammarProgram(this.code)
-    this.setCodeCode(
-      grammarProgram
-        .getRootNodeTypeDefinitionNode()
-        .synthesizeNode()
-        .join("\n")
-    )
-    this._onCodeKeyUp()
   }
 
   // TODO: ADD TESTS!!!!!
@@ -77,7 +67,7 @@ class GrammarEditorComponent extends AbstractTreeComponent {
  id grammarConsole`
   }
 
-  start() {
+  initCodeMirror() {
     this.codeMirrorInstance = new jtree.TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
 
     this.codeMirrorInstance.on("keyup", () => {
@@ -102,9 +92,8 @@ class GrammarEditorComponent extends AbstractTreeComponent {
 
 class GrammarErrorBarComponent extends AbstractTreeComponent {
   toStumpCode() {
-    return `div Grammar Errors
- pre
-  id grammarErrorsConsole`
+    return `pre
+ id grammarErrorsConsole`
   }
 }
 
@@ -123,6 +112,10 @@ class GrammarWorkspaceComponent extends AbstractTreeComponent implements Grammar
       GrammarErrorBarComponent,
       GrammarReadmeComponent
     })
+  }
+
+  initCodeMirror() {
+    this.editor.initCodeMirror()
   }
 
   public grammarProgram: any
@@ -185,7 +178,7 @@ class GrammarWorkspaceComponent extends AbstractTreeComponent implements Grammar
 
   private _updateErrorConsole() {
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
-    this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new jtree.TreeNode(errs).toFormattedTable(200) : "0 errors")
+    this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? `${errs.length} grammar errors\n` + new jtree.TreeNode(errs).toFormattedTable(200) : "0 grammar errors")
   }
 
   private _updateReadme() {

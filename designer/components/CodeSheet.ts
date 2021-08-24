@@ -1,6 +1,8 @@
 const { AbstractTreeComponent } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
 
+import { CodeAndGrammarApp } from "./Types"
+
 const isEmpty = (val: any) => val === ""
 
 declare var Handsontable: any
@@ -22,8 +24,12 @@ class CodeSheetComponent extends AbstractTreeComponent {
     if (this.hotInstance) this.hotInstance.loadData(this.rectangularGrid)
   }
 
+  get app() {
+    return <CodeAndGrammarApp>this.getParent()
+  }
+
   get grid() {
-    return new jtree.TreeNode(this.getRootNode().getCodeValue()).toGrid()
+    return new jtree.TreeNode(this.app.codeCode).toGrid()
   }
 
   get rectangularGrid() {
@@ -48,7 +54,7 @@ class CodeSheetComponent extends AbstractTreeComponent {
   }
 
   get program() {
-    return this.getRootNode().program
+    return this.app.program
   }
 
   getParsedCell(row: number, column: number): ParsedCell {

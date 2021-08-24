@@ -11,6 +11,7 @@ const { ErrorDisplayComponent } = require("./ErrorDisplay.ts")
 const { GrammarWorkspaceComponent } = require("./GrammarWorkspace.ts")
 const { CodeWorkspaceComponent } = require("./CodeWorkspace.ts")
 const { FooterComponent } = require("./Footer.ts")
+const { CodeSheetComponent } = require("./CodeSheet.ts")
 
 import { GrammarProvider, CodeAndGrammarApp, LocalStorageKeys } from "./Types"
 
@@ -25,7 +26,8 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
       ErrorDisplayComponent,
       GrammarWorkspaceComponent,
       CodeWorkspaceComponent,
-      FooterComponent
+      FooterComponent,
+      CodeSheetComponent
     })
   }
 
@@ -55,8 +57,6 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
 
     this._setGrammarAndCode(grammar.text, sample)
   }
-
-  public program: any
 
   private async _loadFromDeepLink() {
     const hash = location.hash
@@ -95,6 +95,7 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
 
     this.grammarWorkspace.initCodeMirror()
     this.codeWorkspace.initCodeMirror()
+    this.codeSheet.initHot().loadData()
 
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
@@ -128,12 +129,28 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
     return this.getNode("CodeWorkspaceComponent")
   }
 
+  get codeSheet() {
+    return <typeof CodeSheetComponent>this.getNode("CodeSheetComponent")
+  }
+
   get codeCode() {
     return this.codeWorkspace.code
   }
 
   get grammarCode() {
     return this.grammarWorkspace.code
+  }
+
+  get program() {
+    const programConstructor = this.grammarConstructor
+    return new programConstructor(this.codeCode)
+  }
+
+  updateCodeSheet() {
+    this.codeSheet
+      .destroy()
+      .initHot()
+      .loadData()
   }
 
   synthesizeProgramCommand() {
@@ -194,7 +211,7 @@ td
 code
  white-space pre
 pre
- overflow scroll
+ overflow auto
 .htmlCubeSpan
  --topIncrement 1px
  --leftIncrement 1px

@@ -1,6 +1,5 @@
 const { AbstractTreeComponent } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
-const { CodeSheetComponent } = require("./CodeSheet.ts")
 
 import { GrammarProvider, LocalStorageKeys, EditorWorkspace } from "./Types"
 
@@ -8,24 +7,27 @@ declare var CodeMirror: any
 
 class CodeToolbarComponent extends AbstractTreeComponent {
   toStumpCode() {
-    return `span Source Code in your Language
- input
-  type checkbox
-  id executeCommand
- a Execute
-  clickCommand executeCommand
- span  |
- input
-  type checkbox
-  id compileCommand
- a Compile
-  clickCommand compileCommand
- span  |
- input
-  type checkbox
-  id visualizeCommand
- a Explain
-  clickCommand visualizeCommand`
+    return `div
+ class CodeToolbarComponent
+ div Source Code in your Language
+ div
+  input
+   type checkbox
+   id executeCommand
+  a Execute
+   clickCommand executeCommand
+  span  |
+  input
+   type checkbox
+   id compileCommand
+  a Compile
+   clickCommand compileCommand
+  span  |
+  input
+   type checkbox
+   id visualizeCommand
+  a Explain
+   clickCommand visualizeCommand`
   }
 }
 
@@ -48,6 +50,7 @@ class CodeEditorComponent extends AbstractTreeComponent {
       .fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
 
     this.codeMirrorInstance.on("keyup", () => this.onCodeKeyUp())
+    this.codeMirrorInstance.setSize(undefined, 500)
   }
 
   private onCodeKeyUp() {
@@ -141,7 +144,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
       CodeEditorComponent,
       CodeToolbarComponent,
       CodeErrorBarComponent,
-      CodeSheetComponent,
       CompiledResultsComponent,
       ExecutionResultsComponent,
       ExplainResultsComponent
@@ -150,7 +152,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
 
   initCodeMirror() {
     this.editor.initCodeMirror()
-    this.codeSheet.initHot().loadData()
   }
 
   private _updateLocalStorage() {
@@ -172,7 +173,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
     const { willowBrowser, code } = this
     this._updateLocalStorage()
     const programConstructor = this.grammarConstructor
-
     this.program = new programConstructor(code)
   }
 
@@ -187,10 +187,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
   setCode(str: string) {
     this.editor.setCode(str)
     this._clearResults()
-    this.codeSheet
-      .destroy()
-      .initHot()
-      .loadData()
   }
 
   _clearResults() {
@@ -213,10 +209,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
 
   visualizeCommand() {
     this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
-  }
-
-  get codeSheet() {
-    return <typeof CodeSheetComponent>this.getNode("CodeSheetComponent")
   }
 
   private _toIceTray(program: any) {
@@ -250,6 +242,7 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
     return `textarea.resultsDiv
  height 120px
  width 220px
+ border 0
 .iceCubes
  tr,td
   margin 0

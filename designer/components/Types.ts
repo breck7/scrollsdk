@@ -13,6 +13,7 @@ export interface CodeAndGrammarApp {
   postCodeKeyup(): any
   codeCode: string
   grammarCode: string
+  program: any
 }
 
 const LocalStorageKeys = {

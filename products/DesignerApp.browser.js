@@ -5,8 +5,11 @@ class CodeSheetComponent extends AbstractTreeComponent {
   loadData() {
     if (this.hotInstance) this.hotInstance.loadData(this.rectangularGrid)
   }
+  get app() {
+    return this.getParent()
+  }
   get grid() {
-    return new jtree.TreeNode(this.getRootNode().getCodeValue()).toGrid()
+    return new jtree.TreeNode(this.app.codeCode).toGrid()
   }
   get rectangularGrid() {
     const { grid } = this
@@ -27,7 +30,7 @@ class CodeSheetComponent extends AbstractTreeComponent {
     return this
   }
   get program() {
-    return this.getRootNode().program
+    return this.app.program
   }
   getParsedCell(row, column) {
     const { program } = this
@@ -114,24 +117,27 @@ class CodeSheetComponent extends AbstractTreeComponent {
 window.CodeSheetComponent = CodeSheetComponent
 class CodeToolbarComponent extends AbstractTreeComponent {
   toStumpCode() {
-    return `span Source Code in your Language
- input
-  type checkbox
-  id executeCommand
- a Execute
-  clickCommand executeCommand
- span  |
- input
-  type checkbox
-  id compileCommand
- a Compile
-  clickCommand compileCommand
- span  |
- input
-  type checkbox
-  id visualizeCommand
- a Explain
-  clickCommand visualizeCommand`
+    return `div
+ class CodeToolbarComponent
+ div Source Code in your Language
+ div
+  input
+   type checkbox
+   id executeCommand
+  a Execute
+   clickCommand executeCommand
+  span  |
+  input
+   type checkbox
+   id compileCommand
+  a Compile
+   clickCommand compileCommand
+  span  |
+  input
+   type checkbox
+   id visualizeCommand
+  a Explain
+   clickCommand visualizeCommand`
   }
 }
 class CodeEditorComponent extends AbstractTreeComponent {
@@ -151,6 +157,7 @@ class CodeEditorComponent extends AbstractTreeComponent {
       .register()
       .fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
     this.codeMirrorInstance.on("keyup", () => this.onCodeKeyUp())
+    this.codeMirrorInstance.setSize(undefined, 500)
   }
   onCodeKeyUp() {
     const { workspace, willowBrowser } = this
@@ -230,7 +237,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
       CodeEditorComponent,
       CodeToolbarComponent,
       CodeErrorBarComponent,
-      CodeSheetComponent,
       CompiledResultsComponent,
       ExecutionResultsComponent,
       ExplainResultsComponent
@@ -238,7 +244,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
   }
   initCodeMirror() {
     this.editor.initCodeMirror()
-    this.codeSheet.initHot().loadData()
   }
   _updateLocalStorage() {
     localStorage.setItem(LocalStorageKeys.codeConsole, this.code)
@@ -267,10 +272,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
   setCode(str) {
     this.editor.setCode(str)
     this._clearResults()
-    this.codeSheet
-      .destroy()
-      .initHot()
-      .loadData()
   }
   _clearResults() {
     this.willowBrowser.setHtmlOfElementsWithClassHack("resultsDiv")
@@ -288,9 +289,6 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
   }
   visualizeCommand() {
     this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
-  }
-  get codeSheet() {
-    return this.getNode("CodeSheetComponent")
   }
   _toIceTray(program) {
     const columns = program.getProgramWidth()
@@ -320,6 +318,7 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
     return `textarea.resultsDiv
  height 120px
  width 220px
+ border 0
 .iceCubes
  tr,td
   margin 0
@@ -362,7 +361,8 @@ class DesignerApp extends AbstractTreeComponent {
       ErrorDisplayComponent,
       GrammarWorkspaceComponent,
       CodeWorkspaceComponent,
-      FooterComponent
+      FooterComponent,
+      CodeSheetComponent
     })
   }
   resetCommand() {
@@ -419,6 +419,7 @@ class DesignerApp extends AbstractTreeComponent {
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
     this.grammarWorkspace.initCodeMirror()
     this.codeWorkspace.initCodeMirror()
+    this.codeSheet.initHot().loadData()
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
@@ -443,11 +444,24 @@ class DesignerApp extends AbstractTreeComponent {
   get codeWorkspace() {
     return this.getNode("CodeWorkspaceComponent")
   }
+  get codeSheet() {
+    return this.getNode("CodeSheetComponent")
+  }
   get codeCode() {
     return this.codeWorkspace.code
   }
   get grammarCode() {
     return this.grammarWorkspace.code
+  }
+  get program() {
+    const programConstructor = this.grammarConstructor
+    return new programConstructor(this.codeCode)
+  }
+  updateCodeSheet() {
+    this.codeSheet
+      .destroy()
+      .initHot()
+      .loadData()
   }
   synthesizeProgramCommand() {
     this.codeWorkspace.setCode(
@@ -502,7 +516,7 @@ td
 code
  white-space pre
 pre
- overflow scroll
+ overflow auto
 .htmlCubeSpan
  --topIncrement 1px
  --leftIncrement 1px
@@ -570,15 +584,19 @@ class GrammarToolbarComponent extends AbstractTreeComponent {
   toStumpCode() {
     return `div
  class GrammarToolbarComponent
- span Grammar for your Tree Language 
- a Infer Prefix Grammar
-  clickCommand inferPrefixGrammarCommand
- span  | 
- a Download Bundle
-  clickCommand downloadBundleCommand
- span  | 
- a Synthesize Program
-  clickCommand synthesizeProgramCommand`
+ div Grammar for your Tree Language
+ div
+  a Infer Prefix Grammar
+   clickCommand inferPrefixGrammarCommand
+  span  | 
+  a Download Bundle
+   clickCommand downloadBundleCommand
+  span  | 
+  a Synthesize Program
+   clickCommand synthesizeProgramCommand
+  span  | 
+  a Generate Readme
+   clickCommand generateReadmeCommand`
   }
   get grammarWorkspace() {
     return this.getParent()
@@ -618,6 +636,7 @@ class GrammarEditorComponent extends AbstractTreeComponent {
     this.codeMirrorInstance.on("keyup", () => {
       this.workspace.onKeyUp()
     })
+    this.codeMirrorInstance.setSize(undefined, 500)
   }
   get workspace() {
     return this.getParent()
@@ -694,13 +713,16 @@ class GrammarWorkspaceComponent extends AbstractTreeComponent {
     this._updateLocalStorage()
     this.grammarProgram = new grammarNode(this.code)
     this._updateErrorConsole()
-    this._updateReadme()
+    this._clearReadme()
   }
   _updateErrorConsole() {
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? `${errs.length} grammar errors\n` + new jtree.TreeNode(errs).toFormattedTable(200) : "0 grammar errors")
   }
-  _updateReadme() {
+  _clearReadme() {
+    this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", "")
+  }
+  generateReadmeCommand() {
     const grammarProgram = new jtree.HandGrammarProgram(this.code)
     const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)

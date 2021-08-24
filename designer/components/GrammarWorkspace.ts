@@ -16,15 +16,19 @@ class GrammarToolbarComponent extends AbstractTreeComponent {
   toStumpCode() {
     return `div
  class GrammarToolbarComponent
- span Grammar for your Tree Language 
- a Infer Prefix Grammar
-  clickCommand inferPrefixGrammarCommand
- span  | 
- a Download Bundle
-  clickCommand downloadBundleCommand
- span  | 
- a Synthesize Program
-  clickCommand synthesizeProgramCommand`
+ div Grammar for your Tree Language
+ div
+  a Infer Prefix Grammar
+   clickCommand inferPrefixGrammarCommand
+  span  | 
+  a Download Bundle
+   clickCommand downloadBundleCommand
+  span  | 
+  a Synthesize Program
+   clickCommand synthesizeProgramCommand
+  span  | 
+  a Generate Readme
+   clickCommand generateReadmeCommand`
   }
 
   private get grammarWorkspace() {
@@ -73,6 +77,8 @@ class GrammarEditorComponent extends AbstractTreeComponent {
     this.codeMirrorInstance.on("keyup", () => {
       this.workspace.onKeyUp()
     })
+
+    this.codeMirrorInstance.setSize(undefined, 500)
   }
 
   get workspace() {
@@ -173,7 +179,7 @@ class GrammarWorkspaceComponent extends AbstractTreeComponent implements Grammar
     this._updateLocalStorage()
     this.grammarProgram = new grammarNode(this.code)
     this._updateErrorConsole()
-    this._updateReadme()
+    this._clearReadme()
   }
 
   private _updateErrorConsole() {
@@ -181,7 +187,11 @@ class GrammarWorkspaceComponent extends AbstractTreeComponent implements Grammar
     this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? `${errs.length} grammar errors\n` + new jtree.TreeNode(errs).toFormattedTable(200) : "0 grammar errors")
   }
 
-  private _updateReadme() {
+  _clearReadme() {
+    this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", "")
+  }
+
+  generateReadmeCommand() {
     const grammarProgram = new jtree.HandGrammarProgram(this.code)
     const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)

@@ -154,6 +154,7 @@
   margin-right: 20px;
 }
 
-.GrammarToolbarComponent {
+.GrammarToolbarComponent,
+.CodeToolbarComponent {
   font-size: 12px;
 }

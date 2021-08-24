@@ -606,7 +606,6 @@ class GrammarToolbarComponent extends AbstractTreeComponent {
   }
   inferPrefixGrammarCommand() {
     this.grammarWorkspace.setCode(new jtree.UnknownGrammarProgram(this.code).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
-    this._onGrammarKeyup()
   }
   // TODO: ADD TESTS!!!!!
   async downloadBundleCommand() {

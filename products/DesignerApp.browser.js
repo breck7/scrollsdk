@@ -24,6 +24,11 @@ class CodeSheetComponent extends AbstractTreeComponent {
     if (this.hotInstance) this.hotInstance.destroy()
     return this
   }
+  refresh() {
+    this.destroy()
+      .initHot()
+      .loadData()
+  }
   initHot() {
     if (!this.program) return this
     this.hotInstance = new Handsontable(document.getElementById("CodeSheetComponent"), this.hotSettings)
@@ -457,12 +462,6 @@ class DesignerApp extends AbstractTreeComponent {
     const programConstructor = this.grammarConstructor
     return new programConstructor(this.codeCode)
   }
-  updateCodeSheet() {
-    this.codeSheet
-      .destroy()
-      .initHot()
-      .loadData()
-  }
   synthesizeProgramCommand() {
     this.codeWorkspace.setCode(
       new jtree.HandGrammarProgram(this.grammarCode)
@@ -488,6 +487,7 @@ class DesignerApp extends AbstractTreeComponent {
     this.grammarWorkspace.setCode(grammar)
     this.codeWorkspace.setCode(code)
     this._clearHash()
+    this.codeSheet.refresh()
   }
   toHakonCode() {
     return `body

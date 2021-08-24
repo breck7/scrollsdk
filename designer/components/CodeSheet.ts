@@ -47,6 +47,12 @@ class CodeSheetComponent extends AbstractTreeComponent {
     return this
   }
 
+  refresh() {
+    this.destroy()
+      .initHot()
+      .loadData()
+  }
+
   initHot() {
     if (!this.program) return this
     this.hotInstance = new Handsontable(document.getElementById("CodeSheetComponent"), this.hotSettings)

@@ -145,12 +145,24 @@ class AbstractBuilder extends jtree.TreeNode {
     this._prettifyFile(outputFilePath)
   }
 
-  produceProductFromInstructionsTree(productNode: any, projectRootPath: string) {
-    const outputFileName = productNode.get("outputFileName")
-    const inputFiles = productNode
+  _getFiles(productNode: any, projectRootPath: string) {
+    // Currently if the "folder" property is set, the behavior is to include only all files in that folder, excluding
+    // test files as indicated by ".test." in the filename. This is currently an exclusive op, but could obviously be
+    // better.
+    const folder = productNode.get("folder")
+    if (folder) return Disk.getFiles(projectRootPath + "/" + folder).filter((path: string) => !path.includes(".test."))
+
+    return productNode
       .getNode("files")
       .getWordsFrom(1)
       .map((path: string) => projectRootPath + "/" + path)
+  }
+
+  produceProductFromInstructionsTree(productNode: any, projectRootPath: string) {
+    const outputFileName = productNode.get("outputFileName")
+
+    const inputFiles = this._getFiles(productNode, projectRootPath)
+
     const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
     const lastLine = productNode.get("lastLine") ? productNode.get("lastLine") : ""
     const removeAll = productNode.getNodesByGlobPath("removeAll")

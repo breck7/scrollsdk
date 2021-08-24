@@ -44,7 +44,7 @@ nodeProduct
  files disk/Disk.node.ts
 browserProduct
  outputFileName DesignerApp.browser.js
- files designer/DesignerApp.ts
+ folder designer/components
 nodeProduct
  outputFileName commandLineApp.node.js
  files products/treeNotationTypes.ts commandLineApp/commandLineApp.node.ts

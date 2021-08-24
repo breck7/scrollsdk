@@ -2,7 +2,7 @@
 
 const { DesignerApp } = require("./DesignerApp")
 
-const { jtree } = require("../index.js")
+const { jtree } = require("../../index.js")
 
 const testTree: any = {}
 

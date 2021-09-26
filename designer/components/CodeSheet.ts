@@ -55,7 +55,7 @@ class CodeSheetComponent extends AbstractTreeComponent {
 
   initHot() {
     if (!this.program) return this
-    this.hotInstance = new Handsontable(document.getElementById("CodeSheetComponent"), this.hotSettings)
+    this.hotInstance = new Handsontable(document.getElementById("HotHolder"), this.hotSettings)
     return this
   }
 
@@ -67,19 +67,23 @@ class CodeSheetComponent extends AbstractTreeComponent {
     const { program } = this
     const theRow = program.getProgramAsCells()[row]
     const cellTypes = new jtree.TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
+    const rootCellTypes = new jtree.TreeNode(program.toPreludeCellTypeTreeWithNodeConstructorNames())
 
     const cell = theRow ? theRow[column] : undefined
     if (!cell) return {}
     const cssClasses: string[] = [(cell.getHighlightScope() || "").replaceAll(".", "") + "Cell"]
     if (!cell.isValid()) cssClasses.push("CellHasErrorsClass")
     const contents = cell.getWord()
-    const cellTypeNames = cellTypes.nodeAt(row).getWord(column + 1)
+    const cellTypeName = cellTypes.nodeAt(row).getWord(column + 1)
+    const rootCellType = rootCellTypes.nodeAt(row).getWord(column + 1)
+    const cellTypeAncestry = `${cellTypeName} < ${rootCellType}` // todo: add full ancestry
+    const nodeType = cellTypes.nodeAt(row).getWord(0)
     return {
       optionKeywords: cell.getAutoCompleteWords().map((word: any) => word.text),
       placeholder: isEmpty(contents) && cell.placeholder ? `eg "${cell.placeholder}"` : "",
       contents,
       cssClasses,
-      comment: contents ? cellTypeNames : undefined
+      comment: contents ? `${nodeType}\n${cellTypeAncestry}` : undefined
     }
     return cell
   }
@@ -153,8 +157,12 @@ class CodeSheetComponent extends AbstractTreeComponent {
   }
 
   toStumpCode() {
-    return `div CODESHEET GOES HERE
- id CodeSheetComponent`
+    return `div
+ id CodeSheetComponent
+ div
+  class CodeSheetToolbarComponent
+ div CODESHEET GOES HERE
+  id HotHolder`
   }
 }
 

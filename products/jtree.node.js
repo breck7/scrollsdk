@@ -3333,12 +3333,12 @@ var GrammarBundleFiles
   GrammarBundleFiles["indexJs"] = "index.js"
   GrammarBundleFiles["testJs"] = "test.js"
 })(GrammarBundleFiles || (GrammarBundleFiles = {}))
-var GrammarCellParser
-;(function(GrammarCellParser) {
-  GrammarCellParser["prefix"] = "prefix"
-  GrammarCellParser["postfix"] = "postfix"
-  GrammarCellParser["omnifix"] = "omnifix"
-})(GrammarCellParser || (GrammarCellParser = {}))
+var GrammarLineParser
+;(function(GrammarLineParser) {
+  GrammarLineParser["prefix"] = "prefix"
+  GrammarLineParser["postfix"] = "postfix"
+  GrammarLineParser["omnifix"] = "omnifix"
+})(GrammarLineParser || (GrammarLineParser = {}))
 var GrammarConstants
 ;(function(GrammarConstants) {
   // node types
@@ -3634,7 +3634,7 @@ class GrammarBackedNode extends TreeNode {
     const usage = new TreeNode()
     const handGrammarProgram = this.getHandGrammarProgram()
     handGrammarProgram.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def => {
-      const requiredCellTypeIds = def.getCellParser().getRequiredCellTypeIds()
+      const requiredCellTypeIds = def._getLineParser().getRequiredCellTypeIds()
       usage.appendLine([def.getNodeTypeIdFromDefinition(), "line-id", "nodeType", requiredCellTypeIds.join(" ")].join(" "))
     })
     this.getTopDownArray().forEach((node, lineNumber) => {
@@ -3711,8 +3711,8 @@ class GrammarBackedNode extends TreeNode {
   }
   _getParsedCells() {
     return this.getDefinition()
-      .getCellParser()
-      .getCellArray(this)
+      ._getLineParser()
+      .getCells(this)
   }
   // todo: just make a fn that computes proper spacing and then is given a node to print
   getLineCellTypes() {
@@ -4434,7 +4434,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     return this.getWord(0)
   }
 }
-class AbstractCellParser {
+class AbstractLineParser {
   constructor(definition) {
     this._definition = definition
   }
@@ -4457,7 +4457,7 @@ class AbstractCellParser {
   _isCatchAllCell(cellIndex, numberOfRequiredCells, totalWordCount) {
     return cellIndex >= numberOfRequiredCells
   }
-  getCellArray(node = undefined) {
+  getCells(node = undefined) {
     const wordCount = node ? node.getWords().length : 0
     const def = this._definition
     const grammarProgram = def.getLanguageDefinitionProgram()
@@ -4473,7 +4473,11 @@ class AbstractCellParser {
       let cellConstructor
       if (cellTypeDefinition) cellConstructor = cellTypeDefinition.getCellConstructor()
       else if (cellTypeId) cellConstructor = GrammarUnknownCellTypeCell
-      else {
+      else if (def._isBlobNodeType()) {
+        cellConstructor = GrammarAnyCell
+        cellTypeId = PreludeCellTypeIds.anyCell
+        cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
+      } else {
         cellConstructor = GrammarExtraWordCellTypeCell
         cellTypeId = PreludeCellTypeIds.extraWordCell
         cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
@@ -4483,8 +4487,8 @@ class AbstractCellParser {
     return cells
   }
 }
-class PrefixCellParser extends AbstractCellParser {}
-class PostfixCellParser extends AbstractCellParser {
+class PrefixLineParser extends AbstractLineParser {}
+class PostfixLineParser extends AbstractLineParser {
   _isCatchAllCell(cellIndex, numberOfRequiredCells, totalWordCount) {
     return cellIndex < totalWordCount - numberOfRequiredCells
   }
@@ -4493,8 +4497,8 @@ class PostfixCellParser extends AbstractCellParser {
     return requiredCellTypeIds[cellIndex - catchAllWordCount]
   }
 }
-class OmnifixCellParser extends AbstractCellParser {
-  getCellArray(node = undefined) {
+class OmnifixLineParser extends AbstractLineParser {
+  getCells(node = undefined) {
     const cells = []
     const def = this._definition
     const program = node ? node.getRootNode() : undefined
@@ -4620,7 +4624,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   }
   getSqlLiteTableColumns() {
     return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds()).map(node => {
-      const firstNonKeywordCellType = node.getCellParser().getCellArray()[1]
+      const firstNonKeywordCellType = node._getLineParser().getCells()[1]
       const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSqlLiteType() : SqlLiteTypes.text
       return {
         columnName: node._getIdWithoutSuffix(),
@@ -4884,7 +4888,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
   }
   // todo: improve layout (use bold?)
   getLineHints() {
-    return this.getCellParser().getLineHints()
+    return this._getLineParser().getLineHints()
   }
   isOrExtendsANodeTypeInScope(firstWordsInScope) {
     const chain = this._getNodeTypeInheritanceSet()
@@ -4901,13 +4905,13 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     const enumOptions = this._getFirstCellEnumOptions()
     if (enumOptions) return `'^ *(${TreeUtils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
   }
-  // todo: refactor. move some parts to cellParser?
+  // todo: refactor. move some parts to lineParser?
   _toSublimeMatchBlock() {
     const defaultHighlightScope = "source"
     const program = this.getLanguageDefinitionProgram()
-    const cellParser = this.getCellParser()
-    const requiredCellTypeIds = cellParser.getRequiredCellTypeIds()
-    const catchAllCellTypeId = cellParser.getCatchAllCellTypeId()
+    const lineParser = this._getLineParser()
+    const requiredCellTypeIds = lineParser.getRequiredCellTypeIds()
+    const catchAllCellTypeId = lineParser.getCatchAllCellTypeId()
     const firstCellTypeDef = program.getCellTypeDefinitionById(requiredCellTypeIds[0])
     const firstWordHighlightScope = (firstCellTypeDef ? firstCellTypeDef.getHighlightScope() : defaultHighlightScope) + "." + this.getNodeTypeIdFromDefinition()
     const topHalf = ` '${this.getNodeTypeIdFromDefinition()}':
@@ -4958,8 +4962,8 @@ ${captures}
   }
   _toStumpString() {
     const crux = this._getCruxIfAny()
-    const cellArray = this.getCellParser()
-      .getCellArray()
+    const cellArray = this._getLineParser()
+      .getCells()
       .filter((item, index) => index) // for now this only works for keyword langs
     if (!cellArray.length)
       // todo: remove this! just doing it for now until we refactor getCellArray to handle catchAlls better.
@@ -4979,8 +4983,8 @@ ${cells.toString(1)}`
   _generateSimulatedLine(seed) {
     // todo: generate simulated data from catch all
     const crux = this._getCruxIfAny()
-    return this.getCellParser()
-      .getCellArray()
+    return this._getLineParser()
+      .getCells()
       .map((cell, index) => (!index && crux ? crux : cell.synthesizeCell(seed)))
       .join(" ")
   }
@@ -5028,14 +5032,14 @@ ${cells.toString(1)}`
     }
     return lines
   }
-  getCellParser() {
-    if (!this._cellParser) {
-      const cellParsingStrategy = this._getFromExtended(GrammarConstants.cellParser)
-      if (cellParsingStrategy === GrammarCellParser.postfix) this._cellParser = new PostfixCellParser(this)
-      else if (cellParsingStrategy === GrammarCellParser.omnifix) this._cellParser = new OmnifixCellParser(this)
-      else this._cellParser = new PrefixCellParser(this)
+  _getLineParser() {
+    if (!this._lineParser) {
+      const lineParsingStrategy = this._getFromExtended(GrammarConstants.cellParser)
+      if (lineParsingStrategy === GrammarLineParser.postfix) this._lineParser = new PostfixLineParser(this)
+      else if (lineParsingStrategy === GrammarLineParser.omnifix) this._lineParser = new OmnifixLineParser(this)
+      else this._lineParser = new PrefixLineParser(this)
     }
-    return this._cellParser
+    return this._lineParser
   }
 }
 // todo: remove?

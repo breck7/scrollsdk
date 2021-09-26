@@ -134,6 +134,10 @@
   float: right;
 }
 
+#CodeSheetComponent {
+  clear: both;
+}
+
 .FooterComponent {
   clear: both;
   border-top: 1px solid #ddd;

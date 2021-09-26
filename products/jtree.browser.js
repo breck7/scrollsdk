@@ -3923,7 +3923,7 @@ ${options.toString(1)}`
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
-    return this._getCellTypeDefinition().isValid(word, this.getNode().getRootNode()) && this._isValid()
+    return this._isValid() && this._getCellTypeDefinition().isValid(word, this.getNode().getRootNode())
   }
   getErrorIfAny() {
     const word = this.getWord()

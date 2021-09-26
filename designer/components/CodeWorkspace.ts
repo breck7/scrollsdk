@@ -1,7 +1,7 @@
 const { AbstractTreeComponent } = require("../../products/TreeComponentFramework.node.js")
 const { jtree } = require("../../index.js")
 
-import { GrammarProvider, LocalStorageKeys, EditorWorkspace } from "./Types"
+import { GrammarProvider, LocalStorageKeys, EditorWorkspace, CodeAndGrammarApp } from "./Types"
 
 declare var CodeMirror: any
 
@@ -165,6 +165,10 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
     return <GrammarProvider>this.getParent()
   }
 
+  get designerApp() {
+    return <CodeAndGrammarApp>this.getParent()
+  }
+
   get grammarConstructor() {
     return this.grammarProvider.grammarConstructor
   }
@@ -174,6 +178,7 @@ class CodeWorkspaceComponent extends AbstractTreeComponent implements EditorWork
     this._updateLocalStorage()
     const programConstructor = this.grammarConstructor
     this.program = new programConstructor(code)
+    this.designerApp.postCodeKeyup()
   }
 
   get editor(): CodeEditorComponent {

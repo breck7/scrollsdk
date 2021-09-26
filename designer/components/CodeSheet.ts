@@ -20,7 +20,7 @@ class CodeSheetComponent extends AbstractTreeComponent {
 
   hotInstance: any
 
-  loadData() {
+  refreshData() {
     if (this.hotInstance) this.hotInstance.loadData(this.rectangularGrid)
   }
 
@@ -47,10 +47,10 @@ class CodeSheetComponent extends AbstractTreeComponent {
     return this
   }
 
-  refresh() {
+  refreshAll() {
     this.destroy()
       .initHot()
-      .loadData()
+      .refreshData()
   }
 
   initHot() {

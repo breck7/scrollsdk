@@ -2,7 +2,7 @@
 const isEmpty = val => val === ""
 class CodeSheetComponent extends AbstractTreeComponent {
   updateProgramFromHot() {}
-  loadData() {
+  refreshData() {
     if (this.hotInstance) this.hotInstance.loadData(this.rectangularGrid)
   }
   get app() {
@@ -24,10 +24,10 @@ class CodeSheetComponent extends AbstractTreeComponent {
     if (this.hotInstance) this.hotInstance.destroy()
     return this
   }
-  refresh() {
+  refreshAll() {
     this.destroy()
       .initHot()
-      .loadData()
+      .refreshData()
   }
   initHot() {
     if (!this.program) return this
@@ -267,6 +267,9 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
   get grammarProvider() {
     return this.getParent()
   }
+  get designerApp() {
+    return this.getParent()
+  }
   get grammarConstructor() {
     return this.grammarProvider.grammarConstructor
   }
@@ -275,6 +278,7 @@ class CodeWorkspaceComponent extends AbstractTreeComponent {
     this._updateLocalStorage()
     const programConstructor = this.grammarConstructor
     this.program = new programConstructor(code)
+    this.designerApp.postCodeKeyup()
   }
   get editor() {
     return this.getNode("CodeEditorComponent")
@@ -432,7 +436,7 @@ class DesignerApp extends AbstractTreeComponent {
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
     this.grammarWorkspace.initCodeMirror()
     this.codeWorkspace.initCodeMirror()
-    this.codeSheet.initHot().loadData()
+    this.codeSheet.initHot().refreshData()
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
@@ -483,6 +487,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
   postCodeKeyup() {
     this.updateShareLink()
+    this.codeSheet.refreshData()
   }
   postGrammarKeyup() {
     // Hack to break CM cache:
@@ -495,7 +500,7 @@ class DesignerApp extends AbstractTreeComponent {
     this.grammarWorkspace.setCode(grammar)
     this.codeWorkspace.setCode(code)
     this._clearHash()
-    this.codeSheet.refresh()
+    this.codeSheet.refreshAll()
   }
   toHakonCode() {
     return `body
@@ -779,6 +784,8 @@ class HeaderComponent extends AbstractTreeComponent {
   }
 }
 window.HeaderComponent = HeaderComponent
+// http://localhost:3333/designer/#url%20https://simoji.pub/simoji.grammar
+// http://localhost:3333/designer/#url%20https://scroll.pub/scrolldown.grammar
 class SamplesComponent extends AbstractTreeComponent {
   constructor() {
     super(...arguments)

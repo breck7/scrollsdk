@@ -95,7 +95,7 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
 
     this.grammarWorkspace.initCodeMirror()
     this.codeWorkspace.initCodeMirror()
-    this.codeSheet.initHot().loadData()
+    this.codeSheet.initHot().refreshData()
 
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
@@ -161,6 +161,7 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
 
   postCodeKeyup() {
     this.updateShareLink()
+    this.codeSheet.refreshData()
   }
 
   postGrammarKeyup() {
@@ -175,7 +176,7 @@ class DesignerApp extends AbstractTreeComponent implements GrammarProvider, Code
     this.grammarWorkspace.setCode(grammar)
     this.codeWorkspace.setCode(code)
     this._clearHash()
-    this.codeSheet.refresh()
+    this.codeSheet.refreshAll()
   }
 
   toHakonCode() {

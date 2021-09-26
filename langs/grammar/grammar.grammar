@@ -19,6 +19,7 @@ booleanCell
  enum true false
  highlightScope constant.numeric
 cellParserCell
+ todo Rename to lineParser
  enum prefix postfix omnifix
  highlightScope constant.numeric
 cellPropertyNameCell

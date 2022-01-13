@@ -2405,6 +2405,7 @@ ${testCode}`
 
   getCellTypeDefinitionById(cellTypeId: treeNotationTypes.cellTypeId) {
     // todo: return unknownCellTypeDefinition? or is that handled somewhere else?
+    // todo: this is breaking with ExtraWordCellType?
     return this.getCellTypeDefinitions()[cellTypeId]
   }
 

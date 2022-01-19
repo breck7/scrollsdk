@@ -292,7 +292,7 @@ treeBaseErrorNode
         const filename = Disk.getFileName(fullPath)
         const content = Disk.read(fullPath)
         if (content.match(/\r/)) throw new Error("bad \\r in " + fullPath)
-        return content ? fullPath + "\n " + content.trim().replace(/\n/g, "\n ") : fullPath
+        return content ? fullPath + "\n " + content.replace(/\n/g, "\n ") : fullPath
       })
       .join("\n")
   }

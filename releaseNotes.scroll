@@ -4,6 +4,11 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 53.1.0 2022-01-18
+list
+ - 🏥 larger buffer for jtree build
+ - 🏥 TreeBase should not run trim when loading files
+
 section 53.0.0 2021-07-27
 list
  - 🎉 tcf: 60% faster rendering

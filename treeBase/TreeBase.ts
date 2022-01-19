@@ -31,7 +31,6 @@ class TreeBaseFile extends TreeNode {
     return TreeUtils.getFileName(TreeUtils.removeFileExtension(filename))
   }
 
-
   getDoc(terms: string[]) {
     return terms
       .map(term => {
@@ -45,7 +44,6 @@ class TreeBaseFile extends TreeNode {
   set(keywordPath: any, content: any) {
     return typeof keywordPath === "object" ? this.setProperties(keywordPath) : super.set(keywordPath, content)
   }
-
 
   save() {
     const str = this.childrenToString()
@@ -354,7 +352,7 @@ treeBaseErrorNode
         const filename = Disk.getFileName(fullPath)
         const content = Disk.read(fullPath)
         if (content.match(/\r/)) throw new Error("bad \\r in " + fullPath)
-        return content ? fullPath + "\n " + content.trim().replace(/\n/g, "\n ") : fullPath
+        return content ? fullPath + "\n " + content.replace(/\n/g, "\n ") : fullPath
       })
       .join("\n")
   }

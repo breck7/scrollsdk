@@ -1623,6 +1623,35 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return new TreeNode.Parser(undefined, map)
   }
 
+  toTypeScriptInterface(used = {}) {
+    let childrenInterfaces = []
+    let properties = []
+    const inScope = this.getFirstWordMapWithDefinitions()
+    const thisId = this._getId() || this.getGrammarName() + GrammarConstants.nodeTypeSuffix
+
+    used[thisId] = true
+    Object.keys(inScope).forEach(key => {
+      const def = inScope[key]
+      const map = def.getFirstWordMapWithDefinitions()
+      const id = def._getId()
+      const optionalTag = def.isRequired() ? "" : "?"
+      const escapedKey = key.match(/\?/) ? `"${key}"` : key
+      if (Object.keys(map).length && !used[id]) {
+        childrenInterfaces.push(def.toTypeScriptInterface(used))
+        properties.push(` ${escapedKey}${optionalTag}: ${id}`)
+      } else properties.push(` ${escapedKey}${optionalTag}: any`)
+    })
+
+    properties.sort()
+
+    const myInterface = ""
+    return `${childrenInterfaces.join("\n")}
+
+interface ${thisId} {
+${properties.join("\n")}
+}`.trim()
+  }
+
   getTableNameIfAny() {
     return this.getFrom(`${GrammarConstantsConstantTypes.string} ${GrammarConstantsMisc.tableName}`)
   }

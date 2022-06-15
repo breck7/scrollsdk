@@ -23,7 +23,7 @@ enum GrammarConstantsCompiler {
   closeChildren = "closeChildren"
 }
 
-enum SqlLiteTypes {
+enum SQLiteTypes {
   integer = "INTEGER",
   float = "FLOAT",
   text = "TEXT"
@@ -152,19 +152,19 @@ abstract class GrammarBackedNode extends TreeNode {
     return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
 
-  toSqlLiteInsertStatement(primaryKeyFunction = (node: any) => node.getWord(0)): string {
+  toSQLiteInsertStatement(primaryKeyFunction = (node: any) => node.getWord(0)): string {
     const def = this.getDefinition()
     const tableName = def.getTableNameIfAny() || def._getId()
-    const columns = def.getSqlLiteTableColumns()
+    const columns = def.getSQLiteTableColumns()
     const hits = columns.filter(colDef => this.has(colDef.columnName))
 
     const values = hits.map(colDef => {
       const node = this.getNode(colDef.columnName)
       const content = node.getContent()
-      return colDef.type === SqlLiteTypes.text ? `"${content}"` : content
+      return colDef.type === SQLiteTypes.text ? `"${content}"` : content
     })
 
-    hits.unshift({ columnName: "id", type: SqlLiteTypes.text })
+    hits.unshift({ columnName: "id", type: SQLiteTypes.text })
     values.unshift(`"${primaryKeyFunction(this)}"`)
     return `INSERT INTO ${tableName} (${hits.map(col => col.columnName).join(",")}) VALUES (${values.join(",")});`
   }
@@ -632,8 +632,8 @@ abstract class AbstractGrammarBackedCell<T> {
     return this._typeDef.getLineNumber()
   }
 
-  getSqlLiteType(): SqlLiteTypes {
-    return SqlLiteTypes.text
+  getSQLiteType(): SQLiteTypes {
+    return SQLiteTypes.text
   }
 
   private _node: GrammarBackedNode
@@ -813,8 +813,8 @@ class GrammarIntCell extends GrammarNumericCell {
     return "\-?[0-9]+"
   }
 
-  getSqlLiteType() {
-    return SqlLiteTypes.integer
+  getSQLiteType() {
+    return SQLiteTypes.integer
   }
 
   getParsed() {
@@ -832,8 +832,8 @@ class GrammarFloatCell extends GrammarNumericCell {
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
   }
 
-  getSqlLiteType() {
-    return SqlLiteTypes.float
+  getSQLiteType() {
+    return SQLiteTypes.float
   }
 
   static defaultHighlightScope = "constant.numeric.float"
@@ -1656,11 +1656,11 @@ ${properties.join("\n")}
     return this.getFrom(`${GrammarConstantsConstantTypes.string} ${GrammarConstantsMisc.tableName}`)
   }
 
-  getSqlLiteTableColumns() {
+  getSQLiteTableColumns() {
     return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds()).map(node => {
       const firstNonKeywordCellType = node.getCellParser().getCellArray()[1]
 
-      const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSqlLiteType() : SqlLiteTypes.text
+      const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSQLiteType() : SQLiteTypes.text
       return {
         columnName: node._getIdWithoutSuffix(), // todo: we want the crux instead I think.
         type
@@ -1668,8 +1668,8 @@ ${properties.join("\n")}
     })
   }
 
-  toSqlLiteTableSchema() {
-    const columns = this.getSqlLiteTableColumns().map(columnDef => `${columnDef.columnName} ${columnDef.type}`)
+  toSQLiteTableSchema() {
+    const columns = this.getSQLiteTableColumns().map(columnDef => `${columnDef.columnName} ${columnDef.type}`)
     return `create table ${this.getTableNameIfAny() || this._getId()} (
  id TEXT NOT NULL PRIMARY KEY,
  ${columns.join(",\n ")}

@@ -529,7 +529,7 @@ ${cols}
       .join("\n")
   }
 
-  // todo: toProtoBuf, toSqlLite, toJsonSchema, toJsonLd, toCapnProto, toApacheArrow, toFlatBuffers
+  // todo: toProtoBuf, toSQLite, toJsonSchema, toJsonLd, toCapnProto, toApacheArrow, toFlatBuffers
 
   // guess which are the more important/informative/interesting columns
   getColumnsByImportance() {

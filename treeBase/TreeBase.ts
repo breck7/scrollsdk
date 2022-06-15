@@ -179,23 +179,23 @@ class TreeBaseFolder extends TreeNode {
     return Disk.touch(this._getDir() + filename)
   }
 
-  toSqlLite(): string {
-    return this.toSqlLiteCreateTables() + "\n\n" + this.toSqlLiteInsertRows()
+  toSQLite(): string {
+    return this.toSQLiteCreateTables() + "\n\n" + this.toSQLiteInsertRows()
   }
 
-  toSqlLiteCreateTables(): string {
+  toSQLiteCreateTables(): string {
     this.loadFolder()
 
     const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
     const tableDefinitionNodes = grammarProgram.filter((node: any) => node.getTableNameIfAny && node.getTableNameIfAny())
     // todo: filter out root root
 
-    return tableDefinitionNodes.map((node: any) => node.toSqlLiteTableSchema()).join("\n")
+    return tableDefinitionNodes.map((node: any) => node.toSQLiteTableSchema()).join("\n")
   }
 
-  toSqlLiteInsertRows(): string {
+  toSQLiteInsertRows(): string {
     return this.toProgram()
-      .map((node: any) => node.toSqlLiteInsertStatement((node: any) => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
+      .map((node: any) => node.toSQLiteInsertStatement((node: any) => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
       .join("\n")
   }
 

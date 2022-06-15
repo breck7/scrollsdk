@@ -25,7 +25,7 @@ testTree.sqlLite = (equal: any) => {
   // Arrange
   const folder = getFolder()
   // Act/Assert
-  equal(folder.toSqlLite(), Disk.read(__dirname + "/planets.sql"), "sqlite works")
+  equal(folder.toSQLite(), Disk.read(__dirname + "/planets.sql"), "sqlite works")
 }
 
 testTree.fileSystemEvents = async (equal: any) => {

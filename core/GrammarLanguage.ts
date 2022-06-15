@@ -1623,20 +1623,20 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     return new TreeNode.Parser(undefined, map)
   }
 
-  toTypeScriptInterface(used = {}) {
-    let childrenInterfaces = []
-    let properties = []
+  toTypeScriptInterface(used = new Set<string>()) {
+    let childrenInterfaces: string[] = []
+    let properties: string[] = []
     const inScope = this.getFirstWordMapWithDefinitions()
-    const thisId = this._getId() || this.getGrammarName() + GrammarConstants.nodeTypeSuffix
+    const thisId = this._getId()
 
-    used[thisId] = true
+    used.add(thisId)
     Object.keys(inScope).forEach(key => {
       const def = inScope[key]
       const map = def.getFirstWordMapWithDefinitions()
       const id = def._getId()
       const optionalTag = def.isRequired() ? "" : "?"
       const escapedKey = key.match(/\?/) ? `"${key}"` : key
-      if (Object.keys(map).length && !used[id]) {
+      if (Object.keys(map).length && !used.add(id)) {
         childrenInterfaces.push(def.toTypeScriptInterface(used))
         properties.push(` ${escapedKey}${optionalTag}: ${id}`)
       } else properties.push(` ${escapedKey}${optionalTag}: any`)
@@ -2490,6 +2490,10 @@ ${testCode}`
 
   getExtensionName() {
     return this.getGrammarName()
+  }
+
+  _getId() {
+    return this.getRootNodeTypeId()
   }
 
   getRootNodeTypeId() {

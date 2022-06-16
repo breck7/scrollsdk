@@ -10,6 +10,7 @@ class Disk {
   static strCount = (str: string, reg: string) => (str.match(new RegExp(reg, "gi")) || []).length
   static read = (path: treeNotationTypes.filepath) => fs.readFileSync(path, "utf8")
   static touch = (path: treeNotationTypes.filepath) => (Disk.exists(path) ? true : Disk.write(path, ""))
+  static copy = (source: treeNotationTypes.filepath, destination: treeNotationTypes.filepath) => Disk.write(destination, Disk.read(source))
   static mkdir = (path: treeNotationTypes.filepath) => require("mkdirp").sync(path)
   static getRecursive = (path: treeNotationTypes.filepath) => require("recursive-readdir-sync")(path)
   static readJson = (path: treeNotationTypes.filepath) => JSON.parse(Disk.read(path))

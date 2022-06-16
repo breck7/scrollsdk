@@ -1458,7 +1458,7 @@ class TreeNode extends AbstractNode {
       else if (operator === WhereOperators.greaterThanOrEqual) return typedCell >= fixedValue
       else if (operator === WhereOperators.lessThanOrEqual) return typedCell <= fixedValue
       else if (operator === WhereOperators.empty) return !node.has(columnName)
-      else if (operator === WhereOperators.notEmpty) return node.has(columnName)
+      else if (operator === WhereOperators.notEmpty) return node.has(columnName) || (cell !== "" && cell !== undefined)
       else if (operator === WhereOperators.in && isArray) return fixedValue.includes(typedCell)
       else if (operator === WhereOperators.notIn && isArray) return !fixedValue.includes(typedCell)
     }
@@ -3208,7 +3208,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "53.1.0"
+TreeNode.getVersion = () => "53.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3296,12 +3296,12 @@ var GrammarConstantsCompiler
   GrammarConstantsCompiler["joinChildrenWith"] = "joinChildrenWith"
   GrammarConstantsCompiler["closeChildren"] = "closeChildren"
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}))
-var SqlLiteTypes
-;(function(SqlLiteTypes) {
-  SqlLiteTypes["integer"] = "INTEGER"
-  SqlLiteTypes["float"] = "FLOAT"
-  SqlLiteTypes["text"] = "TEXT"
-})(SqlLiteTypes || (SqlLiteTypes = {}))
+var SQLiteTypes
+;(function(SQLiteTypes) {
+  SQLiteTypes["integer"] = "INTEGER"
+  SQLiteTypes["float"] = "FLOAT"
+  SQLiteTypes["text"] = "TEXT"
+})(SQLiteTypes || (SQLiteTypes = {}))
 var GrammarConstantsMisc
 ;(function(GrammarConstantsMisc) {
   GrammarConstantsMisc["doNotSynthesize"] = "doNotSynthesize"
@@ -3412,17 +3412,17 @@ class GrammarBackedNode extends TreeNode {
     const handGrammarProgram = this.getHandGrammarProgram()
     return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
-  toSqlLiteInsertStatement(primaryKeyFunction = node => node.getWord(0)) {
+  toSQLiteInsertStatement(primaryKeyFunction = node => node.getWord(0)) {
     const def = this.getDefinition()
     const tableName = def.getTableNameIfAny() || def._getId()
-    const columns = def.getSqlLiteTableColumns()
+    const columns = def.getSQLiteTableColumns()
     const hits = columns.filter(colDef => this.has(colDef.columnName))
     const values = hits.map(colDef => {
       const node = this.getNode(colDef.columnName)
       const content = node.getContent()
-      return colDef.type === SqlLiteTypes.text ? `"${content}"` : content
+      return colDef.type === SQLiteTypes.text ? `"${content}"` : content
     })
-    hits.unshift({ columnName: "id", type: SqlLiteTypes.text })
+    hits.unshift({ columnName: "id", type: SQLiteTypes.text })
     values.unshift(`"${primaryKeyFunction(this)}"`)
     return `INSERT INTO ${tableName} (${hits.map(col => col.columnName).join(",")}) VALUES (${values.join(",")});`
   }
@@ -3821,8 +3821,8 @@ class AbstractGrammarBackedCell {
   getDefinitionLineNumber() {
     return this._typeDef.getLineNumber()
   }
-  getSqlLiteType() {
-    return SqlLiteTypes.text
+  getSQLiteType() {
+    return SQLiteTypes.text
   }
   getCellTypeId() {
     return this._cellTypeId
@@ -3955,8 +3955,8 @@ class GrammarIntCell extends GrammarNumericCell {
   getRegexString() {
     return "-?[0-9]+"
   }
-  getSqlLiteType() {
-    return SqlLiteTypes.integer
+  getSQLiteType() {
+    return SQLiteTypes.integer
   }
   getParsed() {
     const word = this.getWord()
@@ -3971,8 +3971,8 @@ class GrammarFloatCell extends GrammarNumericCell {
     const num = parseFloat(word)
     return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
   }
-  getSqlLiteType() {
-    return SqlLiteTypes.float
+  getSQLiteType() {
+    return SQLiteTypes.float
   }
   _synthesizeCell(seed) {
     return TreeUtils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
@@ -4615,21 +4615,46 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     map[GrammarConstants.example] = GrammarExampleNode
     return new TreeNode.Parser(undefined, map)
   }
+  toTypeScriptInterface(used = new Set()) {
+    let childrenInterfaces = []
+    let properties = []
+    const inScope = this.getFirstWordMapWithDefinitions()
+    const thisId = this._getId()
+    used.add(thisId)
+    Object.keys(inScope).forEach(key => {
+      const def = inScope[key]
+      const map = def.getFirstWordMapWithDefinitions()
+      const id = def._getId()
+      const optionalTag = def.isRequired() ? "" : "?"
+      const escapedKey = key.match(/\?/) ? `"${key}"` : key
+      if (Object.keys(map).length && !used.add(id)) {
+        childrenInterfaces.push(def.toTypeScriptInterface(used))
+        properties.push(` ${escapedKey}${optionalTag}: ${id}`)
+      } else properties.push(` ${escapedKey}${optionalTag}: any`)
+    })
+    properties.sort()
+    const myInterface = ""
+    return `${childrenInterfaces.join("\n")}
+
+interface ${thisId} {
+${properties.join("\n")}
+}`.trim()
+  }
   getTableNameIfAny() {
     return this.getFrom(`${GrammarConstantsConstantTypes.string} ${GrammarConstantsMisc.tableName}`)
   }
-  getSqlLiteTableColumns() {
+  getSQLiteTableColumns() {
     return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds()).map(node => {
       const firstNonKeywordCellType = node.getCellParser().getCellArray()[1]
-      const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSqlLiteType() : SqlLiteTypes.text
+      const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSQLiteType() : SQLiteTypes.text
       return {
         columnName: node._getIdWithoutSuffix(),
         type
       }
     })
   }
-  toSqlLiteTableSchema() {
-    const columns = this.getSqlLiteTableColumns().map(columnDef => `${columnDef.columnName} ${columnDef.type}`)
+  toSQLiteTableSchema() {
+    const columns = this.getSQLiteTableColumns().map(columnDef => `${columnDef.columnName} ${columnDef.type}`)
     return `create table ${this.getTableNameIfAny() || this._getId()} (
  id TEXT NOT NULL PRIMARY KEY,
  ${columns.join(",\n ")}
@@ -5317,6 +5342,9 @@ ${testCode}`
   }
   getExtensionName() {
     return this.getGrammarName()
+  }
+  _getId() {
+    return this.getRootNodeTypeId()
   }
   getRootNodeTypeId() {
     return this.getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()

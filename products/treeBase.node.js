@@ -148,19 +148,19 @@ class TreeBaseFolder extends TreeNode {
     // todo: throw if its a folder path, has wrong file extension, or other invalid
     return Disk.touch(this._getDir() + filename)
   }
-  toSqlLite() {
-    return this.toSqlLiteCreateTables() + "\n\n" + this.toSqlLiteInsertRows()
+  toSQLite() {
+    return this.toSQLiteCreateTables() + "\n\n" + this.toSQLiteInsertRows()
   }
-  toSqlLiteCreateTables() {
+  toSQLiteCreateTables() {
     this.loadFolder()
     const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
     const tableDefinitionNodes = grammarProgram.filter(node => node.getTableNameIfAny && node.getTableNameIfAny())
     // todo: filter out root root
-    return tableDefinitionNodes.map(node => node.toSqlLiteTableSchema()).join("\n")
+    return tableDefinitionNodes.map(node => node.toSQLiteTableSchema()).join("\n")
   }
-  toSqlLiteInsertRows() {
+  toSQLiteInsertRows() {
     return this.toProgram()
-      .map(node => node.toSqlLiteInsertStatement(node => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
+      .map(node => node.toSQLiteInsertStatement(node => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
       .join("\n")
   }
   createParser() {

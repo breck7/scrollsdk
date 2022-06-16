@@ -4,11 +4,11 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
-section edge
+section 53.2.0 2022-06-15
 list
  - 🎉 toTypeScriptInterface method on grammar nodes
  - ⚠️ methods with SqlLite had typo fix to SQLite
- - 🏥 fix bug wehre a deep where query with notEmpty operator would fail
+ - 🏥 fix bug where a deep `where` query with `notEmpty` operator would fail
 
 section 53.1.0 2022-01-18
 list

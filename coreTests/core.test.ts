@@ -4059,6 +4059,13 @@ testTree.queryMethods = equal => {
   equal(tree.where("foobar", "empty").where("species", "includes", "vers").length, 1, "nesting works")
 
   equal(
+    new TreeNode(`boston
+ wp
+  id Boston`).where("wp id", "notEmpty").length,
+    1
+  )
+
+  equal(
     tree
       .where("sepal_width", "!=", 3.7)
       .first(3)

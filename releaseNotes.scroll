@@ -4,6 +4,12 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section edge
+list
+ - 🎉 toTypeScriptInterface method on grammar nodes
+ - ⚠️ methods with SqlLite had typo fix to SQLite
+ - 🏥 fix bug wehre a deep where query with notEmpty operator would fail
+
 section 53.1.0 2022-01-18
 list
  - 🏥 larger buffer for jtree build
@@ -171,7 +177,7 @@ list
 
 section 48.1.0 2019-12-06
 list
- - 🎉 toSqlLite method on TreeBase
+ - 🎉 toSQLite method on TreeBase
  - 🎉 getFrom core method
 
 section 48.0.0 2019-12-02

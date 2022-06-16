@@ -855,7 +855,7 @@ class TreeNode extends AbstractNode {
       else if (operator === WhereOperators.greaterThanOrEqual) return typedCell >= fixedValue
       else if (operator === WhereOperators.lessThanOrEqual) return typedCell <= fixedValue
       else if (operator === WhereOperators.empty) return !node.has(columnName)
-      else if (operator === WhereOperators.notEmpty) return node.has(columnName)
+      else if (operator === WhereOperators.notEmpty) return node.has(columnName) || (cell !== "" && cell !== undefined)
       else if (operator === WhereOperators.in && isArray) return (<Array<string | number>>fixedValue).includes(typedCell)
       else if (operator === WhereOperators.notIn && isArray) return !(<Array<string | number>>fixedValue).includes(typedCell)
     }

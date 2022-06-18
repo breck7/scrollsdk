@@ -4,6 +4,11 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 53.3.0 2022-06-17
+list
+ - 🎉 toTypeScriptInterface includes descriptions now
+ - 🏥 fix dumb bug in toTypeScriptInterface (+ test)
+
 section 53.2.0 2022-06-15
 list
  - 🎉 toTypeScriptInterface method on grammar nodes

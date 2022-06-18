@@ -7,6 +7,7 @@ Disk.makeExecutable = path => fs.chmodSync(path, 0o755)
 Disk.strCount = (str, reg) => (str.match(new RegExp(reg, "gi")) || []).length
 Disk.read = path => fs.readFileSync(path, "utf8")
 Disk.touch = path => (Disk.exists(path) ? true : Disk.write(path, ""))
+Disk.copy = (source, destination) => Disk.write(destination, Disk.read(source))
 Disk.mkdir = path => require("mkdirp").sync(path)
 Disk.getRecursive = path => require("recursive-readdir-sync")(path)
 Disk.readJson = path => JSON.parse(Disk.read(path))

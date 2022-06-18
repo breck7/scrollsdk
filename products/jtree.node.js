@@ -3208,7 +3208,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "53.2.0"
+TreeNode.getVersion = () => "53.3.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -4627,15 +4627,17 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       const id = def._getId()
       const optionalTag = def.isRequired() ? "" : "?"
       const escapedKey = key.match(/\?/) ? `"${key}"` : key
-      if (Object.keys(map).length && !used.add(id)) {
+      const description = def.getDescription()
+      if (Object.keys(map).length && !used.has(id)) {
         childrenInterfaces.push(def.toTypeScriptInterface(used))
         properties.push(` ${escapedKey}${optionalTag}: ${id}`)
-      } else properties.push(` ${escapedKey}${optionalTag}: any`)
+      } else properties.push(` ${escapedKey}${optionalTag}: any${description ? " // " + description : ""}`)
     })
     properties.sort()
+    const description = this.getDescription()
     const myInterface = ""
     return `${childrenInterfaces.join("\n")}
-
+${description ? "// " + description : ""}
 interface ${thisId} {
 ${properties.join("\n")}
 }`.trim()

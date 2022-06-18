@@ -228,6 +228,27 @@ testTree.jibberishErrors = equal => {
   equal(programWithBugs.getInvalidNodeTypes().length, 0)
 }
 
+testTree.toTypeScriptInterface = equal => {
+  // Arrange
+  const grammarProgram = new HandGrammarProgram(arrowGrammar).compileAndReturnRootConstructor()
+  // Act // Assert
+  equal(
+    new grammarProgram().getDefinition().toTypeScriptInterface(),
+    `// A credit card charge
+interface chargeNode {
+ amount: any
+ cardNumber: any
+ currency: any
+ description: any
+ token?: any
+}
+
+interface arrowNode {
+ charge?: chargeNode
+}`
+  )
+}
+
 testTree.cellTypeTree = equal => {
   // Act
   const someJibberishProgram = makeJibberishProgram(`foo

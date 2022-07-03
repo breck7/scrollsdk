@@ -1682,3 +1682,6 @@ list
 section 1.0.2 2017-3-02
 list
  - 🎉 Initial release
+
+html
+ <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />

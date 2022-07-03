@@ -1400,7 +1400,7 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
  class AbstractGithubTriangleComponent
  href ${this.githubLink}
  img
-  src /github-fork.svg`
+  src /images/github-fork.svg`
   }
 }
 window.AbstractGithubTriangleComponent = AbstractGithubTriangleComponent

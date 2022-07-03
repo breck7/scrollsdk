@@ -144,7 +144,7 @@ paragraph
 
 subsection Visualization of the code base
 
-image diagram.svg
+image images/diagram.svg
 
 section Development Status
 
@@ -162,7 +162,7 @@ paragraph
 paragraph
  If you are working on a Tree Notation library in a new host
  language, feel free to post an issue or ask for help in the 
- reeNotation subreddit🔗reddit.com/r/treenotation.
+ TreeNotation subreddit🔗reddit.com/r/treenotation.
 
 subsection How to bump versions
 
@@ -186,5 +186,15 @@ paragraph
  and you can implement the patterns contained here in your
  own code without using this library. In fact, that is often
  the best way to use Tree Notation!
+
+subsection Editing in Sublime Text
+
+aftertext
+ It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files in gitignore. Read more here.
+ https://breckyunits.com/code/my-sublime-setttings.html here
+ wrapsOn
+
+html
+ <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
 
 section ❤️ Public Domain ❤️

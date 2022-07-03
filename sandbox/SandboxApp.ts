@@ -188,7 +188,7 @@ class headerComponent extends AbstractTreeComponent {
    style text-decoration: none;
    img
     id logo
-    src /helloWorld3D.svg
+    src /images/helloWorld3D.svg
     title TreeNotation.org
   span Tree Notation Sandbox
  p

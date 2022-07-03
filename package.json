@@ -15,7 +15,8 @@
   },
   "scripts": {
     "test": "./builder.ts test",
-    "cloc": "cloc --exclude-dir=products $(git ls-files)"
+    "cloc": "cloc --exclude-dir=products $(git ls-files)",
+    "checkLinks": "linkinator -r https://jtree.treenotation.org"
   },
   "repository": {
     "type": "git",

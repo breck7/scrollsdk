@@ -1630,6 +1630,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     const thisId = this._getId()
 
     used.add(thisId)
+    const keywords: string[] = []
     Object.keys(inScope).forEach(key => {
       const def = inScope[key]
       const map = def.getFirstWordMapWithDefinitions()
@@ -1637,6 +1638,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       const optionalTag = def.isRequired() ? "" : "?"
       const escapedKey = key.match(/\?/) ? `"${key}"` : key
       const description = def.getDescription()
+      keywords.push(` ${escapedKey} = "${key}",`)
       if (Object.keys(map).length && !used.has(id)) {
         childrenInterfaces.push(def.toTypeScriptInterface(used))
         properties.push(` ${escapedKey}${optionalTag}: ${id}`)
@@ -1645,13 +1647,17 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
 
     properties.sort()
     const description = this.getDescription()
-
     const myInterface = ""
     return `${childrenInterfaces.join("\n")}
 ${description ? "// " + description : ""}
-interface ${thisId} {
+export interface ${thisId} {
 ${properties.join("\n")}
-}`.trim()
+}
+
+export enum ${thisId}Keywords {
+${keywords.join("\n")}
+}
+`.trim()
   }
 
   getTableNameIfAny() {

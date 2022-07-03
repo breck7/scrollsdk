@@ -15,7 +15,7 @@
   },
   "scripts": {
     "test": "./builder.ts test",
-    "cloc": "cloc --exclude-dir=products $(git ls-files)",
+    "cloc": "cloc $(git ls-files | grep --extended-regexp --invert-match 'products|lib|package-lock')",
     "checkLinks": "linkinator -r https://jtree.treenotation.org"
   },
   "repository": {

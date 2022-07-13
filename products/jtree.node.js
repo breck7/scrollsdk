@@ -3208,7 +3208,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "53.4.0"
+TreeNode.getVersion = () => "53.5.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3368,6 +3368,7 @@ var GrammarConstants
   GrammarConstants["abstract"] = "abstract"
   GrammarConstants["root"] = "root"
   GrammarConstants["crux"] = "crux"
+  GrammarConstants["cruxFromId"] = "cruxFromId"
   GrammarConstants["pattern"] = "pattern"
   GrammarConstants["inScope"] = "inScope"
   GrammarConstants["cells"] = "cells"
@@ -4444,7 +4445,7 @@ class AbstractCellParser {
   // todo: improve layout (use bold?)
   getLineHints() {
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
-    const nodeTypeId = this._definition.get(GrammarConstants.crux) || this._definition._getId() // todo: cleanup
+    const nodeTypeId = this._definition._getCruxIfAny() || this._definition._getId() // todo: cleanup
     return `${nodeTypeId}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
   getRequiredCellTypeIds() {
@@ -4590,6 +4591,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.version,
       GrammarConstants.tags,
       GrammarConstants.crux,
+      GrammarConstants.cruxFromId,
       GrammarConstants.pattern,
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
@@ -4708,7 +4710,7 @@ ${properties.join("\n")}
     })
   }
   _getCruxIfAny() {
-    return this.get(GrammarConstants.crux)
+    return this.get(GrammarConstants.crux) || (this._hasFromExtended(GrammarConstants.cruxFromId) ? this._getIdWithoutSuffix() : undefined)
   }
   _getRegexMatch() {
     return this.get(GrammarConstants.pattern)

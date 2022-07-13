@@ -4,6 +4,10 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 53.4.0 2022-07-12
+list
+ - 🎉 add param to use toDelimited without escaping `tree.toDelimited("|", undefined, false)`
+
 section 53.3.0 2022-06-17
 list
  - 🎉 toTypeScriptInterface includes descriptions now

@@ -1337,10 +1337,10 @@ class TreeNode extends AbstractNode {
     return arrays.rows
   }
 
-  toDelimited(delimiter: treeNotationTypes.delimiter, header = this._getUnionNames()) {
+  toDelimited(delimiter: treeNotationTypes.delimiter, header = this._getUnionNames(), escapeSpecialChars = true) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn: cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
-    return this._toDelimited(delimiter, header, cellFn)
+    return this._toDelimited(delimiter, header, escapeSpecialChars ? cellFn : str => str)
   }
 
   protected _getMatrix(columns: string[]) {

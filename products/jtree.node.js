@@ -1860,10 +1860,10 @@ class TreeNode extends AbstractNode {
     arrays.rows.unshift(arrays.header)
     return arrays.rows
   }
-  toDelimited(delimiter, header = this._getUnionNames()) {
+  toDelimited(delimiter, header = this._getUnionNames(), escapeSpecialChars = true) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
-    return this._toDelimited(delimiter, header, cellFn)
+    return this._toDelimited(delimiter, header, escapeSpecialChars ? cellFn : str => str)
   }
   _getMatrix(columns) {
     const matrix = []
@@ -3208,7 +3208,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "53.3.0"
+TreeNode.getVersion = () => "53.4.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

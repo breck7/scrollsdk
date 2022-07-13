@@ -512,6 +512,13 @@ web 25 zzzz OK
   // Assert
   equal(boundaries.length, 9)
 }
+testTree.toDelimited = equal => {
+  const test = `name|example
+python|"Hello world"`
+  const tree = TreeNode.fromDelimited(test, "|", "'")
+  // Act/Assert
+  equal(tree.toDelimited("|", undefined, false), test)
+}
 testTree.fill = equal => {
   Object.keys(testStrings).forEach(key => {
     // Arrange

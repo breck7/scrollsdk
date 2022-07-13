@@ -99,6 +99,7 @@ enum GrammarConstants {
   abstract = "abstract",
   root = "root",
   crux = "crux",
+  cruxFromId = "cruxFromId",
   pattern = "pattern",
   inScope = "inScope",
   cells = "cells",
@@ -1423,7 +1424,7 @@ abstract class AbstractCellParser {
   // todo: improve layout (use bold?)
   getLineHints(): string {
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
-    const nodeTypeId = this._definition.get(GrammarConstants.crux) || this._definition._getId() // todo: cleanup
+    const nodeTypeId = this._definition._getCruxIfAny() || this._definition._getId() // todo: cleanup
     return `${nodeTypeId}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
 
@@ -1596,6 +1597,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.version,
       GrammarConstants.tags,
       GrammarConstants.crux,
+      GrammarConstants.cruxFromId,
       GrammarConstants.pattern,
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
@@ -1734,7 +1736,7 @@ ${properties.join("\n")}
   }
 
   _getCruxIfAny(): string {
-    return this.get(GrammarConstants.crux)
+    return this.get(GrammarConstants.crux) || (this._hasFromExtended(GrammarConstants.cruxFromId) ? this._getIdWithoutSuffix() : undefined)
   }
 
   _getRegexMatch() {

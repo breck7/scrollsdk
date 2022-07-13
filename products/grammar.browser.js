@@ -13,7 +13,6 @@
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
-todo Add omnifix support
 todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
 abstractConstantCell
  highlightScope entity.name.tag
@@ -283,16 +282,19 @@ abstractParseRuleNode
  description Each node should have a pattern that it matches on unless it's a catch all node.
  abstract
  extends abstractNodeTypeRuleNode
+ cruxFromId
 cruxNode
  cells propertyKeywordCell stringCell
  description Use this property for prefix languages where the first word is the keyword.
  extends abstractParseRuleNode
- crux crux
+cruxFromIdNode
+ cells propertyKeywordCell
+ description Include this to derive the crux word from the node type id, for example 'fooNode' would have crux of 'foo'.
+ extends abstractParseRuleNode
 patternNode
  catchAllCellType regexCell
  description If present, this regex will be used to determine the nodeType instead of the cruxNode.
  extends abstractParseRuleNode
- crux pattern
 requiredNode
  description If present, the parent node will have an error if one of these nodes is not provided.
  extends abstractNodeTypeRuleNode
@@ -442,6 +444,7 @@ extendsCellTypeNode
         javascriptNode: javascriptNode,
         abstractParseRuleNode: abstractParseRuleNode,
         cruxNode: cruxNode,
+        cruxFromIdNode: cruxFromIdNode,
         patternNode: patternNode,
         requiredNode: requiredNode,
         singleNode: singleNode,
@@ -711,6 +714,12 @@ extendsCellTypeNode
     }
   }
 
+  class cruxFromIdNode extends abstractParseRuleNode {
+    get propertyKeywordCell() {
+      return this.getWord(0)
+    }
+  }
+
   class patternNode extends abstractParseRuleNode {
     get regexCell() {
       return this.getWordsFrom(0)
@@ -877,6 +886,7 @@ extendsCellTypeNode
           inScope: inScopeNode,
           javascript: javascriptNode,
           crux: cruxNode,
+          cruxFromId: cruxFromIdNode,
           pattern: patternNode,
           required: requiredNode,
           single: singleNode,

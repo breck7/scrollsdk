@@ -4,6 +4,10 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 53.5.1 2022-07-12
+list
+ - 🏥 ship latest version of grammar
+
 section 53.5.0 2022-07-12
 list
  - 🎉 add cruxFromId property to Grammar

@@ -1938,14 +1938,13 @@ ${properties.join("\n")}
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
 
     if (this._amIRoot()) {
-      components.push(`getHandGrammarProgram() {
-        if (!this._cachedHandGrammarProgramRoot)
-          this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
-            this.getParent()
-              .toString()
-              .replace(/\\/g, "\\\\")
-          )}\`)
-        return this._cachedHandGrammarProgramRoot
+      components.push(`static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
+        this.getParent()
+          .toString()
+          .replace(/\\/g, "\\\\")
+      )}\`)
+        getHandGrammarProgram() {
+          return this.constructor.cachedHandGrammarProgramRoot
       }`)
 
       const nodeTypeMap = this.getLanguageDefinitionProgram()

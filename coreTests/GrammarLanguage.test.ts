@@ -197,7 +197,7 @@ langs.forEach((lang: string) => {
 
     // Assert
     const errors = new programConstructor(simulatedProgram).getAllErrors()
-    //if (errors.length) console.log(simulatedProgram)
+    //if (errors.length) console.log(simulatedProgram, errors)
     equal(errors.length, 0, `should be no errors in simulated ${lang} program`)
   }
 })

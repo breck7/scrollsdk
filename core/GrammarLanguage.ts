@@ -490,7 +490,7 @@ abstract class GrammarBackedNode extends TreeNode {
       .filter(identity => identity)
 
     const firstWord = this.getFirstWord()
-    if (this.getDefinition().has(GrammarConstants.single))
+    if (this.getDefinition().isSingle)
       this.getParent()
         .findNodes(firstWord)
         .forEach((node, index) => {
@@ -544,7 +544,7 @@ abstract class GrammarBackedNode extends TreeNode {
     const fields: any = {}
     this.forEach(node => {
       const def = node.getDefinition()
-      if (def.isRequired() || def.has(GrammarConstants.single)) fields[node.getWord(0)] = node.getContent()
+      if (def.isRequired() || def.isSingle) fields[node.getWord(0)] = node.getContent()
     })
     return fields
   }
@@ -1842,6 +1842,11 @@ ${properties.join("\n")}
     const ids = this._getMyInScopeNodeTypeIds()
     const parentDef = this._getExtendedParent()
     return parentDef ? ids.concat((<AbstractGrammarDefinitionNode>parentDef)._getInScopeNodeTypeIds()) : ids
+  }
+
+  // Should only one of these node types be present in the parent node?
+  get isSingle() {
+    return this._hasFromExtended(GrammarConstants.single)
   }
 
   isRequired(): boolean {

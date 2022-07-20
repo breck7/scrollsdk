@@ -201,7 +201,9 @@ class TreeNode extends AbstractNode {
   }
 
   getIndentation(relativeTo?: TreeNode) {
-    return this.getEdgeSymbol().repeat(this._getIndentLevel(relativeTo) - 1)
+    const indentLevel = this._getIndentLevel(relativeTo) - 1
+    if (indentLevel < 0) return ""
+    return this.getEdgeSymbol().repeat(indentLevel)
   }
 
   protected _getTopDownArray<NodeType = TreeNode>(arr: NodeType[]) {
@@ -539,6 +541,7 @@ class TreeNode extends AbstractNode {
     return spots[charIndex]
   }
 
+  // Note: This currently does not return any errors resulting from "required" or "single"
   getAllErrors(lineStartsAt = 1): treeNotationTypes.TreeError[] {
     const errors: treeNotationTypes.TreeError[] = []
     for (let node of this.getTopDownArray()) {

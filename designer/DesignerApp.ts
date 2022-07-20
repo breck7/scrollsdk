@@ -311,7 +311,7 @@ class DesignerApp extends AbstractTreeComponent {
     const that = this
 
     this.program = new programConstructor(code)
-    const errs = this.program.getAllErrors()
+    const errs = this.program.scopeErrors.concat(this.program.getAllErrors())
 
     willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
 

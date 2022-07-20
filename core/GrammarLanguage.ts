@@ -238,11 +238,10 @@ abstract class GrammarBackedNode extends TreeNode {
     return this
   }
 
-  protected _getRequiredNodeErrors(errors: treeNotationTypes.TreeError[] = []) {
+  protected get requiredNodeErrors() {
+    const errors: treeNotationTypes.TreeError[] = []
     Object.values(this.getDefinition().getFirstWordMapWithDefinitions()).forEach(def => {
-      if (def.isRequired()) {
-        if (!this.getChildren().some(node => node.getDefinition() === def)) errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
-      }
+      if (def.isRequired()) if (!this.getChildren().some(node => node.getDefinition() === def)) errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
     })
     return errors
   }
@@ -484,20 +483,35 @@ abstract class GrammarBackedNode extends TreeNode {
     return this._getParsedCells().filter(cell => cell.getWord() !== undefined)
   }
 
-  getErrors() {
-    const errors = this._getParsedCells()
+  private get cellErrors() {
+    return this._getParsedCells()
       .map(check => check.getErrorIfAny())
       .filter(identity => identity)
+  }
 
-    const firstWord = this.getFirstWord()
-    if (this.getDefinition().isSingle)
-      this.getParent()
-        .findNodes(firstWord)
-        .forEach((node, index) => {
-          if (index) errors.push(new NodeTypeUsedMultipleTimesError(<GrammarBackedNode>node))
-        })
+  private get singleNodeUsedTwiceErrors() {
+    const errors: treeNotationTypes.TreeError[] = []
+    const parent = this.getParent() as GrammarBackedNode
+    const hits = parent.getChildInstancesOfNodeTypeId(this.getDefinition().id)
 
-    return this._getRequiredNodeErrors(errors)
+    if (hits.length > 1)
+      hits.forEach((node, index) => {
+        if (node === this) errors.push(new NodeTypeUsedMultipleTimesError(<GrammarBackedNode>node))
+      })
+    return errors
+  }
+
+  get scopeErrors() {
+    let errors: treeNotationTypes.TreeError[] = []
+    if (this.getDefinition().isSingle) errors = errors.concat(this.singleNodeUsedTwiceErrors)
+
+    const { requiredNodeErrors } = this
+    if (requiredNodeErrors.length) errors = errors.concat(requiredNodeErrors)
+    return errors
+  }
+
+  getErrors() {
+    return this.cellErrors.concat(this.scopeErrors)
   }
 
   _getParsedCells(): AbstractGrammarBackedCell<any>[] {
@@ -1682,6 +1696,10 @@ ${properties.join("\n")}
 
   _getId() {
     return this.getWord(0)
+  }
+
+  get id() {
+    return this._getId()
   }
 
   _getIdWithoutSuffix(): string {

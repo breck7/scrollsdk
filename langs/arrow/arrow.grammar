@@ -39,30 +39,31 @@ errorNode
 chargeNode
  inScope amountNode currencyNode descriptionNode cardNumberNode tokenNode
  description A credit card charge
- crux charge
+ cruxFromId
  cells keywordCell
  javascript
   async execute() {
    const card = this.get("cardNumber")
    return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
   }
+abstractChargeAttributeNode
+ abstract
+ cruxFromId
+ required
+ single
 cardNumberNode
- crux cardNumber
+ extends abstractChargeAttributeNode
  cells keywordCell cardNumberCell
- required
 amountNode
- crux amount
+ extends abstractChargeAttributeNode
  cells keywordCell amountCell
- required
 currencyNode
- crux currency
+ extends abstractChargeAttributeNode
  cells keywordCell currencyCell
- required
 descriptionNode
- crux description
+ extends abstractChargeAttributeNode
  cells keywordCell
  catchAllCellType descriptionCell
- required
 tokenNode
- crux token
+ cruxFromId
  cells keywordCell tokenCell

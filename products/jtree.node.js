@@ -3208,7 +3208,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "53.6.0"
+TreeNode.getVersion = () => "53.7.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3702,7 +3702,7 @@ class GrammarBackedNode extends TreeNode {
       .map(check => check.getErrorIfAny())
       .filter(identity => identity)
     const firstWord = this.getFirstWord()
-    if (this.getDefinition().has(GrammarConstants.single))
+    if (this.getDefinition().isSingle)
       this.getParent()
         .findNodes(firstWord)
         .forEach((node, index) => {
@@ -3748,7 +3748,7 @@ class GrammarBackedNode extends TreeNode {
     const fields = {}
     this.forEach(node => {
       const def = node.getDefinition()
-      if (def.isRequired() || def.has(GrammarConstants.single)) fields[node.getWord(0)] = node.getContent()
+      if (def.isRequired() || def.isSingle) fields[node.getWord(0)] = node.getContent()
     })
     return fields
   }
@@ -4797,6 +4797,10 @@ ${properties.join("\n")}
     const ids = this._getMyInScopeNodeTypeIds()
     const parentDef = this._getExtendedParent()
     return parentDef ? ids.concat(parentDef._getInScopeNodeTypeIds()) : ids
+  }
+  // Should only one of these node types be present in the parent node?
+  get isSingle() {
+    return this._hasFromExtended(GrammarConstants.single)
   }
   isRequired() {
     return this._hasFromExtended(GrammarConstants.required)

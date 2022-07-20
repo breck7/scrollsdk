@@ -4,33 +4,41 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 53.7.0 2022-07-20
+list
+ - 🎉 Grammar: `single` keyword in a parent nodeType now propogates to child nodeTypes
+
+section 53.6.0 2022-07-14
+list
+ - 🎉 Grammar: perf improvement
+
 section 53.5.1 2022-07-12
 list
- - 🏥 ship latest version of grammar
+ - 🏥 Grammar: ship latest version
 
 section 53.5.0 2022-07-12
 list
- - 🎉 add cruxFromId property to Grammar
+ - 🎉 Grammar: add cruxFromId
 
 section 53.4.0 2022-07-12
 list
- - 🎉 add param to use toDelimited without escaping `tree.toDelimited("|", undefined, false)`
+ - 🎉 Core: add param to use toDelimited without escaping `tree.toDelimited("|", undefined, false)`
 
 section 53.3.0 2022-06-17
 list
- - 🎉 toTypeScriptInterface includes descriptions now
- - 🏥 fix dumb bug in toTypeScriptInterface (+ test)
+ - 🎉 Grammar: toTypeScriptInterface includes descriptions now
+ - 🏥 Grammar: fix dumb bug in toTypeScriptInterface (+ test)
 
 section 53.2.0 2022-06-15
 list
- - 🎉 toTypeScriptInterface method on grammar nodes
+ - 🎉 Grammar: toTypeScriptInterface method on grammar nodes
  - ⚠️ methods with SqlLite had typo fix to SQLite
- - 🏥 fix bug where a deep `where` query with `notEmpty` operator would fail
+ - 🏥 Core: fix bug where a deep `where` query with `notEmpty` operator would fail
 
 section 53.1.0 2022-01-18
 list
- - 🏥 larger buffer for jtree build
- - 🏥 TreeBase should not run trim when loading files
+ - 🏥 Builder: larger buffer for jtree build
+ - 🏥 TreeBase: should not run trim when loading files
 
 section 53.0.0 2021-07-27
 list

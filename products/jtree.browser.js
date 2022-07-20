@@ -912,7 +912,9 @@ class TreeNode extends AbstractNode {
     return this._getIndentLevel(relativeTo)
   }
   getIndentation(relativeTo) {
-    return this.getEdgeSymbol().repeat(this._getIndentLevel(relativeTo) - 1)
+    const indentLevel = this._getIndentLevel(relativeTo) - 1
+    if (indentLevel < 0) return ""
+    return this.getEdgeSymbol().repeat(indentLevel)
   }
   _getTopDownArray(arr) {
     this.forEach(child => {
@@ -1200,6 +1202,7 @@ class TreeNode extends AbstractNode {
     })
     return spots[charIndex]
   }
+  // Note: This currently does not return any errors resulting from "required" or "single"
   getAllErrors(lineStartsAt = 1) {
     const errors = []
     for (let node of this.getTopDownArray()) {
@@ -3221,7 +3224,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "53.7.0"
+TreeNode.getVersion = () => "53.7.1"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3501,11 +3504,10 @@ class GrammarBackedNode extends TreeNode {
     )
     return this
   }
-  _getRequiredNodeErrors(errors = []) {
+  get requiredNodeErrors() {
+    const errors = []
     Object.values(this.getDefinition().getFirstWordMapWithDefinitions()).forEach(def => {
-      if (def.isRequired()) {
-        if (!this.getChildren().some(node => node.getDefinition() === def)) errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
-      }
+      if (def.isRequired()) if (!this.getChildren().some(node => node.getDefinition() === def)) errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
     })
     return errors
   }
@@ -3715,18 +3717,30 @@ class GrammarBackedNode extends TreeNode {
   getWordTypes() {
     return this._getParsedCells().filter(cell => cell.getWord() !== undefined)
   }
-  getErrors() {
-    const errors = this._getParsedCells()
+  get cellErrors() {
+    return this._getParsedCells()
       .map(check => check.getErrorIfAny())
       .filter(identity => identity)
-    const firstWord = this.getFirstWord()
-    if (this.getDefinition().isSingle)
-      this.getParent()
-        .findNodes(firstWord)
-        .forEach((node, index) => {
-          if (index) errors.push(new NodeTypeUsedMultipleTimesError(node))
-        })
-    return this._getRequiredNodeErrors(errors)
+  }
+  get singleNodeUsedTwiceErrors() {
+    const errors = []
+    const parent = this.getParent()
+    const hits = parent.getChildInstancesOfNodeTypeId(this.getDefinition().id)
+    if (hits.length > 1)
+      hits.forEach((node, index) => {
+        if (node === this) errors.push(new NodeTypeUsedMultipleTimesError(node))
+      })
+    return errors
+  }
+  get scopeErrors() {
+    let errors = []
+    if (this.getDefinition().isSingle) errors = errors.concat(this.singleNodeUsedTwiceErrors)
+    const { requiredNodeErrors } = this
+    if (requiredNodeErrors.length) errors = errors.concat(requiredNodeErrors)
+    return errors
+  }
+  getErrors() {
+    return this.cellErrors.concat(this.scopeErrors)
   }
   _getParsedCells() {
     return this.getDefinition()
@@ -4684,6 +4698,9 @@ ${properties.join("\n")}
   }
   _getId() {
     return this.getWord(0)
+  }
+  get id() {
+    return this._getId()
   }
   _getIdWithoutSuffix() {
     return this._getId().replace(HandGrammarProgram.nodeTypeSuffixRegex, "")

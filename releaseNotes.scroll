@@ -4,6 +4,10 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 53.7.1 2022-07-20
+list
+ - 🏥 Designer: shows root level required and dupe use errors
+
 section 53.7.0 2022-07-20
 list
  - 🎉 Grammar: `single` keyword in a parent nodeType now propogates to child nodeTypes

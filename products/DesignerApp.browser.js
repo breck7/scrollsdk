@@ -242,7 +242,7 @@ class DesignerApp extends AbstractTreeComponent {
     const programConstructor = this._getGrammarConstructor()
     const that = this
     this.program = new programConstructor(code)
-    const errs = this.program.getAllErrors()
+    const errs = this.program.scopeErrors.concat(this.program.getAllErrors())
     willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new jtree.TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
     const cursor = this.codeInstance.getCursor()
     // todo: what if 2 errors?

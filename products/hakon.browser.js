@@ -16,9 +16,7 @@
         .map(child => child.compile())
         .join("")
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang hakon
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang hakon
 anyCell
 keywordCell
 commentKeywordCell
@@ -119,7 +117,8 @@ selectorNode
   }\\n\`
   }
  cells selectorCell`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

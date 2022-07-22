@@ -31,9 +31,7 @@
       files[filepath] = testBlocks
       return files
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang swarm
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang swarm
 todo Add comments?
 todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
@@ -362,7 +360,8 @@ todoNode
  catchAllNodeType todoNode
  crux todo
  cells todoKeywordCell`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

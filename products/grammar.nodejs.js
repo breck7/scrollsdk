@@ -10,9 +10,7 @@
         [{ regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode }, { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }]
       )
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang grammar
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang grammar
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
@@ -366,7 +364,7 @@ nodeTypeDefinitionNode
  pattern ^[a-zA-Z0-9_]+Node$
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
- inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode extendsNodeTypeNode
+ inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode
  cells nodeTypeIdCell
 _extendsJsClassNode
  extends abstractNodeTypeRuleNode
@@ -410,7 +408,8 @@ extendsCellTypeNode
  todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell cellTypeIdCell
  single`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

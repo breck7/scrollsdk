@@ -29,9 +29,7 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang poop
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang poop
 dateIntCell
  highlightScope constant.numeric.integer
 monthIntCell
@@ -146,7 +144,8 @@ dayNode
     .trim()
     .replace(/ /g, "/")
   }`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

@@ -21,9 +21,7 @@
     execute() {
       return this.map(child => child.execute())
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang numbers
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang numbers
 floatCell
 commentCell
  highlightScope comment
@@ -99,7 +97,8 @@ errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
  cells errorCell`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

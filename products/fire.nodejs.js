@@ -54,9 +54,7 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang fire
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang fire
 todo Explore best ways to add polymorphism
 anyCell
 booleanCell
@@ -405,7 +403,8 @@ errorNode
  baseNodeType errorNode
  compiler
   stringTemplate // error`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

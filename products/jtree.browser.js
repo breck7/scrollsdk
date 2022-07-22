@@ -5116,10 +5116,12 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     map[GrammarConstants.todoComment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
+  // Note: this is some so far unavoidable tricky code. We need to eval the transpiled JS, in a NodeJS or browser environment.
   _compileAndEvalGrammar() {
     if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = TreeUtils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
     else {
-      const code = this.toNodeJsJavascript(__dirname + "/../index.js")
+      const path = require("path")
+      const code = this.toNodeJsJavascript(path.join(__dirname, "..", "index.js"))
       try {
         const rootNode = this._requireInVmNodeJsRootNodeTypeConstructor(code)
         this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
@@ -5201,9 +5203,11 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   }
   _requireInVmNodeJsRootNodeTypeConstructor(code) {
     const vm = require("vm")
+    const path = require("path")
+    const jtreePath = path.join(__dirname, "..", "index.js")
     // todo: cleanup up
     try {
-      global.jtree = require(__dirname + "/../index.js")
+      global.jtree = require(jtreePath)
       global.require = require
       global.__dirname = this._dirName
       global.module = {}
@@ -5212,6 +5216,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
       // todo: figure out best error pattern here for debugging
       console.log(`Error in compiled grammar code for language "${this.getGrammarName()}"`)
       // console.log(new TreeNode(code).toStringWithLineNumbers())
+      console.log(`jtreePath: "${jtreePath}"`)
       console.log(err)
       throw err
     }
@@ -5429,8 +5434,8 @@ ${testCode}`
           .join(",")
       : this.getExtensionName()
   }
-  toNodeJsJavascript(jtreePath = "jtree") {
-    return this._rootNodeDefToJavascriptClass(jtreePath, true).trim()
+  toNodeJsJavascript(normalizedJtreePath = "jtree") {
+    return this._rootNodeDefToJavascriptClass(normalizedJtreePath, true).trim()
   }
   toBrowserJavascript() {
     return this._rootNodeDefToJavascriptClass("", false).trim()
@@ -5438,7 +5443,7 @@ ${testCode}`
   _getProperName() {
     return TreeUtils.ucfirst(this.getExtensionName())
   }
-  _rootNodeDefToJavascriptClass(jtreePath, forNodeJs = true) {
+  _rootNodeDefToJavascriptClass(normalizedJtreePath, forNodeJs = true) {
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
@@ -5455,7 +5460,7 @@ ${rootName}`
     }
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
-${forNodeJs ? `const {jtree} = require("${jtreePath}")` : ""}
+${forNodeJs ? `const {jtree} = require("${normalizedJtreePath.replace(/\\/g, "\\\\")}")` : ""}
 ${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${nodeTypeClasses}
 

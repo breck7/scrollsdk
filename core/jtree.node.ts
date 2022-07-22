@@ -1,4 +1,5 @@
 const fs = require("fs")
+const path = require("path")
 
 import { jtree } from "./jtree"
 import { treeNotationTypes } from "../products/treeNotationTypes"
@@ -19,7 +20,7 @@ class jtreeNode extends jtree {
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true, pathToJtree = __dirname + "/../index.js") {
+  static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true, pathToJtree = path.join(__dirname, "..", "index.js")) {
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, pathToJtree)
   }
 
@@ -39,7 +40,7 @@ class jtreeNode extends jtree {
     return true
   }
 
-  private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean, pathToJtree?: string) {
+  private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean, pathToJtree?: treeNotationTypes.requirePath) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new HandGrammarProgram(grammarCode.toString())

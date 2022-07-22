@@ -70,6 +70,7 @@ namespace treeNotationTypes {
   export declare type firstWord = word
   export declare type triInt = int // -1 0 1
   export declare type filepath = string
+  export declare type requirePath = string // something that could go in a "require" statement
   export declare type url = string
   export declare type typeScriptFilePath = filepath
   export declare type treeProgramFilePath = filepath

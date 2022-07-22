@@ -18,9 +18,7 @@
       const res = super.compile()
       return JSON.stringify(JSON.parse(res), null, 2)
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dug
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dug
 todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 anyCell
@@ -46,31 +44,27 @@ dugNode
 abstractValueNode
  cells keywordCell
  abstract
+ cruxFromId
 nullNode
  compiler
   stringTemplate null
  extends abstractValueNode
- crux null
 numberNode
- crux number
  extends abstractValueNode
  cells keywordCell numberCell
  compiler
   stringTemplate {numberCell}
 stringNode
- crux string
  catchAllCellType stringCell
  compiler
   stringTemplate "{stringCell}"
  extends abstractValueNode
 booleanNode
- crux boolean
  extends abstractValueNode
  cells keywordCell booleanCell
  compiler
   stringTemplate {booleanCell}
 objectNode
- crux object
  catchAllNodeType memberNode
  extends abstractValueNode
  compiler
@@ -79,7 +73,6 @@ objectNode
   openChildren {
   closeChildren }
 arrayNode
- crux array
  extends abstractValueNode
  inScope abstractValueNode
  compiler
@@ -94,7 +87,8 @@ memberNode
  cells stringCell
 errorNode
  baseNodeType errorNode`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

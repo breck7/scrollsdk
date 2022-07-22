@@ -24,9 +24,7 @@
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dumbdown
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dumbdown
 anyCell
 blankCell
 dashCell
@@ -159,7 +157,8 @@ quickParagraphNode
  catchAllCellType textCell
  compiler
   stringTemplate <p>{textCell}</p>`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

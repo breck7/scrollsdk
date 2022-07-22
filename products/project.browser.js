@@ -72,9 +72,7 @@ ${missing.join("\n")}
       })
       return requiredFileList.toString()
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang project
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang project
 anyCell
 filepathCell
  highlightScope string
@@ -195,7 +193,8 @@ fileNode
   }
  cells fileConstantCell
  crux file`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

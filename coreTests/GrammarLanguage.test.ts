@@ -6,21 +6,21 @@ const { jtree } = require("../index.js")
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { Disk } = require("../products/Disk.node.js")
+const path = require("path")
 
 const HandGrammarProgram = jtree.HandGrammarProgram
-const jibberishRootDir = __dirname + "/../langs/jibberish/"
-
-const numbersPath = __dirname + "/../langs/numbers/numbers.grammar"
+const jibberishRootDir = path.normalize(__dirname + "/../langs/jibberish/")
+const numbersPath = path.normalize(__dirname + "/../langs/numbers/numbers.grammar")
 const numbersGrammar = Disk.read(numbersPath)
-const arrowPath = __dirname + "/../langs/arrow/arrow.grammar"
+const arrowPath = path.normalize(__dirname + "/../langs/arrow/arrow.grammar")
 const arrowGrammar = Disk.read(arrowPath)
-const hakonPath = __dirname + "/../langs/hakon/hakon.grammar"
+const hakonPath = path.normalize(__dirname + "/../langs/hakon/hakon.grammar")
 const hakonGrammar = Disk.read(hakonPath)
-const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
+const grammarGrammarPath = path.normalize(__dirname + "/../langs/grammar/grammar.grammar")
 const grammarGrammar = Disk.read(grammarGrammarPath)
 const jibberishGrammarPath = jibberishRootDir + "jibberish.grammar"
 const jibberishGrammarCode = Disk.read(jibberishGrammarPath)
-const poopGrammarPath = __dirname + "/../langs/poop/poop.grammar"
+const poopGrammarPath = path.normalize(__dirname + "/../langs/poop/poop.grammar")
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -56,7 +56,7 @@ const makePoopProgram = (code: string) => {
   return makeProgram(grammarCode, code)
 }
 
-const makeIrisProgram = (code: string) => makeProgram(Disk.read(__dirname + "/../langs/iris/iris.grammar"), code)
+const makeIrisProgram = (code: string) => makeProgram(Disk.read(path.normalize(__dirname + "/../langs/iris/iris.grammar")), code)
 
 const makeNumbersProgram = (code: string) => makeProgram(numbersGrammar, code)
 
@@ -96,7 +96,7 @@ testTree.trainAndPredict = equal => {
 
 testTree.jibberish = equal => {
   // Arrange
-  const sampleJibberishCode = Disk.read(jibberishRootDir + "sample.jibberish")
+  const sampleJibberishCode = Disk.read(path.join(jibberishRootDir + "sample.jibberish"))
 
   // Act
   const program = makeJibberishProgram(sampleJibberishCode)
@@ -180,12 +180,12 @@ missing2 true`)
   )
 }
 
-const langs = Disk.dir(__dirname + `/../langs/`)
+const langs = Disk.dir(path.normalize(__dirname + `/../langs/`))
 langs.forEach((lang: string) => {
-  const folder = `${__dirname}/../langs/${lang}`
+  const folder = path.normalize(`${__dirname}/../langs/${lang}`)
   if (!Disk.isDir(folder)) return
   testTree[`${lang}SimTest`] = equal => {
-    const grammarCode = Disk.read(`${folder}/${lang}.grammar`)
+    const grammarCode = Disk.read(path.normalize(`${folder}/${lang}.grammar`))
     const grammarProgram = new jtree.HandGrammarProgram(grammarCode)
     const programConstructor = grammarProgram.compileAndReturnRootConstructor()
 

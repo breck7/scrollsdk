@@ -127,9 +127,7 @@
     _getHtmlJoinByCharacter() {
       return ""
     }
-    getHandGrammarProgram() {
-      if (!this._cachedHandGrammarProgramRoot)
-        this._cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang stump
+    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang stump
 anyCell
 keywordCell
 emptyCell
@@ -396,7 +394,8 @@ bernNode
   }
   getTextContent() {return ""}
  cells bernKeywordCell`)
-      return this._cachedHandGrammarProgramRoot
+    getHandGrammarProgram() {
+      return this.constructor.cachedHandGrammarProgramRoot
     }
     static getNodeTypeMap() {
       return {

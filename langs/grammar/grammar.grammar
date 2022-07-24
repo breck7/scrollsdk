@@ -14,7 +14,7 @@ baseNodeTypesCell
  todo Remove?
  enum blobNode errorNode
  highlightScope variable.parameter
-booleanCell
+boolCell
  enum true false
  highlightScope constant.numeric
 cellParserCell
@@ -116,52 +116,49 @@ abstractCompilerRuleNode
 closeChildrenNode
  extends abstractCompilerRuleNode
  description When compiling a parent node to a string, this string is appended to the compiled and joined children. Default is blank.
- crux closeChildren
+ cruxFromId
 indentCharacterNode
  extends abstractCompilerRuleNode
  description You can change the indent character for compiled children. Default is a space.
- crux indentCharacter
+ cruxFromId
 catchAllCellDelimiterNode
  description If a node has a catchAllCell, this is the string delimiter that will be used to join those cells. Default is comma.
  extends abstractCompilerRuleNode
- crux catchAllCellDelimiter
+ cruxFromId
 openChildrenNode
  extends abstractCompilerRuleNode
  description When compiling a parent node to a string, this string is prepended to the compiled and joined children. Default is blank.
- crux openChildren
+ cruxFromId
 stringTemplateNode
  extends abstractCompilerRuleNode
  description This template string is used to compile this line, and accepts strings of the format: const var = {someCellId}
- crux stringTemplate
+ cruxFromId
 joinChildrenWithNode
  description When compiling a parent node to a string, child nodes are compiled to strings and joined by this character. Default is a newline.
  extends abstractCompilerRuleNode
- crux joinChildrenWith
+ cruxFromId
 abstractConstantNode
  abstract
  description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
  cells propertyKeywordCell
+ cruxFromId
 booleanNode
  cells propertyKeywordCell constantIdentifierCell
- catchAllCellType booleanCell
+ catchAllCellType boolCell
  extends abstractConstantNode
- crux boolean
 floatNode
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType floatCell
  extends abstractConstantNode
- crux float
 intNode
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType intCell
  extends abstractConstantNode
- crux int
 stringNode
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType stringCell
  catchAllNodeType catchAllMultilineStringConstantNode
  extends abstractConstantNode
- crux string
 abstractNodeTypeRuleNode
  abstract
  single
@@ -170,21 +167,21 @@ compilesToNode
  cells propertyKeywordCell fileExtensionCell
  extends abstractNodeTypeRuleNode
  description Optionally specify a file extension that will be used when compiling your language to a file. Generally used on nodeTypes marked root.
- crux compilesTo
+ cruxFromId
 extensionsNode
  extends abstractNodeTypeRuleNode
  catchAllCellType fileExtensionCell
  description File extensions of your language. Generally used for nodeTypes marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's nodeTypeId will be used as the default file extension.
- crux extensions
+ cruxFromId
 versionNode
  cells propertyKeywordCell semanticVersionCell
  description Version number of your language. Generally used on nodeTypes marked root.
  extends abstractNodeTypeRuleNode
- crux version
+ cruxFromId
 abstractNode
  description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
  extends abstractNodeTypeRuleNode
- crux abstract
+ cruxFromId
 abstractNonTerminalNodeTypeRuleNode
  abstract
  extends abstractNodeTypeRuleNode
@@ -192,44 +189,44 @@ baseNodeTypeNode
  cells propertyKeywordCell baseNodeTypesCell
  description In rare cases with untyped content you can use a blobNode, for now, to skip parsing for performance gains. The base errorNode will report errors when parsed. Use that if you don't want to implement your own error nodeType.
  extends abstractNodeTypeRuleNode
- crux baseNodeType
+ cruxFromId
 catchAllCellTypeNode
  cells propertyKeywordCell cellTypeIdCell
  description If there are extra words in the node's line, parse these words as this type.
  extends abstractNodeTypeRuleNode
- crux catchAllCellType
+ cruxFromId
 cellParserNode
  cells propertyKeywordCell cellParserCell
  description prefix/postfix/omnifix parsing strategy. If missing, defaults to prefix.
  extends abstractNodeTypeRuleNode
- crux cellParser
+ cruxFromId
 catchAllNodeTypeNode
  description If a nodeType is not found in the inScope list, instantiate this type of node instead.
  cells propertyKeywordCell nodeTypeIdCell
  extends abstractNodeTypeRuleNode
- crux catchAllNodeType
+ cruxFromId
 cellsNode
  catchAllCellType cellTypeIdCell
  description Describes the word type of each word in the line.
  extends abstractNodeTypeRuleNode
- crux cells
+ cruxFromId
 compilerNode
  todo Remove this and its children?
  inScope stringTemplateNode catchAllCellDelimiterNode openChildrenNode closeChildrenNode indentCharacterNode joinChildrenWithNode
  extends abstractNodeTypeRuleNode
- crux compiler
+ cruxFromId
 descriptionNode
  catchAllCellType stringCell
  todo Should we make this multiline?
  extends abstractNodeTypeRuleNode
- crux description
+ cruxFromId
 exampleNode
  todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleAnyCell
  catchAllNodeType catchAllExampleLineNode
  extends abstractNodeTypeRuleNode
- crux example
+ cruxFromId
 extendsNodeTypeNode
  crux extends
  description nodeType definitions can extend others.
@@ -240,12 +237,12 @@ frequencyNode
  todo Remove this nodeType. Switch to conditional frequencies.
  cells propertyKeywordCell floatCell
  extends abstractNodeTypeRuleNode
- crux frequency
+ cruxFromId
 inScopeNode
  description A list of possible child nodeTypes for a node.
  catchAllCellType nodeTypeIdCell
  extends abstractNodeTypeRuleNode
- crux inScope
+ cruxFromId
 javascriptNode
  todo Urgently need to get submode syntax highlighting running! (And eventually LSP)
  description Provide raw javascript code that will be inserted into a node type's class.
@@ -266,7 +263,7 @@ javascriptNode
    }
    return this
   }
- crux javascript
+ cruxFromId
 abstractParseRuleNode
  description Each node should have a pattern that it matches on unless it's a catch all node.
  abstract
@@ -287,15 +284,31 @@ patternNode
 requiredNode
  description If present, the parent node will have an error if one of these nodes is not provided.
  extends abstractNodeTypeRuleNode
- crux required
+ cruxFromId
 singleNode
- description If present and their are more than 1 of these nodes on the parent, an error will be present.
+ description If present and there are more than 1 of these nodes on the parent, an error will be present. Can be overridden by a child class by setting to false.
  extends abstractNodeTypeRuleNode
- crux single
+ cruxFromId
+ catchAllCellType boolCell
+uniqueFirstWordNode
+ description For catch all nodeTypes or pattern nodes, use this to indicate the first words should be unique.
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType boolCell
+contentKeyNode
+ description If present will serialize the node to an object and set a property with this key and the value set to the node's content.
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType stringCell
+childrenKeyNode
+ description If present will serialize the node to an object and set a property with this key and the value set to the node's children.
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType stringCell
 tagsNode
  catchAllCellType tagCell
  extends abstractNodeTypeRuleNode
- crux tags
+ cruxFromId
 catchAllErrorNode
  baseNodeType errorNode
 catchAllExampleLineNode
@@ -320,14 +333,14 @@ cellTypeDefinitionNode
 enumFromCellTypesNode
  catchAllCellType cellTypeIdCell
  cells cellPropertyNameCell
- crux enumFromCellTypes
+ cruxFromId
 enumNode
- crux enum
+ cruxFromId
  catchAllCellType enumOptionCell
  cells cellPropertyNameCell
 examplesNode
  description If the domain of possible cell values is large, such as a string type, it can help certain methods—such as program synthesis—to provide a few examples.
- crux examples
+ cruxFromId
  catchAllCellType cellExampleCell
  cells cellPropertyNameCell
 cellMinNode
@@ -342,7 +355,7 @@ highlightScopeNode
  cells propertyKeywordCell scopeNameCell
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
- crux highlightScope
+ cruxFromId
 rootFlagNode
  crux root
  description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
@@ -359,37 +372,37 @@ _extendsJsClassNode
  todo remove
  description Deprecated
  cells propertyKeywordCell anyCell
- crux _extendsJsClass
+ cruxFromId
 _rootNodeJsHeaderNode
  extends abstractNodeTypeRuleNode
  todo remove
  description Deprecated
  catchAllNodeType catchAllJavascriptCodeLineNode
- crux _rootNodeJsHeader
+ cruxFromId
 regexNode
  catchAllCellType regexCell
  description The word must match this pattern or it shall be marked as an error.
  single
  cells cellPropertyNameCell
- crux regex
+ cruxFromId
 reservedWordsNode
  single
  description A list of words that a cell cannot contain.
  catchAllCellType reservedWordCell
  cells cellPropertyNameCell
- crux reservedWords
+ cruxFromId
 todoNode
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
  catchAllCellType todoCell
  catchAllNodeType todoNode
  cells todoCell
- crux todo
+ cruxFromId
 toolingNode
  description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
  catchAllCellType toolingDirectiveCell
  catchAllNodeType toolingNode
  cells toolingDirectiveCell
- crux tooling
+ cruxFromId
 extendsCellTypeNode
  crux extends
  description cellType definitions can extend others.

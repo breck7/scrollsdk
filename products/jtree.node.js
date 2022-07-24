@@ -3375,6 +3375,9 @@ var GrammarConstants
   GrammarConstants["pattern"] = "pattern"
   GrammarConstants["inScope"] = "inScope"
   GrammarConstants["cells"] = "cells"
+  GrammarConstants["contentKey"] = "contentKey"
+  GrammarConstants["childrenKey"] = "childrenKey"
+  GrammarConstants["uniqueFirstWord"] = "uniqueFirstWord"
   GrammarConstants["catchAllCellType"] = "catchAllCellType"
   GrammarConstants["cellParser"] = "cellParser"
   GrammarConstants["catchAllNodeType"] = "catchAllNodeType"
@@ -3423,8 +3426,12 @@ class GrammarBackedNode extends TreeNode {
     const hits = columns.filter(colDef => this.has(colDef.columnName))
     const values = hits.map(colDef => {
       const node = this.getNode(colDef.columnName)
-      const content = node.getContent()
-      return colDef.type === SQLiteTypes.text ? `"${content}"` : content
+      let content = node.getContent()
+      const hasChildren = node.length
+      const isText = colDef.type === SQLiteTypes.text
+      if (content && hasChildren) content = node.getContentWithChildren().replace(/\n/g, "\\n")
+      else if (hasChildren) content = node.childrenToString().replace(/\n/g, "\\n")
+      return isText || hasChildren ? `"${content}"` : content
     })
     hits.unshift({ columnName: "id", type: SQLiteTypes.text })
     values.unshift(`"${primaryKeyFunction(this)}"`)
@@ -3772,6 +3779,63 @@ class GrammarBackedNode extends TreeNode {
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
     return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
   }
+  get contentKey() {
+    return this.getDefinition()._getFromExtended(GrammarConstants.contentKey)
+  }
+  get childrenKey() {
+    return this.getDefinition()._getFromExtended(GrammarConstants.childrenKey)
+  }
+  get childrenAreTextBlob() {
+    return this.getDefinition()._isBlobNodeType()
+  }
+  get isArrayElement() {
+    return this.getDefinition()._hasFromExtended(GrammarConstants.uniqueFirstWord) ? false : !this.getDefinition().isSingle
+  }
+  get typedContent() {
+    const cells = this._getParsedCells()
+    if (cells.length === 2) return cells[1].getParsed()
+    return this.getContent()
+  }
+  get typedTuple() {
+    const key = this.getFirstWord()
+    const { typedContent } = this
+    const hasChildren = this.length > 0
+    const hasChildrenNoContent = typedContent === undefined && hasChildren
+    const hasChildrenAndContent = typedContent !== undefined && hasChildren
+    const shouldReturnValueAsObject = hasChildrenNoContent
+    if (this.contentKey || this.childrenKey) {
+      let obj = {}
+      if (this.childrenKey) obj[this.childrenKey] = this.childrenToString()
+      else obj = this.typedMap
+      if (this.contentKey) obj[this.contentKey] = typedContent
+      return [key, obj]
+    }
+    if (this.childrenAreTextBlob) return [key, this.childrenToString()]
+    if (shouldReturnValueAsObject) return [key, this.typedMap]
+    const shouldReturnValueAsContentPlusChildren = hasChildrenAndContent
+    // If the node has a content and a subtree return it as a string, as
+    // Javascript object values can't be both a leaf and a tree.
+    if (shouldReturnValueAsContentPlusChildren) return [key, this.getContentWithChildren()]
+    return [key, typedContent]
+  }
+  get _shouldSerialize() {
+    const should = this.shouldSerialize
+    return should === undefined ? true : should
+  }
+  get typedMap() {
+    const obj = {}
+    this.forEach(node => {
+      if (!node._shouldSerialize) return true
+      const tuple = node.typedTuple
+      if (!node.isArrayElement) obj[tuple[0]] = tuple[1]
+      else {
+        if (!obj[tuple[0]]) obj[tuple[0]] = []
+        obj[tuple[0]].push(tuple[1])
+      }
+    })
+    return obj
+  }
+  fromTypedMap() {}
   compile() {
     if (this.isRoot()) return super.compile()
     const def = this.getDefinition()
@@ -4013,6 +4077,9 @@ class GrammarBoolCell extends AbstractGrammarBackedCell {
     const word = this.getWord()
     const str = word.toLowerCase()
     return this._trues.has(str) || this._falses.has(str)
+  }
+  getSQLiteType() {
+    return SQLiteTypes.integer
   }
   _synthesizeCell() {
     return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
@@ -4606,6 +4673,9 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.tags,
       GrammarConstants.crux,
       GrammarConstants.cruxFromId,
+      GrammarConstants.contentKey,
+      GrammarConstants.childrenKey,
+      GrammarConstants.uniqueFirstWord,
       GrammarConstants.pattern,
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
@@ -4662,11 +4732,13 @@ ${properties.join("\n")}
     return this.getFrom(`${GrammarConstantsConstantTypes.string} ${GrammarConstantsMisc.tableName}`)
   }
   getSQLiteTableColumns() {
-    return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds()).map(node => {
-      const firstNonKeywordCellType = node.getCellParser().getCellArray()[1]
-      const type = firstNonKeywordCellType ? firstNonKeywordCellType.getSQLiteType() : SQLiteTypes.text
+    return this._getConcreteNonErrorInScopeNodeDefinitions(this._getInScopeNodeTypeIds()).map(def => {
+      const firstNonKeywordCellType = def.getCellParser().getCellArray()[1]
+      let type = firstNonKeywordCellType ? firstNonKeywordCellType.getSQLiteType() : SQLiteTypes.text
+      // For now if it can have children serialize it as text in SQLite
+      if (!def.isTerminalNodeType()) type = SQLiteTypes.text
       return {
-        columnName: node._getIdWithoutSuffix(),
+        columnName: def._getIdWithoutSuffix(),
         type
       }
     })
@@ -4817,7 +4889,7 @@ ${properties.join("\n")}
   }
   // Should only one of these node types be present in the parent node?
   get isSingle() {
-    return this._hasFromExtended(GrammarConstants.single)
+    return this._hasFromExtended(GrammarConstants.single) && this._getFromExtended(GrammarConstants.single) !== "false"
   }
   isRequired() {
     return this._hasFromExtended(GrammarConstants.required)
@@ -4848,7 +4920,7 @@ ${properties.join("\n")}
   }
   _isBlobNodeType() {
     // Do not check extended classes. Only do once.
-    return this.get(GrammarConstants.baseNodeType) === GrammarConstants.blobNode
+    return this._getFromExtended(GrammarConstants.baseNodeType) === GrammarConstants.blobNode
   }
   _getErrorMethodToJavascript() {
     if (this._isBlobNodeType()) return "getErrors() { return [] }" // Skips parsing child nodes for perf gains.

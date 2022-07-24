@@ -1,5 +1,7 @@
 anyCell
 filenameCell
+stringCell
+boolCell
 intCell
  highlightScope constant.numeric.integer
 floatCell
@@ -12,25 +14,72 @@ planetNode
  todo Change pattern to postfix.
  pattern \.planet$
  cells filenameCell
- inScope abstractIntPropertyNode abstractFloatPropertyNode
+ inScope abstractPropertyNode
  catchAllNodeType errorNode
 errorNode
  baseNodeType errorNode
+abstractPropertyNode
+ abstract
+ cruxFromId
+ single
+abstractStringPropertyNode
+ cells keywordCell
+ catchAllCellType stringCell
+ abstract
+ extends abstractPropertyNode
+abstractBooleanPropertyNode
+ cells keywordCell boolCell
+ abstract
+ extends abstractPropertyNode
 abstractIntPropertyNode
  cells keywordCell intCell
  abstract
+ extends abstractPropertyNode
+titleNode
+ extends abstractStringPropertyNode
+descriptionNode
+ extends abstractPropertyNode
+ catchAllNodeType descriptionLineNode
+ baseNodeType blobNode
+descriptionLineNode
+ catchAllCellType stringCell
+akaNode
+ extends abstractStringPropertyNode
+ single false
 surfaceGravityNode
  extends abstractIntPropertyNode
- crux surfaceGravity
 diameterNode
  extends abstractIntPropertyNode
- crux diameter
 moonsNode
  extends abstractIntPropertyNode
- crux moons
 abstractFloatPropertyNode
  cells keywordCell floatCell
  abstract
+ extends abstractPropertyNode
 yearsToOrbitSunNode
  extends abstractFloatPropertyNode
- crux yearsToOrbitSun
+hasLifeNode
+ extends abstractBooleanPropertyNode
+explanationNode
+ baseNodeType blobNode
+ageNode
+ extends abstractIntPropertyNode
+ contentKey value
+ childrenKey description
+ catchAllNodeType explanationNode
+wikipediaPageViewsNode
+ cells keywordCell intCell
+ crux pageViews
+ single
+wikipediaNode
+ extends abstractStringPropertyNode
+ contentKey id
+ inScope wikipediaPageViewsNode
+neighborNode
+ todo Needs to be unique
+ cells stringCell intCell
+ uniqueFirstWord
+neighborsNode
+ cells keywordCell
+ extends abstractPropertyNode
+ catchAllNodeType neighborNode

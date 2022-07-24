@@ -28,6 +28,26 @@ testTree.sqlLite = (equal: any) => {
   equal(folder.toSQLite(), Disk.read(__dirname + "/planets.sql"), "sqlite works")
 }
 
+testTree.toTypedMap = (equal: any) => {
+  // Arrange
+  const folder = getFolder()
+  // Act/Assert
+  const { typedMapShort } = folder
+
+  equal(Object.values(typedMapShort).length, 8)
+  equal(typedMapShort.neptune.surfaceGravity, 11)
+  equal(typedMapShort.mercury.moons, 0)
+  equal(typedMapShort.earth.title, "Earth")
+  equal(typedMapShort.earth.neighbors.Mars, 110000000)
+  equal(typedMapShort.earth.hasLife, true)
+  equal(typedMapShort.earth.aka.length, 2)
+  equal(typedMapShort.earth.wikipedia.id, "Earth")
+  equal(typedMapShort.earth.wikipedia.pageViews, 123)
+  equal(typedMapShort.earth.age.value, 4500000000)
+  equal(typedMapShort.earth.age.description, "It was only during the 19th century that geologists realized Earth's age was at least many millions of years.")
+  equal(typedMapShort.earth.description.split("\n").length, 2)
+}
+
 testTree.fileSystemEvents = async (equal: any) => {
   // Arrange
   const folder = getFolder()

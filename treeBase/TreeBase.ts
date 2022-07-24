@@ -13,7 +13,13 @@ const TreeNode = jtree.TreeNode
 const TreeEvents = jtree.TreeEvents
 const GrammarConstants = jtree.GrammarConstants
 
+const makeId = (word: string) => TreeUtils.getFileName(TreeUtils.removeFileExtension(word))
+
 class TreeBaseFile extends TreeNode {
+  get id() {
+    return makeId(this.getWord(0))
+  }
+
   private _diskVersion: string
   setDiskVersion() {
     this._diskVersion = this.childrenToString()
@@ -179,6 +185,8 @@ class TreeBaseFolder extends TreeNode {
     return Disk.touch(this._getDir() + filename)
   }
 
+  // WARNING: Very basic support! Not fully developed.
+  // WARNING: Does not yet support having multiple tuples with the same key—will collapse those to one.
   toSQLite(): string {
     return this.toSQLiteCreateTables() + "\n\n" + this.toSQLiteInsertRows()
   }
@@ -265,6 +273,10 @@ class TreeBaseFolder extends TreeNode {
     return this.getWord(0).replace(/\/$/, "") + "/"
   }
 
+  get dir(): string {
+    return this._getDir()
+  }
+
   _getGrammarPaths() {
     return Disk.getFiles(this._getDir()).filter((file: string) => file.endsWith(GrammarConstants.grammarFileExtension))
   }
@@ -337,6 +349,15 @@ treeBaseFolderNode
  ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
 treeBaseErrorNode
  ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
+  }
+
+  get typedMapShort() {
+    const typedMap = this.toProgram().typedMap
+    const obj: treeNotationTypes.stringMap = {}
+    Object.keys(typedMap).forEach(key => {
+      obj[makeId(key)] = typedMap[key][0]
+    })
+    return obj
   }
 
   toProgram() {

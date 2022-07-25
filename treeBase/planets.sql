@@ -10,10 +10,11 @@ create table planets (
  hasLife INTEGER,
  age TEXT,
  wikipedia TEXT,
- neighbors TEXT
+ neighbors TEXT,
+ related TEXT
 );
 
-INSERT INTO planets (id,title,description,aka,surfaceGravity,diameter,moons,yearsToOrbitSun,hasLife,age,wikipedia,neighbors) VALUES ("earth","Earth","It's where\nwe live.","Planet Earth",10,12756,1,1,true,"4500000000\nIt was only during the 19th century that geologists realized Earth's age was at least many millions of years.","Earth\npageViews 123","Mars 110000000\nVenus 141000000");
+INSERT INTO planets (id,title,description,aka,surfaceGravity,diameter,moons,yearsToOrbitSun,hasLife,age,wikipedia,neighbors,related) VALUES ("earth","Earth","It's where\nwe live.","Planet Earth",10,12756,1,1,true,"4500000000\nIt was only during the 19th century that geologists realized Earth's age was at least many millions of years.","Earth\npageViews 123","Mars 110000000\nVenus 141000000","mars & venus");
 INSERT INTO planets (id,surfaceGravity,diameter,moons,yearsToOrbitSun) VALUES ("jupiter",25,142984,63,11.86);
 INSERT INTO planets (id,surfaceGravity,diameter,moons,yearsToOrbitSun) VALUES ("mars",4,6794,2,1.881);
 INSERT INTO planets (id,surfaceGravity,diameter,moons,yearsToOrbitSun) VALUES ("mercury",4,4879,0,0.241);

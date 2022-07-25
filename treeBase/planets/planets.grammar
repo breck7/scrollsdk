@@ -83,3 +83,6 @@ neighborsNode
  cells keywordCell
  extends abstractPropertyNode
  catchAllNodeType neighborNode
+relatedNode
+ extends abstractStringPropertyNode
+ contentDelimiter  & 

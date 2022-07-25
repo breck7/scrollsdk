@@ -46,6 +46,7 @@ testTree.toTypedMap = (equal: any) => {
   equal(typedMapShort.earth.age.value, 4500000000)
   equal(typedMapShort.earth.age.description, "It was only during the 19th century that geologists realized Earth's age was at least many millions of years.")
   equal(typedMapShort.earth.description.split("\n").length, 2)
+  equal(typedMapShort.earth.related[1], "venus")
 }
 
 testTree.fileSystemEvents = async (equal: any) => {

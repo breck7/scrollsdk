@@ -295,6 +295,11 @@ uniqueFirstWordNode
  extends abstractNodeTypeRuleNode
  cruxFromId
  catchAllCellType boolCell
+contentDelimiterNode
+ description If present will serialize the content of the node to an array of strings split on the provided delimiter.
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType stringCell
 contentKeyNode
  description If present will serialize the node to an object and set a property with this key and the value set to the node's content.
  extends abstractNodeTypeRuleNode

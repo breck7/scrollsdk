@@ -304,6 +304,11 @@ uniqueFirstWordNode
  extends abstractNodeTypeRuleNode
  cruxFromId
  catchAllCellType boolCell
+contentDelimiterNode
+ description If present will serialize the content of the node to an array of strings split on the provided delimiter.
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType stringCell
 contentKeyNode
  description If present will serialize the node to an object and set a property with this key and the value set to the node's content.
  extends abstractNodeTypeRuleNode
@@ -461,6 +466,7 @@ extendsCellTypeNode
         requiredNode: requiredNode,
         singleNode: singleNode,
         uniqueFirstWordNode: uniqueFirstWordNode,
+        contentDelimiterNode: contentDelimiterNode,
         contentKeyNode: contentKeyNode,
         childrenKeyNode: childrenKeyNode,
         tagsNode: tagsNode,
@@ -755,6 +761,12 @@ extendsCellTypeNode
     }
   }
 
+  class contentDelimiterNode extends abstractNodeTypeRuleNode {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
   class contentKeyNode extends abstractNodeTypeRuleNode {
     get stringCell() {
       return this.getWordsFrom(0)
@@ -928,6 +940,7 @@ extendsCellTypeNode
           required: requiredNode,
           single: singleNode,
           uniqueFirstWord: uniqueFirstWordNode,
+          contentDelimiter: contentDelimiterNode,
           contentKey: contentKeyNode,
           childrenKey: childrenKeyNode,
           tags: tagsNode,

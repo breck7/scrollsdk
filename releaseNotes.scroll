@@ -4,6 +4,10 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 54.1.0 2022-07-25
+list
+ - 🎉 Grammar: contentDelimiter property
+
 section 54.0.0 2022-07-24
 list
  - 🎉 TreeBase: typedMapShort, id, and dir

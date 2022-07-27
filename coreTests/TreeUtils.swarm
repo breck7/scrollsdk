@@ -34,6 +34,9 @@ test getRandomString
 test linkify
  linkify http://cnn.com
   assertStringIs <a href="http://cnn.com" target="_blank">http://cnn.com</a>
+test linkifyParens
+ linkify http://wikipedia.com/wiki/foo_(ProgLang)
+  assertStringIs <a href="http://wikipedia.com/wiki/foo_(ProgLang)" target="_blank">http://wikipedia.com/wiki/foo_(ProgLang)</a>
 test removeFileExtension
  removeFileExtension foobar.csv
   assertStringIs foobar

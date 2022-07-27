@@ -482,17 +482,17 @@ class TreeUtils {
 }
 TreeUtils.Timer = Timer
 //http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links#21925491
-TreeUtils.linkify = text => {
+TreeUtils.linkify = (text, target = "_blank") => {
   let replacedText
   let replacePattern1
   let replacePattern2
   let replacePattern3
   //URLs starting with http://, https://, or ftp://
-  replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/gim
-  replacedText = text.replace(replacePattern1, '<a href="$1" target="_blank">$1</a>')
+  replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z\(\)0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+\(\)&@#\/%=~_|])/gim
+  replacedText = text.replace(replacePattern1, `<a href="$1" target="${target}">$1</a>`)
   //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
   replacePattern2 = /(^|[^\/])(www\.[\S]+(\b|$))/gim
-  replacedText = replacedText.replace(replacePattern2, '$1<a href="http://$2" target="_blank">$2</a>')
+  replacedText = replacedText.replace(replacePattern2, `$1<a href="http://$2" target="${target}">$2</a>`)
   //Change email addresses to mailto:: links.
   replacePattern3 = /(([a-zA-Z0-9\-\_\.])+@[a-zA-Z\_]+?(\.[a-zA-Z]{2,6})+)/gim
   replacedText = replacedText.replace(replacePattern3, '<a href="mailto:$1">$1</a>')
@@ -3211,7 +3211,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "54.2.0"
+TreeNode.getVersion = () => "54.2.1"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

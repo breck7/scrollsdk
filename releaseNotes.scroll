@@ -4,6 +4,10 @@ skipIndexPage
 paragraph
  Here's a list of the notable changes in JTree.
 
+section 54.2.0 2022-07-27
+list
+ - 🎉 CLI: added serve command
+
 section 54.1.0 2022-07-25
 list
  - 🎉 Grammar: contentDelimiter property

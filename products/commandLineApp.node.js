@@ -3,11 +3,12 @@
 const recursiveReadSync = require("recursive-readdir-sync")
 const homedir = require("os").homedir
 const { execSync } = require("child_process")
+const path = require("path")
 const { jtree } = require("../index.js")
 const { TreeNode, HandGrammarProgram, Utils } = jtree
 const { Disk } = require("../products/Disk.node.js")
 class CommandLineApp {
-  constructor(grammarsPath = homedir() + "/grammars.ssv", cwd = process.cwd()) {
+  constructor(grammarsPath = path.join(homedir(), "grammars.ssv"), cwd = process.cwd()) {
     this._grammarsPath = grammarsPath
     Disk.createFileIfDoesNotExist(grammarsPath, "name filepath")
     this._reload() // todo: cleanup
@@ -283,13 +284,19 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   version() {
     return `jtree version ${jtree.getVersion()} installed at ${__filename}`
   }
+  serve(port = 3030, folder = this._cwd) {
+    const express = require("express")
+    const app = express()
+    app.use(express.static(folder))
+    app.listen(port)
+    console.log(`Serving '${folder}'. cmd+dblclick: http://localhost:${port}/`)
+  }
   _getAllCommands() {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this))
       .filter(word => !word.startsWith("_") && word !== "constructor")
       .sort()
   }
   stamp(providedPath) {
-    const path = require("path")
     const stamp = require("../products/stamp.nodejs.js")
     const getAbsPath = input => (input.startsWith("/") ? input : path.resolve(this._cwd + "/" + input))
     const providedPathWithoutEndingSlash = providedPath && providedPath.replace(/\/$/, "")

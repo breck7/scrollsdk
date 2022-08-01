@@ -1,7 +1,7 @@
 title Release Notes
 skipIndexPage
 
-paragraph
+aftertext
  Here's a list of the notable changes in JTree.
 
 section 54.2.1 2022-07-27
@@ -745,7 +745,7 @@ list
  - ⚠️ no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
  - ⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 
-paragraph
+aftertext
  A regex for finding breaks in untyped code:
 
 regexCode
@@ -802,7 +802,7 @@ list
  - ⚠️ in Swarm, createTestDummy is now getTestSubject
  - ⚠️ Swarm grammar changed.
 
-paragraph
+aftertext
  Use code below to update programs:
 
 code

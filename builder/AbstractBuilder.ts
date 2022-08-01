@@ -1,8 +1,7 @@
 //onsave jtree build produce AbstractBuilder.node.js
 
 const fs = require("fs")
-const { exec, execSync } = require("child_process")
-const recursiveReadSync = require("recursive-readdir-sync")
+const { execSync } = require("child_process")
 const express = require("express")
 
 const { jtree } = require("../index.js")
@@ -71,7 +70,7 @@ class AbstractBuilder extends jtree.TreeNode {
     Disk.write(outputFilePath, this._typeScriptToJavascript(sourceCode, forBrowser))
   }
 
-  private _startServer(port: treeNotationTypes.portNumber, folder: string) {
+  protected _startServer(port: treeNotationTypes.portNumber, folder: string) {
     const app = express()
     app.listen(port, () => {
       console.log(`Running builder. cmd+dblclick: http://localhost:${port}/`)
@@ -122,7 +121,7 @@ class AbstractBuilder extends jtree.TreeNode {
     }
   }
 
-  private _fsWatchers: any
+  protected _fsWatchers: any
   private _startListeningForFileChanges(folder: string) {
     const projectFolders = [folder] // todo
 

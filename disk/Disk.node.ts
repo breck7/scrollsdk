@@ -1,4 +1,5 @@
 const fs = require("fs")
+const path = require("path")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
@@ -14,7 +15,7 @@ class Disk {
   static mkdir = (path: treeNotationTypes.filepath) => require("mkdirp").sync(path)
   static getRecursive = (path: treeNotationTypes.filepath) => require("recursive-readdir-sync")(path)
   static readJson = (path: treeNotationTypes.filepath) => JSON.parse(Disk.read(path))
-  static getFileNameWithoutExtension = (path: treeNotationTypes.filepath) => Disk.getFileName(path).replace(/\.[^\.]+$/, "")
+  static getFileNameWithoutExtension = (filepath: treeNotationTypes.filepath) => path.parse(filepath).name
   static write = (path: treeNotationTypes.filepath, content: string) => fs.writeFileSync(path, content, "utf8")
   static writeJson = (path: treeNotationTypes.filepath, content: any) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
   static createFileIfDoesNotExist = (path: treeNotationTypes.filepath, initialString = "") => {
@@ -22,11 +23,11 @@ class Disk {
   }
   static exists = (path: treeNotationTypes.filepath) => fs.existsSync(path)
   static dir = (dir: treeNotationTypes.absoluteFolderPath) => fs.readdirSync(dir).filter((file: treeNotationTypes.filepath) => file !== ".DS_Store")
-  static getFullPaths = (dir: treeNotationTypes.absoluteFolderPath) => Disk.dir(dir).map((file: treeNotationTypes.filepath) => dir.replace(/\/$/, "") + "/" + file)
+  static getFullPaths = (dir: treeNotationTypes.absoluteFolderPath) => Disk.dir(dir).map((file: treeNotationTypes.filepath) => path.join(dir, file))
   static getFiles = (dir: treeNotationTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isFile())
   static getFolders = (dir: treeNotationTypes.absoluteFolderPath) => Disk.getFullPaths(dir).filter((file: treeNotationTypes.filepath) => fs.statSync(file).isDirectory())
   static isDir = (path: treeNotationTypes.absoluteFilePath) => fs.statSync(path).isDirectory()
-  static getFileName = (path: treeNotationTypes.filepath) => path.split("/").pop()
+  static getFileName = (fileName: treeNotationTypes.filepath) => path.parse(fileName).base
   static append = (path: treeNotationTypes.filepath, content: string) => fs.appendFileSync(path, content, "utf8")
   static appendAsync = (path: treeNotationTypes.filepath, content: string, callback: Function) => fs.appendFile(path, content, "utf8", callback)
   static readCsvAsTree = (path: treeNotationTypes.filepath) => Disk.getTreeNode().fromCsv(Disk.read(path))
@@ -79,6 +80,7 @@ class Disk {
       } else map[val] = node
     })
   }
+  // todo: remove.
   static getLastFolderName = (path: treeNotationTypes.filepath) => {
     const parts = path.replace(/\/$/, "").split("/")
     const last = parts.pop()

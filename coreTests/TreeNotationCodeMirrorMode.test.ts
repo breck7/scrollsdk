@@ -12,14 +12,6 @@ const { jtree } = require("../index.js")
 const irisPath = __dirname + "/../langs/iris/iris.grammar"
 const irisGrammar = Disk.read(irisPath)
 
-const makeProgram = (grammarCode: string, code: string) => {
-  const grammarProgram = new jtree.HandGrammarProgram(grammarCode)
-  const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
-  return new rootProgramConstructor(code)
-}
-
-const makeIrisProgram = (code: string) => makeProgram(irisGrammar, code)
-
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode

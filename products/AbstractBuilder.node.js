@@ -1,7 +1,6 @@
 //onsave jtree build produce AbstractBuilder.node.js
 const fs = require("fs")
-const { exec, execSync } = require("child_process")
-const recursiveReadSync = require("recursive-readdir-sync")
+const { execSync } = require("child_process")
 const express = require("express")
 const { jtree } = require("../index.js")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")

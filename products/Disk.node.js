@@ -1,4 +1,5 @@
 const fs = require("fs")
+const path = require("path")
 class Disk {}
 Disk.getTreeNode = () => require("../index.js").jtree.TreeNode // todo: cleanup
 Disk.rm = path => fs.unlinkSync(path)
@@ -11,7 +12,7 @@ Disk.copy = (source, destination) => Disk.write(destination, Disk.read(source))
 Disk.mkdir = path => require("mkdirp").sync(path)
 Disk.getRecursive = path => require("recursive-readdir-sync")(path)
 Disk.readJson = path => JSON.parse(Disk.read(path))
-Disk.getFileNameWithoutExtension = path => Disk.getFileName(path).replace(/\.[^\.]+$/, "")
+Disk.getFileNameWithoutExtension = filepath => path.parse(filepath).name
 Disk.write = (path, content) => fs.writeFileSync(path, content, "utf8")
 Disk.writeJson = (path, content) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
 Disk.createFileIfDoesNotExist = (path, initialString = "") => {
@@ -19,11 +20,11 @@ Disk.createFileIfDoesNotExist = (path, initialString = "") => {
 }
 Disk.exists = path => fs.existsSync(path)
 Disk.dir = dir => fs.readdirSync(dir).filter(file => file !== ".DS_Store")
-Disk.getFullPaths = dir => Disk.dir(dir).map(file => dir.replace(/\/$/, "") + "/" + file)
+Disk.getFullPaths = dir => Disk.dir(dir).map(file => path.join(dir, file))
 Disk.getFiles = dir => Disk.getFullPaths(dir).filter(file => fs.statSync(file).isFile())
 Disk.getFolders = dir => Disk.getFullPaths(dir).filter(file => fs.statSync(file).isDirectory())
 Disk.isDir = path => fs.statSync(path).isDirectory()
-Disk.getFileName = path => path.split("/").pop()
+Disk.getFileName = fileName => path.parse(fileName).base
 Disk.append = (path, content) => fs.appendFileSync(path, content, "utf8")
 Disk.appendAsync = (path, content, callback) => fs.appendFile(path, content, "utf8", callback)
 Disk.readCsvAsTree = path => Disk.getTreeNode().fromCsv(Disk.read(path))
@@ -76,6 +77,7 @@ Disk.deleteDuplicates = (node, prop1, prop2, reverse = false) => {
     } else map[val] = node
   })
 }
+// todo: remove.
 Disk.getLastFolderName = path => {
   const parts = path.replace(/\/$/, "").split("/")
   const last = parts.pop()

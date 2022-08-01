@@ -1,6 +1,7 @@
 //onsave jtree build produce treeBase.node.js
 const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
+const path = require("path")
 const fs = require("fs")
 const HandGrammarProgram = jtree.HandGrammarProgram
 const TreeUtils = jtree.Utils
@@ -70,6 +71,7 @@ class TreeBaseServer {
     return this
   }
   indexCommand(routes) {
+    const folder = this._folder
     const links = routes.map(path => `<a href="${path}">${path}</a>`) // get all the paths
     return `<style>body {
      font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
@@ -80,18 +82,19 @@ class TreeBaseServer {
    }h1 {font-size: 1.2em; margin: 0;}</style>
      <h1>TreeBaseServer running:</h1>
     <div style="white-space:pre;">
--- Folder: '${this._folder._getDir()}'
--- Grammars: '${this._folder._getGrammarPaths().join(",")}'
--- Files: ${this._folder.length}
--- Bytes: ${this._folder.toString().length}
+-- Folder: '${folder.dir}'
+-- Grammars: '${folder.grammarFilePaths.join(",")}'
+-- Files: ${folder.length}
+-- Bytes: ${folder.toString().length}
 -- Routes: ${links.join("\n ")}</div>`
   }
   errorsToHtmlCommand() {
+    const folder = this._folder
     const timer = new TreeUtils.Timer()
     let end = timer.tick("Loaded collection....")
-    let lines = this._folder.getNumberOfLines()
+    let lines = folder.getNumberOfLines()
     let lps = lines / (end / 1000)
-    const errors = this._folder.toProgram().getAllErrors()
+    const errors = folder.toProgram().getAllErrors()
     return `Total errors: ${errors.length}\n${errors.join("\n")}`
   }
   errorsToCsvCommand() {
@@ -111,7 +114,6 @@ class TreeBaseServer {
       .map(route => route.route.path)
   }
   _createExpressApp() {
-    const path = require("path")
     const express = require("express")
     const bodyParser = require("body-parser")
     const app = express()
@@ -127,7 +129,7 @@ class TreeBaseServer {
     app.get("/list.html", (req, res) => res.send(this.listAllFilesCommand()))
     app.get("/", (req, res) => res.send(this.indexCommand(this._getRoutes(app))))
     app.use(
-      express.static(this._folder._getDir(), {
+      express.static(this._folder.dir, {
         setHeaders: (res, requestPath) => {
           res.setHeader("Content-Type", "text/plain")
         }
@@ -147,10 +149,12 @@ class TreeBaseFolder extends TreeNode {
   constructor() {
     super(...arguments)
     this._isLoaded = false
+    this.grammarCode = this.grammarFilePaths.map(Disk.read).join("\n")
+    this.grammarProgramConstructor = new HandGrammarProgram(this.grammarCode).compileAndReturnRootConstructor()
   }
   touch(filename) {
     // todo: throw if its a folder path, has wrong file extension, or other invalid
-    return Disk.touch(this._getDir() + filename)
+    return Disk.touch(path.join(this.dir, filename))
   }
   // WARNING: Very basic support! Not fully developed.
   // WARNING: Does not yet support having multiple tuples with the same key—will collapse those to one.
@@ -159,7 +163,7 @@ class TreeBaseFolder extends TreeNode {
   }
   toSQLiteCreateTables() {
     this.loadFolder()
-    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
+    const grammarProgram = new HandGrammarProgram(this.grammarCode)
     const tableDefinitionNodes = grammarProgram.filter(node => node.getTableNameIfAny && node.getTableNameIfAny())
     // todo: filter out root root
     return tableDefinitionNodes.map(node => node.toSQLiteTableSchema()).join("\n")
@@ -220,6 +224,7 @@ class TreeBaseFolder extends TreeNode {
     }
     return totalErrors
   }
+  // todo: remove
   _getDir() {
     // todo: cache?
     return this.getWord(0).replace(/\/$/, "") + "/"
@@ -227,8 +232,11 @@ class TreeBaseFolder extends TreeNode {
   get dir() {
     return this._getDir()
   }
-  _getGrammarPaths() {
-    return Disk.getFiles(this._getDir()).filter(file => file.endsWith(GrammarConstants.grammarFileExtension))
+  get grammarDir() {
+    return this.dir
+  }
+  get grammarFilePaths() {
+    return Disk.getFiles(this.grammarDir).filter(file => file.endsWith(GrammarConstants.grammarFileExtension))
   }
   _setDiskVersions() {
     this.forEach(node => {
@@ -237,7 +245,7 @@ class TreeBaseFolder extends TreeNode {
     return this
   }
   _getAndFilterFilesFromFolder() {
-    return this._filterFiles(Disk.getFiles(this._getDir()))
+    return this._filterFiles(Disk.getFiles(this.dir))
   }
   // todo: cleanup the filtering here.
   _filterFiles(files) {
@@ -245,8 +253,9 @@ class TreeBaseFolder extends TreeNode {
   }
   startListeningForFileChanges() {
     this.loadFolder()
-    this._fsWatcher = fs.watch(this._getDir(), (event, filename) => {
-      let fullPath = this._getDir() + filename
+    const { dir } = this
+    this._fsWatcher = fs.watch(dir, (event, filename) => {
+      let fullPath = path.join(dir, filename)
       fullPath = this._filterFiles([fullPath])[0]
       if (!fullPath) return true
       const node = this.getNode(fullPath)
@@ -271,24 +280,6 @@ class TreeBaseFolder extends TreeNode {
     this._fsWatcher.close()
     delete this._fsWatcher
   }
-  _getGrammarFilesAsTree() {
-    return new TreeNode(
-      this._getGrammarPaths()
-        .map(Disk.read)
-        .join("\n")
-    )
-  }
-  _getTreeBaseGrammarCode() {
-    const code = this._getGrammarFilesAsTree()
-    const rootNodes = code.with("root")
-    return `${code}
-treeBaseFolderNode
- ${GrammarConstants.root}
- ${GrammarConstants.inScope} ${rootNodes.map(node => node.getWord(0)).join(" ")}
- ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
-treeBaseErrorNode
- ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
-  }
   get typedMapShort() {
     const typedMap = this.toProgram().typedMap
     const obj = {}
@@ -299,14 +290,12 @@ treeBaseErrorNode
   }
   toProgram() {
     this.loadFolder()
-    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
-    const programConstructor = grammarProgram.compileAndReturnRootConstructor()
+    const programConstructor = this.grammarProgramConstructor
     return new programConstructor(this.toString())
   }
   _readFiles(files) {
     return files
       .map(fullPath => {
-        const filename = Disk.getFileName(fullPath)
         const content = Disk.read(fullPath)
         if (content.match(/\r/)) throw new Error("bad \\r in " + fullPath)
         return content ? fullPath + "\n " + content.replace(/\n/g, "\n ") : fullPath

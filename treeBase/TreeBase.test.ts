@@ -2,16 +2,17 @@
 
 import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
 
+const path = require("path")
 const { jtree } = require("../index.js")
-
 const { Disk } = require("../products/Disk.node.js")
 
-const folderPath = require("path").resolve(__dirname + "/planets/")
+
+const folderPath = path.join(__dirname, "planets")
 const testTree: any = {}
 
 const getFolder = () => {
-  const iHateTypeScript = <any>TreeBaseFolder
-  return new iHateTypeScript(undefined, folderPath)
+  const iHateTypeScriptSometimes = <any>TreeBaseFolder
+  return new iHateTypeScriptSometimes(undefined, folderPath)
 }
 
 testTree.all = (equal: any) => {
@@ -25,7 +26,7 @@ testTree.sqlLite = (equal: any) => {
   // Arrange
   const folder = getFolder()
   // Act/Assert
-  equal(folder.toSQLite(), Disk.read(__dirname + "/planets.sql"), "sqlite works")
+  equal(folder.toSQLite(), Disk.read(path.join(__dirname, "planets.sql")), "sqlite works")
 }
 
 testTree.toTypedMap = (equal: any) => {
@@ -54,7 +55,7 @@ testTree.fileSystemEvents = async (equal: any) => {
   const folder = getFolder()
   folder.loadFolder()
   folder.startListeningForFileChanges()
-  const newFilePath = folderPath + "/foobar.planet"
+  const newFilePath = path.join(folderPath, "foobar.planet")
 
   // Arrange
   let fileAdded = ""
@@ -64,7 +65,7 @@ testTree.fileSystemEvents = async (equal: any) => {
       fileAdded = event.targetNode.getLine()
       // Assert
       equal(fileAdded, newFilePath, "new file detected")
-      resolve()
+      resolve(true)
     })
     // Act
     Disk.write(newFilePath, "")
@@ -72,7 +73,6 @@ testTree.fileSystemEvents = async (equal: any) => {
   await waiting
 
   // Arrange
-  let newContent = ""
   const expectedContent = "hello world"
   waiting = new Promise(resolve => {
     folder.onDescendantChanged((event: any) => {
@@ -80,7 +80,7 @@ testTree.fileSystemEvents = async (equal: any) => {
 
       // Assert
       equal(fileNode.childrenToString(), expectedContent, "file change detected")
-      resolve()
+      resolve(true)
       return true // remove after running once
     })
     // Act
@@ -95,7 +95,7 @@ testTree.fileSystemEvents = async (equal: any) => {
       fileRemoved = event.targetNode.getLine()
       // Assert
       equal(fileRemoved, newFilePath, "file remove expected")
-      resolve()
+      resolve(true)
     })
     // Act
     Disk.rm(newFilePath)

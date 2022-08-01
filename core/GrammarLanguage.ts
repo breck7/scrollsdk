@@ -1581,7 +1581,8 @@ abstract class AbstractCellParser {
         cellTypeDefinition = grammarProgram.getCellTypeDefinitionById(cellTypeId)
       }
 
-      cells[cellIndex] = new cellConstructor(node, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll, def)
+      const anyCellConstructor = <any>cellConstructor
+      cells[cellIndex] = new anyCellConstructor(node, cellIndex, cellTypeDefinition, cellTypeId, isCatchAll, def)
     }
     return cells
   }

@@ -67,10 +67,10 @@ class TestRacerTestBlock {
         .map((failure: any) => {
           const actualVal = failure[0] === undefined ? "undefined" : failure[0].toString()
           const expectedVal = failure[1] === undefined ? "undefined" : failure[1].toString()
-          const actual = new jtree.TreeNode(`actual\n${new jtree.TreeNode(actualVal).toString(1)}`)
-          const expected = new jtree.TreeNode(`expected\n${new jtree.TreeNode(expectedVal.toString()).toString(1)}`)
+          const actual = new TreeNode(`actual\n${new TreeNode(actualVal).toString(1)}`)
+          const expected = new TreeNode(`expected\n${new TreeNode(expectedVal.toString()).toString(1)}`)
           const comparison = actual.toComparison(expected)
-          return new jtree.TreeNode(` assertion ${failure[2]}\n${comparison.toSideBySide([actual, expected]).toString(2)}`)
+          return new TreeNode(` assertion ${failure[2]}\n${comparison.toSideBySide([actual, expected]).toString(2)}`)
         })
         .join("\n")
     )

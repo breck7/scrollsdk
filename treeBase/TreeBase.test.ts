@@ -64,7 +64,7 @@ testTree.fileSystemEvents = async (equal: any) => {
       fileAdded = event.targetNode.getLine()
       // Assert
       equal(fileAdded, newFilePath, "new file detected")
-      resolve()
+      resolve(true)
     })
     // Act
     Disk.write(newFilePath, "")
@@ -80,7 +80,7 @@ testTree.fileSystemEvents = async (equal: any) => {
 
       // Assert
       equal(fileNode.childrenToString(), expectedContent, "file change detected")
-      resolve()
+      resolve(true)
       return true // remove after running once
     })
     // Act
@@ -95,7 +95,7 @@ testTree.fileSystemEvents = async (equal: any) => {
       fileRemoved = event.targetNode.getLine()
       // Assert
       equal(fileRemoved, newFilePath, "file remove expected")
-      resolve()
+      resolve(true)
     })
     // Act
     Disk.rm(newFilePath)

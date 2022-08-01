@@ -1829,7 +1829,7 @@ class TreeNode extends AbstractNode {
 
   protected static _getFileFormat(path: string) {
     const format = path.split(".").pop()
-    return FileFormat[<any>format] ? format : FileFormat.tree
+    return (<any>FileFormat)[format] ? format : FileFormat.tree
   }
 
   static Parser = Parser

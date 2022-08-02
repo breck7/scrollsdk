@@ -311,10 +311,10 @@ class TreeBaseFolder extends TreeNode {
   }
 
   get errors() {
-    const errors: any[] = []
+    let errors: any[] = []
     this.forEach((file: TreeBaseFile) => {
-      const { parsed } = file
-      if (parsed.errors) errors.concat(parsed.errors)
+      const errs = file.parsed.getAllErrors()
+      if (errs.length) errors = errors.concat(errs)
     })
     return errors
   }

@@ -11,11 +11,23 @@ const testTree: any = {}
 
 const getFolder = () => new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
 
-testTree.all = (equal: any) => {
-  const folder = getFolder()
+testTree.errorChecking = (equal: any) => {
+  const folder = getFolder().loadFolder()
   const errs = folder.errors
   equal(errs.length, 0, "no errors")
   if (errs.length) console.log(errs.join("\n"))
+
+  // Act
+  folder.getNode("earth").set("foo", "bar")
+
+  // Assert
+  equal(folder.errors.length, 1, "1 error")
+
+  // Act
+  folder.getNode("earth").delete("foo")
+
+  // Assert
+  equal(folder.errors.length, 0, "no errors")
 }
 
 testTree.sqlLite = (equal: any) => {

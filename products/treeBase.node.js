@@ -254,10 +254,10 @@ class TreeBaseFolder extends TreeNode {
     return path.join(this.dir, id + "." + this.fileExtension)
   }
   get errors() {
-    const errors = []
+    let errors = []
     this.forEach(file => {
-      const { parsed } = file
-      if (parsed.errors) errors.concat(parsed.errors)
+      const errs = file.parsed.getAllErrors()
+      if (errs.length) errors = errors.concat(errs)
     })
     return errors
   }

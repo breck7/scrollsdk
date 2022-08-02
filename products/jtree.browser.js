@@ -3224,7 +3224,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "54.2.1"
+TreeNode.getVersion = () => "55.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3438,9 +3438,9 @@ class GrammarBackedNode extends TreeNode {
     const handGrammarProgram = this.getHandGrammarProgram()
     return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
-  toSQLiteInsertStatement(primaryKeyFunction = node => node.getWord(0)) {
+  toSQLiteInsertStatement(id) {
     const def = this.getDefinition()
-    const tableName = def.getTableNameIfAny() || def._getId()
+    const tableName = this.tableName || def.getTableNameIfAny() || def._getId()
     const columns = def.getSQLiteTableColumns()
     const hits = columns.filter(colDef => this.has(colDef.columnName))
     const values = hits.map(colDef => {
@@ -3453,7 +3453,7 @@ class GrammarBackedNode extends TreeNode {
       return isText || hasChildren ? `"${content}"` : content
     })
     hits.unshift({ columnName: "id", type: SQLiteTypes.text })
-    values.unshift(`"${primaryKeyFunction(this)}"`)
+    values.unshift(`"${id}"`)
     return `INSERT INTO ${tableName} (${hits.map(col => col.columnName).join(",")}) VALUES (${values.join(",")});`
   }
   getAutocompleteResults(partialWord, cellIndex) {

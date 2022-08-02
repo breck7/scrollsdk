@@ -1,5 +1,4 @@
 anyCell
-filenameCell
 stringCell
 boolCell
 intCell
@@ -11,9 +10,7 @@ keywordCell
 planetNode
  root
  string tableName planets
- todo Change pattern to postfix.
- pattern \.planet$
- cells filenameCell
+ string fileExtension planet
  inScope abstractPropertyNode
  catchAllNodeType errorNode
 errorNode

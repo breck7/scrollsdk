@@ -4,6 +4,17 @@ skipIndexPage
 aftertext
  Here's a list of the notable changes in JTree.
 
+section 55.0.0 2022-08-02
+list
+ - 🎉 TreeBase: grammarDir and row dir can now be different
+ - ⚠️ TreeBase: setDir and setGrammarDir must now be used instead of a constructor
+ - ⚠️ TreeBase: TreeBaseFile instances have the id as key; TreeBaseFolder handles mapping to filesystem
+ - ⚠️ TreeBase: grammar parsing now done at TreeBaseFile level
+ - ⚠️ TreeBase: removed cellCheckWithProgressBar; removed `_getDir` (use `dir`); removed toProgram; _getGrammarPaths is now grammarFilePaths
+ - ⚠️ TreeBase: typedMapShort is now typedMap
+ - ⚠️ TreeBase: define fileExtension in Grammar files (or programmatically)
+ - ⚠️ Grammar: toSQLiteInsertStatement now takes a string instead of function
+
 section 54.2.1 2022-07-27
 list
  - 🏥 Utils: linkify Wikipedia urls correctly

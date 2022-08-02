@@ -4,7 +4,9 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
+const grammarNode = require("../products/grammar.nodejs.js")
 
+const path = require("path")
 const fs = require("fs")
 
 const HandGrammarProgram = jtree.HandGrammarProgram
@@ -16,25 +18,16 @@ const GrammarConstants = jtree.GrammarConstants
 const makeId = (word: string) => TreeUtils.getFileName(TreeUtils.removeFileExtension(word))
 
 class TreeBaseFile extends TreeNode {
-  get id() {
-    return makeId(this.getWord(0))
-  }
+  id = this.getWord(0)
 
   private _diskVersion: string
   setDiskVersion() {
     this._diskVersion = this.childrenToString()
     return this
   }
+
   getDiskVersion() {
     return this._diskVersion
-  }
-
-  getPrimaryKey() {
-    return TreeBaseFile.extractPrimaryKeyFromFilename(this.getWord(0))
-  }
-
-  static extractPrimaryKeyFromFilename(filename: string) {
-    return TreeUtils.getFileName(TreeUtils.removeFileExtension(filename))
   }
 
   getDoc(terms: string[]) {
@@ -68,7 +61,7 @@ class TreeBaseFile extends TreeNode {
   }
 
   private _getFilePath() {
-    return this.getWord(0)
+    return this.base.makeFilePath(this.id)
   }
 
   getFileName() {
@@ -77,6 +70,15 @@ class TreeBaseFile extends TreeNode {
 
   createParser() {
     return new TreeNode.Parser(TreeNode)
+  }
+
+  get base() {
+    return this.getParent()
+  }
+
+  get parsed() {
+    const programParser = this.base.grammarProgramConstructor
+    return new programParser(this.childrenToString())
   }
 }
 
@@ -94,6 +96,7 @@ class TreeBaseServer {
   }
 
   indexCommand(routes: string[]) {
+    const folder = this._folder
     const links = routes.map((path: any) => `<a href="${path}">${path}</a>`) // get all the paths
     return `<style>body {
      font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
@@ -104,29 +107,25 @@ class TreeBaseServer {
    }h1 {font-size: 1.2em; margin: 0;}</style>
      <h1>TreeBaseServer running:</h1>
     <div style="white-space:pre;">
--- Folder: '${this._folder._getDir()}'
--- Grammars: '${this._folder._getGrammarPaths().join(",")}'
--- Files: ${this._folder.length}
--- Bytes: ${this._folder.toString().length}
+-- Folder: '${folder.dir}'
+-- Grammars: '${folder.grammarFilePaths.join(",")}'
+-- Files: ${folder.length}
+-- Bytes: ${folder.toString().length}
 -- Routes: ${links.join("\n ")}</div>`
   }
 
   errorsToHtmlCommand() {
+    const folder = this._folder
     const timer = new TreeUtils.Timer()
     let end = timer.tick("Loaded collection....")
-    let lines = this._folder.getNumberOfLines()
+    let lines = folder.getNumberOfLines()
     let lps = lines / (end / 1000)
-    const errors = this._folder.toProgram().getAllErrors()
-    return `Total errors: ${errors.length}\n${errors.join("\n")}`
+    const errors = folder.errors
+    return `Total errors: ${errors.length}\n${errors.map(err => err.toString()).join("\n")}`
   }
 
   errorsToCsvCommand() {
-    return new jtree.TreeNode(
-      this._folder
-        .toProgram()
-        .getAllErrors()
-        .map((err: any) => err.toObject())
-    ).toCsv()
+    return new jtree.TreeNode(this._folder.errors.map((err: any) => err.toObject())).toCsv()
   }
 
   listAllFilesCommand() {
@@ -140,7 +139,6 @@ class TreeBaseServer {
   }
 
   private _createExpressApp() {
-    const path = require("path")
     const express = require("express")
     const bodyParser = require("body-parser")
     const app = express()
@@ -159,7 +157,7 @@ class TreeBaseServer {
     app.get("/", (req: any, res: any) => res.send(this.indexCommand(this._getRoutes(app))))
 
     app.use(
-      express.static(this._folder._getDir(), {
+      express.static(this._folder.dir, {
         setHeaders: (res: any, requestPath: string) => {
           res.setHeader("Content-Type", "text/plain")
         }
@@ -182,114 +180,90 @@ class TreeBaseServer {
 class TreeBaseFolder extends TreeNode {
   touch(filename: treeNotationTypes.fileName) {
     // todo: throw if its a folder path, has wrong file extension, or other invalid
-    return Disk.touch(this._getDir() + filename)
+    return Disk.touch(path.join(this.dir, filename))
   }
 
   // WARNING: Very basic support! Not fully developed.
   // WARNING: Does not yet support having multiple tuples with the same key—will collapse those to one.
-  toSQLite(): string {
+  toSQLite() {
     return this.toSQLiteCreateTables() + "\n\n" + this.toSQLiteInsertRows()
   }
 
-  toSQLiteCreateTables(): string {
+  toSQLiteCreateTables() {
     this.loadFolder()
 
-    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
+    const grammarProgram = new HandGrammarProgram(this.grammarCode)
     const tableDefinitionNodes = grammarProgram.filter((node: any) => node.getTableNameIfAny && node.getTableNameIfAny())
     // todo: filter out root root
 
     return tableDefinitionNodes.map((node: any) => node.toSQLiteTableSchema()).join("\n")
   }
 
-  toSQLiteInsertRows(): string {
-    return this.toProgram()
-      .map((node: any) => node.toSQLiteInsertStatement((node: any) => TreeBaseFile.extractPrimaryKeyFromFilename(node.getWord(0))))
-      .join("\n")
+  toSQLiteInsertRows() {
+    return this.map((file: any) => file.parsed.toSQLiteInsertStatement(file.id)).join("\n")
   }
 
   createParser() {
     return new TreeNode.Parser(TreeBaseFile)
   }
 
+  get typedMap() {
+    this.loadFolder()
+    const map: treeNotationTypes.stringMap = {}
+    this.forEach((file: any) => {
+      const [id, value] = file.parsed.typedTuple
+      map[file.id] = value
+    })
+    return map
+  }
+
   private _isLoaded = false
 
   // todo: RAII?
-  loadFolder(files: treeNotationTypes.filepath[] = undefined, sampleSize: treeNotationTypes.int = undefined, seed: number = Date.now()) {
+  loadFolder() {
     if (this._isLoaded) return this
-    files = files || this._getAndFilterFilesFromFolder()
+    const files = this._getAndFilterFilesFromFolder()
 
-    if (sampleSize !== undefined) files = TreeUtils.sampleWithoutReplacement(files, sampleSize, seed)
-
-    this.setChildren(this._readFiles(files))
+    this.setChildren(this._readFiles(files)) // todo: speedup?
     this._setDiskVersions()
 
     this._isLoaded = true
     return this
   }
 
-  cellCheckWithProgressBar(printLimit = 100) {
-    const timer = new TreeUtils.Timer()
-    timer.tick("start...")
-    const program = this.toProgram()
-    let lines = this.getNumberOfLines()
-    let lps = lines / (timer.tick("End parser") / 1000)
-    console.log(`Parsed ${lines} line program at ${lps} lines per second`)
-
-    const ProgressBar = require("progress")
-    const bar = new ProgressBar(":bar", { total: lines, width: 50 })
-    let current = Date.now()
-    let inc = 100000
-    let totalErrors = 0
-    for (let err of program.getAllErrorsIterator()) {
-      bar.tick()
-      if (bar.curr % inc === 0) {
-        bar.interrupt(`Lines ${bar.curr - inc}-${bar.curr} at ${10000 / ((Date.now() - current) / 1000)} per second`)
-        current = Date.now()
-      }
-      if (err.length) totalErrors += err.length
-      if (printLimit && err) {
-        err.forEach((err: treeNotationTypes.treeNode) =>
-          console.log(
-            err
-              .getNode()
-              .getParent()
-              .getLine() +
-              ": " +
-              err.getLine() +
-              ": " +
-              err.getMessage()
-          )
-        )
-        printLimit--
-      }
-
-      //if (!limit) return 0
-    }
-    return totalErrors
+  // todo: need to RAII this. Likely just not have TreeBaseFolder extend TreeNode
+  setDir(dir: string) {
+    this.dir = dir
+    return this
   }
 
-  _getDir() {
-    // todo: cache?
-    return this.getWord(0).replace(/\/$/, "") + "/"
+  setGrammarDir(dir: string) {
+    this.grammarDir = dir
+    const rawCode = this.grammarFilePaths.map(Disk.read).join("\n")
+    this.grammarCode = new grammarNode(rawCode).format().toString()
+    this.grammarProgramConstructor = new HandGrammarProgram(this.grammarCode).compileAndReturnRootConstructor()
+    this.fileExtension = new this.grammarProgramConstructor().fileExtension
+    return this
   }
 
-  get dir(): string {
-    return this._getDir()
-  }
+  dir = ""
+  grammarDir = ""
+  grammarCode = ""
+  grammarProgramConstructor: any = undefined
+  fileExtension = ""
 
-  _getGrammarPaths() {
-    return Disk.getFiles(this._getDir()).filter((file: string) => file.endsWith(GrammarConstants.grammarFileExtension))
+  get grammarFilePaths() {
+    return Disk.getFiles(this.grammarDir).filter((file: string) => file.endsWith(GrammarConstants.grammarFileExtension))
   }
 
   private _setDiskVersions() {
-    this.forEach((node: treeNotationTypes.treeNode) => {
-      node.setDiskVersion()
-    })
+    // todo: speedup?
+    this.forEach((file: treeNotationTypes.treeNode) => file.setDiskVersion())
     return this
   }
 
   private _getAndFilterFilesFromFolder() {
-    return this._filterFiles(Disk.getFiles(this._getDir()))
+    return this._filterFiles(Disk.getFiles(this.dir))
   }
 
   // todo: cleanup the filtering here.
@@ -301,8 +275,9 @@ class TreeBaseFolder extends TreeNode {
 
   startListeningForFileChanges() {
     this.loadFolder()
-    this._fsWatcher = fs.watch(this._getDir(), (event: any, filename: treeNotationTypes.fileName) => {
-      let fullPath = this._getDir() + filename
+    const { dir } = this
+    this._fsWatcher = fs.watch(dir, (event: any, filename: treeNotationTypes.fileName) => {
+      let fullPath = path.join(dir, filename)
       fullPath = this._filterFiles([fullPath])[0]
       if (!fullPath) return true
 
@@ -331,49 +306,26 @@ class TreeBaseFolder extends TreeNode {
     delete this._fsWatcher
   }
 
-  private _getGrammarFilesAsTree() {
-    return new TreeNode(
-      this._getGrammarPaths()
-        .map(Disk.read)
-        .join("\n")
-    )
+  makeFilePath(id: string) {
+    return path.join(this.dir, id + "." + this.fileExtension)
   }
 
-  private _getTreeBaseGrammarCode() {
-    const code = this._getGrammarFilesAsTree()
-    const rootNodes = code.with("root")
-    return `${code}
-treeBaseFolderNode
- ${GrammarConstants.root}
- ${GrammarConstants.inScope} ${rootNodes.map((node: treeNotationTypes.treeNode) => node.getWord(0)).join(" ")}
- ${GrammarConstants.catchAllNodeType} treeBaseErrorNode
-treeBaseErrorNode
- ${GrammarConstants.baseNodeType} ${GrammarConstants.errorNode}`
-  }
-
-  get typedMapShort() {
-    const typedMap = this.toProgram().typedMap
-    const obj: treeNotationTypes.stringMap = {}
-    Object.keys(typedMap).forEach(key => {
-      obj[makeId(key)] = typedMap[key][0]
+  get errors() {
+    const errors: any[] = []
+    this.forEach((file: TreeBaseFile) => {
+      const { parsed } = file
+      if (parsed.errors) errors.concat(parsed.errors)
     })
-    return obj
-  }
-
-  toProgram() {
-    this.loadFolder()
-    const grammarProgram = new HandGrammarProgram(this._getTreeBaseGrammarCode())
-    const programConstructor = <any>grammarProgram.compileAndReturnRootConstructor()
-    return new programConstructor(this.toString())
+    return errors
   }
 
   private _readFiles(files: treeNotationTypes.filepath[]) {
     return files
       .map(fullPath => {
-        const filename = Disk.getFileName(fullPath)
         const content = Disk.read(fullPath)
         if (content.match(/\r/)) throw new Error("bad \\r in " + fullPath)
-        return content ? fullPath + "\n " + content.replace(/\n/g, "\n ") : fullPath
+        const id = makeId(fullPath)
+        return content ? id + "\n " + content.replace(/\n/g, "\n ") : id
       })
       .join("\n")
   }

@@ -157,9 +157,9 @@ abstract class GrammarBackedNode extends TreeNode {
     return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
   }
 
-  toSQLiteInsertStatement(primaryKeyFunction = (node: any) => node.getWord(0)): string {
+  toSQLiteInsertStatement(id: string): string {
     const def = this.getDefinition()
-    const tableName = def.getTableNameIfAny() || def._getId()
+    const tableName = (<any>this).tableName || def.getTableNameIfAny() || def._getId()
     const columns = def.getSQLiteTableColumns()
     const hits = columns.filter(colDef => this.has(colDef.columnName))
 
@@ -174,7 +174,7 @@ abstract class GrammarBackedNode extends TreeNode {
     })
 
     hits.unshift({ columnName: "id", type: SQLiteTypes.text })
-    values.unshift(`"${primaryKeyFunction(this)}"`)
+    values.unshift(`"${id}"`)
     return `INSERT INTO ${tableName} (${hits.map(col => col.columnName).join(",")}) VALUES (${values.join(",")});`
   }
 

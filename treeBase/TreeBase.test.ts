@@ -2,21 +2,18 @@
 
 import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
 
+const path = require("path")
 const { jtree } = require("../index.js")
-
 const { Disk } = require("../products/Disk.node.js")
 
-const folderPath = require("path").resolve(__dirname + "/planets/")
+const folderPath = path.join(__dirname, "planets")
 const testTree: any = {}
 
-const getFolder = () => {
-  const iHateTypeScript = <any>TreeBaseFolder
-  return new iHateTypeScript(undefined, folderPath)
-}
+const getFolder = () => new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
 
 testTree.all = (equal: any) => {
   const folder = getFolder()
-  const errs = folder.toProgram().getAllErrors()
+  const errs = folder.errors
   equal(errs.length, 0, "no errors")
   if (errs.length) console.log(errs.join("\n"))
 }
@@ -25,28 +22,28 @@ testTree.sqlLite = (equal: any) => {
   // Arrange
   const folder = getFolder()
   // Act/Assert
-  equal(folder.toSQLite(), Disk.read(__dirname + "/planets.sql"), "sqlite works")
+  equal(folder.toSQLite(), Disk.read(path.join(__dirname, "planets.sql")), "sqlite works")
 }
 
 testTree.toTypedMap = (equal: any) => {
   // Arrange
   const folder = getFolder()
   // Act/Assert
-  const { typedMapShort } = folder
+  const { typedMap } = folder
 
-  equal(Object.values(typedMapShort).length, 8)
-  equal(typedMapShort.neptune.surfaceGravity, 11)
-  equal(typedMapShort.mercury.moons, 0)
-  equal(typedMapShort.earth.title, "Earth")
-  equal(typedMapShort.earth.neighbors.Mars, 110000000)
-  equal(typedMapShort.earth.hasLife, true)
-  equal(typedMapShort.earth.aka.length, 2)
-  equal(typedMapShort.earth.wikipedia.id, "Earth")
-  equal(typedMapShort.earth.wikipedia.pageViews, 123)
-  equal(typedMapShort.earth.age.value, 4500000000)
-  equal(typedMapShort.earth.age.description, "It was only during the 19th century that geologists realized Earth's age was at least many millions of years.")
-  equal(typedMapShort.earth.description.split("\n").length, 2)
-  equal(typedMapShort.earth.related[1], "venus")
+  equal(Object.values(typedMap).length, 8)
+  equal(typedMap.neptune.surfaceGravity, 11)
+  equal(typedMap.mercury.moons, 0)
+  equal(typedMap.earth.title, "Earth")
+  equal(typedMap.earth.neighbors.Mars, 110000000)
+  equal(typedMap.earth.hasLife, true)
+  equal(typedMap.earth.aka.length, 2)
+  equal(typedMap.earth.wikipedia.id, "Earth")
+  equal(typedMap.earth.wikipedia.pageViews, 123)
+  equal(typedMap.earth.age.value, 4500000000)
+  equal(typedMap.earth.age.description, "It was only during the 19th century that geologists realized Earth's age was at least many millions of years.")
+  equal(typedMap.earth.description.split("\n").length, 2)
+  equal(typedMap.earth.related[1], "venus")
 }
 
 testTree.fileSystemEvents = async (equal: any) => {
@@ -54,7 +51,7 @@ testTree.fileSystemEvents = async (equal: any) => {
   const folder = getFolder()
   folder.loadFolder()
   folder.startListeningForFileChanges()
-  const newFilePath = folderPath + "/foobar.planet"
+  const newFilePath = path.join(folderPath, "foobar.planet")
 
   // Arrange
   let fileAdded = ""
@@ -72,7 +69,6 @@ testTree.fileSystemEvents = async (equal: any) => {
   await waiting
 
   // Arrange
-  let newContent = ""
   const expectedContent = "hello world"
   waiting = new Promise(resolve => {
     folder.onDescendantChanged((event: any) => {

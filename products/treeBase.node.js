@@ -256,8 +256,11 @@ class TreeBaseFolder extends TreeNode {
   get errors() {
     let errors = []
     this.forEach(file => {
-      const errs = file.parsed.getAllErrors()
+      const { parsed } = file
+      const errs = parsed.getAllErrors()
       if (errs.length) errors = errors.concat(errs)
+      const { scopeErrors } = parsed
+      if (scopeErrors.length) errors = errors.concat(scopeErrors)
     })
     return errors
   }

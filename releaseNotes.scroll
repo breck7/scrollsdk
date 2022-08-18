@@ -4,6 +4,10 @@ skipIndexPage
 aftertext
  Here's a list of the notable changes in JTree.
 
+section 55.1.1 2022-08-18
+list
+ - 🏥 TreeBase: fixed error reporting bug.
+
 section 55.1.0 2022-08-02
 list
  - 🏥 TreeBase: fixed error reporting regression and added test.

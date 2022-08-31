@@ -77,6 +77,7 @@ enum GrammarConstants {
 
   grammarFileExtension = "grammar",
 
+  abstractNodeTypePrefix = "abstract",
   nodeTypeSuffix = "Node",
   cellTypeSuffix = "Cell",
 
@@ -96,7 +97,6 @@ enum GrammarConstants {
 
   // parse time
   extends = "extends",
-  abstract = "abstract",
   root = "root",
   crux = "crux",
   cruxFromId = "cruxFromId",
@@ -1722,7 +1722,6 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants._rootNodeJsHeader,
       GrammarConstants.javascript,
       GrammarConstants.compilesTo,
-      GrammarConstants.abstract,
       GrammarConstants.javascript,
       GrammarConstants.single,
       GrammarConstants.todoComment
@@ -1848,7 +1847,7 @@ ${properties.join("\n")}
   }
 
   _isAbstract() {
-    return this.has(GrammarConstants.abstract)
+    return this.id.startsWith(GrammarConstants.abstractNodeTypePrefix)
   }
 
   _getConcreteDescendantDefinitions() {

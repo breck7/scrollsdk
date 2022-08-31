@@ -78,18 +78,17 @@ projectNode
   }
  inScope fileNode
  catchAllNodeType errorNode
-termNode
+abstractTermNode
  catchAllCellType filepathCell
- abstract
  cells termCell
 absoluteNode
- extends termNode
+ extends abstractTermNode
  crux absolute
 externalNode
- extends termNode
+ extends abstractTermNode
  crux external
 relativeNode
- extends termNode
+ extends abstractTermNode
  crux relative
 errorNode
  baseNodeType errorNode

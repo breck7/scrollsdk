@@ -47,7 +47,6 @@ chargeNode
    return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
   }
 abstractChargeAttributeNode
- abstract
  cruxFromId
  required
  single

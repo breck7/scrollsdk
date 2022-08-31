@@ -52,7 +52,6 @@ commentNode
 errorNode
  baseNodeType errorNode
 abstractTypeDeclarationNode
- abstract
  inScope commentNode
 enumTypeDeclarationNode
  extends abstractTypeDeclarationNode

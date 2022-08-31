@@ -21,38 +21,34 @@ jibberishNode
   }
  compilesTo txt
  catchAllNodeType errorNode
- inScope topLevelNode textNode someAbstractClassNode
-someAbstractClassNode
- abstract
+ inScope abstractTopLevelNode textNode abstractBaseClassNode
+abstractBaseClassNode
 extendsAbstractNode
  cells topLevelPropertyCell intCell
- extends someAbstractClassNode
+ extends abstractBaseClassNode
  crux extendsAbstract
-topLevelNode
- abstract
+abstractTopLevelNode
  cells topLevelPropertyCell
-colorPropertiesNode
+abstractColorPropertiesNode
  cells topLevelPropertyCell intCell
- extends topLevelNode
- abstract
+ extends abstractTopLevelNode
 hueNode
- extends colorPropertiesNode
+ extends abstractColorPropertiesNode
  crux hue
 saturationNode
- extends colorPropertiesNode
+ extends abstractColorPropertiesNode
  crux saturation
 constrastNode
- extends colorPropertiesNode
+ extends abstractColorPropertiesNode
  crux constrast
 abstractHtmlNode
  inScope contentNode
- extends topLevelNode
- abstract
+ extends abstractTopLevelNode
 h1Node
  crux html.h1
  extends abstractHtmlNode
 addNode
- extends topLevelNode
+ extends abstractTopLevelNode
  crux add
 plusNode
  crux +
@@ -62,8 +58,8 @@ plusNode
  catchAllCellType intCell
  cells opSymbolCell
 blockNode
- inScope topLevelNode scoreBlockNode
- extends topLevelNode
+ inScope abstractTopLevelNode scoreBlockNode
+ extends abstractTopLevelNode
  crux block
 scoreBlockNode
  description Test that inscope extends and does not overwrite.
@@ -78,7 +74,7 @@ toNode
  extends blockNode
  crux to
 fooNode
- extends topLevelNode
+ extends abstractTopLevelNode
  crux foo
 xColumnNameNode
  description The name of the column to use for the x axis
@@ -88,14 +84,14 @@ xColumnNameNode
   getRunTimeEnumOptions(cell) {
    return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
- extends topLevelNode
+ extends abstractTopLevelNode
  crux xColumnName
 lightbulbStateNode
  cells topLevelPropertyCell onoffCell
- extends topLevelNode
+ extends abstractTopLevelNode
  crux lightbulbState
 nestedNode
- extends topLevelNode
+ extends abstractTopLevelNode
  crux nested
 nodeWithConstsNode
  string greeting hello world
@@ -108,7 +104,7 @@ nodeWithConstsNode
  int anArray 2 3 4
  float score2 3.01
  boolean win true
- extends topLevelNode
+ extends abstractTopLevelNode
  crux nodeWithConsts
 nodeExpandsConstsNode
  string greeting hola
@@ -116,12 +112,12 @@ nodeExpandsConstsNode
  crux nodeExpandsConsts
 someCodeNode
  catchAllNodeType lineOfCodeNode
- extends topLevelNode
+ extends abstractTopLevelNode
  crux someCode
 typeNode
  cells topLevelPropertyCell wordCell
  single
- extends topLevelNode
+ extends abstractTopLevelNode
  crux type
 contentNode
  baseNodeType blobNode

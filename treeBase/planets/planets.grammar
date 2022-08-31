@@ -16,21 +16,17 @@ planetNode
 errorNode
  baseNodeType errorNode
 abstractPropertyNode
- abstract
  cruxFromId
  single
 abstractStringPropertyNode
  cells keywordCell
  catchAllCellType stringCell
- abstract
  extends abstractPropertyNode
 abstractBooleanPropertyNode
  cells keywordCell boolCell
- abstract
  extends abstractPropertyNode
 abstractIntPropertyNode
  cells keywordCell intCell
- abstract
  extends abstractPropertyNode
 titleNode
  extends abstractStringPropertyNode
@@ -51,7 +47,6 @@ moonsNode
  extends abstractIntPropertyNode
 abstractFloatPropertyNode
  cells keywordCell floatCell
- abstract
  extends abstractPropertyNode
 yearsToOrbitSunNode
  extends abstractFloatPropertyNode

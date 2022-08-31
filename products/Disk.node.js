@@ -1,6 +1,8 @@
+var _a
 const fs = require("fs")
 const path = require("path")
 class Disk {}
+_a = Disk
 Disk.getTreeNode = () => require("../index.js").jtree.TreeNode // todo: cleanup
 Disk.rm = path => fs.unlinkSync(path)
 Disk.getCleanedString = str => str.replace(/[\,\t\n]/g, " ")

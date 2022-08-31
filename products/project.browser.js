@@ -152,18 +152,17 @@ projectNode
   }
  inScope fileNode
  catchAllNodeType errorNode
-termNode
+abstractTermNode
  catchAllCellType filepathCell
- abstract
  cells termCell
 absoluteNode
- extends termNode
+ extends abstractTermNode
  crux absolute
 externalNode
- extends termNode
+ extends abstractTermNode
  crux external
 relativeNode
- extends termNode
+ extends abstractTermNode
  crux relative
 errorNode
  baseNodeType errorNode
@@ -199,7 +198,7 @@ fileNode
     static getNodeTypeMap() {
       return {
         projectNode: projectNode,
-        termNode: termNode,
+        abstractTermNode: abstractTermNode,
         absoluteNode: absoluteNode,
         externalNode: externalNode,
         relativeNode: relativeNode,
@@ -209,7 +208,7 @@ fileNode
     }
   }
 
-  class termNode extends jtree.GrammarBackedNode {
+  class abstractTermNode extends jtree.GrammarBackedNode {
     get termCell() {
       return this.getWord(0)
     }
@@ -218,11 +217,11 @@ fileNode
     }
   }
 
-  class absoluteNode extends termNode {}
+  class absoluteNode extends abstractTermNode {}
 
-  class externalNode extends termNode {}
+  class externalNode extends abstractTermNode {}
 
-  class relativeNode extends termNode {}
+  class relativeNode extends abstractTermNode {}
 
   class errorNode extends jtree.GrammarBackedNode {
     getErrors() {

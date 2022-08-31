@@ -60,7 +60,6 @@ dumbdownNode
    // You can add code as well.
    print("Hello world")
 abstractTopLevelNode
- abstract
  cells keywordCell
 linkNode
  cells keywordCell urlCell

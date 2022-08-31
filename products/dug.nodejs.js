@@ -46,7 +46,6 @@ dugNode
   }
 abstractValueNode
  cells keywordCell
- abstract
  cruxFromId
 nullNode
  compiler

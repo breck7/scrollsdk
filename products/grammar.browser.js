@@ -69,7 +69,7 @@ lowercaseCell
  regex [a-z]+
 nodeTypeIdCell
  examples commentNode addNode
- description This doubles as the class name in Javascript.
+ description This doubles as the class name in Javascript. If this begins with \`abstract\`, then the node type will be considered an abstract nodeType, which cannot be used by itself but provides common functionality to nodeTypes that extend it.
  highlightScope variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes nodeTypeIdCell
@@ -119,7 +119,6 @@ grammarNode
  version 3.0.0
  inScope toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
 abstractCompilerRuleNode
- abstract
  catchAllCellType anyCell
  cells propertyKeywordCell
 closeChildrenNode
@@ -147,7 +146,6 @@ joinChildrenWithNode
  extends abstractCompilerRuleNode
  cruxFromId
 abstractConstantNode
- abstract
  description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
  cells propertyKeywordCell
  cruxFromId
@@ -169,7 +167,6 @@ stringNode
  catchAllNodeType catchAllMultilineStringConstantNode
  extends abstractConstantNode
 abstractNodeTypeRuleNode
- abstract
  single
  cells propertyKeywordCell
 compilesToNode
@@ -187,12 +184,7 @@ versionNode
  description Version number of your language. Generally used on nodeTypes marked root.
  extends abstractNodeTypeRuleNode
  cruxFromId
-abstractNode
- description An abstract nodeType cannot be used by itself but provides common functionality to nodeTypes that extend it.
- extends abstractNodeTypeRuleNode
- cruxFromId
 abstractNonTerminalNodeTypeRuleNode
- abstract
  extends abstractNodeTypeRuleNode
 baseNodeTypeNode
  cells propertyKeywordCell baseNodeTypesCell
@@ -275,7 +267,6 @@ javascriptNode
  cruxFromId
 abstractParseRuleNode
  description Each node should have a pattern that it matches on unless it's a catch all node.
- abstract
  extends abstractNodeTypeRuleNode
  cruxFromId
 cruxNode
@@ -445,7 +436,6 @@ extendsCellTypeNode
         compilesToNode: compilesToNode,
         extensionsNode: extensionsNode,
         versionNode: versionNode,
-        abstractNode: abstractNode,
         abstractNonTerminalNodeTypeRuleNode: abstractNonTerminalNodeTypeRuleNode,
         baseNodeTypeNode: baseNodeTypeNode,
         catchAllCellTypeNode: catchAllCellTypeNode,
@@ -601,8 +591,6 @@ extendsCellTypeNode
       return this.getWord(1)
     }
   }
-
-  class abstractNode extends abstractNodeTypeRuleNode {}
 
   class abstractNonTerminalNodeTypeRuleNode extends abstractNodeTypeRuleNode {}
 
@@ -921,7 +909,6 @@ extendsCellTypeNode
           compilesTo: compilesToNode,
           extensions: extensionsNode,
           version: versionNode,
-          abstract: abstractNode,
           baseNodeType: baseNodeTypeNode,
           catchAllCellType: catchAllCellTypeNode,
           cellParser: cellParserNode,

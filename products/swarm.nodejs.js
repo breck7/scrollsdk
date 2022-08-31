@@ -100,7 +100,6 @@ swarmNode
    return files
   }
 abstractAssertionNode
- abstract
  javascript
   async execute(arrangedInstance) {
    //todo: refactor. there is clearly a difference between sync and async that we are not
@@ -201,7 +200,6 @@ assertTypeIsNode
   }
  extends abstractAssertionNode
 abstractArrangeFlagNode
- abstract
  cells keywordCell
 arrangeAsyncNode
  description Add this flag in the arrange node to test async methods.
@@ -247,7 +245,6 @@ abstractTestBlockNode
   }
  inScope arrangeNode
  catchAllNodeType actNode
- abstract
  cells keywordCell
 testNode
  description Basic test block.

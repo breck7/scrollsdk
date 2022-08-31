@@ -3211,7 +3211,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "55.1.1"
+TreeNode.getVersion = () => "56.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3352,6 +3352,7 @@ var GrammarConstants
   GrammarConstants["nodeType"] = "nodeType"
   GrammarConstants["cellType"] = "cellType"
   GrammarConstants["grammarFileExtension"] = "grammar"
+  GrammarConstants["abstractNodeTypePrefix"] = "abstract"
   GrammarConstants["nodeTypeSuffix"] = "Node"
   GrammarConstants["cellTypeSuffix"] = "Cell"
   // error check time
@@ -3368,7 +3369,6 @@ var GrammarConstants
   GrammarConstants["errorNode"] = "errorNode"
   // parse time
   GrammarConstants["extends"] = "extends"
-  GrammarConstants["abstract"] = "abstract"
   GrammarConstants["root"] = "root"
   GrammarConstants["crux"] = "crux"
   GrammarConstants["cruxFromId"] = "cruxFromId"
@@ -4695,7 +4695,6 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants._rootNodeJsHeader,
       GrammarConstants.javascript,
       GrammarConstants.compilesTo,
-      GrammarConstants.abstract,
       GrammarConstants.javascript,
       GrammarConstants.single,
       GrammarConstants.todoComment
@@ -4800,7 +4799,7 @@ ${properties.join("\n")}
     return !!this._getGeneratedClassName()
   }
   _isAbstract() {
-    return this.has(GrammarConstants.abstract)
+    return this.id.startsWith(GrammarConstants.abstractNodeTypePrefix)
   }
   _getConcreteDescendantDefinitions() {
     const defs = this._getProgramNodeTypeDefinitionCache()

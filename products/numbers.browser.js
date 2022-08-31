@@ -55,7 +55,6 @@ abstractArithmeticReducerNode
    return this.numbersCell.slice(1).reduce((curr, tot) => eval(\`\${curr}\${this.operator}\${tot}\`), this.numbersCell[0])
   }
  inScope abstractArithmeticReducerNode commentNode
- abstract
  cells operatorCell
  catchAllCellType numbersCell
 modNode

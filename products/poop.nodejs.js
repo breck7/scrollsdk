@@ -80,7 +80,6 @@ poopNode
   ✨ 6
   💩 630
 abstractEventNode
- abstract
  cellParser omnifix
  cells eventTypeCell
  catchAllCellType timeIntCell

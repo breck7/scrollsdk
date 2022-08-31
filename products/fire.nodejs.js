@@ -117,14 +117,12 @@ fireNode
   }
 abstractNonTerminalNode
  inScope abstractTerminalNode abstractNonTerminalNode
- abstract
  cells keywordCell
 abstractJsblockNode
  compiler
   openChildren  {
   closeChildren }
  extends abstractNonTerminalNode
- abstract
 blockNode
  description block of code
  frequency .2
@@ -159,11 +157,9 @@ whileNode
   stringTemplate while ({identifierCell})
  extends abstractJsblockNode
 abstractTerminalNode
- abstract
  cells keywordCell
 abstractAssignmentNode
  extends abstractTerminalNode
- abstract
 abstractArithmeticNode
  cells keywordCell identifierCell
  catchAllCellType anyCell
@@ -171,7 +167,6 @@ abstractArithmeticNode
   stringTemplate const {identifierCell} = {anyCell}
  frequency .2
  extends abstractAssignmentNode
- abstract
 divideNode
  description Divide Numbers
  compiler
@@ -207,7 +202,6 @@ addNode
 abstractBooleanOperatorNode
  description Runs a boolean test and saves result.
  extends abstractAssignmentNode
- abstract
 greaterThanNode
  description Greater than test
  cells keywordCell identifierCell leftNumberCell numberCell

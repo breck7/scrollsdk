@@ -110,7 +110,7 @@ testTree.jibberish = equal => {
   const defNode = program
     .getHandGrammarProgram()
     .getNodeTypeFamilyTree()
-    .getNode("topLevelNode nodeWithConstsNode nodeExpandsConstsNode")
+    .getNode("abstractTopLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
   equal(defNode.toString(), "nodeExpandsConstsNode", "family tree works")
 
@@ -127,7 +127,7 @@ testTree.jibberish = equal => {
       .getDefinition()
       .getAncestorNodeTypeIdsArray()
       .join(" "),
-    "topLevelNode nodeWithConstsNode"
+    "abstractTopLevelNode nodeWithConstsNode"
   )
 
   // Assert
@@ -176,7 +176,7 @@ missing2 true`)
       ._getAncestorsArray()
       .map((def: any) => def.getNodeTypeIdFromDefinition())
       .join(" "),
-    "h1Node abstractHtmlNode topLevelNode"
+    "h1Node abstractHtmlNode abstractTopLevelNode"
   )
 }
 

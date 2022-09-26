@@ -1,6 +1,6 @@
 importOnly
-title JTree
-description Build your own language using Tree Notation.
+siteTitle JTree
+siteDescription Build your own language using Tree Notation.
 github https://github.com/breck7/jtree
 viewSourceBaseUrl https://github.com/breck7/jtree/blob/main/
 twitter https://twitter.com/treenotation

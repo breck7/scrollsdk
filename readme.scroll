@@ -4,17 +4,17 @@ import ciBadges.scroll
 
 # Links
 
-list
- - Tree Notation Homepage🔗treenotation.org
- - Tree Notation Sandbox🔗jtree.treenotation.org/sandbox
- - Tree Language Designer🔗jtree.treenotation.org/designer
- - Tree Notation FAQ🔗faq.treenotation.org
- - TreeBase🔗treebase.treenotation.org
- - TypeScript Library🔗github.com/treenotation/jtree
- - Tree Notation Subreddit🔗reddit.com/r/treenotation
- - Ohayo🔗github.com/treenotation/ohayo A Data Science App Powered By Tree Notation
- - UnitTests🔗jtree.treenotation.org/sandbox/test.html
- - PerfTests🔗jtree.treenotation.org/sandbox/perfTests.html
+readingList
+ https://treenotation.org Tree Notation Homepage
+ https://jtree.treenotation.org/sandbox Tree Notation Sandbox
+ https://jtree.treenotation.org/designer Tree Language Designer
+ https://faq.treenotation.org Tree Notation FAQ
+ https://treebase.treenotation.org TreeBase
+ https://github.com/treenotation/jtree TypeScript Library
+ https://reddit.com/r/treenotation Tree Notation Subreddit
+ https://github.com/treenotation/ohayo Ohayo - A data science studio powered by Tree Notation
+ https://jtree.treenotation.org/sandbox/test.html UnitTests
+ https://jtree.treenotation.org/sandbox/perfTests.html PerfTests
 
 ? Who is this package built for?
 

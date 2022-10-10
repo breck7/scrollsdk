@@ -41,12 +41,6 @@ nodeProduct
 browserProduct
  outputFileName DesignerApp.browser.js
  files designer/DesignerApp.ts
-nodeProduct
- outputFileName commandLineApp.node.js
- files products/treeNotationTypes.ts commandLineApp/commandLineApp.node.ts
- lastLine module.exports = {CommandLineApp}
- firstLine #! /usr/bin/env node
- executable
 browserProduct
  files sandbox/SandboxApp.ts
  outputFileName SandboxApp.browser.js

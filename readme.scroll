@@ -43,7 +43,7 @@ readingList
 
 code
  npm install -g ts-node
- npm install -g .
+ npm install .
  npm run test
 
 * Jtree currently includes around 10 compiled projects (aka "products") and more than a dozen Tree Languages.
@@ -60,30 +60,22 @@ code
 code
  <script src="https://jtree.treenotation.org/products/jtree.browser.js" />
 
-# jtree command line tool
-
-code
- npm install -g jtree
- jtree help
-
 ## TreeBase
 
-code
- npm install -g jtree
- jtree base
+* Instructions coming soon.
 
 ## jtree "sandbox" web app for exploring base Tree Notation
 
 code
- npm install -g jtree
- jtree kitchen
+ npm install .
+ npm run kitchen
  open http://localhost:3333/
 
 ## jtree "Designer" web app for building new Tree Languages
 
 code
- npm install -g jtree
- jtree kitchen
+ npm install .
+ npm run kitchen
  open http://localhost:3333/designer
 
 ## TreeComponentFramework for building web apps
@@ -103,7 +95,7 @@ code
 ## Building all tools and running tests
 
 code
- ./builder.js produceAll
+ npm run build
  npm test
 
 # Monorepo
@@ -131,7 +123,7 @@ image images/diagram.svg
 ## How to bump versions
 
 code
- ./builder.js updateVersion NEW_NUMBER
+ npm run updateVersion NEW_NUMBER
 
 # Alternatives Considered
 

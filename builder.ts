@@ -335,7 +335,6 @@ class Builder extends jtree.TreeNode {
   async test() {
     let folders = `jtable
 langs
-commandLineApp
 designer
 sandbox
 kitchen

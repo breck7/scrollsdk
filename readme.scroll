@@ -103,7 +103,7 @@ code
 ## Building all tools and running tests
 
 code
- jtree build produceAll
+ ./builder.js produceAll
  npm test
 
 # Monorepo
@@ -131,7 +131,7 @@ image images/diagram.svg
 ## How to bump versions
 
 code
- jtree build updateVersion NEW_NUMBER
+ ./builder.js updateVersion NEW_NUMBER
 
 # Alternatives Considered
 

@@ -41,22 +41,6 @@ class CommandLineApp {
   _reload() {
     this._grammarsTree = TreeNode.fromSsv(Disk.read(this._grammarsPath)) // todo: index on name, or build a Tree Grammar lang
   }
-  build(buildCommandName, argument) {
-    let dir = Utils._removeLastSlash(this._cwd) + "/"
-    let filePath = ""
-    while (dir !== "/") {
-      filePath = dir + "builder.ts"
-      const jsPath = dir + "builder.js"
-      if (Disk.exists(jsPath)) {
-        const { Builder } = require(jsPath)
-        return new Builder().main(buildCommandName, argument)
-      }
-      if (Disk.exists(filePath)) break
-      dir = Utils.getParentFolder(dir)
-    }
-    if (!Disk.exists(filePath)) throw new Error(`No '${filePath}' found.`)
-    return execSync([filePath, buildCommandName, argument].filter(identity => identity).join(" "), { encoding: "utf8", maxBuffer: 1024 * 1024 * 64 })
-  }
   // todo: improve or remove
   cases(folder, grammarName) {
     const files = recursiveReadSync(folder).filter(file => file.endsWith("." + grammarName))

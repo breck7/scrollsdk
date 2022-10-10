@@ -2,6 +2,10 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 58.0.0 2022-10-10
+- ⚠️ BREAKING: removed AbstractBuilder
+- 🏥 more path fixes for Windows users
+
 # 57.0.0 2022-10-10
 - ⚠️ BREAKING: removed rarely commands from CLI app: 'usage', 'programs', 'allHistory', 'distribute', 'combined'
 

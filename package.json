@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "57.0.0",
+  "version": "58.0.0",
   "description": "Simplify your code with Tree Notation. This jtree package includes a Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages, as well as sample languages, implemented in TypeScript.",
   "main": "index.js",
   "types": "./built/jtree.node.d.ts",
@@ -16,7 +16,8 @@
   "scripts": {
     "test": "ts-node builder.ts test",
     "cloc": "cloc $(git ls-files | grep --extended-regexp --invert-match 'products|lib|package-lock')",
-    "checkLinks": "linkinator -r https://jtree.treenotation.org"
+    "checkLinks": "linkinator -r https://jtree.treenotation.org",
+    "coverage": "tap --cov --coverage-report=lcov ${__filename} test"
   },
   "repository": {
     "type": "git",

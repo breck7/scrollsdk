@@ -1,7 +1,3 @@
-nodeProduct
- outputFileName AbstractBuilder.node.js
- files products/treeNotationTypes.ts builder/AbstractBuilder.ts
- lastLine module.exports = {AbstractBuilder}
 browserProduct
  outputFileName SweeperCraft.browser.js
  files treeComponentFramework/sweepercraft/SweeperCraft.ts

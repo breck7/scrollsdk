@@ -1,29 +1,21 @@
 title TypeScript TreeBase Implementation
 
-question What is TreeBase?
+? What is TreeBase?
 
-paragraph
- TreeBase is a system for long-term, collaborative, semantic
- knowledge bases. You can learn more <a
- href="https://treebase.treenotation.org/">here</a>
+* TreeBase is a system for long-term, collaborative, semantic knowledge bases.
 
-paragraph
- This is a TypeScript library for working with a TreeBase.
+* This is a TypeScript library for working with a TreeBase.
 
-section Try It
+? What are some example TreeBases?
 
-paragraph
- This will launch a TreeBase server on port 4444 using the
- included example "planets" database.
+readingList
+ https://pldb.com https://pldb.com
+ https://cancerdb.com https://cancerdb.com
+ http://leafdb.org http://leafdb.org
 
-code
- npm install -g jtree
- jtree base
+? Do I need to use this library to use TreeBase?
 
-question Do I need to use this library to use TreeBase?
-
-paragraph
- No. This library gives you some convenient functionality,
+* No. This library gives you some convenient functionality,
  like querying and bulk editing capabilities, but you can
  use the TreeBase system without installing any new software
  on your computer. In fact, you don't even need to use a

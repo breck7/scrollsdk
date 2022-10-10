@@ -1,4 +1,3 @@
 title CommandLineApp
 
-paragraph
- This subproject implements the `jtree` command line app.
+* This subproject implements the `jtree` command line app. This app may be deprecated in the future.

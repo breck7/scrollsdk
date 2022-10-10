@@ -12,6 +12,27 @@ const { Disk } = require("../products/Disk.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
+const CLI_HELP = TreeNode.fromSsv(
+  `command paramOne paramTwo description
+base folderPath port=4444 Start a TreeBase server for the given folder
+build commandName param? Run a jBuild command with 0 or 1 param.
+check programPath  Check a file for grammar errors
+compile programPath targetExtension Compile a file
+compileCheck folderPath grammarName Test all compiler test cases in a given folder
+format programPath  Format a tree program in place
+help   Show this help
+kitchen port=3333  Start the Kitchen Express server used by JTree developers
+list   List installed Grammars
+parse programPath  Parse and print the nodeTypes and cellTypes in a program
+register grammarPath  Register a new grammar
+run programPath  Execute a Tree Language Program
+serve port=3030 dirPath? Serve a folder over HTTP
+stamp dirPath  Dump a directory as a Stamp program.
+sublime grammarName outputPath Generate sublime syntax highlighting files
+version   List installed Tree Notation version and location
+webForm grammarName nodeTypeId? Build a web form for the given grammar`
+).toTable()
+
 class CommandLineApp {
   constructor(grammarsPath = path.join(homedir(), "grammars.ssv"), cwd = process.cwd()) {
     this._grammarsPath = grammarsPath
@@ -51,34 +72,6 @@ class CommandLineApp {
     return execSync([filePath, buildCommandName, argument].filter(identity => identity).join(" "), { encoding: "utf8", maxBuffer: 1024 * 1024 * 64 })
   }
 
-  combine(grammarName: treeNotationTypes.grammarName) {
-    const content = this.programs(grammarName)
-      .split(" ")
-      .map(path => {
-        const distributeLine = true ? `#file ${path}\n` : ""
-        return distributeLine + " " + Disk.read(path).replace(/\n/g, "\n ")
-      })
-      .join("\n")
-
-    return new TreeNode(content).toString()
-  }
-
-  distribute(combinedFilePath: treeNotationTypes.filepath) {
-    if (!combinedFilePath) throw new Error(`No combinedFilePath provided`)
-    const masterFile = new TreeNode(Disk.read(combinedFilePath))
-    return masterFile.split("#file").map((file: treeNotationTypes.treeNode) => {
-      const firstLine = file.nodeAt(0)
-      if (firstLine.getFirstWord() !== "#file") return undefined
-      const filepath = firstLine.getWord(1)
-
-      const needsShift = !firstLine.length
-      if (needsShift) firstLine.shiftYoungerSibsRight()
-
-      Disk.write(filepath, firstLine.childrenToString())
-      return filepath
-    })
-  }
-
   // todo: improve or remove
   cases(folder: treeNotationTypes.filepath, grammarName: treeNotationTypes.grammarName) {
     const files = recursiveReadSync(folder).filter((file: treeNotationTypes.filepath) => file.endsWith("." + grammarName))
@@ -106,8 +99,7 @@ class CommandLineApp {
   }
 
   help() {
-    const help = Disk.read(__dirname + "/../commandLineApp/help.ssv") // note: we do the parent indirection for compiled reasons.
-    return TreeNode.fromSsv(help).toTable()
+    return CLI_HELP
   }
 
   base(folderPath: treeNotationTypes.absoluteFolderPath = undefined, port = 4444) {
@@ -142,11 +134,6 @@ ${grammars.toTable()}`
 
   check(programPath: treeNotationTypes.treeProgramFilePath) {
     return this._checkAndLog(programPath)
-  }
-
-  checkAll(grammarName: treeNotationTypes.grammarName) {
-    const files = this._history(grammarName)
-    return files.map(file => this._checkAndLog(file)).join("\n")
   }
 
   _checkAndLog(programPath: treeNotationTypes.treeProgramFilePath) {
@@ -222,14 +209,6 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     return homedir() + "/history.ssv"
   }
 
-  programs(grammarName: treeNotationTypes.grammarName) {
-    return this._history(grammarName).join(" ")
-  }
-
-  allHistory() {
-    return this._getHistoryFile()
-  }
-
   webForm(grammarName: treeNotationTypes.grammarName, nodeTypeId?: string) {
     // webForm grammarName nodeTypeId? Build a web form for the given grammar
     const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
@@ -242,32 +221,6 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
     const stumpCode = def.toStumpString()
     const stumpNode = require("../products/stump.nodejs.js")
     return new stumpNode(stumpCode).compile()
-  }
-
-  _getHistoryFile() {
-    Disk.createFileIfDoesNotExist(this._getLogFilePath(), "command paramOne paramTwo timestamp\n")
-    return Disk.read(this._getLogFilePath())
-  }
-
-  _history(grammarName: treeNotationTypes.grammarName) {
-    this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    // todo: store history of all commands
-    // todo: build language for commandLineApp history
-    // todo: refactor this
-    // todo: some easier one step way to get a set from a column
-    // todo: add support for initing a TreeNode from a JS set and map
-    const data = TreeNode.fromSsv(this._getHistoryFile())
-    const files = data
-      .filter((node: treeNotationTypes.treeNode) => {
-        const command = node.get("command")
-        const filepath = node.get("paramOne")
-        // make sure theres a filder and it has an extension.
-        if (!filepath || !filepath.includes(".")) return false
-        if (["check", "run", "", "compile"].includes(command)) return true
-      })
-      .map((node: treeNotationTypes.treeNode) => node.get("paramOne"))
-    const items = Object.keys(new TreeNode(files.join("\n")).toObject())
-    return items.filter(file => file.endsWith(grammarName)).filter(file => Disk.exists(file))
   }
 
   register(grammarPath: treeNotationTypes.grammarFilePath) {
@@ -311,33 +264,7 @@ ${errors.length} errors found ${errors.length ? "\n" + errors.join("\n") : ""}`
   }
 
   async run(programPathOrGrammarName: treeNotationTypes.treeProgramFilePath | treeNotationTypes.grammarName) {
-    if (programPathOrGrammarName.includes(".")) return this._executeFile(programPathOrGrammarName)
-    return Promise.all(this._history(programPathOrGrammarName).map(file => this._executeFile(file)))
-  }
-
-  usage(grammarName: treeNotationTypes.grammarName) {
-    const files = this._history(grammarName)
-    if (!files.length) return ""
-    const grammarPath = this._getGrammarPathByGrammarNameOrThrow(grammarName)
-    const programConstructor = jtree.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
-    const report = new TreeNode()
-    files.forEach(path => {
-      try {
-        const code = Disk.read(path)
-        const program = new programConstructor(code)
-        const usage = program.getNodeTypeUsage(path)
-        report.extend(usage.toString())
-      } catch (err) {
-        // console.log(`Error getting usage stats for program ` + path)
-      }
-    })
-    const folderName = grammarName
-    const stampFile = new TreeNode(`folder ${folderName}`)
-    report.forEach((node: treeNotationTypes.treeNode) => {
-      const fileNode = stampFile.appendLine(`file ${folderName}/${node.getFirstWord()}.ssv`)
-      fileNode.appendLineAndChildren("data", `${node.getContent()}\n` + node.childrenToString())
-    })
-    return stampFile.toString()
+    return this._executeFile(programPathOrGrammarName)
   }
 
   version() {

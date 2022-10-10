@@ -2,6 +2,9 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 57.0.0 2022-10-10
+- ⚠️ BREAKING: removed rarely commands from CLI app: 'usage', 'programs', 'allHistory', 'distribute', 'combined'
+
 # 56.0.1 2022-09-26
 list
  - 🏥 minor dependency bump

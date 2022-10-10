@@ -36,6 +36,16 @@ readingList
 
 # Using Jtree
 
+## Quick start
+
+- Open https://gitpod.io/#https://github.com/breck7/jtree
+- Run:
+
+code
+ npm install -g ts-node
+ npm install -g .
+ npm run test
+
 * Jtree currently includes around 10 compiled projects (aka "products") and more than a dozen Tree Languages.
 
 # jtree base library for npm projects:

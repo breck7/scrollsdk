@@ -20,6 +20,38 @@ const makeId = (word: string) => TreeUtils.getFileName(TreeUtils.removeFileExten
 class TreeBaseFile extends TreeNode {
   id = this.getWord(0)
 
+  get webPermalink() {
+    return `https://pldb.com/languages/${this.permalink}`
+  }
+
+  get permalink() {
+    return this.id + ".html"
+  }
+
+  get type() {
+    return ""
+  }
+
+  get rank() {
+    return this.index()
+  }
+
+  get title() {
+    return this.id
+  }
+
+  get lowercase() {
+    return this.toString().toLowerCase()
+  }
+
+  get lowercaseNames() {
+    return this.names.map(name => name.toLowerCase())
+  }
+
+  get names() {
+    return [this.id]
+  }
+
   private _diskVersion: string
   setDiskVersion() {
     this._diskVersion = this.childrenToString()

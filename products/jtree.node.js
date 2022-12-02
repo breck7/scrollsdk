@@ -19,6 +19,21 @@ class TreeUtils {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
   }
+  static runCommand(instance, command = "", param = undefined) {
+    const run = name => {
+      console.log(`Running ${name}:`)
+      instance[name](param)
+    }
+    if (instance[command + "Command"]) return run(command + "Command")
+    const allCommands = Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).filter(word => word.endsWith("Command"))
+    allCommands.sort()
+    const commandAsNumber = parseInt(command) - 1
+    if (command.match(/^\d+$/) && allCommands[commandAsNumber]) return run(allCommands[commandAsNumber])
+    console.log(`\n❌ No command provided. Available commands:\n\n` + allCommands.map((name, index) => `${index + 1}. ${name.replace("Command", "")}`).join("\n") + "\n")
+  }
+  static htmlEscaped(content) {
+    return content.replace(/</g, "&lt;")
+  }
   static isNodeJs() {
     return typeof exports !== "undefined"
   }
@@ -3211,7 +3226,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "59.0.0"
+TreeNode.getVersion = () => "59.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

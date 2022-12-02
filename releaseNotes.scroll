@@ -2,6 +2,9 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 59.1.0 2022-12-02
+- 🎉 TreeBase: SearchServer now shipped in JTree
+
 # 59.0.0 2022-10-10
 - ⚠️ BREAKING: removed CommandLine app 'jtree'
 

@@ -53,6 +53,10 @@ nodeProduct
  files products/treeNotationTypes.ts treeBase/TreeBase.ts
  lastLine module.exports = {TreeBaseFile, TreeBaseFolder, TreeBaseServer}
 nodeProduct
+ outputFileName treeBaseSearchServer.node.js
+ files treeBase/SearchServer.ts
+ lastLine module.exports = {SearchServer}
+nodeProduct
  outputFileName TypeScriptRewriter.js
  files typeScriptRewriter/TypeScriptRewriter.ts
  lastLine module.exports = {TypeScriptRewriter}

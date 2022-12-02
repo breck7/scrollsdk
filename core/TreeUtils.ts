@@ -27,6 +27,28 @@ class TreeUtils {
     return (match && match[1]) || ""
   }
 
+  static runCommand(instance: any, command = "", param: string = undefined) {
+    const run = (name: string) => {
+      console.log(`Running ${name}:`)
+      instance[name](param)
+    }
+
+    if (instance[command + "Command"]) return run(command + "Command")
+
+    const allCommands = Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).filter(word => word.endsWith("Command"))
+    allCommands.sort()
+
+    const commandAsNumber = parseInt(command) - 1
+
+    if (command.match(/^\d+$/) && allCommands[commandAsNumber]) return run(allCommands[commandAsNumber])
+
+    console.log(`\n❌ No command provided. Available commands:\n\n` + allCommands.map((name, index) => `${index + 1}. ${name.replace("Command", "")}`).join("\n") + "\n")
+  }
+
+  static htmlEscaped(content: string) {
+    return content.replace(/</g, "&lt;")
+  }
+
   static isNodeJs() {
     return typeof exports !== "undefined"
   }

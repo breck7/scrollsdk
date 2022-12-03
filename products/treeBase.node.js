@@ -16,7 +16,7 @@ class TreeBaseFile extends TreeNode {
     this.id = this.getWord(0)
   }
   get webPermalink() {
-    return `https://pldb.com/languages/${this.permalink}`
+    return `${this.base.baseUrl}${this.permalink}`
   }
   get permalink() {
     return this.id + ".html"
@@ -25,7 +25,7 @@ class TreeBaseFile extends TreeNode {
     return ""
   }
   get rank() {
-    return this.index()
+    return this.getIndex()
   }
   get title() {
     return this.id
@@ -176,6 +176,7 @@ class TreeBaseFolder extends TreeNode {
     this.grammarCode = ""
     this.grammarProgramConstructor = undefined
     this.fileExtension = ""
+    this.baseUrl = ""
   }
   touch(filename) {
     // todo: throw if its a folder path, has wrong file extension, or other invalid

@@ -21,7 +21,7 @@ class TreeBaseFile extends TreeNode {
   id = this.getWord(0)
 
   get webPermalink() {
-    return `https://pldb.com/languages/${this.permalink}`
+    return `${this.base.baseUrl}${this.permalink}`
   }
 
   get permalink() {
@@ -33,7 +33,7 @@ class TreeBaseFile extends TreeNode {
   }
 
   get rank() {
-    return this.index()
+    return this.getIndex()
   }
 
   get title() {
@@ -283,6 +283,7 @@ class TreeBaseFolder extends TreeNode {
   grammarCode = ""
   grammarProgramConstructor: any = undefined
   fileExtension = ""
+  baseUrl = ""
 
   get grammarFilePaths() {
     return Disk.getFiles(this.grammarDir).filter((file: string) => file.endsWith(GrammarConstants.grammarFileExtension))

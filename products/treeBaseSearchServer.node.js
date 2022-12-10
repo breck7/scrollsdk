@@ -54,7 +54,7 @@ html
  }"><input name="q" placeholder="Search" autocomplete="off" type="search" id="searchFormInput"><input class="searchButton" type="submit" value="Search"></form></div>
  <script>document.addEventListener("DOMContentLoaded", evt => initSearchAutocomplete("searchFormInput"))</script>
 
-* <p class="searchResultsHeader">Searched ${numeral(folder.length).format("0,0")} languages and entities for "${escapedQuery}" in ${time}s.</p>
+* <p class="searchResultsHeader">Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.</p>
  <hr>
 
 html

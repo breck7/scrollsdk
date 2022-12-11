@@ -2,6 +2,9 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 59.1.2 2022-12-10
+- 🏥 TreeBase: copy fix in search engine
+
 # 59.1.1 2022-12-03
 - 🏥 TreeBase: bug fixes in `rank` and `webPermalink`
 

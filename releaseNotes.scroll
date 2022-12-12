@@ -2,6 +2,14 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 60.0.0 2022-12-12
+
+* This is an unstable release. Please wait a few days for bug fix releases before using.
+
+- ⚠️ BREAKING: TreeBaseServer is now exported from `treeBaseServer.node.js` and has been rewritten
+- ⚠️ BREAKING: SearchServer is now exported from `treeBaseServer.node.js`
+- 🎉 New class: `TreeBaseBuilder` and rewritten class `TreeBaseServer`
+
 # 59.1.2 2022-12-10
 - 🏥 TreeBase: copy fix in search engine
 

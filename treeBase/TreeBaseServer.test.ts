@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 
 import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
-import { SearchServer } from "./SearchServer"
+import { TreeBaseServer } from "./TreeBaseServer"
 
 const path = require("path")
 const { jtree } = require("../index.js")
@@ -14,7 +14,7 @@ const getFolder = () => new TreeBaseFolder().setDir(folderPath).setGrammarDir(fo
 
 testTree.basics = (equal: any) => {
   const folder = getFolder().loadFolder()
-  const searchServer = new SearchServer(folder)
+  const searchServer = new TreeBaseServer(folder).searchServer
   const results = searchServer.search("planet", "namesOnly")
   equal(results.length, 1)
 }

@@ -1,9 +1,108 @@
 const fs = require("fs")
 const path = require("path")
 const numeral = require("numeral")
+const https = require("https")
+const express = require("express")
+const bodyParser = require("body-parser")
 const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
 const { TreeNode, Utils } = jtree
+class TreeBaseServer {
+  constructor(folder, websitePath = "", searchLogFolder = "", prodUrl = "") {
+    this.isProd = false
+    this.folder = folder
+    this.websitePath = websitePath
+    this.homepage = Disk.read(path.join(this.websitePath, "index.html"))
+    this.prodUrl = prodUrl
+    const app = express()
+    this.app = app
+    app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.json())
+    app.use((req, res, next) => {
+      res.setHeader("Access-Control-Allow-Origin", "*")
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
+      res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type")
+      res.setHeader("Access-Control-Allow-Credentials", true)
+      next()
+    })
+    app.get("/", (req, res) => res.send(this.homepage))
+    app.use(express.static(__dirname))
+    if (websitePath) app.use(express.static(websitePath))
+    const searchServer = new SearchServer(folder)
+    this.searchServer = searchServer
+    const searchLogPath = path.join(searchLogFolder, "searchLog.tree")
+    if (searchLogFolder) Disk.touch(searchLogPath)
+    const searchHTMLCache = {}
+    app.get("/search", (req, res) => {
+      var _a
+      const originalQuery = (_a = req.query.q) !== null && _a !== void 0 ? _a : ""
+      if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
+      if (!searchHTMLCache[originalQuery])
+        searchHTMLCache[originalQuery] = this.scrollToHtml(
+          searchServer.search(originalQuery, "html", ["id", "title", "type", "appeared"], "id"),
+          TreeNode // todo: fix
+        )
+      res.send(searchHTMLCache[originalQuery])
+    })
+  }
+  _getRoutes(app) {
+    return app._router.stack // registered routes
+      .filter(route => route.route && route.route.path.length > 1) // take out all the middleware
+      .map(route => route.route.path)
+  }
+  listen(port = 4444) {
+    this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
+    return this
+  }
+  scrollToHtml(scrollContent, ScrollFile) {
+    return new ScrollFile(`replace BASE_URL ${this.isProd ? this.prodUrl : ""}
+replace BUILD_URL ${this.isProd ? this.prodUrl : "/"}
+
+css
+ #editForm {
+  width: 100%;
+  height: 80%;
+ }
+ .cell {
+   width: 48%;
+   display: inline-block;
+   vertical-align: top;
+   padding: 5px;
+ }
+ #quickLinks, .missingRecommendedColumns {
+   font-size: 80%;
+ }
+
+import header.scroll
+
+html
+ <div id="successLink"></div>
+ <div id="errorMessage" style="color: red;"></div>
+
+${scrollContent}
+
+import footer.scroll
+`).html
+  }
+  listenProd(pemPath) {
+    this.isProd = true
+    const key = fs.readFileSync(path.join(pemPath, "privkey.pem"))
+    const cert = fs.readFileSync(path.join(pemPath, "fullchain.pem"))
+    https
+      .createServer(
+        {
+          key,
+          cert
+        },
+        this.app
+      )
+      .listen(443)
+    const redirectApp = express()
+    redirectApp.use((req, res) => res.redirect(301, `https://${req.headers.host}${req.url}`))
+    redirectApp.listen(80, () => console.log(`Running redirect app`))
+    return this
+  }
+}
 class SearchServer {
   constructor(treeBaseFolder, searchUrl = "search") {
     this.folder = treeBaseFolder
@@ -76,4 +175,4 @@ if (!module.parent) {
   new SearchServer(folder).search(process.argv.slice(2).join(" "), "csv")
 }
 
-module.exports = { SearchServer }
+module.exports = { TreeBaseServer }

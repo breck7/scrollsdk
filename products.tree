@@ -51,7 +51,7 @@ nodeProduct
 nodeProduct
  outputFileName treeBase.node.js
  files products/treeNotationTypes.ts treeBase/TreeBase.ts
- lastLine module.exports = {TreeBaseFile, TreeBaseFolder, TreeBaseServer}
+ lastLine module.exports = {TreeBaseFile, TreeBaseFolder, TreeBaseBuilder}
 nodeProduct
  outputFileName treeBaseServer.node.js
  files treeBase/TreeBaseServer.ts

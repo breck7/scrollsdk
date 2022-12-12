@@ -273,4 +273,4 @@ class TreeBaseFolder extends TreeNode {
   }
 }
 
-module.exports = { TreeBaseFile, TreeBaseFolder, TreeBaseServer }
+module.exports = { TreeBaseFile, TreeBaseFolder, TreeBaseBuilder }

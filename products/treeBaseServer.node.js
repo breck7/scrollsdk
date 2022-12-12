@@ -45,11 +45,6 @@ class TreeBaseServer {
       res.send(searchHTMLCache[originalQuery])
     })
   }
-  _getRoutes(app) {
-    return app._router.stack // registered routes
-      .filter(route => route.route && route.route.path.length > 1) // take out all the middleware
-      .map(route => route.route.path)
-  }
   listen(port = 4444) {
     this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this

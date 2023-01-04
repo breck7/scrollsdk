@@ -2,13 +2,14 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
-# 61.0.0 2023-1-4
+# 61.0.1 2023-1-4
+- 🏥 TreeBase: SearchServer now exported correctly
 
+# 61.0.0 2023-1-4
 - ⚠️ Grammar: BREAKING: `contentDelimiter` is now `listDelimiter`
 - 🎉 Grammar: New keyword `uniqueLine` to check for duplicate lines.
 
 # 60.0.0 2022-12-12
-
 * This is an unstable release. Please wait a few days for bug fix releases before using.
 
 - ⚠️ BREAKING: TreeBaseServer is now exported from `treeBaseServer.node.js` and has been rewritten

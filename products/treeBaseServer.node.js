@@ -170,4 +170,4 @@ if (!module.parent) {
   new SearchServer(folder).search(process.argv.slice(2).join(" "), "csv")
 }
 
-module.exports = { TreeBaseServer }
+module.exports = { TreeBaseServer, SearchServer }

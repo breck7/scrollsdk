@@ -55,7 +55,7 @@ nodeProduct
 nodeProduct
  outputFileName treeBaseServer.node.js
  files treeBase/TreeBaseServer.ts
- lastLine module.exports = {TreeBaseServer}
+ lastLine module.exports = { TreeBaseServer, SearchServer}
 nodeProduct
  outputFileName TypeScriptRewriter.js
  files typeScriptRewriter/TypeScriptRewriter.ts

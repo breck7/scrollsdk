@@ -193,7 +193,7 @@ baseNodeTypeNode
  cruxFromId
 catchAllCellTypeNode
  cells propertyKeywordCell cellTypeIdCell
- description If there are extra words in the node's line, parse these words as this type.
+ description Aka 'listCellType'. Use this when the value in a key/value pair is a list. If there are extra words in the node's line, parse these words as this type. Often used with \`listDelimiterNode\`.
  extends abstractNodeTypeRuleNode
  cruxFromId
 cellParserNode
@@ -285,28 +285,31 @@ requiredNode
  description If present, the parent node will have an error if one of these nodes is not provided.
  extends abstractNodeTypeRuleNode
  cruxFromId
+abstractValidationRuleNode
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType boolCell
 singleNode
  description If present and there are more than 1 of these nodes on the parent, an error will be present. Can be overridden by a child class by setting to false.
- extends abstractNodeTypeRuleNode
- cruxFromId
- catchAllCellType boolCell
+ extends abstractValidationRuleNode
+uniqueLineNode
+ description If present and there are more than 1 of these lines on the parent, an error will be present. Can be overridden by a child class by setting to false.
+ extends abstractValidationRuleNode
 uniqueFirstWordNode
  description For catch all nodeTypes or pattern nodes, use this to indicate the first words should be unique.
- extends abstractNodeTypeRuleNode
- cruxFromId
- catchAllCellType boolCell
-contentDelimiterNode
+ extends abstractValidationRuleNode
+listDelimiterNode
  description If present will serialize the content of the node to an array of strings split on the provided delimiter.
  extends abstractNodeTypeRuleNode
  cruxFromId
  catchAllCellType stringCell
 contentKeyNode
- description If present will serialize the node to an object and set a property with this key and the value set to the node's content.
+ description Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the node to an object and set a property with this key and the value set to the node's content.
  extends abstractNodeTypeRuleNode
  cruxFromId
  catchAllCellType stringCell
 childrenKeyNode
- description If present will serialize the node to an object and set a property with this key and the value set to the node's children.
+ description Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the node to an object and set a property with this key and the value set to the node's children.
  extends abstractNodeTypeRuleNode
  cruxFromId
  catchAllCellType stringCell
@@ -454,9 +457,11 @@ extendsCellTypeNode
         cruxFromIdNode: cruxFromIdNode,
         patternNode: patternNode,
         requiredNode: requiredNode,
+        abstractValidationRuleNode: abstractValidationRuleNode,
         singleNode: singleNode,
+        uniqueLineNode: uniqueLineNode,
         uniqueFirstWordNode: uniqueFirstWordNode,
-        contentDelimiterNode: contentDelimiterNode,
+        listDelimiterNode: listDelimiterNode,
         contentKeyNode: contentKeyNode,
         childrenKeyNode: childrenKeyNode,
         tagsNode: tagsNode,
@@ -737,19 +742,19 @@ extendsCellTypeNode
 
   class requiredNode extends abstractNodeTypeRuleNode {}
 
-  class singleNode extends abstractNodeTypeRuleNode {
+  class abstractValidationRuleNode extends abstractNodeTypeRuleNode {
     get boolCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class uniqueFirstWordNode extends abstractNodeTypeRuleNode {
-    get boolCell() {
-      return this.getWordsFrom(0)
-    }
-  }
+  class singleNode extends abstractValidationRuleNode {}
 
-  class contentDelimiterNode extends abstractNodeTypeRuleNode {
+  class uniqueLineNode extends abstractValidationRuleNode {}
+
+  class uniqueFirstWordNode extends abstractValidationRuleNode {}
+
+  class listDelimiterNode extends abstractNodeTypeRuleNode {
     get stringCell() {
       return this.getWordsFrom(0)
     }
@@ -926,8 +931,9 @@ extendsCellTypeNode
           pattern: patternNode,
           required: requiredNode,
           single: singleNode,
+          uniqueLine: uniqueLineNode,
           uniqueFirstWord: uniqueFirstWordNode,
-          contentDelimiter: contentDelimiterNode,
+          listDelimiter: listDelimiterNode,
           contentKey: contentKeyNode,
           childrenKey: childrenKeyNode,
           tags: tagsNode,

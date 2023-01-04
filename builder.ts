@@ -270,8 +270,9 @@ class Builder extends jtree.TreeNode {
   }
 
   produceLang(langName: string) {
-    jtree.compileGrammarForBrowser(`${__dirname}/langs/${langName}/${langName}.grammar`, this._getProductFolder(), true)
-    jtree.compileGrammarForNodeJs(`${__dirname}/langs/${langName}/${langName}.grammar`, this._getProductFolder(), true, "../index.js")
+    const newFilePath = path.join(__dirname, "langs", langName, `${langName}.grammar`)
+    jtree.compileGrammarForBrowser(newFilePath, this._getProductFolder(), true)
+    jtree.compileGrammarForNodeJs(newFilePath, this._getProductFolder(), true, "../index.js")
   }
 
   private _getProductsTree() {

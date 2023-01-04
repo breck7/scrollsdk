@@ -2,6 +2,11 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 61.0.0 2023-1-4
+
+- ⚠️ Grammar: BREAKING: `contentDelimiter` is now `listDelimiter`
+- 🎉 Grammar: New keyword `uniqueLine` to check for duplicate lines.
+
 # 60.0.0 2022-12-12
 
 * This is an unstable release. Please wait a few days for bug fix releases before using.
@@ -66,7 +71,7 @@ list
 
 # 54.1.0 2022-07-25
 list
- - 🎉 Grammar: contentDelimiter property
+ - 🎉 Grammar: `contentDelimiter` property
 
 # 54.0.0 2022-07-24
 list

@@ -3239,7 +3239,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "60.0.0"
+TreeNode.getVersion = () => "61.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3408,7 +3408,7 @@ var GrammarConstants
   GrammarConstants["pattern"] = "pattern"
   GrammarConstants["inScope"] = "inScope"
   GrammarConstants["cells"] = "cells"
-  GrammarConstants["contentDelimiter"] = "contentDelimiter"
+  GrammarConstants["listDelimiter"] = "listDelimiter"
   GrammarConstants["contentKey"] = "contentKey"
   GrammarConstants["childrenKey"] = "childrenKey"
   GrammarConstants["uniqueFirstWord"] = "uniqueFirstWord"
@@ -3418,6 +3418,7 @@ var GrammarConstants
   GrammarConstants["constants"] = "constants"
   GrammarConstants["required"] = "required"
   GrammarConstants["single"] = "single"
+  GrammarConstants["uniqueLine"] = "uniqueLine"
   GrammarConstants["tags"] = "tags"
   GrammarConstants["_extendsJsClass"] = "_extendsJsClass"
   GrammarConstants["_rootNodeJsHeader"] = "_rootNodeJsHeader"
@@ -3755,9 +3756,25 @@ class GrammarBackedNode extends TreeNode {
       })
     return errors
   }
+  get uniqueLineAppearsTwiceErrors() {
+    const errors = []
+    const parent = this.getParent()
+    const hits = parent.getChildInstancesOfNodeTypeId(this.getDefinition().id)
+    if (hits.length > 1) {
+      const set = new Set()
+      hits.forEach((node, index) => {
+        const line = node.getLine()
+        if (set.has(line)) errors.push(new NodeTypeUsedMultipleTimesError(node))
+        set.add(line)
+      })
+    }
+    return errors
+  }
   get scopeErrors() {
     let errors = []
-    if (this.getDefinition().isSingle) errors = errors.concat(this.singleNodeUsedTwiceErrors)
+    const def = this.getDefinition()
+    if (def.isSingle) errors = errors.concat(this.singleNodeUsedTwiceErrors)
+    if (def.isUniqueLine) errors = errors.concat(this.uniqueLineAppearsTwiceErrors)
     const { requiredNodeErrors } = this
     if (requiredNodeErrors.length) errors = errors.concat(requiredNodeErrors)
     return errors
@@ -3813,8 +3830,8 @@ class GrammarBackedNode extends TreeNode {
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
     return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
   }
-  get contentDelimiter() {
-    return this.getDefinition()._getFromExtended(GrammarConstants.contentDelimiter)
+  get listDelimiter() {
+    return this.getDefinition()._getFromExtended(GrammarConstants.listDelimiter)
   }
   get contentKey() {
     return this.getDefinition()._getFromExtended(GrammarConstants.contentKey)
@@ -3832,7 +3849,7 @@ class GrammarBackedNode extends TreeNode {
     const cells = this._getParsedCells()
     // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the node level
     // todo: this currently parse anything other than string types
-    if (this.contentDelimiter) return this.getContent().split(this.contentDelimiter)
+    if (this.listDelimiter) return this.getContent().split(this.listDelimiter)
     if (cells.length === 2) return cells[1].getParsed()
     return this.getContent()
   }
@@ -4384,6 +4401,17 @@ class NodeTypeUsedMultipleTimesError extends AbstractTreeError {
     return this.getNode().destroy()
   }
 }
+class LineAppearsMultipleTimesError extends AbstractTreeError {
+  getMessage() {
+    return super.getMessage() + ` "${this.getNode().getLine()}" appears multiple times.`
+  }
+  getSuggestionMessage() {
+    return `Delete line ${this.getLineNumber()}`
+  }
+  applySuggestion() {
+    return this.getNode().destroy()
+  }
+}
 class UnknownCellTypeError extends AbstractCellError {
   getMessage() {
     return super.getMessage() + ` No cellType "${this.getCell().getCellTypeId()}" found. Language grammar for "${this.getExtension()}" may need to be fixed.`
@@ -4716,10 +4744,11 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.tags,
       GrammarConstants.crux,
       GrammarConstants.cruxFromId,
-      GrammarConstants.contentDelimiter,
+      GrammarConstants.listDelimiter,
       GrammarConstants.contentKey,
       GrammarConstants.childrenKey,
       GrammarConstants.uniqueFirstWord,
+      GrammarConstants.uniqueLine,
       GrammarConstants.pattern,
       GrammarConstants.baseNodeType,
       GrammarConstants.required,
@@ -4933,6 +4962,10 @@ ${properties.join("\n")}
   // Should only one of these node types be present in the parent node?
   get isSingle() {
     return this._hasFromExtended(GrammarConstants.single) && this._getFromExtended(GrammarConstants.single) !== "false"
+  }
+  // Can the same line appear twice in the parent node?
+  get isUniqueLine() {
+    return this._hasFromExtended(GrammarConstants.uniqueLine) && this._getFromExtended(GrammarConstants.uniqueLine) !== "false"
   }
   isRequired() {
     return this._hasFromExtended(GrammarConstants.required)

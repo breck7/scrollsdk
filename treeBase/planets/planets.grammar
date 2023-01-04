@@ -77,4 +77,4 @@ neighborsNode
  catchAllNodeType neighborNode
 relatedNode
  extends abstractStringPropertyNode
- contentDelimiter  & 
+ listDelimiter  & 

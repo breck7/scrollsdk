@@ -44,7 +44,7 @@ class jtreeNode extends jtree {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = jtree.TreeNode.fromDisk(pathToGrammar)
     const program = new HandGrammarProgram(grammarCode.toString())
-    const outputFilePath = outputFolder + `${program.getGrammarName()}.${target}.js`
+    const outputFilePath = path.join(outputFolder, `${program.getGrammarName()}.${target}.js`)
 
     let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
 

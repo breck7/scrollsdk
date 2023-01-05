@@ -153,9 +153,13 @@ class TypedWord extends TreeWord {
 
 // todo: can we merge these methods into base TreeNode and ditch this class?
 abstract class GrammarBackedNode extends TreeNode {
+  private _definition: AbstractGrammarDefinitionNode | HandGrammarProgram | nodeTypeDefinitionNode
   getDefinition(): AbstractGrammarDefinitionNode | HandGrammarProgram | nodeTypeDefinitionNode {
+    if (this._definition) return this._definition
+
     const handGrammarProgram = this.getHandGrammarProgram()
-    return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+    this._definition = this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+    return this._definition
   }
 
   toSQLiteInsertStatement(id: string): string {
@@ -2039,14 +2043,14 @@ ${properties.join("\n")}
     return parentDef ? ids.concat((<AbstractGrammarDefinitionNode>parentDef)._getInScopeNodeTypeIds()) : ids
   }
 
-  // Should only one of these node types be present in the parent node?
   get isSingle() {
-    return this._hasFromExtended(GrammarConstants.single) && this._getFromExtended(GrammarConstants.single) !== "false"
+    const hit = this._getNodeFromExtended(GrammarConstants.single)
+    return hit && hit.get(GrammarConstants.single) !== "false"
   }
 
-  // Can the same line appear twice in the parent node?
   get isUniqueLine() {
-    return this._hasFromExtended(GrammarConstants.uniqueLine) && this._getFromExtended(GrammarConstants.uniqueLine) !== "false"
+    const hit = this._getNodeFromExtended(GrammarConstants.uniqueLine)
+    return hit && hit.get(GrammarConstants.uniqueLine) !== "false"
   }
 
   isRequired(): boolean {

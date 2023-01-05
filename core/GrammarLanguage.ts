@@ -183,8 +183,46 @@ abstract class GrammarBackedNode extends TreeNode {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
+  private _nodeIndex: {
+    [nodeTypeId: string]: GrammarBackedNode[]
+  }
+
+  protected get nodeIndex() {
+    // StringMap<int> {firstWord: index}
+    // When there are multiple tails with the same firstWord, _index stores the last content.
+    // todo: change the above behavior: when a collision occurs, create an array.
+    return this._nodeIndex || this._makeNodeIndex()
+  }
+
+  _clearIndex() {
+    delete this._nodeIndex
+    return super._clearIndex()
+  }
+
+  protected _makeIndex(startAt = 0) {
+    if (this._nodeIndex) this._makeNodeIndex(startAt)
+    return super._makeIndex(startAt)
+  }
+
+  protected _makeNodeIndex(startAt = 0) {
+    if (!this._nodeIndex || !startAt) this._nodeIndex = {}
+    const nodes = this._getChildrenArray() as GrammarBackedNode[]
+    const newIndex = this._nodeIndex
+    const length = nodes.length
+
+    for (let index = startAt; index < length; index++) {
+      const node = nodes[index]
+      const ancestors = Array.from(node.getDefinition()._getAncestorSet()).forEach(id => {
+        if (!newIndex[id]) newIndex[id] = []
+        newIndex[id].push(node)
+      })
+    }
+
+    return newIndex
+  }
+
   getChildInstancesOfNodeTypeId(nodeTypeId: treeNotationTypes.nodeTypeId): GrammarBackedNode[] {
-    return this.filter(node => node.doesExtend(nodeTypeId))
+    return this.nodeIndex[nodeTypeId] || []
   }
 
   doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
@@ -250,7 +288,7 @@ abstract class GrammarBackedNode extends TreeNode {
   protected get requiredNodeErrors() {
     const errors: treeNotationTypes.TreeError[] = []
     Object.values(this.getDefinition().getFirstWordMapWithDefinitions()).forEach(def => {
-      if (def.isRequired()) if (!this.getChildren().some(node => node.getDefinition() === def)) errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
+      if (def.isRequired() && !this.nodeIndex[def.id]) errors.push(new MissingRequiredNodeTypeError(this, def.id))
     })
     return errors
   }

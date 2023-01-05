@@ -1587,8 +1587,12 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     return this._getFromExtended(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
 
+  private _getAllTests() {
+    return this._getChildrenByNodeConstructorInExtended(AbstractGrammarWordTestNode)
+  }
+
   isValid(str: string, programRootNode: GrammarBackedNode) {
-    return this._getChildrenByNodeConstructorInExtended(AbstractGrammarWordTestNode).every(node => (<AbstractGrammarWordTestNode>node).isValid(str, programRootNode))
+    return this._getAllTests().every(node => (<AbstractGrammarWordTestNode>node).isValid(str, programRootNode))
   }
 
   getCellTypeId(): treeNotationTypes.cellTypeId {
@@ -1616,9 +1620,13 @@ abstract class AbstractCellParser {
 
   protected _definition: AbstractGrammarDefinitionNode
 
+  private _requiredCellTypeIds: string[]
   getRequiredCellTypeIds(): treeNotationTypes.cellTypeId[] {
-    const parameters = this._definition._getFromExtended(GrammarConstants.cells)
-    return parameters ? parameters.split(" ") : []
+    if (!this._requiredCellTypeIds) {
+      const parameters = this._definition._getFromExtended(GrammarConstants.cells)
+      this._requiredCellTypeIds = parameters ? parameters.split(" ") : []
+    }
+    return this._requiredCellTypeIds
   }
 
   protected _getCellTypeId(cellIndex: treeNotationTypes.int, requiredCellTypeIds: string[], totalWordCount: treeNotationTypes.int) {
@@ -1889,9 +1897,7 @@ ${properties.join("\n")}
 
   getConstantsObject() {
     const obj = this._getUniqueConstantNodes()
-    Object.keys(obj).forEach(key => {
-      obj[key] = obj[key].getConstantValue()
-    })
+    Object.keys(obj).forEach(key => (obj[key] = obj[key].getConstantValue()))
     return obj
   }
 

@@ -3239,7 +3239,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "61.0.1"
+TreeNode.getVersion = () => "61.1.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3451,8 +3451,10 @@ class TypedWord extends TreeWord {
 // todo: can we merge these methods into base TreeNode and ditch this class?
 class GrammarBackedNode extends TreeNode {
   getDefinition() {
+    if (this._definition) return this._definition
     const handGrammarProgram = this.getHandGrammarProgram()
-    return this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+    this._definition = this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+    return this._definition
   }
   toSQLiteInsertStatement(id) {
     const def = this.getDefinition()
@@ -3475,8 +3477,36 @@ class GrammarBackedNode extends TreeNode {
   getAutocompleteResults(partialWord, cellIndex) {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
+  get nodeIndex() {
+    // StringMap<int> {firstWord: index}
+    // When there are multiple tails with the same firstWord, _index stores the last content.
+    // todo: change the above behavior: when a collision occurs, create an array.
+    return this._nodeIndex || this._makeNodeIndex()
+  }
+  _clearIndex() {
+    delete this._nodeIndex
+    return super._clearIndex()
+  }
+  _makeIndex(startAt = 0) {
+    if (this._nodeIndex) this._makeNodeIndex(startAt)
+    return super._makeIndex(startAt)
+  }
+  _makeNodeIndex(startAt = 0) {
+    if (!this._nodeIndex || !startAt) this._nodeIndex = {}
+    const nodes = this._getChildrenArray()
+    const newIndex = this._nodeIndex
+    const length = nodes.length
+    for (let index = startAt; index < length; index++) {
+      const node = nodes[index]
+      const ancestors = Array.from(node.getDefinition()._getAncestorSet()).forEach(id => {
+        if (!newIndex[id]) newIndex[id] = []
+        newIndex[id].push(node)
+      })
+    }
+    return newIndex
+  }
   getChildInstancesOfNodeTypeId(nodeTypeId) {
-    return this.filter(node => node.doesExtend(nodeTypeId))
+    return this.nodeIndex[nodeTypeId] || []
   }
   doesExtend(nodeTypeId) {
     return this.getDefinition()._doesExtend(nodeTypeId)
@@ -3531,7 +3561,7 @@ class GrammarBackedNode extends TreeNode {
   get requiredNodeErrors() {
     const errors = []
     Object.values(this.getDefinition().getFirstWordMapWithDefinitions()).forEach(def => {
-      if (def.isRequired()) if (!this.getChildren().some(node => node.getDefinition() === def)) errors.push(new MissingRequiredNodeTypeError(this, def.getNodeTypeIdFromDefinition()))
+      if (def.isRequired() && !this.nodeIndex[def.id]) errors.push(new MissingRequiredNodeTypeError(this, def.id))
     })
     return errors
   }
@@ -4579,8 +4609,11 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     const enumOptions = this._getEnumOptions()
     return this._getFromExtended(GrammarConstants.regex) || (enumOptions ? "(?:" + enumOptions.join("|") + ")" : "[^ ]*")
   }
+  _getAllTests() {
+    return this._getChildrenByNodeConstructorInExtended(AbstractGrammarWordTestNode)
+  }
   isValid(str, programRootNode) {
-    return this._getChildrenByNodeConstructorInExtended(AbstractGrammarWordTestNode).every(node => node.isValid(str, programRootNode))
+    return this._getAllTests().every(node => node.isValid(str, programRootNode))
   }
   getCellTypeId() {
     return this.getWord(0)
@@ -4600,8 +4633,11 @@ class AbstractCellParser {
     return `${nodeTypeId}: ${this.getRequiredCellTypeIds().join(" ")}${catchAllCellTypeId ? ` ${catchAllCellTypeId}...` : ""}`
   }
   getRequiredCellTypeIds() {
-    const parameters = this._definition._getFromExtended(GrammarConstants.cells)
-    return parameters ? parameters.split(" ") : []
+    if (!this._requiredCellTypeIds) {
+      const parameters = this._definition._getFromExtended(GrammarConstants.cells)
+      this._requiredCellTypeIds = parameters ? parameters.split(" ") : []
+    }
+    return this._requiredCellTypeIds
   }
   _getCellTypeId(cellIndex, requiredCellTypeIds, totalWordCount) {
     return requiredCellTypeIds[cellIndex]
@@ -4833,9 +4869,7 @@ ${properties.join("\n")}
   }
   getConstantsObject() {
     const obj = this._getUniqueConstantNodes()
-    Object.keys(obj).forEach(key => {
-      obj[key] = obj[key].getConstantValue()
-    })
+    Object.keys(obj).forEach(key => (obj[key] = obj[key].getConstantValue()))
     return obj
   }
   _getUniqueConstantNodes(extended = true) {
@@ -4959,13 +4993,13 @@ ${properties.join("\n")}
     const parentDef = this._getExtendedParent()
     return parentDef ? ids.concat(parentDef._getInScopeNodeTypeIds()) : ids
   }
-  // Should only one of these node types be present in the parent node?
   get isSingle() {
-    return this._hasFromExtended(GrammarConstants.single) && this._getFromExtended(GrammarConstants.single) !== "false"
+    const hit = this._getNodeFromExtended(GrammarConstants.single)
+    return hit && hit.get(GrammarConstants.single) !== "false"
   }
-  // Can the same line appear twice in the parent node?
   get isUniqueLine() {
-    return this._hasFromExtended(GrammarConstants.uniqueLine) && this._getFromExtended(GrammarConstants.uniqueLine) !== "false"
+    const hit = this._getNodeFromExtended(GrammarConstants.uniqueLine)
+    return hit && hit.get(GrammarConstants.uniqueLine) !== "false"
   }
   isRequired() {
     return this._hasFromExtended(GrammarConstants.required)

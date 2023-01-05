@@ -2,6 +2,9 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 61.1.0 2023-1-5
+- 🎉 Performance improvements to core.
+
 # 61.0.1 2023-1-4
 - 🏥 TreeBase: SearchServer now exported correctly
 

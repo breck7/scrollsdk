@@ -3239,7 +3239,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "61.1.0"
+TreeNode.getVersion = () => "61.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3876,20 +3876,17 @@ class GrammarBackedNode extends TreeNode {
     return this.getDefinition()._hasFromExtended(GrammarConstants.uniqueFirstWord) ? false : !this.getDefinition().isSingle
   }
   get typedContent() {
-    const cells = this._getParsedCells()
     // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the node level
     // todo: this currently parse anything other than string types
     if (this.listDelimiter) return this.getContent().split(this.listDelimiter)
+    const cells = this._getParsedCells()
     if (cells.length === 2) return cells[1].getParsed()
     return this.getContent()
   }
   get typedTuple() {
     const key = this.getFirstWord()
+    if (this.childrenAreTextBlob) return [key, this.childrenToString()]
     const { typedContent, contentKey, childrenKey } = this
-    const hasChildren = this.length > 0
-    const hasChildrenNoContent = typedContent === undefined && hasChildren
-    const hasChildrenAndContent = typedContent !== undefined && hasChildren
-    const shouldReturnValueAsObject = hasChildrenNoContent
     if (contentKey || childrenKey) {
       let obj = {}
       if (childrenKey) obj[childrenKey] = this.childrenToString()
@@ -3899,8 +3896,11 @@ class GrammarBackedNode extends TreeNode {
       }
       return [key, obj]
     }
-    if (this.childrenAreTextBlob) return [key, this.childrenToString()]
+    const hasChildren = this.length > 0
+    const hasChildrenNoContent = typedContent === undefined && hasChildren
+    const shouldReturnValueAsObject = hasChildrenNoContent
     if (shouldReturnValueAsObject) return [key, this.typedMap]
+    const hasChildrenAndContent = typedContent !== undefined && hasChildren
     const shouldReturnValueAsContentPlusChildren = hasChildrenAndContent
     // If the node has a content and a subtree return it as a string, as
     // Javascript object values can't be both a leaf and a tree.

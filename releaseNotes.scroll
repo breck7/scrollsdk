@@ -2,6 +2,9 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 61.2.0 2023-1-5
+- 🎉 Performance improvements to core (typed map method).
+
 # 61.1.0 2023-1-5
 - 🎉 Performance improvements to core.
 

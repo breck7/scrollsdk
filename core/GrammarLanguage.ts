@@ -660,23 +660,20 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   get typedContent() {
-    const cells = this._getParsedCells()
-
     // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the node level
     // todo: this currently parse anything other than string types
     if (this.listDelimiter) return this.getContent().split(this.listDelimiter)
 
+    const cells = this._getParsedCells()
     if (cells.length === 2) return cells[1].getParsed()
     return this.getContent()
   }
 
   get typedTuple() {
     const key = this.getFirstWord()
+    if (this.childrenAreTextBlob) return [key, this.childrenToString()]
+
     const { typedContent, contentKey, childrenKey } = this
-    const hasChildren = this.length > 0
-    const hasChildrenNoContent = typedContent === undefined && hasChildren
-    const hasChildrenAndContent = typedContent !== undefined && hasChildren
-    const shouldReturnValueAsObject = hasChildrenNoContent
 
     if (contentKey || childrenKey) {
       let obj: any = {}
@@ -689,10 +686,13 @@ abstract class GrammarBackedNode extends TreeNode {
       return [key, obj]
     }
 
-    if (this.childrenAreTextBlob) return [key, this.childrenToString()]
+    const hasChildren = this.length > 0
 
+    const hasChildrenNoContent = typedContent === undefined && hasChildren
+    const shouldReturnValueAsObject = hasChildrenNoContent
     if (shouldReturnValueAsObject) return [key, this.typedMap]
 
+    const hasChildrenAndContent = typedContent !== undefined && hasChildren
     const shouldReturnValueAsContentPlusChildren = hasChildrenAndContent
 
     // If the node has a content and a subtree return it as a string, as

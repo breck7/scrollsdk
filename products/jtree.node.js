@@ -3215,6 +3215,17 @@ class TreeNode extends AbstractNode {
     }
     return methods[format](content)
   }
+  static fromFolder(folderPath, filepathPredicate = filepath => filepath !== ".DS_Store") {
+    const path = require("path")
+    const fs = require("fs")
+    const tree = new TreeNode()
+    const files = fs
+      .readdirSync(folderPath)
+      .map(filename => path.join(folderPath, filename))
+      .filter(filepath => !fs.statSync(filepath).isDirectory() && filepathPredicate(filepath))
+      .forEach(filePath => tree.appendLineAndChildren(filePath, fs.readFileSync(filePath, "utf8")))
+    return tree
+  }
 }
 TreeNode._parsers = new Map()
 TreeNode.Parser = Parser
@@ -3229,7 +3240,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "61.3.0"
+TreeNode.getVersion = () => "61.4.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

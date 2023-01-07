@@ -136,12 +136,17 @@ class SearchServer {
     }
     const highlightHit = file => {
       const line = file.lowercase.split("\n").find(line => testFn(line))
-      return line.replace(lowerCaseQuery, `<span style="highlightHit">${lowerCaseQuery}</span>`)
+      return line.replace(lowerCaseQuery, `<span class="highlightHit">${lowerCaseQuery}</span>`)
     }
     const fullTextSearchResults = fullTextHits.map(file => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank} - ${highlightHit(file)}</div>`).join("\n")
     const nameResults = nameHits.map(file => ` <div class="searchResultName"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
     const time = numeral((Date.now() - startTime) / 1000).format("0.00")
     return `
+title ${escapedQuery} - Search
+ hidden
+
+viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
+
 html
  <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="${
    this.searchUrl
@@ -151,8 +156,7 @@ html
 * <p class="searchResultsHeader">Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.</p>
  <hr>
 
-html
- <p class="searchResultsHeader">Showing ${nameHits.length} files whose name or aliases matched.</p>
+* <p class="searchResultsHeader">Showing ${nameHits.length} files whose name or aliases matched.</p>
 
 html
 ${nameResults}

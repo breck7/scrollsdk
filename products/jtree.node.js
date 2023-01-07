@@ -1027,6 +1027,9 @@ class TreeNode extends AbstractNode {
     if (index < 0) index = words.length + index
     return words[index]
   }
+  get list() {
+    return this.getWordsFrom(1)
+  }
   _toHtml(indentCount) {
     const path = this.getPathVector().join(" ")
     const classes = {
@@ -3226,7 +3229,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "61.2.0"
+TreeNode.getVersion = () => "61.3.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3856,6 +3859,9 @@ class GrammarBackedNode extends TreeNode {
   }
   get isArrayElement() {
     return this.getDefinition()._hasFromExtended(GrammarConstants.uniqueFirstWord) ? false : !this.getDefinition().isSingle
+  }
+  get list() {
+    return this.listDelimiter ? this.getContent().split(this.listDelimiter) : super.list
   }
   get typedContent() {
     // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the node level

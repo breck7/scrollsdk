@@ -337,6 +337,10 @@ class TreeNode extends AbstractNode {
     return words[index]
   }
 
+  get list() {
+    return this.getWordsFrom(1)
+  }
+
   protected _toHtml(indentCount: int) {
     const path = this.getPathVector().join(" ")
     const classes = {

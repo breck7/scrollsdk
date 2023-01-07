@@ -49,13 +49,13 @@ class TreeBaseServer {
     app.use(express.static(__dirname))
 
     if (websitePath)
-    	app.use(express.static(websitePath))
+      app.use(express.static(websitePath))
 
     const searchServer = new SearchServer(folder)
     this.searchServer = searchServer
     const searchLogPath = path.join(searchLogFolder, "searchLog.tree")
     if (searchLogFolder)
-    	Disk.touch(searchLogPath)
+      Disk.touch(searchLogPath)
     
 
     const searchHTMLCache: any = {}
@@ -148,74 +148,78 @@ import footer.scroll
 }
 
 class SearchServer {
-	constructor(treeBaseFolder: TreeBaseFolder, searchUrl = "search") {
-		this.folder = treeBaseFolder
-		this.searchUrl = searchUrl
-	}
+  constructor(treeBaseFolder: TreeBaseFolder, searchUrl = "search") {
+    this.folder = treeBaseFolder
+    this.searchUrl = searchUrl
+  }
 
-	searchUrl: string
-	folder: TreeBaseFolder
+  searchUrl: string
+  folder: TreeBaseFolder
 
-	logQuery(logFilePath: string, originalQuery: string, ip: string) {
-		const tree = `search
+  logQuery(logFilePath: string, originalQuery: string, ip: string) {
+    const tree = `search
  time ${Date.now()}
  ip ${ip}
  query
   ${originalQuery.replace(/\n/g, "\n  ")} 
 `
-		fs.appendFile(logFilePath, tree, function() {})
-		return this
-	}
+    fs.appendFile(logFilePath, tree, function() {})
+    return this
+  }
 
-	search(originalQuery: string, format = "html", columns = ["id"], idColumnName = "id"): string {
-		const query = decodeURIComponent(originalQuery)
-		const startTime = Date.now()
-		const { folder } = this
-		const lowerCaseQuery = query.toLowerCase()
-		// Todo: allow advanced search. case sensitive/insensitive, regex, et cetera.
-		const testFn = (str: string) => str.includes(lowerCaseQuery)
+  search(originalQuery: string, format = "html", columns = ["id"], idColumnName = "id"): string {
+    const query = decodeURIComponent(originalQuery)
+    const startTime = Date.now()
+    const { folder } = this
+    const lowerCaseQuery = query.toLowerCase()
+    // Todo: allow advanced search. case sensitive/insensitive, regex, et cetera.
+    const testFn = (str: string) => str.includes(lowerCaseQuery)
 
-		const escapedQuery = Utils.htmlEscaped(lowerCaseQuery)
-		const fullTextHits = folder.filter((file: TreeBaseFile) => testFn(file.lowercase))
-		const nameHits = folder.filter((file: TreeBaseFile) => file.lowercaseNames.some(testFn))
+    const escapedQuery = Utils.htmlEscaped(lowerCaseQuery)
+    const fullTextHits = folder.filter((file: TreeBaseFile) => testFn(file.lowercase))
+    const nameHits = folder.filter((file: TreeBaseFile) => file.lowercaseNames.some(testFn))
 
-		if (format === "namesOnly") return fullTextHits.map((file: TreeBaseFile) => file.id)
+    if (format === "namesOnly") return fullTextHits.map((file: TreeBaseFile) => file.id)
 
-		if (format === "csv") {
-			nameHits.map((file: TreeBaseFile) => file.set(idColumnName, file.id))
-			fullTextHits.map((file: TreeBaseFile) => file.set(idColumnName, file.id))
+    if (format === "csv") {
+      nameHits.map((file: TreeBaseFile) => file.set(idColumnName, file.id))
+      fullTextHits.map((file: TreeBaseFile) => file.set(idColumnName, file.id))
 
-			console.log(`## ${nameHits.length} name hits`)
-			console.log(new TreeNode(nameHits).toDelimited(",", columns))
+      console.log(`## ${nameHits.length} name hits`)
+      console.log(new TreeNode(nameHits).toDelimited(",", columns))
 
-			console.log(``)
+      console.log(``)
 
-			console.log(`## ${fullTextHits.length} full text hits`)
-			console.log(new TreeNode(fullTextHits).toDelimited(",", columns))
-			return
-		}
+      console.log(`## ${fullTextHits.length} full text hits`)
+      console.log(new TreeNode(fullTextHits).toDelimited(",", columns))
+      return
+    }
 
-		const highlightHit = (file: TreeBaseFile) => {
-			const line = file.lowercase.split("\n").find((line: string) => testFn(line))
-			return line.replace(lowerCaseQuery, `<span style="highlightHit">${lowerCaseQuery}</span>`)
-		}
-		const fullTextSearchResults = fullTextHits.map((file: TreeBaseFile) => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank} - ${highlightHit(file)}</div>`).join("\n")
+    const highlightHit = (file: TreeBaseFile) => {
+      const line = file.lowercase.split("\n").find((line: string) => testFn(line))
+      return line.replace(lowerCaseQuery, `<span class="highlightHit">${lowerCaseQuery}</span>`)
+    }
+    const fullTextSearchResults = fullTextHits.map((file: TreeBaseFile) => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank} - ${highlightHit(file)}</div>`).join("\n")
 
-		const nameResults = nameHits.map((file: TreeBaseFile) => ` <div class="searchResultName"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
+    const nameResults = nameHits.map((file: TreeBaseFile) => ` <div class="searchResultName"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
 
-		const time = numeral((Date.now() - startTime) / 1000).format("0.00")
-		return `
+    const time = numeral((Date.now() - startTime) / 1000).format("0.00")
+    return `
+title ${escapedQuery} - Search
+ hidden
+
+viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
+
 html
  <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="${
-		this.searchUrl
+    this.searchUrl
  }"><input name="q" placeholder="Search" autocomplete="off" type="search" id="searchFormInput"><input class="searchButton" type="submit" value="Search"></form></div>
  <script>document.addEventListener("DOMContentLoaded", evt => initSearchAutocomplete("searchFormInput"))</script>
 
 * <p class="searchResultsHeader">Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.</p>
  <hr>
 
-html
- <p class="searchResultsHeader">Showing ${nameHits.length} files whose name or aliases matched.</p>
+* <p class="searchResultsHeader">Showing ${nameHits.length} files whose name or aliases matched.</p>
 
 html
 ${nameResults}
@@ -225,13 +229,13 @@ ${nameResults}
 
 html
  ${fullTextSearchResults}`
-	}
+  }
 }
 
 export { SearchServer, TreeBaseServer }
 
 if (!module.parent) {
-	const folderPath = process.cwd()
-	const folder = new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
-	new SearchServer(folder).search(process.argv.slice(2).join(" "), "csv")
+  const folderPath = process.cwd()
+  const folder = new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
+  new SearchServer(folder).search(process.argv.slice(2).join(" "), "csv")
 }

@@ -659,6 +659,10 @@ abstract class GrammarBackedNode extends TreeNode {
     return this.getDefinition()._hasFromExtended(GrammarConstants.uniqueFirstWord) ? false : !this.getDefinition().isSingle
   }
 
+  get list() {
+    return this.listDelimiter ? this.getContent().split(this.listDelimiter) : super.list
+  }
+
   get typedContent() {
     // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the node level
     // todo: this currently parse anything other than string types

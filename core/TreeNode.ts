@@ -2974,6 +2974,18 @@ class TreeNode extends AbstractNode {
 
     return methods[format](content)
   }
+
+  static fromFolder(folderPath: string, filepathPredicate = (filepath: string) => filepath !== ".DS_Store"): TreeNode {
+    const path = require("path")
+    const fs = require("fs")
+    const tree = new TreeNode()
+    const files = fs
+      .readdirSync(folderPath)
+      .map((filename: string) => path.join(folderPath, filename))
+      .filter((filepath: string) => !fs.statSync(filepath).isDirectory() && filepathPredicate(filepath))
+      .forEach((filePath: string) => tree.appendLineAndChildren(filePath, fs.readFileSync(filePath, "utf8")))
+    return tree
+  }
 }
 
 abstract class AbstractExtendibleTreeNode extends TreeNode {

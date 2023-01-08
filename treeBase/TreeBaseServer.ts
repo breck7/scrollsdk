@@ -18,13 +18,11 @@ class TreeBaseServer {
   app: any
   websitePath: string
   homepage: string
-  prodUrl: string
   searchServer: SearchServer
-  constructor(folder: TreeBaseFolder, websitePath = "", searchLogFolder = "", prodUrl = "") {
+  constructor(folder: TreeBaseFolder, websitePath = "", searchLogFolder = "") {
     this.folder = folder
     this.websitePath = websitePath
     this.homepage = Disk.read(path.join(this.websitePath, "index.html"))
-    this.prodUrl = prodUrl
 
     const app = express() 
     this.app = app
@@ -73,7 +71,7 @@ class TreeBaseServer {
             "html",
             ["id", "title", "type", "appeared"],
             "id"
-          ), TreeNode // todo: fix
+          )
         )
 
       res.send(searchHTMLCache[originalQuery])
@@ -89,43 +87,12 @@ class TreeBaseServer {
     return this
   }
 
-  scrollToHtml(scrollContent: string, ScrollFile: any) {
-    return new ScrollFile(
-      `replace BASE_URL ${this.isProd ? this.prodUrl : ""}
-replace BUILD_URL ${this.isProd ? this.prodUrl : "/"}
-
-css
- #editForm {
-  width: 100%;
-  height: 80%;
- }
- .cell {
-   width: 48%;
-   display: inline-block;
-   vertical-align: top;
-   padding: 5px;
- }
- #quickLinks, .missingRecommendedColumns {
-   font-size: 80%;
- }
-
-import header.scroll
-
-html
- <div id="successLink"></div>
- <div id="errorMessage" style="color: red;"></div>
-
-${scrollContent}
-
-import footer.scroll
-`
-    ).html
+  // Currently you need to override in your app
+  scrollToHtml(scrollContent: string) {
+    return scrollContent
   }
-
-  isProd = false
-
+  
   listenProd(pemPath: string) {
-    this.isProd = true
     const key = fs.readFileSync(path.join(pemPath, "privkey.pem"))
     const cert = fs.readFileSync(path.join(pemPath, "fullchain.pem"))
     https

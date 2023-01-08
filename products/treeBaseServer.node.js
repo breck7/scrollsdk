@@ -8,12 +8,10 @@ const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
 const { TreeNode, Utils } = jtree
 class TreeBaseServer {
-  constructor(folder, websitePath = "", searchLogFolder = "", prodUrl = "") {
-    this.isProd = false
+  constructor(folder, websitePath = "", searchLogFolder = "") {
     this.folder = folder
     this.websitePath = websitePath
     this.homepage = Disk.read(path.join(this.websitePath, "index.html"))
-    this.prodUrl = prodUrl
     const app = express()
     this.app = app
     app.use(bodyParser.urlencoded({ extended: false }))
@@ -37,11 +35,7 @@ class TreeBaseServer {
       var _a
       const originalQuery = (_a = req.query.q) !== null && _a !== void 0 ? _a : ""
       if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
-      if (!searchHTMLCache[originalQuery])
-        searchHTMLCache[originalQuery] = this.scrollToHtml(
-          searchServer.search(originalQuery, "html", ["id", "title", "type", "appeared"], "id"),
-          TreeNode // todo: fix
-        )
+      if (!searchHTMLCache[originalQuery]) searchHTMLCache[originalQuery] = this.scrollToHtml(searchServer.search(originalQuery, "html", ["id", "title", "type", "appeared"], "id"))
       res.send(searchHTMLCache[originalQuery])
     })
   }
@@ -49,38 +43,11 @@ class TreeBaseServer {
     this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
   }
-  scrollToHtml(scrollContent, ScrollFile) {
-    return new ScrollFile(`replace BASE_URL ${this.isProd ? this.prodUrl : ""}
-replace BUILD_URL ${this.isProd ? this.prodUrl : "/"}
-
-css
- #editForm {
-  width: 100%;
-  height: 80%;
- }
- .cell {
-   width: 48%;
-   display: inline-block;
-   vertical-align: top;
-   padding: 5px;
- }
- #quickLinks, .missingRecommendedColumns {
-   font-size: 80%;
- }
-
-import header.scroll
-
-html
- <div id="successLink"></div>
- <div id="errorMessage" style="color: red;"></div>
-
-${scrollContent}
-
-import footer.scroll
-`).html
+  // Currently you need to override in your app
+  scrollToHtml(scrollContent) {
+    return scrollContent
   }
   listenProd(pemPath) {
-    this.isProd = true
     const key = fs.readFileSync(path.join(pemPath, "privkey.pem"))
     const cert = fs.readFileSync(path.join(pemPath, "fullchain.pem"))
     https

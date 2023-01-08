@@ -2,6 +2,9 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 61.4.1 2023-1-8
+- 🏥 TreeBase: search server fixes
+
 # 61.4.0 2023-1-7
 - 🎉 added `TreeNode.fromFolder` method
 

@@ -4,7 +4,6 @@ const path = require("path")
 import { jtree } from "./jtree"
 import { treeNotationTypes } from "../products/treeNotationTypes"
 import { HandGrammarProgram, GrammarBackedNode } from "./GrammarLanguage"
-import { Upgrader } from "./Upgrader"
 
 enum CompileTarget {
   nodejs = "nodejs",
@@ -12,8 +11,6 @@ enum CompileTarget {
 }
 
 class jtreeNode extends jtree {
-  static Upgrader = Upgrader
-
   static compileGrammarAndCreateProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath): GrammarBackedNode => {
     // tod: remove?
     const programConstructor = jtreeNode.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)

@@ -2,7 +2,7 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class Timer {
   constructor() {
-    this._tickTime = Date.now() - (TreeUtils.isNodeJs() ? 1000 * process.uptime() : 0)
+    this._tickTime = Date.now() - (Utils.isNodeJs() ? 1000 * process.uptime() : 0)
     this._firstTickTime = this._tickTime
   }
 
@@ -21,7 +21,7 @@ class Timer {
   }
 }
 
-class TreeUtils {
+class Utils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
@@ -89,7 +89,7 @@ class TreeUtils {
   static makeMatrix(cols: number, rows: number, fill = 0) {
     const matrix: number[][] = []
     while (rows) {
-      matrix.push(TreeUtils.makeVector(cols, fill))
+      matrix.push(Utils.makeVector(cols, fill))
       rows--
     }
     return matrix
@@ -166,11 +166,11 @@ class TreeUtils {
   }
 
   static randomUniformInt = (min: treeNotationTypes.int, max: treeNotationTypes.int, seed = Date.now()) => {
-    return Math.floor(TreeUtils.randomUniformFloat(min, max, seed))
+    return Math.floor(Utils.randomUniformFloat(min, max, seed))
   }
 
   static randomUniformFloat = (min: number, max: number, seed = Date.now()) => {
-    const randFn = TreeUtils.makeSemiRandomFn(seed)
+    const randFn = Utils.makeSemiRandomFn(seed)
     return min + (max - min) * randFn()
   }
 
@@ -184,7 +184,7 @@ class TreeUtils {
 
   static shuffleInPlace(arr: any[], seed = Date.now()) {
     // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
-    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)
     for (let index = arr.length - 1; index > 0; index--) {
       const tempIndex = Math.floor(randFn() * (index + 1))
       ;[arr[index], arr[tempIndex]] = [arr[tempIndex], arr[index]]
@@ -318,7 +318,7 @@ class TreeUtils {
 
       if (!candidate) continue
 
-      const editDistance = TreeUtils._getEditDistance(str, caseSensitive ? candidate : candidate.toLowerCase(), maximumEditDistanceToBeBestMatch)
+      const editDistance = Utils._getEditDistance(str, caseSensitive ? candidate : candidate.toLowerCase(), maximumEditDistanceToBeBestMatch)
       if (editDistance < maximumEditDistanceToBeBestMatch) {
         maximumEditDistanceToBeBestMatch = editDistance
         closestMatch = candidate
@@ -333,7 +333,7 @@ class TreeUtils {
   // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
   private static _getEditDistance(stringA: string, stringB: string, maxInt: treeNotationTypes.positiveInt) {
     // Handle null or undefined max.
-    maxInt = maxInt || maxInt === 0 ? maxInt : TreeUtils.MAX_INT
+    maxInt = maxInt || maxInt === 0 ? maxInt : Utils.MAX_INT
 
     const aLength = stringA.length
     const bLength = stringB.length
@@ -364,7 +364,7 @@ class TreeUtils {
 
     // Loop over the rest of the columns.
     for (let bIndex = 1; bIndex <= bLength; bIndex++) {
-      colMin = TreeUtils.MAX_INT
+      colMin = Utils.MAX_INT
       minJ = 1
       if (bIndex > maxInt) minJ = bIndex - maxInt
       maxJ = bLength + 1
@@ -459,7 +459,7 @@ class TreeUtils {
 
   static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), seed = Date.now()) {
     let str = ""
-    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)
     while (length) {
       str += letters[Math.round(Math.min(randFn() * letters.length, letters.length - 1))]
       length--
@@ -471,7 +471,7 @@ class TreeUtils {
   static makeRandomTree(lines = 1000, seed = Date.now()) {
     let str = ""
     let letters = " 123abc".split("")
-    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)
     while (lines) {
       let indent = " ".repeat(Math.round(randFn() * 6))
       let bit = indent
@@ -644,4 +644,4 @@ class TreeUtils {
   }
 }
 
-export { TreeUtils }
+export { Utils }

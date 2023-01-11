@@ -1,5 +1,5 @@
 import { TreeNode } from "./TreeNode"
-import { TreeUtils } from "./TreeUtils"
+import { Utils } from "./Utils"
 
 import { GrammarConstants, HandGrammarProgram, PreludeCellTypeIds } from "./GrammarLanguage"
 

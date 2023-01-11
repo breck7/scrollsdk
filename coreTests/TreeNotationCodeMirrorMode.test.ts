@@ -15,7 +15,7 @@ const irisGrammar = Disk.read(irisPath)
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
-const TreeUtils = jtree.Utils
+const Utils = jtree.Utils
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -38,7 +38,7 @@ class MockStream {
 
   get lineOracle() {
     return {
-      line: TreeUtils.getLineIndexAtCharacterPosition(this._str, this._charPosition)
+      line: Utils.getLineIndexAtCharacterPosition(this._str, this._charPosition)
     }
   }
 

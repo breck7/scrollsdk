@@ -1,5 +1,5 @@
 import { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } from "./TreeNode"
-import { TreeUtils } from "./TreeUtils"
+import { Utils } from "./Utils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {
@@ -282,7 +282,7 @@ abstract class GrammarBackedNode extends TreeNode {
       orderMap[word] = index
     })
     this.sort(
-      TreeUtils.makeSortByFn((runtimeNode: GrammarBackedNode) => {
+      Utils.makeSortByFn((runtimeNode: GrammarBackedNode) => {
         return orderMap[runtimeNode.getDefinition().getNodeTypeIdFromDefinition()]
       })
     )
@@ -636,7 +636,7 @@ abstract class GrammarBackedNode extends TreeNode {
     const compiler = this.getDefinition()._getCompilerObject()
     const catchAllCellDelimiter = compiler[GrammarConstantsCompiler.catchAllCellDelimiter]
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
-    return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
+    return str !== undefined ? Utils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
   }
 
   protected get listDelimiter() {
@@ -873,7 +873,7 @@ abstract class AbstractGrammarBackedCell<T> {
     // todo: cleanup
     const cellDef = this._getCellTypeDefinition()
     const enumOptions = cellDef._getFromExtended(GrammarConstants.enum)
-    if (enumOptions) return TreeUtils.getRandomString(1, enumOptions.split(" "))
+    if (enumOptions) return Utils.getRandomString(1, enumOptions.split(" "))
 
     return this._synthesizeCell(seed)
   }
@@ -944,7 +944,7 @@ class GrammarBitCell extends AbstractGrammarBackedCell<boolean> {
   static defaultHighlightScope = "constant.numeric"
 
   _synthesizeCell() {
-    return TreeUtils.getRandomString(1, "01".split(""))
+    return Utils.getRandomString(1, "01".split(""))
   }
 
   getRegexString() {
@@ -979,7 +979,7 @@ class GrammarIntCell extends GrammarNumericCell {
   static defaultHighlightScope = "constant.numeric.integer"
 
   _synthesizeCell(seed: number) {
-    return TreeUtils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed).toString()
+    return Utils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed).toString()
   }
 
   getRegexString() {
@@ -1012,7 +1012,7 @@ class GrammarFloatCell extends GrammarNumericCell {
   static defaultHighlightScope = "constant.numeric.float"
 
   _synthesizeCell(seed: number) {
-    return TreeUtils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
+    return Utils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
   }
 
   getRegexString() {
@@ -1046,7 +1046,7 @@ class GrammarBoolCell extends AbstractGrammarBackedCell<boolean> {
   static defaultHighlightScope = "constant.numeric"
 
   _synthesizeCell() {
-    return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
+    return Utils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
   }
 
   private _getOptions() {
@@ -1070,7 +1070,7 @@ class GrammarAnyCell extends AbstractGrammarBackedCell<string> {
 
   _synthesizeCell() {
     const examples = this._getCellTypeDefinition()._getFromExtended(GrammarConstants.examples)
-    if (examples) return TreeUtils.getRandomString(1, examples.split(" "))
+    if (examples) return Utils.getRandomString(1, examples.split(" "))
     return this._nodeTypeDefinition.getNodeTypeIdFromDefinition() + "-" + this.constructor.name
   }
 
@@ -1276,7 +1276,7 @@ abstract class AbstractCellError extends AbstractTreeError {
   }
 
   protected _getWordSuggestion() {
-    return TreeUtils.didYouMean(
+    return Utils.didYouMean(
       this.getCell().getWord(),
       this.getCell()
         .getAutoCompleteWords()
@@ -1292,13 +1292,13 @@ class UnknownNodeTypeError extends AbstractTreeError {
     const node = this.getNode()
     const parentNode = node.getParent()
     const options = parentNode._getParser().getFirstWordOptions()
-    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid nodeTypes are: ${TreeUtils._listToEnglishText(options, 7)}.`
+    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid nodeTypes are: ${Utils._listToEnglishText(options, 7)}.`
   }
 
   protected _getWordSuggestion() {
     const node = this.getNode()
     const parentNode = node.getParent()
-    return TreeUtils.didYouMean(node.getFirstWord(), (<GrammarBackedNode>parentNode).getAutocompleteResults("", 0).map(option => option.text))
+    return Utils.didYouMean(node.getFirstWord(), (<GrammarBackedNode>parentNode).getAutocompleteResults("", 0).map(option => option.text))
   }
 
   getSuggestionMessage() {
@@ -1492,7 +1492,7 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
   }
 
   getOptions() {
-    if (!this._map) this._map = TreeUtils.arrayToMap(this.getWordsFrom(1))
+    if (!this._map) this._map = Utils.arrayToMap(this.getWordsFrom(1))
     return this._map
   }
 }
@@ -1770,7 +1770,7 @@ abstract class GrammarNodeTypeConstant extends TreeNode {
 class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
   getConstantValueAsJsText() {
-    return "`" + TreeUtils.escapeBackTicks(this.getConstantValue()) + "`"
+    return "`" + Utils.escapeBackTicks(this.getConstantValue()) + "`"
   }
 
   getConstantValue() {
@@ -2036,7 +2036,7 @@ ${properties.join("\n")}
 
   getTopNodeTypeDefinitions(): nodeTypeDefinitionNode[] {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
-    arr.sort(TreeUtils.makeSortByFn((definition: nodeTypeDefinitionNode) => definition.getFrequency()))
+    arr.sort(Utils.makeSortByFn((definition: nodeTypeDefinitionNode) => definition.getFrequency()))
     arr.reverse()
     return arr
   }
@@ -2157,7 +2157,7 @@ ${properties.join("\n")}
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
 
     if (this._amIRoot()) {
-      components.push(`static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
+      components.push(`static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${Utils.escapeBackTicks(
         this.getParent()
           .toString()
           .replace(/\\/g, "\\\\")
@@ -2219,9 +2219,9 @@ ${properties.join("\n")}
     const regexMatch = this._getRegexMatch()
     if (regexMatch) return `'${regexMatch}'`
     const cruxMatch = this._getCruxIfAny()
-    if (cruxMatch) return `'^ *${TreeUtils.escapeRegExp(cruxMatch)}(?: |$)'`
+    if (cruxMatch) return `'^ *${Utils.escapeRegExp(cruxMatch)}(?: |$)'`
     const enumOptions = this._getFirstCellEnumOptions()
-    if (enumOptions) return `'^ *(${TreeUtils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
+    if (enumOptions) return `'^ *(${Utils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
   }
 
   // todo: refactor. move some parts to cellParser?
@@ -2396,8 +2396,8 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
   }
 
-  static makeNodeTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-  static makeCellTypeId = (str: string) => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+  static makeNodeTypeId = (str: string) => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+  static makeCellTypeId = (str: string) => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 
   static nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
   static nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
@@ -2409,7 +2409,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
 
   // Note: this is some so far unavoidable tricky code. We need to eval the transpiled JS, in a NodeJS or browser environment.
   private _compileAndEvalGrammar() {
-    if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = TreeUtils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
+    if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = Utils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
     else {
       const path = require("path")
       const code = this.toNodeJsJavascript(path.join(__dirname, "..", "index.js"))
@@ -2429,7 +2429,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   trainModel(programs: string[], programConstructor = this.compileAndReturnRootConstructor()): SimplePredictionModel {
     const nodeDefs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     const nodeDefCountIncludingRoot = nodeDefs.length + 1
-    const matrix = TreeUtils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
+    const matrix = Utils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
     const idToIndex: { [id: string]: number } = {}
     const indexToId: { [index: number]: string } = {}
     nodeDefs.forEach((def, index) => {
@@ -2459,7 +2459,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   }
 
   private _mapPredictions(predictionsVector: number[], model: SimplePredictionModel) {
-    const total = TreeUtils.sum(predictionsVector)
+    const total = Utils.sum(predictionsVector)
     const predictions = predictionsVector.slice(1).map((count, index) => {
       const id = model.indexToId[index + 1]
       return {
@@ -2469,7 +2469,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
         prob: count / total
       }
     })
-    predictions.sort(TreeUtils.makeSortByFn((prediction: any) => prediction.count)).reverse()
+    predictions.sort(Utils.makeSortByFn((prediction: any) => prediction.count)).reverse()
     return predictions
   }
 
@@ -2791,7 +2791,7 @@ ${testCode}`
   }
 
   private _getProperName() {
-    return TreeUtils.ucfirst(this.getExtensionName())
+    return Utils.ucfirst(this.getExtensionName())
   }
 
   private _rootNodeDefToJavascriptClass(normalizedJtreePath: treeNotationTypes.requirePath, forNodeJs = true): treeNotationTypes.javascriptCode {

@@ -1,4 +1,4 @@
-const { jtree } = require("../index.js")
+const { jtree, Utils } = require("../index.js")
 // This is a temporary class until we move off TypeScript
 class TypeScriptRewriter {
   constructor(fileStr) {
@@ -79,16 +79,15 @@ class TypeScriptRewriter {
     return this
   }
   static treeToJs(filepath, file) {
-    const TreeUtils = jtree.Utils
-    const filename = TreeUtils.getFileName(filepath)
-    const baseName = TreeUtils.removeFileExtension(filename)
-    const extension = TreeUtils.getFileExtension(filename)
+    const filename = Utils.getFileName(filepath)
+    const baseName = Utils.removeFileExtension(filename)
+    const extension = Utils.getFileExtension(filename)
     const varName = baseName + extension.charAt(0).toUpperCase() + extension.substr(1)
-    const basePath = TreeUtils.getPathWithoutFileName(filepath)
+    const basePath = Utils.getPathWithoutFileName(filepath)
     // const newPath = basePath + "/" + varName + ".compiled.js"
     const lines = file.split(/\n/)
     const jsCode = `"use strict";
-window.${varName} = \`${TreeUtils.escapeBackTicks(lines.join("\n"))}\``
+window.${varName} = \`${Utils.escapeBackTicks(lines.join("\n"))}\``
     return jsCode
   }
   changeNodeExportsToWindowExports() {

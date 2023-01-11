@@ -1,7 +1,7 @@
 // jtree build produce jtree.node.js
 
 import { AbstractNode } from "./AbstractNode.node"
-import { TreeUtils } from "./TreeUtils"
+import { Utils } from "./Utils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 declare type int = treeNotationTypes.int
@@ -668,7 +668,7 @@ class TreeNode extends AbstractNode {
 
   protected _getLineHtml() {
     return this.getWords()
-      .map((word, index) => `<span class="word${index}">${TreeUtils.stripHtml(word)}</span>`)
+      .map((word, index) => `<span class="word${index}">${Utils.stripHtml(word)}</span>`)
       .join(`<span class="zIncrement">${this.getWordBreakSymbol()}</span>`)
   }
 
@@ -773,7 +773,7 @@ class TreeNode extends AbstractNode {
     treesOrStrings.unshift(this)
     const nodeDelimiter = this.getNodeBreakSymbol()
     return new TreeNode(
-      TreeUtils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
+      Utils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
         .map(line => (line === undefined ? "" : line))
         .join(nodeDelimiter)
     )
@@ -1186,7 +1186,7 @@ class TreeNode extends AbstractNode {
   // move to treenode
   pick(fields: string[]) {
     const newTree = new TreeNode(this.toString()) // todo: why not clone?
-    const map = TreeUtils.arrayToMap(fields)
+    const map = Utils.arrayToMap(fields)
     newTree.nodeAt(0).forEach((node: treeNotationTypes.treeNode) => {
       if (!map[node.getWord(0)]) node.destroy()
     })
@@ -1546,7 +1546,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _clearChildren() {
-    this._deleteByIndexes(TreeUtils.getRange(0, this.length))
+    this._deleteByIndexes(Utils.getRange(0, this.length))
     delete this._children
     return this
   }
@@ -2483,7 +2483,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: check to ensure identical objects
-  addObjectsAsDelimited(arrayOfObjects: Object[], delimiter = TreeUtils._chooseDelimiter(new TreeNode(arrayOfObjects).toString())) {
+  addObjectsAsDelimited(arrayOfObjects: Object[], delimiter = Utils._chooseDelimiter(new TreeNode(arrayOfObjects).toString())) {
     const header = Object.keys(arrayOfObjects[0])
       .join(delimiter)
       .replace(/[\n\r]/g, "")
@@ -2495,12 +2495,12 @@ class TreeNode extends AbstractNode {
     return this.addUniqueRowsToNestedDelimited(header, rows)
   }
 
-  setChildrenAsDelimited(tree: TreeNode | string, delimiter = TreeUtils._chooseDelimiter(tree.toString())) {
+  setChildrenAsDelimited(tree: TreeNode | string, delimiter = Utils._chooseDelimiter(tree.toString())) {
     tree = tree instanceof TreeNode ? tree : new TreeNode(tree)
     return this.setChildren(tree.toDelimited(delimiter))
   }
 
-  convertChildrenToDelimited(delimiter = TreeUtils._chooseDelimiter(this.childrenToString())) {
+  convertChildrenToDelimited(delimiter = Utils._chooseDelimiter(this.childrenToString())) {
     // todo: handle newlines!!!
     return this.setChildren(this.toDelimited(delimiter))
   }
@@ -2961,7 +2961,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "61.4.1"
+  static getVersion = () => "62.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
@@ -3006,7 +3006,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   // todo: be more specific with the param
   _getChildrenByNodeConstructorInExtended(constructor: Function): TreeNode[] {
-    return TreeUtils.flatten(<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
+    return Utils.flatten(<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
   }
 
   _getExtendedParent() {

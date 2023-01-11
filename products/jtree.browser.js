@@ -1,7 +1,7 @@
 "use strict"
 class Timer {
   constructor() {
-    this._tickTime = Date.now() - (TreeUtils.isNodeJs() ? 1000 * process.uptime() : 0)
+    this._tickTime = Date.now() - (Utils.isNodeJs() ? 1000 * process.uptime() : 0)
     this._firstTickTime = this._tickTime
   }
   tick(msg) {
@@ -14,7 +14,7 @@ class Timer {
     return Date.now() - this._firstTickTime
   }
 }
-class TreeUtils {
+class Utils {
   static getFileExtension(filepath = "") {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
@@ -66,7 +66,7 @@ class TreeUtils {
   static makeMatrix(cols, rows, fill = 0) {
     const matrix = []
     while (rows) {
-      matrix.push(TreeUtils.makeVector(cols, fill))
+      matrix.push(Utils.makeVector(cols, fill))
       rows--
     }
     return matrix
@@ -107,7 +107,7 @@ class TreeUtils {
   }
   static shuffleInPlace(arr, seed = Date.now()) {
     // https://stackoverflow.com/questions/6274339/how-can-i-shuffle-an-array
-    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)
     for (let index = arr.length - 1; index > 0; index--) {
       const tempIndex = Math.floor(randFn() * (index + 1))
       ;[arr[index], arr[tempIndex]] = [arr[tempIndex], arr[index]]
@@ -219,7 +219,7 @@ class TreeUtils {
     for (let optionIndex = 0; optionIndex < len; optionIndex++) {
       const candidate = options[optionIndex]
       if (!candidate) continue
-      const editDistance = TreeUtils._getEditDistance(str, caseSensitive ? candidate : candidate.toLowerCase(), maximumEditDistanceToBeBestMatch)
+      const editDistance = Utils._getEditDistance(str, caseSensitive ? candidate : candidate.toLowerCase(), maximumEditDistanceToBeBestMatch)
       if (editDistance < maximumEditDistanceToBeBestMatch) {
         maximumEditDistanceToBeBestMatch = editDistance
         closestMatch = candidate
@@ -230,7 +230,7 @@ class TreeUtils {
   // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
   static _getEditDistance(stringA, stringB, maxInt) {
     // Handle null or undefined max.
-    maxInt = maxInt || maxInt === 0 ? maxInt : TreeUtils.MAX_INT
+    maxInt = maxInt || maxInt === 0 ? maxInt : Utils.MAX_INT
     const aLength = stringA.length
     const bLength = stringB.length
     // Fast path - no A or B.
@@ -253,7 +253,7 @@ class TreeUtils {
     let maxJ
     // Loop over the rest of the columns.
     for (let bIndex = 1; bIndex <= bLength; bIndex++) {
-      colMin = TreeUtils.MAX_INT
+      colMin = Utils.MAX_INT
       minJ = 1
       if (bIndex > maxInt) minJ = bIndex - maxInt
       maxJ = bLength + 1
@@ -338,7 +338,7 @@ class TreeUtils {
   }
   static getRandomString(length = 30, letters = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split(""), seed = Date.now()) {
     let str = ""
-    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)
     while (length) {
       str += letters[Math.round(Math.min(randFn() * letters.length, letters.length - 1))]
       length--
@@ -349,7 +349,7 @@ class TreeUtils {
   static makeRandomTree(lines = 1000, seed = Date.now()) {
     let str = ""
     let letters = " 123abc".split("")
-    const randFn = TreeUtils._getPseudoRandom0to1FloatGenerator(seed)
+    const randFn = Utils._getPseudoRandom0to1FloatGenerator(seed)
     while (lines) {
       let indent = " ".repeat(Math.round(randFn() * 6))
       let bit = indent
@@ -495,9 +495,9 @@ class TreeUtils {
     }
   }
 }
-TreeUtils.Timer = Timer
+Utils.Timer = Timer
 //http://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links#21925491
-TreeUtils.linkify = (text, target = "_blank") => {
+Utils.linkify = (text, target = "_blank") => {
   let replacedText
   let replacePattern1
   let replacePattern2
@@ -514,28 +514,28 @@ TreeUtils.linkify = (text, target = "_blank") => {
   return replacedText
 }
 // todo: switch algo to: http://indiegamr.com/generate-repeatable-random-numbers-in-js/?
-TreeUtils.makeSemiRandomFn = (seed = Date.now()) => {
+Utils.makeSemiRandomFn = (seed = Date.now()) => {
   return () => {
     const semiRand = Math.sin(seed++) * 10000
     return semiRand - Math.floor(semiRand)
   }
 }
-TreeUtils.randomUniformInt = (min, max, seed = Date.now()) => {
-  return Math.floor(TreeUtils.randomUniformFloat(min, max, seed))
+Utils.randomUniformInt = (min, max, seed = Date.now()) => {
+  return Math.floor(Utils.randomUniformFloat(min, max, seed))
 }
-TreeUtils.randomUniformFloat = (min, max, seed = Date.now()) => {
-  const randFn = TreeUtils.makeSemiRandomFn(seed)
+Utils.randomUniformFloat = (min, max, seed = Date.now()) => {
+  const randFn = Utils.makeSemiRandomFn(seed)
   return min + (max - min) * randFn()
 }
-TreeUtils.getRange = (startIndex, endIndexExclusive, increment = 1) => {
+Utils.getRange = (startIndex, endIndexExclusive, increment = 1) => {
   const range = []
   for (let index = startIndex; index < endIndexExclusive; index = index + increment) {
     range.push(index)
   }
   return range
 }
-TreeUtils.MAX_INT = Math.pow(2, 32) - 1
-window.TreeUtils = TreeUtils
+Utils.MAX_INT = Math.pow(2, 32) - 1
+window.Utils = Utils
 class TestRacerTestBlock {
   constructor(testFile, testName, fn) {
     this._parentFile = testFile
@@ -632,7 +632,7 @@ class TestRacerFile {
   async execute() {
     const testBlockNames = this._filterSkippedTestBlocks()
     this._emitStartFileMessage(testBlockNames.length)
-    const fileTimer = new TreeUtils.Timer()
+    const fileTimer = new Utils.Timer()
     const blockResults = {}
     const blockPromises = testBlockNames.map(async testName => {
       const results = await this._testTree[testName].execute()
@@ -678,7 +678,7 @@ class TestRacerFile {
 class TestRacer {
   constructor(fileTestTree) {
     this._logFunction = console.log
-    this._timer = new TreeUtils.Timer()
+    this._timer = new Utils.Timer()
     this._sessionFilesPassed = 0
     this._sessionFilesFailed = {}
     this._sessionBlocksFailed = 0
@@ -1322,7 +1322,7 @@ class TreeNode extends AbstractNode {
   }
   _getLineHtml() {
     return this.getWords()
-      .map((word, index) => `<span class="word${index}">${TreeUtils.stripHtml(word)}</span>`)
+      .map((word, index) => `<span class="word${index}">${Utils.stripHtml(word)}</span>`)
       .join(`<span class="zIncrement">${this.getWordBreakSymbol()}</span>`)
   }
   _getXmlContent(indentCount) {
@@ -1415,7 +1415,7 @@ class TreeNode extends AbstractNode {
     treesOrStrings.unshift(this)
     const nodeDelimiter = this.getNodeBreakSymbol()
     return new TreeNode(
-      TreeUtils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
+      Utils.interweave(treesOrStrings.map(tree => tree.toString().split(nodeDelimiter)))
         .map(line => (line === undefined ? "" : line))
         .join(nodeDelimiter)
     )
@@ -1761,7 +1761,7 @@ class TreeNode extends AbstractNode {
   // move to treenode
   pick(fields) {
     const newTree = new TreeNode(this.toString()) // todo: why not clone?
-    const map = TreeUtils.arrayToMap(fields)
+    const map = Utils.arrayToMap(fields)
     newTree.nodeAt(0).forEach(node => {
       if (!map[node.getWord(0)]) node.destroy()
     })
@@ -2063,7 +2063,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   _clearChildren() {
-    this._deleteByIndexes(TreeUtils.getRange(0, this.length))
+    this._deleteByIndexes(Utils.getRange(0, this.length))
     delete this._children
     return this
   }
@@ -2821,7 +2821,7 @@ class TreeNode extends AbstractNode {
     return this.appendWord(word)
   }
   // todo: check to ensure identical objects
-  addObjectsAsDelimited(arrayOfObjects, delimiter = TreeUtils._chooseDelimiter(new TreeNode(arrayOfObjects).toString())) {
+  addObjectsAsDelimited(arrayOfObjects, delimiter = Utils._chooseDelimiter(new TreeNode(arrayOfObjects).toString())) {
     const header = Object.keys(arrayOfObjects[0])
       .join(delimiter)
       .replace(/[\n\r]/g, "")
@@ -2832,11 +2832,11 @@ class TreeNode extends AbstractNode {
     )
     return this.addUniqueRowsToNestedDelimited(header, rows)
   }
-  setChildrenAsDelimited(tree, delimiter = TreeUtils._chooseDelimiter(tree.toString())) {
+  setChildrenAsDelimited(tree, delimiter = Utils._chooseDelimiter(tree.toString())) {
     tree = tree instanceof TreeNode ? tree : new TreeNode(tree)
     return this.setChildren(tree.toDelimited(delimiter))
   }
-  convertChildrenToDelimited(delimiter = TreeUtils._chooseDelimiter(this.childrenToString())) {
+  convertChildrenToDelimited(delimiter = Utils._chooseDelimiter(this.childrenToString())) {
     // todo: handle newlines!!!
     return this.setChildren(this.toDelimited(delimiter))
   }
@@ -3253,7 +3253,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "61.4.1"
+TreeNode.getVersion = () => "62.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -3270,7 +3270,7 @@ class AbstractExtendibleTreeNode extends TreeNode {
   }
   // todo: be more specific with the param
   _getChildrenByNodeConstructorInExtended(constructor) {
-    return TreeUtils.flatten(this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
+    return Utils.flatten(this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
   }
   _getExtendedParent() {
     return this._getAncestorsArray()[1]
@@ -3566,7 +3566,7 @@ class GrammarBackedNode extends TreeNode {
       orderMap[word] = index
     })
     this.sort(
-      TreeUtils.makeSortByFn(runtimeNode => {
+      Utils.makeSortByFn(runtimeNode => {
         return orderMap[runtimeNode.getDefinition().getNodeTypeIdFromDefinition()]
       })
     )
@@ -3872,7 +3872,7 @@ class GrammarBackedNode extends TreeNode {
     const compiler = this.getDefinition()._getCompilerObject()
     const catchAllCellDelimiter = compiler[GrammarConstantsCompiler.catchAllCellDelimiter]
     const str = compiler[GrammarConstantsCompiler.stringTemplate]
-    return str !== undefined ? TreeUtils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
+    return str !== undefined ? Utils.formatStr(str, catchAllCellDelimiter, Object.assign(this._getFields(), this.cells)) : this.getLine()
   }
   get listDelimiter() {
     return this.getDefinition()._getFromExtended(GrammarConstants.listDelimiter)
@@ -4051,7 +4051,7 @@ class AbstractGrammarBackedCell {
     // todo: cleanup
     const cellDef = this._getCellTypeDefinition()
     const enumOptions = cellDef._getFromExtended(GrammarConstants.enum)
-    if (enumOptions) return TreeUtils.getRandomString(1, enumOptions.split(" "))
+    if (enumOptions) return Utils.getRandomString(1, enumOptions.split(" "))
     return this._synthesizeCell(seed)
   }
   _getStumpEnumInput(crux) {
@@ -4106,7 +4106,7 @@ class GrammarBitCell extends AbstractGrammarBackedCell {
     return word === "0" || word === "1"
   }
   _synthesizeCell() {
-    return TreeUtils.getRandomString(1, "01".split(""))
+    return Utils.getRandomString(1, "01".split(""))
   }
   getRegexString() {
     return "[01]"
@@ -4135,7 +4135,7 @@ class GrammarIntCell extends GrammarNumericCell {
     return num.toString() === word
   }
   _synthesizeCell(seed) {
-    return TreeUtils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed).toString()
+    return Utils.randomUniformInt(parseInt(this.min), parseInt(this.max), seed).toString()
   }
   getRegexString() {
     return "-?[0-9]+"
@@ -4160,7 +4160,7 @@ class GrammarFloatCell extends GrammarNumericCell {
     return SQLiteTypes.float
   }
   _synthesizeCell(seed) {
-    return TreeUtils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
+    return Utils.randomUniformFloat(parseFloat(this.min), parseFloat(this.max), seed).toString()
   }
   getRegexString() {
     return "-?d*(.d+)?"
@@ -4188,7 +4188,7 @@ class GrammarBoolCell extends AbstractGrammarBackedCell {
     return SQLiteTypes.integer
   }
   _synthesizeCell() {
-    return TreeUtils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
+    return Utils.getRandomString(1, ["1", "true", "t", "yes", "0", "false", "f", "no"])
   }
   _getOptions() {
     return Array.from(this._trues).concat(Array.from(this._falses))
@@ -4208,7 +4208,7 @@ class GrammarAnyCell extends AbstractGrammarBackedCell {
   }
   _synthesizeCell() {
     const examples = this._getCellTypeDefinition()._getFromExtended(GrammarConstants.examples)
-    if (examples) return TreeUtils.getRandomString(1, examples.split(" "))
+    if (examples) return Utils.getRandomString(1, examples.split(" "))
     return this._nodeTypeDefinition.getNodeTypeIdFromDefinition() + "-" + this.constructor.name
   }
   getRegexString() {
@@ -4380,7 +4380,7 @@ class AbstractCellError extends AbstractTreeError {
     return this._cell.getCellIndex()
   }
   _getWordSuggestion() {
-    return TreeUtils.didYouMean(
+    return Utils.didYouMean(
       this.getCell().getWord(),
       this.getCell()
         .getAutoCompleteWords()
@@ -4393,12 +4393,12 @@ class UnknownNodeTypeError extends AbstractTreeError {
     const node = this.getNode()
     const parentNode = node.getParent()
     const options = parentNode._getParser().getFirstWordOptions()
-    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid nodeTypes are: ${TreeUtils._listToEnglishText(options, 7)}.`
+    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid nodeTypes are: ${Utils._listToEnglishText(options, 7)}.`
   }
   _getWordSuggestion() {
     const node = this.getNode()
     const parentNode = node.getParent()
-    return TreeUtils.didYouMean(node.getFirstWord(), parentNode.getAutocompleteResults("", 0).map(option => option.text))
+    return Utils.didYouMean(node.getFirstWord(), parentNode.getAutocompleteResults("", 0).map(option => option.text))
   }
   getSuggestionMessage() {
     const suggestion = this._getWordSuggestion()
@@ -4545,7 +4545,7 @@ class GrammarEnumTestNode extends AbstractGrammarWordTestNode {
     return !!this.getOptions()[str]
   }
   getOptions() {
-    if (!this._map) this._map = TreeUtils.arrayToMap(this.getWordsFrom(1))
+    if (!this._map) this._map = Utils.arrayToMap(this.getWordsFrom(1))
     return this._map
   }
 }
@@ -4772,7 +4772,7 @@ class GrammarNodeTypeConstant extends TreeNode {
 class GrammarNodeTypeConstantInt extends GrammarNodeTypeConstant {}
 class GrammarNodeTypeConstantString extends GrammarNodeTypeConstant {
   getConstantValueAsJsText() {
-    return "`" + TreeUtils.escapeBackTicks(this.getConstantValue()) + "`"
+    return "`" + Utils.escapeBackTicks(this.getConstantValue()) + "`"
   }
   getConstantValue() {
     return this.length ? this.childrenToString() : this.getWordsFrom(2).join(" ")
@@ -4996,7 +4996,7 @@ ${properties.join("\n")}
   }
   getTopNodeTypeDefinitions() {
     const arr = Object.values(this.getFirstWordMapWithDefinitions())
-    arr.sort(TreeUtils.makeSortByFn(definition => definition.getFrequency()))
+    arr.sort(Utils.makeSortByFn(definition => definition.getFrequency()))
     arr.reverse()
     return arr
   }
@@ -5093,7 +5093,7 @@ ${properties.join("\n")}
   _nodeDefToJavascriptClass() {
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
     if (this._amIRoot()) {
-      components.push(`static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${TreeUtils.escapeBackTicks(
+      components.push(`static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${Utils.escapeBackTicks(
         this.getParent()
           .toString()
           .replace(/\\/g, "\\\\")
@@ -5145,9 +5145,9 @@ ${properties.join("\n")}
     const regexMatch = this._getRegexMatch()
     if (regexMatch) return `'${regexMatch}'`
     const cruxMatch = this._getCruxIfAny()
-    if (cruxMatch) return `'^ *${TreeUtils.escapeRegExp(cruxMatch)}(?: |$)'`
+    if (cruxMatch) return `'^ *${Utils.escapeRegExp(cruxMatch)}(?: |$)'`
     const enumOptions = this._getFirstCellEnumOptions()
-    if (enumOptions) return `'^ *(${TreeUtils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
+    if (enumOptions) return `'^ *(${Utils.escapeRegExp(enumOptions.join("|"))})(?: |$)'`
   }
   // todo: refactor. move some parts to cellParser?
   _toSublimeMatchBlock() {
@@ -5299,7 +5299,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   }
   // Note: this is some so far unavoidable tricky code. We need to eval the transpiled JS, in a NodeJS or browser environment.
   _compileAndEvalGrammar() {
-    if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = TreeUtils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
+    if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = Utils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
     else {
       const path = require("path")
       const code = this.toNodeJsJavascript(path.join(__dirname, "..", "index.js"))
@@ -5318,7 +5318,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   trainModel(programs, programConstructor = this.compileAndReturnRootConstructor()) {
     const nodeDefs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     const nodeDefCountIncludingRoot = nodeDefs.length + 1
-    const matrix = TreeUtils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
+    const matrix = Utils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
     const idToIndex = {}
     const indexToId = {}
     nodeDefs.forEach((def, index) => {
@@ -5347,7 +5347,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     }
   }
   _mapPredictions(predictionsVector, model) {
-    const total = TreeUtils.sum(predictionsVector)
+    const total = Utils.sum(predictionsVector)
     const predictions = predictionsVector.slice(1).map((count, index) => {
       const id = model.indexToId[index + 1]
       return {
@@ -5357,7 +5357,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
         prob: count / total
       }
     })
-    predictions.sort(TreeUtils.makeSortByFn(prediction => prediction.count)).reverse()
+    predictions.sort(Utils.makeSortByFn(prediction => prediction.count)).reverse()
     return predictions
   }
   predictChildren(model, node) {
@@ -5622,7 +5622,7 @@ ${testCode}`
     return this._rootNodeDefToJavascriptClass("", false).trim()
   }
   _getProperName() {
-    return TreeUtils.ucfirst(this.getExtensionName())
+    return Utils.ucfirst(this.getExtensionName())
   }
   _rootNodeDefToJavascriptClass(normalizedJtreePath, forNodeJs = true) {
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
@@ -5673,8 +5673,8 @@ ${includes}
 ${nodeTypeContexts}`
   }
 }
-HandGrammarProgram.makeNodeTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
-HandGrammarProgram.makeCellTypeId = str => TreeUtils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
+HandGrammarProgram.makeNodeTypeId = str => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
+HandGrammarProgram.makeCellTypeId = str => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 HandGrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
 HandGrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
 HandGrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
@@ -5694,41 +5694,6 @@ window.PreludeCellTypeIds = PreludeCellTypeIds
 window.HandGrammarProgram = HandGrammarProgram
 window.GrammarBackedNode = GrammarBackedNode
 window.UnknownNodeTypeError = UnknownNodeTypeError
-class Upgrader extends TreeNode {
-  upgradeManyInPlace(globPatterns, fromVersion, toVersion) {
-    this._upgradeMany(globPatterns, fromVersion, toVersion).forEach(file => file.tree.toDisk(file.path))
-    return this
-  }
-  upgradeManyPreview(globPatterns, fromVersion, toVersion) {
-    return this._upgradeMany(globPatterns, fromVersion, toVersion)
-  }
-  _upgradeMany(globPatterns, fromVersion, toVersion) {
-    const glob = this.require("glob")
-    const files = TreeUtils.flatten(globPatterns.map(pattern => glob.sync(pattern)))
-    console.log(`${files.length} files to upgrade`)
-    return files.map(path => {
-      console.log("Upgrading " + path)
-      return {
-        tree: this.upgrade(TreeNode.fromDisk(path), fromVersion, toVersion),
-        path: path
-      }
-    })
-  }
-  upgrade(code, fromVersion, toVersion) {
-    const updateFromMap = this.getUpgradeFromMap()
-    const semver = this.require("semver")
-    let fromMap
-    while ((fromMap = updateFromMap[fromVersion])) {
-      const toNextVersion = Object.keys(fromMap)[0] // todo: currently we just assume 1 step at a time
-      if (semver.lt(toVersion, toNextVersion)) break
-      const fn = Object.values(fromMap)[0]
-      code = fn(code)
-      fromVersion = toNextVersion
-    }
-    return code
-  }
-}
-window.Upgrader = Upgrader
 class UnknownGrammarProgram extends TreeNode {
   _inferRootNodeForAPrefixLanguage(grammarName) {
     grammarName = HandGrammarProgram.makeNodeTypeId(grammarName)
@@ -6212,7 +6177,7 @@ window.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
 class jtree {}
 jtree.GrammarBackedNode = GrammarBackedNode
 jtree.GrammarConstants = GrammarConstants
-jtree.Utils = TreeUtils
+jtree.Utils = Utils
 jtree.UnknownNodeTypeError = UnknownNodeTypeError
 jtree.TestRacer = TestRacer
 jtree.TreeEvents = TreeEvents

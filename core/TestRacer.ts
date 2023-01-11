@@ -1,5 +1,5 @@
 import { TreeNode } from "./TreeNode"
-import { TreeUtils } from "./TreeUtils"
+import { Utils } from "./Utils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 // todo: ensure we have key features from http://testanything.org/tap-version-13-specification.html
@@ -125,7 +125,7 @@ class TestRacerFile {
   async execute() {
     const testBlockNames = this._filterSkippedTestBlocks()
     this._emitStartFileMessage(testBlockNames.length)
-    const fileTimer = new TreeUtils.Timer()
+    const fileTimer = new Utils.Timer()
     const blockResults: { [blockName: string]: Object } = {}
     const blockPromises = testBlockNames.map(async testName => {
       const results = await this._testTree[testName].execute()
@@ -189,7 +189,7 @@ class TestRacer {
 
   private _fileTestTree: { [fileName: string]: TestRacerFile }
   private _logFunction: Function = console.log
-  private _timer = new TreeUtils.Timer()
+  private _timer = new Utils.Timer()
   private _sessionFilesPassed = 0
   private _sessionFilesFailed: any = {}
   private _sessionBlocksFailed = 0

@@ -2,6 +2,10 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 62.0.0 2023-1-11
+- ⚠️ Removed Upgrader. In practice better handled by an external package which can have multiple versions of jtree as dependencies.
+- 🎉 export `Utils` as top level export
+
 # 61.4.1 2023-1-8
 - 🏥 TreeBase: search server fixes
 

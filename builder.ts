@@ -149,11 +149,11 @@ class Builder extends jtree.TreeNode {
   produceProductFromInstructionsTree(productNode: any, projectRootPath: string) {
     const outputFileName = productNode.get("outputFileName")
     const inputFiles = productNode
-      .getNode("files")
+      .getNode("combineTypeScriptFiles")
       .getWordsFrom(1)
       .map((filePath: string) => path.join(projectRootPath, filePath))
-    const firstLine = productNode.get("firstLine") ? productNode.get("firstLine") + "\n" : ""
-    const lastLine = productNode.get("lastLine") ? productNode.get("lastLine") : ""
+    const firstLine = productNode.get("insertFirstLine") ? productNode.get("insertFirstLine") + "\n" : ""
+    const lastLine = productNode.get("insertLastLine") ? productNode.get("insertLastLine") : ""
     const removeAll = productNode.getNodesByGlobPath("removeAll")
     const transformFn = (code: string) => {
       removeAll.forEach((node: any) => {

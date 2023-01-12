@@ -29,6 +29,10 @@ nodeProduct
  insertLastLine module.exports = {TestRacer}
  combineTypeScriptFiles core/TestRacer.ts
 nodeProduct
+ outputFileName TreeNotationCodeMirrorMode.js
+ insertLastLine module.exports = {TreeNotationCodeMirrorMode}
+ combineTypeScriptFiles products/treeNotationTypes.ts core/TreeNotationCodeMirrorMode.ts
+nodeProduct
  outputFileName GrammarCompiler.js
  insertLastLine module.exports = {GrammarCompiler}
  combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarCompiler.ts

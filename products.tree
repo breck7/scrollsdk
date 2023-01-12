@@ -6,7 +6,7 @@ nodeProduct
  outputFileName jtree.node.js
  insertLastLine module.exports = {jtree}
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
- combineTypeScriptFiles products/treeNotationTypes.ts core/Utils.ts core/TestRacer.ts core/AbstractNode.node.ts core/TreeNode.ts core/GrammarLanguage.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts core/Utils.ts core/TestRacer.ts core/AbstractNode.node.ts core/TreeNode.ts core/GrammarLanguage.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
 nodeProduct
  outputFileName jtable.node.js
  insertFirstLine const { jtree } = require("../index.js")
@@ -21,7 +21,7 @@ nodeProduct
 nodeProduct
  insertFirstLine const { Utils } = require("./Utils.js");  const { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } = require("./TreeNode");
  outputFileName GrammarLanguage.js
- insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError }
+ insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError, UnknownGrammarProgram }
  combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarLanguage.ts
 nodeProduct
  insertFirstLine const { TreeNode } = require("./TreeNode.js"); const { Utils } = require("./Utils.js")
@@ -67,7 +67,7 @@ browserProduct
  outputFileName jtree.browser.js
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
  removeAll window.treeNotationTypes = treeNotationTypes
- combineTypeScriptFiles products/treeNotationTypes.ts core/Utils.ts core/TestRacer.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/UnknownGrammarProgram.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts core/Utils.ts core/TestRacer.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
 browserProduct
  outputFileName core.test.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes

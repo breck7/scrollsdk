@@ -5689,11 +5689,6 @@ PreludeKinds[PreludeCellTypeIds.numberCell] = GrammarFloatCell
 PreludeKinds[PreludeCellTypeIds.bitCell] = GrammarBitCell
 PreludeKinds[PreludeCellTypeIds.boolCell] = GrammarBoolCell
 PreludeKinds[PreludeCellTypeIds.intCell] = GrammarIntCell
-window.GrammarConstants = GrammarConstants
-window.PreludeCellTypeIds = PreludeCellTypeIds
-window.HandGrammarProgram = HandGrammarProgram
-window.GrammarBackedNode = GrammarBackedNode
-window.UnknownNodeTypeError = UnknownNodeTypeError
 class UnknownGrammarProgram extends TreeNode {
   _inferRootNodeForAPrefixLanguage(grammarName) {
     grammarName = HandGrammarProgram.makeNodeTypeId(grammarName)
@@ -5837,6 +5832,11 @@ class UnknownGrammarProgram extends TreeNode {
   }
 }
 UnknownGrammarProgram._childSuffix = "Child"
+window.GrammarConstants = GrammarConstants
+window.PreludeCellTypeIds = PreludeCellTypeIds
+window.HandGrammarProgram = HandGrammarProgram
+window.GrammarBackedNode = GrammarBackedNode
+window.UnknownNodeTypeError = UnknownNodeTypeError
 window.UnknownGrammarProgram = UnknownGrammarProgram
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 var CmToken

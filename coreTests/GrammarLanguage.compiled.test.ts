@@ -1,11 +1,11 @@
 #!/usr/bin/env ts-node
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
-
+const path = require("path")
 const { TestRacer } = require("../products/TestRacer.node.js")
 const { Disk } = require("../products/Disk.node.js")
 const { TreeNode } = require("../products/TreeNode.js")
-const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
+const { HandGrammarProgram, UnknownGrammarProgram } = require("../products/GrammarLanguage.js")
 const { GrammarCompiler } = require("../products/GrammarCompiler.js")
 
 const testTree: treeNotationTypes.testTree = {}
@@ -13,7 +13,8 @@ const testTree: treeNotationTypes.testTree = {}
 // todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
 // todo: setup: make vms dir. cleanup? delete grammar file when done?
 
-const outputDir = __dirname + `/../ignore/vms/`
+const outputDir = path.join(__dirname, "..", "ignore", "vms")
+const langsDir = path.join(__dirname, "..", "langs")
 
 const mkdirp = require("mkdirp")
 mkdirp.sync(outputDir)
@@ -26,7 +27,7 @@ const makeProgram = (grammarCode: string, code: string) => {
 
 testTree.grammar = equal => {
   // Arrange
-  const grammarGrammarPath = __dirname + "/../langs/grammar/grammar.grammar"
+  const grammarGrammarPath = path.join(langsDir, "grammar", "grammar.grammar")
   try {
     const tempFilePath = GrammarCompiler.compileGrammarForNodeJs(grammarGrammarPath, outputDir, false)
 
@@ -47,9 +48,9 @@ testTree.compileAll = equal => {
   langs.split(" ").map(name => {
     try {
       // Act
-      const path = __dirname + `/../langs/${name}/${name}.grammar`
-      const grammarCode = TreeNode.fromDisk(path)
-      const tempFilePath = GrammarCompiler.compileGrammarForNodeJs(path, outputDir, false)
+      const grammarPath = path.join(langsDir, name, `${name}.grammar`)
+      const grammarCode = TreeNode.fromDisk(grammarPath)
+      const tempFilePath = GrammarCompiler.compileGrammarForNodeJs(grammarPath, outputDir, false)
       const rootClass = require(tempFilePath)
 
       // Assert
@@ -67,7 +68,7 @@ testTree.compileAll = equal => {
       }
 
       // Act/ Assert
-      equal(new rootClass(Disk.read(__dirname + `/../langs/${name}/sample.${name}`)).getAllErrors().length, 0, `no errors in ${name} sample program`)
+      equal(new rootClass(Disk.read(path.join(langsDir, name, `sample.${name}`))).getAllErrors().length, 0, `no errors in ${name} sample program`)
     } catch (err) {
       console.log(err)
       equal(true, false, "Hit an error")
@@ -78,7 +79,7 @@ testTree.compileAll = equal => {
 testTree.jibberish = equal => {
   // Arrange
   try {
-    const tempFilePath = GrammarCompiler.compileGrammarForNodeJs(__dirname + "/../langs/jibberish/jibberish.grammar", outputDir, false)
+    const tempFilePath = GrammarCompiler.compileGrammarForNodeJs(path.join(langsDir, `jibberish/jibberish.grammar`), outputDir, false)
 
     // Act
     const jibberish = require(tempFilePath)
@@ -99,7 +100,7 @@ testTree.jibberish = equal => {
 
 testTree.numbers = equal => {
   // Arrange
-  const numbersGrammarPath = __dirname + "/../langs/numbers/numbers.grammar"
+  const numbersGrammarPath = path.join(langsDir, `numbers/numbers.grammar`)
   const numbersGrammarCode = Disk.read(numbersGrammarPath)
   const makeNumbersRunTimeProgram = (code: string) => makeProgram(numbersGrammarCode, code)
   try {
@@ -135,6 +136,54 @@ testTree.numbers = equal => {
   } finally {
   }
 }
+
+testTree.predictGrammarFile = equal => {
+  // Arrange
+  const input = Disk.read(path.join(__dirname, "UnknownGrammar.sample.tree"))
+
+  // Act
+  const grammarFile = new UnknownGrammarProgram(input).inferGrammarFileForAKeywordLanguage("foobar")
+
+  // Assert
+  equal(grammarFile, Disk.read(path.join(__dirname, "UnknownGrammar.expected.grammar")), "predicted grammar correct")
+}
+
+testTree.emojis = equal => {
+  const source = `⌨🕸🌐
+ 📈
+  🏦😎
+ 📉
+  💩`
+
+  // Act
+  const grammarFile = new UnknownGrammarProgram(source).inferGrammarFileForAKeywordLanguage("emojiLang")
+  // Assert
+  equal(grammarFile, Disk.read(path.join(__dirname, "UnknownGrammar.expectedEmoji.grammar")), "predicted emoji grammar correct")
+}
+
+const langs = Disk.dir(langsDir)
+langs.forEach((name: string) => {
+  const folder = path.join(langsDir, `${name}`)
+  if (!Disk.isDir(folder)) return
+  testTree[`${name}InferPrefixGrammar`] = equal => {
+    // Arrange
+    const samplePath = path.join(langsDir, name, `sample.${name}`)
+    const sampleCode = TreeNode.fromDisk(samplePath).toString()
+
+    // todo: cleanup
+    if (Disk.read(path.join(langsDir, name, `${name}.grammar`)).includes("nonPrefixGrammar")) return equal(true, true, `skipped ${name} beause not prefix grammar`)
+
+    // Act
+    const inferredPrefixGrammarCode = new UnknownGrammarProgram(sampleCode).inferGrammarFileForAKeywordLanguage("foobar")
+    const inferredPrefixGrammarProgram = new HandGrammarProgram(inferredPrefixGrammarCode)
+    const rootProgramConstructor = inferredPrefixGrammarProgram.compileAndReturnRootConstructor()
+    const programParsedWithInferredGrammar = new rootProgramConstructor(sampleCode)
+
+    // Assert
+    equal(inferredPrefixGrammarProgram.getAllErrors().length, 0, `no errors in inferred grammar program for language ${name}`)
+    equal(programParsedWithInferredGrammar.getAllErrors().length, 0, `no errors in program from inferred grammar for ${name}`)
+  }
+})
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 

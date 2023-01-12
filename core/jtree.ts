@@ -2,8 +2,7 @@ import { Utils } from "./Utils"
 import { TreeNode, ExtendibleTreeNode, TreeEvents } from "./TreeNode"
 import { TestRacer } from "./TestRacer"
 
-import { HandGrammarProgram, GrammarBackedNode, GrammarConstants, UnknownNodeTypeError } from "./GrammarLanguage"
-import { UnknownGrammarProgram } from "./UnknownGrammarProgram"
+import { HandGrammarProgram, GrammarBackedNode, GrammarConstants, UnknownNodeTypeError, UnknownGrammarProgram } from "./GrammarLanguage"
 import { TreeNotationCodeMirrorMode } from "./TreeNotationCodeMirrorMode"
 
 class jtree {

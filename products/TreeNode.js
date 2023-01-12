@@ -2555,4 +2555,4 @@ class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   }
 }
 
-module.exports = { TreeNode }
+module.exports = { TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }

@@ -37,8 +37,13 @@ browserProduct
 nodeProduct
  insertFirstLine const { Utils } = require("./Utils.js")
  outputFileName TreeNode.js
- insertLastLine module.exports = {TreeNode}
+ insertLastLine module.exports = {TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }
  combineTypeScriptFiles products/treeNotationTypes.ts core/AbstractNode.node.ts core/TreeNode.ts
+nodeProduct
+ insertFirstLine const { Utils } = require("./Utils.js");  const { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } = require("./TreeNode");
+ outputFileName GrammarLanguage.js
+ insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError }
+ combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarLanguage.ts
 nodeProduct
  insertFirstLine const { TreeNode } = require("./TreeNode.js"); const { Utils } = require("./Utils.js")
  outputFileName TestRacer.node.js

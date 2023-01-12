@@ -1,21 +1,19 @@
 #!/usr/bin/env ts-node
 
-// todo: make isomorphic
-
+import { treeNotationTypes } from "../products/treeNotationTypes"
+// Note: this is not isomorphic. We should probably just rewrite and use new version of CodeMirror
+const path = require("path")
 const stamp = require("../products/stamp.nodejs.js")
 const GrammarProgram = require("../products/grammar.nodejs.js")
 const DugProgram = require("../products/dug.nodejs.js")
 const { Disk } = require("../products/Disk.node.js")
+const { Utils } = require("../products/Utils.js")
+const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
+const { TreeNotationCodeMirrorMode } = require("../products/TreeNotationCodeMirrorMode.js")
 
-const { jtree } = require("../index.js")
-
-const irisPath = __dirname + "/../langs/iris/iris.grammar"
+const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.grammar")
 const irisGrammar = Disk.read(irisPath)
-
-import { treeNotationTypes } from "../products/treeNotationTypes"
-
-const TreeNotationCodeMirrorMode = jtree.TreeNotationCodeMirrorMode
-const Utils = jtree.Utils
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -103,7 +101,7 @@ testTree.codeMirrorTest = equal => {
 }
 
 testTree.iris = equal => {
-  const irisConstructor = new jtree.HandGrammarProgram(irisGrammar).compileAndReturnRootConstructor()
+  const irisConstructor = new HandGrammarProgram(irisGrammar).compileAndReturnRootConstructor()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act
@@ -148,6 +146,6 @@ testTree.regression2 = equal => {
   equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

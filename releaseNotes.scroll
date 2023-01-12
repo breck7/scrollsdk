@@ -2,6 +2,9 @@ title Release Notes
 
 * Here's a list of the notable changes in JTree.
 
+# 62.2.0 2023-1-12
+- 🎉 removed jtree.node.js and added instructions for only importing the specific product needed directly.
+
 # 62.1.0 2023-1-12
 - 🎉 new Node products to import directly from: GrammarLanguage.js, TreeNode.js, TestRacer.js, GrammarCompiler.js
 

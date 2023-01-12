@@ -51,8 +51,8 @@ code
 # jtree base library for npm projects:
 
 code
- const {jtree} = require("jtree")
- const tree = new jtree.TreeNode("hello world")
+ const {TreeNode} = require("jtree/products/TreeNode.js")
+ const tree = new TreeNode("hello world")
  console.log(tree.toString())
 
 # jtree base library for the browser:

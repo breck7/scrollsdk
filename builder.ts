@@ -6,6 +6,7 @@ const recursiveReadSync = require("recursive-readdir-sync")
 const { jtree } = require("./index.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { Disk } = require("./products/Disk.node.js")
+const { GrammarCompiler } = require("./products/GrammarCompiler.js")
 const path = require("path")
 const fs = require("fs")
 const { execSync } = require("child_process")
@@ -208,7 +209,7 @@ class Builder extends jtree.TreeNode {
 
     const handGrammarProgram = new jtree.HandGrammarProgram(Disk.read(grammarPath))
 
-    testTree[`grammarCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, jtree.compileGrammarAndCreateProgram(grammarPath, path.join(__dirname, "langs", "grammar", "grammar.grammar")))
+    testTree[`grammarCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, GrammarCompiler.compileGrammarAndCreateProgram(grammarPath, path.join(__dirname, "langs", "grammar", "grammar.grammar")))
     testTree[`handGrammarCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, handGrammarProgram)
 
     Object.assign(testTree, handGrammarProgram.examplesToTestBlocks())
@@ -271,8 +272,8 @@ class Builder extends jtree.TreeNode {
 
   produceLang(langName: string) {
     const newFilePath = path.join(__dirname, "langs", langName, `${langName}.grammar`)
-    jtree.compileGrammarForBrowser(newFilePath, this._getProductFolder(), true)
-    jtree.compileGrammarForNodeJs(newFilePath, this._getProductFolder(), true, "../index.js")
+    GrammarCompiler.compileGrammarForBrowser(newFilePath, this._getProductFolder(), true)
+    GrammarCompiler.compileGrammarForNodeJs(newFilePath, this._getProductFolder(), true, "../index.js")
   }
 
   private _getProductsTree() {
@@ -280,11 +281,11 @@ class Builder extends jtree.TreeNode {
   }
 
   buildJibJab() {
-    const combined = jtree.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
+    const combined = GrammarCompiler.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
     combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
-    jtree.formatFileInPlace(path, __dirname + "/langs/grammar/grammar.grammar")
+    GrammarCompiler.formatFileInPlace(path, __dirname + "/langs/grammar/grammar.grammar")
   }
 
   _getProductFolder() {

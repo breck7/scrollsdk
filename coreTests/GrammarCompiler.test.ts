@@ -10,6 +10,21 @@ const { GrammarCompiler } = require("../products/GrammarCompiler.js")
 
 const testTree: treeNotationTypes.testTree = {}
 
+testTree.compileGrammarAndCreateProgram = equal => {
+  // Arrange
+  const jibberishRootDir = __dirname + "/../langs/jibberish/"
+  const programPath = jibberishRootDir + "sample.jibberish"
+  const grammarPath = jibberishRootDir + "jibberish.grammar"
+
+  // Act
+  const program = GrammarCompiler.compileGrammarAndCreateProgram(programPath, grammarPath)
+  const result = program.execute()
+
+  // Assert
+  equal(program.constructor.name, "jibberishNode", "parent program class parsed correctly")
+  equal(result, 42)
+}
+
 testTree.combineTests = equal => {
   // Arrange
   const combined = GrammarCompiler.combineFiles([__dirname + "/*.swarm"])

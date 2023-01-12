@@ -2,13 +2,13 @@
 
 // todo: make isomorphic
 
-const { jtree } = require("../index.js")
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { Disk } = require("../products/Disk.node.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
+const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
 const path = require("path")
 
-const HandGrammarProgram = jtree.HandGrammarProgram
 const jibberishRootDir = path.join(__dirname, "..", "langs", "jibberish")
 const numbersPath = path.join(__dirname, "..", "langs", "numbers", "numbers.grammar")
 const numbersGrammar = Disk.read(numbersPath)
@@ -186,7 +186,7 @@ langs.forEach((lang: string) => {
   if (!Disk.isDir(folder)) return
   testTree[`${lang}SimTest`] = equal => {
     const grammarCode = Disk.read(path.normalize(`${folder}/${lang}.grammar`))
-    const grammarProgram = new jtree.HandGrammarProgram(grammarCode)
+    const grammarProgram = new HandGrammarProgram(grammarCode)
     const programConstructor = grammarProgram.compileAndReturnRootConstructor()
 
     // Act
@@ -734,6 +734,6 @@ intCell`
 )
 Object.assign(testTree, badGrammarProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

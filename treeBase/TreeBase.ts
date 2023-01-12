@@ -1,21 +1,16 @@
 //onsave jtree build produce treeBase.node.js
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
-
-const { jtree } = require("../index.js")
-const { Disk } = require("../products/Disk.node.js")
-const grammarNode = require("../products/grammar.nodejs.js")
-
 const path = require("path")
 const fs = require("fs")
 
-const HandGrammarProgram = jtree.HandGrammarProgram
-const TreeUtils = jtree.Utils
-const TreeNode = jtree.TreeNode
-const TreeEvents = jtree.TreeEvents
-const GrammarConstants = jtree.GrammarConstants
+const { TreeNode, TreeEvents } = require("../products/TreeNode.js")
+const { HandGrammarProgram, GrammarConstants } = require("../products/GrammarLanguage.js")
+const { Disk } = require("../products/Disk.node.js")
+const { Utils } = require("../products/Utils.js")
+const grammarNode = require("../products/grammar.nodejs.js")
 
-const makeId = (word: string) => TreeUtils.getFileName(TreeUtils.removeFileExtension(word))
+const makeId = (word: string) => Utils.getFileName(Utils.removeFileExtension(word))
 
 class TreeBasePageTemplate {
   constructor(file: TreeBaseFile) {

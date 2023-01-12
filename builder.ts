@@ -1,11 +1,13 @@
 #!/usr/bin/env ts-node
 
-const { exec } = require("child_process")
 const recursiveReadSync = require("recursive-readdir-sync")
 
-const { jtree } = require("./index.js")
+const { TreeNode } = require("./products/TreeNode.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { Disk } = require("./products/Disk.node.js")
+const { Utils } = require("./products/Utils.js")
+const { HandGrammarProgram } = require("./products/GrammarLanguage.js")
+const { TestRacer } = require("./products/TestRacer.node.js")
 const { GrammarCompiler } = require("./products/GrammarCompiler.js")
 const path = require("path")
 const fs = require("fs")
@@ -16,7 +18,7 @@ import { treeNotationTypes } from "./products/treeNotationTypes"
 
 const registeredExtensions: treeNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", grammar: "tooling ", gram: "tooling " }
 
-class Builder extends jtree.TreeNode {
+class Builder extends TreeNode {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
     const ts = require("typescript")
     // downlevelIteration: true, // todo: what is this again?
@@ -93,7 +95,7 @@ class Builder extends jtree.TreeNode {
       return true
     }
 
-    const fileExtension = jtree.Utils.getFileExtension(fullPath)
+    const fileExtension = Utils.getFileExtension(fullPath)
     const commentPrefix = registeredExtensions[fileExtension]
     if (!commentPrefix) {
       console.log(` SKIP not a registered extension.`)
@@ -113,7 +115,7 @@ class Builder extends jtree.TreeNode {
       if (!line.startsWith(prefix)) console.log(` SKIP no tasks`)
       while (line.startsWith(prefix)) {
         const command = line.substr(prefix.length + 1)
-        const folder = jtree.Utils.getParentFolder(fullPath)
+        const folder = Utils.getParentFolder(fullPath)
         console.log(` COMMAND ${command}`)
         const time = Date.now()
         execSync(command, { cwd: folder, encoding: "utf8" })
@@ -157,9 +159,7 @@ class Builder extends jtree.TreeNode {
     const lastLine = productNode.get("insertLastLine") ? productNode.get("insertLastLine") : ""
     const removeAll = productNode.getNodesByGlobPath("removeAll")
     const transformFn = (code: string) => {
-      removeAll.forEach((node: any) => {
-        code = jtree.Utils.removeAll(code, node.getContent())
-      })
+      removeAll.forEach((node: any) => (code = Utils.removeAll(code, node.getContent())))
       return firstLine + code + "\n" + lastLine
     }
     if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
@@ -207,7 +207,7 @@ class Builder extends jtree.TreeNode {
       equal(errs.length, 0, "should be no errors")
     }
 
-    const handGrammarProgram = new jtree.HandGrammarProgram(Disk.read(grammarPath))
+    const handGrammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
 
     testTree[`grammarCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, GrammarCompiler.compileGrammarAndCreateProgram(grammarPath, path.join(__dirname, "langs", "grammar", "grammar.grammar")))
     testTree[`handGrammarCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, handGrammarProgram)
@@ -277,7 +277,7 @@ class Builder extends jtree.TreeNode {
   }
 
   private _getProductsTree() {
-    return jtree.TreeNode.fromDisk(__dirname + "/products.tree")
+    return TreeNode.fromDisk(__dirname + "/products.tree")
   }
 
   buildJibJab() {
@@ -346,7 +346,7 @@ treeBase
 treeComponentFramework`.split("\n")
     const fileTree = {}
     folders.forEach(folder => Object.assign(fileTree, this._makeTestTreeForFolder(__dirname + `/${folder}/`)))
-    const runner = new jtree.TestRacer(fileTree)
+    const runner = new TestRacer(fileTree)
     await runner.execute()
     runner.finish()
   }

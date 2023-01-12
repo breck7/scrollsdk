@@ -1,5 +1,3 @@
-// jtree build produce jtree.node.js
-
 import { AbstractNode } from "./AbstractNode.node"
 import { Utils } from "./Utils"
 import { treeNotationTypes } from "../products/treeNotationTypes"

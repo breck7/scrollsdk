@@ -1,3 +1,5 @@
+import header.scroll
+permalink index.html
 title JTree: Tree Notation SDK for TypeScript & Javascript
 
 import ciBadges.scroll
@@ -147,8 +149,6 @@ code
 * It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files in gitignore. Read more here.
  https://breckyunits.com/code/my-sublime-setttings.html here
 
-html <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
-
 # ❤️ Public Domain ❤️
-permalink index.html
-import settings.scroll
+
+import footer.scroll

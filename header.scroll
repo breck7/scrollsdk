@@ -1,0 +1,6 @@
+importOnly
+import settings.scroll
+metaTags
+scrollCssTag
+scrollHeader
+html <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />

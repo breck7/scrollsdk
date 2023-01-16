@@ -1,3 +1,4 @@
+import header.scroll
 title Release Notes
 
 * Here's a list of the notable changes in JTree.
@@ -1532,4 +1533,4 @@ code
 
 html <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
 
-import settings.scroll
+import footer.scroll

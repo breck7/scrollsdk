@@ -1,27 +1,33 @@
 title A checklist for creating a new Tree Language from Scratch
 
-list
- - ☑️ Know where to get help. GitHub issues🔗github.com/treenotation/jtree/issues, Tree Notation subreddit🔗reddit.com/r/treenotation, <a href="mailto:treenotation@googlegroups.com">Google Groups</a>, or <a href="mailto:breck7@gmail.com">email Breck</a>.
- - ☑️ Take a look at some of the sample languages in the simple web Tree Language builder🔗jtree.treenotation.org/designer/. You might be able to use these as a reference if you get stuck.
- - ☑️ Open the Tree Language Designer.treenotation.org/designer/ or use your own editor (note: only SublimeText4🔗sublimetext.com currently has syntax highlighting for Grammar Languages).
- - ☑️ Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
- - ☑️ If you are using the Tree Language builder🔗jtree.treenotation.org/designer/, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name "{yourLanguageNameGoesHere}.grammar"
- - ☑️ Create a root nodeType. This will be the root node for your language. It should like this:
+
+- ☑️ Know where to get help. GitHub issues, Tree Notation subreddit, Google Groups, or email Breck.
+ https://github.com/treenotation/jtree/issues GitHub issues
+ https://reddit.com/r/treenotation Tree Notation subreddit
+ link mailto:treenotation@googlegroups.com Google Groups
+ link mailto:breck7@gmail.com email Breck
+- ☑️ Take a look at some of the sample languages in the Tree Language Designer. You might be able to use these as a reference if you get stuck.
+ https://jtree.treenotation.org/designer/ Tree Language Designer
+- ☑️ Open the Tree Language Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Grammar Languages).
+ https://jtree.treenotation.org/designer/ Tree Language Designer
+ https://sublimetext.com SublimeText4
+- ☑️ Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
+- ☑️ If you are using the Tree Language Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.grammar`
+ jtree.treenotation.org/designer/
+- ☑️ Create a root nodeType. This will be the root node for your language. It should like this:
 
 psuedoCode
  {yourLanguageNameGoesHere}Node
  root
 
-list
- - ☑️ Add a description line to your new root nodeType. This should describe what the purpose of your language is:
+- ☑️ Add a description line to your new root nodeType. This should describe what the purpose of your language is:
 
 psuedoCode
  {yourLanguageNameGoesHere}Node
   root
   description {thisIsALangageToHelpYouDoX}
 
-list
- - ☑️ Add a top level nodeType to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" nodeType.
+- ☑️ Add a top level nodeType to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" nodeType.
 
 grammarCode
  birthdaysNode
@@ -30,8 +36,7 @@ grammarCode
  friendNode
   description Store information about a friend.
 
-list
- - ☑️ Now let's add an inScope line to the root node so that the friend node is in scope:
+- ☑️ Now let's add an inScope line to the root node so that the friend node is in scope:
 
 grammarCode
  birthdaysNode
@@ -41,16 +46,14 @@ grammarCode
  friendNode
   description Store information about a friend.
 
-list
- - ☑️ Now the following is a valid program in your language:
+- ☑️ Now the following is a valid program in your language:
 
 code
  friend
  friend
  friend
 
-list
- - ☑️ Now let's add a "name" nodeType under the friend nodeType's scope. We're start hiding some already mentioned code with "..." 
+- ☑️ Now let's add a "name" nodeType under the friend nodeType's scope. We're start hiding some already mentioned code with "..." 
 
 psuedoCode
  ...
@@ -59,8 +62,7 @@ psuedoCode
   inScope nameNode
  nameNode
 
-list
- - ☑️ Now the following is a valid program in your language:
+- ☑️ Now the following is a valid program in your language:
 
 psuedoCode
  friend
@@ -69,24 +71,21 @@ psuedoCode
   name
  ...
 
-list
- - ☑️ Now let's add a "cellType", which let's us start getting things like type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the cellTypes at the top of our grammar file.
+- ☑️ Now let's add a "cellType", which let's us start getting things like type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the cellTypes at the top of our grammar file.
 
 psuedoCode
  nameCell
   highlightScope string
  ...
 
-list
- - ☑️ Now let's make the name nodeType accept a "catch all" cellType of the nameCell.
+- ☑️ Now let's make the name nodeType accept a "catch all" cellType of the nameCell.
 
 psuedoCode
  ...
  nameNode
   catchAllCellType nameCell
 
-list
- - ☑️ Now the following is a valid program in your language:
+- ☑️ Now the following is a valid program in your language:
 
 code
  friend
@@ -94,8 +93,7 @@ code
  friend
   name Ada Lovelace
 
-list
- - ☑️ Now let's add an error nodeType, and link it to the rootNode, to catch errors:
+- ☑️ Now let's add an error nodeType, and link it to the rootNode, to catch errors:
 
 grammarCode
  birthdaysNode
@@ -106,12 +104,10 @@ grammarCode
  errorNode
   baseNodeType errorNode
 
-list
- - ☑️ Now you should get an error for a program like this:
+- ☑️ Now you should get an error for a program like this:
 
 code
  frieeeend
   name Ben Franklin
 
-aftertext
- That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format.
+* That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format.

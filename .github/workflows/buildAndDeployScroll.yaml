@@ -13,7 +13,7 @@ jobs:
       - name: Install and Build
         run: |
           npm install scroll-cli
-          ./node_modules/scroll-cli/scroll.js build
+          ./node_modules/scroll-cli/scroll.js list | ./node_modules/scroll-cli/scroll.js build
           # Uncomment the line below if you are ignoring *.html files in your gitignore file
           rm .gitignore
       - name: Deploy 🚀

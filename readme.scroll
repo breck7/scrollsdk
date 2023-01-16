@@ -4,17 +4,26 @@ import ciBadges.scroll
 
 # Links
 
-readingList
- https://treenotation.org Tree Notation Homepage
- https://jtree.treenotation.org/sandbox Tree Notation Sandbox
- https://jtree.treenotation.org/designer Tree Language Designer
- https://faq.treenotation.org Tree Notation FAQ
- https://treebase.treenotation.org TreeBase
- https://github.com/treenotation/jtree TypeScript Library
- https://reddit.com/r/treenotation Tree Notation Subreddit
- https://github.com/treenotation/ohayo Ohayo - A data science studio powered by Tree Notation
- https://jtree.treenotation.org/sandbox/test.html UnitTests
- https://jtree.treenotation.org/sandbox/perfTests.html PerfTests
+* Tree Notation Homepage
+ https://treenotation.org
+* Tree Notation Sandbox
+ https://jtree.treenotation.org/sandbox
+* Tree Language Designer
+ https://jtree.treenotation.org/designer
+* Tree Notation FAQ
+ https://faq.treenotation.org
+* TreeBase
+ https://treebase.treenotation.org
+* TypeScript Library
+ https://github.com/treenotation/jtree
+* Tree Notation Subreddit
+ https://reddit.com/r/treenotation
+* Ohayo - A data science studio powered by Tree Notation
+ https://github.com/treenotation/ohayo
+* UnitTests
+ https://jtree.treenotation.org/sandbox/test.html
+* PerfTests
+ https://jtree.treenotation.org/sandbox/perfTests.html
 
 ? Who is this package built for?
 
@@ -138,9 +147,8 @@ code
 * It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files in gitignore. Read more here.
  https://breckyunits.com/code/my-sublime-setttings.html here
 
-html
- <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+html <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
 
-section ❤️ Public Domain ❤️
+# ❤️ Public Domain ❤️
 permalink index.html
 import settings.scroll

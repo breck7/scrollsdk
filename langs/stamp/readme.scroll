@@ -1,6 +1,6 @@
 title Stamp
 
-paragraph First, show me some code
+* First, show me some code
 
 code
  folder myProject
@@ -11,17 +11,11 @@ code
   data
    # My Readme
 
-paragraph
- You can also play with writing your own stamp files by hand in this
- <a href="https://jtree.treenotation.org/designer/#standard%20stamp">web IDE</a>
- to see autocomplete, type checking, and the full grammar.
+* You can also play with writing your own stamp files by hand in this web IDE to see autocomplete, type checking, and the full grammar.
+ https://jtree.treenotation.org/designer/#standard%20stamp web IDE
 
-section QuickStart: How to use Stamp in Node
-
-paragraph
- Stamp can be used in node to turn a folder on disk into a single
- stamp file, and to expand a single stamp file into a folder
- on disk.
+# QuickStart: How to use Stamp in Node
+* Stamp can be used in node to turn a folder on disk into a single stamp file, and to expand a single stamp file into a folder on disk.
 
 code
  npm install jtree
@@ -33,93 +27,61 @@ code
  // Expand a stamp to disk
  new stamp(`file hello-world.txt`).execute()
 
-section How to use Stamp with other languages
-
-paragraph
- A Stamp file is a simple declarative file. It should be
- straightforward to write a Stamp "library" (really, 2
- functions should suffice), in other languages. If you
- do that, please send a PR with a link so we can direct
- people without nodejs to other implementations.
+# How to use Stamp with other languages
+*
+ A Stamp file is a simple declarative file. It should be straightforward to write a Stamp "library" (really, 2 functions should suffice), in other languages. If you do that, please send a PR with a link so we can direct people without nodejs to other implementations.
  
-section About
+# About
+* Stamp is an alternative to zip files for sharing a small collection of folders and text files.
 
-paragraph
- Stamp is an alternative to zip files for sharing a small
- collection of folders and text files.
+* A Stamp Program is an easily readable plain text program that when executed creates the files and folders listed.
 
-paragraph
- A Stamp Program is an easily readable plain text program
- that when executed creates the files and folders listed.
+* Stamp Programs are great for workflows where you prompt a user for input and then do a simple find/replace throughout the created files and folders.
 
-paragraph
- Stamp Programs are great for workflows where you prompt
- a user for input and then do a simple find/replace
- throughout the created files and folders.
+* Frequently programmers have templates that they start new projects with. Those templates can be turned into Stamp files.
 
-paragraph
- Frequently programmers have templates that they start new
- projects with. Those templates can be turned into Stamp files.
+# The Problem
+* The web is full of project tutorials like this one that ask their readers to go through a series of steps to create a particular folder and file structure for a new project.
+ https://docs.npmjs.com/getting-started/creating-node-modules this one
 
-section The Problem
+* The current options for this situation are:
 
-paragraph
- The web is full of project tutorials like <a
- href="https://docs.npmjs.com/getting-started/creating-node-modules">this one</a>
- that ask their readers to go through a series of steps to
- create a particular folder and file structure for a new
- project.
+# The Recipe Method - explain each step
 
-paragraph
- The current options for this situation are:
+- Downside: If your basic project layout requires 10 files, that's 10 separate steps the reader has to do just to get started.
+- Downside: The reader might make an error during one of those steps and lose even more time.
+- Downside: Putting such steps in a narrative and updating that narrative if things change is time consuming as an author
 
-section The Recipe Method - explain each step
+# The Zip Method - zip the template directory
+- Downside: zip files are opaque and a user has no visibility into what they are creating
+- Downside: everytime the template changes, author has to rezip and reupload the folder
+- Downside: once unzipped, user has to manually change names to match the name of their project
 
-- Downside: If your basic project layout requires 10 files,
-  that's 10 separate steps the reader has to do just to get
-  started.
-- Downside: The reader might make an error during one of
-  those steps and lose even more time.
-- Downside: Putting such steps in a narrative and updating
-  that narrative if things change is time consuming as an
-  author
-
-section The Zip Method - zip the template directory
-
-- Downside: zip files are opaque and a user has no
-  visibility into what they are creating
-- Downside: everytime the template changes, author has to
-  rezip and reupload the folder
-- Downside: once unzipped, user has to manually change names
-  to match the name of their project
-
-section The Custom Utility Method - implement a custom command line
- program that generates new projects*
-
+# The Custom Utility Method - implement a custom command line program that generates new projects*
 - Downside: No visibility into what is getting created
-- Downside: If the template changes, now author needs to get
-  users to install the new template program
-- Downside: Now you have a whole new complicated program to
-  write and maintain
+- Downside: If the template changes, now author needs to get users to install the new template program
+- Downside: Now you have a whole new complicated program to write and maintain
 
-section The GitHub method - create a repo for your template and
- have people git clone it
-
+# The GitHub method - create a repo for your template and have people git clone it
 - Downside: no way of doing variable replacement post-clone
 - Downside: no plain text way of distributing the template
 
-section Alternatives Considered
+# Alternatives Considered
+* Wikipedia list of archive formats
+ https://en.wikipedia.org/wiki/List_of_archive_formats
+* ptar full featured, but difference is the file output is a custom format (not a Tree Language)
+ https://github.com/jtvaughan/ptar ptar
+* shar old school method that has the major security flaw of potentially running any shell command
+ https://en.wikipedia.org/wiki/Shar shar
+* dar
+ http://dar.linux.free.fr/
+* metatar
+ https://github.com/xyproto/metatar
+* txtar
+ https://pkg.go.dev/golang.org/x/tools@v0.1.0/txtar
 
-links
- https://en.wikipedia.org/wiki/List_of_archive_formats Wikipedia list of archive formats
- https://github.com/jtvaughan/ptar ptar full featured, but difference is the file output is a custom format (not a Tree Language)
- https://en.wikipedia.org/wiki/Shar shar old school method that has the major security flaw of potentially running any shell command
- http://dar.linux.free.fr/ dar
- https://github.com/xyproto/metatar metatar
- https://pkg.go.dev/golang.org/x/tools@v0.1.0/txtar txtar
-
-section Directory Editors
-
-links
- https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html Dired
- https://github.com/thameera/vimv vimv
+# Directory Editors
+* Dired
+ https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html
+* vimv
+ https://github.com/thameera/vimv

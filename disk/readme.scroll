@@ -1,7 +1,5 @@
 title Disk
 
-paragraph
- This folder contains some simple wrappers around `fs`.
+* This folder contains some simple wrappers around `fs`.
 
-paragraph
- It will likely be removed in the future.
+* It will likely be removed in the future.

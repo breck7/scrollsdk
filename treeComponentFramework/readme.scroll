@@ -1,85 +1,44 @@
 title TreeComponentFramework
 
-paragraph
- TreeComponentFramework is a **research** web framework for
- building reactive web apps using entirely Tree Notation.
+* TreeComponentFramework is a *research* web framework for building reactive web apps using entirely Tree Notation.
 
-section The Vision
+# The Vision
 
-paragraph
- TreeComponentFramework is a step toward a world where web
- app development and debugging is much simpler! Every app
- can be dumped to a string and you can see all the state in
- the app in that string. <a
- href="https://jtree.treenotation.org/treeComponentFramework/sweepercraft/">See
- for yourself</a> in the SweeperCraft app--just press "d" to
- dump the app to a string.
+* TreeComponentFramework is a step toward a world where web app development and debugging is much simpler! Every app can be dumped to a string and you can see all the state in the app in that string. See for yourself in the SweeperCraft app--just press "d" to dump the app to a string.
+ https://jtree.treenotation.org/treeComponentFramework/sweepercraft/ SweeperCraft app
 
-paragraph
- With TreeComponentFramework, you build your components in
- Tree Languages: instead of CSS use Hakon; instead of HTML
- use Stump; and instead of TypeScript/Javascript use
- TreeScript (coming soon). You define your components in
- those and then you create a high level Tree Language
- specifically for your app to stitch those components
- together.
+* With TreeComponentFramework, you build your components in Tree Languages: instead of CSS use Hakon; instead of HTML use Stump; and instead of TypeScript/Javascript use TreeScript (coming soon). You define your components in those and then you create a high level Tree Language specifically for your app to stitch those components together.
 
-paragraph
- In the future as Tree Notation and Tree Language tooling
- improves you will be able to build enormously powerful and
- complex app webs using a single universal syntax from top
- to bottom. We think this will greatly simplify and improve
- the reliability of web apps.
+* In the future as Tree Notation and Tree Language tooling improves you will be able to build enormously powerful and complex app webs using a single universal syntax from top to bottom. We think this will greatly simplify and improve the reliability of web apps.
 
-paragraph
- Today, your TreeComponentFramework apps are compiled to
- Javascript and HTML and then run on Virtual Machines like
- v8/Chromium, which will further compile your code to
- assembly/machine code and then send that to microprocessors
- which then compile it to microcode before final execution
- on hardware. In the long run if people build Tree Machines
- your code could be run directly as is on those.
+* Today, your TreeComponentFramework apps are compiled to Javascript and HTML and then run on Virtual Machines like v8/Chromium, which will further compile your code to assembly/machine code and then send that to microprocessors which then compile it to microcode before final execution on hardware. In the long run if people build Tree Machines your code could be run directly as is on those.
 
-section Using it
+# Using it
 
-paragraph
- This framework is currently a **research project**. We
- expect to have **version 1 released sometime in 2020, if
- ever**. Feedback is much appreciated and feel free to
- experiment, but it is not recommended for production use at
- this time.
+* This framework is currently a *research project*. We expect to have **version 1 released sometime in 2020, if ever**. Feedback is much appreciated and feel free to experiment, but it is not recommended for production use at this time.
 
-section Examples
+# Examples
 
-paragraph
- The <a
- href="https://github.com/treenotation/jtree/tree/main/treeComponentFramework/sweepercraft">github repo</a>
- contains a demonstration game called "SweeperCraft" that
- let's you design your own Minesweeper board.
+* The github repo contains a demonstration game called "SweeperCraft" that let's you design your own Minesweeper board.
+ https://github.com/treenotation/jtree/tree/main/treeComponentFramework/sweepercraft github repo
 
-paragraph
- This framework also powers:
+* This framework also powers:
 
-links
- https://github.com/treenotation/jtree/tree/main/sandbox Tree Notation Sandbox
- https://github.com/treenotation/jtree/tree/main/designer Tree Language Designer
- https://github.com/treenotation/ohayo Ohayo
- https://pau.treenotation.org/synth/ PauSynth
+* Tree Notation Sandbox
+ https://github.com/treenotation/jtree/tree/main/sandbox
+* Tree Language Designer
+ https://github.com/treenotation/jtree/tree/main/designer
+* Ohayo
+ https://github.com/treenotation/ohayo
+* PauSynth
+ https://pau.treenotation.org/synth/
 
-section Current Architecture
+# Current Architecture
+* TreeComponentFramework is designed to run in the browser and NodeJS. It runs in NodeJS for faster headless testing.
 
-paragraph
- TreeComponentFramework is designed to run in the browser
- and NodeJS. It runs in NodeJS for faster headless testing.
+* Willow shims the environment so your app works with Willow and Willow handles system calls whether it is running in the browser or NodeJs.
 
-paragraph
- Willow shims the environment so your app works with Willow
- and Willow handles system calls whether it is running in
- the browser or NodeJs.
-
-paragraph
- The diagram below was designed using textik 
- (https://textik.com/#5d3d5f6ffc50de4b)
+* The diagram below was designed using textik - https://textik.com/#5d3d5f6ffc50de4b
 
 code
     +--------------------------+         +-------------------------+
@@ -108,30 +67,19 @@ code
                        |Your App                    |               
                        +----------------------------+               
 
-section FAQ
+# FAQ
 
-question Why build another web framework?
+? Why build another web framework?
 
-paragraph
- No one has built a web framework that allows you to build
- web apps using only one single syntax, Tree Notation. This
- is an experiment.
+* No one has built a web framework that allows you to build web apps using only one single syntax, Tree Notation. This is an experiment.
 
-section I see the Hakon and Stump but then I see mostly
- TypeScript/Javascript, so how is this different?
+? I see the Hakon and Stump but then I see mostly TypeScript/Javascript, so how is this different?
 
-paragraph
- An upcoming release will contain most of the
- TypeScript/Javascript converted to TreeScript. The design
- of TreeScript is still in heavy flux.
+* An upcoming release will contain most of the TypeScript/Javascript converted to TreeScript. The design of TreeScript is still in heavy flux.
 
-question How can I help?
+? How can I help?
 
-paragraph
- We are trying to combine Tree Notation with the best ideas
- from the current leading web frameworks like [React]
- (https://reactjs.org/), [Svelte](https://svelte.dev/), and 
- [Vue](https://vuejs.org/). We are not web framework experts
- and would LOVE if any experts on frameworks like those
- could give us some code reviews and point out any obvious
- bad patterns that we could fix.
+* We are trying to combine Tree Notation with the best ideas from the current leading web frameworks like React, Svelte , and Vue. We are not web framework experts and would LOVE if any experts on frameworks like those could give us some code reviews and point out any obvious bad patterns that we could fix.
+ https://reactjs.org/ React
+ https://svelte.dev/ Svelte
+ https://vuejs.org/ Vue

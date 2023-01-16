@@ -1,14 +1,10 @@
 title Kitchen
 
-paragraph
- Kitchen is a simple ExpressJS app used by JTree
- Developers.
+* Kitchen is a simple ExpressJS app used by JTree Developers.
 
-paragraph
- With Kitchen you can run Tree Notation
- sandbox, Tree Notation Desginer, and other tools locally.
+* With Kitchen you can run Tree Notation sandbox, Tree Notation Desginer, and other tools locally.
 
-question How do I start it?
+? How do I start it?
 
 code
  jtree kitchen

@@ -63,772 +63,658 @@ title Release Notes
 - ⚠️ BREAKING: removed rarely commands from CLI app: 'usage', 'programs', 'allHistory', 'distribute', 'combined'
 
 # 56.0.1 2022-09-26
-list
- - 🏥 minor dependency bump
+- 🏥 minor dependency bump
 
 # 56.0.0 2022-08-31
-list
- - ⚠️ BREAKING: removed the keyword `abstract` from Grammar Language. Grammar Language is now a suffix AND prefix language. The functionality of abstract node type definitions is identical, but now instead of flagging them with the `abstract` keyword, you need to ensure that the node type definition id begins with the word `abstract`. This turned out to be the best design pattern already, so you may already do this, and then the migration step is simple—just delete all occurrences of `/^ abstract\n/` in your `*.grammar` files. In the rare chance you have any nodes that are not abstract whose id's begin with the prefix `abstract`, you will need to give those nodes a new id.
+- ⚠️ BREAKING: removed the keyword `abstract` from Grammar Language. Grammar Language is now a suffix AND prefix language. The functionality of abstract node type definitions is identical, but now instead of flagging them with the `abstract` keyword, you need to ensure that the node type definition id begins with the word `abstract`. This turned out to be the best design pattern already, so you may already do this, and then the migration step is simple—just delete all occurrences of `/^ abstract\n/` in your `*.grammar` files. In the rare chance you have any nodes that are not abstract whose id's begin with the prefix `abstract`, you will need to give those nodes a new id.
 
 # 55.1.1 2022-08-18
-list
- - 🏥 TreeBase: fixed error reporting bug.
+- 🏥 TreeBase: fixed error reporting bug.
 
 # 55.1.0 2022-08-02
-list
- - 🏥 TreeBase: fixed error reporting regression and added test.
+- 🏥 TreeBase: fixed error reporting regression and added test.
 
 # 55.0.0 2022-08-02
-list
- - 🎉 TreeBase: grammarDir and row dir can now be different
- - ⚠️ TreeBase: setDir and setGrammarDir must now be used instead of a constructor
- - ⚠️ TreeBase: TreeBaseFile instances have the id as key; TreeBaseFolder handles mapping to filesystem
- - ⚠️ TreeBase: grammar parsing now done at TreeBaseFile level
- - ⚠️ TreeBase: removed cellCheckWithProgressBar; removed `_getDir` (use `dir`); removed toProgram; _getGrammarPaths is now grammarFilePaths
- - ⚠️ TreeBase: typedMapShort is now typedMap
- - ⚠️ TreeBase: define fileExtension in Grammar files (or programmatically)
- - ⚠️ Grammar: toSQLiteInsertStatement now takes a string instead of function
+- 🎉 TreeBase: grammarDir and row dir can now be different
+- ⚠️ TreeBase: setDir and setGrammarDir must now be used instead of a constructor
+- ⚠️ TreeBase: TreeBaseFile instances have the id as key; TreeBaseFolder handles mapping to filesystem
+- ⚠️ TreeBase: grammar parsing now done at TreeBaseFile level
+- ⚠️ TreeBase: removed cellCheckWithProgressBar; removed `_getDir` (use `dir`); removed toProgram; _getGrammarPaths is now grammarFilePaths
+- ⚠️ TreeBase: typedMapShort is now typedMap
+- ⚠️ TreeBase: define fileExtension in Grammar files (or programmatically)
+- ⚠️ Grammar: toSQLiteInsertStatement now takes a string instead of function
 
 # 54.2.1 2022-07-27
-list
- - 🏥 Utils: linkify Wikipedia urls correctly
+- 🏥 Utils: linkify Wikipedia urls correctly
 
 # 54.2.0 2022-07-27
-list
- - 🎉 CLI: added serve command
+- 🎉 CLI: added serve command
 
 # 54.1.0 2022-07-25
-list
- - 🎉 Grammar: `contentDelimiter` property
+- 🎉 Grammar: `contentDelimiter` property
 
 # 54.0.0 2022-07-24
-list
- - 🎉 TreeBase: typedMapShort, id, and dir
- - 🎉 Grammar: typedMap
- - 🎉 Grammar: contentKey, childrenKey, uniqueFirstWord (may all be temporary), to support typedMap
+- 🎉 TreeBase: typedMapShort, id, and dir
+- 🎉 Grammar: typedMap
+- 🎉 Grammar: contentKey, childrenKey, uniqueFirstWord (may all be temporary), to support typedMap
 
 # 53.7.1 2022-07-20
-list
- - 🏥 Designer: shows root level required and dupe use errors
+- 🏥 Designer: shows root level required and dupe use errors
 
 # 53.7.0 2022-07-20
-list
- - 🎉 Grammar: `single` keyword in a parent nodeType now propogates to child nodeTypes
+- 🎉 Grammar: `single` keyword in a parent nodeType now propogates to child nodeTypes
 
 # 53.6.0 2022-07-14
-list
- - 🎉 Grammar: perf improvement
+- 🎉 Grammar: perf improvement
 
 # 53.5.1 2022-07-12
-list
- - 🏥 Grammar: ship latest version
+- 🏥 Grammar: ship latest version
 
 # 53.5.0 2022-07-12
-list
- - 🎉 Grammar: add cruxFromId
+- 🎉 Grammar: add cruxFromId
 
 # 53.4.0 2022-07-12
-list
- - 🎉 Core: add param to use toDelimited without escaping `tree.toDelimited("|", undefined, false)`
+- 🎉 Core: add param to use toDelimited without escaping `tree.toDelimited("|", undefined, false)`
 
 # 53.3.0 2022-06-17
-list
- - 🎉 Grammar: toTypeScriptInterface includes descriptions now
- - 🏥 Grammar: fix dumb bug in toTypeScriptInterface (+ test)
+- 🎉 Grammar: toTypeScriptInterface includes descriptions now
+- 🏥 Grammar: fix dumb bug in toTypeScriptInterface (+ test)
 
 # 53.2.0 2022-06-15
-list
- - 🎉 Grammar: toTypeScriptInterface method on grammar nodes
- - ⚠️ methods with SqlLite had typo fix to SQLite
- - 🏥 Core: fix bug where a deep `where` query with `notEmpty` operator would fail
+- 🎉 Grammar: toTypeScriptInterface method on grammar nodes
+- ⚠️ methods with SqlLite had typo fix to SQLite
+- 🏥 Core: fix bug where a deep `where` query with `notEmpty` operator would fail
 
 # 53.1.0 2022-01-18
-list
- - 🏥 Builder: larger buffer for jtree build
- - 🏥 TreeBase: should not run trim when loading files
+- 🏥 Builder: larger buffer for jtree build
+- 🏥 TreeBase: should not run trim when loading files
 
 # 53.0.0 2021-07-27
-list
- - 🎉 tcf: 60% faster rendering
- - 🎉 tcf/stump: removed jquery dependency
- - 🏥 designer & sandbox regression fixes
- - ⚠️ stump: removed `setStumpNodeCss`
- - ⚠️ tcf: by default html elements are now added w/o surrounding whitespace when mounted
- - ⚠️ tcf: removed `setShadowCss`
- - ⚠️ tcf: removed makeResizable, makeDraggable, makeSelectable, _getJQElement
- - ⚠️ tcf: middle param to onShadowEvent dropped. use onShadowEventWithSelector instead.
- - ⚠️ tcf: triggerShadowEvent, insertHtmlNode, getShadowCss, getShadowPosition implementations changed
- - ⚠️ tcf: shadowHasClass, getShadowValue, triggerShadowEvent, addClassToShadow, removeClassFromShadow implementations changed
- - ⚠️ tcf: onShadowEvent, offShadowEvent, toggleShadow, setShadowCss implementations changed
- - ⚠️ tcf: getShadowOuterHeight, getShadowOuterWidth, getShadowWidth, getShadowHeight, getShadowOffset implementations changed
+- 🎉 tcf: 60% faster rendering
+- 🎉 tcf/stump: removed jquery dependency
+- 🏥 designer & sandbox regression fixes
+- ⚠️ stump: removed `setStumpNodeCss`
+- ⚠️ tcf: by default html elements are now added w/o surrounding whitespace when mounted
+- ⚠️ tcf: removed `setShadowCss`
+- ⚠️ tcf: removed makeResizable, makeDraggable, makeSelectable, _getJQElement
+- ⚠️ tcf: middle param to onShadowEvent dropped. use onShadowEventWithSelector instead.
+- ⚠️ tcf: triggerShadowEvent, insertHtmlNode, getShadowCss, getShadowPosition implementations changed
+- ⚠️ tcf: shadowHasClass, getShadowValue, triggerShadowEvent, addClassToShadow, removeClassFromShadow implementations changed
+- ⚠️ tcf: onShadowEvent, offShadowEvent, toggleShadow, setShadowCss implementations changed
+- ⚠️ tcf: getShadowOuterHeight, getShadowOuterWidth, getShadowWidth, getShadowHeight, getShadowOffset implementations changed
 
 # 52.1.0 2021-07-22
-list
- - 🏥 tcf bug fix
+- 🏥 tcf bug fix
 
 # 52.0.0 2021-07-22
-list
- - 🎉 stump/tcf: ~200% faster when inserting lots of elements
- - 🎉 tcf: added keyUpCommand support
- - ⚠️ tcf: forceRepaint function now a no-op
- - ⚠️ tcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change
- - ⚠️ tcf: getWillowBrowser is now "willowBrowser" getter
- - ⚠️ tcf: getShadowElement is now "shadowElement" getter
- - ⚠️ tcf: removed getShadowHtml
+- 🎉 stump/tcf: ~200% faster when inserting lots of elements
+- 🎉 tcf: added keyUpCommand support
+- ⚠️ tcf: forceRepaint function now a no-op
+- ⚠️ tcf: getWindowSize, getDocumentSize, setCopyHandler, setCutHandler, setResizeEndHandler implementation change
+- ⚠️ tcf: getWillowBrowser is now "willowBrowser" getter
+- ⚠️ tcf: getShadowElement is now "shadowElement" getter
+- ⚠️ tcf: removed getShadowHtml
 
 # 51.7.0 2021-07-22
-list
- - 🎉 perf improvement in TCF—don't insert CSS nodes if no CSS
+- 🎉 perf improvement in TCF—don't insert CSS nodes if no CSS
 
 # 51.6.0 2021-06-25
-list
- - 🎉 bumped pick, setProperties, getOneOf, and setPropertyIfMissing to root TreeNodeClass
- - ⚠️ extract method on TreeBase is now "pick" on TreeNode
+- 🎉 bumped pick, setProperties, getOneOf, and setPropertyIfMissing to root TreeNodeClass
+- ⚠️ extract method on TreeBase is now "pick" on TreeNode
 
 # 51.5.1 2021-05-05
-list
- - 🏥 code cleanup in DD lang
+- 🏥 code cleanup in DD lang
 
 # 51.5.0 2021-03-26
-list
- - 🎉 silence() method on stamp
+- 🎉 silence() method on stamp
 
 # 51.4.0 2021-03-12
-list
- - 🎉 added hyphens prop to hakon
+- 🎉 added hyphens prop to hakon
 
 # 51.3.0 2021-02-18
-list
- - 🎉 added break-inside CSS prop to hakon
+- 🎉 added break-inside CSS prop to hakon
 
 # 51.2.1 2021-02-13
-list
- - 🏥 removed leftover console.log
+- 🏥 removed leftover console.log
 
 # 51.2.0 2021-02-13
-list
- - 🎉 Core: expandLastFromTopMatter and lastMode methods
- - 🎉 Stump now supports defining components
+- 🎉 Core: expandLastFromTopMatter and lastMode methods
+- 🎉 Stump now supports defining components
 
 # 51.1.0 2021-02-11
-list
- - 🎉 add missing CSS Grid properties to Hakon
+- 🎉 add missing CSS Grid properties to Hakon
 
 # 51.0.0 2021-02-08
-list
- - ⚠️ removed "prompt" node and executable stamps. Almost never used, and
+- ⚠️ removed "prompt" node and executable stamps. Almost never used, and
   make it a lot more confusing to write Stamp libraries in other langs.
 
 # 50.2.0 2021-02-07
-list
- - 🎉 Stamp now creates file recursively
- - 🎉 Stamp now accepts a target dir
+- 🎉 Stamp now creates file recursively
+- 🎉 Stamp now accepts a target dir
 
 # 50.1.0 2021-02-07
-list
- - 🏥 bug fix in executing a stamp file
+- 🏥 bug fix in executing a stamp file
 
 # 50.0.0 2020-12-20
-list
- - 🎉 core: toJson, toGrid, toGridJson, fromJson and fromGridJson methods
- - 🎉 sandbox: added share link and toJson and toGridJson consoles
+- 🎉 core: toJson, toGrid, toGridJson, fromJson and fromGridJson methods
+- 🎉 sandbox: added share link and toJson and toGridJson consoles
 
 # 49.8.0 2020-03-01
-list
- - 🎉 jtable: getValues method on columns (use instead of accessing private _getSummaryVector method)
- - 🏥 jtable: pivot column generation now operates in a more pass by copy manner and references to source columns are dropped
- - ⚠️ unused method getSourceColumnName is now _getSourceColumnName
+- 🎉 jtable: getValues method on columns (use instead of accessing private _getSummaryVector method)
+- 🏥 jtable: pivot column generation now operates in a more pass by copy manner and references to source columns are dropped
+- ⚠️ unused method getSourceColumnName is now _getSourceColumnName
 
 # 49.7.0 2020-02-08
-list
- - 🎉 hasNode method in core
- - 🎉 toProgram method on TreeBase
+- 🎉 hasNode method in core
+- 🎉 toProgram method on TreeBase
 
 # 49.6.1 2020-02-03
-list
- - 🏥 TCF save mouse event on click
- - 🏥 getNextOrPrevious test and fix
- - ⚠️ unused isShadowResizable method
+- 🏥 TCF save mouse event on click
+- 🏥 getNextOrPrevious test and fix
+- ⚠️ unused isShadowResizable method
 
 # 49.6.0 2020-01-24
-list
- - 🏥 windows return characters now stripped in fromDelimited methods
+- 🏥 windows return characters now stripped in fromDelimited methods
 
 # 49.5.0 2020-01-03
-list
- - 🎉 jtable: getMin, toVector, toMatrix, toNumericMatrix methods
- - 🎉 nodesThatStartWith core method
- - 🎉 started build server
- - 🏥 clean column names method drop columns fix
+- 🎉 jtable: getMin, toVector, toMatrix, toNumericMatrix methods
+- 🎉 nodesThatStartWith core method
+- 🎉 started build server
+- 🏥 clean column names method drop columns fix
 
 # 49.4.0 2019-12-12
-list
- - 🎉 fillMissing method
- - 🏥 fix for Invalid Date
+- 🎉 fillMissing method
+- 🏥 fix for Invalid Date
 
 # 49.3.0 2019-12-12
-list
- - 🎉 started trainModel, predictChildren and predictParents methods
+- 🎉 started trainModel, predictChildren and predictParents methods
 
 # 49.2.0 2019-12-11
-list
- - 🎉 JTable synthesizeTable and toSimpleSchema
+- 🎉 JTable synthesizeTable and toSimpleSchema
 
 # 49.1.0 2019-12-09
-list
- - 🎉 isValueEmpty util method
- - 🎉 JTable: renameColumns and cloneWithCleanColumnNames methods
+- 🎉 isValueEmpty util method
+- 🎉 JTable: renameColumns and cloneWithCleanColumnNames methods
 
 # 49.0.1 2019-12-09
-list
- - 🎉 JTable: seed param in Table class
- - 🏥 JTable: first non-blank cell now used for column type prediction
+- 🎉 JTable: seed param in Table class
+- 🏥 JTable: first non-blank cell now used for column type prediction
 
 # 49.0.0 2019-12-08
-list
- - 🧹 general refactor to prep for switch to have Grammar entirely written in Grammar
- - 🧹 generally use "products/" folder now to use compiled grammars instead of recompiling everytime
- - 🎉 swarm and testRacer now prints number of skipped tests
- - 🎉 examplesToTestBlocks method on grammar programs
- - 🎉 command line app uses compiled grammar files more
- - ⚠️ getRootConstructor is now compileAndReturnRootConstructor
- - ⚠️ jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
- - ⚠️ jtree.GrammarProgram is now jtree.HandGrammarProgram
- - ⚠️ getGrammarProgram is now getHandGrammarProgram
- - ⚠️ _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
- - ⚠️ removed commandLineApp "create" command. Was broken. Use the Designer app instead.
- - ⚠️ removed jtree.executeFiles
- - ⚠️ removed all /langs/lang/lang.node.js files. Use /products/lang.nodejs.js instead.
- - ⚠️ removed commandLineApp "runSync" method.
- - ⚠️ removed jtree.executeFileSync and executeFile methods
- - ⚠️ removed executeSync method on Core.
- - ⚠️ removed default execute implementation on Core. Up to grammar to specify.
- - ⚠️ jtree.makeProgram is now jtree.compileGrammarAndCreateProgram
- - ⚠️ jtree.formatFile is now jtree.formatFileInPlace and jtree.formatProgram is now jtree.formatCode
- - ⚠️ removed getErrorsInGrammarExamples. Use examplesToTestBlocks
+- 🧹 general refactor to prep for switch to have Grammar entirely written in Grammar
+- 🧹 generally use "products/" folder now to use compiled grammars instead of recompiling everytime
+- 🎉 swarm and testRacer now prints number of skipped tests
+- 🎉 examplesToTestBlocks method on grammar programs
+- 🎉 command line app uses compiled grammar files more
+- ⚠️ getRootConstructor is now compileAndReturnRootConstructor
+- ⚠️ jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
+- ⚠️ jtree.GrammarProgram is now jtree.HandGrammarProgram
+- ⚠️ getGrammarProgram is now getHandGrammarProgram
+- ⚠️ _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
+- ⚠️ removed commandLineApp "create" command. Was broken. Use the Designer app instead.
+- ⚠️ removed jtree.executeFiles
+- ⚠️ removed all /langs/lang/lang.node.js files. Use /products/lang.nodejs.js instead.
+- ⚠️ removed commandLineApp "runSync" method.
+- ⚠️ removed jtree.executeFileSync and executeFile methods
+- ⚠️ removed executeSync method on Core.
+- ⚠️ removed default execute implementation on Core. Up to grammar to specify.
+- ⚠️ jtree.makeProgram is now jtree.compileGrammarAndCreateProgram
+- ⚠️ jtree.formatFile is now jtree.formatFileInPlace and jtree.formatProgram is now jtree.formatCode
+- ⚠️ removed getErrorsInGrammarExamples. Use examplesToTestBlocks
 
 # 48.1.0 2019-12-06
-list
- - 🎉 toSQLite method on TreeBase
- - 🎉 getFrom core method
+- 🎉 toSQLite method on TreeBase
+- 🎉 getFrom core method
 
 # 48.0.0 2019-12-02
-list
- - ⚠️ TCF: removed AbstractTreeComponent.startApp and getDefaultStartState methods. Use startWhenReady and start() pattern instead.
- - ⚠️ TCF: getNextOrPrevious is now on TreeUtils
- - ⚠️ TCF: no more DataShadowEvents
- - ⚠️ TCF: stumpOnClickCommand is now clickCommand, stumpOnBlurCommand is now blurCommand, stumpOnChangeCommand to changeCommand, stumpOnContextMenuCommand to contextMenuCommand, stumpOnShiftClickCommand to shiftClickCommand, stumpOnDblClickCommand to doubleClickCommand, stumpOnLineClick to lineClick, stumpOnLineShiftClick to lineShiftClick
- - ⚠️ TCF: no longer exports WillowConstants
- - ⚠️ TCF: getWillowProgram is now getWillowBrowser
- - ⚠️ TCF: isLoaded() is now checked before calling treeComponentDidUpdate and treeComponentDidMount
- - ⚠️ Stump: stumpCollapse is now collapse
- - ⚠️ Stump: removed stumpNoOp. Empty lines are fine now.
+- ⚠️ TCF: removed AbstractTreeComponent.startApp and getDefaultStartState methods. Use startWhenReady and start() pattern instead.
+- ⚠️ TCF: getNextOrPrevious is now on TreeUtils
+- ⚠️ TCF: no more DataShadowEvents
+- ⚠️ TCF: stumpOnClickCommand is now clickCommand, stumpOnBlurCommand is now blurCommand, stumpOnChangeCommand to changeCommand, stumpOnContextMenuCommand to contextMenuCommand, stumpOnShiftClickCommand to shiftClickCommand, stumpOnDblClickCommand to doubleClickCommand, stumpOnLineClick to lineClick, stumpOnLineShiftClick to lineShiftClick
+- ⚠️ TCF: no longer exports WillowConstants
+- ⚠️ TCF: getWillowProgram is now getWillowBrowser
+- ⚠️ TCF: isLoaded() is now checked before calling treeComponentDidUpdate and treeComponentDidMount
+- ⚠️ Stump: stumpCollapse is now collapse
+- ⚠️ Stump: removed stumpNoOp. Empty lines are fine now.
 
 # 47.1.0 2019-11-29
-list
- - 🎉 pasteText and templateToString methods
- - 🎉 blank lines are now okay in stump to work better with templates
- - 🧹 Performance improvements via caching parsers
+- 🎉 pasteText and templateToString methods
+- 🎉 blank lines are now okay in stump to work better with templates
+- 🧹 Performance improvements via caching parsers
 
 # 47.0.0 2019-11-22
-list
- - 🎉 toAutoCompleteCube method
- - 🎉 support for CSS variables in Hakon
- - 🎉 fill method
- - 🎉 toHtmlCube method
- - ⚠️ getAllSuggestions is now toAutoCompleteTable
- - ⚠️ removed getPoint. Use getIndentLevel and getLineNumber
- - ⚠️ getAllWordBoundaryCoordinates now returns type with members lineIndex and charIndex instead of y and x
- - ⚠️ getWordBoundaryIndices is now getWordBoundaryCharIndices
- - 🏥 getIndentLevel now returns correct level
+- 🎉 toAutoCompleteCube method
+- 🎉 support for CSS variables in Hakon
+- 🎉 fill method
+- 🎉 toHtmlCube method
+- ⚠️ getAllSuggestions is now toAutoCompleteTable
+- ⚠️ removed getPoint. Use getIndentLevel and getLineNumber
+- ⚠️ getAllWordBoundaryCoordinates now returns type with members lineIndex and charIndex instead of y and x
+- ⚠️ getWordBoundaryIndices is now getWordBoundaryCharIndices
+- 🏥 getIndentLevel now returns correct level
 
 # 46.1.0 2019-11-22
-list
- - 🎉 Swarm tests now execute in browser
+- 🎉 Swarm tests now execute in browser
 
 # 46.0.0 2019-11-20
-list
- - 🎉 getCommandNames method on TCF
- - ⚠️ removed AbstractCommander concept from TCF. Move methods with a Command suffix for methods on TCF classes.
+- 🎉 getCommandNames method on TCF
+- ⚠️ removed AbstractCommander concept from TCF. Move methods with a Command suffix for methods on TCF classes.
 
 # 45.1.0 2019-11-20
-list
- - 🎉 TCF added getTextContent to TreeComponent and getHash and setHash methods to WillowBrowser class
- - 🎉 added deepVisit method to core
+- 🎉 TCF added getTextContent to TreeComponent and getHash and setHash methods to WillowBrowser class
+- 🎉 added deepVisit method to core
 
 # 45.0.1 2019-11-13
-list
- - 🏥 web form generation fixes
+- 🏥 web form generation fixes
 
 # 45.0.0 2019-11-08
-list
- - 🎉 toDefinitionLineNumberTree method added to Grammar programs
- - 🎉 lengthen core method
- - 🎉 added seeds to all psuedo-stochastic functions and removed all Math.random calls
- - 🎉 toStumpString added to Grammar programs and webForm added to CLI
- - ⚠️ getInPlaceCellTypeTree: toCellTypeTree, getInPlaceCellTypeTreeWithNodeConstructorNames: toCellTypeTreeWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeTreeWithNodeConstructorNames: toPreludeCellTypeTreeWithNodeConstructorNames
- - 🏥 toSideBySide fix for when later trees are longer than earlier ones
+- 🎉 toDefinitionLineNumberTree method added to Grammar programs
+- 🎉 lengthen core method
+- 🎉 added seeds to all psuedo-stochastic functions and removed all Math.random calls
+- 🎉 toStumpString added to Grammar programs and webForm added to CLI
+- ⚠️ getInPlaceCellTypeTree: toCellTypeTree, getInPlaceCellTypeTreeWithNodeConstructorNames: toCellTypeTreeWithNodeConstructorNames, getInPlaceHighlightScopeTree: toHighlightScopeTree, getInPlacePreludeCellTypeTreeWithNodeConstructorNames: toPreludeCellTypeTreeWithNodeConstructorNames
+- 🏥 toSideBySide fix for when later trees are longer than earlier ones
 
 # 44.1.0 2019-11-05
-list
- - 🎉 added stamp command to commandLineApp tool
- - 🎉 added produceProductFromInstructionsTree and buildBuilder to abstractBuilder
- - 🏥 bug where if a string contained __proto__  or constructor it was parsing incorrectly
+- 🎉 added stamp command to commandLineApp tool
+- 🎉 added produceProductFromInstructionsTree and buildBuilder to abstractBuilder
+- 🏥 bug where if a string contained __proto__  or constructor it was parsing incorrectly
 
 # 44.0.3 2019-11-02
-list
- - 🏥 in TCF rewrote queryObjectToQueryString to make working/testable in node
+- 🏥 in TCF rewrote queryObjectToQueryString to make working/testable in node
 
 # 44.0.2 2019-11-02
-list
- - 🏥 incorrect path in compiled grammars
+- 🏥 incorrect path in compiled grammars
 
 # 44.0.1 2019-11-02
-list
- - 🏥 some case insensitive filenames on Mac broke linux build
- - 🏥 removed isDesktopVersion from TCF
+- 🏥 some case insensitive filenames on Mac broke linux build
+- 🏥 removed isDesktopVersion from TCF
 
 # 44.0.0 2019-11-01
-list
- - 🎉 toBraid and toSideBySide and toComparison methods
- - 🎉 toStringWithLineNumbers method
- - 🎉 loadRequirements, runTimePhaseError methods
- - 🎉 selection methods
- - 🎉 undo/redo/save methods
- - 🏥 sweepercraft perf fix
- - 🏥 table derived tables from column filtering fix
- - ⚠️ removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
- - ⚠️ format() is now evalTemplateString()
- - ⚠️ in Grammar: match is now "crux" for now
- - ⚠️ getTopNodeTypeIds is now getTopNodeTypeDefinitions
- - ⚠️ commandLineApp.prettify is now format
- - ⚠️ changed getCssClassNames behavior in TCF
- - ⚠️ in swarm: blockStringParam is now withParagraph. blockStringIs to assertParagraphIs, lengthIs:assertLengthIs, stringExcludes:assertStringExcludes, stringIncludes:assertStringIncludes, typeIs:assertTypeIs. constructWithBlockString to constructWithParagraph. arrangeTestSubject to arrange.
- - 🧹 Created TestRacer and moved tests and swarm to that
- - 🧹 builder will now look for compiled builder.js first
- - 🧹 commandLineapp will now will first look for compiled grammar when executing a Tree program
- - 🧹 removed qunit, tap, and tap mocha dependencies
+- 🎉 toBraid and toSideBySide and toComparison methods
+- 🎉 toStringWithLineNumbers method
+- 🎉 loadRequirements, runTimePhaseError methods
+- 🎉 selection methods
+- 🎉 undo/redo/save methods
+- 🏥 sweepercraft perf fix
+- 🏥 table derived tables from column filtering fix
+- ⚠️ removed "dirty" methods in TreeComponentFramework. Update the lines is a better pattern.
+- ⚠️ format() is now evalTemplateString()
+- ⚠️ in Grammar: match is now "crux" for now
+- ⚠️ getTopNodeTypeIds is now getTopNodeTypeDefinitions
+- ⚠️ commandLineApp.prettify is now format
+- ⚠️ changed getCssClassNames behavior in TCF
+- ⚠️ in swarm: blockStringParam is now withParagraph. blockStringIs to assertParagraphIs, lengthIs:assertLengthIs, stringExcludes:assertStringExcludes, stringIncludes:assertStringIncludes, typeIs:assertTypeIs. constructWithBlockString to constructWithParagraph. arrangeTestSubject to arrange.
+- 🧹 Created TestRacer and moved tests and swarm to that
+- 🧹 builder will now look for compiled builder.js first
+- 🧹 commandLineapp will now will first look for compiled grammar when executing a Tree program
+- 🧹 removed qunit, tap, and tap mocha dependencies
 
 # 43.0.0 2019-10-07
-list
- - ⚠️ getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getWordBreakSymbol, getXI is getEdgeSymbol
- - 🧹 TCF debugger work
+- ⚠️ getYI is now getNodeBreakSymbol, getYIRegex is getNodeBreakSymbolRegex, getZI is getWordBreakSymbol, getXI is getEdgeSymbol
+- 🧹 TCF debugger work
 
 # 42.2.0 2019-10-04
-list
- - 🎉 getNumberOfWords method
- - 🧹 added swim tests
+- 🎉 getNumberOfWords method
+- 🧹 added swim tests
 
 # 42.1.0 2019-10-03
-list
- - ⚠️ reverted the implicit event system. Made trigger and triggerAncestors public methods instead for finer control over events.
+- ⚠️ reverted the implicit event system. Made trigger and triggerAncestors public methods instead for finer control over events.
 
 # 42.0.0 2019-10-01
-list
- - 🎉 readded event listening code in TreeNode core class
- - 🎉 onLineChanged, onDescendantChanged, onChildAdded, onChildRemoved methods
- - 🎉 getAncestorByNodeConstructor method
- - 🎉 TreeBaseServer exported class
- - ⚠️ getMTime is now getLineModifiedTime, getChildArrayModifiedTime, and getLineOrChildrenModifiedTime
- - ⚠️ startExpressApp in TreeBase is removed. Now use TreeBaseServer class instead.
- - ⚠️ some default routes changed in TreeBase
- - ⚠️ experimental generateSimulatedData methods are now synthesizeNode and synthesizeCell
- - 🧹 moved papers to treenotation/research
+- 🎉 readded event listening code in TreeNode core class
+- 🎉 onLineChanged, onDescendantChanged, onChildAdded, onChildRemoved methods
+- 🎉 getAncestorByNodeConstructor method
+- 🎉 TreeBaseServer exported class
+- ⚠️ getMTime is now getLineModifiedTime, getChildArrayModifiedTime, and getLineOrChildrenModifiedTime
+- ⚠️ startExpressApp in TreeBase is removed. Now use TreeBaseServer class instead.
+- ⚠️ some default routes changed in TreeBase
+- ⚠️ experimental generateSimulatedData methods are now synthesizeNode and synthesizeCell
+- 🧹 moved papers to treenotation/research
 
 # 41.2.0 2019-09-24
-list
- - 🎉 without method
+- 🎉 without method
 
 # 41.1.0 2019-09-18
-list
- - 🎉 error handling in TCF commands
- - 🏥 uncaught command error displaying in Designer app
- - 🏥 generateSimulatedData regression fix and tests
+- 🎉 error handling in TCF commands
+- 🏥 uncaught command error displaying in Designer app
+- 🏥 generateSimulatedData regression fix and tests
 
 # 41.0.0 2019-09-17
-list
- - 🎉 postfix cell parsing
- - 🎉 omnifix cell parsing
- - 🎉 cellParser keyword in Grammar Language
- - 🎉 chuck demo lang demonstrating postfix cell parsing
- - 🎉 improved Explain visualization on designer app
- - 🏥 poop demo lang now implements omnifix
- - ⚠️ removed _getGrammarBackedCellArray method and replaced with new CellParser class
+- 🎉 postfix cell parsing
+- 🎉 omnifix cell parsing
+- 🎉 cellParser keyword in Grammar Language
+- 🎉 chuck demo lang demonstrating postfix cell parsing
+- 🎉 improved Explain visualization on designer app
+- 🏥 poop demo lang now implements omnifix
+- ⚠️ removed _getGrammarBackedCellArray method and replaced with new CellParser class
 
 # 40.3.0 2019-09-16
-list
- - 🎉 added Arrow sample language
- - 🎉 required and single nodeTypes are accessible to compiler string template
- - 🎉 added wwt sample language
- - 🎉 Github triangle and TCF debugger components
- - 🎉 removeNonAscii util method
- - 🏥 poop demo language now compiles to csv correctly
- - 🧹 build fixes. No more manually fixing TypeScript build artifacts
- - 🧹 wwt types
- - 🧹 command line app now shows options when invalid command entered
- - 🧹 TreeComponentFramework work
- - 🧹 builder improvements
+- 🎉 added Arrow sample language
+- 🎉 required and single nodeTypes are accessible to compiler string template
+- 🎉 added wwt sample language
+- 🎉 Github triangle and TCF debugger components
+- 🎉 removeNonAscii util method
+- 🏥 poop demo language now compiles to csv correctly
+- 🧹 build fixes. No more manually fixing TypeScript build artifacts
+- 🧹 wwt types
+- 🧹 command line app now shows options when invalid command entered
+- 🧹 TreeComponentFramework work
+- 🧹 builder improvements
 
 # 40.2.0 2019-09-11
-list
- - 🎉 getInPlacePreludeCellTypeTreeWithNodeConstructorNames
- - 🎉 generateSimulatedData
- - 🎉 designer app - simulate data and explain roots buttons
- - 🎉 explain 2D visualizer in designer app
- - 🏥 highlighting fix for regression caused by blank cells fix
- - 🏥 generateSimulatedData improvements
- - 🧹 migrated Sandbox and Designer apps to TCF
+- 🎉 getInPlacePreludeCellTypeTreeWithNodeConstructorNames
+- 🎉 generateSimulatedData
+- 🎉 designer app - simulate data and explain roots buttons
+- 🎉 explain 2D visualizer in designer app
+- 🏥 highlighting fix for regression caused by blank cells fix
+- 🏥 generateSimulatedData improvements
+- 🧹 migrated Sandbox and Designer apps to TCF
 
 # 40.1.0 2019-09-08
-list
- - 🏥 missing words now trigger "MissingWord" error instead of "InvalidWord"
- - 🏥 fixed bug in codemirror where a missing word would break syntax highlighting of remaining words
- - 🏥 bug fix in Disk
- - 🏥 added GitHub link and show keyboard shortcuts by default in SweeperCraft
+- 🏥 missing words now trigger "MissingWord" error instead of "InvalidWord"
+- 🏥 fixed bug in codemirror where a missing word would break syntax highlighting of remaining words
+- 🏥 bug fix in Disk
+- 🏥 added GitHub link and show keyboard shortcuts by default in SweeperCraft
 
 # 40.0.0 2019-09-03
-list
- - ⚠️ removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Tree Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
- - 🎉 default highlightScopes for basic cellTypes
- - 🏥 fixes from reducing complexity of ExtendibleTreeNode and firstCellType
+- ⚠️ removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Tree Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
+- 🎉 default highlightScopes for basic cellTypes
+- 🏥 fixes from reducing complexity of ExtendibleTreeNode and firstCellType
 
 # 39.6.0 2019-09-03
-list
- - 🎉 added jtable
+- 🎉 added jtable
 
 # 39.5.0 2019-09-01
-list
- - 🎉 added comments to hakon
+- 🎉 added comments to hakon
 
 # 39.4.0 2019-08-31
-list
- - ⚠️ toReadme now generates Dumbdown instead of markdown
- - 🎉 added dumbdown language
- - 🎉 toReadme now generates roadmap from todos
- - 🏥 fix for poop compile
- - 🏥 fix for compiling with an empty stringTemplate
+- ⚠️ toReadme now generates Dumbdown instead of markdown
+- 🎉 added dumbdown language
+- 🎉 toReadme now generates roadmap from todos
+- 🏥 fix for poop compile
+- 🏥 fix for compiling with an empty stringTemplate
 
 # 39.3.0 2019-08-31
-list
- - 🎉 added "Explain" button to Designer
- - 🎉 renamed poop node types
+- 🎉 added "Explain" button to Designer
+- 🎉 renamed poop node types
 
 # 39.2.0 2019-08-31
-list
- - 🎉 new layout for Designer app from feedback
- - 🎉 show readme for Grammars in Designer app
+- 🎉 new layout for Designer app from feedback
+- 🎉 show readme for Grammars in Designer app
 
 # 39.1.0 2019-08-30
-list
- - 🎉 added "config" sample language
- - 🎉 added "poop" sample language
+- 🎉 added "config" sample language
+- 🎉 added "poop" sample language
 
 # 39.0.0 2019-08-30
-list
- - ⚠️ we now export {jtree} instead of jtree. We removed all TypeScript export default.
- - 🎉 added "map" demo language
- - 🧹 refactored build system
- - 🧹 moved Disk to products
- - 🧹 removed tsconfigs
- - 🧹 created products.tree
- - 🧹 started worldWideTypes folder
- - 🧹 TCF tests now included in npm test
+- ⚠️ we now export {jtree} instead of jtree. We removed all TypeScript export default.
+- 🎉 added "map" demo language
+- 🧹 refactored build system
+- 🧹 moved Disk to products
+- 🧹 removed tsconfigs
+- 🧹 created products.tree
+- 🧹 started worldWideTypes folder
+- 🧹 TCF tests now included in npm test
 
 # 38.2.0 2019-08-28
-list
- - 🎉 appendSibling base method
- - 🎉 TreeComponentFramework added to products
- - 🎉 added SweeperCraft demo to products
- - 🎉 added hakon and stump to products
+- 🎉 appendSibling base method
+- 🎉 TreeComponentFramework added to products
+- 🎉 added SweeperCraft demo to products
+- 🎉 added hakon and stump to products
 
 # 38.1.0 2019-08-23
-list
- - 🎉 errors.csv route to TreeBase
+- 🎉 errors.csv route to TreeBase
 
 # 38.0.1 2019-08-17
-list
- - 🏥 cleanup to bundle filenames
- - 🏥 sample code fix in bundle files
+- 🏥 cleanup to bundle filenames
+- 🏥 sample code fix in bundle files
 
 # 38.0.0 2019-08-17
-list
- - 🎉 toReadMe method on GrammarProgram
- - 🎉 toBundle method on GrammarProgram
- - ⚠️ removed "anyFirstCell". Now just use "anyCell"
- - 🏥 anyCell now always added to inferred grammar
- - 🏥 various fixes to make inferring prefix grammars more robust
- - 🧹 now run UnknownGrammarProgram against all sample grammars
- - 🧹 builder is now compiled into a product
+- 🎉 toReadMe method on GrammarProgram
+- 🎉 toBundle method on GrammarProgram
+- ⚠️ removed "anyFirstCell". Now just use "anyCell"
+- 🏥 anyCell now always added to inferred grammar
+- 🏥 various fixes to make inferring prefix grammars more robust
+- 🧹 now run UnknownGrammarProgram against all sample grammars
+- 🧹 builder is now compiled into a product
 
 # 37.1.0 2019-08-10
-list
- - 🎉 support for inference of prefix languages with unicode characters (emojis)
- - ⚠️ UnknownGrammarProgram "getPredictedGrammarFile" is now "inferGrammarFileForAPrefixLanguage" to be more precise about what the method does
+- 🎉 support for inference of prefix languages with unicode characters (emojis)
+- ⚠️ UnknownGrammarProgram "getPredictedGrammarFile" is now "inferGrammarFileForAPrefixLanguage" to be more precise about what the method does
 
 # 37.0.0 2019-08-08
-list
- - ⚠️ No more "dist" folder. Use files in "/products/" folder instead.
- - 🏥 Grammar inference (UnknownGrammarProgram) now predicts base cell types
- - 🧹 switched to TypeScript for all JS src files and test files.
- - 🧹 new folders for each product
- - 🧹 "products" folder. Currently checking in compiled versions as this makes distribution simpler. In the future maybe move products to separate repo.
+- ⚠️ No more "dist" folder. Use files in "/products/" folder instead.
+- 🏥 Grammar inference (UnknownGrammarProgram) now predicts base cell types
+- 🧹 switched to TypeScript for all JS src files and test files.
+- 🧹 new folders for each product
+- 🧹 "products" folder. Currently checking in compiled versions as this makes distribution simpler. In the future maybe move products to separate repo.
 
 # 36.2.0 2019-08-01
-list
- - ⚠️ builder refactor. Instead "jbuild.js" now do "builder.js".
+- ⚠️ builder refactor. Instead "jbuild.js" now do "builder.js".
 
 # 36.1.0 2019-07-31
-list
- - 🧹 jBuild
- - 🧹 improved error messaging for invalid nodeType.
- - ⚠️ some method names changed in Project Tree Language. See that readme for details.
+- 🧹 jBuild
+- 🧹 improved error messaging for invalid nodeType.
+- ⚠️ some method names changed in Project Tree Language. See that readme for details.
 
 # 36.0.2 2019-07-30
-list
- - 🏥 TreeBase Disk path fix
+- 🏥 TreeBase Disk path fix
 
 # 36.0.1 2019-07-30
-list
- - 🏥 TreeBase path fix
+- 🏥 TreeBase path fix
 
 # 36.0.0 2019-07-30
-list
- - 🎉 added TreeBase and "base" command to CLI
- - 🎉 added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setChildrenAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
- - 🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
- - ⚠️ removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
- - ⚠️ getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
- - 🧹 added basic tests for treeBase and made sure treeComponent framework test getting run
- - 🧹 moved repo from breck7/jtree to treenotation/jtree
+- 🎉 added TreeBase and "base" command to CLI
+- 🎉 added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setChildrenAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
+- 🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
+- ⚠️ removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
+- ⚠️ getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
+- 🧹 added basic tests for treeBase and made sure treeComponent framework test getting run
+- 🧹 moved repo from breck7/jtree to treenotation/jtree
 
 # 35.1.0 2019-07-25
-list
- - 🎉 printLinesFrom and printLinesWithLineNumbersFrom methods
- - 🏥 fix for npm install -g dependency issues
+- 🎉 printLinesFrom and printLinesWithLineNumbersFrom methods
+- 🏥 fix for npm install -g dependency issues
 
 # 35.0.1 2019-07-25
-list
- - 🏥 fixed uncaught error when an old grammar is used with a "root" subnode
- - 🏥 more precise pattern matching in Grammar Language
- - 🏥 improved highlight scopes for Grammar Language
+- 🏥 fixed uncaught error when an old grammar is used with a "root" subnode
+- 🏥 more precise pattern matching in Grammar Language
+- 🏥 improved highlight scopes for Grammar Language
 
 # 35.0.0 2019-07-24
-list
- - 🎉 "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.
- - 🎉 polymorphism and symbol tables via enumFromCellTypes
- - 🎉 Grammar Language now uses suffix notation instead of prefix notation for root node types.
- - 🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `cellType int` do `intCell`
- - 🎉 findAllWordsWithCellType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
- - 🎉 getAllTypedWords method in Grammar Programs
- - 🏥 removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
- - ⚠️ Javascript code and compiler nodes that previously referred to cellTypes that have been renamed, must be updated manually
- - ⚠️ Javascript code that previously referred to nodeTypeIds that have been renamed, must be updated manually (check uses of getChildInstancesOfNodeTypeId and doesExtend)
- - ⚠️ lineHints string is different
- - ⚠️ enumFromGrammar is now enumFromCellTypes and accepts any cellTypeId
- - ⚠️ cellTypes that ended in "Word" now end in "Cell".
- - ⚠️ removed public "getFirstWordMap" method.
- - ⚠️ removed "updateNodeTypeIds" method. Use findAllWordsWithCellType and findAllNodesWithNodeType
- - ⚠️ use createParser() instead of getNodeConstructor
+- 🎉 "pattern" property on nodeType to support any type of "fix" notation: prefix, postfix, etc.
+- 🎉 polymorphism and symbol tables via enumFromCellTypes
+- 🎉 Grammar Language now uses suffix notation instead of prefix notation for root node types.
+- 🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `cellType int` do `intCell`
+- 🎉 findAllWordsWithCellType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
+- 🎉 getAllTypedWords method in Grammar Programs
+- 🏥 removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
+- ⚠️ Javascript code and compiler nodes that previously referred to cellTypes that have been renamed, must be updated manually
+- ⚠️ Javascript code that previously referred to nodeTypeIds that have been renamed, must be updated manually (check uses of getChildInstancesOfNodeTypeId and doesExtend)
+- ⚠️ lineHints string is different
+- ⚠️ enumFromGrammar is now enumFromCellTypes and accepts any cellTypeId
+- ⚠️ cellTypes that ended in "Word" now end in "Cell".
+- ⚠️ removed public "getFirstWordMap" method.
+- ⚠️ removed "updateNodeTypeIds" method. Use findAllWordsWithCellType and findAllNodesWithNodeType
+- ⚠️ use createParser() instead of getNodeConstructor
 
 # 34.2.0 2019-07-21
-list
- - 🎉 compiled nodejs grammar files are now executables and accept an input filepath
- - 🏥 switched all hashbangs to "#! /usr/bin/env node" for better cross platform support
+- 🎉 compiled nodejs grammar files are now executables and accept an input filepath
+- 🏥 switched all hashbangs to "#! /usr/bin/env node" for better cross platform support
 
 # 34.1.0 2019-07-19
-list
- - 🎉 root nodes can now extend other root nodes for easier grammar combinations and extensions
+- 🎉 root nodes can now extend other root nodes for easier grammar combinations and extensions
 
 # 34.0.0 2019-07-16
-list
- - 🎉 the empty Grammar "" is now a valid Grammar and works properly
- - 🎉 the default catch all node for Grammar Backed Languages is now Blob Node, and not Error Node
- - 🏥 now the empty Grammar language returns a forgiving grammar by default.
- - 🏥 now an empty nodeTypeId won't break the grammar parser
- - 🏥 fixes for Download Bundle command
- - ⚠️ getConcreteAndAbstractNodeTypeDefinitions is now getValidConcreteAndAbstractNodeTypeDefinitions
- - ⚠️ the empty Grammar is now valid. Should not break anything but could allow for code removal.
- - ⚠️ removed getTheAnyLanguageRootConstructor(). Just use the empty grammar now.
- - ⚠️ the default catch all node is now Blob node, not error node.
+- 🎉 the empty Grammar "" is now a valid Grammar and works properly
+- 🎉 the default catch all node for Grammar Backed Languages is now Blob Node, and not Error Node
+- 🏥 now the empty Grammar language returns a forgiving grammar by default.
+- 🏥 now an empty nodeTypeId won't break the grammar parser
+- 🏥 fixes for Download Bundle command
+- ⚠️ getConcreteAndAbstractNodeTypeDefinitions is now getValidConcreteAndAbstractNodeTypeDefinitions
+- ⚠️ the empty Grammar is now valid. Should not break anything but could allow for code removal.
+- ⚠️ removed getTheAnyLanguageRootConstructor(). Just use the empty grammar now.
+- ⚠️ the default catch all node is now Blob node, not error node.
 
 # 33.0.2 2019-07-15
-list
- - 🎉 added "infer" button to Grammar Builder
- - 🏥 polyfill flat method
- - 🏥 CLI fixes
- - 🧹 upgrade version script
+- 🎉 added "infer" button to Grammar Builder
+- 🏥 polyfill flat method
+- 🏥 CLI fixes
+- 🧹 upgrade version script
 
 # 33.0.1 2019-07-15
-list
- - 🏥 changed browser target to es2016 to fix the "flat" bug in Linux Chrome
+- 🏥 changed browser target to es2016 to fix the "flat" bug in Linux Chrome
 
 # 33.0.0 2019-07-10
-list
- - ⚠️ no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can still access the others via that.
- - ⚠️ removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.
- - ⚠️ removed unused getTheGrammarFilePath method
- - ⚠️ compile to node/browser now saves a lang named "foo" to "foo.browser.js" instead of "fooLanguage"
- - 🏥 prettify grammar files multiple inheritance sort fix and added regression test
- - 🏥 getErrorsInGrammarExamples now prints correct source line where errors occur
- - 🏥 fixed bug and added test where inScope was not extending correctly
- - 🧹 removed dead code
- - 🧹 compiled grammars are now much less code and rely on native JS class tree
- - 🧹 compiled grammar vs runtime code paths are largely merged
+- ⚠️ no more "constants" or "nodeTypeMap" exports in compiled. Now 1 export per grammar, of root language node. You can still access the others via that.
+- ⚠️ removed runTimeFirstWord methods. Now that grammars are compiled, just use normal firstWord methods.
+- ⚠️ removed unused getTheGrammarFilePath method
+- ⚠️ compile to node/browser now saves a lang named "foo" to "foo.browser.js" instead of "fooLanguage"
+- 🏥 prettify grammar files multiple inheritance sort fix and added regression test
+- 🏥 getErrorsInGrammarExamples now prints correct source line where errors occur
+- 🏥 fixed bug and added test where inScope was not extending correctly
+- 🧹 removed dead code
+- 🧹 compiled grammars are now much less code and rely on native JS class tree
+- 🧹 compiled grammar vs runtime code paths are largely merged
 
 # 32.0.0 2019-07-07
-list
- - 🎉 getParseTable method on Grammar backed programs
- - 🎉 CLI "parse" command
- - 🏥 fixed blobNode and errorNode regressions
- - ⚠️ removed getDoc
- - ⚠️ no longer export BlobNode or ErrorNode
- - ⚠️ toFormattedTable now adds ellipsis ("...") when columns overrun limit
- - ⚠️ removed toNodeJsJavascriptPrettier and toBrowserJavascriptPrettier. Use compileGrammarForNodeJs and compileGrammarForBrowser w/prettier param instead.
- - 🧹 fixed 2.5x test speed regression and got them back down to 2s
+- 🎉 getParseTable method on Grammar backed programs
+- 🎉 CLI "parse" command
+- 🏥 fixed blobNode and errorNode regressions
+- ⚠️ removed getDoc
+- ⚠️ no longer export BlobNode or ErrorNode
+- ⚠️ toFormattedTable now adds ellipsis ("...") when columns overrun limit
+- ⚠️ removed toNodeJsJavascriptPrettier and toBrowserJavascriptPrettier. Use compileGrammarForNodeJs and compileGrammarForBrowser w/prettier param instead.
+- 🧹 fixed 2.5x test speed regression and got them back down to 2s
 
 # 31.0.0 2019-07-05
-list
- - 🎉 added "joinChildrenWith" word to compiler nodeTypes in grammar language
- - 🎉 added "dug" language which compiles to JSON
- - 🎉 improved documentation for grammar compiler nodeTypes
- - 🎉 in compiler nodes, and generated classes, you can now access the firstCellType in this.cells just like other cells
- - 🏥 fixed bugs in runtime extended nodeType constructor loading
- - ⚠️ rarely used listDelimiter compiler property in Grammar Language is now "catchAllCellDelimiter"
- - ⚠️ Terminal vs NonTerminal nodeTypes are now determined by duck typing. Use GrammarBackedNonRootNode in place of those now.
+- 🎉 added "joinChildrenWith" word to compiler nodeTypes in grammar language
+- 🎉 added "dug" language which compiles to JSON
+- 🎉 improved documentation for grammar compiler nodeTypes
+- 🎉 in compiler nodes, and generated classes, you can now access the firstCellType in this.cells just like other cells
+- 🏥 fixed bugs in runtime extended nodeType constructor loading
+- ⚠️ rarely used listDelimiter compiler property in Grammar Language is now "catchAllCellDelimiter"
+- ⚠️ Terminal vs NonTerminal nodeTypes are now determined by duck typing. Use GrammarBackedNonRootNode in place of those now.
 
 # 30.0.0 2019-07-03
-list
- - 🎉 much easier way to do Grammar Composition => simple concatenate strings & define a new nodeType as root!
- - ⚠️ removed newFromCondensed method, which became a noOp. Use new GrammarProgram(grammarCode, grammarPath) instead
- - ⚠️ removed "grammar" root node type in GrammarLanguage. Add a "root" property to a nodeType for the new root node.
- - ⚠️ instead of "{grammarName}ProgramRoot" as the root class, the root class is now just "grammarName"
- - ⚠️ paths to shipped language program constructors are now like "fire.js" instead of "FireProgram.js"
+- 🎉 much easier way to do Grammar Composition => simple concatenate strings & define a new nodeType as root!
+- ⚠️ removed newFromCondensed method, which became a noOp. Use new GrammarProgram(grammarCode, grammarPath) instead
+- ⚠️ removed "grammar" root node type in GrammarLanguage. Add a "root" property to a nodeType for the new root node.
+- ⚠️ instead of "{grammarName}ProgramRoot" as the root class, the root class is now just "grammarName"
+- ⚠️ paths to shipped language program constructors are now like "fire.js" instead of "FireProgram.js"
 
 # 29.0.0 2019-07-02
-list
- - 🎉 doesExtend and getChildInstancesOfNodeTypeId methods on Extendible nodes
- - 🎉 GrammarUpgrader additions
- - 🧹 refactor of Swarm/Stamp/Project/Jibberish/Stump to be 1 file.
- - ⚠️ no more "constructors" node for nodeTypes or root programs.
+- 🎉 doesExtend and getChildInstancesOfNodeTypeId methods on Extendible nodes
+- 🎉 GrammarUpgrader additions
+- 🧹 refactor of Swarm/Stamp/Project/Jibberish/Stump to be 1 file.
+- ⚠️ no more "constructors" node for nodeTypes or root programs.
 
 # 28.0.0 2019-07-02
-list
- - 🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
- - 🎉 "reservedWords" attribute on cellTypes in Grammar Language
- - ⚠️ removed "abstract" nodeType in Grammar Language. now its a property of nodeType
- - ⚠️ compileGrammar method is now compileGrammarForNodeJs and compileGrammarForBrowser
- - ⚠️ nodeTypeId's now can only be alphanumeric
- - ⚠️ nodeTypeId's are now identical to the generated Javascript class names. Some nodeTypeIds are now reserved and those now require using a "match" node
- - ⚠️ cellTypeId's now can only be alphanumeric
- - ⚠️ constants in Grammar Language alphanumeric
- - ⚠️ removed "group" property on abstract nodeTypes. To achieve the same affect use a build script.
- - ⚠️ "constructors" now no longer take a class name. The class name must be identical to nodeTypeId.
+- 🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
+- 🎉 "reservedWords" attribute on cellTypes in Grammar Language
+- ⚠️ removed "abstract" nodeType in Grammar Language. now its a property of nodeType
+- ⚠️ compileGrammar method is now compileGrammarForNodeJs and compileGrammarForBrowser
+- ⚠️ nodeTypeId's now can only be alphanumeric
+- ⚠️ nodeTypeId's are now identical to the generated Javascript class names. Some nodeTypeIds are now reserved and those now require using a "match" node
+- ⚠️ cellTypeId's now can only be alphanumeric
+- ⚠️ constants in Grammar Language alphanumeric
+- ⚠️ removed "group" property on abstract nodeTypes. To achieve the same affect use a build script.
+- ⚠️ "constructors" now no longer take a class name. The class name must be identical to nodeTypeId.
 
 # 27.2.0 2019-06-26
-list
- - 🎉 /sandbox/build/ => refactored Tree Language IDE
- - 🎉 added "New" simple grammar language template
- - 🎉 added deep linking to /sandbox/build/
- - ⚠️ removed undocumented BackupConstructor feature as IDE should no longer need it
- - 🏥 stump compile fix
+- 🎉 /sandbox/build/ => refactored Tree Language IDE
+- 🎉 added "New" simple grammar language template
+- 🎉 added deep linking to /sandbox/build/
+- ⚠️ removed undocumented BackupConstructor feature as IDE should no longer need it
+- 🏥 stump compile fix
 
 # 27.1.0 2019-06-25
-list
- - 🎉 appendNode, select, where, limit, first, last, and print methods
+- 🎉 appendNode, select, where, limit, first, last, and print methods
 
 # 27.0.0 2019-06-23
-list
- - 🎉 simplified compile method to take 0 params
- - 🎉 refactored Fire language
- - 🎉 compilesTo property on grammar node in GrammarLanguage
- - 🎉 perf fix for compiled languages
- - 🏥 fire grammar fixes
- - 🏥 compilation open and close children fixes
- - ⚠️ you can now only have 1 target compilation language per grammar. If you want multiple targets just extend the grammar.
- - ⚠️ "sub" compiler property is now "templateString"
- - ⚠️ Fire experimental language changed a lot
- - ⚠️ for internal use only makeGraphSortFunction util function is now _makeGraphSortFunction and method signature changed
+- 🎉 simplified compile method to take 0 params
+- 🎉 refactored Fire language
+- 🎉 compilesTo property on grammar node in GrammarLanguage
+- 🎉 perf fix for compiled languages
+- 🏥 fire grammar fixes
+- 🏥 compilation open and close children fixes
+- ⚠️ you can now only have 1 target compilation language per grammar. If you want multiple targets just extend the grammar.
+- ⚠️ "sub" compiler property is now "templateString"
+- ⚠️ Fire experimental language changed a lot
+- ⚠️ for internal use only makeGraphSortFunction util function is now _makeGraphSortFunction and method signature changed
 
 # 26.5.0 2019-06-23
-list
- - 🎉 todos in swarm
- - 🏥 escaping backslash fix for compiled files
- - 🧹 more testing of compiled code
+- 🎉 todos in swarm
+- 🏥 escaping backslash fix for compiled files
+- 🧹 more testing of compiled code
 
 # 26.4.0 2019-06-23
-list
- - ⚠️ moved getLineHints back to definition node
+- ⚠️ moved getLineHints back to definition node
 
 # 26.3.0 2019-06-23
-list
- - 🏥 extension bug in classes with more than 1 ancestor
- - ⚠️ getNodeTypeDefintions is now getConcreteAndAbstractNodeTypeDefinitions
+- 🏥 extension bug in classes with more than 1 ancestor
+- ⚠️ getNodeTypeDefintions is now getConcreteAndAbstractNodeTypeDefinitions
 
 # 26.2.0 2019-06-22
-list
- - 🏥 extends now works correctly
- - 🎉 added "todo" nodeType to grammar language
- - 🎉 added "extends" keyword in place of previous one line method
- - ⚠️ instead of "nodeType/cellType foo extendsFoo" now do "nodeType foo\n extends extendsFoo"
+- 🏥 extends now works correctly
+- 🎉 added "todo" nodeType to grammar language
+- 🎉 added "extends" keyword in place of previous one line method
+- ⚠️ instead of "nodeType/cellType foo extendsFoo" now do "nodeType foo\n extends extendsFoo"
 
 # 26.1.1 2019-06-21
-list
- - 🏥 support for mutliline strings in getConstantsObject
+- 🏥 support for mutliline strings in getConstantsObject
 
 # 26.1.0 2019-06-21
-list
- - 🎉 restored getConstantsObject on definition nodes
+- 🎉 restored getConstantsObject on definition nodes
 
 # 26.0.2 2019-06-21
-list
- - 🏥 backtick escaping in getter generation
- - 🏥 migrate constants in grammar updater
- - 🎉 dump generated code for more information when something goes wrong
+- 🏥 backtick escaping in getter generation
+- 🏥 migrate constants in grammar updater
+- 🎉 dump generated code for more information when something goes wrong
 
 # 26.0.1 2019-06-21
-list
- - 🏥 fixed require bug
+- 🏥 fixed require bug
 
 # 26.0.0 2019-06-21
-list
- - Warning: this was a major refactor that may have introduced new bugs, so if using please be ready to ping me with bug reports
- - 🎉 ability to compile grammar files to Javascript
- - 🎉 grammar sandbox now has "download bundle"
- - 🎉 Upgrader class for making Tree Language upgrades easier
- - 🎉 added support for "tooling" directives in Grammar language
- - 🎉 getFirstNode method
- - 🎉 getNodeTypeId on NonRootRunTime nodes
- - 🎉 findNodes in base can now take an array of first words
- - 🎉 "nodeType javascript" property
- - 🎉 add custom javascript to rootNodeTypes in grammar files
- - ⚠️ stamp.js script is now stamp.cli.js
- - ⚠️ removed "defaults" from grammar
- - ⚠️ avoid getDefinition() when possible--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
- - ⚠️ removed getExpectedLineCellTypes--use getLineHints
- - ⚠️ nodeTypes in grammar is now "inScope", and is one line instead of parent/children
- - ⚠️ removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
- - ⚠️ fromJson is now fromJsonSubset and toJson is now toJsonSubset
- - ⚠️ deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.
- - ⚠️ removed getCompiledProgramName
- - ⚠️ getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
- - ⚠️ getCatchAllCellTypeName is now getCatchAllCellTypeId
- - ⚠️ getRequiredCellTypeNames is now getRequiredCellTypeIds
- - ⚠️ getRunTimeNodeTypeNames is now getRunTimeFirstWordsInScope
- - ⚠️ removed getProgramErrorMessages. Use getAllErrors
- - ⚠️ getFirstCellType is now getFirstCellTypeId
- - ⚠️ getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
- - ⚠️ getGrammarProgram is now getGrammarProgramRoot
- - ⚠️ getParsedWords removed
- - ⚠️ getCellTypeName is now getCellTypeId
- - ⚠️ getCellTypeDefinition is now getCellTypeDefinitionById
- - ⚠️ getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
- - ⚠️ getProgramErrors is now getAllErrors, getProgramErrorsIterator is now getAllErrorsIterator
- - ⚠️ getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
- - ⚠️ removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
- - ⚠️ no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
- - ⚠️ in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
- - ⚠️ no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
- - ⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
+- Warning: this was a major refactor that may have introduced new bugs, so if using please be ready to ping me with bug reports
+- 🎉 ability to compile grammar files to Javascript
+- 🎉 grammar sandbox now has "download bundle"
+- 🎉 Upgrader class for making Tree Language upgrades easier
+- 🎉 added support for "tooling" directives in Grammar language
+- 🎉 getFirstNode method
+- 🎉 getNodeTypeId on NonRootRunTime nodes
+- 🎉 findNodes in base can now take an array of first words
+- 🎉 "nodeType javascript" property
+- 🎉 add custom javascript to rootNodeTypes in grammar files
+- ⚠️ stamp.js script is now stamp.cli.js
+- ⚠️ removed "defaults" from grammar
+- ⚠️ avoid getDefinition() when possible--use methods on nodes directly: getConstantsObject, getNodeTypeId, getLineHints,
+- ⚠️ removed getExpectedLineCellTypes--use getLineHints
+- ⚠️ nodeTypes in grammar is now "inScope", and is one line instead of parent/children
+- ⚠️ removed unused isLeafColumn, _getDuplicateLinesMap(), _getFirstWordByIndex, toFlatTree
+- ⚠️ fromJson is now fromJsonSubset and toJson is now toJsonSubset
+- ⚠️ deprecating getExpanded. Now renamed to _expandChildren and now has a 3rd parameter.
+- ⚠️ removed getCompiledProgramName
+- ⚠️ getAncestorNodeTypeNamesArray is now getAncestorNodeTypeIdsArray
+- ⚠️ getCatchAllCellTypeName is now getCatchAllCellTypeId
+- ⚠️ getRequiredCellTypeNames is now getRequiredCellTypeIds
+- ⚠️ getRunTimeNodeTypeNames is now getRunTimeFirstWordsInScope
+- ⚠️ removed getProgramErrorMessages. Use getAllErrors
+- ⚠️ getFirstCellType is now getFirstCellTypeId
+- ⚠️ getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
+- ⚠️ getGrammarProgram is now getGrammarProgramRoot
+- ⚠️ getParsedWords removed
+- ⚠️ getCellTypeName is now getCellTypeId
+- ⚠️ getCellTypeDefinition is now getCellTypeDefinitionById
+- ⚠️ getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
+- ⚠️ getProgramErrors is now getAllErrors, getProgramErrorsIterator is now getAllErrorsIterator
+- ⚠️ getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
+- ⚠️ removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
+- ⚠️ no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
+- ⚠️ in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
+- ⚠️ no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
+- ⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 
 aftertext
  A regex for finding breaks in untyped code:
@@ -837,55 +723,47 @@ regexCode
  \b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getGrammarProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
 
 # 25.2.0 2019-05-30
-list
- - 🏥 Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds
- - 🏥 Stump div is now no longer an inputType unless it has contenteditable
+- 🏥 Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds
+- 🏥 Stump div is now no longer an inputType unless it has contenteditable
 
 # 25.1.0 2019-05-29
-list
- - 🎉 Added BlankLineError type.
- - 🎉 Added inline syntax highlighting with error correction suggestions to grammar sandbox.
- - 🎉 Added parameters hints for nodeTypes with required cells in codeMirror
- - 🎉 enabled using backup constructors in browser to allow Grammar Sandbox without access to constructor files
- - 🎉 ErrorType messaging improvments
+- 🎉 Added BlankLineError type.
+- 🎉 Added inline syntax highlighting with error correction suggestions to grammar sandbox.
+- 🎉 Added parameters hints for nodeTypes with required cells in codeMirror
+- 🎉 enabled using backup constructors in browser to allow Grammar Sandbox without access to constructor files
+- 🎉 ErrorType messaging improvments
 
 # 25.0.0 2019-05-28
-list
- - 🎉 standardized error messages with suggested fixes!
- - 🎉 added deleteWordAt method
- - 🏥 minor fixes to grammar sandbox and updated to use new error message code
- - ⚠️ interface of errors changed, so code that uses getErrors, getErrorsInGrammarExamples, or getProgramErrors needs to change
- - 🧹 refactored "types" file into "jTreeTypes"
- - 🧹 removed unneeded npm packages
- - 🧹 fixed TypeScript browser target build issues
+- 🎉 standardized error messages with suggested fixes!
+- 🎉 added deleteWordAt method
+- 🏥 minor fixes to grammar sandbox and updated to use new error message code
+- ⚠️ interface of errors changed, so code that uses getErrors, getErrorsInGrammarExamples, or getProgramErrors needs to change
+- 🧹 refactored "types" file into "jTreeTypes"
+- 🧹 removed unneeded npm packages
+- 🧹 fixed TypeScript browser target build issues
 
 # 24.2.0 2019-05-27
-list
- - 🎉 extraWord syntax highlighting
- - 🎉 improved syntax highlighting for Hakon, Stump, and others
+- 🎉 extraWord syntax highlighting
+- 🎉 improved syntax highlighting for Hakon, Stump, and others
 
 # 24.1.0 2019-05-27
-list
- - 🎉 getAncestorNodeTypeNamesArray method on definition nodes
- - 🎉 getNodeTypeFamilyTree method on grammarPrograms
- - 🎉 setWords, setWordsFrom and appendWord methods on base tree
+- 🎉 getAncestorNodeTypeNamesArray method on definition nodes
+- 🎉 getNodeTypeFamilyTree method on grammarPrograms
+- 🎉 setWords, setWordsFrom and appendWord methods on base tree
 
 # 24.0.0 2019-05-21
-list
- - 🎉 targeting es2017
- - 🏥 sandbox onload fix
+- 🎉 targeting es2017
+- 🏥 sandbox onload fix
 
 # 23.2.1 2019-05-21
-list
- - 🏥 fix for updateNodeTypeIds recursion bug
+- 🏥 fix for updateNodeTypeIds recursion bug
 
 # 23.2.0 2019-05-21
-list
- - 🎉 updateNodeTypeIds method
- - 🎉 Swarm files now no longer require a root level setup node.
- - 🧹 added prettier config to package.json
- - ⚠️ in Swarm, createTestDummy is now getTestSubject
- - ⚠️ Swarm grammar changed.
+- 🎉 updateNodeTypeIds method
+- 🎉 Swarm files now no longer require a root level setup node.
+- 🧹 added prettier config to package.json
+- ⚠️ in Swarm, createTestDummy is now getTestSubject
+- ⚠️ Swarm grammar changed.
 
 aftertext
  Use code below to update programs:
@@ -902,915 +780,756 @@ code
  =~ typeIs
  #test test
  +#test testOnly
- -#test skipTest`)
+-#test skipTest`)
 
 # 23.1.0 2019-05-21
-list
- - 🎉 executeFiles method
- - 🎉 50% speed improvement in getExpanded and extend and GrammarProgram.newFromCondensed
- - ⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyword
- - ⚠️ getGraph is now getAncestorNodesByInheritanceViaColumnIndices
+- 🎉 executeFiles method
+- 🎉 50% speed improvement in getExpanded and extend and GrammarProgram.newFromCondensed
+- ⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyword
+- ⚠️ getGraph is now getAncestorNodesByInheritanceViaColumnIndices
 
 # 23.0.1 2019-05-20
-list
- - 🏥 sublime syntax regression fix
- - 🏥 small lang regression fixes
+- 🏥 sublime syntax regression fix
+- 🏥 small lang regression fixes
 
 # 23.0.0 2019-05-20
-list
- - ⚠️ highlightScope is now defined only on cellTypes (no longer on nodeTypes)
- - ⚠️ "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode
- - ⚠️ grammars should all define a "cellType any" if they have leave any firstCellTypes undefined
- - ⚠️ getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
- - ⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
- - ⚠️ def.getId() is now def.getNodeTypeIdFromDefinition(), def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
- - ⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeTreeWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeTree
- - ⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
- - ⚠️ getLineSyntax is now getLineCellTypes
+- ⚠️ highlightScope is now defined only on cellTypes (no longer on nodeTypes)
+- ⚠️ "any" grammar nodeType property is now "blob", and jtree.AnyNode is now jtree.BlobNode
+- ⚠️ grammars should all define a "cellType any" if they have leave any firstCellTypes undefined
+- ⚠️ getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
+- ⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
+- ⚠️ def.getId() is now def.getNodeTypeIdFromDefinition(), def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
+- ⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeTreeWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeTree
+- ⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
+- ⚠️ getLineSyntax is now getLineCellTypes
 
 # 22.3.0 2019-05-16
-list
- - ⚠️ instead of FireProgram.js do Fire.js Program and same for Hakon and Numbers and Project and Stump and Swarm
+- ⚠️ instead of FireProgram.js do Fire.js Program and same for Hakon and Numbers and Project and Stump and Swarm
 
 # 22.2.0 2019-05-16
-list
- - ⚠️ jtree.program is now jtree.programRoot
- - ⚠️ renamed root program lang nodes so things like StumpProgram now refer to the grammar generated constructor and StumpProgramRoot to the program root instance
- - ⚠️ instead of "index.js" files in the langs packages, we now have FireProgram.js, HakonProgram.js, ProjectProgram.js, StampProgram.js, StumpProgram.js, and SwarmProgram.js
+- ⚠️ jtree.program is now jtree.programRoot
+- ⚠️ renamed root program lang nodes so things like StumpProgram now refer to the grammar generated constructor and StumpProgramRoot to the program root instance
+- ⚠️ instead of "index.js" files in the langs packages, we now have FireProgram.js, HakonProgram.js, ProjectProgram.js, StampProgram.js, StumpProgram.js, and SwarmProgram.js
 
 # 22.1.1 2019-05-16
-list
- - 🏥 missing constant
+- 🏥 missing constant
 
 # 22.1.0 2019-05-16
-list
- - 🎉 expand will append rather than set if a node is obviously not a map
+- 🎉 expand will append rather than set if a node is obviously not a map
 
 # 22.0.0 2019-05-15
-list
- - 🎉 Hakon, Stump and Fire languages moved into this repo, monorepo style
- - 🎉 wrote grammars for Hakon and Stump
- - 🎉 getNodesByGlobPath, every, hasLine, getNodesByLine, toggleLine methods
- - 🎉 combineFiles method in node version with glob patterns
- - 🎉 compile and execute button in grammar sandbox
- - 🎉 basic browser module constructor loading in grammar sandbox
- - 🏥 better reset functionality in grammar sandbox
- - ⚠️ getChildrenByNodeType is now getChildrenByNodeConstructor
- - ⚠️ extend now throws if attempting to extend with a non-map. Better solution to come.
- - ⚠️ removed combine.js script
- - ⚠️ GrammarProgram.predictGrammarFile is now new UnknownGrammarProgram(input).getPredictedGrammarFile()
- - ⚠️ instead of title or style tags in Stump use "titleTag" or "styleTag" to overcome the inherent attribute/tag html name conflict.
- - ⚠️ no more @ prefix in Stump
- - ⚠️ for Stump collapseNode, just have it, don't set it to "true"
- - ⚠️ fire has been refactored a bit
+- 🎉 Hakon, Stump and Fire languages moved into this repo, monorepo style
+- 🎉 wrote grammars for Hakon and Stump
+- 🎉 getNodesByGlobPath, every, hasLine, getNodesByLine, toggleLine methods
+- 🎉 combineFiles method in node version with glob patterns
+- 🎉 compile and execute button in grammar sandbox
+- 🎉 basic browser module constructor loading in grammar sandbox
+- 🏥 better reset functionality in grammar sandbox
+- ⚠️ getChildrenByNodeType is now getChildrenByNodeConstructor
+- ⚠️ extend now throws if attempting to extend with a non-map. Better solution to come.
+- ⚠️ removed combine.js script
+- ⚠️ GrammarProgram.predictGrammarFile is now new UnknownGrammarProgram(input).getPredictedGrammarFile()
+- ⚠️ instead of title or style tags in Stump use "titleTag" or "styleTag" to overcome the inherent attribute/tag html name conflict.
+- ⚠️ no more @ prefix in Stump
+- ⚠️ for Stump collapseNode, just have it, don't set it to "true"
+- ⚠️ fire has been refactored a bit
 
 # 21.0.0 2019-05-04
-list
- - 🎉 getRunTimeEnumOptions method allows for run time autocomplete and run time validation
- - 🎉 autocomplete for grammar cellTypes
- - 🎉 grammar name keyword
- - 🎉 cells property on grammar non-root runtime nodes
- - 🎉 makeGraphSort function. Also now used in grammar file prettification
- - ⚠️ in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
- - ⚠️ removed ability in grammar files to have a wordType and keyword share the same name
- - ⚠️ getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
- - ⚠️ instead of "grammar grammarName" oneliner now use the grammar name keyword
- - ⚠️ removed parseWith cellType property
- - ⚠️ removed jtree.getLanguage. Instead do require('.../langs/...').
- - ⚠️ in grammar keywordTable now enumFromGrammar
- - 🏥 all word types now have default regex of [^ ]* so no need to specify it
- - 🏥 grammar code cleanup
- - 🏥 small fixes to grammar sandbox
- - 🧹 repo folder cleanup
+- 🎉 getRunTimeEnumOptions method allows for run time autocomplete and run time validation
+- 🎉 autocomplete for grammar cellTypes
+- 🎉 grammar name keyword
+- 🎉 cells property on grammar non-root runtime nodes
+- 🎉 makeGraphSort function. Also now used in grammar file prettification
+- ⚠️ in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
+- ⚠️ removed ability in grammar files to have a wordType and keyword share the same name
+- ⚠️ getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
+- ⚠️ instead of "grammar grammarName" oneliner now use the grammar name keyword
+- ⚠️ removed parseWith cellType property
+- ⚠️ removed jtree.getLanguage. Instead do require('.../langs/...').
+- ⚠️ in grammar keywordTable now enumFromGrammar
+- 🏥 all word types now have default regex of [^ ]* so no need to specify it
+- 🏥 grammar code cleanup
+- 🏥 small fixes to grammar sandbox
+- 🧹 repo folder cleanup
 
 # 20.0.0 2019-04-30
-list
- - 🎉 simpler grammar files (no more @ prefix)
- - 🎉 catchAllColumn grammar keyword
- - 🎉 new methods shiftLeft, shiftRight, shiftYoungerSibsRight, split
- - 🎉 new methods keywordSort, getPrettified
- - 🎉 new method getCatchAllCellTypeName
- - ⚠️ the "@" prefix on grammar keywords has been removed
- - ⚠️ for catch all columns use catchAllColumn instead of *
- - ⚠️ getNodeColumnTypes is now getRequiredCellTypeNames
- - ⚠️ autocomplete help now only gets description and does not fall back to showing required columns
- - ⚠️ removed getNodeColumnRegexes method
+- 🎉 simpler grammar files (no more @ prefix)
+- 🎉 catchAllColumn grammar keyword
+- 🎉 new methods shiftLeft, shiftRight, shiftYoungerSibsRight, split
+- 🎉 new methods keywordSort, getPrettified
+- 🎉 new method getCatchAllCellTypeName
+- ⚠️ the "@" prefix on grammar keywords has been removed
+- ⚠️ for catch all columns use catchAllColumn instead of *
+- ⚠️ getNodeColumnTypes is now getRequiredCellTypeNames
+- ⚠️ autocomplete help now only gets description and does not fall back to showing required columns
+- ⚠️ removed getNodeColumnRegexes method
 
 # 19.5.1 2019-04-26
-list
- - 🏥 codeMirror autocomplete will now close if 1 option matching input text
- - 🏥 fixed 0 autocomplete results when at position 0,0 on a blank line
- - 🏥 fixed codeMirror bug in long documents
+- 🏥 codeMirror autocomplete will now close if 1 option matching input text
+- 🏥 fixed 0 autocomplete results when at position 0,0 on a blank line
+- 🏥 fixed codeMirror bug in long documents
 
 # 19.5.0 2019-04-25
-list
- - 🎉 @example keyword in grammar
- - 🎉 getErrorsInGrammarExamples method on GrammarProgram
+- 🎉 @example keyword in grammar
+- 🎉 getErrorsInGrammarExamples method on GrammarProgram
 
 # 19.4.0 2019-04-24
-list
- - 🎉 getKeywordInheritanceSet method
+- 🎉 getKeywordInheritanceSet method
 
 # 19.3.2 2019-04-23
-list
- - 🏥 better error handling for incomplete grammars
+- 🏥 better error handling for incomplete grammars
 
 # 19.3.1 2019-04-22
-list
- - 🏥 grammar checking of grammar files now only checks constructors if in correct env
+- 🏥 grammar checking of grammar files now only checks constructors if in correct env
 
 # 19.3.0 2019-04-22
-list
- - 🎉 autocomplete for words beyond keywords
- - 🎉 new base methods nodeAtLine, getNodeInScopeAtCharIndex, getWordIndexAtCharacterIndex, getWordProperties, getWordBoundaryIndices,   getAllWordBoundaryCoordinates
- - 🎉 on runtime programs: getAutocompleteWordsAt and getAllSuggestions
- - 🎉 getAutocompleteResults now provides descriptions, if present, along with completion word
- - 🏥 error highlight scope fixes
- - ⚠️ instead of getAutocompleteWords use getAutocompleteWordsAt
+- 🎉 autocomplete for words beyond keywords
+- 🎉 new base methods nodeAtLine, getNodeInScopeAtCharIndex, getWordIndexAtCharacterIndex, getWordProperties, getWordBoundaryIndices,   getAllWordBoundaryCoordinates
+- 🎉 on runtime programs: getAutocompleteWordsAt and getAllSuggestions
+- 🎉 getAutocompleteResults now provides descriptions, if present, along with completion word
+- 🏥 error highlight scope fixes
+- ⚠️ instead of getAutocompleteWords use getAutocompleteWordsAt
 
 # 19.2.1 2019-04-20
-list
- - 🏥 grammar sandbox bug on first visit
+- 🏥 grammar sandbox bug on first visit
 
 # 19.2.0 2019-04-20
-list
- - 🎉 @highlightScope is now an enum for better checking and autocomplete
- - 🎉 CodeMirror now uses @highlightScope for styles.
- - 🏥 we sort @enum options to now match largest hit first
- - 🏥 fixed cache bug in @keywordTable
- - ⚠️ CodeMirror now uses @highlightScope for styles so colors may have changed.
+- 🎉 @highlightScope is now an enum for better checking and autocomplete
+- 🎉 CodeMirror now uses @highlightScope for styles.
+- 🏥 we sort @enum options to now match largest hit first
+- 🏥 fixed cache bug in @keywordTable
+- ⚠️ CodeMirror now uses @highlightScope for styles so colors may have changed.
 
 # 19.1.0 2019-04-20
-list
- - 🎉 custom constructors can now specify a "." nested path to the JS constructor
- - 🎉 added error printing in Grammar sandbox
+- 🎉 custom constructors can now specify a "." nested path to the JS constructor
+- 🎉 added error printing in Grammar sandbox
 
 # 19.0.0 2019-04-19
-list
- - 🎉 CodeMirror support
- - 🎉 Tree Language Sandbox webpage using CodeMirror
- - 🎉 in Grammar files we now have support for different constructors for node and browser environments
- - ⚠️ in grammar files @constructor is now @constructors. Browser and nodejs constructors must be specified separately.
+- 🎉 CodeMirror support
+- 🎉 Tree Language Sandbox webpage using CodeMirror
+- 🎉 in Grammar files we now have support for different constructors for node and browser environments
+- ⚠️ in grammar files @constructor is now @constructors. Browser and nodejs constructors must be specified separately.
 
 # 18.2.0 2019-04-11
-list
- - 🎉 very basic toYaml method
+- 🎉 very basic toYaml method
 
 # 18.1.3 2019-03-26
-list
- - 🎉 more TypeScript typings
+- 🎉 more TypeScript typings
 
 # 18.1.2 2019-03-25
-list
- - 🎉 more TypeScript typings
+- 🎉 more TypeScript typings
 
 # 18.1.1 2019-03-25
-list
- - 🏥 added "types" field to package.json
+- 🏥 added "types" field to package.json
 
 # 18.1.0 2019-03-25
-list
- - 🎉 now with d.ts files
+- 🎉 now with d.ts files
 
 # 18.0.0 2019-03-24
-list
- - 🎉 basic .sublime-syntax file generation works. Scopes not yet integrated.
- - 🎉 added gen command to cli.js for generating syntax files
- - 🎉 added @highlightScope property to @keyword and @wordType in grammar language
- - 🎉 added @required feature to grammar with appropriate error messages
- - 🎉 added @single feature to grammar with appropriate error messages
- - 🎉 added @tags feature to grammar
- - ⚠️ @wordType > @regex with `.?` should now be `.*`
- - ⚠️ in @wordType > @regex now all @regex are enclosed by ^$ automatically
- - ⚠️ AbstractGrammarDefinitionNode: getDefinitionByName is now getKeywordDefinitionByName
- - ⚠️ _isOrExtendsAKeywordInScope is now isOrExtendsAKeywordInScope
+- 🎉 basic .sublime-syntax file generation works. Scopes not yet integrated.
+- 🎉 added gen command to cli.js for generating syntax files
+- 🎉 added @highlightScope property to @keyword and @wordType in grammar language
+- 🎉 added @required feature to grammar with appropriate error messages
+- 🎉 added @single feature to grammar with appropriate error messages
+- 🎉 added @tags feature to grammar
+- ⚠️ @wordType > @regex with `.?` should now be `.*`
+- ⚠️ in @wordType > @regex now all @regex are enclosed by ^$ automatically
+- ⚠️ AbstractGrammarDefinitionNode: getDefinitionByName is now getKeywordDefinitionByName
+- ⚠️ _isOrExtendsAKeywordInScope is now isOrExtendsAKeywordInScope
 
 # 17.1.3 2019-03-14
-list
- - 🏥 added support for constructors with nested paths in grammar languages in browser
+- 🏥 added support for constructors with nested paths in grammar languages in browser
 
 # 17.1.2 2019-03-14
-list
- - 🏥 added support for spaces in filenames in langs-project
+- 🏥 added support for spaces in filenames in langs-project
 
 # 17.1.1 2019-03-13
-list
- - 🏥 circular array check false positives when creating tree from Javascript object.
+- 🏥 circular array check false positives when creating tree from Javascript object.
 
 # 17.1.0 2019-03-13
-list
- - ⚠️ getCatchAllNodeClass is now getCatchAllNodeConstructor
- - ⚠️ getRunTimeCatchAllNodeClass is now getRunTimeCatchAllNodeConstructor
- - 🏥 catchAllKeywords can now instantiate a custom class
- - 🎉 checking a grammar programmatically now throws an error a constructor path in a grammar file does not exist
- - 🧹 added tap-mocha-reporter for clearer test run output
+- ⚠️ getCatchAllNodeClass is now getCatchAllNodeConstructor
+- ⚠️ getRunTimeCatchAllNodeClass is now getRunTimeCatchAllNodeConstructor
+- 🏥 catchAllKeywords can now instantiate a custom class
+- 🎉 checking a grammar programmatically now throws an error a constructor path in a grammar file does not exist
+- 🧹 added tap-mocha-reporter for clearer test run output
 
 # 17.0.0 2019-03-11
-list
- - ⚠️ In TreeNode, parseNodeType is now getNodeConstructor
- - ⚠️ jtree.getParser is now jtree.getProgramConstructor
- - ⚠️ In .grammar files @parser is now @constructor
- - ⚠️ In grammar JS getParserClass is now getDefinedConstructor
- - ⚠️ In grammar JS getRootParserClass is now getRootConstructor
- - 🎉 moved BrowserScript and swarm, project and stamp languages into this project to avoid circular dependencies
- - 🎉 (temporary) getLanguage method for accessing included languages
- - 🎉 error message when you have an inheritance loop in grammar file
- - 🏥 line number error message regression fix
- - 🧹 minor CLI app refactor
+- ⚠️ In TreeNode, parseNodeType is now getNodeConstructor
+- ⚠️ jtree.getParser is now jtree.getProgramConstructor
+- ⚠️ In .grammar files @parser is now @constructor
+- ⚠️ In grammar JS getParserClass is now getDefinedConstructor
+- ⚠️ In grammar JS getRootParserClass is now getRootConstructor
+- 🎉 moved BrowserScript and swarm, project and stamp languages into this project to avoid circular dependencies
+- 🎉 (temporary) getLanguage method for accessing included languages
+- 🎉 error message when you have an inheritance loop in grammar file
+- 🏥 line number error message regression fix
+- 🧹 minor CLI app refactor
 
 # 16.0.1 2019-03-03
-list
- - 🏥 minor migration fix
+- 🏥 minor migration fix
 
 # 16.0.0 2019-03-03
-list
- - 🧹 migrated to TypeScript
+- 🧹 migrated to TypeScript
 
 # 15.3.0 2019-03-01
-list
- - 🎉 for convenience added map, forEach, filter, find and slice methods aliasing getChildren().map ...
- - 🎉 sortByColumns method
- - 🎉 predictGrammarFile method
- - 🎉 getInvalidKeywords method
- - 🎉 @abstract keyword in grammars
- - 🎉 @any keyword in grammars
- - 🎉 any, bit, bool, float, int default word types
- - 🎉 toDisk method in node.js version
- - 🎉 getOneHot method
- - 🎉 deleteColumn method
- - 🎉 getColumnNames method
- - 🎉 isBlankLine method
- - 🎉 isEmpty method
- - 🎉 deleteChildren method
- - 🎉 deleteDuplicates method
- - 🎉 deleteBlanks method
- - 🎉 getNodesByRegex method
- - 🎉 fromShape method
- - 🎉 getFiltered method
- - 🎉 added sample of iris dataset to static TreeNode for handy testing and exploring
- - 🏥 renameAll fix
- - ⚠️ getExpanded - if multiple parent nodes match, getExpanded will extend node with matching keyword
- - ⚠️ getProgramErrors() is now getProgramErrorMessages(). getProgramErrors() now returns err objects
- - 🧹 makeRandomTree method & updates to perf test pages
- - 🧹 Default sandbox port now 3333
+- 🎉 for convenience added map, forEach, filter, find and slice methods aliasing getChildren().map ...
+- 🎉 sortByColumns method
+- 🎉 predictGrammarFile method
+- 🎉 getInvalidKeywords method
+- 🎉 @abstract keyword in grammars
+- 🎉 @any keyword in grammars
+- 🎉 any, bit, bool, float, int default word types
+- 🎉 toDisk method in node.js version
+- 🎉 getOneHot method
+- 🎉 deleteColumn method
+- 🎉 getColumnNames method
+- 🎉 isBlankLine method
+- 🎉 isEmpty method
+- 🎉 deleteChildren method
+- 🎉 deleteDuplicates method
+- 🎉 deleteBlanks method
+- 🎉 getNodesByRegex method
+- 🎉 fromShape method
+- 🎉 getFiltered method
+- 🎉 added sample of iris dataset to static TreeNode for handy testing and exploring
+- 🏥 renameAll fix
+- ⚠️ getExpanded - if multiple parent nodes match, getExpanded will extend node with matching keyword
+- ⚠️ getProgramErrors() is now getProgramErrorMessages(). getProgramErrors() now returns err objects
+- 🧹 makeRandomTree method & updates to perf test pages
+- 🧹 Default sandbox port now 3333
 
 # 15.2.0 2019-02-10
-list
- - 🎉 added getNumberOfLines() method
- - 🎉 GrammarProgram speedup 20%+
- - 🎉 getProgramErrors speedup 10x+
- - 🎉 toString speedup 5%+
+- 🎉 added getNumberOfLines() method
+- 🎉 GrammarProgram speedup 20%+
+- 🎉 getProgramErrors speedup 10x+
+- 🎉 toString speedup 5%+
 
 # 15.1.0 2019-02-10
-list
- - 🎉 10x+ faster typechecking of "any" nodes
- - 🎉 60% faster typechecking of other types
- - 🎉 50% faster parsing for large trees
- - 🧹 sandbox cleanup
- - 🎉 added getProgramErrorsIterator() method
- - 🎉 experimental _getSyntaxTreeHtml() method
+- 🎉 10x+ faster typechecking of "any" nodes
+- 🎉 60% faster typechecking of other types
+- 🎉 50% faster parsing for large trees
+- 🧹 sandbox cleanup
+- 🎉 added getProgramErrorsIterator() method
+- 🎉 experimental _getSyntaxTreeHtml() method
 
 # 15.0.2 2019-02-07
-list
- - 🏥 setChildren wasn't clearing cache
- - 🏥 findNodes wasn't recursing
+- 🏥 setChildren wasn't clearing cache
+- 🏥 findNodes wasn't recursing
 
 # 15.0.1 2019-01-02
-list
- - 🏥 Chrome wasn't always monotonically increasing perf.now due to precision
+- 🏥 Chrome wasn't always monotonically increasing perf.now due to precision
 
 # 15.0.0 2018-12-01
-list
- - 🎉 added toDataTable and fromDataTable methods
- - 🎉 added getSlice method
- - 🎉 added set method (to revert to original get/set behavior)
- - ⚠️ renamed findBeam to get
- - ⚠️ renamed getBeam to getContent
- - ⚠️ renamed getBeams to getContentsArray
- - ⚠️ removed undocumented getRest method
- - 🧹 renamed "garden" to "sandbox" for clarity
- - 🧹 moved "papers" to one folder
+- 🎉 added toDataTable and fromDataTable methods
+- 🎉 added getSlice method
+- 🎉 added set method (to revert to original get/set behavior)
+- ⚠️ renamed findBeam to get
+- ⚠️ renamed getBeam to getContent
+- ⚠️ renamed getBeams to getContentsArray
+- ⚠️ removed undocumented getRest method
+- 🧹 renamed "garden" to "sandbox" for clarity
+- 🧹 moved "papers" to one folder
 
 # 14.6.0 2018-09-23
-list
- - 🏥 Fix for browsers removing monotonically increasing perf.now
- - 🎉 getChildren() now returns a copy of array enabling in loop deletes
+- 🏥 Fix for browsers removing monotonically increasing perf.now
+- 🎉 getChildren() now returns a copy of array enabling in loop deletes
 
 # 14.5.1 2017-11-24
-list
- - 🧹 removed dead code
+- 🧹 removed dead code
 
 # 14.5.0 2017-11-23
-list
- - 🎉 standardized error messages into a grammar
- - 🎉 @parseWith wordType property
+- 🎉 standardized error messages into a grammar
+- 🎉 @parseWith wordType property
 
 # 14.4.0 2017-11-19
-list
- - 🎉 added @enum wordType
+- 🎉 added @enum wordType
 
 # 14.3.3 2017-11-17
-list
- - 🎉 added toMarkdownTable methods
+- 🎉 added toMarkdownTable methods
 
 # 14.3.2 2017-11-16
-list
- - 🎉 getNodesByLinePrefixes method
+- 🎉 getNodesByLinePrefixes method
 
 # 14.3.1 2017-11-14
-list
- - 🎉 cases cli command
+- 🎉 cases cli command
 
 # 14.3.0 2017-11-13
-list
- - 🎉 added macroExpand method
- - 🎉 hasWord method
+- 🎉 added macroExpand method
+- 🎉 hasWord method
 
 # 14.2.0 2017-11-12
-list
- - 🎉 added @version keyword to grammar
- - 🧹 renamed TreeGrammar.grammar to grammar.grammar
- - 🧹 removed ohayo constants
+- 🎉 added @version keyword to grammar
+- 🧹 renamed TreeGrammar.grammar to grammar.grammar
+- 🧹 removed ohayo constants
 
 # 14.1.0 2017-11-11
-list
- - 🎉 split check into check and checkAll commands
- - 🎉 compile cli command can now take a target extension
+- 🎉 split check into check and checkAll commands
+- 🎉 compile cli command can now take a target extension
 
 # 14.0.1 2017-11-11
-list
- - 🧹 Moved dependencies to devDependencies
+- 🧹 Moved dependencies to devDependencies
 
 # 14.0.0 2017-11-10
-list
- - ⚠️ renamed otree to jtree
+- ⚠️ renamed otree to jtree
 
 # 13.0.0 2017-11-09
-list
- - ⚠️ Tree Grammar switched to @wordType nodes for defining word types, no more implicit types
- - ⚠️ replaceNode now returns an array
+- ⚠️ Tree Grammar switched to @wordType nodes for defining word types, no more implicit types
+- ⚠️ replaceNode now returns an array
 
 # 12.2.1 2017-11-09
-list
- - 🏥 bug fix in getExpanded
+- 🏥 bug fix in getExpanded
 
 # 12.2.0 2017-11-09
-list
- - 🎉 insertWord method
- - 🏥 fixes to usage reports
- - ⚠️ renamed getBeamParameters to getNodeColumnTypes
+- 🎉 insertWord method
+- 🏥 fixes to usage reports
+- ⚠️ renamed getBeamParameters to getNodeColumnTypes
 
 # 12.1.0 2017-11-09
-list
- - ⚠️ getWordTypeLine is now getLineSyntax
- - ⚠️ getProgramWordTypeString is now getInPlaceSyntaxTree
- - 🎉 getTreeWithNodeTypes and getInPlaceSyntaxTreeWithNodeTypes methods for inspecting the parse
+- ⚠️ getWordTypeLine is now getLineSyntax
+- ⚠️ getProgramWordTypeString is now getInPlaceSyntaxTree
+- 🎉 getTreeWithNodeTypes and getInPlaceSyntaxTreeWithNodeTypes methods for inspecting the parse
 
 # 12.0.0 2017-11-09
-list
- - ⚠️ grammar file grammar change, first node should be @grammar, keywords should be @keyword
- - ⚠️ getGraph now takes 2 params, use getGraph(0, 1) for previous behavior
- - ⚠️ getExpanded now takes 2 params, use getExpanded(0, 1) for previous behavior
- - 🎉 getNodeByColumn method
+- ⚠️ grammar file grammar change, first node should be @grammar, keywords should be @keyword
+- ⚠️ getGraph now takes 2 params, use getGraph(0, 1) for previous behavior
+- ⚠️ getExpanded now takes 2 params, use getExpanded(0, 1) for previous behavior
+- 🎉 getNodeByColumn method
 
 # 11.5.0 2017-11-08
-list
- - 🎉 appendLine method
- - 🎉 insertLine method
- - ⚠️ append is now appendLineAndChildren
- - ⚠️ insert is now insertLineAndChildren
- - ⚠️ prepend is now prependLine and takes only 1 param
- - ⚠️ copyTo now requires second arg
- - ⚠️ toOutline now takes 0 args. use toMappedOutline to pass a mapping fn
- - ⚠️ fromCsv, fromSsv, fromTsv no longer take optional hasHeaders param. Use new fromDelimitedNoHeaders
- - ⚠️ fromDelimited now requires quoteChar param
- - ⚠️ toTable now accepts 0 params, use toFormattedTable to pass params
- - ⚠️ getPoint now takes no params, use getPointRelativeTo; getPathVector => getPathVectorRelativeTo
- - ⚠️ getKeywordPath now takes no params, use getKeywordPathRelativeTo
- - ⚠️ getStack, getRootNode now take no params
- - ⚠️ getWords now takes 0 params. use getWordsFrom
- - ⚠️ use getGraphByKey to getGraphByKey
+- 🎉 appendLine method
+- 🎉 insertLine method
+- ⚠️ append is now appendLineAndChildren
+- ⚠️ insert is now insertLineAndChildren
+- ⚠️ prepend is now prependLine and takes only 1 param
+- ⚠️ copyTo now requires second arg
+- ⚠️ toOutline now takes 0 args. use toMappedOutline to pass a mapping fn
+- ⚠️ fromCsv, fromSsv, fromTsv no longer take optional hasHeaders param. Use new fromDelimitedNoHeaders
+- ⚠️ fromDelimited now requires quoteChar param
+- ⚠️ toTable now accepts 0 params, use toFormattedTable to pass params
+- ⚠️ getPoint now takes no params, use getPointRelativeTo; getPathVector => getPathVectorRelativeTo
+- ⚠️ getKeywordPath now takes no params, use getKeywordPathRelativeTo
+- ⚠️ getStack, getRootNode now take no params
+- ⚠️ getWords now takes 0 params. use getWordsFrom
+- ⚠️ use getGraphByKey to getGraphByKey
 
 # 11.4.1 2017-11-08
-list
- - 🎉 export GrammarProgram
+- 🎉 export GrammarProgram
 
 # 11.4.0 2017-11-08
-list
- - ⚠️ getGrammarUsage is now getKeywordUsage
- - ⚠️ removed undocumented getNodeClasses, run, and getErrorCount methods
+- ⚠️ getGrammarUsage is now getKeywordUsage
+- ⚠️ removed undocumented getNodeClasses, run, and getErrorCount methods
 
 # 11.3.0 2017-11-07
-list
- - 🎉 added support for putting multiple parse nodes in one file
+- 🎉 added support for putting multiple parse nodes in one file
 
 # 11.2.3 2017-11-06
-list
- - 🧹 TestCoverage 90.44% Smt 2137/2363 72.32% Brnch 384/531 85.37% Fn 496/581 91.89% Loc 2017/2195
+- 🧹 TestCoverage 90.44% Smt 2137/2363 72.32% Brnch 384/531 85.37% Fn 496/581 91.89% Loc 2017/2195
 
 # 11.2.2 2017-11-06
-list
- - 🧹 updated ProjectLang
+- 🧹 updated ProjectLang
 
 # 11.2.1 2017-11-06
-list
- - 🏥 path fixes
+- 🏥 path fixes
 
 # 11.2.0 2017-11-06
-list
- - ⚠️ otree.getProgramClassFromGrammarFile is now otree.getParser
- - ⚠️ otree.AbstractGrammarBackedProgram is now otree.program
+- ⚠️ otree.getProgramClassFromGrammarFile is now otree.getParser
+- ⚠️ otree.AbstractGrammarBackedProgram is now otree.program
 
 # 11.1.0 2017-11-06
-list
- - 🏥 path and other fixes from otree move
+- 🏥 path and other fixes from otree move
 
 # 11.0.0 2017-11-06
-list
- - ⚠️ renamed TreeProgram to otree
+- ⚠️ renamed TreeProgram to otree
 
 # 10.1.2 2017-11-06
-list
- - 🧹 rearranged code into base node and grammar backed folders
+- 🧹 rearranged code into base node and grammar backed folders
 
 # 10.1.1 2017-11-05
-list
- - 🎉 started Tree Garden web console
- - 🏥 Fixed create command line tool
+- 🎉 started Tree Garden web console
+- 🏥 Fixed create command line tool
 
 # 10.1.0 2017-11-04
-list
- - 🏥 parsing top level program class fix
- - 🏥 getNodeByColumns now works when search and target have different # of columns
- - 🧹 started tests for console, static, and grammar classes
+- 🏥 parsing top level program class fix
+- 🏥 getNodeByColumns now works when search and target have different # of columns
+- 🧹 started tests for console, static, and grammar classes
 
 # 10.0.1 2017-11-03
-list
- - 🏥 static method path bug fixes
+- 🏥 static method path bug fixes
 
 # 10.0.0 2017-11-03
-list
- - 🎉 getNodeByColumns method
- - ⚠️ grammar file is now primary file, use static getProgramClassFromGrammarFile method to create a VM/compiler
- - ⚠️ languages.tree => grammars.tree
- - ⚠️ grammars.tree now points to grammar files, not index files
+- 🎉 getNodeByColumns method
+- ⚠️ grammar file is now primary file, use static getProgramClassFromGrammarFile method to create a VM/compiler
+- ⚠️ languages.tree => grammars.tree
+- ⚠️ grammars.tree now points to grammar files, not index files
 
 # 9.2.0 2017-11-03
-list
- - ⚠️ TreeProgram.getGrammarErrors => TreeProgram.Tools.getGrammarErrors
- - ⚠️ TreeProgram.executeFile => TreeProgram.Tools.executeFile
- - 🧹 cleanup for making grammar files source of truth
+- ⚠️ TreeProgram.getGrammarErrors => TreeProgram.Tools.getGrammarErrors
+- ⚠️ TreeProgram.executeFile => TreeProgram.Tools.executeFile
+- 🧹 cleanup for making grammar files source of truth
 
 # 9.1.0 2017-11-02
-list
- - 🎉 refactored Tree Grammar to support compiler-compilers and vms in languages other than ES6
- - ⚠️ "@parseClass" => "@constructor js"
- - 🏥 @ char is now acceptable in filepaths
+- 🎉 refactored Tree Grammar to support compiler-compilers and vms in languages other than ES6
+- ⚠️ "@parseClass" => "@constructor js"
+- 🏥 @ char is now acceptable in filepaths
 
 # 9.0.0 2017-11-02
-list
- - 🎉 support for multiple compile targets
- - 🎉 CLI history command can show all history
- - 🎉 CLI check command now alternately accepts a language extension to check a collection
- - ⚠️ @targetExtension => @compiler, @compiled => @sub, @compiledIndentCharacter => @indentCharacter
- - ⚠️ @sub, @indentCharacter, @listDelimiter, @openChildren, @closeChildren moved under @compiler
- - ⚠️ compile method now requires a target extension
- - 🧹 renamed slot types to columnTypes and better error messaging for when graph expansion fails
+- 🎉 support for multiple compile targets
+- 🎉 CLI history command can show all history
+- 🎉 CLI check command now alternately accepts a language extension to check a collection
+- ⚠️ @targetExtension => @compiler, @compiled => @sub, @compiledIndentCharacter => @indentCharacter
+- ⚠️ @sub, @indentCharacter, @listDelimiter, @openChildren, @closeChildren moved under @compiler
+- ⚠️ compile method now requires a target extension
+- 🧹 renamed slot types to columnTypes and better error messaging for when graph expansion fails
 
 # 8.6.0 2017-10-30
-list
- - ⚠️ renamed @parameters to @columns in Grammar Tree Language
+- ⚠️ renamed @parameters to @columns in Grammar Tree Language
 
 # 8.5.0 2017-10-30
-list
- - 🎉 New usage command line tool
- - 🎉 New getGrammarUsage method
+- 🎉 New usage command line tool
+- 🎉 New getGrammarUsage method
 
 # 8.4.1 2017-10-28
-list
- - 🏥 init the languages and history file on cli first use
- - 🧹 added a tiny bit of documentation to readme
+- 🏥 init the languages and history file on cli first use
+- 🧹 added a tiny bit of documentation to readme
 
 # 8.4.0 2017-10-28
-list
- - 🎉 added getNodeClasses method to TreeProgram to support multiple node classes in 1 file
+- 🎉 added getNodeClasses method to TreeProgram to support multiple node classes in 1 file
 
 # 8.3.1 2017-10-28
-list
- - 🏥 expose TerminalNode and NonTerminalNode in browser distribution
+- 🏥 expose TerminalNode and NonTerminalNode in browser distribution
 
 # 8.3.0 2017-10-27
-list
- - 🎉 replaceNode method
- - 🎉 getSiblings, getYoungerSiblings, getOlderSiblings methods
+- 🎉 replaceNode method
+- 🎉 getSiblings, getYoungerSiblings, getOlderSiblings methods
 
 # 8.2.3 2017-10-27
-list
- - 🎉 export TreeTerminalNode class
- - 🧹 minor cleanup of cli app
+- 🎉 export TreeTerminalNode class
+- 🧹 minor cleanup of cli app
 
 # 8.2.2 2017-10-26
-list
- - 🧹 recursive dependency fix and console code cleanup
+- 🧹 recursive dependency fix and console code cleanup
 
 # 8.2.1 2017-10-26
-list
- - 🎉 support absolute paths in grammar files
+- 🎉 support absolute paths in grammar files
 
 # 8.2.0 2017-10-26
-list
- - 🎉 export TreeNonTerminalNode class
- - 🎉 support for relative paths in grammar files
+- 🎉 export TreeNonTerminalNode class
+- 🎉 support for relative paths in grammar files
 
 # 8.1.0 2017-10-25
-list
- - ⚠️ renamed fixedWidthTable method to toTable and changed default to left aligned.
+- ⚠️ renamed fixedWidthTable method to toTable and changed default to left aligned.
 
 # 8.0.1 2017-10-15
-list
- - 🏥 fixed browser version
+- 🏥 fixed browser version
 
 # 8.0.0 2017-10-15
-list
- - 🎉 Create new Tree Languages using a tree grammar file
- - 🎉 Tree Console app
- - ⚠️ ImmutableNode no longer exposed on TreeProgram
+- 🎉 Create new Tree Languages using a tree grammar file
+- 🎉 Tree Console app
+- ⚠️ ImmutableNode no longer exposed on TreeProgram
 
 # 7.2.0 2017-10-14
-list
- - ⚠️ for use in browser, now use treeprogram.browser.js instead of treeprogram.js
- - 🧹 prep work for grammar and blaze library merger -- consoleApp and src directory
+- ⚠️ for use in browser, now use treeprogram.browser.js instead of treeprogram.js
+- 🧹 prep work for grammar and blaze library merger -- consoleApp and src directory
 
 # 7.1.1 2017-9-17
-list
- - 🎉 getErrors and getWordTypeLine methods
- - 🏥 fix for executeFile static method when more than one #! line.
+- 🎉 getErrors and getWordTypeLine methods
+- 🏥 fix for executeFile static method when more than one #! line.
 
 # 7.1.0 2017-9-15
-list
- - ⚠️ Symbol is now Keyword throughout. Same changes at 7.0.0, except substitute keyword for symbol.
+- ⚠️ Symbol is now Keyword throughout. Same changes at 7.0.0, except substitute keyword for symbol.
 
 # 7.0.0 2017-9-14
-list
- - ⚠️ getNodeTypes is now getSymbolMap
- - ⚠️ getDefaultNodeType is now getCatchAllNodeClass
- - ⚠️ getBase is now getSymbol
- - ⚠️ getBasePath is now getSymbolPath
- - ⚠️ getBases is now getSymbols
- - ⚠️ pathVectorToBasePath is now pathVectorToSymbolPath
- - ⚠️ setBase is now setSymbol
+- ⚠️ getNodeTypes is now getSymbolMap
+- ⚠️ getDefaultNodeType is now getCatchAllNodeClass
+- ⚠️ getBase is now getSymbol
+- ⚠️ getBasePath is now getSymbolPath
+- ⚠️ getBases is now getSymbols
+- ⚠️ pathVectorToBasePath is now pathVectorToSymbolPath
+- ⚠️ setBase is now setSymbol
 
 # 6.1.3 2017-9-8
-list
- - 🎉 added executeSync method
- - 🧹 removed outdated ETNs
- - 🧹 switched to Tap from Tape to get code coverage working again with nyc
+- 🎉 added executeSync method
+- 🧹 removed outdated ETNs
+- 🧹 switched to Tap from Tape to get code coverage working again with nyc
 
 # 6.1.2 2017-9-6
-list
- - 🏥 bug fix in getCMTime
+- 🏥 bug fix in getCMTime
 
 # 6.1.1 2017-8-27
-list
- - 🎉 added getExpanded method
+- 🎉 added getExpanded method
 
 # 6.1.0 2017-8-25
-list
- - 🎉 added getDefaultNodeType and getNodeTypes methods
- - 🎉 added default compile method
- - 🏥 updated outdated code in readme
+- 🎉 added getDefaultNodeType and getNodeTypes methods
+- 🎉 added default compile method
+- 🏥 updated outdated code in readme
 
 # 6.0.0 2017-8-24
-list
- - ⚠️ Renamed TreeNotation to TreeProgram.
- - ⚠️ github is now at breck7/treeprogram
- - ⚠️ npm install treenotation is now npm install treeprogram
- - 🏥 fixed timing bug in getTreeMTime
+- ⚠️ Renamed TreeNotation to TreeProgram.
+- ⚠️ github is now at breck7/treeprogram
+- ⚠️ npm install treenotation is now npm install treeprogram
+- 🏥 fixed timing bug in getTreeMTime
 
 # 5.7.0 2017-8-24
-list
- - 🎉 getWord can now take a negative int
- - 🎉 added static method executeFile and cli.js
+- 🎉 getWord can now take a negative int
+- 🎉 added static method executeFile and cli.js
 
 # 5.6.2 2017-8-20
-list
- - 🏥 child nodes can now inspect their parent's line at parse time to enable dependent types
+- 🏥 child nodes can now inspect their parent's line at parse time to enable dependent types
 
 # 5.6.1 2017-8-20
-list
- - 🏥 stale index when using setLine or setBase methods
+- 🏥 stale index when using setLine or setBase methods
 
 # 5.6.0 2017-8-18
-list
- - ⚠️ base execute now returns a Promise.all that resolves when all children have resolves
- - 🎉 Added getIndentation method
+- ⚠️ base execute now returns a Promise.all that resolves when all children have resolves
+- 🎉 Added getIndentation method
 
 # 5.5.0 2017-8-8
-list
- - 🎉 Added getTreeMTime method
+- 🎉 Added getTreeMTime method
 
 # 5.4.0 2017-8-8
-list
- - ⚠️ getMTime now always returns a number (previously it could return undefined). Initializes lazily on first call.
+- ⚠️ getMTime now always returns a number (previously it could return undefined). Initializes lazily on first call.
 
 # 5.3.0 2017-8-3
-list
- - 🎉 Added nest static method
+- 🎉 Added nest static method
 
 # 5.2.0 2017-8-1
-list
- - 🎉 Added getInheritanceTree method
+- 🎉 Added getInheritanceTree method
 
 # 5.1.0 2017-7-25
-list
- - 🎉 Added "relativeTo" parameter to: getPoint, isRoot, getRootNode, getStack, getStackString, getBasePath, getPathVector
+- 🎉 Added "relativeTo" parameter to: getPoint, isRoot, getRootNode, getStack, getStackString, getBasePath, getPathVector
 
 # 5.0.1 2017-7-24
-list
- - 🏥 getBasePath works
+- 🏥 getBasePath works
 
 # 5.0.0 2017-7-24
-list
- - ⚠️ getWI is now getZI for consistency with X,Y,Z convention.
- - ⚠️ getHead is now getBase
- - ⚠️ setHead is now setBase
- - ⚠️ pathVectorToPathName is now pathVectorToBasePath
- - ⚠️ getPathName is now getBasePath
- - ⚠️ getTail is now getBeam
- - ⚠️ setTail is now setBeam
- - ⚠️ findTail is now findBeam
- - ⚠️ pushTailAndChildren is now pushBeamAndChildren
- - ⚠️ getTailWithChildren is now getBeamWithChildren
- - ⚠️ setTailWithChildren is now setBeamWithChildren
- - ⚠️ getTails is now getBeams
+- ⚠️ getWI is now getZI for consistency with X,Y,Z convention.
+- ⚠️ getHead is now getBase
+- ⚠️ setHead is now setBase
+- ⚠️ pathVectorToPathName is now pathVectorToBasePath
+- ⚠️ getPathName is now getBasePath
+- ⚠️ getTail is now getBeam
+- ⚠️ setTail is now setBeam
+- ⚠️ findTail is now findBeam
+- ⚠️ pushTailAndChildren is now pushBeamAndChildren
+- ⚠️ getTailWithChildren is now getBeamWithChildren
+- ⚠️ setTailWithChildren is now setBeamWithChildren
+- ⚠️ getTails is now getBeams
 
 # 4.1.2 2017-6-26
-list
- - 🎉 Added setWord method
+- 🎉 Added setWord method
 
 # 4.1.1 2017-6-26
-list
- - 🏥 Bug fix in getPoint method
+- 🏥 Bug fix in getPoint method
 
 # 4.1.0 2017-6-20
-list
- - ⚠️ removed toJavascript method on base class.
+- ⚠️ removed toJavascript method on base class.
 
 # 4.0.3 2017-6-20
-list
- - 🏥 Reverted last.
+- 🏥 Reverted last.
 
 # 4.0.2 2017-6-20
-list
- - 🏥 Fix so Hakon works in browser
+- 🏥 Fix so Hakon works in browser
 
 # 4.0.1 2017-6-20
-list
- - 🎉 Added HTML, CSS and Unit Testing ETNs (I named them Bray, Hakon, and Wall).
+- 🎉 Added HTML, CSS and Unit Testing ETNs (I named them Bray, Hakon, and Wall).
 
 # 4.0.0 2017-6-18
-list
- - ⚠️ removed _getSize if any ETNs were using that
- - ⚠️ changes some output classes in toHtml() method
- - 🎉 getWords() now takes an optional starting WI location
- - 🎉 Final version of paper, mistakes and all.
+- ⚠️ removed _getSize if any ETNs were using that
+- ⚠️ changes some output classes in toHtml() method
+- 🎉 getWords() now takes an optional starting WI location
+- 🎉 Final version of paper, mistakes and all.
 
 # 3.10.0 2017-6-17
-list
- - ⚠️ getAncestorNodes is now getStack
- - 🎉 Added getStackString method
+- ⚠️ getAncestorNodes is now getStack
+- 🎉 Added getStackString method
 
 # 3.9.2 2017-6-17
-list
- - 🎉 getGraph method now also takes 0 params, in which case it uses word1.
+- 🎉 getGraph method now also takes 0 params, in which case it uses word1.
 
 # 3.9.1 2017-6-17
-list
- - 🎉 Added getGraph method
+- 🎉 Added getGraph method
 
 # 3.9.0 2017-6-16
-list
- - ⚠️ Removed TreeNode.ExecutableTreeNode. TreeNotation now has execute method by default.
- - ⚠️ getWord now ignores getSize. In fact, we'll probably ditch getSize.
+- ⚠️ Removed TreeNode.ExecutableTreeNode. TreeNotation now has execute method by default.
+- ⚠️ getWord now ignores getSize. In fact, we'll probably ditch getSize.
 
 # 3.8.0 2017-6-15
-list
- - 🎉 toOutline now takes an optional mapping fn
+- 🎉 toOutline now takes an optional mapping fn
 
 # 3.7.4 2017-6-15
-list
- - 🏥 setTailWithChildren Regression fix.
+- 🏥 setTailWithChildren Regression fix.
 
 # 3.7.3 2017-6-15
-list
- - 🏥 Fix for closure compiler
+- 🏥 Fix for closure compiler
 
 # 3.7.2 2017-6-15
-list
- - 🏥 setChildren regression fix
+- 🏥 setChildren regression fix
 
 # 3.7.1 2017-6-15
-list
- - 🏥 ETN parsing regression fix
+- 🏥 ETN parsing regression fix
 
 # 3.7.0 2017-6-15
-list
- - ⚠️ expose TreeNotation now and not TreeNode
- - ⚠️ TreeNode.ExecutableTreeNode is now TreeNotation.ExecutableETN
- - ⚠️ TreeNotation.ImmutableTreeNode is now TreeNotation.ImmutableNode
- - 🏥 Fixed regression introduced in 3.6 in ETN parsing in parseString method
- - 🎉 Updated readme with an ETN example
+- ⚠️ expose TreeNotation now and not TreeNode
+- ⚠️ TreeNode.ExecutableTreeNode is now TreeNotation.ExecutableETN
+- ⚠️ TreeNotation.ImmutableTreeNode is now TreeNotation.ImmutableNode
+- 🏥 Fixed regression introduced in 3.6 in ETN parsing in parseString method
+- 🎉 Updated readme with an ETN example
 
 # 3.6.0 2017-6-15
-list
- - ⚠️ parseNode is now parseNodeType and only takes a line param.
- - ⚠️ getMTime() now returns undefined if the node hasn't been modified.
- - 🎉 Added more laziness to get a ~2.5x improvement in parse time. Parses about ~1M loc of basic TN a sec on test machine
+- ⚠️ parseNode is now parseNodeType and only takes a line param.
+- ⚠️ getMTime() now returns undefined if the node hasn't been modified.
+- 🎉 Added more laziness to get a ~2.5x improvement in parse time. Parses about ~1M loc of basic TN a sec on test machine
 
 # 3.5.3 2017-6-14
-list
- - 🎉 Added getChildrenByNodeType method
- - 🎉 Expose a simple ExecutableTreeNode class
- - 🏥 Fixed bug when initiating from an ETN
+- 🎉 Added getChildrenByNodeType method
+- 🎉 Expose a simple ExecutableTreeNode class
+- 🏥 Fixed bug when initiating from an ETN
 
 # 3.5.2 2017-6-13
-list
- - 🎉 Added getNext and getPrevious methods
+- 🎉 Added getNext and getPrevious methods
 
 # 3.5.1 2017-6-13
-list
- - 🎉 Added getPoint method
+- 🎉 Added getPoint method
 
 # 3.5.0 2017-6-9
-list
- - ⚠️ changed parseNode method to just return the new node class.
+- ⚠️ changed parseNode method to just return the new node class.
 
 # 3.4.0 2017-6-6
-list
- - ⚠️ removed reload method
+- ⚠️ removed reload method
 
 # 3.3.0 2017-6-5
-list
- - ⚠️ in the toHtml() method, the child nodes div now has class nodeChildren instead of nodeTree
- - ⚠️ pushTailAndTree is now pushTailAndChildren
+- ⚠️ in the toHtml() method, the child nodes div now has class nodeChildren instead of nodeTree
+- ⚠️ pushTailAndTree is now pushTailAndChildren
 
 # 3.2.1 2017-6-5
-list
- - 🎉 Added getMTime method
+- 🎉 Added getMTime method
 
 # 3.2.0 2017-6-5
-list
- - ⚠️ removed moveTo method. Use the new copyTo method follow by destroy.
- - ⚠️ destroy no longer returns the detached node.
- - 🎉 Experimental: expose ImmutableTreeNode
- - 🎉 Improvements to _parseNode(), increased test coverage, and reduced test code size
+- ⚠️ removed moveTo method. Use the new copyTo method follow by destroy.
+- ⚠️ destroy no longer returns the detached node.
+- 🎉 Experimental: expose ImmutableTreeNode
+- 🎉 Improvements to _parseNode(), increased test coverage, and reduced test code size
 
 # 3.1.1 2017-6-2
-list
- - 🏥 Regression fix in extend method
+- 🏥 Regression fix in extend method
 
 # 3.1.0 2017-6-1
-list
- - ⚠️ removed every() method
- - 🎉 Added getTopDownArray (preorder), getChildrenFirstArray (postorder), getParentFirstArray(breadth first) methods
+- ⚠️ removed every() method
+- 🎉 Added getTopDownArray (preorder), getChildrenFirstArray (postorder), getParentFirstArray(breadth first) methods
 
 # 3.0.1 2017-5-30
-list
- - 🎉 Added findTail method
+- 🎉 Added findTail method
 
 # 3.0.0 2017-5-30
-list
- - ⚠️ merged all subclasses into one TreeNode class.
- - ⚠️ getNodes is now getChildren
- - ⚠️ setName > setHead, setValue > setTail, getName > getHead, getValue > getTail
- - ⚠️ getNames > getHeads, getValues > getTails, setValue > setTail
- - ⚠️ removed seed methods
- - ⚠️ removed findTrees and findValues methods
- - ⚠️ removed tree next and prev methods
- - ⚠️ removed tree setText...do tree.touchNode().setTailWithChildren(text)
- - ⚠️ removed tree setTree...do tree.touchNode().setChildren()
- - ⚠️ removed tree setTail...do tree.touchNode().setTail()
- - ⚠️ removed tree getTail...do tree.getNode(path).getTail()
- - ⚠️ removed tree getTree...do tree.getNode(path).getTree()
- - ⚠️ removed tree getText...do tree.getNode(path).getText()
- - ⚠️ node setTree is now node setChildren
- - ⚠️ append now takes only 2 params, line and tree.
- - ⚠️ appendLine is now just append
- - ⚠️ getAncestorTrees is now getAncestorNodes
- - ⚠️ getText now getTailWithChildren
- - ⚠️ removed getTrees method.
- - ⚠️ removed tree clear method.
- - ⚠️ removed node initTree
- - ⚠️ removed treeAt method
- - ⚠️ insert now takes line and not head and tail params
- - ⚠️ pushValue is now pushTailAndTree
- - ⚠️ prepend method now takes line and not head and tail params
- - 🎉 Added insertNode public method
- - 🏥 Bug fix: toString no longer returns an empty line after you delete last node in a nested tree
+- ⚠️ merged all subclasses into one TreeNode class.
+- ⚠️ getNodes is now getChildren
+- ⚠️ setName > setHead, setValue > setTail, getName > getHead, getValue > getTail
+- ⚠️ getNames > getHeads, getValues > getTails, setValue > setTail
+- ⚠️ removed seed methods
+- ⚠️ removed findTrees and findValues methods
+- ⚠️ removed tree next and prev methods
+- ⚠️ removed tree setText...do tree.touchNode().setTailWithChildren(text)
+- ⚠️ removed tree setTree...do tree.touchNode().setChildren()
+- ⚠️ removed tree setTail...do tree.touchNode().setTail()
+- ⚠️ removed tree getTail...do tree.getNode(path).getTail()
+- ⚠️ removed tree getTree...do tree.getNode(path).getTree()
+- ⚠️ removed tree getText...do tree.getNode(path).getText()
+- ⚠️ node setTree is now node setChildren
+- ⚠️ append now takes only 2 params, line and tree.
+- ⚠️ appendLine is now just append
+- ⚠️ getAncestorTrees is now getAncestorNodes
+- ⚠️ getText now getTailWithChildren
+- ⚠️ removed getTrees method.
+- ⚠️ removed tree clear method.
+- ⚠️ removed node initTree
+- ⚠️ removed treeAt method
+- ⚠️ insert now takes line and not head and tail params
+- ⚠️ pushValue is now pushTailAndTree
+- ⚠️ prepend method now takes line and not head and tail params
+- 🎉 Added insertNode public method
+- 🏥 Bug fix: toString no longer returns an empty line after you delete last node in a nested tree
 
 # 2.3.0 2017-5-9
-list
- - ⚠️ created abstract classes and language classes. PairTree = require("treenotation").PairTreeLanguage.PairTree
- - ⚠️ fromCsv and other from methods are now static methods on PairTreeLanguage, not PairTree.
+- ⚠️ created abstract classes and language classes. PairTree = require("treenotation").PairTreeLanguage.PairTree
+- ⚠️ fromCsv and other from methods are now static methods on PairTreeLanguage, not PairTree.
 
 # 2.2.4 2017-4-28
-list
- - 🏥 Dist npm fix
+- 🏥 Dist npm fix
 
 # 2.2.3 2017-4-28
-list
- - 🎉 Started using Prettier
- - 🎉 Swapped out Browserfy in favor of simple express router transform flow
- - 🎉 Created tasks folder in place of npm scripts
- - 🎉 Code cleanup: turned helper methods into statics
+- 🎉 Started using Prettier
+- 🎉 Swapped out Browserfy in favor of simple express router transform flow
+- 🎉 Created tasks folder in place of npm scripts
+- 🎉 Code cleanup: turned helper methods into statics
 
 # 2.2.2 2017-4-17
-list
- - 🎉 Added getAncestorTrees method to node.
+- 🎉 Added getAncestorTrees method to node.
 
 # 2.2.1 2017-4-17
-list
- - 🎉 Added getRootTree method to node.
+- 🎉 Added getRootTree method to node.
 
 # 2.2.0 2017-4-17
-list
- - ⚠️ extend method on PairTree is now recursive.
+- ⚠️ extend method on PairTree is now recursive.
 
 # 2.1.1 2017-4-16
-list
- - 🏥 Bug fix: fixed uncaught error when parsing malformed delimited input
+- 🏥 Bug fix: fixed uncaught error when parsing malformed delimited input
 
 # 2.1.0 2017-4-13
-list
- - ⚠️ in base and pair, values are now converted to strings. Use a higher level language to preserve types.
+- ⚠️ in base and pair, values are now converted to strings. Use a higher level language to preserve types.
 
 # 2.0.3 2017-4-05
-list
- - 🎉 Added prepublish hook
+- 🎉 Added prepublish hook
 
 # 2.0.2 2017-4-05
-list
- - 🏥 Bug fix in node.setTree method
+- 🏥 Bug fix in node.setTree method
 
 # 2.0.1 2017-4-05
-list
- - 🏥 NPM bundle fix
+- 🏥 NPM bundle fix
 
 # 2.0.0 2017-4-05
-list
- - 🎉 Made TreeNotation the root namespace and separated PairTree out as a sublanguage
- - ⚠️ new Tree() now needs to be new TreeNotation.PairTree() or just add a Tree = TreeNotation.PairTree
- - ⚠️ node.getPath is now node.getPathName
- - ⚠️ indexPathToNamePath is now pathVectorToPathName
- - ⚠️ node.getNodeParentTree is now node.getParentTree
- - ⚠️ tree.push is now tree.pushValue
- - ⚠️ removed tree.toggleValue
- - ⚠️ tree.toFixedWidth is now tree.toFixedWidthTable
- - ⚠️ node.getIndexPath is now node.getPathVector
- - ⚠️ removed tree.deleteNodeAt
- - ⚠️ tree.getTrees() no longer accepts a parameter.
- - ⚠️ tree.getValues() no longer accepts a parameter.
- - ⚠️ in html returned from tree.toHtml(), data-path is now data-pathVector
- - ⚠️ fromDelimiter is now fromDelimited
- - 🎉 Removed gulp devDependency. Switched to browserify.
+- 🎉 Made TreeNotation the root namespace and separated PairTree out as a sublanguage
+- ⚠️ new Tree() now needs to be new TreeNotation.PairTree() or just add a Tree = TreeNotation.PairTree
+- ⚠️ node.getPath is now node.getPathName
+- ⚠️ indexPathToNamePath is now pathVectorToPathName
+- ⚠️ node.getNodeParentTree is now node.getParentTree
+- ⚠️ tree.push is now tree.pushValue
+- ⚠️ removed tree.toggleValue
+- ⚠️ tree.toFixedWidth is now tree.toFixedWidthTable
+- ⚠️ node.getIndexPath is now node.getPathVector
+- ⚠️ removed tree.deleteNodeAt
+- ⚠️ tree.getTrees() no longer accepts a parameter.
+- ⚠️ tree.getValues() no longer accepts a parameter.
+- ⚠️ in html returned from tree.toHtml(), data-path is now data-pathVector
+- ⚠️ fromDelimiter is now fromDelimited
+- 🎉 Removed gulp devDependency. Switched to browserify.
 
 # 1.2.2 2017-4-02
-list
- - 🎉 Removed package.tree and fixed gulp version update script
+- 🎉 Removed package.tree and fixed gulp version update script
 
 # 1.2.1 2017-3-31
-list
- - ⚠️ append, insert, prepend, push, and shift now return the new Tree Nodes.
+- ⚠️ append, insert, prepend, push, and shift now return the new Tree Nodes.
 
 # 1.1.1 2017-3-26
-list
- - ⚠️ Removed each method
+- ⚠️ Removed each method
 
 # 1.0.7 2017-3-25
-list
- - 🎉 Added moveTo method on TreeNode
+- 🎉 Added moveTo method on TreeNode
 
 # 1.0.6 2017-3-19
-list
- - 🎉 Added isTerminal, fromSeed, seedToTree, invert, remap, and toSeed methods
+- 🎉 Added isTerminal, fromSeed, seedToTree, invert, remap, and toSeed methods
 
 # 1.0.5 2017-3-17
-list
- - 🏥 Version number generator fix.
+- 🏥 Version number generator fix.
 
 # 1.0.4 2017-3-17
-list
- - 🏥 Bug fix in node.setFromText
+- 🏥 Bug fix in node.setFromText
 
 # 1.0.3 2017-3-15
-list
- - 🎉 Added extend method
+- 🎉 Added extend method
 
 # 1.0.2 2017-3-02
-list
- - 🎉 Initial release
+- 🎉 Initial release
 
-html
- <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+html <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
 
 import settings.scroll

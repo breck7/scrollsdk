@@ -1,32 +1,20 @@
 title A Tree Language for project dependency management.
 
-paragraph
- Helps with building and serving Javascript and TypeScript projects.
+* Helps with building and serving Javascript and TypeScript projects.
 
-section Release Notes
+# Release Notes
 
-version 2.0.0 2019-07-31
- 
- Breaking: getProjectProgram is now
- makeProjectProgramFromArrayOfScripts
- 
- Breaking: getImports is now
- getTypeScriptAndJavaScriptImportsFromSourceCode
- 
- Breaking: getOrderedDependenciesArray is now
- getScriptPathsInCorrectDependencyOrder
+## version 2.0.0 2019-07-31
+- Breaking: getProjectProgram is now makeProjectProgramFromArrayOfScripts
+- Breaking: getImports is now getTypeScriptAndJavaScriptImportsFromSourceCode
+- Breaking: getOrderedDependenciesArray is now getScriptPathsInCorrectDependencyOrder
 
-version 1.9.0 2019-03-14
- 
- Fix: add support for files with spaces in their names or
- paths
+## version 1.9.0 2019-03-14
+- Fix: add support for files with spaces in their names or paths
 
-version 1.8.0 2019-03-11
+## version 1.8.0 2019-03-11
+- New: moved into root TreeNotation project
 
- New: moved into root TreeNotation project
-
-version 1.7.0 2019-03-03
-
- New: ported BrowserScript class
-
- New: "import" support
+## version 1.7.0 2019-03-03
+- New: ported BrowserScript class
+- New: "import" support

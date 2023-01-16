@@ -1,18 +1,11 @@
 title Dumbdown - The dumb alternative to markdown
 
-paragraph
- The dialect of Dumbdown included in the JTree
- project is used as a demonstration and to autogenerate
- readmes from Grammars.
+* The dialect of Dumbdown included in the JTree project is used as a demonstration and to autogenerate readmes from Grammars.
 
-paragraph
- Dumbdown spawned an official project here:
-
-links
+* Dumbdown spawned an official project: Scroll
  https://github.com/treenotation/scroll Scroll
 
-question Can you show me some example code?
-
+? Can you show me some example code?
 code
  title This is Dumbdown. The keyword for title is title.
  title2 Dumbdown compiles to html.
@@ -32,12 +25,12 @@ code
   item If you want to make it better, please do!
 
 
-question How can I try the original prototype?
+? How can I try the original prototype?
 
-link https://jtree.treenotation.org/designer/#standard%20dumbdown Here
+* Here
+ https://jtree.treenotation.org/designer/#standard%20dumbdown
 
-question How do I develop this lang?
+? How do I develop this lang?
 
-paragraph
- Building: [todo]
- Running tests: [todo]
+* Building: [todo]
+* Running tests: [todo]

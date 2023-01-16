@@ -1,20 +1,18 @@
 title Designer
 
-paragraph
- This is the folder containing the source code for the Tree
- Language Designer web app.
+* This is the folder containing the source code for the Tree Language Designer web app.
 
-links
- https://jtree.treenotation.org/designer/ Try it Now
+* Try it Now
+ https://jtree.treenotation.org/designer/
 
-section For Designer Developers
+# For Designer Developers
 
-question How do I run the tests?
+? How do I run the tests?
 
 code
  jtree/designer/DesignerApp.test.ts
 
-question How do I run the Designer locally?
+? How do I run the Designer locally?
 
 code
  jtree kitchen

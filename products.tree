@@ -4,8 +4,6 @@ nodeProduct
  insertLastLine module.exports = { AbstractTreeComponent, WillowBrowser, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
 nodeProduct
  outputFileName jtable.node.js
- insertFirstLine const { jtree } = require("../index.js")
- removeAll const { jtree } = require("../index.js")
  insertLastLine module.exports = {Table, TableParser, Column, Row, DummyDataSets, PrimitiveTypes }
  combineTypeScriptFiles products/treeNotationTypes.ts products/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
 nodeProduct
@@ -63,10 +61,10 @@ browserProduct
  removeAll window.treeNotationTypes = treeNotationTypes
  combineTypeScriptFiles products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
 browserProduct
- outputFileName jtree.browser.js
+ outputFileName combined.browser.js
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
  removeAll window.treeNotationTypes = treeNotationTypes
- combineTypeScriptFiles products/treeNotationTypes.ts core/Utils.ts core/TestRacer.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/TreeNotationCodeMirrorMode.ts core/jtree.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts core/Utils.ts core/TestRacer.ts core/AbstractNode.browser.ts core/TreeNode.ts core/GrammarLanguage.ts core/TreeNotationCodeMirrorMode.ts
 browserProduct
  outputFileName core.test.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes

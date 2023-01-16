@@ -100,7 +100,7 @@ memoryNode
  string eventType memory
  javascript
   getNotes() {
-   return jtree.Utils.removeNonAscii(this.getLine()).trim()
+   return Utils.removeNonAscii(this.getLine()).trim()
   }
 dayNode
  crux 🌄
@@ -108,7 +108,7 @@ dayNode
  cells symbolCell monthIntCell dayIntCell yearIntCell
  javascript
   getDay() {
-   return jtree.Utils.removeNonAscii(this.getLine())
+   return Utils.removeNonAscii(this.getLine())
     .trim()
     .replace(/ /g, "/")
   }

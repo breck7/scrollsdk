@@ -1,7 +1,6 @@
-//onsave jtree build produce SweeperCraft.browser.js
-
 const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
-const { jtree } = require("../../index.js")
+const { Utils } = require("../../products/Utils.js")
+const { TreeNode } = require("../../products/TreeNode.js")
 
 declare type int = number
 declare type Row = int[]
@@ -402,7 +401,7 @@ class SweeperCraftGame {
     const board = SweeperCraftGame.getZeroedBoard(rows, cols)
 
     while (mines) {
-      let num = jtree.Utils.randomUniformInt(0, numberOfSquares)
+      let num = Utils.randomUniformInt(0, numberOfSquares)
       let row = Math.floor(num / cols)
       let col = num % cols
       if (!board[row][col]) {
@@ -462,7 +461,7 @@ const linkToObject = (link: string): Object => {
 
 class SweeperCraftApp extends AbstractTreeComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       headerComponent,
       boardComponent,
       controlsComponent,
@@ -829,7 +828,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
 
 class boardComponent extends AbstractSweeperCraftComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       rowComponent: rowComponent
     })
   }
@@ -853,7 +852,7 @@ class boardComponent extends AbstractSweeperCraftComponent {
 
 class rowComponent extends AbstractTreeComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       squareComponent: squareComponent
     })
   }

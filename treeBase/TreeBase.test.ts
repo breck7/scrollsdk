@@ -3,7 +3,7 @@
 import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
 
 const path = require("path")
-const { jtree } = require("../index.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
 const { Disk } = require("../products/Disk.node.js")
 
 const folderPath = path.join(__dirname, "planets")
@@ -113,5 +113,5 @@ testTree.fileSystemEvents = async (equal: any) => {
   folder.stopListeningForFileChanges()
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 export { testTree }

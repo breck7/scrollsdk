@@ -1,8 +1,3 @@
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
-
-const { jtree } = require("../index.js")
-
 import { jTableTypes } from "../products/jTableTypes"
 
 enum TableParserIds {
@@ -136,7 +131,7 @@ class JsonDataTableWithHeaderParser extends AbstractJsonArrayParser {
   }
 
   _parseTableInputsFromString(str: string) {
-    return { rows: jtree.Utils.javascriptTableWithHeaderRowToObjects(JSON.parse(str)) }
+    return { rows: Utils.javascriptTableWithHeaderRowToObjects(JSON.parse(str)) }
   }
 
   getParserId() {
@@ -279,7 +274,7 @@ john,12,50`
   }
 
   _parseTrees(str: string) {
-    return jtree.TreeNode.fromCsv(str)
+    return TreeNode.fromCsv(str)
   }
 
   getProbForRowSpecimen(specimen: any) {
@@ -300,7 +295,7 @@ john\t12\t50`
   }
 
   _parseTrees(str: string) {
-    return jtree.TreeNode.fromTsv(str)
+    return TreeNode.fromTsv(str)
   }
 
   getProbForRowSpecimen(specimen: any) {
@@ -325,7 +320,7 @@ mike|33`
   }
 
   _parseTrees(str: string) {
-    return jtree.TreeNode.fromDelimited(str, "|", '"')
+    return TreeNode.fromDelimited(str, "|", '"')
   }
 
   getProbForRowSpecimen(specimen: any) {
@@ -347,7 +342,7 @@ john 12 50`
   }
 
   _parseTrees(str: string) {
-    return jtree.TreeNode.fromSsv(str)
+    return TreeNode.fromSsv(str)
   }
 
   getProbForRowSpecimen(specimen: any) {
@@ -373,8 +368,8 @@ class XmlParser extends AbstractJTreeTableParser {
 
   _parseTrees(str: string) {
     // todo: fix this! Create an XML Tree Language
-    if (this.isNodeJs()) return new jtree.TreeNode(str)
-    return jtree.TreeNode.fromXml(str)
+    if (this.isNodeJs()) return new TreeNode(str)
+    return TreeNode.fromXml(str)
   }
 }
 
@@ -394,8 +389,8 @@ class HtmlParser extends AbstractJTreeTableParser {
   }
 
   _parseTrees(str: string) {
-    if (this.isNodeJs()) return new jtree.TreeNode(str)
-    return jtree.TreeNode.fromXml(str)
+    if (this.isNodeJs()) return new TreeNode(str)
+    return TreeNode.fromXml(str)
   }
 }
 
@@ -409,7 +404,7 @@ class TreeRowsParser extends AbstractJTreeTableParser {
 
   _parseTableInputsFromString(str: string) {
     // todo: get columns on first pass.
-    const rows = new jtree.TreeNode(str)
+    const rows = new TreeNode(str)
     return {
       rows: rows.map((node: any) => node.toObject()),
       columnDefinitions: rows.getColumnNames().map((name: string) => {
@@ -440,8 +435,8 @@ class TreeParser extends AbstractJTreeTableParser {
 
   _parseTrees(str: any) {
     // todo: add tests. Detected value(s) or undefined subtrees, treating as object.
-    const newTree = new jtree.TreeNode()
-    newTree.pushContentAndChildren(undefined, str instanceof jtree.TreeNode ? str : new jtree.TreeNode(str))
+    const newTree = new TreeNode()
+    newTree.pushContentAndChildren(undefined, str instanceof TreeNode ? str : new TreeNode(str))
     return newTree
   }
 
@@ -658,7 +653,7 @@ class TableParser {
   // todo: remove this?
   parseTableInputsFromObject(data: any, parserId: TableParserIds): jTableTypes.tableInputs {
     if (data instanceof Array) {
-      if (JsonDataTableWithHeaderParser.isJavaScriptDataTable(data)) return { rows: jtree.Utils.javascriptTableWithHeaderRowToObjects(data) }
+      if (JsonDataTableWithHeaderParser.isJavaScriptDataTable(data)) return { rows: Utils.javascriptTableWithHeaderRowToObjects(data) }
 
       // test to see if it's primitives
       if (typeof data[0] === "object") return { rows: data }

@@ -58,7 +58,7 @@ code
 # jtree base library for the browser:
 
 code
- <script src="https://jtree.treenotation.org/products/jtree.browser.js" />
+ <script src="https://jtree.treenotation.org/products/combined.browser.js" />
 
 ## TreeBase
 

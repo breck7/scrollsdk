@@ -2,7 +2,6 @@
 
 const stamp = require("../../../products/stamp.nodejs.js")
 const fs = require("fs")
-const { jtree } = require("../../../index.js")
 
 const testTree = {}
 
@@ -50,5 +49,5 @@ testTree.stampTargetDifferentDir = equal => {
   equal(fs.existsSync(targetDir), false)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 module.exports = { testTree }

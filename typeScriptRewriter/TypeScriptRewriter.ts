@@ -1,4 +1,4 @@
-const { jtree, Utils } = require("../index.js")
+const { Utils } = require("../products/Utils.js")
 
 // This is a temporary class until we move off TypeScript
 class TypeScriptRewriter {

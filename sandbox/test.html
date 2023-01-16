@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <script type="text/javascript" src="/products/jtree.browser.js"></script>
+    <script type="text/javascript" src="/products/combined.browser.js"></script>
     <script type="text/javascript" src="/products/core.test.browser.js"></script>
     <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
   </head>
@@ -28,7 +28,7 @@
         const bodyTag = document.getElementsByTagName("body")[0]
         const fileTree = {}
         fileTree.core = testsToRun
-        const racer = new jtree.TestRacer(fileTree).setLogFunction(message => {
+        const racer = new TestRacer(fileTree).setLogFunction(message => {
           const result = document.createElement("div")
           result.innerHTML = message.replace(/ method (\w+)/, " method <a href='?runTestMethod=$1'>$1</a>")
           bodyTag.prepend(result)

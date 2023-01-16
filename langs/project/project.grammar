@@ -107,7 +107,7 @@ fileNode
      if (firstWord === "external") return ""
      if (firstWord === "absolute") return childFilePath
      const link = childFilePath
-     const folderPath = jtree.Utils.getPathWithoutFileName(this.getFilePath())
+     const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
      const resolvedPath = require("path").resolve(folderPath + "/" + link)
      return resolvedPath
     })

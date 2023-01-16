@@ -1,8 +1,9 @@
 #!/usr/bin/env ts-node
 
-const { SweeperCraftApp, SweeperCraftGame } = require("./SweeperCraft")
+const { TestRacer } = require("../../products/TestRacer.node.js")
+const { TreeNode } = require("../../products/TreeNode.js")
 
-const { jtree } = require("../../index.js")
+const { SweeperCraftApp, SweeperCraftGame } = require("./SweeperCraft")
 
 const testTree: any = {}
 
@@ -213,7 +214,7 @@ testTree.getZeroedBoard = (equal: any) => {
   ]
 
   testCases.forEach(test => {
-    equal(new jtree.TreeNode(SweeperCraftGame.getZeroedBoard(test.rows, test.cols)).toString(), new jtree.TreeNode(test.expected).toString(), "deep equal okay")
+    equal(new TreeNode(SweeperCraftGame.getZeroedBoard(test.rows, test.cols)).toString(), new TreeNode(test.expected).toString(), "deep equal okay")
   })
 }
 
@@ -240,7 +241,7 @@ testTree.genRandomBoard = (equal: any) => {
   // Assert
   equal(SweeperCraftGame.sum(board), 20, "Random board has expected number of mines")
   // the below will fail if run a bazillion times
-  const deepEqual = new jtree.TreeNode(board).toString() === new jtree.TreeNode(board2).toString()
+  const deepEqual = new TreeNode(board).toString() === new TreeNode(board2).toString()
   equal(deepEqual, false, "Random boards are different")
 }
 
@@ -326,6 +327,6 @@ testTree.getNeighbors = (equal: any) => {
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

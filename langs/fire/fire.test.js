@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 const fire = require("../../products/fire.nodejs.js")
-const { jtree } = require("../../index.js")
+const { TestRacer } = require("../../products/TestRacer.node.js")
 
 const testTree = {}
 
@@ -14,5 +14,5 @@ testTree.all = equal => {
   equal(program.compile(), `const ten = 2 + 3 + 5`)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 module.exports = { testTree }

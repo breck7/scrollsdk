@@ -1,5 +1,6 @@
 import header.scroll
 title Release Notes
+startColumns 4
 
 * Here's a list of the notable changes in JTree.
 

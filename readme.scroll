@@ -1,7 +1,7 @@
 import header.scroll
 permalink index.html
 title JTree: Tree Notation SDK for TypeScript & Javascript
-
+startColumns 4
 import ciBadges.scroll
 
 # Links
@@ -17,7 +17,7 @@ import ciBadges.scroll
 * Tree Notation FAQ
  https://faq.treenotation.org
 * TreeBase
- https://treebase.treenotation.org
+ link treeBase/index.html
 * TypeScript Library
  https://github.com/treenotation/jtree
 * Tree Notation Subreddit

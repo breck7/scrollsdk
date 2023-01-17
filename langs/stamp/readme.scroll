@@ -28,9 +28,8 @@ code
  new stamp(`file hello-world.txt`).execute()
 
 # How to use Stamp with other languages
-*
- A Stamp file is a simple declarative file. It should be straightforward to write a Stamp "library" (really, 2 functions should suffice), in other languages. If you do that, please send a PR with a link so we can direct people without nodejs to other implementations.
- 
+* A Stamp file is a simple declarative file. It should be straightforward to write a Stamp "library" (really, 2 functions should suffice), in other languages. If you do that, please send a PR with a link so we can direct people without nodejs to other implementations.
+
 # About
 * Stamp is an alternative to zip files for sharing a small collection of folders and text files.
 

@@ -187,8 +187,7 @@ startColumns 4
 - 🎉 add missing CSS Grid properties to Hakon
 
 # 51.0.0 2021-02-08
-- ⚠️ removed "prompt" node and executable stamps. Almost never used, and
-  make it a lot more confusing to write Stamp libraries in other langs.
+- ⚠️ removed "prompt" node and executable stamps. Almost never used, and make it a lot more confusing to write Stamp libraries in other langs.
 
 # 50.2.0 2021-02-07
 - 🎉 Stamp now creates file recursively
@@ -718,8 +717,7 @@ startColumns 4
 - ⚠️ no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
 - ⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 
-aftertext
- A regex for finding breaks in untyped code:
+* A regex for finding breaks in untyped code:
 
 regexCode
  \b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getGrammarProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
@@ -767,8 +765,7 @@ regexCode
 - ⚠️ in Swarm, createTestDummy is now getTestSubject
 - ⚠️ Swarm grammar changed.
 
-aftertext
- Use code below to update programs:
+* Use code below to update programs:
 
 code
  swarmProgram.updateNodeTypeIds(`#setup arrange
@@ -782,7 +779,7 @@ code
  =~ typeIs
  #test test
  +#test testOnly
--#test skipTest`)
+ -#test skipTest`)
 
 # 23.1.0 2019-05-21
 - 🎉 executeFiles method

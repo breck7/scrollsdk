@@ -13,7 +13,7 @@ title A checklist for creating a new Tree Language from Scratch
  https://sublimetext.com SublimeText4
 - ☑️ Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
 - ☑️ If you are using the Tree Language Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.grammar`
- jtree.treenotation.org/designer/
+ https://jtree.treenotation.org/designer/
 - ☑️ Create a root nodeType. This will be the root node for your language. It should like this:
 
 psuedoCode

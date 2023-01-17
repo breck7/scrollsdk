@@ -33,9 +33,9 @@ code
  dayNode
 
 ## Cell Types
- dateIntCell
- timeIntCell
- anyCell
+- dateIntCell
+- timeIntCell
+- anyCell
 
 * This readme was auto-generated using the JTree library
  https://github.com/treenotation/jtree JTree library

@@ -2,15 +2,16 @@
 
 // todo: make isomorphic
 
-const { jtree } = require("../index.js")
 import { treeNotationTypes } from "../products/treeNotationTypes"
-const { Utils, TreeNode } = jtree
+const { Utils } = require("../products/Utils.js")
+const { TreeNode } = require("../products/TreeNode.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
 
 const testTree: treeNotationTypes.testTree = {}
 
 testTree.version = equal => {
   // Arrange/Act/Assert
-  equal(!!jtree.getVersion(), true)
+  equal(!!TreeNode.getVersion(), true)
 }
 
 testTree.vector = equal => {
@@ -104,6 +105,6 @@ testTree.makeSemiRandomFn = equal => {
   equal(Utils.randomUniformInt(0, 100, 2), 97)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

@@ -4,9 +4,9 @@ const numeral = require("numeral")
 const https = require("https")
 const express = require("express")
 const bodyParser = require("body-parser")
-const { jtree } = require("../index.js")
 const { Disk } = require("../products/Disk.node.js")
-const { TreeNode, Utils } = jtree
+const { Utils } = require("../products/Utils.js")
+const { TreeNode } = require("../products/TreeNode.js")
 class TreeBaseServer {
   constructor(folder, websitePath = "", searchLogFolder = "") {
     this.folder = folder

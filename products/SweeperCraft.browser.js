@@ -292,7 +292,7 @@ class SweeperCraftGame {
     if (mines > numberOfSquares) throw new Error("Number of mines can't be more than the number of squares.")
     const board = SweeperCraftGame.getZeroedBoard(rows, cols)
     while (mines) {
-      let num = jtree.Utils.randomUniformInt(0, numberOfSquares)
+      let num = Utils.randomUniformInt(0, numberOfSquares)
       let row = Math.floor(num / cols)
       let col = num % cols
       if (!board[row][col]) {
@@ -342,7 +342,7 @@ const linkToObject = link => {
 }
 class SweeperCraftApp extends AbstractTreeComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       headerComponent,
       boardComponent,
       controlsComponent,
@@ -665,7 +665,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
 }
 class boardComponent extends AbstractSweeperCraftComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       rowComponent: rowComponent
     })
   }
@@ -685,7 +685,7 @@ class boardComponent extends AbstractSweeperCraftComponent {
 }
 class rowComponent extends AbstractTreeComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       squareComponent: squareComponent
     })
   }

@@ -4,7 +4,7 @@ const path = require("path")
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 class Disk {
-  static getTreeNode = () => require("../index.js").jtree.TreeNode // todo: cleanup
+  static getTreeNode = () => require("../products/TreeNode.js").TreeNode // todo: cleanup
   static rm = (path: treeNotationTypes.filepath) => fs.unlinkSync(path)
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
   static makeExecutable = (path: treeNotationTypes.filepath) => fs.chmodSync(path, 0o755)

@@ -4,7 +4,7 @@ import { Column } from "./Column"
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
-const { jtree } = require("../index.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
 
 const testTree: treeNotationTypes.testTree = {}
 
@@ -63,5 +63,5 @@ testTree.usd = equal => {
   equal(col.getMax(), 196.58)
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 export { testTree }

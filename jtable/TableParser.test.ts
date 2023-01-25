@@ -2,7 +2,7 @@
 
 import { TableParser } from "./TableParser"
 
-const { jtree } = require("../index.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
@@ -100,5 +100,5 @@ PID    COMMAND          %CPU TIME     #TH   #WQ #PORTS MEM    PURG   CMPRS  PGRP
   })
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 export { testTree }

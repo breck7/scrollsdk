@@ -3,7 +3,7 @@ const fs = require("fs")
 const path = require("path")
 class Disk {}
 _a = Disk
-Disk.getTreeNode = () => require("../index.js").jtree.TreeNode // todo: cleanup
+Disk.getTreeNode = () => require("../products/TreeNode.js").TreeNode // todo: cleanup
 Disk.rm = path => fs.unlinkSync(path)
 Disk.getCleanedString = str => str.replace(/[\,\t\n]/g, " ")
 Disk.makeExecutable = path => fs.chmodSync(path, 0o755)

@@ -2,7 +2,7 @@
 
 import { WillowBrowser } from "./TreeComponentFramework"
 
-const { jtree } = require("../index.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
 
 const testTree: any = {}
 
@@ -38,5 +38,5 @@ testTree.all = (equal: any) => {
   equal(bodyStumpNode.findStumpNodeByFirstWord("h6").getLine(), "h6 Hello world")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 export { testTree }

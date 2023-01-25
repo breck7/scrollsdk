@@ -1,13 +1,14 @@
 #!/usr/bin/env ts-node
 
 import { AbstractTreeComponent } from "./TreeComponentFramework"
-const { jtree } = require("../index.js")
+const { TreeNode } = require("../products/TreeNode.js")
+const { TestRacer } = require("../products/TestRacer.node.js")
 
 const testTree: any = {}
 
 class TestApp extends AbstractTreeComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       headerComponent: headerComponent
     })
   }
@@ -26,6 +27,6 @@ testTree.all = (equal: any) => {
   equal(app.willowBrowser.toPrettyDeepLink(`foo bar`, { filename: "bam.foo" }), "http://localhost:8000/index.html?filename=bam.foo&nodeBreakSymbol=%7E&edgeSymbol=_&data=foo_bar")
 }
 
-/*NODE_JS_ONLY*/ if (!module.parent) jtree.TestRacer.testSingleFile(__filename, testTree)
+/*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 
 export { testTree }

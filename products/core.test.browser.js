@@ -2859,7 +2859,7 @@ event lala2018
   const tree = new TreeNode(test)
   // Act
   const simple = tree.toMarkdownTable()
-  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) => (row ? value : jtree.Utils.ucfirst(value)))
+  const table = tree.toMarkdownTableAdvanced(["title", "date", "location", "website"], (value, row, col) => (row ? value : Utils.ucfirst(value)))
   // Assert
   equal(table, expected, "markdown ok")
   equal(simple, simpleExpected, "markdown simple ok")
@@ -3202,7 +3202,7 @@ testTree.printLines = equal => {
 }
 testTree.with = equal => {
   // Arrange
-  const dummy = new jtree.TreeNode(`0
+  const dummy = new TreeNode(`0
  color red
  age 100
 1
@@ -3217,7 +3217,7 @@ testTree.with = equal => {
 }
 testTree.extendible = equal => {
   // Arrange
-  const a = new jtree.ExtendibleTreeNode(`a
+  const a = new ExtendibleTreeNode(`a
  color red
 b
  extends a`)
@@ -3342,10 +3342,10 @@ testTree.asyncUndoRedo = async equal => {
 }
 testTree.trim = equal => {
   // Arrange/Act/Assert
-  const tree = new jtree.TreeNode("\n\n\n")
+  const tree = new TreeNode("\n\n\n")
   equal(tree.length, 4)
   equal(tree.trim().length, 0)
-  const tree2 = new jtree.TreeNode(testStrings.webpage)
+  const tree2 = new TreeNode(testStrings.webpage)
   equal(tree2.length, tree2.trim().length)
 }
 testTree.queryMethods = equal => {

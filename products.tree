@@ -72,6 +72,17 @@ browserProduct
  removeAll window.treeNotationTypes = treeNotationTypes
  combineTypeScriptFiles products/treeNotationTypes.ts coreTests/core.test.ts
 browserProduct
+ outputFileName Utils.browser.js
+ combineTypeScriptFiles core/Utils.ts
+browserProduct
+ outputFileName TreeNode.browser.js
+ removeAll window.treeNotationTypes = treeNotationTypes
+ combineTypeScriptFiles products/treeNotationTypes.ts core/AbstractNode.browser.ts core/TreeNode.ts
+browserProduct
+ outputFileName TestRacer.browser.js
+ removeAll window.treeNotationTypes = treeNotationTypes
+ combineTypeScriptFiles products/treeNotationTypes.ts core/TestRacer.ts
+browserProduct
  outputFileName jtable.browser.js
  removeAll window.jTableTypes = jTableTypes
  removeAll window.treeNotationTypes = treeNotationTypes

@@ -1,5 +1,7 @@
 //onsave jtree build produce TreeComponentFramework.browser.js
-const { jtree } = require("../index.js")
+const { TreeNode } = require("../products/TreeNode.js")
+const { Utils } = require("../products/Utils.js")
+const { GrammarBackedNode } = require("../products/GrammarLanguage.js")
 const stumpNode = require("../products/stump.nodejs.js")
 const hakonNode = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
@@ -345,7 +347,7 @@ class AbstractWillowBrowser extends stumpNode {
     return this._fullHtmlPageUrlIncludingProtocolAndFileName
   }
   getAppWebPageParentFolderWithoutTrailingSlash() {
-    return jtree.Utils.getPathWithoutFileName(this._fullHtmlPageUrlIncludingProtocolAndFileName)
+    return Utils.getPathWithoutFileName(this._fullHtmlPageUrlIncludingProtocolAndFileName)
   }
   _makeRelativeUrlAbsolute(url) {
     if (url.startsWith("http://") || url.startsWith("https://")) return url
@@ -905,7 +907,7 @@ class AbstractTheme {
   }
 }
 class DefaultTheme extends AbstractTheme {}
-class AbstractTreeComponent extends jtree.GrammarBackedNode {
+class AbstractTreeComponent extends GrammarBackedNode {
   async startWhenReady() {
     if (this.isNodeJs()) return this.start()
     document.addEventListener(
@@ -978,7 +980,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
   }
   getStumpNodeStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
-    const clone = new jtree.TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
+    const clone = new TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
     clone.getTopDownArray().forEach(node => {
       if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
     })
@@ -1095,7 +1097,7 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     })
   }
   getMessageBuffer() {
-    if (!this._messageBuffer) this._messageBuffer = new jtree.TreeNode()
+    if (!this._messageBuffer) this._messageBuffer = new TreeNode()
     return this._messageBuffer
   }
   // todo: move this to tree class? or other higher level class?
@@ -1109,11 +1111,11 @@ class AbstractTreeComponent extends jtree.GrammarBackedNode {
     // todo: cleanup!
     return this.addStumpCodeMessageToLog(`div
  class OhayoError
- bern${jtree.TreeNode.nest(errorMessage, 2)}`)
+ bern${TreeNode.nest(errorMessage, 2)}`)
   }
   logMessageText(message = "") {
     const pre = `pre
- bern${jtree.TreeNode.nest(message, 2)}`
+ bern${TreeNode.nest(message, 2)}`
     return this.addStumpCodeMessageToLog(pre)
   }
   unmount() {
@@ -1303,7 +1305,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
     // todo: only insert css once per class? have a set?
     this._cssStumpNode = this._getPageHeadStump().insertCssChildNode(`styleTag
  for ${this.constructor.name}
- bern${jtree.TreeNode.nest(css, 2)}`)
+ bern${TreeNode.nest(css, 2)}`)
   }
   _getPageHeadStump() {
     return this.getRootNode().willowBrowser.getHeadStumpNode()
@@ -1345,7 +1347,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
     }
     let str = `${this.getWord(0) || this.constructor.name} ${isUpdateOp ? "update" : "mount"} ${treeComponentUpdateReport.shouldUpdate} ${treeComponentUpdateReport.reason}`
     childResults.forEach(child => (str += "\n" + child.toString(1)))
-    return new jtree.TreeNode(str)
+    return new TreeNode(str)
   }
 }
 AbstractTreeComponent._mountedTreeComponents = 0

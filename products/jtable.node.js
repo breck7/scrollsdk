@@ -1,6 +1,5 @@
-const { jtree } = require("../index.js")
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
+const { Utils } = require("./Utils.js")
+const { TreeNode } = require("./TreeNode.js")
 // todo: create a Tree Language for number formatting
 const d3format = require("d3-format")
 const moment = require("moment")
@@ -616,7 +615,7 @@ class Column {
   constructor(colDef = {}, rawAnyVector) {
     this._colDefObject = colDef
     this._rawAnyVectorFromSource = rawAnyVector
-    this._sampleSet = jtree.Utils.sampleWithoutReplacement(rawAnyVector, 30, Date.now())
+    this._sampleSet = Utils.sampleWithoutReplacement(rawAnyVector, 30, Date.now())
   }
   static _getPrimitiveTypesCollection() {
     if (!this._colTypes)
@@ -667,7 +666,7 @@ class Column {
   _getFirstNonEmptyValueFromSampleSet() {
     if (this._sample === undefined) {
       const sampleSet = this._getSampleSet()
-      this._sample = sampleSet.length ? sampleSet.find(value => !jtree.Utils.isValueEmpty(value)) : ""
+      this._sample = sampleSet.length ? sampleSet.find(value => !Utils.isValueEmpty(value)) : ""
     }
     return this._sample
   }
@@ -1011,8 +1010,6 @@ const PrimitiveTypes = {
   HourMinute,
   CodeCol
 }
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
 class Row {
   constructor(sourceObject = {}, table) {
     this._puid = this._getUniqueId()
@@ -1077,7 +1074,7 @@ class Row {
   }
   getRowHtmlSafeValue(columnName) {
     const val = this.getRowOriginalValue(columnName)
-    return val === undefined ? "" : jtree.Utils.stripHtml(val.toString()).toString() // todo: cache this?
+    return val === undefined ? "" : Utils.stripHtml(val.toString()).toString() // todo: cache this?
   }
   getHoverTitle() {
     return encodeURIComponent(this.rowToString().replace(/\n/g, " "))
@@ -1090,8 +1087,6 @@ class Row {
   }
 }
 Row._uniqueId = 0
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
 var TableParserIds
 ;(function(TableParserIds) {
   TableParserIds["csv"] = "csv"
@@ -1185,7 +1180,7 @@ class JsonDataTableWithHeaderParser extends AbstractJsonArrayParser {
     return JSON.stringify([["country", "income", "health", "population"], ["Afghanistan", 1925, "57.63", 32526562], ["Albania", 10620, "76", 2896679]])
   }
   _parseTableInputsFromString(str) {
-    return { rows: jtree.Utils.javascriptTableWithHeaderRowToObjects(JSON.parse(str)) }
+    return { rows: Utils.javascriptTableWithHeaderRowToObjects(JSON.parse(str)) }
   }
   getParserId() {
     return TableParserIds.jsonDataTableWithHeader
@@ -1300,7 +1295,7 @@ class CsvParser extends AbstractJTreeTableParser {
 john,12,50`
   }
   _parseTrees(str) {
-    return jtree.TreeNode.fromCsv(str)
+    return TreeNode.fromCsv(str)
   }
   getProbForRowSpecimen(specimen) {
     if (!specimen.firstLineCommaCount) return 0
@@ -1317,7 +1312,7 @@ class TsvParser extends AbstractJTreeTableParser {
 john\t12\t50`
   }
   _parseTrees(str) {
-    return jtree.TreeNode.fromTsv(str)
+    return TreeNode.fromTsv(str)
   }
   getProbForRowSpecimen(specimen) {
     if (!specimen.firstLineTabCount) return 0
@@ -1337,7 +1332,7 @@ class PsvParser extends AbstractJTreeTableParser {
 mike|33`
   }
   _parseTrees(str) {
-    return jtree.TreeNode.fromDelimited(str, "|", '"')
+    return TreeNode.fromDelimited(str, "|", '"')
   }
   getProbForRowSpecimen(specimen) {
     // vertical bar separated file
@@ -1355,7 +1350,7 @@ john 12 50`
     return TableParserIds.ssv
   }
   _parseTrees(str) {
-    return jtree.TreeNode.fromSsv(str)
+    return TreeNode.fromSsv(str)
   }
   getProbForRowSpecimen(specimen) {
     if (!specimen.firstLineSpaceCount) return 0
@@ -1376,8 +1371,8 @@ class XmlParser extends AbstractJTreeTableParser {
   }
   _parseTrees(str) {
     // todo: fix this! Create an XML Tree Language
-    if (this.isNodeJs()) return new jtree.TreeNode(str)
-    return jtree.TreeNode.fromXml(str)
+    if (this.isNodeJs()) return new TreeNode(str)
+    return TreeNode.fromXml(str)
   }
 }
 class HtmlParser extends AbstractJTreeTableParser {
@@ -1393,8 +1388,8 @@ class HtmlParser extends AbstractJTreeTableParser {
     return TableParserIds.html
   }
   _parseTrees(str) {
-    if (this.isNodeJs()) return new jtree.TreeNode(str)
-    return jtree.TreeNode.fromXml(str)
+    if (this.isNodeJs()) return new TreeNode(str)
+    return TreeNode.fromXml(str)
   }
 }
 class TreeRowsParser extends AbstractJTreeTableParser {
@@ -1406,7 +1401,7 @@ class TreeRowsParser extends AbstractJTreeTableParser {
   }
   _parseTableInputsFromString(str) {
     // todo: get columns on first pass.
-    const rows = new jtree.TreeNode(str)
+    const rows = new TreeNode(str)
     return {
       rows: rows.map(node => node.toObject()),
       columnDefinitions: rows.getColumnNames().map(name => {
@@ -1433,8 +1428,8 @@ class TreeParser extends AbstractJTreeTableParser {
   }
   _parseTrees(str) {
     // todo: add tests. Detected value(s) or undefined subtrees, treating as object.
-    const newTree = new jtree.TreeNode()
-    newTree.pushContentAndChildren(undefined, str instanceof jtree.TreeNode ? str : new jtree.TreeNode(str))
+    const newTree = new TreeNode()
+    newTree.pushContentAndChildren(undefined, str instanceof TreeNode ? str : new TreeNode(str))
     return newTree
   }
   getProbForRowSpecimen(specimen) {
@@ -1615,7 +1610,7 @@ class TableParser {
   // todo: remove this?
   parseTableInputsFromObject(data, parserId) {
     if (data instanceof Array) {
-      if (JsonDataTableWithHeaderParser.isJavaScriptDataTable(data)) return { rows: jtree.Utils.javascriptTableWithHeaderRowToObjects(data) }
+      if (JsonDataTableWithHeaderParser.isJavaScriptDataTable(data)) return { rows: Utils.javascriptTableWithHeaderRowToObjects(data) }
       // test to see if it's primitives
       if (typeof data[0] === "object") return { rows: data }
       return { rows: data.map(row => (typeof row === "object" ? row : { value: row })) }
@@ -2121,8 +2116,6 @@ And that has made all the difference.`
     [69, 80]
   ]
 }
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
 class PivotTable {
   constructor(rows, inputColumns, outputColumns) {
     this._columns = {}
@@ -2203,7 +2196,7 @@ var ComparisonOperators
 class Table {
   constructor(rowsArray = [], columnsArrayOrMap = [], rowClass = Row, detectAndAddColumns = true, samplingSeed = Date.now()) {
     this._columnsMap = {}
-    this._ctime = new jtree.TreeNode()._getProcessTimeInMilliseconds()
+    this._ctime = new TreeNode()._getProcessTimeInMilliseconds()
     this._tableId = this._getUniqueId()
     this._samplingSeed = samplingSeed
     // if this is ALREADY CARDS, should we be a view?
@@ -2246,7 +2239,7 @@ class Table {
     // for now just 1 prop ranking.
     const rankColumn = tests.find(test => !test.includes("=") && !test.includes("!"))
     let potentialCols = colsThatPassed
-    if (rankColumn) potentialCols = potentialCols.sort(jtree.Utils.makeSortByFn(col => col[rankColumn]())).reverse()
+    if (rankColumn) potentialCols = potentialCols.sort(Utils.makeSortByFn(col => col[rankColumn]())).reverse()
     return potentialCols
   }
   getRows() {
@@ -2335,7 +2328,7 @@ class Table {
   }
   fillMissing(columnName, value) {
     const filled = this.cloneNativeJavascriptTypedRows().map(row => {
-      if (jtree.Utils.isValueEmpty(row[columnName])) row[columnName] = value
+      if (Utils.isValueEmpty(row[columnName])) row[columnName] = value
       return row
     })
     return new Table(filled, this.getColumnsArrayOfObjects())
@@ -2357,7 +2350,7 @@ class Table {
   }
   _getSampleSet() {
     const SAMPLE_SET_SIZE = 30 // todo: fix.
-    if (!this._sampleSet) this._sampleSet = jtree.Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, this._samplingSeed)
+    if (!this._sampleSet) this._sampleSet = Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, this._samplingSeed)
     return this._sampleSet
   }
   _getDetectedColumnNames() {
@@ -2424,7 +2417,7 @@ ${cols}
     return []
   }
   toTree() {
-    return new jtree.TreeNode(this.getRows().map(row => row.getRowSourceObject()))
+    return new TreeNode(this.getRows().map(row => row.getRowSourceObject()))
   }
   filterRowsByFn(fn) {
     return new Table(this.cloneNativeJavascriptTypedRows().filter((inputRow, index) => fn(inputRow, index)))
@@ -2512,7 +2505,7 @@ ${cols}
     return row
   }
   synthesizeTable(rowcount, seed) {
-    const randomNumberFn = jtree.Utils.makeSemiRandomFn(seed)
+    const randomNumberFn = Utils.makeSemiRandomFn(seed)
     const rows = []
     while (rowcount) {
       rows.push(this._synthesizeRow(randomNumberFn))
@@ -2526,7 +2519,7 @@ ${cols}
     // todo: add seed!
     // cellType randomSeed int
     //  description An integer to seed the random number generator with.
-    return new Table(jtree.Utils.shuffleInPlace(this.getRows().slice(0)), this.getColumnsMap())
+    return new Table(Utils.shuffleInPlace(this.getRows().slice(0)), this.getColumnsMap())
   }
   reverseRows() {
     const rows = this.getRows().slice(0)
@@ -2544,7 +2537,7 @@ ${cols}
   }
   sortBy(colNames) {
     const colAccessorFns = colNames.map(colName => row => row.rowToObjectWithOnlyNativeJavascriptTypes()[colName])
-    const rows = this.getRows().sort(jtree.Utils.makeSortByFn(colAccessorFns))
+    const rows = this.getRows().sort(Utils.makeSortByFn(colAccessorFns))
     return new Table(rows, this.getColumnsMap())
   }
   toDelimited(delimiter) {

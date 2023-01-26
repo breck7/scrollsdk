@@ -15,8 +15,8 @@ lightbulbState off
 text
 thisShouldErrorError1
 to fillThis`
-  const code = new jtree.TreeNode(programCode)
-  let long = jtree.TreeNode.toString().repeat(20)
+  const code = new TreeNode(programCode)
+  let long = TreeNode.toString().repeat(20)
   code.getNode("text").setChildren(long)
 
   long = "+ 34 432 423 43\nto foo\n to bar\n  + 12 12\n".repeat(2000)
@@ -26,7 +26,7 @@ to fillThis`
 
 const main = (grammarCode, code) => {
   logFn("Building language...")
-  const programConstructor = new jtree.HandGrammarProgram(grammarCode).compileAndReturnRootConstructor()
+  const programConstructor = new HandGrammarProgram(grammarCode).compileAndReturnRootConstructor()
 
   logFn("Loading program...")
 
@@ -71,7 +71,7 @@ const parseStringTest = () => {
 }
 
 const toStringTest = () => {
-  const data = new TreeNode(jtree.Utils.makeRandomTree(10000))
+  const data = new TreeNode(Utils.makeRandomTree(10000))
   const startTime = Date.now()
 
   const res = data.toString()

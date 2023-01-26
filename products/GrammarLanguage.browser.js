@@ -2300,9 +2300,11 @@ ${rootName}`
     } else {
       exportScript = `window.${rootName} = ${rootName}`
     }
+    let nodeJsImports = ``
+    if (forNodeJs) nodeJsImports = `const {jtree} = require("${normalizedJtreePath.replace(/\\/g, "\\\\")}")`
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
-${forNodeJs ? `const {jtree} = require("${normalizedJtreePath.replace(/\\/g, "\\\\")}")` : ""}
+${nodeJsImports}
 ${rootNodeJsHeader ? rootNodeJsHeader : ""}
 ${nodeTypeClasses}
 

@@ -1,4 +1,3 @@
-tooling onsave jtree build produceLang grammar
 todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?

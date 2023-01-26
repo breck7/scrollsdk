@@ -1,10 +1,11 @@
 #! /usr/bin/env node
 {
   const { jtree } = require("../index.js")
+  const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode } = jtree
 
-  class stampNode extends jtree.GrammarBackedNode {
+  class stampNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "#!": hashbangNode, file: fileNode, folder: folderNode }),
         undefined
@@ -38,7 +39,7 @@
     static _dirToStampFn(absPathWithoutEndingSlash, output) {
       const fs = require("fs")
       // todo: add chmod, file metadata
-      if (absPathWithoutEndingSlash.startsWith(".")) absPathWithoutEndingSlash = jtree.Utils.resolvePath(absPathWithoutEndingSlash, process.cwd() + "/")
+      if (absPathWithoutEndingSlash.startsWith(".")) absPathWithoutEndingSlash = Utils.resolvePath(absPathWithoutEndingSlash, process.cwd() + "/")
       const stat = fs.statSync(absPathWithoutEndingSlash)
       if (!stat.isDirectory()) throw new Error(`${absPath} is a file not a directory.`)
       const fns = {
@@ -54,7 +55,7 @@
           if (isDir) return `folder ` + reducedPath
           const content = fs.readFileSync(file, "utf8")
           return `file ${reducedPath}
- data${jtree.TreeNode.nest(content, 2)}`
+ data${TreeNode.nest(content, 2)}`
         }
       }
       const fn = fns[output]
@@ -68,8 +69,7 @@
       const pathStartIndex = rootFolderPath.length + 1
       return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang stamp
-todo File permissions
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo File permissions
 anyCell
 extraCell
  highlightScope invalid
@@ -120,7 +120,7 @@ stampNode
   static _dirToStampFn(absPathWithoutEndingSlash, output) {
    const fs = require("fs")
    // todo: add chmod, file metadata
-   if (absPathWithoutEndingSlash.startsWith(".")) absPathWithoutEndingSlash = jtree.Utils.resolvePath(absPathWithoutEndingSlash, process.cwd() + "/")
+   if (absPathWithoutEndingSlash.startsWith(".")) absPathWithoutEndingSlash = Utils.resolvePath(absPathWithoutEndingSlash, process.cwd() + "/")
    const stat = fs.statSync(absPathWithoutEndingSlash)
    if (!stat.isDirectory()) throw new Error(\`\${absPath} is a file not a directory.\`)
    const fns = {
@@ -136,7 +136,7 @@ stampNode
      if (isDir) return \`folder \` + reducedPath
      const content = fs.readFileSync(file, "utf8")
      return \`file \${reducedPath}
-   data\${jtree.TreeNode.nest(content, 2)}\`
+   data\${TreeNode.nest(content, 2)}\`
     }
    }
    const fn = fns[output]
@@ -223,7 +223,7 @@ folderNode
     }
   }
 
-  class hashbangNode extends jtree.GrammarBackedNode {
+  class hashbangNode extends GrammarBackedNode {
     get commentCell() {
       return this.getWord(0)
     }
@@ -232,9 +232,9 @@ folderNode
     }
   }
 
-  class catchAllAnyLineNode extends jtree.GrammarBackedNode {
+  class catchAllAnyLineNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllAnyLineNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllAnyLineNode, undefined, undefined)
     }
     get anyCell() {
       return this.getWord(0)
@@ -244,30 +244,30 @@ folderNode
     }
   }
 
-  class dataNode extends jtree.GrammarBackedNode {
+  class dataNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllAnyLineNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllAnyLineNode, undefined, undefined)
     }
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class executableNode extends jtree.GrammarBackedNode {
+  class executableNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class fileNode extends jtree.GrammarBackedNode {
+  class fileNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { data: dataNode, executable: executableNode }),
         undefined
@@ -299,7 +299,7 @@ folderNode
     }
   }
 
-  class folderNode extends jtree.GrammarBackedNode {
+  class folderNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -322,5 +322,5 @@ folderNode
   module.exports = stampNode
   stampNode
 
-  if (!module.parent) new stampNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new stampNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

@@ -1,11 +1,7 @@
 {
-  class projectNode extends jtree.GrammarBackedNode {
+  class projectNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { file: fileNode }),
-        undefined
-      )
+      return new TreeNode.Parser(errorNode, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { file: fileNode }), undefined)
     }
     getScriptPathsInCorrectDependencyOrder() {
       const cloned = this.clone()
@@ -63,8 +59,8 @@ ${missing.join("\n")}
     }
     static makeProjectProgramFromArrayOfScripts(arrayOfScriptPaths) {
       const fs = require("fs")
-      const files = new jtree.TreeNode(arrayOfScriptPaths.join("\n"))
-      const requiredFileList = new jtree.TreeNode()
+      const files = new TreeNode(arrayOfScriptPaths.join("\n"))
+      const requiredFileList = new TreeNode()
       files.forEach(child => {
         const line = child.getLine()
         const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
@@ -72,8 +68,7 @@ ${missing.join("\n")}
       })
       return requiredFileList.toString()
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang project
-anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
 filepathCell
  highlightScope string
 termCell
@@ -141,8 +136,8 @@ projectNode
   }
   static makeProjectProgramFromArrayOfScripts(arrayOfScriptPaths) {
    const fs = require("fs")
-   const files = new jtree.TreeNode(arrayOfScriptPaths.join("\\n"))
-   const requiredFileList = new jtree.TreeNode()
+   const files = new TreeNode(arrayOfScriptPaths.join("\\n"))
+   const requiredFileList = new TreeNode()
    files.forEach(child => {
     const line = child.getLine()
     const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
@@ -181,7 +176,7 @@ fileNode
      if (firstWord === "external") return ""
      if (firstWord === "absolute") return childFilePath
      const link = childFilePath
-     const folderPath = jtree.Utils.getPathWithoutFileName(this.getFilePath())
+     const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
      const resolvedPath = require("path").resolve(folderPath + "/" + link)
      return resolvedPath
     })
@@ -208,7 +203,7 @@ fileNode
     }
   }
 
-  class abstractTermNode extends jtree.GrammarBackedNode {
+  class abstractTermNode extends GrammarBackedNode {
     get termCell() {
       return this.getWord(0)
     }
@@ -223,15 +218,15 @@ fileNode
 
   class relativeNode extends abstractTermNode {}
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class fileNode extends jtree.GrammarBackedNode {
+  class fileNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           absolute: absoluteNode,
@@ -258,7 +253,7 @@ fileNode
           if (firstWord === "external") return ""
           if (firstWord === "absolute") return childFilePath
           const link = childFilePath
-          const folderPath = jtree.Utils.getPathWithoutFileName(this.getFilePath())
+          const folderPath = Utils.getPathWithoutFileName(this.getFilePath())
           const resolvedPath = require("path").resolve(folderPath + "/" + link)
           return resolvedPath
         })

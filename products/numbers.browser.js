@@ -1,7 +1,7 @@
 {
-  class numbersNode extends jtree.GrammarBackedNode {
+  class numbersNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           "%": modNode,
@@ -18,8 +18,7 @@
     execute() {
       return this.map(child => child.execute())
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang numbers
-floatCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`floatCell
 commentCell
  highlightScope comment
 keywordCell
@@ -113,9 +112,9 @@ errorNode
     }
   }
 
-  class abstractArithmeticReducerNode extends jtree.GrammarBackedNode {
+  class abstractArithmeticReducerNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           "%": modNode,
@@ -169,9 +168,9 @@ errorNode
     }
   }
 
-  class commentNode extends jtree.GrammarBackedNode {
+  class commentNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(commentContentNode, undefined, undefined)
+      return new TreeNode.Parser(commentContentNode, undefined, undefined)
     }
     get commentKeywordCell() {
       return this.getWord(0)
@@ -181,16 +180,16 @@ errorNode
     }
   }
 
-  class commentContentNode extends jtree.GrammarBackedNode {
+  class commentContentNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(commentContentNode, undefined, undefined)
+      return new TreeNode.Parser(commentContentNode, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class hashBangNode extends jtree.GrammarBackedNode {
+  class hashBangNode extends GrammarBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -199,7 +198,7 @@ errorNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }

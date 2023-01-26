@@ -1,4 +1,3 @@
-tooling onsave jtree build produceLang dumbdown
 anyCell
 blankCell
 dashCell
@@ -97,7 +96,7 @@ titleNode
  javascript
   compile(spaces) {
    const title = this.getContent()
-   const permalink = jtree.Utils.stringToPermalink(this.getContent())
+   const permalink = Utils.stringToPermalink(this.getContent())
    return `<h1 id="${permalink}"><a href="#${permalink}">${title}</a></h1>`
   }
 title2Node

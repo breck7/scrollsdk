@@ -1,10 +1,11 @@
 #! /usr/bin/env node
 {
   const { jtree } = require("../index.js")
+  const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode } = jtree
 
-  class stumpNode extends jtree.GrammarBackedNode {
+  class stumpNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           blockquote: htmlTagNode,
@@ -127,8 +128,7 @@
     _getHtmlJoinByCharacter() {
       return ""
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang stump
-anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
 keywordCell
 emptyCell
 extraCell
@@ -278,7 +278,7 @@ htmlTagNode
    return this.insertChildNode(text, index)
   }
   insertChildNode(text, index) {
-   const singleNode = new jtree.TreeNode(text).getChildren()[0]
+   const singleNode = new TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
    const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
    this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
@@ -412,7 +412,7 @@ bernNode
     }
   }
 
-  class blankLineNode extends jtree.GrammarBackedNode {
+  class blankLineNode extends GrammarBackedNode {
     get emptyCell() {
       return this.getWord(0)
     }
@@ -424,9 +424,9 @@ bernNode
     }
   }
 
-  class htmlTagNode extends jtree.GrammarBackedNode {
+  class htmlTagNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           blockquote: htmlTagNode,
@@ -818,7 +818,7 @@ bernNode
       return this.insertChildNode(text, index)
     }
     insertChildNode(text, index) {
-      const singleNode = new jtree.TreeNode(text).getChildren()[0]
+      const singleNode = new TreeNode(text).getChildren()[0]
       const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
       const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
       this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
@@ -888,7 +888,7 @@ bernNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
@@ -903,9 +903,9 @@ bernNode
     }
   }
 
-  class htmlAttributeNode extends jtree.GrammarBackedNode {
+  class htmlAttributeNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
+      return new TreeNode.Parser(errorNode, undefined, undefined)
     }
     get htmlAttributeNameCell() {
       return this.getWord(0)
@@ -936,9 +936,9 @@ bernNode
     }
   }
 
-  class lineOfHtmlContentNode extends jtree.GrammarBackedNode {
+  class lineOfHtmlContentNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
+      return new TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
     }
     get anyHtmlContentCell() {
       return this.getWordsFrom(0)
@@ -951,9 +951,9 @@ bernNode
     }
   }
 
-  class bernNode extends jtree.GrammarBackedNode {
+  class bernNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
+      return new TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
     }
     get bernKeywordCell() {
       return this.getWord(0)
@@ -972,5 +972,5 @@ bernNode
   module.exports = stumpNode
   stumpNode
 
-  if (!module.parent) new stumpNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new stumpNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

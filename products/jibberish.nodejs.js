@@ -1,10 +1,11 @@
 #! /usr/bin/env node
 {
   const { jtree } = require("../index.js")
+  const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode } = jtree
 
-  class jibberishNode extends jtree.GrammarBackedNode {
+  class jibberishNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           extendsAbstract: extendsAbstractNode,
@@ -33,7 +34,7 @@
     execute() {
       return 42
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
 columnNameEnumCell
 columnNameCell
 errorCell
@@ -207,7 +208,7 @@ scoresNode
     }
   }
 
-  class abstractBaseClassNode extends jtree.GrammarBackedNode {}
+  class abstractBaseClassNode extends GrammarBackedNode {}
 
   class extendsAbstractNode extends abstractBaseClassNode {
     get topLevelPropertyCell() {
@@ -218,7 +219,7 @@ scoresNode
     }
   }
 
-  class abstractTopLevelNode extends jtree.GrammarBackedNode {
+  class abstractTopLevelNode extends GrammarBackedNode {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -241,7 +242,7 @@ scoresNode
 
   class abstractHtmlNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { content: contentNode }),
         undefined
@@ -264,7 +265,7 @@ scoresNode
 
   class blockNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           hue: hueNode,
@@ -292,7 +293,7 @@ scoresNode
 
   class scoreBlockNode extends blockNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { scores: scoresNode }),
         undefined
@@ -370,7 +371,7 @@ world`
 
   class someCodeNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(lineOfCodeNode, undefined, undefined)
+      return new TreeNode.Parser(lineOfCodeNode, undefined, undefined)
     }
   }
 
@@ -383,16 +384,16 @@ world`
     }
   }
 
-  class contentNode extends jtree.GrammarBackedNode {
+  class contentNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
+      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
     }
     getErrors() {
       return []
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
@@ -404,22 +405,22 @@ world`
     }
   }
 
-  class lineOfCodeNode extends jtree.GrammarBackedNode {
+  class lineOfCodeNode extends GrammarBackedNode {
     get wordCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class textNode extends jtree.GrammarBackedNode {
+  class textNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
+      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
     }
     getErrors() {
       return []
     }
   }
 
-  class scoresNode extends jtree.GrammarBackedNode {
+  class scoresNode extends GrammarBackedNode {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -431,5 +432,5 @@ world`
   module.exports = jibberishNode
   jibberishNode
 
-  if (!module.parent) new jibberishNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new jibberishNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

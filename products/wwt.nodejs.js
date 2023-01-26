@@ -1,10 +1,11 @@
 #! /usr/bin/env node
 {
   const { jtree } = require("../index.js")
+  const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode } = jtree
 
-  class wwtNode extends jtree.GrammarBackedNode {
+  class wwtNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(errorNode, undefined, [
+      return new TreeNode.Parser(errorNode, undefined, [
         { regex: /EnumType$/, nodeConstructor: enumTypeDeclarationNode },
         { regex: /UnionType$/, nodeConstructor: unionTypeDeclarationNode },
         { regex: /MapType$/, nodeConstructor: mapTypeDeclarationNode },
@@ -15,7 +16,7 @@
     compile() {
       return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + "\n}"
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`keywordCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
 anyCell
 fieldIdCell
  examples titleField
@@ -159,9 +160,9 @@ arrayNode
     }
   }
 
-  class commentNode extends jtree.GrammarBackedNode {
+  class commentNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
+      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
     }
     getErrors() {
       return []
@@ -174,15 +175,15 @@ arrayNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class abstractTypeDeclarationNode extends jtree.GrammarBackedNode {
+  class abstractTypeDeclarationNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }),
         undefined
@@ -192,7 +193,7 @@ arrayNode
 
   class enumTypeDeclarationNode extends abstractTypeDeclarationNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { enumOptions: enumOptionsNode }),
         undefined
@@ -205,7 +206,7 @@ arrayNode
 
   class unionTypeDeclarationNode extends abstractTypeDeclarationNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { unionTypes: unionTypesNode }),
         undefined
@@ -218,7 +219,7 @@ arrayNode
 
   class mapTypeDeclarationNode extends abstractTypeDeclarationNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { key: keyNode, value: valueNode }),
         undefined
@@ -231,7 +232,7 @@ arrayNode
 
   class typeDeclarationNode extends abstractTypeDeclarationNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { extends: extendsNode }),
         undefined
@@ -242,7 +243,7 @@ arrayNode
     }
   }
 
-  class extendsNode extends jtree.GrammarBackedNode {
+  class extendsNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -251,7 +252,7 @@ arrayNode
     }
   }
 
-  class enumOptionsNode extends jtree.GrammarBackedNode {
+  class enumOptionsNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -260,7 +261,7 @@ arrayNode
     }
   }
 
-  class unionTypesNode extends jtree.GrammarBackedNode {
+  class unionTypesNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -269,7 +270,7 @@ arrayNode
     }
   }
 
-  class keyNode extends jtree.GrammarBackedNode {
+  class keyNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -281,7 +282,7 @@ arrayNode
     }
   }
 
-  class valueNode extends jtree.GrammarBackedNode {
+  class valueNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -290,9 +291,9 @@ arrayNode
     }
   }
 
-  class interfaceDeclarationNode extends jtree.GrammarBackedNode {
+  class interfaceDeclarationNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }), [
+      return new TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }), [
         { regex: /Field/, nodeConstructor: fieldDeclarationNode }
       ])
     }
@@ -301,9 +302,9 @@ arrayNode
     }
   }
 
-  class fieldDeclarationNode extends jtree.GrammarBackedNode {
+  class fieldDeclarationNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { optional: optionalNode, array: arrayNode }),
         undefined
@@ -317,13 +318,13 @@ arrayNode
     }
   }
 
-  class optionalNode extends jtree.GrammarBackedNode {
+  class optionalNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class arrayNode extends jtree.GrammarBackedNode {
+  class arrayNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -332,5 +333,5 @@ arrayNode
   module.exports = wwtNode
   wwtNode
 
-  if (!module.parent) new wwtNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new wwtNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

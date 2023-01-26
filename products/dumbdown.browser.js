@@ -1,13 +1,13 @@
 {
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class dumbdownNode extends jtree.GrammarBackedNode {
+  class dumbdownNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         quickParagraphNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           link: linkNode,
@@ -24,8 +24,7 @@
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dumbdown
-anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
 blankCell
 dashCell
  highlightScope constant.language
@@ -123,7 +122,7 @@ titleNode
  javascript
   compile(spaces) {
    const title = this.getContent()
-   const permalink = jtree.Utils.stringToPermalink(this.getContent())
+   const permalink = Utils.stringToPermalink(this.getContent())
    return \`<h1 id="\${permalink}"><a href="#\${permalink}">\${title}</a></h1>\`
   }
 title2Node
@@ -183,7 +182,7 @@ quickParagraphNode
     }
   }
 
-  class abstractTopLevelNode extends jtree.GrammarBackedNode {
+  class abstractTopLevelNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -203,11 +202,11 @@ quickParagraphNode
 
   class paragraphNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(paragraphContentNode, undefined, undefined)
+      return new TreeNode.Parser(paragraphContentNode, undefined, undefined)
     }
   }
 
-  class paragraphContentNode extends jtree.GrammarBackedNode {
+  class paragraphContentNode extends GrammarBackedNode {
     get textCell() {
       return this.getWordsFrom(0)
     }
@@ -215,7 +214,7 @@ quickParagraphNode
 
   class codeNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(lineOfCodeNode, undefined, undefined)
+      return new TreeNode.Parser(lineOfCodeNode, undefined, undefined)
     }
     compile() {
       return `<code>${this.getIndentation() + this.childrenToString()}</code>`
@@ -224,30 +223,26 @@ quickParagraphNode
 
   class listNode extends abstractTopLevelNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
-        undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "-": dashNode }),
-        undefined
-      )
+      return new TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "-": dashNode }), undefined)
     }
   }
 
-  class blankLineNode extends jtree.GrammarBackedNode {
+  class blankLineNode extends GrammarBackedNode {
     get blankCell() {
       return this.getWord(0)
     }
   }
 
-  class lineOfCodeNode extends jtree.GrammarBackedNode {
+  class lineOfCodeNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(lineOfCodeNode, undefined, undefined)
+      return new TreeNode.Parser(lineOfCodeNode, undefined, undefined)
     }
     get codeCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class dashNode extends jtree.GrammarBackedNode {
+  class dashNode extends GrammarBackedNode {
     get dashCell() {
       return this.getWord(0)
     }
@@ -262,7 +257,7 @@ quickParagraphNode
     }
     compile(spaces) {
       const title = this.getContent()
-      const permalink = jtree.Utils.stringToPermalink(this.getContent())
+      const permalink = Utils.stringToPermalink(this.getContent())
       return `<h1 id="${permalink}"><a href="#${permalink}">${title}</a></h1>`
     }
   }
@@ -281,7 +276,7 @@ quickParagraphNode
 
   class title6Node extends title2Node {}
 
-  class quickParagraphNode extends jtree.GrammarBackedNode {
+  class quickParagraphNode extends GrammarBackedNode {
     get textCell() {
       return this.getWordsFrom(0)
     }

@@ -52,7 +52,7 @@ class GrammarCompiler {
         result.replace(
           /}\s*$/,
           `
-if (!module.parent) new ${program.getRootNodeTypeId()}(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+if (!module.parent) new ${program.getRootNodeTypeId()}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }
 `
         )

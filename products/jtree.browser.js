@@ -5057,7 +5057,7 @@ ${properties.join("\n")}
   _getParserToJavascript() {
     if (this._isBlobNodeType())
       // todo: do we need this?
-      return "createParser() { return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType())}"
+      return "createParser() { return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType())}"
     const parserInfo = this._createParserInfo(this._getMyInScopeNodeTypeIds())
     const myFirstWordMap = parserInfo.firstWordMap
     const regexRules = parserInfo.regexTests
@@ -5079,7 +5079,7 @@ ${properties.join("\n")}
       : "undefined"
     const catchAllStr = catchAllConstructor ? catchAllConstructor : this._amIRoot() ? `this._getBlobNodeCatchAllNodeType()` : "undefined"
     return `createParser() {
-  return new jtree.TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
+  return new TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
   }`
   }
   _getCatchAllNodeConstructorToJavascript() {
@@ -5093,7 +5093,7 @@ ${properties.join("\n")}
   _nodeDefToJavascriptClass() {
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
     if (this._amIRoot()) {
-      components.push(`static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(\`${Utils.escapeBackTicks(
+      components.push(`static cachedHandGrammarProgramRoot = new HandGrammarProgram(\`${Utils.escapeBackTicks(
         this.getParent()
           .toString()
           .replace(/\\/g, "\\\\")
@@ -5119,7 +5119,7 @@ ${properties.join("\n")}
     const hardCodedExtend = this.get(GrammarConstants._extendsJsClass)
     if (hardCodedExtend) return hardCodedExtend
     const extendedDef = this._getExtendedParent()
-    return extendedDef ? extendedDef._getGeneratedClassName() : "jtree.GrammarBackedNode"
+    return extendedDef ? extendedDef._getGeneratedClassName() : "GrammarBackedNode"
   }
   _getCompilerObject() {
     let obj = {}

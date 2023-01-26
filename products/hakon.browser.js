@@ -1,7 +1,7 @@
 {
-  class hakonNode extends jtree.GrammarBackedNode {
+  class hakonNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         selectorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }),
         undefined
@@ -16,8 +16,7 @@
         .map(child => child.compile())
         .join("")
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang hakon
-anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
 keywordCell
 commentKeywordCell
  extends keywordCell
@@ -133,9 +132,9 @@ selectorNode
     }
   }
 
-  class propertyNode extends jtree.GrammarBackedNode {
+  class propertyNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
+      return new TreeNode.Parser(errorNode, undefined, undefined)
     }
     get propertyKeywordCell() {
       return this.getWord(0)
@@ -156,9 +155,9 @@ selectorNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(errorNode, undefined, undefined)
+      return new TreeNode.Parser(errorNode, undefined, undefined)
     }
     getErrors() {
       return this._getErrorNodeErrors()
@@ -168,9 +167,9 @@ selectorNode
     }
   }
 
-  class commentNode extends jtree.GrammarBackedNode {
+  class commentNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(commentNode, undefined, undefined)
+      return new TreeNode.Parser(commentNode, undefined, undefined)
     }
     get commentKeywordCell() {
       return this.getWord(0)
@@ -180,9 +179,9 @@ selectorNode
     }
   }
 
-  class selectorNode extends jtree.GrammarBackedNode {
+  class selectorNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         selectorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           "border-bottom-right-radius": propertyNode,

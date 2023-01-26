@@ -1,7 +1,7 @@
 {
-  class fireNode extends jtree.GrammarBackedNode {
+  class fireNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           block: blockNode,
@@ -51,8 +51,7 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang fire
-todo Explore best ways to add polymorphism
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Explore best ways to add polymorphism
 anyCell
 booleanCell
  enum false true
@@ -443,9 +442,9 @@ errorNode
     }
   }
 
-  class abstractNonTerminalNode extends jtree.GrammarBackedNode {
+  class abstractNonTerminalNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           block: blockNode,
@@ -522,7 +521,7 @@ errorNode
     }
   }
 
-  class abstractTerminalNode extends jtree.GrammarBackedNode {
+  class abstractTerminalNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -809,7 +808,7 @@ errorNode
     }
   }
 
-  class hashbangNode extends jtree.GrammarBackedNode {
+  class hashbangNode extends GrammarBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -818,7 +817,7 @@ errorNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }

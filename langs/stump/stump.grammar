@@ -1,4 +1,3 @@
-tooling onsave jtree build produceLang stump
 anyCell
 keywordCell
 emptyCell
@@ -149,7 +148,7 @@ htmlTagNode
    return this.insertChildNode(text, index)
   }
   insertChildNode(text, index) {
-   const singleNode = new jtree.TreeNode(text).getChildren()[0]
+   const singleNode = new TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
    const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
    this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)

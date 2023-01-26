@@ -1,4 +1,3 @@
-tooling onsave jtree build produceLang stamp
 todo File permissions
 anyCell
 extraCell
@@ -50,7 +49,7 @@ stampNode
   static _dirToStampFn(absPathWithoutEndingSlash, output) {
    const fs = require("fs")
    // todo: add chmod, file metadata
-   if (absPathWithoutEndingSlash.startsWith(".")) absPathWithoutEndingSlash = jtree.Utils.resolvePath(absPathWithoutEndingSlash, process.cwd() + "/")
+   if (absPathWithoutEndingSlash.startsWith(".")) absPathWithoutEndingSlash = Utils.resolvePath(absPathWithoutEndingSlash, process.cwd() + "/")
    const stat = fs.statSync(absPathWithoutEndingSlash)
    if (!stat.isDirectory()) throw new Error(`${absPath} is a file not a directory.`)
    const fns = {
@@ -66,7 +65,7 @@ stampNode
      if (isDir) return `folder ` + reducedPath
      const content = fs.readFileSync(file, "utf8")
      return `file ${reducedPath}
-   data${jtree.TreeNode.nest(content, 2)}`
+   data${TreeNode.nest(content, 2)}`
     }
    }
    const fn = fns[output]

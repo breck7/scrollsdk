@@ -1,7 +1,7 @@
 {
-  class swarmNode extends jtree.GrammarBackedNode {
+  class swarmNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           test: testNode,
@@ -17,7 +17,7 @@
       return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
     }
     async execute(filepath) {
-      const tree = new jtree.TestRacer(this.compileToRacer(filepath))
+      const tree = new TestRacer(this.compileToRacer(filepath))
       await tree.execute()
       return tree.finish()
     }
@@ -31,8 +31,7 @@
       files[filepath] = testBlocks
       return files
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang swarm
-todo Add comments?
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Add comments?
 todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
 anyCell
@@ -82,7 +81,7 @@ swarmNode
    return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
   }
   async execute(filepath) {
-   const tree = new jtree.TestRacer(this.compileToRacer(filepath))
+   const tree = new TestRacer(this.compileToRacer(filepath))
    await tree.execute()
    return tree.finish()
   }
@@ -102,7 +101,7 @@ abstractAssertionNode
    //todo: refactor. there is clearly a difference between sync and async that we are not
    // documenting. seems like async and sync have different cellTypes. the former requires
    // a method to get the result.
-   const finalParts = jtree.Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
+   const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
    const subject = finalParts[0]
    const command = finalParts[1]
    const actual = subject[command]()
@@ -286,12 +285,12 @@ arrangeNode
    let theClass
    if (this.isNodeJs()) {
     if (requiredFileNameOrClass.includes("."))
-      theClass = require(jtree.Utils.resolvePath(requiredFileNameOrClass, programFilepath))
+      theClass = require(Utils.resolvePath(requiredFileNameOrClass, programFilepath))
     else
       theClass = global[requiredFileNameOrClass]
    }
-   else theClass = window[jtree.Utils.getClassNameFromFilePath(requiredFileNameOrClass)]
-   if (requiredClassParts[1]) theClass = jtree.Utils.resolveProperty(theClass, requiredClassParts[1])
+   else theClass = window[Utils.getClassNameFromFilePath(requiredFileNameOrClass)]
+   if (requiredClassParts[1]) theClass = Utils.resolveProperty(theClass, requiredClassParts[1])
    if (!theClass) throw new Error(\`Required class '\${requiredClassParts.join(" ")}' not found for \${this.toString()}\`)
    return theClass
   }
@@ -390,7 +389,7 @@ todoNode
     }
   }
 
-  class abstractAssertionNode extends jtree.GrammarBackedNode {
+  class abstractAssertionNode extends GrammarBackedNode {
     get assertionKeywordCell() {
       return this.getWord(0)
     }
@@ -398,7 +397,7 @@ todoNode
       //todo: refactor. there is clearly a difference between sync and async that we are not
       // documenting. seems like async and sync have different cellTypes. the former requires
       // a method to get the result.
-      const finalParts = jtree.Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
+      const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
       const subject = finalParts[0]
       const command = finalParts[1]
       const actual = subject[command]()
@@ -433,7 +432,7 @@ todoNode
 
   class assertParagraphIsNode extends abstractAssertionNode {
     createParser() {
-      return new jtree.TreeNode.Parser(paragraphLineNode, undefined, undefined)
+      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
     }
     getExpected() {
       return this.childrenToString()
@@ -500,7 +499,7 @@ todoNode
     }
   }
 
-  class abstractArrangeFlagNode extends jtree.GrammarBackedNode {
+  class abstractArrangeFlagNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -508,7 +507,7 @@ todoNode
 
   class arrangeAsyncNode extends abstractArrangeFlagNode {}
 
-  class arrangeRequireNode extends jtree.GrammarBackedNode {
+  class arrangeRequireNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -522,9 +521,9 @@ todoNode
 
   class arrangeStaticNode extends abstractArrangeFlagNode {}
 
-  class abstractTestBlockNode extends jtree.GrammarBackedNode {
+  class abstractTestBlockNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         actNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { arrange: arrangeNode }),
         undefined
@@ -578,7 +577,7 @@ todoNode
     }
   }
 
-  class hashbangNode extends jtree.GrammarBackedNode {
+  class hashbangNode extends GrammarBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -590,9 +589,9 @@ todoNode
     }
   }
 
-  class arrangeNode extends jtree.GrammarBackedNode {
+  class arrangeNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           async: arrangeAsyncNode,
@@ -627,19 +626,19 @@ todoNode
       const requiredFileNameOrClass = requiredClassParts[0]
       let theClass
       if (this.isNodeJs()) {
-        if (requiredFileNameOrClass.includes(".")) theClass = require(jtree.Utils.resolvePath(requiredFileNameOrClass, programFilepath))
+        if (requiredFileNameOrClass.includes(".")) theClass = require(Utils.resolvePath(requiredFileNameOrClass, programFilepath))
         else theClass = global[requiredFileNameOrClass]
-      } else theClass = window[jtree.Utils.getClassNameFromFilePath(requiredFileNameOrClass)]
-      if (requiredClassParts[1]) theClass = jtree.Utils.resolveProperty(theClass, requiredClassParts[1])
+      } else theClass = window[Utils.getClassNameFromFilePath(requiredFileNameOrClass)]
+      if (requiredClassParts[1]) theClass = Utils.resolveProperty(theClass, requiredClassParts[1])
       if (!theClass) throw new Error(`Required class '${requiredClassParts.join(" ")}' not found for ${this.toString()}`)
       return theClass
     }
     executeSync() {}
   }
 
-  class withParagraphNode extends jtree.GrammarBackedNode {
+  class withParagraphNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(paragraphLineNode, undefined, undefined)
+      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
     }
     get parameterKeywordCell() {
       return this.getWord(0)
@@ -647,9 +646,9 @@ todoNode
     executeSync() {}
   }
 
-  class actNode extends jtree.GrammarBackedNode {
+  class actNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         actNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           assertParagraphIs: assertParagraphIsNode,
@@ -697,9 +696,9 @@ todoNode
     }
   }
 
-  class constructWithParagraphNode extends jtree.GrammarBackedNode {
+  class constructWithParagraphNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(paragraphLineNode, undefined, undefined)
+      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
     }
     get keywordCell() {
       return this.getWord(0)
@@ -707,15 +706,15 @@ todoNode
     executeSync() {}
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class paragraphLineNode extends jtree.GrammarBackedNode {
+  class paragraphLineNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(paragraphLineNode, undefined, undefined)
+      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
     }
     get anyCell() {
       return this.getWord(0)
@@ -725,9 +724,9 @@ todoNode
     }
   }
 
-  class todoNode extends jtree.GrammarBackedNode {
+  class todoNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(todoNode, undefined, undefined)
+      return new TreeNode.Parser(todoNode, undefined, undefined)
     }
     get todoKeywordCell() {
       return this.getWord(0)

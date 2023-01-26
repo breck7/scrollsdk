@@ -1,7 +1,7 @@
 {
-  class poopNode extends jtree.GrammarBackedNode {
+  class poopNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         this._getBlobNodeCatchAllNodeType(),
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "🌄": dayNode }),
         [
@@ -29,8 +29,7 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang poop
-dateIntCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`dateIntCell
  highlightScope constant.numeric.integer
 monthIntCell
  extends dateIntCell
@@ -131,7 +130,7 @@ memoryNode
  string eventType memory
  javascript
   getNotes() {
-   return jtree.Utils.removeNonAscii(this.getLine()).trim()
+   return Utils.removeNonAscii(this.getLine()).trim()
   }
 dayNode
  crux 🌄
@@ -139,7 +138,7 @@ dayNode
  cells symbolCell monthIntCell dayIntCell yearIntCell
  javascript
   getDay() {
-   return jtree.Utils.removeNonAscii(this.getLine())
+   return Utils.removeNonAscii(this.getLine())
     .trim()
     .replace(/ /g, "/")
   }`)
@@ -161,7 +160,7 @@ dayNode
     }
   }
 
-  class abstractEventNode extends jtree.GrammarBackedNode {
+  class abstractEventNode extends GrammarBackedNode {
     get eventTypeCell() {
       return this.getWord(0)
     }
@@ -221,11 +220,11 @@ dayNode
       return `memory`
     }
     getNotes() {
-      return jtree.Utils.removeNonAscii(this.getLine()).trim()
+      return Utils.removeNonAscii(this.getLine()).trim()
     }
   }
 
-  class dayNode extends jtree.GrammarBackedNode {
+  class dayNode extends GrammarBackedNode {
     get symbolCell() {
       return this.getWord(0)
     }
@@ -239,7 +238,7 @@ dayNode
       return this.getWord(3)
     }
     getDay() {
-      return jtree.Utils.removeNonAscii(this.getLine())
+      return Utils.removeNonAscii(this.getLine())
         .trim()
         .replace(/ /g, "/")
     }

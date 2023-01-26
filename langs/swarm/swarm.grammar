@@ -1,4 +1,3 @@
-tooling onsave jtree build produceLang swarm
 todo Add comments?
 todo Make run in browser
 todo Add print or tracer type of intermediate element. debugger?
@@ -49,7 +48,7 @@ swarmNode
    return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
   }
   async execute(filepath) {
-   const tree = new jtree.TestRacer(this.compileToRacer(filepath))
+   const tree = new TestRacer(this.compileToRacer(filepath))
    await tree.execute()
    return tree.finish()
   }
@@ -69,7 +68,7 @@ abstractAssertionNode
    //todo: refactor. there is clearly a difference between sync and async that we are not
    // documenting. seems like async and sync have different cellTypes. the former requires
    // a method to get the result.
-   const finalParts = jtree.Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
+   const finalParts = Utils.getMethodFromDotPath(arrangedInstance, this.getWord(1))
    const subject = finalParts[0]
    const command = finalParts[1]
    const actual = subject[command]()
@@ -253,12 +252,12 @@ arrangeNode
    let theClass
    if (this.isNodeJs()) {
     if (requiredFileNameOrClass.includes("."))
-      theClass = require(jtree.Utils.resolvePath(requiredFileNameOrClass, programFilepath))
+      theClass = require(Utils.resolvePath(requiredFileNameOrClass, programFilepath))
     else
       theClass = global[requiredFileNameOrClass]
    }
-   else theClass = window[jtree.Utils.getClassNameFromFilePath(requiredFileNameOrClass)]
-   if (requiredClassParts[1]) theClass = jtree.Utils.resolveProperty(theClass, requiredClassParts[1])
+   else theClass = window[Utils.getClassNameFromFilePath(requiredFileNameOrClass)]
+   if (requiredClassParts[1]) theClass = Utils.resolveProperty(theClass, requiredClassParts[1])
    if (!theClass) throw new Error(`Required class '${requiredClassParts.join(" ")}' not found for ${this.toString()}`)
    return theClass
   }

@@ -1,7 +1,7 @@
 {
-  class dugNode extends jtree.GrammarBackedNode {
+  class dugNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           null: nullNode,
@@ -18,8 +18,7 @@
       const res = super.compile()
       return JSON.stringify(JSON.parse(res), null, 2)
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang dug
-todo Add swarm tests for top scenarios, including the scalar at root level scenario.
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 anyCell
 keywordCell
@@ -105,7 +104,7 @@ errorNode
     }
   }
 
-  class abstractValueNode extends jtree.GrammarBackedNode {
+  class abstractValueNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -139,13 +138,13 @@ errorNode
 
   class objectNode extends abstractValueNode {
     createParser() {
-      return new jtree.TreeNode.Parser(memberNode, undefined, undefined)
+      return new TreeNode.Parser(memberNode, undefined, undefined)
     }
   }
 
   class arrayNode extends abstractValueNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           null: nullNode,
@@ -160,9 +159,9 @@ errorNode
     }
   }
 
-  class memberNode extends jtree.GrammarBackedNode {
+  class memberNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           null: nullNode,
@@ -180,7 +179,7 @@ errorNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }

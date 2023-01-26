@@ -1,17 +1,17 @@
 #! /usr/bin/env node
 {
   const { jtree } = require("../index.js")
+  const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode } = jtree
 
-  class grammarNode extends jtree.GrammarBackedNode {
+  class grammarNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         catchAllErrorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { todo: todoNode, tooling: toolingNode }),
         [{ regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode }, { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }]
       )
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`tooling onsave jtree build produceLang grammar
-todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 todo Add enumOption root level type?
 todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
@@ -492,7 +492,7 @@ extendsCellTypeNode
     }
   }
 
-  class abstractCompilerRuleNode extends jtree.GrammarBackedNode {
+  class abstractCompilerRuleNode extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -513,7 +513,7 @@ extendsCellTypeNode
 
   class joinChildrenWithNode extends abstractCompilerRuleNode {}
 
-  class abstractConstantNode extends jtree.GrammarBackedNode {
+  class abstractConstantNode extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -557,7 +557,7 @@ extendsCellTypeNode
 
   class stringNode extends abstractConstantNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
     }
     get propertyKeywordCell() {
       return this.getWord(0)
@@ -570,7 +570,7 @@ extendsCellTypeNode
     }
   }
 
-  class abstractNodeTypeRuleNode extends jtree.GrammarBackedNode {
+  class abstractNodeTypeRuleNode extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -646,7 +646,7 @@ extendsCellTypeNode
 
   class compilerNode extends abstractNodeTypeRuleNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           closeChildren: closeChildrenNode,
@@ -669,7 +669,7 @@ extendsCellTypeNode
 
   class exampleNode extends abstractNodeTypeRuleNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
     }
     get exampleAnyCell() {
       return this.getWordsFrom(0)
@@ -702,7 +702,7 @@ extendsCellTypeNode
 
   class javascriptNode extends abstractNodeTypeRuleNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
     }
     format() {
       if (this.isNodeJs()) {
@@ -781,15 +781,15 @@ extendsCellTypeNode
     }
   }
 
-  class catchAllErrorNode extends jtree.GrammarBackedNode {
+  class catchAllErrorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class catchAllExampleLineNode extends jtree.GrammarBackedNode {
+  class catchAllExampleLineNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
     }
     get exampleAnyCell() {
       return this.getWord(0)
@@ -799,18 +799,18 @@ extendsCellTypeNode
     }
   }
 
-  class catchAllJavascriptCodeLineNode extends jtree.GrammarBackedNode {
+  class catchAllJavascriptCodeLineNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
     }
     get javascriptCodeCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class catchAllMultilineStringConstantNode extends jtree.GrammarBackedNode {
+  class catchAllMultilineStringConstantNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
     }
     get stringCell() {
       return this.getWord(0)
@@ -820,9 +820,9 @@ extendsCellTypeNode
     }
   }
 
-  class cellTypeDefinitionNode extends jtree.GrammarBackedNode {
+  class cellTypeDefinitionNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           description: descriptionNode,
@@ -845,7 +845,7 @@ extendsCellTypeNode
     }
   }
 
-  class enumFromCellTypesNode extends jtree.GrammarBackedNode {
+  class enumFromCellTypesNode extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -854,7 +854,7 @@ extendsCellTypeNode
     }
   }
 
-  class enumNode extends jtree.GrammarBackedNode {
+  class enumNode extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -863,7 +863,7 @@ extendsCellTypeNode
     }
   }
 
-  class examplesNode extends jtree.GrammarBackedNode {
+  class examplesNode extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -872,7 +872,7 @@ extendsCellTypeNode
     }
   }
 
-  class cellMinNode extends jtree.GrammarBackedNode {
+  class cellMinNode extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -881,7 +881,7 @@ extendsCellTypeNode
     }
   }
 
-  class cellMaxNode extends jtree.GrammarBackedNode {
+  class cellMaxNode extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -890,7 +890,7 @@ extendsCellTypeNode
     }
   }
 
-  class highlightScopeNode extends jtree.GrammarBackedNode {
+  class highlightScopeNode extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -899,15 +899,15 @@ extendsCellTypeNode
     }
   }
 
-  class rootFlagNode extends jtree.GrammarBackedNode {
+  class rootFlagNode extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class nodeTypeDefinitionNode extends jtree.GrammarBackedNode {
+  class nodeTypeDefinitionNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         catchAllErrorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           boolean: booleanNode,
@@ -964,11 +964,11 @@ extendsCellTypeNode
 
   class _rootNodeJsHeaderNode extends abstractNodeTypeRuleNode {
     createParser() {
-      return new jtree.TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+      return new TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
     }
   }
 
-  class regexNode extends jtree.GrammarBackedNode {
+  class regexNode extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -977,7 +977,7 @@ extendsCellTypeNode
     }
   }
 
-  class reservedWordsNode extends jtree.GrammarBackedNode {
+  class reservedWordsNode extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -986,9 +986,9 @@ extendsCellTypeNode
     }
   }
 
-  class todoNode extends jtree.GrammarBackedNode {
+  class todoNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(todoNode, undefined, undefined)
+      return new TreeNode.Parser(todoNode, undefined, undefined)
     }
     get todoCell() {
       return this.getWord(0)
@@ -998,9 +998,9 @@ extendsCellTypeNode
     }
   }
 
-  class toolingNode extends jtree.GrammarBackedNode {
+  class toolingNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(toolingNode, undefined, undefined)
+      return new TreeNode.Parser(toolingNode, undefined, undefined)
     }
     get toolingDirectiveCell() {
       return this.getWord(0)
@@ -1010,7 +1010,7 @@ extendsCellTypeNode
     }
   }
 
-  class extendsCellTypeNode extends jtree.GrammarBackedNode {
+  class extendsCellTypeNode extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -1022,5 +1022,5 @@ extendsCellTypeNode
   module.exports = grammarNode
   grammarNode
 
-  if (!module.parent) new grammarNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new grammarNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

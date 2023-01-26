@@ -1,10 +1,11 @@
 #! /usr/bin/env node
 {
   const { jtree } = require("../index.js")
+  const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode } = jtree
 
-  class arrowNode extends jtree.GrammarBackedNode {
+  class arrowNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         errorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { charge: chargeNode }),
         undefined
@@ -13,7 +14,7 @@
     compile() {
       return this.toJsonSubset()
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`keywordCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
  enum charge cardNumber amount currency description token
 floatCell
 intCell
@@ -99,15 +100,15 @@ tokenNode
     }
   }
 
-  class errorNode extends jtree.GrammarBackedNode {
+  class errorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
     }
   }
 
-  class chargeNode extends jtree.GrammarBackedNode {
+  class chargeNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(
+      return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
           cardNumber: cardNumberNode,
@@ -128,7 +129,7 @@ tokenNode
     }
   }
 
-  class abstractChargeAttributeNode extends jtree.GrammarBackedNode {}
+  class abstractChargeAttributeNode extends GrammarBackedNode {}
 
   class cardNumberNode extends abstractChargeAttributeNode {
     get keywordCell() {
@@ -166,7 +167,7 @@ tokenNode
     }
   }
 
-  class tokenNode extends jtree.GrammarBackedNode {
+  class tokenNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -178,5 +179,5 @@ tokenNode
   module.exports = arrowNode
   arrowNode
 
-  if (!module.parent) new arrowNode(jtree.TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new arrowNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

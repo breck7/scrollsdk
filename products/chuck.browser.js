@@ -1,14 +1,14 @@
 {
-  class chuckNode extends jtree.GrammarBackedNode {
+  class chuckNode extends GrammarBackedNode {
     createParser() {
-      return new jtree.TreeNode.Parser(this._getBlobNodeCatchAllNodeType(), undefined, [
+      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType(), undefined, [
         { regex: /\+/, nodeConstructor: addNode },
         { regex: /\*/, nodeConstructor: multiplyNode },
         { regex: /print/, nodeConstructor: printNode },
         { regex: /^[\d\. ]+$/, nodeConstructor: onlyNumbersNode }
       ])
     }
-    static cachedHandGrammarProgramRoot = new jtree.HandGrammarProgram(`todo Make this compile and execute
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Make this compile and execute
 operatorCell
  highlightScope keyword
  enum + * print
@@ -48,7 +48,7 @@ onlyNumbersNode
     }
   }
 
-  class abstractOperatorNode extends jtree.GrammarBackedNode {
+  class abstractOperatorNode extends GrammarBackedNode {
     get operatorCell() {
       return this.getWord(0)
     }
@@ -63,7 +63,7 @@ onlyNumbersNode
 
   class printNode extends abstractOperatorNode {}
 
-  class onlyNumbersNode extends jtree.GrammarBackedNode {
+  class onlyNumbersNode extends GrammarBackedNode {
     get floatCell() {
       return this.getWordsFrom(0).map(val => parseFloat(val))
     }

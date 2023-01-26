@@ -1,13 +1,13 @@
 //onsave jtree build produce SandboxApp.browser.js
 
 const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
-const { jtree } = require("../index.js")
+const { TreeNode } = require("../products/TreeNode.js")
 
 // Todo: add inputs at the top to change the edge, node, and cell delimiters.
 
 class SandboxApp extends AbstractTreeComponent {
   createParser() {
-    return new jtree.TreeNode.Parser(undefined, {
+    return new TreeNode.Parser(undefined, {
       tableComponent,
       shareComponent,
       githubTriangleComponent,
@@ -30,7 +30,7 @@ class SandboxApp extends AbstractTreeComponent {
   }
 
   loadCsvSampleCommand() {
-    this.willowBrowser.setValueOfElementWithIdHack("csvConsole", jtree.TreeNode.iris)
+    this.willowBrowser.setValueOfElementWithIdHack("csvConsole", TreeNode.iris)
 
     this.updateFromCsvConsoleCommand()
   }
@@ -45,7 +45,7 @@ class SandboxApp extends AbstractTreeComponent {
   toShareLink() {
     const treeCode = localStorage.getItem("tree")
     if (!treeCode) return ""
-    const tree = new jtree.TreeNode()
+    const tree = new TreeNode()
     tree.appendLineAndChildren("tree", treeCode)
     return "#" + encodeURIComponent(tree.toString())
   }
@@ -54,7 +54,7 @@ class SandboxApp extends AbstractTreeComponent {
     const hash = location.hash
     if (hash.length < 2) return ""
 
-    return new jtree.TreeNode(decodeURIComponent(hash.substr(1))).getNode("tree")
+    return new TreeNode(decodeURIComponent(hash.substr(1))).getNode("tree")
   }
 
   updateAllCommand(tree: any, eventSource: string) {
@@ -95,27 +95,27 @@ class SandboxApp extends AbstractTreeComponent {
   }
 
   updateFromXmlConsoleCommand() {
-    this.updateAllCommand(jtree.TreeNode.fromXml(this.valueOf("xmlConsole")), "xmlConsole")
+    this.updateAllCommand(TreeNode.fromXml(this.valueOf("xmlConsole")), "xmlConsole")
   }
 
   updateFromGridJsonConsoleCommand() {
-    this.updateAllCommand(jtree.TreeNode.fromGridJson(this.valueOf("gridJsonConsole")), "gridJsonConsole")
+    this.updateAllCommand(TreeNode.fromGridJson(this.valueOf("gridJsonConsole")), "gridJsonConsole")
   }
 
   updateFromJsonConsoleCommand() {
-    this.updateAllCommand(jtree.TreeNode.fromJson(this.valueOf("jsonConsole")), "jsonConsole")
+    this.updateAllCommand(TreeNode.fromJson(this.valueOf("jsonConsole")), "jsonConsole")
   }
 
   updateFromCsvConsoleCommand() {
-    this.updateAllCommand(jtree.TreeNode.fromCsv(this.valueOf("csvConsole")), "csvConsole")
+    this.updateAllCommand(TreeNode.fromCsv(this.valueOf("csvConsole")), "csvConsole")
   }
 
   updateFromJsonSubsetCommand() {
-    this.updateAllCommand(jtree.TreeNode.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
+    this.updateAllCommand(TreeNode.fromJsonSubset(this.valueOf("toJsonSubset")), "toJsonSubset")
   }
 
   updateFromTreeConsoleCommand() {
-    this.updateAllCommand(new jtree.TreeNode(this.valueOf("treeConsole")), "treeConsole")
+    this.updateAllCommand(new TreeNode(this.valueOf("treeConsole")), "treeConsole")
   }
 
   toHakonCode() {
@@ -203,7 +203,7 @@ class headerComponent extends AbstractTreeComponent {
   span  | 
   a Debug
    clickCommand toggleTreeComponentFrameworkDebuggerCommand
-  span  | Version ${jtree.getVersion()}
+  span  | Version ${TreeNode.getVersion()}
  p This is a simple console for exploring the base Tree Notation. In dev tools, you can access the parsed tree below as "window.tree"`
   }
 }

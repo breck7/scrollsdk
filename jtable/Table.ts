@@ -1,7 +1,5 @@
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
-
-const { jtree } = require("../index.js")
+const { Utils } = require("../products/Utils.js")
+const { TreeNode } = require("../products/TreeNode.js")
 
 import { jTableTypes } from "../products/jTableTypes"
 import { Row } from "./Row"
@@ -102,7 +100,7 @@ declare type columnsMap = { [columnName: string]: Column }
 // todo: remove rowclass param?
 class Table {
   constructor(rowsArray: (Row | jTableTypes.rawRowJavascriptObject)[] = [], columnsArrayOrMap: jTableTypes.columnDefinitionObject[] | columnsMap = [], rowClass = Row, detectAndAddColumns = true, samplingSeed = Date.now()) {
-    this._ctime = new jtree.TreeNode()._getProcessTimeInMilliseconds()
+    this._ctime = new TreeNode()._getProcessTimeInMilliseconds()
     this._tableId = this._getUniqueId()
     this._samplingSeed = samplingSeed
 
@@ -166,7 +164,7 @@ class Table {
     const rankColumn = tests.find(test => !test.includes("=") && !test.includes("!"))
     let potentialCols = colsThatPassed
 
-    if (rankColumn) potentialCols = <Column[]>potentialCols.sort(jtree.Utils.makeSortByFn((col: any) => col[rankColumn]())).reverse()
+    if (rankColumn) potentialCols = <Column[]>potentialCols.sort(Utils.makeSortByFn((col: any) => col[rankColumn]())).reverse()
 
     return potentialCols
   }
@@ -276,7 +274,7 @@ class Table {
 
   fillMissing(columnName: string, value: any) {
     const filled = this.cloneNativeJavascriptTypedRows().map(row => {
-      if (jtree.Utils.isValueEmpty(row[columnName])) row[columnName] = value
+      if (Utils.isValueEmpty(row[columnName])) row[columnName] = value
       return row
     })
     return new Table(filled, this.getColumnsArrayOfObjects())
@@ -301,7 +299,7 @@ class Table {
 
   private _getSampleSet() {
     const SAMPLE_SET_SIZE = 30 // todo: fix.
-    if (!this._sampleSet) this._sampleSet = jtree.Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, this._samplingSeed)
+    if (!this._sampleSet) this._sampleSet = Utils.sampleWithoutReplacement(this.getRows(), SAMPLE_SET_SIZE, this._samplingSeed)
     return this._sampleSet
   }
 
@@ -381,7 +379,7 @@ ${cols}
   }
 
   toTree() {
-    return new jtree.TreeNode(this.getRows().map((row: any) => row.getRowSourceObject()))
+    return new TreeNode(this.getRows().map((row: any) => row.getRowSourceObject()))
   }
 
   filterRowsByFn(fn: Function) {
@@ -478,7 +476,7 @@ ${cols}
   }
 
   synthesizeTable(rowcount: number, seed: number) {
-    const randomNumberFn = jtree.Utils.makeSemiRandomFn(seed)
+    const randomNumberFn = Utils.makeSemiRandomFn(seed)
     const rows = []
     while (rowcount) {
       rows.push(this._synthesizeRow(randomNumberFn))
@@ -493,7 +491,7 @@ ${cols}
     // todo: add seed!
     // cellType randomSeed int
     //  description An integer to seed the random number generator with.
-    return new Table(jtree.Utils.shuffleInPlace(this.getRows().slice(0)), this.getColumnsMap())
+    return new Table(Utils.shuffleInPlace(this.getRows().slice(0)), this.getColumnsMap())
   }
 
   reverseRows() {
@@ -515,7 +513,7 @@ ${cols}
 
   sortBy(colNames: jTableTypes.columnName[]) {
     const colAccessorFns = colNames.map((colName: string) => (row: any) => row.rowToObjectWithOnlyNativeJavascriptTypes()[colName])
-    const rows = this.getRows().sort(jtree.Utils.makeSortByFn(colAccessorFns))
+    const rows = this.getRows().sort(Utils.makeSortByFn(colAccessorFns))
     return new Table(rows, this.getColumnsMap())
   }
 

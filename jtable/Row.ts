@@ -1,7 +1,4 @@
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
-
-const { jtree } = require("../index.js")
+const { Utils } = require("../products/Utils.js")
 
 import { jTableTypes } from "../products/jTableTypes"
 import { Column } from "./Column"
@@ -94,7 +91,7 @@ class Row {
 
   getRowHtmlSafeValue(columnName: jTableTypes.columnName) {
     const val = this.getRowOriginalValue(columnName)
-    return val === undefined ? "" : jtree.Utils.stripHtml(val.toString()).toString() // todo: cache this?
+    return val === undefined ? "" : Utils.stripHtml(val.toString()).toString() // todo: cache this?
   }
 
   getHoverTitle() {

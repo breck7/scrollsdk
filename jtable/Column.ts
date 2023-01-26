@@ -1,7 +1,4 @@
-//onsave jtree build produce jtable.browser.js
-//onsave jtree build produce jtable.node.js
-
-const { jtree } = require("../index.js")
+const { Utils } = require("../products/Utils.js")
 
 import { jTableTypes } from "../products/jTableTypes"
 
@@ -787,7 +784,7 @@ class Column {
   constructor(colDef: jTableTypes.columnDefinitionObject = {}, rawAnyVector: any[]) {
     this._colDefObject = colDef
     this._rawAnyVectorFromSource = rawAnyVector
-    this._sampleSet = jtree.Utils.sampleWithoutReplacement(rawAnyVector, 30, Date.now())
+    this._sampleSet = Utils.sampleWithoutReplacement(rawAnyVector, 30, Date.now())
   }
 
   private _colDefObject: jTableTypes.columnDefinitionObject
@@ -860,7 +857,7 @@ class Column {
   private _getFirstNonEmptyValueFromSampleSet() {
     if (this._sample === undefined) {
       const sampleSet = this._getSampleSet()
-      this._sample = sampleSet.length ? sampleSet.find(value => !jtree.Utils.isValueEmpty(value)) : ""
+      this._sample = sampleSet.length ? sampleSet.find(value => !Utils.isValueEmpty(value)) : ""
     }
     return this._sample
   }

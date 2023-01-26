@@ -2167,7 +2167,9 @@ if (errors.length)
     files[GrammarBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
     const browserPath = `${languageName}.browser.js`
     files[browserPath] = this.toBrowserJavascript()
-    files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/jtree/products/jtree.browser.js"></script>
+    files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/jtree/products/Utils.browser.js"></script>
+<script src="node_modules/jtree/products/TreeNode.browser.js"></script>
+<script src="node_modules/jtree/products/GrammarLanguage.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
 const sampleCode = \`${sampleCode.toString()}\`

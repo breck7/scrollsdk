@@ -59,19 +59,21 @@ code
  npm install .
  npm run test
 
-* Jtree currently includes around 10 compiled projects (aka "products") and more than a dozen Tree Languages.
+* Jtree currently includes over 10 compiled projects (aka "products") and more than a dozen Tree Languages.
 
-# jtree base library for npm projects:
+# Basic TreeNode library for npm projects:
 
 code
  const {TreeNode} = require("jtree/products/TreeNode.js")
  const tree = new TreeNode("hello world")
  console.log(tree.toString())
 
-# jtree base library for the browser:
+# Basic TreeNode library + Grammar Language for the browser:
 
 code
- <script src="https://jtree.treenotation.org/products/jtree.browser.js" />
+ <script src="../../products/Utils.browser.js"></script>
+ <script src="../../products/TreeNode.browser.js"></script>
+ <script src="../../products/GrammarLanguage.browser.js"></script>
 
 ## TreeBase
 

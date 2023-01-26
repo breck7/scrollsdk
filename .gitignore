@@ -6,9 +6,7 @@ node_modules/
 *.aux
 *.log
 *.synctex.gz
-jtree.project
 notes.txt
-jtree.browser.ts
 syntax.sh
 *.d.ts
 builder.js

@@ -62,6 +62,7 @@ class Builder extends TreeNode {
         new TypeScriptRewriter(content)
           .removeRequires()
           .removeImports()
+          .removeTsGeneratedCrap()
           .removeHashBang()
           .removeNodeJsOnlyLines()
           .changeDefaultExportsToWindowExports()

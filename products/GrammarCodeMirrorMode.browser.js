@@ -1,5 +1,4 @@
 "use strict"
-Object.defineProperty(exports, "__esModule", { value: true })
 // Adapted from https://github.com/NeekSandhu/codemirror-textmate/blob/master/src/tmToCm.ts
 var CmToken
 ;(function(CmToken) {
@@ -335,5 +334,4 @@ class GrammarCodeMirrorMode {
     state.cellIndex = 0
   }
 }
-
-module.exports = { GrammarCodeMirrorMode }
+window.GrammarCodeMirrorMode = GrammarCodeMirrorMode

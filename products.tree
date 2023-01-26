@@ -80,6 +80,11 @@ browserProduct
  removeAll window.treeNotationTypes = treeNotationTypes
  combineTypeScriptFiles products/treeNotationTypes.ts testRacer/TestRacer.ts
 browserProduct
+ outputFileName GrammarCodeMirrorMode.browser.js
+ removeAll Object.defineProperty(exports, "__esModule", { value: true })
+ removeAll window.treeNotationTypes = treeNotationTypes
+ combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarCodeMirrorMode.ts
+browserProduct
  outputFileName jtable.browser.js
  removeAll window.jTableTypes = jTableTypes
  removeAll window.treeNotationTypes = treeNotationTypes

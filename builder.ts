@@ -270,6 +270,11 @@ class Builder extends TreeNode {
     })
   }
 
+  produceAllLangs() {
+    const langs = `arrow chuck dug dumbdown fire grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
+    langs.forEach(lang => this.produceLang(lang))
+  }
+
   produceLang(langName: string) {
     const newFilePath = path.join(__dirname, "langs", langName, `${langName}.grammar`)
     GrammarCompiler.compileGrammarForBrowser(newFilePath, this._getProductFolder(), true)

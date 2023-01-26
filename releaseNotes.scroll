@@ -4,6 +4,34 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 63.0.0 2023-1-26
+* This is a major release that makes the code more modular and eliminates a lot of technical debt. In the past to simplify NodeJs+Browser isomorphism I created the `jtree` namespace and bundled everything together. This was a mistake. This release fixes that, and makes each subproject more independent. This should speed up future development.
+
+- ⚠️ BREAKING: Replace all `jtree.getVersion()` with `TreeNode.getVersion()`
+- ⚠️ BREAKING: `products/TreeNotationCodeMirrorMode.js` is now `products/GrammarCodeMirrorMode.js`
+- ⚠️ BREAKING: The bundled file `jtree.browser.js` is now deprecated. That file will be kept for now (for external links) but will no longer be updated and will be removed in a future version. Include exactly what you need.
+* Before:
+code
+ <script src="../products/jtree.browser.js"></script>
+* After: (to get everything that was previously in the bundle)
+code
+ <script src="../products/Utils.browser.js"></script>
+ <script src="../products/TreeNode.browser.js"></script>
+ <script src="../products/GrammarLanguage.browser.js"></script>
+ <script src="../products/GrammarCodeMirrorMode.browser.js"></script>
+
+
+- ⚠️ BREAKING: The `jtree` namespace is no more. Include exactly what you need:
+* Before:
+code
+ const {jtree} = require("jtree")
+ const tree = new jtree.TreeNode("hello world")
+* After:
+code
+ const {TreeNode} = require("jtree/products/TreeNode.js")
+ const tree = new TreeNode("hello world")
+
+
 # 62.2.0 2023-1-12
 - 🎉 removed jtree.node.js and added instructions for only importing the specific product needed directly.
 

@@ -2301,7 +2301,9 @@ ${rootName}`
       exportScript = `window.${rootName} = ${rootName}`
     }
     let nodeJsImports = ``
-    if (forNodeJs) nodeJsImports = `const {jtree} = require("${normalizedJtreePath.replace(/\\/g, "\\\\")}")`
+    if (forNodeJs)
+      nodeJsImports = `const {jtree} = require("${normalizedJtreePath.replace(/\\/g, "\\\\")}")
+const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode} = jtree `
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
 ${nodeJsImports}

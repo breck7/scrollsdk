@@ -72,6 +72,10 @@ browserProduct
  removeAll window.treeNotationTypes = treeNotationTypes
  combineTypeScriptFiles products/treeNotationTypes.ts coreTests/core.test.ts
 browserProduct
+ outputFileName GrammarLanguage.browser.js
+ removeAll window.treeNotationTypes = treeNotationTypes
+ combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarLanguage.ts
+browserProduct
  outputFileName Utils.browser.js
  combineTypeScriptFiles core/Utils.ts
 browserProduct

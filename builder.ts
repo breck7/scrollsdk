@@ -347,6 +347,7 @@ sandbox
 kitchen
 core
 coreTests
+utils
 treeBase
 treeComponentFramework`.split("\n")
     const fileTree = {}

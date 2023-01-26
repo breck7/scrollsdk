@@ -39,7 +39,7 @@ nodeProduct
 nodeProduct
  outputFileName Utils.js
  insertLastLine module.exports = {Utils}
- combineTypeScriptFiles core/Utils.ts
+ combineTypeScriptFiles utils/Utils.ts
 nodeProduct
  outputFileName Kitchen.node.js
  combineTypeScriptFiles products/treeNotationTypes.ts kitchen/Kitchen.node.ts
@@ -73,7 +73,7 @@ browserProduct
  combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarLanguage.ts
 browserProduct
  outputFileName Utils.browser.js
- combineTypeScriptFiles core/Utils.ts
+ combineTypeScriptFiles utils/Utils.ts
 browserProduct
  outputFileName TreeNode.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes

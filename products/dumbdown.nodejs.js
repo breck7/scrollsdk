@@ -1,7 +1,9 @@
 #! /usr/bin/env node
 {
-  const { jtree } = require("../index.js")
-  const { Utils, TreeNode, HandGrammarProgram, GrammarBackedNode } = jtree
+  const { Utils } = require("./Utils.js")
+  const { TreeNode } = require("./TreeNode.js")
+  const { HandGrammarProgram } = require("./GrammarLanguage.js")
+  const { GrammarBackedNode } = require("./GrammarLanguage.js")
 
   class errorNode extends GrammarBackedNode {
     getErrors() {

@@ -2,12 +2,7 @@
   "name": "treecomponent",
   "version": "2.0.0",
   "description": "Tree Component is an experimental web framework for building reactive web apps using Tree Notation.",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Breck Yunits",
-  "license": "MIT",
   "dependencies": {
     "superagent": "^5.1.0"
   }

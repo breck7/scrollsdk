@@ -18,8 +18,8 @@ class GrammarCompiler {
     return new programConstructor(fs.readFileSync(programPath, "utf8"))
   }
 
-  static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true, pathToJtree = path.join(__dirname, "..", "index.js")) {
-    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, pathToJtree)
+  static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true, jtreeProductsPath = __dirname) {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, jtreeProductsPath)
   }
 
   static formatCode = (programCode: string, grammarPath: treeNotationTypes.filepath) => {
@@ -38,13 +38,13 @@ class GrammarCompiler {
     return true
   }
 
-  private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean, pathToJtree?: treeNotationTypes.requirePath) {
+  private static _compileGrammar(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, target: CompileTarget, usePrettier: boolean, jtreeProductsPath?: treeNotationTypes.requirePath) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = TreeNode.fromDisk(pathToGrammar)
     const program = new HandGrammarProgram(grammarCode.toString())
     const outputFilePath = path.join(outputFolder, `${program.getGrammarName()}.${target}.js`)
 
-    let result = isNodeJs ? program.toNodeJsJavascript(pathToJtree) : program.toBrowserJavascript()
+    let result = isNodeJs ? program.toNodeJsJavascript(jtreeProductsPath) : program.toBrowserJavascript()
 
     if (isNodeJs)
       result =

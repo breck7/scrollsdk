@@ -278,7 +278,7 @@ class Builder extends TreeNode {
   produceLang(langName: string) {
     const newFilePath = path.join(__dirname, "langs", langName, `${langName}.grammar`)
     GrammarCompiler.compileGrammarForBrowser(newFilePath, this._getProductFolder(), true)
-    GrammarCompiler.compileGrammarForNodeJs(newFilePath, this._getProductFolder(), true, "../index.js")
+    GrammarCompiler.compileGrammarForNodeJs(newFilePath, this._getProductFolder(), true, ".")
   }
 
   private _getProductsTree() {

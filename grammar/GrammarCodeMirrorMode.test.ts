@@ -10,7 +10,7 @@ const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
 const { TestRacer } = require("../products/TestRacer.node.js")
-const { TreeNotationCodeMirrorMode } = require("../products/TreeNotationCodeMirrorMode.js")
+const { GrammarCodeMirrorMode } = require("../products/GrammarCodeMirrorMode.js")
 
 const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.grammar")
 const irisGrammar = Disk.read(irisPath)
@@ -95,7 +95,7 @@ testTree.codeMirrorTest = equal => {
  root
  version`
 
-  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammarNode", () => GrammarProgram, () => code))
+  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("grammarNode", () => GrammarProgram, () => code))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.join(" "), `def bracket atom bracket atom`)
 }
@@ -105,12 +105,12 @@ testTree.iris = equal => {
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act
-  const tokenLines = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("irisNode", () => irisConstructor, () => goodCode)).getTokenLines(goodCode)
+  const tokenLines = new MockCodeMirror(() => new GrammarCodeMirrorMode("irisNode", () => irisConstructor, () => goodCode)).getTokenLines(goodCode)
   // Assert
   equal(tokenLines.join(" "), `number bracket number bracket number bracket number bracket atom`)
 
   // Act
-  const tokenLines2 = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("irisNode", () => irisConstructor, () => codeWithMissingCell)).getTokenLines(codeWithMissingCell)
+  const tokenLines2 = new MockCodeMirror(() => new GrammarCodeMirrorMode("irisNode", () => irisConstructor, () => codeWithMissingCell)).getTokenLines(codeWithMissingCell)
   // Assert
   equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
 }
@@ -121,7 +121,7 @@ testTree.codeMirrorTest2 = equal => {
  version 1.0.0
 foobarNode`
 
-  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("grammarNode", () => GrammarProgram, () => code))
+  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("grammarNode", () => GrammarProgram, () => code))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 4)
   equal(tokenLines.join(" "), `def bracket atom bracket atom bracket number def`)
@@ -130,7 +130,7 @@ foobarNode`
 testTree.regressionTest = equal => {
   const code = Disk.read(__dirname + "/TreeNotationCoreMirrorMode.regression.stamp")
 
-  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("stampNode", () => stamp, () => code))
+  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("stampNode", () => stamp, () => code))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 217)
 }
@@ -140,7 +140,7 @@ testTree.regression2 = equal => {
  prettier
   object`
 
-  const mock = new MockCodeMirror(() => new TreeNotationCodeMirrorMode("dugNode", () => DugProgram, () => code))
+  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("dugNode", () => DugProgram, () => code))
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 3)
   equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)

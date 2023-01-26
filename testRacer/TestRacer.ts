@@ -1,5 +1,5 @@
-import { TreeNode } from "./TreeNode"
-import { Utils } from "./Utils"
+const { Utils } = require("../products/Utils.js")
+const { TreeNode } = require("../products/TreeNode.js")
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 // todo: ensure we have key features from http://testanything.org/tap-version-13-specification.html

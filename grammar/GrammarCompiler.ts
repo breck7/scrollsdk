@@ -1,8 +1,8 @@
 const fs = require("fs")
 const path = require("path")
 
-const { TreeNode } = require("./TreeNode.js")
-const { Utils } = require("./Utils.js")
+const { Utils } = require("../products/Utils.js")
+const { TreeNode } = require("../products/TreeNode.js")
 const { HandGrammarProgram } = require("./GrammarLanguage.js")
 import { treeNotationTypes } from "../products/treeNotationTypes"
 

@@ -1,6 +1,7 @@
 import { AbstractNode } from "./AbstractNode.node"
-import { Utils } from "./Utils"
 import { treeNotationTypes } from "../products/treeNotationTypes"
+
+const { Utils } = require("../products/Utils.js")
 
 declare type int = treeNotationTypes.int
 declare type word = treeNotationTypes.word

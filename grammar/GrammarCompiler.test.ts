@@ -58,7 +58,7 @@ testTree.diskTests = equal => {
 testTree.findProjectRoot = equal => {
   const dir = Utils.findProjectRoot(__dirname, "jtree")
   equal(typeof dir, "string")
-  equal(dir.includes("coreTests"), false, "correct parent dir selected")
+  equal(dir.includes("grammar"), false, "correct parent dir selected")
 
   try {
     const result = Utils.findProjectRoot("/foo/bar/", "jtree")

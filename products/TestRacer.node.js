@@ -1,7 +1,7 @@
 const { TreeNode } = require("./TreeNode.js")
 const { Utils } = require("./Utils.js")
-// todo: ensure we have key features from http://testanything.org/tap-version-13-specification.html
-// todo: be able to compile to TAP 13?
+const { Utils } = require("../products/Utils.js")
+const { TreeNode } = require("../products/TreeNode.js")
 class TestRacerTestBlock {
   constructor(testFile, testName, fn) {
     this._parentFile = testFile

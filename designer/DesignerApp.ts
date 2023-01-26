@@ -2,7 +2,7 @@ const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, Abstract
 const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
 const { HandGrammarProgram, GrammarBackedNode, UnknownGrammarProgram } = require("../products/GrammarLanguage.js")
-const { TreeNotationCodeMirrorMode } = require("../products/TreeNotationCodeMirrorMode.js")
+const { GrammarCodeMirrorMode } = require("../products/GrammarCodeMirrorMode.js")
 
 declare var grammarNode: any
 
@@ -204,13 +204,13 @@ class DesignerApp extends AbstractTreeComponent {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
 
-    this.grammarInstance = new TreeNotationCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
+    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
 
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
 
-    this.codeInstance = new TreeNotationCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
 
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
 

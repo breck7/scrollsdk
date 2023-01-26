@@ -301,7 +301,7 @@ class Builder extends TreeNode {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
     this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
-    const codePath = __dirname + "/core/TreeNode.ts"
+    const codePath = __dirname + "/treeNode/TreeNode.ts"
     const code = Disk.read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)
     Disk.write(codePath, code)
     console.log(`Updated ${codePath} to version ${newVersion}`)
@@ -345,8 +345,10 @@ langs
 designer
 sandbox
 kitchen
-core
-coreTests
+treeNode
+swim
+testRacer
+grammar
 utils
 treeBase
 treeComponentFramework`.split("\n")

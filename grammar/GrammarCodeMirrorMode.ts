@@ -196,7 +196,7 @@ interface treeNotationCodeMirrorState {
   cellIndex: number
 }
 
-class TreeNotationCodeMirrorMode {
+class GrammarCodeMirrorMode {
   constructor(name: string, getProgramConstructorFn: () => treeNotationTypes.TreeProgramConstructor, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
     this._getProgramConstructorFn = getProgramConstructorFn
@@ -382,4 +382,4 @@ class TreeNotationCodeMirrorMode {
   }
 }
 
-export { TreeNotationCodeMirrorMode }
+export { GrammarCodeMirrorMode }

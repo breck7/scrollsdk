@@ -5,6 +5,7 @@ class AbstractNode {
     return (hrtime[0] * 1e9 + hrtime[1]) / 1e6
   }
 }
+const { Utils } = require("../products/Utils.js")
 var FileFormat
 ;(function(FileFormat) {
   FileFormat["csv"] = "csv"

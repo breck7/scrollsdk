@@ -6030,7 +6030,7 @@ const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
   const matchingBranch = styleTree[scopeSegments.shift()]
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }
-class TreeNotationCodeMirrorMode {
+class GrammarCodeMirrorMode {
   constructor(name, getProgramConstructorFn, getProgramCodeFn, codeMirrorLib = undefined) {
     this._name = name
     this._getProgramConstructorFn = getProgramConstructorFn
@@ -6185,7 +6185,7 @@ class TreeNotationCodeMirrorMode {
     state.cellIndex = 0
   }
 }
-window.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
+window.GrammarCodeMirrorMode = GrammarCodeMirrorMode
 class jtree {}
 jtree.GrammarBackedNode = GrammarBackedNode
 jtree.GrammarConstants = GrammarConstants
@@ -6197,6 +6197,6 @@ jtree.TreeNode = TreeNode
 jtree.ExtendibleTreeNode = ExtendibleTreeNode
 jtree.HandGrammarProgram = HandGrammarProgram
 jtree.UnknownGrammarProgram = UnknownGrammarProgram
-jtree.TreeNotationCodeMirrorMode = TreeNotationCodeMirrorMode
+jtree.GrammarCodeMirrorMode = GrammarCodeMirrorMode
 jtree.getVersion = () => TreeNode.getVersion()
 window.jtree = jtree

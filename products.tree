@@ -13,25 +13,25 @@ nodeProduct
  insertFirstLine const { Utils } = require("./Utils.js")
  outputFileName TreeNode.js
  insertLastLine module.exports = {TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }
- combineTypeScriptFiles products/treeNotationTypes.ts core/AbstractNode.node.ts core/TreeNode.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts treeNode/AbstractNode.node.ts treeNode/TreeNode.ts
 nodeProduct
  insertFirstLine const { Utils } = require("./Utils.js");  const { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } = require("./TreeNode");
  outputFileName GrammarLanguage.js
  insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError, UnknownGrammarProgram }
- combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarLanguage.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarLanguage.ts
 nodeProduct
  insertFirstLine const { TreeNode } = require("./TreeNode.js"); const { Utils } = require("./Utils.js")
  outputFileName TestRacer.node.js
  insertLastLine module.exports = {TestRacer}
- combineTypeScriptFiles core/TestRacer.ts
+ combineTypeScriptFiles testRacer/TestRacer.ts
 nodeProduct
- outputFileName TreeNotationCodeMirrorMode.js
- insertLastLine module.exports = {TreeNotationCodeMirrorMode}
- combineTypeScriptFiles products/treeNotationTypes.ts core/TreeNotationCodeMirrorMode.ts
+ outputFileName GrammarCodeMirrorMode.js
+ insertLastLine module.exports = {GrammarCodeMirrorMode}
+ combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarCodeMirrorMode.ts
 nodeProduct
  outputFileName GrammarCompiler.js
  insertLastLine module.exports = {GrammarCompiler}
- combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarCompiler.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarCompiler.ts
 nodeProduct
  outputFileName Disk.node.js
  insertLastLine module.exports = {Disk}
@@ -64,24 +64,24 @@ browserProduct
  removeAll window.treeNotationTypes = treeNotationTypes
  combineTypeScriptFiles products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
 browserProduct
- outputFileName core.test.browser.js
+ outputFileName TreeNode.test.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes
- combineTypeScriptFiles products/treeNotationTypes.ts coreTests/core.test.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts treeNode/TreeNode.test.ts
 browserProduct
  outputFileName GrammarLanguage.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes
- combineTypeScriptFiles products/treeNotationTypes.ts core/GrammarLanguage.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarLanguage.ts
 browserProduct
  outputFileName Utils.browser.js
  combineTypeScriptFiles utils/Utils.ts
 browserProduct
  outputFileName TreeNode.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes
- combineTypeScriptFiles products/treeNotationTypes.ts core/AbstractNode.browser.ts core/TreeNode.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts treeNode/AbstractNode.browser.ts treeNode/TreeNode.ts
 browserProduct
  outputFileName TestRacer.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes
- combineTypeScriptFiles products/treeNotationTypes.ts core/TestRacer.ts
+ combineTypeScriptFiles products/treeNotationTypes.ts testRacer/TestRacer.ts
 browserProduct
  outputFileName jtable.browser.js
  removeAll window.jTableTypes = jTableTypes

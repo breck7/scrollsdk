@@ -1,5 +1,6 @@
-import { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } from "./TreeNode"
-import { Utils } from "./Utils"
+const { Utils } = require("../products/Utils.js")
+const { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } = require("../products/TreeNode.js")
+
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 interface AbstractRuntimeProgramConstructorInterface {

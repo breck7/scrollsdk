@@ -9,7 +9,7 @@ const testTree: treeNotationTypes.testTree = {}
 
 testTree.runSwimTests = equal => {
   // Arrange/Act/Assert
-  const tests = TreeNode.fromDisk(__dirname + "/core.swim")
+  const tests = TreeNode.fromDisk(__dirname + "/TreeNode.swim")
   tests.forEach((test: any) => {
     const arrange = test.getNode("arrange").childrenToString() // Note: used in the eval below
     const expected = test.getNode("assert").childrenToString()

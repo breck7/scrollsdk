@@ -5,7 +5,7 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 const { TreeNode } = require("../products/TreeNode.js")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 const { GrammarCompiler } = require("../products/GrammarCompiler.js")
 
 const testTree: treeNotationTypes.testTree = {}

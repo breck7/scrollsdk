@@ -2,7 +2,7 @@
 
 const stamp = require("../../../products/stamp.nodejs.js")
 const fs = require("fs")
-const { TestRacer } = require("../../../products/TestRacer.node.js")
+const { TestRacer } = require("../../../products/TestRacer.js")
 
 const testTree = {}
 

@@ -5,7 +5,7 @@ import { treeNotationTypes } from "../products/treeNotationTypes"
 const testTree: treeNotationTypes.testTree = {}
 const { TreeNode, ExtendibleTreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 
 const testStrings: treeNotationTypes.stringMap = {}
 const testObjects: any = {}

@@ -9,7 +9,7 @@ const DugProgram = require("../products/dug.nodejs.js")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 const { GrammarCodeMirrorMode } = require("../products/GrammarCodeMirrorMode.js")
 
 const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.grammar")
@@ -128,7 +128,7 @@ foobarNode`
 }
 
 testTree.regressionTest = equal => {
-  const code = Disk.read(__dirname + "/TreeNotationCoreMirrorMode.regression.stamp")
+  const code = Disk.read(__dirname + "/GrammarCodeMirrorMode.regression.stamp")
 
   const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("stampNode", () => stamp, () => code))
   const tokenLines = mock.getTokenLines(code)

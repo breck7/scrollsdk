@@ -6,7 +6,7 @@ import { DummyDataSets } from "./DummyDataSets"
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 

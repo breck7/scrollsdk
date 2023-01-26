@@ -4,7 +4,7 @@ import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
 import { TreeBaseServer } from "./TreeBaseServer"
 
 const path = require("path")
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 const { Disk } = require("../products/Disk.node.js")
 
 const folderPath = path.join(__dirname, "planets")

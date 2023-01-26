@@ -2,7 +2,7 @@
 
 import { TableParser } from "./TableParser"
 
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 

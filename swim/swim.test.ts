@@ -3,7 +3,7 @@
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const { TreeNode } = require("../products/TreeNode.js")
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 
 const testTree: treeNotationTypes.testTree = {}
 

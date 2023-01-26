@@ -10,18 +10,15 @@ nodeProduct
  insertLastLine module.exports = {Table, TableParser, Column, Row, DummyDataSets, PrimitiveTypes }
  combineTypeScriptFiles products/treeNotationTypes.ts products/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
 nodeProduct
- insertFirstLine const { Utils } = require("./Utils.js")
  outputFileName TreeNode.js
  insertLastLine module.exports = {TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }
  combineTypeScriptFiles products/treeNotationTypes.ts treeNode/AbstractNode.node.ts treeNode/TreeNode.ts
 nodeProduct
- insertFirstLine const { Utils } = require("./Utils.js");  const { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } = require("./TreeNode");
  outputFileName GrammarLanguage.js
  insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError, UnknownGrammarProgram }
  combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarLanguage.ts
 nodeProduct
- insertFirstLine const { TreeNode } = require("./TreeNode.js"); const { Utils } = require("./Utils.js")
- outputFileName TestRacer.node.js
+ outputFileName TestRacer.js
  insertLastLine module.exports = {TestRacer}
  combineTypeScriptFiles testRacer/TestRacer.ts
 nodeProduct

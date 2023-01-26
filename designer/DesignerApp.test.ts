@@ -2,7 +2,7 @@
 
 const { DesignerApp } = require("./DesignerApp")
 
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 
 const testTree: any = {}
 

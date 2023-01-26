@@ -2,7 +2,7 @@
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 const path = require("path")
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 const { Disk } = require("../products/Disk.node.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const { HandGrammarProgram, UnknownGrammarProgram } = require("../products/GrammarLanguage.js")

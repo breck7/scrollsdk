@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 const fire = require("../../products/fire.nodejs.js")
-const { TestRacer } = require("../../products/TestRacer.node.js")
+const { TestRacer } = require("../../products/TestRacer.js")
 
 const testTree = {}
 

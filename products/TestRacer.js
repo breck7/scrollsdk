@@ -1,5 +1,3 @@
-const { TreeNode } = require("./TreeNode.js")
-const { Utils } = require("./Utils.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 class TestRacerTestBlock {

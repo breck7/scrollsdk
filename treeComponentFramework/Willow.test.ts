@@ -2,7 +2,7 @@
 
 import { WillowBrowser } from "./TreeComponentFramework"
 
-const { TestRacer } = require("../products/TestRacer.node.js")
+const { TestRacer } = require("../products/TestRacer.js")
 
 const testTree: any = {}
 

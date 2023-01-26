@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 
 const numbers = require("../../products/numbers.nodejs.js")
-const { TestRacer } = require("../../products/TestRacer.node.js")
+const { TestRacer } = require("../../products/TestRacer.js")
 
 const testTree = {}
 

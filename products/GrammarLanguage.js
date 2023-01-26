@@ -1,5 +1,3 @@
-const { Utils } = require("./Utils.js")
-const { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } = require("./TreeNode")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode, TreeWord, ExtendibleTreeNode, AbstractExtendibleTreeNode } = require("../products/TreeNode.js")
 // Compiled language parsers will include these files:

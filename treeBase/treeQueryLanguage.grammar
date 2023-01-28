@@ -8,27 +8,40 @@ regexCell
  highlightScope string
 numberCell
  highlightScope constant.numeric
+commentCell
+ highlightScope comment
 columnNameCell
  description The field to search on.
  highlightScope constant.numeric
+blankCell
 treeQueryLanguageNode
  root
  description Tree Query Language is a new language for searching a TreeBase.
  catchAllNodeType catchAllErrorNode
- inScope abstractQueryNode
+ inScope abstractQueryNode blankLineNode commentNode
 abstractQueryNode
  cells keywordCell
+ inScope abstractQueryNode commentNode
 catchAllErrorNode
  baseNodeType errorNode
-lineOfSearchNode
- catchAllCellType stringCell
- catchAllNodeType lineOfSearchNode
+commentNode
+ description Comments are ignored.
+ crux #
+ cells commentCell
+ catchAllCellType commentCell
+ catchAllNodeType commentNode
+blankLineNode
+ description Blank lines are ignored.
+ cells blankCell
+ compiler
+  stringTemplate 
+ pattern ^$
+ tags doNotSynthesize
+ boolean shouldSerialize false
 includesTextNode
  extends abstractQueryNode
  description A plain text exact match search.
  catchAllCellType stringCell
- catchAllNodeType lineOfSearchNode
- baseNodeType blobNode
  crux *
 doesNotIncludeTextNode
  description Find files that do NOT match this plain text search.

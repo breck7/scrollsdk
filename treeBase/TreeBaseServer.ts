@@ -24,20 +24,14 @@ class TreeBaseServer {
     this.websitePath = websitePath
     this.homepage = Disk.read(path.join(this.websitePath, "index.html"))
 
-    const app = express() 
+    const app = express()
     this.app = app
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
     app.use((req: any, res: any, next: any) => {
       res.setHeader("Access-Control-Allow-Origin", "*")
-      res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-      )
-      res.setHeader(
-        "Access-Control-Allow-Headers",
-        "X-Requested-With,content-type"
-      )
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE")
+      res.setHeader("Access-Control-Allow-Headers", "X-Requested-With,content-type")
       res.setHeader("Access-Control-Allow-Credentials", true)
       next()
     })
@@ -46,44 +40,27 @@ class TreeBaseServer {
 
     app.use(express.static(__dirname))
 
-    if (websitePath)
-      app.use(express.static(websitePath))
+    if (websitePath) app.use(express.static(websitePath))
 
     const searchServer = new SearchServer(folder)
     this.searchServer = searchServer
     const searchLogPath = path.join(searchLogFolder, "searchLog.tree")
-    if (searchLogFolder)
-      Disk.touch(searchLogPath)
-    
+    if (searchLogFolder) Disk.touch(searchLogPath)
 
     const searchHTMLCache: any = {}
     app.get("/search", (req: any, res: any) => {
-      const originalQuery = req.query.q ?? ""
+      const originalQuery = req.query.q === undefined ? "" : req.query.q
 
+      if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
 
-      if (searchLogFolder)
-      searchServer.logQuery(searchLogPath, originalQuery, req.ip)
-
-      if (!searchHTMLCache[originalQuery])
-        searchHTMLCache[originalQuery] = this.scrollToHtml(
-          searchServer.search(
-            originalQuery,
-            "html",
-            ["id", "title", "type", "appeared"],
-            "id"
-          )
-        )
+      if (!searchHTMLCache[originalQuery]) searchHTMLCache[originalQuery] = this.scrollToHtml(searchServer.search(originalQuery, "html", ["id", "title", "type", "appeared"], "id"))
 
       res.send(searchHTMLCache[originalQuery])
     })
   }
 
   listen(port = 4444) {
-    this.app.listen(port, () =>
-      console.log(
-        `TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`
-      )
-    )
+    this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
   }
 
@@ -91,7 +68,7 @@ class TreeBaseServer {
   scrollToHtml(scrollContent: string) {
     return scrollContent
   }
-  
+
   listenProd(pemPath: string) {
     const key = fs.readFileSync(path.join(pemPath, "privkey.pem"))
     const cert = fs.readFileSync(path.join(pemPath, "fullchain.pem"))
@@ -106,9 +83,7 @@ class TreeBaseServer {
       .listen(443)
 
     const redirectApp = express()
-    redirectApp.use((req: any, res: any) =>
-      res.redirect(301, `https://${req.headers.host}${req.url}`)
-    )
+    redirectApp.use((req: any, res: any) => res.redirect(301, `https://${req.headers.host}${req.url}`))
     redirectApp.listen(80, () => console.log(`Running redirect app`))
     return this
   }
@@ -132,6 +107,14 @@ class SearchServer {
 `
     fs.appendFile(logFilePath, tree, function() {})
     return this
+  }
+
+  treeQueryLanguageSearch(treeQLProgramCode: string): string {
+    const treeQLProgram: any = treeQLProgramCode
+    const startTime = Date.now()
+    const { folder } = this
+    const results = treeQLProgram.execute(folder)
+    return results
   }
 
   search(originalQuery: string, format = "html", columns = ["id"], idColumnName = "id"): string {
@@ -179,7 +162,7 @@ viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.
 
 html
  <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="${
-    this.searchUrl
+   this.searchUrl
  }"><input name="q" placeholder="Search" autocomplete="off" type="search" id="searchFormInput"><input class="searchButton" type="submit" value="Search"></form></div>
  <script>document.addEventListener("DOMContentLoaded", evt => initSearchAutocomplete("searchFormInput"))</script>
 

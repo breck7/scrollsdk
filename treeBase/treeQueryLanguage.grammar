@@ -1,0 +1,59 @@
+keywordCell
+ highlightScope keyword
+treeQueryLanguageNode
+ root
+ description Tree Query Language is a new language for searching a TreeBase.
+ catchAllNodeType catchAllErrorNode
+ inScope abstractQueryNode
+abstractQueryNode
+ cells keywordCell
+catchAllErrorNode
+ baseNodeType errorNode
+idIsOneOfNode
+ extends abstractQueryNode
+ crux id
+idIsNotOneOfNode
+ extends idIsOneOfNode
+ crux !id
+includesTextNode
+ extends abstractQueryNode
+ crux *
+includesBlockNode
+ description Run a multiline text search.
+ extends includesTextNode
+ crux **
+doesNotIncludeTextNode
+ extends includesTextNode
+ crux !*
+matchesNode
+ extends abstractQueryNode
+ crux /
+doesNotMatchNode
+ extends matchesNode
+ crux !/
+abstractComparisonNode
+ extends abstractQueryNode
+greaterThanNode
+ extends abstractComparisonNode
+ crux >
+lessThanNode
+ extends abstractComparisonNode
+ crux >
+equalsNode
+ extends abstractComparisonNode
+ crux =
+doesNotEqualNode
+ extends abstractComparisonNode
+ crux !=
+fieldIsMissingNode
+ extends abstractQueryNode
+ crux ?
+fieldIsNotMissingNode
+ extends fieldIsMissingNode
+ crux !?
+listIncludesNode
+ extends abstractQueryNode
+ crux +
+listDoesNotIncludeNode
+ extends listIncludesNode
+ crux -

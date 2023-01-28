@@ -1,5 +1,16 @@
 keywordCell
  highlightScope keyword
+stringCell
+ highlightScope string
+permalinkCell
+ highlightScole string
+regexCell
+ highlightScope string
+numberCell
+ highlightScope constant.numeric
+columnNameCell
+ description The field to search on.
+ highlightScope constant.numeric
 treeQueryLanguageNode
  root
  description Tree Query Language is a new language for searching a TreeBase.
@@ -9,51 +20,73 @@ abstractQueryNode
  cells keywordCell
 catchAllErrorNode
  baseNodeType errorNode
-idIsOneOfNode
- extends abstractQueryNode
- crux id
-idIsNotOneOfNode
- extends idIsOneOfNode
- crux !id
+lineOfSearchNode
+ catchAllCellType stringCell
+ catchAllNodeType lineOfSearchNode
 includesTextNode
  extends abstractQueryNode
+ description A plain text exact match search.
+ catchAllCellType stringCell
+ catchAllNodeType lineOfSearchNode
+ baseNodeType blobNode
  crux *
-includesBlockNode
- description Run a multiline text search.
- extends includesTextNode
- crux **
 doesNotIncludeTextNode
+ description Find files that do NOT match this plain text search.
  extends includesTextNode
  crux !*
 matchesNode
+ description Search by regex.
  extends abstractQueryNode
+ catchAllCellType regexCell
  crux /
 doesNotMatchNode
+ description Find files that do NOT match this regex.
  extends matchesNode
  crux !/
 abstractComparisonNode
  extends abstractQueryNode
+ cells keywordCell columnNameCell numberCell
 greaterThanNode
+ description Find files whose value in the given column are greater than this.
  extends abstractComparisonNode
  crux >
 lessThanNode
+ description Find files whose value in the given column are less than this.
  extends abstractComparisonNode
- crux >
+ crux <
 equalsNode
+ description Find files whose value in the given column are equal to this.
  extends abstractComparisonNode
  crux =
 doesNotEqualNode
+ description Find files whose value in the given column does not equal this.
  extends abstractComparisonNode
  crux !=
 fieldIsMissingNode
+ description Find files whose value in the given column is missing.
  extends abstractQueryNode
+ cells keywordCell columnNameCell
  crux ?
 fieldIsNotMissingNode
+ description Find files whose value in the given column is not missing.
  extends fieldIsMissingNode
  crux !?
 listIncludesNode
+ description Find files whose value in the given list column includes this.
  extends abstractQueryNode
+ cells keywordCell columnNameCell
+ catchAllCellType stringCell
  crux +
 listDoesNotIncludeNode
+ description Find files whose value in the given list column does NOT include this.
  extends listIncludesNode
  crux -
+idIsOneOfNode
+ description Find files whose permalink is included in this list.
+ extends abstractQueryNode
+ crux id
+ catchAllCellType permalinkCell
+idIsNotOneOfNode
+ description Find files whose permalink is NOT in this list.
+ extends idIsOneOfNode
+ crux !id

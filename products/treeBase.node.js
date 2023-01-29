@@ -135,6 +135,9 @@ class TreeBaseFile extends TreeNode {
     const programParser = this.base.grammarProgramConstructor
     return new programParser(this.childrenToString())
   }
+  get typed() {
+    return this.parsed.typedTuple[1]
+  }
 }
 class TreeBaseFolder extends TreeNode {
   constructor() {
@@ -172,10 +175,7 @@ class TreeBaseFolder extends TreeNode {
   get typedMap() {
     this.loadFolder()
     const map = {}
-    this.forEach(file => {
-      const [id, value] = file.parsed.typedTuple
-      map[file.id] = value
-    })
+    this.forEach(file => (map[file.id] = file.typed))
     return map
   }
   // todo: RAII?

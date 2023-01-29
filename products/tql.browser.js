@@ -4,21 +4,14 @@
       return new TreeNode.Parser(
         catchAllErrorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          "#": commentNode,
-          "*": includesTextNode,
-          "!*": doesNotIncludeTextNode,
-          "/": matchesNode,
-          "!/": doesNotMatchNode,
-          ">": greaterThanNode,
-          "<": lessThanNode,
-          "=": equalsNode,
-          "!=": doesNotEqualNode,
-          "?": fieldIsMissingNode,
-          "!?": fieldIsNotMissingNode,
-          "+": listIncludesNode,
-          "-": listDoesNotIncludeNode,
-          id: idIsOneOfNode,
-          "!id": idIsNotOneOfNode
+          has: includesTextNode,
+          hasNo: doesNotIncludeTextNode,
+          where: whereNode,
+          missing: fieldIsMissingNode,
+          notMissing: fieldIsNotMissingNode,
+          matching: matchesNode,
+          notMatching: doesNotMatchNode,
+          "#": commentNode
         }),
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
@@ -37,6 +30,8 @@
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
  highlightScope keyword
+comparisonCell
+ enum < > = != has hasNo
 stringCell
  highlightScope string
 permalinkCell
@@ -44,6 +39,8 @@ permalinkCell
 regexCell
  highlightScope string
 numberCell
+ highlightScope constant.numeric
+numberOrStringCell
  highlightScope constant.numeric
 commentCell
  highlightScope comment
@@ -78,12 +75,6 @@ abstractQueryNode
   }
 catchAllErrorNode
  baseNodeType errorNode
-commentNode
- description Comments are ignored.
- crux #
- cells commentCell
- catchAllCellType commentCell
- catchAllNodeType commentNode
 blankLineNode
  description Blank lines are ignored.
  cells blankCell
@@ -94,24 +85,71 @@ blankLineNode
  boolean shouldSerialize false
 includesTextNode
  extends abstractQueryNode
- description A plain text case insensitive search.
+ description Global text search against each file. Case insensitive.
  catchAllCellType stringCell
- crux *
+ crux has
  javascript
   toPredicate() {
     const query = this.getContent().toLowerCase()
     return file => file.lowercase.includes(query)
   }
 doesNotIncludeTextNode
- description Find files that do NOT match this plain text case insensitive search.
+ description Reverse of global text search against each file. Case insensitive.
  extends includesTextNode
- crux !*
+ crux hasNo
+ boolean flip true
+whereNode
+ description Find files whose value in the given column meet this condition.
+ extends abstractQueryNode
+ cells keywordCell columnNameCell comparisonCell
+ catchAllCellType numberOrStringCell
+ crux where
+ javascript
+  get columnName() {
+    return this.getWord(1)
+  }
+  get operator() {
+    return this.getWord(2)
+  }
+  get numericValue() {
+    return parseFloat(this.getWord(3))
+  }
+  toPredicate() {
+    const {columnName, operator} = this
+    if (operator === ">")
+      return file => file.parsed[columnName] > this.numericValue
+    if (operator === "<")
+      return file => file.parsed[columnName] < this.numericValue
+    const stringValue = this.getWordsFrom(3).join(" ")
+    if (operator === "=")
+      return file => file.parsed[columnName] == this.numericValue
+    if (operator === "!=")
+      return file => file.parsed[columnName] != this.numericValue
+    if (operator === "has")
+      return file => file.parsed[columnName].includes(stringValue)
+    if (operator === "hasNo")
+      return file => !file.parsed[columnName].includes(stringValue)
+  }
+fieldIsMissingNode
+ description Find files whose value in the given column is missing.
+ extends abstractQueryNode
+ cells keywordCell columnNameCell
+ crux missing
+ javascript
+  toPredicate() {
+    const columnName = this.getWord(1)
+    return file => !file.has(columnName)
+  }
+fieldIsNotMissingNode
+ description Find files whose value in the given column is not missing.
+ extends fieldIsMissingNode
+ crux notMissing
  boolean flip true
 matchesNode
  description Search by regex.
  extends abstractQueryNode
  catchAllCellType regexCell
- crux /
+ crux matching
  javascript
   toPredicate() {
     const regex = new RegExp(this.getContent())
@@ -120,94 +158,14 @@ matchesNode
 doesNotMatchNode
  description Find files that do NOT match this regex.
  extends matchesNode
- crux !/
+ crux notMatching
  boolean flip true
-abstractComparisonNode
- extends abstractQueryNode
- cells keywordCell columnNameCell numberCell
- javascript
-  get columnName() {
-    return this.getWord(1)
-  }
-  get comparisonValue() {
-    return parseFloat(this.getWord(2))
-  }
-greaterThanNode
- description Find files whose value in the given column are greater than this number.
- extends abstractComparisonNode
- crux >
- javascript
-  toPredicate() {
-    return file => file[this.columnName] > this.comparisonValue
-  }
-lessThanNode
- description Find files whose value in the given column are less than this number.
- extends abstractComparisonNode
- crux <
- javascript
-  toPredicate() {
-    return file => file[this.columnName] < this.comparisonValue
-  }
-equalsNode
- description Find files whose value in the given column are equal to this number.
- extends abstractComparisonNode
- crux =
- javascript
-  toPredicate() {
-    return file => file[this.columnName] === this.comparisonValue
-  }
-doesNotEqualNode
- description Find files whose value in the given column does not equal this.
- extends abstractComparisonNode
- crux !=
- javascript
-  toPredicate() {
-    return file => file[this.columnName] !== this.comparisonValue
-  }
-fieldIsMissingNode
- description Find files whose value in the given column is missing.
- extends abstractComparisonNode
- cells keywordCell columnNameCell
- crux ?
- javascript
-  toPredicate() {
-    return file => file.has(this.columnName)
-  }
-fieldIsNotMissingNode
- description Find files whose value in the given column is not missing.
- extends fieldIsMissingNode
- crux !?
- boolean flip true
-listIncludesNode
- description Find files whose value in the given list column includes this.
- extends abstractComparisonNode
- cells keywordCell columnNameCell
- catchAllCellType stringCell
- crux +
- javascript
-  toPredicate() {
-    return file => file[this.columnName].includes(this.getWordsFrom(2).join(" "))
-  }
-listDoesNotIncludeNode
- description Find files whose value in the given list column does NOT include this.
- extends listIncludesNode
- crux -
- boolean flip true
-idIsOneOfNode
- description Find files whose permalink is included in this list.
- extends abstractQueryNode
- crux id
- catchAllCellType permalinkCell
- javascript
-  toPredicate() {
-    const okayList = this.getWordsFrom(1)
-    return file => okayList.includes(file.id)
-  }
-idIsNotOneOfNode
- description Find files whose permalink is NOT in this list.
- extends idIsOneOfNode
- boolean flip true
- crux !id`)
+commentNode
+ description Comments are ignored.
+ crux #
+ cells commentCell
+ catchAllCellType commentCell
+ catchAllNodeType commentNode`)
     getHandGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
@@ -216,23 +174,15 @@ idIsNotOneOfNode
         tqlNode: tqlNode,
         abstractQueryNode: abstractQueryNode,
         catchAllErrorNode: catchAllErrorNode,
-        commentNode: commentNode,
         blankLineNode: blankLineNode,
         includesTextNode: includesTextNode,
         doesNotIncludeTextNode: doesNotIncludeTextNode,
-        matchesNode: matchesNode,
-        doesNotMatchNode: doesNotMatchNode,
-        abstractComparisonNode: abstractComparisonNode,
-        greaterThanNode: greaterThanNode,
-        lessThanNode: lessThanNode,
-        equalsNode: equalsNode,
-        doesNotEqualNode: doesNotEqualNode,
+        whereNode: whereNode,
         fieldIsMissingNode: fieldIsMissingNode,
         fieldIsNotMissingNode: fieldIsNotMissingNode,
-        listIncludesNode: listIncludesNode,
-        listDoesNotIncludeNode: listDoesNotIncludeNode,
-        idIsOneOfNode: idIsOneOfNode,
-        idIsNotOneOfNode: idIsNotOneOfNode
+        matchesNode: matchesNode,
+        doesNotMatchNode: doesNotMatchNode,
+        commentNode: commentNode
       }
     }
   }
@@ -242,21 +192,14 @@ idIsNotOneOfNode
       return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          "#": commentNode,
-          "*": includesTextNode,
-          "!*": doesNotIncludeTextNode,
-          "/": matchesNode,
-          "!/": doesNotMatchNode,
-          ">": greaterThanNode,
-          "<": lessThanNode,
-          "=": equalsNode,
-          "!=": doesNotEqualNode,
-          "?": fieldIsMissingNode,
-          "!?": fieldIsNotMissingNode,
-          "+": listIncludesNode,
-          "-": listDoesNotIncludeNode,
-          id: idIsOneOfNode,
-          "!id": idIsNotOneOfNode
+          has: includesTextNode,
+          hasNo: doesNotIncludeTextNode,
+          where: whereNode,
+          missing: fieldIsMissingNode,
+          notMissing: fieldIsNotMissingNode,
+          matching: matchesNode,
+          notMatching: doesNotMatchNode,
+          "#": commentNode
         }),
         undefined
       )
@@ -272,18 +215,6 @@ idIsNotOneOfNode
   class catchAllErrorNode extends GrammarBackedNode {
     getErrors() {
       return this._getErrorNodeErrors()
-    }
-  }
-
-  class commentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(commentNode, undefined, undefined)
-    }
-    get commentCell() {
-      return this.getWord(0)
-    }
-    get commentCell() {
-      return this.getWordsFrom(1)
     }
   }
 
@@ -312,6 +243,59 @@ idIsNotOneOfNode
     }
   }
 
+  class whereNode extends abstractQueryNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get columnNameCell() {
+      return this.getWord(1)
+    }
+    get comparisonCell() {
+      return this.getWord(2)
+    }
+    get numberOrStringCell() {
+      return this.getWordsFrom(3)
+    }
+    get columnName() {
+      return this.getWord(1)
+    }
+    get operator() {
+      return this.getWord(2)
+    }
+    get numericValue() {
+      return parseFloat(this.getWord(3))
+    }
+    toPredicate() {
+      const { columnName, operator } = this
+      if (operator === ">") return file => file.parsed[columnName] > this.numericValue
+      if (operator === "<") return file => file.parsed[columnName] < this.numericValue
+      const stringValue = this.getWordsFrom(3).join(" ")
+      if (operator === "=") return file => file.parsed[columnName] == this.numericValue
+      if (operator === "!=") return file => file.parsed[columnName] != this.numericValue
+      if (operator === "has") return file => file.parsed[columnName].includes(stringValue)
+      if (operator === "hasNo") return file => !file.parsed[columnName].includes(stringValue)
+    }
+  }
+
+  class fieldIsMissingNode extends abstractQueryNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get columnNameCell() {
+      return this.getWord(1)
+    }
+    toPredicate() {
+      const columnName = this.getWord(1)
+      return file => !file.has(columnName)
+    }
+  }
+
+  class fieldIsNotMissingNode extends fieldIsMissingNode {
+    get flip() {
+      return true
+    }
+  }
+
   class matchesNode extends abstractQueryNode {
     get regexCell() {
       return this.getWordsFrom(0)
@@ -328,100 +312,15 @@ idIsNotOneOfNode
     }
   }
 
-  class abstractComparisonNode extends abstractQueryNode {
-    get keywordCell() {
+  class commentNode extends GrammarBackedNode {
+    createParser() {
+      return new TreeNode.Parser(commentNode, undefined, undefined)
+    }
+    get commentCell() {
       return this.getWord(0)
     }
-    get columnNameCell() {
-      return this.getWord(1)
-    }
-    get numberCell() {
-      return parseFloat(this.getWord(2))
-    }
-    get columnName() {
-      return this.getWord(1)
-    }
-    get comparisonValue() {
-      return parseFloat(this.getWord(2))
-    }
-  }
-
-  class greaterThanNode extends abstractComparisonNode {
-    toPredicate() {
-      return file => file[this.columnName] > this.comparisonValue
-    }
-  }
-
-  class lessThanNode extends abstractComparisonNode {
-    toPredicate() {
-      return file => file[this.columnName] < this.comparisonValue
-    }
-  }
-
-  class equalsNode extends abstractComparisonNode {
-    toPredicate() {
-      return file => file[this.columnName] === this.comparisonValue
-    }
-  }
-
-  class doesNotEqualNode extends abstractComparisonNode {
-    toPredicate() {
-      return file => file[this.columnName] !== this.comparisonValue
-    }
-  }
-
-  class fieldIsMissingNode extends abstractComparisonNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get columnNameCell() {
-      return this.getWord(1)
-    }
-    toPredicate() {
-      return file => file.has(this.columnName)
-    }
-  }
-
-  class fieldIsNotMissingNode extends fieldIsMissingNode {
-    get flip() {
-      return true
-    }
-  }
-
-  class listIncludesNode extends abstractComparisonNode {
-    get keywordCell() {
-      return this.getWord(0)
-    }
-    get columnNameCell() {
-      return this.getWord(1)
-    }
-    get stringCell() {
-      return this.getWordsFrom(2)
-    }
-    toPredicate() {
-      return file => file[this.columnName].includes(this.getWordsFrom(2).join(" "))
-    }
-  }
-
-  class listDoesNotIncludeNode extends listIncludesNode {
-    get flip() {
-      return true
-    }
-  }
-
-  class idIsOneOfNode extends abstractQueryNode {
-    get permalinkCell() {
-      return this.getWordsFrom(0)
-    }
-    toPredicate() {
-      const okayList = this.getWordsFrom(1)
-      return file => okayList.includes(file.id)
-    }
-  }
-
-  class idIsNotOneOfNode extends idIsOneOfNode {
-    get flip() {
-      return true
+    get commentCell() {
+      return this.getWordsFrom(1)
     }
   }
 

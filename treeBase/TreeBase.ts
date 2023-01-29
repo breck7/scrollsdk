@@ -173,6 +173,10 @@ class TreeBaseFile extends TreeNode {
     const programParser = this.base.grammarProgramConstructor
     return new programParser(this.childrenToString())
   }
+
+  get typed() {
+    return this.parsed.typedTuple[1]
+  }
 }
 
 class TreeBaseFolder extends TreeNode {
@@ -208,10 +212,7 @@ class TreeBaseFolder extends TreeNode {
   get typedMap() {
     this.loadFolder()
     const map: treeNotationTypes.stringMap = {}
-    this.forEach((file: any) => {
-      const [id, value] = file.parsed.typedTuple
-      map[file.id] = value
-    })
+    this.forEach((file: any) => (map[file.id] = file.typed))
     return map
   }
 

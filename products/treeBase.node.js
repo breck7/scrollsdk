@@ -188,7 +188,7 @@ class TreeBaseFolder extends TreeNode {
     return this
   }
   // todo: need to RAII this. Likely just not have TreeBaseFolder extend TreeNode
-  setDir(dir) {
+  setDir(dir, fileExtension = "") {
     this.dir = dir
     return this
   }
@@ -213,7 +213,8 @@ class TreeBaseFolder extends TreeNode {
   }
   // todo: cleanup the filtering here.
   _filterFiles(files) {
-    return files.filter(file => !file.endsWith(GrammarConstants.grammarFileExtension))
+    if (!this.fileExtension) return files
+    return files.filter(file => file.endsWith(this.fileExtension))
   }
   startListeningForFileChanges() {
     this.loadFolder()

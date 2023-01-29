@@ -17,12 +17,10 @@ class TreeBaseServer {
   folder: TreeBaseFolder
   app: any
   websitePath: string
-  homepage: string
   searchServer: SearchServer
   constructor(folder: TreeBaseFolder, websitePath = "", searchLogFolder = "") {
     this.folder = folder
     this.websitePath = websitePath
-    this.homepage = Disk.read(path.join(this.websitePath, "index.html"))
 
     const app = express()
     this.app = app
@@ -35,8 +33,6 @@ class TreeBaseServer {
       res.setHeader("Access-Control-Allow-Credentials", true)
       next()
     })
-
-    app.get("/", (req: any, res: any) => res.send(this.homepage))
 
     app.use(express.static(__dirname))
 

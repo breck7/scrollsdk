@@ -230,7 +230,7 @@ class TreeBaseFolder extends TreeNode {
   }
 
   // todo: need to RAII this. Likely just not have TreeBaseFolder extend TreeNode
-  setDir(dir: string) {
+  setDir(dir: string, fileExtension = "") {
     this.dir = dir
     return this
   }
@@ -267,7 +267,8 @@ class TreeBaseFolder extends TreeNode {
 
   // todo: cleanup the filtering here.
   private _filterFiles(files: string[]) {
-    return files.filter((file: string) => !file.endsWith(GrammarConstants.grammarFileExtension))
+    if (!this.fileExtension) return files
+    return files.filter((file: string) => file.endsWith(this.fileExtension))
   }
 
   private _fsWatcher: any

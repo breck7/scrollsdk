@@ -11,7 +11,6 @@ class TreeBaseServer {
   constructor(folder, websitePath = "", searchLogFolder = "") {
     this.folder = folder
     this.websitePath = websitePath
-    this.homepage = Disk.read(path.join(this.websitePath, "index.html"))
     const app = express()
     this.app = app
     app.use(bodyParser.urlencoded({ extended: false }))
@@ -23,7 +22,6 @@ class TreeBaseServer {
       res.setHeader("Access-Control-Allow-Credentials", true)
       next()
     })
-    app.get("/", (req, res) => res.send(this.homepage))
     app.use(express.static(__dirname))
     if (websitePath) app.use(express.static(websitePath))
     const searchServer = new SearchServer(folder)
@@ -32,8 +30,7 @@ class TreeBaseServer {
     if (searchLogFolder) Disk.touch(searchLogPath)
     const searchHTMLCache = {}
     app.get("/search", (req, res) => {
-      var _a
-      const originalQuery = (_a = req.query.q) !== null && _a !== void 0 ? _a : ""
+      const originalQuery = req.query.q === undefined ? "" : req.query.q
       if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
       if (!searchHTMLCache[originalQuery]) searchHTMLCache[originalQuery] = this.scrollToHtml(searchServer.search(originalQuery, "html", ["id", "title", "type", "appeared"], "id"))
       res.send(searchHTMLCache[originalQuery])
@@ -79,6 +76,13 @@ class SearchServer {
 `
     fs.appendFile(logFilePath, tree, function() {})
     return this
+  }
+  treeQueryLanguageSearch(treeQLProgramCode) {
+    const treeQLProgram = treeQLProgramCode
+    const startTime = Date.now()
+    const { folder } = this
+    const results = treeQLProgram.execute(folder)
+    return results
   }
   search(originalQuery, format = "html", columns = ["id"], idColumnName = "id") {
     const query = decodeURIComponent(originalQuery)

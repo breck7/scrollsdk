@@ -1,0 +1,14 @@
+permalink index.html
+startColumns 1
+
+title PlanetsDB
+
+# This is a demo TreeBase
+* It contains a file for each planet.
+* You can test the search:
+
+html
+ <form method="GET" action="search">
+ <textarea name="q"></textarea>
+ <input type="submit">
+ </form>

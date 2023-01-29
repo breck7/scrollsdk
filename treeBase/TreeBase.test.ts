@@ -34,7 +34,7 @@ testTree.sqlLite = (equal: any) => {
   // Arrange
   const folder = getFolder()
   // Act/Assert
-  equal(folder.toSQLite(), Disk.read(path.join(__dirname, "planets.sql")), "sqlite works")
+  equal(folder.toSQLite(), Disk.read(path.join(folderPath, "planets.sql")), "sqlite works")
 }
 
 testTree.toTypedMap = (equal: any) => {

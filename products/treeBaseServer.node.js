@@ -84,11 +84,10 @@ class SearchServer {
     return this
   }
   treeQueryLanguageSearch(treeQLProgram) {
-    const { folder } = this
-    const tests = treeQLProgram.toTests()
-    const predicate = file => tests.every(fn => fn(file))
-    const hits = folder.filter(file => predicate(file))
-    return hits.map(file => file.id).join("\n")
+    return treeQLProgram
+      .filterFolder(this.folder)
+      .map(file => file.id)
+      .join("\n")
   }
   search(query, format = "html", columns = ["id"], idColumnName = "id") {
     const startTime = Date.now()

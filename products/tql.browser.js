@@ -23,12 +23,17 @@
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
     }
-    toTests() {
+    get tests() {
       const tests = this.filter(node => node.toPredicate).map(node => {
         const predicate = node.toPredicate()
         return node.flip ? file => !predicate(file) : predicate
       })
       return tests
+    }
+    filterFolder(treeBaseFolder) {
+      const { tests } = this
+      const predicate = file => tests.every(fn => fn(file))
+      return treeBaseFolder.filter(file => predicate(file))
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
  highlightScope keyword
@@ -52,12 +57,17 @@ tqlNode
  catchAllNodeType catchAllErrorNode
  inScope abstractQueryNode blankLineNode commentNode
  javascript
-  toTests() {
+  get tests() {
     const tests = this.filter(node => node.toPredicate).map(node => {
         const predicate = node.toPredicate()
         return node.flip ? (file) => !predicate(file)  : predicate
     })
     return tests
+  }
+  filterFolder(treeBaseFolder) {
+    const {tests} = this
+    const predicate = file => tests.every(fn => fn(file))
+    return treeBaseFolder.filter(file => predicate(file))
   }
 abstractQueryNode
  cells keywordCell

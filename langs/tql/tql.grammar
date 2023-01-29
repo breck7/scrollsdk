@@ -14,14 +14,26 @@ columnNameCell
  description The field to search on.
  highlightScope constant.numeric
 blankCell
-treeQueryLanguageNode
+tqlNode
  root
- description Tree Query Language is a new language for searching a TreeBase.
+ description Tree Query Language (TQL) is a new language for searching a TreeBase.
  catchAllNodeType catchAllErrorNode
  inScope abstractQueryNode blankLineNode commentNode
+ javascript
+  toTests() {
+    const tests = this.filter(node => node.toPredicate).map(node => {
+        const predicate = node.toPredicate()
+        return node.flip ? (file) => !predicate(file)  : predicate
+    })
+    return tests
+  }
 abstractQueryNode
  cells keywordCell
  inScope abstractQueryNode commentNode
+ javascript
+  toPredicate() {
+    return () => true
+  }
 catchAllErrorNode
  baseNodeType errorNode
 commentNode
@@ -40,66 +52,117 @@ blankLineNode
  boolean shouldSerialize false
 includesTextNode
  extends abstractQueryNode
- description A plain text exact match search.
+ description A plain text case insensitive search.
  catchAllCellType stringCell
  crux *
+ javascript
+  toPredicate() {
+    const query = this.getContent().toLowerCase()
+    return file => file.lowercase.includes(query)
+  }
 doesNotIncludeTextNode
- description Find files that do NOT match this plain text search.
+ description Find files that do NOT match this plain text case insensitive search.
  extends includesTextNode
  crux !*
+ boolean flip true
 matchesNode
  description Search by regex.
  extends abstractQueryNode
  catchAllCellType regexCell
  crux /
+ javascript
+  toPredicate() {
+    const regex = new RegExp(this.getContent())
+    return file => regex.test(file.toString())
+  }
 doesNotMatchNode
  description Find files that do NOT match this regex.
  extends matchesNode
  crux !/
+ boolean flip true
 abstractComparisonNode
  extends abstractQueryNode
  cells keywordCell columnNameCell numberCell
+ javascript
+  get columnName() {
+    return this.getWord(1)
+  }
+  get comparisonValue() {
+    return parseFloat(this.getWord(2))
+  }
 greaterThanNode
- description Find files whose value in the given column are greater than this.
+ description Find files whose value in the given column are greater than this number.
  extends abstractComparisonNode
  crux >
+ javascript
+  toPredicate() {
+    return file => file[this.columnName] > this.comparisonValue
+  }
 lessThanNode
- description Find files whose value in the given column are less than this.
+ description Find files whose value in the given column are less than this number.
  extends abstractComparisonNode
  crux <
+ javascript
+  toPredicate() {
+    return file => file[this.columnName] < this.comparisonValue
+  }
 equalsNode
- description Find files whose value in the given column are equal to this.
+ description Find files whose value in the given column are equal to this number.
  extends abstractComparisonNode
  crux =
+ javascript
+  toPredicate() {
+    return file => file[this.columnName] === this.comparisonValue
+  }
 doesNotEqualNode
  description Find files whose value in the given column does not equal this.
  extends abstractComparisonNode
  crux !=
+ javascript
+  toPredicate() {
+    return file => file[this.columnName] !== this.comparisonValue
+  }
 fieldIsMissingNode
  description Find files whose value in the given column is missing.
- extends abstractQueryNode
+ extends abstractComparisonNode
  cells keywordCell columnNameCell
  crux ?
+ javascript
+  toPredicate() {
+    return file => file.has(this.columnName)
+  }
 fieldIsNotMissingNode
  description Find files whose value in the given column is not missing.
  extends fieldIsMissingNode
  crux !?
+ boolean flip true
 listIncludesNode
  description Find files whose value in the given list column includes this.
- extends abstractQueryNode
+ extends abstractComparisonNode
  cells keywordCell columnNameCell
  catchAllCellType stringCell
  crux +
+ javascript
+  toPredicate() {
+    return file => file[this.columnName].includes(this.getWordsFrom(2).join(" "))
+  }
 listDoesNotIncludeNode
  description Find files whose value in the given list column does NOT include this.
  extends listIncludesNode
  crux -
+ boolean flip true
 idIsOneOfNode
  description Find files whose permalink is included in this list.
  extends abstractQueryNode
  crux id
  catchAllCellType permalinkCell
+ javascript
+  toPredicate() {
+    const okayList = this.getWordsFrom(1)
+    return file => okayList.includes(file.id)
+  }
 idIsNotOneOfNode
  description Find files whose permalink is NOT in this list.
  extends idIsOneOfNode
+ boolean flip true
  crux !id

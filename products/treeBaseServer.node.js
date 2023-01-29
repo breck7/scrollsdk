@@ -7,6 +7,7 @@ const bodyParser = require("body-parser")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
+const tqlNode = require("../products/tql.nodejs.js")
 class TreeBaseServer {
   constructor(folder, websitePath = "", searchLogFolder = "") {
     this.folder = folder
@@ -32,7 +33,12 @@ class TreeBaseServer {
     app.get("/search", (req, res) => {
       const originalQuery = req.query.q === undefined ? "" : req.query.q
       if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
-      if (!searchHTMLCache[originalQuery]) searchHTMLCache[originalQuery] = this.scrollToHtml(searchServer.search(originalQuery, "html", ["id", "title", "type", "appeared"], "id"))
+      if (searchHTMLCache[originalQuery]) return res.send(searchHTMLCache[originalQuery])
+      const decodedQuery = decodeURIComponent(originalQuery).replace(/\r/g, "")
+      const treeQLProgram = new tqlNode(decodedQuery)
+      const hasErrors = treeQLProgram.getAllErrors().length > 0
+      const results = !hasErrors ? searchServer.treeQueryLanguageSearch(treeQLProgram) : searchServer.search(decodedQuery, "html", ["id", "title", "type", "appeared"], "id")
+      searchHTMLCache[originalQuery] = this.scrollToHtml(results)
       res.send(searchHTMLCache[originalQuery])
     })
   }
@@ -77,15 +83,14 @@ class SearchServer {
     fs.appendFile(logFilePath, tree, function() {})
     return this
   }
-  treeQueryLanguageSearch(treeQLProgramCode) {
-    const treeQLProgram = treeQLProgramCode
-    const startTime = Date.now()
+  treeQueryLanguageSearch(treeQLProgram) {
     const { folder } = this
-    const results = treeQLProgram.execute(folder)
-    return results
+    const tests = treeQLProgram.toTests()
+    const predicate = file => tests.every(fn => fn(file))
+    const hits = folder.filter(file => predicate(file))
+    return hits.map(file => file.id).join("\n")
   }
-  search(originalQuery, format = "html", columns = ["id"], idColumnName = "id") {
-    const query = decodeURIComponent(originalQuery)
+  search(query, format = "html", columns = ["id"], idColumnName = "id") {
     const startTime = Date.now()
     const { folder } = this
     const lowerCaseQuery = query.toLowerCase()

@@ -123,18 +123,18 @@ whereNode
   toPredicate() {
     const {columnName, operator} = this
     if (operator === ">")
-      return file => file.parsed[columnName] > this.numericValue
+      return file => file.typed[columnName] > this.numericValue
     if (operator === "<")
-      return file => file.parsed[columnName] < this.numericValue
+      return file => file.typed[columnName] < this.numericValue
     const stringValue = this.getWordsFrom(3).join(" ")
     if (operator === "=")
-      return file => file.parsed[columnName] == this.numericValue
+      return file => file.typed[columnName] == this.numericValue
     if (operator === "!=")
-      return file => file.parsed[columnName] != this.numericValue
+      return file => file.typed[columnName] != this.numericValue
     if (operator === "has")
-      return file => file.parsed[columnName].includes(stringValue)
+      return file => file.typed[columnName].includes(stringValue)
     if (operator === "hasNo")
-      return file => !file.parsed[columnName].includes(stringValue)
+      return file => !file.typed[columnName].includes(stringValue)
   }
 fieldIsMissingNode
  description Find files whose value in the given column is missing.
@@ -273,13 +273,13 @@ commentNode
     }
     toPredicate() {
       const { columnName, operator } = this
-      if (operator === ">") return file => file.parsed[columnName] > this.numericValue
-      if (operator === "<") return file => file.parsed[columnName] < this.numericValue
+      if (operator === ">") return file => file.typed[columnName] > this.numericValue
+      if (operator === "<") return file => file.typed[columnName] < this.numericValue
       const stringValue = this.getWordsFrom(3).join(" ")
-      if (operator === "=") return file => file.parsed[columnName] == this.numericValue
-      if (operator === "!=") return file => file.parsed[columnName] != this.numericValue
-      if (operator === "has") return file => file.parsed[columnName].includes(stringValue)
-      if (operator === "hasNo") return file => !file.parsed[columnName].includes(stringValue)
+      if (operator === "=") return file => file.typed[columnName] == this.numericValue
+      if (operator === "!=") return file => file.typed[columnName] != this.numericValue
+      if (operator === "has") return file => file.typed[columnName].includes(stringValue)
+      if (operator === "hasNo") return file => !file.typed[columnName].includes(stringValue)
     }
   }
 

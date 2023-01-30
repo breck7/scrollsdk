@@ -98,17 +98,19 @@ class SearchServer {
 
 viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
 
-html
- <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="search"><textarea name="q" placeholder="Search" autocomplete="off" type="search" rows="3" cols="50"></textarea><input class="searchButton" type="submit" value="Search"></form></div>
+html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" name="q"></textarea><input type="submit" value="Search"></form>
 
-* Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.
+html <script>document.addEventListener("DOMContentLoaded", evt => document.getElementById("tqlInput").value = decodeURIComponent("${encodeURIComponent(treeQLCode)}"))</script>
+
+* ${hits.length} of ${numeral(folder.length).format("0,0")} files matched. Search took ${time}s. 
  class searchResultsHeader
 
 html <hr>
-* ${hits.length} matching files.
- class searchResultsHeader
+
 html
- ${results}`
+ ${results}
+
+html <hr>`
   }
   search(treeQLCode) {
     const treeQLProgram = new tqlNode(treeQLCode)

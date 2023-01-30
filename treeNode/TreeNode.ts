@@ -1377,7 +1377,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  protected _toDelimited(delimiter: treeNotationTypes.delimiter, header: string[], cellFn: cellFn) {
+  _toDelimited(delimiter: treeNotationTypes.delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
@@ -2960,7 +2960,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "63.0.0"
+  static getVersion = () => "64.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

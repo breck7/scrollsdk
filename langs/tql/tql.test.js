@@ -15,12 +15,12 @@ const testTree = {}
 
 testTree.all = equal => {
   // Arrange
-  const program = new tql(`has mars
-hasNo zzzzz
-matches \\d+
+  const program = new tql(`includes mars
+doesNotInclude zzzzz
+matchesRegex \\d+
 where moons = 1
 where diameter > 10000
-where related has mars
+where related includes mars
 notMissing diameter`)
 
   // Act/Assert

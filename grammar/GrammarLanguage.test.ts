@@ -129,6 +129,7 @@ testTree.jibberish = equal => {
       .join(" "),
     "abstractTopLevelNode nodeWithConstsNode"
   )
+  equal(constNode.getDefinition().greeting, "hello world", "constants are also present on grammar definition nodes")
 
   // Assert
   equal(constNode.greeting, "hello world", "constant strings should work")

@@ -8,12 +8,17 @@ const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const tqlNode = require("../products/tql.nodejs.js")
+const delimitedEscapeFunction = value => (value.includes("\n") ? value.split("\n")[0] : value)
 class TreeBaseServer {
-  constructor(folder, websitePath = "", searchLogFolder = "") {
+  constructor(folder) {
     this.folder = folder
-    this.websitePath = websitePath
     const app = express()
     this.app = app
+    this._setExpressBasics()
+    return this
+  }
+  _setExpressBasics() {
+    const { app } = this
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
     app.use((req, res, next) => {
@@ -23,24 +28,26 @@ class TreeBaseServer {
       res.setHeader("Access-Control-Allow-Credentials", true)
       next()
     })
-    app.use(express.static(__dirname))
-    if (websitePath) app.use(express.static(websitePath))
-    const searchServer = new SearchServer(folder)
+  }
+  serveFolder(folder) {
+    this.app.use(express.static(folder))
+    return this
+  }
+  initSearch(searchLogFolder = "") {
+    const searchServer = new SearchServer(this.folder)
     this.searchServer = searchServer
     const searchLogPath = path.join(searchLogFolder, "searchLog.tree")
     if (searchLogFolder) Disk.touch(searchLogPath)
     const searchHTMLCache = {}
-    app.get("/search", (req, res) => {
+    this.app.get("/search", (req, res) => {
       const originalQuery = req.query.q === undefined ? "" : req.query.q
       if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
       if (searchHTMLCache[originalQuery]) return res.send(searchHTMLCache[originalQuery])
       const decodedQuery = decodeURIComponent(originalQuery).replace(/\r/g, "")
-      const treeQLProgram = new tqlNode(decodedQuery)
-      const hasErrors = treeQLProgram.getAllErrors().length > 0
-      const results = !hasErrors ? searchServer.treeQueryLanguageSearch(treeQLProgram) : searchServer.search(decodedQuery, "html", ["id", "title", "type", "appeared"], "id")
-      searchHTMLCache[originalQuery] = this.scrollToHtml(results)
+      searchHTMLCache[originalQuery] = this.scrollToHtml(searchServer.scroll(decodedQuery))
       res.send(searchHTMLCache[originalQuery])
     })
+    return this
   }
   listen(port = 4444) {
     this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
@@ -69,9 +76,8 @@ class TreeBaseServer {
   }
 }
 class SearchServer {
-  constructor(treeBaseFolder, searchUrl = "search") {
+  constructor(treeBaseFolder) {
     this.folder = treeBaseFolder
-    this.searchUrl = searchUrl
   }
   logQuery(logFilePath, originalQuery, ip) {
     const tree = `search
@@ -83,70 +89,49 @@ class SearchServer {
     fs.appendFile(logFilePath, tree, function() {})
     return this
   }
-  treeQueryLanguageSearch(treeQLProgram) {
-    return treeQLProgram
-      .filterFolder(this.folder)
-      .map(file => file.id)
-      .join("\n")
-  }
-  search(query, format = "html", columns = ["id"], idColumnName = "id") {
-    const startTime = Date.now()
+  scroll(treeQLCode) {
+    const { hits, time, columnNames } = this.search(treeQLCode)
     const { folder } = this
-    const lowerCaseQuery = query.toLowerCase()
-    // Todo: allow advanced search. case sensitive/insensitive, regex, et cetera.
-    const testFn = str => str.includes(lowerCaseQuery)
-    const escapedQuery = Utils.htmlEscaped(lowerCaseQuery)
-    const fullTextHits = folder.filter(file => testFn(file.lowercase))
-    const nameHits = folder.filter(file => file.lowercaseNames.some(testFn))
-    if (format === "namesOnly") return fullTextHits.map(file => file.id)
-    if (format === "csv") {
-      nameHits.map(file => file.set(idColumnName, file.id))
-      fullTextHits.map(file => file.set(idColumnName, file.id))
-      console.log(`## ${nameHits.length} name hits`)
-      console.log(new TreeNode(nameHits).toDelimited(",", columns))
-      console.log(``)
-      console.log(`## ${fullTextHits.length} full text hits`)
-      console.log(new TreeNode(fullTextHits).toDelimited(",", columns))
-      return
-    }
-    const highlightHit = file => {
-      const line = file.lowercase.split("\n").find(line => testFn(line))
-      return line.replace(lowerCaseQuery, `<span class="highlightHit">${lowerCaseQuery}</span>`)
-    }
-    const fullTextSearchResults = fullTextHits.map(file => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank} - ${highlightHit(file)}</div>`).join("\n")
-    const nameResults = nameHits.map(file => ` <div class="searchResultName"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
-    const time = numeral((Date.now() - startTime) / 1000).format("0.00")
-    return `
-title ${escapedQuery} - Search
+    const delimiter = "DeLiM"
+    const results = hits._toDelimited(delimiter, columnNames, delimitedEscapeFunction)
+    return `title Search Results
  hidden
 
 viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
 
-html
- <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="${
-   this.searchUrl
- }"><input name="q" placeholder="Search" autocomplete="off" type="search" id="searchFormInput"><input class="searchButton" type="submit" value="Search"></form></div>
- <script>document.addEventListener("DOMContentLoaded", evt => initSearchAutocomplete("searchFormInput"))</script>
+html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" name="q"></textarea><input type="submit" value="Search"></form>
 
-* <p class="searchResultsHeader">Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.</p>
- <hr>
+* Searched ${numeral(folder.length).format("0,0")} files and found ${hits.length} matches in ${time}s. 
+ class searchResultsHeader
 
-* <p class="searchResultsHeader">Showing ${nameHits.length} files whose name or aliases matched.</p>
-
-html
-${nameResults}
-<hr>
-
-* <p class="searchResultsHeader">Showing ${fullTextHits.length} files who matched on a full text search.</p>
-
-html
- ${fullTextSearchResults}`
+table ${delimiter}
+ ${results.replace(/\n/g, "\n ")}
+`
+  }
+  search(treeQLCode) {
+    var _a
+    const treeQLProgram = new tqlNode(treeQLCode)
+    const startTime = Date.now()
+    const time = numeral((Date.now() - startTime) / 1000).format("0.00")
+    const rawHits = treeQLProgram.filterFolder(this.folder)
+    rawHits.forEach(file => file.set("titleLink", file.webPermalink))
+    const hits = new TreeNode(rawHits)
+    const customColumns = ((_a = treeQLProgram.get("select")) === null || _a === void 0 ? void 0 : _a.split(" ")) || []
+    const columnNames = "title titleLink".split(" ").concat(customColumns)
+    return { hits, time, columnNames }
+  }
+  json(treeQLCode) {
+    return this.search(treeQLCode).hits.toJSON()
+  }
+  csv(treeQLCode) {
+    const { hits, columnNames } = this.search(treeQLCode)
+    return hits.toDelimited(",", columnNames, delimitedEscapeFunction)
   }
 }
 if (!module.parent) {
   const folderPath = process.cwd()
   const folder = new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
-  new SearchServer(folder).search(process.argv.slice(2).join(" "), "csv")
+  new SearchServer(folder).csv(process.argv.slice(2).join(" "))
 }
 
 module.exports = { TreeBaseServer, SearchServer }

@@ -205,14 +205,17 @@ class GrammarBackedNode extends TreeNode {
     const keywordMap = this.getDefinition().getFirstWordMapWithDefinitions()
     let keywords = Object.keys(keywordMap)
     if (partialWord) keywords = keywords.filter(keyword => keyword.includes(partialWord))
-    return keywords.map(keyword => {
-      const def = keywordMap[keyword]
-      const description = def.getDescription()
-      return {
-        text: keyword,
-        displayText: keyword + (description ? " " + description : "")
-      }
-    })
+    return keywords
+      .map(keyword => {
+        const def = keywordMap[keyword]
+        if (def.suggestInAutocomplete === false) return false
+        const description = def.getDescription()
+        return {
+          text: keyword,
+          displayText: keyword + (description ? " " + description : "")
+        }
+      })
+      .filter(i => i)
   }
   _getAutocompleteResultsForCell(partialWord, cellIndex) {
     // todo: root should be [] correct?
@@ -1425,6 +1428,10 @@ class GrammarCompilerNode extends TreeNode {
   }
 }
 class GrammarNodeTypeConstant extends TreeNode {
+  constructor(children, line, parent) {
+    super(children, line, parent)
+    parent[this.getIdentifier()] = this.getConstantValue()
+  }
   getGetter() {
     return `get ${this.getIdentifier()}() { return ${this.getConstantValueAsJsText()} }`
   }

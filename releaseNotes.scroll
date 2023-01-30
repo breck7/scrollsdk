@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 64.0.1 2023-1-30
+- 🏥 version number fix
+
 # 64.0.0 2023-1-30
 * This releases introduced a new language called Tree Query Language (TQL) for quering TreeBases. This release may have some bugs, you may want to wait before upgrading.
 

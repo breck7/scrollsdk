@@ -131,4 +131,4 @@ commentNode
  cells commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
- tags doNotSynthesize
+ boolean suggestInAutcomplete false

@@ -256,14 +256,17 @@ abstract class GrammarBackedNode extends TreeNode {
 
     if (partialWord) keywords = keywords.filter(keyword => keyword.includes(partialWord))
 
-    return keywords.map(keyword => {
-      const def = keywordMap[keyword]
-      const description = def.getDescription()
-      return {
-        text: keyword,
-        displayText: keyword + (description ? " " + description : "")
-      }
-    })
+    return keywords
+      .map(keyword => {
+        const def = keywordMap[keyword]
+        if (def.suggestInAutcomplete === false) return false
+        const description = def.getDescription()
+        return {
+          text: keyword,
+          displayText: keyword + (description ? " " + description : "")
+        }
+      })
+      .filter(i => i)
   }
 
   private _getAutocompleteResultsForCell(partialWord: string, cellIndex: treeNotationTypes.positiveInt) {

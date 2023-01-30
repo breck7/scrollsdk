@@ -9,11 +9,15 @@ const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const tqlNode = require("../products/tql.nodejs.js")
 class TreeBaseServer {
-  constructor(folder, websitePath = "", searchLogFolder = "") {
+  constructor(folder) {
     this.folder = folder
-    this.websitePath = websitePath
     const app = express()
     this.app = app
+    this._setExpressBasics()
+    return this
+  }
+  _setExpressBasics() {
+    const { app } = this
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
     app.use((req, res, next) => {
@@ -23,14 +27,18 @@ class TreeBaseServer {
       res.setHeader("Access-Control-Allow-Credentials", true)
       next()
     })
-    app.use(express.static(__dirname))
-    if (websitePath) app.use(express.static(websitePath))
-    const searchServer = new SearchServer(folder)
+  }
+  serveFolder(folder) {
+    this.app.use(express.static(folder))
+    return this
+  }
+  initSearch(searchLogFolder = "") {
+    const searchServer = new SearchServer(this.folder)
     this.searchServer = searchServer
     const searchLogPath = path.join(searchLogFolder, "searchLog.tree")
     if (searchLogFolder) Disk.touch(searchLogPath)
     const searchHTMLCache = {}
-    app.get("/search", (req, res) => {
+    this.app.get("/search", (req, res) => {
       const originalQuery = req.query.q === undefined ? "" : req.query.q
       if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
       if (searchHTMLCache[originalQuery]) return res.send(searchHTMLCache[originalQuery])
@@ -41,6 +49,7 @@ class TreeBaseServer {
       searchHTMLCache[originalQuery] = this.scrollToHtml(results)
       res.send(searchHTMLCache[originalQuery])
     })
+    return this
   }
   listen(port = 4444) {
     this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
@@ -84,10 +93,38 @@ class SearchServer {
     return this
   }
   treeQueryLanguageSearch(treeQLProgram) {
-    return treeQLProgram
-      .filterFolder(this.folder)
-      .map(file => file.id)
-      .join("\n")
+    const startTime = Date.now()
+    const escapedQuery = Utils.htmlEscaped(treeQLProgram.toString())
+    const hits = treeQLProgram.filterFolder(this.folder)
+    const results = hits.map(file => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
+    const time = numeral((Date.now() - startTime) / 1000).format("0.00")
+    return this.searchResultsPage(
+      escapedQuery,
+      time,
+      `html <hr>
+* ${hits.length} matching files.
+ class searchResultsHeader
+html
+ ${results}`
+    )
+  }
+  searchResultsPage(escapedQuery, time, results) {
+    const { folder } = this
+    return `
+title ${escapedQuery} - Search
+ hidden
+
+viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
+
+html
+ <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="${
+   this.searchUrl
+ }"><textarea name="q" placeholder="Search" autocomplete="off" type="search" rows="3" cols="50"></textarea><input class="searchButton" type="submit" value="Search"></form></div>
+
+* Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.
+ class searchResultsHeader
+
+${results}`
   }
   search(query, format = "html", columns = ["id"], idColumnName = "id") {
     const startTime = Date.now()
@@ -116,31 +153,22 @@ class SearchServer {
     const fullTextSearchResults = fullTextHits.map(file => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank} - ${highlightHit(file)}</div>`).join("\n")
     const nameResults = nameHits.map(file => ` <div class="searchResultName"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
     const time = numeral((Date.now() - startTime) / 1000).format("0.00")
-    return `
-title ${escapedQuery} - Search
- hidden
-
-viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
-
-html
- <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="${
-   this.searchUrl
- }"><input name="q" placeholder="Search" autocomplete="off" type="search" id="searchFormInput"><input class="searchButton" type="submit" value="Search"></form></div>
- <script>document.addEventListener("DOMContentLoaded", evt => initSearchAutocomplete("searchFormInput"))</script>
-
-* <p class="searchResultsHeader">Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.</p>
- <hr>
-
-* <p class="searchResultsHeader">Showing ${nameHits.length} files whose name or aliases matched.</p>
-
+    return this.searchResultsPage(
+      escapedQuery,
+      time,
+      `
+html <hr>
+* Showing ${nameHits.length} files whose name or aliases matched.
+ class searchResultsHeader
 html
 ${nameResults}
-<hr>
 
-* <p class="searchResultsHeader">Showing ${fullTextHits.length} files who matched on a full text search.</p>
-
+html <hr>
+* Showing ${fullTextHits.length} files who matched on a full text search.
+ class searchResultsHeader
 html
  ${fullTextSearchResults}`
+    )
   }
 }
 if (!module.parent) {

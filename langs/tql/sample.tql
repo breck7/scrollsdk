@@ -1,4 +1,5 @@
-> appeared 1970
-+ United States
-- influencedBy c
-* lisp
+has lisp
+notMissing features
+where appeared > 1970
+where country has United States
+where influencedBy c

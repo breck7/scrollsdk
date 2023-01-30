@@ -1,4 +1,4 @@
-has lisp
+includes lisp
 notMissing features
 where appeared > 1970
 where country has United States

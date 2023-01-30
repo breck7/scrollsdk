@@ -55,18 +55,18 @@ blankLineNode
  boolean shouldSerialize false
 includesTextNode
  extends abstractQueryNode
- description Global text search against each file. Case insensitive.
+ description Find files that include this text somewhere. Case insensitive.
  catchAllCellType stringCell
- crux has
+ crux includes
  javascript
   toPredicate() {
     const query = (this.getContent() ?? "").toLowerCase()
     return file => file.lowercase.includes(query)
   }
 doesNotIncludeTextNode
- description Reverse of global text search against each file. Case insensitive.
+ description Find files that do not include this text anywhere. Case insensitive.
  extends includesTextNode
- crux hasNo
+ crux doesNotInclude
  boolean flip true
 whereNode
  description Find files whose value in the given column meet this condition.
@@ -115,24 +115,20 @@ fieldIsNotMissingNode
  extends fieldIsMissingNode
  crux notMissing
  boolean flip true
-matchesNode
- description Search by regex.
+matchesRegexNode
+ description Find files that match this regex on a full text search.
  extends abstractQueryNode
  catchAllCellType regexCell
- crux matching
+ crux matchesRegex
  javascript
   toPredicate() {
     const regex = new RegExp(this.getContent() ?? "")
     return file => regex.test(file.toString())
   }
-doesNotMatchNode
- description Find files that do NOT match this regex.
- extends matchesNode
- crux notMatching
- boolean flip true
 commentNode
  description Comments are ignored.
  crux #
  cells commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
+ tags doNotSynthesize

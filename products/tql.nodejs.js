@@ -121,19 +121,26 @@ whereNode
   }
   toPredicate() {
     const {columnName, operator} = this
+    const getValue = file => file.typed[columnName]
+    const getTextValue = file => {
+      const value = getValue(file)
+      if (value === undefined) return ""
+      if (!value.includes) return ""
+      return value
+    }
     if (operator === ">")
-      return file => file.typed[columnName] > this.numericValue
+      return file => getValue(file) > this.numericValue
     if (operator === "<")
-      return file => file.typed[columnName] < this.numericValue
+      return file => getValue(file) < this.numericValue
     const stringValue = this.getWordsFrom(3).join(" ")
     if (operator === "=")
-      return file => file.typed[columnName] == this.numericValue
+      return file => getValue(file) == this.numericValue
     if (operator === "!=")
-      return file => file.typed[columnName] != this.numericValue
+      return file => getValue(file) != this.numericValue
     if (operator === "includes")
-      return file => file.typed[columnName].includes(stringValue)
+      return file => getTextValue(file).includes(stringValue)
     if (operator === "doesNotInclude")
-      return file => !file.typed[columnName].includes(stringValue)
+      return file => !getTextValue(file).includes(stringValue)
   }
 fieldIsMissingNode
  description Find files whose value in the given column is missing.
@@ -266,13 +273,20 @@ commentNode
     }
     toPredicate() {
       const { columnName, operator } = this
-      if (operator === ">") return file => file.typed[columnName] > this.numericValue
-      if (operator === "<") return file => file.typed[columnName] < this.numericValue
+      const getValue = file => file.typed[columnName]
+      const getTextValue = file => {
+        const value = getValue(file)
+        if (value === undefined) return ""
+        if (!value.includes) return ""
+        return value
+      }
+      if (operator === ">") return file => getValue(file) > this.numericValue
+      if (operator === "<") return file => getValue(file) < this.numericValue
       const stringValue = this.getWordsFrom(3).join(" ")
-      if (operator === "=") return file => file.typed[columnName] == this.numericValue
-      if (operator === "!=") return file => file.typed[columnName] != this.numericValue
-      if (operator === "includes") return file => file.typed[columnName].includes(stringValue)
-      if (operator === "doesNotInclude") return file => !file.typed[columnName].includes(stringValue)
+      if (operator === "=") return file => getValue(file) == this.numericValue
+      if (operator === "!=") return file => getValue(file) != this.numericValue
+      if (operator === "includes") return file => getTextValue(file).includes(stringValue)
+      if (operator === "doesNotInclude") return file => !getTextValue(file).includes(stringValue)
     }
   }
 

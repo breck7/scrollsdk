@@ -208,7 +208,7 @@ class GrammarBackedNode extends TreeNode {
     return keywords
       .map(keyword => {
         const def = keywordMap[keyword]
-        if (def.suggestInAutcomplete === false) return false
+        if (def.suggestInAutocomplete === false) return false
         const description = def.getDescription()
         return {
           text: keyword,

@@ -131,4 +131,4 @@ commentNode
  cells commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
- boolean suggestInAutcomplete false
+ boolean suggestInAutocomplete false

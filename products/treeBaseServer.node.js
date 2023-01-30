@@ -89,10 +89,10 @@ class SearchServer {
     return this
   }
   scroll(treeQLCode) {
-    const { hits, time } = this.search(treeQLCode)
+    const { hits, time, columnNames } = this.search(treeQLCode)
     const { folder } = this
-    const escapedQuery = Utils.htmlEscaped(treeQLCode)
-    const results = hits.map(file => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
+    const delimiter = "DeLiM"
+    const results = hits.toDelimited(delimiter, columnNames)
     return `title Search Results
  hidden
 
@@ -102,28 +102,31 @@ html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" 
 
 html <script>document.addEventListener("DOMContentLoaded", evt => document.getElementById("tqlInput").value = decodeURIComponent("${encodeURIComponent(treeQLCode)}"))</script>
 
-* ${hits.length} of ${numeral(folder.length).format("0,0")} files matched. Search took ${time}s. 
+* Searched ${numeral(folder.length).format("0,0")} files and found ${hits.length} matches in ${time}s. 
  class searchResultsHeader
 
-html <hr>
-
-html
- ${results}
-
-html <hr>`
+table ${delimiter}
+ ${results.replace(/\n/g, "\n ")}
+`
   }
   search(treeQLCode) {
+    var _a
     const treeQLProgram = new tqlNode(treeQLCode)
     const startTime = Date.now()
-    const hits = treeQLProgram.filterFolder(this.folder)
     const time = numeral((Date.now() - startTime) / 1000).format("0.00")
-    return { hits, time }
+    const rawHits = treeQLProgram.filterFolder(this.folder)
+    rawHits.forEach(file => file.set("titleLink", file.webPermalink))
+    const hits = new TreeNode(rawHits)
+    const customColumns = ((_a = treeQLProgram.get("select")) === null || _a === void 0 ? void 0 : _a.split(" ")) || []
+    const columnNames = "title titleLink".split(" ").concat(customColumns)
+    return { hits, time, columnNames }
   }
   json(treeQLCode) {
-    return new TreeNode(this.search(treeQLCode).hits).toJSON()
+    return this.search(treeQLCode).hits.toJSON()
   }
   csv(treeQLCode) {
-    return new TreeNode(this.search(treeQLCode).hits).toDelimited(",")
+    const { hits, columnNames } = this.search(treeQLCode)
+    return hits.toDelimited(",", columnNames)
   }
 }
 if (!module.parent) {

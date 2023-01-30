@@ -20,7 +20,7 @@ doesNotInclude zzzzz
 matchesRegex \\d+
 where moons = 1
 where diameter > 10000
-where related has mars
+where related includes mars
 notMissing diameter`)
 
   // Act/Assert

@@ -10,13 +10,14 @@
       return new TreeNode.Parser(
         catchAllErrorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
+          where: whereNode,
           includes: includesTextNode,
           doesNotInclude: doesNotIncludeTextNode,
-          where: whereNode,
           missing: fieldIsMissingNode,
           notMissing: fieldIsNotMissingNode,
           matchesRegex: matchesRegexNode,
-          "#": commentNode
+          "#": commentNode,
+          select: selectNode
         }),
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
@@ -57,7 +58,7 @@ tqlNode
  root
  description Tree Query Language (TQL) is a new language for searching a TreeBase.
  catchAllNodeType catchAllErrorNode
- inScope abstractQueryNode blankLineNode commentNode
+ inScope abstractQueryNode blankLineNode commentNode selectNode
  javascript
   get tests() {
     const tests = this.filter(node => node.toPredicate).map(node => {
@@ -88,21 +89,6 @@ blankLineNode
  pattern ^$
  tags doNotSynthesize
  boolean shouldSerialize false
-includesTextNode
- extends abstractQueryNode
- description Find files that include this text somewhere. Case insensitive.
- catchAllCellType stringCell
- crux includes
- javascript
-  toPredicate() {
-    const query = (this.getContent() ?? "").toLowerCase()
-    return file => file.lowercase.includes(query)
-  }
-doesNotIncludeTextNode
- description Find files that do not include this text anywhere. Case insensitive.
- extends includesTextNode
- crux doesNotInclude
- boolean flip true
 whereNode
  description Find files whose value in the given column meet this condition.
  extends abstractQueryNode
@@ -142,6 +128,21 @@ whereNode
     if (operator === "doesNotInclude")
       return file => !getTextValue(file).includes(stringValue)
   }
+includesTextNode
+ extends abstractQueryNode
+ description Find files that include this text somewhere. Case insensitive.
+ catchAllCellType stringCell
+ crux includes
+ javascript
+  toPredicate() {
+    const query = (this.getContent() ?? "").toLowerCase()
+    return file => file.lowercase.includes(query)
+  }
+doesNotIncludeTextNode
+ description Find files that do not include this text anywhere. Case insensitive.
+ extends includesTextNode
+ crux doesNotInclude
+ boolean flip true
 fieldIsMissingNode
  description Find files whose value in the given column is missing.
  extends abstractQueryNode
@@ -173,7 +174,13 @@ commentNode
  cells commentCell
  catchAllCellType commentCell
  catchAllNodeType commentNode
- boolean suggestInAutocomplete false`)
+ boolean suggestInAutocomplete false
+selectNode
+ description Choose which columns to return.
+ cells keywordCell
+ catchAllCellType columnNameCell
+ crux select
+ single`)
     getHandGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
@@ -183,13 +190,14 @@ commentNode
         abstractQueryNode: abstractQueryNode,
         catchAllErrorNode: catchAllErrorNode,
         blankLineNode: blankLineNode,
+        whereNode: whereNode,
         includesTextNode: includesTextNode,
         doesNotIncludeTextNode: doesNotIncludeTextNode,
-        whereNode: whereNode,
         fieldIsMissingNode: fieldIsMissingNode,
         fieldIsNotMissingNode: fieldIsNotMissingNode,
         matchesRegexNode: matchesRegexNode,
-        commentNode: commentNode
+        commentNode: commentNode,
+        selectNode: selectNode
       }
     }
   }
@@ -199,9 +207,9 @@ commentNode
       return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
+          where: whereNode,
           includes: includesTextNode,
           doesNotInclude: doesNotIncludeTextNode,
-          where: whereNode,
           missing: fieldIsMissingNode,
           notMissing: fieldIsNotMissingNode,
           matchesRegex: matchesRegexNode,
@@ -230,22 +238,6 @@ commentNode
     }
     get shouldSerialize() {
       return false
-    }
-  }
-
-  class includesTextNode extends abstractQueryNode {
-    get stringCell() {
-      return this.getWordsFrom(0)
-    }
-    toPredicate() {
-      const query = (this.getContent() ?? "").toLowerCase()
-      return file => file.lowercase.includes(query)
-    }
-  }
-
-  class doesNotIncludeTextNode extends includesTextNode {
-    get flip() {
-      return true
     }
   }
 
@@ -290,6 +282,22 @@ commentNode
     }
   }
 
+  class includesTextNode extends abstractQueryNode {
+    get stringCell() {
+      return this.getWordsFrom(0)
+    }
+    toPredicate() {
+      const query = (this.getContent() ?? "").toLowerCase()
+      return file => file.lowercase.includes(query)
+    }
+  }
+
+  class doesNotIncludeTextNode extends includesTextNode {
+    get flip() {
+      return true
+    }
+  }
+
   class fieldIsMissingNode extends abstractQueryNode {
     get keywordCell() {
       return this.getWord(0)
@@ -331,6 +339,15 @@ commentNode
     }
     get suggestInAutocomplete() {
       return false
+    }
+  }
+
+  class selectNode extends GrammarBackedNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get columnNameCell() {
+      return this.getWordsFrom(1)
     }
   }
 

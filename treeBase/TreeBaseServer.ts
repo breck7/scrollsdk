@@ -60,11 +60,7 @@ class TreeBaseServer {
       if (searchHTMLCache[originalQuery]) return res.send(searchHTMLCache[originalQuery])
 
       const decodedQuery = decodeURIComponent(originalQuery).replace(/\r/g, "")
-      const treeQLProgram = new tqlNode(decodedQuery)
-      const hasErrors = treeQLProgram.getAllErrors().length > 0
-
-      const results = !hasErrors ? searchServer.treeQueryLanguageSearch(treeQLProgram) : searchServer.search(decodedQuery, "html", ["id", "title", "type", "appeared"], "id")
-      searchHTMLCache[originalQuery] = this.scrollToHtml(results)
+      searchHTMLCache[originalQuery] = this.scrollToHtml(searchServer.scroll(decodedQuery))
       res.send(searchHTMLCache[originalQuery])
     })
     return this
@@ -101,12 +97,10 @@ class TreeBaseServer {
 }
 
 class SearchServer {
-  constructor(treeBaseFolder: TreeBaseFolder, searchUrl = "search") {
+  constructor(treeBaseFolder: TreeBaseFolder) {
     this.folder = treeBaseFolder
-    this.searchUrl = searchUrl
   }
 
-  searchUrl: string
   folder: TreeBaseFolder
 
   logQuery(logFilePath: string, originalQuery: string, ip: string) {
@@ -120,94 +114,44 @@ class SearchServer {
     return this
   }
 
-  treeQueryLanguageSearch(treeQLProgram: any): string {
-    const startTime = Date.now()
-    const escapedQuery = Utils.htmlEscaped(treeQLProgram.toString())
-    const hits = treeQLProgram.filterFolder(this.folder)
-    const results = hits.map((file: TreeBaseFile) => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
-    const time = numeral((Date.now() - startTime) / 1000).format("0.00")
-    return this.searchResultsPage(
-      escapedQuery,
-      time,
-      `html <hr>
-* ${hits.length} matching files.
- class searchResultsHeader
-html
- ${results}`
-    )
-  }
-
-  searchResultsPage(escapedQuery: string, time: string, results: string) {
+  scroll(treeQLCode: string) {
+    const { hits, time } = this.search(treeQLCode)
     const { folder } = this
-    return `
-title ${escapedQuery} - Search
+    const escapedQuery = Utils.htmlEscaped(treeQLCode)
+    const results = hits.map((file: TreeBaseFile) => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
+
+    return `title Search Results
  hidden
 
 viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
 
 html
- <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="${
-   this.searchUrl
- }"><textarea name="q" placeholder="Search" autocomplete="off" type="search" rows="3" cols="50"></textarea><input class="searchButton" type="submit" value="Search"></form></div>
+ <div class="treeBaseSearchForm"><form style="display:inline;" method="get" action="search"><textarea name="q" placeholder="Search" autocomplete="off" type="search" rows="3" cols="50"></textarea><input class="searchButton" type="submit" value="Search"></form></div>
 
 * Searched ${numeral(folder.length).format("0,0")} files for "${escapedQuery}" in ${time}s.
  class searchResultsHeader
 
-${results}`
+html <hr>
+* ${hits.length} matching files.
+ class searchResultsHeader
+html
+ ${results}`
   }
 
-  search(query: string, format = "html", columns = ["id"], idColumnName = "id"): string {
+  search(treeQLCode: string) {
+    const treeQLProgram = new tqlNode(treeQLCode)
     const startTime = Date.now()
-    const { folder } = this
-    const lowerCaseQuery = query.toLowerCase()
-    // Todo: allow advanced search. case sensitive/insensitive, regex, et cetera.
-    const testFn = (str: string) => str.includes(lowerCaseQuery)
-
-    const escapedQuery = Utils.htmlEscaped(lowerCaseQuery)
-    const fullTextHits = folder.filter((file: TreeBaseFile) => testFn(file.lowercase))
-    const nameHits = folder.filter((file: TreeBaseFile) => file.lowercaseNames.some(testFn))
-
-    if (format === "namesOnly") return fullTextHits.map((file: TreeBaseFile) => file.id)
-
-    if (format === "csv") {
-      nameHits.map((file: TreeBaseFile) => file.set(idColumnName, file.id))
-      fullTextHits.map((file: TreeBaseFile) => file.set(idColumnName, file.id))
-
-      console.log(`## ${nameHits.length} name hits`)
-      console.log(new TreeNode(nameHits).toDelimited(",", columns))
-
-      console.log(``)
-
-      console.log(`## ${fullTextHits.length} full text hits`)
-      console.log(new TreeNode(fullTextHits).toDelimited(",", columns))
-      return
-    }
-
-    const highlightHit = (file: TreeBaseFile) => {
-      const line = file.lowercase.split("\n").find((line: string) => testFn(line))
-      return line.replace(lowerCaseQuery, `<span class="highlightHit">${lowerCaseQuery}</span>`)
-    }
-    const fullTextSearchResults = fullTextHits.map((file: TreeBaseFile) => ` <div class="searchResultFullText"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank} - ${highlightHit(file)}</div>`).join("\n")
-
-    const nameResults = nameHits.map((file: TreeBaseFile) => ` <div class="searchResultName"><a href="${file.webPermalink}">${file.title}</a> - ${file.get("type")} #${file.rank}</div>`).join("\n")
-
+    const hits = treeQLProgram.filterFolder(this.folder)
     const time = numeral((Date.now() - startTime) / 1000).format("0.00")
-    return this.searchResultsPage(
-      escapedQuery,
-      time,
-      `
-html <hr>
-* Showing ${nameHits.length} files whose name or aliases matched.
- class searchResultsHeader
-html
-${nameResults}
+    return { hits, time }
+  }
 
-html <hr>
-* Showing ${fullTextHits.length} files who matched on a full text search.
- class searchResultsHeader
-html
- ${fullTextSearchResults}`
-    )
+  json(treeQLCode: any) {
+    return new TreeNode(this.search(treeQLCode).hits).toJSON()
+  }
+
+  csv(treeQLCode: any) {
+    return new TreeNode(this.search(treeQLCode).hits).toDelimited(",")
   }
 }
 
@@ -216,5 +160,5 @@ export { SearchServer, TreeBaseServer }
 if (!module.parent) {
   const folderPath = process.cwd()
   const folder = new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
-  new SearchServer(folder).search(process.argv.slice(2).join(" "), "csv")
+  new SearchServer(folder).csv(process.argv.slice(2).join(" "))
 }

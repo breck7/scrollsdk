@@ -13,6 +13,8 @@ const { TreeNode } = require("../products/TreeNode.js")
 
 const tqlNode = require("../products/tql.nodejs.js")
 
+const delimitedEscapeFunction = (value: any) => value.includes("\n") ? value.split("\n")[0] : value
+
 import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
 
 class TreeBaseServer {
@@ -118,7 +120,7 @@ class SearchServer {
     const { hits, time, columnNames } = this.search(treeQLCode)
     const { folder } = this
     const delimiter = "DeLiM"
-    const results = hits.toDelimited(delimiter, columnNames)
+    const results = hits._toDelimited(delimiter, columnNames, delimitedEscapeFunction)
 
     return `title Search Results
  hidden
@@ -126,8 +128,6 @@ class SearchServer {
 viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
 
 html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" name="q"></textarea><input type="submit" value="Search"></form>
-
-html <script>document.addEventListener("DOMContentLoaded", evt => document.getElementById("tqlInput").value = decodeURIComponent("${encodeURIComponent(treeQLCode)}"))</script>
 
 * Searched ${numeral(folder.length).format("0,0")} files and found ${hits.length} matches in ${time}s. 
  class searchResultsHeader
@@ -155,7 +155,7 @@ table ${delimiter}
 
   csv(treeQLCode: any) {
     const {hits, columnNames} = this.search(treeQLCode)
-    return hits.toDelimited(",", columnNames)
+    return hits.toDelimited(",", columnNames, delimitedEscapeFunction)
   }
 }
 

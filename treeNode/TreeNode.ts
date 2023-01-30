@@ -1377,7 +1377,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  protected _toDelimited(delimiter: treeNotationTypes.delimiter, header: string[], cellFn: cellFn) {
+  _toDelimited(delimiter: treeNotationTypes.delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }

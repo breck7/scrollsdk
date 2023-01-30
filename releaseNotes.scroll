@@ -4,6 +4,12 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 64.0.0 2023-1-30
+* This releases introduced a new language called Tree Query Language (TQL) for quering TreeBases. This release may have some bugs, you may want to wait before upgrading.
+
+- 🎉 Grammar: constants are now available on the grammar definition nodes at runtime in addition to instance nodes.
+- ⚠️ BREAKING: TreeBaseServer has been rewritten and basic search has been replaced by TQL search.
+
 # 63.0.0 2023-1-26
 * This is a major release that makes the code more modular and eliminates a lot of technical debt. In the past to simplify NodeJs+Browser isomorphism I created the `jtree` namespace and bundled everything together. This was a mistake. This release fixes that, and makes each subproject more independent. This should speed up future development.
 

@@ -1423,6 +1423,10 @@ class GrammarCompilerNode extends TreeNode {
   }
 }
 class GrammarNodeTypeConstant extends TreeNode {
+  constructor(children, line, parent) {
+    super(children, line, parent)
+    parent[this.getIdentifier()] = this.getConstantValue()
+  }
   getGetter() {
     return `get ${this.getIdentifier()}() { return ${this.getConstantValueAsJsText()} }`
   }

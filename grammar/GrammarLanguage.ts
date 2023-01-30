@@ -1758,6 +1758,11 @@ class GrammarCompilerNode extends TreeNode {
 }
 
 abstract class GrammarNodeTypeConstant extends TreeNode {
+  constructor(children?: treeNotationTypes.children, line?: string, parent?: TreeNode) {
+    super(children, line, parent)
+    parent[this.getIdentifier()] = this.getConstantValue()
+  }
+
   getGetter() {
     return `get ${this.getIdentifier()}() { return ${this.getConstantValueAsJsText()} }`
   }

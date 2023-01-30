@@ -4,13 +4,12 @@
       return new TreeNode.Parser(
         catchAllErrorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          has: includesTextNode,
-          hasNo: doesNotIncludeTextNode,
+          includes: includesTextNode,
+          doesNotInclude: doesNotIncludeTextNode,
           where: whereNode,
           missing: fieldIsMissingNode,
           notMissing: fieldIsNotMissingNode,
-          matching: matchesNode,
-          notMatching: doesNotMatchNode,
+          matchesRegex: matchesRegexNode,
           "#": commentNode
         }),
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
@@ -31,7 +30,7 @@
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
  highlightScope keyword
 comparisonCell
- enum < > = != has hasNo
+ enum < > = != includes doesNotInclude
 stringCell
  highlightScope string
 permalinkCell
@@ -85,18 +84,18 @@ blankLineNode
  boolean shouldSerialize false
 includesTextNode
  extends abstractQueryNode
- description Global text search against each file. Case insensitive.
+ description Find files that include this text somewhere. Case insensitive.
  catchAllCellType stringCell
- crux has
+ crux includes
  javascript
   toPredicate() {
     const query = (this.getContent() ?? "").toLowerCase()
     return file => file.lowercase.includes(query)
   }
 doesNotIncludeTextNode
- description Reverse of global text search against each file. Case insensitive.
+ description Find files that do not include this text anywhere. Case insensitive.
  extends includesTextNode
- crux hasNo
+ crux doesNotInclude
  boolean flip true
 whereNode
  description Find files whose value in the given column meet this condition.
@@ -125,9 +124,9 @@ whereNode
       return file => file.typed[columnName] == this.numericValue
     if (operator === "!=")
       return file => file.typed[columnName] != this.numericValue
-    if (operator === "has")
+    if (operator === "includes")
       return file => file.typed[columnName].includes(stringValue)
-    if (operator === "hasNo")
+    if (operator === "doesNotInclude")
       return file => !file.typed[columnName].includes(stringValue)
   }
 fieldIsMissingNode
@@ -145,27 +144,23 @@ fieldIsNotMissingNode
  extends fieldIsMissingNode
  crux notMissing
  boolean flip true
-matchesNode
- description Search by regex.
+matchesRegexNode
+ description Find files that match this regex on a full text search.
  extends abstractQueryNode
  catchAllCellType regexCell
- crux matching
+ crux matchesRegex
  javascript
   toPredicate() {
     const regex = new RegExp(this.getContent() ?? "")
     return file => regex.test(file.toString())
   }
-doesNotMatchNode
- description Find files that do NOT match this regex.
- extends matchesNode
- crux notMatching
- boolean flip true
 commentNode
  description Comments are ignored.
  crux #
  cells commentCell
  catchAllCellType commentCell
- catchAllNodeType commentNode`)
+ catchAllNodeType commentNode
+ boolean suggestInAutocomplete false`)
     getHandGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
@@ -180,8 +175,7 @@ commentNode
         whereNode: whereNode,
         fieldIsMissingNode: fieldIsMissingNode,
         fieldIsNotMissingNode: fieldIsNotMissingNode,
-        matchesNode: matchesNode,
-        doesNotMatchNode: doesNotMatchNode,
+        matchesRegexNode: matchesRegexNode,
         commentNode: commentNode
       }
     }
@@ -192,13 +186,12 @@ commentNode
       return new TreeNode.Parser(
         undefined,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          has: includesTextNode,
-          hasNo: doesNotIncludeTextNode,
+          includes: includesTextNode,
+          doesNotInclude: doesNotIncludeTextNode,
           where: whereNode,
           missing: fieldIsMissingNode,
           notMissing: fieldIsNotMissingNode,
-          matching: matchesNode,
-          notMatching: doesNotMatchNode,
+          matchesRegex: matchesRegexNode,
           "#": commentNode
         }),
         undefined
@@ -272,8 +265,8 @@ commentNode
       const stringValue = this.getWordsFrom(3).join(" ")
       if (operator === "=") return file => file.typed[columnName] == this.numericValue
       if (operator === "!=") return file => file.typed[columnName] != this.numericValue
-      if (operator === "has") return file => file.typed[columnName].includes(stringValue)
-      if (operator === "hasNo") return file => !file.typed[columnName].includes(stringValue)
+      if (operator === "includes") return file => file.typed[columnName].includes(stringValue)
+      if (operator === "doesNotInclude") return file => !file.typed[columnName].includes(stringValue)
     }
   }
 
@@ -296,19 +289,13 @@ commentNode
     }
   }
 
-  class matchesNode extends abstractQueryNode {
+  class matchesRegexNode extends abstractQueryNode {
     get regexCell() {
       return this.getWordsFrom(0)
     }
     toPredicate() {
       const regex = new RegExp(this.getContent() ?? "")
       return file => regex.test(file.toString())
-    }
-  }
-
-  class doesNotMatchNode extends matchesNode {
-    get flip() {
-      return true
     }
   }
 
@@ -321,6 +308,9 @@ commentNode
     }
     get commentCell() {
       return this.getWordsFrom(1)
+    }
+    get suggestInAutocomplete() {
+      return false
     }
   }
 

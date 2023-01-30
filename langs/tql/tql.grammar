@@ -1,7 +1,7 @@
 keywordCell
  highlightScope keyword
 comparisonCell
- enum < > = != has hasNo
+ enum < > = != includes doesNotInclude
 stringCell
  highlightScope string
 permalinkCell
@@ -95,9 +95,9 @@ whereNode
       return file => file.typed[columnName] == this.numericValue
     if (operator === "!=")
       return file => file.typed[columnName] != this.numericValue
-    if (operator === "has")
+    if (operator === "includes")
       return file => file.typed[columnName].includes(stringValue)
-    if (operator === "hasNo")
+    if (operator === "doesNotInclude")
       return file => !file.typed[columnName].includes(stringValue)
   }
 fieldIsMissingNode

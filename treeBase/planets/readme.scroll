@@ -9,6 +9,6 @@ title PlanetsDB
 
 html
  <form method="GET" action="search">
- <textarea name="q" rows="10" columns="80">* mars</textarea><br>
+ <textarea name="q" rows="10" columns="80">where diameter > 15000</textarea><br>
  <input type="submit">
  </form>

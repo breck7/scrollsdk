@@ -20,7 +20,7 @@ class Kitchen {
       .setDir(databaseFolder)
       .setGrammarDir(databaseFolder)
       .loadFolder()
-    const treeBaseServer = new (<any>PlanetsDbServer)(folder, databaseFolder)
+    const treeBaseServer = new (<any>PlanetsDbServer)(folder, databaseFolder).initSearch().serveFolder(databaseFolder)
     treeBaseServer.listen(port)
   }
 

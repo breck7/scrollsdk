@@ -28,6 +28,7 @@
     "d3-format": "^1.3.2",
     "express": "*",
     "glob": "^7.1.4",
+    "lodash": "^4.17.21",
     "mkdirp": "^0.5.6",
     "moment": "^2.29.3",
     "moment-parseformat": "^3.0.0",

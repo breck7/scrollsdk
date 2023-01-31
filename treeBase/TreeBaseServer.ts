@@ -2,6 +2,7 @@
 
 const fs = require("fs")
 const path = require("path")
+const lodash = require("lodash")
 const numeral = require("numeral")
 const https = require("https")
 const express = require("express")
@@ -14,7 +15,7 @@ const { TreeNode } = require("../products/TreeNode.js")
 const tqlNode = require("../products/tql.nodejs.js")
 
 const delimitedEscapeFunction = (value: any) => (value.includes("\n") ? value.split("\n")[0] : value)
-const delimiter = "DeLiM"
+const delimiter = " DeLiM "
 
 import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
 
@@ -53,18 +54,28 @@ class TreeBaseServer {
     const searchServer = new SearchServer(this.folder)
     this.searchServer = searchServer
     const searchLogPath = path.join(searchLogFolder, "searchLog.tree")
+    const formats = ["html", "csv", "text", "scroll"]
     if (searchLogFolder) Disk.touch(searchLogPath)
-    const searchHTMLCache: any = {}
+    const searchCache: any = {}
     this.app.get("/search", (req: any, res: any) => {
-      const originalQuery = req.query.q === undefined ? "" : req.query.q
+      const { q } = req.query
+      const originalQuery = q === undefined ? "" : q
+      const originalFormat = req.query.format
+      const format = originalFormat && formats.includes(originalFormat) ? originalFormat : "html"
 
-      if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip)
+      if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip, format)
 
-      if (searchHTMLCache[originalQuery]) return res.send(searchHTMLCache[originalQuery])
+      const key = originalQuery + format
+      if (searchCache[key]) return res.send(searchCache[key])
 
       const decodedQuery = decodeURIComponent(originalQuery).replace(/\r/g, "")
-      searchHTMLCache[originalQuery] = this.scrollToHtml(searchServer.scroll(decodedQuery))
-      res.send(searchHTMLCache[originalQuery])
+
+      if (format === "html") searchCache[key] = this.scrollToHtml(searchServer.scroll(decodedQuery))
+      if (format === "scroll") searchCache[key] = searchServer.scroll(decodedQuery)
+      if (format === "csv") searchCache[key] = searchServer.csv(decodedQuery)
+      if (format === "text") searchCache[key] = searchServer.text(decodedQuery)
+
+      res.send(searchCache[key])
     })
     return this
   }
@@ -106,10 +117,11 @@ class SearchServer {
 
   folder: TreeBaseFolder
 
-  logQuery(logFilePath: string, originalQuery: string, ip: string) {
+  logQuery(logFilePath: string, originalQuery: string, ip: string, format = "html") {
     const tree = `search
  time ${Date.now()}
  ip ${ip}
+ format ${format}
  query
   ${originalQuery.replace(/\n/g, "\n  ")} 
 `
@@ -150,7 +162,14 @@ table ${delimiter}
       if (programErrors.length) throw new Error(programErrors.map((err: any) => err.getMessage()).join(" "))
       const customColumns = (treeQLProgram.get("select") || "").split(" ")
       columnNames = "title titleLink".split(" ").concat(customColumns)
-      const rawHits = treeQLProgram.filterFolder(this.folder)
+      const sortBy = treeQLProgram.get("sortBy")
+      let rawHits = treeQLProgram.filterFolder(this.folder)
+      if (sortBy) {
+        const sortByFns = sortBy.split(" ").map((columnName: string) => (file: any) => file.typed[columnName])
+        rawHits = lodash.sortBy(rawHits, sortByFns)
+      }
+      if (treeQLProgram.has("reverse")) rawHits.reverse()
+
       rawHits.forEach((file: any) => file.set("titleLink", file.webPermalink))
       hits = new TreeNode(rawHits)
     } catch (err) {
@@ -159,8 +178,8 @@ table ${delimiter}
     return { hits, time: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors }
   }
 
-  json(treeQLCode: any) {
-    return this.search(treeQLCode).hits.toJSON()
+  text(treeQLCode: any) {
+    return this.search(treeQLCode).hits.toString()
   }
 
   csv(treeQLCode: any) {

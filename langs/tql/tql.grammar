@@ -22,7 +22,7 @@ tqlNode
  root
  description Tree Query Language (TQL) is a new language for searching a TreeBase.
  catchAllNodeType catchAllErrorNode
- inScope abstractQueryNode blankLineNode commentNode selectNode
+ inScope abstractQueryNode blankLineNode commentNode abstractModifierNode
  javascript
   get tests() {
     const tests = this.filter(node => node.toPredicate).map(node => {
@@ -139,9 +139,19 @@ commentNode
  catchAllCellType commentCell
  catchAllNodeType commentNode
  boolean suggestInAutocomplete false
+abstractModifierNode
+ cells keywordCell
+ cruxFromId
+ single
+abstractColumnModifierNode
+ extends abstractModifierNode
+ catchAllCellType columnNameCell
 selectNode
  description Choose which columns to return.
- cells keywordCell
- catchAllCellType columnNameCell
- crux select
- single
+ extends abstractColumnModifierNode
+sortByNode
+ description Sort by these columns.
+ extends abstractColumnModifierNode
+reverseNode
+ extends abstractModifierNode
+ description Reverse the order of results.

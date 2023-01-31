@@ -11,7 +11,9 @@
           notMissing: fieldIsNotMissingNode,
           matchesRegex: matchesRegexNode,
           "#": commentNode,
-          select: selectNode
+          select: selectNode,
+          sortBy: sortByNode,
+          reverse: reverseNode
         }),
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
@@ -52,7 +54,7 @@ tqlNode
  root
  description Tree Query Language (TQL) is a new language for searching a TreeBase.
  catchAllNodeType catchAllErrorNode
- inScope abstractQueryNode blankLineNode commentNode selectNode
+ inScope abstractQueryNode blankLineNode commentNode abstractModifierNode
  javascript
   get tests() {
     const tests = this.filter(node => node.toPredicate).map(node => {
@@ -169,12 +171,22 @@ commentNode
  catchAllCellType commentCell
  catchAllNodeType commentNode
  boolean suggestInAutocomplete false
+abstractModifierNode
+ cells keywordCell
+ cruxFromId
+ single
+abstractColumnModifierNode
+ extends abstractModifierNode
+ catchAllCellType columnNameCell
 selectNode
  description Choose which columns to return.
- cells keywordCell
- catchAllCellType columnNameCell
- crux select
- single`)
+ extends abstractColumnModifierNode
+sortByNode
+ description Sort by these columns.
+ extends abstractColumnModifierNode
+reverseNode
+ extends abstractModifierNode
+ description Reverse the order of results.`)
     getHandGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
@@ -191,7 +203,11 @@ selectNode
         fieldIsNotMissingNode: fieldIsNotMissingNode,
         matchesRegexNode: matchesRegexNode,
         commentNode: commentNode,
-        selectNode: selectNode
+        abstractModifierNode: abstractModifierNode,
+        abstractColumnModifierNode: abstractColumnModifierNode,
+        selectNode: selectNode,
+        sortByNode: sortByNode,
+        reverseNode: reverseNode
       }
     }
   }
@@ -336,14 +352,23 @@ selectNode
     }
   }
 
-  class selectNode extends GrammarBackedNode {
+  class abstractModifierNode extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
+  }
+
+  class abstractColumnModifierNode extends abstractModifierNode {
     get columnNameCell() {
-      return this.getWordsFrom(1)
+      return this.getWordsFrom(0)
     }
   }
+
+  class selectNode extends abstractColumnModifierNode {}
+
+  class sortByNode extends abstractColumnModifierNode {}
+
+  class reverseNode extends abstractModifierNode {}
 
   window.tqlNode = tqlNode
 }

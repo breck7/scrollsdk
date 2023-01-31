@@ -9,6 +9,7 @@ const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const tqlNode = require("../products/tql.nodejs.js")
 const delimitedEscapeFunction = value => (value.includes("\n") ? value.split("\n")[0] : value)
+const delimiter = "DeLiM"
 class TreeBaseServer {
   constructor(folder) {
     this.folder = folder
@@ -90,9 +91,8 @@ class SearchServer {
     return this
   }
   scroll(treeQLCode) {
-    const { hits, time, columnNames } = this.search(treeQLCode)
+    const { hits, time, columnNames, errors } = this.search(treeQLCode)
     const { folder } = this
-    const delimiter = "DeLiM"
     const results = hits._toDelimited(delimiter, columnNames, delimitedEscapeFunction)
     return `title Search Results
  hidden
@@ -100,6 +100,8 @@ class SearchServer {
 viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
 
 html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" name="q"></textarea><input type="submit" value="Search"></form>
+
+html <div id="tqlErrors">${errors}</div>
 
 * Searched ${numeral(folder.length).format("0,0")} files and found ${hits.length} matches in ${time}s. 
  class searchResultsHeader
@@ -109,16 +111,23 @@ table ${delimiter}
 `
   }
   search(treeQLCode) {
-    var _a
-    const treeQLProgram = new tqlNode(treeQLCode)
     const startTime = Date.now()
-    const time = numeral((Date.now() - startTime) / 1000).format("0.00")
-    const rawHits = treeQLProgram.filterFolder(this.folder)
-    rawHits.forEach(file => file.set("titleLink", file.webPermalink))
-    const hits = new TreeNode(rawHits)
-    const customColumns = ((_a = treeQLProgram.get("select")) === null || _a === void 0 ? void 0 : _a.split(" ")) || []
-    const columnNames = "title titleLink".split(" ").concat(customColumns)
-    return { hits, time, columnNames }
+    let hits = new TreeNode()
+    let errors = ""
+    let columnNames = []
+    try {
+      const treeQLProgram = new tqlNode(treeQLCode)
+      const programErrors = treeQLProgram.scopeErrors.concat(treeQLProgram.getAllErrors())
+      if (programErrors.length) throw new Error(programErrors.map(err => err.getMessage()).join(" "))
+      const customColumns = (treeQLProgram.get("select") || "").split(" ")
+      columnNames = "title titleLink".split(" ").concat(customColumns)
+      const rawHits = treeQLProgram.filterFolder(this.folder)
+      rawHits.forEach(file => file.set("titleLink", file.webPermalink))
+      hits = new TreeNode(rawHits)
+    } catch (err) {
+      errors = err.toString()
+    }
+    return { hits, time: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors }
   }
   json(treeQLCode) {
     return this.search(treeQLCode).hits.toJSON()

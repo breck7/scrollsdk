@@ -7,8 +7,8 @@
           where: whereNode,
           includes: includesTextNode,
           doesNotInclude: doesNotIncludeTextNode,
-          missing: fieldIsMissingNode,
-          notMissing: fieldIsNotMissingNode,
+          missing: columnIsMissingNode,
+          notMissing: columnIsNotMissingNode,
           matchesRegex: matchesRegexNode,
           "#": commentNode,
           select: selectNode,
@@ -47,7 +47,7 @@ numberOrStringCell
 commentCell
  highlightScope comment
 columnNameCell
- description The field to search on.
+ description The column to search on.
  highlightScope constant.numeric
 blankCell
 tqlNode
@@ -92,37 +92,28 @@ whereNode
  catchAllCellType numberOrStringCell
  crux where
  javascript
-  get columnName() {
-    return this.getWord(1)
-  }
-  get operator() {
-    return this.getWord(2)
-  }
-  get numericValue() {
-    return parseFloat(this.getWord(3))
-  }
   toPredicate() {
-    const {columnName, operator} = this
-    const getValue = file => file.typed[columnName]
-    const getTextValue = file => {
-      const value = getValue(file)
-      if (value === undefined) return ""
-      if (!value.includes) return ""
-      return value
+    const columnName = this.getWord(1)
+    const operator = this.getWord(2)
+    return file => {
+      const value = file.getTypedValue(columnName)
+      const valueType = typeof value
+      let queryValue = this.getWordsFrom(3).join(" ")
+      if (valueType === "number")
+        queryValue = parseFloat(queryValue)
+      if (operator === ">")
+        return value > queryValue
+      if (operator === "<")
+        return value < queryValue
+      if (operator === "=")
+        return value == queryValue
+      if (operator === "!=")
+        return value != queryValue
+      if (operator === "includes")
+        return value ? value.includes(queryValue) : false
+      if (operator === "doesNotInclude")
+        return value ? !value.includes(queryValue) : true
     }
-    if (operator === ">")
-      return file => getValue(file) > this.numericValue
-    if (operator === "<")
-      return file => getValue(file) < this.numericValue
-    const stringValue = this.getWordsFrom(3).join(" ")
-    if (operator === "=")
-      return file => getValue(file) == this.numericValue
-    if (operator === "!=")
-      return file => getValue(file) != this.numericValue
-    if (operator === "includes")
-      return file => getTextValue(file).includes(stringValue)
-    if (operator === "doesNotInclude")
-      return file => !getTextValue(file).includes(stringValue)
   }
 includesTextNode
  extends abstractQueryNode
@@ -139,7 +130,7 @@ doesNotIncludeTextNode
  extends includesTextNode
  crux doesNotInclude
  boolean flip true
-fieldIsMissingNode
+columnIsMissingNode
  description Find files whose value in the given column is missing.
  extends abstractQueryNode
  cells keywordCell columnNameCell
@@ -147,11 +138,11 @@ fieldIsMissingNode
  javascript
   toPredicate() {
     const columnName = this.getWord(1)
-    return file => !file.has(columnName)
+    return file => !file.has(columnName.replaceAll(".", " "))
   }
-fieldIsNotMissingNode
+columnIsNotMissingNode
  description Find files whose value in the given column is not missing.
- extends fieldIsMissingNode
+ extends columnIsMissingNode
  crux notMissing
  boolean flip true
 matchesRegexNode
@@ -199,8 +190,8 @@ reverseNode
         whereNode: whereNode,
         includesTextNode: includesTextNode,
         doesNotIncludeTextNode: doesNotIncludeTextNode,
-        fieldIsMissingNode: fieldIsMissingNode,
-        fieldIsNotMissingNode: fieldIsNotMissingNode,
+        columnIsMissingNode: columnIsMissingNode,
+        columnIsNotMissingNode: columnIsNotMissingNode,
         matchesRegexNode: matchesRegexNode,
         commentNode: commentNode,
         abstractModifierNode: abstractModifierNode,
@@ -220,8 +211,8 @@ reverseNode
           where: whereNode,
           includes: includesTextNode,
           doesNotInclude: doesNotIncludeTextNode,
-          missing: fieldIsMissingNode,
-          notMissing: fieldIsNotMissingNode,
+          missing: columnIsMissingNode,
+          notMissing: columnIsNotMissingNode,
           matchesRegex: matchesRegexNode,
           "#": commentNode
         }),
@@ -264,31 +255,21 @@ reverseNode
     get numberOrStringCell() {
       return this.getWordsFrom(3)
     }
-    get columnName() {
-      return this.getWord(1)
-    }
-    get operator() {
-      return this.getWord(2)
-    }
-    get numericValue() {
-      return parseFloat(this.getWord(3))
-    }
     toPredicate() {
-      const { columnName, operator } = this
-      const getValue = file => file.typed[columnName]
-      const getTextValue = file => {
-        const value = getValue(file)
-        if (value === undefined) return ""
-        if (!value.includes) return ""
-        return value
+      const columnName = this.getWord(1)
+      const operator = this.getWord(2)
+      return file => {
+        const value = file.getTypedValue(columnName)
+        const valueType = typeof value
+        let queryValue = this.getWordsFrom(3).join(" ")
+        if (valueType === "number") queryValue = parseFloat(queryValue)
+        if (operator === ">") return value > queryValue
+        if (operator === "<") return value < queryValue
+        if (operator === "=") return value == queryValue
+        if (operator === "!=") return value != queryValue
+        if (operator === "includes") return value ? value.includes(queryValue) : false
+        if (operator === "doesNotInclude") return value ? !value.includes(queryValue) : true
       }
-      if (operator === ">") return file => getValue(file) > this.numericValue
-      if (operator === "<") return file => getValue(file) < this.numericValue
-      const stringValue = this.getWordsFrom(3).join(" ")
-      if (operator === "=") return file => getValue(file) == this.numericValue
-      if (operator === "!=") return file => getValue(file) != this.numericValue
-      if (operator === "includes") return file => getTextValue(file).includes(stringValue)
-      if (operator === "doesNotInclude") return file => !getTextValue(file).includes(stringValue)
     }
   }
 
@@ -308,7 +289,7 @@ reverseNode
     }
   }
 
-  class fieldIsMissingNode extends abstractQueryNode {
+  class columnIsMissingNode extends abstractQueryNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -317,11 +298,11 @@ reverseNode
     }
     toPredicate() {
       const columnName = this.getWord(1)
-      return file => !file.has(columnName)
+      return file => !file.has(columnName.replaceAll(".", " "))
     }
   }
 
-  class fieldIsNotMissingNode extends fieldIsMissingNode {
+  class columnIsNotMissingNode extends columnIsMissingNode {
     get flip() {
       return true
     }

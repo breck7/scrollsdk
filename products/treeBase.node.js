@@ -1,6 +1,7 @@
 //onsave jtree build produce treeBase.node.js
 const path = require("path")
 const fs = require("fs")
+const lodash = require("lodash")
 const { TreeNode, TreeEvents } = require("../products/TreeNode.js")
 const { HandGrammarProgram, GrammarConstants } = require("../products/GrammarLanguage.js")
 const { Disk } = require("../products/Disk.node.js")
@@ -71,6 +72,19 @@ class TreeBaseFile extends TreeNode {
   }
   get type() {
     return ""
+  }
+  getTypedValue(dotPath) {
+    const value = dotPath.includes(".") ? lodash.get(this.typed, dotPath) : this.typed[dotPath]
+    const typeOfValue = typeof value
+    if (typeOfValue === "object" && !Array.isArray(typeOfValue))
+      // JSON and Tree Notation are not naturally isomorphic. This accounts for trees with content.
+      return this.get(dotPath.replace(".", " "))
+    return value
+  }
+  selectAsObject(columnNames) {
+    const obj = {}
+    columnNames.forEach(dotPath => (obj[dotPath] = this.getTypedValue(dotPath)))
+    return obj
   }
   get rank() {
     return this.getIndex()

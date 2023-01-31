@@ -1142,19 +1142,19 @@ class TreeNode extends AbstractNode {
     })
     return matrix
   }
-  _toArrays(header, cellFn) {
+  _toArrays(columnNames, cellFn) {
     const skipHeaderRow = 1
-    const headerArray = header.map((columnName, index) => cellFn(columnName, 0, index))
+    const header = columnNames.map((columnName, index) => cellFn(columnName, 0, index))
     const rows = this.map((node, rowNumber) =>
-      header.map((columnName, columnIndex) => {
+      columnNames.map((columnName, columnIndex) => {
         const childNode = node.getNode(columnName)
         const content = childNode ? childNode.getContentWithChildren() : ""
         return cellFn(content, rowNumber + skipHeaderRow, columnIndex)
       })
     )
     return {
-      rows: rows,
-      header: headerArray
+      rows,
+      header
     }
   }
   _toDelimited(delimiter, header, cellFn) {
@@ -1451,9 +1451,16 @@ class TreeNode extends AbstractNode {
   clone() {
     return new this.constructor(this.childrenToString(), this.getLine())
   }
-  // todo: rename to hasFirstWord
-  has(firstWord) {
+  hasFirstWord(firstWord) {
     return this._hasFirstWord(firstWord)
+  }
+  has(firstWordPath) {
+    const edgeSymbol = this.getEdgeSymbol()
+    if (!firstWordPath.includes(edgeSymbol)) return this.hasFirstWord(firstWordPath)
+    const parts = firstWordPath.split(edgeSymbol)
+    const next = this.getNode(parts.shift())
+    if (!next) return false
+    return next.has(parts.join(edgeSymbol))
   }
   hasNode(node) {
     const needle = node.toString()
@@ -2485,7 +2492,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "64.2.0"
+TreeNode.getVersion = () => "64.3.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

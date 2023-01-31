@@ -1566,12 +1566,22 @@ d`)
 }
 testTree.has = equal => {
   // Arrange
-  const tree = new TreeNode("hello world\nnested\nfoo ")
+  const tree = new TreeNode(`hello world
+nested
+foo 
+deep
+ test
+  2`)
   // Assert
   equal(tree.has("hello"), true)
   equal(tree.has("world"), false)
   equal(tree.has("foo"), true)
   equal(tree.has("nested"), true)
+  equal(tree.has("deep test 2"), true)
+  equal(tree.has("deep test"), true)
+  equal(tree.has("deep"), true)
+  equal(tree.has("deep test 3"), false)
+  equal(tree.has("deep t 2"), false)
 }
 testTree.hasNode = equal => {
   // Arrange

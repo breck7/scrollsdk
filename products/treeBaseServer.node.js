@@ -129,17 +129,21 @@ table ${delimiter}
       const treeQLProgram = new tqlNode(treeQLCode)
       const programErrors = treeQLProgram.scopeErrors.concat(treeQLProgram.getAllErrors())
       if (programErrors.length) throw new Error(programErrors.map(err => err.getMessage()).join(" "))
-      const customColumns = (treeQLProgram.get("select") || "").split(" ")
-      columnNames = "title titleLink".split(" ").concat(customColumns)
       const sortBy = treeQLProgram.get("sortBy")
       let rawHits = treeQLProgram.filterFolder(this.folder)
       if (sortBy) {
-        const sortByFns = sortBy.split(" ").map(columnName => file => file.typed[columnName])
+        const sortByFns = sortBy.split(" ").map(columnName => file => file.getTypedValue(columnName))
         rawHits = lodash.sortBy(rawHits, sortByFns)
       }
       if (treeQLProgram.has("reverse")) rawHits.reverse()
-      rawHits.forEach(file => file.set("titleLink", file.webPermalink))
-      hits = new TreeNode(rawHits)
+      const customColumns = (treeQLProgram.get("select") || "").split(" ")
+      columnNames = "title titleLink".split(" ").concat(customColumns)
+      const selected = rawHits.map(file => {
+        const obj = file.selectAsObject(columnNames)
+        obj.titleLink = file.webPermalink
+        return obj
+      })
+      hits = new TreeNode(selected)
     } catch (err) {
       errors = err.toString()
     }

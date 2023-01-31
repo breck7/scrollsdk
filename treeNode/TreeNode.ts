@@ -1361,19 +1361,19 @@ class TreeNode extends AbstractNode {
     return matrix
   }
 
-  protected _toArrays(header: string[], cellFn: cellFn) {
+  protected _toArrays(columnNames: string[], cellFn: cellFn) {
     const skipHeaderRow = 1
-    const headerArray = header.map((columnName, index) => cellFn(columnName, 0, index))
+    const header = columnNames.map((columnName, index) => cellFn(columnName, 0, index))
     const rows = this.map((node, rowNumber) =>
-      header.map((columnName, columnIndex) => {
+      columnNames.map((columnName, columnIndex) => {
         const childNode = node.getNode(columnName)
         const content = childNode ? childNode.getContentWithChildren() : ""
         return cellFn(content, rowNumber + skipHeaderRow, columnIndex)
       })
     )
     return {
-      rows: rows,
-      header: headerArray
+      rows,
+      header
     }
   }
 
@@ -1731,9 +1731,18 @@ class TreeNode extends AbstractNode {
     return new (<any>this.constructor)(this.childrenToString(), this.getLine())
   }
 
-  // todo: rename to hasFirstWord
-  has(firstWord: word): boolean {
+  hasFirstWord(firstWord: word): boolean {
     return this._hasFirstWord(firstWord)
+  }
+
+  has(firstWordPath: treeNotationTypes.firstWordPath): boolean {
+    const edgeSymbol = this.getEdgeSymbol()
+    if (!firstWordPath.includes(edgeSymbol)) return this.hasFirstWord(firstWordPath)
+
+    const parts = firstWordPath.split(edgeSymbol)
+    const next = this.getNode(parts.shift())
+    if (!next) return false
+    return next.has(parts.join(edgeSymbol))
   }
 
   hasNode(node: TreeNode | string): boolean {

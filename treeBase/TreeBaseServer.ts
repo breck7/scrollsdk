@@ -160,18 +160,22 @@ table ${delimiter}
       const treeQLProgram = new tqlNode(treeQLCode)
       const programErrors = treeQLProgram.scopeErrors.concat(treeQLProgram.getAllErrors())
       if (programErrors.length) throw new Error(programErrors.map((err: any) => err.getMessage()).join(" "))
-      const customColumns = (treeQLProgram.get("select") || "").split(" ")
-      columnNames = "title titleLink".split(" ").concat(customColumns)
       const sortBy = treeQLProgram.get("sortBy")
       let rawHits = treeQLProgram.filterFolder(this.folder)
       if (sortBy) {
-        const sortByFns = sortBy.split(" ").map((columnName: string) => (file: any) => file.typed[columnName])
+        const sortByFns = sortBy.split(" ").map((columnName: string) => (file: any) => file.getTypedValue(columnName))
         rawHits = lodash.sortBy(rawHits, sortByFns)
       }
       if (treeQLProgram.has("reverse")) rawHits.reverse()
 
-      rawHits.forEach((file: any) => file.set("titleLink", file.webPermalink))
-      hits = new TreeNode(rawHits)
+      const customColumns = (treeQLProgram.get("select") || "").split(" ")
+      columnNames = "title titleLink".split(" ").concat(customColumns)
+      const selected = rawHits.map((file: any) => {
+        const obj = file.selectAsObject(columnNames)
+        obj.titleLink = file.webPermalink
+        return obj
+      })
+      hits = new TreeNode(selected)
     } catch (err) {
       errors = err.toString()
     }

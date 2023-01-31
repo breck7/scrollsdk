@@ -3,6 +3,7 @@
 import { treeNotationTypes } from "../products/treeNotationTypes"
 const path = require("path")
 const fs = require("fs")
+const lodash = require("lodash")
 
 const { TreeNode, TreeEvents } = require("../products/TreeNode.js")
 const { HandGrammarProgram, GrammarConstants } = require("../products/GrammarLanguage.js")
@@ -91,6 +92,21 @@ class TreeBaseFile extends TreeNode {
 
   get type() {
     return ""
+  }
+
+  getTypedValue(dotPath: string) {
+    const value = dotPath.includes(".") ? lodash.get(this.typed, dotPath) : this.typed[dotPath]
+    const typeOfValue = typeof value
+    if (typeOfValue === "object" && !Array.isArray(typeOfValue))
+      // JSON and Tree Notation are not naturally isomorphic. This accounts for trees with content.
+      return this.get(dotPath.replace(".", " "))
+    return value
+  }
+
+  selectAsObject(columnNames: string[]) {
+    const obj: any = {}
+    columnNames.forEach((dotPath: string) => (obj[dotPath] = this.getTypedValue(dotPath)))
+    return obj
   }
 
   get rank() {

@@ -4,12 +4,17 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 64.3.0 2023-1-31
+- 🎉 TQL: added support for nested dot paths like `github.stars`
+- 🏥 TQL: various fixes.
+- 🏥 TreeNode: renamed current `has` to `hasFirstWord` and `has` now works correctly for deep paths.
+
 # 64.2.0 2023-1-31
-- 🎉 Added `sortBy` and `reverse` keywords to TQL.
-- 🎉 Added `csv`, `text`, and `scroll` output formats to TQL search.
+- 🎉 TQL: Added `sortBy` and `reverse` keywords.
+- 🎉 TreeBase: Added `csv`, `text`, and `scroll` output formats.
 
 # 64.1.0 2023-1-31
-- 🎉 improved error handling in TQL
+- 🎉 TQL: improved error handling
 
 # 64.0.1 2023-1-30
 - 🏥 version number fix

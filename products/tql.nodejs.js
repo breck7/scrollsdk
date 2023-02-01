@@ -19,7 +19,10 @@
           "#": commentNode,
           select: selectNode,
           sortBy: sortByNode,
-          reverse: reverseNode
+          reverse: reverseNode,
+          limit: limitNode,
+          title: titleNode,
+          description: descriptionNode
         }),
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
@@ -39,7 +42,7 @@
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
  highlightScope keyword
 comparisonCell
- enum < > = != includes doesNotInclude
+ enum < > = != includes doesNotInclude oneOf
 stringCell
  highlightScope string
 permalinkCell
@@ -60,7 +63,7 @@ tqlNode
  root
  description Tree Query Language (TQL) is a new language for searching a TreeBase.
  catchAllNodeType catchAllErrorNode
- inScope abstractQueryNode blankLineNode commentNode abstractModifierNode
+ inScope abstractQueryNode blankLineNode commentNode abstractModifierNode abstractMetaNode
  javascript
   get tests() {
     const tests = this.filter(node => node.toPredicate).map(node => {
@@ -104,7 +107,8 @@ whereNode
     return file => {
       const value = file.getTypedValue(columnName)
       const valueType = typeof value
-      let queryValue = this.getWordsFrom(3).join(" ")
+      const textQueryValue = this.getWordsFrom(3).join(" ")
+      let queryValue = textQueryValue
       if (valueType === "number")
         queryValue = parseFloat(queryValue)
       if (operator === ">")
@@ -119,6 +123,8 @@ whereNode
         return value ? value.includes(queryValue) : false
       if (operator === "doesNotInclude")
         return value ? !value.includes(queryValue) : true
+      if (operator === "oneOf")
+        return value ? textQueryValue.split(" ").includes(value.toString()) : false
     }
   }
 includesTextNode
@@ -183,7 +189,23 @@ sortByNode
  extends abstractColumnModifierNode
 reverseNode
  extends abstractModifierNode
- description Reverse the order of results.`)
+ description Reverse the order of results.
+limitNode
+ extends abstractModifierNode
+ description Return a maximum of this many results.
+ cells keywordCell numberCell
+abstractMetaNode
+ cells keywordCell
+ catchAllCellType stringCell
+ cruxFromId
+ single
+ boolean suggestInAutocomplete false
+titleNode
+ description Give your query a title for display on the results page.
+ extends abstractMetaNode
+descriptionNode
+ description Give your query a description for display on the results page.
+ extends abstractMetaNode`)
     getHandGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
@@ -204,7 +226,11 @@ reverseNode
         abstractColumnModifierNode: abstractColumnModifierNode,
         selectNode: selectNode,
         sortByNode: sortByNode,
-        reverseNode: reverseNode
+        reverseNode: reverseNode,
+        limitNode: limitNode,
+        abstractMetaNode: abstractMetaNode,
+        titleNode: titleNode,
+        descriptionNode: descriptionNode
       }
     }
   }
@@ -267,7 +293,8 @@ reverseNode
       return file => {
         const value = file.getTypedValue(columnName)
         const valueType = typeof value
-        let queryValue = this.getWordsFrom(3).join(" ")
+        const textQueryValue = this.getWordsFrom(3).join(" ")
+        let queryValue = textQueryValue
         if (valueType === "number") queryValue = parseFloat(queryValue)
         if (operator === ">") return value > queryValue
         if (operator === "<") return value < queryValue
@@ -275,6 +302,7 @@ reverseNode
         if (operator === "!=") return value != queryValue
         if (operator === "includes") return value ? value.includes(queryValue) : false
         if (operator === "doesNotInclude") return value ? !value.includes(queryValue) : true
+        if (operator === "oneOf") return value ? textQueryValue.split(" ").includes(value.toString()) : false
       }
     }
   }
@@ -356,6 +384,31 @@ reverseNode
   class sortByNode extends abstractColumnModifierNode {}
 
   class reverseNode extends abstractModifierNode {}
+
+  class limitNode extends abstractModifierNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get numberCell() {
+      return parseFloat(this.getWord(1))
+    }
+  }
+
+  class abstractMetaNode extends GrammarBackedNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get stringCell() {
+      return this.getWordsFrom(1)
+    }
+    get suggestInAutocomplete() {
+      return false
+    }
+  }
+
+  class titleNode extends abstractMetaNode {}
+
+  class descriptionNode extends abstractMetaNode {}
 
   module.exports = tqlNode
   tqlNode

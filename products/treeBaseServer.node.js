@@ -101,20 +101,23 @@ class SearchServer {
     return this
   }
   scroll(treeQLCode) {
-    const { hits, time, columnNames, errors } = this.search(treeQLCode)
+    const { hits, time, columnNames, errors, title, description } = this.search(treeQLCode)
     const { folder } = this
     const results = hits._toDelimited(delimiter, columnNames, delimitedEscapeFunction)
-    return `title Search Results
+    const encodedTitle = Utils.escapeScrollAndHtml(title)
+    const encodedDescription = Utils.escapeScrollAndHtml(description)
+    return `title ${title ? encodedTitle : "Search Results"}
  hidden
-
 viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
 
 html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" name="q"></textarea><input type="submit" value="Search"></form>
-
 html <div id="tqlErrors">${errors}</div>
 
 * Searched ${numeral(folder.length).format("0,0")} files and found ${hits.length} matches in ${time}s. 
  class searchResultsHeader
+
+${title ? `# ${encodedTitle}` : ""}
+${description ? `* ${encodedDescription}` : ""}
 
 table ${delimiter}
  ${results.replace(/\n/g, "\n ")}
@@ -125,11 +128,15 @@ table ${delimiter}
     let hits = new TreeNode()
     let errors = ""
     let columnNames = []
+    let title = ""
+    let description = ""
     try {
       const treeQLProgram = new tqlNode(treeQLCode)
       const programErrors = treeQLProgram.scopeErrors.concat(treeQLProgram.getAllErrors())
       if (programErrors.length) throw new Error(programErrors.map(err => err.getMessage()).join(" "))
       const sortBy = treeQLProgram.get("sortBy")
+      title = treeQLProgram.get("title")
+      description = treeQLProgram.get("description")
       let rawHits = treeQLProgram.filterFolder(this.folder)
       if (sortBy) {
         const sortByFns = sortBy.split(" ").map(columnName => file => file.getTypedValue(columnName))
@@ -138,16 +145,18 @@ table ${delimiter}
       if (treeQLProgram.has("reverse")) rawHits.reverse()
       const customColumns = (treeQLProgram.get("select") || "").split(" ")
       columnNames = "title titleLink".split(" ").concat(customColumns)
-      const selected = rawHits.map(file => {
+      let selected = rawHits.map(file => {
         const obj = file.selectAsObject(columnNames)
         obj.titleLink = file.webPermalink
         return obj
       })
+      const limit = treeQLProgram.get("limit")
+      if (limit) selected = selected.slice(0, parseInt(limit))
       hits = new TreeNode(selected)
     } catch (err) {
       errors = err.toString()
     }
-    return { hits, time: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors }
+    return { hits, time: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors, title, description }
   }
   text(treeQLCode) {
     return this.search(treeQLCode).hits.toString()

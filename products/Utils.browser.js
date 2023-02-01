@@ -30,7 +30,15 @@ class Utils {
     if (command.match(/^\d+$/) && allCommands[commandAsNumber]) return run(allCommands[commandAsNumber])
     console.log(`\n❌ No command provided. Available commands:\n\n` + allCommands.map((name, index) => `${index + 1}. ${name.replace("Command", "")}`).join("\n") + "\n")
   }
-  static htmlEscaped(content) {
+  // Only allow text content and inline styling. Don't allow HTML tags or any nested scroll tags or escape characters.
+  static escapeScrollAndHtml(content = "") {
+    return content
+      .replace(/</g, "&lt;")
+      .replace(/\n/g, "")
+      .replace(/\r/g, "")
+      .replace(/\\/g, "")
+  }
+  static htmlEscaped(content = "") {
     return content.replace(/</g, "&lt;")
   }
   static isNodeJs() {

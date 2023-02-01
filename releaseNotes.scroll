@@ -4,6 +4,12 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 64.4.0 2023-2-1
+- 🎉 TQL: added `limit` keyword
+- 🎉 TQL: added `oneOf` operator
+- 🎉 TQL: added `title` and `description` fields
+- 🎉 TQL: started readme
+
 # 64.3.0 2023-1-31
 - 🎉 TQL: added support for nested dot paths like `github.stars`
 - 🏥 TQL: various fixes.

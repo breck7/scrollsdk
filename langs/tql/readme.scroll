@@ -1,0 +1,12 @@
+# TQL: A plain text language for querying plain text databases
+
+? What is TQL?
+* Tree Query Language (TQL) is a language for querying TreeBases.
+
+? Can you show me a demo?
+* TQL powers the search on PLDB.com. Here is an example query to show all query languages in the PLDB.
+ https://build.pldb.com/search?q=select+appeared+standsFor+creators%0D%0Awhere+type+%3D+queryLanguage%0D%0AsortBy+appeared%0D%0Areverse show all query languages in the PLDB
+
+? How does TQL compare to SQL?
+* SQL is designed for querying binary databases storied in various binary formats. TQL is designed for querying plain text databases stored in Tree Notation format. SQL is a plain text language for querying binary databases. TQL is a plain text language for querying plain text databases. 
+

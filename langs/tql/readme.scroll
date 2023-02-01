@@ -1,4 +1,8 @@
+import ../../header.scroll
+
 # TQL: A plain text language for querying plain text databases
+
+startColumns 1
 
 ? What is TQL?
 * Tree Query Language (TQL) is a language for querying TreeBases.
@@ -10,3 +14,4 @@
 ? How does TQL compare to SQL?
 * SQL is designed for querying binary databases storied in various binary formats. TQL is designed for querying plain text databases stored in Tree Notation format. SQL is a plain text language for querying binary databases. TQL is a plain text language for querying plain text databases. 
 
+import ../../footer.scroll

@@ -1,4 +1,5 @@
 import ../../header.scroll
+permalink index.html
 
 # TQL: A plain text language for querying plain text databases
 

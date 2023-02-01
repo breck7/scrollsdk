@@ -1,0 +1,15 @@
+import ../../header.scroll
+permalink index.html
+
+# Grammar: A language for building languages
+
+startColumns 1
+
+? What is Grammar?
+* Grammar is a Tree Language for building Tree Languages.
+
+? Can you show me a demo?
+* The Tree Language Designer let's you use Grammar to build languages right in your browser.
+ https://jtree.treenotation.org/designer/ Tree Language Designer
+
+import ../../footer.scroll

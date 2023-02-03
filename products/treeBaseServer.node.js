@@ -4,6 +4,7 @@ const lodash = require("lodash")
 const numeral = require("numeral")
 const https = require("https")
 const express = require("express")
+const dayjs = require("dayjs")
 const bodyParser = require("body-parser")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
@@ -33,13 +34,16 @@ class TreeBaseServer {
     // Log all requests to a log file in the log folder similar to how NGINX does it:
     app.use((req, res, next) => {
       const userAgent = req.headers["user-agent"] || ""
-      const date = new Date().toUTCString()
       const { method, originalUrl, httpVersion, ip, statusCode } = req
       const contentLength = res.get("Content-Length") || 0
       const referer = req.headers.referer || ""
-      const logLine = `${ip} - - [${date}] "${method} ${originalUrl} HTTP/${httpVersion}" ${statusCode} ${contentLength} "${referer}" "${userAgent}"\n`
+      // https://en.wikipedia.org/wiki/Common_Log_Format
+      // Set the date to match the format %d/%b/%Y:%H:%M:%S %z
+      const date = dayjs().format("DD/MMM/YYYY:HH:mm:ss ZZ")
+      const commonLogFormat = `${ip} - - [${date}] "${method} ${originalUrl} HTTP/${httpVersion}" ${statusCode} ${contentLength}`
+      const combinedLogFormat = `${commonLogFormat} "${referer}" "${userAgent}"\n`
       // Now write to the log file:
-      fs.appendFile(this.requestLog, logLine, "utf8", function() {})
+      fs.appendFile(this.requestLog, combinedLogFormat, "utf8", function() {})
       next()
     })
     app.use(bodyParser.urlencoded({ extended: false }))

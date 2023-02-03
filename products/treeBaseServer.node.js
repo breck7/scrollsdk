@@ -12,15 +12,36 @@ const tqlNode = require("../products/tql.nodejs.js")
 const delimitedEscapeFunction = value => (value.includes("\n") ? value.split("\n")[0] : value)
 const delimiter = " DeLiM "
 class TreeBaseServer {
-  constructor(folder) {
+  constructor(folder, ignoreFolder) {
+    this.requestLog = ""
+    this.searchRequestLog = ""
+    this.ignoreFolder = ""
     this.folder = folder
     const app = express()
     this.app = app
     this._setExpressBasics()
+    if (!Disk.exists(ignoreFolder)) Disk.mkdir(ignoreFolder)
+    this.ignoreFolder = ignoreFolder
+    this.requestLog = path.join(ignoreFolder, "access.log")
+    this.searchRequestLog = path.join(ignoreFolder, "searchLog.tree")
+    Disk.touch(this.searchRequestLog)
+    Disk.touch(this.requestLog)
     return this
   }
   _setExpressBasics() {
     const { app } = this
+    // Log all requests to a log file in the log folder similar to how NGINX does it:
+    app.use((req, res, next) => {
+      const userAgent = req.headers["user-agent"] || ""
+      const date = new Date().toUTCString()
+      const { method, originalUrl, httpVersion, ip, statusCode } = req
+      const contentLength = res.get("Content-Length") || 0
+      const referer = req.headers.referer || ""
+      const logLine = `${ip} - - [${date}] "${method} ${originalUrl} HTTP/${httpVersion}" ${statusCode} ${contentLength} "${referer}" "${userAgent}"\n`
+      // Now write to the log file:
+      fs.appendFile(this.requestLog, logLine, "utf8", function() {})
+      next()
+    })
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
     app.use((req, res, next) => {
@@ -35,19 +56,17 @@ class TreeBaseServer {
     this.app.use(express.static(folder))
     return this
   }
-  initSearch(searchLogFolder = "") {
+  initSearch() {
     const searchServer = new SearchServer(this.folder)
     this.searchServer = searchServer
-    const searchLogPath = path.join(searchLogFolder, "searchLog.tree")
     const formats = ["html", "csv", "text", "scroll"]
-    if (searchLogFolder) Disk.touch(searchLogPath)
     const searchCache = {}
     this.app.get("/search", (req, res) => {
       const { q } = req.query
       const originalQuery = q === undefined ? "" : q
       const originalFormat = req.query.format
       const format = originalFormat && formats.includes(originalFormat) ? originalFormat : "html"
-      if (searchLogFolder) searchServer.logQuery(searchLogPath, originalQuery, req.ip, format)
+      searchServer.logQuery(this.searchRequestLog, originalQuery, req.ip, format)
       const key = originalQuery + format
       if (searchCache[key]) return res.send(searchCache[key])
       const decodedQuery = decodeURIComponent(originalQuery).replace(/\r/g, "")
@@ -67,9 +86,9 @@ class TreeBaseServer {
   scrollToHtml(scrollContent) {
     return scrollContent
   }
-  listenProd(pemPath) {
-    const key = fs.readFileSync(path.join(pemPath, "privkey.pem"))
-    const cert = fs.readFileSync(path.join(pemPath, "fullchain.pem"))
+  listenProd() {
+    const key = fs.readFileSync(path.join(this.ignoreFolder, "privkey.pem"))
+    const cert = fs.readFileSync(path.join(this.ignoreFolder, "fullchain.pem"))
     https
       .createServer(
         {

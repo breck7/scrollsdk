@@ -4,6 +4,10 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 65.0.0 2023-2-3
+- 🎉 TreeBaseServer: added request logging.
+- ⚠️ TreeBaseServer: ignore folder now required in constructor and not passed in `initSearch` or `listenProd` methods.
+
 # 64.4.0 2023-2-1
 - 🎉 TQL: added `limit` keyword
 - 🎉 TQL: added `oneOf` operator

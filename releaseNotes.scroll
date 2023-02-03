@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 65.0.2 2023-2-3
+- 🏥 TreeBaseServer: discovered morgan (thank god!) and now logging works.
+
 # 65.0.1 2023-2-3
 - 🏥 TreeBaseServer: fix format of server log files
 

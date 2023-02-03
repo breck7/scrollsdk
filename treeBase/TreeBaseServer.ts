@@ -4,9 +4,9 @@ const fs = require("fs")
 const path = require("path")
 const lodash = require("lodash")
 const numeral = require("numeral")
+const morgan = require("morgan")
 const https = require("https")
 const express = require("express")
-const dayjs = require("dayjs")
 const bodyParser = require("body-parser")
 
 const { Disk } = require("../products/Disk.node.js")
@@ -24,43 +24,19 @@ class TreeBaseServer {
   folder: TreeBaseFolder
   app: any
   searchServer: SearchServer
-  requestLog = ""
-  searchRequestLog = ""
   ignoreFolder = ""
 
   constructor(folder: TreeBaseFolder, ignoreFolder: string) {
     this.folder = folder
     const app = express()
     this.app = app
-    this._setExpressBasics()
-
-    if (!Disk.exists(ignoreFolder)) Disk.mkdir(ignoreFolder)
     this.ignoreFolder = ignoreFolder
-    this.requestLog = path.join(ignoreFolder, "access.log")
-    this.searchRequestLog = path.join(ignoreFolder, "searchLog.tree")
-    Disk.touch(this.searchRequestLog)
-    Disk.touch(this.requestLog)
+    if (!Disk.exists(ignoreFolder)) Disk.mkdir(ignoreFolder)
 
-    return this
-  }
+    const requestLog = path.join(ignoreFolder, "access.log")
+    Disk.touch(requestLog)
+    app.use(morgan("combined", { stream: fs.createWriteStream(requestLog, { flags: "a" }) }))
 
-  _setExpressBasics() {
-    const { app } = this
-    // Log all requests to a log file in the log folder similar to how NGINX does it:
-    app.use((req: any, res: any, next: any) => {
-      const userAgent = req.headers["user-agent"] || ""
-      const { method, originalUrl, httpVersion, ip, statusCode } = req
-      const contentLength = res.get("Content-Length") || 0
-      const referer = req.headers.referer || ""
-      // https://en.wikipedia.org/wiki/Common_Log_Format
-      // Set the date to match the format %d/%b/%Y:%H:%M:%S %z
-      const date = dayjs().format("DD/MMM/YYYY:HH:mm:ss ZZ")
-      const commonLogFormat = `${ip} - - [${date}] "${method} ${originalUrl} HTTP/${httpVersion}" ${statusCode} ${contentLength}`
-      const combinedLogFormat = `${commonLogFormat} "${referer}" "${userAgent}"\n`
-      // Now write to the log file:
-      fs.appendFile(this.requestLog, combinedLogFormat, "utf8", function() {})
-      next()
-    })
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
     app.use((req: any, res: any, next: any) => {
@@ -70,6 +46,15 @@ class TreeBaseServer {
       res.setHeader("Access-Control-Allow-Credentials", true)
       next()
     })
+
+    return this
+  }
+
+  notFoundPage = "Not found"
+  _addNotFoundRoute() {
+    const { notFoundPage } = this
+    //The 404 Route (ALWAYS Keep this as the last route)
+    this.app.get("*", (req: any, res: any) => res.status(404).send(notFoundPage))
   }
 
   serveFolder(folder: string) {
@@ -82,13 +67,17 @@ class TreeBaseServer {
     this.searchServer = searchServer
     const formats = ["html", "csv", "text", "scroll"]
     const searchCache: any = {}
+
+    const searchRequestLog = path.join(this.ignoreFolder, "searchLog.tree")
+    Disk.touch(searchRequestLog)
+
     this.app.get("/search", (req: any, res: any) => {
       const { q } = req.query
       const originalQuery = q === undefined ? "" : q
       const originalFormat = req.query.format
       const format = originalFormat && formats.includes(originalFormat) ? originalFormat : "html"
 
-      searchServer.logQuery(this.searchRequestLog, originalQuery, req.ip, format)
+      searchServer.logQuery(searchRequestLog, originalQuery, req.ip, format)
 
       const key = originalQuery + format
       if (searchCache[key]) return res.send(searchCache[key])
@@ -106,6 +95,7 @@ class TreeBaseServer {
   }
 
   listen(port = 4444) {
+    this._addNotFoundRoute()
     this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
   }
@@ -116,6 +106,7 @@ class TreeBaseServer {
   }
 
   listenProd() {
+    this._addNotFoundRoute()
     const key = fs.readFileSync(path.join(this.ignoreFolder, "privkey.pem"))
     const cert = fs.readFileSync(path.join(this.ignoreFolder, "fullchain.pem"))
     https

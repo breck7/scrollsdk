@@ -12,6 +12,7 @@
           matchesRegex: matchesRegexNode,
           "#": commentNode,
           select: selectNode,
+          rename: renameNode,
           sortBy: sortByNode,
           reverse: reverseNode,
           limit: limitNode,
@@ -178,6 +179,12 @@ abstractColumnModifierNode
 selectNode
  description Choose which columns to return.
  extends abstractColumnModifierNode
+renameNode
+ cells keywordCell columnNameCell stringCell
+ example
+  rename githubRepo.stars Stars
+ description Rename a column.
+ extends abstractColumnModifierNode
 sortByNode
  description Sort by these columns.
  extends abstractColumnModifierNode
@@ -219,6 +226,7 @@ descriptionNode
         abstractModifierNode: abstractModifierNode,
         abstractColumnModifierNode: abstractColumnModifierNode,
         selectNode: selectNode,
+        renameNode: renameNode,
         sortByNode: sortByNode,
         reverseNode: reverseNode,
         limitNode: limitNode,
@@ -374,6 +382,18 @@ descriptionNode
   }
 
   class selectNode extends abstractColumnModifierNode {}
+
+  class renameNode extends abstractColumnModifierNode {
+    get keywordCell() {
+      return this.getWord(0)
+    }
+    get columnNameCell() {
+      return this.getWord(1)
+    }
+    get stringCell() {
+      return this.getWord(2)
+    }
+  }
 
   class sortByNode extends abstractColumnModifierNode {}
 

@@ -10,6 +10,7 @@ class PlanetsDbServer extends TreeBaseServer {
     return scrollContent
   }
 }
+const ignoreFolder = path.join(__dirname, "..", "ignore")
 class Kitchen {
   startPlanetsDbServer(port) {
     const databaseFolder = path.join(__dirname, "..", "treeBase", "planets")
@@ -17,7 +18,7 @@ class Kitchen {
       .setDir(databaseFolder)
       .setGrammarDir(databaseFolder)
       .loadFolder()
-    const treeBaseServer = new PlanetsDbServer(folder, databaseFolder).initSearch().serveFolder(databaseFolder)
+    const treeBaseServer = new PlanetsDbServer(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
     treeBaseServer.listen(port)
   }
   start(port) {

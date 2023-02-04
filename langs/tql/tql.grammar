@@ -143,6 +143,12 @@ abstractColumnModifierNode
 selectNode
  description Choose which columns to return.
  extends abstractColumnModifierNode
+renameNode
+ cells keywordCell columnNameCell stringCell
+ example
+  rename githubRepo.stars Stars
+ description Rename a column.
+ extends abstractColumnModifierNode
 sortByNode
  description Sort by these columns.
  extends abstractColumnModifierNode

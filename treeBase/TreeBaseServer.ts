@@ -191,16 +191,30 @@ table ${delimiter}
       }
       if (treeQLProgram.has("reverse")) rawHits.reverse()
 
-      const customColumns = (treeQLProgram.get("select") || "").split(" ")
-      columnNames = "title titleLink".split(" ").concat(customColumns)
-      let selected = rawHits.map((file: any) => {
+      // By default right now we basically add: select title titleLink
+      // We will probably ditch that in the future and make it explicit.
+      columnNames = ["title", "titleLink"].concat((treeQLProgram.get("select") || "").split(" "))
+
+      let matchingFilesAsObjectsWithSelectedColumns = rawHits.map((file: any) => {
         const obj = file.selectAsObject(columnNames)
         obj.titleLink = file.webPermalink
         return obj
       })
+
       const limit = treeQLProgram.get("limit")
-      if (limit) selected = selected.slice(0, parseInt(limit))
-      hits = new TreeNode(selected)
+      if (limit) matchingFilesAsObjectsWithSelectedColumns = matchingFilesAsObjectsWithSelectedColumns.slice(0, parseInt(limit))
+
+      const renames = treeQLProgram.findNodes("rename").forEach((node: any) => {
+        const oldName = node.getWord(1)
+        const newName = node.getWord(2)
+        matchingFilesAsObjectsWithSelectedColumns.forEach((obj: any) => {
+          obj[newName] = obj[oldName]
+          delete obj[oldName]
+          columnNames = columnNames.map(columnName => (oldName === columnName ? newName : columnName))
+        })
+      })
+
+      hits = new TreeNode(matchingFilesAsObjectsWithSelectedColumns)
     } catch (err) {
       errors = err.toString()
     }

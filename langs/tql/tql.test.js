@@ -21,10 +21,12 @@ matchesRegex \\d+
 where moons = 1
 where diameter > 10000
 where related includes mars
-notMissing diameter`)
+notMissing diameter
+rename diameter Diameter`)
 
   // Act/Assert
-  equal(program.filterFolder(folder).length, 1)
+  const results = program.filterFolder(folder)
+  equal(results.length, 1)
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)

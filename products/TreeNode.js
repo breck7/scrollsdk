@@ -327,6 +327,18 @@ class TreeNode extends AbstractNode {
   _getProjectRootDir() {
     return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
   }
+  // Concat 2 trees amd return a new true, but replace any nodes
+  // in this tree that start with the same node from the first tree with
+  // that patched version. Does not recurse.
+  patch(two) {
+    const copy = this.clone()
+    two.forEach(node => {
+      const hit = copy.getNode(node.getWord(0))
+      if (hit) hit.destroy()
+    })
+    copy.concat(two)
+    return copy
+  }
   getSparsity() {
     const nodes = this.getChildren()
     const fields = this._getUnionNames()
@@ -2482,7 +2494,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "65.1.0"
+TreeNode.getVersion = () => "65.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

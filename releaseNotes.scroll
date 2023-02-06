@@ -4,6 +4,10 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 65.2.0 2023-2-6
+- 🎉 TreeNode: upstreamed `patch` method from pldb
+- 🎉 Utils: upstreamed some methods from pldb
+
 # 65.1.0 2023-2-4
 - 🎉 TQL: added `rename` keyword
 

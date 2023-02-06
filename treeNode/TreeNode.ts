@@ -417,6 +417,19 @@ class TreeNode extends AbstractNode {
     return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
   }
 
+  // Concat 2 trees amd return a new true, but replace any nodes
+  // in this tree that start with the same node from the first tree with
+  // that patched version. Does not recurse.
+  patch(two: TreeNode) {
+    const copy = this.clone()
+    two.forEach(node => {
+      const hit = copy.getNode(node.getWord(0))
+      if (hit) hit.destroy()
+    })
+    copy.concat(two)
+    return copy
+  }
+
   getSparsity() {
     const nodes = this.getChildren()
     const fields = this._getUnionNames()

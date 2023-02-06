@@ -1206,6 +1206,22 @@ div
   )
 }
 
+testTree.patch = equal => {
+  // Arrange
+  const one = new TreeNode(`name Git
+appeared 2012`)
+  const two = new TreeNode(`name Git
+creators Linus Torvalds
+appeared 2005`)
+
+  // Act
+  const three = one.patch(two)
+
+  // Assert
+  equal(three.get("appeared"), "2005")
+  equal(three.get("creators"), "Linus Torvalds")
+}
+
 testTree.evalTemplateString = equal => {
   // Arrange
   const templateString = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"

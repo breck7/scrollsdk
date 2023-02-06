@@ -45,6 +45,20 @@ class Utils {
     console.log(`\n❌ No command provided. Available commands:\n\n` + allCommands.map((name, index) => `${index + 1}. ${name.replace("Command", "")}`).join("\n") + "\n")
   }
 
+  static removeReturnChars(str = "") {
+    return str.replace(/\r/g, "")
+  }
+
+  static shiftRight(str = "", numSpaces = 1) {
+    let spaces = " ".repeat(numSpaces)
+    return str.replace(/\n/g, `\n${spaces}`)
+  }
+
+  static getLinks(str = "") {
+    const _re = new RegExp("(^|[ \t\r\n])((ftp|http|https):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))", "g")
+    return str.match(_re) || []
+  }
+
   // Only allow text content and inline styling. Don't allow HTML tags or any nested scroll tags or escape characters.
   static escapeScrollAndHtml(content = "") {
     return content
@@ -54,8 +68,80 @@ class Utils {
       .replace(/\\/g, "")
   }
 
+  static ensureDelimiterNotFound(strings: string[], delimiter: string) {
+    const hit = strings.find(word => word.includes(delimiter))
+    if (hit) throw `Delimiter "${delimiter}" found in hit`
+  }
+
+  // https://github.com/rigoneri/indefinite-article.js/blob/master/indefinite-article.js
+  static getIndefiniteArticle(phrase: string) {
+    // Getting the first word
+    const match = /\w+/.exec(phrase)
+    let word
+    if (match) word = match[0]
+    else return "an"
+
+    var l_word = word.toLowerCase()
+    // Specific start of words that should be preceded by 'an'
+    var alt_cases = ["honest", "hour", "hono"]
+    for (var i in alt_cases) {
+      if (l_word.indexOf(alt_cases[i]) == 0) return "an"
+    }
+
+    // Single letter word which should be preceded by 'an'
+    if (l_word.length == 1) {
+      if ("aedhilmnorsx".indexOf(l_word) >= 0) return "an"
+      else return "a"
+    }
+
+    // Capital words which should likely be preceded by 'an'
+    if (word.match(/(?!FJO|[HLMNS]Y.|RY[EO]|SQU|(F[LR]?|[HL]|MN?|N|RH?|S[CHKLMNPTVW]?|X(YL)?)[AEIOU])[FHLMNRSX][A-Z]/)) {
+      return "an"
+    }
+
+    // Special cases where a word that begins with a vowel should be preceded by 'a'
+    const regexes = [/^e[uw]/, /^onc?e\b/, /^uni([^nmd]|mo)/, /^u[bcfhjkqrst][aeiou]/]
+    for (var i in regexes) {
+      if (l_word.match(regexes[i])) return "a"
+    }
+
+    // Special capital words (UK, UN)
+    if (word.match(/^U[NK][AIEO]/)) {
+      return "a"
+    } else if (word == word.toUpperCase()) {
+      if ("aedhilmnorsx".indexOf(l_word[0]) >= 0) return "an"
+      else return "a"
+    }
+
+    // Basic method of words that begin with a vowel being preceded by 'an'
+    if ("aeiou".indexOf(l_word[0]) >= 0) return "an"
+
+    // Instances where y follwed by specific letters is preceded by 'an'
+    if (l_word.match(/^y(b[lor]|cl[ea]|fere|gg|p[ios]|rou|tt)/)) return "an"
+
+    return "a"
+  }
+
   static htmlEscaped(content = "") {
     return content.replace(/</g, "&lt;")
+  }
+
+  static isValidEmail(email = "") {
+    return email.toLowerCase().match(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)
+  }
+
+  static capitalizeFirstLetter(str: string) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
+  }
+
+  // generate a random alpha numeric hash:
+  static getRandomCharacters(len: number) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
+    let result = ""
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * characters.length))
+    }
+    return result
   }
 
   static isNodeJs() {

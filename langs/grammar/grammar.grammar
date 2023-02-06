@@ -218,6 +218,11 @@ exampleNode
  catchAllNodeType catchAllExampleLineNode
  extends abstractNodeTypeRuleNode
  cruxFromId
+sortTemplateNode
+ description A one liner for describing how the content of the node should be sorted. Put a blank cell to insert a line break between sections.
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType anyCell
 extendsNodeTypeNode
  crux extends
  description nodeType definitions can extend others.

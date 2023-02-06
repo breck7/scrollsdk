@@ -142,6 +142,7 @@ enum GrammarConstants {
   // develop time
   description = "description",
   example = "example",
+  sortTemplate = "sortTemplate",
   frequency = "frequency", // todo: remove. switch to conditional frequencies. potentially do that outside this core lang.
   highlightScope = "highlightScope"
 }
@@ -407,10 +408,12 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   toAutoCompleteTable() {
-    return new TreeNode(<any>this._getAllAutoCompleteWords().map(result => {
-      result.suggestions = <any>result.suggestions.map((node: any) => node.text).join(" ")
-      return result
-    })).toTable()
+    return new TreeNode(
+      <any>this._getAllAutoCompleteWords().map(result => {
+        result.suggestions = <any>result.suggestions.map((node: any) => node.text).join(" ")
+        return result
+      })
+    ).toTable()
   }
 
   getAutocompleteResultsAt(lineIndex: treeNotationTypes.positiveInt, charIndex: treeNotationTypes.positiveInt) {
@@ -460,6 +463,43 @@ abstract class GrammarBackedNode extends TreeNode {
     this.getTopDownArray().forEach(child => {
       child.format()
     })
+    return this
+  }
+
+  sortFromSortTemplate() {
+    if (!this.length) return this
+
+    // Recurse
+    this.forEach((node: any) => node.sortFromSortTemplate())
+
+    const def = this.getDefinition()
+    const { sortIndices, sortSections } = def.sortSpec
+
+    // Sort and insert section breaks
+    if (sortIndices.size) {
+      // Sort keywords
+      this.sort((nodeA: any, nodeB: any) => {
+        const aIndex = sortIndices.get(nodeA.getFirstWord())
+        const bIndex = sortIndices.get(nodeB.getFirstWord())
+        if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.getFirstWord()}"`)
+
+        const a = aIndex ?? 1000
+        const b = bIndex ?? 1000
+        return a > b ? 1 : a < b ? -1 : nodeA.getLine() > nodeB.getLine()
+      })
+
+      // pad sections
+      let currentSection = 0
+      this.forEach((node: any) => {
+        const nodeSection = sortSections.get(node.getFirstWord())
+        const sectionHasAdvanced = nodeSection > currentSection
+        if (sectionHasAdvanced) {
+          currentSection = nodeSection
+          node.prependSibling("") // Put a blank line before this section
+        }
+      })
+    }
+
     return this
   }
 
@@ -1310,7 +1350,10 @@ class UnknownNodeTypeError extends AbstractTreeError {
   protected _getWordSuggestion() {
     const node = this.getNode()
     const parentNode = node.getParent()
-    return Utils.didYouMean(node.getFirstWord(), (<GrammarBackedNode>parentNode).getAutocompleteResults("", 0).map(option => option.text))
+    return Utils.didYouMean(
+      node.getFirstWord(),
+      (<GrammarBackedNode>parentNode).getAutocompleteResults("", 0).map(option => option.text)
+    )
   }
 
   getSuggestionMessage() {
@@ -1811,6 +1854,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.cellParser,
       GrammarConstants.extensions,
       GrammarConstants.version,
+      GrammarConstants.sortTemplate,
       GrammarConstants.tags,
       GrammarConstants.crux,
       GrammarConstants.cruxFromId,
@@ -1843,6 +1887,18 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.example] = GrammarExampleNode
     return new TreeNode.Parser(undefined, map)
+  }
+
+  get sortSpec() {
+    const sortSections = new Map()
+    const sortIndices = new Map()
+    const sortTemplate = this.get(GrammarConstants.sortTemplate)
+    if (!sortTemplate) return { sortSections, sortIndices }
+
+    sortTemplate.split("  ").forEach((section, sectionIndex) => section.split(" ").forEach(word => sortSections.set(word, sectionIndex)))
+
+    sortTemplate.split(" ").forEach((word, index) => sortIndices.set(word, index))
+    return { sortSections, sortIndices }
   }
 
   toTypeScriptInterface(used = new Set<string>()) {
@@ -2410,7 +2466,10 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     const map: treeNotationTypes.stringMap = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
-    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
+    return new TreeNode.Parser(UnknownNodeTypeNode, map, [
+      { regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
+      { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
+    ])
   }
 
   static makeNodeTypeId = (str: string) => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.nodeTypeSuffixRegex, "") + GrammarConstants.nodeTypeSuffix
@@ -2945,7 +3004,12 @@ class UnknownGrammarProgram extends TreeNode {
     let catchAllCellType: string
     let cellTypeIds = []
     for (let cellIndex = 0; cellIndex < maxCellsOnLine; cellIndex++) {
-      const cellType = this._getBestCellType(firstWord, instances.length, maxCellsOnLine, cellsForAllInstances.map(cells => cells[cellIndex]))
+      const cellType = this._getBestCellType(
+        firstWord,
+        instances.length,
+        maxCellsOnLine,
+        cellsForAllInstances.map(cells => cells[cellIndex])
+      )
       if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
 
       cellTypeIds.push(cellType.cellTypeId)

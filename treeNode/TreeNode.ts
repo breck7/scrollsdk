@@ -1740,8 +1740,8 @@ class TreeNode extends AbstractNode {
     return level
   }
 
-  clone(): TreeNode {
-    return new (<any>this.constructor)(this.childrenToString(), this.getLine())
+  clone(children = this.childrenToString(), line = this.getLine()): TreeNode {
+    return new (<any>this.constructor)(children, line)
   }
 
   hasFirstWord(firstWord: word): boolean {

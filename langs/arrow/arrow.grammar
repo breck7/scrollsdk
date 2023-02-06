@@ -46,6 +46,7 @@ chargeNode
    const card = this.get("cardNumber")
    return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
   }
+ sortTemplate description  amount currency  cardNumber token
 abstractChargeAttributeNode
  cruxFromId
  required

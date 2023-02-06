@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 65.3.0 2023-2-6
+- 🎉 GrammarLange: upstreamed `sortFromSortTemplate` method from pldb
+
 # 65.2.0 2023-2-6
 - 🎉 TreeNode: upstreamed `patch` method from pldb
 - 🎉 Utils: upstreamed some methods from pldb

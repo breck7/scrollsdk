@@ -115,6 +115,7 @@ var GrammarConstants
   // develop time
   GrammarConstants["description"] = "description"
   GrammarConstants["example"] = "example"
+  GrammarConstants["sortTemplate"] = "sortTemplate"
   GrammarConstants["frequency"] = "frequency"
   GrammarConstants["highlightScope"] = "highlightScope"
 })(GrammarConstants || (GrammarConstants = {}))
@@ -387,6 +388,36 @@ class GrammarBackedNode extends TreeNode {
     this.getTopDownArray().forEach(child => {
       child.format()
     })
+    return this
+  }
+  sortFromSortTemplate() {
+    if (!this.length) return this
+    // Recurse
+    this.forEach(node => node.sortFromSortTemplate())
+    const def = this.getDefinition()
+    const { sortIndices, sortSections } = def.sortSpec
+    // Sort and insert section breaks
+    if (sortIndices.size) {
+      // Sort keywords
+      this.sort((nodeA, nodeB) => {
+        const aIndex = sortIndices.get(nodeA.getFirstWord())
+        const bIndex = sortIndices.get(nodeB.getFirstWord())
+        if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.getFirstWord()}"`)
+        const a = aIndex !== null && aIndex !== void 0 ? aIndex : 1000
+        const b = bIndex !== null && bIndex !== void 0 ? bIndex : 1000
+        return a > b ? 1 : a < b ? -1 : nodeA.getLine() > nodeB.getLine()
+      })
+      // pad sections
+      let currentSection = 0
+      this.forEach(node => {
+        const nodeSection = sortSections.get(node.getFirstWord())
+        const sectionHasAdvanced = nodeSection > currentSection
+        if (sectionHasAdvanced) {
+          currentSection = nodeSection
+          node.prependSibling("") // Put a blank line before this section
+        }
+      })
+    }
     return this
   }
   getNodeTypeUsage(filepath = "") {
@@ -1069,7 +1100,10 @@ class UnknownNodeTypeError extends AbstractTreeError {
   _getWordSuggestion() {
     const node = this.getNode()
     const parentNode = node.getParent()
-    return Utils.didYouMean(node.getFirstWord(), parentNode.getAutocompleteResults("", 0).map(option => option.text))
+    return Utils.didYouMean(
+      node.getFirstWord(),
+      parentNode.getAutocompleteResults("", 0).map(option => option.text)
+    )
   }
   getSuggestionMessage() {
     const suggestion = this._getWordSuggestion()
@@ -1469,6 +1503,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.cellParser,
       GrammarConstants.extensions,
       GrammarConstants.version,
+      GrammarConstants.sortTemplate,
       GrammarConstants.tags,
       GrammarConstants.crux,
       GrammarConstants.cruxFromId,
@@ -1500,6 +1535,15 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.example] = GrammarExampleNode
     return new TreeNode.Parser(undefined, map)
+  }
+  get sortSpec() {
+    const sortSections = new Map()
+    const sortIndices = new Map()
+    const sortTemplate = this.get(GrammarConstants.sortTemplate)
+    if (!sortTemplate) return { sortSections, sortIndices }
+    sortTemplate.split("  ").forEach((section, sectionIndex) => section.split(" ").forEach(word => sortSections.set(word, sectionIndex)))
+    sortTemplate.split(" ").forEach((word, index) => sortIndices.set(word, index))
+    return { sortSections, sortIndices }
   }
   toTypeScriptInterface(used = new Set()) {
     let childrenInterfaces = []
@@ -1970,7 +2014,10 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     const map = {}
     map[GrammarConstants.toolingDirective] = TreeNode
     map[GrammarConstants.todoComment] = TreeNode
-    return new TreeNode.Parser(UnknownNodeTypeNode, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }, { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }])
+    return new TreeNode.Parser(UnknownNodeTypeNode, map, [
+      { regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
+      { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
+    ])
   }
   // Note: this is some so far unavoidable tricky code. We need to eval the transpiled JS, in a NodeJS or browser environment.
   _compileAndEvalGrammar() {
@@ -2424,7 +2471,12 @@ class UnknownGrammarProgram extends TreeNode {
     let catchAllCellType
     let cellTypeIds = []
     for (let cellIndex = 0; cellIndex < maxCellsOnLine; cellIndex++) {
-      const cellType = this._getBestCellType(firstWord, instances.length, maxCellsOnLine, cellsForAllInstances.map(cells => cells[cellIndex]))
+      const cellType = this._getBestCellType(
+        firstWord,
+        instances.length,
+        maxCellsOnLine,
+        cellsForAllInstances.map(cells => cells[cellIndex])
+      )
       if (!globalCellTypeMap.has(cellType.cellTypeId)) globalCellTypeMap.set(cellType.cellTypeId, cellType.cellTypeDefinition)
       cellTypeIds.push(cellType.cellTypeId)
     }

@@ -28,6 +28,7 @@ baseNodeTypesCell
  todo Remove?
  enum blobNode errorNode
  highlightScope variable.parameter
+blankCell
 boolCell
  enum true false
  highlightScope constant.numeric
@@ -233,6 +234,11 @@ exampleNode
  catchAllNodeType catchAllExampleLineNode
  extends abstractNodeTypeRuleNode
  cruxFromId
+sortTemplateNode
+ description A one liner for describing how the content of the node should be sorted.
+ extends abstractNodeTypeRuleNode
+ cruxFromId
+ catchAllCellType anyCell
 extendsNodeTypeNode
  crux extends
  description nodeType definitions can extend others.
@@ -453,6 +459,7 @@ extendsCellTypeNode
         compilerNode: compilerNode,
         descriptionNode: descriptionNode,
         exampleNode: exampleNode,
+        sortTemplateNode: sortTemplateNode,
         extendsNodeTypeNode: extendsNodeTypeNode,
         frequencyNode: frequencyNode,
         inScopeNode: inScopeNode,
@@ -674,6 +681,12 @@ extendsCellTypeNode
       return new TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
     }
     get exampleAnyCell() {
+      return this.getWordsFrom(0)
+    }
+  }
+
+  class sortTemplateNode extends abstractNodeTypeRuleNode {
+    get anyCell() {
       return this.getWordsFrom(0)
     }
   }
@@ -927,6 +940,7 @@ extendsCellTypeNode
           compiler: compilerNode,
           description: descriptionNode,
           example: exampleNode,
+          sortTemplate: sortTemplateNode,
           extends: extendsNodeTypeNode,
           frequency: frequencyNode,
           inScope: inScopeNode,

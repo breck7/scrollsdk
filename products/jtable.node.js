@@ -1156,7 +1156,10 @@ class AbstractJsonParser extends AbstractTableParser {
     return 0
   }
   getExample() {
-    return JSON.stringify([{ name: "joe", age: 2 }, { name: "mike", age: 4 }])
+    return JSON.stringify([
+      { name: "joe", age: 2 },
+      { name: "mike", age: 4 }
+    ])
   }
   _parseTableInputsFromString(str) {
     const obj = JSON.parse(str)
@@ -1166,7 +1169,10 @@ class AbstractJsonParser extends AbstractTableParser {
 class JsonParser extends AbstractJsonParser {}
 class AbstractJsonArrayParser extends AbstractJsonParser {
   getExample() {
-    return JSON.stringify([{ name: "jane", age: 33 }, { name: "bill", age: 25 }])
+    return JSON.stringify([
+      { name: "jane", age: 33 },
+      { name: "bill", age: 25 }
+    ])
   }
   getProbForRowSpecimen(specimen) {
     const str = specimen.trimmedStr
@@ -1177,7 +1183,11 @@ class AbstractJsonArrayParser extends AbstractJsonParser {
 class JsonArrayParser extends AbstractJsonArrayParser {}
 class JsonDataTableWithHeaderParser extends AbstractJsonArrayParser {
   getExample() {
-    return JSON.stringify([["country", "income", "health", "population"], ["Afghanistan", 1925, "57.63", 32526562], ["Albania", 10620, "76", 2896679]])
+    return JSON.stringify([
+      ["country", "income", "health", "population"],
+      ["Afghanistan", 1925, "57.63", 32526562],
+      ["Albania", 10620, "76", 2896679]
+    ])
   }
   _parseTableInputsFromString(str) {
     return { rows: Utils.javascriptTableWithHeaderRowToObjects(JSON.parse(str)) }
@@ -1893,7 +1903,12 @@ const DummyDataSets = {
     ["Zambia", 4034, "58.96", 16211767],
     ["Zimbabwe", 1801, "60.01", 15602751]
   ],
-  emojis: [["animal", "count"], ["🐄", 9], ["🐖", 12], ["🐏", 3]],
+  emojis: [
+    ["animal", "count"],
+    ["🐄", 9],
+    ["🐖", 12],
+    ["🐏", 3]
+  ],
   telescopes: [
     ["Name", "Type", "Url", "Location", "OperatedBy", "FundedBy"],
     ["Hubble Space Telescope", "Space Telescope", "https://en.wikipedia.org/wiki/Hubble_Space_Telescope", "Space", "NASA", "NASA"],
@@ -2009,8 +2024,22 @@ I took the one less traveled by,
 And that has made all the difference.`
     ]
   ],
-  playerGoals: [["PlayerGoals", "Goals"], ["Player1", 11], ["Player2", 2], ["Player3", 2], ["Player4", 2], ["Player5", 7]],
-  patients: [["Patient", "Gender", "Weight"], ["Patient1", "Girl", "3.31"], ["Patient2", "Male", "2.8"], ["Patient3", "Male", "3.7"], ["Patient4", "Girl", "2.5"], ["Patient5", "Girl", "2.8"]],
+  playerGoals: [
+    ["PlayerGoals", "Goals"],
+    ["Player1", 11],
+    ["Player2", 2],
+    ["Player3", 2],
+    ["Player4", 2],
+    ["Player5", 7]
+  ],
+  patients: [
+    ["Patient", "Gender", "Weight"],
+    ["Patient1", "Girl", "3.31"],
+    ["Patient2", "Male", "2.8"],
+    ["Patient3", "Male", "3.7"],
+    ["Patient4", "Girl", "2.5"],
+    ["Patient5", "Girl", "2.8"]
+  ],
   regionalMarkets: [
     ["Location", "Parent", "Market trade volume (size)", "Market increase/decrease (color)"],
     ["Global", null, 0, 0],
@@ -2511,7 +2540,10 @@ ${cols}
       rows.push(this._synthesizeRow(randomNumberFn))
       rowcount--
     }
-    return new Table(rows, this.getColumnsArray().map(col => col.toObject()))
+    return new Table(
+      rows,
+      this.getColumnsArray().map(col => col.toObject())
+    )
   }
   // todo: we don't need any cloning here--here create a new sorted array with poitners
   // to same rows

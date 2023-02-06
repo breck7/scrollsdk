@@ -33,6 +33,9 @@ class Utils {
   static removeReturnChars(str = "") {
     return str.replace(/\r/g, "")
   }
+  static removeEmptyLines(str = "") {
+    return str.replace(/\n\n+/g, "\n")
+  }
   static shiftRight(str = "", numSpaces = 1) {
     let spaces = " ".repeat(numSpaces)
     return str.replace(/\n/g, `\n${spaces}`)

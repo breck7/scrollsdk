@@ -1024,7 +1024,10 @@ class TreeNode extends AbstractNode {
     const current = parts.shift()
     const rest = parts.join(edgeSymbol)
     const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getFirstWord() === current)
-    return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)))
+    return [].concat.apply(
+      [],
+      matchingNodes.map(node => node._getNodesByGlobPath(rest))
+    )
   }
   _getNodeByPath(firstWordPath) {
     const edgeSymbol = this.getEdgeSymbol()
@@ -1065,13 +1068,21 @@ class TreeNode extends AbstractNode {
     return Object.keys(obj)
   }
   getAncestorNodesByInheritanceViaExtendsKeyword(key) {
-    const ancestorNodes = this._getAncestorNodes((node, id) => node._getNodesByColumn(0, id), node => node.get(key), this)
+    const ancestorNodes = this._getAncestorNodes(
+      (node, id) => node._getNodesByColumn(0, id),
+      node => node.get(key),
+      this
+    )
     ancestorNodes.push(this)
     return ancestorNodes
   }
   // Note: as you can probably tell by the name of this method, I don't recommend using this as it will likely be replaced by something better.
   getAncestorNodesByInheritanceViaColumnIndices(thisColumnNumber, extendsColumnNumber) {
-    const ancestorNodes = this._getAncestorNodes((node, id) => node._getNodesByColumn(thisColumnNumber, id), node => node.getWord(extendsColumnNumber), this)
+    const ancestorNodes = this._getAncestorNodes(
+      (node, id) => node._getNodesByColumn(thisColumnNumber, id),
+      node => node.getWord(extendsColumnNumber),
+      this
+    )
     ancestorNodes.push(this)
     return ancestorNodes
   }
@@ -1460,8 +1471,8 @@ class TreeNode extends AbstractNode {
     }
     return level
   }
-  clone() {
-    return new this.constructor(this.childrenToString(), this.getLine())
+  clone(children = this.childrenToString(), line = this.getLine()) {
+    return new this.constructor(children, line)
   }
   hasFirstWord(firstWord) {
     return this._hasFirstWord(firstWord)
@@ -1563,7 +1574,14 @@ class TreeNode extends AbstractNode {
     return this
   }
   getLineOrChildrenModifiedTime() {
-    return Math.max(this.getLineModifiedTime(), this.getChildArrayModifiedTime(), Math.max.apply(null, this.map(child => child.getLineOrChildrenModifiedTime())))
+    return Math.max(
+      this.getLineModifiedTime(),
+      this.getChildArrayModifiedTime(),
+      Math.max.apply(
+        null,
+        this.map(child => child.getLineOrChildrenModifiedTime())
+      )
+    )
   }
   _setVirtualParentTree(tree) {
     this._virtualParentTree = tree
@@ -1804,7 +1822,10 @@ class TreeNode extends AbstractNode {
   // todo: remove?
   getNodesByLinePrefixes(columns) {
     const matches = []
-    this._getNodesByLineRegex(matches, columns.map(str => new RegExp("^" + str)))
+    this._getNodesByLineRegex(
+      matches,
+      columns.map(str => new RegExp("^" + str))
+    )
     return matches
   }
   nodesThatStartWith(prefix) {
@@ -2504,7 +2525,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "65.2.0"
+TreeNode.getVersion = () => "65.3.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

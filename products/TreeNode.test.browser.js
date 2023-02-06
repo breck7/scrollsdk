@@ -74,7 +74,10 @@ state
  date 1/3/32
  key c
 `
-testObjects.json2tree = [{ id: 755, settings: "123" }, { id: 756, settings: "456" }]
+testObjects.json2tree = [
+  { id: 755, settings: "123" },
+  { id: 756, settings: "456" }
+]
 testStrings.json2tree = `docs
  0
   id 755
@@ -839,7 +842,10 @@ testTree.forEach = equal => {
 }
 testTree.every = equal => {
   // Arrange/Act/Assert
-  equal(new TreeNode(`a 2\nb 2\nc 2`).every(node => node.getWord(1) === "2"), true)
+  equal(
+    new TreeNode(`a 2\nb 2\nc 2`).every(node => node.getWord(1) === "2"),
+    true
+  )
 }
 testTree.extend = equal => {
   // Arrange
@@ -2281,7 +2287,10 @@ testTree.parseNode = equal => {
   }
   class TestLanguageNode extends TreeNode {
     createParser() {
-      return new TreeNode.Parser(TestLanguageNode, {}, [{ regex: /^tree/, nodeConstructor: TreeNode }, { regex: /^sub/, nodeConstructor: SubNode }])
+      return new TreeNode.Parser(TestLanguageNode, {}, [
+        { regex: /^tree/, nodeConstructor: TreeNode },
+        { regex: /^sub/, nodeConstructor: SubNode }
+      ])
     }
   }
   // Act
@@ -2818,7 +2827,12 @@ testTree.nest = equal => {
 }
 testTree.toDataTable = equal => {
   // Arrange
-  const data = [["name", "age", "score"], ["coke", 29, 86], ["pepsi", 48, 16], ["soda", 32, 43]]
+  const data = [
+    ["name", "age", "score"],
+    ["coke", 29, 86],
+    ["pepsi", 48, 16],
+    ["soda", 32, 43]
+  ]
   // Act
   const tree = TreeNode.fromDataTable(data)
   // Assert

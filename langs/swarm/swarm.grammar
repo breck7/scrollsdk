@@ -244,7 +244,7 @@ arrangeNode
     // todo: cleanup
    let requiredClass =
     this.get("require") ||
-    this.getRootNode()
+    this.root
      .getNode("arrange")
      .get("require")
    const requiredClassParts = requiredClass.split(" ") // Allows for ./ExportsClasses.js ChildClass

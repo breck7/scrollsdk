@@ -266,7 +266,7 @@ class TreeNode extends AbstractNode {
   _getLineNumber(target: TreeNode = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
     let lineNumber = 1
-    for (let node of this.getRootNode().getTopDownArrayIterator()) {
+    for (let node of this.root.getTopDownArrayIterator()) {
       if (node === target) return lineNumber
       lineNumber++
     }
@@ -287,7 +287,7 @@ class TreeNode extends AbstractNode {
 
   protected _getLineNumberRelativeTo(relativeTo?: TreeNode) {
     if (this.isRoot(relativeTo)) return 0
-    const start = relativeTo || this.getRootNode()
+    const start = relativeTo || this.root
     return start._getLineNumber(this)
   }
 
@@ -295,7 +295,7 @@ class TreeNode extends AbstractNode {
     return relativeTo === this || !this.parent
   }
 
-  getRootNode() {
+  get root() {
     return this._getRootNode()
   }
 
@@ -414,7 +414,7 @@ class TreeNode extends AbstractNode {
   }
 
   _getProjectRootDir(): string {
-    return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
+    return this.isRoot() ? "" : this.root._getProjectRootDir()
   }
 
   // Concat 2 trees amd return a new true, but replace any nodes
@@ -3116,7 +3116,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   private _nodeMapCache: { [id: string]: AbstractExtendibleTreeNode }
   _getIdToNodeMap() {
-    if (!this.isRoot()) return (<AbstractExtendibleTreeNode>this.getRootNode())._getIdToNodeMap()
+    if (!this.isRoot()) return (<AbstractExtendibleTreeNode>this.root)._getIdToNodeMap()
     if (!this._nodeMapCache) {
       this._nodeMapCache = {}
       this.forEach(child => {

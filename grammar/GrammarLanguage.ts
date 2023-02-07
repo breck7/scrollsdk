@@ -280,7 +280,7 @@ abstract class GrammarBackedNode extends TreeNode {
   // some of the magic that makes this all work. but maybe there's a better way.
   getHandGrammarProgram(): HandGrammarProgram {
     if (this.isRoot()) throw new Error(`Root node without getHandGrammarProgram defined.`)
-    return (<any>this.getRootNode()).getHandGrammarProgram()
+    return (<any>this.root).getHandGrammarProgram()
   }
 
   getRunTimeEnumOptions(cell: AbstractGrammarBackedCell<any>): string[] {
@@ -900,7 +900,7 @@ abstract class AbstractGrammarBackedCell<T> {
 
   getAutoCompleteWords(partialWord: string = "") {
     const cellDef = this._getCellTypeDefinition()
-    let words = cellDef ? cellDef._getAutocompleteWordOptions(<GrammarBackedNode>this.getNode().getRootNode()) : []
+    let words = cellDef ? cellDef._getAutocompleteWordOptions(<GrammarBackedNode>this.getNode().root) : []
 
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     if (runTimeOptions) words = runTimeOptions.concat(words)
@@ -968,7 +968,7 @@ ${options.toString(1)}`
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
-    return this._getCellTypeDefinition().isValid(word, <GrammarBackedNode>this.getNode().getRootNode()) && this._isValid()
+    return this._getCellTypeDefinition().isValid(word, <GrammarBackedNode>this.getNode().root) && this._isValid()
   }
 
   getErrorIfAny(): treeNotationTypes.TreeError {
@@ -1740,7 +1740,7 @@ class OmnifixCellParser extends AbstractCellParser {
   getCellArray(node: GrammarBackedNode = undefined): AbstractGrammarBackedCell<any>[] {
     const cells: AbstractGrammarBackedCell<any>[] = []
     const def = this._definition
-    const program = <GrammarBackedNode>(node ? node.getRootNode() : undefined)
+    const program = <GrammarBackedNode>(node ? node.root : undefined)
     const grammarProgram = def.getLanguageDefinitionProgram()
     const words = node ? node.getWords() : []
     const requiredCellTypeDefs = this.getRequiredCellTypeIds().map(cellTypeId => grammarProgram.getCellTypeDefinitionById(cellTypeId))

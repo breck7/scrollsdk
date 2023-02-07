@@ -1377,7 +1377,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
   toggleTreeComponentFrameworkDebuggerCommand() {
     // todo: move somewhere else?
     // todo: cleanup
-    const app = this.getRootNode()
+    const app = this.root
     const node = app.getNode("TreeComponentFrameworkDebuggerComponent")
     if (node) {
       node.unmountAndDestroy()
@@ -1396,7 +1396,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
   }
 
   getTheme(): AbstractTheme {
-    if (!this.isRoot()) return this.getRootNode().getTheme()
+    if (!this.isRoot()) return this.root.getTheme()
     if (!this._theme) this._theme = new DefaultTheme()
     return this._theme
   }
@@ -1567,7 +1567,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
 
   toggleAndRender(firstWord: string, contentOptions: string[]) {
     this.toggle(firstWord, contentOptions)
-    this.getRootNode().renderAndGetRenderReport()
+    this.root.renderAndGetRenderReport()
   }
 
   protected _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
@@ -1673,7 +1673,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 
   protected _getPageHeadStump(): abstractHtmlTag {
-    return this.getRootNode().willowBrowser.getHeadStumpNode()
+    return this.root.willowBrowser.getHeadStumpNode()
   }
 
   protected _removeCss() {
@@ -1746,7 +1746,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   }
 
   toStumpCode() {
-    const app: any = this.getRootNode()
+    const app: any = this.root
     return `div
  class TreeComponentFrameworkDebuggerComponent
  div x

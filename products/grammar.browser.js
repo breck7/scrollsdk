@@ -4,7 +4,10 @@
       return new TreeNode.Parser(
         catchAllErrorNode,
         Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { todo: todoNode, tooling: toolingNode }),
-        [{ regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode }, { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }]
+        [
+          { regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode },
+          { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }
+        ]
       )
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
@@ -22,7 +25,6 @@ baseNodeTypesCell
  todo Remove?
  enum blobNode errorNode
  highlightScope variable.parameter
-blankCell
 boolCell
  enum true false
  highlightScope constant.numeric
@@ -229,7 +231,7 @@ exampleNode
  extends abstractNodeTypeRuleNode
  cruxFromId
 sortTemplateNode
- description A one liner for describing how the content of the node should be sorted.
+ description A one liner for describing how the content of the node should be sorted. Put a blank cell to insert a line break between sections.
  extends abstractNodeTypeRuleNode
  cruxFromId
  catchAllCellType anyCell

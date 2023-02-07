@@ -394,7 +394,10 @@ selectorNode
           "": propertyNode,
           comment: commentNode
         }),
-        [{ regex: /--/, nodeConstructor: variableNode }, { regex: /^\-\w.+/, nodeConstructor: browserPrefixPropertyNode }]
+        [
+          { regex: /--/, nodeConstructor: variableNode },
+          { regex: /^\-\w.+/, nodeConstructor: browserPrefixPropertyNode }
+        ]
       )
     }
     get selectorCell() {

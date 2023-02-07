@@ -115,7 +115,10 @@
           s: htmlTagNode,
           u: htmlTagNode
         }),
-        [{ regex: /^$/, nodeConstructor: blankLineNode }, { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }]
+        [
+          { regex: /^$/, nodeConstructor: blankLineNode },
+          { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }
+        ]
       )
     }
     compile() {
@@ -710,7 +713,10 @@ bernNode
           collapse: stumpExtendedAttributeNode,
           bern: bernNode
         }),
-        [{ regex: /^$/, nodeConstructor: blankLineNode }, { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }]
+        [
+          { regex: /^$/, nodeConstructor: blankLineNode },
+          { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }
+        ]
       )
     }
     get htmlTagNameCell() {

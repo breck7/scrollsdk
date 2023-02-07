@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 65.4.0 2023-2-6
+- 🎉 Utils: Upstream `titleToPermalink` method from pldb
+
 # 65.3.0 2023-2-6
 - 🎉 GrammarLange: upstreamed `sortFromSortTemplate` method from pldb
 

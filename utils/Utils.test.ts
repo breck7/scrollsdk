@@ -19,6 +19,11 @@ testTree.vector = equal => {
   equal(Utils.sum(Utils.makeVector(5, 3)), 15)
 }
 
+testTree.titleToPermalink = equal => {
+  // Arrange/Act/Assert
+  equal(Utils.titleToPermalink("C#"), "c-sharp")
+}
+
 testTree.getNextOrPrevious = equal => {
   // A/A/A
   equal(Utils.getNextOrPrevious([1, 2, 3], 2), 3)
@@ -74,7 +79,12 @@ retriever dog
 car
 cat animal
 house`)
-  a.sort(Utils._makeGraphSortFunction((node: any) => node.getWord(0), (node: any) => node.getWord(1)))
+  a.sort(
+    Utils._makeGraphSortFunction(
+      (node: any) => node.getWord(0),
+      (node: any) => node.getWord(1)
+    )
+  )
 
   // Assert
   equal(

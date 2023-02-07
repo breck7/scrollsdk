@@ -173,6 +173,35 @@ class Utils {
     return result
   }
 
+  static titleToPermalink(str: string) {
+    return str
+      .replace(/[\/\_\:\\\[\]]/g, "-")
+      .replace(/π/g, "pi")
+      .replace(/`/g, "tick")
+      .replace(/\$/g, "dollar-sign")
+      .replace(/\*$/g, "-star")
+      .replace(/^\*/g, "star-")
+      .replace(/\*/g, "-star-")
+      .replace(/\'+$/g, "q")
+      .replace(/^@/g, "at-")
+      .replace(/@$/g, "-at")
+      .replace(/@/g, "-at-")
+      .replace(/[\'\"\,\ū]/g, "")
+      .replace(/^\#/g, "sharp-")
+      .replace(/\#$/g, "-sharp")
+      .replace(/\#/g, "-sharp-")
+      .replace(/[\(\)]/g, "")
+      .replace(/\+\+$/g, "pp")
+      .replace(/\+$/g, "p")
+      .replace(/^\!/g, "bang-")
+      .replace(/\!$/g, "-bang")
+      .replace(/\!/g, "-bang-")
+      .replace(/\&/g, "-n-")
+      .replace(/[\+ ]/g, "-")
+      .replace(/[^a-zA-Z0-9\-\.]/g, "")
+      .toLowerCase()
+  }
+
   static escapeRegExp(str: string) {
     return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   }

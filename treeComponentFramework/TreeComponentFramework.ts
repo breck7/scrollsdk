@@ -515,13 +515,13 @@ class AbstractWillowBrowser extends stumpNode {
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.getTopDownArray()
-    const titleNode = nodes.find((node: treeNotationTypes.treeNode) => node.getFirstWord() === WillowConstants.titleTag)
+    const titleNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.titleTag)
     return titleNode ? titleNode.content : ""
   }
 
   setWindowTitle(value: string) {
     const nodes = this.getTopDownArray()
-    const headNode = nodes.find((node: treeNotationTypes.treeNode) => node.getFirstWord() === WillowConstants.tags.head)
+    const headNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -1265,7 +1265,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
   _getHtmlOnlyNodes() {
     const nodes: any[] = []
     this.willowBrowser.getHtmlStumpNode().deepVisit((node: any) => {
-      if (node.getFirstWord() === "styleTag" || (node.content || "").startsWith("<svg ")) return false
+      if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) return false
       nodes.push(node)
     })
     return nodes
@@ -1276,7 +1276,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
     const clone = new TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
 
     clone.getTopDownArray().forEach((node: any) => {
-      if (node.getFirstWord() === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
+      if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
     })
     return clone.toString()
   }
@@ -1621,7 +1621,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 
   toStumpLoadingCode() {
-    return `div Loading ${this.getFirstWord()}...
+    return `div Loading ${this.firstWord}...
  class ${this.getCssClassNames().join(" ")}
  id ${this.getTreeComponentId()}`
   }

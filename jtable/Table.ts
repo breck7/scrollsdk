@@ -349,7 +349,7 @@ ${cols}
   getPredictionsForAPropertyNameToColumnNameMapGivenHintsNode(hintsNode: jTableTypes.treeNode, propertyNameToColumnNameMap: jTableTypes.propertyNameToColumnNameMap): jTableTypes.propertyNameToColumnNameMap {
     const results: jTableTypes.propertyNameToColumnNameMap = {}
     hintsNode
-      .map((columnHintNode: any) => this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.content, propertyNameToColumnNameMap))
+      .map((columnHintNode: any) => this.getColumnNamePredictionsForProperty(columnHintNode.firstWord, columnHintNode.content, propertyNameToColumnNameMap))
       .filter((pred: any) => pred.length)
       .forEach((predictions: any) => {
         const topPrediction = predictions[0]

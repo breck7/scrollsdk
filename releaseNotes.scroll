@@ -12,13 +12,13 @@ table
  getParent() parent
  getContent() content
  getRootNode() root
+ getWords() words
+ getFirstWord() firstWord
  getNext() next
  getPrevious() previous
  getOlderSiblings() olderSiblings
  getYoungerSiblings() youngerSiblings
  getSiblings() siblings
- getWords() words
- getFirstWord() firstWord
 
 # 65.4.0 2023-2-6
 - 🎉 Utils: Upstream `titleToPermalink` method from pldb

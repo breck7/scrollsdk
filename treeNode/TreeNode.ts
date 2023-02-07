@@ -282,7 +282,7 @@ class TreeNode extends AbstractNode {
   }
 
   isEmpty(): boolean {
-    return !this.length && !this.getContent()
+    return !this.length && !this.content
   }
 
   protected _getLineNumberRelativeTo(relativeTo?: TreeNode) {
@@ -585,14 +585,14 @@ class TreeNode extends AbstractNode {
     return this.getWords()[0]
   }
 
-  getContent(): string {
+  get content(): string {
     const words = this.getWordsFrom(1)
     return words.length ? words.join(this.getWordBreakSymbol()) : undefined
   }
 
   getContentWithChildren(): string {
     // todo: deprecate
-    const content = this.getContent()
+    const content = this.content
     return (content ? content : "") + (this.length ? this.getNodeBreakSymbol() + this._childrenToString() : "")
   }
 
@@ -685,7 +685,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _getXmlContent(indentCount: treeNotationTypes.positiveInt) {
-    if (this.getContent() !== undefined) return this.getContentWithChildren()
+    if (this.content !== undefined) return this.getContentWithChildren()
     return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
 
@@ -696,7 +696,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _toObjectTuple() {
-    const content = this.getContent()
+    const content = this.content
     const length = this.length
     const hasChildrenNoContent = content === undefined && length
     const hasContentAndHasChildren = content !== undefined && length
@@ -1061,7 +1061,7 @@ class TreeNode extends AbstractNode {
   _lineToYaml(indentLevel: number, listTag = "") {
     let prefix = " ".repeat(indentLevel)
     if (listTag && indentLevel > 1) prefix = " ".repeat(indentLevel - 2) + listTag + " "
-    return prefix + `${this.getFirstWord()}:` + (this.getContent() ? " " + this.getContent() : "")
+    return prefix + `${this.getFirstWord()}:` + (this.content ? " " + this.content : "")
   }
 
   _isYamlList() {
@@ -1184,7 +1184,7 @@ class TreeNode extends AbstractNode {
 
   get(firstWordPath: treeNotationTypes.firstWordPath) {
     const node = this._getNodeByPath(firstWordPath)
-    return node === undefined ? undefined : node.getContent()
+    return node === undefined ? undefined : node.content
   }
 
   getOneOf(keys: string[]) {
@@ -1679,7 +1679,7 @@ class TreeNode extends AbstractNode {
   }
 
   getContentsArray() {
-    return this.map(node => node.getContent())
+    return this.map(node => node.content)
   }
 
   // todo: rename to getChildrenByConstructor(?)
@@ -1989,7 +1989,7 @@ class TreeNode extends AbstractNode {
       }
       if (isAnArrayNotMap) targetNode = this.appendLine(sourceNode.getLine())
       else {
-        targetNode = this.touchNode(firstWord).setContent(sourceNode.getContent())
+        targetNode = this.touchNode(firstWord).setContent(sourceNode.content)
         usedFirstWords.add(firstWord)
       }
       if (sourceNode.length) targetNode.extend(sourceNode)
@@ -2079,7 +2079,7 @@ class TreeNode extends AbstractNode {
   }
 
   setContent(content: string): TreeNode {
-    if (content === this.getContent()) return this
+    if (content === this.content) return this
     const newArray = [this.getFirstWord()]
     if (content !== undefined) {
       content = content.toString()

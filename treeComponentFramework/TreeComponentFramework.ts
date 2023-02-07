@@ -516,7 +516,7 @@ class AbstractWillowBrowser extends stumpNode {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.getTopDownArray()
     const titleNode = nodes.find((node: treeNotationTypes.treeNode) => node.getFirstWord() === WillowConstants.titleTag)
-    return titleNode ? titleNode.getContent() : ""
+    return titleNode ? titleNode.content : ""
   }
 
   setWindowTitle(value: string) {
@@ -1265,7 +1265,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
   _getHtmlOnlyNodes() {
     const nodes: any[] = []
     this.willowBrowser.getHtmlStumpNode().deepVisit((node: any) => {
-      if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) return false
+      if (node.getFirstWord() === "styleTag" || (node.content || "").startsWith("<svg ")) return false
       nodes.push(node)
     })
     return nodes
@@ -1276,7 +1276,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
     const clone = new TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
 
     clone.getTopDownArray().forEach((node: any) => {
-      if (node.getFirstWord() === "styleTag" || (node.getContent() || "").startsWith("<svg ")) node.destroy()
+      if (node.getFirstWord() === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
     })
     return clone.toString()
   }
@@ -1551,7 +1551,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   toggle(firstWord: string, contentOptions: string[]) {
     const currentNode = <AbstractTreeComponent>this.getNode(firstWord)
     if (!contentOptions) return currentNode ? currentNode.unmountAndDestroy() : this.appendLine(firstWord)
-    const currentContent = currentNode === undefined ? undefined : currentNode.getContent()
+    const currentContent = currentNode === undefined ? undefined : currentNode.content
 
     const index = contentOptions.indexOf(currentContent)
     const newContent = index === -1 || index + 1 === contentOptions.length ? contentOptions[0] : contentOptions[index + 1]

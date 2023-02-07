@@ -160,7 +160,7 @@ class Builder extends TreeNode {
     const lastLine = productNode.get("insertLastLine") ? productNode.get("insertLastLine") : ""
     const removeAll = productNode.getNodesByGlobPath("removeAll")
     const transformFn = (code: string) => {
-      removeAll.forEach((node: any) => (code = Utils.removeAll(code, node.getContent())))
+      removeAll.forEach((node: any) => (code = Utils.removeAll(code, node.content)))
       return firstLine + code + "\n" + lastLine
     }
     if (productNode.getLine() === "browserProduct") this._produceBrowserProductFromTypeScript(inputFiles, outputFileName, transformFn)
@@ -272,7 +272,7 @@ class Builder extends TreeNode {
   }
 
   produceAllLangs() {
-    const langs = `arrow chuck dug dumbdown fire grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
+    const langs = `arrow chuck dug dumbdown fire grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt tql`.split(" ")
     langs.forEach(lang => this.produceLang(lang))
   }
 

@@ -7,5 +7,5 @@ test swarm base
  getChildren
   assertLengthIs 1
  nodeAt 0
-  getContent
+  content
    assertStringIs world

@@ -56,7 +56,7 @@ propertyNode
  catchAllNodeType errorNode
  javascript
   compile(spaces) {
-   return `${spaces}${this.getFirstWord()}: ${this.getContent()};`
+   return `${spaces}${this.getFirstWord()}: ${this.content};`
   }
  cells propertyKeywordCell
 variableNode

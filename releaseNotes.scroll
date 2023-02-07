@@ -5,10 +5,12 @@ startColumns 4
 * Here's a list of the notable changes in JTree.
 
 # 66.0.0 2023-2-7
+- ⚠️ Legacy `products/jtree.browser.js` has been removed.
 - ⚠️ TreeNode: This is the *Getter Release*. Long overdue that we switch to Javascript getters.
 table 
  Before After
  getParent() parent
+ getContent() content
  getRootNode() root
  getNext() next
  getPrevious() previous
@@ -17,7 +19,6 @@ table
  getSiblings() siblings
  getWords() words
  getFirstWord() firstWord
- getContent() content
 
 # 65.4.0 2023-2-6
 - 🎉 Utils: Upstream `titleToPermalink` method from pldb

@@ -349,7 +349,7 @@ ${cols}
   getPredictionsForAPropertyNameToColumnNameMapGivenHintsNode(hintsNode: jTableTypes.treeNode, propertyNameToColumnNameMap: jTableTypes.propertyNameToColumnNameMap): jTableTypes.propertyNameToColumnNameMap {
     const results: jTableTypes.propertyNameToColumnNameMap = {}
     hintsNode
-      .map((columnHintNode: any) => this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.getContent(), propertyNameToColumnNameMap))
+      .map((columnHintNode: any) => this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.content, propertyNameToColumnNameMap))
       .filter((pred: any) => pred.length)
       .forEach((predictions: any) => {
         const topPrediction = predictions[0]
@@ -482,7 +482,10 @@ ${cols}
       rows.push(this._synthesizeRow(randomNumberFn))
       rowcount--
     }
-    return new Table(rows, this.getColumnsArray().map(col => col.toObject()))
+    return new Table(
+      rows,
+      this.getColumnsArray().map(col => col.toObject())
+    )
   }
 
   // todo: we don't need any cloning here--here create a new sorted array with poitners

@@ -182,7 +182,7 @@ class TreeBaseFile extends TreeNode {
   }
 
   get base() {
-    return this.getParent()
+    return this.parent
   }
 
   get parsed() {

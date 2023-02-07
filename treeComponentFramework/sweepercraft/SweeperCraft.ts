@@ -895,7 +895,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
   }
 
   getRow() {
-    return this.getParent().getIndex()
+    return this.parent.getIndex()
   }
 
   getColumn() {

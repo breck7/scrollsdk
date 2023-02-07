@@ -93,7 +93,7 @@ class Disk {
     return Disk.append(path, prefix + line + "\n")
   }
   static move = (node: treeNotationTypes.treeNode, newPosition: treeNotationTypes.int) => {
-    node.getParent().insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
+    node.parent.insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
     node.destroy()
   }
   static _getTextUrl = async (url: treeNotationTypes.url) => {

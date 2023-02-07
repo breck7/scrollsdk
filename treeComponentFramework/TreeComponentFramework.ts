@@ -156,9 +156,7 @@ class AbstractWillowShadow {
   }
 
   getShadowParent() {
-    return this.getShadowStumpNode()
-      .getParent()
-      .getShadow()
+    return this.getShadowStumpNode().parent.getShadow()
   }
 
   getPositionAndDimensions(gridSize = 1) {
@@ -1304,7 +1302,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
 
     let treeComponent = stumpNode.getStumpNodeTreeComponent()
     while (!treeComponent[commandMethod]) {
-      const parent = treeComponent.getParent()
+      const parent = treeComponent.parent
       if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
       if (!parent) debugger
       treeComponent = parent
@@ -1538,7 +1536,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 
   protected _updateHtml() {
-    const stumpNodeToMountOn = <abstractHtmlTag>this._htmlStumpNode.getParent()
+    const stumpNodeToMountOn = <abstractHtmlTag>this._htmlStumpNode.parent
     const currentIndex = this._htmlStumpNode.getIndex()
     this._removeHtml()
     this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)

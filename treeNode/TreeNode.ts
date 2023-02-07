@@ -104,7 +104,7 @@ class Parser {
   _getCatchAllNodeConstructor(contextNode: treeNotationTypes.treeNode) {
     if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
 
-    const parent = contextNode.getParent()
+    const parent = contextNode.parent
 
     if (parent) return parent._getParser()._getCatchAllNodeConstructor(parent)
 
@@ -167,7 +167,7 @@ class TreeNode extends AbstractNode {
 
   getOlderSiblings() {
     if (this.isRoot()) return []
-    return this.getParent().slice(0, this.getIndex())
+    return this.parent.slice(0, this.getIndex())
   }
 
   protected _getClosestOlderSibling(): TreeNode | undefined {
@@ -177,12 +177,12 @@ class TreeNode extends AbstractNode {
 
   getYoungerSiblings() {
     if (this.isRoot()) return []
-    return this.getParent().slice(this.getIndex() + 1)
+    return this.parent.slice(this.getIndex() + 1)
   }
 
   getSiblings() {
     if (this.isRoot()) return []
-    return this.getParent().filter(node => node !== this)
+    return this.parent.filter(node => node !== this)
   }
 
   protected _getUid() {
@@ -191,7 +191,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: rename getMother? grandMother et cetera?
-  getParent() {
+  get parent() {
     return this._parent
   }
 
@@ -292,7 +292,7 @@ class TreeNode extends AbstractNode {
   }
 
   isRoot(relativeTo?: TreeNode): boolean {
-    return relativeTo === this || !this.getParent()
+    return relativeTo === this || !this.parent
   }
 
   getRootNode() {
@@ -301,7 +301,7 @@ class TreeNode extends AbstractNode {
 
   protected _getRootNode(relativeTo?: TreeNode): TreeNode | this {
     if (this.isRoot(relativeTo)) return this
-    return this.getParent()._getRootNode(relativeTo)
+    return this.parent._getRootNode(relativeTo)
   }
 
   toString(indentCount = 0, language = this): string {
@@ -380,7 +380,7 @@ class TreeNode extends AbstractNode {
   }
 
   getFirstAncestor(): TreeNode {
-    const parent = this.getParent()
+    const parent = this.parent
     return parent.isRoot() ? this : parent.getFirstAncestor()
   }
 
@@ -485,7 +485,7 @@ class TreeNode extends AbstractNode {
     if (wordIndex > 0) return this
     let node: TreeNode = this
     while (wordIndex < 1) {
-      node = node.getParent()
+      node = node.parent
       wordIndex++
     }
     return node
@@ -606,7 +606,7 @@ class TreeNode extends AbstractNode {
 
   protected _getStack(relativeTo?: TreeNode): TreeNode[] {
     if (this.isRoot(relativeTo)) return []
-    const parent = this.getParent()
+    const parent = this.parent
     if (parent.isRoot(relativeTo)) return [this]
     else return parent._getStack(relativeTo).concat([this])
   }
@@ -642,9 +642,9 @@ class TreeNode extends AbstractNode {
   // todo: return array? getPathArray?
   protected _getFirstWordPath(relativeTo?: TreeNode): treeNotationTypes.firstWordPath {
     if (this.isRoot(relativeTo)) return ""
-    else if (this.getParent().isRoot(relativeTo)) return this.getFirstWord()
+    else if (this.parent.isRoot(relativeTo)) return this.getFirstWord()
 
-    return this.getParent()._getFirstWordPath(relativeTo) + this.getEdgeSymbol() + this.getFirstWord()
+    return this.parent._getFirstWordPath(relativeTo) + this.getEdgeSymbol() + this.getFirstWord()
   }
 
   getFirstWordPathRelativeTo(relativeTo?: TreeNode): treeNotationTypes.firstWordPath {
@@ -665,13 +665,13 @@ class TreeNode extends AbstractNode {
 
   protected _getPathVector(relativeTo?: TreeNode): treeNotationTypes.pathVector {
     if (this.isRoot(relativeTo)) return []
-    const path = this.getParent()._getPathVector(relativeTo)
+    const path = this.parent._getPathVector(relativeTo)
     path.push(this.getIndex())
     return path
   }
 
   getIndex(): int {
-    return this.getParent()._indexOfNode(this)
+    return this.parent._indexOfNode(this)
   }
 
   isTerminal() {
@@ -1222,7 +1222,10 @@ class TreeNode extends AbstractNode {
     const rest = parts.join(edgeSymbol)
     const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getFirstWord() === current)
 
-    return [].concat.apply([], matchingNodes.map(node => node._getNodesByGlobPath(rest)))
+    return [].concat.apply(
+      [],
+      matchingNodes.map(node => node._getNodesByGlobPath(rest))
+    )
   }
 
   protected _getNodeByPath(firstWordPath: treeNotationTypes.firstWordPath): TreeNode {
@@ -1241,7 +1244,7 @@ class TreeNode extends AbstractNode {
   getNext() {
     if (this.isRoot()) return this
     const index = this.getIndex()
-    const parent = this.getParent()
+    const parent = this.parent
     const length = parent.length
     const next = index + 1
     return next === length ? parent._getChildrenArray()[0] : parent._getChildrenArray()[next]
@@ -1250,7 +1253,7 @@ class TreeNode extends AbstractNode {
   getPrevious() {
     if (this.isRoot()) return this
     const index = this.getIndex()
-    const parent = this.getParent()
+    const parent = this.parent
     const length = parent.length
     const prev = index - 1
     return prev === -1 ? parent._getChildrenArray()[length - 1] : parent._getChildrenArray()[prev]
@@ -1270,14 +1273,22 @@ class TreeNode extends AbstractNode {
   }
 
   getAncestorNodesByInheritanceViaExtendsKeyword(key: word): TreeNode[] {
-    const ancestorNodes = this._getAncestorNodes((node, id) => node._getNodesByColumn(0, id), node => node.get(key), this)
+    const ancestorNodes = this._getAncestorNodes(
+      (node, id) => node._getNodesByColumn(0, id),
+      node => node.get(key),
+      this
+    )
     ancestorNodes.push(this)
     return ancestorNodes
   }
 
   // Note: as you can probably tell by the name of this method, I don't recommend using this as it will likely be replaced by something better.
   getAncestorNodesByInheritanceViaColumnIndices(thisColumnNumber: int, extendsColumnNumber: int): TreeNode[] {
-    const ancestorNodes = this._getAncestorNodes((node, id) => node._getNodesByColumn(thisColumnNumber, id), node => node.getWord(extendsColumnNumber), this)
+    const ancestorNodes = this._getAncestorNodes(
+      (node, id) => node._getNodesByColumn(thisColumnNumber, id),
+      node => node.getWord(extendsColumnNumber),
+      this
+    )
     ancestorNodes.push(this)
     return ancestorNodes
   }
@@ -1286,7 +1297,7 @@ class TreeNode extends AbstractNode {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
 
-    const potentialParentNodes = getPotentialParentNodesByIdFn(this.getParent(), parentId)
+    const potentialParentNodes = getPotentialParentNodesByIdFn(this.parent, parentId)
     if (!potentialParentNodes.length) throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
 
     if (potentialParentNodes.length > 1) throw new Error(`Invalid inheritance family tree. Multiple unique ids found for "${parentId}"`)
@@ -1679,7 +1690,7 @@ class TreeNode extends AbstractNode {
   getAncestorByNodeConstructor(constructor: Function): TreeNode | undefined {
     if (this instanceof constructor) return this
     if (this.isRoot()) return undefined
-    const parent = this.getParent()
+    const parent = this.parent
     return parent instanceof constructor ? parent : parent.getAncestorByNodeConstructor(constructor)
   }
 
@@ -1830,7 +1841,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _getGrandParent(): TreeNode | undefined {
-    return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
+    return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
 
   private static _parsers = new Map<any, Parser>()
@@ -1891,7 +1902,14 @@ class TreeNode extends AbstractNode {
   }
 
   getLineOrChildrenModifiedTime(): number {
-    return Math.max(this.getLineModifiedTime(), this.getChildArrayModifiedTime(), Math.max.apply(null, this.map(child => child.getLineOrChildrenModifiedTime())))
+    return Math.max(
+      this.getLineModifiedTime(),
+      this.getChildArrayModifiedTime(),
+      Math.max.apply(
+        null,
+        this.map(child => child.getLineOrChildrenModifiedTime())
+      )
+    )
   }
 
   private _virtualParentTree: TreeNode
@@ -2074,11 +2092,11 @@ class TreeNode extends AbstractNode {
   }
 
   prependSibling(line: string, children: string) {
-    return this.getParent().insertLineAndChildren(line, children, this.getIndex())
+    return this.parent.insertLineAndChildren(line, children, this.getIndex())
   }
 
   appendSibling(line: string, children: string) {
-    return this.getParent().insertLineAndChildren(line, children, this.getIndex() + 1)
+    return this.parent.insertLineAndChildren(line, children, this.getIndex() + 1)
   }
 
   setContentWithChildren(text: string) {
@@ -2107,14 +2125,14 @@ class TreeNode extends AbstractNode {
   setLine(line: string) {
     if (line === this.getLine()) return this
     // todo: clear parent TMTimes
-    this.getParent()._clearIndex()
+    this.parent._clearIndex()
     this._setLine(line)
     this._updateLineModifiedTimeAndTriggerEvent()
     return this
   }
 
   duplicate() {
-    return this.getParent()._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
+    return this.parent._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
   }
 
   trim() {
@@ -2124,7 +2142,7 @@ class TreeNode extends AbstractNode {
   }
 
   destroy() {
-    ;(this.getParent() as TreeNode)._deleteNode(this)
+    ;(this.parent as TreeNode)._deleteNode(this)
   }
 
   set(firstWordPath: treeNotationTypes.firstWordPath, text: string) {
@@ -2175,7 +2193,10 @@ class TreeNode extends AbstractNode {
   // todo: remove?
   getNodesByLinePrefixes(columns: string[]) {
     const matches: TreeNode[] = []
-    this._getNodesByLineRegex(matches, columns.map(str => new RegExp("^" + str)))
+    this._getNodesByLineRegex(
+      matches,
+      columns.map(str => new RegExp("^" + str))
+    )
     return matches
   }
 
@@ -2297,7 +2318,7 @@ class TreeNode extends AbstractNode {
   }
 
   replaceNode(fn: (thisStr: string) => string) {
-    const parent = this.getParent()
+    const parent = this.parent
     const index = this.getIndex()
     const newNodes = new TreeNode(fn(this.toString()))
     const returnedNodes: TreeNode[] = []
@@ -2366,7 +2387,7 @@ class TreeNode extends AbstractNode {
 
   triggerAncestors(event: AbstractTreeEvent) {
     if (this.isRoot()) return
-    const parent = this.getParent()
+    const parent = this.parent
     parent.trigger(event)
     parent.triggerAncestors(event)
   }
@@ -2541,14 +2562,14 @@ class TreeNode extends AbstractNode {
     const grandParent = <TreeNode>this._getGrandParent()
     if (!grandParent) return this
 
-    const parentIndex = this.getParent().getIndex()
+    const parentIndex = this.parent.getIndex()
     const newNode = grandParent.insertLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined, parentIndex + 1)
     this.destroy()
     return newNode
   }
 
   pasteText(text: string) {
-    const parent = this.getParent()
+    const parent = this.parent
     const index = this.getIndex()
     const newNodes = new TreeNode(text)
     const firstNode = newNodes.nodeAt(0)

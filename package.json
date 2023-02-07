@@ -12,7 +12,7 @@
   },
   "scripts": {
     "kitchen": "node ./products/Kitchen.node.js",
-    "build": "./builder.ts produceAll",
+    "build": "./builder.ts produceAll; ./builder.ts produceAllLangs",
     "updateVersion": "./builder.ts updateVersion",
     "test": "ts-node builder.ts test",
     "cloc": "cloc $(git ls-files | grep --extended-regexp --invert-match 'products|lib|package-lock')",

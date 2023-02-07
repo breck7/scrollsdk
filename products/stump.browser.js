@@ -321,11 +321,11 @@ htmlTagNode
    )
   }
   getShadowClass() {
-   return this.getParent().getShadowClass()
+   return this.parent.getShadowClass()
   }
   // todo: should not be here
   getStumpNodeTreeComponent() {
-   return this._treeComponent || this.getParent().getStumpNodeTreeComponent()
+   return this._treeComponent || this.parent.getStumpNodeTreeComponent()
   }
   // todo: should not be here
   setStumpNodeTreeComponent(treeComponent) {
@@ -864,11 +864,11 @@ bernNode
       )
     }
     getShadowClass() {
-      return this.getParent().getShadowClass()
+      return this.parent.getShadowClass()
     }
     // todo: should not be here
     getStumpNodeTreeComponent() {
-      return this._treeComponent || this.getParent().getStumpNodeTreeComponent()
+      return this._treeComponent || this.parent.getStumpNodeTreeComponent()
     }
     // todo: should not be here
     setStumpNodeTreeComponent(treeComponent) {

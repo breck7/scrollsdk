@@ -143,7 +143,7 @@ class TreeBaseFile extends TreeNode {
     return new TreeNode.Parser(TreeNode)
   }
   get base() {
-    return this.getParent()
+    return this.parent
   }
   get parsed() {
     const programParser = this.base.grammarProgramConstructor

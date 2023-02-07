@@ -643,7 +643,7 @@ testTree.getNodeByColumns = equal => {
   // Act
   const node = test.getNodeByColumns("name", "Success")
   // Assert
-  equal(node.getParent().get("key"), "b")
+  equal(node.parent.get("key"), "b")
 }
 testTree.delete = equal => {
   // Arrange
@@ -1551,7 +1551,7 @@ testTree.getFirstWordPath = equal => {
   const simple = new TreeNode("foo bar")
   // Assert
   equal(child.getFirstWordPath(), "domains test.test.com pages home settings data")
-  equal(child.getParent(), parent)
+  equal(child.parent, parent)
   equal(child.getRootNode(), tree)
   equal(child.getStack().length, 6)
   equal(simple.getNode("foo").getStack().length, 1)
@@ -1752,8 +1752,7 @@ chart`
     tree
       .nodeAt(1)
       .shiftRight()
-      .getParent()
-      .getLine(),
+      .parent.getLine(),
     "reddit"
   )
   equal(tree.length, 2)
@@ -1762,8 +1761,7 @@ chart`
     tree
       .nodeAtLine(1)
       .shiftLeft()
-      .getParent()
-      .toString(),
+      .parent.toString(),
     str
   )
   equal(tree.length, 3)

@@ -92,7 +92,7 @@ Disk.appendUniqueLine = (path, line) => {
   return Disk.append(path, prefix + line + "\n")
 }
 Disk.move = (node, newPosition) => {
-  node.getParent().insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
+  node.parent.insertLineAndChildren(node.getLine(), node.childrenToString(), newPosition)
   node.destroy()
 }
 Disk._getTextUrl = async url => {

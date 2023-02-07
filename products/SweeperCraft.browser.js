@@ -717,7 +717,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
     return this.game.getNeighborBombCount(this.getRow(), this.getColumn())
   }
   getRow() {
-    return this.getParent().getIndex()
+    return this.parent.getIndex()
   }
   getColumn() {
     return this.getIndex()

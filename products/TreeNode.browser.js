@@ -89,7 +89,7 @@ class Parser {
   }
   _getCatchAllNodeConstructor(contextNode) {
     if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
-    const parent = contextNode.getParent()
+    const parent = contextNode.parent
     if (parent) return parent._getParser()._getCatchAllNodeConstructor(parent)
     return contextNode.constructor
   }
@@ -133,7 +133,7 @@ class TreeNode extends AbstractNode {
   }
   getOlderSiblings() {
     if (this.isRoot()) return []
-    return this.getParent().slice(0, this.getIndex())
+    return this.parent.slice(0, this.getIndex())
   }
   _getClosestOlderSibling() {
     const olderSiblings = this.getOlderSiblings()
@@ -141,18 +141,18 @@ class TreeNode extends AbstractNode {
   }
   getYoungerSiblings() {
     if (this.isRoot()) return []
-    return this.getParent().slice(this.getIndex() + 1)
+    return this.parent.slice(this.getIndex() + 1)
   }
   getSiblings() {
     if (this.isRoot()) return []
-    return this.getParent().filter(node => node !== this)
+    return this.parent.filter(node => node !== this)
   }
   _getUid() {
     if (!this._uid) this._uid = TreeNode._makeUniqueId()
     return this._uid
   }
   // todo: rename getMother? grandMother et cetera?
-  getParent() {
+  get parent() {
     return this._parent
   }
   getIndentLevel(relativeTo) {
@@ -236,14 +236,14 @@ class TreeNode extends AbstractNode {
     return start._getLineNumber(this)
   }
   isRoot(relativeTo) {
-    return relativeTo === this || !this.getParent()
+    return relativeTo === this || !this.parent
   }
   getRootNode() {
     return this._getRootNode()
   }
   _getRootNode(relativeTo) {
     if (this.isRoot(relativeTo)) return this
-    return this.getParent()._getRootNode(relativeTo)
+    return this.parent._getRootNode(relativeTo)
   }
   toString(indentCount = 0, language = this) {
     if (this.isRoot()) return this._childrenToString(indentCount, language)
@@ -308,7 +308,7 @@ class TreeNode extends AbstractNode {
     return this._getWords(startFrom)
   }
   getFirstAncestor() {
-    const parent = this.getParent()
+    const parent = this.parent
     return parent.isRoot() ? this : parent.getFirstAncestor()
   }
   isLoaded() {
@@ -400,7 +400,7 @@ class TreeNode extends AbstractNode {
     if (wordIndex > 0) return this
     let node = this
     while (wordIndex < 1) {
-      node = node.getParent()
+      node = node.parent
       wordIndex++
     }
     return node
@@ -506,7 +506,7 @@ class TreeNode extends AbstractNode {
   }
   _getStack(relativeTo) {
     if (this.isRoot(relativeTo)) return []
-    const parent = this.getParent()
+    const parent = this.parent
     if (parent.isRoot(relativeTo)) return [this]
     else return parent._getStack(relativeTo).concat([this])
   }
@@ -537,8 +537,8 @@ class TreeNode extends AbstractNode {
   // todo: return array? getPathArray?
   _getFirstWordPath(relativeTo) {
     if (this.isRoot(relativeTo)) return ""
-    else if (this.getParent().isRoot(relativeTo)) return this.getFirstWord()
-    return this.getParent()._getFirstWordPath(relativeTo) + this.getEdgeSymbol() + this.getFirstWord()
+    else if (this.parent.isRoot(relativeTo)) return this.getFirstWord()
+    return this.parent._getFirstWordPath(relativeTo) + this.getEdgeSymbol() + this.getFirstWord()
   }
   getFirstWordPathRelativeTo(relativeTo) {
     return this._getFirstWordPath(relativeTo)
@@ -554,12 +554,12 @@ class TreeNode extends AbstractNode {
   }
   _getPathVector(relativeTo) {
     if (this.isRoot(relativeTo)) return []
-    const path = this.getParent()._getPathVector(relativeTo)
+    const path = this.parent._getPathVector(relativeTo)
     path.push(this.getIndex())
     return path
   }
   getIndex() {
-    return this.getParent()._indexOfNode(this)
+    return this.parent._indexOfNode(this)
   }
   isTerminal() {
     return !this.length
@@ -1043,7 +1043,7 @@ class TreeNode extends AbstractNode {
   getNext() {
     if (this.isRoot()) return this
     const index = this.getIndex()
-    const parent = this.getParent()
+    const parent = this.parent
     const length = parent.length
     const next = index + 1
     return next === length ? parent._getChildrenArray()[0] : parent._getChildrenArray()[next]
@@ -1051,7 +1051,7 @@ class TreeNode extends AbstractNode {
   getPrevious() {
     if (this.isRoot()) return this
     const index = this.getIndex()
-    const parent = this.getParent()
+    const parent = this.parent
     const length = parent.length
     const prev = index - 1
     return prev === -1 ? parent._getChildrenArray()[length - 1] : parent._getChildrenArray()[prev]
@@ -1089,7 +1089,7 @@ class TreeNode extends AbstractNode {
   _getAncestorNodes(getPotentialParentNodesByIdFn, getParentIdFn, cannotContainNode) {
     const parentId = getParentIdFn(this)
     if (!parentId) return []
-    const potentialParentNodes = getPotentialParentNodesByIdFn(this.getParent(), parentId)
+    const potentialParentNodes = getPotentialParentNodesByIdFn(this.parent, parentId)
     if (!potentialParentNodes.length) throw new Error(`"${this.getLine()} tried to extend "${parentId}" but "${parentId}" not found.`)
     if (potentialParentNodes.length > 1) throw new Error(`Invalid inheritance family tree. Multiple unique ids found for "${parentId}"`)
     const parentNode = potentialParentNodes[0]
@@ -1423,7 +1423,7 @@ class TreeNode extends AbstractNode {
   getAncestorByNodeConstructor(constructor) {
     if (this instanceof constructor) return this
     if (this.isRoot()) return undefined
-    const parent = this.getParent()
+    const parent = this.parent
     return parent instanceof constructor ? parent : parent.getAncestorByNodeConstructor(constructor)
   }
   // todo: rename to getNodeByConstructor(?)
@@ -1545,7 +1545,7 @@ class TreeNode extends AbstractNode {
     return result
   }
   _getGrandParent() {
-    return this.isRoot() || this.getParent().isRoot() ? undefined : this.getParent().getParent()
+    return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
   _getParser() {
     if (!TreeNode._parsers.has(this.constructor)) TreeNode._parsers.set(this.constructor, this.createParser())
@@ -1738,10 +1738,10 @@ class TreeNode extends AbstractNode {
     return this
   }
   prependSibling(line, children) {
-    return this.getParent().insertLineAndChildren(line, children, this.getIndex())
+    return this.parent.insertLineAndChildren(line, children, this.getIndex())
   }
   appendSibling(line, children) {
-    return this.getParent().insertLineAndChildren(line, children, this.getIndex() + 1)
+    return this.parent.insertLineAndChildren(line, children, this.getIndex() + 1)
   }
   setContentWithChildren(text) {
     // todo: deprecate
@@ -1765,13 +1765,13 @@ class TreeNode extends AbstractNode {
   setLine(line) {
     if (line === this.getLine()) return this
     // todo: clear parent TMTimes
-    this.getParent()._clearIndex()
+    this.parent._clearIndex()
     this._setLine(line)
     this._updateLineModifiedTimeAndTriggerEvent()
     return this
   }
   duplicate() {
-    return this.getParent()._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
+    return this.parent._insertLineAndChildren(this.getLine(), this.childrenToString(), this.getIndex() + 1)
   }
   trim() {
     // todo: could do this so only the trimmed rows are deleted.
@@ -1779,7 +1779,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   destroy() {
-    this.getParent()._deleteNode(this)
+    this.parent._deleteNode(this)
   }
   set(firstWordPath, text) {
     return this.touchNode(firstWordPath).setContentWithChildren(text)
@@ -1924,7 +1924,7 @@ class TreeNode extends AbstractNode {
     return results
   }
   replaceNode(fn) {
-    const parent = this.getParent()
+    const parent = this.parent
     const index = this.getIndex()
     const newNodes = new TreeNode(fn(this.toString()))
     const returnedNodes = []
@@ -1980,7 +1980,7 @@ class TreeNode extends AbstractNode {
   }
   triggerAncestors(event) {
     if (this.isRoot()) return
-    const parent = this.getParent()
+    const parent = this.parent
     parent.trigger(event)
     parent.triggerAncestors(event)
   }
@@ -2123,13 +2123,13 @@ class TreeNode extends AbstractNode {
   shiftLeft() {
     const grandParent = this._getGrandParent()
     if (!grandParent) return this
-    const parentIndex = this.getParent().getIndex()
+    const parentIndex = this.parent.getIndex()
     const newNode = grandParent.insertLineAndChildren(this.getLine(), this.length ? this.childrenToString() : undefined, parentIndex + 1)
     this.destroy()
     return newNode
   }
   pasteText(text) {
-    const parent = this.getParent()
+    const parent = this.parent
     const index = this.getIndex()
     const newNodes = new TreeNode(text)
     const firstNode = newNodes.nodeAt(0)

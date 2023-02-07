@@ -110,7 +110,7 @@ abstractAssertionNode
    this.getAssertionResult(actualAsString, expected, this.getLine())
   }
   equal(actual, expected, message) {
-   this.getParent().getEqualFn()(actual, expected, message)
+   this.parent.getEqualFn()(actual, expected, message)
   }
   getAssertionResult(actualAsString, expected, message) {
    this.equal(actualAsString, expected, message)
@@ -214,7 +214,7 @@ abstractTestBlockNode
  catchAllCellType anyCell
  javascript
   getArrangeNode() {
-   return this.getNode("arrange") || this.getParent().getArrangeNode()
+   return this.getNode("arrange") || this.parent.getArrangeNode()
   }
   setEqualMethod(equal) {
    this._equal = equal
@@ -307,7 +307,7 @@ withParagraphNode
 actNode
  javascript
   getTestBlock() {
-   return this.getParent()
+   return this.parent
   }
   getEqualFn() {
    return this.getTestBlock().getEqualFn()
@@ -406,7 +406,7 @@ todoNode
       this.getAssertionResult(actualAsString, expected, this.getLine())
     }
     equal(actual, expected, message) {
-      this.getParent().getEqualFn()(actual, expected, message)
+      this.parent.getEqualFn()(actual, expected, message)
     }
     getAssertionResult(actualAsString, expected, message) {
       this.equal(actualAsString, expected, message)
@@ -536,7 +536,7 @@ todoNode
       return this.getWordsFrom(1)
     }
     getArrangeNode() {
-      return this.getNode("arrange") || this.getParent().getArrangeNode()
+      return this.getNode("arrange") || this.parent.getArrangeNode()
     }
     setEqualMethod(equal) {
       this._equal = equal
@@ -669,7 +669,7 @@ todoNode
       return this.getWordsFrom(1)
     }
     getTestBlock() {
-      return this.getParent()
+      return this.parent
     }
     getEqualFn() {
       return this.getTestBlock().getEqualFn()

@@ -125,9 +125,7 @@ class AbstractWillowShadow {
     return this
   }
   getShadowParent() {
-    return this.getShadowStumpNode()
-      .getParent()
-      .getShadow()
+    return this.getShadowStumpNode().parent.getShadow()
   }
   getPositionAndDimensions(gridSize = 1) {
     const offset = this.getShadowOffset()
@@ -1004,7 +1002,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
     this._onCommandWillRun() // todo: remove. currently used by ohayo
     let treeComponent = stumpNode.getStumpNodeTreeComponent()
     while (!treeComponent[commandMethod]) {
-      const parent = treeComponent.getParent()
+      const parent = treeComponent.parent
       if (parent === treeComponent) throw new Error(`Unknown command "${commandMethod}"`)
       if (!parent) debugger
       treeComponent = parent
@@ -1194,7 +1192,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
     return reasonForUpdatingOrNot
   }
   _updateHtml() {
-    const stumpNodeToMountOn = this._htmlStumpNode.getParent()
+    const stumpNodeToMountOn = this._htmlStumpNode.parent
     const currentIndex = this._htmlStumpNode.getIndex()
     this._removeHtml()
     this._mountHtml(stumpNodeToMountOn, this._toLoadedOrLoadingStumpCode(), currentIndex)

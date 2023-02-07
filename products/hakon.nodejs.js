@@ -104,7 +104,7 @@ selectorNode
  boolean isSelectorNode true
  javascript
   getSelector() {
-   const parentSelector = this.getParent().getSelector()
+   const parentSelector = this.parent.getSelector()
    return this.getFirstWord()
     .split(",")
     .map(part => {
@@ -413,7 +413,7 @@ selectorNode
       return true
     }
     getSelector() {
-      const parentSelector = this.getParent().getSelector()
+      const parentSelector = this.parent.getSelector()
       return this.getFirstWord()
         .split(",")
         .map(part => {

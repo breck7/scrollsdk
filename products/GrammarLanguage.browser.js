@@ -146,7 +146,7 @@ class GrammarBackedNode extends TreeNode {
     const hits = columns.filter(colDef => this.has(colDef.columnName))
     const values = hits.map(colDef => {
       const node = this.getNode(colDef.columnName)
-      let content = node.getContent()
+      let content = node.content
       const hasChildren = node.length
       const isText = colDef.type === SQLiteTypes.text
       if (content && hasChildren) content = node.getContentWithChildren().replace(/\n/g, "\\n")
@@ -297,7 +297,7 @@ class GrammarBackedNode extends TreeNode {
           lineNumber: lineNumber,
           source: sourceNode.getIndentation() + sourceNode.getLine(),
           nodeType: sourceNode.constructor.name,
-          cellTypes: node.getContent(),
+          cellTypes: node.content,
           errorCount: errorCount
         }
         if (errorCount) obj.errorMessages = errs.map(err => err.getMessage()).join(";")
@@ -559,7 +559,7 @@ class GrammarBackedNode extends TreeNode {
     const fields = {}
     this.forEach(node => {
       const def = node.getDefinition()
-      if (def.isRequired() || def.isSingle) fields[node.getWord(0)] = node.getContent()
+      if (def.isRequired() || def.isSingle) fields[node.getWord(0)] = node.content
     })
     return fields
   }
@@ -585,15 +585,15 @@ class GrammarBackedNode extends TreeNode {
     return this.getDefinition()._hasFromExtended(GrammarConstants.uniqueFirstWord) ? false : !this.getDefinition().isSingle
   }
   get list() {
-    return this.listDelimiter ? this.getContent().split(this.listDelimiter) : super.list
+    return this.listDelimiter ? this.content.split(this.listDelimiter) : super.list
   }
   get typedContent() {
     // todo: probably a better way to do this, perhaps by defining a cellDelimiter at the node level
     // todo: this currently parse anything other than string types
-    if (this.listDelimiter) return this.getContent().split(this.listDelimiter)
+    if (this.listDelimiter) return this.content.split(this.listDelimiter)
     const cells = this._getParsedCells()
     if (cells.length === 2) return cells[1].getParsed()
-    return this.getContent()
+    return this.content
   }
   get typedTuple() {
     const key = this.getFirstWord()
@@ -1201,13 +1201,13 @@ class MissingWordError extends AbstractCellError {
 class AbstractGrammarWordTestNode extends TreeNode {}
 class GrammarRegexTestNode extends AbstractGrammarWordTestNode {
   isValid(str) {
-    if (!this._regex) this._regex = new RegExp("^" + this.getContent() + "$")
+    if (!this._regex) this._regex = new RegExp("^" + this.content + "$")
     return !!str.match(this._regex)
   }
 }
 class GrammarReservedWordsTestNode extends AbstractGrammarWordTestNode {
   isValid(str) {
-    if (!this._set) this._set = new Set(this.getContent().split(" "))
+    if (!this._set) this._set = new Set(this.content.split(" "))
     return !this._set.has(str)
   }
 }
@@ -2117,7 +2117,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     const testBlocks = {}
     this.getValidConcreteAndAbstractNodeTypeDefinitions().forEach(def =>
       def.getExamples().forEach(example => {
-        const id = def._getId() + example.getContent()
+        const id = def._getId() + example.content
         testBlocks[id] = equal => {
           const exampleProgram = new programConstructor(example.childrenToString())
           const errors = exampleProgram.getAllErrors(example._getLineNumber() + 1)
@@ -2451,7 +2451,7 @@ class UnknownGrammarProgram extends TreeNode {
     const childNodeTypeIds = childFirstWords.map(word => HandGrammarProgram.makeNodeTypeId(word))
     if (childNodeTypeIds.length) nodeDefNode.touchNode(GrammarConstants.inScope).setWordsFrom(1, childNodeTypeIds)
     const cellsForAllInstances = instances
-      .map(line => line.getContent())
+      .map(line => line.content)
       .filter(identity => identity)
       .map(line => line.split(edgeSymbol))
     const instanceCellCounts = new Set(cellsForAllInstances.map(cells => cells.length))

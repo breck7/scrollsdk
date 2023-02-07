@@ -129,7 +129,7 @@ includesTextNode
  crux includes
  javascript
   toPredicate() {
-    const query = (this.getContent() ?? "").toLowerCase()
+    const query = (this.content ?? "").toLowerCase()
     return file => file.lowercase.includes(query)
   }
 doesNotIncludeTextNode
@@ -159,7 +159,7 @@ matchesRegexNode
  crux matchesRegex
  javascript
   toPredicate() {
-    const regex = new RegExp(this.getContent() ?? "")
+    const regex = new RegExp(this.content ?? "")
     return file => regex.test(file.toString())
   }
 commentNode
@@ -314,7 +314,7 @@ descriptionNode
       return this.getWordsFrom(0)
     }
     toPredicate() {
-      const query = (this.getContent() ?? "").toLowerCase()
+      const query = (this.content ?? "").toLowerCase()
       return file => file.lowercase.includes(query)
     }
   }
@@ -349,7 +349,7 @@ descriptionNode
       return this.getWordsFrom(0)
     }
     toPredicate() {
-      const regex = new RegExp(this.getContent() ?? "")
+      const regex = new RegExp(this.content ?? "")
       return file => regex.test(file.toString())
     }
   }

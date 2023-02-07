@@ -25,7 +25,7 @@
       const testBlocks = {}
       this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").forEach(testNode => {
         const prefix = testNode.racerPrefix || ""
-        testBlocks[prefix + testNode.getContent()] = testNode.toTestRacerFunction(filepath)
+        testBlocks[prefix + testNode.content] = testNode.toTestRacerFunction(filepath)
       })
       const files = {}
       files[filepath] = testBlocks
@@ -89,7 +89,7 @@ swarmNode
    const testBlocks = {}
    this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").forEach(testNode => {
     const prefix = testNode.racerPrefix || ""
-    testBlocks[prefix + testNode.getContent()] = testNode.toTestRacerFunction(filepath)
+    testBlocks[prefix + testNode.content] = testNode.toTestRacerFunction(filepath)
    })
    const files = {}
    files[filepath] = testBlocks
@@ -130,7 +130,7 @@ abstractAssertionNode
    return this.getWordsFrom(2).join(" ")
   }
   getSyncExpected() {
-   return this.getContent()
+   return this.content
   }
  cells assertionKeywordCell
 assertParagraphIsNode
@@ -321,7 +321,7 @@ actNode
    const actionMethodName = this.getFirstWord()
    const actionMethod = arrangedInstance[actionMethodName]
    if (!actionMethod) throw new Error(\`No method "\${actionMethodName}" on "\${arrangedInstance.constructor.name}"\`)
-   if (typeof actionMethod !== "function") throw new Error(\`"\${actionMethodName}" on "\${arrangedInstance.constructor.name}" is a property not a method\`)
+   if (typeof actionMethod !== "function") return arrangedInstance[actionMethodName] // Property access
    return actionMethod.apply(arrangedInstance, this._getActArgs())
   }
   async execute(arrangedInstance) {
@@ -426,7 +426,7 @@ todoNode
       return this.getWordsFrom(2).join(" ")
     }
     getSyncExpected() {
-      return this.getContent()
+      return this.content
     }
   }
 
@@ -683,7 +683,7 @@ todoNode
       const actionMethodName = this.getFirstWord()
       const actionMethod = arrangedInstance[actionMethodName]
       if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstance.constructor.name}"`)
-      if (typeof actionMethod !== "function") throw new Error(`"${actionMethodName}" on "${arrangedInstance.constructor.name}" is a property not a method`)
+      if (typeof actionMethod !== "function") return arrangedInstance[actionMethodName] // Property access
       return actionMethod.apply(arrangedInstance, this._getActArgs())
     }
     async execute(arrangedInstance) {

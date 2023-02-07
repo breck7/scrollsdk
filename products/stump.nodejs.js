@@ -216,7 +216,7 @@ htmlTagNode
     var elem = document.createElement(this.getTag())
     elem.setAttribute("stumpUid", this._getUid())
     this.filter(node => node.isAttributeNode)
-      .forEach(child => elem.setAttribute(child.getFirstWord(), child.getContent()))
+      .forEach(child => elem.setAttribute(child.getFirstWord(), child.content))
     elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
     this.filter(node => node.isHtmlTagNode)
       .forEach(child => elem.appendChild(child.domElement))
@@ -368,7 +368,7 @@ htmlAttributeNode
   }
   getTextContent() {return ""}
   getAttribute() {
-   return \` \${this.getFirstWord()}="\${this.getContent()}"\`
+   return \` \${this.getFirstWord()}="\${this.content}"\`
   }
  boolean isAttributeNode true
  boolean isTileAttribute true
@@ -760,7 +760,7 @@ bernNode
     get domElement() {
       var elem = document.createElement(this.getTag())
       elem.setAttribute("stumpUid", this._getUid())
-      this.filter(node => node.isAttributeNode).forEach(child => elem.setAttribute(child.getFirstWord(), child.getContent()))
+      this.filter(node => node.isAttributeNode).forEach(child => elem.setAttribute(child.getFirstWord(), child.content))
       elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
       this.filter(node => node.isHtmlTagNode).forEach(child => elem.appendChild(child.domElement))
       return elem
@@ -934,7 +934,7 @@ bernNode
       return ""
     }
     getAttribute() {
-      return ` ${this.getFirstWord()}="${this.getContent()}"`
+      return ` ${this.getFirstWord()}="${this.content}"`
     }
   }
 

@@ -74,7 +74,7 @@ propertyNode
  catchAllNodeType errorNode
  javascript
   compile(spaces) {
-   return \`\${spaces}\${this.getFirstWord()}: \${this.getContent()};\`
+   return \`\${spaces}\${this.getFirstWord()}: \${this.content};\`
   }
  cells propertyKeywordCell
 variableNode
@@ -143,7 +143,7 @@ selectorNode
       return this.getWordsFrom(1)
     }
     compile(spaces) {
-      return `${spaces}${this.getFirstWord()}: ${this.getContent()};`
+      return `${spaces}${this.getFirstWord()}: ${this.content};`
     }
   }
 

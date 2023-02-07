@@ -121,8 +121,8 @@ titleNode
  crux title
  javascript
   compile(spaces) {
-   const title = this.getContent()
-   const permalink = Utils.stringToPermalink(this.getContent())
+   const title = this.content
+   const permalink = Utils.stringToPermalink(this.content)
    return \`<h1 id="\${permalink}"><a href="#\${permalink}">\${title}</a></h1>\`
   }
 title2Node
@@ -256,8 +256,8 @@ quickParagraphNode
       return this.getWordsFrom(0)
     }
     compile(spaces) {
-      const title = this.getContent()
-      const permalink = Utils.stringToPermalink(this.getContent())
+      const title = this.content
+      const permalink = Utils.stringToPermalink(this.content)
       return `<h1 id="${permalink}"><a href="#${permalink}">${title}</a></h1>`
     }
   }

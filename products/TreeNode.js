@@ -218,7 +218,7 @@ class TreeNode extends AbstractNode {
     return this.length ? new Set(this.getFirstWords()).size !== this.length : false
   }
   isEmpty() {
-    return !this.length && !this.getContent()
+    return !this.length && !this.content
   }
   _getLineNumberRelativeTo(relativeTo) {
     if (this.isRoot(relativeTo)) return 0
@@ -479,13 +479,13 @@ class TreeNode extends AbstractNode {
   getFirstWord() {
     return this.getWords()[0]
   }
-  getContent() {
+  get content() {
     const words = this.getWordsFrom(1)
     return words.length ? words.join(this.getWordBreakSymbol()) : undefined
   }
   getContentWithChildren() {
     // todo: deprecate
-    const content = this.getContent()
+    const content = this.content
     return (content ? content : "") + (this.length ? this.getNodeBreakSymbol() + this._childrenToString() : "")
   }
   getFirstNode() {
@@ -560,7 +560,7 @@ class TreeNode extends AbstractNode {
       .join(`<span class="zIncrement">${this.getWordBreakSymbol()}</span>`)
   }
   _getXmlContent(indentCount) {
-    if (this.getContent() !== undefined) return this.getContentWithChildren()
+    if (this.content !== undefined) return this.getContentWithChildren()
     return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
   _toXml(indentCount) {
@@ -569,7 +569,7 @@ class TreeNode extends AbstractNode {
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
   _toObjectTuple() {
-    const content = this.getContent()
+    const content = this.content
     const length = this.length
     const hasChildrenNoContent = content === undefined && length
     const hasContentAndHasChildren = content !== undefined && length
@@ -881,7 +881,7 @@ class TreeNode extends AbstractNode {
   _lineToYaml(indentLevel, listTag = "") {
     let prefix = " ".repeat(indentLevel)
     if (listTag && indentLevel > 1) prefix = " ".repeat(indentLevel - 2) + listTag + " "
-    return prefix + `${this.getFirstWord()}:` + (this.getContent() ? " " + this.getContent() : "")
+    return prefix + `${this.getFirstWord()}:` + (this.content ? " " + this.content : "")
   }
   _isYamlList() {
     return this.hasDuplicateFirstWords()
@@ -983,7 +983,7 @@ class TreeNode extends AbstractNode {
   }
   get(firstWordPath) {
     const node = this._getNodeByPath(firstWordPath)
-    return node === undefined ? undefined : node.getContent()
+    return node === undefined ? undefined : node.content
   }
   getOneOf(keys) {
     for (let i = 0; i < keys.length; i++) {
@@ -1404,7 +1404,7 @@ class TreeNode extends AbstractNode {
     return this._index || this._makeIndex()
   }
   getContentsArray() {
-    return this.map(node => node.getContent())
+    return this.map(node => node.content)
   }
   // todo: rename to getChildrenByConstructor(?)
   getChildrenByNodeConstructor(constructor) {
@@ -1637,7 +1637,7 @@ class TreeNode extends AbstractNode {
       }
       if (isAnArrayNotMap) targetNode = this.appendLine(sourceNode.getLine())
       else {
-        targetNode = this.touchNode(firstWord).setContent(sourceNode.getContent())
+        targetNode = this.touchNode(firstWord).setContent(sourceNode.content)
         usedFirstWords.add(firstWord)
       }
       if (sourceNode.length) targetNode.extend(sourceNode)
@@ -1716,7 +1716,7 @@ class TreeNode extends AbstractNode {
     return this._clearChildren()
   }
   setContent(content) {
-    if (content === this.getContent()) return this
+    if (content === this.content) return this
     const newArray = [this.getFirstWord()]
     if (content !== undefined) {
       content = content.toString()

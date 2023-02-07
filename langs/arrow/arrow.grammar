@@ -25,11 +25,19 @@ tokenCell
 currencyCell
  enum usd cad jpy
  highlightScope constant.numeric
+commentCell
+ highlightScope comment
+commentNode
+ catchAllCellType commentCell
+ cells commentCell
+ crux Comment
+ boolean suggestInAutocomplete false
 arrowNode
  description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
  root
- inScope chargeNode
+ inScope chargeNode commentNode
  catchAllNodeType errorNode
+ sortTemplate Comment charge
  javascript
   compile() {
    return this.toJsonSubset()

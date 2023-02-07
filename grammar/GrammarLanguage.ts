@@ -472,7 +472,7 @@ abstract class GrammarBackedNode extends TreeNode {
     // Recurse
     this.forEach((node: any) => node.sortFromSortTemplate())
 
-    const def = this.getDefinition()
+    const def = this.isRoot() ? this.getDefinition().getRootNodeTypeDefinitionNode() : this.getDefinition()
     const { sortIndices, sortSections } = def.sortSpec
 
     // Sort and insert section breaks

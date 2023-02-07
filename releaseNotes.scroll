@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 66.1.0 2023-2-7
+- 🏥 Grammar: fixed bug when sorting a root node.
+
 # 66.0.0 2023-2-7
 - ⚠️ Legacy `products/jtree.browser.js` has been removed.
 - ⚠️ TreeNode: This is the first of the *getter releases*. Start the long overdue switch to Javascript getters for `get` methods with zero params.

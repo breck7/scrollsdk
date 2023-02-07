@@ -245,6 +245,7 @@ interface chargeNode {
 }
 
 interface arrowNode {
+ Comment?: any
  charge?: chargeNode
 }`
   )

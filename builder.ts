@@ -300,7 +300,6 @@ class Builder extends TreeNode {
 
   updateVersion(newVersion: treeNotationTypes.semanticVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
-    this._updatePackageJson(__dirname + "/package-lock.json", newVersion)
 
     const codePath = __dirname + "/treeNode/TreeNode.ts"
     const code = Disk.read(codePath).replace(/\"\d+\.\d+\.\d+\"/, `"${newVersion}"`)

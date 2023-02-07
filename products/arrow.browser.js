@@ -1,9 +1,21 @@
 {
+  class commentNode extends GrammarBackedNode {
+    get commentCell() {
+      return this.getWord(0)
+    }
+    get commentCell() {
+      return this.getWordsFrom(1)
+    }
+    get suggestInAutocomplete() {
+      return false
+    }
+  }
+
   class arrowNode extends GrammarBackedNode {
     createParser() {
       return new TreeNode.Parser(
         errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { charge: chargeNode }),
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { Comment: commentNode, charge: chargeNode }),
         undefined
       )
     }
@@ -37,11 +49,19 @@ tokenCell
 currencyCell
  enum usd cad jpy
  highlightScope constant.numeric
+commentCell
+ highlightScope comment
+commentNode
+ catchAllCellType commentCell
+ cells commentCell
+ crux Comment
+ boolean suggestInAutocomplete false
 arrowNode
  description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
  root
- inScope chargeNode
+ inScope chargeNode commentNode
  catchAllNodeType errorNode
+ sortTemplate Comment charge
  javascript
   compile() {
    return this.toJsonSubset()
@@ -84,6 +104,7 @@ tokenNode
     }
     static getNodeTypeMap() {
       return {
+        commentNode: commentNode,
         arrowNode: arrowNode,
         errorNode: errorNode,
         chargeNode: chargeNode,

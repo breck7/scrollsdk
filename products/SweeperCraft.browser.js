@@ -638,7 +638,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
     return this._getGame().getNumberOfMoves()
   }
   _getGame() {
-    return this.getRootNode().getGame()
+    return this.root.getGame()
   }
   // mines moves gameMessage
   // 10 1 You Lost!
@@ -673,11 +673,7 @@ class boardComponent extends AbstractSweeperCraftComponent {
     this.setContent(this._getCssGameClass())
   }
   _getCssGameClass() {
-    return this.getRootNode()
-      .getGame()
-      .isOver()
-      ? "over"
-      : "playing"
+    return this.root.getGame().isOver() ? "over" : "playing"
   }
   getCssClasses() {
     return super.getCssClasses().concat([this._getCssGameClass()])
@@ -723,7 +719,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
     return this.getIndex()
   }
   get game() {
-    return this.getRootNode().getGame()
+    return this.root.getGame()
   }
   get hasBomb() {
     return this.game.hasBomb(this.getRow(), this.getColumn())
@@ -751,7 +747,7 @@ class squareComponent extends AbstractSweeperCraftComponent {
 class controlsComponent extends AbstractSweeperCraftComponent {
   toStumpCode() {
     const parts = []
-    const game = this.getRootNode().getGame()
+    const game = this.root.getGame()
     if (game.isOver())
       parts.push(`div Restart
  clickCommand retryGameCommand
@@ -760,7 +756,7 @@ class controlsComponent extends AbstractSweeperCraftComponent {
     return parts.join("\n") || "div"
   }
   _syncBoardToGame() {
-    const game = this.getRootNode().getGame()
+    const game = this.root.getGame()
     this.setContent(`${game.isOver() ? "over" : "notOver"} ${game.isFlagLockOn() ? "flagLockOn" : "flagLockOff"}`)
   }
 }
@@ -772,7 +768,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
     return `div`
   }
   _getGameLink() {
-    const game = this.getRootNode().getGame()
+    const game = this.root.getGame()
     if (game.getNumberOfFlags() && !game.getNumberOfMoves()) return game.getCraftPermalink()
     return ""
   }

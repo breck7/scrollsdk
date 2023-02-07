@@ -283,7 +283,7 @@ arrangeNode
     // todo: cleanup
    let requiredClass =
     this.get("require") ||
-    this.getRootNode()
+    this.root
      .getNode("arrange")
      .get("require")
    const requiredClassParts = requiredClass.split(" ") // Allows for ./ExportsClasses.js ChildClass
@@ -623,11 +623,7 @@ todoNode
     }
     _getRequiredClass(programFilepath) {
       // todo: cleanup
-      let requiredClass =
-        this.get("require") ||
-        this.getRootNode()
-          .getNode("arrange")
-          .get("require")
+      let requiredClass = this.get("require") || this.root.getNode("arrange").get("require")
       const requiredClassParts = requiredClass.split(" ") // Allows for ./ExportsClasses.js ChildClass
       const requiredFileNameOrClass = requiredClassParts[0]
       let theClass

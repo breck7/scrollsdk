@@ -177,7 +177,7 @@ fileNode
   execute(parentDir) {
    const fs = require("fs")
    const fullPath = this._getAbsolutePath(parentDir)
-   this.getRootNode().log(\`Creating file \${fullPath}\`)
+   this.root.log(\`Creating file \${fullPath}\`)
    const data = this.getNode("data")
    const content = data ? data.childrenToString() : ""
    require("mkdirp").sync(require("path").dirname(fullPath))
@@ -198,7 +198,7 @@ folderNode
   }
   execute(parentDir) {
    const path = this._getAbsolutePath(parentDir)
-   this.getRootNode().log(\`Creating folder \${path}\`)
+   this.root.log(\`Creating folder \${path}\`)
    require("mkdirp").sync(path)
   }
  crux folder`)
@@ -285,7 +285,7 @@ folderNode
     execute(parentDir) {
       const fs = require("fs")
       const fullPath = this._getAbsolutePath(parentDir)
-      this.getRootNode().log(`Creating file ${fullPath}`)
+      this.root.log(`Creating file ${fullPath}`)
       const data = this.getNode("data")
       const content = data ? data.childrenToString() : ""
       require("mkdirp").sync(require("path").dirname(fullPath))
@@ -310,7 +310,7 @@ folderNode
     }
     execute(parentDir) {
       const path = this._getAbsolutePath(parentDir)
-      this.getRootNode().log(`Creating folder ${path}`)
+      this.root.log(`Creating folder ${path}`)
       require("mkdirp").sync(path)
     }
   }

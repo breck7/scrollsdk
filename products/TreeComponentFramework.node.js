@@ -1064,7 +1064,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
   toggleTreeComponentFrameworkDebuggerCommand() {
     // todo: move somewhere else?
     // todo: cleanup
-    const app = this.getRootNode()
+    const app = this.root
     const node = app.getNode("TreeComponentFrameworkDebuggerComponent")
     if (node) {
       node.unmountAndDestroy()
@@ -1080,7 +1080,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
     return ""
   }
   getTheme() {
-    if (!this.isRoot()) return this.getRootNode().getTheme()
+    if (!this.isRoot()) return this.root.getTheme()
     if (!this._theme) this._theme = new DefaultTheme()
     return this._theme
   }
@@ -1217,7 +1217,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
   toggleAndRender(firstWord, contentOptions) {
     this.toggle(firstWord, contentOptions)
-    this.getRootNode().renderAndGetRenderReport()
+    this.root.renderAndGetRenderReport()
   }
   _getFirstOutdatedDependency(lastRenderedTime = this._getLastRenderedTime() || 0) {
     return this.getDependencies().find(dep => dep.getLineModifiedTime() > lastRenderedTime)
@@ -1306,7 +1306,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
  bern${TreeNode.nest(css, 2)}`)
   }
   _getPageHeadStump() {
-    return this.getRootNode().willowBrowser.getHeadStumpNode()
+    return this.root.willowBrowser.getHeadStumpNode()
   }
   _removeCss() {
     if (!this._cssStumpNode) return this
@@ -1371,7 +1371,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   opacity 1`
   }
   toStumpCode() {
-    const app = this.getRootNode()
+    const app = this.root
     return `div
  class TreeComponentFrameworkDebuggerComponent
  div x

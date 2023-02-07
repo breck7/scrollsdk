@@ -368,8 +368,8 @@ a
 }
 class samplesComponent extends AbstractTreeComponent {
   toStumpCode() {
-    const langs = this.getRootNode()
-      .languages.map(
+    const langs = this.root.languages
+      .map(
         lang => ` a ${Utils.ucfirst(lang)}
   href #standard%20${lang}
   value ${lang}

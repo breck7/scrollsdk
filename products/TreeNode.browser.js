@@ -215,7 +215,7 @@ class TreeNode extends AbstractNode {
   _getLineNumber(target = this) {
     if (this._cachedLineNumber) return this._cachedLineNumber
     let lineNumber = 1
-    for (let node of this.getRootNode().getTopDownArrayIterator()) {
+    for (let node of this.root.getTopDownArrayIterator()) {
       if (node === target) return lineNumber
       lineNumber++
     }
@@ -232,13 +232,13 @@ class TreeNode extends AbstractNode {
   }
   _getLineNumberRelativeTo(relativeTo) {
     if (this.isRoot(relativeTo)) return 0
-    const start = relativeTo || this.getRootNode()
+    const start = relativeTo || this.root
     return start._getLineNumber(this)
   }
   isRoot(relativeTo) {
     return relativeTo === this || !this.parent
   }
-  getRootNode() {
+  get root() {
     return this._getRootNode()
   }
   _getRootNode(relativeTo) {
@@ -335,7 +335,7 @@ class TreeNode extends AbstractNode {
     return chain
   }
   _getProjectRootDir() {
-    return this.isRoot() ? "" : this.getRootNode()._getProjectRootDir()
+    return this.isRoot() ? "" : this.root._getProjectRootDir()
   }
   // Concat 2 trees amd return a new true, but replace any nodes
   // in this tree that start with the same node from the first tree with
@@ -2591,7 +2591,7 @@ class AbstractExtendibleTreeNode extends TreeNode {
 }
 class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   _getIdToNodeMap() {
-    if (!this.isRoot()) return this.getRootNode()._getIdToNodeMap()
+    if (!this.isRoot()) return this.root._getIdToNodeMap()
     if (!this._nodeMapCache) {
       this._nodeMapCache = {}
       this.forEach(child => {

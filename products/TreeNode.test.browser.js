@@ -1527,7 +1527,7 @@ testTree.getFirstWordPath = equal => {
   // Assert
   equal(child.getFirstWordPath(), "domains test.test.com pages home settings data")
   equal(child.parent, parent)
-  equal(child.getRootNode(), tree)
+  equal(child.root, tree)
   equal(child.getStack().length, 6)
   equal(simple.getNode("foo").getStack().length, 1)
   equal(child.getFirstWordPathRelativeTo(parent), "data")
@@ -1758,8 +1758,7 @@ b = 3
 c = 4`)
       .nodeAtLine(0)
       .shiftYoungerSibsRight()
-      .getRootNode()
-      .toString(),
+      .root.toString(),
     `file foo.js
  a = 2
  b = 3

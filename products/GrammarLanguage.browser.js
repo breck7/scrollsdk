@@ -225,7 +225,7 @@ class GrammarBackedNode extends TreeNode {
   // some of the magic that makes this all work. but maybe there's a better way.
   getHandGrammarProgram() {
     if (this.isRoot()) throw new Error(`Root node without getHandGrammarProgram defined.`)
-    return this.getRootNode().getHandGrammarProgram()
+    return this.root.getHandGrammarProgram()
   }
   getRunTimeEnumOptions(cell) {
     return undefined
@@ -731,7 +731,7 @@ class AbstractGrammarBackedCell {
   }
   getAutoCompleteWords(partialWord = "") {
     const cellDef = this._getCellTypeDefinition()
-    let words = cellDef ? cellDef._getAutocompleteWordOptions(this.getNode().getRootNode()) : []
+    let words = cellDef ? cellDef._getAutocompleteWordOptions(this.getNode().root) : []
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     if (runTimeOptions) words = runTimeOptions.concat(words)
     if (partialWord) words = words.filter(word => word.includes(partialWord))
@@ -785,7 +785,7 @@ ${options.toString(1)}`
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
-    return this._getCellTypeDefinition().isValid(word, this.getNode().getRootNode()) && this._isValid()
+    return this._getCellTypeDefinition().isValid(word, this.getNode().root) && this._isValid()
   }
   getErrorIfAny() {
     const word = this.getWord()
@@ -1401,7 +1401,7 @@ class OmnifixCellParser extends AbstractCellParser {
   getCellArray(node = undefined) {
     const cells = []
     const def = this._definition
-    const program = node ? node.getRootNode() : undefined
+    const program = node ? node.root : undefined
     const grammarProgram = def.getLanguageDefinitionProgram()
     const words = node ? node.getWords() : []
     const requiredCellTypeDefs = this.getRequiredCellTypeIds().map(cellTypeId => grammarProgram.getCellTypeDefinitionById(cellTypeId))

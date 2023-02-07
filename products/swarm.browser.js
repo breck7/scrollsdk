@@ -318,7 +318,7 @@ actNode
    return this.getWordsFrom(1)
   }
   _act(arrangedInstance) {
-   const actionMethodName = this.getFirstWord()
+   const actionMethodName = this.firstWord
    const actionMethod = arrangedInstance[actionMethodName]
    if (!actionMethod) throw new Error(\`No method "\${actionMethodName}" on "\${arrangedInstance.constructor.name}"\`)
    if (typeof actionMethod !== "function") return arrangedInstance[actionMethodName] // Property access
@@ -676,7 +676,7 @@ todoNode
       return this.getWordsFrom(1)
     }
     _act(arrangedInstance) {
-      const actionMethodName = this.getFirstWord()
+      const actionMethodName = this.firstWord
       const actionMethod = arrangedInstance[actionMethodName]
       if (!actionMethod) throw new Error(`No method "${actionMethodName}" on "${arrangedInstance.constructor.name}"`)
       if (typeof actionMethod !== "function") return arrangedInstance[actionMethodName] // Property access

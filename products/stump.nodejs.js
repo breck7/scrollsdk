@@ -189,7 +189,7 @@ htmlTagNode
   isHtmlTagNode = true
   getTag() {
    // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
-   const firstWord = this.getFirstWord()
+   const firstWord = this.firstWord
    const map = {
     titleTag: "title",
     styleTag: "style"
@@ -216,7 +216,7 @@ htmlTagNode
     var elem = document.createElement(this.getTag())
     elem.setAttribute("stumpUid", this._getUid())
     this.filter(node => node.isAttributeNode)
-      .forEach(child => elem.setAttribute(child.getFirstWord(), child.content))
+      .forEach(child => elem.setAttribute(child.firstWord, child.content))
     elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
     this.filter(node => node.isHtmlTagNode)
       .forEach(child => elem.appendChild(child.domElement))
@@ -259,7 +259,7 @@ htmlTagNode
   removeClassFromStumpNode(className) {
    const classNode = this.getNode("class")
    if (!classNode) return this
-   const newClasses = classNode.getWords().filter(word => word !== className)
+   const newClasses = classNode.words.filter(word => word !== className)
    if (!newClasses.length) classNode.destroy()
    else classNode.setContent(newClasses.join(" "))
    this.getShadow().removeClassFromShadow(className)
@@ -267,7 +267,7 @@ htmlTagNode
   }
   stumpNodeHasClass(className) {
    const classNode = this.getNode("class")
-   return classNode && classNode.getWords().includes(className) ? true : false
+   return classNode && classNode.words.includes(className) ? true : false
   }
   isStumpNodeCheckbox() {
    return this.get("type") === "checkbox"
@@ -307,7 +307,7 @@ htmlTagNode
    return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.getFirstWord() === firstWord)
+   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
   }
   hasLine(line) {
    return this.getChildren().some(node => node.getLine() === line)
@@ -322,7 +322,7 @@ htmlTagNode
      node.has("class") &&
      node
       .getNode("class")
-      .getWords()
+      .words
       .includes(className)
    )
   }
@@ -368,7 +368,7 @@ htmlAttributeNode
   }
   getTextContent() {return ""}
   getAttribute() {
-   return \` \${this.getFirstWord()}="\${this.content}"\`
+   return \` \${this.firstWord}="\${this.content}"\`
   }
  boolean isAttributeNode true
  boolean isTileAttribute true
@@ -734,7 +734,7 @@ bernNode
     isHtmlTagNode = true
     getTag() {
       // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
-      const firstWord = this.getFirstWord()
+      const firstWord = this.firstWord
       const map = {
         titleTag: "title",
         styleTag: "style"
@@ -760,7 +760,7 @@ bernNode
     get domElement() {
       var elem = document.createElement(this.getTag())
       elem.setAttribute("stumpUid", this._getUid())
-      this.filter(node => node.isAttributeNode).forEach(child => elem.setAttribute(child.getFirstWord(), child.content))
+      this.filter(node => node.isAttributeNode).forEach(child => elem.setAttribute(child.firstWord, child.content))
       elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
       this.filter(node => node.isHtmlTagNode).forEach(child => elem.appendChild(child.domElement))
       return elem
@@ -802,7 +802,7 @@ bernNode
     removeClassFromStumpNode(className) {
       const classNode = this.getNode("class")
       if (!classNode) return this
-      const newClasses = classNode.getWords().filter(word => word !== className)
+      const newClasses = classNode.words.filter(word => word !== className)
       if (!newClasses.length) classNode.destroy()
       else classNode.setContent(newClasses.join(" "))
       this.getShadow().removeClassFromShadow(className)
@@ -810,7 +810,7 @@ bernNode
     }
     stumpNodeHasClass(className) {
       const classNode = this.getNode("class")
-      return classNode && classNode.getWords().includes(className) ? true : false
+      return classNode && classNode.words.includes(className) ? true : false
     }
     isStumpNodeCheckbox() {
       return this.get("type") === "checkbox"
@@ -850,7 +850,7 @@ bernNode
       return this._findStumpNodesByBase(firstWord)[0]
     }
     _findStumpNodesByBase(firstWord) {
-      return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.getFirstWord() === firstWord)
+      return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
     }
     hasLine(line) {
       return this.getChildren().some(node => node.getLine() === line)
@@ -859,15 +859,7 @@ bernNode
       return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
     }
     findStumpNodesWithClass(className) {
-      return this.getTopDownArray().filter(
-        node =>
-          node.doesExtend("htmlTagNode") &&
-          node.has("class") &&
-          node
-            .getNode("class")
-            .getWords()
-            .includes(className)
-      )
+      return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.has("class") && node.getNode("class").words.includes(className))
     }
     getShadowClass() {
       return this.parent.getShadowClass()
@@ -934,7 +926,7 @@ bernNode
       return ""
     }
     getAttribute() {
-      return ` ${this.getFirstWord()}="${this.content}"`
+      return ` ${this.firstWord}="${this.content}"`
     }
   }
 

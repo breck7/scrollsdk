@@ -80,7 +80,7 @@ propertyNode
  catchAllNodeType errorNode
  javascript
   compile(spaces) {
-   return \`\${spaces}\${this.getFirstWord()}: \${this.content};\`
+   return \`\${spaces}\${this.firstWord}: \${this.content};\`
   }
  cells propertyKeywordCell
 variableNode
@@ -105,7 +105,7 @@ selectorNode
  javascript
   getSelector() {
    const parentSelector = this.parent.getSelector()
-   return this.getFirstWord()
+   return this.firstWord
     .split(",")
     .map(part => {
      if (part.startsWith("&")) return parentSelector + part.substr(1)
@@ -149,7 +149,7 @@ selectorNode
       return this.getWordsFrom(1)
     }
     compile(spaces) {
-      return `${spaces}${this.getFirstWord()}: ${this.content};`
+      return `${spaces}${this.firstWord}: ${this.content};`
     }
   }
 
@@ -414,7 +414,7 @@ selectorNode
     }
     getSelector() {
       const parentSelector = this.parent.getSelector()
-      return this.getFirstWord()
+      return this.firstWord
         .split(",")
         .map(part => {
           if (part.startsWith("&")) return parentSelector + part.substr(1)

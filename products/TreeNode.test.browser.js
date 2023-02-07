@@ -361,7 +361,7 @@ domains
   // Arrange
   const node = new TreeNode(" ").nodeAt(0)
   // Act/Assert
-  equal(node.getFirstWord(), "")
+  equal(node.firstWord, "")
   equal(node.content, "")
   // Arrange
   const spaceChar = " "
@@ -696,7 +696,7 @@ other`
   const tree6 = new TreeNode(blankTest)
   // Act
   tree6.forEach(node => {
-    if (!node.getFirstWord().startsWith("p")) return true
+    if (!node.firstWord.startsWith("p")) return true
     node.setContent("President")
     node.delete("class")
   })
@@ -801,7 +801,7 @@ testTree.forEach = equal => {
   var result = ""
   // Act
   value.forEach(function(node) {
-    const property = node.getFirstWord()
+    const property = node.firstWord
     const v = node.content
     result += property.toUpperCase()
     result += v.toUpperCase()
@@ -815,9 +815,9 @@ testTree.forEach = equal => {
   const value2 = new TreeNode("hello world\nhi mom")
   // Act
   value2
-    .filter(node => node.getFirstWord() !== "hello")
+    .filter(node => node.firstWord !== "hello")
     .forEach(node => {
-      const property = node.getFirstWord()
+      const property = node.firstWord
       const value = node.content
       count++
     })
@@ -893,7 +893,7 @@ testTree.firstProperty = equal => {
   // Arrange
   const value = new TreeNode("hello world\nhi mom")
   // Assert
-  equal(value.nodeAt(0).getFirstWord(), "hello")
+  equal(value.nodeAt(0).firstWord, "hello")
 }
 testTree.hasDuplicates = equal => {
   // Arrange/Act/Assert
@@ -1850,7 +1850,7 @@ testTree.htmlDsl = equal => {
   var page = ""
   // Act
   html.forEach(node => {
-    const property = node.getFirstWord()
+    const property = node.firstWord
     const value = node.content
     page += "<" + property + ">" + value + "</" + property + ">"
   })
@@ -1907,7 +1907,7 @@ testTree.lastProperty = equal => {
   // Arrange
   const value = new TreeNode("hello world\nhi mom")
   // Assert
-  equal(value.nodeAt(-1).getFirstWord(), "hi")
+  equal(value.nodeAt(-1).firstWord, "hi")
 }
 testTree.lastValue = equal => {
   // Arrange
@@ -2121,7 +2121,7 @@ testTree.copyToRegression = equal => {
  @blue
  >div`
   const migrateNode = node => {
-    if (!node.getFirstWord().startsWith(">")) return true
+    if (!node.firstWord.startsWith(">")) return true
     if (node.length) {
       const cla = node.getNode("class").content
       if (cla) node.setContent(cla)
@@ -2130,7 +2130,7 @@ testTree.copyToRegression = equal => {
         const nodes = css.getChildren()
         const toMove = []
         nodes.forEach(propNode => {
-          const name = propNode.getFirstWord().replace(":", " ")
+          const name = propNode.firstWord.replace(":", " ")
           propNode.setFirstWord("@" + name)
           toMove.push(propNode)
         })
@@ -2445,17 +2445,11 @@ bob
   // Assert
   equal(a.getNext().toString(), a.toString())
   equal(a.getPrevious().toString(), a.toString())
-  equal(b.getPrevious().getFirstWord(), "bob")
-  equal(
-    b
-      .getPrevious()
-      .getNext()
-      .getFirstWord(),
-    "john"
-  )
-  equal(b.getNext().getFirstWord(), "susy")
-  equal(c.getNext().getFirstWord(), "score")
-  equal(c.getPrevious().getFirstWord(), "score")
+  equal(b.getPrevious().firstWord, "bob")
+  equal(b.getPrevious().getNext().firstWord, "john")
+  equal(b.getNext().firstWord, "susy")
+  equal(c.getNext().firstWord, "score")
+  equal(c.getPrevious().firstWord, "score")
 }
 testTree.reverse = equal => {
   // Arrange
@@ -2473,22 +2467,8 @@ testTree.reverse = equal => {
   // Act
   tree2.nodeAt(0).reverse()
   // Assert
-  equal(
-    tree2
-      .nodeAt(0)
-      .nodeAt(0)
-      .getFirstWord(),
-    "age",
-    "Expected reversed properties"
-  )
-  equal(
-    tree2
-      .nodeAt(1)
-      .nodeAt(0)
-      .getFirstWord(),
-    "name",
-    "Expected unchanged properties"
-  )
+  equal(tree2.nodeAt(0).nodeAt(0).firstWord, "age", "Expected reversed properties")
+  equal(tree2.nodeAt(1).nodeAt(0).firstWord, "name", "Expected unchanged properties")
 }
 testTree.set = equal => {
   // Arrange
@@ -2659,7 +2639,7 @@ testTree.sort = equal => {
   // Assert
   equal(tree.getFirstWords().join(" "), "john susy bob")
   // Act
-  tree.sort((a, b) => (b.getFirstWord() < a.getFirstWord() ? 1 : b.getFirstWord() === a.getFirstWord() ? 0 : -1))
+  tree.sort((a, b) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
   // Assert
   equal(tree.getFirstWords().join(" "), "bob john susy")
 }
@@ -3053,7 +3033,7 @@ b
  a
 b
  a
-c`).getFiltered(node => node.getFirstWord() === "a").length,
+c`).getFiltered(node => node.firstWord === "a").length,
     3
   )
 }
@@ -3272,7 +3252,7 @@ testTree.treeNodes = equal => {
   // Assert
   equal(originalMtime > 0, true)
   equal(node.isTerminal(), true)
-  equal(node.getFirstWord(), "text")
+  equal(node.firstWord, "text")
   equal(node.content, undefined)
   equal(node.length, 0)
   // Act

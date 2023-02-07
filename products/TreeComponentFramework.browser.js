@@ -399,12 +399,12 @@ class AbstractWillowBrowser extends stumpNode {
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.getTopDownArray()
-    const titleNode = nodes.find(node => node.getFirstWord() === WillowConstants.titleTag)
+    const titleNode = nodes.find(node => node.firstWord === WillowConstants.titleTag)
     return titleNode ? titleNode.content : ""
   }
   setWindowTitle(value) {
     const nodes = this.getTopDownArray()
-    const headNode = nodes.find(node => node.getFirstWord() === WillowConstants.tags.head)
+    const headNode = nodes.find(node => node.firstWord === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -965,7 +965,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
   _getHtmlOnlyNodes() {
     const nodes = []
     this.willowBrowser.getHtmlStumpNode().deepVisit(node => {
-      if (node.getFirstWord() === "styleTag" || (node.content || "").startsWith("<svg ")) return false
+      if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) return false
       nodes.push(node)
     })
     return nodes
@@ -974,7 +974,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
     // todo: cleanup. feels hacky.
     const clone = new TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
     clone.getTopDownArray().forEach(node => {
-      if (node.getFirstWord() === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
+      if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
     })
     return clone.toString()
   }
@@ -1258,7 +1258,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
     })
   }
   toStumpLoadingCode() {
-    return `div Loading ${this.getFirstWord()}...
+    return `div Loading ${this.firstWord}...
  class ${this.getCssClassNames().join(" ")}
  id ${this.getTreeComponentId()}`
   }

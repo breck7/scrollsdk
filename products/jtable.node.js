@@ -2423,7 +2423,7 @@ ${cols}
   getPredictionsForAPropertyNameToColumnNameMapGivenHintsNode(hintsNode, propertyNameToColumnNameMap) {
     const results = {}
     hintsNode
-      .map(columnHintNode => this.getColumnNamePredictionsForProperty(columnHintNode.getFirstWord(), columnHintNode.content, propertyNameToColumnNameMap))
+      .map(columnHintNode => this.getColumnNamePredictionsForProperty(columnHintNode.firstWord, columnHintNode.content, propertyNameToColumnNameMap))
       .filter(pred => pred.length)
       .forEach(predictions => {
         const topPrediction = predictions[0]

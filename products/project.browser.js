@@ -171,7 +171,7 @@ fileNode
   _getDependencies() {
    return this.getChildren()
     .map(child => {
-     const firstWord = child.getFirstWord()
+     const firstWord = child.firstWord
      const childFilePath = child.filepathCell.join(" ")
      if (firstWord === "external") return ""
      if (firstWord === "absolute") return childFilePath
@@ -248,7 +248,7 @@ fileNode
     _getDependencies() {
       return this.getChildren()
         .map(child => {
-          const firstWord = child.getFirstWord()
+          const firstWord = child.firstWord
           const childFilePath = child.filepathCell.join(" ")
           if (firstWord === "external") return ""
           if (firstWord === "absolute") return childFilePath

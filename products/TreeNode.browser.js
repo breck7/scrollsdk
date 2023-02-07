@@ -123,7 +123,7 @@ class TreeNode extends AbstractNode {
   }
   getLineCellTypes() {
     // todo: make this any a constant
-    return "undefinedCellType ".repeat(this.getWords().length).trim()
+    return "undefinedCellType ".repeat(this.words.length).trim()
   }
   isNodeJs() {
     return typeof exports !== "undefined"
@@ -197,7 +197,7 @@ class TreeNode extends AbstractNode {
   _getMaxUnitsOnALine() {
     let max = 0
     for (let node of this.getTopDownArrayIterator()) {
-      const count = node.getWords().length + node.getIndentLevel()
+      const count = node.words.length + node.getIndentLevel()
       if (count > max) max = count
     }
     return max
@@ -205,7 +205,7 @@ class TreeNode extends AbstractNode {
   getNumberOfWords() {
     let wordCount = 0
     for (let node of this.getTopDownArrayIterator()) {
-      wordCount += node.getWords().length
+      wordCount += node.words.length
     }
     return wordCount
   }
@@ -294,7 +294,7 @@ class TreeNode extends AbstractNode {
     if (!this._words) this._words = this._getLine().split(this.getWordBreakSymbol())
     return startFrom ? this._words.slice(startFrom) : this._words
   }
-  getWords() {
+  get words() {
     return this._getWords(0)
   }
   doesExtend(nodeTypeId) {
@@ -386,13 +386,7 @@ class TreeNode extends AbstractNode {
     const numIndents = this._getIndentLevel(undefined) - 1
     const indentPosition = xiLength * numIndents
     if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
-    return (
-      indentPosition +
-      this.getWords()
-        .slice(0, wordIndex)
-        .join(this.getWordBreakSymbol()).length +
-      this.getWordBreakSymbol().length
-    )
+    return indentPosition + this.words.slice(0, wordIndex).join(this.getWordBreakSymbol()).length + this.getWordBreakSymbol().length
   }
   getNodeInScopeAtCharIndex(charIndex) {
     if (this.isRoot()) return this
@@ -416,7 +410,7 @@ class TreeNode extends AbstractNode {
   }
   fill(fill = "") {
     this.getTopDownArray().forEach(line => {
-      line.getWords().forEach((word, index) => {
+      line.words.forEach((word, index) => {
         line.setWord(index, fill)
       })
     })
@@ -441,7 +435,7 @@ class TreeNode extends AbstractNode {
     let indentLevel = this._getIndentLevel()
     const wordBreakSymbolLength = this.getWordBreakSymbol().length
     let elapsed = indentLevel
-    return this.getWords().map((word, wordIndex) => {
+    return this.words.map((word, wordIndex) => {
       const boundary = elapsed
       elapsed += word.length + wordBreakSymbolLength
       return boundary
@@ -456,7 +450,7 @@ class TreeNode extends AbstractNode {
     while (spots.length < numberOfIndents) {
       spots.push(-(numberOfIndents - spots.length))
     }
-    this.getWords().forEach((word, wordIndex) => {
+    this.words.forEach((word, wordIndex) => {
       word.split("").forEach(letter => {
         spots.push(wordIndex)
       })
@@ -486,8 +480,8 @@ class TreeNode extends AbstractNode {
       line++
     }
   }
-  getFirstWord() {
-    return this.getWords()[0]
+  get firstWord() {
+    return this.words[0]
   }
   get content() {
     const words = this.getWordsFrom(1)
@@ -517,7 +511,7 @@ class TreeNode extends AbstractNode {
   }
   getLine(language) {
     if (!this._words && !language) return this._getLine() // todo: how does this interact with "language" param?
-    return this.getWords().join((language || this).getWordBreakSymbol())
+    return this.words.join((language || this).getWordBreakSymbol())
   }
   getColumnNames() {
     return this._getUnionNames()
@@ -537,8 +531,8 @@ class TreeNode extends AbstractNode {
   // todo: return array? getPathArray?
   _getFirstWordPath(relativeTo) {
     if (this.isRoot(relativeTo)) return ""
-    else if (this.parent.isRoot(relativeTo)) return this.getFirstWord()
-    return this.parent._getFirstWordPath(relativeTo) + this.getEdgeSymbol() + this.getFirstWord()
+    else if (this.parent.isRoot(relativeTo)) return this.firstWord
+    return this.parent._getFirstWordPath(relativeTo) + this.getEdgeSymbol() + this.firstWord
   }
   getFirstWordPathRelativeTo(relativeTo) {
     return this._getFirstWordPath(relativeTo)
@@ -565,9 +559,7 @@ class TreeNode extends AbstractNode {
     return !this.length
   }
   _getLineHtml() {
-    return this.getWords()
-      .map((word, index) => `<span class="word${index}">${Utils.stripHtml(word)}</span>`)
-      .join(`<span class="zIncrement">${this.getWordBreakSymbol()}</span>`)
+    return this.words.map((word, index) => `<span class="word${index}">${Utils.stripHtml(word)}</span>`).join(`<span class="zIncrement">${this.getWordBreakSymbol()}</span>`)
   }
   _getXmlContent(indentCount) {
     if (this.content !== undefined) return this.getContentWithChildren()
@@ -575,7 +567,7 @@ class TreeNode extends AbstractNode {
   }
   _toXml(indentCount) {
     const indent = " ".repeat(indentCount)
-    const tag = this.getFirstWord()
+    const tag = this.firstWord
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
   _toObjectTuple() {
@@ -586,7 +578,7 @@ class TreeNode extends AbstractNode {
     // If the node has a content and a subtree return it as a string, as
     // Javascript object values can't be both a leaf and a tree.
     const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.getContentWithChildren() : content
-    return [this.getFirstWord(), tupleValue]
+    return [this.firstWord, tupleValue]
   }
   _indexOfNode(needleNode) {
     let result = -1
@@ -672,7 +664,7 @@ class TreeNode extends AbstractNode {
     )
   }
   _hasColumns(columns) {
-    const words = this.getWords()
+    const words = this.words
     return columns.every((searchTerm, index) => searchTerm === words[index])
   }
   hasWord(index, word) {
@@ -839,7 +831,7 @@ class TreeNode extends AbstractNode {
     const getLine = (cellIndex, word = "") =>
       `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--cellWidth) * ${cellIndex});">${word}</span>`
     let cells = []
-    this.getWords().forEach((word, index) => (word ? cells.push(getLine(index + indents, word)) : ""))
+    this.words.forEach((word, index) => (word ? cells.push(getLine(index + indents, word)) : ""))
     return cells.join("")
   }
   toHtmlCube() {
@@ -891,7 +883,7 @@ class TreeNode extends AbstractNode {
   _lineToYaml(indentLevel, listTag = "") {
     let prefix = " ".repeat(indentLevel)
     if (listTag && indentLevel > 1) prefix = " ".repeat(indentLevel - 2) + listTag + " "
-    return prefix + `${this.getFirstWord()}:` + (this.content ? " " + this.content : "")
+    return prefix + `${this.firstWord}:` + (this.content ? " " + this.content : "")
   }
   _isYamlList() {
     return this.hasDuplicateFirstWords()
@@ -936,11 +928,11 @@ class TreeNode extends AbstractNode {
   _toObjectForSerialization() {
     return this.length
       ? {
-          cells: this.getWords(),
+          cells: this.words,
           children: this.map(child => child._toObjectForSerialization())
         }
       : {
-          cells: this.getWords()
+          cells: this.words
         }
   }
   toJson() {
@@ -1018,12 +1010,12 @@ class TreeNode extends AbstractNode {
     const edgeSymbol = this.getEdgeSymbol()
     if (!globPath.includes(edgeSymbol)) {
       if (globPath === "*") return this.getChildren()
-      return this.filter(node => node.getFirstWord() === globPath)
+      return this.filter(node => node.firstWord === globPath)
     }
     const parts = globPath.split(edgeSymbol)
     const current = parts.shift()
     const rest = parts.join(edgeSymbol)
-    const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.getFirstWord() === current)
+    const matchingNodes = current === "*" ? this.getChildren() : this.filter(child => child.firstWord === current)
     return [].concat.apply(
       [],
       matchingNodes.map(node => node._getNodesByGlobPath(rest))
@@ -1062,7 +1054,7 @@ class TreeNode extends AbstractNode {
     this.forEach(node => {
       if (!node.length) return undefined
       node.forEach(node => {
-        obj[node.getFirstWord()] = 1
+        obj[node.firstWord] = 1
       })
     })
     return Object.keys(obj)
@@ -1105,7 +1097,7 @@ class TreeNode extends AbstractNode {
     let node = this
     while (path.length) {
       if (!node) return names
-      names.push(node.nodeAt(path[0]).getFirstWord())
+      names.push(node.nodeAt(path[0]).firstWord)
       node = node.nodeAt(path.shift())
     }
     return names
@@ -1440,7 +1432,7 @@ class TreeNode extends AbstractNode {
     const length = this.length
     const nodes = this._getChildrenArray()
     for (let index = 0; index < length; index++) {
-      if (nodes[index].getFirstWord() === firstWord) return index
+      if (nodes[index].firstWord === firstWord) return index
     }
   }
   // todo: rename this. it is a particular type of object.
@@ -1448,7 +1440,7 @@ class TreeNode extends AbstractNode {
     return this._toObject()
   }
   getFirstWords() {
-    return this.map(node => node.getFirstWord())
+    return this.map(node => node.firstWord)
   }
   _makeIndex(startAt = 0) {
     if (!this._index || !startAt) this._index = {}
@@ -1456,7 +1448,7 @@ class TreeNode extends AbstractNode {
     const newIndex = this._index
     const length = nodes.length
     for (let index = startAt; index < length; index++) {
-      newIndex[nodes[index].getFirstWord()] = index
+      newIndex[nodes[index].firstWord] = index
     }
     return newIndex
   }
@@ -1637,7 +1629,7 @@ class TreeNode extends AbstractNode {
     const node = nodeOrStr instanceof TreeNode ? nodeOrStr : new TreeNode(nodeOrStr)
     const usedFirstWords = new Set()
     node.forEach(sourceNode => {
-      const firstWord = sourceNode.getFirstWord()
+      const firstWord = sourceNode.firstWord
       let targetNode
       const isAnArrayNotMap = usedFirstWords.has(firstWord)
       if (!this.has(firstWord)) {
@@ -1727,7 +1719,7 @@ class TreeNode extends AbstractNode {
   }
   setContent(content) {
     if (content === this.content) return this
-    const newArray = [this.getFirstWord()]
+    const newArray = [this.firstWord]
     if (content !== undefined) {
       content = content.toString()
       if (content.match(this.getNodeBreakSymbol())) return this.setContentWithChildren(content)
@@ -1870,7 +1862,7 @@ class TreeNode extends AbstractNode {
     return this
   }
   invert() {
-    this.forEach(node => node.getWords().reverse())
+    this.forEach(node => node.words.reverse())
     return this
   }
   _rename(oldFirstWord, newFirstWord) {
@@ -1884,7 +1876,7 @@ class TreeNode extends AbstractNode {
   // Does not recurse.
   remap(map) {
     this.forEach(node => {
-      const firstWord = node.getFirstWord()
+      const firstWord = node.firstWord
       if (map[firstWord] !== undefined) node.setFirstWord(map[firstWord])
     })
     return this
@@ -1902,7 +1894,7 @@ class TreeNode extends AbstractNode {
     const allNodes = this._getChildrenArray()
     const indexesToDelete = []
     allNodes.forEach((node, index) => {
-      if (node.getFirstWord() === firstWord) indexesToDelete.push(index)
+      if (node.firstWord === firstWord) indexesToDelete.push(index)
     })
     return this._deleteByIndexes(indexesToDelete)
   }
@@ -1963,7 +1955,7 @@ class TreeNode extends AbstractNode {
     return this._firstWordSort(firstWordOrder)
   }
   deleteWordAt(wordIndex) {
-    const words = this.getWords()
+    const words = this.words
     words.splice(wordIndex, 1)
     return this.setWords(words)
   }
@@ -2006,15 +1998,11 @@ class TreeNode extends AbstractNode {
     return this.setLine(words.join(this.getWordBreakSymbol()))
   }
   setWordsFrom(index, words) {
-    this.setWords(
-      this.getWords()
-        .slice(0, index)
-        .concat(words)
-    )
+    this.setWords(this.words.slice(0, index).concat(words))
     return this
   }
   appendWord(word) {
-    const words = this.getWords()
+    const words = this.words
     words.push(word)
     return this.setWords(words)
   }
@@ -2026,8 +2014,8 @@ class TreeNode extends AbstractNode {
       map[word] = index
     })
     this.sort((nodeA, nodeB) => {
-      const valA = map[nodeA.getFirstWord()]
-      const valB = map[nodeB.getFirstWord()]
+      const valA = map[nodeA.firstWord]
+      const valB = map[nodeB.firstWord]
       if (valA > valB) return nodeBFirst
       if (valA < valB) return nodeAFirst
       return secondarySortFn ? secondarySortFn(nodeA, nodeB) : 0
@@ -2070,8 +2058,8 @@ class TreeNode extends AbstractNode {
     const indices = indexOrIndices instanceof Array ? indexOrIndices : [indexOrIndices]
     const length = indices.length
     this.sort((nodeA, nodeB) => {
-      const wordsA = nodeA.getWords()
-      const wordsB = nodeB.getWords()
+      const wordsA = nodeA.words
+      const wordsB = nodeB.words
       for (let index = 0; index < length; index++) {
         const col = indices[index]
         const av = wordsA[col]

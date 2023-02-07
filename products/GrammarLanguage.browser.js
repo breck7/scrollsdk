@@ -195,7 +195,7 @@ class GrammarBackedNode extends TreeNode {
     return this.getDefinition()._doesExtend(nodeTypeId)
   }
   _getErrorNodeErrors() {
-    return [this.getFirstWord() ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
+    return [this.firstWord ? new UnknownNodeTypeError(this) : new BlankLineError(this)]
   }
   _getBlobNodeCatchAllNodeType() {
     return BlobNode
@@ -311,7 +311,7 @@ class GrammarBackedNode extends TreeNode {
       new Set(
         this.getAllErrors()
           .filter(err => err instanceof UnknownNodeTypeError)
-          .map(err => err.getNode().getFirstWord())
+          .map(err => err.getNode().firstWord)
       )
     )
   }
@@ -400,9 +400,9 @@ class GrammarBackedNode extends TreeNode {
     if (sortIndices.size) {
       // Sort keywords
       this.sort((nodeA, nodeB) => {
-        const aIndex = sortIndices.get(nodeA.getFirstWord())
-        const bIndex = sortIndices.get(nodeB.getFirstWord())
-        if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.getFirstWord()}"`)
+        const aIndex = sortIndices.get(nodeA.firstWord)
+        const bIndex = sortIndices.get(nodeB.firstWord)
+        if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.firstWord}"`)
         const a = aIndex !== null && aIndex !== void 0 ? aIndex : 1000
         const b = bIndex !== null && bIndex !== void 0 ? bIndex : 1000
         return a > b ? 1 : a < b ? -1 : nodeA.getLine() > nodeB.getLine()
@@ -410,7 +410,7 @@ class GrammarBackedNode extends TreeNode {
       // pad sections
       let currentSection = 0
       this.forEach(node => {
-        const nodeSection = sortSections.get(node.getFirstWord())
+        const nodeSection = sortSections.get(node.firstWord)
         const sectionHasAdvanced = nodeSection > currentSection
         if (sectionHasAdvanced) {
           currentSection = nodeSection
@@ -430,7 +430,7 @@ class GrammarBackedNode extends TreeNode {
     })
     this.getTopDownArray().forEach((node, lineNumber) => {
       const stats = usage.getNode(node.getNodeTypeId())
-      stats.appendLine([filepath + "-" + lineNumber, node.getWords().join(" ")].join(" "))
+      stats.appendLine([filepath + "-" + lineNumber, node.words.join(" ")].join(" "))
     })
     return usage
   }
@@ -596,7 +596,7 @@ class GrammarBackedNode extends TreeNode {
     return this.content
   }
   get typedTuple() {
-    const key = this.getFirstWord()
+    const key = this.firstWord
     if (this.childrenAreTextBlob) return [key, this.childrenToString()]
     const { typedContent, contentKey, childrenKey } = this
     if (contentKey || childrenKey) {
@@ -1088,20 +1088,20 @@ class UnknownNodeTypeError extends AbstractTreeError {
     const node = this.getNode()
     const parentNode = node.parent
     const options = parentNode._getParser().getFirstWordOptions()
-    return super.getMessage() + ` Invalid nodeType "${node.getFirstWord()}". Valid nodeTypes are: ${Utils._listToEnglishText(options, 7)}.`
+    return super.getMessage() + ` Invalid nodeType "${node.firstWord}". Valid nodeTypes are: ${Utils._listToEnglishText(options, 7)}.`
   }
   _getWordSuggestion() {
     const node = this.getNode()
     const parentNode = node.parent
     return Utils.didYouMean(
-      node.getFirstWord(),
+      node.firstWord,
       parentNode.getAutocompleteResults("", 0).map(option => option.text)
     )
   }
   getSuggestionMessage() {
     const suggestion = this._getWordSuggestion()
     const node = this.getNode()
-    if (suggestion) return `Change "${node.getFirstWord()}" to "${suggestion}"`
+    if (suggestion) return `Change "${node.firstWord}" to "${suggestion}"`
     return ""
   }
   applySuggestion() {
@@ -1137,7 +1137,7 @@ class MissingRequiredNodeTypeError extends AbstractTreeError {
 }
 class NodeTypeUsedMultipleTimesError extends AbstractTreeError {
   getMessage() {
-    return super.getMessage() + ` Multiple "${this.getNode().getFirstWord()}" found.`
+    return super.getMessage() + ` Multiple "${this.getNode().firstWord}" found.`
   }
   getSuggestionMessage() {
     return `Delete line ${this.getLineNumber()}`
@@ -1361,7 +1361,7 @@ class AbstractCellParser {
     return cellIndex >= numberOfRequiredCells
   }
   getCellArray(node = undefined) {
-    const wordCount = node ? node.getWords().length : 0
+    const wordCount = node ? node.words.length : 0
     const def = this._definition
     const grammarProgram = def.getLanguageDefinitionProgram()
     const requiredCellTypeIds = this.getRequiredCellTypeIds()
@@ -1403,7 +1403,7 @@ class OmnifixCellParser extends AbstractCellParser {
     const def = this._definition
     const program = node ? node.root : undefined
     const grammarProgram = def.getLanguageDefinitionProgram()
-    const words = node ? node.getWords() : []
+    const words = node ? node.words : []
     const requiredCellTypeDefs = this.getRequiredCellTypeIds().map(cellTypeId => grammarProgram.getCellTypeDefinitionById(cellTypeId))
     const catchAllCellTypeId = this.getCatchAllCellTypeId()
     const catchAllCellTypeDef = catchAllCellTypeId && grammarProgram.getCellTypeDefinitionById(catchAllCellTypeId)
@@ -2425,8 +2425,8 @@ class UnknownGrammarProgram extends TreeNode {
   _renameIntegerKeywords(clone) {
     // todo: why are we doing this?
     for (let node of clone.getTopDownArrayIterator()) {
-      const firstWordIsAnInteger = !!node.getFirstWord().match(/^\d+$/)
-      const parentFirstWord = node.parent.getFirstWord()
+      const firstWordIsAnInteger = !!node.firstWord.match(/^\d+$/)
+      const parentFirstWord = node.parent.firstWord
       if (firstWordIsAnInteger && parentFirstWord) node.setFirstWord(HandGrammarProgram.makeNodeTypeId(parentFirstWord + UnknownGrammarProgram._childSuffix))
     }
   }
@@ -2434,12 +2434,12 @@ class UnknownGrammarProgram extends TreeNode {
     const keywordsToChildKeywords = {}
     const keywordsToNodeInstances = {}
     for (let node of clone.getTopDownArrayIterator()) {
-      const firstWord = node.getFirstWord()
+      const firstWord = node.firstWord
       if (!keywordsToChildKeywords[firstWord]) keywordsToChildKeywords[firstWord] = {}
       if (!keywordsToNodeInstances[firstWord]) keywordsToNodeInstances[firstWord] = []
       keywordsToNodeInstances[firstWord].push(node)
       node.forEach(child => {
-        keywordsToChildKeywords[firstWord][child.getFirstWord()] = true
+        keywordsToChildKeywords[firstWord][child.firstWord] = true
       })
     }
     return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToNodeInstances: keywordsToNodeInstances }

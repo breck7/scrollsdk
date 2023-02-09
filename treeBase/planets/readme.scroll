@@ -8,7 +8,11 @@ title PlanetsDB
 * You can test the search:
 
 html
- <form method="GET" action="search">
- <textarea name="q" style="width: 800px; height: 200px;">where diameter > 15000</textarea><br>
- <input type="submit">
- </form>
+ <div><textarea name="q" id="query" style="width: 800px; height: 200px;">where diameter > 15000</textarea><button onclick="runSearch()">Search</button></div>
+ <script>const runSearch = async () => {
+    let response = await fetch(`/search.tree?q=` + encodeURIComponent(document.getElementById("query").value ))
+    document.getElementById("results").innerHTML = await response.text()
+ }
+ </script>
+ <pre id="results"></pre>
+

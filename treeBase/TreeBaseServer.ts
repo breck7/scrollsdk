@@ -63,34 +63,11 @@ class TreeBaseServer {
   }
 
   initSearch() {
-    const searchServer = new SearchServer(this.folder)
+    const searchServer = new SearchServer(this.folder, this.ignoreFolder)
     this.searchServer = searchServer
-    const formats = ["html", "csv", "text", "scroll"]
-    const searchCache: any = {}
-
-    const searchRequestLog = path.join(this.ignoreFolder, "searchLog.tree")
-    Disk.touch(searchRequestLog)
-
-    this.app.get("/search", (req: any, res: any) => {
-      const { q } = req.query
-      const originalQuery = q === undefined ? "" : q
-      const originalFormat = req.query.format
-      const format = originalFormat && formats.includes(originalFormat) ? originalFormat : "html"
-
-      searchServer.logQuery(searchRequestLog, originalQuery, req.ip, format)
-
-      const key = originalQuery + format
-      if (searchCache[key]) return res.send(searchCache[key])
-
-      const decodedQuery = decodeURIComponent(originalQuery).replace(/\r/g, "")
-
-      if (format === "html") searchCache[key] = this.scrollToHtml(searchServer.scroll(decodedQuery))
-      if (format === "scroll") searchCache[key] = searchServer.scroll(decodedQuery)
-      if (format === "csv") searchCache[key] = searchServer.csv(decodedQuery)
-      if (format === "text") searchCache[key] = searchServer.text(decodedQuery)
-
-      res.send(searchCache[key])
-    })
+    this.app.get("/search.json", (req: any, res: any) => res.send(searchServer.logAndRunSearch(req.query.q, "json", req.ip)))
+    this.app.get("/search.csv", (req: any, res: any) => res.send(searchServer.logAndRunSearch(req.query.q, "csv", req.ip)))
+    this.app.get("/search.tree", (req: any, res: any) => res.send(searchServer.logAndRunSearch(req.query.q, "tree", req.ip)))
     return this
   }
 
@@ -98,11 +75,6 @@ class TreeBaseServer {
     this._addNotFoundRoute()
     this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
-  }
-
-  // Currently you need to override in your app
-  scrollToHtml(scrollContent: string) {
-    return scrollContent
   }
 
   listenProd() {
@@ -127,13 +99,19 @@ class TreeBaseServer {
 }
 
 class SearchServer {
-  constructor(treeBaseFolder: TreeBaseFolder) {
+  constructor(treeBaseFolder: TreeBaseFolder, ignoreFolder: string) {
     this.folder = treeBaseFolder
+    this.ignoreFolder = ignoreFolder
+    this.searchRequestLog = path.join(this.ignoreFolder, "searchLog.tree")
   }
 
+  searchRequestLog: any
+  searchCache: any = {}
+  ignoreFolder: string
   folder: TreeBaseFolder
 
-  logQuery(logFilePath: string, originalQuery: string, ip: string, format = "html") {
+  _touchedLog = false
+  logQuery(originalQuery: string, ip: string, format = "html") {
     const tree = `search
  time ${Date.now()}
  ip ${ip}
@@ -141,38 +119,27 @@ class SearchServer {
  query
   ${originalQuery.replace(/\n/g, "\n  ")} 
 `
-    fs.appendFile(logFilePath, tree, function() {})
+
+    if (!this._touchedLog) {
+      Disk.touch(this.searchRequestLog)
+      this._touchedLog = true
+    }
+
+    fs.appendFile(this.searchRequestLog, tree, function() {})
     return this
   }
 
-  scroll(treeQLCode: string) {
-    const { hits, time, columnNames, errors, title, description } = this.search(treeQLCode)
-    const { folder } = this
-    const results = hits._toDelimited(delimiter, columnNames, delimitedEscapeFunction)
-    const encodedTitle = Utils.escapeScrollAndHtml(title)
-    const encodedDescription = Utils.escapeScrollAndHtml(description)
-
-    return `title ${title ? encodedTitle : "Search Results"}
- hidden
-viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
-
-html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" name="q"></textarea><input type="submit" value="Search"></form>
-html <div id="tqlErrors">${errors}</div>
-
-* Searched ${numeral(folder.length).format("0,0")} files and found ${hits.length} matches in ${time}s. 
- class searchResultsHeader
-
-${title ? `# ${encodedTitle}` : ""}
-${description ? `* ${encodedDescription}` : ""}
-
-table ${delimiter}
- ${results.replace(/\n/g, "\n ")}
-`
+  logAndRunSearch(originalQuery = "", format = "object", ip = "") {
+    this.logQuery(originalQuery, ip, format)
+    return (<any>this)[format](decodeURIComponent(originalQuery).replace(/\r/g, ""))
   }
 
   search(treeQLCode: string) {
+    const { searchCache } = this
+    if (searchCache[treeQLCode]) return searchCache[treeQLCode]
+
     const startTime = Date.now()
-    let hits = new TreeNode()
+    let hits = []
     let errors = ""
     let columnNames: string[] = []
     let title = ""
@@ -214,20 +181,26 @@ table ${delimiter}
         })
       })
 
-      hits = new TreeNode(matchingFilesAsObjectsWithSelectedColumns)
+      hits = matchingFilesAsObjectsWithSelectedColumns
     } catch (err) {
       errors = err.toString()
     }
-    return { hits, time: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors, title, description }
+
+    searchCache[treeQLCode] = { hits, queryTime: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors, title, description }
+    return searchCache[treeQLCode]
   }
 
-  text(treeQLCode: any) {
-    return this.search(treeQLCode).hits.toString()
+  json(treeQLCode: string) {
+    return JSON.stringify(this.search(treeQLCode), undefined, 2)
   }
 
-  csv(treeQLCode: any) {
+  tree(treeQLCode: string) {
+    return new TreeNode(this.search(treeQLCode).hits).toString()
+  }
+
+  csv(treeQLCode: string) {
     const { hits, columnNames } = this.search(treeQLCode)
-    return hits.toDelimited(",", columnNames, delimitedEscapeFunction)
+    return new TreeNode(hits).toDelimited(",", columnNames, delimitedEscapeFunction)
   }
 }
 
@@ -236,5 +209,5 @@ export { SearchServer, TreeBaseServer }
 if (!module.parent) {
   const folderPath = process.cwd()
   const folder = new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
-  new SearchServer(folder).csv(process.argv.slice(2).join(" "))
+  new SearchServer(folder, folderPath).csv(process.argv.slice(2).join(" "))
 }

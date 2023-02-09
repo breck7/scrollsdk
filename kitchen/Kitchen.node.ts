@@ -7,22 +7,16 @@ const { Utils } = require("../products/Utils.js")
 const { TreeBaseServer } = require("../products/treeBaseServer.node.js")
 const { TreeBaseFolder } = require("../products/treeBase.node.js")
 
-class PlanetsDbServer extends TreeBaseServer {
-  scrollToHtml(scrollContent: string) {
-    return scrollContent
-  }
-}
-
 const ignoreFolder = path.join(__dirname, "..", "ignore")
 
 class Kitchen {
-  startPlanetsDbServer(port: number) {
+  startPlanetsDemoTreeBaseServer(port: number) {
     const databaseFolder = path.join(__dirname, "..", "treeBase", "planets")
     const folder = new TreeBaseFolder()
       .setDir(databaseFolder)
       .setGrammarDir(databaseFolder)
       .loadFolder()
-    const treeBaseServer = new (<any>PlanetsDbServer)(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
+    const treeBaseServer = new TreeBaseServer(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
     treeBaseServer.listen(port)
   }
 
@@ -30,7 +24,7 @@ class Kitchen {
     const planetsPort = 8080
     const app = express()
 
-    this.startPlanetsDbServer(planetsPort)
+    this.startPlanetsDemoTreeBaseServer(planetsPort)
 
     app.get("/*.js", (req: any, res: any) => {
       const filename = req.path.substr(1)

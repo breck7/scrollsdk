@@ -17,6 +17,10 @@ class Disk {
   static readJson = (path: treeNotationTypes.filepath) => JSON.parse(Disk.read(path))
   static getFileNameWithoutExtension = (filepath: treeNotationTypes.filepath) => path.parse(filepath).name
   static write = (path: treeNotationTypes.filepath, content: string) => fs.writeFileSync(path, content, "utf8")
+  // Do not overwrite to preserve mtimes for cache
+  static writeIfChanged = (filepath: string, content: string) => {
+    if (!Disk.exists(filepath) || Disk.read(filepath) !== content) Disk.write(filepath, content)
+  }
   static writeJson = (path: treeNotationTypes.filepath, content: any) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
   static createFileIfDoesNotExist = (path: treeNotationTypes.filepath, initialString = "") => {
     if (!fs.existsSync(path)) Disk.write(path, initialString)

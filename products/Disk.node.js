@@ -16,6 +16,10 @@ Disk.getRecursive = path => require("recursive-readdir-sync")(path)
 Disk.readJson = path => JSON.parse(Disk.read(path))
 Disk.getFileNameWithoutExtension = filepath => path.parse(filepath).name
 Disk.write = (path, content) => fs.writeFileSync(path, content, "utf8")
+// Do not overwrite to preserve mtimes for cache
+Disk.writeIfChanged = (filepath, content) => {
+  if (!Disk.exists(filepath) || Disk.read(filepath) !== content) Disk.write(filepath, content)
+}
 Disk.writeJson = (path, content) => fs.writeFileSync(path, JSON.stringify(content, null, 2), "utf8")
 Disk.createFileIfDoesNotExist = (path, initialString = "") => {
   if (!fs.existsSync(path)) Disk.write(path, initialString)

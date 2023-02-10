@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 67.1.0 2023-2-10
+- 🎉 Disk: add `writeIfChanged` method.
+
 # 67.0.0 2023-2-9
 - ⚠️ TreeBaseServer: Refactored search routes. Downstreamed HTML rendering of Search Results Pages. Default just provides json, csv, and tree results now.
 

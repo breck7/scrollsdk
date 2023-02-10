@@ -45,37 +45,17 @@ class TreeBaseServer {
     return this
   }
   initSearch() {
-    const searchServer = new SearchServer(this.folder)
+    const searchServer = new SearchServer(this.folder, this.ignoreFolder)
     this.searchServer = searchServer
-    const formats = ["html", "csv", "text", "scroll"]
-    const searchCache = {}
-    const searchRequestLog = path.join(this.ignoreFolder, "searchLog.tree")
-    Disk.touch(searchRequestLog)
-    this.app.get("/search", (req, res) => {
-      const { q } = req.query
-      const originalQuery = q === undefined ? "" : q
-      const originalFormat = req.query.format
-      const format = originalFormat && formats.includes(originalFormat) ? originalFormat : "html"
-      searchServer.logQuery(searchRequestLog, originalQuery, req.ip, format)
-      const key = originalQuery + format
-      if (searchCache[key]) return res.send(searchCache[key])
-      const decodedQuery = decodeURIComponent(originalQuery).replace(/\r/g, "")
-      if (format === "html") searchCache[key] = this.scrollToHtml(searchServer.scroll(decodedQuery))
-      if (format === "scroll") searchCache[key] = searchServer.scroll(decodedQuery)
-      if (format === "csv") searchCache[key] = searchServer.csv(decodedQuery)
-      if (format === "text") searchCache[key] = searchServer.text(decodedQuery)
-      res.send(searchCache[key])
-    })
+    this.app.get("/search.json", (req, res) => res.send(searchServer.logAndRunSearch(req.query.q, "json", req.ip)))
+    this.app.get("/search.csv", (req, res) => res.send(searchServer.logAndRunSearch(req.query.q, "csv", req.ip)))
+    this.app.get("/search.tree", (req, res) => res.send(searchServer.logAndRunSearch(req.query.q, "tree", req.ip)))
     return this
   }
   listen(port = 4444) {
     this._addNotFoundRoute()
     this.app.listen(port, () => console.log(`TreeBase server running: \ncmd+dblclick: http://localhost:${port}/`))
     return this
-  }
-  // Currently you need to override in your app
-  scrollToHtml(scrollContent) {
-    return scrollContent
   }
   listenProd() {
     this._addNotFoundRoute()
@@ -97,10 +77,14 @@ class TreeBaseServer {
   }
 }
 class SearchServer {
-  constructor(treeBaseFolder) {
+  constructor(treeBaseFolder, ignoreFolder) {
+    this.searchCache = {}
+    this._touchedLog = false
     this.folder = treeBaseFolder
+    this.ignoreFolder = ignoreFolder
+    this.searchRequestLog = path.join(this.ignoreFolder, "searchLog.tree")
   }
-  logQuery(logFilePath, originalQuery, ip, format = "html") {
+  logQuery(originalQuery, ip, format = "html") {
     const tree = `search
  time ${Date.now()}
  ip ${ip}
@@ -108,35 +92,22 @@ class SearchServer {
  query
   ${originalQuery.replace(/\n/g, "\n  ")} 
 `
-    fs.appendFile(logFilePath, tree, function() {})
+    if (!this._touchedLog) {
+      Disk.touch(this.searchRequestLog)
+      this._touchedLog = true
+    }
+    fs.appendFile(this.searchRequestLog, tree, function() {})
     return this
   }
-  scroll(treeQLCode) {
-    const { hits, time, columnNames, errors, title, description } = this.search(treeQLCode)
-    const { folder } = this
-    const results = hits._toDelimited(delimiter, columnNames, delimitedEscapeFunction)
-    const encodedTitle = Utils.escapeScrollAndHtml(title)
-    const encodedDescription = Utils.escapeScrollAndHtml(description)
-    return `title ${title ? encodedTitle : "Search Results"}
- hidden
-viewSourceUrl https://github.com/breck7/jtree/blob/main/treeBase/TreeBaseServer.ts
-
-html <form method="get" action="search" class="tqlForm"><textarea id="tqlInput" name="q"></textarea><input type="submit" value="Search"></form>
-html <div id="tqlErrors">${errors}</div>
-
-* Searched ${numeral(folder.length).format("0,0")} files and found ${hits.length} matches in ${time}s. 
- class searchResultsHeader
-
-${title ? `# ${encodedTitle}` : ""}
-${description ? `* ${encodedDescription}` : ""}
-
-table ${delimiter}
- ${results.replace(/\n/g, "\n ")}
-`
+  logAndRunSearch(originalQuery = "", format = "object", ip = "") {
+    this.logQuery(originalQuery, ip, format)
+    return this[format](decodeURIComponent(originalQuery).replace(/\r/g, ""))
   }
   search(treeQLCode) {
+    const { searchCache } = this
+    if (searchCache[treeQLCode]) return searchCache[treeQLCode]
     const startTime = Date.now()
-    let hits = new TreeNode()
+    let hits = []
     let errors = ""
     let columnNames = []
     let title = ""
@@ -173,24 +144,28 @@ table ${delimiter}
           columnNames = columnNames.map(columnName => (oldName === columnName ? newName : columnName))
         })
       })
-      hits = new TreeNode(matchingFilesAsObjectsWithSelectedColumns)
+      hits = matchingFilesAsObjectsWithSelectedColumns
     } catch (err) {
       errors = err.toString()
     }
-    return { hits, time: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors, title, description }
+    searchCache[treeQLCode] = { hits, queryTime: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors, title, description }
+    return searchCache[treeQLCode]
   }
-  text(treeQLCode) {
-    return this.search(treeQLCode).hits.toString()
+  json(treeQLCode) {
+    return JSON.stringify(this.search(treeQLCode), undefined, 2)
+  }
+  tree(treeQLCode) {
+    return new TreeNode(this.search(treeQLCode).hits).toString()
   }
   csv(treeQLCode) {
     const { hits, columnNames } = this.search(treeQLCode)
-    return hits.toDelimited(",", columnNames, delimitedEscapeFunction)
+    return new TreeNode(hits).toDelimited(",", columnNames, delimitedEscapeFunction)
   }
 }
 if (!module.parent) {
   const folderPath = process.cwd()
   const folder = new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
-  new SearchServer(folder).csv(process.argv.slice(2).join(" "))
+  new SearchServer(folder, folderPath).csv(process.argv.slice(2).join(" "))
 }
 
 module.exports = { TreeBaseServer, SearchServer }

@@ -5,26 +5,21 @@ const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeBaseServer } = require("../products/treeBaseServer.node.js")
 const { TreeBaseFolder } = require("../products/treeBase.node.js")
-class PlanetsDbServer extends TreeBaseServer {
-  scrollToHtml(scrollContent) {
-    return scrollContent
-  }
-}
 const ignoreFolder = path.join(__dirname, "..", "ignore")
 class Kitchen {
-  startPlanetsDbServer(port) {
+  startPlanetsDemoTreeBaseServer(port) {
     const databaseFolder = path.join(__dirname, "..", "treeBase", "planets")
     const folder = new TreeBaseFolder()
       .setDir(databaseFolder)
       .setGrammarDir(databaseFolder)
       .loadFolder()
-    const treeBaseServer = new PlanetsDbServer(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
+    const treeBaseServer = new TreeBaseServer(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
     treeBaseServer.listen(port)
   }
   start(port) {
     const planetsPort = 8080
     const app = express()
-    this.startPlanetsDbServer(planetsPort)
+    this.startPlanetsDemoTreeBaseServer(planetsPort)
     app.get("/*.js", (req, res) => {
       const filename = req.path.substr(1)
       readFile(path.join(__dirname, "..", filename), "utf8", (err, code) => {

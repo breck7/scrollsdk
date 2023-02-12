@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 67.2.0 2023-2-12
+- 🎉 TreeBase: add `requestTimes.log`
+
 # 67.1.0 2023-2-10
 - 🎉 Disk: add `writeIfChanged` method.
 

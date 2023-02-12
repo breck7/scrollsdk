@@ -21,9 +21,7 @@ class TreeBaseServer {
     this.app = app
     this.ignoreFolder = ignoreFolder
     if (!Disk.exists(ignoreFolder)) Disk.mkdir(ignoreFolder)
-    const requestLog = path.join(ignoreFolder, "access.log")
-    Disk.touch(requestLog)
-    app.use(morgan("combined", { stream: fs.createWriteStream(requestLog, { flags: "a" }) }))
+    this._initLogs()
     app.use(bodyParser.urlencoded({ extended: false }))
     app.use(bodyParser.json())
     app.use((req, res, next) => {
@@ -34,6 +32,15 @@ class TreeBaseServer {
       next()
     })
     return this
+  }
+  _initLogs() {
+    const { ignoreFolder, app } = this
+    const requestLog = path.join(ignoreFolder, "access.log")
+    Disk.touch(requestLog)
+    app.use(morgan("combined", { stream: fs.createWriteStream(requestLog, { flags: "a" }) }))
+    const requestTimesLog = path.join(ignoreFolder, "requestTimes.log")
+    Disk.touch(requestTimesLog)
+    app.use(morgan("tiny", { stream: fs.createWriteStream(requestTimesLog, { flags: "a" }) }))
   }
   _addNotFoundRoute() {
     const { notFoundPage } = this

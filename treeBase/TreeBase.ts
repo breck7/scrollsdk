@@ -11,8 +11,6 @@ const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const grammarNode = require("../products/grammar.nodejs.js")
 
-const makeId = (word: string) => Utils.getFileName(Utils.removeFileExtension(word))
-
 class TreeBasePageTemplate {
   constructor(file: TreeBaseFile) {
     this.file = file
@@ -82,6 +80,11 @@ class TreeBaseBuilder {
 class TreeBaseFile extends TreeNode {
   id = this.getWord(0)
 
+  quickCache: treeNotationTypes.stringMap = {}
+  clearQuickCache() {
+    this.quickCache = {}
+  }
+
   get webPermalink() {
     return `${this.base.baseUrl}${this.permalink}`
   }
@@ -126,7 +129,21 @@ class TreeBaseFile extends TreeNode {
   }
 
   get names() {
-    return [this.id]
+    return [this.id, this.title]
+  }
+
+  get linksToOtherFiles() {
+    return lodash.uniq(
+      this.parsed
+        .getTopDownArray()
+        .filter((node: TreeBaseFile) => node.providesPermalinks)
+        .map((node: TreeBaseFile) => node.getWordsFrom(1))
+        .flat()
+    )
+  }
+
+  doesLinkTo(id: string) {
+    return this.linksToOtherFiles.includes(id)
   }
 
   private _diskVersion: string
@@ -185,20 +202,105 @@ class TreeBaseFile extends TreeNode {
     return this.parent
   }
 
+  updatePermalinks(oldId: string, newId: string) {
+    this.parsed
+      .getTopDownArray()
+      .filter((node: TreeBaseFile) => node.providesPermalinks)
+      .map((node: TreeBaseFile) =>
+        node.setContent(
+          node
+            .getWordsFrom(1)
+            .map((word: string) => (word === oldId ? newId : word))
+            .join(" ")
+        )
+      )
+    this.setChildren(this.parsed.childrenToString())
+    this.save()
+  }
+
   get parsed() {
-    const programParser = this.base.grammarProgramConstructor
-    return new programParser(this.childrenToString())
+    if (!this.quickCache.parsed) {
+      const programParser = this.base.grammarProgramConstructor
+      this.quickCache.parsed = new programParser(this.childrenToString())
+    }
+    return this.quickCache.parsed
   }
 
   get typed() {
     return this.parsed.typedTuple[1]
   }
+
+  sort() {
+    this.clearQuickCache()
+    this.setChildren(
+      this.parsed
+        .sortFromSortTemplate()
+        .toString()
+        .replace(/\n+$/g, "") + "\n"
+    )
+  }
+
+  prettifyAndSave() {
+    this.sort()
+    this.save()
+    return this
+  }
 }
 
 class TreeBaseFolder extends TreeNode {
+  quickCache: treeNotationTypes.stringMap = {}
+  clearQuickCache() {
+    this.quickCache = {}
+  }
+
+  get searchIndex() {
+    if (this.quickCache.searchIndex) return this.quickCache.searchIndex
+    this.quickCache.searchIndex = new Map()
+    const map = this.quickCache.searchIndex
+    this.forEach((file: TreeBaseFile) => {
+      const { id } = file
+      file.names.forEach(name => map.set(name.toLowerCase(), id))
+    })
+    return map
+  }
+
   touch(filename: treeNotationTypes.fileName) {
     // todo: throw if its a folder path, has wrong file extension, or other invalid
     return Disk.touch(path.join(this.dir, filename))
+  }
+
+  createFile(content: string, id?: string) {
+    if (id === undefined) {
+      const title = new TreeNode(content).get("title")
+      if (!title) throw new Error(`A "title" must be provided when creating a new file`)
+
+      id = this.makeId(title)
+    }
+    Disk.write(this.makeFilePath(id), content)
+    return this.appendLineAndChildren(id, content)
+  }
+
+  // todo: do this properly upstream in jtree
+  rename(oldId: string, newId: string) {
+    const content = this.getFile(oldId).childrenToString()
+    Disk.write(this.makeFilePath(newId), content)
+    this.delete(oldId)
+    this.filter((file: TreeBaseFile) => file.doesLinkTo(oldId)).forEach(file => file.updatePermalinks(oldId, newId))
+    this.appendLineAndChildren(newId, content)
+  }
+
+  getFile(id: string) {
+    if (id === undefined) return undefined
+    if (id.includes("/")) id = Utils.removeFileExtension(Disk.getFileName(id))
+    return this.getNode(id)
+  }
+
+  makeId(title: string) {
+    let id = Utils.titleToPermalink(title)
+    let newId = id
+    if (!this.getFile(newId)) return newId
+
+    throw new Error(`Already file with id: "${id}". Are you sure the database doesn't have this already? Perhaps update the title to something more unique for now.`)
   }
 
   // WARNING: Very basic support! Not fully developed.
@@ -344,7 +446,7 @@ class TreeBaseFolder extends TreeNode {
       .map(fullPath => {
         const content = Disk.read(fullPath)
         if (content.match(/\r/)) throw new Error("bad \\r in " + fullPath)
-        const id = makeId(fullPath)
+        const id = Utils.getFileName(Utils.removeFileExtension(fullPath))
         return content ? id + "\n " + content.replace(/\n/g, "\n ") : id
       })
       .join("\n")

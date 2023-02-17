@@ -16,9 +16,8 @@ const { TreeNode } = require("../products/TreeNode.js")
 const tqlNode = require("../products/tql.nodejs.js")
 
 const delimitedEscapeFunction = (value: any) => (value.includes("\n") ? value.split("\n")[0] : value)
-const delimiter = " DeLiM "
 
-import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
+import { TreeBaseFolder } from "./TreeBase"
 
 class TreeBaseServer {
   folder: TreeBaseFolder
@@ -78,6 +77,64 @@ class TreeBaseServer {
     this.app.get("/search.csv", (req: any, res: any) => res.send(searchServer.logAndRunSearch(req.query.q, "csv", req.ip)))
     this.app.get("/search.tree", (req: any, res: any) => res.send(searchServer.logAndRunSearch(req.query.q, "tree", req.ip)))
     return this
+  }
+
+  async applyPatch(patch: string) {
+    const { folder } = this
+    const tree = new TreeNode(patch)
+
+    const create = tree.getNode("create")
+    const changedFiles = []
+    if (create) {
+      const data = create.childrenToString()
+
+      // todo: audit
+      const validateSubmissionResults = this.validateSubmission(data)
+      const newFile = folder.createFile(validateSubmissionResults.content)
+
+      changedFiles.push(newFile)
+    }
+
+    tree.delete("create")
+
+    tree.forEach((node: any) => {
+      const id = Utils.removeFileExtension(node.getWord(0))
+      const file = folder.getFile(id)
+      if (!file) throw new Error(`File '${id}' not found.`)
+
+      const validateSubmissionResults = this.validateSubmission(node.childrenToString())
+      file.setChildren(validateSubmissionResults.content)
+      file.prettifyAndSave()
+      file.clearQuickCache()
+      changedFiles.push(file)
+    })
+
+    folder.clearQuickCache()
+    return changedFiles
+  }
+
+  validateSubmission(content: string) {
+    // Run some simple sanity checks.
+    if (content.length > 200000) throw new Error(`Submission too large`)
+
+    // Remove all return characters
+    content = Utils.removeEmptyLines(Utils.removeReturnChars(content))
+
+    const programParser = this.folder.grammarProgramConstructor
+    const parsed = new programParser(content)
+
+    const errs = parsed.getAllErrors()
+
+    if (errs.length > 3) throw new Error(`Too many errors detected in submission: ${JSON.stringify(errs.map((err: any) => err.toObject()))}`)
+
+    const { scopeErrors } = parsed
+    if (scopeErrors.length > 3) throw new Error(`Too many scope errors detected in submission: ${JSON.stringify(scopeErrors.map((err: any) => err.toObject()))}`)
+
+    if (parsed.length < 3) throw new Error(`Must provide at least 3 facts about the language.`)
+
+    return {
+      content: parsed.sortFromSortTemplate().toString()
+    }
   }
 
   listen(port = 4444) {

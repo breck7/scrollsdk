@@ -4,6 +4,26 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 67.3.0 2023-2-17
+- 🎉 TreeBase: upstreamed work from pldb. New methods and getters are:
+
+* TreeBaseFolder:
+loop
+ words makeId getFile rename createFile searchIndex quickCache
+ javascript `<code>${item}</code>`
+ join  
+
+* TreeBaseFile:
+loop
+ words sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles quickCache
+ javascript `<code>${item}</code>`
+ join  
+
+* TreeBaseServer:
+loop
+ words applyPatch validateSubmission
+ javascript `<code>${item}</code>`
+
 # 67.2.0 2023-2-12
 - 🎉 TreeBase: add `requestTimes.log`
 

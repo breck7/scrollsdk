@@ -6,10 +6,10 @@ const path = require("path")
 const { TestRacer } = require("../products/TestRacer.js")
 const { Disk } = require("../products/Disk.node.js")
 
-const folderPath = path.join(__dirname, "planets")
+const planetsFolderPath = path.join(__dirname, "planets")
 const testTree: any = {}
 
-const getFolder = () => new TreeBaseFolder().setDir(folderPath).setGrammarDir(folderPath)
+const getFolder = () => new TreeBaseFolder().setDir(planetsFolderPath).setGrammarDir(planetsFolderPath)
 
 testTree.errorChecking = (equal: any) => {
   const folder = getFolder().loadFolder()
@@ -34,7 +34,7 @@ testTree.sqlLite = (equal: any) => {
   // Arrange
   const folder = getFolder()
   // Act/Assert
-  equal(folder.toSQLite(), Disk.read(path.join(folderPath, "planets.sql")), "sqlite works")
+  equal(folder.toSQLite(), Disk.read(path.join(planetsFolderPath, "planets.sql")), "sqlite works")
 }
 
 testTree.toTypedMap = (equal: any) => {
@@ -63,7 +63,7 @@ testTree.fileSystemEvents = async (equal: any) => {
   const folder = getFolder()
   folder.loadFolder()
   folder.startListeningForFileChanges()
-  const newFilePath = path.join(folderPath, "foobar.planet")
+  const newFilePath = path.join(planetsFolderPath, "foobar.planet")
 
   // Arrange
   let fileAdded = ""

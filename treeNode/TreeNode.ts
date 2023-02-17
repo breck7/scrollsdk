@@ -1635,6 +1635,7 @@ class TreeNode extends AbstractNode {
     this._getChildrenArray().splice(adjustedIndex, 0, newNode)
 
     if (this._index) this._makeIndex(adjustedIndex)
+    this.clearQuickCache()
     return newNode
   }
 
@@ -1809,9 +1810,20 @@ class TreeNode extends AbstractNode {
     })
   }
 
+  _quickCache: treeNotationTypes.stringMap
+  get quickCache() {
+    if (!this._quickCache) this._quickCache = {}
+    return this._quickCache
+  }
+
+  clearQuickCache() {
+    delete this._quickCache
+  }
+
   // todo: protected?
   _clearIndex() {
     delete this._index
+    this.clearQuickCache()
   }
 
   slice(start: int, end?: int): TreeNode[] {
@@ -2991,7 +3003,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "67.2.0"
+  static getVersion = () => "67.3.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

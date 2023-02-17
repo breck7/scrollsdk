@@ -5,17 +5,18 @@ startColumns 4
 * Here's a list of the notable changes in JTree.
 
 # 67.3.0 2023-2-17
+- 🎉 TreeNode: added `quickCache`
 - 🎉 TreeBase: upstreamed work from pldb. New methods and getters are:
 
 * TreeBaseFolder:
 loop
- words makeId getFile rename createFile searchIndex quickCache
+ words makeId getFile rename createFile searchIndex
  javascript `<code>${item}</code>`
  join  
 
 * TreeBaseFile:
 loop
- words sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles quickCache
+ words sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles
  javascript `<code>${item}</code>`
  join  
 

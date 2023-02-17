@@ -80,13 +80,8 @@ class TreeBaseBuilder {
 class TreeBaseFile extends TreeNode {
   id = this.getWord(0)
 
-  quickCache: treeNotationTypes.stringMap = {}
-  clearQuickCache() {
-    this.quickCache = {}
-  }
-
   get webPermalink() {
-    return `${this.base.baseUrl}${this.permalink}`
+    return `${this.parent.baseUrl}${this.permalink}`
   }
 
   get permalink() {
@@ -187,7 +182,7 @@ class TreeBaseFile extends TreeNode {
   }
 
   private _getFilePath() {
-    return this.base.makeFilePath(this.id)
+    return this.parent.makeFilePath(this.id)
   }
 
   getFileName() {
@@ -196,10 +191,6 @@ class TreeBaseFile extends TreeNode {
 
   createParser() {
     return new TreeNode.Parser(TreeNode)
-  }
-
-  get base() {
-    return this.parent
   }
 
   updatePermalinks(oldId: string, newId: string) {
@@ -220,7 +211,7 @@ class TreeBaseFile extends TreeNode {
 
   get parsed() {
     if (!this.quickCache.parsed) {
-      const programParser = this.base.grammarProgramConstructor
+      const programParser = this.parent.grammarProgramConstructor
       this.quickCache.parsed = new programParser(this.childrenToString())
     }
     return this.quickCache.parsed
@@ -231,7 +222,6 @@ class TreeBaseFile extends TreeNode {
   }
 
   sort() {
-    this.clearQuickCache()
     this.setChildren(
       this.parsed
         .sortFromSortTemplate()
@@ -248,11 +238,6 @@ class TreeBaseFile extends TreeNode {
 }
 
 class TreeBaseFolder extends TreeNode {
-  quickCache: treeNotationTypes.stringMap = {}
-  clearQuickCache() {
-    this.quickCache = {}
-  }
-
   get searchIndex() {
     if (this.quickCache.searchIndex) return this.quickCache.searchIndex
     this.quickCache.searchIndex = new Map()
@@ -285,7 +270,7 @@ class TreeBaseFolder extends TreeNode {
     const content = this.getFile(oldId).childrenToString()
     Disk.write(this.makeFilePath(newId), content)
     this.delete(oldId)
-    this.filter((file: TreeBaseFile) => file.doesLinkTo(oldId)).forEach(file => file.updatePermalinks(oldId, newId))
+    this.filter((file: TreeBaseFile) => file.doesLinkTo(oldId)).forEach((file: TreeBaseFile) => file.updatePermalinks(oldId, newId))
     this.appendLineAndChildren(newId, content)
   }
 

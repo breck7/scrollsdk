@@ -105,7 +105,6 @@ class TreeBaseServer {
       const validateSubmissionResults = this.validateSubmission(node.childrenToString())
       file.setChildren(validateSubmissionResults.content)
       file.prettifyAndSave()
-      file.clearQuickCache()
       changedFiles.push(file)
     })
 

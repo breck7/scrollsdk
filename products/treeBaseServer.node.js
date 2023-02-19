@@ -150,7 +150,8 @@ class SearchServer {
     this.logQuery(originalQuery, ip, format)
     return this[format](decodeURIComponent(originalQuery).replace(/\r/g, ""))
   }
-  search(treeQLCode) {
+  search(treeQLCode, tqlParser = tqlNode) {
+    var _a, _b, _c, _d
     const { searchCache } = this
     if (searchCache[treeQLCode]) return searchCache[treeQLCode]
     const startTime = Date.now()
@@ -160,7 +161,7 @@ class SearchServer {
     let title = ""
     let description = ""
     try {
-      const treeQLProgram = new tqlNode(treeQLCode)
+      const treeQLProgram = new tqlParser(treeQLCode)
       const programErrors = treeQLProgram.scopeErrors.concat(treeQLProgram.getAllErrors())
       if (programErrors.length) throw new Error(programErrors.map(err => err.getMessage()).join(" "))
       const sortBy = treeQLProgram.get("sortBy")
@@ -174,7 +175,15 @@ class SearchServer {
       if (treeQLProgram.has("reverse")) rawHits.reverse()
       // By default right now we basically add: select title titleLink
       // We will probably ditch that in the future and make it explicit.
-      columnNames = ["title", "titleLink"].concat((treeQLProgram.get("select") || "").split(" "))
+      if (treeQLProgram.has("selectAll"))
+        columnNames =
+          (_d =
+            (_b = (_a = treeQLProgram.rootGrammarTree.get("columnNameCell enum")) === null || _a === void 0 ? void 0 : _a.split(" ")) !== null && _b !== void 0
+              ? _b
+              : Object.keys(((_c = rawHits[0]) === null || _c === void 0 ? void 0 : _c.typed) || undefined)) !== null && _d !== void 0
+            ? _d
+            : ["title"]
+      else columnNames = ["title", "titleLink"].concat((treeQLProgram.get("select") || "").split(" "))
       let matchingFilesAsObjectsWithSelectedColumns = rawHits.map(file => {
         const obj = file.selectAsObject(columnNames)
         obj.titleLink = file.webPermalink
@@ -194,6 +203,7 @@ class SearchServer {
       hits = matchingFilesAsObjectsWithSelectedColumns
     } catch (err) {
       errors = err.toString()
+      console.error(err)
     }
     searchCache[treeQLCode] = { hits, queryTime: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors, title, description }
     return searchCache[treeQLCode]

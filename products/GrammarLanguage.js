@@ -141,6 +141,9 @@ class GrammarBackedNode extends TreeNode {
     this._definition = this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
     return this._definition
   }
+  get rootGrammarTree() {
+    return this.getDefinition().root
+  }
   toSQLiteInsertStatement(id) {
     const def = this.getDefinition()
     const tableName = this.tableName || def.getTableNameIfAny() || def._getId()

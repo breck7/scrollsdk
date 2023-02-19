@@ -12,6 +12,7 @@
           matchesRegex: matchesRegexNode,
           "#": commentNode,
           select: selectNode,
+          selectAll: selectAllNode,
           rename: renameNode,
           sortBy: sortByNode,
           reverse: reverseNode,
@@ -179,6 +180,9 @@ abstractColumnModifierNode
 selectNode
  description Choose which columns to return.
  extends abstractColumnModifierNode
+selectAllNode
+ description Select all the columns
+ extends abstractColumnModifierNode
 renameNode
  cells keywordCell columnNameCell stringCell
  example
@@ -226,6 +230,7 @@ descriptionNode
         abstractModifierNode: abstractModifierNode,
         abstractColumnModifierNode: abstractColumnModifierNode,
         selectNode: selectNode,
+        selectAllNode: selectAllNode,
         renameNode: renameNode,
         sortByNode: sortByNode,
         reverseNode: reverseNode,
@@ -382,6 +387,8 @@ descriptionNode
   }
 
   class selectNode extends abstractColumnModifierNode {}
+
+  class selectAllNode extends abstractColumnModifierNode {}
 
   class renameNode extends abstractColumnModifierNode {
     get keywordCell() {

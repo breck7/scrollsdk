@@ -143,6 +143,9 @@ abstractColumnModifierNode
 selectNode
  description Choose which columns to return.
  extends abstractColumnModifierNode
+selectAllNode
+ description Select all the columns
+ extends abstractColumnModifierNode
 renameNode
  cells keywordCell columnNameCell stringCell
  example

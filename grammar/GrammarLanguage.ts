@@ -172,6 +172,10 @@ abstract class GrammarBackedNode extends TreeNode {
     return this._definition
   }
 
+  get rootGrammarTree() {
+    return this.getDefinition().root
+  }
+
   toSQLiteInsertStatement(id: string): string {
     const def = this.getDefinition()
     const tableName = (<any>this).tableName || def.getTableNameIfAny() || def._getId()

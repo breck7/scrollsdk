@@ -199,7 +199,7 @@ class SearchServer {
     return (<any>this)[format](decodeURIComponent(originalQuery).replace(/\r/g, ""))
   }
 
-  search(treeQLCode: string) {
+  search(treeQLCode: string, tqlParser: any = tqlNode) {
     const { searchCache } = this
     if (searchCache[treeQLCode]) return searchCache[treeQLCode]
 
@@ -210,7 +210,7 @@ class SearchServer {
     let title = ""
     let description = ""
     try {
-      const treeQLProgram = new tqlNode(treeQLCode)
+      const treeQLProgram = new tqlParser(treeQLCode)
       const programErrors = treeQLProgram.scopeErrors.concat(treeQLProgram.getAllErrors())
       if (programErrors.length) throw new Error(programErrors.map((err: any) => err.getMessage()).join(" "))
       const sortBy = treeQLProgram.get("sortBy")
@@ -225,7 +225,8 @@ class SearchServer {
 
       // By default right now we basically add: select title titleLink
       // We will probably ditch that in the future and make it explicit.
-      columnNames = ["title", "titleLink"].concat((treeQLProgram.get("select") || "").split(" "))
+      if (treeQLProgram.has("selectAll")) columnNames = treeQLProgram.rootGrammarTree.get("columnNameCell enum")?.split(" ") ?? Object.keys(rawHits[0]?.typed || undefined) ?? ["title"]
+      else columnNames = ["title", "titleLink"].concat((treeQLProgram.get("select") || "").split(" "))
 
       let matchingFilesAsObjectsWithSelectedColumns = rawHits.map((file: any) => {
         const obj = file.selectAsObject(columnNames)
@@ -249,6 +250,7 @@ class SearchServer {
       hits = matchingFilesAsObjectsWithSelectedColumns
     } catch (err) {
       errors = err.toString()
+      console.error(err)
     }
 
     searchCache[treeQLCode] = { hits, queryTime: numeral((Date.now() - startTime) / 1000).format("0.00"), columnNames, errors, title, description }

@@ -3,7 +3,7 @@ startColumns 1
 
 title PlanetsDB
 
-# This is a demo TreeBase
+# This is a demo TrueBase
 * It contains a file for each planet.
 * You can test the search:
 

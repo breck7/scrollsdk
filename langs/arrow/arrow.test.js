@@ -2,7 +2,7 @@
 
 const arrow = require("../../products/arrow.nodejs.js")
 const { TestRacer } = require("../../products/TestRacer.js")
-const { TreeBaseFolder } = require("../../products/treeBase.node.js")
+const { TrueBaseFolder } = require("../../products/trueBase.node.js")
 
 const testTree = {}
 

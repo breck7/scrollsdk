@@ -1,4 +1,4 @@
-//onsave jtree build produce treeBase.node.js
+//onsave jtree build produce trueBase.node.js
 const path = require("path")
 const fs = require("fs")
 const lodash = require("lodash")
@@ -7,7 +7,7 @@ const { HandGrammarProgram, GrammarConstants } = require("../products/GrammarLan
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const grammarNode = require("../products/grammar.nodejs.js")
-class TreeBasePageTemplate {
+class TrueBasePageTemplate {
   constructor(file) {
     this.file = file
   }
@@ -50,15 +50,15 @@ keyboardNav ${this.prevPage} ${this.nextPage}
     return ""
   }
 }
-class TreeBaseBuilder {
+class TrueBaseBuilder {
   constructor(folder) {
     this.folder = folder
   }
-  compileTreeBaseFilesToScrollFiles(websiteFolder) {
-    this.folder.forEach(file => Disk.write(path.join(websiteFolder, `${file.id}.scroll`), new TreeBasePageTemplate(file).toScroll()))
+  compileTrueBaseFilesToScrollFiles(websiteFolder) {
+    this.folder.forEach(file => Disk.write(path.join(websiteFolder, `${file.id}.scroll`), new TrueBasePageTemplate(file).toScroll()))
   }
 }
-class TreeBaseFile extends TreeNode {
+class TrueBaseFile extends TreeNode {
   constructor() {
     super(...arguments)
     this.id = this.getWord(0)
@@ -192,7 +192,7 @@ class TreeBaseFile extends TreeNode {
     return this
   }
 }
-class TreeBaseFolder extends TreeNode {
+class TrueBaseFolder extends TreeNode {
   constructor() {
     super(...arguments)
     this._isLoaded = false
@@ -261,7 +261,7 @@ class TreeBaseFolder extends TreeNode {
     return this.map(file => file.parsed.toSQLiteInsertStatement(file.id)).join("\n")
   }
   createParser() {
-    return new TreeNode.Parser(TreeBaseFile)
+    return new TreeNode.Parser(TrueBaseFile)
   }
   get typedMap() {
     this.loadFolder()
@@ -278,7 +278,7 @@ class TreeBaseFolder extends TreeNode {
     this._isLoaded = true
     return this
   }
-  // todo: need to RAII this. Likely just not have TreeBaseFolder extend TreeNode
+  // todo: need to RAII this. Likely just not have TrueBaseFolder extend TreeNode
   setDir(dir, fileExtension = "") {
     this.dir = dir
     return this
@@ -362,4 +362,4 @@ class TreeBaseFolder extends TreeNode {
   }
 }
 
-module.exports = { TreeBaseFile, TreeBaseFolder, TreeBaseBuilder }
+module.exports = { TrueBaseFile, TrueBaseFolder, TrueBaseBuilder }

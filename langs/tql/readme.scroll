@@ -6,7 +6,7 @@ permalink index.html
 startColumns 1
 
 ? What is TQL?
-* Tree Query Language (TQL) is a language for querying TreeBases.
+* Tree Query Language (TQL) is a language for querying TrueBases.
 
 ? Can you show me a demo?
 * TQL powers the search on PLDB.com. Here is an example query to show all query languages in the PLDB.

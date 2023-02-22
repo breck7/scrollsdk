@@ -4,27 +4,27 @@ const { readFile } = require("fs")
 const path = require("path")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Utils } = require("../products/Utils.js")
-const { TreeBaseServer } = require("../products/treeBaseServer.node.js")
-const { TreeBaseFolder } = require("../products/treeBase.node.js")
+const { TrueBaseServer } = require("../products/trueBaseServer.node.js")
+const { TrueBaseFolder } = require("../products/trueBase.node.js")
 
 const ignoreFolder = path.join(__dirname, "..", "ignore")
 
 class Kitchen {
-  startPlanetsDemoTreeBaseServer(port: number) {
-    const databaseFolder = path.join(__dirname, "..", "treeBase", "planets")
-    const folder = new TreeBaseFolder()
+  startPlanetsDemoTrueBaseServer(port: number) {
+    const databaseFolder = path.join(__dirname, "..", "trueBase", "planets")
+    const folder = new TrueBaseFolder()
       .setDir(databaseFolder)
       .setGrammarDir(databaseFolder)
       .loadFolder()
-    const treeBaseServer = new TreeBaseServer(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
-    treeBaseServer.listen(port)
+    const trueBaseServer = new TrueBaseServer(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
+    trueBaseServer.listen(port)
   }
 
   start(port: treeNotationTypes.portNumber) {
     const planetsPort = 8080
     const app = express()
 
-    this.startPlanetsDemoTreeBaseServer(planetsPort)
+    this.startPlanetsDemoTrueBaseServer(planetsPort)
 
     app.get("/*.js", (req: any, res: any) => {
       const filename = req.path.substr(1)

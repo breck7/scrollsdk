@@ -3,10 +3,10 @@
 const path = require("path")
 const tql = require("../../products/tql.nodejs.js")
 const { TestRacer } = require("../../products/TestRacer.js")
-const { TreeBaseFolder } = require("../../products/treeBase.node.js")
+const { TrueBaseFolder } = require("../../products/trueBase.node.js")
 
-const baseFolder = path.join(__dirname, "..", "..", "treeBase", "planets")
-const folder = new TreeBaseFolder()
+const baseFolder = path.join(__dirname, "..", "..", "trueBase", "planets")
+const folder = new TrueBaseFolder()
   .setDir(baseFolder)
   .setGrammarDir(baseFolder)
   .loadFolder()

@@ -36,10 +36,10 @@
       })
       return tests
     }
-    filterFolder(treeBaseFolder) {
+    filterFolder(trueBaseFolder) {
       const { tests } = this
       const predicate = file => tests.every(fn => fn(file))
-      return treeBaseFolder.filter(file => predicate(file))
+      return trueBaseFolder.filter(file => predicate(file))
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
  highlightScope keyword
@@ -63,7 +63,7 @@ columnNameCell
 blankCell
 tqlNode
  root
- description Tree Query Language (TQL) is a new language for searching a TreeBase.
+ description Tree Query Language (TQL) is a new language for searching a TrueBase.
  catchAllNodeType catchAllErrorNode
  inScope abstractQueryNode blankLineNode commentNode abstractModifierNode abstractMetaNode
  javascript
@@ -74,10 +74,10 @@ tqlNode
     })
     return tests
   }
-  filterFolder(treeBaseFolder) {
+  filterFolder(trueBaseFolder) {
     const {tests} = this
     const predicate = file => tests.every(fn => fn(file))
-    return treeBaseFolder.filter(file => predicate(file))
+    return trueBaseFolder.filter(file => predicate(file))
   }
 abstractQueryNode
  cells keywordCell

@@ -1,4 +1,4 @@
-//onsave jtree build produce treeBase.node.js
+//onsave jtree build produce trueBase.node.js
 
 import { treeNotationTypes } from "../products/treeNotationTypes"
 const path = require("path")
@@ -11,12 +11,12 @@ const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const grammarNode = require("../products/grammar.nodejs.js")
 
-class TreeBasePageTemplate {
-  constructor(file: TreeBaseFile) {
+class TrueBasePageTemplate {
+  constructor(file: TrueBaseFile) {
     this.file = file
   }
 
-  file: TreeBaseFile
+  file: TrueBaseFile
 
   toScroll() {
     const { file, typeName, title } = this
@@ -65,19 +65,19 @@ keyboardNav ${this.prevPage} ${this.nextPage}
   }
 }
 
-class TreeBaseBuilder {
-  constructor(folder: TreeBaseFolder) {
+class TrueBaseBuilder {
+  constructor(folder: TrueBaseFolder) {
     this.folder = folder
   }
 
-  folder: TreeBaseFolder
+  folder: TrueBaseFolder
 
-  compileTreeBaseFilesToScrollFiles(websiteFolder: string) {
-    this.folder.forEach((file: TreeBaseFile) => Disk.write(path.join(websiteFolder, `${file.id}.scroll`), new TreeBasePageTemplate(file).toScroll()))
+  compileTrueBaseFilesToScrollFiles(websiteFolder: string) {
+    this.folder.forEach((file: TrueBaseFile) => Disk.write(path.join(websiteFolder, `${file.id}.scroll`), new TrueBasePageTemplate(file).toScroll()))
   }
 }
 
-class TreeBaseFile extends TreeNode {
+class TrueBaseFile extends TreeNode {
   id = this.getWord(0)
 
   get webPermalink() {
@@ -131,8 +131,8 @@ class TreeBaseFile extends TreeNode {
     return lodash.uniq(
       this.parsed
         .getTopDownArray()
-        .filter((node: TreeBaseFile) => node.providesPermalinks)
-        .map((node: TreeBaseFile) => node.getWordsFrom(1))
+        .filter((node: TrueBaseFile) => node.providesPermalinks)
+        .map((node: TrueBaseFile) => node.getWordsFrom(1))
         .flat()
     )
   }
@@ -196,8 +196,8 @@ class TreeBaseFile extends TreeNode {
   updatePermalinks(oldId: string, newId: string) {
     this.parsed
       .getTopDownArray()
-      .filter((node: TreeBaseFile) => node.providesPermalinks)
-      .map((node: TreeBaseFile) =>
+      .filter((node: TrueBaseFile) => node.providesPermalinks)
+      .map((node: TrueBaseFile) =>
         node.setContent(
           node
             .getWordsFrom(1)
@@ -237,12 +237,12 @@ class TreeBaseFile extends TreeNode {
   }
 }
 
-class TreeBaseFolder extends TreeNode {
+class TrueBaseFolder extends TreeNode {
   get searchIndex() {
     if (this.quickCache.searchIndex) return this.quickCache.searchIndex
     this.quickCache.searchIndex = new Map()
     const map = this.quickCache.searchIndex
-    this.forEach((file: TreeBaseFile) => {
+    this.forEach((file: TrueBaseFile) => {
       const { id } = file
       file.names.forEach(name => map.set(name.toLowerCase(), id))
     })
@@ -270,7 +270,7 @@ class TreeBaseFolder extends TreeNode {
     const content = this.getFile(oldId).childrenToString()
     Disk.write(this.makeFilePath(newId), content)
     this.delete(oldId)
-    this.filter((file: TreeBaseFile) => file.doesLinkTo(oldId)).forEach((file: TreeBaseFile) => file.updatePermalinks(oldId, newId))
+    this.filter((file: TrueBaseFile) => file.doesLinkTo(oldId)).forEach((file: TrueBaseFile) => file.updatePermalinks(oldId, newId))
     this.appendLineAndChildren(newId, content)
   }
 
@@ -309,7 +309,7 @@ class TreeBaseFolder extends TreeNode {
   }
 
   createParser() {
-    return new TreeNode.Parser(TreeBaseFile)
+    return new TreeNode.Parser(TrueBaseFile)
   }
 
   get typedMap() {
@@ -333,7 +333,7 @@ class TreeBaseFolder extends TreeNode {
     return this
   }
 
-  // todo: need to RAII this. Likely just not have TreeBaseFolder extend TreeNode
+  // todo: need to RAII this. Likely just not have TrueBaseFolder extend TreeNode
   setDir(dir: string, fileExtension = "") {
     this.dir = dir
     return this
@@ -416,7 +416,7 @@ class TreeBaseFolder extends TreeNode {
 
   get errors() {
     let errors: any[] = []
-    this.forEach((file: TreeBaseFile) => {
+    this.forEach((file: TrueBaseFile) => {
       const { parsed } = file
       const errs = parsed.getAllErrors()
       if (errs.length) errors = errors.concat(errs)
@@ -438,4 +438,4 @@ class TreeBaseFolder extends TreeNode {
   }
 }
 
-export { TreeBaseFile, TreeBaseFolder, TreeBaseBuilder }
+export { TrueBaseFile, TrueBaseFolder, TrueBaseBuilder }

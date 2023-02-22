@@ -4,38 +4,41 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 68.0.0 2023-2-22
+- ⚠️ Breaking: Renamed TreeBase to TrueBase
+
 # 67.4.0 2023-2-19
 - 🎉 TQL: added `selectAll` keyword
 
 # 67.3.0 2023-2-17
 - 🎉 TreeNode: added `quickCache`
-- 🎉 TreeBase: upstreamed work from pldb. New methods and getters are:
+- 🎉 TrueBase: upstreamed work from pldb. New methods and getters are:
 
-* TreeBaseFolder:
+* TrueBaseFolder:
 loop
  words makeId getFile rename createFile searchIndex
  javascript `<code>${item}</code>`
  join  
 
-* TreeBaseFile:
+* TrueBaseFile:
 loop
  words sort prettifyAndSave parsed updatePermalinks names linksToOtherFiles
  javascript `<code>${item}</code>`
  join  
 
-* TreeBaseServer:
+* TrueBaseServer:
 loop
  words applyPatch validateSubmission
  javascript `<code>${item}</code>`
 
 # 67.2.0 2023-2-12
-- 🎉 TreeBase: add `requestTimes.log`
+- 🎉 TrueBase: add `requestTimes.log`
 
 # 67.1.0 2023-2-10
 - 🎉 Disk: add `writeIfChanged` method.
 
 # 67.0.0 2023-2-9
-- ⚠️ TreeBaseServer: Refactored search routes. Downstreamed HTML rendering of Search Results Pages. Default just provides json, csv, and tree results now.
+- ⚠️ TrueBaseServer: Refactored search routes. Downstreamed HTML rendering of Search Results Pages. Default just provides json, csv, and tree results now.
 
 # 66.1.0 2023-2-7
 - 🏥 Grammar: fixed bug when sorting a root node.
@@ -65,14 +68,14 @@ spaceTable
 - 🎉 TQL: added `rename` keyword
 
 # 65.0.2 2023-2-3
-- 🏥 TreeBaseServer: discovered morgan (thank god!) and now logging works.
+- 🏥 TrueBaseServer: discovered morgan (thank god!) and now logging works.
 
 # 65.0.1 2023-2-3
-- 🏥 TreeBaseServer: fix format of server log files
+- 🏥 TrueBaseServer: fix format of server log files
 
 # 65.0.0 2023-2-3
-- 🎉 TreeBaseServer: added request logging.
-- ⚠️ TreeBaseServer: ignore folder now required in constructor and not passed in `initSearch` or `listenProd` methods.
+- 🎉 TrueBaseServer: added request logging.
+- ⚠️ TrueBaseServer: ignore folder now required in constructor and not passed in `initSearch` or `listenProd` methods.
 
 # 64.4.0 2023-2-1
 - 🎉 TQL: added `limit` keyword
@@ -87,7 +90,7 @@ spaceTable
 
 # 64.2.0 2023-1-31
 - 🎉 TQL: Added `sortBy` and `reverse` keywords.
-- 🎉 TreeBase: Added `csv`, `text`, and `scroll` output formats.
+- 🎉 TrueBase: Added `csv`, `text`, and `scroll` output formats.
 
 # 64.1.0 2023-1-31
 - 🎉 TQL: improved error handling
@@ -96,10 +99,10 @@ spaceTable
 - 🏥 version number fix
 
 # 64.0.0 2023-1-30
-* This releases introduced a new language called Tree Query Language (TQL) for quering TreeBases. This release may have some bugs, you may want to wait before upgrading.
+* This releases introduced a new language called Tree Query Language (TQL) for quering TrueBases. This release may have some bugs, you may want to wait before upgrading.
 
 - 🎉 Grammar: constants are now available on the grammar definition nodes at runtime in addition to instance nodes.
-- ⚠️ BREAKING: TreeBaseServer has been rewritten and basic search has been replaced by TQL search.
+- ⚠️ BREAKING: TrueBaseServer has been rewritten and basic search has been replaced by TQL search.
 
 # 63.0.0 2023-1-26
 * This is a major release that makes the code more modular and eliminates a lot of technical debt. In the past to simplify NodeJs+Browser isomorphism I created the `jtree` namespace and bundled everything together. This was a mistake. This release fixes that, and makes each subproject more independent. This should speed up future development.
@@ -140,15 +143,15 @@ code
 - 🎉 export `Utils` as top level export
 
 # 61.4.1 2023-1-8
-- 🏥 TreeBase: search server fixes
+- 🏥 TrueBase: search server fixes
 
 # 61.4.0 2023-1-7
 - 🎉 added `TreeNode.fromFolder` method
 
 # 61.3.0 2023-1-7
 - 🎉 new `list` getter on Grammar backed nodes returns an array of strings split by `listDelimiter`. Fallback is same behavior as if ` ` is the listDelimiter.
-- 🏥 TreeBase: search results page now sets title meta tag
-- 🏥 TreeBase: fixed highlight hit bug
+- 🏥 TrueBase: search results page now sets title meta tag
+- 🏥 TrueBase: fixed highlight hit bug
 
 # 61.2.0 2023-1-5
 - 🎉 Performance improvements to core (typed map method).
@@ -157,7 +160,7 @@ code
 - 🎉 Performance improvements to core.
 
 # 61.0.1 2023-1-4
-- 🏥 TreeBase: SearchServer now exported correctly
+- 🏥 TrueBase: SearchServer now exported correctly
 
 # 61.0.0 2023-1-4
 - ⚠️ Grammar: BREAKING: `contentDelimiter` is now `listDelimiter`
@@ -166,18 +169,18 @@ code
 # 60.0.0 2022-12-12
 * This is an unstable release. Please wait a few days for bug fix releases before using.
 
-- ⚠️ BREAKING: TreeBaseServer is now exported from `treeBaseServer.node.js` and has been rewritten
-- ⚠️ BREAKING: SearchServer is now exported from `treeBaseServer.node.js`
-- 🎉 New class: `TreeBaseBuilder` and rewritten class `TreeBaseServer`
+- ⚠️ BREAKING: TrueBaseServer is now exported from `trueBaseServer.node.js` and has been rewritten
+- ⚠️ BREAKING: SearchServer is now exported from `trueBaseServer.node.js`
+- 🎉 New class: `TrueBaseBuilder` and rewritten class `TrueBaseServer`
 
 # 59.1.2 2022-12-10
-- 🏥 TreeBase: copy fix in search engine
+- 🏥 TrueBase: copy fix in search engine
 
 # 59.1.1 2022-12-03
-- 🏥 TreeBase: bug fixes in `rank` and `webPermalink`
+- 🏥 TrueBase: bug fixes in `rank` and `webPermalink`
 
 # 59.1.0 2022-12-02
-- 🎉 TreeBase: SearchServer now shipped in JTree
+- 🎉 TrueBase: SearchServer now shipped in JTree
 
 # 59.0.0 2022-10-10
 - ⚠️ BREAKING: removed CommandLine app 'jtree'
@@ -196,19 +199,19 @@ code
 - ⚠️ BREAKING: removed the keyword `abstract` from Grammar Language. Grammar Language is now a suffix AND prefix language. The functionality of abstract node type definitions is identical, but now instead of flagging them with the `abstract` keyword, you need to ensure that the node type definition id begins with the word `abstract`. This turned out to be the best design pattern already, so you may already do this, and then the migration step is simple—just delete all occurrences of `/^ abstract\n/` in your `*.grammar` files. In the rare chance you have any nodes that are not abstract whose id's begin with the prefix `abstract`, you will need to give those nodes a new id.
 
 # 55.1.1 2022-08-18
-- 🏥 TreeBase: fixed error reporting bug.
+- 🏥 TrueBase: fixed error reporting bug.
 
 # 55.1.0 2022-08-02
-- 🏥 TreeBase: fixed error reporting regression and added test.
+- 🏥 TrueBase: fixed error reporting regression and added test.
 
 # 55.0.0 2022-08-02
-- 🎉 TreeBase: grammarDir and row dir can now be different
-- ⚠️ TreeBase: setDir and setGrammarDir must now be used instead of a constructor
-- ⚠️ TreeBase: TreeBaseFile instances have the id as key; TreeBaseFolder handles mapping to filesystem
-- ⚠️ TreeBase: grammar parsing now done at TreeBaseFile level
-- ⚠️ TreeBase: removed cellCheckWithProgressBar; removed `_getDir` (use `dir`); removed toProgram; _getGrammarPaths is now grammarFilePaths
-- ⚠️ TreeBase: typedMapShort is now typedMap
-- ⚠️ TreeBase: define fileExtension in Grammar files (or programmatically)
+- 🎉 TrueBase: grammarDir and row dir can now be different
+- ⚠️ TrueBase: setDir and setGrammarDir must now be used instead of a constructor
+- ⚠️ TrueBase: TrueBaseFile instances have the id as key; TrueBaseFolder handles mapping to filesystem
+- ⚠️ TrueBase: grammar parsing now done at TrueBaseFile level
+- ⚠️ TrueBase: removed cellCheckWithProgressBar; removed `_getDir` (use `dir`); removed toProgram; _getGrammarPaths is now grammarFilePaths
+- ⚠️ TrueBase: typedMapShort is now typedMap
+- ⚠️ TrueBase: define fileExtension in Grammar files (or programmatically)
 - ⚠️ Grammar: toSQLiteInsertStatement now takes a string instead of function
 
 # 54.2.1 2022-07-27
@@ -221,7 +224,7 @@ code
 - 🎉 Grammar: `contentDelimiter` property
 
 # 54.0.0 2022-07-24
-- 🎉 TreeBase: typedMapShort, id, and dir
+- 🎉 TrueBase: typedMapShort, id, and dir
 - 🎉 Grammar: typedMap
 - 🎉 Grammar: contentKey, childrenKey, uniqueFirstWord (may all be temporary), to support typedMap
 
@@ -254,7 +257,7 @@ code
 
 # 53.1.0 2022-01-18
 - 🏥 Builder: larger buffer for jtree build
-- 🏥 TreeBase: should not run trim when loading files
+- 🏥 TrueBase: should not run trim when loading files
 
 # 53.0.0 2021-07-27
 - 🎉 tcf: 60% faster rendering
@@ -287,7 +290,7 @@ code
 
 # 51.6.0 2021-06-25
 - 🎉 bumped pick, setProperties, getOneOf, and setPropertyIfMissing to root TreeNodeClass
-- ⚠️ extract method on TreeBase is now "pick" on TreeNode
+- ⚠️ extract method on TrueBase is now "pick" on TreeNode
 
 # 51.5.1 2021-05-05
 - 🏥 code cleanup in DD lang
@@ -332,7 +335,7 @@ code
 
 # 49.7.0 2020-02-08
 - 🎉 hasNode method in core
-- 🎉 toProgram method on TreeBase
+- 🎉 toProgram method on TrueBase
 
 # 49.6.1 2020-02-03
 - 🏥 TCF save mouse event on click
@@ -389,7 +392,7 @@ code
 - ⚠️ removed getErrorsInGrammarExamples. Use examplesToTestBlocks
 
 # 48.1.0 2019-12-06
-- 🎉 toSQLite method on TreeBase
+- 🎉 toSQLite method on TrueBase
 - 🎉 getFrom core method
 
 # 48.0.0 2019-12-02
@@ -491,10 +494,10 @@ code
 - 🎉 readded event listening code in TreeNode core class
 - 🎉 onLineChanged, onDescendantChanged, onChildAdded, onChildRemoved methods
 - 🎉 getAncestorByNodeConstructor method
-- 🎉 TreeBaseServer exported class
+- 🎉 TrueBaseServer exported class
 - ⚠️ getMTime is now getLineModifiedTime, getChildArrayModifiedTime, and getLineOrChildrenModifiedTime
-- ⚠️ startExpressApp in TreeBase is removed. Now use TreeBaseServer class instead.
-- ⚠️ some default routes changed in TreeBase
+- ⚠️ startExpressApp in TrueBase is removed. Now use TrueBaseServer class instead.
+- ⚠️ some default routes changed in TrueBase
 - ⚠️ experimental generateSimulatedData methods are now synthesizeNode and synthesizeCell
 - 🧹 moved papers to treenotation/research
 
@@ -590,7 +593,7 @@ code
 - 🎉 added hakon and stump to products
 
 # 38.1.0 2019-08-23
-- 🎉 errors.csv route to TreeBase
+- 🎉 errors.csv route to TrueBase
 
 # 38.0.1 2019-08-17
 - 🏥 cleanup to bundle filenames
@@ -625,18 +628,18 @@ code
 - ⚠️ some method names changed in Project Tree Language. See that readme for details.
 
 # 36.0.2 2019-07-30
-- 🏥 TreeBase Disk path fix
+- 🏥 TrueBase Disk path fix
 
 # 36.0.1 2019-07-30
-- 🏥 TreeBase path fix
+- 🏥 TrueBase path fix
 
 # 36.0.0 2019-07-30
-- 🎉 added TreeBase and "base" command to CLI
+- 🎉 added TrueBase and "base" command to CLI
 - 🎉 added methods to base class: getWordsAsSet, appendWordIfMissing, addObjectsAsDelimited, setChildrenAsDelimited, convertChildrenToDelimited, addUniqueRowsToNestedDelimited, with, getBiDirectionalMaps, getSparsity
 - 🏥 fixed grammar concatenation bug where you might have 2 nodeTypes extending from RootNode
 - ⚠️ removed nodeTypeOrder property from Grammar Language. Now just uses inScope order.
 - ⚠️ getPrettified() is now "sortNodesByInScopeOrder().getSortedByInheritance()"
-- 🧹 added basic tests for treeBase and made sure treeComponent framework test getting run
+- 🧹 added basic tests for trueBase and made sure treeComponent framework test getting run
 - 🧹 moved repo from breck7/jtree to treenotation/jtree
 
 # 35.1.0 2019-07-25

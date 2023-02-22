@@ -42,13 +42,13 @@ nodeProduct
  combineTypeScriptFiles products/treeNotationTypes.ts kitchen/Kitchen.node.ts
  insertLastLine module.exports = {Kitchen}
 nodeProduct
- outputFileName treeBase.node.js
- combineTypeScriptFiles products/treeNotationTypes.ts treeBase/TreeBase.ts
- insertLastLine module.exports = {TreeBaseFile, TreeBaseFolder, TreeBaseBuilder}
+ outputFileName trueBase.node.js
+ combineTypeScriptFiles products/treeNotationTypes.ts trueBase/TrueBase.ts
+ insertLastLine module.exports = {TrueBaseFile, TrueBaseFolder, TrueBaseBuilder}
 nodeProduct
- outputFileName treeBaseServer.node.js
- combineTypeScriptFiles treeBase/TreeBaseServer.ts
- insertLastLine module.exports = { TreeBaseServer, SearchServer}
+ outputFileName trueBaseServer.node.js
+ combineTypeScriptFiles trueBase/TrueBaseServer.ts
+ insertLastLine module.exports = { TrueBaseServer, SearchServer}
 nodeProduct
  outputFileName TypeScriptRewriter.js
  combineTypeScriptFiles typeScriptRewriter/TypeScriptRewriter.ts

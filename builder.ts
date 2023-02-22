@@ -350,7 +350,7 @@ swim
 testRacer
 grammar
 utils
-treeBase
+trueBase
 treeComponentFramework`.split("\n")
     const fileTree = {}
     folders.forEach(folder => Object.assign(fileTree, this._makeTestTreeForFolder(__dirname + `/${folder}/`)))

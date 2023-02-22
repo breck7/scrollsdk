@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { TreeBaseFolder, TreeBaseFile } from "./TreeBase"
+import { TrueBaseFolder, TrueBaseFile } from "./TrueBase"
 
 const path = require("path")
 const { TestRacer } = require("../products/TestRacer.js")
@@ -9,7 +9,7 @@ const { Disk } = require("../products/Disk.node.js")
 const planetsFolderPath = path.join(__dirname, "planets")
 const testTree: any = {}
 
-const getFolder = () => new TreeBaseFolder().setDir(planetsFolderPath).setGrammarDir(planetsFolderPath)
+const getFolder = () => new TrueBaseFolder().setDir(planetsFolderPath).setGrammarDir(planetsFolderPath)
 
 testTree.errorChecking = (equal: any) => {
   const folder = getFolder().loadFolder()
@@ -84,7 +84,7 @@ testTree.fileSystemEvents = async (equal: any) => {
   const expectedContent = "hello world"
   waiting = new Promise(resolve => {
     folder.onDescendantChanged((event: any) => {
-      const fileNode = event.targetNode.getAncestorByNodeConstructor(TreeBaseFile)
+      const fileNode = event.targetNode.getAncestorByNodeConstructor(TrueBaseFile)
 
       // Assert
       equal(fileNode.childrenToString(), expectedContent, "file change detected")

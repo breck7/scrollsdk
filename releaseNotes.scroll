@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 69.0.0 2023-2-23
+- ⚠️ Breaking: `TrueBase` and `tql` are now in the repo `https://github.com/breck7/truebase` and npm package `truebase`.
+
 # 68.0.0 2023-2-22
 - ⚠️ Breaking: Renamed TreeBase to TrueBase
 

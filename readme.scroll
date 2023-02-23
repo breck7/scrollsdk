@@ -17,7 +17,7 @@ import ciBadges.scroll
 * Tree Notation FAQ
  https://faq.treenotation.org
 * TrueBase
- link trueBase/index.html
+ https://truebase.pub/
 * TypeScript Library
  https://github.com/treenotation/jtree
 * Tree Notation Subreddit
@@ -31,7 +31,7 @@ import ciBadges.scroll
 
 ? Who is this package built for?
 
-* Jtree is for people who want to design Tree Languages, make Tree editing tools, use TrueBase, or use the Tree Component Web Framework.
+* Jtree is for people who want to design Tree Languages, make Tree editing tools, or use the Tree Component Web Framework.
 
 * You can think of jtree as similar to the Java Development Kit, except for Tree Notation instead of Java.
 
@@ -74,10 +74,6 @@ code
  <script src="../../products/Utils.browser.js"></script>
  <script src="../../products/TreeNode.browser.js"></script>
  <script src="../../products/GrammarLanguage.browser.js"></script>
-
-## TrueBase
-
-* Instructions coming soon.
 
 ## jtree "sandbox" web app for exploring base Tree Notation
 

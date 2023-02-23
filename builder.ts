@@ -272,7 +272,7 @@ class Builder extends TreeNode {
   }
 
   produceAllLangs() {
-    const langs = `arrow chuck dug dumbdown fire grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt tql`.split(" ")
+    const langs = `arrow chuck dug dumbdown fire grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
     langs.forEach(lang => this.produceLang(lang))
   }
 
@@ -350,7 +350,6 @@ swim
 testRacer
 grammar
 utils
-trueBase
 treeComponentFramework`.split("\n")
     const fileTree = {}
     folders.forEach(folder => Object.assign(fileTree, this._makeTestTreeForFolder(__dirname + `/${folder}/`)))

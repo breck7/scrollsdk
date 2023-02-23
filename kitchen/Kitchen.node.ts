@@ -4,27 +4,13 @@ const { readFile } = require("fs")
 const path = require("path")
 const { TypeScriptRewriter } = require("../products/TypeScriptRewriter.js")
 const { Utils } = require("../products/Utils.js")
-const { TrueBaseServer } = require("../products/trueBaseServer.node.js")
-const { TrueBaseFolder } = require("../products/trueBase.node.js")
 
 const ignoreFolder = path.join(__dirname, "..", "ignore")
 
 class Kitchen {
-  startPlanetsDemoTrueBaseServer(port: number) {
-    const databaseFolder = path.join(__dirname, "..", "trueBase", "planets")
-    const folder = new TrueBaseFolder()
-      .setDir(databaseFolder)
-      .setGrammarDir(databaseFolder)
-      .loadFolder()
-    const trueBaseServer = new TrueBaseServer(folder, ignoreFolder).initSearch().serveFolder(databaseFolder)
-    trueBaseServer.listen(port)
-  }
-
   start(port: treeNotationTypes.portNumber) {
     const planetsPort = 8080
     const app = express()
-
-    this.startPlanetsDemoTrueBaseServer(planetsPort)
 
     app.get("/*.js", (req: any, res: any) => {
       const filename = req.path.substr(1)

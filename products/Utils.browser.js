@@ -24,7 +24,9 @@ class Utils {
       instance[name](param)
     }
     if (instance[command + "Command"]) return run(command + "Command")
-    const allCommands = Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).filter(word => word.endsWith("Command"))
+    // Get commands from both the child and parent classes
+    const classes = [Object.getPrototypeOf(instance), Object.getPrototypeOf(Object.getPrototypeOf(instance))]
+    const allCommands = classes.map(classInstance => Object.getOwnPropertyNames(classInstance).filter(word => word.endsWith("Command"))).flat()
     allCommands.sort()
     const commandAsNumber = parseInt(command) - 1
     if (command.match(/^\d+$/) && allCommands[commandAsNumber]) return run(allCommands[commandAsNumber])

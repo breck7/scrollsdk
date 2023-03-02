@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 69.2.0 2023-3-2
+- 🎉 added `getCustomIndex` fn
+
 # 69.1.0 2023-2-28
 - 🎉 `runCommand` now also looks for commands on the parent class
 

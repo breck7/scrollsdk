@@ -1816,6 +1816,18 @@ class TreeNode extends AbstractNode {
     return this._quickCache
   }
 
+  getCustomIndex(key: string) {
+    if (!this.quickCache.customIndexes) this.quickCache.customIndexes = {}
+    const customIndexes = this.quickCache.customIndexes
+    if (customIndexes[key]) return customIndexes[key]
+    const customIndex: { [firstWord: string]: TreeNode } = {}
+    customIndexes[key] = customIndex
+    this.filter(file => file.has(key)).forEach(file => {
+      customIndex[file.get(key)] = file
+    })
+    return customIndex
+  }
+
   clearQuickCache() {
     delete this._quickCache
   }

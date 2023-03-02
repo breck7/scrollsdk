@@ -2206,6 +2206,21 @@ testTree.expandedShouldAppendNonMaps = equal => {
   equal(tree._expandChildren(0, 1).toString(), tree.toString(), "should have thrown")
 }
 
+testTree.getCustomIndex = equal => {
+  // todo: we need to work on extend so its more straightforward
+  // Arrange
+  const tree = new TreeNode(
+    `coke
+ id 123
+ related 456
+pepsi
+ type soda
+ id 456`
+  )
+  // Act/Assert
+  equal(tree.getCustomIndex("id")["456"].get("type"), "soda", "custom indexes work")
+}
+
 testTree.htmlDsl = equal => {
   // Arrange
   const html = new TreeNode("h1 hello world\nh1 hello world")

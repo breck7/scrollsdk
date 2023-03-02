@@ -1511,6 +1511,17 @@ class TreeNode extends AbstractNode {
     if (!this._quickCache) this._quickCache = {}
     return this._quickCache
   }
+  getCustomIndex(key) {
+    if (!this.quickCache.customIndexes) this.quickCache.customIndexes = {}
+    const customIndexes = this.quickCache.customIndexes
+    if (customIndexes[key]) return customIndexes[key]
+    const customIndex = {}
+    customIndexes[key] = customIndex
+    this.filter(file => file.has(key)).forEach(file => {
+      customIndex[file.get(key)] = file
+    })
+    return customIndex
+  }
   clearQuickCache() {
     delete this._quickCache
   }
@@ -2512,7 +2523,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "69.1.0"
+TreeNode.getVersion = () => "69.2.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

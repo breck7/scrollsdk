@@ -2218,7 +2218,7 @@ pepsi
  id 456`
   )
   // Act/Assert
-  equal(tree.getCustomIndex("id")["456"].get("type"), "soda", "custom indexes work")
+  equal(tree.getCustomIndex("id")["456"][0].get("type"), "soda", "custom indexes work")
 }
 
 testTree.htmlDsl = equal => {

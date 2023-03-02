@@ -1528,7 +1528,9 @@ class TreeNode extends AbstractNode {
     const customIndex = {}
     customIndexes[key] = customIndex
     this.filter(file => file.has(key)).forEach(file => {
-      customIndex[file.get(key)] = file
+      const value = file.get(key)
+      if (!customIndex[value]) customIndex[value] = []
+      customIndex[value].push(file)
     })
     return customIndex
   }

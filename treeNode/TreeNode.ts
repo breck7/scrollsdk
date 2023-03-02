@@ -1820,10 +1820,12 @@ class TreeNode extends AbstractNode {
     if (!this.quickCache.customIndexes) this.quickCache.customIndexes = {}
     const customIndexes = this.quickCache.customIndexes
     if (customIndexes[key]) return customIndexes[key]
-    const customIndex: { [firstWord: string]: TreeNode } = {}
+    const customIndex: { [firstWord: string]: TreeNode[] } = {}
     customIndexes[key] = customIndex
     this.filter(file => file.has(key)).forEach(file => {
-      customIndex[file.get(key)] = file
+      const value = file.get(key)
+      if (!customIndex[value]) customIndex[value] = []
+      customIndex[value].push(file)
     })
     return customIndex
   }

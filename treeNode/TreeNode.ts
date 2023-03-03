@@ -2197,6 +2197,11 @@ class TreeNode extends AbstractNode {
     return this._insertLineAndChildren(line)
   }
 
+  appendUniqueLine(line: string) {
+    if (!this.hasLine(line)) return this.appendLine(line)
+    return this.findLine(line)
+  }
+
   appendLineAndChildren(line: string, children: treeNotationTypes.children) {
     return this._insertLineAndChildren(line, children)
   }
@@ -2488,6 +2493,10 @@ class TreeNode extends AbstractNode {
 
   hasLine(line: treeNotationTypes.line) {
     return this.getChildren().some(node => node.getLine() === line)
+  }
+
+  findLine(line: treeNotationTypes.line) {
+    return this.getChildren().find(node => node.getLine() === line)
   }
 
   getNodesByLine(line: treeNotationTypes.line) {

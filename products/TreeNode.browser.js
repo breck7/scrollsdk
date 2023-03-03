@@ -1824,6 +1824,10 @@ class TreeNode extends AbstractNode {
   appendLine(line) {
     return this._insertLineAndChildren(line)
   }
+  appendUniqueLine(line) {
+    if (!this.hasLine(line)) return this.appendLine(line)
+    return this.findLine(line)
+  }
   appendLineAndChildren(line, children) {
     return this._insertLineAndChildren(line, children)
   }
@@ -2063,6 +2067,9 @@ class TreeNode extends AbstractNode {
   }
   hasLine(line) {
     return this.getChildren().some(node => node.getLine() === line)
+  }
+  findLine(line) {
+    return this.getChildren().find(node => node.getLine() === line)
   }
   getNodesByLine(line) {
     return this.filter(node => node.getLine() === line)
@@ -2535,7 +2542,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "69.2.0"
+TreeNode.getVersion = () => "69.3.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)

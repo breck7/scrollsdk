@@ -1885,6 +1885,16 @@ testTree.indexOf = equal => {
   equal(tree.indexOf("hello"), 0)
   equal(tree.indexOfLast("hello"), 2)
 }
+testTree.appendUniqueLine = equal => {
+  // Arrange
+  const tree = new TreeNode(`city Brockton`)
+  // Act
+  tree.appendUniqueLine("city Brockton")
+  tree.appendUniqueLine("country United States")
+  // Assert
+  equal(tree.length, 2)
+  equal(tree.get("country"), "United States")
+}
 testTree.insert = equal => {
   // Arrange
   const tree = new TreeNode("hello world")

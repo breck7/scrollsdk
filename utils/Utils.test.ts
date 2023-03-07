@@ -29,6 +29,11 @@ testTree.getNextOrPrevious = equal => {
   equal(Utils.getNextOrPrevious([1, 2, 3], 2), 3)
 }
 
+testTree.getRandomCharacters = equal => {
+  // AAA
+  equal(Utils.getRandomCharacters(9).length, 9)
+}
+
 testTree.didYouMean = equal => {
   // Arrange/Act/Assert
   const didYouMean = Utils.didYouMean

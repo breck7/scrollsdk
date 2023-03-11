@@ -51,6 +51,10 @@ class Utils {
     return str.replace(/\r/g, "")
   }
 
+  static isAbsoluteUrl(url: string) {
+    return url.startsWith("https://") || url.startsWith("http://")
+  }
+
   static removeEmptyLines(str = "") {
     return str.replace(/\n\n+/g, "\n")
   }

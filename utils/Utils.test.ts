@@ -24,6 +24,13 @@ testTree.titleToPermalink = equal => {
   equal(Utils.titleToPermalink("C#"), "c-sharp")
 }
 
+testTree.isAbsoluteUrl = equal => {
+  // AAA
+  equal(Utils.isAbsoluteUrl("https://"), true)
+  equal(Utils.isAbsoluteUrl("http://"), true)
+  equal(Utils.isAbsoluteUrl("link.html"), false)
+}
+
 testTree.getNextOrPrevious = equal => {
   // A/A/A
   equal(Utils.getNextOrPrevious([1, 2, 3], 2), 3)

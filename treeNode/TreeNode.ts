@@ -973,6 +973,22 @@ class TreeNode extends AbstractNode {
     return node.nodeAt(indexOrIndexArray.slice(1))
   }
 
+  // Flatten a tree node into an object like {twitter:"pldb", "twitter.followers":123}.
+  // Assumes you have a nested key/value list with no multiline strings.
+  toFlatObject(delimiter = ".") {
+    let newObject: treeNotationTypes.stringMap = {}
+    const { edgeSymbolRegex } = this
+    this.forEach((child: TreeNode, index: number) => {
+      newObject[child.getWord(0)] = child.content
+      child.getTopDownArray().forEach((node: TreeNode) => {
+        const newColumnName = node.getFirstWordPathRelativeTo(this).replace(edgeSymbolRegex, delimiter)
+        const value = node.content
+        newObject[newColumnName] = value
+      })
+    })
+    return newObject
+  }
+
   protected _toObject() {
     const obj: treeNotationTypes.stringMap = {}
     this.forEach(node => {
@@ -1528,6 +1544,10 @@ class TreeNode extends AbstractNode {
 
   getWordBreakSymbol(): string {
     return " "
+  }
+
+  get edgeSymbolRegex() {
+    return new RegExp(this.getEdgeSymbol(), "g")
   }
 
   getNodeBreakSymbolRegex() {

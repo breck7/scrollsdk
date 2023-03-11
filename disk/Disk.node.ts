@@ -143,6 +143,29 @@ class Disk {
     })
     return map
   }
+  /**
+   * Take an object like {".gitignore" : "ignore/", "grammar/root.grammar": "foo"}
+   * and recreate on the filesystem as files and folders. Each key is 1 file.
+   * */
+  static writeObjectToDisk = (baseFolder: string, obj: any) => {
+    Object.keys(obj).forEach(filename => {
+      const filePath = path.join(baseFolder, filename)
+      if (filename.includes("/")) Disk.mkdir(path.dirname(filename))
+      if (!fs.existsSync(filePath)) Disk.writeIfChanged(filePath, obj[filename])
+    })
+  }
+  static recursiveReaddirSync = (folder: string, callback: any) =>
+    fs.readdirSync(folder).forEach((filename: string) => {
+      try {
+        const fullPath = path.join(folder, filename)
+        const isDir = fs.lstatSync(fullPath).isDirectory()
+        if (filename.includes("node_modules")) return // Do not recurse into node_modules folders
+        if (isDir) Disk.recursiveReaddirSync(fullPath, callback)
+        else callback(fullPath)
+      } catch (err) {
+        // Ignore errors
+      }
+    })
 }
 
 export { Disk }

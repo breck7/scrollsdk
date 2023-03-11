@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 69.4.0 2023-3-11
+- 🎉 new util methods upstreamed: `Utils.isAbsoluteUrl`, `TreeNode.toFlatObject`, `Disk.recursiveReaddirSync`, `Disk.writeObjectToDisk`
+
 # 69.3.1 2023-3-7
 - 🏥 fix bug in Utils getRandomCharacters
 

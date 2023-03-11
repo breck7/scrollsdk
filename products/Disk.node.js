@@ -142,5 +142,28 @@ Disk.csvToMap = (path, columnName) => {
   })
   return map
 }
+/**
+ * Take an object like {".gitignore" : "ignore/", "grammar/root.grammar": "foo"}
+ * and recreate on the filesystem as files and folders. Each key is 1 file.
+ * */
+Disk.writeObjectToDisk = (baseFolder, obj) => {
+  Object.keys(obj).forEach(filename => {
+    const filePath = path.join(baseFolder, filename)
+    if (filename.includes("/")) Disk.mkdir(path.dirname(filename))
+    if (!fs.existsSync(filePath)) Disk.writeIfChanged(filePath, obj[filename])
+  })
+}
+Disk.recursiveReaddirSync = (folder, callback) =>
+  fs.readdirSync(folder).forEach(filename => {
+    try {
+      const fullPath = path.join(folder, filename)
+      const isDir = fs.lstatSync(fullPath).isDirectory()
+      if (filename.includes("node_modules")) return // Do not recurse into node_modules folders
+      if (isDir) Disk.recursiveReaddirSync(fullPath, callback)
+      else callback(fullPath)
+    } catch (err) {
+      // Ignore errors
+    }
+  })
 
 module.exports = { Disk }

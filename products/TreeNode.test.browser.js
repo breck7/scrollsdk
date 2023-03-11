@@ -1855,6 +1855,8 @@ pepsi
  id 456`)
   // Act/Assert
   equal(tree.getCustomIndex("id")["456"][0].get("type"), "soda", "custom indexes work")
+  // AA
+  equal(tree.toFlatObject()["pepsi.type"], "soda", "to flat object works")
 }
 testTree.htmlDsl = equal => {
   // Arrange

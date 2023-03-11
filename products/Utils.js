@@ -35,6 +35,9 @@ class Utils {
   static removeReturnChars(str = "") {
     return str.replace(/\r/g, "")
   }
+  static isAbsoluteUrl(url) {
+    return url.startsWith("https://") || url.startsWith("http://")
+  }
   static removeEmptyLines(str = "") {
     return str.replace(/\n\n+/g, "\n")
   }

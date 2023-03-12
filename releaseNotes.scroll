@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 69.4.1 2023-3-11
+- 🏥 fix bug in `Disk.writeObjectToDisk`
+
 # 69.4.0 2023-3-11
 - 🎉 new util methods upstreamed: `Utils.isAbsoluteUrl`, `TreeNode.toFlatObject`, `Disk.recursiveReaddirSync`, `Disk.writeObjectToDisk`
 

@@ -150,7 +150,7 @@ class Disk {
   static writeObjectToDisk = (baseFolder: string, obj: any) => {
     Object.keys(obj).forEach(filename => {
       const filePath = path.join(baseFolder, filename)
-      if (filename.includes("/")) Disk.mkdir(path.dirname(filename))
+      if (filename.includes("/")) Disk.mkdir(path.dirname(filePath))
       if (!fs.existsSync(filePath)) Disk.writeIfChanged(filePath, obj[filename])
     })
   }

@@ -51,7 +51,9 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Explore best ways to add polymorphism
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Explore best ways to add polymorphism
+
+// Cell Parsers
 anyCell
 booleanCell
  enum false true
@@ -93,6 +95,8 @@ leftNumberCell
  extends numberCell
 leftAnyCell
  extends anyCell
+
+// Line Parsers
 fireNode
  root
  description A useless prefix Tree Language that compiles to Javascript for testing Tree Notation features.
@@ -362,7 +366,7 @@ printNumberNode
   stringTemplate console.log({numberIdentifierCell})
 printStringNode
  crux printString
- todo Allow printing of multiline strings
+ // todo Allow printing of multiline strings
  extends abstractTerminalNode
  catchAllCellType stringCellsCell
  compiler

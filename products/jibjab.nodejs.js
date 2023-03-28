@@ -40,7 +40,8 @@
   }
 
   class jibjabNode extends jibberishNode {
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+anyCell
 columnNameEnumCell
 columnNameCell
 errorCell
@@ -56,6 +57,8 @@ opSymbolCell
  highlightScope keyword.operator.arithmetic
 commentCell
  highlightScope comment
+
+// Line Parsers
 jibberishNode
  root
  description A useless Tree Language built for testing Tree Notation code.

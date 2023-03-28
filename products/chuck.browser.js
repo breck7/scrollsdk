@@ -8,11 +8,15 @@
         { regex: /^[\d\. ]+$/, nodeConstructor: onlyNumbersNode }
       ])
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Make this compile and execute
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Make this compile and execute
+
+// Cell Parsers
 operatorCell
  highlightScope keyword
  enum + * print
 floatCell
+
+// Line Parsers
 chuckNode
  description A useless demo Tree Language inspired by Forth that tests postfix notation.
  root

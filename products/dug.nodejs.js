@@ -24,8 +24,10 @@
       const res = super.compile()
       return JSON.stringify(JSON.parse(res), null, 2)
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Add swarm tests for top scenarios, including the scalar at root level scenario.
-todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Add swarm tests for top scenarios, including the scalar at root level scenario.
+// todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
+
+// Cell Parsers
 anyCell
 keywordCell
  highlightScope keyword
@@ -36,6 +38,8 @@ booleanCell
  highlightScope constant.numeric
 numberCell
  highlightScope constant.numeric
+
+// Line Parsers
 dugNode
  root
  description A demonstration prefix Tree Language that compiles to JSON.

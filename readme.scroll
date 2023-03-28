@@ -79,14 +79,14 @@ code
 
 code
  npm install .
- npm run kitchen
+ npm run local
  open http://localhost:3333/
 
 ## jtree "Designer" web app for building new Tree Languages
 
 code
  npm install .
- npm run kitchen
+ npm run local
  open http://localhost:3333/designer
 
 ## TreeComponentFramework for building web apps

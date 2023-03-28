@@ -24,7 +24,8 @@
         [{ regex: /^$/, nodeConstructor: blankLineNode }]
       )
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+anyCell
 blankCell
 dashCell
  highlightScope constant.language
@@ -36,6 +37,8 @@ textCell
  highlightScope string
 urlCell
  highlightScope constant.language
+
+// Line Parsers
 errorNode
  baseNodeType errorNode
 dumbdownNode

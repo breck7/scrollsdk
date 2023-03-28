@@ -29,7 +29,8 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`dateIntCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+dateIntCell
  highlightScope constant.numeric.integer
 monthIntCell
  extends dateIntCell
@@ -48,6 +49,8 @@ memoryDescriptionCell
  highlightScope string
 eventTypeCell
  enum 💩 ✨ 🍼 😴 😀 ❤️
+
+// Line parsers
 poopNode
  description POOP is the Programming Option for Overtired Parents. It is a Tree Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events and compile them to CSV. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes. POOP is an anyfix language. You can put the time first or the event type first. You can write the actual symbols, or, if it is 3am, you can just use some of the natural medium to record the event type.
  root

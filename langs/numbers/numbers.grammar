@@ -1,3 +1,4 @@
+// Cell Parsers
 floatCell
 commentCell
  highlightScope comment
@@ -18,6 +19,8 @@ numbersCell
  extends numberCell
 operatorCell
  highlightScope keyword.operator.arithmetic
+
+// Line Parsers
 numbersNode
  root
  description A useless Tree Language for testing Tree Notation features.

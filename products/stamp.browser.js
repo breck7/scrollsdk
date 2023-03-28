@@ -65,7 +65,9 @@
       const pathStartIndex = rootFolderPath.length + 1
       return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo File permissions
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo File permissions
+
+// Cell parsers
 anyCell
 extraCell
  highlightScope invalid
@@ -82,6 +84,8 @@ inputTypeCell
  enum string int any lowercase
 keywordCell
  highlightScope keyword.control
+
+// Line parsers
 stampNode
  root
  description A prefix Tree Language for creating distributable text template files that expand to folders and files.

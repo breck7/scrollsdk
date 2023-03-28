@@ -37,9 +37,11 @@
       files[filepath] = testBlocks
       return files
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Add comments?
-todo Make run in browser
-todo Add print or tracer type of intermediate element. debugger?
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Add comments?
+// todo Make run in browser
+// todo Add print or tracer type of intermediate element. debugger?
+
+// Cell parsers
 anyCell
  highlightScope string
  examples lorem ipsum
@@ -77,6 +79,8 @@ typeOfOptionCell
  description The 6 possible results for Javascript's typeof.
  highlightScope constant.language
  enum object boolean function number string undefined
+
+// Line parsers
 swarmNode
  root
  description A prefix Tree Language for unit testing of classes.

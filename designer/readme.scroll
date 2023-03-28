@@ -8,12 +8,11 @@ title Designer
 # For Designer Developers
 
 ? How do I run the tests?
-
 code
- jtree/designer/DesignerApp.test.ts
+ ./jtree/designer/DesignerApp.test.ts
 
 ? How do I run the Designer locally?
-
 code
- jtree kitchen
+ cd jtree
+ npm run local
  open http://localhost:3333/designer

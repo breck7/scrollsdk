@@ -6,7 +6,6 @@ const { Utils } = require("../products/Utils.js")
 const ignoreFolder = path.join(__dirname, "..", "ignore")
 class Kitchen {
   start(port) {
-    const planetsPort = 8080
     const app = express()
     app.get("/*.js", (req, res) => {
       const filename = req.path.substr(1)
@@ -27,7 +26,6 @@ class Kitchen {
     app.listen(port, () =>
       console.log(`Running kitchen from '${__dirname}'.
 Use cmd+dblclick to open a site:
-Running PlanetsDb on: http://localhost:${planetsPort}/
 Running kitchen on: http://localhost:${port}/sandbox`)
     )
   }

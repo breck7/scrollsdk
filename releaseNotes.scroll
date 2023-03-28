@@ -4,6 +4,10 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 70.0.0 2023-3-28
+- ⚠️ Big changes to Grammar. See the new Grammar Release Notes.
+ link langs/grammar/relaseNotes.html Grammar Release Notes
+
 # 69.4.1 2023-3-11
 - 🏥 fix bug in `Disk.writeObjectToDisk`
 

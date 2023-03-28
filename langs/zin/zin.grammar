@@ -1,8 +1,11 @@
+// Cell parsers
 nameCell
  description A person's name
  highlightScope string
 keywordCell
  highlightScope keyword
+
+// Line parsers
 zinNode
  root
  description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-tree programming languages into one tree language.

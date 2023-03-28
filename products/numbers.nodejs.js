@@ -24,7 +24,8 @@
     execute() {
       return this.map(child => child.execute())
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`floatCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+floatCell
 commentCell
  highlightScope comment
 keywordCell
@@ -44,6 +45,8 @@ numbersCell
  extends numberCell
 operatorCell
  highlightScope keyword.operator.arithmetic
+
+// Line Parsers
 numbersNode
  root
  description A useless Tree Language for testing Tree Notation features.

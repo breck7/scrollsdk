@@ -68,13 +68,16 @@ ${missing.join("\n")}
       })
       return requiredFileList.toString()
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+anyCell
 filepathCell
  highlightScope string
 termCell
  highlightScope variable.parameter
 fileConstantCell
  highlightScope keyword.control
+
+// Line Parsers
 projectNode
  root
  version 2.0.0

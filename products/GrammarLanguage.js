@@ -63,8 +63,7 @@ var GrammarConstants
 ;(function(GrammarConstants) {
   // node types
   GrammarConstants["extensions"] = "extensions"
-  GrammarConstants["toolingDirective"] = "tooling"
-  GrammarConstants["todoComment"] = "todo"
+  GrammarConstants["comment"] = "//"
   GrammarConstants["version"] = "version"
   GrammarConstants["nodeType"] = "nodeType"
   GrammarConstants["cellType"] = "cellType"
@@ -1260,7 +1259,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.enumFromCellTypes] = EnumFromCellTypesTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
-    types[GrammarConstants.todoComment] = TreeNode
+    types[GrammarConstants.comment] = TreeNode
     types[GrammarConstants.examples] = TreeNode
     types[GrammarConstants.min] = TreeNode
     types[GrammarConstants.max] = TreeNode
@@ -1520,7 +1519,7 @@ class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode {
       GrammarConstants.compilesTo,
       GrammarConstants.javascript,
       GrammarConstants.single,
-      GrammarConstants.todoComment
+      GrammarConstants.comment
     ]
     const map = {}
     types.forEach(type => {
@@ -2006,9 +2005,9 @@ class nodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {}
 class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   createParser() {
     const map = {}
-    map[GrammarConstants.toolingDirective] = TreeNode
-    map[GrammarConstants.todoComment] = TreeNode
+    map[GrammarConstants.comment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [
+      { regex: HandGrammarProgram.blankLineRegex, nodeConstructor: TreeNode },
       { regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
       { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
     ])
@@ -2400,6 +2399,7 @@ HandGrammarProgram.makeNodeTypeId = str => Utils._replaceNonAlphaNumericCharacte
 HandGrammarProgram.makeCellTypeId = str => Utils._replaceNonAlphaNumericCharactersWithCharCodes(str).replace(HandGrammarProgram.cellTypeSuffixRegex, "") + GrammarConstants.cellTypeSuffix
 HandGrammarProgram.nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
 HandGrammarProgram.nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
+HandGrammarProgram.blankLineRegex = new RegExp("^$")
 HandGrammarProgram.cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
 HandGrammarProgram.cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
 HandGrammarProgram._languages = {}

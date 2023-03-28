@@ -22,7 +22,8 @@
     compile() {
       return this.toJsonSubset()
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+keywordCell
  enum charge cardNumber amount currency description token
 floatCell
 intCell
@@ -51,6 +52,8 @@ currencyCell
  highlightScope constant.numeric
 commentCell
  highlightScope comment
+
+// Line parsers
 commentNode
  catchAllCellType commentCell
  cells commentCell

@@ -127,7 +127,8 @@
     _getHtmlJoinByCharacter() {
       return ""
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+anyCell
 keywordCell
 emptyCell
 extraCell
@@ -150,6 +151,8 @@ htmlAttributeNameCell
 bernKeywordCell
  enum bern
  extends keywordCell
+
+// Line parsers
 stumpNode
  root
  description A prefix Tree Language that compiles to HTML.
@@ -384,7 +387,7 @@ lineOfHtmlContentNode
   getTextContent() {return this.getLine()}
 bernNode
  boolean isTileAttribute true
- todo Rename this node type
+ // todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
  catchAllNodeType lineOfHtmlContentNode
  javascript

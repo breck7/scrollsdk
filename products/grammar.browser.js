@@ -3,17 +3,20 @@
     createParser() {
       return new TreeNode.Parser(
         catchAllErrorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { todo: todoNode, tooling: toolingNode }),
+        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "//": slashCommentNode }),
         [
+          { regex: /^$/, nodeConstructor: blankLineNode },
           { regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode },
           { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }
         ]
       )
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
-todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
-todo Add enumOption root level type?
-todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
+// todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
+// todo Add enumOption root level type?
+// todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
+
+// Cell Parsers
 abstractConstantCell
  highlightScope entity.name.tag
 javascriptSafeAlphaNumericIdentifierCell
@@ -22,7 +25,7 @@ javascriptSafeAlphaNumericIdentifierCell
 anyCell
 baseNodeTypesCell
  description There are a few classes of special nodeTypes. BlobNodes don't have their children parsed. Error nodes always report an error.
- todo Remove?
+ // todo Remove?
  enum blobNode errorNode
  highlightScope variable.parameter
 boolCell
@@ -40,13 +43,13 @@ cellTypeIdCell
  highlightScope storage
 constantIdentifierCell
  examples someId myVar
- todo Extend javascriptSafeAlphaNumericIdentifier
+ // todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\\w+
  highlightScope constant.other
  description A word that can be assigned to the node class in the target language.
 constructorFilePathCell
 enumOptionCell
- todo Add an enumOption top level type, so we can add data to an enum option such as a description.
+ // todo Add an enumOption top level type, so we can add data to an enum option such as a description.
  highlightScope string
 cellExampleCell
  description Holds an example for a cell with a wide range of options.
@@ -95,18 +98,19 @@ stringCell
  examples lorem ipsum
 tagCell
  highlightScope string
-todoCell
- highlightScope comment
-toolingDirectiveCell
- highlightScope comment
 wordCell
  regex [a-zA-Z]+
  highlightScope variable.parameter
 exampleAnyCell
  examples lorem ipsem
- todo Eventually we want to be able to parse correctly the examples.
+ // todo Eventually we want to be able to parse correctly the examples.
  highlightScope comment
  extends stringCell
+blankCell
+commentCell
+ highlightScope comment
+
+// Line Parsers
 grammarNode
  root
  description Grammar is a Tree Language for creating new Tree Languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Grammar uses both postfix and prefix language features.
@@ -118,8 +122,13 @@ grammarNode
    catchAllNodeType anyNode
   anyNode
    baseNodeType blobNode
- version 3.0.0
- inScope toolingNode todoNode cellTypeDefinitionNode nodeTypeDefinitionNode
+ version 4.0.0
+ inScope slashCommentNode blankLineNode cellTypeDefinitionNode nodeTypeDefinitionNode
+blankLineNode
+ description Blank lines are OK in Grammar.
+ cells blankCell
+ pattern ^$
+ tags doNotSynthesize
 abstractCompilerRuleNode
  catchAllCellType anyCell
  cells propertyKeywordCell
@@ -214,17 +223,17 @@ cellsNode
  extends abstractNodeTypeRuleNode
  cruxFromId
 compilerNode
- todo Remove this and its children?
+ // todo Remove this and its children?
  inScope stringTemplateNode catchAllCellDelimiterNode openChildrenNode closeChildrenNode indentCharacterNode joinChildrenWithNode
  extends abstractNodeTypeRuleNode
  cruxFromId
 descriptionNode
  catchAllCellType stringCell
- todo Should we make this multiline?
+ // todo Should we make this multiline?
  extends abstractNodeTypeRuleNode
  cruxFromId
 exampleNode
- todo Should this just be a "string" constant on nodes?
+ // todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleAnyCell
  catchAllNodeType catchAllExampleLineNode
@@ -238,11 +247,11 @@ sortTemplateNode
 extendsNodeTypeNode
  crux extends
  description nodeType definitions can extend others.
- todo Add mixin support in addition to/in place of extends?
+ // todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell nodeTypeIdCell
  extends abstractNodeTypeRuleNode
 frequencyNode
- todo Remove this nodeType. Switch to conditional frequencies.
+ // todo Remove this nodeType. Switch to conditional frequencies.
  cells propertyKeywordCell floatCell
  extends abstractNodeTypeRuleNode
  cruxFromId
@@ -252,7 +261,7 @@ inScopeNode
  extends abstractNodeTypeRuleNode
  cruxFromId
 javascriptNode
- todo Urgently need to get submode syntax highlighting running! (And eventually LSP)
+ // todo Urgently need to get submode syntax highlighting running! (And eventually LSP)
  description Provide raw javascript code that will be inserted into a node type's class.
  catchAllNodeType catchAllJavascriptCodeLineNode
  extends abstractNodeTypeRuleNode
@@ -339,11 +348,11 @@ catchAllMultilineStringConstantNode
  catchAllNodeType catchAllMultilineStringConstantNode
  cells stringCell
 cellTypeDefinitionNode
- todo Generate a class for each cell type?
- todo Allow abstract cell types?
- todo Change pattern to postfix.
+ // todo Generate a class for each cell type?
+ // todo Allow abstract cell types?
+ // todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Cell$
- inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode todoNode extendsCellTypeNode examplesNode cellMinNode cellMaxNode
+ inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode slashCommentNode extendsCellTypeNode examplesNode cellMinNode cellMaxNode
  cells cellTypeIdCell
 enumFromCellTypesNode
  catchAllCellType cellTypeIdCell
@@ -376,21 +385,21 @@ rootFlagNode
  description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
  cells propertyKeywordCell
 nodeTypeDefinitionNode
- todo Add multiple dispatch?
+ // todo Add multiple dispatch?
  pattern ^[a-zA-Z0-9_]+Node$
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
- inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode todoNode
+ inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode slashCommentNode
  cells nodeTypeIdCell
 _extendsJsClassNode
  extends abstractNodeTypeRuleNode
- todo remove
+ // todo remove
  description Deprecated
  cells propertyKeywordCell anyCell
  cruxFromId
 _rootNodeJsHeaderNode
  extends abstractNodeTypeRuleNode
- todo remove
+ // todo remove
  description Deprecated
  catchAllNodeType catchAllJavascriptCodeLineNode
  cruxFromId
@@ -406,22 +415,17 @@ reservedWordsNode
  catchAllCellType reservedWordCell
  cells cellPropertyNameCell
  cruxFromId
-todoNode
- description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
- catchAllCellType todoCell
- catchAllNodeType todoNode
- cells todoCell
- cruxFromId
-toolingNode
- description Tooling directives are not part of the language grammar but used for tools like editors, preprocessors and compilers. Something like "tooling onsave {bash command}". Should be at top of file, if present at all.
- catchAllCellType toolingDirectiveCell
- catchAllNodeType toolingNode
- cells toolingDirectiveCell
- cruxFromId
+commentLineNode
+ catchAllCellType commentCell
+slashCommentNode
+ description A comment.
+ catchAllCellType commentCell
+ crux //
+ catchAllNodeType commentLineNode
 extendsCellTypeNode
  crux extends
  description cellType definitions can extend others.
- todo Add mixin support in addition to/in place of extends?
+ // todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell cellTypeIdCell
  single`)
     getHandGrammarProgram() {
@@ -430,6 +434,7 @@ extendsCellTypeNode
     static getNodeTypeMap() {
       return {
         grammarNode: grammarNode,
+        blankLineNode: blankLineNode,
         abstractCompilerRuleNode: abstractCompilerRuleNode,
         closeChildrenNode: closeChildrenNode,
         indentCharacterNode: indentCharacterNode,
@@ -490,10 +495,16 @@ extendsCellTypeNode
         _rootNodeJsHeaderNode: _rootNodeJsHeaderNode,
         regexNode: regexNode,
         reservedWordsNode: reservedWordsNode,
-        todoNode: todoNode,
-        toolingNode: toolingNode,
+        commentLineNode: commentLineNode,
+        slashCommentNode: slashCommentNode,
         extendsCellTypeNode: extendsCellTypeNode
       }
+    }
+  }
+
+  class blankLineNode extends GrammarBackedNode {
+    get blankCell() {
+      return this.getWord(0)
     }
   }
 
@@ -845,7 +856,7 @@ extendsCellTypeNode
           highlightScope: highlightScopeNode,
           regex: regexNode,
           reservedWords: reservedWordsNode,
-          todo: todoNode,
+          "//": slashCommentNode,
           extends: extendsCellTypeNode
         }),
         undefined
@@ -955,7 +966,7 @@ extendsCellTypeNode
           root: rootFlagNode,
           _extendsJsClass: _extendsJsClassNode,
           _rootNodeJsHeader: _rootNodeJsHeaderNode,
-          todo: todoNode
+          "//": slashCommentNode
         }),
         undefined
       )
@@ -998,27 +1009,18 @@ extendsCellTypeNode
     }
   }
 
-  class todoNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(todoNode, undefined, undefined)
-    }
-    get todoCell() {
-      return this.getWord(0)
-    }
-    get todoCell() {
-      return this.getWordsFrom(1)
+  class commentLineNode extends GrammarBackedNode {
+    get commentCell() {
+      return this.getWordsFrom(0)
     }
   }
 
-  class toolingNode extends GrammarBackedNode {
+  class slashCommentNode extends GrammarBackedNode {
     createParser() {
-      return new TreeNode.Parser(toolingNode, undefined, undefined)
+      return new TreeNode.Parser(commentLineNode, undefined, undefined)
     }
-    get toolingDirectiveCell() {
-      return this.getWord(0)
-    }
-    get toolingDirectiveCell() {
-      return this.getWordsFrom(1)
+    get commentCell() {
+      return this.getWordsFrom(0)
     }
   }
 

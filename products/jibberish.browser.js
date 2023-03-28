@@ -30,7 +30,8 @@
     execute() {
       return 42
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`anyCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+anyCell
 columnNameEnumCell
 columnNameCell
 errorCell
@@ -44,6 +45,8 @@ topLevelPropertyCell
  highlightScope constant.language
 opSymbolCell
  highlightScope keyword.operator.arithmetic
+
+// Line Parsers
 jibberishNode
  root
  description A useless Tree Language built for testing Tree Notation code.

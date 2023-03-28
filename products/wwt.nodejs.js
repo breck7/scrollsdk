@@ -18,7 +18,8 @@
     compile() {
       return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + "\n}"
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`keywordCell
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+keywordCell
 anyCell
 fieldIdCell
  examples titleField
@@ -52,6 +53,8 @@ commentKeywordCell
 commentCell
  extends anyCell
  highlightScope comment
+
+// Line parsers
 wwtNode
  description WorldWideTypes. A work in progress. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
  root

@@ -405,7 +405,7 @@ reservedWordsNode
 commentLineNode
  catchAllCellType commentCell
 slashCommentNode
- description Comments are ignored.
+ description A comment.
  catchAllCellType commentCell
  crux //
  catchAllNodeType commentLineNode

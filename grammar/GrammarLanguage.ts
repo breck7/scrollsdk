@@ -2458,6 +2458,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     const map: treeNotationTypes.stringMap = {}
     map[GrammarConstants.comment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [
+      { regex: HandGrammarProgram.blankLineRegex, nodeConstructor: TreeNode },
       { regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
       { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }
     ])
@@ -2468,6 +2469,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
 
   static nodeTypeSuffixRegex = new RegExp(GrammarConstants.nodeTypeSuffix + "$")
   static nodeTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.nodeTypeSuffix + "$")
+  static blankLineRegex = new RegExp("^$")
 
   static cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
   static cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")

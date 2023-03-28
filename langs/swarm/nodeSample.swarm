@@ -30,7 +30,7 @@ test swarmNodeSample
  getAllErrors
   assertLengthIs 0
  getRunTimeFirstWordsInScope
-  assertLengthIs 2
+  assertLengthIs 1
  getNodeTypeDefinitionByNodeTypeId toNode
   assertTypeIs object
  getTopNodeTypeDefinitions

@@ -16,6 +16,7 @@ const express = require("express")
 
 import { treeNotationTypes } from "./products/treeNotationTypes"
 
+// todo: remove?
 const registeredExtensions: treeNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", grammar: "tooling ", gram: "tooling " }
 
 class Builder extends TreeNode {
@@ -288,7 +289,6 @@ class Builder extends TreeNode {
 
   buildJibJab() {
     const combined = GrammarCompiler.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
-    combined.delete("tooling")
     const path = __dirname + "/langs/jibjab/jibjab.grammar"
     combined.toDisk(path)
     GrammarCompiler.formatFileInPlace(path, __dirname + "/langs/grammar/grammar.grammar")

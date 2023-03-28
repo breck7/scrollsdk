@@ -1,0 +1,14 @@
+import ../../header.scroll
+title Grammar Release Notes
+startColumns 4
+
+* Here's a list of the notable changes in Grammar.
+
+# 4.0.0 2023-3-28
+- 🎉 blank lines are now OK
+- 🎉 added `//` comments
+- ⚠️ BREAKING:
+ - Removed `todo` comments. Use `// todo` instead
+ - Removed `tooling` keyword. Use `// tooling` instead
+
+import ../../footer.scroll

@@ -1,8 +1,11 @@
+// Cell Parsers
 nameCell
  description A person's name
  highlightScope string
 keywordCell
  highlightScope keyword
+
+// Line Parsers
 newlangNode
  root
  description This is the basic root node for your new prefix Tree Language.

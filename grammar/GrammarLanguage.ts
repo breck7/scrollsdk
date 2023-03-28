@@ -78,8 +78,7 @@ enum GrammarCellParser {
 enum GrammarConstants {
   // node types
   extensions = "extensions",
-  toolingDirective = "tooling",
-  todoComment = "todo",
+  comment = "//",
   version = "version",
   nodeType = "nodeType",
   cellType = "cellType",
@@ -1557,7 +1556,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     types[GrammarConstants.enumFromCellTypes] = EnumFromCellTypesTestNode
     types[GrammarConstants.enum] = GrammarEnumTestNode
     types[GrammarConstants.highlightScope] = TreeNode
-    types[GrammarConstants.todoComment] = TreeNode
+    types[GrammarConstants.comment] = TreeNode
     types[GrammarConstants.examples] = TreeNode
     types[GrammarConstants.min] = TreeNode
     types[GrammarConstants.max] = TreeNode
@@ -1870,7 +1869,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
       GrammarConstants.compilesTo,
       GrammarConstants.javascript,
       GrammarConstants.single,
-      GrammarConstants.todoComment
+      GrammarConstants.comment
     ]
 
     const map: treeNotationTypes.firstWordToNodeConstructorMap = {}
@@ -2457,8 +2456,7 @@ class nodeTypeDefinitionNode extends AbstractGrammarDefinitionNode {}
 class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   createParser() {
     const map: treeNotationTypes.stringMap = {}
-    map[GrammarConstants.toolingDirective] = TreeNode
-    map[GrammarConstants.todoComment] = TreeNode
+    map[GrammarConstants.comment] = TreeNode
     return new TreeNode.Parser(UnknownNodeTypeNode, map, [
       { regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode },
       { regex: HandGrammarProgram.cellTypeFullRegex, nodeConstructor: cellTypeDefinitionNode }

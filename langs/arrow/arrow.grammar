@@ -1,3 +1,4 @@
+// Cell parsers
 keywordCell
  enum charge cardNumber amount currency description token
 floatCell
@@ -27,6 +28,8 @@ currencyCell
  highlightScope constant.numeric
 commentCell
  highlightScope comment
+
+// Line parsers
 commentNode
  catchAllCellType commentCell
  cells commentCell

@@ -9,7 +9,6 @@ const ignoreFolder = path.join(__dirname, "..", "ignore")
 
 class Kitchen {
   start(port: treeNotationTypes.portNumber) {
-    const planetsPort = 8080
     const app = express()
 
     app.get("/*.js", (req: any, res: any) => {
@@ -34,7 +33,6 @@ class Kitchen {
     app.listen(port, () =>
       console.log(`Running kitchen from '${__dirname}'.
 Use cmd+dblclick to open a site:
-Running PlanetsDb on: http://localhost:${planetsPort}/
 Running kitchen on: http://localhost:${port}/sandbox`)
     )
   }

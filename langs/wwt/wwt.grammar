@@ -1,3 +1,4 @@
+// Cell parsers
 keywordCell
 anyCell
 fieldIdCell
@@ -32,6 +33,8 @@ commentKeywordCell
 commentCell
  extends anyCell
  highlightScope comment
+
+// Line parsers
 wwtNode
  description WorldWideTypes. A work in progress. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
  root

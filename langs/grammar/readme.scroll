@@ -12,4 +12,8 @@ startColumns 1
 * The Tree Language Designer let's you use Grammar to build languages right in your browser.
  https://jtree.treenotation.org/designer/ Tree Language Designer
 
+? Where are the release notes?
+* Here
+ link releaseNotes.html
+
 import ../../footer.scroll

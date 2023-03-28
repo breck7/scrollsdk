@@ -5,7 +5,7 @@ title Kitchen
 * With Kitchen you can run Tree Notation sandbox, Tree Notation Desginer, and other tools locally.
 
 ? How do I start it?
-
 code
- jtree kitchen
+ cd jtree
+ npm run local
 

@@ -475,7 +475,7 @@ abstract class GrammarBackedNode extends TreeNode {
     // Recurse
     this.forEach((node: any) => node.sortFromSortTemplate())
 
-    const def = this.isRoot() ? this.getDefinition().getRootNodeTypeDefinitionNode() : this.getDefinition()
+    const def = this.isRoot() ? this.getDefinition().rootNodeTypeDefinitionNode : this.getDefinition()
     const { sortIndices, sortSections } = def.sortSpec
 
     // Sort and insert section breaks
@@ -2002,7 +2002,7 @@ ${properties.join("\n")}
   }
 
   _getConcreteDescendantDefinitions() {
-    const defs = this._getProgramNodeTypeDefinitionCache()
+    const defs = this.programNodeTypeDefinitionCache
     const id = this.id
     return Object.values(defs).filter(def => {
       return def._doesExtend(id) && !def._isAbstract()
@@ -2079,10 +2079,12 @@ ${properties.join("\n")}
 
     if (!nodeTypeIdsInScope.length) return result
 
-    const allProgramNodeTypeDefinitionsMap = this._getProgramNodeTypeDefinitionCache()
+    const allProgramNodeTypeDefinitionsMap = this.programNodeTypeDefinitionCache
     Object.keys(allProgramNodeTypeDefinitionsMap)
-      .filter(nodeTypeId => allProgramNodeTypeDefinitionsMap[nodeTypeId].isOrExtendsANodeTypeInScope(nodeTypeIdsInScope))
-      .filter(nodeTypeId => !allProgramNodeTypeDefinitionsMap[nodeTypeId]._isAbstract())
+      .filter(nodeTypeId => {
+        const def = allProgramNodeTypeDefinitionsMap[nodeTypeId]
+        return def.isOrExtendsANodeTypeInScope(nodeTypeIdsInScope) && !def._isAbstract()
+      })
       .forEach(nodeTypeId => {
         const def = allProgramNodeTypeDefinitionsMap[nodeTypeId]
         const regex = def._getRegexMatch()
@@ -2091,9 +2093,7 @@ ${properties.join("\n")}
         if (regex) result.regexTests.push({ regex: regex, nodeConstructor: def.getNodeTypeIdFromDefinition() })
         else if (crux) result.firstWordMap[crux] = def
         else if (enumOptions) {
-          enumOptions.forEach(option => {
-            result.firstWordMap[option] = def
-          })
+          enumOptions.forEach(option => (result.firstWordMap[option] = def))
         }
       })
     return result
@@ -2135,19 +2135,19 @@ ${properties.join("\n")}
 
   getNodeTypeDefinitionByNodeTypeId(nodeTypeId: treeNotationTypes.nodeTypeId): AbstractGrammarDefinitionNode {
     // todo: return catch all?
-    const def = this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
+    const def = this.programNodeTypeDefinitionCache[nodeTypeId]
     if (def) return def
     // todo: cleanup
     this.getLanguageDefinitionProgram()._addDefaultCatchAllBlobNode()
-    return this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
+    return this.programNodeTypeDefinitionCache[nodeTypeId]
   }
 
   isDefined(nodeTypeId: string) {
-    return !!this._getProgramNodeTypeDefinitionCache()[nodeTypeId]
+    return !!this.programNodeTypeDefinitionCache[nodeTypeId]
   }
 
   get idToNodeMap() {
-    return this._getProgramNodeTypeDefinitionCache()
+    return this.programNodeTypeDefinitionCache
   }
 
   private _cache_isRoot: boolean
@@ -2158,7 +2158,7 @@ ${properties.join("\n")}
   }
 
   private get _languageRootNode() {
-    return (<HandGrammarProgram>this.root).getRootNodeTypeDefinitionNode()
+    return (<HandGrammarProgram>this.root).rootNodeTypeDefinitionNode
   }
 
   private _isErrorNodeType() {
@@ -2334,8 +2334,8 @@ ${captures}
     return this._cache_ancestorNodeTypeIdsArray
   }
 
-  protected _getProgramNodeTypeDefinitionCache(): { [nodeTypeId: string]: nodeTypeDefinitionNode } {
-    return this.getLanguageDefinitionProgram()._getProgramNodeTypeDefinitionCache()
+  protected get programNodeTypeDefinitionCache(): { [nodeTypeId: string]: nodeTypeDefinitionNode } {
+    return this.getLanguageDefinitionProgram().programNodeTypeDefinitionCache
   }
 
   getDescription(): string {
@@ -2606,7 +2606,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
 
   toReadMe() {
     const languageName = this.getExtensionName()
-    const rootNodeDef = this.getRootNodeTypeDefinitionNode()
+    const rootNodeDef = this.rootNodeTypeDefinitionNode
     const cellTypes = this.getCellTypeDefinitions()
     const nodeTypeFamilyTree = this.getNodeTypeFamilyTree()
     const exampleNode = rootNodeDef.getExamples()[0]
@@ -2662,7 +2662,7 @@ paragraph This readme was auto-generated using the
 
   toBundle() {
     const files: treeNotationTypes.stringMap = {}
-    const rootNodeDef = this.getRootNodeTypeDefinitionNode()
+    const rootNodeDef = this.rootNodeTypeDefinitionNode
     const languageName = this.getExtensionName()
     const example = rootNodeDef.getExamples()[0]
     const sampleCode = example ? example.childrenToString() : ""
@@ -2710,7 +2710,7 @@ ${testCode}`
   }
 
   getTargetExtension() {
-    return this.getRootNodeTypeDefinitionNode().get(GrammarConstants.compilesTo)
+    return this.rootNodeTypeDefinitionNode.get(GrammarConstants.compilesTo)
   }
 
   private _cache_cellTypes: {
@@ -2770,7 +2770,7 @@ ${testCode}`
     }
   }
 
-  getRootNodeTypeDefinitionNode() {
+  get rootNodeTypeDefinitionNode() {
     this._initRootNodeTypeDefinitionNode()
     return this._cache_rootNodeTypeNode
   }
@@ -2791,7 +2791,7 @@ ${testCode}`
   }
 
   getRootNodeTypeId() {
-    return this.getRootNodeTypeDefinitionNode().getNodeTypeIdFromDefinition()
+    return this.rootNodeTypeDefinitionNode.getNodeTypeIdFromDefinition()
   }
 
   getGrammarName(): string | undefined {
@@ -2799,11 +2799,11 @@ ${testCode}`
   }
 
   _getMyInScopeNodeTypeIds() {
-    return super._getMyInScopeNodeTypeIds(this.getRootNodeTypeDefinitionNode())
+    return super._getMyInScopeNodeTypeIds(this.rootNodeTypeDefinitionNode)
   }
 
   protected _getInScopeNodeTypeIds(): treeNotationTypes.nodeTypeId[] {
-    const nodeTypesNode = this.getRootNodeTypeDefinitionNode().getNode(GrammarConstants.inScope)
+    const nodeTypesNode = this.rootNodeTypeDefinitionNode.getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
 
@@ -2820,7 +2820,7 @@ ${testCode}`
     })
   }
 
-  _getProgramNodeTypeDefinitionCache() {
+  get programNodeTypeDefinitionCache() {
     this._initProgramNodeTypeDefinitionCache()
     return this._cache_nodeTypeDefinitions
   }
@@ -2832,15 +2832,15 @@ ${testCode}`
 
   compileAndReturnRootConstructor() {
     if (!this._cache_rootConstructorClass) {
-      const rootDef = this.getRootNodeTypeDefinitionNode()
+      const rootDef = this.rootNodeTypeDefinitionNode
       this._cache_rootConstructorClass = <AbstractRuntimeProgramConstructorInterface>rootDef.getLanguageDefinitionProgram()._compileAndReturnRootNodeTypeConstructor()
     }
     return this._cache_rootConstructorClass
   }
 
   private _getFileExtensions(): string {
-    return this.getRootNodeTypeDefinitionNode().get(GrammarConstants.extensions)
-      ? this.getRootNodeTypeDefinitionNode()
+    return this.rootNodeTypeDefinitionNode.get(GrammarConstants.extensions)
+      ? this.rootNodeTypeDefinitionNode
           .get(GrammarConstants.extensions)
           .split(" ")
           .join(",")
@@ -2863,7 +2863,7 @@ ${testCode}`
     const defs = this.getValidConcreteAndAbstractNodeTypeDefinitions()
     // todo: throw if there is no root node defined
     const nodeTypeClasses = defs.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
-    const rootDef = this.getRootNodeTypeDefinitionNode()
+    const rootDef = this.rootNodeTypeDefinitionNode
     const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(GrammarConstants._rootNodeJsHeader)
     const rootName = rootDef._getGeneratedClassName()
 

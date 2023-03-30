@@ -191,10 +191,7 @@ langs.forEach((lang: string) => {
     const programConstructor = grammarProgram.compileAndReturnRootConstructor()
 
     // Act
-    const simulatedProgram = grammarProgram
-      .getRootNodeTypeDefinitionNode()
-      .synthesizeNode()
-      .join("\n")
+    const simulatedProgram = grammarProgram.rootNodeTypeDefinitionNode.synthesizeNode().join("\n")
 
     // Assert
     const errors = new programConstructor(simulatedProgram).getAllErrors()

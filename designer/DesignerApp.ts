@@ -56,12 +56,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   synthesizeProgramCommand() {
     const grammarProgram = new HandGrammarProgram(this.getGrammarCode())
-    this.setCodeCode(
-      grammarProgram
-        .getRootNodeTypeDefinitionNode()
-        .synthesizeNode()
-        .join("\n")
-    )
+    this.setCodeCode(grammarProgram.rootNodeTypeDefinitionNode.synthesizeNode().join("\n"))
     this._onCodeKeyUp()
   }
 
@@ -86,7 +81,7 @@ class DesignerApp extends AbstractTreeComponent {
     const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(url)
     const grammarProgram = new HandGrammarProgram(grammar.text)
-    const rootNodeDef = grammarProgram.getRootNodeTypeDefinitionNode()
+    const rootNodeDef = grammarProgram.rootNodeTypeDefinitionNode
     const sample = rootNodeDef.getNode("example").childrenToString()
 
     this._setGrammarAndCode(grammar.text, sample)

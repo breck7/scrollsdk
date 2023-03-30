@@ -3082,7 +3082,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
   _getFamilyTree() {
     const tree = new TreeNode()
     this.forEach(node => {
-      const path = node._getAncestorsArray().map((node: AbstractExtendibleTreeNode) => node._getId())
+      const path = node._getAncestorsArray().map((node: AbstractExtendibleTreeNode) => node.id)
       path.reverse()
       tree.touchNode(path.join(" "))
     })
@@ -3119,11 +3119,11 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
   }
 
   _getAncestorSet() {
-    if (!this._cache_ancestorSet) this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def._getId()))
+    if (!this._cache_ancestorSet) this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def.id))
     return this._cache_ancestorSet
   }
 
-  abstract _getId(): string
+  abstract get id(): string
 
   private _cache_ancestorSet: Set<treeNotationTypes.nodeTypeId>
   private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
@@ -3134,20 +3134,20 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     return this._cache_ancestorsArray
   }
 
-  private _getIdThatThisExtends() {
+  private get idThatThisExtends() {
     return this.get(TreeNotationConstants.extends)
   }
 
-  abstract _getIdToNodeMap(): { [id: string]: AbstractExtendibleTreeNode }
+  abstract get idToNodeMap(): { [id: string]: AbstractExtendibleTreeNode }
 
   protected _initAncestorsArrayCache(cannotContainNodes?: AbstractExtendibleTreeNode[]): void {
     if (this._cache_ancestorsArray) return undefined
     if (cannotContainNodes && cannotContainNodes.includes(this)) throw new Error(`Loop detected: '${this.getLine()}' is the ancestor of one of its ancestors.`)
     cannotContainNodes = cannotContainNodes || [this]
     let ancestors: AbstractExtendibleTreeNode[] = [this]
-    const extendedId = this._getIdThatThisExtends()
+    const extendedId = this.idThatThisExtends
     if (extendedId) {
-      const parentNode = this._getIdToNodeMap()[extendedId]
+      const parentNode = this.idToNodeMap[extendedId]
       if (!parentNode) throw new Error(`${extendedId} not found`)
 
       ancestors = ancestors.concat(parentNode._getAncestorsArray(cannotContainNodes))
@@ -3158,18 +3158,18 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
 class ExtendibleTreeNode extends AbstractExtendibleTreeNode {
   private _nodeMapCache: { [id: string]: AbstractExtendibleTreeNode }
-  _getIdToNodeMap() {
-    if (!this.isRoot()) return (<AbstractExtendibleTreeNode>this.root)._getIdToNodeMap()
+  get idToNodeMap() {
+    if (!this.isRoot()) return (<AbstractExtendibleTreeNode>this.root).idToNodeMap
     if (!this._nodeMapCache) {
       this._nodeMapCache = {}
       this.forEach(child => {
-        this._nodeMapCache[child._getId()] = child
+        this._nodeMapCache[child.id] = child
       })
     }
     return this._nodeMapCache
   }
 
-  _getId() {
+  get id() {
     return this.getWord(0)
   }
 }

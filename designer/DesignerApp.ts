@@ -42,7 +42,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   showAutoCompleteCubeCommand() {
-    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this.program.toAutoCompleteCube().toHtmlCube())
+    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this.program.toAutoCompleteCube().asHtmlCube)
   }
 
   visualizeCommand() {
@@ -91,7 +91,7 @@ class DesignerApp extends AbstractTreeComponent {
   async downloadBundleCommand() {
     const grammarProgram = new HandGrammarProgram(this.getGrammarCode())
     const bundle = grammarProgram.toBundle()
-    const languageName = grammarProgram.getExtensionName()
+    const languageName = grammarProgram.extensionName
     return this._makeZipBundle(languageName + ".zip", bundle)
   }
 
@@ -110,7 +110,7 @@ class DesignerApp extends AbstractTreeComponent {
   private _toIceTray(program: any) {
     const columns = program.programWidth
 
-    const cellTypes = new TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
+    const cellTypes = new TreeNode(program.asCellTypeTreeWithNodeConstructorNames)
     const rootCellTypes = new TreeNode(program.toPreludeCellTypeTreeWithNodeConstructorNames())
 
     const table = program.programAsCells
@@ -295,7 +295,7 @@ class DesignerApp extends AbstractTreeComponent {
     const tree = new TreeNode()
     tree.appendLineAndChildren("grammar", this.getGrammarCode())
     tree.appendLineAndChildren("sample", this.getCodeValue())
-    return "#" + encodeURIComponent(tree.toString())
+    return "#" + encodeURIComponent(tree.asString)
   }
 
   _onCodeKeyUp() {
@@ -323,7 +323,7 @@ class DesignerApp extends AbstractTreeComponent {
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach((err: any) => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
-            this.codeInstance.setValue(this.program.toString())
+            this.codeInstance.setValue(this.program.asString)
             this._onCodeKeyUp()
           })
           this.codeWidgets.push(this.codeInstance.addLineWidget(err.lineNumber - 1, el, { coverGutter: false, noHScroll: false }))

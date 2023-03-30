@@ -46,7 +46,7 @@ const main = (grammarCode, code) => {
   logFn(msg)
   logFn("")
   logFn("Errors:")
-  logFn(errors.map(e => e.getMessage()).join("<br>"))
+  logFn(errors.map(err => err.message).join("<br>"))
 
   parseStringTest()
   toStringTest()

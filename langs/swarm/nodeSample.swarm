@@ -29,9 +29,9 @@ test swarmNodeSample
      closeChildren end
  getAllErrors
   assertLengthIs 0
- getRunTimeFirstWordsInScope
+ runTimeFirstWordsInScope
   assertLengthIs 1
  getNodeTypeDefinitionByNodeTypeId toNode
   assertTypeIs object
- getTopNodeTypeDefinitions
+ topNodeTypeDefinitions
   assertLengthIs 3

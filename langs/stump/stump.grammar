@@ -35,7 +35,7 @@ stumpNode
  compilesTo html
  javascript
   compile() {
-   return this.toHtml()
+   return this.asHtml
   }
   _getHtmlJoinByCharacter() {
     return ""
@@ -121,7 +121,7 @@ htmlTagNode
    this.getShadow().addClassToShadow(className)
    if (words.includes(className)) return this
    words.push(className)
-   classNode.setContent(words.join(this.getWordBreakSymbol()))
+   classNode.setContent(words.join(this.wordBreakSymbol))
    return this
   }
   removeClassFromStumpNode(className) {
@@ -216,7 +216,7 @@ htmlTagNode
    // todo
    return this
   }
-  toHtml() {
+  get asHtml() {
    return this._toHtml()
   }
 errorNode

@@ -43,7 +43,7 @@ arrowNode
  sortTemplate Comment charge
  javascript
   compile() {
-   return this.toJsonSubset()
+   return this.asJsonSubset
   }
 errorNode
  baseNodeType errorNode

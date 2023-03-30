@@ -30,7 +30,7 @@ testTree.emptyProgram = equal => {
   const errs = program.getAllErrors()
 
   // Assert
-  if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
+  if (errs.length) console.log(errs.map((err: any) => err.message))
   equal(errs.length, 0, "should be no errors")
 }
 
@@ -40,7 +40,7 @@ testTree.grammarLangBasics = equal => {
   const errs = grammarProgram.getAllErrors()
 
   // Assert
-  if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
+  if (errs.length) console.log(errs.map((err: any) => err.message))
   equal(errs.length, 0, "should be no errors")
 }
 
@@ -105,9 +105,9 @@ testTree.jibberish = equal => {
   equal(program.constructor.name, "jibberishNode", "correct program class")
   const errs = program.getAllErrors()
   equal(errs.length, 0, `should be 0 errors`)
-  if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
+  if (errs.length) console.log(errs.map((err: any) => err.message))
 
-  const defNode = program.handGrammarProgram.getNodeTypeFamilyTree().getNode("abstractTopLevelNode nodeWithConstsNode nodeExpandsConstsNode")
+  const defNode = program.handGrammarProgram.nodeTypeFamilyTree.getNode("abstractTopLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
   equal(defNode.toString(), "nodeExpandsConstsNode", "family tree works")
 
@@ -119,7 +119,7 @@ testTree.jibberish = equal => {
   // Assert
   equal(fooNode.getNodeTypeId(), "fooNode")
   equal(constNode.getNodeTypeId(), "nodeWithConstsNode")
-  equal(constNode.definition.getAncestorNodeTypeIdsArray().join(" "), "abstractTopLevelNode nodeWithConstsNode")
+  equal(constNode.definition.ancestorNodeTypeIdsArray.join(" "), "abstractTopLevelNode nodeWithConstsNode")
   equal(constNode.definition.greeting, "hello world", "constants are also present on grammar definition nodes")
 
   // Assert
@@ -127,7 +127,7 @@ testTree.jibberish = equal => {
   equal(constNode.score1, 28, "constant insts should work")
   equal(constNode.score2, 3.01, "constant floats should work")
   equal(constNode.win, true, "constant booleans should work")
-  const obj = constNode.definition.getConstantsObject()
+  const obj = constNode.definition.constantsObject
   equal(obj.score1, 28, "constants int works")
   equal(obj.score2, 3.01, "constants floats works")
   equal(obj.win, true, "constants bool works")
@@ -138,7 +138,7 @@ testTree.jibberish = equal => {
 world`,
     "constants multiline string works"
   )
-  const obj2 = nodeExpandsConsts.definition.getConstantsObject()
+  const obj2 = nodeExpandsConsts.definition.constantsObject
   equal(obj2.greeting, "hola", "expanding constants works and last wins")
   equal(obj2.win, true, "expanding constants works")
 
@@ -156,7 +156,7 @@ world`,
 missing2 true`)
 
   // Assert
-  equal(programWithNodeTypeBugs.getInvalidNodeTypes().length, 2)
+  equal(programWithNodeTypeBugs.invalidNodeTypes.length, 2)
 
   // Grandchild inheritance
   // Arrange
@@ -166,7 +166,7 @@ missing2 true`)
   equal(
     def
       ._getAncestorsArray()
-      .map((def: any) => def.getNodeTypeIdFromDefinition())
+      .map((def: any) => def.nodeTypeIdFromDefinition)
       .join(" "),
     "h1Node abstractHtmlNode abstractTopLevelNode"
   )
@@ -214,7 +214,7 @@ testTree.jibberishErrors = equal => {
   }
 
   // Act/Asssert
-  equal(programWithBugs.getInvalidNodeTypes().length, 0)
+  equal(programWithBugs.invalidNodeTypes.length, 0)
 }
 
 testTree.toTypeScriptInterface = equal => {
@@ -256,8 +256,8 @@ opSymbolCell intCell intCell intCell`,
   equal(someJibberishProgram.findAllWordsWithCellType("intCell").length, 3)
 
   // Act
-  const nodeTypes = someJibberishProgram.toCellTypeTreeWithNodeConstructorNames()
-  const treeWithNodeTypes = someJibberishProgram.getTreeWithNodeTypes()
+  const nodeTypes = someJibberishProgram.asCellTypeTreeWithNodeConstructorNames
+  const treeWithNodeTypes = someJibberishProgram.asTreeWithNodeTypes
 
   // Assert
   equal(
@@ -359,7 +359,7 @@ cokes 22 11`
   // Assert
   const errs = program.getAllErrors()
   equal(errs.length, 0)
-  if (errs.length) console.log(errs.map((err: any) => err.getMessage()).join("\n"))
+  if (errs.length) console.log(errs.map((err: any) => err.message).join("\n"))
   equal(typeof program.toHighlightScopeTree(), "string")
 }
 

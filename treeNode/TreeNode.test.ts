@@ -537,7 +537,7 @@ testTree.pick = equal => {
 
   // Act/Assert
   equal(tree.pick(["Color", "tint"]).asString, `tint blue\nColor red`)
-  equal(tree.getOneOf(["height"]).asString, "")
+  equal(tree.getOneOf(["height"]).toString(), "")
 }
 
 testTree.setProperties = equal => {
@@ -2177,7 +2177,7 @@ car non-existant`)
     badMap._expandChildren(0, 1)
     equal(true, false, "expanding with missing id should throw")
   } catch (err) {
-    equal(err.asString.includes("non-existant"), true, "expanding with missing id throws")
+    equal(err.toString().includes("non-existant"), true, "expanding with missing id throws")
   }
 }
 
@@ -2344,7 +2344,7 @@ testTree.createFromObject = equal => {
 
   // Assert
   equal(tree.getNode("lowestScore").content, "-10")
-  equal(treeWithDate.getNode("date").content, time.asString)
+  equal(treeWithDate.getNode("date").content, time.toString())
 
   // Test against object with circular references
   // Arrange
@@ -3551,7 +3551,7 @@ testTree.toStringMethod = equal => {
   equal(treeNode.asString, str)
 }
 
-testTree.toHtml = equal => {
+testTree.asHtml = equal => {
   // Arrange
   const tree = new TreeNode("hello world")
   // Act
@@ -3972,7 +3972,7 @@ testTree.mTimeNotIncrementingRegressionTest = equal => {
   const numOfTrials = 100
   // Previously we would get a flakey test about every 10k trials
   for (let i = 0; i < numOfTrials; i++) {
-    node.setContent(i.asString)
+    node.setContent(i.toString())
     let newMTime = node.getLineModifiedTime()
 
     // Assert

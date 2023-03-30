@@ -67,7 +67,7 @@ htmlTagNode
   _getHtmlJoinByCharacter() {
    return ""
   }
-  toHtmlWithSuids() {
+  asHtmlWithSuids() {
    return this._toHtml(undefined, true)
   }
   _getOneLiner() {

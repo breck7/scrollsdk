@@ -1,3 +1,5 @@
+fruitNameCell
+ highlightScope keyword
 fruitNode
  description A useless language to test scoped parsers.
  root
@@ -9,8 +11,6 @@ fruitNode
 abstractFruitNode
  cruxFromId
  cells fruitNameCell
- fruitNameCell
-  highlightScope keyword
 appleNode
  extends abstractFruitNode
  inScope appleNode

@@ -2163,7 +2163,7 @@ ${properties.join("\n")}
 
     const catchAllStr = catchAllConstructor ? catchAllConstructor : this._amIRoot() ? `this._getBlobNodeCatchAllNodeType()` : "undefined"
 
-    const scopedParserJavascript = this.myScopedParserDefinitions.map(def => def.asJavascriptClasss).join("\n\n")
+    const scopedParserJavascript = this.myScopedParserDefinitions.map(def => def.asJavascriptClass).join("\n\n")
 
     return `createParser() {${scopedParserJavascript}
   return new TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
@@ -2560,7 +2560,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   examplesToTestBlocks(programConstructor = this.compileAndReturnRootConstructor(), expectedErrorMessage = "") {
     const testBlocks: { [id: string]: Function } = {}
     this.validConcreteAndAbstractNodeTypeDefinitions.forEach(def =>
-      def.example.forEach(example => {
+      def.examples.forEach(example => {
         const id = def.id + example.content
         testBlocks[id] = (equal: Function) => {
           const exampleProgram = new programConstructor(example.childrenToString())
@@ -2577,7 +2577,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     const rootNodeDef = this.rootNodeTypeDefinitionNode
     const cellTypes = this.cellTypeDefinitions
     const nodeTypeFamilyTree = this.nodeTypeFamilyTree
-    const exampleNode = rootNodeDef.example[0]
+    const exampleNode = rootNodeDef.examples[0]
     return `title ${languageName} Readme
 
 paragraph ${rootNodeDef.description}
@@ -2632,7 +2632,7 @@ paragraph This readme was auto-generated using the
     const files: treeNotationTypes.stringMap = {}
     const rootNodeDef = this.rootNodeTypeDefinitionNode
     const languageName = this.extensionName
-    const example = rootNodeDef.example[0]
+    const example = rootNodeDef.examples[0]
     const sampleCode = example ? example.childrenToString() : ""
 
     files[GrammarBundleFiles.package] = JSON.stringify(
@@ -2810,7 +2810,7 @@ ${testCode}`
   private _rootNodeDefToJavascriptClass(jtreeProductsPath: treeNotationTypes.requirePath, forNodeJs = true): treeNotationTypes.javascriptCode {
     const defs = this.validConcreteAndAbstractNodeTypeDefinitions
     // todo: throw if there is no root node defined
-    const nodeTypeClasses = defs.map(def => def.asJavascriptClasss).join("\n\n")
+    const nodeTypeClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
     const rootDef = this.rootNodeTypeDefinitionNode
     const rootNodeJsHeader = forNodeJs && rootDef._getConcatBlockStringFromExtended(GrammarConstants._rootNodeJsHeader)
     const rootName = rootDef.generatedClassName
@@ -2818,12 +2818,10 @@ ${testCode}`
     if (!rootName) throw new Error(`Root Node Type Has No Name`)
 
     let exportScript = ""
-    if (forNodeJs) {
+    if (forNodeJs)
       exportScript = `module.exports = ${rootName};
 ${rootName}`
-    } else {
-      exportScript = `window.${rootName} = ${rootName}`
-    }
+    else exportScript = `window.${rootName} = ${rootName}`
 
     let nodeJsImports = ``
     if (forNodeJs)

@@ -535,7 +535,7 @@ class AbstractWillowBrowser extends stumpNode {
   }
 
   getPageHtml() {
-    return this.getHtmlStumpNode().toHtmlWithSuids()
+    return this.getHtmlStumpNode().asHtmlWithSuids()
   }
 
   getStumpNodeFromElement(el: any) {}
@@ -1173,7 +1173,7 @@ declare class abstractHtmlTag extends GrammarBackedNode {
   setStumpNodeCss(...args: any[]): void
   shouldCollapse(...args: any[]): void
   stumpNodeHasClass(...args: any[]): void
-  toHtmlWithSuids(...args: any[]): void
+  asHtmlWithSuids(...args: any[]): void
 }
 
 abstract class AbstractTreeComponent extends GrammarBackedNode {

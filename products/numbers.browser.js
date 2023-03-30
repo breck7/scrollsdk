@@ -95,24 +95,10 @@ errorNode
  catchAllCellType errorCell
  baseNodeType errorNode
  cells errorCell`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        numbersNode: numbersNode,
-        abstractArithmeticReducerNode: abstractArithmeticReducerNode,
-        modNode: modNode,
-        timesNode: timesNode,
-        addNode: addNode,
-        substractNode: substractNode,
-        divideNode: divideNode,
-        commentNode: commentNode,
-        commentContentNode: commentContentNode,
-        hashBangNode: hashBangNode,
-        errorNode: errorNode
-      }
-    }
+    static rootNodeTypeConstructor = numbersNode
   }
 
   class abstractArithmeticReducerNode extends GrammarBackedNode {

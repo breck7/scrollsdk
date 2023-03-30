@@ -43,19 +43,10 @@ printNode
 onlyNumbersNode
  catchAllCellType floatCell
  pattern ^[\\d\\. ]+$`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        chuckNode: chuckNode,
-        abstractOperatorNode: abstractOperatorNode,
-        addNode: addNode,
-        multiplyNode: multiplyNode,
-        printNode: printNode,
-        onlyNumbersNode: onlyNumbersNode
-      }
-    }
+    static rootNodeTypeConstructor = chuckNode
   }
 
   class abstractOperatorNode extends GrammarBackedNode {

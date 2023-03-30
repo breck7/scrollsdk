@@ -212,21 +212,10 @@ folderNode
    require("mkdirp").sync(path)
   }
  crux folder`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        stampNode: stampNode,
-        hashbangNode: hashbangNode,
-        catchAllAnyLineNode: catchAllAnyLineNode,
-        dataNode: dataNode,
-        errorNode: errorNode,
-        executableNode: executableNode,
-        fileNode: fileNode,
-        folderNode: folderNode
-      }
-    }
+    static rootNodeTypeConstructor = stampNode
   }
 
   class hashbangNode extends GrammarBackedNode {

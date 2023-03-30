@@ -17,7 +17,7 @@
       return ""
     }
     compile() {
-      return this.getTopDownArray()
+      return this.topDownArray
         .filter(node => node.isSelectorNode)
         .map(child => child.compile())
         .join("")
@@ -64,7 +64,7 @@ hakonNode
    return ""
   }
   compile() {
-   return this.getTopDownArray()
+   return this.topDownArray
     .filter(node => node.isSelectorNode)
     .map(child => child.compile())
     .join("")
@@ -125,20 +125,10 @@ selectorNode
   }\\n\`
   }
  cells selectorCell`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        hakonNode: hakonNode,
-        propertyNode: propertyNode,
-        variableNode: variableNode,
-        browserPrefixPropertyNode: browserPrefixPropertyNode,
-        errorNode: errorNode,
-        commentNode: commentNode,
-        selectorNode: selectorNode
-      }
-    }
+    static rootNodeTypeConstructor = hakonNode
   }
 
   class propertyNode extends GrammarBackedNode {

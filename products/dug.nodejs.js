@@ -95,23 +95,10 @@ memberNode
  cells stringCell
 errorNode
  baseNodeType errorNode`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        dugNode: dugNode,
-        abstractValueNode: abstractValueNode,
-        nullNode: nullNode,
-        numberNode: numberNode,
-        stringNode: stringNode,
-        booleanNode: booleanNode,
-        objectNode: objectNode,
-        arrayNode: arrayNode,
-        memberNode: memberNode,
-        errorNode: errorNode
-      }
-    }
+    static rootNodeTypeConstructor = dugNode
   }
 
   class abstractValueNode extends GrammarBackedNode {

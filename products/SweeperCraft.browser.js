@@ -580,7 +580,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
   }
   // todo: there's probably a better pattern than this.
   _syncBoardToGame() {
-    this.getTopDownArray()
+    this.topDownArray
       .filter(node => node instanceof AbstractSweeperCraftComponent)
       .forEach(node => {
         node._syncBoardToGame()

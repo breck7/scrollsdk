@@ -133,30 +133,10 @@ arrayNode
  description Does this take an array
  cells keywordCell
  crux array`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        wwtNode: wwtNode,
-        commentNode: commentNode,
-        errorNode: errorNode,
-        abstractTypeDeclarationNode: abstractTypeDeclarationNode,
-        enumTypeDeclarationNode: enumTypeDeclarationNode,
-        unionTypeDeclarationNode: unionTypeDeclarationNode,
-        mapTypeDeclarationNode: mapTypeDeclarationNode,
-        typeDeclarationNode: typeDeclarationNode,
-        extendsNode: extendsNode,
-        enumOptionsNode: enumOptionsNode,
-        unionTypesNode: unionTypesNode,
-        keyNode: keyNode,
-        valueNode: valueNode,
-        interfaceDeclarationNode: interfaceDeclarationNode,
-        fieldDeclarationNode: fieldDeclarationNode,
-        optionalNode: optionalNode,
-        arrayNode: arrayNode
-      }
-    }
+    static rootNodeTypeConstructor = wwtNode
   }
 
   class commentNode extends GrammarBackedNode {

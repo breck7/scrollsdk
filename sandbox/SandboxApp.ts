@@ -60,16 +60,16 @@ class SandboxApp extends AbstractTreeComponent {
   updateAllCommand(tree: any, eventSource: string) {
     const { willowBrowser } = this
     if (eventSource !== "treeConsole") willowBrowser.setValueOfElementWithIdHack("treeConsole", tree.toString())
-    if (eventSource !== "toJsonSubset") willowBrowser.setValueOfElementWithIdHack("toJsonSubset", tree.toJsonSubset())
-    if (eventSource !== "csvConsole") willowBrowser.setValueOfElementWithIdHack("csvConsole", tree.toCsv())
-    if (eventSource !== "xmlConsole") willowBrowser.setValueOfElementWithIdHack("xmlConsole", tree.toXml())
-    if (eventSource !== "gridJsonConsole") willowBrowser.setValueOfElementWithIdHack("gridJsonConsole", tree.toGridJson())
-    if (eventSource !== "jsonConsole") willowBrowser.setValueOfElementWithIdHack("jsonConsole", tree.toJson())
-    if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", tree.toOutline())
-    if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", tree.toHtml())
-    if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", tree.toTable())
-    if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", tree.toHtmlCube())
-    if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", tree.toYaml())
+    if (eventSource !== "toJsonSubset") willowBrowser.setValueOfElementWithIdHack("toJsonSubset", tree.asJsonSubset)
+    if (eventSource !== "csvConsole") willowBrowser.setValueOfElementWithIdHack("csvConsole", tree.asCsv)
+    if (eventSource !== "xmlConsole") willowBrowser.setValueOfElementWithIdHack("xmlConsole", tree.asXml)
+    if (eventSource !== "gridJsonConsole") willowBrowser.setValueOfElementWithIdHack("gridJsonConsole", tree.asGridJson)
+    if (eventSource !== "jsonConsole") willowBrowser.setValueOfElementWithIdHack("jsonConsole", tree.asJson)
+    if (eventSource !== "outlineConsole") willowBrowser.setHtmlOfElementWithIdHack("outlineConsole", tree.asOutline)
+    if (eventSource !== "htmlConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlConsole", tree.asHtml)
+    if (eventSource !== "tableConsole") willowBrowser.setHtmlOfElementWithIdHack("tableConsole", tree.asTable)
+    if (eventSource !== "htmlCubeConsole") willowBrowser.setHtmlOfElementWithIdHack("htmlCubeConsole", tree.asHtmlCube)
+    if (eventSource !== "yamlConsole") willowBrowser.setHtmlOfElementWithIdHack("yamlConsole", tree.asYaml)
 
     let win = <any>window
     win.tree = tree
@@ -244,19 +244,19 @@ class tableComponent extends AbstractTreeComponent {
     id treeConsole
     keyUpCommand updateFromTreeConsoleCommand
   td
-   div toGridJson()
+   div asGridJson
    textarea
     id gridJsonConsole
     keyUpCommand updateFromGridJsonConsoleCommand
  tr
   td
-   div toJson()
+   div asJson
    textarea
     id jsonConsole
     keyUpCommand updateFromJsonConsoleCommand
   td
    div
-    span toJsonSubset()
+    span asJsonSubset
     a sample
      clickCommand loadJsonSampleCommand
    textarea
@@ -265,7 +265,7 @@ class tableComponent extends AbstractTreeComponent {
  tr
   td
    div
-    span toCsv()
+    span asCsv
     a sample
      clickCommand loadCsvSampleCommand
    textarea
@@ -273,31 +273,31 @@ class tableComponent extends AbstractTreeComponent {
     keyUpCommand updateFromCsvConsoleCommand
   td
    div
-    span toXml()
+    span asXml
    textarea
     id xmlConsole
     keyUpCommand updateFromXmlConsoleCommand
  tr
   td
-   div toOutline()
+   div asOutline
    pre
     id outlineConsole
   td
-   div toHtml()
+   div asHtml
    pre
     id htmlConsole
  tr
   td
-   div toTable()
+   div asTable
    pre
     id tableConsole
   td
-   div toYaml()
+   div asYaml
    pre
     id yamlConsole
  tr
   td
-   div toHtmlCube()
+   div asHtmlCube
     title Experimental. This is a very specific kind of Tree Language.
    div
     id htmlCubeConsole

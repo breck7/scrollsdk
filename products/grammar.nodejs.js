@@ -128,7 +128,7 @@ grammarNode
    catchAllNodeType anyNode
   anyNode
    baseNodeType blobNode
- version 4.0.0
+ version 5.0.0
  inScope slashCommentNode blankLineNode cellTypeDefinitionNode nodeTypeDefinitionNode
 blankLineNode
  description Blank lines are OK in Grammar.
@@ -395,7 +395,7 @@ nodeTypeDefinitionNode
  pattern ^[a-zA-Z0-9_]+Node$
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
- inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode slashCommentNode
+ inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode slashCommentNode nodeTypeDefinitionNode
  cells nodeTypeIdCell
 _extendsJsClassNode
  extends abstractNodeTypeRuleNode
@@ -434,78 +434,10 @@ extendsCellTypeNode
  // todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell cellTypeIdCell
  single`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        grammarNode: grammarNode,
-        blankLineNode: blankLineNode,
-        abstractCompilerRuleNode: abstractCompilerRuleNode,
-        closeChildrenNode: closeChildrenNode,
-        indentCharacterNode: indentCharacterNode,
-        catchAllCellDelimiterNode: catchAllCellDelimiterNode,
-        openChildrenNode: openChildrenNode,
-        stringTemplateNode: stringTemplateNode,
-        joinChildrenWithNode: joinChildrenWithNode,
-        abstractConstantNode: abstractConstantNode,
-        booleanNode: booleanNode,
-        floatNode: floatNode,
-        intNode: intNode,
-        stringNode: stringNode,
-        abstractNodeTypeRuleNode: abstractNodeTypeRuleNode,
-        compilesToNode: compilesToNode,
-        extensionsNode: extensionsNode,
-        versionNode: versionNode,
-        abstractNonTerminalNodeTypeRuleNode: abstractNonTerminalNodeTypeRuleNode,
-        baseNodeTypeNode: baseNodeTypeNode,
-        catchAllCellTypeNode: catchAllCellTypeNode,
-        cellParserNode: cellParserNode,
-        catchAllNodeTypeNode: catchAllNodeTypeNode,
-        cellsNode: cellsNode,
-        compilerNode: compilerNode,
-        descriptionNode: descriptionNode,
-        exampleNode: exampleNode,
-        sortTemplateNode: sortTemplateNode,
-        extendsNodeTypeNode: extendsNodeTypeNode,
-        frequencyNode: frequencyNode,
-        inScopeNode: inScopeNode,
-        javascriptNode: javascriptNode,
-        abstractParseRuleNode: abstractParseRuleNode,
-        cruxNode: cruxNode,
-        cruxFromIdNode: cruxFromIdNode,
-        patternNode: patternNode,
-        requiredNode: requiredNode,
-        abstractValidationRuleNode: abstractValidationRuleNode,
-        singleNode: singleNode,
-        uniqueLineNode: uniqueLineNode,
-        uniqueFirstWordNode: uniqueFirstWordNode,
-        listDelimiterNode: listDelimiterNode,
-        contentKeyNode: contentKeyNode,
-        childrenKeyNode: childrenKeyNode,
-        tagsNode: tagsNode,
-        catchAllErrorNode: catchAllErrorNode,
-        catchAllExampleLineNode: catchAllExampleLineNode,
-        catchAllJavascriptCodeLineNode: catchAllJavascriptCodeLineNode,
-        catchAllMultilineStringConstantNode: catchAllMultilineStringConstantNode,
-        cellTypeDefinitionNode: cellTypeDefinitionNode,
-        enumFromCellTypesNode: enumFromCellTypesNode,
-        enumNode: enumNode,
-        examplesNode: examplesNode,
-        cellMinNode: cellMinNode,
-        cellMaxNode: cellMaxNode,
-        highlightScopeNode: highlightScopeNode,
-        rootFlagNode: rootFlagNode,
-        nodeTypeDefinitionNode: nodeTypeDefinitionNode,
-        _extendsJsClassNode: _extendsJsClassNode,
-        _rootNodeJsHeaderNode: _rootNodeJsHeaderNode,
-        regexNode: regexNode,
-        reservedWordsNode: reservedWordsNode,
-        commentLineNode: commentLineNode,
-        slashCommentNode: slashCommentNode,
-        extendsCellTypeNode: extendsCellTypeNode
-      }
-    }
+    static rootNodeTypeConstructor = grammarNode
   }
 
   class blankLineNode extends GrammarBackedNode {
@@ -974,7 +906,7 @@ extendsCellTypeNode
           _rootNodeJsHeader: _rootNodeJsHeaderNode,
           "//": slashCommentNode
         }),
-        undefined
+        [{ regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }]
       )
     }
     get nodeTypeIdCell() {

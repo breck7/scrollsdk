@@ -1,6 +1,6 @@
 {
   "name": "jtree",
-  "version": "70.0.0",
+  "version": "71.0.0",
   "description": "Simplify your code with Tree Notation. This jtree package includes a Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages, as well as sample languages, implemented in TypeScript.",
   "types": "./built/jtree.node.d.ts",
   "prettier": {

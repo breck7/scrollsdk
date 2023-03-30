@@ -25,13 +25,13 @@ test grammarSample
     compiler
      stringTemplate to {wordCell}
      closeChildren end
- getRunTimeFirstWordsInScope
+ runTimeFirstWordsInScope
   assertLengthIs 1
  getNodeTypeDefinitionByNodeTypeId toNode
   assertTypeIs object
- getTopNodeTypeDefinitions
+ topNodeTypeDefinitions
   assertLengthIs 3
- getExtensionName
+ extensionName
   assertStringIs testlang
  toSublimeSyntaxFile
   assertTypeIs string

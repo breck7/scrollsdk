@@ -514,13 +514,13 @@ class AbstractWillowBrowser extends stumpNode {
 
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
-    const nodes = this.getTopDownArray()
+    const nodes = this.topDownArray
     const titleNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.titleTag)
     return titleNode ? titleNode.content : ""
   }
 
   setWindowTitle(value: string) {
-    const nodes = this.getTopDownArray()
+    const nodes = this.topDownArray
     const headNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
@@ -535,7 +535,7 @@ class AbstractWillowBrowser extends stumpNode {
   }
 
   getPageHtml() {
-    return this.getHtmlStumpNode().toHtmlWithSuids()
+    return this.getHtmlStumpNode().asHtmlWithSuids()
   }
 
   getStumpNodeFromElement(el: any) {}
@@ -1173,7 +1173,7 @@ declare class abstractHtmlTag extends GrammarBackedNode {
   setStumpNodeCss(...args: any[]): void
   shouldCollapse(...args: any[]): void
   stumpNodeHasClass(...args: any[]): void
-  toHtmlWithSuids(...args: any[]): void
+  asHtmlWithSuids(...args: any[]): void
 }
 
 abstract class AbstractTreeComponent extends GrammarBackedNode {
@@ -1275,7 +1275,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
     // todo: cleanup. feels hacky.
     const clone = new TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
 
-    clone.getTopDownArray().forEach((node: any) => {
+    clone.topDownArray.forEach((node: any) => {
       if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
     })
     return clone.toString()
@@ -1756,7 +1756,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   span This app is powered by the
   a Tree Component Framework
    href https://github.com/treenotation/jtree/tree/main/treeComponentFramework
- p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
+ p ${app.numberOfLines} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern
 ${app.toString(3)}`

@@ -4,6 +4,10 @@ startColumns 4
 
 * Here's a list of the notable changes in Grammar.
 
+# 5.0.0 2023-3-30
+- 🎉 You can now add scoped line parsers inside other line parser definitions.
+- ⚠️ BREAKING: A lot of methods that were formerly `getX()` have been changed to getters like `get x()`.
+
 # 4.0.0 2023-3-28
 - 🎉 blank lines are now OK
 - 🎉 added `//` comments

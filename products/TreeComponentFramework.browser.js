@@ -398,12 +398,12 @@ class AbstractWillowBrowser extends stumpNode {
   async appendScript(url) {}
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
-    const nodes = this.getTopDownArray()
+    const nodes = this.topDownArray
     const titleNode = nodes.find(node => node.firstWord === WillowConstants.titleTag)
     return titleNode ? titleNode.content : ""
   }
   setWindowTitle(value) {
-    const nodes = this.getTopDownArray()
+    const nodes = this.topDownArray
     const headNode = nodes.find(node => node.firstWord === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
@@ -415,7 +415,7 @@ class AbstractWillowBrowser extends stumpNode {
     // noop in willow
   }
   getPageHtml() {
-    return this.getHtmlStumpNode().toHtmlWithSuids()
+    return this.getHtmlStumpNode().asHtmlWithSuids()
   }
   getStumpNodeFromElement(el) {}
   setPasteHandler(fn) {
@@ -973,7 +973,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
   getStumpNodeStringWithoutCssAndSvg() {
     // todo: cleanup. feels hacky.
     const clone = new TreeNode(this.willowBrowser.getHtmlStumpNode().toString())
-    clone.getTopDownArray().forEach(node => {
+    clone.topDownArray.forEach(node => {
       if (node.firstWord === "styleTag" || (node.content || "").startsWith("<svg ")) node.destroy()
     })
     return clone.toString()
@@ -1375,7 +1375,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
   span This app is powered by the
   a Tree Component Framework
    href https://github.com/treenotation/jtree/tree/main/treeComponentFramework
- p ${app.getNumberOfLines()} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
+ p ${app.numberOfLines} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern
 ${app.toString(3)}`

@@ -123,7 +123,7 @@ xColumnNameNode
  tags doNotSynthesize
  javascript
   getRunTimeEnumOptions(cell) {
-   return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
+   return cell.cellTypeId === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
  extends abstractTopLevelNode
  crux xColumnName
@@ -176,41 +176,10 @@ scoresNode
  catchAllCellType intCell
  cells topLevelPropertyCell
  crux scores`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        jibberishNode: jibberishNode,
-        abstractBaseClassNode: abstractBaseClassNode,
-        extendsAbstractNode: extendsAbstractNode,
-        abstractTopLevelNode: abstractTopLevelNode,
-        abstractColorPropertiesNode: abstractColorPropertiesNode,
-        hueNode: hueNode,
-        saturationNode: saturationNode,
-        constrastNode: constrastNode,
-        abstractHtmlNode: abstractHtmlNode,
-        h1Node: h1Node,
-        addNode: addNode,
-        plusNode: plusNode,
-        blockNode: blockNode,
-        scoreBlockNode: scoreBlockNode,
-        toNode: toNode,
-        fooNode: fooNode,
-        xColumnNameNode: xColumnNameNode,
-        lightbulbStateNode: lightbulbStateNode,
-        nestedNode: nestedNode,
-        nodeWithConstsNode: nodeWithConstsNode,
-        nodeExpandsConstsNode: nodeExpandsConstsNode,
-        someCodeNode: someCodeNode,
-        typeNode: typeNode,
-        contentNode: contentNode,
-        errorNode: errorNode,
-        lineOfCodeNode: lineOfCodeNode,
-        textNode: textNode,
-        scoresNode: scoresNode
-      }
-    }
+    static rootNodeTypeConstructor = jibberishNode
   }
 
   class abstractBaseClassNode extends GrammarBackedNode {}
@@ -325,7 +294,7 @@ scoresNode
       return this.getWord(1)
     }
     getRunTimeEnumOptions(cell) {
-      return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
+      return cell.cellTypeId === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
     }
   }
 

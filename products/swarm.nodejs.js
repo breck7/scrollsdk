@@ -366,37 +366,10 @@ todoNode
  catchAllNodeType todoNode
  crux todo
  cells todoKeywordCell`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        swarmNode: swarmNode,
-        abstractAssertionNode: abstractAssertionNode,
-        assertParagraphIsNode: assertParagraphIsNode,
-        assertLengthIsNode: assertLengthIsNode,
-        assertStringExcludesNode: assertStringExcludesNode,
-        assertStringIncludesNode: assertStringIncludesNode,
-        assertStringIsNode: assertStringIsNode,
-        assertTypeIsNode: assertTypeIsNode,
-        abstractArrangeFlagNode: abstractArrangeFlagNode,
-        arrangeAsyncNode: arrangeAsyncNode,
-        arrangeRequireNode: arrangeRequireNode,
-        arrangeStaticNode: arrangeStaticNode,
-        abstractTestBlockNode: abstractTestBlockNode,
-        testNode: testNode,
-        testOnlyNode: testOnlyNode,
-        skipTestNode: skipTestNode,
-        hashbangNode: hashbangNode,
-        arrangeNode: arrangeNode,
-        withParagraphNode: withParagraphNode,
-        actNode: actNode,
-        constructWithParagraphNode: constructWithParagraphNode,
-        errorNode: errorNode,
-        paragraphLineNode: paragraphLineNode,
-        todoNode: todoNode
-      }
-    }
+    static rootNodeTypeConstructor = swarmNode
   }
 
   class abstractAssertionNode extends GrammarBackedNode {

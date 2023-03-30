@@ -2,7 +2,7 @@ class DesignerApp extends AbstractTreeComponent {
   constructor() {
     super(...arguments)
     ///
-    this.languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt swarm project stamp grammar config jibberish numbers poop".split(" ")
+    this.languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt fruit swarm project stamp grammar config jibberish numbers poop".split(" ")
     this._localStorageKeys = {
       grammarConsole: "grammarConsole",
       codeConsole: "codeConsole"
@@ -33,7 +33,7 @@ class DesignerApp extends AbstractTreeComponent {
     this.willowBrowser.setValueOfElementWithIdHack("compileResultsDiv", this.program.compile())
   }
   showAutoCompleteCubeCommand() {
-    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this.program.toAutoCompleteCube().toHtmlCube())
+    this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this.program.toAutoCompleteCube().asHtmlCube)
   }
   visualizeCommand() {
     this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
@@ -44,12 +44,7 @@ class DesignerApp extends AbstractTreeComponent {
   }
   synthesizeProgramCommand() {
     const grammarProgram = new HandGrammarProgram(this.getGrammarCode())
-    this.setCodeCode(
-      grammarProgram
-        .getRootNodeTypeDefinitionNode()
-        .synthesizeNode()
-        .join("\n")
-    )
+    this.setCodeCode(grammarProgram.rootNodeTypeDefinitionNode.synthesizeNode().join("\n"))
     this._onCodeKeyUp()
   }
   resetCommand() {
@@ -69,7 +64,7 @@ class DesignerApp extends AbstractTreeComponent {
     const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(url)
     const grammarProgram = new HandGrammarProgram(grammar.text)
-    const rootNodeDef = grammarProgram.getRootNodeTypeDefinitionNode()
+    const rootNodeDef = grammarProgram.rootNodeTypeDefinitionNode
     const sample = rootNodeDef.getNode("example").childrenToString()
     this._setGrammarAndCode(grammar.text, sample)
   }
@@ -77,7 +72,7 @@ class DesignerApp extends AbstractTreeComponent {
   async downloadBundleCommand() {
     const grammarProgram = new HandGrammarProgram(this.getGrammarCode())
     const bundle = grammarProgram.toBundle()
-    const languageName = grammarProgram.getExtensionName()
+    const languageName = grammarProgram.extensionName
     return this._makeZipBundle(languageName + ".zip", bundle)
   }
   async _makeZipBundle(fileName, bundle) {
@@ -91,11 +86,10 @@ class DesignerApp extends AbstractTreeComponent {
     })
   }
   _toIceTray(program) {
-    const columns = program.getProgramWidth()
-    const cellTypes = new TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
+    const columns = program.programWidth
+    const cellTypes = new TreeNode(program.asCellTypeTreeWithNodeConstructorNames)
     const rootCellTypes = new TreeNode(program.toPreludeCellTypeTreeWithNodeConstructorNames())
-    const table = program
-      .getProgramAsCells()
+    const table = program.programAsCells
       .map((line, lineIndex) => {
         const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
         let cells = `<td class="iceTrayNodeType">${nodeType}</td>` // todo: add ancestry
@@ -232,7 +226,7 @@ class DesignerApp extends AbstractTreeComponent {
     const tree = new TreeNode()
     tree.appendLineAndChildren("grammar", this.getGrammarCode())
     tree.appendLineAndChildren("sample", this.getCodeValue())
-    return "#" + encodeURIComponent(tree.toString())
+    return "#" + encodeURIComponent(tree.asString)
   }
   _onCodeKeyUp() {
     const { willowBrowser } = this
@@ -254,10 +248,10 @@ class DesignerApp extends AbstractTreeComponent {
         .slice(0, 1) // Only show 1 error at a time. Otherwise UX is not fun.
         .forEach(err => {
           const el = err.getCodeMirrorLineWidgetElement(() => {
-            this.codeInstance.setValue(this.program.toString())
+            this.codeInstance.setValue(this.program.asString)
             this._onCodeKeyUp()
           })
-          this.codeWidgets.push(this.codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
+          this.codeWidgets.push(this.codeInstance.addLineWidget(err.lineNumber - 1, el, { coverGutter: false, noHScroll: false }))
         })
       const info = this.codeInstance.getScrollInfo()
       const after = this.codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top

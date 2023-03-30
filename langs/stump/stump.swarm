@@ -15,7 +15,7 @@ test stumpBasics
      span Hello more
  getAllErrors
   assertLengthIs 0
- toHtml
+ asHtml
   assertParagraphIs
    <html id="bam" class="someClass">
     <body>
@@ -49,7 +49,7 @@ test div
    div hello world
     id bam
     class someClass
- toHtml
+ asHtml
   assertParagraphIs
    <div id="bam" class="someClass">hello world</div>
    
@@ -61,12 +61,12 @@ test uids
     id bam
     class someClass
  getFirstNode
-  toHtmlWithSuids
+  asHtmlWithSuids
    assertTypeIs string
    assertStringIncludes stumpUid
   isStumpNodeCheckbox
    assertStringIs false
-  toHtml
+  asHtml
    assertTypeIs string
   isInputType
    assertStringIs false

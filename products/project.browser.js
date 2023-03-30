@@ -190,20 +190,10 @@ fileNode
   }
  cells fileConstantCell
  crux file`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        projectNode: projectNode,
-        abstractTermNode: abstractTermNode,
-        absoluteNode: absoluteNode,
-        externalNode: externalNode,
-        relativeNode: relativeNode,
-        errorNode: errorNode,
-        fileNode: fileNode
-      }
-    }
+    static rootNodeTypeConstructor = projectNode
   }
 
   class abstractTermNode extends GrammarBackedNode {

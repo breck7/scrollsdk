@@ -273,7 +273,7 @@ class Builder extends TreeNode {
   }
 
   produceAllLangs() {
-    const langs = `arrow chuck dug dumbdown fire grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
+    const langs = `arrow chuck dug dumbdown fire fruit grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
     langs.forEach(lang => this.produceLang(lang))
   }
 
@@ -319,23 +319,11 @@ class Builder extends TreeNode {
 
     const fileTestTree: any = {}
 
-    allTestFiles
-      .filter(file => file.endsWith(".grammar"))
-      .forEach(file => {
-        fileTestTree[file] = this.makeGrammarFileTestTree(file)
-      })
+    allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => (fileTestTree[file] = this.makeGrammarFileTestTree(file)))
 
-    allTestFiles
-      .filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts"))
-      .forEach(file => {
-        fileTestTree[file] = require(file).testTree
-      })
+    allTestFiles.filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts")).forEach(file => (fileTestTree[file] = require(file).testTree))
 
-    allTestFiles
-      .filter(file => file.endsWith(".swarm"))
-      .forEach(file => {
-        Object.assign(fileTestTree, new swarm(Disk.read(file)).compileToRacer(file))
-      })
+    allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => Object.assign(fileTestTree, new swarm(Disk.read(file)).compileToRacer(file)))
     return fileTestTree
   }
 

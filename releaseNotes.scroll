@@ -4,6 +4,21 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 71.0.0 2023-3-30
+* This was a refactor of Grammar to support scoped parsers. I also took the opportunity to switch more `get()` methods to getters.
+- 🎉 Scoped parsers in Grammar 5
+- ⚠️ BREAKING: A lot of methods that were formerly `getX()` have been changed to getters like `get x()`:
+ - getTopDownArray > topDownArray
+ - getNext > next
+ - getPrevious > previous
+ - getDefinition > definition
+ - getNodeTypeId > nodeTypeId
+ - getTableNameIfAny > tableNameIfAny
+ - getMessage > message (on errors)
+- ⚠️ BREAKING: A lot of zero parameter methods that were formerly `toX()` have been changed to getters like `get asX()`:
+ - toString > asString (toString is maintained for compability with idiomatic Javascript)
+ - toCsv > asCsv; toTsv > asTsv; toSsv > asSsv
+
 # 70.0.0 2023-3-28
 - ⚠️ Big changes to Grammar. See the new Grammar Release Notes.
  link langs/grammar/relaseNotes.html Grammar Release Notes
@@ -953,7 +968,7 @@ code
 - ⚠️ grammars should all define a "cellType any" if they have leave any firstCellTypes undefined
 - ⚠️ getKeyword is now getFirstWord, getKeywords is getFirstWords, hasDuplicateKeywords is now hasDuplicateFirstWords, setKeyword is now setFirstWord, getKeywordPath is getFirstWordPath, pathVectorToKeywordPath is pathVectorToFirstWordPath, getKeywordMap is getFirstWordMap, keywordSort is firstWordSort
 - ⚠️ in grammar, keyword is nodeType, catchAllKeyword is catchAllNodeType, keywords is nodeTypes, keywordOrder is nodeTypeOrder
-- ⚠️ def.getId() is now def.getNodeTypeIdFromDefinition(), def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
+- ⚠️ `def.getId` is now `def.getNodeTypeIdFromDefinition`, def.getTopNodeTypes is now def.getTopNodeTypeIds, def.getKeywordDefinitionByName is now def.getNodeTypeDefinitionByName, def.getRunTimeKeywordMap is now def.getRunTimeFirstWordMap, def.getRunTimeKeywordNames is def.getRunTimeNodeTypeNames, def.getRunTimeKeywordMapWithDefinitions is def.getRunTimeFirstWordMapWithDefinitions, def.isOrExtendsAKeywordInScope is def.isOrExtendsANodeTypeInScope, def.getKeywordInheritanceSet is def.getNodeTypeInheritanceSet, def.getSyntaxContextId is def.getSublimeSyntaxContextId
 - ⚠️ program.getKeywordDefinitions is program def.getNodeTypeDefinitions, program.getKeywordUsage is now getNodeTypeUsage, program.getKeywordDefinitionByKeywordPath is program.getNodeTypeDefinitionByFirstWordPath, program.getInvalidKeywords is program.getInvalidNodeTypes, program.getInPlaceSyntaxTreeWithNodeTypes is program.getInPlaceCellTypeTreeWithNodeConstructorNames, program.getInPlaceSyntaxTree is now program.getInPlaceCellTypeTree
 - ⚠️ in stump, findStumpNodeByKeyword is now findStumpNodeByFirstWord
 - ⚠️ getLineSyntax is now getLineCellTypes
@@ -1154,7 +1169,7 @@ code
 - 🧹 Default sandbox port now 3333
 
 # 15.2.0 2019-02-10
-- 🎉 added getNumberOfLines() method
+- 🎉 added `getNumberOfLines` method
 - 🎉 GrammarProgram speedup 20%+
 - 🎉 getProgramErrors speedup 10x+
 - 🎉 toString speedup 5%+

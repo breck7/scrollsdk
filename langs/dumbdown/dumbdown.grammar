@@ -63,7 +63,7 @@ codeNode
  extends abstractTopLevelNode
  javascript
   compile() {
-   return `<code>${this.getIndentation() + this.childrenToString()}</code>`
+   return `<code>${this.indentation + this.childrenToString()}</code>`
   }
  crux code
 listNode

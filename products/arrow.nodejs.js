@@ -26,7 +26,7 @@
       )
     }
     compile() {
-      return this.toJsonSubset()
+      return this.asJsonSubset
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
 keywordCell
@@ -73,7 +73,7 @@ arrowNode
  sortTemplate Comment charge
  javascript
   compile() {
-   return this.toJsonSubset()
+   return this.asJsonSubset
   }
 errorNode
  baseNodeType errorNode
@@ -108,23 +108,10 @@ descriptionNode
 tokenNode
  cruxFromId
  cells keywordCell tokenCell`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        commentNode: commentNode,
-        arrowNode: arrowNode,
-        errorNode: errorNode,
-        chargeNode: chargeNode,
-        abstractChargeAttributeNode: abstractChargeAttributeNode,
-        cardNumberNode: cardNumberNode,
-        amountNode: amountNode,
-        currencyNode: currencyNode,
-        descriptionNode: descriptionNode,
-        tokenNode: tokenNode
-      }
-    }
+    static rootNodeTypeConstructor = arrowNode
   }
 
   class errorNode extends GrammarBackedNode {

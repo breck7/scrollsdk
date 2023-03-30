@@ -397,53 +397,10 @@ errorNode
  baseNodeType errorNode
  compiler
   stringTemplate // error`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        fireNode: fireNode,
-        abstractNonTerminalNode: abstractNonTerminalNode,
-        abstractJsblockNode: abstractJsblockNode,
-        blockNode: blockNode,
-        functionNode: functionNode,
-        ifNode: ifNode,
-        whileNode: whileNode,
-        abstractTerminalNode: abstractTerminalNode,
-        abstractAssignmentNode: abstractAssignmentNode,
-        abstractArithmeticNode: abstractArithmeticNode,
-        divideNode: divideNode,
-        moduloNode: moduloNode,
-        multiplyNode: multiplyNode,
-        substractNode: substractNode,
-        addNode: addNode,
-        abstractBooleanOperatorNode: abstractBooleanOperatorNode,
-        greaterThanNode: greaterThanNode,
-        greaterThanOrEqualNode: greaterThanOrEqualNode,
-        lessThanNode: lessThanNode,
-        lessThanOrEqualNode: lessThanOrEqualNode,
-        sumNode: sumNode,
-        booleanNode: booleanNode,
-        callFunctionAndSetNode: callFunctionAndSetNode,
-        callMethodAndSetNode: callMethodAndSetNode,
-        joinNode: joinNode,
-        mutableNumberNode: mutableNumberNode,
-        numberNode: numberNode,
-        numbersNode: numbersNode,
-        stringNode: stringNode,
-        callFunctionNode: callFunctionNode,
-        decrementNode: decrementNode,
-        dumpIdentifierNode: dumpIdentifierNode,
-        exportNode: exportNode,
-        incrementNode: incrementNode,
-        printNumberNode: printNumberNode,
-        printStringNode: printStringNode,
-        requireNode: requireNode,
-        returnNode: returnNode,
-        hashbangNode: hashbangNode,
-        errorNode: errorNode
-      }
-    }
+    static rootNodeTypeConstructor = fireNode
   }
 
   class abstractNonTerminalNode extends GrammarBackedNode {

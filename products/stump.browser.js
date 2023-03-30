@@ -122,7 +122,7 @@
       )
     }
     compile() {
-      return this.toHtml()
+      return this.asHtml
     }
     _getHtmlJoinByCharacter() {
       return ""
@@ -164,7 +164,7 @@ stumpNode
  compilesTo html
  javascript
   compile() {
-   return this.toHtml()
+   return this.asHtml
   }
   _getHtmlJoinByCharacter() {
     return ""
@@ -196,7 +196,7 @@ htmlTagNode
   _getHtmlJoinByCharacter() {
    return ""
   }
-  toHtmlWithSuids() {
+  asHtmlWithSuids() {
    return this._toHtml(undefined, true)
   }
   _getOneLiner() {
@@ -240,7 +240,7 @@ htmlTagNode
    return this.destroy()
   }
   getNodeByGuid(guid) {
-   return this.getTopDownArray().find(node => node._getUid() === guid)
+   return this.topDownArray.find(node => node._getUid() === guid)
   }
   addClassToStumpNode(className) {
    const classNode = this.touchNode("class")
@@ -250,7 +250,7 @@ htmlTagNode
    this.getShadow().addClassToShadow(className)
    if (words.includes(className)) return this
    words.push(className)
-   classNode.setContent(words.join(this.getWordBreakSymbol()))
+   classNode.setContent(words.join(this.wordBreakSymbol))
    return this
   }
   removeClassFromStumpNode(className) {
@@ -293,7 +293,7 @@ htmlTagNode
    return this.findStumpNodesByChild(line)[0]
   }
   findStumpNodeByChildString(line) {
-   return this.getTopDownArray().find(node =>
+   return this.topDownArray.find(node =>
     node
      .map(child => child.getLine())
      .join("\\n")
@@ -304,16 +304,16 @@ htmlTagNode
    return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
   }
   hasLine(line) {
    return this.getChildren().some(node => node.getLine() === line)
   }
   findStumpNodesByChild(line) {
-   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
   }
   findStumpNodesWithClass(className) {
-   return this.getTopDownArray().filter(
+   return this.topDownArray.filter(
     node =>
      node.doesExtend("htmlTagNode") &&
      node.has("class") &&
@@ -345,7 +345,7 @@ htmlTagNode
    // todo
    return this
   }
-  toHtml() {
+  get asHtml() {
    return this._toHtml()
   }
 errorNode
@@ -396,22 +396,10 @@ bernNode
   }
   getTextContent() {return ""}
  cells bernKeywordCell`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        stumpNode: stumpNode,
-        blankLineNode: blankLineNode,
-        htmlTagNode: htmlTagNode,
-        errorNode: errorNode,
-        componentDefinitionNode: componentDefinitionNode,
-        htmlAttributeNode: htmlAttributeNode,
-        stumpExtendedAttributeNode: stumpExtendedAttributeNode,
-        lineOfHtmlContentNode: lineOfHtmlContentNode,
-        bernNode: bernNode
-      }
-    }
+    static rootNodeTypeConstructor = stumpNode
   }
 
   class blankLineNode extends GrammarBackedNode {
@@ -741,7 +729,7 @@ bernNode
     _getHtmlJoinByCharacter() {
       return ""
     }
-    toHtmlWithSuids() {
+    asHtmlWithSuids() {
       return this._toHtml(undefined, true)
     }
     _getOneLiner() {
@@ -783,7 +771,7 @@ bernNode
       return this.destroy()
     }
     getNodeByGuid(guid) {
-      return this.getTopDownArray().find(node => node._getUid() === guid)
+      return this.topDownArray.find(node => node._getUid() === guid)
     }
     addClassToStumpNode(className) {
       const classNode = this.touchNode("class")
@@ -793,7 +781,7 @@ bernNode
       this.getShadow().addClassToShadow(className)
       if (words.includes(className)) return this
       words.push(className)
-      classNode.setContent(words.join(this.getWordBreakSymbol()))
+      classNode.setContent(words.join(this.wordBreakSymbol))
       return this
     }
     removeClassFromStumpNode(className) {
@@ -836,7 +824,7 @@ bernNode
       return this.findStumpNodesByChild(line)[0]
     }
     findStumpNodeByChildString(line) {
-      return this.getTopDownArray().find(node =>
+      return this.topDownArray.find(node =>
         node
           .map(child => child.getLine())
           .join("\n")
@@ -847,16 +835,16 @@ bernNode
       return this._findStumpNodesByBase(firstWord)[0]
     }
     _findStumpNodesByBase(firstWord) {
-      return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
     }
     hasLine(line) {
       return this.getChildren().some(node => node.getLine() === line)
     }
     findStumpNodesByChild(line) {
-      return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
     }
     findStumpNodesWithClass(className) {
-      return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.has("class") && node.getNode("class").words.includes(className))
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.has("class") && node.getNode("class").words.includes(className))
     }
     getShadowClass() {
       return this.parent.getShadowClass()
@@ -880,7 +868,7 @@ bernNode
       // todo
       return this
     }
-    toHtml() {
+    get asHtml() {
       return this._toHtml()
     }
   }

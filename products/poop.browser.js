@@ -17,7 +17,7 @@
     compile() {
       let day = ""
       let lastTime = ""
-      const rows = this.getTopDownArray()
+      const rows = this.topDownArray
         .map(node => {
           if (node.doesExtend("dayNode")) {
             day = node.getDay()
@@ -60,7 +60,7 @@ poopNode
   compile() {
    let day = ""
    let lastTime = ""
-   const rows = this.getTopDownArray()
+   const rows = this.topDownArray
     .map(node => {
      if (node.doesExtend("dayNode")) {
       day = node.getDay()
@@ -145,22 +145,10 @@ dayNode
     .trim()
     .replace(/ /g, "/")
   }`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        poopNode: poopNode,
-        abstractEventNode: abstractEventNode,
-        bowelNode: bowelNode,
-        bladderNode: bladderNode,
-        bottleNode: bottleNode,
-        sleep4Node: sleep4Node,
-        awakeNode: awakeNode,
-        memoryNode: memoryNode,
-        dayNode: dayNode
-      }
-    }
+    static rootNodeTypeConstructor = poopNode
   }
 
   class abstractEventNode extends GrammarBackedNode {

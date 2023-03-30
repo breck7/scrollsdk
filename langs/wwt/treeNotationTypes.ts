@@ -16,12 +16,12 @@ namespace treeNotationTypes {
     getLine(): line
     getExtension(): fileExtension
     getNode(): treeNode
-    getErrorTypeName(): string
-    getCellIndex(): positiveInt
+    errorTypeName: string
+    cellIndex: positiveInt
     hasSuggestion(): boolean
-    getSuggestionMessage(): string
+    suggestionMessage: string
     applySuggestion(): void
-    getMessage(): string
+    message: string
   }
 
   export interface regexTest {
@@ -34,7 +34,7 @@ namespace treeNotationTypes {
     nodeConstructor: string
   }
 
-	export interface SerializedTreeNode {
+  export interface SerializedTreeNode {
     cells?: string[]
     children?: SerializedTreeNode[]
   }
@@ -48,7 +48,7 @@ namespace treeNotationTypes {
   export declare type queryStringMap = { [firstWord: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string
-  export declare type dataTable = (any[])[]
+  export declare type dataTable = any[][]
   export declare type delimiter = string
 
   export declare type rawRowJavascriptObject = Object

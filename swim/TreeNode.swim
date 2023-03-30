@@ -3,7 +3,7 @@ aToStringTest
   hello
    world
  act
-  new TreeNode(arrange).toString()
+  new TreeNode(arrange).asString
  assert
   hello
    world
@@ -12,7 +12,7 @@ aTotalLineCountTest
   hello
    world
  act
-  new TreeNode(arrange).getNumberOfLines().toString()
+  new TreeNode(arrange).numberOfLines.toString()
  assert
   2
 aToCsvTest
@@ -24,7 +24,7 @@ aToCsvTest
    team af
    score 28
  act
-  new TreeNode(arrange).toCsv()
+  new TreeNode(arrange).asCsv
  assert
   team,score
   ne,3
@@ -35,7 +35,7 @@ aFromCsvTest
   ne,3
   af,28
  act
-  TreeNode.fromCsv(arrange).toString()
+  TreeNode.fromCsv(arrange).asString
  assert
   0
    team ne
@@ -66,7 +66,7 @@ aReverseTest
   hello
   world
  act
-  new TreeNode(arrange).reverse().toString()
+  new TreeNode(arrange).reverse().asString
  assert
   world
   hello
@@ -76,7 +76,7 @@ aWordCountTest
    brave
     new world
  act
-  new TreeNode(arrange).getNumberOfWords().toString()
+  new TreeNode(arrange).numberOfWords.toString()
  assert
   4
 aFilterTest
@@ -93,7 +93,7 @@ aFromJsonSubsetTest
  arrange
   {"message": {"hello": "world"}}
  act
-  new TreeNode(JSON.parse(arrange)).toString()
+  new TreeNode(JSON.parse(arrange)).asString
  assert
   message
    hello world

@@ -95,7 +95,7 @@ codeNode
  extends abstractTopLevelNode
  javascript
   compile() {
-   return \`<code>\${this.getIndentation() + this.childrenToString()}</code>\`
+   return \`<code>\${this.indentation + this.childrenToString()}</code>\`
   }
  crux code
 listNode
@@ -164,31 +164,10 @@ quickParagraphNode
  catchAllCellType textCell
  compiler
   stringTemplate <p>{textCell}</p>`)
-    getHandGrammarProgram() {
+    get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static getNodeTypeMap() {
-      return {
-        errorNode: errorNode,
-        dumbdownNode: dumbdownNode,
-        abstractTopLevelNode: abstractTopLevelNode,
-        linkNode: linkNode,
-        paragraphNode: paragraphNode,
-        paragraphContentNode: paragraphContentNode,
-        codeNode: codeNode,
-        listNode: listNode,
-        blankLineNode: blankLineNode,
-        lineOfCodeNode: lineOfCodeNode,
-        dashNode: dashNode,
-        titleNode: titleNode,
-        title2Node: title2Node,
-        title3Node: title3Node,
-        title4Node: title4Node,
-        title5Node: title5Node,
-        title6Node: title6Node,
-        quickParagraphNode: quickParagraphNode
-      }
-    }
+    static rootNodeTypeConstructor = dumbdownNode
   }
 
   class abstractTopLevelNode extends GrammarBackedNode {
@@ -226,7 +205,7 @@ quickParagraphNode
       return new TreeNode.Parser(lineOfCodeNode, undefined, undefined)
     }
     compile() {
-      return `<code>${this.getIndentation() + this.childrenToString()}</code>`
+      return `<code>${this.indentation + this.childrenToString()}</code>`
     }
   }
 

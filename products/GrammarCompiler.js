@@ -17,7 +17,7 @@ class GrammarCompiler {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = TreeNode.fromDisk(pathToGrammar)
     const program = new HandGrammarProgram(grammarCode.toString())
-    const outputFilePath = path.join(outputFolder, `${program.getGrammarName()}.${target}.js`)
+    const outputFilePath = path.join(outputFolder, `${program.grammarName}.${target}.js`)
     let result = isNodeJs ? program.toNodeJsJavascript(jtreeProductsPath) : program.toBrowserJavascript()
     if (isNodeJs)
       result =
@@ -25,7 +25,7 @@ class GrammarCompiler {
         result.replace(
           /}\s*$/,
           `
-if (!module.parent) new ${program.getRootNodeTypeId()}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+if (!module.parent) new ${program.rootNodeTypeId}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }
 `
         )

@@ -29,7 +29,7 @@ poopNode
   compile() {
    let day = ""
    let lastTime = ""
-   const rows = this.getTopDownArray()
+   const rows = this.topDownArray
     .map(node => {
      if (node.doesExtend("dayNode")) {
       day = node.getDay()

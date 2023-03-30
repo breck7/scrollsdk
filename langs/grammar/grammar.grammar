@@ -109,7 +109,7 @@ grammarNode
    catchAllNodeType anyNode
   anyNode
    baseNodeType blobNode
- version 4.0.0
+ version 5.0.0
  inScope slashCommentNode blankLineNode cellTypeDefinitionNode nodeTypeDefinitionNode
 blankLineNode
  description Blank lines are OK in Grammar.
@@ -376,7 +376,7 @@ nodeTypeDefinitionNode
  pattern ^[a-zA-Z0-9_]+Node$
  description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
  catchAllNodeType catchAllErrorNode
- inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode slashCommentNode
+ inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode slashCommentNode nodeTypeDefinitionNode
  cells nodeTypeIdCell
 _extendsJsClassNode
  extends abstractNodeTypeRuleNode

@@ -1974,12 +1974,6 @@ ${properties.join("\n")}
     return this.id.startsWith(GrammarConstants.abstractNodeTypePrefix)
   }
 
-  get concreteDescendantDefinitions() {
-    const defs = this.programNodeTypeDefinitionCache
-    const id = this.id
-    return Object.values(defs).filter(def => def._doesExtend(id) && !def._isAbstract())
-  }
-
   _getCruxIfAny(): string {
     return this.get(GrammarConstants.crux) || (this._hasFromExtended(GrammarConstants.cruxFromId) ? this.idWithoutSuffix : undefined)
   }
@@ -2360,15 +2354,21 @@ ${cells.toString(1)}`
     return true
   }
 
+  get concreteDescendantDefinitions() {
+    const defs = this.programNodeTypeDefinitionCache
+    const id = this.id
+    return Object.values(defs).filter(def => def._doesExtend(id) && !def._isAbstract())
+  }
+
   private _getConcreteNonErrorInScopeNodeDefinitions(nodeTypeIds: string[]) {
-    const results: AbstractGrammarDefinitionNode[] = []
+    const defs: AbstractGrammarDefinitionNode[] = []
     nodeTypeIds.forEach(nodeTypeId => {
       const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
-      if (def._isErrorNodeType()) return true
-      else if (def._isAbstract()) def.concreteDescendantDefinitions.forEach(def => results.push(def))
-      else results.push(def)
+      if (def._isErrorNodeType()) return
+      else if (def._isAbstract()) def.concreteDescendantDefinitions.forEach(def => defs.push(def))
+      else defs.push(def)
     })
-    return results
+    return defs
   }
 
   // todo: refactor
@@ -2388,9 +2388,7 @@ ${cells.toString(1)}`
         .forEach(def => {
           const chain = nodeTypesAlreadySynthesized // .slice(0)
           chain.push(def.id)
-          def.synthesizeNode(1, indentCount + 1, chain, seed).forEach(line => {
-            lines.push(line)
-          })
+          def.synthesizeNode(1, indentCount + 1, chain, seed).forEach(line => lines.push(line))
         })
       nodeCount--
     }

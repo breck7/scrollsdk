@@ -2156,12 +2156,12 @@ ${properties.join("\n")}
   private _cache_isRoot: boolean
 
   private _amIRoot(): boolean {
-    if (this._cache_isRoot === undefined) this._cache_isRoot = this._getLanguageRootNode() === this
+    if (this._cache_isRoot === undefined) this._cache_isRoot = this._languageRootNode === this
     return this._cache_isRoot
   }
 
-  private _getLanguageRootNode() {
-    return (<HandGrammarProgram>this.parent).getRootNodeTypeDefinitionNode()
+  private get _languageRootNode() {
+    return (<HandGrammarProgram>this.root).getRootNodeTypeDefinitionNode()
   }
 
   private _isErrorNodeType() {
@@ -2208,7 +2208,8 @@ ${properties.join("\n")}
 
     const catchAllStr = catchAllConstructor ? catchAllConstructor : this._amIRoot() ? `this._getBlobNodeCatchAllNodeType()` : "undefined"
 
-    const scopedParserJavascript = ""
+    const scopedParserDefinitions = <nodeTypeDefinitionNode[]>this.getChildrenByNodeConstructor(nodeTypeDefinitionNode)
+    const scopedParserJavascript = scopedParserDefinitions.map(def => def._nodeDefToJavascriptClass()).join("\n\n")
 
     return `createParser() {${scopedParserJavascript}
   return new TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
@@ -2226,6 +2227,7 @@ ${properties.join("\n")}
 
   _nodeDefToJavascriptClass(): treeNotationTypes.javascriptCode {
     const components = [this._getParserToJavascript(), this._getErrorMethodToJavascript(), this._getCellGettersAndNodeTypeConstants(), this._getCustomJavascriptMethods()].filter(identity => identity)
+    const thisClassName = this._getGeneratedClassName()
 
     if (this._amIRoot()) {
       components.push(`static cachedHandGrammarProgramRoot = new HandGrammarProgram(\`${Utils.escapeBackTicks(this.parent.toString().replace(/\\/g, "\\\\"))}\`)
@@ -2233,16 +2235,10 @@ ${properties.join("\n")}
           return this.constructor.cachedHandGrammarProgramRoot
       }`)
 
-      const nodeTypeMap = this.getLanguageDefinitionProgram()
-        .getValidConcreteAndAbstractNodeTypeDefinitions()
-        .map(def => def.getNodeTypeIdFromDefinition())
-        .join(",\n")
-
-      // todo: do we generate one of these for all subtypes, now that we don't have one global scope?
-      components.push(`static getNodeTypeMap() { return {${nodeTypeMap} }}`)
+      components.push(`static rootNodeTypeConstructor = ${thisClassName}`)
     }
 
-    return `class ${this._getGeneratedClassName()} extends ${this._getExtendsClassName()} {
+    return `class ${thisClassName} extends ${this._getExtendsClassName()} {
       ${components.join("\n")}
     }`
   }
@@ -2474,29 +2470,30 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   static cellTypeSuffixRegex = new RegExp(GrammarConstants.cellTypeSuffix + "$")
   static cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
 
-  private _cache_compiledLoadedNodeTypes: { [nodeTypeId: string]: Function }
+  private _cache_rootNodeTypeConstructor: any
+  // rootNodeTypeConstructor
   // Note: this is some so far unavoidable tricky code. We need to eval the transpiled JS, in a NodeJS or browser environment.
-  _compileAndReturnNodeTypeMap() {
-    if (this._cache_compiledLoadedNodeTypes) return this._cache_compiledLoadedNodeTypes
+  _compileAndReturnRootNodeTypeConstructor(): Function {
+    if (this._cache_rootNodeTypeConstructor) return this._cache_rootNodeTypeConstructor
 
     if (!this.isNodeJs()) {
-      this._cache_compiledLoadedNodeTypes = Utils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
-      return this._cache_compiledLoadedNodeTypes
+      this._cache_rootNodeTypeConstructor = Utils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).rootNodeTypeConstructor
+      return this._cache_rootNodeTypeConstructor
     }
 
     const path = require("path")
     const code = this.toNodeJsJavascript(__dirname)
     try {
       const rootNode = this._requireInVmNodeJsRootNodeTypeConstructor(code)
-      this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
-      if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
+      this._cache_rootNodeTypeConstructor = rootNode.rootNodeTypeConstructor
+      if (!this._cache_rootNodeTypeConstructor) throw new Error(`Failed to rootNodeTypeConstructor`)
     } catch (err) {
       // todo: figure out best error pattern here for debugging
       console.log(err)
       // console.log(`Error in code: `)
       // console.log(new TreeNode(code).toStringWithLineNumbers())
     }
-    return this._cache_compiledLoadedNodeTypes
+    return this._cache_rootNodeTypeConstructor
   }
 
   trainModel(programs: string[], programConstructor = this.compileAndReturnRootConstructor()): SimplePredictionModel {
@@ -2836,9 +2833,8 @@ ${testCode}`
 
   compileAndReturnRootConstructor() {
     if (!this._cache_rootConstructorClass) {
-      const def = this.getRootNodeTypeDefinitionNode()
-      const rootNodeTypeId = def.getNodeTypeIdFromDefinition()
-      this._cache_rootConstructorClass = <AbstractRuntimeProgramConstructorInterface>def.getLanguageDefinitionProgram()._compileAndReturnNodeTypeMap()[rootNodeTypeId]
+      const rootDef = this.getRootNodeTypeDefinitionNode()
+      this._cache_rootConstructorClass = <AbstractRuntimeProgramConstructorInterface>rootDef.getLanguageDefinitionProgram()._compileAndReturnRootNodeTypeConstructor()
     }
     return this._cache_rootConstructorClass
   }

@@ -495,6 +495,9 @@ testTree.blobNodes = equal => {
     // Should be no errors
     equal(true, false)
   }
+
+  // Regression test. The below should not throw
+  equal(anyProgram.topDownArray.map((node: any) => node.nodeTypeId).length > 0, true, "passed blob regression")
 }
 
 testTree.sublimeSyntaxFile = equal => {

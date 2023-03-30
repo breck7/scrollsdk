@@ -4,6 +4,12 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 71.0.0 2023-3-30
+* This was a refactor of Grammar to support scoped parsers. I also took the opportunity to switch more `get()` methods to getters.
+- 🎉 Scoped parsers in Grammar 5
+- ⚠️ BREAKING: A lot of methods that were formerly `getX()` have been changed to getters like `get x()`:
+- ⚠️ BREAKING: A lot of zero parameter methods that were formerly `toX()` have been changed to getters like `get asX()`:
+
 # 70.0.0 2023-3-28
 - ⚠️ Big changes to Grammar. See the new Grammar Release Notes.
  link langs/grammar/relaseNotes.html Grammar Release Notes

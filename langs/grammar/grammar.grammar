@@ -109,7 +109,7 @@ grammarNode
    catchAllNodeType anyNode
   anyNode
    baseNodeType blobNode
- version 4.0.0
+ version 5.0.0
  inScope slashCommentNode blankLineNode cellTypeDefinitionNode nodeTypeDefinitionNode
 blankLineNode
  description Blank lines are OK in Grammar.

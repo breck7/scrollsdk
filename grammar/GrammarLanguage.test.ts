@@ -117,8 +117,8 @@ testTree.jibberish = equal => {
   const nodeExpandsConsts = <any>program.getNode("nodeExpandsConsts")
 
   // Assert
-  equal(fooNode.getNodeTypeId(), "fooNode")
-  equal(constNode.getNodeTypeId(), "nodeWithConstsNode")
+  equal(fooNode.nodeTypeId, "fooNode")
+  equal(constNode.nodeTypeId, "nodeWithConstsNode")
   equal(constNode.definition.ancestorNodeTypeIdsArray.join(" "), "abstractTopLevelNode nodeWithConstsNode")
   equal(constNode.definition.greeting, "hello world", "constants are also present on grammar definition nodes")
 

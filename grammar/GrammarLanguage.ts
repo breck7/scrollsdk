@@ -508,7 +508,7 @@ abstract class GrammarBackedNode extends TreeNode {
       usage.appendLine([def.nodeTypeIdFromDefinition, "line-id", "nodeType", requiredCellTypeIds.join(" ")].join(" "))
     })
     this.topDownArray.forEach((node: GrammarBackedNode, lineNumber: number) => {
-      const stats = usage.getNode(node.getNodeTypeId())
+      const stats = usage.getNode(node.nodeTypeId)
       stats.appendLine([filepath + "-" + lineNumber, node.words.join(" ")].join(" "))
     })
     return usage
@@ -557,7 +557,7 @@ abstract class GrammarBackedNode extends TreeNode {
     return this.isRoot() ? new TreeNode.Parser(BlobNode) : new TreeNode.Parser(this.parent._getParser()._getCatchAllNodeConstructor(this.parent), {})
   }
 
-  getNodeTypeId(): treeNotationTypes.nodeTypeId {
+  get nodeTypeId(): treeNotationTypes.nodeTypeId {
     return this.definition.nodeTypeIdFromDefinition
   }
 
@@ -1201,7 +1201,7 @@ abstract class AbstractTreeError implements treeNotationTypes.TreeError {
     return this._getCodeMirrorLineWidgetElementWithoutSuggestion()
   }
 
-  getNodeTypeId(): string {
+  get nodeTypeId(): string {
     return (<GrammarBackedNode>this.getNode()).definition.nodeTypeIdFromDefinition
   }
 
@@ -1426,7 +1426,7 @@ class InvalidWordError extends AbstractCellError {
 
 class ExtraWordError extends AbstractCellError {
   get message(): string {
-    return super.message + ` Extra word "${this.cell.getWord()}" in ${this.getNodeTypeId()}.`
+    return super.message + ` Extra word "${this.cell.getWord()}" in ${this.nodeTypeId}.`
   }
 
   get suggestionMessage() {

@@ -8,7 +8,14 @@ startColumns 4
 * This was a refactor of Grammar to support scoped parsers. I also took the opportunity to switch more `get()` methods to getters.
 - 🎉 Scoped parsers in Grammar 5
 - ⚠️ BREAKING: A lot of methods that were formerly `getX()` have been changed to getters like `get x()`:
+ - getTopDownArray > topDownArray
+ - getNext > next
+ - getPrevious > previous
+ - getDefinition > definition
+ - getNodeTypeId > nodeTypeId
 - ⚠️ BREAKING: A lot of zero parameter methods that were formerly `toX()` have been changed to getters like `get asX()`:
+ - toString > asString (toString is maintained for compability with idiomatic Javascript)
+ - toCsv > asCsv; toTsv > asTsv; toSsv > asSsv
 
 # 70.0.0 2023-3-28
 - ⚠️ Big changes to Grammar. See the new Grammar Release Notes.

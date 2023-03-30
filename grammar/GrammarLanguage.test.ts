@@ -71,7 +71,7 @@ testTree.trainAndPredict = equal => {
   const grammarProgram = new HandGrammarProgram(hakonGrammar)
   const hakonNode = grammarProgram.compileAndReturnRootConstructor()
   const testBlankProgram = new hakonNode()
-  const handGrammarProgram = testBlankProgram.getHandGrammarProgram()
+  const handGrammarProgram = testBlankProgram.handGrammarProgram
   const examples = handGrammarProgram.getNodesByGlobPath("* example").map((node: any) => node.childrenToString())
   const model = grammarProgram.trainModel(examples)
 
@@ -107,10 +107,7 @@ testTree.jibberish = equal => {
   equal(errs.length, 0, `should be 0 errors`)
   if (errs.length) console.log(errs.map((err: any) => err.getMessage()))
 
-  const defNode = program
-    .getHandGrammarProgram()
-    .getNodeTypeFamilyTree()
-    .getNode("abstractTopLevelNode nodeWithConstsNode nodeExpandsConstsNode")
+  const defNode = program.handGrammarProgram.getNodeTypeFamilyTree().getNode("abstractTopLevelNode nodeWithConstsNode nodeExpandsConstsNode")
 
   equal(defNode.toString(), "nodeExpandsConstsNode", "family tree works")
 
@@ -122,21 +119,15 @@ testTree.jibberish = equal => {
   // Assert
   equal(fooNode.getNodeTypeId(), "fooNode")
   equal(constNode.getNodeTypeId(), "nodeWithConstsNode")
-  equal(
-    constNode
-      .getDefinition()
-      .getAncestorNodeTypeIdsArray()
-      .join(" "),
-    "abstractTopLevelNode nodeWithConstsNode"
-  )
-  equal(constNode.getDefinition().greeting, "hello world", "constants are also present on grammar definition nodes")
+  equal(constNode.definition.getAncestorNodeTypeIdsArray().join(" "), "abstractTopLevelNode nodeWithConstsNode")
+  equal(constNode.definition.greeting, "hello world", "constants are also present on grammar definition nodes")
 
   // Assert
   equal(constNode.greeting, "hello world", "constant strings should work")
   equal(constNode.score1, 28, "constant insts should work")
   equal(constNode.score2, 3.01, "constant floats should work")
   equal(constNode.win, true, "constant booleans should work")
-  const obj = constNode.getDefinition().getConstantsObject()
+  const obj = constNode.definition.getConstantsObject()
   equal(obj.score1, 28, "constants int works")
   equal(obj.score2, 3.01, "constants floats works")
   equal(obj.win, true, "constants bool works")
@@ -147,7 +138,7 @@ testTree.jibberish = equal => {
 world`,
     "constants multiline string works"
   )
-  const obj2 = nodeExpandsConsts.getDefinition().getConstantsObject()
+  const obj2 = nodeExpandsConsts.definition.getConstantsObject()
   equal(obj2.greeting, "hola", "expanding constants works and last wins")
   equal(obj2.win, true, "expanding constants works")
 
@@ -169,7 +160,7 @@ missing2 true`)
 
   // Grandchild inheritance
   // Arrange
-  const def = (<any>program.getNode("html.h1")).getDefinition()
+  const def = (<any>program.getNode("html.h1")).definition
 
   // Act/Assert
   equal(
@@ -231,7 +222,7 @@ testTree.toTypeScriptInterface = equal => {
   const grammarProgram = new HandGrammarProgram(arrowGrammar).compileAndReturnRootConstructor()
   // Act // Assert
   equal(
-    new grammarProgram().getDefinition().toTypeScriptInterface(),
+    new grammarProgram().definition.toTypeScriptInterface(),
     `// A credit card charge
 interface chargeNode {
  amount: any
@@ -253,7 +244,7 @@ testTree.cellTypeTree = equal => {
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
 
-  const a = (<any>someJibberishProgram.nodeAt(1)).getDefinition()
+  const a = (<any>someJibberishProgram.nodeAt(1)).definition
 
   // Assert
   equal(
@@ -470,7 +461,7 @@ faveNumberNode
   // Act/Assert
   equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)
 
-  equal(program.toSideBySide([program.toDefinitionLineNumberTree()]).getNumberOfLines(), 8)
+  equal(program.toSideBySide([program.toDefinitionLineNumberTree()]).numberOfLines, 8)
 }
 
 // todo: fix autocomplete for omnifix languages
@@ -518,10 +509,7 @@ testTree.sublimeSyntaxFile = equal => {
 testTree.toStumpString = equal => {
   // Arrange/Act
   const grammarProgram = new HandGrammarProgram(arrowGrammar).compileAndReturnRootConstructor()
-  const code = new grammarProgram()
-    .getDefinition()
-    .getNodeTypeDefinitionByNodeTypeId("chargeNode")
-    .toStumpString()
+  const code = new grammarProgram().definition.getNodeTypeDefinitionByNodeTypeId("chargeNode").toStumpString()
   const expected = `div
  label amount
  input
@@ -579,7 +567,7 @@ anyNode
 anyCell`
   ).compileAndReturnRootConstructor()
   const program = new programConstructor()
-  const handGrammarProgram = program.getHandGrammarProgram()
+  const handGrammarProgram = program.handGrammarProgram
 
   // Assert
   let errors = handGrammarProgram.getAllErrors()

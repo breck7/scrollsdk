@@ -108,13 +108,12 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   private _toIceTray(program: any) {
-    const columns = program.getProgramWidth()
+    const columns = program.programWidth
 
     const cellTypes = new TreeNode(program.toCellTypeTreeWithNodeConstructorNames())
     const rootCellTypes = new TreeNode(program.toPreludeCellTypeTreeWithNodeConstructorNames())
 
-    const table = program
-      .getProgramAsCells()
+    const table = program.programAsCells
       .map((line: any, lineIndex: number) => {
         const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
         let cells = `<td class="iceTrayNodeType">${nodeType}</td>` // todo: add ancestry
@@ -327,7 +326,7 @@ class DesignerApp extends AbstractTreeComponent {
             this.codeInstance.setValue(this.program.toString())
             this._onCodeKeyUp()
           })
-          this.codeWidgets.push(this.codeInstance.addLineWidget(err.getLineNumber() - 1, el, { coverGutter: false, noHScroll: false }))
+          this.codeWidgets.push(this.codeInstance.addLineWidget(err.lineNumber - 1, el, { coverGutter: false, noHScroll: false }))
         })
       const info = this.codeInstance.getScrollInfo()
       const after = this.codeInstance.charCoords({ line: cursor.line + 1, ch: 0 }, "local").top

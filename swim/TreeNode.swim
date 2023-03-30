@@ -12,7 +12,7 @@ aTotalLineCountTest
   hello
    world
  act
-  new TreeNode(arrange).getNumberOfLines().toString()
+  new TreeNode(arrange).numberOfLines.toString()
  assert
   2
 aToCsvTest
@@ -76,7 +76,7 @@ aWordCountTest
    brave
     new world
  act
-  new TreeNode(arrange).getNumberOfWords().toString()
+  new TreeNode(arrange).numberOfWords.toString()
  assert
   4
 aFilterTest

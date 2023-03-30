@@ -1154,7 +1154,7 @@ code
 - 🧹 Default sandbox port now 3333
 
 # 15.2.0 2019-02-10
-- 🎉 added getNumberOfLines() method
+- 🎉 added `getNumberOfLines` method
 - 🎉 GrammarProgram speedup 20%+
 - 🎉 getProgramErrors speedup 10x+
 - 🎉 toString speedup 5%+

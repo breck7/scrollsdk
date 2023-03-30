@@ -111,7 +111,7 @@ htmlTagNode
    return this.destroy()
   }
   getNodeByGuid(guid) {
-   return this.getTopDownArray().find(node => node._getUid() === guid)
+   return this.topDownArray.find(node => node._getUid() === guid)
   }
   addClassToStumpNode(className) {
    const classNode = this.touchNode("class")
@@ -164,7 +164,7 @@ htmlTagNode
    return this.findStumpNodesByChild(line)[0]
   }
   findStumpNodeByChildString(line) {
-   return this.getTopDownArray().find(node =>
+   return this.topDownArray.find(node =>
     node
      .map(child => child.getLine())
      .join("\n")
@@ -175,16 +175,16 @@ htmlTagNode
    return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
   }
   hasLine(line) {
    return this.getChildren().some(node => node.getLine() === line)
   }
   findStumpNodesByChild(line) {
-   return this.getTopDownArray().filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
   }
   findStumpNodesWithClass(className) {
-   return this.getTopDownArray().filter(
+   return this.topDownArray.filter(
     node =>
      node.doesExtend("htmlTagNode") &&
      node.has("class") &&

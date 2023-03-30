@@ -212,8 +212,8 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  getTopDownArray<NodeType = TreeNode>(): NodeType[] {
-    const arr: NodeType[] = []
+  get topDownArray(): TreeNode[] {
+    const arr: TreeNode[] = []
     this._getTopDownArray(arr)
     return arr
   }
@@ -233,7 +233,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  getNumberOfLines(): int {
+  get numberOfLines(): int {
     let lineCount = 0
     for (let node of this.getTopDownArrayIterator()) {
       lineCount++
@@ -250,7 +250,7 @@ class TreeNode extends AbstractNode {
     return max
   }
 
-  getNumberOfWords(): int {
+  get numberOfWords(): int {
     let wordCount = 0
     for (let node of this.getTopDownArrayIterator()) {
       wordCount += node.words.length
@@ -258,7 +258,7 @@ class TreeNode extends AbstractNode {
     return wordCount
   }
 
-  getLineNumber() {
+  get lineNumber(): int {
     return this._getLineNumberRelativeTo()
   }
 
@@ -467,7 +467,7 @@ class TreeNode extends AbstractNode {
 
   private _getWordIndexCharacterStartPosition(wordIndex: int): treeNotationTypes.positiveInt {
     const xiLength = this.getEdgeSymbol().length
-    const numIndents = this._getIndentLevel(undefined) - 1
+    const numIndents = this._getIndentLevel() - 1
     const indentPosition = xiLength * numIndents
     if (wordIndex < 1) return xiLength * (numIndents + wordIndex)
     return indentPosition + this.words.slice(0, wordIndex).join(this.getWordBreakSymbol()).length + this.getWordBreakSymbol().length
@@ -496,10 +496,8 @@ class TreeNode extends AbstractNode {
   }
 
   fill(fill = "") {
-    this.getTopDownArray().forEach(line => {
-      line.words.forEach((word, index) => {
-        line.setWord(index, fill)
-      })
+    this.topDownArray.forEach(line => {
+      line.words.forEach((word, index) => line.setWord(index, fill))
     })
     return this
   }
@@ -554,7 +552,7 @@ class TreeNode extends AbstractNode {
   // Note: This currently does not return any errors resulting from "required" or "single"
   getAllErrors(lineStartsAt = 1): treeNotationTypes.TreeError[] {
     const errors: treeNotationTypes.TreeError[] = []
-    for (let node of this.getTopDownArray()) {
+    for (let node of this.topDownArray) {
       node._cachedLineNumber = lineStartsAt // todo: cleanup
       const errs: treeNotationTypes.TreeError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
@@ -584,7 +582,7 @@ class TreeNode extends AbstractNode {
     return words.length ? words.join(this.getWordBreakSymbol()) : undefined
   }
 
-  getContentWithChildren(): string {
+  get contentWithChildren(): string {
     // todo: deprecate
     const content = this.content
     return (content ? content : "") + (this.length ? this.getNodeBreakSymbol() + this._childrenToString() : "")
@@ -677,7 +675,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _getXmlContent(indentCount: treeNotationTypes.positiveInt) {
-    if (this.content !== undefined) return this.getContentWithChildren()
+    if (this.content !== undefined) return this.contentWithChildren
     return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
 
@@ -694,7 +692,7 @@ class TreeNode extends AbstractNode {
     const hasContentAndHasChildren = content !== undefined && length
     // If the node has a content and a subtree return it as a string, as
     // Javascript object values can't be both a leaf and a tree.
-    const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.getContentWithChildren() : content
+    const tupleValue = hasChildrenNoContent ? this.toObject() : hasContentAndHasChildren ? this.contentWithChildren : content
     return [this.firstWord, tupleValue]
   }
 
@@ -730,12 +728,12 @@ class TreeNode extends AbstractNode {
 
   rightPad(padCharacter = " ") {
     const newWidth = this.getMaxLineWidth()
-    this.getTopDownArray().forEach(node => node._rightPad(newWidth, padCharacter))
+    this.topDownArray.forEach(node => node._rightPad(newWidth, padCharacter))
     return this
   }
 
   lengthen(numberOfLines: int) {
-    let linesToAdd = numberOfLines - this.getNumberOfLines()
+    let linesToAdd = numberOfLines - this.numberOfLines
     while (linesToAdd > 0) {
       this.appendLine("")
       linesToAdd--
@@ -749,7 +747,7 @@ class TreeNode extends AbstractNode {
     const nodeBreakSymbol = "\n"
     let next: any
     while ((next = treesOrStrings.shift())) {
-      clone.lengthen(next.getNumberOfLines())
+      clone.lengthen(next.numberOfLines)
       clone.rightPad()
       next
         .toString()
@@ -801,7 +799,7 @@ class TreeNode extends AbstractNode {
   }
 
   getNodeByColumns(...columns: string[]): TreeNode {
-    return this.getTopDownArray().find(node => node._hasColumns(columns))
+    return this.topDownArray.find(node => node._hasColumns(columns))
   }
 
   getNodeByColumn(index: int, name: string): TreeNode {
@@ -833,7 +831,7 @@ class TreeNode extends AbstractNode {
   }
 
   getSelectedNodes() {
-    return this.getTopDownArray().filter(node => node.isSelected())
+    return this.topDownArray.filter(node => node.isSelected())
   }
 
   clearSelection() {
@@ -932,7 +930,7 @@ class TreeNode extends AbstractNode {
 
   protected _getLevels(): { [level: number]: TreeNode[] } {
     const levels: { [level: number]: TreeNode[] } = {}
-    this.getTopDownArray().forEach(node => {
+    this.topDownArray.forEach(node => {
       const level = node._getIndentLevel()
       if (!levels[level]) levels[level] = []
       levels[level].push(node)
@@ -980,7 +978,7 @@ class TreeNode extends AbstractNode {
     const { edgeSymbolRegex } = this
     this.forEach((child: TreeNode, index: number) => {
       newObject[child.getWord(0)] = child.content
-      child.getTopDownArray().forEach((node: TreeNode) => {
+      child.topDownArray.forEach((node: TreeNode) => {
         const newColumnName = node.getFirstWordPathRelativeTo(this).replace(edgeSymbolRegex, delimiter)
         const value = node.content
         newObject[newColumnName] = value
@@ -1011,12 +1009,7 @@ class TreeNode extends AbstractNode {
   }
 
   toHtmlCube(): treeNotationTypes.htmlString {
-    return this.map((plane, planeIndex) =>
-      plane
-        .getTopDownArray()
-        .map((line: any, lineIndex: number) => line._toHtmlCubeLine(line.getIndentLevel() - 2, lineIndex, planeIndex))
-        .join("")
-    ).join("")
+    return this.map((plane, planeIndex) => plane.topDownArray.map((line: any, lineIndex: number) => line._toHtmlCubeLine(line.getIndentLevel() - 2, lineIndex, planeIndex)).join("")).join("")
   }
 
   protected _getHtmlJoinByCharacter() {
@@ -1152,7 +1145,7 @@ class TreeNode extends AbstractNode {
     const map: any = {}
     if (!Array.isArray(firstWordPath)) firstWordPath = [firstWordPath]
     firstWordPath.forEach(path => (map[path] = true))
-    return this.getTopDownArray().filter(node => {
+    return this.topDownArray.filter(node => {
       if (map[node._getFirstWordPath(this)]) return true
       return false
     })
@@ -1399,7 +1392,7 @@ class TreeNode extends AbstractNode {
     const rows = this.map((node, rowNumber) =>
       columnNames.map((columnName, columnIndex) => {
         const childNode = node.getNode(columnName)
-        const content = childNode ? childNode.getContentWithChildren() : ""
+        const content = childNode ? childNode.contentWithChildren : ""
         return cellFn(content, rowNumber + skipHeaderRow, columnIndex)
       })
     )
@@ -2044,7 +2037,7 @@ class TreeNode extends AbstractNode {
     const map = new Map()
     const lastNode = clone.lastNode()
     lastNode.getOlderSiblings().forEach(node => map.set(node.getWord(0), node))
-    lastNode.getTopDownArray().forEach(node => {
+    lastNode.topDownArray.forEach(node => {
       const replacement = map.get(node.getWord(0))
       if (!replacement) return
 
@@ -2096,7 +2089,7 @@ class TreeNode extends AbstractNode {
 
   deleteDuplicates() {
     const set = new Set()
-    this.getTopDownArray().forEach(node => {
+    this.topDownArray.forEach(node => {
       const str = node.toString()
       if (set.has(str)) node.destroy()
       else set.add(str)
@@ -2355,7 +2348,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _getNonMaps(): TreeNode[] {
-    const results = this.getTopDownArray().filter(node => node.hasDuplicateFirstWords())
+    const results = this.topDownArray.filter(node => node.hasDuplicateFirstWords())
     if (this.hasDuplicateFirstWords()) results.unshift(this)
     return results
   }
@@ -2634,7 +2627,7 @@ class TreeNode extends AbstractNode {
   templateToString(obj: treeNotationTypes.stringMap): string {
     // todo: compile/cache for perf?
     const tree = this.clone()
-    tree.getTopDownArray().forEach(node => {
+    tree.topDownArray.forEach(node => {
       const line = node.getLine().replace(/{([^\}]+)}/g, (match, path) => {
         const replacement = obj[path]
         if (replacement === undefined) throw new Error(`In string template no match found on line "${node.getLine()}"`)

@@ -399,9 +399,9 @@ domains
   const tree8 = new TreeNode(treeString)
 
   // Assert
-  equal(tree8.getTopDownArray().length, 20)
-  equal(tree8.getNumberOfLines(), 20)
-  equal(tree8.getNumberOfWords(), 30)
+  equal(tree8.topDownArray.length, 20)
+  equal(tree8.numberOfLines, 20)
+  equal(tree8.numberOfWords, 30)
   equal(tree8.getNode("domains test.test.com pages home settings data title").content, "Hello, World", "Multiline creation should be okay.")
 
   // Arrange
@@ -615,8 +615,8 @@ testTree.fill = equal => {
     const filledTree = tree.clone().fill("x")
     // Act/Assert
     equal(tree.length, filledTree.length)
-    equal(tree.getNumberOfLines(), filledTree.getNumberOfLines())
-    equal(tree.getNumberOfWords(), filledTree.getNumberOfWords())
+    equal(tree.numberOfLines, filledTree.numberOfLines)
+    equal(tree.numberOfWords, filledTree.numberOfWords)
   })
 }
 
@@ -645,7 +645,7 @@ web 25 zzzz OK
  000000111222222`
 
   // Act/Assert
-  const lineNodes = tree.getTopDownArray()
+  const lineNodes = tree.topDownArray
   tests.split("\n").forEach((testLine, lineIndex) => {
     const node = lineNodes[lineIndex]
     testLine.split("").forEach((char, charIndex) => {
@@ -1504,13 +1504,7 @@ testTree.getIndentation = equal => {
   equal(tree.getNode("body div").getIndentation(), " ")
   equal(tree.getNode("body div content").getIndentation(), "  ")
 
-  equal(
-    testStrings.webpageTrimmed,
-    tree
-      .getTopDownArray()
-      .map((line: treeNotationTypes.treeNode) => line.getIndentation() + line.getLine())
-      .join("\n")
-  )
+  equal(testStrings.webpageTrimmed, tree.topDownArray.map((line: treeNotationTypes.treeNode) => line.getIndentation() + line.getLine()).join("\n"))
 }
 
 testTree.content = equal => {
@@ -2415,13 +2409,13 @@ testTree.createFromString = equal => {
   const a = new TreeNode("text \n this is a string\n and more")
 
   // Assert
-  equal(a.getNode("text").getContentWithChildren(), "\nthis is a string\nand more", "Basic")
+  equal(a.getNode("text").contentWithChildren, "\nthis is a string\nand more", "Basic")
 
   // Arrange
   const b = new TreeNode("a\n text \n  this is a string\n  and more")
 
   // Assert
-  equal(b.getNode("a text").getContentWithChildren(), "\nthis is a string\nand more")
+  equal(b.getNode("a text").contentWithChildren, "\nthis is a string\nand more")
   equal(b.toString(), "a\n text \n  this is a string\n  and more")
 
   // Arrange
@@ -2651,48 +2645,48 @@ testTree.multiline = equal => {
   // Arrange
   const a = new TreeNode("my multiline\n string")
   // Assert
-  equal(a.getNode("my").getContentWithChildren(), "multiline\nstring")
+  equal(a.getNode("my").contentWithChildren, "multiline\nstring")
 
   // Arrange
   const a2 = new TreeNode("my \n \n multiline\n string")
   // Assert
-  equal(a2.getNode("my").getContentWithChildren(), "\n\nmultiline\nstring")
+  equal(a2.getNode("my").contentWithChildren, "\n\nmultiline\nstring")
 
   // Arrange
   const b = new TreeNode("brave new\n world")
   // Assert
-  equal(b.getNode("brave").getContentWithChildren(), "new\nworld", "ml value correct")
+  equal(b.getNode("brave").contentWithChildren, "new\nworld", "ml value correct")
   equal(b.toString(), "brave new\n world", "multiline does not begin with nl")
 
   // Arrange
   const c = new TreeNode("brave \n new\n world")
   // Assert
-  equal(c.getNode("brave").getContentWithChildren(), "\nnew\nworld", "ml begin with nl value correct")
+  equal(c.getNode("brave").contentWithChildren, "\nnew\nworld", "ml begin with nl value correct")
   equal(c.toString(), "brave \n new\n world", "multiline begins with nl")
 
   // Arrange
   const d = new TreeNode("brave \n \n new\n world")
   // Assert
-  equal(d.getNode("brave").getContentWithChildren(), "\n\nnew\nworld", "ml begin with 2 nl value correct")
+  equal(d.getNode("brave").contentWithChildren, "\n\nnew\nworld", "ml begin with 2 nl value correct")
   equal(d.toString(), "brave \n \n new\n world", "multiline begins with 2 nl")
 
   // Arrange
   const e = new TreeNode("brave new\n world\n ")
   // Assert
-  equal(e.getNode("brave").getContentWithChildren(), "new\nworld\n", "ml value end with nl correct")
+  equal(e.getNode("brave").contentWithChildren, "new\nworld\n", "ml value end with nl correct")
   equal(e.toString(), "brave new\n world\n ", "multiline ends with a nl")
 
   // Arrange
   const f = new TreeNode("brave new\n world\n \n ")
   // Assert
-  equal(f.getNode("brave").getContentWithChildren(), "new\nworld\n\n", "ml value end with 2 nl correct")
+  equal(f.getNode("brave").contentWithChildren, "new\nworld\n\n", "ml value end with 2 nl correct")
   equal(f.toString(), "brave new\n world\n \n ", "multiline ends with 2 nl")
 
   // Arrange
   const g = new TreeNode()
   g.touchNode("brave").setContentWithChildren("\nnew\nworld\n\n")
   // Assert
-  equal(g.getNode("brave").getContentWithChildren(), "\nnew\nworld\n\n", "set ml works")
+  equal(g.getNode("brave").contentWithChildren, "\nnew\nworld\n\n", "set ml works")
   equal(g.toString(), "brave \n new\n world\n \n ", "set ml works")
 
   // Arrange/Act
@@ -2705,7 +2699,7 @@ testTree.multiline = equal => {
   // Assert
   equal(twoNodes.length, 2)
   equal(k.getNode("settings").length, 1, "Expected subtree to have 1 empty node")
-  equal(k.getNode("settings").getContentWithChildren(), twoNodes.toString(), "Expected setContentWithChildren and getText to work with newlines")
+  equal(k.getNode("settings").contentWithChildren, twoNodes.toString(), "Expected setContentWithChildren and getText to work with newlines")
   equal(k.toString(), `time 123\nsettings title Untitled\n \nday 1`)
 
   // Arrange
@@ -2788,9 +2782,9 @@ ohayo
 
   // Assert
   equal(a.getIndentLevel(), 0, "a indent level")
-  equal(a.getLineNumber(), 0)
+  equal(a.lineNumber, 0)
   equal(b.getIndentLevel(), 3, "b indent level")
-  equal(b.getLineNumber(), 6)
+  equal(b.lineNumber, 6)
 
   // Arrange
   const reg = new TreeNode(
@@ -2802,12 +2796,9 @@ d
   )
 
   // Act/Assert
-  const result = reg
-    .getTopDownArray()
-    .map((node: treeNotationTypes.treeNode) => node.getLineNumber())
-    .join(" ")
+  const result = reg.topDownArray.map((node: treeNotationTypes.treeNode) => node.lineNumber).join(" ")
   equal(result, "1 2 3 4 5")
-  equal(reg.getNode("a").getLineNumber(), 1)
+  equal(reg.getNode("a").lineNumber, 1)
 }
 
 testTree.pushContentAndChildren = equal => {
@@ -3633,10 +3624,7 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const preOrder = traversal
-    .getTopDownArray()
-    .map((node: treeNotationTypes.treeNode) => node.getLine())
-    .join(" ")
+  const preOrder = traversal.topDownArray.map((node: treeNotationTypes.treeNode) => node.getLine()).join(" ")
   const postOrder = traversal
     .getChildrenFirstArray()
     .map((node: treeNotationTypes.treeNode) => node.getLine())
@@ -3665,10 +3653,7 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const wikipreorder = wikipediaBinaryTree
-    .getTopDownArray()
-    .map((node: treeNotationTypes.treeNode) => node.getLine())
-    .join("")
+  const wikipreorder = wikipediaBinaryTree.topDownArray.map((node: treeNotationTypes.treeNode) => node.getLine()).join("")
   const wikibreadthfirst = wikipediaBinaryTree
     .getParentFirstArray()
     .map((node: treeNotationTypes.treeNode) => node.getLine())

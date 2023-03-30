@@ -39,7 +39,7 @@ const main = (grammarCode, code) => {
   const expected = 2
   const elapsed = Date.now() - startTime
 
-  let totalLines = code.getNumberOfLines()
+  let totalLines = code.numberOfLines
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
   let msg = `checked ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second. Expected ${expected} errors. Actual errors: ${errors.length}.`
 
@@ -77,7 +77,7 @@ const toStringTest = () => {
   const res = data.toString()
   const elapsed = Date.now() - startTime
 
-  let totalLines = data.getNumberOfLines()
+  let totalLines = data.numberOfLines
   const ps = (totalLines / (elapsed / 1000)).toLocaleString()
   logFn(`toString ${totalLines} lines of TN code in ${elapsed}ms. ${ps} lines per second`)
 }

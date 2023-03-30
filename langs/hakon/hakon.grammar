@@ -40,7 +40,7 @@ hakonNode
    return ""
   }
   compile() {
-   return this.getTopDownArray()
+   return this.topDownArray
     .filter(node => node.isSelectorNode)
     .map(child => child.compile())
     .join("")

@@ -112,7 +112,7 @@ retriever dog`
 
 testTree.makeRandomTree = equal => {
   // Arrange/Act/Assert
-  equal(new TreeNode(Utils.makeRandomTree(2)).getTopDownArray().length, 3)
+  equal(new TreeNode(Utils.makeRandomTree(2)).topDownArray.length, 3)
 }
 
 testTree.makeSemiRandomFn = equal => {

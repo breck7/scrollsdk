@@ -1882,7 +1882,7 @@ abstract class AbstractGrammarDefinitionNode extends AbstractExtendibleTreeNode 
     map[GrammarConstantsConstantTypes.float] = GrammarNodeTypeConstantFloat
     map[GrammarConstants.compilerNodeType] = GrammarCompilerNode
     map[GrammarConstants.example] = GrammarExampleNode
-    return new TreeNode.Parser(undefined, map)
+    return new TreeNode.Parser(undefined, map, [{ regex: HandGrammarProgram.nodeTypeFullRegex, nodeConstructor: nodeTypeDefinitionNode }])
   }
 
   get sortSpec() {
@@ -2208,7 +2208,9 @@ ${properties.join("\n")}
 
     const catchAllStr = catchAllConstructor ? catchAllConstructor : this._amIRoot() ? `this._getBlobNodeCatchAllNodeType()` : "undefined"
 
-    return `createParser() {
+    const scopedParserJavascript = ""
+
+    return `createParser() {${scopedParserJavascript}
   return new TreeNode.Parser(${catchAllStr}, ${firstWordsStr}, ${regexStr})
   }`
   }
@@ -2233,12 +2235,10 @@ ${properties.join("\n")}
 
       const nodeTypeMap = this.getLanguageDefinitionProgram()
         .getValidConcreteAndAbstractNodeTypeDefinitions()
-        .map(def => {
-          const id = def.getNodeTypeIdFromDefinition()
-          return `"${id}": ${id}`
-        })
+        .map(def => def.getNodeTypeIdFromDefinition())
         .join(",\n")
 
+      // todo: do we generate one of these for all subtypes, now that we don't have one global scope?
       components.push(`static getNodeTypeMap() { return {${nodeTypeMap} }}`)
     }
 
@@ -2475,24 +2475,28 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
   static cellTypeFullRegex = new RegExp("^[a-zA-Z0-9_]+" + GrammarConstants.cellTypeSuffix + "$")
 
   private _cache_compiledLoadedNodeTypes: { [nodeTypeId: string]: Function }
-
   // Note: this is some so far unavoidable tricky code. We need to eval the transpiled JS, in a NodeJS or browser environment.
-  private _compileAndEvalGrammar() {
-    if (!this.isNodeJs()) this._cache_compiledLoadedNodeTypes = Utils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
-    else {
-      const path = require("path")
-      const code = this.toNodeJsJavascript(__dirname)
-      try {
-        const rootNode = this._requireInVmNodeJsRootNodeTypeConstructor(code)
-        this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
-        if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
-      } catch (err) {
-        // todo: figure out best error pattern here for debugging
-        console.log(err)
-        // console.log(`Error in code: `)
-        // console.log(new TreeNode(code).toStringWithLineNumbers())
-      }
+  _compileAndReturnNodeTypeMap() {
+    if (this._cache_compiledLoadedNodeTypes) return this._cache_compiledLoadedNodeTypes
+
+    if (!this.isNodeJs()) {
+      this._cache_compiledLoadedNodeTypes = Utils.appendCodeAndReturnValueOnWindow(this.toBrowserJavascript(), this.getRootNodeTypeId()).getNodeTypeMap()
+      return this._cache_compiledLoadedNodeTypes
     }
+
+    const path = require("path")
+    const code = this.toNodeJsJavascript(__dirname)
+    try {
+      const rootNode = this._requireInVmNodeJsRootNodeTypeConstructor(code)
+      this._cache_compiledLoadedNodeTypes = rootNode.getNodeTypeMap()
+      if (!this._cache_compiledLoadedNodeTypes) throw new Error(`Failed to getNodeTypeMap`)
+    } catch (err) {
+      // todo: figure out best error pattern here for debugging
+      console.log(err)
+      // console.log(`Error in code: `)
+      // console.log(new TreeNode(code).toStringWithLineNumbers())
+    }
+    return this._cache_compiledLoadedNodeTypes
   }
 
   trainModel(programs: string[], programConstructor = this.compileAndReturnRootConstructor()): SimplePredictionModel {
@@ -2558,11 +2562,6 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     if (node.isRoot()) return []
     const nodeIndex = model.idToIndex[node.getDefinition()._getId()]
     return model.matrix.map(row => row[nodeIndex])
-  }
-
-  _compileAndReturnNodeTypeMap() {
-    if (!this._cache_compiledLoadedNodeTypes) this._compileAndEvalGrammar()
-    return this._cache_compiledLoadedNodeTypes
   }
 
   // todo: hacky, remove

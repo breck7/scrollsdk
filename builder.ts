@@ -273,7 +273,7 @@ class Builder extends TreeNode {
   }
 
   produceAllLangs() {
-    const langs = `arrow chuck dug dumbdown fire grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
+    const langs = `arrow chuck dug dumbdown fire fruit grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
     langs.forEach(lang => this.produceLang(lang))
   }
 

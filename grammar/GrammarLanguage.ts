@@ -332,7 +332,7 @@ abstract class GrammarBackedNode extends TreeNode {
 
   get allTypedWords() {
     const words: TypedWord[] = []
-    this.topDownArray.forEach((node: GrammarBackedNode) => node.wordTypes.forEach((cell, index) => words.push(new TypedWord(node, index, cell.getCellTypeId()))))
+    this.topDownArray.forEach((node: GrammarBackedNode) => node.wordTypes.forEach((cell, index) => words.push(new TypedWord(node, index, cell.cellTypeId))))
     return words
   }
 
@@ -345,7 +345,7 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   toCellTypeTree() {
-    return this.topDownArray.map(child => child.getIndentation() + child.getLineCellTypes()).join("\n")
+    return this.topDownArray.map(child => child.getIndentation() + child.lineCellTypes).join("\n")
   }
 
   getParseTable(maxColumnWidth = 40) {
@@ -524,7 +524,7 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   toCellTypeTreeWithNodeConstructorNames() {
-    return this.topDownArray.map((child: GrammarBackedNode) => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.getLineCellTypes()).join("\n")
+    return this.topDownArray.map((child: GrammarBackedNode) => child.constructor.name + this.getWordBreakSymbol() + child.getIndentation() + child.lineCellTypes).join("\n")
   }
 
   toPreludeCellTypeTreeWithNodeConstructorNames() {
@@ -618,8 +618,8 @@ abstract class GrammarBackedNode extends TreeNode {
   }
 
   // todo: just make a fn that computes proper spacing and then is given a node to print
-  getLineCellTypes() {
-    return this.parsedCells.map(slot => slot.getCellTypeId()).join(" ")
+  get lineCellTypes() {
+    return this.parsedCells.map(slot => slot.cellTypeId).join(" ")
   }
 
   getLineCellPreludeTypes() {
@@ -776,7 +776,7 @@ ${indent}${closeChildrenString}`
   get cells() {
     const cells: treeNotationTypes.stringMap = {}
     this.parsedCells.forEach(cell => {
-      const cellTypeId = cell.getCellTypeId()
+      const cellTypeId = cell.cellTypeId
       if (!cell.isCatchAll()) cells[cellTypeId] = cell.getParsed()
       else {
         if (!cells[cellTypeId]) cells[cellTypeId] = []
@@ -840,7 +840,7 @@ abstract class AbstractGrammarBackedCell<T> {
   private _cellTypeId: string
   protected _nodeTypeDefinition: AbstractGrammarDefinitionNode
 
-  getCellTypeId() {
+  get cellTypeId() {
     return this._cellTypeId
   }
 
@@ -1405,13 +1405,13 @@ class LineAppearsMultipleTimesError extends AbstractTreeError {
 
 class UnknownCellTypeError extends AbstractCellError {
   getMessage(): string {
-    return super.getMessage() + ` No cellType "${this.getCell().getCellTypeId()}" found. Language grammar for "${this.getExtension()}" may need to be fixed.`
+    return super.getMessage() + ` No cellType "${this.getCell().cellTypeId}" found. Language grammar for "${this.getExtension()}" may need to be fixed.`
   }
 }
 
 class InvalidWordError extends AbstractCellError {
   getMessage(): string {
-    return super.getMessage() + ` "${this.getCell().getWord()}" does not fit in cellType "${this.getCell().getCellTypeId()}".`
+    return super.getMessage() + ` "${this.getCell().getWord()}" does not fit in cellType "${this.getCell().cellTypeId}".`
   }
 
   getSuggestionMessage() {
@@ -1447,7 +1447,7 @@ class MissingWordError extends AbstractCellError {
   // todo: autocomplete suggestion
 
   getMessage(): string {
-    return super.getMessage() + ` Missing word for cell "${this.getCell().getCellTypeId()}".`
+    return super.getMessage() + ` Missing word for cell "${this.getCell().cellTypeId}".`
   }
 
   isMissingWordError() {
@@ -1548,14 +1548,14 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
 
   getGetter(wordIndex: number) {
     const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
-    return `get ${this.getCellTypeId()}() {
+    return `get ${this.cellTypeId}() {
       return ${wordToNativeJavascriptTypeParser ? wordToNativeJavascriptTypeParser + `(this.getWord(${wordIndex}))` : `this.getWord(${wordIndex})`}
     }`
   }
 
   getCatchAllGetter(wordIndex: number) {
     const wordToNativeJavascriptTypeParser = this.getCellConstructor().parserFunctionName
-    return `get ${this.getCellTypeId()}() {
+    return `get ${this.cellTypeId}() {
       return ${wordToNativeJavascriptTypeParser ? `this.getWordsFrom(${wordIndex}).map(val => ${wordToNativeJavascriptTypeParser}(val))` : `this.getWordsFrom(${wordIndex})`}
     }`
   }
@@ -1623,7 +1623,7 @@ class cellTypeDefinitionNode extends AbstractExtendibleTreeNode {
     return this._getAllTests().every(node => (<AbstractGrammarWordTestNode>node).isValid(str, programRootNode))
   }
 
-  getCellTypeId(): treeNotationTypes.cellTypeId {
+  get cellTypeId(): treeNotationTypes.cellTypeId {
     return this.getWord(0)
   }
 
@@ -2268,7 +2268,7 @@ ${properties.join("\n")}
       .map((cellTypeId, index) => {
         const cellTypeDefinition = program.getCellTypeDefinitionById(cellTypeId) // todo: cleanup
         if (!cellTypeDefinition) throw new Error(`No ${GrammarConstants.cellType} ${cellTypeId} found`) // todo: standardize error/capture error at grammar time
-        return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) + "." + cellTypeDefinition.getCellTypeId()}`
+        return `        ${index + 1}: ${(cellTypeDefinition.getHighlightScope() || defaultHighlightScope) + "." + cellTypeDefinition.cellTypeId}`
       })
       .join("\n")
 
@@ -2299,8 +2299,19 @@ ${captures}
     return this._cache_ancestorNodeTypeIdsArray
   }
 
-  protected get programNodeTypeDefinitionCache(): { [nodeTypeId: string]: nodeTypeDefinitionNode } {
-    return this.languageDefinitionProgram.programNodeTypeDefinitionCache
+  protected _cache_nodeTypeDefinitions: { [nodeTypeId: string]: nodeTypeDefinitionNode }
+  get programNodeTypeDefinitionCache() {
+    if (this._cache_nodeTypeDefinitions) return this._cache_nodeTypeDefinitions
+
+    const scopedParsers = this.getChildrenByNodeConstructor(nodeTypeDefinitionNode)
+    if (!scopedParsers.length) {
+      this._cache_nodeTypeDefinitions = this.languageDefinitionProgram.programNodeTypeDefinitionCache
+      return this._cache_nodeTypeDefinitions
+    }
+    const cache = Object.assign({}, this.languageDefinitionProgram.programNodeTypeDefinitionCache)
+    this._cache_nodeTypeDefinitions = cache
+    scopedParsers.forEach(nodeTypeDefinitionNode => (cache[(<nodeTypeDefinitionNode>nodeTypeDefinitionNode).getNodeTypeIdFromDefinition()] = nodeTypeDefinitionNode))
+    return this._cache_nodeTypeDefinitions
   }
 
   getDescription(): string {
@@ -2700,7 +2711,7 @@ ${testCode}`
   protected _getCellTypeDefinitions() {
     const types: { [typeName: string]: cellTypeDefinitionNode } = {}
     // todo: add built in word types?
-    this.getChildrenByNodeConstructor(cellTypeDefinitionNode).forEach(type => (types[(<cellTypeDefinitionNode>type).getCellTypeId()] = type))
+    this.getChildrenByNodeConstructor(cellTypeDefinitionNode).forEach(type => (types[(<cellTypeDefinitionNode>type).cellTypeId] = type))
     return types
   }
 
@@ -2768,8 +2779,6 @@ ${testCode}`
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
 
-  // At present we only have global nodeType definitions (you cannot have scoped nodeType definitions right now).
-  private _cache_nodeTypeDefinitions: { [nodeTypeId: string]: nodeTypeDefinitionNode }
   get programNodeTypeDefinitionCache() {
     if (this._cache_nodeTypeDefinitions) return this._cache_nodeTypeDefinitions
 

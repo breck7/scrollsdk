@@ -91,7 +91,7 @@ xColumnNameNode
  tags doNotSynthesize
  javascript
   getRunTimeEnumOptions(cell) {
-   return cell.getCellTypeId() === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
+   return cell.cellTypeId === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
  extends abstractTopLevelNode
  crux xColumnName

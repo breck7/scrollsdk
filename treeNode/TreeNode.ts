@@ -152,7 +152,7 @@ class TreeNode extends AbstractNode {
     return []
   }
 
-  getLineCellTypes() {
+  get lineCellTypes() {
     // todo: make this any a constant
     return "undefinedCellType ".repeat(this.words.length).trim()
   }

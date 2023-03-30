@@ -3813,7 +3813,7 @@ testTree.typeTests = equal => {
   const a = new TreeNode("text")
   // Assert
   equal(a.getErrors().length, 0)
-  equal(a.getLineCellTypes(), "undefinedCellType") // todo: make this a constant
+  equal(a.lineCellTypes, "undefinedCellType") // todo: make this a constant
 }
 
 testTree.setTests = equal => {

@@ -166,8 +166,7 @@ abstract class GrammarBackedNode extends TreeNode {
   get definition(): AbstractGrammarDefinitionNode | HandGrammarProgram | nodeTypeDefinitionNode {
     if (this._definition) return this._definition
 
-    const handGrammarProgram = this.handGrammarProgram
-    this._definition = this.isRoot() ? handGrammarProgram : handGrammarProgram.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
+    this._definition = this.isRoot() ? this.handGrammarProgram : this.parent.definition.getNodeTypeDefinitionByNodeTypeId(this.constructor.name)
     return this._definition
   }
 
@@ -1988,7 +1987,7 @@ ${properties.join("\n")}
   }
 
   get languageDefinitionProgram(): HandGrammarProgram {
-    return <HandGrammarProgram>this.parent
+    return <HandGrammarProgram>this.root
   }
 
   protected _getCustomJavascriptMethods(): treeNotationTypes.javascriptCode {

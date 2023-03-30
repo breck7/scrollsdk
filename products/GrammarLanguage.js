@@ -1692,7 +1692,9 @@ ${properties.join("\n")}
     if (def) return def
     // todo: cleanup
     this.languageDefinitionProgram._addDefaultCatchAllBlobNode()
-    return this.programNodeTypeDefinitionCache[nodeTypeId]
+    const nodeDef = this.languageDefinitionProgram.programNodeTypeDefinitionCache[nodeTypeId]
+    if (!nodeDef) throw new Error(`No definition found for nodeType id "${nodeTypeId}". Node: \n---\n${this.asString}\n---`)
+    return nodeDef
   }
   isDefined(nodeTypeId) {
     return !!this.programNodeTypeDefinitionCache[nodeTypeId]
@@ -1756,7 +1758,6 @@ ${properties.join("\n")}
     const nodeTypeId = this.get(GrammarConstants.catchAllNodeType)
     if (!nodeTypeId) return ""
     const nodeDef = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
-    if (!nodeDef) throw new Error(`No definition found for nodeType id "${nodeTypeId}"`)
     return nodeDef.generatedClassName
   }
   get asJavascriptClass() {
@@ -1850,16 +1851,16 @@ ${captures}
     return this._cache_ancestorNodeTypeIdsArray
   }
   get programNodeTypeDefinitionCache() {
-    if (this._cache_nodeTypeDefinitions) return this._cache_nodeTypeDefinitions
-    const scopedParsers = this.getChildrenByNodeConstructor(nodeTypeDefinitionNode)
-    if (!scopedParsers.length) {
-      this._cache_nodeTypeDefinitions = this.languageDefinitionProgram.programNodeTypeDefinitionCache
-      return this._cache_nodeTypeDefinitions
-    }
-    const cache = Object.assign({}, this.languageDefinitionProgram.programNodeTypeDefinitionCache)
-    this._cache_nodeTypeDefinitions = cache
-    scopedParsers.forEach(nodeTypeDefinitionNode => (cache[nodeTypeDefinitionNode.nodeTypeIdFromDefinition] = nodeTypeDefinitionNode))
+    if (!this._cache_nodeTypeDefinitions) this._cache_nodeTypeDefinitions = this.makeProgramNodeTypeDefinitionCache()
     return this._cache_nodeTypeDefinitions
+  }
+  makeProgramNodeTypeDefinitionCache() {
+    const scopedParsers = this.getChildrenByNodeConstructor(nodeTypeDefinitionNode)
+    const parentCache = this.parent.programNodeTypeDefinitionCache
+    if (!scopedParsers.length) return parentCache
+    const cache = Object.assign({}, parentCache)
+    scopedParsers.forEach(nodeTypeDefinitionNode => (cache[nodeTypeDefinitionNode.nodeTypeIdFromDefinition] = nodeTypeDefinitionNode))
+    return cache
   }
   get description() {
     return this._getFromExtended(GrammarConstants.description) || ""
@@ -2253,11 +2254,10 @@ ${testCode}`
     const nodeTypesNode = this.rootNodeTypeDefinitionNode.getNode(GrammarConstants.inScope)
     return nodeTypesNode ? nodeTypesNode.getWordsFrom(1) : []
   }
-  get programNodeTypeDefinitionCache() {
-    if (this._cache_nodeTypeDefinitions) return this._cache_nodeTypeDefinitions
-    this._cache_nodeTypeDefinitions = {}
-    this.getChildrenByNodeConstructor(nodeTypeDefinitionNode).forEach(nodeTypeDefinitionNode => (this._cache_nodeTypeDefinitions[nodeTypeDefinitionNode.nodeTypeIdFromDefinition] = nodeTypeDefinitionNode))
-    return this._cache_nodeTypeDefinitions
+  makeProgramNodeTypeDefinitionCache() {
+    const cache = {}
+    this.getChildrenByNodeConstructor(nodeTypeDefinitionNode).forEach(nodeTypeDefinitionNode => (cache[nodeTypeDefinitionNode.nodeTypeIdFromDefinition] = nodeTypeDefinitionNode))
+    return cache
   }
   compileAndReturnRootConstructor() {
     if (!this._cache_rootConstructorClass) {

@@ -13,6 +13,8 @@ startColumns 4
  - getPrevious > previous
  - getDefinition > definition
  - getNodeTypeId > nodeTypeId
+ - getTableNameIfAny > tableNameIfAny
+ - getMessage > message (on errors)
 - ⚠️ BREAKING: A lot of zero parameter methods that were formerly `toX()` have been changed to getters like `get asX()`:
  - toString > asString (toString is maintained for compability with idiomatic Javascript)
  - toCsv > asCsv; toTsv > asTsv; toSsv > asSsv

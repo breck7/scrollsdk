@@ -2095,8 +2095,7 @@ ${properties.join("\n")}
     // todo: return catch all?
     const def = this.programNodeTypeDefinitionCache[nodeTypeId]
     if (def) return def
-    // todo: cleanup
-    this.languageDefinitionProgram._addDefaultCatchAllBlobNode()
+    this.languageDefinitionProgram._addDefaultCatchAllBlobNode() // todo: cleanup. Why did I do this? Needs to be removed or documented.
     const nodeDef = this.languageDefinitionProgram.programNodeTypeDefinitionCache[nodeTypeId]
     if (!nodeDef) throw new Error(`No definition found for nodeType id "${nodeTypeId}". Node: \n---\n${this.asString}\n---`)
     return nodeDef
@@ -2295,15 +2294,17 @@ ${captures}
 
   protected _cache_nodeTypeDefinitions: { [nodeTypeId: string]: nodeTypeDefinitionNode }
   get programNodeTypeDefinitionCache() {
-    if (!this._cache_nodeTypeDefinitions) this._cache_nodeTypeDefinitions = this.makeProgramNodeTypeDefinitionCache()
+    if (!this._cache_nodeTypeDefinitions) this._cache_nodeTypeDefinitions = this.isRoot || this.hasParserDefinitions ? this.makeProgramNodeTypeDefinitionCache() : this.parent.programNodeTypeDefinitionCache
     return this._cache_nodeTypeDefinitions
+  }
+
+  get hasParserDefinitions() {
+    return !!this.getChildrenByNodeConstructor(nodeTypeDefinitionNode).length
   }
 
   makeProgramNodeTypeDefinitionCache() {
     const scopedParsers = this.getChildrenByNodeConstructor(nodeTypeDefinitionNode)
-    const parentCache = this.parent.programNodeTypeDefinitionCache
-    if (!scopedParsers.length) return parentCache
-    const cache = Object.assign({}, parentCache)
+    const cache = Object.assign({}, this.parent.programNodeTypeDefinitionCache) // todo. We don't really need this. we should just lookup the parent if no local hits.
     scopedParsers.forEach(nodeTypeDefinitionNode => (cache[(<nodeTypeDefinitionNode>nodeTypeDefinitionNode).nodeTypeIdFromDefinition] = nodeTypeDefinitionNode))
     return cache
   }
@@ -2359,7 +2360,27 @@ ${cells.toString(1)}`
     return true
   }
 
+  // Get all definitions in this current scope down, even ones that are scoped inside other definitions.
+  get inScopeAndDescendantDefinitions() {
+    return this.languageDefinitionProgram._collectAllDefinitions(Object.values(this.programNodeTypeDefinitionCache), [])
+  }
+
+  private _collectAllDefinitions(defs: nodeTypeDefinitionNode[], collection: nodeTypeDefinitionNode[] = []) {
+    defs.forEach((def: nodeTypeDefinitionNode) => {
+      collection.push(def)
+      def._collectAllDefinitions(def.getChildrenByNodeConstructor(nodeTypeDefinitionNode), collection)
+    })
+    return collection
+  }
+
+  // Get every definition that extends from this one, even ones that are scoped inside other definitions.
   get concreteDescendantDefinitions() {
+    const { inScopeAndDescendantDefinitions, id } = this
+    return Object.values(inScopeAndDescendantDefinitions).filter(def => def._doesExtend(id) && !def._isAbstract())
+  }
+
+  get concreteInScopeDescendantDefinitions() {
+    // Note: non-recursive.
     const defs = this.programNodeTypeDefinitionCache
     const id = this.id
     return Object.values(defs).filter(def => def._doesExtend(id) && !def._isAbstract())
@@ -2370,7 +2391,7 @@ ${cells.toString(1)}`
     nodeTypeIds.forEach(nodeTypeId => {
       const def = this.getNodeTypeDefinitionByNodeTypeId(nodeTypeId)
       if (def._isErrorNodeType()) return
-      else if (def._isAbstract()) def.concreteDescendantDefinitions.forEach(def => defs.push(def))
+      else if (def._isAbstract()) def.concreteInScopeDescendantDefinitions.forEach(def => defs.push(def))
       else defs.push(def)
     })
     return defs
@@ -2502,7 +2523,7 @@ class HandGrammarProgram extends AbstractGrammarDefinitionNode {
     const predictions = predictionsVector.slice(1).map((count, index) => {
       const id = model.indexToId[index + 1]
       return {
-        id: id,
+        id,
         def: this.getNodeTypeDefinitionByNodeTypeId(id),
         count,
         prob: count / total

@@ -2229,8 +2229,9 @@ ${testCode}`
     this._initRootNodeTypeDefinitionNode()
     return this._cache_rootNodeTypeNode
   }
-  // todo: whats the best design pattern to use for this sort of thing?
   _addDefaultCatchAllBlobNode() {
+    if (this._addedCatchAll) return
+    this._addedCatchAll = true
     delete this._cache_nodeTypeDefinitions
     this.concat(`${GrammarConstants.BlobNode}
  ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`)

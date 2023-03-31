@@ -2739,7 +2739,11 @@ ${testCode}`
   }
 
   // todo: whats the best design pattern to use for this sort of thing?
+  // todo: remove this, or at least document wtf is going on
+  _addedCatchAll: any
   _addDefaultCatchAllBlobNode() {
+    if (this._addedCatchAll) return
+    this._addedCatchAll = true
     delete this._cache_nodeTypeDefinitions
     this.concat(`${GrammarConstants.BlobNode}
  ${GrammarConstants.baseNodeType} ${GrammarConstants.blobNode}`)

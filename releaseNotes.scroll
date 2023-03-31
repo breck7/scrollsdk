@@ -4,8 +4,10 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
-# 71.0.3 2023-3-31
-- 🏥 `concreteDescendantDefinitions` now recurses. use `concreteInScopeDescendantDefinitions` for old behavior.
+# 72.0.0 2023-3-31
+- 🎉 new `cruxPathAsColumnName` method on parser definition nodes
+- ⚠️ BREAKING: downstreamed all SQLite methods to TrueBase, the only place where they were used and made sense.
+- ⚠️ BREAKING: `concreteDescendantDefinitions` now recurses. use `concreteInScopeDescendantDefinitions` for old behavior.
 
 # 71.0.2 2023-3-30
 - 🏥 fix perf regression

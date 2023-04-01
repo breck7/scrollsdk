@@ -31,6 +31,9 @@ startColumns 4
  - getDefinition > definition
  - getNodeTypeId > nodeTypeId
  - getTableNameIfAny > tableNameIfAny
+ - getEdgeSymbol > edgeSymbol
+ - getWordBreakSymbol > wordBreakSymbol
+ - getNodeBreakSymbol > nodeBreakSymbol
  - On errors:
   - getMessage > message
   - getLineNumber > lineNumber

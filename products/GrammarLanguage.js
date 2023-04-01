@@ -373,8 +373,8 @@ class GrammarBackedNode extends TreeNode {
       // Sort keywords
       this.sort((nodeA, nodeB) => {
         var _a, _b
-        const aIndex = (_a = sortIndices.get(nodeA.firstWord)) !== null && _a !== void 0 ? _a : sortIndices.get(nodeA.definition.id)
-        const bIndex = (_b = sortIndices.get(nodeB.firstWord)) !== null && _b !== void 0 ? _b : sortIndices.get(nodeB.definition.id)
+        const aIndex = (_a = sortIndices.get(nodeA.firstWord)) !== null && _a !== void 0 ? _a : sortIndices.get(nodeA.sortKey)
+        const bIndex = (_b = sortIndices.get(nodeB.firstWord)) !== null && _b !== void 0 ? _b : sortIndices.get(nodeB.sortKey)
         if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.firstWord}"`)
         const a = aIndex !== null && aIndex !== void 0 ? aIndex : 1000
         const b = bIndex !== null && bIndex !== void 0 ? bIndex : 1000
@@ -384,7 +384,7 @@ class GrammarBackedNode extends TreeNode {
       let currentSection = 0
       this.forEach(node => {
         var _a
-        const nodeSection = (_a = sortSections.get(node.firstWord)) !== null && _a !== void 0 ? _a : sortSections.get(node.definition.id)
+        const nodeSection = (_a = sortSections.get(node.firstWord)) !== null && _a !== void 0 ? _a : sortSections.get(node.sortKey)
         const sectionHasAdvanced = nodeSection > currentSection
         if (sectionHasAdvanced) {
           currentSection = nodeSection

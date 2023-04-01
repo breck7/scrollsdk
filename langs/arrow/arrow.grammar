@@ -68,6 +68,7 @@ cardNumberNode
 amountNode
  extends abstractChargeAttributeNode
  cells keywordCell amountCell
+ string sortKey amountNode
 currencyNode
  extends abstractChargeAttributeNode
  cells keywordCell currencyCell

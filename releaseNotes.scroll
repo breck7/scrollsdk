@@ -4,8 +4,11 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 72.2.0 2023-3-31
+- 🎉 improved `sortTemplate`. You can now use `sortKey` in addition to keywords.
+
 # 72.1.0 2023-3-31
-- 🎉 improved `sortTemplate`. You can now use parser types in addition to keywords.
+- 🎉 work on `sortTemplate`.
 
 # 72.0.0 2023-3-31
 - 🎉 new `cruxPathAsColumnName` method on parser definition nodes

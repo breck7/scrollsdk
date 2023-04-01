@@ -92,6 +92,7 @@ cardNumberNode
 amountNode
  extends abstractChargeAttributeNode
  cells keywordCell amountCell
+ string sortKey amountNode
 currencyNode
  extends abstractChargeAttributeNode
  cells keywordCell currencyCell
@@ -154,6 +155,9 @@ tokenNode
     }
     get amountCell() {
       return parseFloat(this.getWord(1))
+    }
+    get sortKey() {
+      return `amountNode`
     }
   }
 

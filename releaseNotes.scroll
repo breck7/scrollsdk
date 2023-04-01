@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 72.1.0 2023-3-31
+- 🎉 improved `sortTemplate`. You can now use parser types in addition to keywords.
+
 # 72.0.0 2023-3-31
 - 🎉 new `cruxPathAsColumnName` method on parser definition nodes
 - ⚠️ BREAKING: downstreamed all SQLite methods to TrueBase, the only place where they were used and made sense.

@@ -370,8 +370,9 @@ class GrammarBackedNode extends TreeNode {
     if (sortIndices.size) {
       // Sort keywords
       this.sort((nodeA, nodeB) => {
-        const aIndex = sortIndices.get(nodeA.firstWord)
-        const bIndex = sortIndices.get(nodeB.firstWord)
+        var _a, _b
+        const aIndex = (_a = sortIndices.get(nodeA.firstWord)) !== null && _a !== void 0 ? _a : sortIndices.get(nodeA.definition.id)
+        const bIndex = (_b = sortIndices.get(nodeB.firstWord)) !== null && _b !== void 0 ? _b : sortIndices.get(nodeB.definition.id)
         if (aIndex === undefined) console.error(`sortTemplate is missing "${nodeA.firstWord}"`)
         const a = aIndex !== null && aIndex !== void 0 ? aIndex : 1000
         const b = bIndex !== null && bIndex !== void 0 ? bIndex : 1000
@@ -380,7 +381,8 @@ class GrammarBackedNode extends TreeNode {
       // pad sections
       let currentSection = 0
       this.forEach(node => {
-        const nodeSection = sortSections.get(node.firstWord)
+        var _a
+        const nodeSection = (_a = sortSections.get(node.firstWord)) !== null && _a !== void 0 ? _a : sortSections.get(node.definition.id)
         const sectionHasAdvanced = nodeSection > currentSection
         if (sectionHasAdvanced) {
           currentSection = nodeSection

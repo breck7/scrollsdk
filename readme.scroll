@@ -34,7 +34,7 @@ import ciBadges.scroll
 
 ? How do I build a new language?
 * You can try the Grammar tutorial.
- https://jtree.treenotation.org/grammarTutorial.html Grammar tutorial
+ link grammarTutorial.html Grammar tutorial
 
 # Grammar Files
 * Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web Tree Language Designer.

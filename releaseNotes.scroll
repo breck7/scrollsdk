@@ -4,6 +4,12 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 73.0.0 2023-4-2
+* This is a major release with significant naming breaks. All logic is the same but methods have been renamed to better express the core idea of Tree Languages as small simple parsers combined.
+- ⚠️ BREAKING: 
+- ⚠️ BREAKING: See Grammar Release Notes for upgrading Grammar files
+ link langs/grammar/relaseNotes.html Grammar Release Notes
+
 # 72.2.0 2023-3-31
 - 🎉 improved `sortTemplate`. You can now use `sortKey` in addition to keywords.
 

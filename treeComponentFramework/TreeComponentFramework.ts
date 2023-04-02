@@ -6,8 +6,8 @@ const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
 const { GrammarBackedNode } = require("../products/GrammarLanguage.js")
 
-const stumpNode = require("../products/stump.nodejs.js")
-const hakonNode = require("../products/hakon.nodejs.js")
+const stumpParser = require("../products/stump.nodejs.js")
+const hakonParser = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
 
 const BrowserEvents: treeNotationTypes.stringMap = {}
@@ -302,7 +302,7 @@ class WillowMousetrap {
 }
 
 // this one should have no document, window, $, et cetera.
-class AbstractWillowBrowser extends stumpNode {
+class AbstractWillowBrowser extends stumpParser {
   constructor(fullHtmlPageUrlIncludingProtocolAndFileName: string) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
@@ -1121,7 +1121,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 
 abstract class AbstractTheme {
   hakonToCss(str: string) {
-    const hakonProgram = new hakonNode(str)
+    const hakonProgram = new hakonParser(str)
     // console.log(hakonProgram.getAllErrors())
     return hakonProgram.compile()
   }
@@ -1134,13 +1134,13 @@ interface reasonForUpdatingOrNot {
   shouldUpdate: boolean
   reason: string
   staleTime?: number
-  dependency?: AbstractTreeComponent
+  dependency?: AbstractTreeComponentParser
   lastRenderedTime?: number
   mTime?: number
 }
 
 interface childShouldUpdateResult {
-  child: AbstractTreeComponent
+  child: AbstractTreeComponentParser
   childUpdateBecause: reasonForUpdatingOrNot
 }
 
@@ -1176,7 +1176,7 @@ declare class abstractHtmlTag extends GrammarBackedNode {
   asHtmlWithSuids(...args: any[]): void
 }
 
-abstract class AbstractTreeComponent extends GrammarBackedNode {
+abstract class AbstractTreeComponentParser extends GrammarBackedNode {
   private _commandsBuffer: treeNotationTypes.treeNode[]
   private _messageBuffer: treeNotationTypes.treeNode
   private _htmlStumpNode: abstractHtmlTag
@@ -1463,17 +1463,17 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
   }
 
   getCssClassNames() {
-    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent")
+    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponentParser")
   }
 
   treeComponentWillMount() {}
 
   async treeComponentDidMount() {
-    AbstractTreeComponent._mountedTreeComponents++
+    AbstractTreeComponentParser._mountedTreeComponents++
   }
 
   treeComponentDidUnmount() {
-    AbstractTreeComponent._mountedTreeComponents--
+    AbstractTreeComponentParser._mountedTreeComponents--
   }
 
   treeComponentWillUnmount() {}
@@ -1490,7 +1490,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
   async treeComponentDidUpdate() {}
 
   protected _getChildTreeComponents() {
-    return this.getChildrenByNodeConstructor(AbstractTreeComponent)
+    return this.getChildrenByParser(AbstractTreeComponentParser)
   }
 
   protected _hasChildrenTreeComponents() {
@@ -1513,7 +1513,7 @@ abstract class AbstractTreeComponent extends GrammarBackedNode {
   toPlainHtml(containerId: string) {
     return `<div id="${containerId}">
  <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
-${new stumpNode(this.toStumpCode()).compile()}
+${new stumpParser(this.toStumpCode()).compile()}
 </div>`
   }
 
@@ -1549,7 +1549,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
 
   // todo: move to keyword node class?
   toggle(firstWord: string, contentOptions: string[]) {
-    const currentNode = <AbstractTreeComponent>this.getNode(firstWord)
+    const currentNode = <AbstractTreeComponentParser>this.getNode(firstWord)
     if (!contentOptions) return currentNode ? currentNode.unmountAndDestroy() : this.appendLine(firstWord)
     const currentContent = currentNode === undefined ? undefined : currentNode.content
 
@@ -1608,12 +1608,12 @@ ${new stumpNode(this.toStumpCode()).compile()}
     }
   }
 
-  getDependencies(): AbstractTreeComponent[] {
+  getDependencies(): AbstractTreeComponentParser[] {
     return []
   }
 
   protected _getTreeComponentsThatNeedRendering(arr: childShouldUpdateResult[]) {
-    this._getChildTreeComponents().forEach((child: AbstractTreeComponent) => {
+    this._getChildTreeComponents().forEach((child: AbstractTreeComponentParser) => {
       const reasonForUpdatingOrNot = child.getWhetherToUpdateAndReason()
       if (!child.isMounted() || reasonForUpdatingOrNot.shouldUpdate) arr.push({ child: child, childUpdateBecause: reasonForUpdatingOrNot })
       child._getTreeComponentsThatNeedRendering(arr)
@@ -1723,7 +1723,7 @@ ${new stumpNode(this.toStumpCode()).compile()}
   }
 }
 
-class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
+class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponentParser {
   toHakonCode() {
     return `.TreeComponentFrameworkDebuggerComponent
  position fixed
@@ -1763,7 +1763,7 @@ ${app.toString(3)}`
   }
 }
 
-abstract class AbstractGithubTriangleComponent extends AbstractTreeComponent {
+abstract class AbstractGithubTriangleComponent extends AbstractTreeComponentParser {
   githubLink = `https://github.com/treenotation/jtree`
 
   toHakonCode() {
@@ -1782,4 +1782,4 @@ abstract class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   }
 }
 
-export { AbstractGithubTriangleComponent, AbstractTreeComponent, WillowBrowser, TreeComponentFrameworkDebuggerComponent }
+export { AbstractGithubTriangleComponent, AbstractTreeComponentParser, WillowBrowser, TreeComponentFrameworkDebuggerComponent }

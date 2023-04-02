@@ -21,8 +21,8 @@ mkdirp.sync(outputDir)
 
 const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new HandGrammarProgram(grammarCode)
-  const rootProgramConstructor = grammarProgram.compileAndReturnRootConstructor()
-  return new rootProgramConstructor(code)
+  const rootParser = grammarProgram.compileAndReturnRootParser()
+  return new rootParser(code)
 }
 
 testTree.grammar = equal => {
@@ -176,8 +176,8 @@ langs.forEach((name: string) => {
     // Act
     const inferredPrefixGrammarCode = new UnknownGrammarProgram(sampleCode).inferGrammarFileForAKeywordLanguage("foobar")
     const inferredPrefixGrammarProgram = new HandGrammarProgram(inferredPrefixGrammarCode)
-    const rootProgramConstructor = inferredPrefixGrammarProgram.compileAndReturnRootConstructor()
-    const programParsedWithInferredGrammar = new rootProgramConstructor(sampleCode)
+    const rootParser = inferredPrefixGrammarProgram.compileAndReturnRootParser()
+    const programParsedWithInferredGrammar = new rootParser(sampleCode)
 
     // Assert
     equal(inferredPrefixGrammarProgram.getAllErrors().length, 0, `no errors in inferred grammar program for language ${name}`)

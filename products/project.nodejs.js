@@ -5,9 +5,13 @@
   const { HandGrammarProgram } = require("./GrammarLanguage.js")
   const { GrammarBackedNode } = require("./GrammarLanguage.js")
 
-  class projectNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(errorNode, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { file: fileNode }), undefined)
+  class projectParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { file: fileParser }),
+        undefined
+      )
     }
     getScriptPathsInCorrectDependencyOrder() {
       const cloned = this.clone()
@@ -84,7 +88,7 @@ fileConstantCell
  highlightScope keyword.control
 
 // Line Parsers
-projectNode
+projectParser
  root
  version 2.0.0
  description A prefix Tree Language for project dependency management in Javascript and Typescript.
@@ -154,25 +158,25 @@ projectNode
    })
    return requiredFileList.toString()
   }
- inScope fileNode
- catchAllNodeType errorNode
-abstractTermNode
+ inScope fileParser
+ catchAllParser errorParser
+abstractTermParser
  catchAllCellType filepathCell
  cells termCell
-absoluteNode
- extends abstractTermNode
+absoluteParser
+ extends abstractTermParser
  crux absolute
-externalNode
- extends abstractTermNode
+externalParser
+ extends abstractTermParser
  crux external
-relativeNode
- extends abstractTermNode
+relativeParser
+ extends abstractTermParser
  crux relative
-errorNode
- baseNodeType errorNode
-fileNode
+errorParser
+ baseParser errorParser
+fileParser
  catchAllCellType filepathCell
- inScope externalNode absoluteNode relativeNode
+ inScope externalParser absoluteParser relativeParser
  javascript
   getFilePath() {
    return this.filepathCell.join(" ")
@@ -199,10 +203,10 @@ fileNode
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = projectNode
+    static rootParser = projectParser
   }
 
-  class abstractTermNode extends GrammarBackedNode {
+  class abstractTermParser extends GrammarBackedNode {
     get termCell() {
       return this.getWord(0)
     }
@@ -211,26 +215,26 @@ fileNode
     }
   }
 
-  class absoluteNode extends abstractTermNode {}
+  class absoluteParser extends abstractTermParser {}
 
-  class externalNode extends abstractTermNode {}
+  class externalParser extends abstractTermParser {}
 
-  class relativeNode extends abstractTermNode {}
+  class relativeParser extends abstractTermParser {}
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class fileNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class fileParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          absolute: absoluteNode,
-          external: externalNode,
-          relative: relativeNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          absolute: absoluteParser,
+          external: externalParser,
+          relative: relativeParser
         }),
         undefined
       )
@@ -263,8 +267,8 @@ fileNode
     }
   }
 
-  module.exports = projectNode
-  projectNode
+  module.exports = projectParser
+  projectParser
 
-  if (!module.parent) new projectNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new projectParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

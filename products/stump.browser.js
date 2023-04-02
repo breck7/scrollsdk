@@ -1,123 +1,123 @@
 {
-  class stumpNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          blockquote: htmlTagNode,
-          colgroup: htmlTagNode,
-          datalist: htmlTagNode,
-          fieldset: htmlTagNode,
-          menuitem: htmlTagNode,
-          noscript: htmlTagNode,
-          optgroup: htmlTagNode,
-          progress: htmlTagNode,
-          styleTag: htmlTagNode,
-          template: htmlTagNode,
-          textarea: htmlTagNode,
-          titleTag: htmlTagNode,
-          address: htmlTagNode,
-          article: htmlTagNode,
-          caption: htmlTagNode,
-          details: htmlTagNode,
-          section: htmlTagNode,
-          summary: htmlTagNode,
-          button: htmlTagNode,
-          canvas: htmlTagNode,
-          dialog: htmlTagNode,
-          figure: htmlTagNode,
-          footer: htmlTagNode,
-          header: htmlTagNode,
-          hgroup: htmlTagNode,
-          iframe: htmlTagNode,
-          keygen: htmlTagNode,
-          legend: htmlTagNode,
-          object: htmlTagNode,
-          option: htmlTagNode,
-          output: htmlTagNode,
-          script: htmlTagNode,
-          select: htmlTagNode,
-          source: htmlTagNode,
-          strong: htmlTagNode,
-          aside: htmlTagNode,
-          embed: htmlTagNode,
-          input: htmlTagNode,
-          label: htmlTagNode,
-          meter: htmlTagNode,
-          param: htmlTagNode,
-          small: htmlTagNode,
-          table: htmlTagNode,
-          tbody: htmlTagNode,
-          tfoot: htmlTagNode,
-          thead: htmlTagNode,
-          track: htmlTagNode,
-          video: htmlTagNode,
-          abbr: htmlTagNode,
-          area: htmlTagNode,
-          base: htmlTagNode,
-          body: htmlTagNode,
-          code: htmlTagNode,
-          form: htmlTagNode,
-          head: htmlTagNode,
-          html: htmlTagNode,
-          link: htmlTagNode,
-          main: htmlTagNode,
-          mark: htmlTagNode,
-          menu: htmlTagNode,
-          meta: htmlTagNode,
-          ruby: htmlTagNode,
-          samp: htmlTagNode,
-          span: htmlTagNode,
-          time: htmlTagNode,
-          bdi: htmlTagNode,
-          bdo: htmlTagNode,
-          col: htmlTagNode,
-          del: htmlTagNode,
-          dfn: htmlTagNode,
-          div: htmlTagNode,
-          img: htmlTagNode,
-          ins: htmlTagNode,
-          kbd: htmlTagNode,
-          map: htmlTagNode,
-          nav: htmlTagNode,
-          pre: htmlTagNode,
-          rtc: htmlTagNode,
-          sub: htmlTagNode,
-          sup: htmlTagNode,
-          var: htmlTagNode,
-          wbr: htmlTagNode,
-          br: htmlTagNode,
-          dd: htmlTagNode,
-          dl: htmlTagNode,
-          dt: htmlTagNode,
-          em: htmlTagNode,
-          h1: htmlTagNode,
-          h2: htmlTagNode,
-          h3: htmlTagNode,
-          h4: htmlTagNode,
-          h5: htmlTagNode,
-          h6: htmlTagNode,
-          hr: htmlTagNode,
-          li: htmlTagNode,
-          ol: htmlTagNode,
-          rb: htmlTagNode,
-          rp: htmlTagNode,
-          rt: htmlTagNode,
-          td: htmlTagNode,
-          th: htmlTagNode,
-          tr: htmlTagNode,
-          ul: htmlTagNode,
-          a: htmlTagNode,
-          b: htmlTagNode,
-          i: htmlTagNode,
-          p: htmlTagNode,
-          q: htmlTagNode,
-          s: htmlTagNode,
-          u: htmlTagNode
+  class stumpParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          blockquote: htmlTagParser,
+          colgroup: htmlTagParser,
+          datalist: htmlTagParser,
+          fieldset: htmlTagParser,
+          menuitem: htmlTagParser,
+          noscript: htmlTagParser,
+          optgroup: htmlTagParser,
+          progress: htmlTagParser,
+          styleTag: htmlTagParser,
+          template: htmlTagParser,
+          textarea: htmlTagParser,
+          titleTag: htmlTagParser,
+          address: htmlTagParser,
+          article: htmlTagParser,
+          caption: htmlTagParser,
+          details: htmlTagParser,
+          section: htmlTagParser,
+          summary: htmlTagParser,
+          button: htmlTagParser,
+          canvas: htmlTagParser,
+          dialog: htmlTagParser,
+          figure: htmlTagParser,
+          footer: htmlTagParser,
+          header: htmlTagParser,
+          hgroup: htmlTagParser,
+          iframe: htmlTagParser,
+          keygen: htmlTagParser,
+          legend: htmlTagParser,
+          object: htmlTagParser,
+          option: htmlTagParser,
+          output: htmlTagParser,
+          script: htmlTagParser,
+          select: htmlTagParser,
+          source: htmlTagParser,
+          strong: htmlTagParser,
+          aside: htmlTagParser,
+          embed: htmlTagParser,
+          input: htmlTagParser,
+          label: htmlTagParser,
+          meter: htmlTagParser,
+          param: htmlTagParser,
+          small: htmlTagParser,
+          table: htmlTagParser,
+          tbody: htmlTagParser,
+          tfoot: htmlTagParser,
+          thead: htmlTagParser,
+          track: htmlTagParser,
+          video: htmlTagParser,
+          abbr: htmlTagParser,
+          area: htmlTagParser,
+          base: htmlTagParser,
+          body: htmlTagParser,
+          code: htmlTagParser,
+          form: htmlTagParser,
+          head: htmlTagParser,
+          html: htmlTagParser,
+          link: htmlTagParser,
+          main: htmlTagParser,
+          mark: htmlTagParser,
+          menu: htmlTagParser,
+          meta: htmlTagParser,
+          ruby: htmlTagParser,
+          samp: htmlTagParser,
+          span: htmlTagParser,
+          time: htmlTagParser,
+          bdi: htmlTagParser,
+          bdo: htmlTagParser,
+          col: htmlTagParser,
+          del: htmlTagParser,
+          dfn: htmlTagParser,
+          div: htmlTagParser,
+          img: htmlTagParser,
+          ins: htmlTagParser,
+          kbd: htmlTagParser,
+          map: htmlTagParser,
+          nav: htmlTagParser,
+          pre: htmlTagParser,
+          rtc: htmlTagParser,
+          sub: htmlTagParser,
+          sup: htmlTagParser,
+          var: htmlTagParser,
+          wbr: htmlTagParser,
+          br: htmlTagParser,
+          dd: htmlTagParser,
+          dl: htmlTagParser,
+          dt: htmlTagParser,
+          em: htmlTagParser,
+          h1: htmlTagParser,
+          h2: htmlTagParser,
+          h3: htmlTagParser,
+          h4: htmlTagParser,
+          h5: htmlTagParser,
+          h6: htmlTagParser,
+          hr: htmlTagParser,
+          li: htmlTagParser,
+          ol: htmlTagParser,
+          rb: htmlTagParser,
+          rp: htmlTagParser,
+          rt: htmlTagParser,
+          td: htmlTagParser,
+          th: htmlTagParser,
+          tr: htmlTagParser,
+          ul: htmlTagParser,
+          a: htmlTagParser,
+          b: htmlTagParser,
+          i: htmlTagParser,
+          p: htmlTagParser,
+          q: htmlTagParser,
+          s: htmlTagParser,
+          u: htmlTagParser
         }),
         [
-          { regex: /^$/, nodeConstructor: blankLineNode },
-          { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }
+          { regex: /^$/, parser: blankLineParser },
+          { regex: /^[a-zA-Z0-9_]+Component/, parser: componentDefinitionParser }
         ]
       )
     }
@@ -153,11 +153,11 @@ bernKeywordCell
  extends keywordCell
 
 // Line parsers
-stumpNode
+stumpParser
  root
  description A prefix Tree Language that compiles to HTML.
- catchAllNodeType errorNode
- inScope htmlTagNode blankLineNode
+ catchAllParser errorParser
+ inScope htmlTagParser blankLineParser
  example
   div
    h1 hello world
@@ -169,7 +169,7 @@ stumpNode
   _getHtmlJoinByCharacter() {
     return ""
   }
-blankLineNode
+blankLineParser
  pattern ^$
  tags doNotSynthesize
  cells emptyCell
@@ -178,12 +178,12 @@ blankLineNode
    return ""
   }
   getTextContent() {return ""}
-htmlTagNode
- inScope bernNode htmlTagNode htmlAttributeNode blankLineNode
+htmlTagParser
+ inScope bernParser htmlTagParser htmlAttributeParser blankLineParser
  catchAllCellType anyHtmlContentCell
  cells htmlTagNameCell
  javascript
-  isHtmlTagNode = true
+  isHtmlTagParser = true
   getTag() {
    // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
    const firstWord = this.firstWord
@@ -212,25 +212,25 @@ htmlTagNode
   get domElement() {
     var elem = document.createElement(this.getTag())
     elem.setAttribute("stumpUid", this._getUid())
-    this.filter(node => node.isAttributeNode)
+    this.filter(node => node.isAttributeParser)
       .forEach(child => elem.setAttribute(child.firstWord, child.content))
     elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
-    this.filter(node => node.isHtmlTagNode)
+    this.filter(node => node.isHtmlTagParser)
       .forEach(child => elem.appendChild(child.domElement))
     return elem
   }
   _toHtml(indentCount, withSuid) {
    const tag = this.getTag()
    const children = this.map(child => child._toHtml(indentCount + 1, withSuid)).join("")
-   const attributesStr = this.filter(node => node.isAttributeNode)
+   const attributesStr = this.filter(node => node.isAttributeParser)
     .map(child => child.getAttribute())
     .join("")
    const indent = " ".repeat(indentCount)
    const collapse = this.shouldCollapse()
-   const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("htmlTagNode").length > 0
+   const indentForChildParsers = !collapse && this.getChildInstancesOfParserId("htmlTagParser").length > 0
    const suid = withSuid ? \` stumpUid="\${this._getUid()}"\` : ""
    const oneLiner = this._getOneLiner()
-   return \`\${!collapse ? indent : ""}<\${tag}\${attributesStr}\${suid}>\${oneLiner}\${indentForChildNodes ? "\\n" : ""}\${children}</\${tag}>\${collapse ? "" : "\\n"}\`
+   return \`\${!collapse ? indent : ""}<\${tag}\${attributesStr}\${suid}>\${oneLiner}\${indentForChildParsers ? "\\n" : ""}\${children}</\${tag}>\${collapse ? "" : "\\n"}\`
   }
   removeCssStumpNode() {
    return this.removeStumpNode()
@@ -243,28 +243,28 @@ htmlTagNode
    return this.topDownArray.find(node => node._getUid() === guid)
   }
   addClassToStumpNode(className) {
-   const classNode = this.touchNode("class")
-   const words = classNode.getWordsFrom(1)
+   const classParser = this.touchNode("class")
+   const words = classParser.getWordsFrom(1)
    // note: we call add on shadow regardless, because at the moment stump may have gotten out of
    // sync with shadow, if things modified the dom. todo: cleanup.
    this.getShadow().addClassToShadow(className)
    if (words.includes(className)) return this
    words.push(className)
-   classNode.setContent(words.join(this.wordBreakSymbol))
+   classParser.setContent(words.join(this.wordBreakSymbol))
    return this
   }
   removeClassFromStumpNode(className) {
-   const classNode = this.getNode("class")
-   if (!classNode) return this
-   const newClasses = classNode.words.filter(word => word !== className)
-   if (!newClasses.length) classNode.destroy()
-   else classNode.setContent(newClasses.join(" "))
+   const classParser = this.getNode("class")
+   if (!classParser) return this
+   const newClasses = classParser.words.filter(word => word !== className)
+   if (!newClasses.length) classParser.destroy()
+   else classParser.setContent(newClasses.join(" "))
    this.getShadow().removeClassFromShadow(className)
    return this
   }
   stumpNodeHasClass(className) {
-   const classNode = this.getNode("class")
-   return classNode && classNode.words.includes(className) ? true : false
+   const classParser = this.getNode("class")
+   return classParser && classParser.words.includes(className) ? true : false
   }
   isStumpNodeCheckbox() {
    return this.get("type") === "checkbox"
@@ -282,8 +282,8 @@ htmlTagNode
   insertChildNode(text, index) {
    const singleNode = new TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-   const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
-   this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
+   const stumpParserIndex = this.filter(node => node.isHtmlTagParser).indexOf(newNode)
+   this.getShadow().insertHtmlNode(newNode, stumpParserIndex)
    return newNode
   }
   isInputType() {
@@ -304,18 +304,18 @@ htmlTagNode
    return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.firstWord === firstWord)
   }
   hasLine(line) {
    return this.getChildren().some(node => node.getLine() === line)
   }
   findStumpNodesByChild(line) {
-   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.hasLine(line))
   }
   findStumpNodesWithClass(className) {
    return this.topDownArray.filter(
     node =>
-     node.doesExtend("htmlTagNode") &&
+     node.doesExtend("htmlTagParser") &&
      node.has("class") &&
      node
       .getNode("class")
@@ -348,17 +348,17 @@ htmlTagNode
   get asHtml() {
    return this._toHtml()
   }
-errorNode
- baseNodeType errorNode
-componentDefinitionNode
- extends htmlTagNode
+errorParser
+ baseParser errorParser
+componentDefinitionParser
+ extends htmlTagParser
  pattern ^[a-zA-Z0-9_]+Component
  cells componentTagNameCell
  javascript
   getTag() {
    return "div"
   }
-htmlAttributeNode
+htmlAttributeParser
  javascript
   _toHtml() {
    return ""
@@ -367,29 +367,29 @@ htmlAttributeNode
   getAttribute() {
    return \` \${this.firstWord}="\${this.content}"\`
   }
- boolean isAttributeNode true
+ boolean isAttributeParser true
  boolean isTileAttribute true
- catchAllNodeType errorNode
+ catchAllParser errorParser
  catchAllCellType attributeValueCell
  cells htmlAttributeNameCell
 stumpExtendedAttributeNameCell
  extends htmlAttributeNameCell
  enum collapse blurCommand changeCommand clickCommand contextMenuCommand doubleClickCommand keyUpCommand lineClickCommand lineShiftClickCommand shiftClickCommand
-stumpExtendedAttributeNode
- description Node types not present in HTML but included in stump.
- extends htmlAttributeNode
+stumpExtendedAttributeParser
+ description Parser types not present in HTML but included in stump.
+ extends htmlAttributeParser
  cells stumpExtendedAttributeNameCell
-lineOfHtmlContentNode
+lineOfHtmlContentParser
  boolean isTileAttribute true
- catchAllNodeType lineOfHtmlContentNode
+ catchAllParser lineOfHtmlContentParser
  catchAllCellType anyHtmlContentCell
  javascript
   getTextContent() {return this.getLine()}
-bernNode
+bernParser
  boolean isTileAttribute true
  // todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
- catchAllNodeType lineOfHtmlContentNode
+ catchAllParser lineOfHtmlContentParser
  javascript
   _toHtml() {
    return this.childrenToString()
@@ -399,10 +399,10 @@ bernNode
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = stumpNode
+    static rootParser = stumpParser
   }
 
-  class blankLineNode extends GrammarBackedNode {
+  class blankLineParser extends GrammarBackedNode {
     get emptyCell() {
       return this.getWord(0)
     }
@@ -414,299 +414,299 @@ bernNode
     }
   }
 
-  class htmlTagNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class htmlTagParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          blockquote: htmlTagNode,
-          colgroup: htmlTagNode,
-          datalist: htmlTagNode,
-          fieldset: htmlTagNode,
-          menuitem: htmlTagNode,
-          noscript: htmlTagNode,
-          optgroup: htmlTagNode,
-          progress: htmlTagNode,
-          styleTag: htmlTagNode,
-          template: htmlTagNode,
-          textarea: htmlTagNode,
-          titleTag: htmlTagNode,
-          address: htmlTagNode,
-          article: htmlTagNode,
-          caption: htmlTagNode,
-          details: htmlTagNode,
-          section: htmlTagNode,
-          summary: htmlTagNode,
-          button: htmlTagNode,
-          canvas: htmlTagNode,
-          dialog: htmlTagNode,
-          figure: htmlTagNode,
-          footer: htmlTagNode,
-          header: htmlTagNode,
-          hgroup: htmlTagNode,
-          iframe: htmlTagNode,
-          keygen: htmlTagNode,
-          legend: htmlTagNode,
-          object: htmlTagNode,
-          option: htmlTagNode,
-          output: htmlTagNode,
-          script: htmlTagNode,
-          select: htmlTagNode,
-          source: htmlTagNode,
-          strong: htmlTagNode,
-          aside: htmlTagNode,
-          embed: htmlTagNode,
-          input: htmlTagNode,
-          label: htmlTagNode,
-          meter: htmlTagNode,
-          param: htmlTagNode,
-          small: htmlTagNode,
-          table: htmlTagNode,
-          tbody: htmlTagNode,
-          tfoot: htmlTagNode,
-          thead: htmlTagNode,
-          track: htmlTagNode,
-          video: htmlTagNode,
-          abbr: htmlTagNode,
-          area: htmlTagNode,
-          base: htmlTagNode,
-          body: htmlTagNode,
-          code: htmlTagNode,
-          form: htmlTagNode,
-          head: htmlTagNode,
-          html: htmlTagNode,
-          link: htmlTagNode,
-          main: htmlTagNode,
-          mark: htmlTagNode,
-          menu: htmlTagNode,
-          meta: htmlTagNode,
-          ruby: htmlTagNode,
-          samp: htmlTagNode,
-          span: htmlTagNode,
-          time: htmlTagNode,
-          bdi: htmlTagNode,
-          bdo: htmlTagNode,
-          col: htmlTagNode,
-          del: htmlTagNode,
-          dfn: htmlTagNode,
-          div: htmlTagNode,
-          img: htmlTagNode,
-          ins: htmlTagNode,
-          kbd: htmlTagNode,
-          map: htmlTagNode,
-          nav: htmlTagNode,
-          pre: htmlTagNode,
-          rtc: htmlTagNode,
-          sub: htmlTagNode,
-          sup: htmlTagNode,
-          var: htmlTagNode,
-          wbr: htmlTagNode,
-          br: htmlTagNode,
-          dd: htmlTagNode,
-          dl: htmlTagNode,
-          dt: htmlTagNode,
-          em: htmlTagNode,
-          h1: htmlTagNode,
-          h2: htmlTagNode,
-          h3: htmlTagNode,
-          h4: htmlTagNode,
-          h5: htmlTagNode,
-          h6: htmlTagNode,
-          hr: htmlTagNode,
-          li: htmlTagNode,
-          ol: htmlTagNode,
-          rb: htmlTagNode,
-          rp: htmlTagNode,
-          rt: htmlTagNode,
-          td: htmlTagNode,
-          th: htmlTagNode,
-          tr: htmlTagNode,
-          ul: htmlTagNode,
-          a: htmlTagNode,
-          b: htmlTagNode,
-          i: htmlTagNode,
-          p: htmlTagNode,
-          q: htmlTagNode,
-          s: htmlTagNode,
-          u: htmlTagNode,
-          oncanplaythrough: htmlAttributeNode,
-          ondurationchange: htmlAttributeNode,
-          onloadedmetadata: htmlAttributeNode,
-          contenteditable: htmlAttributeNode,
-          "accept-charset": htmlAttributeNode,
-          onbeforeunload: htmlAttributeNode,
-          onvolumechange: htmlAttributeNode,
-          onbeforeprint: htmlAttributeNode,
-          oncontextmenu: htmlAttributeNode,
-          autocomplete: htmlAttributeNode,
-          onafterprint: htmlAttributeNode,
-          onhashchange: htmlAttributeNode,
-          onloadeddata: htmlAttributeNode,
-          onmousewheel: htmlAttributeNode,
-          onratechange: htmlAttributeNode,
-          ontimeupdate: htmlAttributeNode,
-          oncuechange: htmlAttributeNode,
-          ondragenter: htmlAttributeNode,
-          ondragleave: htmlAttributeNode,
-          ondragstart: htmlAttributeNode,
-          onloadstart: htmlAttributeNode,
-          onmousedown: htmlAttributeNode,
-          onmousemove: htmlAttributeNode,
-          onmouseover: htmlAttributeNode,
-          placeholder: htmlAttributeNode,
-          formaction: htmlAttributeNode,
-          "http-equiv": htmlAttributeNode,
-          novalidate: htmlAttributeNode,
-          ondblclick: htmlAttributeNode,
-          ondragover: htmlAttributeNode,
-          onkeypress: htmlAttributeNode,
-          onmouseout: htmlAttributeNode,
-          onpagehide: htmlAttributeNode,
-          onpageshow: htmlAttributeNode,
-          onpopstate: htmlAttributeNode,
-          onprogress: htmlAttributeNode,
-          spellcheck: htmlAttributeNode,
-          accesskey: htmlAttributeNode,
-          autofocus: htmlAttributeNode,
-          draggable: htmlAttributeNode,
-          maxlength: htmlAttributeNode,
-          oncanplay: htmlAttributeNode,
-          ondragend: htmlAttributeNode,
-          onemptied: htmlAttributeNode,
-          oninvalid: htmlAttributeNode,
-          onkeydown: htmlAttributeNode,
-          onmouseup: htmlAttributeNode,
-          onoffline: htmlAttributeNode,
-          onplaying: htmlAttributeNode,
-          onseeking: htmlAttributeNode,
-          onstalled: htmlAttributeNode,
-          onstorage: htmlAttributeNode,
-          onsuspend: htmlAttributeNode,
-          onwaiting: htmlAttributeNode,
-          translate: htmlAttributeNode,
-          autoplay: htmlAttributeNode,
-          controls: htmlAttributeNode,
-          datetime: htmlAttributeNode,
-          disabled: htmlAttributeNode,
-          download: htmlAttributeNode,
-          dropzone: htmlAttributeNode,
-          hreflang: htmlAttributeNode,
-          multiple: htmlAttributeNode,
-          onchange: htmlAttributeNode,
-          ononline: htmlAttributeNode,
-          onresize: htmlAttributeNode,
-          onscroll: htmlAttributeNode,
-          onsearch: htmlAttributeNode,
-          onseeked: htmlAttributeNode,
-          onselect: htmlAttributeNode,
-          onsubmit: htmlAttributeNode,
-          ontoggle: htmlAttributeNode,
-          onunload: htmlAttributeNode,
-          property: htmlAttributeNode,
-          readonly: htmlAttributeNode,
-          required: htmlAttributeNode,
-          reversed: htmlAttributeNode,
-          selected: htmlAttributeNode,
-          tabindex: htmlAttributeNode,
-          bgcolor: htmlAttributeNode,
-          charset: htmlAttributeNode,
-          checked: htmlAttributeNode,
-          colspan: htmlAttributeNode,
-          content: htmlAttributeNode,
-          default: htmlAttributeNode,
-          dirname: htmlAttributeNode,
-          enctype: htmlAttributeNode,
-          headers: htmlAttributeNode,
-          onabort: htmlAttributeNode,
-          onclick: htmlAttributeNode,
-          onended: htmlAttributeNode,
-          onerror: htmlAttributeNode,
-          onfocus: htmlAttributeNode,
-          oninput: htmlAttributeNode,
-          onkeyup: htmlAttributeNode,
-          onpaste: htmlAttributeNode,
-          onpause: htmlAttributeNode,
-          onreset: htmlAttributeNode,
-          onwheel: htmlAttributeNode,
-          optimum: htmlAttributeNode,
-          pattern: htmlAttributeNode,
-          preload: htmlAttributeNode,
-          rowspan: htmlAttributeNode,
-          sandbox: htmlAttributeNode,
-          srclang: htmlAttributeNode,
-          accept: htmlAttributeNode,
-          action: htmlAttributeNode,
-          border: htmlAttributeNode,
-          coords: htmlAttributeNode,
-          height: htmlAttributeNode,
-          hidden: htmlAttributeNode,
-          method: htmlAttributeNode,
-          onblur: htmlAttributeNode,
-          oncopy: htmlAttributeNode,
-          ondrag: htmlAttributeNode,
-          ondrop: htmlAttributeNode,
-          onload: htmlAttributeNode,
-          onplay: htmlAttributeNode,
-          poster: htmlAttributeNode,
-          srcdoc: htmlAttributeNode,
-          srcset: htmlAttributeNode,
-          target: htmlAttributeNode,
-          usemap: htmlAttributeNode,
-          align: htmlAttributeNode,
-          async: htmlAttributeNode,
-          class: htmlAttributeNode,
-          color: htmlAttributeNode,
-          defer: htmlAttributeNode,
-          ismap: htmlAttributeNode,
-          media: htmlAttributeNode,
-          muted: htmlAttributeNode,
-          oncut: htmlAttributeNode,
-          scope: htmlAttributeNode,
-          shape: htmlAttributeNode,
-          sizes: htmlAttributeNode,
-          start: htmlAttributeNode,
-          style: htmlAttributeNode,
-          title: htmlAttributeNode,
-          value: htmlAttributeNode,
-          width: htmlAttributeNode,
-          cols: htmlAttributeNode,
-          high: htmlAttributeNode,
-          href: htmlAttributeNode,
-          kind: htmlAttributeNode,
-          lang: htmlAttributeNode,
-          list: htmlAttributeNode,
-          loop: htmlAttributeNode,
-          name: htmlAttributeNode,
-          open: htmlAttributeNode,
-          rows: htmlAttributeNode,
-          size: htmlAttributeNode,
-          step: htmlAttributeNode,
-          type: htmlAttributeNode,
-          wrap: htmlAttributeNode,
-          alt: htmlAttributeNode,
-          dir: htmlAttributeNode,
-          for: htmlAttributeNode,
-          low: htmlAttributeNode,
-          max: htmlAttributeNode,
-          min: htmlAttributeNode,
-          rel: htmlAttributeNode,
-          src: htmlAttributeNode,
-          id: htmlAttributeNode,
-          lineShiftClickCommand: stumpExtendedAttributeNode,
-          contextMenuCommand: stumpExtendedAttributeNode,
-          doubleClickCommand: stumpExtendedAttributeNode,
-          shiftClickCommand: stumpExtendedAttributeNode,
-          lineClickCommand: stumpExtendedAttributeNode,
-          changeCommand: stumpExtendedAttributeNode,
-          clickCommand: stumpExtendedAttributeNode,
-          keyUpCommand: stumpExtendedAttributeNode,
-          blurCommand: stumpExtendedAttributeNode,
-          collapse: stumpExtendedAttributeNode,
-          bern: bernNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          blockquote: htmlTagParser,
+          colgroup: htmlTagParser,
+          datalist: htmlTagParser,
+          fieldset: htmlTagParser,
+          menuitem: htmlTagParser,
+          noscript: htmlTagParser,
+          optgroup: htmlTagParser,
+          progress: htmlTagParser,
+          styleTag: htmlTagParser,
+          template: htmlTagParser,
+          textarea: htmlTagParser,
+          titleTag: htmlTagParser,
+          address: htmlTagParser,
+          article: htmlTagParser,
+          caption: htmlTagParser,
+          details: htmlTagParser,
+          section: htmlTagParser,
+          summary: htmlTagParser,
+          button: htmlTagParser,
+          canvas: htmlTagParser,
+          dialog: htmlTagParser,
+          figure: htmlTagParser,
+          footer: htmlTagParser,
+          header: htmlTagParser,
+          hgroup: htmlTagParser,
+          iframe: htmlTagParser,
+          keygen: htmlTagParser,
+          legend: htmlTagParser,
+          object: htmlTagParser,
+          option: htmlTagParser,
+          output: htmlTagParser,
+          script: htmlTagParser,
+          select: htmlTagParser,
+          source: htmlTagParser,
+          strong: htmlTagParser,
+          aside: htmlTagParser,
+          embed: htmlTagParser,
+          input: htmlTagParser,
+          label: htmlTagParser,
+          meter: htmlTagParser,
+          param: htmlTagParser,
+          small: htmlTagParser,
+          table: htmlTagParser,
+          tbody: htmlTagParser,
+          tfoot: htmlTagParser,
+          thead: htmlTagParser,
+          track: htmlTagParser,
+          video: htmlTagParser,
+          abbr: htmlTagParser,
+          area: htmlTagParser,
+          base: htmlTagParser,
+          body: htmlTagParser,
+          code: htmlTagParser,
+          form: htmlTagParser,
+          head: htmlTagParser,
+          html: htmlTagParser,
+          link: htmlTagParser,
+          main: htmlTagParser,
+          mark: htmlTagParser,
+          menu: htmlTagParser,
+          meta: htmlTagParser,
+          ruby: htmlTagParser,
+          samp: htmlTagParser,
+          span: htmlTagParser,
+          time: htmlTagParser,
+          bdi: htmlTagParser,
+          bdo: htmlTagParser,
+          col: htmlTagParser,
+          del: htmlTagParser,
+          dfn: htmlTagParser,
+          div: htmlTagParser,
+          img: htmlTagParser,
+          ins: htmlTagParser,
+          kbd: htmlTagParser,
+          map: htmlTagParser,
+          nav: htmlTagParser,
+          pre: htmlTagParser,
+          rtc: htmlTagParser,
+          sub: htmlTagParser,
+          sup: htmlTagParser,
+          var: htmlTagParser,
+          wbr: htmlTagParser,
+          br: htmlTagParser,
+          dd: htmlTagParser,
+          dl: htmlTagParser,
+          dt: htmlTagParser,
+          em: htmlTagParser,
+          h1: htmlTagParser,
+          h2: htmlTagParser,
+          h3: htmlTagParser,
+          h4: htmlTagParser,
+          h5: htmlTagParser,
+          h6: htmlTagParser,
+          hr: htmlTagParser,
+          li: htmlTagParser,
+          ol: htmlTagParser,
+          rb: htmlTagParser,
+          rp: htmlTagParser,
+          rt: htmlTagParser,
+          td: htmlTagParser,
+          th: htmlTagParser,
+          tr: htmlTagParser,
+          ul: htmlTagParser,
+          a: htmlTagParser,
+          b: htmlTagParser,
+          i: htmlTagParser,
+          p: htmlTagParser,
+          q: htmlTagParser,
+          s: htmlTagParser,
+          u: htmlTagParser,
+          oncanplaythrough: htmlAttributeParser,
+          ondurationchange: htmlAttributeParser,
+          onloadedmetadata: htmlAttributeParser,
+          contenteditable: htmlAttributeParser,
+          "accept-charset": htmlAttributeParser,
+          onbeforeunload: htmlAttributeParser,
+          onvolumechange: htmlAttributeParser,
+          onbeforeprint: htmlAttributeParser,
+          oncontextmenu: htmlAttributeParser,
+          autocomplete: htmlAttributeParser,
+          onafterprint: htmlAttributeParser,
+          onhashchange: htmlAttributeParser,
+          onloadeddata: htmlAttributeParser,
+          onmousewheel: htmlAttributeParser,
+          onratechange: htmlAttributeParser,
+          ontimeupdate: htmlAttributeParser,
+          oncuechange: htmlAttributeParser,
+          ondragenter: htmlAttributeParser,
+          ondragleave: htmlAttributeParser,
+          ondragstart: htmlAttributeParser,
+          onloadstart: htmlAttributeParser,
+          onmousedown: htmlAttributeParser,
+          onmousemove: htmlAttributeParser,
+          onmouseover: htmlAttributeParser,
+          placeholder: htmlAttributeParser,
+          formaction: htmlAttributeParser,
+          "http-equiv": htmlAttributeParser,
+          novalidate: htmlAttributeParser,
+          ondblclick: htmlAttributeParser,
+          ondragover: htmlAttributeParser,
+          onkeypress: htmlAttributeParser,
+          onmouseout: htmlAttributeParser,
+          onpagehide: htmlAttributeParser,
+          onpageshow: htmlAttributeParser,
+          onpopstate: htmlAttributeParser,
+          onprogress: htmlAttributeParser,
+          spellcheck: htmlAttributeParser,
+          accesskey: htmlAttributeParser,
+          autofocus: htmlAttributeParser,
+          draggable: htmlAttributeParser,
+          maxlength: htmlAttributeParser,
+          oncanplay: htmlAttributeParser,
+          ondragend: htmlAttributeParser,
+          onemptied: htmlAttributeParser,
+          oninvalid: htmlAttributeParser,
+          onkeydown: htmlAttributeParser,
+          onmouseup: htmlAttributeParser,
+          onoffline: htmlAttributeParser,
+          onplaying: htmlAttributeParser,
+          onseeking: htmlAttributeParser,
+          onstalled: htmlAttributeParser,
+          onstorage: htmlAttributeParser,
+          onsuspend: htmlAttributeParser,
+          onwaiting: htmlAttributeParser,
+          translate: htmlAttributeParser,
+          autoplay: htmlAttributeParser,
+          controls: htmlAttributeParser,
+          datetime: htmlAttributeParser,
+          disabled: htmlAttributeParser,
+          download: htmlAttributeParser,
+          dropzone: htmlAttributeParser,
+          hreflang: htmlAttributeParser,
+          multiple: htmlAttributeParser,
+          onchange: htmlAttributeParser,
+          ononline: htmlAttributeParser,
+          onresize: htmlAttributeParser,
+          onscroll: htmlAttributeParser,
+          onsearch: htmlAttributeParser,
+          onseeked: htmlAttributeParser,
+          onselect: htmlAttributeParser,
+          onsubmit: htmlAttributeParser,
+          ontoggle: htmlAttributeParser,
+          onunload: htmlAttributeParser,
+          property: htmlAttributeParser,
+          readonly: htmlAttributeParser,
+          required: htmlAttributeParser,
+          reversed: htmlAttributeParser,
+          selected: htmlAttributeParser,
+          tabindex: htmlAttributeParser,
+          bgcolor: htmlAttributeParser,
+          charset: htmlAttributeParser,
+          checked: htmlAttributeParser,
+          colspan: htmlAttributeParser,
+          content: htmlAttributeParser,
+          default: htmlAttributeParser,
+          dirname: htmlAttributeParser,
+          enctype: htmlAttributeParser,
+          headers: htmlAttributeParser,
+          onabort: htmlAttributeParser,
+          onclick: htmlAttributeParser,
+          onended: htmlAttributeParser,
+          onerror: htmlAttributeParser,
+          onfocus: htmlAttributeParser,
+          oninput: htmlAttributeParser,
+          onkeyup: htmlAttributeParser,
+          onpaste: htmlAttributeParser,
+          onpause: htmlAttributeParser,
+          onreset: htmlAttributeParser,
+          onwheel: htmlAttributeParser,
+          optimum: htmlAttributeParser,
+          pattern: htmlAttributeParser,
+          preload: htmlAttributeParser,
+          rowspan: htmlAttributeParser,
+          sandbox: htmlAttributeParser,
+          srclang: htmlAttributeParser,
+          accept: htmlAttributeParser,
+          action: htmlAttributeParser,
+          border: htmlAttributeParser,
+          coords: htmlAttributeParser,
+          height: htmlAttributeParser,
+          hidden: htmlAttributeParser,
+          method: htmlAttributeParser,
+          onblur: htmlAttributeParser,
+          oncopy: htmlAttributeParser,
+          ondrag: htmlAttributeParser,
+          ondrop: htmlAttributeParser,
+          onload: htmlAttributeParser,
+          onplay: htmlAttributeParser,
+          poster: htmlAttributeParser,
+          srcdoc: htmlAttributeParser,
+          srcset: htmlAttributeParser,
+          target: htmlAttributeParser,
+          usemap: htmlAttributeParser,
+          align: htmlAttributeParser,
+          async: htmlAttributeParser,
+          class: htmlAttributeParser,
+          color: htmlAttributeParser,
+          defer: htmlAttributeParser,
+          ismap: htmlAttributeParser,
+          media: htmlAttributeParser,
+          muted: htmlAttributeParser,
+          oncut: htmlAttributeParser,
+          scope: htmlAttributeParser,
+          shape: htmlAttributeParser,
+          sizes: htmlAttributeParser,
+          start: htmlAttributeParser,
+          style: htmlAttributeParser,
+          title: htmlAttributeParser,
+          value: htmlAttributeParser,
+          width: htmlAttributeParser,
+          cols: htmlAttributeParser,
+          high: htmlAttributeParser,
+          href: htmlAttributeParser,
+          kind: htmlAttributeParser,
+          lang: htmlAttributeParser,
+          list: htmlAttributeParser,
+          loop: htmlAttributeParser,
+          name: htmlAttributeParser,
+          open: htmlAttributeParser,
+          rows: htmlAttributeParser,
+          size: htmlAttributeParser,
+          step: htmlAttributeParser,
+          type: htmlAttributeParser,
+          wrap: htmlAttributeParser,
+          alt: htmlAttributeParser,
+          dir: htmlAttributeParser,
+          for: htmlAttributeParser,
+          low: htmlAttributeParser,
+          max: htmlAttributeParser,
+          min: htmlAttributeParser,
+          rel: htmlAttributeParser,
+          src: htmlAttributeParser,
+          id: htmlAttributeParser,
+          lineShiftClickCommand: stumpExtendedAttributeParser,
+          contextMenuCommand: stumpExtendedAttributeParser,
+          doubleClickCommand: stumpExtendedAttributeParser,
+          shiftClickCommand: stumpExtendedAttributeParser,
+          lineClickCommand: stumpExtendedAttributeParser,
+          changeCommand: stumpExtendedAttributeParser,
+          clickCommand: stumpExtendedAttributeParser,
+          keyUpCommand: stumpExtendedAttributeParser,
+          blurCommand: stumpExtendedAttributeParser,
+          collapse: stumpExtendedAttributeParser,
+          bern: bernParser
         }),
         [
-          { regex: /^$/, nodeConstructor: blankLineNode },
-          { regex: /^[a-zA-Z0-9_]+Component/, nodeConstructor: componentDefinitionNode }
+          { regex: /^$/, parser: blankLineParser },
+          { regex: /^[a-zA-Z0-9_]+Component/, parser: componentDefinitionParser }
         ]
       )
     }
@@ -716,7 +716,7 @@ bernNode
     get anyHtmlContentCell() {
       return this.getWordsFrom(1)
     }
-    isHtmlTagNode = true
+    isHtmlTagParser = true
     getTag() {
       // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
       const firstWord = this.firstWord
@@ -745,23 +745,25 @@ bernNode
     get domElement() {
       var elem = document.createElement(this.getTag())
       elem.setAttribute("stumpUid", this._getUid())
-      this.filter(node => node.isAttributeNode).forEach(child => elem.setAttribute(child.firstWord, child.content))
+      this.filter(node => node.isAttributeParser).forEach(child => elem.setAttribute(child.firstWord, child.content))
       elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
-      this.filter(node => node.isHtmlTagNode).forEach(child => elem.appendChild(child.domElement))
+      this.filter(node => node.isHtmlTagParser).forEach(child => elem.appendChild(child.domElement))
       return elem
     }
     _toHtml(indentCount, withSuid) {
       const tag = this.getTag()
       const children = this.map(child => child._toHtml(indentCount + 1, withSuid)).join("")
-      const attributesStr = this.filter(node => node.isAttributeNode)
+      const attributesStr = this.filter(node => node.isAttributeParser)
         .map(child => child.getAttribute())
         .join("")
       const indent = " ".repeat(indentCount)
       const collapse = this.shouldCollapse()
-      const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("htmlTagNode").length > 0
+      const indentForChildParsers = !collapse && this.getChildInstancesOfParserId("htmlTagParser").length > 0
       const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
       const oneLiner = this._getOneLiner()
-      return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
+      return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildParsers ? "\n" : ""}${children}</${tag}>${
+        collapse ? "" : "\n"
+      }`
     }
     removeCssStumpNode() {
       return this.removeStumpNode()
@@ -774,28 +776,28 @@ bernNode
       return this.topDownArray.find(node => node._getUid() === guid)
     }
     addClassToStumpNode(className) {
-      const classNode = this.touchNode("class")
-      const words = classNode.getWordsFrom(1)
+      const classParser = this.touchNode("class")
+      const words = classParser.getWordsFrom(1)
       // note: we call add on shadow regardless, because at the moment stump may have gotten out of
       // sync with shadow, if things modified the dom. todo: cleanup.
       this.getShadow().addClassToShadow(className)
       if (words.includes(className)) return this
       words.push(className)
-      classNode.setContent(words.join(this.wordBreakSymbol))
+      classParser.setContent(words.join(this.wordBreakSymbol))
       return this
     }
     removeClassFromStumpNode(className) {
-      const classNode = this.getNode("class")
-      if (!classNode) return this
-      const newClasses = classNode.words.filter(word => word !== className)
-      if (!newClasses.length) classNode.destroy()
-      else classNode.setContent(newClasses.join(" "))
+      const classParser = this.getNode("class")
+      if (!classParser) return this
+      const newClasses = classParser.words.filter(word => word !== className)
+      if (!newClasses.length) classParser.destroy()
+      else classParser.setContent(newClasses.join(" "))
       this.getShadow().removeClassFromShadow(className)
       return this
     }
     stumpNodeHasClass(className) {
-      const classNode = this.getNode("class")
-      return classNode && classNode.words.includes(className) ? true : false
+      const classParser = this.getNode("class")
+      return classParser && classParser.words.includes(className) ? true : false
     }
     isStumpNodeCheckbox() {
       return this.get("type") === "checkbox"
@@ -813,8 +815,8 @@ bernNode
     insertChildNode(text, index) {
       const singleNode = new TreeNode(text).getChildren()[0]
       const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-      const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
-      this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
+      const stumpParserIndex = this.filter(node => node.isHtmlTagParser).indexOf(newNode)
+      this.getShadow().insertHtmlNode(newNode, stumpParserIndex)
       return newNode
     }
     isInputType() {
@@ -835,16 +837,16 @@ bernNode
       return this._findStumpNodesByBase(firstWord)[0]
     }
     _findStumpNodesByBase(firstWord) {
-      return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.firstWord === firstWord)
     }
     hasLine(line) {
       return this.getChildren().some(node => node.getLine() === line)
     }
     findStumpNodesByChild(line) {
-      return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.hasLine(line))
     }
     findStumpNodesWithClass(className) {
-      return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.has("class") && node.getNode("class").words.includes(className))
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.has("class") && node.getNode("class").words.includes(className))
     }
     getShadowClass() {
       return this.parent.getShadowClass()
@@ -873,13 +875,13 @@ bernNode
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class componentDefinitionNode extends htmlTagNode {
+  class componentDefinitionParser extends htmlTagParser {
     get componentTagNameCell() {
       return this.getWord(0)
     }
@@ -888,9 +890,9 @@ bernNode
     }
   }
 
-  class htmlAttributeNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(errorNode, undefined, undefined)
+  class htmlAttributeParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(errorParser, undefined, undefined)
     }
     get htmlAttributeNameCell() {
       return this.getWord(0)
@@ -901,7 +903,7 @@ bernNode
     get isTileAttribute() {
       return true
     }
-    get isAttributeNode() {
+    get isAttributeParser() {
       return true
     }
     _toHtml() {
@@ -915,15 +917,15 @@ bernNode
     }
   }
 
-  class stumpExtendedAttributeNode extends htmlAttributeNode {
+  class stumpExtendedAttributeParser extends htmlAttributeParser {
     get stumpExtendedAttributeNameCell() {
       return this.getWord(0)
     }
   }
 
-  class lineOfHtmlContentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
+  class lineOfHtmlContentParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
     get anyHtmlContentCell() {
       return this.getWordsFrom(0)
@@ -936,9 +938,9 @@ bernNode
     }
   }
 
-  class bernNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(lineOfHtmlContentNode, undefined, undefined)
+  class bernParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
     get bernKeywordCell() {
       return this.getWord(0)
@@ -954,5 +956,5 @@ bernNode
     }
   }
 
-  window.stumpNode = stumpNode
+  window.stumpParser = stumpParser
 }

@@ -1,11 +1,11 @@
 {
-  class chuckNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType(), undefined, [
-        { regex: /\+/, nodeConstructor: addNode },
-        { regex: /\*/, nodeConstructor: multiplyNode },
-        { regex: /print/, nodeConstructor: printNode },
-        { regex: /^[\d\. ]+$/, nodeConstructor: onlyNumbersNode }
+  class chuckParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser(), undefined, [
+        { regex: /\+/, parser: addParser },
+        { regex: /\*/, parser: multiplyParser },
+        { regex: /print/, parser: printParser },
+        { regex: /^[\d\. ]+$/, parser: onlyNumbersParser }
       ])
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Make this compile and execute
@@ -17,33 +17,33 @@ operatorCell
 floatCell
 
 // Line Parsers
-chuckNode
+chuckParser
  description A useless demo Tree Language inspired by Forth that tests postfix notation.
  root
- inScope abstractOperatorNode onlyNumbersNode
-abstractOperatorNode
+ inScope abstractOperatorParser onlyNumbersParser
+abstractOperatorParser
  catchAllCellType floatCell
  cells operatorCell
  cellParser postfix
-addNode
- extends abstractOperatorNode
+addParser
+ extends abstractOperatorParser
  pattern \\+
-multiplyNode
- extends abstractOperatorNode
+multiplyParser
+ extends abstractOperatorParser
  pattern \\*
-printNode
- extends abstractOperatorNode
+printParser
+ extends abstractOperatorParser
  pattern print
-onlyNumbersNode
+onlyNumbersParser
  catchAllCellType floatCell
  pattern ^[\\d\\. ]+$`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = chuckNode
+    static rootParser = chuckParser
   }
 
-  class abstractOperatorNode extends GrammarBackedNode {
+  class abstractOperatorParser extends GrammarBackedNode {
     get operatorCell() {
       return this.getWord(0)
     }
@@ -52,17 +52,17 @@ onlyNumbersNode
     }
   }
 
-  class addNode extends abstractOperatorNode {}
+  class addParser extends abstractOperatorParser {}
 
-  class multiplyNode extends abstractOperatorNode {}
+  class multiplyParser extends abstractOperatorParser {}
 
-  class printNode extends abstractOperatorNode {}
+  class printParser extends abstractOperatorParser {}
 
-  class onlyNumbersNode extends GrammarBackedNode {
+  class onlyNumbersParser extends GrammarBackedNode {
     get floatCell() {
       return this.getWordsFrom(0).map(val => parseFloat(val))
     }
   }
 
-  window.chuckNode = chuckNode
+  window.chuckParser = chuckParser
 }

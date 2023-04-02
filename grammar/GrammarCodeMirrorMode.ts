@@ -197,16 +197,16 @@ interface treeNotationCodeMirrorState {
 }
 
 class GrammarCodeMirrorMode {
-  constructor(name: string, getProgramConstructorFn: () => treeNotationTypes.TreeProgramConstructor, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
+  constructor(name: string, getRootParserFn: () => treeNotationTypes.TreeProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
-    this._getProgramConstructorFn = getProgramConstructorFn
+    this._getRootParserFn = getRootParserFn
     this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? <string>instance.getValue() : this._originalValue))
     this._codeMirrorLib = codeMirrorLib
   }
 
   private _name: string
   private _getProgramCodeFn: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getProgramConstructorFn: () => treeNotationTypes.TreeProgramConstructor
+  private _getRootParserFn: () => treeNotationTypes.TreeProgramParser
   private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
   private _cachedProgram: treeNotationTypes.treeProgram
@@ -217,7 +217,7 @@ class GrammarCodeMirrorMode {
     const source = this._getProgramCodeFn(this._cmInstance) || ""
     if (!this._cachedProgram || this._cachedSource !== source) {
       this._cachedSource = source
-      this._cachedProgram = new (<any>this._getProgramConstructorFn())(source)
+      this._cachedProgram = new (<any>this._getRootParserFn())(source)
     }
     return this._cachedProgram
   }

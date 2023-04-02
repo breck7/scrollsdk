@@ -4,6 +4,37 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 73.0.0 2023-4-2
+* This is a major release with significant name breaks. All logic is the same but methods have been renamed to better express the core idea of Tree Languages as small simple parsers combined.
+- ⚠️ BREAKING:
+ - Tree Langauges:
+  - grammarNode, hakonNode, etc. > grammarParser, hakonParser
+ - TreeNode
+  - createParser > createParserCombinator
+  - getAncestorByNodeConstructor
+  - TreeNode.Parser > TreeNode.ParserCombinator
+  - getChildInstancesOfNodeTypeId > getChildInstancesOfParserId
+  - findAllNodesWithNodeType > findAllNodesWithParser
+ - GrammarCompiler:
+  - compileGrammarFileAtPathAndReturnRootConstructor > compileGrammarFileAtPathAndReturnRootParser
+ - GrammarLanguage.ts:
+  - rootNodeTypeDefinitionNode > rootParserDefinitionNode
+  - invalidNodeTypes > invalidParsers
+  - getNodeTypeUsage > getParserUsage
+  - asCellTypeTreeWithNodeConstructorNames > asCellTypeTreeWithParserIds
+  - toPreludeCellTypeTreeWithNodeConstructorNames > toPreludeCellTypeTreeWithParserIds
+  - asTreeWithNodeTypes > asTreeWithParsers
+  - nodeTypeId > parserId
+  - topNodeTypeDefinitions > topParserDefinitions
+  - nodeTypeFamilyTree > parserFamilyTree
+  - validConcreteAndAbstractNodeTypeDefinitions > validConcreteAndAbstractParserDefinitions
+  - rootNodeTypeId > rootParserId
+  - compileAndReturnRootConstructor > compileAndReturnRootParser
+ - TreeComponentFramework:
+  - AbstractTreeComponent > AbstractTreeComponentParser
+- ⚠️ BREAKING: See Grammar Release Notes for upgrading Grammar files
+ link langs/grammar/relaseNotes.html Grammar Release Notes
+
 # 72.2.0 2023-3-31
 - 🎉 improved `sortTemplate`. You can now use `sortKey` in addition to keywords.
 

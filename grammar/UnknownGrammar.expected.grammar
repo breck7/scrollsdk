@@ -3,49 +3,49 @@ anyCell
 intCell
 boolCell
 floatCell
-foobarNode
+foobarParser
  root
- inScope fileNode
-fileNode
- inScope sizeNode digitsNode openNode tempNode descriptionNode editsNode accountNode
+ inScope fileParser
+fileParser
+ inScope sizeParser digitsParser openParser tempParser descriptionParser editsParser accountParser
  crux file
  cells keywordCell anyCell
-sizeNode
+sizeParser
  crux size
  cells keywordCell intCell
-digitsNode
+digitsParser
  crux digits
  cells keywordCell intCell intCell
-openNode
+openParser
  crux open
  cells keywordCell boolCell
-tempNode
+tempParser
  crux temp
  cells keywordCell floatCell
-descriptionNode
+descriptionParser
  crux description
  catchAllCellType anyCell
  cells keywordCell
-editsNode
- inScope editsChildNode
+editsParser
+ inScope editsChildParser
  crux edits
  cells keywordCell
-editsChildNode
- inScope dataNode
+editsChildParser
+ inScope dataParser
  cells keywordCell
-dataNode
+dataParser
  crux data
  cells keywordCell anyCell
-accountNode
- inScope balanceNode transactionsNode sourceNode
+accountParser
+ inScope balanceParser transactionsParser sourceParser
  crux account
  cells keywordCell
-balanceNode
+balanceParser
  crux balance
  cells keywordCell floatCell
-transactionsNode
+transactionsParser
  crux transactions
  cells keywordCell intCell
-sourceNode
+sourceParser
  crux source
  cells keywordCell boolCell anyCell intCell

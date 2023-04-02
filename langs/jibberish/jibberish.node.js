@@ -1,1 +1,1 @@
-module.exports = require("../../products/GrammarCompiler.js").GrammarCompiler.compileGrammarFileAtPathAndReturnRootConstructor(__dirname + "/jibberish.grammar")
+module.exports = require("../../products/GrammarCompiler.js").GrammarCompiler.compileGrammarFileAtPathAndReturnRootParser(__dirname + "/jibberish.grammar")

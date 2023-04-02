@@ -1,56 +1,60 @@
 {
-  class fruitNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(errorNode, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { apple: appleNode }), undefined)
+  class fruitParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }),
+        undefined
+      )
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`fruitNameCell
  highlightScope keyword
-fruitNode
+fruitParser
  description A useless language to test scoped parsers.
  root
- inScope appleNode
- catchAllNodeType errorNode
+ inScope appleParser
+ catchAllParser errorParser
  example
   apple
    banana
-abstractFruitNode
+abstractFruitParser
  cruxFromId
  cells fruitNameCell
-appleNode
- extends abstractFruitNode
- inScope appleNode
- bananaNode
-  extends abstractFruitNode
-errorNode
- baseNodeType errorNode`)
+appleParser
+ extends abstractFruitParser
+ inScope appleParser
+ bananaParser
+  extends abstractFruitParser
+errorParser
+ baseParser errorParser`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = fruitNode
+    static rootParser = fruitParser
   }
 
-  class abstractFruitNode extends GrammarBackedNode {
+  class abstractFruitParser extends GrammarBackedNode {
     get fruitNameCell() {
       return this.getWord(0)
     }
   }
 
-  class appleNode extends abstractFruitNode {
-    createParser() {
-      class bananaNode extends abstractFruitNode {}
-      return new TreeNode.Parser(
+  class appleParser extends abstractFruitParser {
+    createParserCombinator() {
+      class bananaParser extends abstractFruitParser {}
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { apple: appleNode, banana: bananaNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser, banana: bananaParser }),
         undefined
       )
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  window.fruitNode = fruitNode
+  window.fruitParser = fruitParser
 }

@@ -30,25 +30,25 @@ commentCell
  highlightScope comment
 
 // Line parsers
-commentNode
+commentParser
  catchAllCellType commentCell
  cells commentCell
  crux Comment
  boolean suggestInAutocomplete false
-arrowNode
+arrowParser
  description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
  root
- inScope chargeNode commentNode
- catchAllNodeType errorNode
+ inScope chargeParser commentParser
+ catchAllParser errorParser
  sortTemplate Comment charge
  javascript
   compile() {
    return this.asJsonSubset
   }
-errorNode
- baseNodeType errorNode
-chargeNode
- inScope amountNode currencyNode descriptionNode cardNumberNode tokenNode
+errorParser
+ baseParser errorParser
+chargeParser
+ inScope amountParser currencyParser descriptionParser cardNumberParser tokenParser
  description A credit card charge
  cruxFromId
  cells keywordCell
@@ -57,25 +57,25 @@ chargeNode
    const card = this.get("cardNumber")
    return `Successfully charged ${this.get("amount")} ${this.get("currency")} to card ${card.substr(card.length - 4, 4)}.`
   }
- sortTemplate description  amountNode currency  cardNumber token
-abstractChargeAttributeNode
+ sortTemplate description  amountParser currency  cardNumber token
+abstractChargeAttributeParser
  cruxFromId
  required
  single
-cardNumberNode
- extends abstractChargeAttributeNode
+cardNumberParser
+ extends abstractChargeAttributeParser
  cells keywordCell cardNumberCell
-amountNode
- extends abstractChargeAttributeNode
+amountParser
+ extends abstractChargeAttributeParser
  cells keywordCell amountCell
- string sortKey amountNode
-currencyNode
- extends abstractChargeAttributeNode
+ string sortKey amountParser
+currencyParser
+ extends abstractChargeAttributeParser
  cells keywordCell currencyCell
-descriptionNode
- extends abstractChargeAttributeNode
+descriptionParser
+ extends abstractChargeAttributeParser
  cells keywordCell
  catchAllCellType descriptionCell
-tokenNode
+tokenParser
  cruxFromId
  cells keywordCell tokenCell

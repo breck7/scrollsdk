@@ -4,6 +4,14 @@ startColumns 4
 
 * Here's a list of the notable changes in Grammar.
 
+# 6.0.0 2023-4-2
+- ⚠️ BREAKING:
+ - instead of `NodeTypeDefinitions` ending in `Node` it is now `ParserDefinitions` ending in `Parser`
+ - baseNodeType > baseParser
+ - blobNode > blobParser
+ - errorNode > errorParser
+ - catchAllNodeType > catchAllParser
+
 # 5.0.0 2023-3-30
 - 🎉 You can now add scoped line parsers inside other line parser definitions.
 - ⚠️ BREAKING: A lot of methods that were formerly `getX()` have been changed to getters like `get x()`.

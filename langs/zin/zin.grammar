@@ -6,15 +6,15 @@ keywordCell
  highlightScope keyword
 
 // Line parsers
-zinNode
+zinParser
  root
  description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-tree programming languages into one tree language.
- catchAllNodeType catchAllErrorNode
- inScope alohaNode
-alohaNode
+ catchAllParser catchAllErrorParser
+ inScope alohaParser
+alohaParser
  description Say aloha to a person.
  catchAllCellType nameCell
  cells keywordCell
  crux aloha
-catchAllErrorNode
- baseNodeType errorNode
+catchAllErrorParser
+ baseParser errorParser

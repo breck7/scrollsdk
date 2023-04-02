@@ -35,87 +35,87 @@ commentCell
  highlightScope comment
 
 // Line parsers
-wwtNode
+wwtParser
  description WorldWideTypes. A work in progress. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
  root
- inScope abstractTypeDeclarationNode interfaceDeclarationNode
- catchAllNodeType errorNode
+ inScope abstractTypeDeclarationParser interfaceDeclarationParser
+ catchAllParser errorParser
  compilesTo ts
  javascript
   compile() {
    return `namespace {\n ` + super.compile().replace(/\n\s*\n+/g, "\n") + "\n}"
   }
-commentNode
- baseNodeType blobNode
+commentParser
+ baseParser blobParser
  cells commentKeywordCell
  catchAllCellType commentCell
  compiler
   stringTemplate /* {commentCell} */
  crux comment
-errorNode
- baseNodeType errorNode
-abstractTypeDeclarationNode
- inScope commentNode
-enumTypeDeclarationNode
- extends abstractTypeDeclarationNode
+errorParser
+ baseParser errorParser
+abstractTypeDeclarationParser
+ inScope commentParser
+enumTypeDeclarationParser
+ extends abstractTypeDeclarationParser
  cells enumTypeIdCell
- inScope enumOptionsNode
+ inScope enumOptionsParser
  pattern EnumType$
-unionTypeDeclarationNode
+unionTypeDeclarationParser
  cells unionTypeIdCell
- extends abstractTypeDeclarationNode
+ extends abstractTypeDeclarationParser
  pattern UnionType$
- inScope unionTypesNode
-mapTypeDeclarationNode
+ inScope unionTypesParser
+mapTypeDeclarationParser
  cells mapTypeIdCell
- extends abstractTypeDeclarationNode
+ extends abstractTypeDeclarationParser
  pattern MapType$
- inScope keyNode valueNode
-typeDeclarationNode
+ inScope keyParser valueParser
+typeDeclarationParser
  cells typeDecIdCell
- extends abstractTypeDeclarationNode
+ extends abstractTypeDeclarationParser
  pattern Type$
- inScope extendsNode
+ inScope extendsParser
  compiler
   stringTemplate export declare type {typeDecIdCell} = {extends}
-extendsNode
+extendsParser
  cells keywordCell typeIdCell
  required
  compiler
   stringTemplate 
  crux extends
-enumOptionsNode
+enumOptionsParser
  cells keywordCell
  catchAllCellType enumOptionCell
  crux enumOptions
-unionTypesNode
+unionTypesParser
  cells keywordCell
  catchAllCellType typeIdCell
  crux unionTypes
-keyNode
+keyParser
  cells keywordCell stringKeyCell typeIdCell
  crux key
-valueNode
+valueParser
  cells keywordCell typeIdCell
  crux value
-interfaceDeclarationNode
+interfaceDeclarationParser
  pattern Interface$
  cells interfaceIdCell
- inScope commentNode fieldDeclarationNode
+ inScope commentParser fieldDeclarationParser
  compiler
   stringTemplate export interface {interfaceIdCell} {
   closeChildren }
-fieldDeclarationNode
+fieldDeclarationParser
  pattern Field
  cells fieldIdCell typeIdCell
- inScope optionalNode arrayNode
+ inScope optionalParser arrayParser
  compiler
   stringTemplate {fieldIdCell}: {typeIdCell}
-optionalNode
+optionalParser
  description Is this field optional?
  cells keywordCell
  crux optional
-arrayNode
+arrayParser
  description Does this take an array
  cells keywordCell
  crux array

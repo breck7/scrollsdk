@@ -3,25 +3,25 @@ test swarmNodeSample
  arrange
   require ../../products/GrammarLanguage.js HandGrammarProgram
   constructWithParagraph
-   testlangNode
+   testlangParser
     root
     compilesTo txt
-    inScope baseNode
-    catchAllNodeType errorNode
+    inScope baseParser
+    catchAllParser errorParser
    anyCell
    wordCell
     extends anyCell
-   errorNode
-    baseNodeType errorNode
-   baseNode
+   errorParser
+    baseParser errorParser
+   baseParser
     crux base
-   blockNode
+   blockParser
     crux block
-    extends baseNode
-    inScope baseNode
-   toNode
+    extends baseParser
+    inScope baseParser
+   toParser
     crux to
-    extends blockNode
+    extends blockParser
     cells wordCell
     tags test
     compiler
@@ -31,7 +31,7 @@ test swarmNodeSample
   assertLengthIs 0
  runTimeFirstWordsInScope
   assertLengthIs 1
- getNodeTypeDefinitionByNodeTypeId toNode
+ getParserDefinitionByParserId toParser
   assertTypeIs object
- topNodeTypeDefinitions
+ topParserDefinitions
   assertLengthIs 3

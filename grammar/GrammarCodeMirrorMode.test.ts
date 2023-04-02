@@ -91,37 +91,65 @@ class MockCodeMirror {
 }
 
 testTree.codeMirrorTest = equal => {
-  const code = `testNode
+  const code = `testParser
  root
  version`
 
-  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("grammarNode", () => GrammarProgram, () => code))
+  const mock = new MockCodeMirror(
+    () =>
+      new GrammarCodeMirrorMode(
+        "grammarParser",
+        () => GrammarProgram,
+        () => code
+      )
+  )
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.join(" "), `def bracket atom bracket atom`)
 }
 
 testTree.iris = equal => {
-  const irisConstructor = new HandGrammarProgram(irisGrammar).compileAndReturnRootConstructor()
+  const irisParser = new HandGrammarProgram(irisGrammar).compileAndReturnRootParser()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act
-  const tokenLines = new MockCodeMirror(() => new GrammarCodeMirrorMode("irisNode", () => irisConstructor, () => goodCode)).getTokenLines(goodCode)
+  const tokenLines = new MockCodeMirror(
+    () =>
+      new GrammarCodeMirrorMode(
+        "irisParser",
+        () => irisParser,
+        () => goodCode
+      )
+  ).getTokenLines(goodCode)
   // Assert
   equal(tokenLines.join(" "), `number bracket number bracket number bracket number bracket atom`)
 
   // Act
-  const tokenLines2 = new MockCodeMirror(() => new GrammarCodeMirrorMode("irisNode", () => irisConstructor, () => codeWithMissingCell)).getTokenLines(codeWithMissingCell)
+  const tokenLines2 = new MockCodeMirror(
+    () =>
+      new GrammarCodeMirrorMode(
+        "irisParser",
+        () => irisParser,
+        () => codeWithMissingCell
+      )
+  ).getTokenLines(codeWithMissingCell)
   // Assert
   equal(tokenLines2.join(" "), `number bracket number bracket number bracket bracket atom`)
 }
 
 testTree.codeMirrorTest2 = equal => {
-  const code = `testNode
+  const code = `testParser
  root
  version 1.0.0
-foobarNode`
+foobarParser`
 
-  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("grammarNode", () => GrammarProgram, () => code))
+  const mock = new MockCodeMirror(
+    () =>
+      new GrammarCodeMirrorMode(
+        "grammarParser",
+        () => GrammarProgram,
+        () => code
+      )
+  )
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 4)
   equal(tokenLines.join(" "), `def bracket atom bracket atom bracket number def`)
@@ -130,7 +158,14 @@ foobarNode`
 testTree.regressionTest = equal => {
   const code = Disk.read(__dirname + "/GrammarCodeMirrorMode.regression.stamp")
 
-  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("stampNode", () => stamp, () => code))
+  const mock = new MockCodeMirror(
+    () =>
+      new GrammarCodeMirrorMode(
+        "stampParser",
+        () => stamp,
+        () => code
+      )
+  )
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 217)
 }
@@ -140,7 +175,14 @@ testTree.regression2 = equal => {
  prettier
   object`
 
-  const mock = new MockCodeMirror(() => new GrammarCodeMirrorMode("dugNode", () => DugProgram, () => code))
+  const mock = new MockCodeMirror(
+    () =>
+      new GrammarCodeMirrorMode(
+        "dugParser",
+        () => DugProgram,
+        () => code
+      )
+  )
   const tokenLines = mock.getTokenLines(code)
   equal(tokenLines.length, 3)
   equal(tokenLines.join(" "), `keyword bracket string bracket bracket keyword`)

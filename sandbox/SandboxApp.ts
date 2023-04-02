@@ -1,13 +1,13 @@
 //onsave jtree build produce SandboxApp.browser.js
 
-const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponentParser, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { TreeNode } = require("../products/TreeNode.js")
 
 // Todo: add inputs at the top to change the edge, node, and cell delimiters.
 
-class SandboxApp extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class SandboxApp extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       tableComponent,
       shareComponent,
       githubTriangleComponent,
@@ -173,7 +173,7 @@ pre
   }
 }
 
-class headerComponent extends AbstractTreeComponent {
+class headerComponent extends AbstractTreeComponentParser {
   toHakonCode() {
     return `#logo
  width 100px
@@ -208,7 +208,7 @@ class headerComponent extends AbstractTreeComponent {
   }
 }
 
-class shareComponent extends AbstractTreeComponent {
+class shareComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `div
  id shareDiv
@@ -234,7 +234,7 @@ class githubTriangleComponent extends AbstractGithubTriangleComponent {
   githubLink = `https://github.com/treenotation/jtree/tree/main/sandbox`
 }
 
-class tableComponent extends AbstractTreeComponent {
+class tableComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `table
  tr

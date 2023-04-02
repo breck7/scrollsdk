@@ -1,15 +1,15 @@
 {
-  class dugNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          null: nullNode,
-          number: numberNode,
-          string: stringNode,
-          boolean: booleanNode,
-          object: objectNode,
-          array: arrayNode
+  class dugParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          null: nullParser,
+          number: numberParser,
+          string: stringParser,
+          boolean: booleanParser,
+          object: objectParser,
+          array: arrayParser
         }),
         undefined
       )
@@ -34,76 +34,76 @@ numberCell
  highlightScope constant.numeric
 
 // Line Parsers
-dugNode
+dugParser
  root
  description A demonstration prefix Tree Language that compiles to JSON.
- inScope abstractValueNode
- catchAllNodeType errorNode
+ inScope abstractValueParser
+ catchAllParser errorParser
  javascript
   compile() {
    const res = super.compile()
    return JSON.stringify(JSON.parse(res), null, 2)
   }
-abstractValueNode
+abstractValueParser
  cells keywordCell
  cruxFromId
-nullNode
+nullParser
  compiler
   stringTemplate null
- extends abstractValueNode
-numberNode
- extends abstractValueNode
+ extends abstractValueParser
+numberParser
+ extends abstractValueParser
  cells keywordCell numberCell
  compiler
   stringTemplate {numberCell}
-stringNode
+stringParser
  catchAllCellType stringCell
  compiler
   stringTemplate "{stringCell}"
- extends abstractValueNode
-booleanNode
- extends abstractValueNode
+ extends abstractValueParser
+booleanParser
+ extends abstractValueParser
  cells keywordCell booleanCell
  compiler
   stringTemplate {booleanCell}
-objectNode
- catchAllNodeType memberNode
- extends abstractValueNode
+objectParser
+ catchAllParser memberParser
+ extends abstractValueParser
  compiler
   stringTemplate  
   joinChildrenWith , 
   openChildren {
   closeChildren }
-arrayNode
- extends abstractValueNode
- inScope abstractValueNode
+arrayParser
+ extends abstractValueParser
+ inScope abstractValueParser
  compiler
   stringTemplate  
   joinChildrenWith , 
   openChildren [
   closeChildren ]
-memberNode
- inScope abstractValueNode
+memberParser
+ inScope abstractValueParser
  compiler
   stringTemplate "{stringCell}" :
  cells stringCell
-errorNode
- baseNodeType errorNode`)
+errorParser
+ baseParser errorParser`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = dugNode
+    static rootParser = dugParser
   }
 
-  class abstractValueNode extends GrammarBackedNode {
+  class abstractValueParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class nullNode extends abstractValueNode {}
+  class nullParser extends abstractValueParser {}
 
-  class numberNode extends abstractValueNode {
+  class numberParser extends abstractValueParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -112,13 +112,13 @@ errorNode
     }
   }
 
-  class stringNode extends abstractValueNode {
+  class stringParser extends abstractValueParser {
     get stringCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class booleanNode extends abstractValueNode {
+  class booleanParser extends abstractValueParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -127,40 +127,40 @@ errorNode
     }
   }
 
-  class objectNode extends abstractValueNode {
-    createParser() {
-      return new TreeNode.Parser(memberNode, undefined, undefined)
+  class objectParser extends abstractValueParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(memberParser, undefined, undefined)
     }
   }
 
-  class arrayNode extends abstractValueNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class arrayParser extends abstractValueParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          null: nullNode,
-          number: numberNode,
-          string: stringNode,
-          boolean: booleanNode,
-          object: objectNode,
-          array: arrayNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          null: nullParser,
+          number: numberParser,
+          string: stringParser,
+          boolean: booleanParser,
+          object: objectParser,
+          array: arrayParser
         }),
         undefined
       )
     }
   }
 
-  class memberNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class memberParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          null: nullNode,
-          number: numberNode,
-          string: stringNode,
-          boolean: booleanNode,
-          object: objectNode,
-          array: arrayNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          null: nullParser,
+          number: numberParser,
+          string: stringParser,
+          boolean: booleanParser,
+          object: objectParser,
+          array: arrayParser
         }),
         undefined
       )
@@ -170,11 +170,11 @@ errorNode
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  window.dugNode = dugNode
+  window.dugParser = dugParser
 }

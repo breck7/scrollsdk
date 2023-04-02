@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 73.0.1 2023-4-2
+- 🏥 fix regression in Designer app
+
 # 73.0.0 2023-4-2
 * This is a major release with significant name breaks. All logic is the same but methods have been renamed to better express the core idea of Tree Languages as small simple parsers combined.
 - ⚠️ BREAKING:
@@ -18,7 +21,7 @@ startColumns 4
  - GrammarCompiler:
   - compileGrammarFileAtPathAndReturnRootConstructor > compileGrammarFileAtPathAndReturnRootParser
  - GrammarLanguage.ts:
-  - rootNodeTypeDefinitionNode > rootParserDefinitionNode
+  - rootNodeTypeDefinitionNode > rootParserDefinition
   - invalidNodeTypes > invalidParsers
   - getNodeTypeUsage > getParserUsage
   - asCellTypeTreeWithNodeConstructorNames > asCellTypeTreeWithParserIds

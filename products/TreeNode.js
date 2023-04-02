@@ -1413,7 +1413,6 @@ class TreeNode extends AbstractNode {
   getContentsArray() {
     return this.map(node => node.content)
   }
-  // todo: rename to getChildrenByConstructor(?)
   getChildrenByParser(parser) {
     return this.filter(child => child instanceof parser)
   }

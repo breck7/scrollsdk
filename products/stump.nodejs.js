@@ -245,7 +245,7 @@ htmlTagParser
    this.getShadow().removeShadow()
    return this.destroy()
   }
-  getParserByGuid(guid) {
+  getNodeByGuid(guid) {
    return this.topDownArray.find(node => node._getUid() === guid)
   }
   addClassToStumpNode(className) {
@@ -778,7 +778,7 @@ bernParser
       this.getShadow().removeShadow()
       return this.destroy()
     }
-    getParserByGuid(guid) {
+    getNodeByGuid(guid) {
       return this.topDownArray.find(node => node._getUid() === guid)
     }
     addClassToStumpNode(className) {

@@ -4,13 +4,13 @@ const { Utils } = require("../products/Utils.js")
 const { HandGrammarProgram, GrammarBackedNode, UnknownGrammarProgram } = require("../products/GrammarLanguage.js")
 const { GrammarCodeMirrorMode } = require("../products/GrammarCodeMirrorMode.js")
 
-declare var grammarNode: any
+declare var grammarParser: any
 
 // todo: get typings in here.
 declare var CodeMirror: any
 declare var saveAs: any
 declare var JSZip: any
-declare var dumbdownNode: any
+declare var dumbdownParser: any
 declare type html = string
 
 class DesignerApp extends AbstractTreeComponentParser {
@@ -147,7 +147,7 @@ class DesignerApp extends AbstractTreeComponentParser {
   private grammarInstance: any
   private codeInstance: any
 
-  private _grammarConstructor: any
+  private _grammarParser: any
   private _cachedGrammarCode: string
 
   private codeWidgets: any[] = []
@@ -198,13 +198,13 @@ class DesignerApp extends AbstractTreeComponentParser {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
 
-    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
+    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
 
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
 
-    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
 
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
 
@@ -247,16 +247,16 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
 
   private _getGrammarErrors(grammarCode: string) {
-    return new grammarNode(grammarCode).getAllErrors()
+    return new grammarParser(grammarCode).getAllErrors()
   }
 
-  private _getGrammarConstructor() {
+  private _getGrammarParser() {
     let currentGrammarCode = this.getGrammarCode()
 
-    if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
+    if (!this._grammarParser || currentGrammarCode !== this._cachedGrammarCode) {
       try {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
-        this._grammarConstructor = new HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
+        this._grammarParser = new HandGrammarProgram(currentGrammarCode).compileAndReturnRootParser()
         this._cachedGrammarCode = currentGrammarCode
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
       } catch (err) {
@@ -264,7 +264,7 @@ class DesignerApp extends AbstractTreeComponentParser {
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
       }
     }
-    return this._grammarConstructor
+    return this._grammarParser
   }
 
   protected onCommandError(err: any) {
@@ -275,11 +275,11 @@ class DesignerApp extends AbstractTreeComponentParser {
   private _grammarDidUpdate() {
     const grammarCode = this.getGrammarCode()
     this._updateLocalStorage()
-    this.grammarProgram = new grammarNode(grammarCode)
+    this.grammarProgram = new grammarParser(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new HandGrammarProgram(this.grammarInstance.getValue())
-    const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
+    const readme = new dumbdownParser(grammarProgram.toReadMe()).compile()
 
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
@@ -302,10 +302,10 @@ class DesignerApp extends AbstractTreeComponentParser {
     const { willowBrowser } = this
     const code = this.getCodeValue()
     this._updateLocalStorage()
-    const programConstructor = this._getGrammarConstructor()
+    const grammarParser = this._getGrammarParser()
     const that = this
 
-    this.program = new programConstructor(code)
+    this.program = new grammarParser(code)
     const errs = this.program.scopeErrors.concat(this.program.getAllErrors())
 
     willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")

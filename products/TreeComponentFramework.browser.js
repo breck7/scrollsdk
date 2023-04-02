@@ -235,7 +235,7 @@ class WillowMousetrap {
   bind() {}
 }
 // this one should have no document, window, $, et cetera.
-class AbstractWillowBrowser extends stumpNode {
+class AbstractWillowBrowser extends stumpParser {
   constructor(fullHtmlPageUrlIncludingProtocolAndFileName) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
@@ -893,7 +893,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 }
 class AbstractTheme {
   hakonToCss(str) {
-    const hakonProgram = new hakonNode(str)
+    const hakonProgram = new hakonParser(str)
     // console.log(hakonProgram.getAllErrors())
     return hakonProgram.compile()
   }
@@ -1168,7 +1168,7 @@ class AbstractTreeComponentParser extends GrammarBackedNode {
   toPlainHtml(containerId) {
     return `<div id="${containerId}">
  <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
-${new stumpNode(this.toStumpCode()).compile()}
+${new stumpParser(this.toStumpCode()).compile()}
 </div>`
   }
   _updateAndGetUpdateReport() {

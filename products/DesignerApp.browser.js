@@ -149,11 +149,11 @@ class DesignerApp extends AbstractTreeComponentParser {
   async start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
-    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
+    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
-    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
@@ -185,14 +185,14 @@ class DesignerApp extends AbstractTreeComponentParser {
     console.log("Local storage updated...")
   }
   _getGrammarErrors(grammarCode) {
-    return new grammarNode(grammarCode).getAllErrors()
+    return new grammarParser(grammarCode).getAllErrors()
   }
-  _getGrammarConstructor() {
+  _getGrammarParser() {
     let currentGrammarCode = this.getGrammarCode()
-    if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
+    if (!this._grammarParser || currentGrammarCode !== this._cachedGrammarCode) {
       try {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
-        this._grammarConstructor = new HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
+        this._grammarParser = new HandGrammarProgram(currentGrammarCode).compileAndReturnRootParser()
         this._cachedGrammarCode = currentGrammarCode
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
       } catch (err) {
@@ -200,7 +200,7 @@ class DesignerApp extends AbstractTreeComponentParser {
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
       }
     }
-    return this._grammarConstructor
+    return this._grammarParser
   }
   onCommandError(err) {
     console.log(err)
@@ -209,11 +209,11 @@ class DesignerApp extends AbstractTreeComponentParser {
   _grammarDidUpdate() {
     const grammarCode = this.getGrammarCode()
     this._updateLocalStorage()
-    this.grammarProgram = new grammarNode(grammarCode)
+    this.grammarProgram = new grammarParser(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new HandGrammarProgram(this.grammarInstance.getValue())
-    const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
+    const readme = new dumbdownParser(grammarProgram.toReadMe()).compile()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
   _updateShareLink() {
@@ -232,9 +232,9 @@ class DesignerApp extends AbstractTreeComponentParser {
     const { willowBrowser } = this
     const code = this.getCodeValue()
     this._updateLocalStorage()
-    const programConstructor = this._getGrammarConstructor()
+    const grammarParser = this._getGrammarParser()
     const that = this
-    this.program = new programConstructor(code)
+    this.program = new grammarParser(code)
     const errs = this.program.scopeErrors.concat(this.program.getAllErrors())
     willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new TreeNode(errs.map(err => err.toObject())).toFormattedTable(200) : "0 errors")
     const cursor = this.codeInstance.getCursor()

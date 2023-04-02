@@ -179,13 +179,13 @@ langs.forEach((lang: string) => {
   testTree[`${lang}SimTest`] = equal => {
     const grammarCode = Disk.read(path.normalize(`${folder}/${lang}.grammar`))
     const grammarProgram = new HandGrammarProgram(grammarCode)
-    const programConstructor = grammarProgram.compileAndReturnRootParser()
+    const rootParser = grammarProgram.compileAndReturnRootParser()
 
     // Act
     const simulatedProgram = grammarProgram.rootParserDefinition.synthesizeNode().join("\n")
 
     // Assert
-    const errors = new programConstructor(simulatedProgram).getAllErrors()
+    const errors = new rootParser(simulatedProgram).getAllErrors()
     //if (errors.length) console.log(simulatedProgram, errors)
     equal(errors.length, 0, `should be no errors in simulated ${lang} program`)
   }
@@ -561,7 +561,7 @@ div
 
 testTree.minimumGrammar = equal => {
   // Arrange/Act
-  const programConstructor = new HandGrammarProgram(
+  const rootParser = new HandGrammarProgram(
     `anyLangParser
  root
  catchAllParser anyParser
@@ -569,7 +569,7 @@ anyParser
  catchAllCellType anyCell
 anyCell`
   ).compileAndReturnRootParser()
-  const program = new programConstructor()
+  const program = new rootParser()
   const handGrammarProgram = program.handGrammarProgram
 
   // Assert
@@ -616,7 +616,7 @@ testTree.blankParserId = equal => {
 testTree.grammarWithLoop = equal => {
   // Arrange/Act/Assert
   try {
-    const programConstructor = new HandGrammarProgram(
+    const rootParser = new HandGrammarProgram(
       `langWithLoopParser
  root
  catchAllParser nodeAParser
@@ -630,7 +630,7 @@ nodeCParser
 anyCell`
     ).compileAndReturnRootParser()
 
-    new programConstructor("nodeA")
+    new rootParser("nodeA")
     equal(false, true, "Should have thrown error")
   } catch (err) {
     equal(err.toString().includes("Loop"), true, `Expected correct error thrown when grammar. Got: ${err.toString()}`)

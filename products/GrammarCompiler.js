@@ -41,13 +41,13 @@ if (!module.parent) new ${program.rootParserId}(TreeNode.fromDisk(process.argv[2
 _a = GrammarCompiler
 GrammarCompiler.compileGrammarAndCreateProgram = (programPath, grammarPath) => {
   // tod: remove?
-  const programConstructor = _a.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
-  return new programConstructor(fs.readFileSync(programPath, "utf8"))
+  const rootParser = _a.compileGrammarFileAtPathAndReturnRootParser(grammarPath)
+  return new rootParser(fs.readFileSync(programPath, "utf8"))
 }
 GrammarCompiler.formatCode = (programCode, grammarPath) => {
   // tod: remove?
-  const programConstructor = _a.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
-  const program = new programConstructor(programCode)
+  const rootParser = _a.compileGrammarFileAtPathAndReturnRootParser(grammarPath)
+  const program = new rootParser(programCode)
   return program.format().toString()
 }
 GrammarCompiler.formatFileInPlace = (programPath, grammarPath) => {
@@ -58,7 +58,7 @@ GrammarCompiler.formatFileInPlace = (programPath, grammarPath) => {
   new TreeNode(formatted).toDisk(programPath)
   return true
 }
-GrammarCompiler.compileGrammarFileAtPathAndReturnRootConstructor = grammarPath => {
+GrammarCompiler.compileGrammarFileAtPathAndReturnRootParser = grammarPath => {
   // todo: remove
   if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
   const grammarCode = fs.readFileSync(grammarPath, "utf8")

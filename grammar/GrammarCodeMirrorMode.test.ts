@@ -108,7 +108,7 @@ testTree.codeMirrorTest = equal => {
 }
 
 testTree.iris = equal => {
-  const irisConstructor = new HandGrammarProgram(irisGrammar).compileAndReturnRootParser()
+  const irisParser = new HandGrammarProgram(irisGrammar).compileAndReturnRootParser()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act
@@ -116,7 +116,7 @@ testTree.iris = equal => {
     () =>
       new GrammarCodeMirrorMode(
         "irisParser",
-        () => irisConstructor,
+        () => irisParser,
         () => goodCode
       )
   ).getTokenLines(goodCode)
@@ -128,7 +128,7 @@ testTree.iris = equal => {
     () =>
       new GrammarCodeMirrorMode(
         "irisParser",
-        () => irisConstructor,
+        () => irisParser,
         () => codeWithMissingCell
       )
   ).getTokenLines(codeWithMissingCell)

@@ -1951,7 +1951,7 @@ class HandGrammarProgram extends AbstractParserDefinitionParser {
   get cruxPath() {
     return ""
   }
-  trainModel(programs, programConstructor = this.compileAndReturnRootParser()) {
+  trainModel(programs, rootParser = this.compileAndReturnRootParser()) {
     const nodeDefs = this.validConcreteAndAbstractParserDefinitions
     const nodeDefCountIncludingRoot = nodeDefs.length + 1
     const matrix = Utils.makeMatrix(nodeDefCountIncludingRoot, nodeDefCountIncludingRoot, 0)
@@ -1963,7 +1963,7 @@ class HandGrammarProgram extends AbstractParserDefinitionParser {
       indexToId[index + 1] = id
     })
     programs.forEach(code => {
-      const exampleProgram = new programConstructor(code)
+      const exampleProgram = new rootParser(code)
       exampleProgram.topDownArray.forEach(node => {
         const nodeIndex = idToIndex[node.definition.id]
         const parentNode = node.parent
@@ -2034,13 +2034,13 @@ class HandGrammarProgram extends AbstractParserDefinitionParser {
       throw err
     }
   }
-  examplesToTestBlocks(programConstructor = this.compileAndReturnRootParser(), expectedErrorMessage = "") {
+  examplesToTestBlocks(rootParser = this.compileAndReturnRootParser(), expectedErrorMessage = "") {
     const testBlocks = {}
     this.validConcreteAndAbstractParserDefinitions.forEach(def =>
       def.examples.forEach(example => {
         const id = def.id + example.content
         testBlocks[id] = equal => {
-          const exampleProgram = new programConstructor(example.childrenToString())
+          const exampleProgram = new rootParser(example.childrenToString())
           const errors = exampleProgram.getAllErrors(example._getLineNumber() + 1)
           equal(errors.join("\n"), expectedErrorMessage, `Expected no errors in ${id}`)
         }
@@ -2223,11 +2223,11 @@ ${testCode}`
     return cache
   }
   compileAndReturnRootParser() {
-    if (!this._cache_rootConstructorClass) {
+    if (!this._cached_rootParser) {
       const rootDef = this.rootParserDefinition
-      this._cache_rootConstructorClass = rootDef.languageDefinitionProgram._compileAndReturnRootParser()
+      this._cached_rootParser = rootDef.languageDefinitionProgram._compileAndReturnRootParser()
     }
-    return this._cache_rootConstructorClass
+    return this._cached_rootParser
   }
   get fileExtensions() {
     return this.rootParserDefinition.get(GrammarConstants.extensions)
@@ -2419,8 +2419,8 @@ class UnknownGrammarProgram extends TreeNode {
     // todo: make this run in browser too
     if (!this.isNodeJs()) return code
     const grammarProgram = new HandGrammarProgram(TreeNode.fromDisk(__dirname + "/../langs/grammar/grammar.grammar"))
-    const programConstructor = grammarProgram.compileAndReturnRootParser()
-    const program = new programConstructor(code)
+    const rootParser = grammarProgram.compileAndReturnRootParser()
+    const program = new rootParser(code)
     return program.format().toString()
   }
   _getBestCellType(firstWord, instanceCount, maxCellsOnLine, allValues) {

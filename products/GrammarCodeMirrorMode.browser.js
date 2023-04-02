@@ -180,9 +180,9 @@ const textMateScopeToCodeMirrorStyle = (scopeSegments, styleTree = tmToCm) => {
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }
 class GrammarCodeMirrorMode {
-  constructor(name, getProgramConstructorFn, getProgramCodeFn, codeMirrorLib = undefined) {
+  constructor(name, getRootParserFn, getProgramCodeFn, codeMirrorLib = undefined) {
     this._name = name
-    this._getProgramConstructorFn = getProgramConstructorFn
+    this._getRootParserFn = getRootParserFn
     this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? instance.getValue() : this._originalValue))
     this._codeMirrorLib = codeMirrorLib
   }
@@ -190,7 +190,7 @@ class GrammarCodeMirrorMode {
     const source = this._getProgramCodeFn(this._cmInstance) || ""
     if (!this._cachedProgram || this._cachedSource !== source) {
       this._cachedSource = source
-      this._cachedProgram = new (this._getProgramConstructorFn())(source)
+      this._cachedProgram = new (this._getRootParserFn())(source)
     }
     return this._cachedProgram
   }

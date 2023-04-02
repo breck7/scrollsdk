@@ -110,7 +110,7 @@ namespace treeNotationTypes {
   export declare type children = string | Object | treeNode | any // todo: specify better.
 
   export declare type TreeParser = Function // A constructor extending TreeParser
-  export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
+  export declare type TreeProgramParser = Function // A constructor extending AbstractRuntimeNode
   export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
 
   export declare type upgradeFunction = (tree: treeNode) => treeNode

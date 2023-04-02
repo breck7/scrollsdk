@@ -456,7 +456,7 @@ testTree.autocompleteAdvanced = equal => {
 integerCell
 anyParser
 faveNumberParser
- cells integerCell`)
+ cells in`)
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(7, 9).matches.length, 2)

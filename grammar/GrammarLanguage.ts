@@ -2870,9 +2870,7 @@ class UnknownGrammarProgram extends TreeNode {
       if (!keywordsToChildKeywords[firstWord]) keywordsToChildKeywords[firstWord] = {}
       if (!keywordsToNodeInstances[firstWord]) keywordsToNodeInstances[firstWord] = []
       keywordsToNodeInstances[firstWord].push(node)
-      node.forEach((child: TreeNode) => {
-        keywordsToChildKeywords[firstWord][child.firstWord] = true
-      })
+      node.forEach((child: TreeNode) => (keywordsToChildKeywords[firstWord][child.firstWord] = true))
     }
     return { keywordsToChildKeywords: keywordsToChildKeywords, keywordsToNodeInstances: keywordsToNodeInstances }
   }
@@ -2912,7 +2910,7 @@ class UnknownGrammarProgram extends TreeNode {
       }
     }
 
-    const needsCruxProperty = !firstWord.endsWith(UnknownGrammarProgram._childSuffix + "Node") // todo: cleanup
+    const needsCruxProperty = !firstWord.endsWith(UnknownGrammarProgram._childSuffix + GrammarConstants.parserSuffix) // todo: cleanup
     if (needsCruxProperty) nodeDefNode.set(GrammarConstants.crux, firstWord)
 
     if (catchAllCellType) nodeDefNode.set(GrammarConstants.catchAllCellType, catchAllCellType)

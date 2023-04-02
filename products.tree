@@ -1,7 +1,7 @@
 nodeProduct
  outputFileName TreeComponentFramework.node.js
  combineTypeScriptFiles products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
- insertLastLine module.exports = { AbstractTreeComponent, WillowBrowser, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
+ insertLastLine module.exports = { AbstractTreeComponentParser, WillowBrowser, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
 nodeProduct
  outputFileName jtable.node.js
  removeAll const { Utils } = require("../products/Utils.js")

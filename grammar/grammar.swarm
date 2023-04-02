@@ -27,7 +27,7 @@ test grammarSample
      closeChildren end
  runTimeFirstWordsInScope
   assertLengthIs 1
- getParserDefinitionByParserId toNode
+ getParserDefinitionByParserId toParser
   assertTypeIs object
  topParserDefinitions
   assertLengthIs 3
@@ -37,7 +37,7 @@ test grammarSample
   assertTypeIs string
  isDefined notDefined
   assertStringIs false
- isDefined toNode
+ isDefined toParser
   assertStringIs true
  getAllErrors
   assertLengthIs 0

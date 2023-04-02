@@ -1,9 +1,13 @@
 {
-  class stampNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "#!": hashbangNode, file: fileNode, folder: folderNode }),
+  class stampParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          "#!": hashbangParser,
+          file: fileParser,
+          folder: folderParser
+        }),
         undefined
       )
     }
@@ -27,10 +31,10 @@
       await this.executeSeries(parentDir)
     }
     static dirToStampWithContents(absPathWithoutEndingSlash) {
-      return stampNode._dirToStampFn(absPathWithoutEndingSlash, "content")
+      return stampParser._dirToStampFn(absPathWithoutEndingSlash, "content")
     }
     static dirToStamp(absPathWithoutEndingSlash) {
-      return stampNode._dirToStampFn(absPathWithoutEndingSlash, "list")
+      return stampParser._dirToStampFn(absPathWithoutEndingSlash, "list")
     }
     static _dirToStampFn(absPathWithoutEndingSlash, output) {
       const fs = require("fs")
@@ -86,10 +90,10 @@ keywordCell
  highlightScope keyword.control
 
 // Line parsers
-stampNode
+stampParser
  root
  description A prefix Tree Language for creating distributable text template files that expand to folders and files.
- catchAllNodeType errorNode
+ catchAllParser errorParser
  javascript
   async executeSeries(parentDir) {
    const length = this.length
@@ -112,10 +116,10 @@ stampNode
    await this.executeSeries(parentDir)
   }
   static dirToStampWithContents(absPathWithoutEndingSlash) {
-    return stampNode._dirToStampFn(absPathWithoutEndingSlash, "content")
+    return stampParser._dirToStampFn(absPathWithoutEndingSlash, "content")
   }
   static dirToStamp(absPathWithoutEndingSlash) {
-    return stampNode._dirToStampFn(absPathWithoutEndingSlash, "list")
+    return stampParser._dirToStampFn(absPathWithoutEndingSlash, "list")
   }
   static _dirToStampFn(absPathWithoutEndingSlash, output) {
    const fs = require("fs")
@@ -150,25 +154,25 @@ stampNode
    const pathStartIndex = rootFolderPath.length + 1
    return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\\n")
   }
- inScope hashbangNode folderNode fileNode
-hashbangNode
+ inScope hashbangParser folderParser fileParser
+hashbangParser
  crux #!
  catchAllCellType commentCell
  cells commentCell
-catchAllAnyLineNode
+catchAllAnyLineParser
  catchAllCellType anyCell
- catchAllNodeType catchAllAnyLineNode
+ catchAllParser catchAllAnyLineParser
  cells anyCell
-dataNode
- catchAllNodeType catchAllAnyLineNode
+dataParser
+ catchAllParser catchAllAnyLineParser
  cells keywordCell
  crux data
-errorNode
- baseNodeType errorNode
-executableNode
+errorParser
+ baseParser errorParser
+executableParser
  cells keywordCell
  crux executable
-fileNode
+fileParser
  cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {
@@ -189,9 +193,9 @@ fileNode
    const isExecutable = this.has("executable") // todo: allow for all file permissions?
    if (isExecutable) fs.chmodSync(fullPath, "755")
   }
- inScope dataNode executableNode
+ inScope dataParser executableParser
  crux file
-folderNode
+folderParser
  cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {
@@ -209,10 +213,10 @@ folderNode
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = stampNode
+    static rootParser = stampParser
   }
 
-  class hashbangNode extends GrammarBackedNode {
+  class hashbangParser extends GrammarBackedNode {
     get commentCell() {
       return this.getWord(0)
     }
@@ -221,9 +225,9 @@ folderNode
     }
   }
 
-  class catchAllAnyLineNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllAnyLineNode, undefined, undefined)
+  class catchAllAnyLineParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
     get anyCell() {
       return this.getWord(0)
@@ -233,32 +237,32 @@ folderNode
     }
   }
 
-  class dataNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllAnyLineNode, undefined, undefined)
+  class dataParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllAnyLineParser, undefined, undefined)
     }
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class executableNode extends GrammarBackedNode {
+  class executableParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class fileNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class fileParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { data: dataNode, executable: executableNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { data: dataParser, executable: executableParser }),
         undefined
       )
     }
@@ -288,7 +292,7 @@ folderNode
     }
   }
 
-  class folderNode extends GrammarBackedNode {
+  class folderParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -308,5 +312,5 @@ folderNode
     }
   }
 
-  window.stampNode = stampNode
+  window.stampParser = stampParser
 }

@@ -1,9 +1,9 @@
 {
-  class hakonNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        selectorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }),
+  class hakonParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        selectorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { comment: commentParser }),
         undefined
       )
     }
@@ -12,7 +12,7 @@
     }
     compile() {
       return this.topDownArray
-        .filter(node => node.isSelectorNode)
+        .filter(node => node.isSelectorParser)
         .map(child => child.compile())
         .join("")
     }
@@ -46,20 +46,20 @@ commentCell
  highlightScope comment
 
 // Line Parsers
-hakonNode
+hakonParser
  root
  // todo Add variables?
  description A prefix Tree Language that compiles to CSS
  compilesTo css
- inScope commentNode
- catchAllNodeType selectorNode
+ inScope commentParser
+ catchAllParser selectorParser
  javascript
   getSelector() {
    return ""
   }
   compile() {
    return this.topDownArray
-    .filter(node => node.isSelectorNode)
+    .filter(node => node.isSelectorParser)
     .map(child => child.compile())
     .join("")
   }
@@ -72,33 +72,33 @@ hakonNode
    &:hover
     color blue
     font-size 17px
-propertyNode
+propertyParser
  catchAllCellType cssValueCell
- catchAllNodeType errorNode
+ catchAllParser errorParser
  javascript
   compile(spaces) {
    return \`\${spaces}\${this.firstWord}: \${this.content};\`
   }
  cells propertyKeywordCell
-variableNode
- extends propertyNode
+variableParser
+ extends propertyParser
  pattern --
-browserPrefixPropertyNode
- extends propertyNode
+browserPrefixPropertyParser
+ extends propertyParser
  pattern ^\\-\\w.+
  cells vendorPrefixPropertyKeywordCell
-errorNode
- catchAllNodeType errorNode
+errorParser
+ catchAllParser errorParser
  catchAllCellType errorCell
- baseNodeType errorNode
-commentNode
+ baseParser errorParser
+commentParser
  cells commentKeywordCell
  catchAllCellType commentCell
- catchAllNodeType commentNode
-selectorNode
- inScope propertyNode variableNode commentNode
- catchAllNodeType selectorNode
- boolean isSelectorNode true
+ catchAllParser commentParser
+selectorParser
+ inScope propertyParser variableParser commentParser
+ catchAllParser selectorParser
+ boolean isSelectorParser true
  javascript
   getSelector() {
    const parentSelector = this.parent.getSelector()
@@ -111,23 +111,23 @@ selectorNode
     .join(",")
   }
   compile() {
-   const propertyNodes = this.getChildren().filter(node => node.doesExtend("propertyNode"))
-   if (!propertyNodes.length) return ""
+   const propertyParsers = this.getChildren().filter(node => node.doesExtend("propertyParser"))
+   if (!propertyParsers.length) return ""
    const spaces = "  "
    return \`\${this.getSelector()} {
-  \${propertyNodes.map(child => child.compile(spaces)).join("\\n")}
+  \${propertyParsers.map(child => child.compile(spaces)).join("\\n")}
   }\\n\`
   }
  cells selectorCell`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = hakonNode
+    static rootParser = hakonParser
   }
 
-  class propertyNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(errorNode, undefined, undefined)
+  class propertyParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(errorParser, undefined, undefined)
     }
     get propertyKeywordCell() {
       return this.getWord(0)
@@ -140,29 +140,29 @@ selectorNode
     }
   }
 
-  class variableNode extends propertyNode {}
+  class variableParser extends propertyParser {}
 
-  class browserPrefixPropertyNode extends propertyNode {
+  class browserPrefixPropertyParser extends propertyParser {
     get vendorPrefixPropertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class errorNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(errorNode, undefined, undefined)
+  class errorParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(errorParser, undefined, undefined)
     }
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
     get errorCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class commentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(commentNode, undefined, undefined)
+  class commentParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(commentParser, undefined, undefined)
     }
     get commentKeywordCell() {
       return this.getWord(0)
@@ -172,231 +172,231 @@ selectorNode
     }
   }
 
-  class selectorNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        selectorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          "border-bottom-right-radius": propertyNode,
-          "transition-timing-function": propertyNode,
-          "animation-iteration-count": propertyNode,
-          "animation-timing-function": propertyNode,
-          "border-bottom-left-radius": propertyNode,
-          "border-top-right-radius": propertyNode,
-          "border-top-left-radius": propertyNode,
-          "background-attachment": propertyNode,
-          "background-blend-mode": propertyNode,
-          "text-decoration-color": propertyNode,
-          "text-decoration-style": propertyNode,
-          "overscroll-behavior-x": propertyNode,
-          "-webkit-touch-callout": propertyNode,
-          "grid-template-columns": propertyNode,
-          "animation-play-state": propertyNode,
-          "text-decoration-line": propertyNode,
-          "animation-direction": propertyNode,
-          "animation-fill-mode": propertyNode,
-          "backface-visibility": propertyNode,
-          "background-position": propertyNode,
-          "border-bottom-color": propertyNode,
-          "border-bottom-style": propertyNode,
-          "border-bottom-width": propertyNode,
-          "border-image-outset": propertyNode,
-          "border-image-repeat": propertyNode,
-          "border-image-source": propertyNode,
-          "hanging-punctuation": propertyNode,
-          "list-style-position": propertyNode,
-          "transition-duration": propertyNode,
-          "transition-property": propertyNode,
-          "-webkit-user-select": propertyNode,
-          "animation-duration": propertyNode,
-          "border-image-slice": propertyNode,
-          "border-image-width": propertyNode,
-          "border-right-color": propertyNode,
-          "border-right-style": propertyNode,
-          "border-right-width": propertyNode,
-          "perspective-origin": propertyNode,
-          "-khtml-user-select": propertyNode,
-          "grid-template-rows": propertyNode,
-          "background-origin": propertyNode,
-          "background-repeat": propertyNode,
-          "border-left-color": propertyNode,
-          "border-left-style": propertyNode,
-          "border-left-width": propertyNode,
-          "column-rule-color": propertyNode,
-          "column-rule-style": propertyNode,
-          "column-rule-width": propertyNode,
-          "counter-increment": propertyNode,
-          "page-break-before": propertyNode,
-          "page-break-inside": propertyNode,
-          "grid-column-start": propertyNode,
-          "background-color": propertyNode,
-          "background-image": propertyNode,
-          "border-top-color": propertyNode,
-          "border-top-style": propertyNode,
-          "border-top-width": propertyNode,
-          "font-size-adjust": propertyNode,
-          "list-style-image": propertyNode,
-          "page-break-after": propertyNode,
-          "transform-origin": propertyNode,
-          "transition-delay": propertyNode,
-          "-ms-touch-action": propertyNode,
-          "-moz-user-select": propertyNode,
-          "animation-delay": propertyNode,
-          "background-clip": propertyNode,
-          "background-size": propertyNode,
-          "border-collapse": propertyNode,
-          "justify-content": propertyNode,
-          "list-style-type": propertyNode,
-          "text-align-last": propertyNode,
-          "text-decoration": propertyNode,
-          "transform-style": propertyNode,
-          "-ms-user-select": propertyNode,
-          "grid-column-end": propertyNode,
-          "grid-column-gap": propertyNode,
-          "animation-name": propertyNode,
-          "border-spacing": propertyNode,
-          "flex-direction": propertyNode,
-          "letter-spacing": propertyNode,
-          "outline-offset": propertyNode,
-          "padding-bottom": propertyNode,
-          "text-transform": propertyNode,
-          "vertical-align": propertyNode,
-          "grid-auto-flow": propertyNode,
-          "grid-row-start": propertyNode,
-          "align-content": propertyNode,
-          "border-bottom": propertyNode,
-          "border-radius": propertyNode,
-          "counter-reset": propertyNode,
-          "margin-bottom": propertyNode,
-          "outline-color": propertyNode,
-          "outline-style": propertyNode,
-          "outline-width": propertyNode,
-          "padding-right": propertyNode,
-          "text-overflow": propertyNode,
-          "justify-items": propertyNode,
-          "border-color": propertyNode,
-          "border-image": propertyNode,
-          "border-right": propertyNode,
-          "border-style": propertyNode,
-          "border-width": propertyNode,
-          "break-inside": propertyNode,
-          "caption-side": propertyNode,
-          "column-count": propertyNode,
-          "column-width": propertyNode,
-          "font-stretch": propertyNode,
-          "font-variant": propertyNode,
-          "margin-right": propertyNode,
-          "padding-left": propertyNode,
-          "table-layout": propertyNode,
-          "text-justify": propertyNode,
-          "unicode-bidi": propertyNode,
-          "word-spacing": propertyNode,
-          "touch-action": propertyNode,
-          "grid-row-end": propertyNode,
-          "grid-row-gap": propertyNode,
-          "justify-self": propertyNode,
-          "align-items": propertyNode,
-          "border-left": propertyNode,
-          "column-fill": propertyNode,
-          "column-rule": propertyNode,
-          "column-span": propertyNode,
-          "empty-cells": propertyNode,
-          "flex-shrink": propertyNode,
-          "font-family": propertyNode,
-          "font-weight": propertyNode,
-          "line-height": propertyNode,
-          "margin-left": propertyNode,
-          "padding-top": propertyNode,
-          perspective: propertyNode,
-          "text-indent": propertyNode,
-          "text-shadow": propertyNode,
-          "white-space": propertyNode,
-          "user-select": propertyNode,
-          "grid-column": propertyNode,
-          "align-self": propertyNode,
-          background: propertyNode,
-          "border-top": propertyNode,
-          "box-shadow": propertyNode,
-          "box-sizing": propertyNode,
-          "column-gap": propertyNode,
-          "flex-basis": propertyNode,
-          "@font-face": propertyNode,
-          "font-style": propertyNode,
-          "@keyframes": propertyNode,
-          "list-style": propertyNode,
-          "margin-top": propertyNode,
-          "max-height": propertyNode,
-          "min-height": propertyNode,
-          "overflow-x": propertyNode,
-          "overflow-y": propertyNode,
-          "text-align": propertyNode,
-          transition: propertyNode,
-          visibility: propertyNode,
-          "word-break": propertyNode,
-          animation: propertyNode,
-          direction: propertyNode,
-          "flex-flow": propertyNode,
-          "flex-grow": propertyNode,
-          "flex-wrap": propertyNode,
-          "font-size": propertyNode,
-          "max-width": propertyNode,
-          "min-width": propertyNode,
-          "nav-index": propertyNode,
-          "nav-right": propertyNode,
-          transform: propertyNode,
-          "word-wrap": propertyNode,
-          "nav-down": propertyNode,
-          "nav-left": propertyNode,
-          overflow: propertyNode,
-          position: propertyNode,
-          "tab-size": propertyNode,
-          "grid-gap": propertyNode,
-          "grid-row": propertyNode,
-          columns: propertyNode,
-          content: propertyNode,
-          display: propertyNode,
-          hyphens: propertyNode,
-          opacity: propertyNode,
-          outline: propertyNode,
-          padding: propertyNode,
-          "z-index": propertyNode,
-          border: propertyNode,
-          bottom: propertyNode,
-          cursor: propertyNode,
-          filter: propertyNode,
-          height: propertyNode,
-          margin: propertyNode,
-          "@media": propertyNode,
-          "nav-up": propertyNode,
-          quotes: propertyNode,
-          resize: propertyNode,
-          clear: propertyNode,
-          color: propertyNode,
-          float: propertyNode,
-          order: propertyNode,
-          right: propertyNode,
-          width: propertyNode,
-          clip: propertyNode,
-          fill: propertyNode,
-          flex: propertyNode,
-          font: propertyNode,
-          left: propertyNode,
-          all: propertyNode,
-          top: propertyNode,
-          gap: propertyNode,
-          "": propertyNode,
-          comment: commentNode
+  class selectorParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        selectorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          "border-bottom-right-radius": propertyParser,
+          "transition-timing-function": propertyParser,
+          "animation-iteration-count": propertyParser,
+          "animation-timing-function": propertyParser,
+          "border-bottom-left-radius": propertyParser,
+          "border-top-right-radius": propertyParser,
+          "border-top-left-radius": propertyParser,
+          "background-attachment": propertyParser,
+          "background-blend-mode": propertyParser,
+          "text-decoration-color": propertyParser,
+          "text-decoration-style": propertyParser,
+          "overscroll-behavior-x": propertyParser,
+          "-webkit-touch-callout": propertyParser,
+          "grid-template-columns": propertyParser,
+          "animation-play-state": propertyParser,
+          "text-decoration-line": propertyParser,
+          "animation-direction": propertyParser,
+          "animation-fill-mode": propertyParser,
+          "backface-visibility": propertyParser,
+          "background-position": propertyParser,
+          "border-bottom-color": propertyParser,
+          "border-bottom-style": propertyParser,
+          "border-bottom-width": propertyParser,
+          "border-image-outset": propertyParser,
+          "border-image-repeat": propertyParser,
+          "border-image-source": propertyParser,
+          "hanging-punctuation": propertyParser,
+          "list-style-position": propertyParser,
+          "transition-duration": propertyParser,
+          "transition-property": propertyParser,
+          "-webkit-user-select": propertyParser,
+          "animation-duration": propertyParser,
+          "border-image-slice": propertyParser,
+          "border-image-width": propertyParser,
+          "border-right-color": propertyParser,
+          "border-right-style": propertyParser,
+          "border-right-width": propertyParser,
+          "perspective-origin": propertyParser,
+          "-khtml-user-select": propertyParser,
+          "grid-template-rows": propertyParser,
+          "background-origin": propertyParser,
+          "background-repeat": propertyParser,
+          "border-left-color": propertyParser,
+          "border-left-style": propertyParser,
+          "border-left-width": propertyParser,
+          "column-rule-color": propertyParser,
+          "column-rule-style": propertyParser,
+          "column-rule-width": propertyParser,
+          "counter-increment": propertyParser,
+          "page-break-before": propertyParser,
+          "page-break-inside": propertyParser,
+          "grid-column-start": propertyParser,
+          "background-color": propertyParser,
+          "background-image": propertyParser,
+          "border-top-color": propertyParser,
+          "border-top-style": propertyParser,
+          "border-top-width": propertyParser,
+          "font-size-adjust": propertyParser,
+          "list-style-image": propertyParser,
+          "page-break-after": propertyParser,
+          "transform-origin": propertyParser,
+          "transition-delay": propertyParser,
+          "-ms-touch-action": propertyParser,
+          "-moz-user-select": propertyParser,
+          "animation-delay": propertyParser,
+          "background-clip": propertyParser,
+          "background-size": propertyParser,
+          "border-collapse": propertyParser,
+          "justify-content": propertyParser,
+          "list-style-type": propertyParser,
+          "text-align-last": propertyParser,
+          "text-decoration": propertyParser,
+          "transform-style": propertyParser,
+          "-ms-user-select": propertyParser,
+          "grid-column-end": propertyParser,
+          "grid-column-gap": propertyParser,
+          "animation-name": propertyParser,
+          "border-spacing": propertyParser,
+          "flex-direction": propertyParser,
+          "letter-spacing": propertyParser,
+          "outline-offset": propertyParser,
+          "padding-bottom": propertyParser,
+          "text-transform": propertyParser,
+          "vertical-align": propertyParser,
+          "grid-auto-flow": propertyParser,
+          "grid-row-start": propertyParser,
+          "align-content": propertyParser,
+          "border-bottom": propertyParser,
+          "border-radius": propertyParser,
+          "counter-reset": propertyParser,
+          "margin-bottom": propertyParser,
+          "outline-color": propertyParser,
+          "outline-style": propertyParser,
+          "outline-width": propertyParser,
+          "padding-right": propertyParser,
+          "text-overflow": propertyParser,
+          "justify-items": propertyParser,
+          "border-color": propertyParser,
+          "border-image": propertyParser,
+          "border-right": propertyParser,
+          "border-style": propertyParser,
+          "border-width": propertyParser,
+          "break-inside": propertyParser,
+          "caption-side": propertyParser,
+          "column-count": propertyParser,
+          "column-width": propertyParser,
+          "font-stretch": propertyParser,
+          "font-variant": propertyParser,
+          "margin-right": propertyParser,
+          "padding-left": propertyParser,
+          "table-layout": propertyParser,
+          "text-justify": propertyParser,
+          "unicode-bidi": propertyParser,
+          "word-spacing": propertyParser,
+          "touch-action": propertyParser,
+          "grid-row-end": propertyParser,
+          "grid-row-gap": propertyParser,
+          "justify-self": propertyParser,
+          "align-items": propertyParser,
+          "border-left": propertyParser,
+          "column-fill": propertyParser,
+          "column-rule": propertyParser,
+          "column-span": propertyParser,
+          "empty-cells": propertyParser,
+          "flex-shrink": propertyParser,
+          "font-family": propertyParser,
+          "font-weight": propertyParser,
+          "line-height": propertyParser,
+          "margin-left": propertyParser,
+          "padding-top": propertyParser,
+          perspective: propertyParser,
+          "text-indent": propertyParser,
+          "text-shadow": propertyParser,
+          "white-space": propertyParser,
+          "user-select": propertyParser,
+          "grid-column": propertyParser,
+          "align-self": propertyParser,
+          background: propertyParser,
+          "border-top": propertyParser,
+          "box-shadow": propertyParser,
+          "box-sizing": propertyParser,
+          "column-gap": propertyParser,
+          "flex-basis": propertyParser,
+          "@font-face": propertyParser,
+          "font-style": propertyParser,
+          "@keyframes": propertyParser,
+          "list-style": propertyParser,
+          "margin-top": propertyParser,
+          "max-height": propertyParser,
+          "min-height": propertyParser,
+          "overflow-x": propertyParser,
+          "overflow-y": propertyParser,
+          "text-align": propertyParser,
+          transition: propertyParser,
+          visibility: propertyParser,
+          "word-break": propertyParser,
+          animation: propertyParser,
+          direction: propertyParser,
+          "flex-flow": propertyParser,
+          "flex-grow": propertyParser,
+          "flex-wrap": propertyParser,
+          "font-size": propertyParser,
+          "max-width": propertyParser,
+          "min-width": propertyParser,
+          "nav-index": propertyParser,
+          "nav-right": propertyParser,
+          transform: propertyParser,
+          "word-wrap": propertyParser,
+          "nav-down": propertyParser,
+          "nav-left": propertyParser,
+          overflow: propertyParser,
+          position: propertyParser,
+          "tab-size": propertyParser,
+          "grid-gap": propertyParser,
+          "grid-row": propertyParser,
+          columns: propertyParser,
+          content: propertyParser,
+          display: propertyParser,
+          hyphens: propertyParser,
+          opacity: propertyParser,
+          outline: propertyParser,
+          padding: propertyParser,
+          "z-index": propertyParser,
+          border: propertyParser,
+          bottom: propertyParser,
+          cursor: propertyParser,
+          filter: propertyParser,
+          height: propertyParser,
+          margin: propertyParser,
+          "@media": propertyParser,
+          "nav-up": propertyParser,
+          quotes: propertyParser,
+          resize: propertyParser,
+          clear: propertyParser,
+          color: propertyParser,
+          float: propertyParser,
+          order: propertyParser,
+          right: propertyParser,
+          width: propertyParser,
+          clip: propertyParser,
+          fill: propertyParser,
+          flex: propertyParser,
+          font: propertyParser,
+          left: propertyParser,
+          all: propertyParser,
+          top: propertyParser,
+          gap: propertyParser,
+          "": propertyParser,
+          comment: commentParser
         }),
         [
-          { regex: /--/, nodeConstructor: variableNode },
-          { regex: /^\-\w.+/, nodeConstructor: browserPrefixPropertyNode }
+          { regex: /--/, parser: variableParser },
+          { regex: /^\-\w.+/, parser: browserPrefixPropertyParser }
         ]
       )
     }
     get selectorCell() {
       return this.getWord(0)
     }
-    get isSelectorNode() {
+    get isSelectorParser() {
       return true
     }
     getSelector() {
@@ -410,14 +410,14 @@ selectorNode
         .join(",")
     }
     compile() {
-      const propertyNodes = this.getChildren().filter(node => node.doesExtend("propertyNode"))
-      if (!propertyNodes.length) return ""
+      const propertyParsers = this.getChildren().filter(node => node.doesExtend("propertyParser"))
+      if (!propertyParsers.length) return ""
       const spaces = "  "
       return `${this.getSelector()} {
-${propertyNodes.map(child => child.compile(spaces)).join("\n")}
+${propertyParsers.map(child => child.compile(spaces)).join("\n")}
 }\n`
     }
   }
 
-  window.hakonNode = hakonNode
+  window.hakonParser = hakonParser
 }

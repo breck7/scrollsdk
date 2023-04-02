@@ -5,43 +5,43 @@
   const { HandGrammarProgram } = require("./GrammarLanguage.js")
   const { GrammarBackedNode } = require("./GrammarLanguage.js")
 
-  class fireNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          block: blockNode,
-          function: functionNode,
-          if: ifNode,
-          while: whileNode,
-          divide: divideNode,
-          modulo: moduloNode,
-          multiply: multiplyNode,
-          substract: substractNode,
-          add: addNode,
-          greaterThan: greaterThanNode,
-          greaterThanOrEqual: greaterThanOrEqualNode,
-          lessThan: lessThanNode,
-          lessThanOrEqual: lessThanOrEqualNode,
-          sum: sumNode,
-          boolean: booleanNode,
-          callFunctionAndSet: callFunctionAndSetNode,
-          callMethodAndSet: callMethodAndSetNode,
-          join: joinNode,
-          mutableNumber: mutableNumberNode,
-          number: numberNode,
-          numbers: numbersNode,
-          string: stringNode,
-          callFunction: callFunctionNode,
-          decrement: decrementNode,
-          dumpIdentifier: dumpIdentifierNode,
-          export: exportNode,
-          increment: incrementNode,
-          printNumber: printNumberNode,
-          printString: printStringNode,
-          require: requireNode,
-          return: returnNode,
-          "#!": hashbangNode
+  class fireParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          block: blockParser,
+          function: functionParser,
+          if: ifParser,
+          while: whileParser,
+          divide: divideParser,
+          modulo: moduloParser,
+          multiply: multiplyParser,
+          substract: substractParser,
+          add: addParser,
+          greaterThan: greaterThanParser,
+          greaterThanOrEqual: greaterThanOrEqualParser,
+          lessThan: lessThanParser,
+          lessThanOrEqual: lessThanOrEqualParser,
+          sum: sumParser,
+          boolean: booleanParser,
+          callFunctionAndSet: callFunctionAndSetParser,
+          callMethodAndSet: callMethodAndSetParser,
+          join: joinParser,
+          mutableNumber: mutableNumberParser,
+          number: numberParser,
+          numbers: numbersParser,
+          string: stringParser,
+          callFunction: callFunctionParser,
+          decrement: decrementParser,
+          dumpIdentifier: dumpIdentifierParser,
+          export: exportParser,
+          increment: incrementParser,
+          printNumber: printNumberParser,
+          printString: printStringParser,
+          require: requireParser,
+          return: returnParser,
+          "#!": hashbangParser
         }),
         undefined
       )
@@ -103,12 +103,12 @@ leftAnyCell
  extends anyCell
 
 // Line Parsers
-fireNode
+fireParser
  root
  description A useless prefix Tree Language that compiles to Javascript for testing Tree Notation features.
  compilesTo js
- inScope hashbangNode abstractTerminalNode abstractNonTerminalNode
- catchAllNodeType errorNode
+ inScope hashbangParser abstractTerminalParser abstractNonTerminalParser
+ catchAllParser errorParser
  javascript
   async execute() {
    let outputLines = []
@@ -121,22 +121,22 @@ fireNode
    console.log(outputLines.join("\\n"))
    return outputLines
   }
-abstractNonTerminalNode
- inScope abstractTerminalNode abstractNonTerminalNode
+abstractNonTerminalParser
+ inScope abstractTerminalParser abstractNonTerminalParser
  cells keywordCell
-abstractJsblockNode
+abstractJsblockParser
  compiler
   openChildren  {
   closeChildren }
- extends abstractNonTerminalNode
-blockNode
+ extends abstractNonTerminalParser
+blockParser
  description block of code
  frequency .2
  compiler
   stringTemplate /* {identifierCell} */
- extends abstractJsblockNode
+ extends abstractJsblockParser
  crux block
-functionNode
+functionParser
  crux function
  description Function Assignment
  cells keywordCell functionIdentifierCell
@@ -145,102 +145,102 @@ functionNode
   stringTemplate const {functionIdentifierCell} = ({anyCell}) =>
   catchAllCellDelimiter , 
  frequency .1
- extends abstractJsblockNode
-ifNode
+ extends abstractJsblockParser
+ifParser
  crux if
  description If tile
  cells keywordCell identifierCell
  frequency .2
  compiler
   stringTemplate if ({identifierCell})
- extends abstractJsblockNode
-whileNode
+ extends abstractJsblockParser
+whileParser
  crux while
  description While tile
  cells keywordCell identifierCell
  frequency .1
  compiler
   stringTemplate while ({identifierCell})
- extends abstractJsblockNode
-abstractTerminalNode
+ extends abstractJsblockParser
+abstractTerminalParser
  cells keywordCell
-abstractAssignmentNode
- extends abstractTerminalNode
-abstractArithmeticNode
+abstractAssignmentParser
+ extends abstractTerminalParser
+abstractArithmeticParser
  cells keywordCell identifierCell
  catchAllCellType anyCell
  compiler
   stringTemplate const {identifierCell} = {anyCell}
  frequency .2
- extends abstractAssignmentNode
-divideNode
+ extends abstractAssignmentParser
+divideParser
  description Divide Numbers
  compiler
   catchAllCellDelimiter  / 
- extends abstractArithmeticNode
+ extends abstractArithmeticParser
  crux divide
-moduloNode
+moduloParser
  description Modulo Numbers
  compiler
   catchAllCellDelimiter %
- extends abstractArithmeticNode
+ extends abstractArithmeticParser
  crux modulo
-multiplyNode
+multiplyParser
  description Multiply Numbers
  compiler
   catchAllCellDelimiter  * 
- extends abstractArithmeticNode
+ extends abstractArithmeticParser
  crux multiply
-substractNode
+substractParser
  description Subtract Numbers
  compiler
   catchAllCellDelimiter  - 
- extends abstractArithmeticNode
+ extends abstractArithmeticParser
  crux substract
-addNode
+addParser
  crux add
  example
   add ten 2 3 5
  description Add numbers and store result
  compiler
   catchAllCellDelimiter  + 
- extends abstractArithmeticNode
-abstractBooleanOperatorNode
+ extends abstractArithmeticParser
+abstractBooleanOperatorParser
  description Runs a boolean test and saves result.
- extends abstractAssignmentNode
-greaterThanNode
+ extends abstractAssignmentParser
+greaterThanParser
  description Greater than test
  cells keywordCell identifierCell leftNumberCell numberCell
  compiler
   stringTemplate const {identifierCell} = {leftNumberCell} > {numberCell}
  frequency .1
- extends abstractBooleanOperatorNode
+ extends abstractBooleanOperatorParser
  crux greaterThan
-greaterThanOrEqualNode
+greaterThanOrEqualParser
  description Greater than or equal to test
  cells keywordCell identifierCell leftNumberCell numberCell
  compiler
   stringTemplate const {identifierCell} = {leftNumberCell} >= {numberCell}
  frequency .1
- extends abstractBooleanOperatorNode
+ extends abstractBooleanOperatorParser
  crux greaterThanOrEqual
-lessThanNode
+lessThanParser
  description Less than test
  cells keywordCell identifierCell leftAnyCell anyCell
  compiler
   stringTemplate const {identifierCell} = {leftAnyCell} < {anyCell}
  frequency .1
- extends abstractBooleanOperatorNode
+ extends abstractBooleanOperatorParser
  crux lessThan
-lessThanOrEqualNode
+lessThanOrEqualParser
  crux lessThanOrEqual
  description Less than or equal to test
  cells keywordCell identifierCell leftAnyCell anyCell
  compiler
   stringTemplate const {identifierCell} = {leftAnyCell} <= {anyCell}
  frequency .1
- extends abstractBooleanOperatorNode
-sumNode
+ extends abstractBooleanOperatorParser
+sumParser
  crux sum
  description Add numbers and store result
  cells keywordCell numberIdentifierCell
@@ -249,15 +249,15 @@ sumNode
   stringTemplate const {numberIdentifierCell} = [{numberCell}].reduce((sum, num) => sum + num)
   catchAllCellDelimiter , 
  frequency .1
- extends abstractAssignmentNode
-booleanNode
+ extends abstractAssignmentParser
+booleanParser
  crux boolean
  description Boolean Assignment
  cells keywordCell booleanIdentifierCell booleanCell
  compiler
   stringTemplate const {booleanIdentifierCell} = {booleanCell}
- extends abstractAssignmentNode
-callFunctionAndSetNode
+ extends abstractAssignmentParser
+callFunctionAndSetParser
  crux callFunctionAndSet
  description Function Call
  frequency .5
@@ -266,8 +266,8 @@ callFunctionAndSetNode
  compiler
   stringTemplate const {resultIdentifierCell} = {functionIdentifierCell}({anyCell})
   catchAllCellDelimiter , 
- extends abstractAssignmentNode
-callMethodAndSetNode
+ extends abstractAssignmentParser
+callMethodAndSetParser
  crux callMethodAndSet
  description Method Call
  frequency .5
@@ -276,8 +276,8 @@ callMethodAndSetNode
  compiler
   stringTemplate const {resultIdentifierCell} = {instanceIdentifierCell}.{methodIdentifierCell}({anyCell})
   catchAllCellDelimiter , 
- extends abstractAssignmentNode
-joinNode
+ extends abstractAssignmentParser
+joinParser
  crux join
  description Join strings to form new string
  cells keywordCell identifierCell
@@ -286,23 +286,23 @@ joinNode
   stringTemplate const {identifierCell} = [{identifiersCell}].join("")
   catchAllCellDelimiter , 
  frequency .2
- extends abstractAssignmentNode
-mutableNumberNode
+ extends abstractAssignmentParser
+mutableNumberParser
  crux mutableNumber
  description Mutable Number Assignment
  cells keywordCell identifierCell numberCell
  compiler
   stringTemplate let {identifierCell} = {numberCell}
- extends abstractAssignmentNode
-numberNode
+ extends abstractAssignmentParser
+numberParser
  crux number
  description Number Assignment
  cells keywordCell identifierCell numberCell
  compiler
   stringTemplate const {identifierCell} = {numberCell}
  frequency .3
- extends abstractAssignmentNode
-numbersNode
+ extends abstractAssignmentParser
+numbersParser
  crux numbers
  description Number Array Assignment
  cells keywordCell identifierCell
@@ -311,8 +311,8 @@ numbersNode
  compiler
   stringTemplate const {identifierCell} = [{numberCell}]
   catchAllCellDelimiter , 
- extends abstractAssignmentNode
-stringNode
+ extends abstractAssignmentParser
+stringParser
  crux string
  description String Assignment
  cells keywordCell stringIdentifierCell
@@ -320,8 +320,8 @@ stringNode
  compiler
   stringTemplate const {stringIdentifierCell} = "{anyCell}"
  frequency .2
- extends abstractAssignmentNode
-callFunctionNode
+ extends abstractAssignmentParser
+callFunctionParser
  crux callFunction
  description Function call ignore result.
  frequency .1
@@ -330,16 +330,16 @@ callFunctionNode
  compiler
   stringTemplate {functionIdentifierCell}({anyCell})
   catchAllCellDelimiter , 
- extends abstractTerminalNode
-decrementNode
+ extends abstractTerminalParser
+decrementParser
  crux decrement
  description Decrement
  cells keywordCell numberIdentifierCell
  compiler
   stringTemplate {numberIdentifierCell}--
  frequency .1
- extends abstractTerminalNode
-dumpIdentifierNode
+ extends abstractTerminalParser
+dumpIdentifierParser
  crux dumpIdentifier
  description Dump variable(s) to console
  catchAllCellType identifierCell
@@ -347,104 +347,104 @@ dumpIdentifierNode
   stringTemplate console.log({identifierCell})
   catchAllCellDelimiter , 
  frequency .5
- extends abstractTerminalNode
-exportNode
+ extends abstractTerminalParser
+exportParser
  crux export
  description Export This
  cells keywordCell identifierCell
  compiler
   stringTemplate module.exports = {identifierCell}
  frequency .1
- extends abstractTerminalNode
-incrementNode
+ extends abstractTerminalParser
+incrementParser
  crux increment
  description Increment
  frequency .3
  cells keywordCell numberIdentifierCell
  compiler
   stringTemplate {numberIdentifierCell}++
- extends abstractTerminalNode
-printNumberNode
+ extends abstractTerminalParser
+printNumberParser
  crux printNumber
- extends abstractTerminalNode
+ extends abstractTerminalParser
  catchAllCellType numberIdentifierCell
  compiler
   stringTemplate console.log({numberIdentifierCell})
-printStringNode
+printStringParser
  crux printString
  // todo Allow printing of multiline strings
- extends abstractTerminalNode
+ extends abstractTerminalParser
  catchAllCellType stringCellsCell
  compiler
   stringTemplate console.log("{stringCells}")
-requireNode
+requireParser
  crux require
  description Require Something
  cells keywordCell identifierCell filepathCell
  compiler
   stringTemplate const {identifierCell} = require("{filepathCell}")
  frequency .1
- extends abstractTerminalNode
-returnNode
+ extends abstractTerminalParser
+returnParser
  crux return
  cells keywordCell anyCell
  compiler
   stringTemplate return {anyCell}
  frequency .1
- extends abstractTerminalNode
-hashbangNode
+ extends abstractTerminalParser
+hashbangParser
  crux #!
  description Standard bash hashbang line.
  catchAllCellType hashBangCell
  compiler
   stringTemplate // #! {hashBangCell}
  cells hashBangKeywordCell
-errorNode
- baseNodeType errorNode
+errorParser
+ baseParser errorParser
  compiler
   stringTemplate // error`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = fireNode
+    static rootParser = fireParser
   }
 
-  class abstractNonTerminalNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class abstractNonTerminalParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          block: blockNode,
-          function: functionNode,
-          if: ifNode,
-          while: whileNode,
-          divide: divideNode,
-          modulo: moduloNode,
-          multiply: multiplyNode,
-          substract: substractNode,
-          add: addNode,
-          greaterThan: greaterThanNode,
-          greaterThanOrEqual: greaterThanOrEqualNode,
-          lessThan: lessThanNode,
-          lessThanOrEqual: lessThanOrEqualNode,
-          sum: sumNode,
-          boolean: booleanNode,
-          callFunctionAndSet: callFunctionAndSetNode,
-          callMethodAndSet: callMethodAndSetNode,
-          join: joinNode,
-          mutableNumber: mutableNumberNode,
-          number: numberNode,
-          numbers: numbersNode,
-          string: stringNode,
-          callFunction: callFunctionNode,
-          decrement: decrementNode,
-          dumpIdentifier: dumpIdentifierNode,
-          export: exportNode,
-          increment: incrementNode,
-          printNumber: printNumberNode,
-          printString: printStringNode,
-          require: requireNode,
-          return: returnNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          block: blockParser,
+          function: functionParser,
+          if: ifParser,
+          while: whileParser,
+          divide: divideParser,
+          modulo: moduloParser,
+          multiply: multiplyParser,
+          substract: substractParser,
+          add: addParser,
+          greaterThan: greaterThanParser,
+          greaterThanOrEqual: greaterThanOrEqualParser,
+          lessThan: lessThanParser,
+          lessThanOrEqual: lessThanOrEqualParser,
+          sum: sumParser,
+          boolean: booleanParser,
+          callFunctionAndSet: callFunctionAndSetParser,
+          callMethodAndSet: callMethodAndSetParser,
+          join: joinParser,
+          mutableNumber: mutableNumberParser,
+          number: numberParser,
+          numbers: numbersParser,
+          string: stringParser,
+          callFunction: callFunctionParser,
+          decrement: decrementParser,
+          dumpIdentifier: dumpIdentifierParser,
+          export: exportParser,
+          increment: incrementParser,
+          printNumber: printNumberParser,
+          printString: printStringParser,
+          require: requireParser,
+          return: returnParser
         }),
         undefined
       )
@@ -454,11 +454,11 @@ errorNode
     }
   }
 
-  class abstractJsblockNode extends abstractNonTerminalNode {}
+  class abstractJsblockParser extends abstractNonTerminalParser {}
 
-  class blockNode extends abstractJsblockNode {}
+  class blockParser extends abstractJsblockParser {}
 
-  class functionNode extends abstractJsblockNode {
+  class functionParser extends abstractJsblockParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -470,7 +470,7 @@ errorNode
     }
   }
 
-  class ifNode extends abstractJsblockNode {
+  class ifParser extends abstractJsblockParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -479,7 +479,7 @@ errorNode
     }
   }
 
-  class whileNode extends abstractJsblockNode {
+  class whileParser extends abstractJsblockParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -488,15 +488,15 @@ errorNode
     }
   }
 
-  class abstractTerminalNode extends GrammarBackedNode {
+  class abstractTerminalParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class abstractAssignmentNode extends abstractTerminalNode {}
+  class abstractAssignmentParser extends abstractTerminalParser {}
 
-  class abstractArithmeticNode extends abstractAssignmentNode {
+  class abstractArithmeticParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -508,19 +508,19 @@ errorNode
     }
   }
 
-  class divideNode extends abstractArithmeticNode {}
+  class divideParser extends abstractArithmeticParser {}
 
-  class moduloNode extends abstractArithmeticNode {}
+  class moduloParser extends abstractArithmeticParser {}
 
-  class multiplyNode extends abstractArithmeticNode {}
+  class multiplyParser extends abstractArithmeticParser {}
 
-  class substractNode extends abstractArithmeticNode {}
+  class substractParser extends abstractArithmeticParser {}
 
-  class addNode extends abstractArithmeticNode {}
+  class addParser extends abstractArithmeticParser {}
 
-  class abstractBooleanOperatorNode extends abstractAssignmentNode {}
+  class abstractBooleanOperatorParser extends abstractAssignmentParser {}
 
-  class greaterThanNode extends abstractBooleanOperatorNode {
+  class greaterThanParser extends abstractBooleanOperatorParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -535,7 +535,7 @@ errorNode
     }
   }
 
-  class greaterThanOrEqualNode extends abstractBooleanOperatorNode {
+  class greaterThanOrEqualParser extends abstractBooleanOperatorParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -550,7 +550,7 @@ errorNode
     }
   }
 
-  class lessThanNode extends abstractBooleanOperatorNode {
+  class lessThanParser extends abstractBooleanOperatorParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -565,7 +565,7 @@ errorNode
     }
   }
 
-  class lessThanOrEqualNode extends abstractBooleanOperatorNode {
+  class lessThanOrEqualParser extends abstractBooleanOperatorParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -580,7 +580,7 @@ errorNode
     }
   }
 
-  class sumNode extends abstractAssignmentNode {
+  class sumParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -592,7 +592,7 @@ errorNode
     }
   }
 
-  class booleanNode extends abstractAssignmentNode {
+  class booleanParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -604,7 +604,7 @@ errorNode
     }
   }
 
-  class callFunctionAndSetNode extends abstractAssignmentNode {
+  class callFunctionAndSetParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -619,7 +619,7 @@ errorNode
     }
   }
 
-  class callMethodAndSetNode extends abstractAssignmentNode {
+  class callMethodAndSetParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -637,7 +637,7 @@ errorNode
     }
   }
 
-  class joinNode extends abstractAssignmentNode {
+  class joinParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -649,7 +649,7 @@ errorNode
     }
   }
 
-  class mutableNumberNode extends abstractAssignmentNode {
+  class mutableNumberParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -661,7 +661,7 @@ errorNode
     }
   }
 
-  class numberNode extends abstractAssignmentNode {
+  class numberParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -673,7 +673,7 @@ errorNode
     }
   }
 
-  class numbersNode extends abstractAssignmentNode {
+  class numbersParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -685,7 +685,7 @@ errorNode
     }
   }
 
-  class stringNode extends abstractAssignmentNode {
+  class stringParser extends abstractAssignmentParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -697,7 +697,7 @@ errorNode
     }
   }
 
-  class callFunctionNode extends abstractTerminalNode {
+  class callFunctionParser extends abstractTerminalParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -709,7 +709,7 @@ errorNode
     }
   }
 
-  class decrementNode extends abstractTerminalNode {
+  class decrementParser extends abstractTerminalParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -718,13 +718,13 @@ errorNode
     }
   }
 
-  class dumpIdentifierNode extends abstractTerminalNode {
+  class dumpIdentifierParser extends abstractTerminalParser {
     get identifierCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class exportNode extends abstractTerminalNode {
+  class exportParser extends abstractTerminalParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -733,7 +733,7 @@ errorNode
     }
   }
 
-  class incrementNode extends abstractTerminalNode {
+  class incrementParser extends abstractTerminalParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -742,19 +742,19 @@ errorNode
     }
   }
 
-  class printNumberNode extends abstractTerminalNode {
+  class printNumberParser extends abstractTerminalParser {
     get numberIdentifierCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class printStringNode extends abstractTerminalNode {
+  class printStringParser extends abstractTerminalParser {
     get stringCellsCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class requireNode extends abstractTerminalNode {
+  class requireParser extends abstractTerminalParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -766,7 +766,7 @@ errorNode
     }
   }
 
-  class returnNode extends abstractTerminalNode {
+  class returnParser extends abstractTerminalParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -775,7 +775,7 @@ errorNode
     }
   }
 
-  class hashbangNode extends GrammarBackedNode {
+  class hashbangParser extends GrammarBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -784,14 +784,14 @@ errorNode
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  module.exports = fireNode
-  fireNode
+  module.exports = fireParser
+  fireParser
 
-  if (!module.parent) new fireNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new fireParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

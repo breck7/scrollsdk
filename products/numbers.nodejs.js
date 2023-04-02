@@ -5,18 +5,18 @@
   const { HandGrammarProgram } = require("./GrammarLanguage.js")
   const { GrammarBackedNode } = require("./GrammarLanguage.js")
 
-  class numbersNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          "%": modNode,
-          "*": timesNode,
-          "+": addNode,
-          "-": substractNode,
-          "/": divideNode,
-          comment: commentNode,
-          "#!": hashBangNode
+  class numbersParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          "%": modParser,
+          "*": timesParser,
+          "+": addParser,
+          "-": substractParser,
+          "/": divideParser,
+          comment: commentParser,
+          "#!": hashBangParser
         }),
         undefined
       )
@@ -47,77 +47,77 @@ operatorCell
  highlightScope keyword.operator.arithmetic
 
 // Line Parsers
-numbersNode
+numbersParser
  root
  description A useless Tree Language for testing Tree Notation features.
- inScope abstractArithmeticReducerNode commentNode hashBangNode
- catchAllNodeType errorNode
+ inScope abstractArithmeticReducerParser commentParser hashBangParser
+ catchAllParser errorParser
  javascript
   execute() {
    return this.map(child => child.execute())
   }
-abstractArithmeticReducerNode
+abstractArithmeticReducerParser
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   execute() {
    return this.numbersCell.slice(1).reduce((curr, tot) => eval(\`\${curr}\${this.operator}\${tot}\`), this.numbersCell[0])
   }
- inScope abstractArithmeticReducerNode commentNode
+ inScope abstractArithmeticReducerParser commentParser
  cells operatorCell
  catchAllCellType numbersCell
-modNode
+modParser
  crux %
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator %
-timesNode
+timesParser
  crux *
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator *
-addNode
+addParser
  crux +
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator +
-substractNode
+substractParser
  crux -
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator -
-divideNode
+divideParser
  crux /
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator /
-commentNode
+commentParser
  description This is a line comment.
  catchAllCellType commentCell
- catchAllNodeType commentContentNode
+ catchAllParser commentContentParser
  cells commentKeywordCell
-commentContentNode
+commentContentParser
  catchAllCellType commentCell
- catchAllNodeType commentContentNode
-hashBangNode
+ catchAllParser commentContentParser
+hashBangParser
  crux #!
  cells hashBangKeywordCell
  catchAllCellType commentCell
-errorNode
+errorParser
  catchAllCellType errorCell
- baseNodeType errorNode
+ baseParser errorParser
  cells errorCell`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = numbersNode
+    static rootParser = numbersParser
   }
 
-  class abstractArithmeticReducerNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class abstractArithmeticReducerParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          "%": modNode,
-          "*": timesNode,
-          "+": addNode,
-          "-": substractNode,
-          "/": divideNode,
-          comment: commentNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          "%": modParser,
+          "*": timesParser,
+          "+": addParser,
+          "-": substractParser,
+          "/": divideParser,
+          comment: commentParser
         }),
         undefined
       )
@@ -133,39 +133,39 @@ errorNode
     }
   }
 
-  class modNode extends abstractArithmeticReducerNode {
+  class modParser extends abstractArithmeticReducerParser {
     get operator() {
       return `%`
     }
   }
 
-  class timesNode extends abstractArithmeticReducerNode {
+  class timesParser extends abstractArithmeticReducerParser {
     get operator() {
       return `*`
     }
   }
 
-  class addNode extends abstractArithmeticReducerNode {
+  class addParser extends abstractArithmeticReducerParser {
     get operator() {
       return `+`
     }
   }
 
-  class substractNode extends abstractArithmeticReducerNode {
+  class substractParser extends abstractArithmeticReducerParser {
     get operator() {
       return `-`
     }
   }
 
-  class divideNode extends abstractArithmeticReducerNode {
+  class divideParser extends abstractArithmeticReducerParser {
     get operator() {
       return `/`
     }
   }
 
-  class commentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(commentContentNode, undefined, undefined)
+  class commentParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentKeywordCell() {
       return this.getWord(0)
@@ -175,16 +175,16 @@ errorNode
     }
   }
 
-  class commentContentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(commentContentNode, undefined, undefined)
+  class commentContentParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class hashBangNode extends GrammarBackedNode {
+  class hashBangParser extends GrammarBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -193,9 +193,9 @@ errorNode
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
     get errorCell() {
       return this.getWord(0)
@@ -205,8 +205,8 @@ errorNode
     }
   }
 
-  module.exports = numbersNode
-  numbersNode
+  module.exports = numbersParser
+  numbersParser
 
-  if (!module.parent) new numbersNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new numbersParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

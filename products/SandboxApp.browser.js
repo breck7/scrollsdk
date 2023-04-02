@@ -1,8 +1,8 @@
 //onsave jtree build produce SandboxApp.browser.js
 // Todo: add inputs at the top to change the edge, node, and cell delimiters.
-class SandboxApp extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class SandboxApp extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       tableComponent,
       shareComponent,
       githubTriangleComponent,
@@ -146,7 +146,7 @@ pre
  color green`
   }
 }
-class headerComponent extends AbstractTreeComponent {
+class headerComponent extends AbstractTreeComponentParser {
   toHakonCode() {
     return `#logo
  width 100px
@@ -179,7 +179,7 @@ class headerComponent extends AbstractTreeComponent {
  p This is a simple console for exploring the base Tree Notation. In dev tools, you can access the parsed tree below as "window.tree"`
   }
 }
-class shareComponent extends AbstractTreeComponent {
+class shareComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `div
  id shareDiv
@@ -206,7 +206,7 @@ class githubTriangleComponent extends AbstractGithubTriangleComponent {
     this.githubLink = `https://github.com/treenotation/jtree/tree/main/sandbox`
   }
 }
-class tableComponent extends AbstractTreeComponent {
+class tableComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `table
  tr

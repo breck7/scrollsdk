@@ -389,13 +389,13 @@ testTree.ambiguityFixWhenAssignmentAndEdgeCharsMatch = equal => {
       return ":"
     }
   }
-  const iHateTypeScript = TestTree
-  equal(new iHateTypeScript(test).nodeAt(0).length, 2)
-  const rootTree = new iHateTypeScript()
-  const tree = rootTree.appendLineAndChildren("", new iHateTypeScript())
+  const iHateTypeScriptSometimes = TestTree
+  equal(new iHateTypeScriptSometimes(test).nodeAt(0).length, 2)
+  const rootTree = new iHateTypeScriptSometimes()
+  const tree = rootTree.appendLineAndChildren("", new iHateTypeScriptSometimes())
   tree.appendLine("")
   tree.appendLine("")
-  const newTree = new iHateTypeScript(rootTree.asString)
+  const newTree = new iHateTypeScriptSometimes(rootTree.asString)
   equal(newTree.nodeAt(0).length, 2)
 }
 testTree.duplicateReferences = equal => {
@@ -1281,18 +1281,18 @@ testTree.content = equal => {
 }
 testTree.getInheritanceTree = equal => {
   // Arrange
-  const classes = `abstractNodeType
-abstractModalNodeType abstractNodeType
-helpModal abstractModalNodeType
-abstractButton abstractNodeType
+  const classes = `abstractParser
+abstractModalParser abstractParser
+helpModal abstractModalParser
+abstractButton abstractParser
 helpButton abstractButton`
   // Act
   const inheritanceTree = new TreeNode(classes).getInheritanceTree()
   // Assert
   equal(
     inheritanceTree.asString,
-    `abstractNodeType
- abstractModalNodeType
+    `abstractParser
+ abstractModalParser
   helpModal
  abstractButton
   helpButton`
@@ -1354,12 +1354,12 @@ testTree.multiply = equal => {
       return "-"
     }
   }
-  const iHateTypeScript = MathNode
+  const iHateTypeScriptSometimes = MathNode
   // Arrange
-  const two = new iHateTypeScript(`o`)
-  const three = new iHateTypeScript(`oo`)
+  const two = new iHateTypeScriptSometimes(`o`)
+  const three = new iHateTypeScriptSometimes(`oo`)
   // Act/Assert
-  const result = iHateTypeScript.multiply(two, three)
+  const result = iHateTypeScriptSometimes.multiply(two, three)
   equal(result.asString, "o-o-o-oo-o-o-", "multipling empty structures (in this case 1D primes) works as expected")
   // Non blanks
   const four = new TreeNode(`o
@@ -1453,17 +1453,17 @@ testTree.getIndex = equal => {
 }
 testTree.simpleTreeLanguage = equal => {
   // Arrange
-  class MathProgram extends TreeNode {
+  class MathProgramParser extends TreeNode {
     // Look! You created a top down parser!
-    createParser() {
-      return new TreeNode.Parser(undefined, { "+": AdditionNode, "-": SubstractionNode })
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(undefined, { "+": AdditionNodeParser, "-": SubstractionNodeParser })
     }
     execute() {
       return this.map(child => child.execute())
     }
   }
-  class SubstractionNode extends TreeNode {}
-  class AdditionNode extends TreeNode {
+  class SubstractionNodeParser extends TreeNode {}
+  class AdditionNodeParser extends TreeNode {
     // Look! You created an interpreter!
     execute() {
       return [this.getNumbers().reduce((prev, current) => prev + current, 0)]
@@ -1481,8 +1481,8 @@ testTree.simpleTreeLanguage = equal => {
 + 3 1
 + 15 1.1 200 100`
   // Act
-  const iHateTypeScript = MathProgram
-  const program = new iHateTypeScript(source)
+  const iHateTypeScriptSometimes = MathProgramParser
+  const program = new iHateTypeScriptSometimes(source)
   const compiled = program.compile()
   // Assert
   equal(program.length, 3)
@@ -1503,14 +1503,14 @@ testTree.simpleTreeLanguage = equal => {
   )
   // Edit the program and assure parsing is correct
   // Assert
-  equal(program.getChildrenByNodeConstructor(AdditionNode).length, 3)
-  equal(program.getChildrenByNodeConstructor(SubstractionNode).length, 0)
+  equal(program.getChildrenByParser(AdditionNodeParser).length, 3)
+  equal(program.getChildrenByParser(SubstractionNodeParser).length, 0)
   // Act
   program.nodeAt(0).replaceNode(str => str.replace("+", "-"))
   // Assert
-  equal(program.getChildrenByNodeConstructor(AdditionNode).length, 2)
-  equal(program.getChildrenByNodeConstructor(SubstractionNode).length, 1)
-  equal(program.getNodeByType(SubstractionNode) instanceof SubstractionNode, true)
+  equal(program.getChildrenByParser(AdditionNodeParser).length, 2)
+  equal(program.getChildrenByParser(SubstractionNodeParser).length, 1)
+  equal(program.getNodeByParser(SubstractionNodeParser) instanceof SubstractionNodeParser, true)
 }
 testTree.getFirstWordPath = equal => {
   // Arrange
@@ -2175,19 +2175,19 @@ testTree.setWord = equal => {
 testTree.treeLanguageDependingOnParent = equal => {
   // Arrange
   class ReverseEtnNode extends TreeNode {
-    createParser() {
-      return new TreeNode.Parser(TreeNode, {})
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(TreeNode, {})
     }
   }
   class TestLanguage extends TreeNode {
-    createParser() {
-      return new TreeNode.Parser(ReverseEtnNode, {})
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(ReverseEtnNode, {})
     }
   }
   // Act
   // This tests against a regression, it should not throw.
-  const iHateTypeScript = TestLanguage
-  const program = new iHateTypeScript(`foo
+  const iHateTypeScriptSometimes = TestLanguage
+  const program = new iHateTypeScriptSometimes(`foo
  bar`)
   // Assert.
   equal(program.length, 1)
@@ -2262,21 +2262,21 @@ testTree.parseNode = equal => {
   // Arrange
   class LeafNode extends TreeNode {}
   class SubNode extends TreeNode {
-    createParser() {
-      return new TreeNode.Parser(SubNode, {}, [{ regex: /^leaf/, nodeConstructor: LeafNode }])
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(SubNode, {}, [{ regex: /^leaf/, parser: LeafNode }])
     }
   }
   class TestLanguageNode extends TreeNode {
-    createParser() {
-      return new TreeNode.Parser(TestLanguageNode, {}, [
-        { regex: /^tree/, nodeConstructor: TreeNode },
-        { regex: /^sub/, nodeConstructor: SubNode }
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(TestLanguageNode, {}, [
+        { regex: /^tree/, parser: TreeNode },
+        { regex: /^sub/, parser: SubNode }
       ])
     }
   }
   // Act
-  const iHateTypeScript = TestLanguageNode
-  const node = new iHateTypeScript(`foo bar
+  const iHateTypeScriptSometimes = TestLanguageNode
+  const node = new iHateTypeScriptSometimes(`foo bar
  foo bar
   tree bar
 sub
@@ -2714,8 +2714,8 @@ testTree.syntax = equal => {
     }
   }
   // Act
-  const iHateTypeScript = TestLanguage
-  const b = new iHateTypeScript(test2)
+  const iHateTypeScriptSometimes = TestLanguage
+  const b = new iHateTypeScriptSometimes(test2)
   // Assert
   equal(b.getNode("person=country").content, "USA")
   equal(a.toString(undefined, b), test2, "syntax conversion works")

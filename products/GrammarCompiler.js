@@ -25,7 +25,7 @@ class GrammarCompiler {
         result.replace(
           /}\s*$/,
           `
-if (!module.parent) new ${program.rootNodeTypeId}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+if (!module.parent) new ${program.rootParserId}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }
 `
         )
@@ -63,7 +63,7 @@ GrammarCompiler.compileGrammarFileAtPathAndReturnRootConstructor = grammarPath =
   if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
   const grammarCode = fs.readFileSync(grammarPath, "utf8")
   const grammarProgram = new HandGrammarProgram(grammarCode)
-  return grammarProgram.compileAndReturnRootConstructor()
+  return grammarProgram.compileAndReturnRootParser()
 }
 GrammarCompiler.combineFiles = globPatterns => {
   const glob = require("glob")

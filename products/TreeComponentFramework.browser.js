@@ -899,7 +899,7 @@ class AbstractTheme {
   }
 }
 class DefaultTheme extends AbstractTheme {}
-class AbstractTreeComponent extends GrammarBackedNode {
+class AbstractTreeComponentParser extends GrammarBackedNode {
   async startWhenReady() {
     if (this.isNodeJs()) return this.start()
     document.addEventListener(
@@ -1131,14 +1131,14 @@ class AbstractTreeComponent extends GrammarBackedNode {
  class ${this.getCssClassNames().join(" ")}`
   }
   getCssClassNames() {
-    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent")
+    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponentParser")
   }
   treeComponentWillMount() {}
   async treeComponentDidMount() {
-    AbstractTreeComponent._mountedTreeComponents++
+    AbstractTreeComponentParser._mountedTreeComponents++
   }
   treeComponentDidUnmount() {
-    AbstractTreeComponent._mountedTreeComponents--
+    AbstractTreeComponentParser._mountedTreeComponents--
   }
   treeComponentWillUnmount() {}
   getNewestTimeToRender() {
@@ -1150,7 +1150,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
   }
   async treeComponentDidUpdate() {}
   _getChildTreeComponents() {
-    return this.getChildrenByNodeConstructor(AbstractTreeComponent)
+    return this.getChildrenByParser(AbstractTreeComponentParser)
   }
   _hasChildrenTreeComponents() {
     return this._getChildTreeComponents().length > 0
@@ -1342,8 +1342,8 @@ ${new stumpNode(this.toStumpCode()).compile()}
     return new TreeNode(str)
   }
 }
-AbstractTreeComponent._mountedTreeComponents = 0
-class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
+AbstractTreeComponentParser._mountedTreeComponents = 0
+class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponentParser {
   toHakonCode() {
     return `.TreeComponentFrameworkDebuggerComponent
  position fixed
@@ -1381,7 +1381,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
 ${app.toString(3)}`
   }
 }
-class AbstractGithubTriangleComponent extends AbstractTreeComponent {
+class AbstractGithubTriangleComponent extends AbstractTreeComponentParser {
   constructor() {
     super(...arguments)
     this.githubLink = `https://github.com/treenotation/jtree`
@@ -1402,6 +1402,6 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   }
 }
 window.AbstractGithubTriangleComponent = AbstractGithubTriangleComponent
-window.AbstractTreeComponent = AbstractTreeComponent
+window.AbstractTreeComponentParser = AbstractTreeComponentParser
 window.WillowBrowser = WillowBrowser
 window.TreeComponentFrameworkDebuggerComponent = TreeComponentFrameworkDebuggerComponent

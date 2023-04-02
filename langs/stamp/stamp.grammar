@@ -19,10 +19,10 @@ keywordCell
  highlightScope keyword.control
 
 // Line parsers
-stampNode
+stampParser
  root
  description A prefix Tree Language for creating distributable text template files that expand to folders and files.
- catchAllNodeType errorNode
+ catchAllParser errorParser
  javascript
   async executeSeries(parentDir) {
    const length = this.length
@@ -45,10 +45,10 @@ stampNode
    await this.executeSeries(parentDir)
   }
   static dirToStampWithContents(absPathWithoutEndingSlash) {
-    return stampNode._dirToStampFn(absPathWithoutEndingSlash, "content")
+    return stampParser._dirToStampFn(absPathWithoutEndingSlash, "content")
   }
   static dirToStamp(absPathWithoutEndingSlash) {
-    return stampNode._dirToStampFn(absPathWithoutEndingSlash, "list")
+    return stampParser._dirToStampFn(absPathWithoutEndingSlash, "list")
   }
   static _dirToStampFn(absPathWithoutEndingSlash, output) {
    const fs = require("fs")
@@ -83,25 +83,25 @@ stampNode
    const pathStartIndex = rootFolderPath.length + 1
    return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
   }
- inScope hashbangNode folderNode fileNode
-hashbangNode
+ inScope hashbangParser folderParser fileParser
+hashbangParser
  crux #!
  catchAllCellType commentCell
  cells commentCell
-catchAllAnyLineNode
+catchAllAnyLineParser
  catchAllCellType anyCell
- catchAllNodeType catchAllAnyLineNode
+ catchAllParser catchAllAnyLineParser
  cells anyCell
-dataNode
- catchAllNodeType catchAllAnyLineNode
+dataParser
+ catchAllParser catchAllAnyLineParser
  cells keywordCell
  crux data
-errorNode
- baseNodeType errorNode
-executableNode
+errorParser
+ baseParser errorParser
+executableParser
  cells keywordCell
  crux executable
-fileNode
+fileParser
  cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {
@@ -122,9 +122,9 @@ fileNode
    const isExecutable = this.has("executable") // todo: allow for all file permissions?
    if (isExecutable) fs.chmodSync(fullPath, "755")
   }
- inScope dataNode executableNode
+ inScope dataParser executableParser
  crux file
-folderNode
+folderParser
  cells keywordCell filepathCell
  javascript
   compileToBash(parentDir) {

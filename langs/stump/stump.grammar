@@ -24,11 +24,11 @@ bernKeywordCell
  extends keywordCell
 
 // Line parsers
-stumpNode
+stumpParser
  root
  description A prefix Tree Language that compiles to HTML.
- catchAllNodeType errorNode
- inScope htmlTagNode blankLineNode
+ catchAllParser errorParser
+ inScope htmlTagParser blankLineParser
  example
   div
    h1 hello world
@@ -40,7 +40,7 @@ stumpNode
   _getHtmlJoinByCharacter() {
     return ""
   }
-blankLineNode
+blankLineParser
  pattern ^$
  tags doNotSynthesize
  cells emptyCell
@@ -49,12 +49,12 @@ blankLineNode
    return ""
   }
   getTextContent() {return ""}
-htmlTagNode
- inScope bernNode htmlTagNode htmlAttributeNode blankLineNode
+htmlTagParser
+ inScope bernParser htmlTagParser htmlAttributeParser blankLineParser
  catchAllCellType anyHtmlContentCell
  cells htmlTagNameCell
  javascript
-  isHtmlTagNode = true
+  isHtmlTagParser = true
   getTag() {
    // we need to remove the "Tag" bit to handle the style and title attribute/tag conflict.
    const firstWord = this.firstWord
@@ -83,25 +83,25 @@ htmlTagNode
   get domElement() {
     var elem = document.createElement(this.getTag())
     elem.setAttribute("stumpUid", this._getUid())
-    this.filter(node => node.isAttributeNode)
+    this.filter(node => node.isAttributeParser)
       .forEach(child => elem.setAttribute(child.firstWord, child.content))
     elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
-    this.filter(node => node.isHtmlTagNode)
+    this.filter(node => node.isHtmlTagParser)
       .forEach(child => elem.appendChild(child.domElement))
     return elem
   }
   _toHtml(indentCount, withSuid) {
    const tag = this.getTag()
    const children = this.map(child => child._toHtml(indentCount + 1, withSuid)).join("")
-   const attributesStr = this.filter(node => node.isAttributeNode)
+   const attributesStr = this.filter(node => node.isAttributeParser)
     .map(child => child.getAttribute())
     .join("")
    const indent = " ".repeat(indentCount)
    const collapse = this.shouldCollapse()
-   const indentForChildNodes = !collapse && this.getChildInstancesOfNodeTypeId("htmlTagNode").length > 0
+   const indentForChildParsers = !collapse && this.getChildInstancesOfParserId("htmlTagParser").length > 0
    const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
    const oneLiner = this._getOneLiner()
-   return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildNodes ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
+   return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildParsers ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
   }
   removeCssStumpNode() {
    return this.removeStumpNode()
@@ -114,28 +114,28 @@ htmlTagNode
    return this.topDownArray.find(node => node._getUid() === guid)
   }
   addClassToStumpNode(className) {
-   const classNode = this.touchNode("class")
-   const words = classNode.getWordsFrom(1)
+   const classParser = this.touchNode("class")
+   const words = classParser.getWordsFrom(1)
    // note: we call add on shadow regardless, because at the moment stump may have gotten out of
    // sync with shadow, if things modified the dom. todo: cleanup.
    this.getShadow().addClassToShadow(className)
    if (words.includes(className)) return this
    words.push(className)
-   classNode.setContent(words.join(this.wordBreakSymbol))
+   classParser.setContent(words.join(this.wordBreakSymbol))
    return this
   }
   removeClassFromStumpNode(className) {
-   const classNode = this.getNode("class")
-   if (!classNode) return this
-   const newClasses = classNode.words.filter(word => word !== className)
-   if (!newClasses.length) classNode.destroy()
-   else classNode.setContent(newClasses.join(" "))
+   const classParser = this.getNode("class")
+   if (!classParser) return this
+   const newClasses = classParser.words.filter(word => word !== className)
+   if (!newClasses.length) classParser.destroy()
+   else classParser.setContent(newClasses.join(" "))
    this.getShadow().removeClassFromShadow(className)
    return this
   }
   stumpNodeHasClass(className) {
-   const classNode = this.getNode("class")
-   return classNode && classNode.words.includes(className) ? true : false
+   const classParser = this.getNode("class")
+   return classParser && classParser.words.includes(className) ? true : false
   }
   isStumpNodeCheckbox() {
    return this.get("type") === "checkbox"
@@ -153,8 +153,8 @@ htmlTagNode
   insertChildNode(text, index) {
    const singleNode = new TreeNode(text).getChildren()[0]
    const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-   const stumpNodeIndex = this.filter(node => node.isHtmlTagNode).indexOf(newNode)
-   this.getShadow().insertHtmlNode(newNode, stumpNodeIndex)
+   const stumpParserIndex = this.filter(node => node.isHtmlTagParser).indexOf(newNode)
+   this.getShadow().insertHtmlNode(newNode, stumpParserIndex)
    return newNode
   }
   isInputType() {
@@ -175,18 +175,18 @@ htmlTagNode
    return this._findStumpNodesByBase(firstWord)[0]
   }
   _findStumpNodesByBase(firstWord) {
-   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.firstWord === firstWord)
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.firstWord === firstWord)
   }
   hasLine(line) {
    return this.getChildren().some(node => node.getLine() === line)
   }
   findStumpNodesByChild(line) {
-   return this.topDownArray.filter(node => node.doesExtend("htmlTagNode") && node.hasLine(line))
+   return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.hasLine(line))
   }
   findStumpNodesWithClass(className) {
    return this.topDownArray.filter(
     node =>
-     node.doesExtend("htmlTagNode") &&
+     node.doesExtend("htmlTagParser") &&
      node.has("class") &&
      node
       .getNode("class")
@@ -219,17 +219,17 @@ htmlTagNode
   get asHtml() {
    return this._toHtml()
   }
-errorNode
- baseNodeType errorNode
-componentDefinitionNode
- extends htmlTagNode
+errorParser
+ baseParser errorParser
+componentDefinitionParser
+ extends htmlTagParser
  pattern ^[a-zA-Z0-9_]+Component
  cells componentTagNameCell
  javascript
   getTag() {
    return "div"
   }
-htmlAttributeNode
+htmlAttributeParser
  javascript
   _toHtml() {
    return ""
@@ -238,29 +238,29 @@ htmlAttributeNode
   getAttribute() {
    return ` ${this.firstWord}="${this.content}"`
   }
- boolean isAttributeNode true
+ boolean isAttributeParser true
  boolean isTileAttribute true
- catchAllNodeType errorNode
+ catchAllParser errorParser
  catchAllCellType attributeValueCell
  cells htmlAttributeNameCell
 stumpExtendedAttributeNameCell
  extends htmlAttributeNameCell
  enum collapse blurCommand changeCommand clickCommand contextMenuCommand doubleClickCommand keyUpCommand lineClickCommand lineShiftClickCommand shiftClickCommand
-stumpExtendedAttributeNode
- description Node types not present in HTML but included in stump.
- extends htmlAttributeNode
+stumpExtendedAttributeParser
+ description Parser types not present in HTML but included in stump.
+ extends htmlAttributeParser
  cells stumpExtendedAttributeNameCell
-lineOfHtmlContentNode
+lineOfHtmlContentParser
  boolean isTileAttribute true
- catchAllNodeType lineOfHtmlContentNode
+ catchAllParser lineOfHtmlContentParser
  catchAllCellType anyHtmlContentCell
  javascript
   getTextContent() {return this.getLine()}
-bernNode
+bernParser
  boolean isTileAttribute true
  // todo Rename this node type
  description This is a node where you can put any HTML content. It is called "bern" until someone comes up with a better name.
- catchAllNodeType lineOfHtmlContentNode
+ catchAllParser lineOfHtmlContentParser
  javascript
   _toHtml() {
    return this.childrenToString()

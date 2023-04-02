@@ -1,7 +1,7 @@
 nodeProduct
  outputFileName TreeComponentFramework.node.js
  combineTypeScriptFiles products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
- insertLastLine module.exports = { AbstractTreeComponent, WillowBrowser, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
+ insertLastLine module.exports = { AbstractTreeComponentParser, WillowBrowser, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
 nodeProduct
  outputFileName jtable.node.js
  removeAll const { Utils } = require("../products/Utils.js")
@@ -15,7 +15,7 @@ nodeProduct
  combineTypeScriptFiles products/treeNotationTypes.ts treeNode/AbstractNode.node.ts treeNode/TreeNode.ts
 nodeProduct
  outputFileName GrammarLanguage.js
- insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError, UnknownGrammarProgram }
+ insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownParserError, UnknownGrammarProgram }
  combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarLanguage.ts
 nodeProduct
  outputFileName TestRacer.js

@@ -1,17 +1,17 @@
 {
-  class grammarNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        catchAllErrorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "//": slashCommentNode }),
+  class grammarParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        catchAllErrorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }),
         [
-          { regex: /^$/, nodeConstructor: blankLineNode },
-          { regex: /^[a-zA-Z0-9_]+Cell$/, nodeConstructor: cellTypeDefinitionNode },
-          { regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }
+          { regex: /^$/, parser: blankLineParser },
+          { regex: /^[a-zA-Z0-9_]+Cell$/, parser: cellTypeDefinitionParser },
+          { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }
         ]
       )
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Add imports nodeTypes, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
+    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Add imports parsers, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 // todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 // todo Add enumOption root level type?
 // todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
@@ -23,10 +23,10 @@ javascriptSafeAlphaNumericIdentifierCell
  regex [a-zA-Z0-9_]+
  reservedWords enum extends function static if while export return class for default require var let const new
 anyCell
-baseNodeTypesCell
- description There are a few classes of special nodeTypes. BlobNodes don't have their children parsed. Error nodes always report an error.
+baseParsersCell
+ description There are a few classes of special parsers. BlobParsers don't have their children parsed. Error nodes always report an error.
  // todo Remove?
- enum blobNode errorNode
+ enum blobParser errorParser
  highlightScope variable.parameter
 boolCell
  enum true false
@@ -72,12 +72,12 @@ intCell
 javascriptCodeCell
 lowercaseCell
  regex [a-z]+
-nodeTypeIdCell
- examples commentNode addNode
- description This doubles as the class name in Javascript. If this begins with \`abstract\`, then the node type will be considered an abstract nodeType, which cannot be used by itself but provides common functionality to nodeTypes that extend it.
+parserIdCell
+ examples commentParser addParser
+ description This doubles as the class name in Javascript. If this begins with \`abstract\`, then the node type will be considered an abstract parser, which cannot be used by itself but provides common functionality to parsers that extend it.
  highlightScope variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
- enumFromCellTypes nodeTypeIdCell
+ enumFromCellTypes parserIdCell
 propertyKeywordCell
  highlightScope constant.language
 regexCell
@@ -111,160 +111,160 @@ commentCell
  highlightScope comment
 
 // Line Parsers
-grammarNode
+grammarParser
  root
  description Grammar is a Tree Language for creating new Tree Languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Grammar uses both postfix and prefix language features.
- catchAllNodeType catchAllErrorNode
+ catchAllParser catchAllErrorParser
  extensions grammar gram
  example A grammar that parses anything:
-  latinNode
+  latinParser
    root
-   catchAllNodeType anyNode
-  anyNode
-   baseNodeType blobNode
+   catchAllParser anyParser
+  anyParser
+   baseParser blobParser
  version 5.0.0
- inScope slashCommentNode blankLineNode cellTypeDefinitionNode nodeTypeDefinitionNode
-blankLineNode
+ inScope slashCommentParser blankLineParser cellTypeDefinitionParser parserDefinitionParser
+blankLineParser
  description Blank lines are OK in Grammar.
  cells blankCell
  pattern ^$
  tags doNotSynthesize
-abstractCompilerRuleNode
+abstractCompilerRuleParser
  catchAllCellType anyCell
  cells propertyKeywordCell
-closeChildrenNode
- extends abstractCompilerRuleNode
+closeChildrenParser
+ extends abstractCompilerRuleParser
  description When compiling a parent node to a string, this string is appended to the compiled and joined children. Default is blank.
  cruxFromId
-indentCharacterNode
- extends abstractCompilerRuleNode
+indentCharacterParser
+ extends abstractCompilerRuleParser
  description You can change the indent character for compiled children. Default is a space.
  cruxFromId
-catchAllCellDelimiterNode
+catchAllCellDelimiterParser
  description If a node has a catchAllCell, this is the string delimiter that will be used to join those cells. Default is comma.
- extends abstractCompilerRuleNode
+ extends abstractCompilerRuleParser
  cruxFromId
-openChildrenNode
- extends abstractCompilerRuleNode
+openChildrenParser
+ extends abstractCompilerRuleParser
  description When compiling a parent node to a string, this string is prepended to the compiled and joined children. Default is blank.
  cruxFromId
-stringTemplateNode
- extends abstractCompilerRuleNode
+stringTemplateParser
+ extends abstractCompilerRuleParser
  description This template string is used to compile this line, and accepts strings of the format: const var = {someCellId}
  cruxFromId
-joinChildrenWithNode
+joinChildrenWithParser
  description When compiling a parent node to a string, child nodes are compiled to strings and joined by this character. Default is a newline.
- extends abstractCompilerRuleNode
+ extends abstractCompilerRuleParser
  cruxFromId
-abstractConstantNode
- description Assign a constant to a nodeType which will be available in the compiled nodeType classes.
+abstractConstantParser
+ description Assign a constant to a parser which will be available in the compiled parser classes.
  cells propertyKeywordCell
  cruxFromId
-booleanNode
+booleanParser
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType boolCell
- extends abstractConstantNode
-floatNode
+ extends abstractConstantParser
+floatParser
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType floatCell
- extends abstractConstantNode
-intNode
+ extends abstractConstantParser
+intParser
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType intCell
- extends abstractConstantNode
-stringNode
+ extends abstractConstantParser
+stringParser
  cells propertyKeywordCell constantIdentifierCell
  catchAllCellType stringCell
- catchAllNodeType catchAllMultilineStringConstantNode
- extends abstractConstantNode
-abstractNodeTypeRuleNode
+ catchAllParser catchAllMultilineStringConstantParser
+ extends abstractConstantParser
+abstractParserRuleParser
  single
  cells propertyKeywordCell
-compilesToNode
+compilesToParser
  cells propertyKeywordCell fileExtensionCell
- extends abstractNodeTypeRuleNode
- description Optionally specify a file extension that will be used when compiling your language to a file. Generally used on nodeTypes marked root.
+ extends abstractParserRuleParser
+ description Optionally specify a file extension that will be used when compiling your language to a file. Generally used on parsers marked root.
  cruxFromId
-extensionsNode
- extends abstractNodeTypeRuleNode
+extensionsParser
+ extends abstractParserRuleParser
  catchAllCellType fileExtensionCell
- description File extensions of your language. Generally used for nodeTypes marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's nodeTypeId will be used as the default file extension.
+ description File extensions of your language. Generally used for parsers marked "root". Sometimes your language might have multiple extensions. If you don't add this, the root node's parserId will be used as the default file extension.
  cruxFromId
-versionNode
+versionParser
  cells propertyKeywordCell semanticVersionCell
- description Version number of your language. Generally used on nodeTypes marked root.
- extends abstractNodeTypeRuleNode
+ description Version number of your language. Generally used on parsers marked root.
+ extends abstractParserRuleParser
  cruxFromId
-abstractNonTerminalNodeTypeRuleNode
- extends abstractNodeTypeRuleNode
-baseNodeTypeNode
- cells propertyKeywordCell baseNodeTypesCell
- description In rare cases with untyped content you can use a blobNode, for now, to skip parsing for performance gains. The base errorNode will report errors when parsed. Use that if you don't want to implement your own error nodeType.
- extends abstractNodeTypeRuleNode
+abstractNonTerminalParserRuleParser
+ extends abstractParserRuleParser
+baseParserParser
+ cells propertyKeywordCell baseParsersCell
+ description In rare cases with untyped content you can use a blobParser, for now, to skip parsing for performance gains. The base errorParser will report errors when parsed. Use that if you don't want to implement your own error parser.
+ extends abstractParserRuleParser
  cruxFromId
-catchAllCellTypeNode
+catchAllCellTypeParser
  cells propertyKeywordCell cellTypeIdCell
- description Aka 'listCellType'. Use this when the value in a key/value pair is a list. If there are extra words in the node's line, parse these words as this type. Often used with \`listDelimiterNode\`.
- extends abstractNodeTypeRuleNode
+ description Aka 'listCellType'. Use this when the value in a key/value pair is a list. If there are extra words in the node's line, parse these words as this type. Often used with \`listDelimiterParser\`.
+ extends abstractParserRuleParser
  cruxFromId
-cellParserNode
+cellParserParser
  cells propertyKeywordCell cellParserCell
  description prefix/postfix/omnifix parsing strategy. If missing, defaults to prefix.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
-catchAllNodeTypeNode
- description If a nodeType is not found in the inScope list, instantiate this type of node instead.
- cells propertyKeywordCell nodeTypeIdCell
- extends abstractNodeTypeRuleNode
+catchAllParserParser
+ description If a parser is not found in the inScope list, instantiate this type of node instead.
+ cells propertyKeywordCell parserIdCell
+ extends abstractParserRuleParser
  cruxFromId
-cellsNode
+cellsParser
  catchAllCellType cellTypeIdCell
  description Describes the word type of each word in the line.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
-compilerNode
+compilerParser
  // todo Remove this and its children?
- inScope stringTemplateNode catchAllCellDelimiterNode openChildrenNode closeChildrenNode indentCharacterNode joinChildrenWithNode
- extends abstractNodeTypeRuleNode
+ inScope stringTemplateParser catchAllCellDelimiterParser openChildrenParser closeChildrenParser indentCharacterParser joinChildrenWithParser
+ extends abstractParserRuleParser
  cruxFromId
-descriptionNode
+descriptionParser
  catchAllCellType stringCell
  // todo Should we make this multiline?
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
-exampleNode
+exampleParser
  // todo Should this just be a "string" constant on nodes?
  description Provide a one line description and then a snippet of example code.
  catchAllCellType exampleAnyCell
- catchAllNodeType catchAllExampleLineNode
- extends abstractNodeTypeRuleNode
+ catchAllParser catchAllExampleLineParser
+ extends abstractParserRuleParser
  cruxFromId
-sortTemplateNode
+sortTemplateParser
  description A one liner for describing how the content of the node should be sorted. Put a blank cell to insert a line break between sections.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
  catchAllCellType anyCell
-extendsNodeTypeNode
+extendsParserParser
  crux extends
- description nodeType definitions can extend others.
+ description parser definitions can extend others.
  // todo Add mixin support in addition to/in place of extends?
- cells propertyKeywordCell nodeTypeIdCell
- extends abstractNodeTypeRuleNode
-frequencyNode
- // todo Remove this nodeType. Switch to conditional frequencies.
+ cells propertyKeywordCell parserIdCell
+ extends abstractParserRuleParser
+frequencyParser
+ // todo Remove this parser. Switch to conditional frequencies.
  cells propertyKeywordCell floatCell
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
-inScopeNode
- description A list of possible child nodeTypes for a node.
- catchAllCellType nodeTypeIdCell
- extends abstractNodeTypeRuleNode
+inScopeParser
+ description A list of possible child parsers for a node.
+ catchAllCellType parserIdCell
+ extends abstractParserRuleParser
  cruxFromId
-javascriptNode
+javascriptParser
  // todo Urgently need to get submode syntax highlighting running! (And eventually LSP)
  description Provide raw javascript code that will be inserted into a node type's class.
- catchAllNodeType catchAllJavascriptCodeLineNode
- extends abstractNodeTypeRuleNode
+ catchAllParser catchAllJavascriptCodeLineParser
+ extends abstractParserRuleParser
  javascript
   format() {
    if (this.isNodeJs()) {
@@ -281,148 +281,148 @@ javascriptNode
    return this
   }
  cruxFromId
-abstractParseRuleNode
+abstractParseRuleParser
  description Each node should have a pattern that it matches on unless it's a catch all node.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
-cruxNode
+cruxParser
  cells propertyKeywordCell stringCell
  description Use this property for prefix languages where the first word is the keyword.
- extends abstractParseRuleNode
-cruxFromIdNode
+ extends abstractParseRuleParser
+cruxFromIdParser
  cells propertyKeywordCell
- description Include this to derive the crux word from the node type id, for example 'fooNode' would have crux of 'foo'.
- extends abstractParseRuleNode
-patternNode
+ description Include this to derive the crux word from the node type id, for example 'fooParser' would have crux of 'foo'.
+ extends abstractParseRuleParser
+patternParser
  catchAllCellType regexCell
- description If present, this regex will be used to determine the nodeType instead of the cruxNode.
- extends abstractParseRuleNode
-requiredNode
+ description If present, this regex will be used to determine the parser instead of the cruxParser.
+ extends abstractParseRuleParser
+requiredParser
  description If present, the parent node will have an error if one of these nodes is not provided.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
-abstractValidationRuleNode
- extends abstractNodeTypeRuleNode
+abstractValidationRuleParser
+ extends abstractParserRuleParser
  cruxFromId
  catchAllCellType boolCell
-singleNode
+singleParser
  description If present and there are more than 1 of these nodes on the parent, an error will be present. Can be overridden by a child class by setting to false.
- extends abstractValidationRuleNode
-uniqueLineNode
+ extends abstractValidationRuleParser
+uniqueLineParser
  description If present and there are more than 1 of these lines on the parent, an error will be present. Can be overridden by a child class by setting to false.
- extends abstractValidationRuleNode
-uniqueFirstWordNode
- description For catch all nodeTypes or pattern nodes, use this to indicate the first words should be unique.
- extends abstractValidationRuleNode
-listDelimiterNode
+ extends abstractValidationRuleParser
+uniqueFirstWordParser
+ description For catch all parsers or pattern nodes, use this to indicate the first words should be unique.
+ extends abstractValidationRuleParser
+listDelimiterParser
  description If present will serialize the content of the node to an array of strings split on the provided delimiter.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
-contentKeyNode
+contentKeyParser
  description Advanced keyword to help with isomorphic JSON serialization/deserialization. If present will serialize the node to an object and set a property with this key and the value set to the node's content.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
-childrenKeyNode
+childrenKeyParser
  description Advanced keyword to help with serialization/deserialization of blobs. If present will serialize the node to an object and set a property with this key and the value set to the node's children.
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
  catchAllCellType stringCell
-tagsNode
+tagsParser
  catchAllCellType tagCell
- extends abstractNodeTypeRuleNode
+ extends abstractParserRuleParser
  cruxFromId
-catchAllErrorNode
- baseNodeType errorNode
-catchAllExampleLineNode
+catchAllErrorParser
+ baseParser errorParser
+catchAllExampleLineParser
  catchAllCellType exampleAnyCell
- catchAllNodeType catchAllExampleLineNode
+ catchAllParser catchAllExampleLineParser
  cells exampleAnyCell
-catchAllJavascriptCodeLineNode
+catchAllJavascriptCodeLineParser
  catchAllCellType javascriptCodeCell
- catchAllNodeType catchAllJavascriptCodeLineNode
-catchAllMultilineStringConstantNode
+ catchAllParser catchAllJavascriptCodeLineParser
+catchAllMultilineStringConstantParser
  description String constants can span multiple lines.
  catchAllCellType stringCell
- catchAllNodeType catchAllMultilineStringConstantNode
+ catchAllParser catchAllMultilineStringConstantParser
  cells stringCell
-cellTypeDefinitionNode
+cellTypeDefinitionParser
  // todo Generate a class for each cell type?
  // todo Allow abstract cell types?
  // todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Cell$
- inScope highlightScopeNode regexNode reservedWordsNode enumFromCellTypesNode descriptionNode enumNode slashCommentNode extendsCellTypeNode examplesNode cellMinNode cellMaxNode
+ inScope highlightScopeParser regexParser reservedWordsParser enumFromCellTypesParser descriptionParser enumParser slashCommentParser extendsCellTypeParser examplesParser cellMinParser cellMaxParser
  cells cellTypeIdCell
-enumFromCellTypesNode
+enumFromCellTypesParser
  catchAllCellType cellTypeIdCell
  cells cellPropertyNameCell
  cruxFromId
-enumNode
+enumParser
  cruxFromId
  catchAllCellType enumOptionCell
  cells cellPropertyNameCell
-examplesNode
+examplesParser
  description If the domain of possible cell values is large, such as a string type, it can help certain methods—such as program synthesis—to provide a few examples.
  cruxFromId
  catchAllCellType cellExampleCell
  cells cellPropertyNameCell
-cellMinNode
+cellMinParser
  description For numeric cell types you can specify a min
  crux min
  cells cellPropertyNameCell numericCell
-cellMaxNode
+cellMaxParser
  description For numeric cell types you can specify a max
  crux max
  cells cellPropertyNameCell numericCell
-highlightScopeNode
+highlightScopeParser
  cells propertyKeywordCell scopeNameCell
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
  cruxFromId
-rootFlagNode
+rootFlagParser
  crux root
- description Mark a nodeType as root if it is the root of your programming language. The nodeTypeId will be the name of your language. The nodeTypeId will also serve as the default file extension, if you don't specify another. If more than 1 nodeType is marked as "root", the last one wins.
+ description Mark a parser as root if it is the root of your programming language. The parserId will be the name of your language. The parserId will also serve as the default file extension, if you don't specify another. If more than 1 parser is marked as "root", the last one wins.
  cells propertyKeywordCell
-nodeTypeDefinitionNode
+parserDefinitionParser
  // todo Add multiple dispatch?
- pattern ^[a-zA-Z0-9_]+Node$
- description Node types are a core unit of your language. They translate to 1 class per nodeType. Examples of nodeType would be "header", "person", "if", "+", "define", etc.
- catchAllNodeType catchAllErrorNode
- inScope rootFlagNode abstractNodeTypeRuleNode abstractConstantNode slashCommentNode nodeTypeDefinitionNode
- cells nodeTypeIdCell
-_extendsJsClassNode
- extends abstractNodeTypeRuleNode
+ pattern ^[a-zA-Z0-9_]+Parser$
+ description Parser types are a core unit of your language. They translate to 1 class per parser. Examples of parser would be "header", "person", "if", "+", "define", etc.
+ catchAllParser catchAllErrorParser
+ inScope rootFlagParser abstractParserRuleParser abstractConstantParser slashCommentParser parserDefinitionParser
+ cells parserIdCell
+_extendsJsClassParser
+ extends abstractParserRuleParser
  // todo remove
  description Deprecated
  cells propertyKeywordCell anyCell
  cruxFromId
-_rootNodeJsHeaderNode
- extends abstractNodeTypeRuleNode
+_rootParserJsHeaderParser
+ extends abstractParserRuleParser
  // todo remove
  description Deprecated
- catchAllNodeType catchAllJavascriptCodeLineNode
+ catchAllParser catchAllJavascriptCodeLineParser
  cruxFromId
-regexNode
+regexParser
  catchAllCellType regexCell
  description The word must match this pattern or it shall be marked as an error.
  single
  cells cellPropertyNameCell
  cruxFromId
-reservedWordsNode
+reservedWordsParser
  single
  description A list of words that a cell cannot contain.
  catchAllCellType reservedWordCell
  cells cellPropertyNameCell
  cruxFromId
-commentLineNode
+commentLineParser
  catchAllCellType commentCell
-slashCommentNode
+slashCommentParser
  description A comment.
  catchAllCellType commentCell
  crux //
- catchAllNodeType commentLineNode
-extendsCellTypeNode
+ catchAllParser commentLineParser
+extendsCellTypeParser
  crux extends
  description cellType definitions can extend others.
  // todo Add mixin support in addition to/in place of extends?
@@ -431,16 +431,16 @@ extendsCellTypeNode
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = grammarNode
+    static rootParser = grammarParser
   }
 
-  class blankLineNode extends GrammarBackedNode {
+  class blankLineParser extends GrammarBackedNode {
     get blankCell() {
       return this.getWord(0)
     }
   }
 
-  class abstractCompilerRuleNode extends GrammarBackedNode {
+  class abstractCompilerRuleParser extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -449,25 +449,25 @@ extendsCellTypeNode
     }
   }
 
-  class closeChildrenNode extends abstractCompilerRuleNode {}
+  class closeChildrenParser extends abstractCompilerRuleParser {}
 
-  class indentCharacterNode extends abstractCompilerRuleNode {}
+  class indentCharacterParser extends abstractCompilerRuleParser {}
 
-  class catchAllCellDelimiterNode extends abstractCompilerRuleNode {}
+  class catchAllCellDelimiterParser extends abstractCompilerRuleParser {}
 
-  class openChildrenNode extends abstractCompilerRuleNode {}
+  class openChildrenParser extends abstractCompilerRuleParser {}
 
-  class stringTemplateNode extends abstractCompilerRuleNode {}
+  class stringTemplateParser extends abstractCompilerRuleParser {}
 
-  class joinChildrenWithNode extends abstractCompilerRuleNode {}
+  class joinChildrenWithParser extends abstractCompilerRuleParser {}
 
-  class abstractConstantNode extends GrammarBackedNode {
+  class abstractConstantParser extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class booleanNode extends abstractConstantNode {
+  class booleanParser extends abstractConstantParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -479,7 +479,7 @@ extendsCellTypeNode
     }
   }
 
-  class floatNode extends abstractConstantNode {
+  class floatParser extends abstractConstantParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -491,7 +491,7 @@ extendsCellTypeNode
     }
   }
 
-  class intNode extends abstractConstantNode {
+  class intParser extends abstractConstantParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -503,9 +503,9 @@ extendsCellTypeNode
     }
   }
 
-  class stringNode extends abstractConstantNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
+  class stringParser extends abstractConstantParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get propertyKeywordCell() {
       return this.getWord(0)
@@ -518,13 +518,13 @@ extendsCellTypeNode
     }
   }
 
-  class abstractNodeTypeRuleNode extends GrammarBackedNode {
+  class abstractParserRuleParser extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class compilesToNode extends abstractNodeTypeRuleNode {
+  class compilesToParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -533,13 +533,13 @@ extendsCellTypeNode
     }
   }
 
-  class extensionsNode extends abstractNodeTypeRuleNode {
+  class extensionsParser extends abstractParserRuleParser {
     get fileExtensionCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class versionNode extends abstractNodeTypeRuleNode {
+  class versionParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -548,18 +548,18 @@ extendsCellTypeNode
     }
   }
 
-  class abstractNonTerminalNodeTypeRuleNode extends abstractNodeTypeRuleNode {}
+  class abstractNonTerminalParserRuleParser extends abstractParserRuleParser {}
 
-  class baseNodeTypeNode extends abstractNodeTypeRuleNode {
+  class baseParserParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
-    get baseNodeTypesCell() {
+    get baseParsersCell() {
       return this.getWord(1)
     }
   }
 
-  class catchAllCellTypeNode extends abstractNodeTypeRuleNode {
+  class catchAllCellTypeParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -568,7 +568,7 @@ extendsCellTypeNode
     }
   }
 
-  class cellParserNode extends abstractNodeTypeRuleNode {
+  class cellParserParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -577,69 +577,69 @@ extendsCellTypeNode
     }
   }
 
-  class catchAllNodeTypeNode extends abstractNodeTypeRuleNode {
+  class catchAllParserParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
-    get nodeTypeIdCell() {
+    get parserIdCell() {
       return this.getWord(1)
     }
   }
 
-  class cellsNode extends abstractNodeTypeRuleNode {
+  class cellsParser extends abstractParserRuleParser {
     get cellTypeIdCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class compilerNode extends abstractNodeTypeRuleNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class compilerParser extends abstractParserRuleParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          closeChildren: closeChildrenNode,
-          indentCharacter: indentCharacterNode,
-          catchAllCellDelimiter: catchAllCellDelimiterNode,
-          openChildren: openChildrenNode,
-          stringTemplate: stringTemplateNode,
-          joinChildrenWith: joinChildrenWithNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          closeChildren: closeChildrenParser,
+          indentCharacter: indentCharacterParser,
+          catchAllCellDelimiter: catchAllCellDelimiterParser,
+          openChildren: openChildrenParser,
+          stringTemplate: stringTemplateParser,
+          joinChildrenWith: joinChildrenWithParser
         }),
         undefined
       )
     }
   }
 
-  class descriptionNode extends abstractNodeTypeRuleNode {
+  class descriptionParser extends abstractParserRuleParser {
     get stringCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class exampleNode extends abstractNodeTypeRuleNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
+  class exampleParser extends abstractParserRuleParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class sortTemplateNode extends abstractNodeTypeRuleNode {
+  class sortTemplateParser extends abstractParserRuleParser {
     get anyCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class extendsNodeTypeNode extends abstractNodeTypeRuleNode {
+  class extendsParserParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
-    get nodeTypeIdCell() {
+    get parserIdCell() {
       return this.getWord(1)
     }
   }
 
-  class frequencyNode extends abstractNodeTypeRuleNode {
+  class frequencyParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -648,15 +648,15 @@ extendsCellTypeNode
     }
   }
 
-  class inScopeNode extends abstractNodeTypeRuleNode {
-    get nodeTypeIdCell() {
+  class inScopeParser extends abstractParserRuleParser {
+    get parserIdCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class javascriptNode extends abstractNodeTypeRuleNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+  class javascriptParser extends abstractParserRuleParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
     format() {
       if (this.isNodeJs()) {
@@ -674,9 +674,9 @@ extendsCellTypeNode
     }
   }
 
-  class abstractParseRuleNode extends abstractNodeTypeRuleNode {}
+  class abstractParseRuleParser extends abstractParserRuleParser {}
 
-  class cruxNode extends abstractParseRuleNode {
+  class cruxParser extends abstractParseRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -685,65 +685,65 @@ extendsCellTypeNode
     }
   }
 
-  class cruxFromIdNode extends abstractParseRuleNode {
+  class cruxFromIdParser extends abstractParseRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class patternNode extends abstractParseRuleNode {
+  class patternParser extends abstractParseRuleParser {
     get regexCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class requiredNode extends abstractNodeTypeRuleNode {}
+  class requiredParser extends abstractParserRuleParser {}
 
-  class abstractValidationRuleNode extends abstractNodeTypeRuleNode {
+  class abstractValidationRuleParser extends abstractParserRuleParser {
     get boolCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class singleNode extends abstractValidationRuleNode {}
+  class singleParser extends abstractValidationRuleParser {}
 
-  class uniqueLineNode extends abstractValidationRuleNode {}
+  class uniqueLineParser extends abstractValidationRuleParser {}
 
-  class uniqueFirstWordNode extends abstractValidationRuleNode {}
+  class uniqueFirstWordParser extends abstractValidationRuleParser {}
 
-  class listDelimiterNode extends abstractNodeTypeRuleNode {
+  class listDelimiterParser extends abstractParserRuleParser {
     get stringCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class contentKeyNode extends abstractNodeTypeRuleNode {
+  class contentKeyParser extends abstractParserRuleParser {
     get stringCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class childrenKeyNode extends abstractNodeTypeRuleNode {
+  class childrenKeyParser extends abstractParserRuleParser {
     get stringCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class tagsNode extends abstractNodeTypeRuleNode {
+  class tagsParser extends abstractParserRuleParser {
     get tagCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class catchAllErrorNode extends GrammarBackedNode {
+  class catchAllErrorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class catchAllExampleLineNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllExampleLineNode, undefined, undefined)
+  class catchAllExampleLineParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
     get exampleAnyCell() {
       return this.getWord(0)
@@ -753,18 +753,18 @@ extendsCellTypeNode
     }
   }
 
-  class catchAllJavascriptCodeLineNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+  class catchAllJavascriptCodeLineParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
     get javascriptCodeCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class catchAllMultilineStringConstantNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllMultilineStringConstantNode, undefined, undefined)
+  class catchAllMultilineStringConstantParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
     get stringCell() {
       return this.getWord(0)
@@ -774,22 +774,22 @@ extendsCellTypeNode
     }
   }
 
-  class cellTypeDefinitionNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class cellTypeDefinitionParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          description: descriptionNode,
-          enumFromCellTypes: enumFromCellTypesNode,
-          enum: enumNode,
-          examples: examplesNode,
-          min: cellMinNode,
-          max: cellMaxNode,
-          highlightScope: highlightScopeNode,
-          regex: regexNode,
-          reservedWords: reservedWordsNode,
-          "//": slashCommentNode,
-          extends: extendsCellTypeNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          description: descriptionParser,
+          enumFromCellTypes: enumFromCellTypesParser,
+          enum: enumParser,
+          examples: examplesParser,
+          min: cellMinParser,
+          max: cellMaxParser,
+          highlightScope: highlightScopeParser,
+          regex: regexParser,
+          reservedWords: reservedWordsParser,
+          "//": slashCommentParser,
+          extends: extendsCellTypeParser
         }),
         undefined
       )
@@ -799,7 +799,7 @@ extendsCellTypeNode
     }
   }
 
-  class enumFromCellTypesNode extends GrammarBackedNode {
+  class enumFromCellTypesParser extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -808,7 +808,7 @@ extendsCellTypeNode
     }
   }
 
-  class enumNode extends GrammarBackedNode {
+  class enumParser extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -817,7 +817,7 @@ extendsCellTypeNode
     }
   }
 
-  class examplesNode extends GrammarBackedNode {
+  class examplesParser extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -826,7 +826,7 @@ extendsCellTypeNode
     }
   }
 
-  class cellMinNode extends GrammarBackedNode {
+  class cellMinParser extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -835,7 +835,7 @@ extendsCellTypeNode
     }
   }
 
-  class cellMaxNode extends GrammarBackedNode {
+  class cellMaxParser extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -844,7 +844,7 @@ extendsCellTypeNode
     }
   }
 
-  class highlightScopeNode extends GrammarBackedNode {
+  class highlightScopeParser extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -853,62 +853,62 @@ extendsCellTypeNode
     }
   }
 
-  class rootFlagNode extends GrammarBackedNode {
+  class rootFlagParser extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class nodeTypeDefinitionNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        catchAllErrorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          boolean: booleanNode,
-          float: floatNode,
-          int: intNode,
-          string: stringNode,
-          compilesTo: compilesToNode,
-          extensions: extensionsNode,
-          version: versionNode,
-          baseNodeType: baseNodeTypeNode,
-          catchAllCellType: catchAllCellTypeNode,
-          cellParser: cellParserNode,
-          catchAllNodeType: catchAllNodeTypeNode,
-          cells: cellsNode,
-          compiler: compilerNode,
-          description: descriptionNode,
-          example: exampleNode,
-          sortTemplate: sortTemplateNode,
-          extends: extendsNodeTypeNode,
-          frequency: frequencyNode,
-          inScope: inScopeNode,
-          javascript: javascriptNode,
-          crux: cruxNode,
-          cruxFromId: cruxFromIdNode,
-          pattern: patternNode,
-          required: requiredNode,
-          single: singleNode,
-          uniqueLine: uniqueLineNode,
-          uniqueFirstWord: uniqueFirstWordNode,
-          listDelimiter: listDelimiterNode,
-          contentKey: contentKeyNode,
-          childrenKey: childrenKeyNode,
-          tags: tagsNode,
-          root: rootFlagNode,
-          _extendsJsClass: _extendsJsClassNode,
-          _rootNodeJsHeader: _rootNodeJsHeaderNode,
-          "//": slashCommentNode
+  class parserDefinitionParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        catchAllErrorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          boolean: booleanParser,
+          float: floatParser,
+          int: intParser,
+          string: stringParser,
+          compilesTo: compilesToParser,
+          extensions: extensionsParser,
+          version: versionParser,
+          baseParser: baseParserParser,
+          catchAllCellType: catchAllCellTypeParser,
+          cellParser: cellParserParser,
+          catchAllParser: catchAllParserParser,
+          cells: cellsParser,
+          compiler: compilerParser,
+          description: descriptionParser,
+          example: exampleParser,
+          sortTemplate: sortTemplateParser,
+          extends: extendsParserParser,
+          frequency: frequencyParser,
+          inScope: inScopeParser,
+          javascript: javascriptParser,
+          crux: cruxParser,
+          cruxFromId: cruxFromIdParser,
+          pattern: patternParser,
+          required: requiredParser,
+          single: singleParser,
+          uniqueLine: uniqueLineParser,
+          uniqueFirstWord: uniqueFirstWordParser,
+          listDelimiter: listDelimiterParser,
+          contentKey: contentKeyParser,
+          childrenKey: childrenKeyParser,
+          tags: tagsParser,
+          root: rootFlagParser,
+          _extendsJsClass: _extendsJsClassParser,
+          _rootParserJsHeader: _rootParserJsHeaderParser,
+          "//": slashCommentParser
         }),
-        [{ regex: /^[a-zA-Z0-9_]+Node$/, nodeConstructor: nodeTypeDefinitionNode }]
+        [{ regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }]
       )
     }
-    get nodeTypeIdCell() {
+    get parserIdCell() {
       return this.getWord(0)
     }
   }
 
-  class _extendsJsClassNode extends abstractNodeTypeRuleNode {
+  class _extendsJsClassParser extends abstractParserRuleParser {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -917,13 +917,13 @@ extendsCellTypeNode
     }
   }
 
-  class _rootNodeJsHeaderNode extends abstractNodeTypeRuleNode {
-    createParser() {
-      return new TreeNode.Parser(catchAllJavascriptCodeLineNode, undefined, undefined)
+  class _rootParserJsHeaderParser extends abstractParserRuleParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
   }
 
-  class regexNode extends GrammarBackedNode {
+  class regexParser extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -932,7 +932,7 @@ extendsCellTypeNode
     }
   }
 
-  class reservedWordsNode extends GrammarBackedNode {
+  class reservedWordsParser extends GrammarBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -941,22 +941,22 @@ extendsCellTypeNode
     }
   }
 
-  class commentLineNode extends GrammarBackedNode {
+  class commentLineParser extends GrammarBackedNode {
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class slashCommentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(commentLineNode, undefined, undefined)
+  class slashCommentParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(commentLineParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class extendsCellTypeNode extends GrammarBackedNode {
+  class extendsCellTypeParser extends GrammarBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -965,5 +965,5 @@ extendsCellTypeNode
     }
   }
 
-  window.grammarNode = grammarNode
+  window.grammarParser = grammarParser
 }

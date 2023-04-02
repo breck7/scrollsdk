@@ -28,20 +28,20 @@ commentCell
  highlightScope comment
 
 // Line Parsers
-hakonNode
+hakonParser
  root
  // todo Add variables?
  description A prefix Tree Language that compiles to CSS
  compilesTo css
- inScope commentNode
- catchAllNodeType selectorNode
+ inScope commentParser
+ catchAllParser selectorParser
  javascript
   getSelector() {
    return ""
   }
   compile() {
    return this.topDownArray
-    .filter(node => node.isSelectorNode)
+    .filter(node => node.isSelectorParser)
     .map(child => child.compile())
     .join("")
   }
@@ -54,33 +54,33 @@ hakonNode
    &:hover
     color blue
     font-size 17px
-propertyNode
+propertyParser
  catchAllCellType cssValueCell
- catchAllNodeType errorNode
+ catchAllParser errorParser
  javascript
   compile(spaces) {
    return `${spaces}${this.firstWord}: ${this.content};`
   }
  cells propertyKeywordCell
-variableNode
- extends propertyNode
+variableParser
+ extends propertyParser
  pattern --
-browserPrefixPropertyNode
- extends propertyNode
+browserPrefixPropertyParser
+ extends propertyParser
  pattern ^\-\w.+
  cells vendorPrefixPropertyKeywordCell
-errorNode
- catchAllNodeType errorNode
+errorParser
+ catchAllParser errorParser
  catchAllCellType errorCell
- baseNodeType errorNode
-commentNode
+ baseParser errorParser
+commentParser
  cells commentKeywordCell
  catchAllCellType commentCell
- catchAllNodeType commentNode
-selectorNode
- inScope propertyNode variableNode commentNode
- catchAllNodeType selectorNode
- boolean isSelectorNode true
+ catchAllParser commentParser
+selectorParser
+ inScope propertyParser variableParser commentParser
+ catchAllParser selectorParser
+ boolean isSelectorParser true
  javascript
   getSelector() {
    const parentSelector = this.parent.getSelector()
@@ -93,11 +93,11 @@ selectorNode
     .join(",")
   }
   compile() {
-   const propertyNodes = this.getChildren().filter(node => node.doesExtend("propertyNode"))
-   if (!propertyNodes.length) return ""
+   const propertyParsers = this.getChildren().filter(node => node.doesExtend("propertyParser"))
+   if (!propertyParsers.length) return ""
    const spaces = "  "
    return `${this.getSelector()} {
-  ${propertyNodes.map(child => child.compile(spaces)).join("\n")}
+  ${propertyParsers.map(child => child.compile(spaces)).join("\n")}
   }\n`
   }
  cells selectorCell

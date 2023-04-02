@@ -5,31 +5,31 @@
   const { HandGrammarProgram } = require("./GrammarLanguage.js")
   const { GrammarBackedNode } = require("./GrammarLanguage.js")
 
-  class jibberishNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          extendsAbstract: extendsAbstractNode,
-          hue: hueNode,
-          saturation: saturationNode,
-          constrast: constrastNode,
-          "html.h1": h1Node,
-          add: addNode,
-          "+": plusNode,
-          block: blockNode,
-          scoreBlock: scoreBlockNode,
-          to: toNode,
-          foo: fooNode,
-          xColumnName: xColumnNameNode,
-          lightbulbState: lightbulbStateNode,
-          nested: nestedNode,
-          nodeWithConsts: nodeWithConstsNode,
-          nodeExpandsConsts: nodeExpandsConstsNode,
-          someCode: someCodeNode,
-          type: typeNode,
-          comment: commentNode,
-          text: textNode
+  class jibberishParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          extendsAbstract: extendsAbstractParser,
+          hue: hueParser,
+          saturation: saturationParser,
+          constrast: constrastParser,
+          "html.h1": h1Parser,
+          add: addParser,
+          "+": plusParser,
+          block: blockParser,
+          scoreBlock: scoreBlockParser,
+          to: toParser,
+          foo: fooParser,
+          xColumnName: xColumnNameParser,
+          lightbulbState: lightbulbStateParser,
+          nested: nestedParser,
+          nodeWithConsts: nodeWithConstsParser,
+          nodeExpandsConsts: nodeExpandsConstsParser,
+          someCode: someCodeParser,
+          type: typeParser,
+          comment: commentParser,
+          text: textParser
         }),
         undefined
       )
@@ -39,7 +39,7 @@
     }
   }
 
-  class jibjabNode extends jibberishNode {
+  class jibjabParser extends jibberishParser {
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
 anyCell
 columnNameEnumCell
@@ -59,7 +59,7 @@ commentCell
  highlightScope comment
 
 // Line Parsers
-jibberishNode
+jibberishParser
  root
  description A useless Tree Language built for testing Tree Notation code.
  javascript
@@ -67,67 +67,67 @@ jibberishNode
    return 42
   }
  compilesTo txt
- catchAllNodeType errorNode
- inScope abstractTopLevelNode textNode abstractBaseClassNode
-jibjabNode
+ catchAllParser errorParser
+ inScope abstractTopLevelParser textParser abstractBaseClassParser
+jibjabParser
  root
  description Adds a comment node to Jibberish
- extends jibberishNode
-abstractBaseClassNode
-extendsAbstractNode
+ extends jibberishParser
+abstractBaseClassParser
+extendsAbstractParser
  cells topLevelPropertyCell intCell
- extends abstractBaseClassNode
+ extends abstractBaseClassParser
  crux extendsAbstract
-abstractTopLevelNode
+abstractTopLevelParser
  cells topLevelPropertyCell
-abstractColorPropertiesNode
+abstractColorPropertiesParser
  cells topLevelPropertyCell intCell
- extends abstractTopLevelNode
-hueNode
- extends abstractColorPropertiesNode
+ extends abstractTopLevelParser
+hueParser
+ extends abstractColorPropertiesParser
  crux hue
-saturationNode
- extends abstractColorPropertiesNode
+saturationParser
+ extends abstractColorPropertiesParser
  crux saturation
-constrastNode
- extends abstractColorPropertiesNode
+constrastParser
+ extends abstractColorPropertiesParser
  crux constrast
-abstractHtmlNode
- inScope contentNode
- extends abstractTopLevelNode
-h1Node
+abstractHtmlParser
+ inScope contentParser
+ extends abstractTopLevelParser
+h1Parser
  crux html.h1
- extends abstractHtmlNode
-addNode
- extends abstractTopLevelNode
+ extends abstractHtmlParser
+addParser
+ extends abstractTopLevelParser
  crux add
-plusNode
+plusParser
  crux +
- extends addNode
+ extends addParser
  example Adding two numbers:
   + 1 2
  catchAllCellType intCell
  cells opSymbolCell
-blockNode
- inScope abstractTopLevelNode scoreBlockNode
- extends abstractTopLevelNode
+blockParser
+ inScope abstractTopLevelParser scoreBlockParser
+ extends abstractTopLevelParser
  crux block
-scoreBlockNode
+scoreBlockParser
  description Test that inscope extends and does not overwrite.
- extends blockNode
- inScope scoresNode
+ extends blockParser
+ inScope scoresParser
  crux scoreBlock
-toNode
+toParser
  cells topLevelPropertyCell wordCell
  compiler
   stringTemplate to {word}
   closeChildren end
- extends blockNode
+ extends blockParser
  crux to
-fooNode
- extends abstractTopLevelNode
+fooParser
+ extends abstractTopLevelParser
  crux foo
-xColumnNameNode
+xColumnNameParser
  description The name of the column to use for the x axis
  cells topLevelPropertyCell columnNameEnumCell
  tags doNotSynthesize
@@ -135,16 +135,16 @@ xColumnNameNode
   getRunTimeEnumOptions(cell) {
    return cell.cellTypeId === "columnNameEnumCell" ? ["gender", "height", "weight"] : undefined
   }
- extends abstractTopLevelNode
+ extends abstractTopLevelParser
  crux xColumnName
-lightbulbStateNode
+lightbulbStateParser
  cells topLevelPropertyCell onoffCell
- extends abstractTopLevelNode
+ extends abstractTopLevelParser
  crux lightbulbState
-nestedNode
- extends abstractTopLevelNode
+nestedParser
+ extends abstractTopLevelParser
  crux nested
-nodeWithConstsNode
+nodeWithConstsParser
  string greeting hello world
  string singleCell hello
  string thisHasQuotes "'\`
@@ -155,51 +155,51 @@ nodeWithConstsNode
  int anArray 2 3 4
  float score2 3.01
  boolean win true
- extends abstractTopLevelNode
+ extends abstractTopLevelParser
  crux nodeWithConsts
-nodeExpandsConstsNode
+nodeExpandsConstsParser
  string greeting hola
- extends nodeWithConstsNode
+ extends nodeWithConstsParser
  crux nodeExpandsConsts
-someCodeNode
- catchAllNodeType lineOfCodeNode
- extends abstractTopLevelNode
+someCodeParser
+ catchAllParser lineOfCodeParser
+ extends abstractTopLevelParser
  crux someCode
-typeNode
+typeParser
  cells topLevelPropertyCell wordCell
  single
- extends abstractTopLevelNode
+ extends abstractTopLevelParser
  crux type
-commentNode
- extends abstractTopLevelNode
+commentParser
+ extends abstractTopLevelParser
  catchAllCellType commentCell
- catchAllNodeType commentNode
+ catchAllParser commentParser
  crux comment
-contentNode
- baseNodeType blobNode
+contentParser
+ baseParser blobParser
  crux content
-errorNode
+errorParser
  catchAllCellType errorCell
- baseNodeType errorNode
+ baseParser errorParser
  cells errorCell
-lineOfCodeNode
+lineOfCodeParser
  catchAllCellType wordCell
-textNode
- baseNodeType blobNode
+textParser
+ baseParser blobParser
  crux text
-scoresNode
+scoresParser
  catchAllCellType intCell
  cells topLevelPropertyCell
  crux scores`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = jibjabNode
+    static rootParser = jibjabParser
   }
 
-  class abstractBaseClassNode extends GrammarBackedNode {}
+  class abstractBaseClassParser extends GrammarBackedNode {}
 
-  class extendsAbstractNode extends abstractBaseClassNode {
+  class extendsAbstractParser extends abstractBaseClassParser {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -208,13 +208,13 @@ scoresNode
     }
   }
 
-  class abstractTopLevelNode extends GrammarBackedNode {
+  class abstractTopLevelParser extends GrammarBackedNode {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
   }
 
-  class abstractColorPropertiesNode extends abstractTopLevelNode {
+  class abstractColorPropertiesParser extends abstractTopLevelParser {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -223,27 +223,27 @@ scoresNode
     }
   }
 
-  class hueNode extends abstractColorPropertiesNode {}
+  class hueParser extends abstractColorPropertiesParser {}
 
-  class saturationNode extends abstractColorPropertiesNode {}
+  class saturationParser extends abstractColorPropertiesParser {}
 
-  class constrastNode extends abstractColorPropertiesNode {}
+  class constrastParser extends abstractColorPropertiesParser {}
 
-  class abstractHtmlNode extends abstractTopLevelNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class abstractHtmlParser extends abstractTopLevelParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { content: contentNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }),
         undefined
       )
     }
   }
 
-  class h1Node extends abstractHtmlNode {}
+  class h1Parser extends abstractHtmlParser {}
 
-  class addNode extends abstractTopLevelNode {}
+  class addParser extends abstractTopLevelParser {}
 
-  class plusNode extends addNode {
+  class plusParser extends addParser {
     get opSymbolCell() {
       return this.getWord(0)
     }
@@ -252,46 +252,46 @@ scoresNode
     }
   }
 
-  class blockNode extends abstractTopLevelNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class blockParser extends abstractTopLevelParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          hue: hueNode,
-          saturation: saturationNode,
-          constrast: constrastNode,
-          "html.h1": h1Node,
-          add: addNode,
-          "+": plusNode,
-          block: blockNode,
-          scoreBlock: scoreBlockNode,
-          to: toNode,
-          foo: fooNode,
-          xColumnName: xColumnNameNode,
-          lightbulbState: lightbulbStateNode,
-          nested: nestedNode,
-          nodeWithConsts: nodeWithConstsNode,
-          nodeExpandsConsts: nodeExpandsConstsNode,
-          someCode: someCodeNode,
-          type: typeNode,
-          comment: commentNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          hue: hueParser,
+          saturation: saturationParser,
+          constrast: constrastParser,
+          "html.h1": h1Parser,
+          add: addParser,
+          "+": plusParser,
+          block: blockParser,
+          scoreBlock: scoreBlockParser,
+          to: toParser,
+          foo: fooParser,
+          xColumnName: xColumnNameParser,
+          lightbulbState: lightbulbStateParser,
+          nested: nestedParser,
+          nodeWithConsts: nodeWithConstsParser,
+          nodeExpandsConsts: nodeExpandsConstsParser,
+          someCode: someCodeParser,
+          type: typeParser,
+          comment: commentParser
         }),
         undefined
       )
     }
   }
 
-  class scoreBlockNode extends blockNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class scoreBlockParser extends blockParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { scores: scoresNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }),
         undefined
       )
     }
   }
 
-  class toNode extends blockNode {
+  class toParser extends blockParser {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -300,9 +300,9 @@ scoresNode
     }
   }
 
-  class fooNode extends abstractTopLevelNode {}
+  class fooParser extends abstractTopLevelParser {}
 
-  class xColumnNameNode extends abstractTopLevelNode {
+  class xColumnNameParser extends abstractTopLevelParser {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -314,7 +314,7 @@ scoresNode
     }
   }
 
-  class lightbulbStateNode extends abstractTopLevelNode {
+  class lightbulbStateParser extends abstractTopLevelParser {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -323,9 +323,9 @@ scoresNode
     }
   }
 
-  class nestedNode extends abstractTopLevelNode {}
+  class nestedParser extends abstractTopLevelParser {}
 
-  class nodeWithConstsNode extends abstractTopLevelNode {
+  class nodeWithConstsParser extends abstractTopLevelParser {
     get win() {
       return true
     }
@@ -353,19 +353,19 @@ world`
     }
   }
 
-  class nodeExpandsConstsNode extends nodeWithConstsNode {
+  class nodeExpandsConstsParser extends nodeWithConstsParser {
     get greeting() {
       return `hola`
     }
   }
 
-  class someCodeNode extends abstractTopLevelNode {
-    createParser() {
-      return new TreeNode.Parser(lineOfCodeNode, undefined, undefined)
+  class someCodeParser extends abstractTopLevelParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
   }
 
-  class typeNode extends abstractTopLevelNode {
+  class typeParser extends abstractTopLevelParser {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -374,27 +374,27 @@ world`
     }
   }
 
-  class commentNode extends abstractTopLevelNode {
-    createParser() {
-      return new TreeNode.Parser(commentNode, undefined, undefined)
+  class commentParser extends abstractTopLevelParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(commentParser, undefined, undefined)
     }
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class contentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
+  class contentParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
     get errorCell() {
       return this.getWord(0)
@@ -404,22 +404,22 @@ world`
     }
   }
 
-  class lineOfCodeNode extends GrammarBackedNode {
+  class lineOfCodeParser extends GrammarBackedNode {
     get wordCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class textNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
+  class textParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
     }
   }
 
-  class scoresNode extends GrammarBackedNode {
+  class scoresParser extends GrammarBackedNode {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -428,8 +428,8 @@ world`
     }
   }
 
-  module.exports = jibjabNode
-  jibjabNode
+  module.exports = jibjabParser
+  jibjabParser
 
-  if (!module.parent) new jibjabNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new jibjabParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

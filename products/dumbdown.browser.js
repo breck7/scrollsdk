@@ -1,27 +1,27 @@
 {
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class dumbdownNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        quickParagraphNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          link: linkNode,
-          paragraph: paragraphNode,
-          code: codeNode,
-          list: listNode,
-          title: titleNode,
-          title2: title2Node,
-          title3: title3Node,
-          title4: title4Node,
-          title5: title5Node,
-          title6: title6Node
+  class dumbdownParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        quickParagraphParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          link: linkParser,
+          paragraph: paragraphParser,
+          code: codeParser,
+          list: listParser,
+          title: titleParser,
+          title2: title2Parser,
+          title3: title3Parser,
+          title4: title4Parser,
+          title5: title5Parser,
+          title6: title6Parser
         }),
-        [{ regex: /^$/, nodeConstructor: blankLineNode }]
+        [{ regex: /^$/, parser: blankLineParser }]
       )
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
@@ -39,14 +39,14 @@ urlCell
  highlightScope constant.language
 
 // Line Parsers
-errorNode
- baseNodeType errorNode
-dumbdownNode
+errorParser
+ baseParser errorParser
+dumbdownParser
  extensions dd dumbdown
  description A Tree Language that compiles to HTML. An alternative to Markdown.
  root
- inScope abstractTopLevelNode blankLineNode
- catchAllNodeType quickParagraphNode
+ inScope abstractTopLevelParser blankLineParser
+ catchAllParser quickParagraphParser
  compilesTo html
  example
   title Hello world
@@ -61,64 +61,64 @@ dumbdownNode
   code
    // You can add code as well.
    print("Hello world")
-abstractTopLevelNode
+abstractTopLevelParser
  cells keywordCell
-linkNode
+linkParser
  cells keywordCell urlCell
  catchAllCellType textCell
- extends abstractTopLevelNode
+ extends abstractTopLevelParser
  compiler
   stringTemplate <a href="{urlCell}">{textCell}</a>
  crux link
-paragraphNode
- catchAllNodeType paragraphContentNode
- extends abstractTopLevelNode
+paragraphParser
+ catchAllParser paragraphContentParser
+ extends abstractTopLevelParser
  crux paragraph
  compiler
   openChildren <p>
   closeChildren </p>
   stringTemplate 
-paragraphContentNode
- inScope paragraphContentNode
+paragraphContentParser
+ inScope paragraphContentParser
  catchAllCellType textCell
  compiler
   stringTemplate {textCell}
-codeNode
+codeParser
  description A code block.
- catchAllNodeType lineOfCodeNode
- extends abstractTopLevelNode
+ catchAllParser lineOfCodeParser
+ extends abstractTopLevelParser
  javascript
   compile() {
    return \`<code>\${this.indentation + this.childrenToString()}</code>\`
   }
  crux code
-listNode
- inScope dashNode
- extends abstractTopLevelNode
+listParser
+ inScope dashParser
+ extends abstractTopLevelParser
  compiler
   stringTemplate 
   openChildren <ul>
   closeChildren </ul>
  crux list
-blankLineNode
+blankLineParser
  description Blank lines compile to nothing in the HTML.
  cells blankCell
  compiler
   stringTemplate 
  pattern ^$
  tags doNotSynthesize
-lineOfCodeNode
+lineOfCodeParser
  catchAllCellType codeCell
- catchAllNodeType lineOfCodeNode
-dashNode
+ catchAllParser lineOfCodeParser
+dashParser
  crux -
  catchAllCellType textCell
  compiler
   stringTemplate <li>{textCell}</li>
  cells dashCell
-titleNode
+titleParser
  catchAllCellType textCell
- extends abstractTopLevelNode
+ extends abstractTopLevelParser
  compiler
   stringTemplate 
  crux title
@@ -128,49 +128,49 @@ titleNode
    const permalink = Utils.stringToPermalink(this.content)
    return \`<h1 id="\${permalink}"><a href="#\${permalink}">\${title}</a></h1>\`
   }
-title2Node
+title2Parser
  catchAllCellType textCell
- extends abstractTopLevelNode
+ extends abstractTopLevelParser
  compiler
   stringTemplate <h2>{textCell}</h2>
  crux title2
-title3Node
- extends title2Node
+title3Parser
+ extends title2Parser
  compiler
   stringTemplate <h3>{textCell}</h3>
  crux title3
-title4Node
- extends title2Node
+title4Parser
+ extends title2Parser
  compiler
   stringTemplate <h4>{textCell}</h4>
  crux title4
-title5Node
- extends title2Node
+title5Parser
+ extends title2Parser
  compiler
   stringTemplate <h5>{textCell}</h5>
  crux title5
-title6Node
- extends title2Node
+title6Parser
+ extends title2Parser
  compiler
   stringTemplate <h6>{textCell}</h6>
  crux title6
-quickParagraphNode
+quickParagraphParser
  catchAllCellType textCell
  compiler
   stringTemplate <p>{textCell}</p>`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = dumbdownNode
+    static rootParser = dumbdownParser
   }
 
-  class abstractTopLevelNode extends GrammarBackedNode {
+  class abstractTopLevelParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class linkNode extends abstractTopLevelNode {
+  class linkParser extends abstractTopLevelParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -182,49 +182,53 @@ quickParagraphNode
     }
   }
 
-  class paragraphNode extends abstractTopLevelNode {
-    createParser() {
-      return new TreeNode.Parser(paragraphContentNode, undefined, undefined)
+  class paragraphParser extends abstractTopLevelParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(paragraphContentParser, undefined, undefined)
     }
   }
 
-  class paragraphContentNode extends GrammarBackedNode {
+  class paragraphContentParser extends GrammarBackedNode {
     get textCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class codeNode extends abstractTopLevelNode {
-    createParser() {
-      return new TreeNode.Parser(lineOfCodeNode, undefined, undefined)
+  class codeParser extends abstractTopLevelParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     compile() {
       return `<code>${this.indentation + this.childrenToString()}</code>`
     }
   }
 
-  class listNode extends abstractTopLevelNode {
-    createParser() {
-      return new TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "-": dashNode }), undefined)
+  class listParser extends abstractTopLevelParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        undefined,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }),
+        undefined
+      )
     }
   }
 
-  class blankLineNode extends GrammarBackedNode {
+  class blankLineParser extends GrammarBackedNode {
     get blankCell() {
       return this.getWord(0)
     }
   }
 
-  class lineOfCodeNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(lineOfCodeNode, undefined, undefined)
+  class lineOfCodeParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
     get codeCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class dashNode extends GrammarBackedNode {
+  class dashParser extends GrammarBackedNode {
     get dashCell() {
       return this.getWord(0)
     }
@@ -233,7 +237,7 @@ quickParagraphNode
     }
   }
 
-  class titleNode extends abstractTopLevelNode {
+  class titleParser extends abstractTopLevelParser {
     get textCell() {
       return this.getWordsFrom(0)
     }
@@ -244,25 +248,25 @@ quickParagraphNode
     }
   }
 
-  class title2Node extends abstractTopLevelNode {
+  class title2Parser extends abstractTopLevelParser {
     get textCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class title3Node extends title2Node {}
+  class title3Parser extends title2Parser {}
 
-  class title4Node extends title2Node {}
+  class title4Parser extends title2Parser {}
 
-  class title5Node extends title2Node {}
+  class title5Parser extends title2Parser {}
 
-  class title6Node extends title2Node {}
+  class title6Parser extends title2Parser {}
 
-  class quickParagraphNode extends GrammarBackedNode {
+  class quickParagraphParser extends GrammarBackedNode {
     get textCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  window.dumbdownNode = dumbdownNode
+  window.dumbdownParser = dumbdownParser
 }

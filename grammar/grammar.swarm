@@ -3,23 +3,23 @@ test grammarSample
  arrange
   require ../products/GrammarLanguage.js HandGrammarProgram
   constructWithParagraph
-   testlangNode
+   testlangParser
     root
     compilesTo txt
-    inScope baseNode
+    inScope baseParser
    anyCell
    wordCell
     extends anyCell
-   baseNode
+   baseParser
     crux base
    keywordCell
-   blockNode
+   blockParser
     crux block
-    extends baseNode
-    inScope baseNode
-   toNode
+    extends baseParser
+    inScope baseParser
+   toParser
     crux to
-    extends blockNode
+    extends blockParser
     cells keywordCell wordCell
     tags test
     compiler
@@ -27,9 +27,9 @@ test grammarSample
      closeChildren end
  runTimeFirstWordsInScope
   assertLengthIs 1
- getNodeTypeDefinitionByNodeTypeId toNode
+ getParserDefinitionByParserId toParser
   assertTypeIs object
- topNodeTypeDefinitions
+ topParserDefinitions
   assertLengthIs 3
  extensionName
   assertStringIs testlang
@@ -37,7 +37,7 @@ test grammarSample
   assertTypeIs string
  isDefined notDefined
   assertStringIs false
- isDefined toNode
+ isDefined toParser
   assertStringIs true
  getAllErrors
   assertLengthIs 0

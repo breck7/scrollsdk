@@ -62,9 +62,9 @@ var TreeNotationConstants
 ;(function(TreeNotationConstants) {
   TreeNotationConstants["extends"] = "extends"
 })(TreeNotationConstants || (TreeNotationConstants = {}))
-class Parser {
-  constructor(catchAllNodeConstructor, firstWordMap = {}, regexTests = undefined) {
-    this._catchAllNodeConstructor = catchAllNodeConstructor
+class ParserCombinator {
+  constructor(catchAllParser, firstWordMap = {}, regexTests = undefined) {
+    this._catchAllParser = catchAllParser
     this._firstWordMap = new Map(Object.entries(firstWordMap))
     this._regexTests = regexTests
   }
@@ -84,19 +84,19 @@ class Parser {
     }
     return obj
   }
-  _getNodeConstructor(line, contextNode, wordBreakSymbol = " ") {
-    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
+  _getParser(line, contextNode, wordBreakSymbol = " ") {
+    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextNode)
   }
-  _getCatchAllNodeConstructor(contextNode) {
-    if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
+  _getCatchAllParser(contextNode) {
+    if (this._catchAllParser) return this._catchAllParser
     const parent = contextNode.parent
-    if (parent) return parent._getParser()._getCatchAllNodeConstructor(parent)
+    if (parent) return parent._getParser()._getCatchAllParser(parent)
     return contextNode.constructor
   }
-  _getConstructorFromRegexTests(line) {
+  _getParserFromRegexTests(line) {
     if (!this._regexTests) return undefined
     const hit = this._regexTests.find(test => test.regex.test(line))
-    if (hit) return hit.nodeConstructor
+    if (hit) return hit.parser
     return undefined
   }
   _getFirstWord(line, wordBreakSymbol) {
@@ -300,7 +300,7 @@ class TreeNode extends AbstractNode {
   get words() {
     return this._getWords(0)
   }
-  doesExtend(nodeTypeId) {
+  doesExtend(parserId) {
     return false
   }
   require(moduleName, filePath) {
@@ -1382,8 +1382,8 @@ class TreeNode extends AbstractNode {
     this._insertLineAndChildren(line, children)
   }
   _insertLineAndChildren(line, children, index = this.length) {
-    const nodeConstructor = this._getParser()._getNodeConstructor(line, this)
-    const newNode = new nodeConstructor(children, line, this)
+    const parser = this._getParser()._getParser(line, this)
+    const newNode = new parser(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
     this._getChildrenArray().splice(adjustedIndex, 0, newNode)
     if (this._index) this._makeIndex(adjustedIndex)
@@ -1409,8 +1409,8 @@ class TreeNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const nodeConstructor = parent._getParser()._getNodeConstructor(lineContent, parent)
-      lastNode = new nodeConstructor(undefined, lineContent, parent)
+      const parser = parent._getParser()._getParser(lineContent, parent)
+      lastNode = new parser(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })
   }
@@ -1423,19 +1423,17 @@ class TreeNode extends AbstractNode {
   getContentsArray() {
     return this.map(node => node.content)
   }
-  // todo: rename to getChildrenByConstructor(?)
-  getChildrenByNodeConstructor(constructor) {
-    return this.filter(child => child instanceof constructor)
+  getChildrenByParser(parser) {
+    return this.filter(child => child instanceof parser)
   }
-  getAncestorByNodeConstructor(constructor) {
-    if (this instanceof constructor) return this
+  getAncestorByParser(parser) {
+    if (this instanceof parser) return this
     if (this.isRoot()) return undefined
     const parent = this.parent
-    return parent instanceof constructor ? parent : parent.getAncestorByNodeConstructor(constructor)
+    return parent instanceof parser ? parent : parent.getAncestorByParser(parser)
   }
-  // todo: rename to getNodeByConstructor(?)
-  getNodeByType(constructor) {
-    return this.find(child => child instanceof constructor)
+  getNodeByParser(parser) {
+    return this.find(child => child instanceof parser)
   }
   indexOfLast(firstWord) {
     const result = this._getIndex()[firstWord]
@@ -1576,11 +1574,11 @@ class TreeNode extends AbstractNode {
     return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
   _getParser() {
-    if (!TreeNode._parsers.has(this.constructor)) TreeNode._parsers.set(this.constructor, this.createParser())
-    return TreeNode._parsers.get(this.constructor)
+    if (!TreeNode._parserCombinators.has(this.constructor)) TreeNode._parserCombinators.set(this.constructor, this.createParserCombinator())
+    return TreeNode._parserCombinators.get(this.constructor)
   }
-  createParser() {
-    return new Parser(this.constructor)
+  createParserCombinator() {
+    return new ParserCombinator(this.constructor)
   }
   static _makeUniqueId() {
     if (this._uniqueId === undefined) this._uniqueId = 0
@@ -2543,8 +2541,8 @@ class TreeNode extends AbstractNode {
     return tree
   }
 }
-TreeNode._parsers = new Map()
-TreeNode.Parser = Parser
+TreeNode._parserCombinators = new Map()
+TreeNode.ParserCombinator = ParserCombinator
 TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
 5.6,2.7,4.2,1.3,versicolor
@@ -2556,7 +2554,7 @@ TreeNode.iris = `sepal_length,sepal_width,petal_length,petal_width,species
 4.9,2.5,4.5,1.7,virginica
 5.1,3.5,1.4,0.2,setosa
 5,3.4,1.5,0.2,setosa`
-TreeNode.getVersion = () => "72.1.0"
+TreeNode.getVersion = () => "73.0.0"
 class AbstractExtendibleTreeNode extends TreeNode {
   _getFromExtended(firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
@@ -2572,8 +2570,8 @@ class AbstractExtendibleTreeNode extends TreeNode {
     return tree
   }
   // todo: be more specific with the param
-  _getChildrenByNodeConstructorInExtended(constructor) {
-    return Utils.flatten(this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
+  _getChildrenByParserInExtended(parser) {
+    return Utils.flatten(this._getAncestorsArray().map(node => node.getChildrenByParser(parser)))
   }
   _getExtendedParent() {
     return this._getAncestorsArray()[1]
@@ -2591,8 +2589,8 @@ class AbstractExtendibleTreeNode extends TreeNode {
       .reverse()
       .join("\n")
   }
-  _doesExtend(nodeTypeId) {
-    return this._getAncestorSet().has(nodeTypeId)
+  _doesExtend(parserId) {
+    return this._getAncestorSet().has(parserId)
   }
   _getAncestorSet() {
     if (!this._cache_ancestorSet) this._cache_ancestorSet = new Set(this._getAncestorsArray().map(def => def.id))

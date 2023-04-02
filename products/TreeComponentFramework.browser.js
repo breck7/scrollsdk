@@ -235,7 +235,7 @@ class WillowMousetrap {
   bind() {}
 }
 // this one should have no document, window, $, et cetera.
-class AbstractWillowBrowser extends stumpNode {
+class AbstractWillowBrowser extends stumpParser {
   constructor(fullHtmlPageUrlIncludingProtocolAndFileName) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
@@ -893,13 +893,13 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 }
 class AbstractTheme {
   hakonToCss(str) {
-    const hakonProgram = new hakonNode(str)
+    const hakonProgram = new hakonParser(str)
     // console.log(hakonProgram.getAllErrors())
     return hakonProgram.compile()
   }
 }
 class DefaultTheme extends AbstractTheme {}
-class AbstractTreeComponent extends GrammarBackedNode {
+class AbstractTreeComponentParser extends GrammarBackedNode {
   async startWhenReady() {
     if (this.isNodeJs()) return this.start()
     document.addEventListener(
@@ -1131,14 +1131,14 @@ class AbstractTreeComponent extends GrammarBackedNode {
  class ${this.getCssClassNames().join(" ")}`
   }
   getCssClassNames() {
-    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponent")
+    return this._getJavascriptPrototypeChainUpTo("AbstractTreeComponentParser")
   }
   treeComponentWillMount() {}
   async treeComponentDidMount() {
-    AbstractTreeComponent._mountedTreeComponents++
+    AbstractTreeComponentParser._mountedTreeComponents++
   }
   treeComponentDidUnmount() {
-    AbstractTreeComponent._mountedTreeComponents--
+    AbstractTreeComponentParser._mountedTreeComponents--
   }
   treeComponentWillUnmount() {}
   getNewestTimeToRender() {
@@ -1150,7 +1150,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
   }
   async treeComponentDidUpdate() {}
   _getChildTreeComponents() {
-    return this.getChildrenByNodeConstructor(AbstractTreeComponent)
+    return this.getChildrenByParser(AbstractTreeComponentParser)
   }
   _hasChildrenTreeComponents() {
     return this._getChildTreeComponents().length > 0
@@ -1168,7 +1168,7 @@ class AbstractTreeComponent extends GrammarBackedNode {
   toPlainHtml(containerId) {
     return `<div id="${containerId}">
  <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
-${new stumpNode(this.toStumpCode()).compile()}
+${new stumpParser(this.toStumpCode()).compile()}
 </div>`
   }
   _updateAndGetUpdateReport() {
@@ -1342,8 +1342,8 @@ ${new stumpNode(this.toStumpCode()).compile()}
     return new TreeNode(str)
   }
 }
-AbstractTreeComponent._mountedTreeComponents = 0
-class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
+AbstractTreeComponentParser._mountedTreeComponents = 0
+class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponentParser {
   toHakonCode() {
     return `.TreeComponentFrameworkDebuggerComponent
  position fixed
@@ -1381,7 +1381,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponent {
 ${app.toString(3)}`
   }
 }
-class AbstractGithubTriangleComponent extends AbstractTreeComponent {
+class AbstractGithubTriangleComponent extends AbstractTreeComponentParser {
   constructor() {
     super(...arguments)
     this.githubLink = `https://github.com/treenotation/jtree`
@@ -1402,6 +1402,6 @@ class AbstractGithubTriangleComponent extends AbstractTreeComponent {
   }
 }
 window.AbstractGithubTriangleComponent = AbstractGithubTriangleComponent
-window.AbstractTreeComponent = AbstractTreeComponent
+window.AbstractTreeComponentParser = AbstractTreeComponentParser
 window.WillowBrowser = WillowBrowser
 window.TreeComponentFrameworkDebuggerComponent = TreeComponentFrameworkDebuggerComponent

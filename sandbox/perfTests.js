@@ -26,11 +26,11 @@ to fillThis`
 
 const main = (grammarCode, code) => {
   logFn("Building language...")
-  const programConstructor = new HandGrammarProgram(grammarCode).compileAndReturnRootConstructor()
+  const rootParser = new HandGrammarProgram(grammarCode).compileAndReturnRootParser()
 
   logFn("Loading program...")
 
-  const program = new programConstructor(code)
+  const program = new rootParser(code)
 
   logFn("Checking errors...")
   const startTime = Date.now()

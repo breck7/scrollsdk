@@ -5,7 +5,7 @@
   const { HandGrammarProgram } = require("./GrammarLanguage.js")
   const { GrammarBackedNode } = require("./GrammarLanguage.js")
 
-  class commentNode extends GrammarBackedNode {
+  class commentParser extends GrammarBackedNode {
     get commentCell() {
       return this.getWord(0)
     }
@@ -17,11 +17,11 @@
     }
   }
 
-  class arrowNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { Comment: commentNode, charge: chargeNode }),
+  class arrowParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { Comment: commentParser, charge: chargeParser }),
         undefined
       )
     }
@@ -60,25 +60,25 @@ commentCell
  highlightScope comment
 
 // Line parsers
-commentNode
+commentParser
  catchAllCellType commentCell
  cells commentCell
  crux Comment
  boolean suggestInAutocomplete false
-arrowNode
+arrowParser
  description A demonstration prefix Tree Language showing how in the future Tree Notation will be used for simpler and more intelligent APIs.
  root
- inScope chargeNode commentNode
- catchAllNodeType errorNode
+ inScope chargeParser commentParser
+ catchAllParser errorParser
  sortTemplate Comment charge
  javascript
   compile() {
    return this.asJsonSubset
   }
-errorNode
- baseNodeType errorNode
-chargeNode
- inScope amountNode currencyNode descriptionNode cardNumberNode tokenNode
+errorParser
+ baseParser errorParser
+chargeParser
+ inScope amountParser currencyParser descriptionParser cardNumberParser tokenParser
  description A credit card charge
  cruxFromId
  cells keywordCell
@@ -87,50 +87,50 @@ chargeNode
    const card = this.get("cardNumber")
    return \`Successfully charged \${this.get("amount")} \${this.get("currency")} to card \${card.substr(card.length - 4, 4)}.\`
   }
- sortTemplate description  amountNode currency  cardNumber token
-abstractChargeAttributeNode
+ sortTemplate description  amountParser currency  cardNumber token
+abstractChargeAttributeParser
  cruxFromId
  required
  single
-cardNumberNode
- extends abstractChargeAttributeNode
+cardNumberParser
+ extends abstractChargeAttributeParser
  cells keywordCell cardNumberCell
-amountNode
- extends abstractChargeAttributeNode
+amountParser
+ extends abstractChargeAttributeParser
  cells keywordCell amountCell
- string sortKey amountNode
-currencyNode
- extends abstractChargeAttributeNode
+ string sortKey amountParser
+currencyParser
+ extends abstractChargeAttributeParser
  cells keywordCell currencyCell
-descriptionNode
- extends abstractChargeAttributeNode
+descriptionParser
+ extends abstractChargeAttributeParser
  cells keywordCell
  catchAllCellType descriptionCell
-tokenNode
+tokenParser
  cruxFromId
  cells keywordCell tokenCell`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = arrowNode
+    static rootParser = arrowParser
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class chargeNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class chargeParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          cardNumber: cardNumberNode,
-          amount: amountNode,
-          currency: currencyNode,
-          description: descriptionNode,
-          token: tokenNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          cardNumber: cardNumberParser,
+          amount: amountParser,
+          currency: currencyParser,
+          description: descriptionParser,
+          token: tokenParser
         }),
         undefined
       )
@@ -144,9 +144,9 @@ tokenNode
     }
   }
 
-  class abstractChargeAttributeNode extends GrammarBackedNode {}
+  class abstractChargeAttributeParser extends GrammarBackedNode {}
 
-  class cardNumberNode extends abstractChargeAttributeNode {
+  class cardNumberParser extends abstractChargeAttributeParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -155,7 +155,7 @@ tokenNode
     }
   }
 
-  class amountNode extends abstractChargeAttributeNode {
+  class amountParser extends abstractChargeAttributeParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -163,11 +163,11 @@ tokenNode
       return parseFloat(this.getWord(1))
     }
     get sortKey() {
-      return `amountNode`
+      return `amountParser`
     }
   }
 
-  class currencyNode extends abstractChargeAttributeNode {
+  class currencyParser extends abstractChargeAttributeParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -176,7 +176,7 @@ tokenNode
     }
   }
 
-  class descriptionNode extends abstractChargeAttributeNode {
+  class descriptionParser extends abstractChargeAttributeParser {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -185,7 +185,7 @@ tokenNode
     }
   }
 
-  class tokenNode extends GrammarBackedNode {
+  class tokenParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -194,8 +194,8 @@ tokenNode
     }
   }
 
-  module.exports = arrowNode
-  arrowNode
+  module.exports = arrowParser
+  arrowParser
 
-  if (!module.parent) new arrowNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new arrowParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

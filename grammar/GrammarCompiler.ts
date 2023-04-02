@@ -14,8 +14,8 @@ enum CompileTarget {
 class GrammarCompiler {
   static compileGrammarAndCreateProgram = (programPath: treeNotationTypes.filepath, grammarPath: treeNotationTypes.filepath) => {
     // tod: remove?
-    const programConstructor = this.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
-    return new programConstructor(fs.readFileSync(programPath, "utf8"))
+    const rootParser = this.compileGrammarFileAtPathAndReturnRootParser(grammarPath)
+    return new rootParser(fs.readFileSync(programPath, "utf8"))
   }
 
   static compileGrammarForNodeJs(pathToGrammar: treeNotationTypes.absoluteFilePath, outputFolder: treeNotationTypes.absoluteFolderPath, usePrettier = true, jtreeProductsPath = __dirname) {
@@ -24,8 +24,8 @@ class GrammarCompiler {
 
   static formatCode = (programCode: string, grammarPath: treeNotationTypes.filepath) => {
     // tod: remove?
-    const programConstructor = this.compileGrammarFileAtPathAndReturnRootConstructor(grammarPath)
-    const program = new programConstructor(programCode)
+    const rootParser = this.compileGrammarFileAtPathAndReturnRootParser(grammarPath)
+    const program = new rootParser(programCode)
     return program.format().toString()
   }
 
@@ -52,7 +52,7 @@ class GrammarCompiler {
         result.replace(
           /}\s*$/,
           `
-if (!module.parent) new ${program.rootNodeTypeId}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+if (!module.parent) new ${program.rootParserId}(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }
 `
         )
@@ -69,12 +69,12 @@ if (!module.parent) new ${program.rootNodeTypeId}(TreeNode.fromDisk(process.argv
     return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.browser, usePrettier)
   }
 
-  static compileGrammarFileAtPathAndReturnRootConstructor = (grammarPath: treeNotationTypes.filepath) => {
+  static compileGrammarFileAtPathAndReturnRootParser = (grammarPath: treeNotationTypes.filepath) => {
     // todo: remove
     if (!fs.existsSync(grammarPath)) throw new Error(`Grammar file does not exist: ${grammarPath}`)
     const grammarCode = fs.readFileSync(grammarPath, "utf8")
     const grammarProgram = new HandGrammarProgram(grammarCode)
-    return <any>grammarProgram.compileAndReturnRootConstructor()
+    return <any>grammarProgram.compileAndReturnRootParser()
   }
 
   static combineFiles = (globPatterns: treeNotationTypes.globPattern[]) => {

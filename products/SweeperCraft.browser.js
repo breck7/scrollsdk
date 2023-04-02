@@ -340,9 +340,9 @@ const linkToObject = link => {
   }
   return obj
 }
-class SweeperCraftApp extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class SweeperCraftApp extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       headerComponent,
       boardComponent,
       controlsComponent,
@@ -606,7 +606,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
     return classes
   }
 }
-class AbstractSweeperCraftComponent extends AbstractTreeComponent {}
+class AbstractSweeperCraftComponent extends AbstractTreeComponentParser {}
 class headerComponent extends AbstractSweeperCraftComponent {
   async treeComponentDidMount() {
     await super.treeComponentDidMount()
@@ -664,8 +664,8 @@ class headerComponent extends AbstractSweeperCraftComponent {
   }
 }
 class boardComponent extends AbstractSweeperCraftComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       rowComponent: rowComponent
     })
   }
@@ -679,9 +679,9 @@ class boardComponent extends AbstractSweeperCraftComponent {
     return super.getCssClasses().concat([this._getCssGameClass()])
   }
 }
-class rowComponent extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class rowComponent extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       squareComponent: squareComponent
     })
   }
@@ -776,7 +776,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
     this.setContent(this._getGameLink())
   }
 }
-class shortcutsTableComponent extends AbstractTreeComponent {
+class shortcutsTableComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `div
  id shortcutsTableComponent

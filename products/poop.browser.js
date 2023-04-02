@@ -1,16 +1,16 @@
 {
-  class poopNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        this._getBlobNodeCatchAllNodeType(),
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { "🌄": dayNode }),
+  class poopParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        this._getBlobParserCatchAllParser(),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "🌄": dayParser }),
         [
-          { regex: /💩/, nodeConstructor: bowelNode },
-          { regex: /✨/, nodeConstructor: bladderNode },
-          { regex: /🍼/, nodeConstructor: bottleNode },
-          { regex: /😴/, nodeConstructor: sleep4Node },
-          { regex: /😀/, nodeConstructor: awakeNode },
-          { regex: /❤️/, nodeConstructor: memoryNode }
+          { regex: /💩/, parser: bowelParser },
+          { regex: /✨/, parser: bladderParser },
+          { regex: /🍼/, parser: bottleParser },
+          { regex: /😴/, parser: sleep4Parser },
+          { regex: /😀/, parser: awakeParser },
+          { regex: /❤️/, parser: memoryParser }
         ]
       )
     }
@@ -19,7 +19,7 @@
       let lastTime = ""
       const rows = this.topDownArray
         .map(node => {
-          if (node.doesExtend("dayNode")) {
+          if (node.doesExtend("dayParser")) {
             day = node.getDay()
             return undefined
           }
@@ -51,7 +51,7 @@ eventTypeCell
  enum 💩 ✨ 🍼 😴 😀 ❤️
 
 // Line parsers
-poopNode
+poopParser
  description POOP is the Programming Option for Overtired Parents. It is a Tree Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events and compile them to CSV. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes. POOP is an anyfix language. You can put the time first or the event type first. You can write the actual symbols, or, if it is 3am, you can just use some of the natural medium to record the event type.
  root
  tags nonPrefixGrammar
@@ -62,7 +62,7 @@ poopNode
    let lastTime = ""
    const rows = this.topDownArray
     .map(node => {
-     if (node.doesExtend("dayNode")) {
+     if (node.doesExtend("dayParser")) {
       day = node.getDay()
       return undefined
      }
@@ -72,13 +72,13 @@ poopNode
     .filter(identity => identity)
    return \`date,time,event,notes\\n\` + rows.join("\\n")
   }
- inScope abstractEventNode dayNode
+ inScope abstractEventParser dayParser
  example
   🌄 8 29 2019
   😀 4
   ✨ 6
   💩 630
-abstractEventNode
+abstractEventParser
  cellParser omnifix
  cells eventTypeCell
  catchAllCellType timeIntCell
@@ -93,49 +93,49 @@ abstractEventNode
   compile(day, lastTime) {
    return \`\${day},\${lastTime},\${this.eventType},\${this.getNotes()}\`
   }
-bowelNode
+bowelParser
  crux 💩
  pattern 💩
- extends abstractEventNode
+ extends abstractEventParser
  description Bowel movement.
  string eventType bowelMovement
-bladderNode
+bladderParser
  crux ✨
  pattern ✨
  description Bladder movement.
- extends abstractEventNode
+ extends abstractEventParser
  string eventType bladderMovement
-bottleNode
+bottleParser
  crux 🍼
  pattern 🍼
- extends abstractEventNode
+ extends abstractEventParser
  description Feeding.
  string eventType feeding
-sleep4Node
+sleep4Parser
  crux 😴
  pattern 😴
  description Sleep.
- extends abstractEventNode
+ extends abstractEventParser
  string eventType asleep
-awakeNode
+awakeParser
  crux 😀
  pattern 😀
  description I'm awake!
- extends abstractEventNode
+ extends abstractEventParser
  string eventType awoke
-memoryNode
+memoryParser
  crux ❤️
  pattern ❤️
  cells eventTypeCell
  catchAllCellType memoryDescriptionCell
  description Special memory.
- extends abstractEventNode
+ extends abstractEventParser
  string eventType memory
  javascript
   getNotes() {
    return Utils.removeNonAscii(this.getLine()).trim()
   }
-dayNode
+dayParser
  crux 🌄
  description We survived another day!
  cells symbolCell monthIntCell dayIntCell yearIntCell
@@ -148,10 +148,10 @@ dayNode
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = poopNode
+    static rootParser = poopParser
   }
 
-  class abstractEventNode extends GrammarBackedNode {
+  class abstractEventParser extends GrammarBackedNode {
     get eventTypeCell() {
       return this.getWord(0)
     }
@@ -170,37 +170,37 @@ dayNode
     }
   }
 
-  class bowelNode extends abstractEventNode {
+  class bowelParser extends abstractEventParser {
     get eventType() {
       return `bowelMovement`
     }
   }
 
-  class bladderNode extends abstractEventNode {
+  class bladderParser extends abstractEventParser {
     get eventType() {
       return `bladderMovement`
     }
   }
 
-  class bottleNode extends abstractEventNode {
+  class bottleParser extends abstractEventParser {
     get eventType() {
       return `feeding`
     }
   }
 
-  class sleep4Node extends abstractEventNode {
+  class sleep4Parser extends abstractEventParser {
     get eventType() {
       return `asleep`
     }
   }
 
-  class awakeNode extends abstractEventNode {
+  class awakeParser extends abstractEventParser {
     get eventType() {
       return `awoke`
     }
   }
 
-  class memoryNode extends abstractEventNode {
+  class memoryParser extends abstractEventParser {
     get eventTypeCell() {
       return this.getWord(0)
     }
@@ -215,7 +215,7 @@ dayNode
     }
   }
 
-  class dayNode extends GrammarBackedNode {
+  class dayParser extends GrammarBackedNode {
     get symbolCell() {
       return this.getWord(0)
     }
@@ -235,5 +235,5 @@ dayNode
     }
   }
 
-  window.poopNode = poopNode
+  window.poopParser = poopParser
 }

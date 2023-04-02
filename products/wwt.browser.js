@@ -1,12 +1,12 @@
 {
-  class wwtNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(errorNode, undefined, [
-        { regex: /EnumType$/, nodeConstructor: enumTypeDeclarationNode },
-        { regex: /UnionType$/, nodeConstructor: unionTypeDeclarationNode },
-        { regex: /MapType$/, nodeConstructor: mapTypeDeclarationNode },
-        { regex: /Type$/, nodeConstructor: typeDeclarationNode },
-        { regex: /Interface$/, nodeConstructor: interfaceDeclarationNode }
+  class wwtParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(errorParser, undefined, [
+        { regex: /EnumType$/, parser: enumTypeDeclarationParser },
+        { regex: /UnionType$/, parser: unionTypeDeclarationParser },
+        { regex: /MapType$/, parser: mapTypeDeclarationParser },
+        { regex: /Type$/, parser: typeDeclarationParser },
+        { regex: /Interface$/, parser: interfaceDeclarationParser }
       ])
     }
     compile() {
@@ -49,99 +49,99 @@ commentCell
  highlightScope comment
 
 // Line parsers
-wwtNode
+wwtParser
  description WorldWideTypes. A work in progress. A simple Tree Language for only declaring types and interfaces that compiles to TypeScript, and in the future other langs.
  root
- inScope abstractTypeDeclarationNode interfaceDeclarationNode
- catchAllNodeType errorNode
+ inScope abstractTypeDeclarationParser interfaceDeclarationParser
+ catchAllParser errorParser
  compilesTo ts
  javascript
   compile() {
    return \`namespace {\\n \` + super.compile().replace(/\\n\\s*\\n+/g, "\\n") + "\\n}"
   }
-commentNode
- baseNodeType blobNode
+commentParser
+ baseParser blobParser
  cells commentKeywordCell
  catchAllCellType commentCell
  compiler
   stringTemplate /* {commentCell} */
  crux comment
-errorNode
- baseNodeType errorNode
-abstractTypeDeclarationNode
- inScope commentNode
-enumTypeDeclarationNode
- extends abstractTypeDeclarationNode
+errorParser
+ baseParser errorParser
+abstractTypeDeclarationParser
+ inScope commentParser
+enumTypeDeclarationParser
+ extends abstractTypeDeclarationParser
  cells enumTypeIdCell
- inScope enumOptionsNode
+ inScope enumOptionsParser
  pattern EnumType$
-unionTypeDeclarationNode
+unionTypeDeclarationParser
  cells unionTypeIdCell
- extends abstractTypeDeclarationNode
+ extends abstractTypeDeclarationParser
  pattern UnionType$
- inScope unionTypesNode
-mapTypeDeclarationNode
+ inScope unionTypesParser
+mapTypeDeclarationParser
  cells mapTypeIdCell
- extends abstractTypeDeclarationNode
+ extends abstractTypeDeclarationParser
  pattern MapType$
- inScope keyNode valueNode
-typeDeclarationNode
+ inScope keyParser valueParser
+typeDeclarationParser
  cells typeDecIdCell
- extends abstractTypeDeclarationNode
+ extends abstractTypeDeclarationParser
  pattern Type$
- inScope extendsNode
+ inScope extendsParser
  compiler
   stringTemplate export declare type {typeDecIdCell} = {extends}
-extendsNode
+extendsParser
  cells keywordCell typeIdCell
  required
  compiler
   stringTemplate 
  crux extends
-enumOptionsNode
+enumOptionsParser
  cells keywordCell
  catchAllCellType enumOptionCell
  crux enumOptions
-unionTypesNode
+unionTypesParser
  cells keywordCell
  catchAllCellType typeIdCell
  crux unionTypes
-keyNode
+keyParser
  cells keywordCell stringKeyCell typeIdCell
  crux key
-valueNode
+valueParser
  cells keywordCell typeIdCell
  crux value
-interfaceDeclarationNode
+interfaceDeclarationParser
  pattern Interface$
  cells interfaceIdCell
- inScope commentNode fieldDeclarationNode
+ inScope commentParser fieldDeclarationParser
  compiler
   stringTemplate export interface {interfaceIdCell} {
   closeChildren }
-fieldDeclarationNode
+fieldDeclarationParser
  pattern Field
  cells fieldIdCell typeIdCell
- inScope optionalNode arrayNode
+ inScope optionalParser arrayParser
  compiler
   stringTemplate {fieldIdCell}: {typeIdCell}
-optionalNode
+optionalParser
  description Is this field optional?
  cells keywordCell
  crux optional
-arrayNode
+arrayParser
  description Does this take an array
  cells keywordCell
  crux array`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = wwtNode
+    static rootParser = wwtParser
   }
 
-  class commentNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(this._getBlobNodeCatchAllNodeType())
+  class commentParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
     }
     getErrors() {
       return []
@@ -154,27 +154,27 @@ arrayNode
     }
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class abstractTypeDeclarationNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class abstractTypeDeclarationParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { comment: commentParser }),
         undefined
       )
     }
   }
 
-  class enumTypeDeclarationNode extends abstractTypeDeclarationNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class enumTypeDeclarationParser extends abstractTypeDeclarationParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { enumOptions: enumOptionsNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { enumOptions: enumOptionsParser }),
         undefined
       )
     }
@@ -183,11 +183,11 @@ arrayNode
     }
   }
 
-  class unionTypeDeclarationNode extends abstractTypeDeclarationNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class unionTypeDeclarationParser extends abstractTypeDeclarationParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { unionTypes: unionTypesNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { unionTypes: unionTypesParser }),
         undefined
       )
     }
@@ -196,11 +196,11 @@ arrayNode
     }
   }
 
-  class mapTypeDeclarationNode extends abstractTypeDeclarationNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class mapTypeDeclarationParser extends abstractTypeDeclarationParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { key: keyNode, value: valueNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { key: keyParser, value: valueParser }),
         undefined
       )
     }
@@ -209,11 +209,11 @@ arrayNode
     }
   }
 
-  class typeDeclarationNode extends abstractTypeDeclarationNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class typeDeclarationParser extends abstractTypeDeclarationParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { extends: extendsNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { extends: extendsParser }),
         undefined
       )
     }
@@ -222,7 +222,7 @@ arrayNode
     }
   }
 
-  class extendsNode extends GrammarBackedNode {
+  class extendsParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -231,7 +231,7 @@ arrayNode
     }
   }
 
-  class enumOptionsNode extends GrammarBackedNode {
+  class enumOptionsParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -240,7 +240,7 @@ arrayNode
     }
   }
 
-  class unionTypesNode extends GrammarBackedNode {
+  class unionTypesParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -249,7 +249,7 @@ arrayNode
     }
   }
 
-  class keyNode extends GrammarBackedNode {
+  class keyParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -261,7 +261,7 @@ arrayNode
     }
   }
 
-  class valueNode extends GrammarBackedNode {
+  class valueParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -270,22 +270,24 @@ arrayNode
     }
   }
 
-  class interfaceDeclarationNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(undefined, Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { comment: commentNode }), [
-        { regex: /Field/, nodeConstructor: fieldDeclarationNode }
-      ])
+  class interfaceDeclarationParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        undefined,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { comment: commentParser }),
+        [{ regex: /Field/, parser: fieldDeclarationParser }]
+      )
     }
     get interfaceIdCell() {
       return this.getWord(0)
     }
   }
 
-  class fieldDeclarationNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class fieldDeclarationParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { optional: optionalNode, array: arrayNode }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { optional: optionalParser, array: arrayParser }),
         undefined
       )
     }
@@ -297,17 +299,17 @@ arrayNode
     }
   }
 
-  class optionalNode extends GrammarBackedNode {
+  class optionalParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class arrayNode extends GrammarBackedNode {
+  class arrayParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  window.wwtNode = wwtNode
+  window.wwtParser = wwtParser
 }

@@ -31,12 +31,12 @@ namespace treeNotationTypes {
 
   export interface regexTest {
     regex: RegExp
-    nodeConstructor: TreeNodeConstructor
+    parser: TreeParser
   }
 
   export interface regexTestDef {
     regex: string
-    nodeConstructor: string
+    parser: string
   }
 
   export interface SerializedTreeNode {
@@ -53,7 +53,7 @@ namespace treeNotationTypes {
   export declare type queryStringMap = { [firstWord: string]: any }
   export declare type htmlString = string
   export declare type xmlString = string
-  export declare type dataTable = (any[])[]
+  export declare type dataTable = any[][]
   export declare type delimiter = string
 
   export declare type rawRowJavascriptObject = Object
@@ -88,7 +88,6 @@ namespace treeNotationTypes {
   export declare type everyFn = (node: treeNode, index: int) => boolean
   export declare type nodeToStringFn = (node: treeNode) => string
   export declare type formatFunction = (val: string, rowIndex: positiveInt, colIndex: positiveInt) => string
-  export declare type nodeIdRenameMap = { [oldNodeTypeId: string]: string }
   export declare type typeScriptCode = string
   export declare type javascriptCode = string
   export declare type id = string
@@ -98,7 +97,7 @@ namespace treeNotationTypes {
 
   export declare type idAccessorFunction = (tree: treeNode) => id
 
-  export declare type nodeTypeId = string // todo: add character restrictions.
+  export declare type parserId = string // todo: add character restrictions.
   export declare type cellTypeId = string // todo: add character restrictions.
 
   export declare type semanticVersion = string
@@ -110,16 +109,15 @@ namespace treeNotationTypes {
 
   export declare type children = string | Object | treeNode | any // todo: specify better.
 
-  export declare type TreeNodeConstructor = Function // A constructor extending TreeNodeConstructor
-  export declare type RunTimeNodeConstructor = Function // A constructor extending AbstractRuntimeNode
-  export declare type TreeProgramConstructor = Function // A constructor extending AbstractRuntimeNode
+  export declare type TreeParser = Function // A constructor extending TreeParser
+  export declare type TreeProgramParser = Function // A constructor extending AbstractRuntimeNode
   export declare type treeProgram = treeNode // A constructor extending AbstractRuntimeNode
 
   export declare type upgradeFunction = (tree: treeNode) => treeNode
   export declare type upgradeToMap = { [toVersion: string]: upgradeFunction }
   export declare type upgradeFromMap = { [fromVersion: string]: upgradeToMap }
 
-  export declare type firstWordToNodeConstructorMap = { [firstWord: string]: TreeNodeConstructor }
+  export declare type firstWordToParserMap = { [firstWord: string]: TreeParser }
 }
 
 export { treeNotationTypes }

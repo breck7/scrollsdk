@@ -67,13 +67,13 @@ enum TreeNotationConstants {
   extends = "extends"
 }
 
-class Parser {
+class ParserCombinator {
   // todo: should getErrors be under here? At least for certain types of errors?
-  private _catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor
+  private _catchAllParser: treeNotationTypes.TreeParser
   private _firstWordMap: Map<string, Function>
   private _regexTests: treeNotationTypes.regexTest[]
-  constructor(catchAllNodeConstructor: treeNotationTypes.TreeNodeConstructor, firstWordMap: treeNotationTypes.firstWordToNodeConstructorMap = {}, regexTests: treeNotationTypes.regexTest[] = undefined) {
-    this._catchAllNodeConstructor = catchAllNodeConstructor
+  constructor(catchAllParser: treeNotationTypes.TreeParser, firstWordMap: treeNotationTypes.firstWordToParserMap = {}, regexTests: treeNotationTypes.regexTest[] = undefined) {
+    this._catchAllParser = catchAllParser
     this._firstWordMap = new Map(Object.entries(firstWordMap))
     this._regexTests = regexTests
   }
@@ -89,7 +89,7 @@ class Parser {
 
   // todo: remove
   _getFirstWordMapAsObject() {
-    let obj: treeNotationTypes.firstWordToNodeConstructorMap = {}
+    let obj: treeNotationTypes.firstWordToParserMap = {}
     const map = this._getFirstWordMap()
     for (let [key, val] of map.entries()) {
       obj[key] = val
@@ -97,24 +97,24 @@ class Parser {
     return obj
   }
 
-  _getNodeConstructor(line: string, contextNode: treeNotationTypes.treeNode, wordBreakSymbol = " "): treeNotationTypes.TreeNodeConstructor {
-    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getConstructorFromRegexTests(line) || this._getCatchAllNodeConstructor(contextNode)
+  _getParser(line: string, contextNode: treeNotationTypes.treeNode, wordBreakSymbol = " "): treeNotationTypes.TreeParser {
+    return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextNode)
   }
 
-  _getCatchAllNodeConstructor(contextNode: treeNotationTypes.treeNode) {
-    if (this._catchAllNodeConstructor) return this._catchAllNodeConstructor
+  _getCatchAllParser(contextNode: treeNotationTypes.treeNode) {
+    if (this._catchAllParser) return this._catchAllParser
 
     const parent = contextNode.parent
 
-    if (parent) return parent._getParser()._getCatchAllNodeConstructor(parent)
+    if (parent) return parent._getParser()._getCatchAllParser(parent)
 
     return contextNode.constructor
   }
 
-  private _getConstructorFromRegexTests(line: string): treeNotationTypes.TreeNodeConstructor {
+  private _getParserFromRegexTests(line: string): treeNotationTypes.TreeParser {
     if (!this._regexTests) return undefined
     const hit = this._regexTests.find(test => test.regex.test(line))
-    if (hit) return hit.nodeConstructor
+    if (hit) return hit.parser
     return undefined
   }
 
@@ -205,7 +205,7 @@ class TreeNode extends AbstractNode {
     return this.edgeSymbol.repeat(indentLevel)
   }
 
-  protected _getTopDownArray<NodeType = TreeNode>(arr: NodeType[]) {
+  protected _getTopDownArray<Parser = TreeNode>(arr: Parser[]) {
     this.forEach(child => {
       arr.push(child)
       child._getTopDownArray(arr)
@@ -370,7 +370,7 @@ class TreeNode extends AbstractNode {
     return this._getWords(0)
   }
 
-  doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
+  doesExtend(parserId: treeNotationTypes.parserId) {
     return false
   }
 
@@ -1645,8 +1645,8 @@ class TreeNode extends AbstractNode {
   }
 
   protected _insertLineAndChildren(line: string, children?: treeNotationTypes.children, index = this.length) {
-    const nodeConstructor: any = this._getParser()._getNodeConstructor(line, this)
-    const newNode = new nodeConstructor(children, line, this)
+    const parser: any = this._getParser()._getParser(line, this)
+    const newNode = new parser(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
 
     this._getChildrenArray().splice(adjustedIndex, 0, newNode)
@@ -1675,8 +1675,8 @@ class TreeNode extends AbstractNode {
       }
       const lineContent = line.substr(currentIndentCount)
       const parent = parentStack[parentStack.length - 1]
-      const nodeConstructor: any = parent._getParser()._getNodeConstructor(lineContent, parent)
-      lastNode = new nodeConstructor(undefined, lineContent, parent)
+      const parser: any = parent._getParser()._getParser(lineContent, parent)
+      lastNode = new parser(undefined, lineContent, parent)
       parent._getChildrenArray().push(lastNode)
     })
   }
@@ -1692,21 +1692,19 @@ class TreeNode extends AbstractNode {
     return this.map(node => node.content)
   }
 
-  // todo: rename to getChildrenByConstructor(?)
-  getChildrenByNodeConstructor(constructor: Function) {
-    return this.filter(child => child instanceof constructor)
+  getChildrenByParser(parser: Function) {
+    return this.filter(child => child instanceof parser)
   }
 
-  getAncestorByNodeConstructor(constructor: Function): TreeNode | undefined {
-    if (this instanceof constructor) return this
+  getAncestorByParser(parser: Function): TreeNode | undefined {
+    if (this instanceof parser) return this
     if (this.isRoot()) return undefined
     const parent = this.parent
-    return parent instanceof constructor ? parent : parent.getAncestorByNodeConstructor(constructor)
+    return parent instanceof parser ? parent : parent.getAncestorByParser(parser)
   }
 
-  // todo: rename to getNodeByConstructor(?)
-  getNodeByType(constructor: Function) {
-    return this.find(child => child instanceof constructor)
+  getNodeByParser(parser: Function) {
+    return this.find(child => child instanceof parser)
   }
 
   indexOfLast(firstWord: word): int {
@@ -1879,15 +1877,15 @@ class TreeNode extends AbstractNode {
     return this.isRoot() || this.parent.isRoot() ? undefined : this.parent.parent
   }
 
-  private static _parsers = new Map<any, Parser>()
+  private static _parserCombinators = new Map<any, ParserCombinator>()
 
   _getParser() {
-    if (!TreeNode._parsers.has(this.constructor)) TreeNode._parsers.set(this.constructor, this.createParser())
-    return TreeNode._parsers.get(this.constructor)
+    if (!TreeNode._parserCombinators.has(this.constructor)) TreeNode._parserCombinators.set(this.constructor, this.createParserCombinator())
+    return TreeNode._parserCombinators.get(this.constructor)
   }
 
-  createParser(): Parser {
-    return new Parser(this.constructor)
+  createParserCombinator(): ParserCombinator {
+    return new ParserCombinator(this.constructor)
   }
 
   private static _uniqueId: int
@@ -1903,7 +1901,7 @@ class TreeNode extends AbstractNode {
     return (<any>FileFormat)[format] ? format : FileFormat.tree
   }
 
-  static Parser = Parser
+  static ParserCombinator = ParserCombinator
 
   static iris = `sepal_length,sepal_width,petal_length,petal_width,species
 6.1,3,4.9,1.8,virginica
@@ -3043,7 +3041,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "72.1.0"
+  static getVersion = () => "73.0.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)
@@ -3087,8 +3085,8 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
   }
 
   // todo: be more specific with the param
-  _getChildrenByNodeConstructorInExtended(constructor: Function): TreeNode[] {
-    return Utils.flatten(<any>this._getAncestorsArray().map(node => node.getChildrenByNodeConstructor(constructor)))
+  _getChildrenByParserInExtended(parser: Function): TreeNode[] {
+    return Utils.flatten(<any>this._getAncestorsArray().map(node => node.getChildrenByParser(parser)))
   }
 
   _getExtendedParent() {
@@ -3111,8 +3109,8 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
       .join("\n")
   }
 
-  _doesExtend(nodeTypeId: treeNotationTypes.nodeTypeId) {
-    return this._getAncestorSet().has(nodeTypeId)
+  _doesExtend(parserId: treeNotationTypes.parserId) {
+    return this._getAncestorSet().has(parserId)
   }
 
   _getAncestorSet() {
@@ -3122,7 +3120,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   abstract get id(): string
 
-  private _cache_ancestorSet: Set<treeNotationTypes.nodeTypeId>
+  private _cache_ancestorSet: Set<treeNotationTypes.parserId>
   private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
 
   // Note: the order is: [this, parent, grandParent, ...]

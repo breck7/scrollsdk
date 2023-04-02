@@ -5,22 +5,22 @@
   const { HandGrammarProgram } = require("./GrammarLanguage.js")
   const { GrammarBackedNode } = require("./GrammarLanguage.js")
 
-  class swarmNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        errorNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          test: testNode,
-          testOnly: testOnlyNode,
-          skipTest: skipTestNode,
-          "#!": hashbangNode,
-          arrange: arrangeNode
+  class swarmParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        errorParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          test: testParser,
+          testOnly: testOnlyParser,
+          skipTest: skipTestParser,
+          "#!": hashbangParser,
+          arrange: arrangeParser
         }),
         undefined
       )
     }
-    getArrangeNode() {
-      return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
+    getArrangeParser() {
+      return this.getChildInstancesOfParserId("arrangeParser")[0]
     }
     async execute(filepath) {
       const tree = new TestRacer(this.compileToRacer(filepath))
@@ -29,9 +29,9 @@
     }
     compileToRacer(filepath) {
       const testBlocks = {}
-      this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").forEach(testNode => {
-        const prefix = testNode.racerPrefix || ""
-        testBlocks[prefix + testNode.content] = testNode.toTestRacerFunction(filepath)
+      this.getChildInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
+        const prefix = testParser.racerPrefix || ""
+        testBlocks[prefix + testParser.content] = testParser.toTestRacerFunction(filepath)
       })
       const files = {}
       files[filepath] = testBlocks
@@ -81,14 +81,14 @@ typeOfOptionCell
  enum object boolean function number string undefined
 
 // Line parsers
-swarmNode
+swarmParser
  root
  description A prefix Tree Language for unit testing of classes.
- inScope hashbangNode arrangeNode abstractTestBlockNode
- catchAllNodeType errorNode
+ inScope hashbangParser arrangeParser abstractTestBlockParser
+ catchAllParser errorParser
  javascript
-  getArrangeNode() {
-   return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
+  getArrangeParser() {
+   return this.getChildInstancesOfParserId("arrangeParser")[0]
   }
   async execute(filepath) {
    const tree = new TestRacer(this.compileToRacer(filepath))
@@ -97,15 +97,15 @@ swarmNode
   }
   compileToRacer(filepath) {
    const testBlocks = {}
-   this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").forEach(testNode => {
-    const prefix = testNode.racerPrefix || ""
-    testBlocks[prefix + testNode.content] = testNode.toTestRacerFunction(filepath)
+   this.getChildInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
+    const prefix = testParser.racerPrefix || ""
+    testBlocks[prefix + testParser.content] = testParser.toTestRacerFunction(filepath)
    })
    const files = {}
    files[filepath] = testBlocks
    return files
   }
-abstractAssertionNode
+abstractAssertionParser
  javascript
   async execute(arrangedInstance) {
    //todo: refactor. there is clearly a difference between sync and async that we are not
@@ -143,10 +143,10 @@ abstractAssertionNode
    return this.content
   }
  cells assertionKeywordCell
-assertParagraphIsNode
+assertParagraphIsParser
  crux assertParagraphIs
  description When your expected value is a multiline string.
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  javascript
   getExpected() {
    return this.childrenToString()
@@ -154,8 +154,8 @@ assertParagraphIsNode
   getSyncExpected() {
    return this.childrenToString()
   }
- extends abstractAssertionNode
-assertLengthIsNode
+ extends abstractAssertionParser
+assertLengthIsParser
  crux assertLengthIs
  description Intake is an array, and checks if the length of array matches expected.
  cells assertionKeywordCell intCell
@@ -163,8 +163,8 @@ assertLengthIsNode
   parseActual(actual) {
    return actual.length
   }
- extends abstractAssertionNode
-assertStringExcludesNode
+ extends abstractAssertionParser
+assertStringExcludesParser
  crux assertStringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyCell
@@ -179,8 +179,8 @@ assertStringExcludesNode
    this.equal(result, true, message)
    return result
   }
- extends abstractAssertionNode
-assertStringIncludesNode
+ extends abstractAssertionParser
+assertStringIncludesParser
  crux assertStringIncludes
  catchAllCellType anyCell
  description Converts the input to string and see if the string contains the provided string
@@ -190,13 +190,13 @@ assertStringIncludesNode
    this.equal(result, true, message)
    return result
   }
- extends abstractAssertionNode
-assertStringIsNode
+ extends abstractAssertionParser
+assertStringIsParser
  crux assertStringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllCellType anyCell
- extends abstractAssertionNode
-assertTypeIsNode
+ extends abstractAssertionParser
+assertTypeIsParser
  crux assertTypeIs
  description Assert result is one of Javascript's 6 typeof types.
  cells assertionKeywordCell typeOfOptionCell
@@ -204,27 +204,27 @@ assertTypeIsNode
   parseActual(actual) {
    return typeof actual
   }
- extends abstractAssertionNode
-abstractArrangeFlagNode
+ extends abstractAssertionParser
+abstractArrangeFlagParser
  cells keywordCell
-arrangeAsyncNode
+arrangeAsyncParser
  description Add this flag in the arrange node to test async methods.
- extends abstractArrangeFlagNode
+ extends abstractArrangeFlagParser
  crux async
-arrangeRequireNode
+arrangeRequireParser
  description Pass in the filename to require for nodejs tests.
  crux require
  cells keywordCell filepathCell
  catchAllCellType anyCell
-arrangeStaticNode
+arrangeStaticParser
  crux static
  description Add this to the arrange node to import class directly without initiating it for static method testing.
- extends abstractArrangeFlagNode
-abstractTestBlockNode
+ extends abstractArrangeFlagParser
+abstractTestBlockParser
  catchAllCellType anyCell
  javascript
-  getArrangeNode() {
-   return this.getNode("arrange") || this.parent.getArrangeNode()
+  getArrangeParser() {
+   return this.getNode("arrange") || this.parent.getArrangeParser()
   }
   setEqualMethod(equal) {
    this._equal = equal
@@ -237,9 +237,9 @@ abstractTestBlockNode
    return this._equal
   }
   toTestRacerFunction(programFilepath) {
-   const arrangeNode = this.getArrangeNode()
-   const arrangedInstance = arrangeNode.arrange(programFilepath)
-   const executeMethod = arrangeNode.isAsync() ? "execute" : "executeSync"
+   const arrangeParser = this.getArrangeParser()
+   const arrangedInstance = arrangeParser.arrange(programFilepath)
+   const executeMethod = arrangeParser.isAsync() ? "execute" : "executeSync"
    return async equal => {
     this.setEqualMethod(equal)
     const promises = this.map(async childAction => {
@@ -249,29 +249,29 @@ abstractTestBlockNode
     await Promise.all(promises)
    }
   }
- inScope arrangeNode
- catchAllNodeType actNode
+ inScope arrangeParser
+ catchAllParser actParser
  cells keywordCell
-testNode
+testParser
  description Basic test block.
- extends abstractTestBlockNode
+ extends abstractTestBlockParser
  crux test
-testOnlyNode
+testOnlyParser
  description If set, only this test block will be run.
- extends abstractTestBlockNode
+ extends abstractTestBlockParser
  string racerPrefix _
  crux testOnly
-skipTestNode
+skipTestParser
  description If you want to skip running a test.
- extends abstractTestBlockNode
+ extends abstractTestBlockParser
  string racerPrefix $
  crux skipTest
-hashbangNode
+hashbangParser
  crux #!
  description Standard bash hashbang line.
  cells hashBangKeywordCell hashBangCell
  catchAllCellType hashBangCell
-arrangeNode
+arrangeParser
  crux arrange
  javascript
   isAsync() {
@@ -279,8 +279,8 @@ arrangeNode
   }
   arrange(programFilepath) {
    const requiredClass = this._getRequiredClass(programFilepath)
-   const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithParagraphNode")[0]
-   const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
+   const constructorArgParser = this.getChildInstancesOfParserId("constructWithParagraphParser")[0]
+   const param = constructorArgParser ? constructorArgParser.childrenToString() : undefined
    return this.has("static") ? requiredClass : new requiredClass(param)
   }
   _getRequiredClass(programFilepath) {
@@ -305,16 +305,16 @@ arrangeNode
    return theClass
   }
   executeSync() {}
- inScope arrangeAsyncNode arrangeRequireNode arrangeStaticNode constructWithParagraphNode todoNode
+ inScope arrangeAsyncParser arrangeRequireParser arrangeStaticParser constructWithParagraphParser todoParser
  cells keywordCell
-withParagraphNode
+withParagraphParser
  description Pass in a multiline string as a command arg.
  javascript
   executeSync() {}
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  cells parameterKeywordCell
  crux withParagraph
-actNode
+actParser
  javascript
   getTestBlock() {
    return this.parent
@@ -323,8 +323,8 @@ actNode
    return this.getTestBlock().getEqualFn()
   }
   _getActArgs() {
-   const paragraphActNodes = this.getChildInstancesOfNodeTypeId("withParagraphNode")
-   if (paragraphActNodes.length) return paragraphActNodes.map(arg => arg.childrenToString())
+   const paragraphActParsers = this.getChildInstancesOfParserId("withParagraphParser")
+   if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.childrenToString())
    return this.getWordsFrom(1)
   }
   _act(arrangedInstance) {
@@ -344,35 +344,35 @@ actNode
   }
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyCell
- catchAllNodeType actNode
- inScope withParagraphNode abstractAssertionNode
+ catchAllParser actParser
+ inScope withParagraphParser abstractAssertionParser
  cells commandCell
-constructWithParagraphNode
+constructWithParagraphParser
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  cells keywordCell
  crux constructWithParagraph
-errorNode
- baseNodeType errorNode
-paragraphLineNode
+errorParser
+ baseParser errorParser
+paragraphLineParser
  catchAllCellType anyCell
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  cells anyCell
-todoNode
+todoParser
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
  catchAllCellType todoCell
- catchAllNodeType todoNode
+ catchAllParser todoParser
  crux todo
  cells todoKeywordCell`)
     get handGrammarProgram() {
       return this.constructor.cachedHandGrammarProgramRoot
     }
-    static rootNodeTypeConstructor = swarmNode
+    static rootParser = swarmParser
   }
 
-  class abstractAssertionNode extends GrammarBackedNode {
+  class abstractAssertionParser extends GrammarBackedNode {
     get assertionKeywordCell() {
       return this.getWord(0)
     }
@@ -413,9 +413,9 @@ todoNode
     }
   }
 
-  class assertParagraphIsNode extends abstractAssertionNode {
-    createParser() {
-      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
+  class assertParagraphIsParser extends abstractAssertionParser {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     getExpected() {
       return this.childrenToString()
@@ -425,7 +425,7 @@ todoNode
     }
   }
 
-  class assertLengthIsNode extends abstractAssertionNode {
+  class assertLengthIsParser extends abstractAssertionParser {
     get assertionKeywordCell() {
       return this.getWord(0)
     }
@@ -437,7 +437,7 @@ todoNode
     }
   }
 
-  class assertStringExcludesNode extends abstractAssertionNode {
+  class assertStringExcludesParser extends abstractAssertionParser {
     get anyCell() {
       return this.getWordsFrom(0)
     }
@@ -453,7 +453,7 @@ todoNode
     }
   }
 
-  class assertStringIncludesNode extends abstractAssertionNode {
+  class assertStringIncludesParser extends abstractAssertionParser {
     get anyCell() {
       return this.getWordsFrom(0)
     }
@@ -464,13 +464,13 @@ todoNode
     }
   }
 
-  class assertStringIsNode extends abstractAssertionNode {
+  class assertStringIsParser extends abstractAssertionParser {
     get anyCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class assertTypeIsNode extends abstractAssertionNode {
+  class assertTypeIsParser extends abstractAssertionParser {
     get assertionKeywordCell() {
       return this.getWord(0)
     }
@@ -482,15 +482,15 @@ todoNode
     }
   }
 
-  class abstractArrangeFlagNode extends GrammarBackedNode {
+  class abstractArrangeFlagParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
   }
 
-  class arrangeAsyncNode extends abstractArrangeFlagNode {}
+  class arrangeAsyncParser extends abstractArrangeFlagParser {}
 
-  class arrangeRequireNode extends GrammarBackedNode {
+  class arrangeRequireParser extends GrammarBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -502,13 +502,13 @@ todoNode
     }
   }
 
-  class arrangeStaticNode extends abstractArrangeFlagNode {}
+  class arrangeStaticParser extends abstractArrangeFlagParser {}
 
-  class abstractTestBlockNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        actNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), { arrange: arrangeNode }),
+  class abstractTestBlockParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        actParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }),
         undefined
       )
     }
@@ -518,8 +518,8 @@ todoNode
     get anyCell() {
       return this.getWordsFrom(1)
     }
-    getArrangeNode() {
-      return this.getNode("arrange") || this.parent.getArrangeNode()
+    getArrangeParser() {
+      return this.getNode("arrange") || this.parent.getArrangeParser()
     }
     setEqualMethod(equal) {
       this._equal = equal
@@ -532,9 +532,9 @@ todoNode
       return this._equal
     }
     toTestRacerFunction(programFilepath) {
-      const arrangeNode = this.getArrangeNode()
-      const arrangedInstance = arrangeNode.arrange(programFilepath)
-      const executeMethod = arrangeNode.isAsync() ? "execute" : "executeSync"
+      const arrangeParser = this.getArrangeParser()
+      const arrangedInstance = arrangeParser.arrange(programFilepath)
+      const executeMethod = arrangeParser.isAsync() ? "execute" : "executeSync"
       return async equal => {
         this.setEqualMethod(equal)
         const promises = this.map(async childAction => {
@@ -546,21 +546,21 @@ todoNode
     }
   }
 
-  class testNode extends abstractTestBlockNode {}
+  class testParser extends abstractTestBlockParser {}
 
-  class testOnlyNode extends abstractTestBlockNode {
+  class testOnlyParser extends abstractTestBlockParser {
     get racerPrefix() {
       return `_`
     }
   }
 
-  class skipTestNode extends abstractTestBlockNode {
+  class skipTestParser extends abstractTestBlockParser {
     get racerPrefix() {
       return `$`
     }
   }
 
-  class hashbangNode extends GrammarBackedNode {
+  class hashbangParser extends GrammarBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -572,16 +572,16 @@ todoNode
     }
   }
 
-  class arrangeNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
+  class arrangeParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          async: arrangeAsyncNode,
-          require: arrangeRequireNode,
-          static: arrangeStaticNode,
-          constructWithParagraph: constructWithParagraphNode,
-          todo: todoNode
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          async: arrangeAsyncParser,
+          require: arrangeRequireParser,
+          static: arrangeStaticParser,
+          constructWithParagraph: constructWithParagraphParser,
+          todo: todoParser
         }),
         undefined
       )
@@ -594,8 +594,8 @@ todoNode
     }
     arrange(programFilepath) {
       const requiredClass = this._getRequiredClass(programFilepath)
-      const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithParagraphNode")[0]
-      const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
+      const constructorArgParser = this.getChildInstancesOfParserId("constructWithParagraphParser")[0]
+      const param = constructorArgParser ? constructorArgParser.childrenToString() : undefined
       return this.has("static") ? requiredClass : new requiredClass(param)
     }
     _getRequiredClass(programFilepath) {
@@ -615,9 +615,9 @@ todoNode
     executeSync() {}
   }
 
-  class withParagraphNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
+  class withParagraphParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get parameterKeywordCell() {
       return this.getWord(0)
@@ -625,18 +625,18 @@ todoNode
     executeSync() {}
   }
 
-  class actNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(
-        actNode,
-        Object.assign(Object.assign({}, super.createParser()._getFirstWordMapAsObject()), {
-          assertParagraphIs: assertParagraphIsNode,
-          assertLengthIs: assertLengthIsNode,
-          assertStringExcludes: assertStringExcludesNode,
-          assertStringIncludes: assertStringIncludesNode,
-          assertStringIs: assertStringIsNode,
-          assertTypeIs: assertTypeIsNode,
-          withParagraph: withParagraphNode
+  class actParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(
+        actParser,
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
+          assertParagraphIs: assertParagraphIsParser,
+          assertLengthIs: assertLengthIsParser,
+          assertStringExcludes: assertStringExcludesParser,
+          assertStringIncludes: assertStringIncludesParser,
+          assertStringIs: assertStringIsParser,
+          assertTypeIs: assertTypeIsParser,
+          withParagraph: withParagraphParser
         }),
         undefined
       )
@@ -654,8 +654,8 @@ todoNode
       return this.getTestBlock().getEqualFn()
     }
     _getActArgs() {
-      const paragraphActNodes = this.getChildInstancesOfNodeTypeId("withParagraphNode")
-      if (paragraphActNodes.length) return paragraphActNodes.map(arg => arg.childrenToString())
+      const paragraphActParsers = this.getChildInstancesOfParserId("withParagraphParser")
+      if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.childrenToString())
       return this.getWordsFrom(1)
     }
     _act(arrangedInstance) {
@@ -675,9 +675,9 @@ todoNode
     }
   }
 
-  class constructWithParagraphNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
+  class constructWithParagraphParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get keywordCell() {
       return this.getWord(0)
@@ -685,15 +685,15 @@ todoNode
     executeSync() {}
   }
 
-  class errorNode extends GrammarBackedNode {
+  class errorParser extends GrammarBackedNode {
     getErrors() {
-      return this._getErrorNodeErrors()
+      return this._getErrorParserErrors()
     }
   }
 
-  class paragraphLineNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(paragraphLineNode, undefined, undefined)
+  class paragraphLineParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
     get anyCell() {
       return this.getWord(0)
@@ -703,9 +703,9 @@ todoNode
     }
   }
 
-  class todoNode extends GrammarBackedNode {
-    createParser() {
-      return new TreeNode.Parser(todoNode, undefined, undefined)
+  class todoParser extends GrammarBackedNode {
+    createParserCombinator() {
+      return new TreeNode.ParserCombinator(todoParser, undefined, undefined)
     }
     get todoKeywordCell() {
       return this.getWord(0)
@@ -715,8 +715,8 @@ todoNode
     }
   }
 
-  module.exports = swarmNode
-  swarmNode
+  module.exports = swarmParser
+  swarmParser
 
-  if (!module.parent) new swarmNode(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new swarmParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

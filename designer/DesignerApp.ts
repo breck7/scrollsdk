@@ -1,21 +1,21 @@
-const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponentParser, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
 const { HandGrammarProgram, GrammarBackedNode, UnknownGrammarProgram } = require("../products/GrammarLanguage.js")
 const { GrammarCodeMirrorMode } = require("../products/GrammarCodeMirrorMode.js")
 
-declare var grammarNode: any
+declare var grammarParser: any
 
 // todo: get typings in here.
 declare var CodeMirror: any
 declare var saveAs: any
 declare var JSZip: any
-declare var dumbdownNode: any
+declare var dumbdownParser: any
 declare type html = string
 
-class DesignerApp extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class DesignerApp extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       githubTriangleComponent,
       samplesComponent,
       tableComponent,
@@ -56,7 +56,7 @@ class DesignerApp extends AbstractTreeComponent {
 
   synthesizeProgramCommand() {
     const grammarProgram = new HandGrammarProgram(this.getGrammarCode())
-    this.setCodeCode(grammarProgram.rootNodeTypeDefinitionNode.synthesizeNode().join("\n"))
+    this.setCodeCode(grammarProgram.rootParserDefinitionNode.synthesizeNode().join("\n"))
     this._onCodeKeyUp()
   }
 
@@ -81,7 +81,7 @@ class DesignerApp extends AbstractTreeComponent {
     const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(url)
     const grammarProgram = new HandGrammarProgram(grammar.text)
-    const rootNodeDef = grammarProgram.rootNodeTypeDefinitionNode
+    const rootNodeDef = grammarProgram.rootParserDefinitionNode
     const sample = rootNodeDef.getNode("example").childrenToString()
 
     this._setGrammarAndCode(grammar.text, sample)
@@ -110,13 +110,13 @@ class DesignerApp extends AbstractTreeComponent {
   private _toIceTray(program: any) {
     const columns = program.programWidth
 
-    const cellTypes = new TreeNode(program.asCellTypeTreeWithNodeConstructorNames)
-    const rootCellTypes = new TreeNode(program.toPreludeCellTypeTreeWithNodeConstructorNames())
+    const cellTypes = new TreeNode(program.asCellTypeTreeWithParserIds)
+    const rootCellTypes = new TreeNode(program.toPreludeCellTypeTreeWithParserIds())
 
     const table = program.programAsCells
       .map((line: any, lineIndex: number) => {
-        const nodeType = cellTypes.nodeAt(lineIndex).getWord(0)
-        let cells = `<td class="iceTrayNodeType">${nodeType}</td>` // todo: add ancestry
+        const parser = cellTypes.nodeAt(lineIndex).getWord(0)
+        let cells = `<td class="iceTrayParser">${parser}</td>` // todo: add ancestry
         for (let cellIndex = 0; cellIndex < columns; cellIndex++) {
           const cell = line[cellIndex]
           if (!cell) cells += `<td>&nbsp;</td>`
@@ -147,7 +147,7 @@ class DesignerApp extends AbstractTreeComponent {
   private grammarInstance: any
   private codeInstance: any
 
-  private _grammarConstructor: any
+  private _grammarParser: any
   private _cachedGrammarCode: string
 
   private codeWidgets: any[] = []
@@ -198,13 +198,13 @@ class DesignerApp extends AbstractTreeComponent {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
 
-    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarNode, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
+    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
 
     this.grammarInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
 
-    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarConstructor(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
 
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
 
@@ -247,16 +247,16 @@ class DesignerApp extends AbstractTreeComponent {
   }
 
   private _getGrammarErrors(grammarCode: string) {
-    return new grammarNode(grammarCode).getAllErrors()
+    return new grammarParser(grammarCode).getAllErrors()
   }
 
-  private _getGrammarConstructor() {
+  private _getGrammarParser() {
     let currentGrammarCode = this.getGrammarCode()
 
-    if (!this._grammarConstructor || currentGrammarCode !== this._cachedGrammarCode) {
+    if (!this._grammarParser || currentGrammarCode !== this._cachedGrammarCode) {
       try {
         const grammarErrors = this._getGrammarErrors(currentGrammarCode)
-        this._grammarConstructor = new HandGrammarProgram(currentGrammarCode).compileAndReturnRootConstructor()
+        this._grammarParser = new HandGrammarProgram(currentGrammarCode).compileAndReturnRootParser()
         this._cachedGrammarCode = currentGrammarCode
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
       } catch (err) {
@@ -264,7 +264,7 @@ class DesignerApp extends AbstractTreeComponent {
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
       }
     }
-    return this._grammarConstructor
+    return this._grammarParser
   }
 
   protected onCommandError(err: any) {
@@ -275,11 +275,11 @@ class DesignerApp extends AbstractTreeComponent {
   private _grammarDidUpdate() {
     const grammarCode = this.getGrammarCode()
     this._updateLocalStorage()
-    this.grammarProgram = new grammarNode(grammarCode)
+    this.grammarProgram = new grammarParser(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
     const grammarProgram = new HandGrammarProgram(this.grammarInstance.getValue())
-    const readme = new dumbdownNode(grammarProgram.toReadMe()).compile()
+    const readme = new dumbdownParser(grammarProgram.toReadMe()).compile()
 
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
@@ -302,10 +302,10 @@ class DesignerApp extends AbstractTreeComponent {
     const { willowBrowser } = this
     const code = this.getCodeValue()
     this._updateLocalStorage()
-    const programConstructor = this._getGrammarConstructor()
+    const grammarParser = this._getGrammarParser()
     const that = this
 
-    this.program = new programConstructor(code)
+    this.program = new grammarParser(code)
     const errs = this.program.scopeErrors.concat(this.program.getAllErrors())
 
     willowBrowser.setHtmlOfElementWithIdHack("codeErrorsConsole", errs.length ? new TreeNode(errs.map((err: any) => err.toObject())).toFormattedTable(200) : "0 errors")
@@ -386,14 +386,14 @@ td
    top 0
    font-size 8px
    color rgba(1,1,1,.2)
- .iceTrayNodeType
+ .iceTrayParser
   box-shadow none
   font-size 8px
   color rgba(1,1,1,.2)
  tr
   &:hover
    td
-    .iceTrayNodeType
+    .iceTrayParser
      color rgba(1,1,1,.5)
     .cellTypeSpan
      color rgba(1,1,1,.5)
@@ -439,7 +439,7 @@ a
   }
 }
 
-class samplesComponent extends AbstractTreeComponent {
+class samplesComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     const langs = this.root.languages
       .map(
@@ -455,7 +455,7 @@ ${langs}`
   }
 }
 
-class shareComponent extends AbstractTreeComponent {
+class shareComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `div
  id shareDiv
@@ -478,7 +478,7 @@ class shareComponent extends AbstractTreeComponent {
   }
 }
 
-class otherErrorsComponent extends AbstractTreeComponent {
+class otherErrorsComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `div
  id otherErrorsDiv`
@@ -490,8 +490,8 @@ class otherErrorsComponent extends AbstractTreeComponent {
 }
 
 // Todo: use these 3
-class compiledResultsComponent extends AbstractTreeComponent {}
-class executionResultsComponent extends AbstractTreeComponent {
+class compiledResultsComponent extends AbstractTreeComponentParser {}
+class executionResultsComponent extends AbstractTreeComponentParser {
   toHakonCode() {
     return `#execResultsTextArea
  border 0
@@ -504,15 +504,15 @@ class executionResultsComponent extends AbstractTreeComponent {
   }
 }
 
-class explainResultsComponent extends AbstractTreeComponent {
+class explainResultsComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `div`
   }
 }
 
-class tableComponent extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class tableComponent extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       compiledResultsComponent: compiledResultsComponent,
       executionResultsComponent: executionResultsComponent,
       explainResultsComponent: explainResultsComponent
@@ -587,7 +587,7 @@ class tableComponent extends AbstractTreeComponent {
   }
 }
 
-class headerComponent extends AbstractTreeComponent {
+class headerComponent extends AbstractTreeComponentParser {
   _getTitle() {
     return `Tree Language Designer`
   }

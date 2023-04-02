@@ -14,58 +14,58 @@ numberCell
  highlightScope constant.numeric
 
 // Line Parsers
-dugNode
+dugParser
  root
  description A demonstration prefix Tree Language that compiles to JSON.
- inScope abstractValueNode
- catchAllNodeType errorNode
+ inScope abstractValueParser
+ catchAllParser errorParser
  javascript
   compile() {
    const res = super.compile()
    return JSON.stringify(JSON.parse(res), null, 2)
   }
-abstractValueNode
+abstractValueParser
  cells keywordCell
  cruxFromId
-nullNode
+nullParser
  compiler
   stringTemplate null
- extends abstractValueNode
-numberNode
- extends abstractValueNode
+ extends abstractValueParser
+numberParser
+ extends abstractValueParser
  cells keywordCell numberCell
  compiler
   stringTemplate {numberCell}
-stringNode
+stringParser
  catchAllCellType stringCell
  compiler
   stringTemplate "{stringCell}"
- extends abstractValueNode
-booleanNode
- extends abstractValueNode
+ extends abstractValueParser
+booleanParser
+ extends abstractValueParser
  cells keywordCell booleanCell
  compiler
   stringTemplate {booleanCell}
-objectNode
- catchAllNodeType memberNode
- extends abstractValueNode
+objectParser
+ catchAllParser memberParser
+ extends abstractValueParser
  compiler
   stringTemplate  
   joinChildrenWith , 
   openChildren {
   closeChildren }
-arrayNode
- extends abstractValueNode
- inScope abstractValueNode
+arrayParser
+ extends abstractValueParser
+ inScope abstractValueParser
  compiler
   stringTemplate  
   joinChildrenWith , 
   openChildren [
   closeChildren ]
-memberNode
- inScope abstractValueNode
+memberParser
+ inScope abstractValueParser
  compiler
   stringTemplate "{stringCell}" :
  cells stringCell
-errorNode
- baseNodeType errorNode
+errorParser
+ baseParser errorParser

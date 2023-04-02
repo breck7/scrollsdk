@@ -21,7 +21,7 @@ testTree.compileGrammarAndCreateProgram = equal => {
   const result = program.execute()
 
   // Assert
-  equal(program.constructor.name, "jibberishNode", "parent program class parsed correctly")
+  equal(program.constructor.name, "jibberishParser", "parent program class parsed correctly")
   equal(result, 42)
 }
 

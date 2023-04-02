@@ -97,6 +97,7 @@ code
 * That being said, we despise unnecessary dependencies as much as anyone. If anyone wants to create some automated submodules built from the projects in this monorepo, to allow for consuming of a smaller subset of the code and dependencies in this module, feel free to do so.
 
 ## Visualization of the code base
+ https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=breck7%2Fjtree Visualization
 image images/diagram.svg
 
 # Development Status

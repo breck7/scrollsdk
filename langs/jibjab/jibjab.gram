@@ -7,5 +7,5 @@ commentCell
 commentNode
  extends topLevelNode
  catchAllCellType commentCell
- catchAllNodeType commentNode
+ catchAllParser commentNode
  crux comment

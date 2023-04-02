@@ -6,14 +6,14 @@ keywordCell
  highlightScope keyword
 
 // Line Parsers
-newlangNode
+newlangParser
  root
  description This is the basic root node for your new prefix Tree Language.
- catchAllNodeType catchAllErrorNode
- inScope helloNode
-helloNode
+ catchAllParser catchAllErrorParser
+ inScope helloParser
+helloParser
  catchAllCellType nameCell
  cells keywordCell
  crux hello
-catchAllErrorNode
- baseNodeType errorNode
+catchAllErrorParser
+ baseParser errorParser

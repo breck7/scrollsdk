@@ -8,7 +8,7 @@ fileConstantCell
  highlightScope keyword.control
 
 // Line Parsers
-projectNode
+projectParser
  root
  version 2.0.0
  description A prefix Tree Language for project dependency management in Javascript and Typescript.
@@ -78,25 +78,25 @@ projectNode
    })
    return requiredFileList.toString()
   }
- inScope fileNode
- catchAllNodeType errorNode
-abstractTermNode
+ inScope fileParser
+ catchAllParser errorParser
+abstractTermParser
  catchAllCellType filepathCell
  cells termCell
-absoluteNode
- extends abstractTermNode
+absoluteParser
+ extends abstractTermParser
  crux absolute
-externalNode
- extends abstractTermNode
+externalParser
+ extends abstractTermParser
  crux external
-relativeNode
- extends abstractTermNode
+relativeParser
+ extends abstractTermParser
  crux relative
-errorNode
- baseNodeType errorNode
-fileNode
+errorParser
+ baseParser errorParser
+fileParser
  catchAllCellType filepathCell
- inScope externalNode absoluteNode relativeNode
+ inScope externalParser absoluteParser relativeParser
  javascript
   getFilePath() {
    return this.filepathCell.join(" ")

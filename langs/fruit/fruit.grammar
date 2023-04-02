@@ -1,20 +1,20 @@
 fruitNameCell
  highlightScope keyword
-fruitNode
+fruitParser
  description A useless language to test scoped parsers.
  root
- inScope appleNode
- catchAllNodeType errorNode
+ inScope appleParser
+ catchAllParser errorParser
  example
   apple
    banana
-abstractFruitNode
+abstractFruitParser
  cruxFromId
  cells fruitNameCell
-appleNode
- extends abstractFruitNode
- inScope appleNode
- bananaNode
-  extends abstractFruitNode
-errorNode
- baseNodeType errorNode
+appleParser
+ extends abstractFruitParser
+ inScope appleParser
+ bananaParser
+  extends abstractFruitParser
+errorParser
+ baseParser errorParser

@@ -1,6 +1,6 @@
 //onsave jtree build produce SweeperCraft.browser.js
 
-const { AbstractTreeComponent, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
+const { AbstractTreeComponentParser, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
 const { TreeNode } = require("../../products/TreeNode.js")
 const { Utils } = require("../../products/Utils.js")
 
@@ -461,9 +461,9 @@ const linkToObject = (link: string): Object => {
   return obj
 }
 
-class SweeperCraftApp extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class SweeperCraftApp extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       headerComponent,
       boardComponent,
       controlsComponent,
@@ -756,7 +756,7 @@ class SweeperCraftApp extends AbstractTreeComponent {
   }
 }
 
-abstract class AbstractSweeperCraftComponent extends AbstractTreeComponent {
+abstract class AbstractSweeperCraftComponent extends AbstractTreeComponentParser {
   abstract _syncBoardToGame(): void
 }
 
@@ -829,8 +829,8 @@ class headerComponent extends AbstractSweeperCraftComponent {
 }
 
 class boardComponent extends AbstractSweeperCraftComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       rowComponent: rowComponent
     })
   }
@@ -848,9 +848,9 @@ class boardComponent extends AbstractSweeperCraftComponent {
   }
 }
 
-class rowComponent extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class rowComponent extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       squareComponent: squareComponent
     })
   }
@@ -972,7 +972,7 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
   }
 }
 
-class shortcutsTableComponent extends AbstractTreeComponent {
+class shortcutsTableComponent extends AbstractTreeComponentParser {
   toStumpCode() {
     return `div
  id shortcutsTableComponent

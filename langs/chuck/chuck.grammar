@@ -7,23 +7,23 @@ operatorCell
 floatCell
 
 // Line Parsers
-chuckNode
+chuckParser
  description A useless demo Tree Language inspired by Forth that tests postfix notation.
  root
- inScope abstractOperatorNode onlyNumbersNode
-abstractOperatorNode
+ inScope abstractOperatorParser onlyNumbersParser
+abstractOperatorParser
  catchAllCellType floatCell
  cells operatorCell
  cellParser postfix
-addNode
- extends abstractOperatorNode
+addParser
+ extends abstractOperatorParser
  pattern \+
-multiplyNode
- extends abstractOperatorNode
+multiplyParser
+ extends abstractOperatorParser
  pattern \*
-printNode
- extends abstractOperatorNode
+printParser
+ extends abstractOperatorParser
  pattern print
-onlyNumbersNode
+onlyNumbersParser
  catchAllCellType floatCell
  pattern ^[\d\. ]+$

@@ -21,57 +21,57 @@ operatorCell
  highlightScope keyword.operator.arithmetic
 
 // Line Parsers
-numbersNode
+numbersParser
  root
  description A useless Tree Language for testing Tree Notation features.
- inScope abstractArithmeticReducerNode commentNode hashBangNode
- catchAllNodeType errorNode
+ inScope abstractArithmeticReducerParser commentParser hashBangParser
+ catchAllParser errorParser
  javascript
   execute() {
    return this.map(child => child.execute())
   }
-abstractArithmeticReducerNode
+abstractArithmeticReducerParser
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
   execute() {
    return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersCell[0])
   }
- inScope abstractArithmeticReducerNode commentNode
+ inScope abstractArithmeticReducerParser commentParser
  cells operatorCell
  catchAllCellType numbersCell
-modNode
+modParser
  crux %
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator %
-timesNode
+timesParser
  crux *
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator *
-addNode
+addParser
  crux +
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator +
-substractNode
+substractParser
  crux -
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator -
-divideNode
+divideParser
  crux /
- extends abstractArithmeticReducerNode
+ extends abstractArithmeticReducerParser
  string operator /
-commentNode
+commentParser
  description This is a line comment.
  catchAllCellType commentCell
- catchAllNodeType commentContentNode
+ catchAllParser commentContentParser
  cells commentKeywordCell
-commentContentNode
+commentContentParser
  catchAllCellType commentCell
- catchAllNodeType commentContentNode
-hashBangNode
+ catchAllParser commentContentParser
+hashBangParser
  crux #!
  cells hashBangKeywordCell
  catchAllCellType commentCell
-errorNode
+errorParser
  catchAllCellType errorCell
- baseNodeType errorNode
+ baseParser errorParser
  cells errorCell

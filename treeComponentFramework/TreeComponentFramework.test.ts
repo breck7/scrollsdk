@@ -1,20 +1,20 @@
 #!/usr/bin/env ts-node
 
-import { AbstractTreeComponent } from "./TreeComponentFramework"
+import { AbstractTreeComponentParser } from "./TreeComponentFramework"
 const { TreeNode } = require("../products/TreeNode.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
 const testTree: any = {}
 
-class TestApp extends AbstractTreeComponent {
-  createParser() {
-    return new TreeNode.Parser(undefined, {
+class TestApp extends AbstractTreeComponentParser {
+  createParserCombinator() {
+    return new TreeNode.ParserCombinator(undefined, {
       headerComponent: headerComponent
     })
   }
 }
 
-class headerComponent extends AbstractTreeComponent {}
+class headerComponent extends AbstractTreeComponentParser {}
 
 testTree.all = (equal: any) => {
   // Arrange

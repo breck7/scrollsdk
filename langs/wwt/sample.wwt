@@ -6,7 +6,7 @@ positiveIntType
  extends intType
 columnNameType
  extends stringType
-treeNodeType
+treeParser
  extends anyType
 nowType
  extends floatType

@@ -15,7 +15,7 @@ nodeProduct
  combineTypeScriptFiles products/treeNotationTypes.ts treeNode/AbstractNode.node.ts treeNode/TreeNode.ts
 nodeProduct
  outputFileName GrammarLanguage.js
- insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownNodeTypeError, UnknownGrammarProgram }
+ insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownParserError, UnknownGrammarProgram }
  combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarLanguage.ts
 nodeProduct
  outputFileName TestRacer.js

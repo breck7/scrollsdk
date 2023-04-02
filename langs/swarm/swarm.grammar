@@ -42,14 +42,14 @@ typeOfOptionCell
  enum object boolean function number string undefined
 
 // Line parsers
-swarmNode
+swarmParser
  root
  description A prefix Tree Language for unit testing of classes.
- inScope hashbangNode arrangeNode abstractTestBlockNode
- catchAllNodeType errorNode
+ inScope hashbangParser arrangeParser abstractTestBlockParser
+ catchAllParser errorParser
  javascript
-  getArrangeNode() {
-   return this.getChildInstancesOfNodeTypeId("arrangeNode")[0]
+  getArrangeParser() {
+   return this.getChildInstancesOfParserId("arrangeParser")[0]
   }
   async execute(filepath) {
    const tree = new TestRacer(this.compileToRacer(filepath))
@@ -58,15 +58,15 @@ swarmNode
   }
   compileToRacer(filepath) {
    const testBlocks = {}
-   this.getChildInstancesOfNodeTypeId("abstractTestBlockNode").forEach(testNode => {
-    const prefix = testNode.racerPrefix || ""
-    testBlocks[prefix + testNode.content] = testNode.toTestRacerFunction(filepath)
+   this.getChildInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
+    const prefix = testParser.racerPrefix || ""
+    testBlocks[prefix + testParser.content] = testParser.toTestRacerFunction(filepath)
    })
    const files = {}
    files[filepath] = testBlocks
    return files
   }
-abstractAssertionNode
+abstractAssertionParser
  javascript
   async execute(arrangedInstance) {
    //todo: refactor. there is clearly a difference between sync and async that we are not
@@ -104,10 +104,10 @@ abstractAssertionNode
    return this.content
   }
  cells assertionKeywordCell
-assertParagraphIsNode
+assertParagraphIsParser
  crux assertParagraphIs
  description When your expected value is a multiline string.
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  javascript
   getExpected() {
    return this.childrenToString()
@@ -115,8 +115,8 @@ assertParagraphIsNode
   getSyncExpected() {
    return this.childrenToString()
   }
- extends abstractAssertionNode
-assertLengthIsNode
+ extends abstractAssertionParser
+assertLengthIsParser
  crux assertLengthIs
  description Intake is an array, and checks if the length of array matches expected.
  cells assertionKeywordCell intCell
@@ -124,8 +124,8 @@ assertLengthIsNode
   parseActual(actual) {
    return actual.length
   }
- extends abstractAssertionNode
-assertStringExcludesNode
+ extends abstractAssertionParser
+assertStringExcludesParser
  crux assertStringExcludes
  description Converts the input to string and ensure the string does NOT contain the provided string
  catchAllCellType anyCell
@@ -140,8 +140,8 @@ assertStringExcludesNode
    this.equal(result, true, message)
    return result
   }
- extends abstractAssertionNode
-assertStringIncludesNode
+ extends abstractAssertionParser
+assertStringIncludesParser
  crux assertStringIncludes
  catchAllCellType anyCell
  description Converts the input to string and see if the string contains the provided string
@@ -151,13 +151,13 @@ assertStringIncludesNode
    this.equal(result, true, message)
    return result
   }
- extends abstractAssertionNode
-assertStringIsNode
+ extends abstractAssertionParser
+assertStringIsParser
  crux assertStringIs
  description Intake is anything with a toString method, and compares that to provided expected value.
  catchAllCellType anyCell
- extends abstractAssertionNode
-assertTypeIsNode
+ extends abstractAssertionParser
+assertTypeIsParser
  crux assertTypeIs
  description Assert result is one of Javascript's 6 typeof types.
  cells assertionKeywordCell typeOfOptionCell
@@ -165,27 +165,27 @@ assertTypeIsNode
   parseActual(actual) {
    return typeof actual
   }
- extends abstractAssertionNode
-abstractArrangeFlagNode
+ extends abstractAssertionParser
+abstractArrangeFlagParser
  cells keywordCell
-arrangeAsyncNode
+arrangeAsyncParser
  description Add this flag in the arrange node to test async methods.
- extends abstractArrangeFlagNode
+ extends abstractArrangeFlagParser
  crux async
-arrangeRequireNode
+arrangeRequireParser
  description Pass in the filename to require for nodejs tests.
  crux require
  cells keywordCell filepathCell
  catchAllCellType anyCell
-arrangeStaticNode
+arrangeStaticParser
  crux static
  description Add this to the arrange node to import class directly without initiating it for static method testing.
- extends abstractArrangeFlagNode
-abstractTestBlockNode
+ extends abstractArrangeFlagParser
+abstractTestBlockParser
  catchAllCellType anyCell
  javascript
-  getArrangeNode() {
-   return this.getNode("arrange") || this.parent.getArrangeNode()
+  getArrangeParser() {
+   return this.getNode("arrange") || this.parent.getArrangeParser()
   }
   setEqualMethod(equal) {
    this._equal = equal
@@ -198,9 +198,9 @@ abstractTestBlockNode
    return this._equal
   }
   toTestRacerFunction(programFilepath) {
-   const arrangeNode = this.getArrangeNode()
-   const arrangedInstance = arrangeNode.arrange(programFilepath)
-   const executeMethod = arrangeNode.isAsync() ? "execute" : "executeSync"
+   const arrangeParser = this.getArrangeParser()
+   const arrangedInstance = arrangeParser.arrange(programFilepath)
+   const executeMethod = arrangeParser.isAsync() ? "execute" : "executeSync"
    return async equal => {
     this.setEqualMethod(equal)
     const promises = this.map(async childAction => {
@@ -210,29 +210,29 @@ abstractTestBlockNode
     await Promise.all(promises)
    }
   }
- inScope arrangeNode
- catchAllNodeType actNode
+ inScope arrangeParser
+ catchAllParser actParser
  cells keywordCell
-testNode
+testParser
  description Basic test block.
- extends abstractTestBlockNode
+ extends abstractTestBlockParser
  crux test
-testOnlyNode
+testOnlyParser
  description If set, only this test block will be run.
- extends abstractTestBlockNode
+ extends abstractTestBlockParser
  string racerPrefix _
  crux testOnly
-skipTestNode
+skipTestParser
  description If you want to skip running a test.
- extends abstractTestBlockNode
+ extends abstractTestBlockParser
  string racerPrefix $
  crux skipTest
-hashbangNode
+hashbangParser
  crux #!
  description Standard bash hashbang line.
  cells hashBangKeywordCell hashBangCell
  catchAllCellType hashBangCell
-arrangeNode
+arrangeParser
  crux arrange
  javascript
   isAsync() {
@@ -240,8 +240,8 @@ arrangeNode
   }
   arrange(programFilepath) {
    const requiredClass = this._getRequiredClass(programFilepath)
-   const constructorArgNode = this.getChildInstancesOfNodeTypeId("constructWithParagraphNode")[0]
-   const param = constructorArgNode ? constructorArgNode.childrenToString() : undefined
+   const constructorArgParser = this.getChildInstancesOfParserId("constructWithParagraphParser")[0]
+   const param = constructorArgParser ? constructorArgParser.childrenToString() : undefined
    return this.has("static") ? requiredClass : new requiredClass(param)
   }
   _getRequiredClass(programFilepath) {
@@ -266,16 +266,16 @@ arrangeNode
    return theClass
   }
   executeSync() {}
- inScope arrangeAsyncNode arrangeRequireNode arrangeStaticNode constructWithParagraphNode todoNode
+ inScope arrangeAsyncParser arrangeRequireParser arrangeStaticParser constructWithParagraphParser todoParser
  cells keywordCell
-withParagraphNode
+withParagraphParser
  description Pass in a multiline string as a command arg.
  javascript
   executeSync() {}
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  cells parameterKeywordCell
  crux withParagraph
-actNode
+actParser
  javascript
   getTestBlock() {
    return this.parent
@@ -284,8 +284,8 @@ actNode
    return this.getTestBlock().getEqualFn()
   }
   _getActArgs() {
-   const paragraphActNodes = this.getChildInstancesOfNodeTypeId("withParagraphNode")
-   if (paragraphActNodes.length) return paragraphActNodes.map(arg => arg.childrenToString())
+   const paragraphActParsers = this.getChildInstancesOfParserId("withParagraphParser")
+   if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.childrenToString())
    return this.getWordsFrom(1)
   }
   _act(arrangedInstance) {
@@ -305,25 +305,25 @@ actNode
   }
  description Input is an object, and calls some method with an optional array of string args.
  catchAllCellType anyCell
- catchAllNodeType actNode
- inScope withParagraphNode abstractAssertionNode
+ catchAllParser actParser
+ inScope withParagraphParser abstractAssertionParser
  cells commandCell
-constructWithParagraphNode
+constructWithParagraphParser
  javascript
   executeSync() {}
  description Pass in a multiline string to setup constructor. #todo: rename
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  cells keywordCell
  crux constructWithParagraph
-errorNode
- baseNodeType errorNode
-paragraphLineNode
+errorParser
+ baseParser errorParser
+paragraphLineParser
  catchAllCellType anyCell
- catchAllNodeType paragraphLineNode
+ catchAllParser paragraphLineParser
  cells anyCell
-todoNode
+todoParser
  description Todos let you add notes about what is coming in the future in the source code. They are like comments in other languages except should only be used for todos.
  catchAllCellType todoCell
- catchAllNodeType todoNode
+ catchAllParser todoParser
  crux todo
  cells todoKeywordCell

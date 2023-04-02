@@ -8,11 +8,11 @@ keywordCell
  highlightScope keyword
 
 // Line Parsers
-configNode
+configParser
  description A simple Tree Language for config files. Stores recursive maps with keys as strings and values as strings.
  root
- catchAllNodeType pairNode
-pairNode
+ catchAllParser pairParser
+pairParser
  description Holds a key/value pair
  catchAllCellType valueCell
  cells keywordCell

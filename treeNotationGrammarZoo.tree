@@ -14,11 +14,11 @@ singleScopeGrammar
  benefit Isomorphic to a single table
  downsides
 staticGrammar
- description A grammar where the nodeType and cellTypes cannot be changed or defined at runtime
+ description A grammar where the parser and cellTypes cannot be changed or defined at runtime
  example
   print hello world
 dynamicGrammar
- description A grammar where new nodeType and/or cellTypes can be defined at runtime
+ description A grammar where new parser and/or cellTypes can be defined at runtime
  example
   name score
   string int

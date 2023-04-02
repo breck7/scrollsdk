@@ -6,8 +6,8 @@ const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
 const { GrammarBackedNode } = require("../products/GrammarLanguage.js")
 
-const stumpNode = require("../products/stump.nodejs.js")
-const hakonNode = require("../products/hakon.nodejs.js")
+const stumpParser = require("../products/stump.nodejs.js")
+const hakonParser = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
 
 const BrowserEvents: treeNotationTypes.stringMap = {}
@@ -302,7 +302,7 @@ class WillowMousetrap {
 }
 
 // this one should have no document, window, $, et cetera.
-class AbstractWillowBrowser extends stumpNode {
+class AbstractWillowBrowser extends stumpParser {
   constructor(fullHtmlPageUrlIncludingProtocolAndFileName: string) {
     super(`${WillowConstants.tags.html}
  ${WillowConstants.tags.head}
@@ -1121,7 +1121,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 
 abstract class AbstractTheme {
   hakonToCss(str: string) {
-    const hakonProgram = new hakonNode(str)
+    const hakonProgram = new hakonParser(str)
     // console.log(hakonProgram.getAllErrors())
     return hakonProgram.compile()
   }
@@ -1513,7 +1513,7 @@ abstract class AbstractTreeComponentParser extends GrammarBackedNode {
   toPlainHtml(containerId: string) {
     return `<div id="${containerId}">
  <style>${this.getTheme().hakonToCss(this.toHakonCode())}</style>
-${new stumpNode(this.toStumpCode()).compile()}
+${new stumpParser(this.toStumpCode()).compile()}
 </div>`
   }
 

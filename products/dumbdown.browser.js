@@ -19,7 +19,7 @@
           title3: title3Parser,
           title4: title4Parser,
           title5: title5Parser,
-          title6: title6Parser
+          title6: title6Parser,
         }),
         [{ regex: /^$/, parser: blankLineParser }]
       )

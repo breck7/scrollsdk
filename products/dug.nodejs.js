@@ -15,7 +15,7 @@
           string: stringParser,
           boolean: booleanParser,
           object: objectParser,
-          array: arrayParser
+          array: arrayParser,
         }),
         undefined
       )
@@ -149,7 +149,7 @@ errorParser
           string: stringParser,
           boolean: booleanParser,
           object: objectParser,
-          array: arrayParser
+          array: arrayParser,
         }),
         undefined
       )
@@ -166,7 +166,7 @@ errorParser
           string: stringParser,
           boolean: booleanParser,
           object: objectParser,
-          array: arrayParser
+          array: arrayParser,
         }),
         undefined
       )

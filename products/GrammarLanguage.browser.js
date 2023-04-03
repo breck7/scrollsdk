@@ -6,7 +6,7 @@ const GlobalNamespaceAdditions = {
   GrammarBackedNode: "GrammarLanguage.js"
 }
 var GrammarConstantsCompiler
-;(function(GrammarConstantsCompiler) {
+;(function (GrammarConstantsCompiler) {
   GrammarConstantsCompiler["stringTemplate"] = "stringTemplate"
   GrammarConstantsCompiler["indentCharacter"] = "indentCharacter"
   GrammarConstantsCompiler["catchAllCellDelimiter"] = "catchAllCellDelimiter"
@@ -15,11 +15,11 @@ var GrammarConstantsCompiler
   GrammarConstantsCompiler["closeChildren"] = "closeChildren"
 })(GrammarConstantsCompiler || (GrammarConstantsCompiler = {}))
 var GrammarConstantsMisc
-;(function(GrammarConstantsMisc) {
+;(function (GrammarConstantsMisc) {
   GrammarConstantsMisc["doNotSynthesize"] = "doNotSynthesize"
 })(GrammarConstantsMisc || (GrammarConstantsMisc = {}))
 var PreludeCellTypeIds
-;(function(PreludeCellTypeIds) {
+;(function (PreludeCellTypeIds) {
   PreludeCellTypeIds["anyCell"] = "anyCell"
   PreludeCellTypeIds["keywordCell"] = "keywordCell"
   PreludeCellTypeIds["extraWordCell"] = "extraWordCell"
@@ -30,14 +30,14 @@ var PreludeCellTypeIds
   PreludeCellTypeIds["intCell"] = "intCell"
 })(PreludeCellTypeIds || (PreludeCellTypeIds = {}))
 var GrammarConstantsConstantTypes
-;(function(GrammarConstantsConstantTypes) {
+;(function (GrammarConstantsConstantTypes) {
   GrammarConstantsConstantTypes["boolean"] = "boolean"
   GrammarConstantsConstantTypes["string"] = "string"
   GrammarConstantsConstantTypes["int"] = "int"
   GrammarConstantsConstantTypes["float"] = "float"
 })(GrammarConstantsConstantTypes || (GrammarConstantsConstantTypes = {}))
 var GrammarBundleFiles
-;(function(GrammarBundleFiles) {
+;(function (GrammarBundleFiles) {
   GrammarBundleFiles["package"] = "package.json"
   GrammarBundleFiles["readme"] = "readme.md"
   GrammarBundleFiles["indexHtml"] = "index.html"
@@ -45,13 +45,13 @@ var GrammarBundleFiles
   GrammarBundleFiles["testJs"] = "test.js"
 })(GrammarBundleFiles || (GrammarBundleFiles = {}))
 var GrammarCellParser
-;(function(GrammarCellParser) {
+;(function (GrammarCellParser) {
   GrammarCellParser["prefix"] = "prefix"
   GrammarCellParser["postfix"] = "postfix"
   GrammarCellParser["omnifix"] = "omnifix"
 })(GrammarCellParser || (GrammarCellParser = {}))
 var GrammarConstants
-;(function(GrammarConstants) {
+;(function (GrammarConstants) {
   // node types
   GrammarConstants["extensions"] = "extensions"
   GrammarConstants["comment"] = "//"
@@ -721,9 +721,7 @@ ${options.toString(1)}`
     return this._typeDef
   }
   _getErrorContext() {
-    return this.getNode()
-      .getLine()
-      .split(" ")[0] // todo: WordBreakSymbol
+    return this.getNode().getLine().split(" ")[0] // todo: WordBreakSymbol
   }
   isValid() {
     const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
@@ -2228,12 +2226,7 @@ ${testCode}`
     return this._cached_rootParser
   }
   get fileExtensions() {
-    return this.rootParserDefinition.get(GrammarConstants.extensions)
-      ? this.rootParserDefinition
-          .get(GrammarConstants.extensions)
-          .split(" ")
-          .join(",")
-      : this.extensionName
+    return this.rootParserDefinition.get(GrammarConstants.extensions) ? this.rootParserDefinition.get(GrammarConstants.extensions).split(" ").join(",") : this.extensionName
   }
   toNodeJsJavascript(jtreeProductsPath = "jtree/products") {
     return this._rootNodeDefToJavascriptClass(jtreeProductsPath, true).trim()

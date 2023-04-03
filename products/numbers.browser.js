@@ -10,13 +10,13 @@
           "-": substractParser,
           "/": divideParser,
           comment: commentParser,
-          "#!": hashBangParser
+          "#!": hashBangParser,
         }),
         undefined
       )
     }
     execute() {
-      return this.map(child => child.execute())
+      return this.map((child) => child.execute())
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
 floatCell
@@ -111,7 +111,7 @@ errorParser
           "+": addParser,
           "-": substractParser,
           "/": divideParser,
-          comment: commentParser
+          comment: commentParser,
         }),
         undefined
       )
@@ -120,7 +120,7 @@ errorParser
       return this.getWord(0)
     }
     get numbersCell() {
-      return this.getWordsFrom(1).map(val => parseFloat(val))
+      return this.getWordsFrom(1).map((val) => parseFloat(val))
     }
     execute() {
       return this.numbersCell.slice(1).reduce((curr, tot) => eval(`${curr}${this.operator}${tot}`), this.numbersCell[0])

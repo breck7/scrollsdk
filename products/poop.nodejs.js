@@ -16,7 +16,7 @@
           { regex: /🍼/, parser: bottleParser },
           { regex: /😴/, parser: sleep4Parser },
           { regex: /😀/, parser: awakeParser },
-          { regex: /❤️/, parser: memoryParser }
+          { regex: /❤️/, parser: memoryParser },
         ]
       )
     }
@@ -24,7 +24,7 @@
       let day = ""
       let lastTime = ""
       const rows = this.topDownArray
-        .map(node => {
+        .map((node) => {
           if (node.doesExtend("dayParser")) {
             day = node.getDay()
             return undefined
@@ -32,7 +32,7 @@
           lastTime = !node.getTime || node.getTime() === undefined ? lastTime : node.getTime()
           return node.compile(day, lastTime)
         })
-        .filter(identity => identity)
+        .filter((identity) => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
@@ -162,7 +162,7 @@ dayParser
       return this.getWord(0)
     }
     get timeIntCell() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+      return this.getWordsFrom(1).map((val) => parseInt(val))
     }
     getTime() {
       const time = this.getLine().match(/(\d+)/)
@@ -235,9 +235,7 @@ dayParser
       return this.getWord(3)
     }
     getDay() {
-      return Utils.removeNonAscii(this.getLine())
-        .trim()
-        .replace(/ /g, "/")
+      return Utils.removeNonAscii(this.getLine()).trim().replace(/ /g, "/")
     }
   }
 

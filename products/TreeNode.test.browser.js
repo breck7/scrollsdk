@@ -800,7 +800,7 @@ testTree.forEach = equal => {
   var count = 0
   var result = ""
   // Act
-  value.forEach(function(node) {
+  value.forEach(function (node) {
     const property = node.firstWord
     const v = node.content
     result += property.toUpperCase()
@@ -1302,13 +1302,7 @@ testTree.getLines = equal => {
   // Arrange
   const value = new TreeNode("hello\n world")
   // Assert
-  equal(
-    value
-      .getLines()
-      .join("")
-      .indexOf(" "),
-    -1
-  )
+  equal(value.getLines().join("").indexOf(" "), -1)
 }
 testTree.getNodes = equal => {
   // Arrange
@@ -1682,10 +1676,7 @@ frank,321
 #file foo.css #file
 body {
  }`
-  const test2 = test
-    .split("\n")
-    .slice(1)
-    .join("\n") // Same without leading #file
+  const test2 = test.split("\n").slice(1).join("\n") // Same without leading #file
   const tree = new TreeNode(test)
   const tree2 = new TreeNode(test2)
   // Act
@@ -1717,13 +1708,7 @@ chart`
   // Test Noops:
   equal(tree.shiftLeft() && tree.shiftRight() && tree.nodeAt(0).shiftLeft() && true, true)
   equal(tree.length, 3)
-  equal(
-    tree
-      .nodeAt(1)
-      .shiftRight()
-      .parent.getLine(),
-    "reddit"
-  )
+  equal(tree.nodeAt(1).shiftRight().parent.getLine(), "reddit")
   equal(tree.length, 2)
   // Act/Assert
   equal(tree.nodeAtLine(1).shiftLeft().parent.asString, str)
@@ -2353,10 +2338,7 @@ c cost
 v value
 q quantity`)
   const expandMapObj = map.clone().toObject()
-  const contractMap = map
-    .clone()
-    .invert()
-    .toObject()
+  const contractMap = map.clone().invert().toObject()
   // Act
   const remapped = new TreeNode(test)
   remapped.forEach(node => node.remap(expandMapObj))
@@ -3141,14 +3123,7 @@ testTree.setTests = equal => {
   equal(base.getWordsAsSet().has("bar"), true)
   equal(base.getWordsAsSet().has("bar2"), false)
   equal(base.appendWordIfMissing("bar").asString, `foo bar`)
-  equal(
-    base
-      .appendWordIfMissing("bam")
-      .getWordsAsSet()
-      .has("bam"),
-    true,
-    "word should be appended"
-  )
+  equal(base.appendWordIfMissing("bam").getWordsAsSet().has("bam"), true, "word should be appended")
 }
 testTree.getBiDirectionalMaps = equal => {
   const csv = TreeNode.fromCsv(TreeNode.iris)
@@ -3357,17 +3332,6 @@ testTree.queryMethods = equal => {
   id Boston`).where("wp id", "notEmpty").length,
     1
   )
-  equal(
-    tree
-      .where("sepal_width", "!=", 3.7)
-      .first(3)
-      .select("species")
-      .last(1)
-      .sortBy("species")
-      .nodeAt(0)
-      .get("species"),
-    "virginica",
-    "last and first work"
-  )
+  equal(tree.where("sepal_width", "!=", 3.7).first(3).select("species").last(1).sortBy("species").nodeAt(0).get("species"), "virginica", "last and first work")
 }
 window.testTree = testTree

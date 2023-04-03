@@ -16,7 +16,7 @@ class AbstractNode {
   }
 }
 var FileFormat
-;(function(FileFormat) {
+;(function (FileFormat) {
   FileFormat["csv"] = "csv"
   FileFormat["tsv"] = "tsv"
   FileFormat["tree"] = "tree"
@@ -44,7 +44,7 @@ class TreeWord {
 }
 const TreeEvents = { ChildAddedTreeEvent, ChildRemovedTreeEvent, DescendantChangedTreeEvent, LineChangedTreeEvent }
 var WhereOperators
-;(function(WhereOperators) {
+;(function (WhereOperators) {
   WhereOperators["equal"] = "="
   WhereOperators["notEqual"] = "!="
   WhereOperators["lessThan"] = "<"
@@ -59,7 +59,7 @@ var WhereOperators
   WhereOperators["notEmpty"] = "notEmpty"
 })(WhereOperators || (WhereOperators = {}))
 var TreeNotationConstants
-;(function(TreeNotationConstants) {
+;(function (TreeNotationConstants) {
   TreeNotationConstants["extends"] = "extends"
 })(TreeNotationConstants || (TreeNotationConstants = {}))
 class ParserCombinator {
@@ -1507,9 +1507,7 @@ class TreeNode extends AbstractNode {
     return this.getChildren().find(fn)
   }
   findLast(fn) {
-    return this.getChildren()
-      .reverse()
-      .find(fn)
+    return this.getChildren().reverse().find(fn)
   }
   every(fn) {
     let index = 0

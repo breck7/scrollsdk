@@ -29,7 +29,7 @@
           someCode: someCodeParser,
           type: typeParser,
           comment: commentParser,
-          text: textParser
+          text: textParser,
         }),
         undefined
       )
@@ -248,7 +248,7 @@ scoresParser
       return this.getWord(0)
     }
     get intCell() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+      return this.getWordsFrom(1).map((val) => parseInt(val))
     }
   }
 
@@ -274,7 +274,7 @@ scoresParser
           nodeExpandsConsts: nodeExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser,
-          comment: commentParser
+          comment: commentParser,
         }),
         undefined
       )
@@ -424,7 +424,7 @@ world`
       return this.getWord(0)
     }
     get intCell() {
-      return this.getWordsFrom(1).map(val => parseInt(val))
+      return this.getWordsFrom(1).map((val) => parseInt(val))
     }
   }
 

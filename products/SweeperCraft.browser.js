@@ -510,7 +510,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
     const willowBrowser = this.willowBrowser
     const keyboardShortcuts = this._getKeyboardShortcuts()
     Object.keys(keyboardShortcuts).forEach(key => {
-      willowBrowser.getMousetrap().bind(key, function(evt) {
+      willowBrowser.getMousetrap().bind(key, function (evt) {
         keyboardShortcuts[key]()
         // todo: handle the below when we need to
         if (evt.preventDefault) evt.preventDefault()
@@ -624,9 +624,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
       }, 1000)
   }
   get gameTime() {
-    return this._getGame()
-      .getGameTime()
-      .toString()
+    return this._getGame().getGameTime().toString()
   }
   get numberOfMines() {
     return this._getGame().getNumberOfMines(true)

@@ -11,14 +11,7 @@ class Kitchen {
       const filename = req.path.substr(1)
       readFile(path.join(__dirname, "..", filename), "utf8", (err, code) => {
         if (err) throw err
-        res.send(
-          new TypeScriptRewriter(code)
-            .removeRequires()
-            .removeHashBang()
-            .removeNodeJsOnlyLines()
-            .changeNodeExportsToWindowExports()
-            .getString()
-        )
+        res.send(new TypeScriptRewriter(code).removeRequires().removeHashBang().removeNodeJsOnlyLines().changeNodeExportsToWindowExports().getString())
       })
     })
     app.get("/", (req, res) => res.redirect(301, "/sandbox"))

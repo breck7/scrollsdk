@@ -52,7 +52,7 @@ WillowConstants.checkedSelector = ":checked"
 WillowConstants.contenteditable = "contenteditable"
 WillowConstants.inputTypes = ["input", "textarea"]
 var CacheType
-;(function(CacheType) {
+;(function (CacheType) {
   CacheType["inBrowserMemory"] = "inBrowserMemory"
 })(CacheType || (CacheType = {}))
 class WillowHTTPResponse {
@@ -580,7 +580,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
     return this
   }
   onShadowEventWithSelector(event, selector, fn) {
-    this.element.addEventListener(event, function(evt) {
+    this.element.addEventListener(event, function (evt) {
       let target = evt.target
       while (target !== null) {
         if (target.matches(selector)) {
@@ -731,13 +731,13 @@ class RealWillowBrowser extends AbstractWillowBrowser {
   }
   _appendScript(url) {
     //https://bradb.net/blog/promise-based-js-script-loader/
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let resolved = false
       const scriptEl = document.createElement("script")
       scriptEl.type = "text/javascript"
       scriptEl.src = url
       scriptEl.async = true
-      scriptEl.onload = scriptEl.onreadystatechange = function() {
+      scriptEl.onload = scriptEl.onreadystatechange = function () {
         if (!resolved && (!this.readyState || this.readyState == "complete")) {
           resolved = true
           resolve(this)
@@ -818,7 +818,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
         // Add the help, and then hopefull we'll get a dragover event on the dragOverHelp, then
         // 50ms later, add the dragleave handler, and from now on drag leave will only happen on the help
         // div
-        setTimeout(function() {
+        setTimeout(function () {
           bodyShadow.onShadowEvent(BrowserEvents.dragleave, dragleaveHandler)
         }, 50)
       }
@@ -850,7 +850,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     bodyShadow.onShadowEvent(BrowserEvents.dragover, dragoverHandler)
     bodyShadow.onShadowEvent(BrowserEvents.drop, dropHandler)
     // todo: why do we do this?
-    bodyShadow.onShadowEvent(BrowserEvents.dragenter, function(event) {
+    bodyShadow.onShadowEvent(BrowserEvents.dragenter, function (event) {
       event.preventDefault()
       event.stopPropagation()
     })
@@ -1018,28 +1018,28 @@ class AbstractTreeComponentParser extends GrammarBackedNode {
       this._executeCommandOnStumpNode(stumpNode, stumpNode.getStumpNodeAttr(attr))
       return false
     }
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.contextmenu, `[${WillowConstants.contextMenuCommand}]`, function(target, evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.contextmenu, `[${WillowConstants.contextMenuCommand}]`, function (target, evt) {
       if (evt.ctrlKey) return true
       app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(target, WillowConstants.contextMenuCommand, evt)
     })
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function(target, evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function (target, evt) {
       if (evt.shiftKey) return checkAndExecute(this, WillowConstants.shiftClickCommand, evt)
       app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(target, WillowConstants.clickCommand, evt)
     })
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function(target, evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function (target, evt) {
       if (evt.target !== evt.currentTarget) return true // direct dblclicks only
       app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(target, WillowConstants.doubleClickCommand, evt)
     })
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function(target, evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function (target, evt) {
       return checkAndExecute(target, WillowConstants.blurCommand, evt)
     })
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function(target, evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function (target, evt) {
       return checkAndExecute(target, WillowConstants.keyUpCommand, evt)
     })
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function(target, evt) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function (target, evt) {
       return checkAndExecute(target, WillowConstants.changeCommand, evt)
     })
   }

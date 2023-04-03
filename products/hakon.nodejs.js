@@ -18,8 +18,8 @@
     }
     compile() {
       return this.topDownArray
-        .filter(node => node.isSelectorParser)
-        .map(child => child.compile())
+        .filter((node) => node.isSelectorParser)
+        .map((child) => child.compile())
         .join("")
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
@@ -391,11 +391,11 @@ selectorParser
           top: propertyParser,
           gap: propertyParser,
           "": propertyParser,
-          comment: commentParser
+          comment: commentParser,
         }),
         [
           { regex: /--/, parser: variableParser },
-          { regex: /^\-\w.+/, parser: browserPrefixPropertyParser }
+          { regex: /^\-\w.+/, parser: browserPrefixPropertyParser },
         ]
       )
     }
@@ -409,18 +409,18 @@ selectorParser
       const parentSelector = this.parent.getSelector()
       return this.firstWord
         .split(",")
-        .map(part => {
+        .map((part) => {
           if (part.startsWith("&")) return parentSelector + part.substr(1)
           return parentSelector ? parentSelector + " " + part : part
         })
         .join(",")
     }
     compile() {
-      const propertyParsers = this.getChildren().filter(node => node.doesExtend("propertyParser"))
+      const propertyParsers = this.getChildren().filter((node) => node.doesExtend("propertyParser"))
       if (!propertyParsers.length) return ""
       const spaces = "  "
       return `${this.getSelector()} {
-${propertyParsers.map(child => child.compile(spaces)).join("\n")}
+${propertyParsers.map((child) => child.compile(spaces)).join("\n")}
 }\n`
     }
   }

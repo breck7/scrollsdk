@@ -6,7 +6,7 @@
         Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
           "#!": hashbangParser,
           file: fileParser,
-          folder: folderParser
+          folder: folderParser,
         }),
         undefined
       )
@@ -56,7 +56,7 @@
           const content = fs.readFileSync(file, "utf8")
           return `file ${reducedPath}
  data${TreeNode.nest(content, 2)}`
-        }
+        },
       }
       const fn = fns[output]
       return this._dirToStamp(absPathWithoutEndingSlash, fn)
@@ -67,7 +67,7 @@
       const rootFolderName = folderParts.pop()
       const rootFolderPath = folderParts.join("/")
       const pathStartIndex = rootFolderPath.length + 1
-      return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
+      return files.map((file) => fileFn(file, file.substr(pathStartIndex))).join("\n")
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo File permissions
 

@@ -124,7 +124,7 @@ tokenParser
           amount: amountParser,
           currency: currencyParser,
           description: descriptionParser,
-          token: tokenParser
+          token: tokenParser,
         }),
         undefined
       )

@@ -5,7 +5,7 @@ const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const { HandGrammarProgram } = require("./GrammarLanguage.js")
 var CompileTarget
-;(function(CompileTarget) {
+;(function (CompileTarget) {
   CompileTarget["nodejs"] = "nodejs"
   CompileTarget["browser"] = "browser"
 })(CompileTarget || (CompileTarget = {}))

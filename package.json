@@ -11,6 +11,10 @@
     "trailingComma": "none",
     "arrowParens": "avoid"
   },
+  "engineStrict": true,
+  "engines": {
+    "node": ">=16.0"
+  },
   "scripts": {
     "local": "node ./products/Kitchen.node.js",
     "build": "./builder.ts produceAll; ./builder.ts produceAllLangs",

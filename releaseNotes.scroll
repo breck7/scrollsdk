@@ -4,6 +4,11 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 74.0.0 2023-4-3
+- ⚠️ BREAKING: (No one should be affected)
+ - Removed WWT. WWC is now in TrueBase
+ - Remove JTable. Ohayo is only user but that should switch to Owid's CoreTable or similar.
+
 # 73.0.1 2023-4-2
 - 🏥 fix regression in Designer app
 

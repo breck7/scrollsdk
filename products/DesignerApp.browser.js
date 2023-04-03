@@ -2,7 +2,7 @@ class DesignerApp extends AbstractTreeComponentParser {
   constructor() {
     super(...arguments)
     ///
-    this.languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt fruit swarm project stamp grammar config jibberish numbers poop".split(" ")
+    this.languages = "newlang hakon stump dumbdown arrow dug iris fire chuck fruit swarm project stamp grammar config jibberish numbers poop".split(" ")
     this._localStorageKeys = {
       grammarConsole: "grammarConsole",
       codeConsole: "codeConsole"

@@ -3,13 +3,6 @@ nodeProduct
  combineTypeScriptFiles products/treeNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
  insertLastLine module.exports = { AbstractTreeComponentParser, WillowBrowser, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
 nodeProduct
- outputFileName jtable.node.js
- removeAll const { Utils } = require("../products/Utils.js")
- removeAll const { TreeNode } = require("../products/TreeNode.js")
- insertFirstLine const { Utils } = require("./Utils.js"); const { TreeNode } = require("./TreeNode.js");
- insertLastLine module.exports = {Table, TableParser, Column, Row, DummyDataSets, PrimitiveTypes }
- combineTypeScriptFiles products/treeNotationTypes.ts products/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
-nodeProduct
  outputFileName TreeNode.js
  insertLastLine module.exports = {TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }
  combineTypeScriptFiles products/treeNotationTypes.ts treeNode/AbstractNode.node.ts treeNode/TreeNode.ts
@@ -76,11 +69,6 @@ browserProduct
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
  removeAll window.treeNotationTypes = treeNotationTypes
  combineTypeScriptFiles products/treeNotationTypes.ts grammar/GrammarCodeMirrorMode.ts
-browserProduct
- outputFileName jtable.browser.js
- removeAll window.jTableTypes = jTableTypes
- removeAll window.treeNotationTypes = treeNotationTypes
- combineTypeScriptFiles products/treeNotationTypes.ts products/jTableTypes.ts jtable/Column.ts jtable/Row.ts jtable/TableParser.ts jtable/DummyDataSets.ts jtable/Table.ts
 browserProduct
  outputFileName DesignerApp.browser.js
  combineTypeScriptFiles designer/DesignerApp.ts

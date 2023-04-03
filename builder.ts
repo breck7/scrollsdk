@@ -273,7 +273,7 @@ class Builder extends TreeNode {
   }
 
   produceAllLangs() {
-    const langs = `arrow chuck dug dumbdown fire fruit grammar hakon jibberish jibjab numbers poop project stamp stump swarm wwt`.split(" ")
+    const langs = `arrow chuck dug dumbdown fire fruit grammar hakon jibberish jibjab numbers poop project stamp stump swarm`.split(" ")
     langs.forEach(lang => this.produceLang(lang))
   }
 
@@ -328,8 +328,7 @@ class Builder extends TreeNode {
   }
 
   async test() {
-    let folders = `jtable
-langs
+    let folders = `langs
 designer
 sandbox
 kitchen

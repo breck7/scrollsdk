@@ -134,7 +134,7 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
   ///
 
-  public languages = "newlang hakon stump dumbdown arrow dug iris fire chuck wwt fruit swarm project stamp grammar config jibberish numbers poop".split(" ")
+  public languages = "newlang hakon stump dumbdown arrow dug iris fire chuck fruit swarm project stamp grammar config jibberish numbers poop".split(" ")
 
   public program: any
   public grammarProgram: any

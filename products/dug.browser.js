@@ -3,14 +3,7 @@
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          null: nullParser,
-          number: numberParser,
-          string: stringParser,
-          boolean: booleanParser,
-          object: objectParser,
-          array: arrayParser,
-        }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
@@ -137,14 +130,7 @@ errorParser
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          null: nullParser,
-          number: numberParser,
-          string: stringParser,
-          boolean: booleanParser,
-          object: objectParser,
-          array: arrayParser,
-        }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }
@@ -154,14 +140,7 @@ errorParser
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          null: nullParser,
-          number: numberParser,
-          string: stringParser,
-          boolean: booleanParser,
-          object: objectParser,
-          array: arrayParser,
-        }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { null: nullParser, number: numberParser, string: stringParser, boolean: booleanParser, object: objectParser, array: arrayParser }),
         undefined
       )
     }

@@ -57,7 +57,7 @@ if (!module.parent) new ${program.rootParserId}(TreeNode.fromDisk(process.argv[2
 `
         )
 
-    if (usePrettier) result = require("prettier").format(result, { semi: false, parser: "babel", printWidth: 160 })
+    if (usePrettier) result = require("prettier").format(result, require("../package.json").prettier)
 
     fs.writeFileSync(outputFilePath, result, "utf8")
 

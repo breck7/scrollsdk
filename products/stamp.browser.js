@@ -1,15 +1,7 @@
 {
   class stampParser extends GrammarBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          "#!": hashbangParser,
-          file: fileParser,
-          folder: folderParser,
-        }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "#!": hashbangParser, file: fileParser, folder: folderParser }), undefined)
     }
     async executeSeries(parentDir) {
       const length = this.length
@@ -56,7 +48,7 @@
           const content = fs.readFileSync(file, "utf8")
           return `file ${reducedPath}
  data${TreeNode.nest(content, 2)}`
-        },
+        }
       }
       const fn = fns[output]
       return this._dirToStamp(absPathWithoutEndingSlash, fn)
@@ -67,7 +59,7 @@
       const rootFolderName = folderParts.pop()
       const rootFolderPath = folderParts.join("/")
       const pathStartIndex = rootFolderPath.length + 1
-      return files.map((file) => fileFn(file, file.substr(pathStartIndex))).join("\n")
+      return files.map(file => fileFn(file, file.substr(pathStartIndex))).join("\n")
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo File permissions
 
@@ -260,11 +252,7 @@ folderParser
 
   class fileParser extends GrammarBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { data: dataParser, executable: executableParser }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { data: dataParser, executable: executableParser }), undefined)
     }
     get keywordCell() {
       return this.getWord(0)

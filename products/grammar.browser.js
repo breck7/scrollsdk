@@ -1,15 +1,11 @@
 {
   class grammarParser extends GrammarBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        catchAllErrorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }),
-        [
-          { regex: /^$/, parser: blankLineParser },
-          { regex: /^[a-zA-Z0-9_]+Cell$/, parser: cellTypeDefinitionParser },
-          { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser },
-        ]
-      )
+      return new TreeNode.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
+        { regex: /^$/, parser: blankLineParser },
+        { regex: /^[a-zA-Z0-9_]+Cell$/, parser: cellTypeDefinitionParser },
+        { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }
+      ])
     }
     static cachedHandGrammarProgramRoot =
       new HandGrammarProgram(`// todo Add imports parsers, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
@@ -488,7 +484,7 @@ extendsCellTypeParser
       return this.getWord(1)
     }
     get floatCell() {
-      return this.getWordsFrom(2).map((val) => parseFloat(val))
+      return this.getWordsFrom(2).map(val => parseFloat(val))
     }
   }
 
@@ -500,7 +496,7 @@ extendsCellTypeParser
       return this.getWord(1)
     }
     get intCell() {
-      return this.getWordsFrom(2).map((val) => parseInt(val))
+      return this.getWordsFrom(2).map(val => parseInt(val))
     }
   }
 
@@ -603,7 +599,7 @@ extendsCellTypeParser
           catchAllCellDelimiter: catchAllCellDelimiterParser,
           openChildren: openChildrenParser,
           stringTemplate: stringTemplateParser,
-          joinChildrenWith: joinChildrenWithParser,
+          joinChildrenWith: joinChildrenWithParser
         }),
         undefined
       )
@@ -790,7 +786,7 @@ extendsCellTypeParser
           regex: regexParser,
           reservedWords: reservedWordsParser,
           "//": slashCommentParser,
-          extends: extendsCellTypeParser,
+          extends: extendsCellTypeParser
         }),
         undefined
       )
@@ -899,7 +895,7 @@ extendsCellTypeParser
           root: rootFlagParser,
           _extendsJsClass: _extendsJsClassParser,
           _rootParserJsHeader: _rootParserJsHeaderParser,
-          "//": slashCommentParser,
+          "//": slashCommentParser
         }),
         [{ regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }]
       )

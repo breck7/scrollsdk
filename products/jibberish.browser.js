@@ -22,7 +22,7 @@
           nodeExpandsConsts: nodeExpandsConstsParser,
           someCode: someCodeParser,
           type: typeParser,
-          text: textParser,
+          text: textParser
         }),
         undefined
       )
@@ -210,11 +210,7 @@ scoresParser
 
   class abstractHtmlParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { content: contentParser }), undefined)
     }
   }
 
@@ -227,7 +223,7 @@ scoresParser
       return this.getWord(0)
     }
     get intCell() {
-      return this.getWordsFrom(1).map((val) => parseInt(val))
+      return this.getWordsFrom(1).map(val => parseInt(val))
     }
   }
 
@@ -252,7 +248,7 @@ scoresParser
           nodeWithConsts: nodeWithConstsParser,
           nodeExpandsConsts: nodeExpandsConstsParser,
           someCode: someCodeParser,
-          type: typeParser,
+          type: typeParser
         }),
         undefined
       )
@@ -261,11 +257,7 @@ scoresParser
 
   class scoreBlockParser extends blockParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { scores: scoresParser }), undefined)
     }
   }
 
@@ -393,7 +385,7 @@ world`
       return this.getWord(0)
     }
     get intCell() {
-      return this.getWordsFrom(1).map((val) => parseInt(val))
+      return this.getWordsFrom(1).map(val => parseInt(val))
     }
   }
 

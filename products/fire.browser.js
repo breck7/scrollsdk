@@ -35,7 +35,7 @@
           printString: printStringParser,
           require: requireParser,
           return: returnParser,
-          "#!": hashbangParser,
+          "#!": hashbangParser
         }),
         undefined
       )
@@ -438,7 +438,7 @@ errorParser
           printNumber: printNumberParser,
           printString: printStringParser,
           require: requireParser,
-          return: returnParser,
+          return: returnParser
         }),
         undefined
       )
@@ -582,7 +582,7 @@ errorParser
       return this.getWord(1)
     }
     get numberCell() {
-      return this.getWordsFrom(2).map((val) => parseFloat(val))
+      return this.getWordsFrom(2).map(val => parseFloat(val))
     }
   }
 
@@ -675,7 +675,7 @@ errorParser
       return this.getWord(1)
     }
     get numberCell() {
-      return this.getWordsFrom(2).map((val) => parseFloat(val))
+      return this.getWordsFrom(2).map(val => parseFloat(val))
     }
   }
 

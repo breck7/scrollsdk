@@ -19,7 +19,7 @@
           title3: title3Parser,
           title4: title4Parser,
           title5: title5Parser,
-          title6: title6Parser,
+          title6: title6Parser
         }),
         [{ regex: /^$/, parser: blankLineParser }]
       )
@@ -205,11 +205,7 @@ quickParagraphParser
 
   class listParser extends abstractTopLevelParser {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "-": dashParser }), undefined)
     }
   }
 

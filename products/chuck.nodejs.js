@@ -11,7 +11,7 @@
         { regex: /\+/, parser: addParser },
         { regex: /\*/, parser: multiplyParser },
         { regex: /print/, parser: printParser },
-        { regex: /^[\d\. ]+$/, parser: onlyNumbersParser },
+        { regex: /^[\d\. ]+$/, parser: onlyNumbersParser }
       ])
     }
     static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Make this compile and execute
@@ -54,7 +54,7 @@ onlyNumbersParser
       return this.getWord(0)
     }
     get floatCell() {
-      return this.getWordsFrom(1).map((val) => parseFloat(val))
+      return this.getWordsFrom(1).map(val => parseFloat(val))
     }
   }
 
@@ -66,7 +66,7 @@ onlyNumbersParser
 
   class onlyNumbersParser extends GrammarBackedNode {
     get floatCell() {
-      return this.getWordsFrom(0).map((val) => parseFloat(val))
+      return this.getWordsFrom(0).map(val => parseFloat(val))
     }
   }
 

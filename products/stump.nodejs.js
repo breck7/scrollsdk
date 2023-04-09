@@ -119,11 +119,11 @@
           p: htmlTagParser,
           q: htmlTagParser,
           s: htmlTagParser,
-          u: htmlTagParser,
+          u: htmlTagParser
         }),
         [
           { regex: /^$/, parser: blankLineParser },
-          { regex: /^[a-zA-Z0-9_]+Component/, parser: componentDefinitionParser },
+          { regex: /^[a-zA-Z0-9_]+Component/, parser: componentDefinitionParser }
         ]
       )
     }
@@ -708,11 +708,11 @@ bernParser
           keyUpCommand: stumpExtendedAttributeParser,
           blurCommand: stumpExtendedAttributeParser,
           collapse: stumpExtendedAttributeParser,
-          bern: bernParser,
+          bern: bernParser
         }),
         [
           { regex: /^$/, parser: blankLineParser },
-          { regex: /^[a-zA-Z0-9_]+Component/, parser: componentDefinitionParser },
+          { regex: /^[a-zA-Z0-9_]+Component/, parser: componentDefinitionParser }
         ]
       )
     }
@@ -728,7 +728,7 @@ bernParser
       const firstWord = this.firstWord
       const map = {
         titleTag: "title",
-        styleTag: "style",
+        styleTag: "style"
       }
       return map[firstWord] || firstWord
     }
@@ -751,25 +751,23 @@ bernParser
     get domElement() {
       var elem = document.createElement(this.getTag())
       elem.setAttribute("stumpUid", this._getUid())
-      this.filter((node) => node.isAttributeParser).forEach((child) => elem.setAttribute(child.firstWord, child.content))
+      this.filter(node => node.isAttributeParser).forEach(child => elem.setAttribute(child.firstWord, child.content))
       elem.innerHTML = this.has("bern") ? this.getNode("bern").childrenToString() : this._getOneLiner()
-      this.filter((node) => node.isHtmlTagParser).forEach((child) => elem.appendChild(child.domElement))
+      this.filter(node => node.isHtmlTagParser).forEach(child => elem.appendChild(child.domElement))
       return elem
     }
     _toHtml(indentCount, withSuid) {
       const tag = this.getTag()
-      const children = this.map((child) => child._toHtml(indentCount + 1, withSuid)).join("")
-      const attributesStr = this.filter((node) => node.isAttributeParser)
-        .map((child) => child.getAttribute())
+      const children = this.map(child => child._toHtml(indentCount + 1, withSuid)).join("")
+      const attributesStr = this.filter(node => node.isAttributeParser)
+        .map(child => child.getAttribute())
         .join("")
       const indent = " ".repeat(indentCount)
       const collapse = this.shouldCollapse()
       const indentForChildParsers = !collapse && this.getChildInstancesOfParserId("htmlTagParser").length > 0
       const suid = withSuid ? ` stumpUid="${this._getUid()}"` : ""
       const oneLiner = this._getOneLiner()
-      return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildParsers ? "\n" : ""}${children}</${tag}>${
-        collapse ? "" : "\n"
-      }`
+      return `${!collapse ? indent : ""}<${tag}${attributesStr}${suid}>${oneLiner}${indentForChildParsers ? "\n" : ""}${children}</${tag}>${collapse ? "" : "\n"}`
     }
     removeCssStumpNode() {
       return this.removeStumpNode()
@@ -779,7 +777,7 @@ bernParser
       return this.destroy()
     }
     getNodeByGuid(guid) {
-      return this.topDownArray.find((node) => node._getUid() === guid)
+      return this.topDownArray.find(node => node._getUid() === guid)
     }
     addClassToStumpNode(className) {
       const classParser = this.touchNode("class")
@@ -795,7 +793,7 @@ bernParser
     removeClassFromStumpNode(className) {
       const classParser = this.getNode("class")
       if (!classParser) return this
-      const newClasses = classParser.words.filter((word) => word !== className)
+      const newClasses = classParser.words.filter(word => word !== className)
       if (!newClasses.length) classParser.destroy()
       else classParser.setContent(newClasses.join(" "))
       this.getShadow().removeClassFromShadow(className)
@@ -821,7 +819,7 @@ bernParser
     insertChildNode(text, index) {
       const singleNode = new TreeNode(text).getChildren()[0]
       const newNode = this.insertLineAndChildren(singleNode.getLine(), singleNode.childrenToString(), index)
-      const stumpParserIndex = this.filter((node) => node.isHtmlTagParser).indexOf(newNode)
+      const stumpParserIndex = this.filter(node => node.isHtmlTagParser).indexOf(newNode)
       this.getShadow().insertHtmlNode(newNode, stumpParserIndex)
       return newNode
     }
@@ -832,9 +830,9 @@ bernParser
       return this.findStumpNodesByChild(line)[0]
     }
     findStumpNodeByChildString(line) {
-      return this.topDownArray.find((node) =>
+      return this.topDownArray.find(node =>
         node
-          .map((child) => child.getLine())
+          .map(child => child.getLine())
           .join("\n")
           .includes(line)
       )
@@ -843,16 +841,16 @@ bernParser
       return this._findStumpNodesByBase(firstWord)[0]
     }
     _findStumpNodesByBase(firstWord) {
-      return this.topDownArray.filter((node) => node.doesExtend("htmlTagParser") && node.firstWord === firstWord)
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.firstWord === firstWord)
     }
     hasLine(line) {
-      return this.getChildren().some((node) => node.getLine() === line)
+      return this.getChildren().some(node => node.getLine() === line)
     }
     findStumpNodesByChild(line) {
-      return this.topDownArray.filter((node) => node.doesExtend("htmlTagParser") && node.hasLine(line))
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.hasLine(line))
     }
     findStumpNodesWithClass(className) {
-      return this.topDownArray.filter((node) => node.doesExtend("htmlTagParser") && node.has("class") && node.getNode("class").words.includes(className))
+      return this.topDownArray.filter(node => node.doesExtend("htmlTagParser") && node.has("class") && node.getNode("class").words.includes(className))
     }
     getShadowClass() {
       return this.parent.getShadowClass()

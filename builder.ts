@@ -13,6 +13,7 @@ const path = require("path")
 const fs = require("fs")
 const { execSync } = require("child_process")
 const express = require("express")
+const prettierConfig = require("./package.json").prettier
 
 import { treeNotationTypes } from "./products/treeNotationTypes"
 
@@ -40,8 +41,8 @@ class Builder extends TreeNode {
   private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
     // todo: prettify
     return typeScriptScriptsInOrder
-      .map((src) => Disk.read(src))
-      .map((content) =>
+      .map(src => Disk.read(src))
+      .map(content =>
         new TypeScriptRewriter(content)
           //.removeRequires()
           .removeImports()
@@ -53,13 +54,23 @@ class Builder extends TreeNode {
   }
 
   private _prettifyFile(path: treeNotationTypes.filepath) {
-    Disk.write(path, require("prettier").format(Disk.read(path), { semi: false, parser: "babel", printWidth: 240, trailingComma: "none", arrowParens: "avoid" }))
+    Disk.write(path, require("prettier").format(Disk.read(path), prettierConfig))
   }
 
   private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
     return typeScriptScriptsInOrder
-      .map((src) => Disk.read(src))
-      .map((content) => new TypeScriptRewriter(content).removeRequires().removeImports().removeTsGeneratedCrap().removeHashBang().removeNodeJsOnlyLines().changeDefaultExportsToWindowExports().removeExports().getString())
+      .map(src => Disk.read(src))
+      .map(content =>
+        new TypeScriptRewriter(content)
+          .removeRequires()
+          .removeImports()
+          .removeTsGeneratedCrap()
+          .removeHashBang()
+          .removeNodeJsOnlyLines()
+          .changeDefaultExportsToWindowExports()
+          .removeExports()
+          .getString()
+      )
       .join("\n")
   }
 
@@ -122,7 +133,7 @@ class Builder extends TreeNode {
   private _startListeningForFileChanges(folder: string) {
     const projectFolders = [folder] // todo
 
-    this._fsWatchers = projectFolders.map((folder) =>
+    this._fsWatchers = projectFolders.map(folder =>
       fs.watch(folder, { recursive: true }, (event: any, filename: treeNotationTypes.fileName) => {
         this._onFileChanged(folder + filename)
       })
@@ -216,12 +227,12 @@ class Builder extends TreeNode {
 
   _getAllCommands() {
     return Object.getOwnPropertyNames(Object.getPrototypeOf(this))
-      .filter((word) => !word.startsWith("_") && word !== "constructor")
+      .filter(word => !word.startsWith("_") && word !== "constructor")
       .sort()
   }
 
   private _getPartialMatches(commandName: string) {
-    return this._getAllCommands().filter((item) => item.startsWith(commandName))
+    return this._getAllCommands().filter(item => item.startsWith(commandName))
   }
 
   main(command?: string, paramOne?: string, paramTwo?: string) {
@@ -240,9 +251,20 @@ class Builder extends TreeNode {
   }
 
   produce(outputFileName: string) {
-    if (outputFileName) return this.produceProductFromInstructionsTree(this._getProductsTree().where("outputFileName", "=", outputFileName).nodeAt(0), __dirname)
+    if (outputFileName)
+      return this.produceProductFromInstructionsTree(
+        this._getProductsTree()
+          .where("outputFileName", "=", outputFileName)
+          .nodeAt(0),
+        __dirname
+      )
 
-    console.log("Available options:\n" + this._getProductsTree().getColumn("outputFileName").join("\n"))
+    console.log(
+      "Available options:\n" +
+        this._getProductsTree()
+          .getColumn("outputFileName")
+          .join("\n")
+    )
   }
 
   produceAll() {
@@ -253,7 +275,7 @@ class Builder extends TreeNode {
 
   produceAllLangs() {
     const langs = `arrow chuck dug dumbdown fire fruit grammar hakon jibberish jibjab numbers poop project stamp stump swarm`.split(" ")
-    langs.forEach((lang) => this.produceLang(lang))
+    langs.forEach(lang => this.produceLang(lang))
   }
 
   produceLang(langName: string) {
@@ -298,11 +320,11 @@ class Builder extends TreeNode {
 
     const fileTestTree: any = {}
 
-    allTestFiles.filter((file) => file.endsWith(".grammar")).forEach((file) => (fileTestTree[file] = this.makeGrammarFileTestTree(file)))
+    allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => (fileTestTree[file] = this.makeGrammarFileTestTree(file)))
 
-    allTestFiles.filter((file) => file.endsWith(".test.js") || file.endsWith(".test.ts")).forEach((file) => (fileTestTree[file] = require(file).testTree))
+    allTestFiles.filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts")).forEach(file => (fileTestTree[file] = require(file).testTree))
 
-    allTestFiles.filter((file) => file.endsWith(".swarm")).forEach((file) => Object.assign(fileTestTree, new swarm(Disk.read(file)).compileToRacer(file)))
+    allTestFiles.filter(file => file.endsWith(".swarm")).forEach(file => Object.assign(fileTestTree, new swarm(Disk.read(file)).compileToRacer(file)))
     return fileTestTree
   }
 
@@ -318,7 +340,7 @@ grammar
 utils
 treeComponentFramework`.split("\n")
     const fileTree = {}
-    folders.forEach((folder) => Object.assign(fileTree, this._makeTestTreeForFolder(__dirname + `/${folder}/`)))
+    folders.forEach(folder => Object.assign(fileTree, this._makeTestTreeForFolder(__dirname + `/${folder}/`)))
     const runner = new TestRacer(fileTree)
     await runner.execute()
     runner.finish()

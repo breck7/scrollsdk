@@ -19,11 +19,7 @@
 
   class arrowParser extends GrammarBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { Comment: commentParser, charge: chargeParser }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
     }
     compile() {
       return this.asJsonSubset
@@ -125,13 +121,7 @@ tokenParser
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          cardNumber: cardNumberParser,
-          amount: amountParser,
-          currency: currencyParser,
-          description: descriptionParser,
-          token: tokenParser,
-        }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { cardNumber: cardNumberParser, amount: amountParser, currency: currencyParser, description: descriptionParser, token: tokenParser }),
         undefined
       )
     }

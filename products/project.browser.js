@@ -1,11 +1,7 @@
 {
   class projectParser extends GrammarBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { file: fileParser }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { file: fileParser }), undefined)
     }
     getScriptPathsInCorrectDependencyOrder() {
       const cloned = this.clone()
@@ -15,7 +11,7 @@
       while (cloned.length) {
         if (lastLength === cloned.length) {
           const missing = cloned.map(
-            (file) => `${file.getLine()}
+            file => `${file.getLine()}
  missing ${file.getMissingDependencies(included).join("\n missing ")}`
           )
           throw new Error(`Circular dependency or other error detected with ${cloned.length} remaining
@@ -44,7 +40,7 @@ ${missing.join("\n")}
       const matches = sourceCode.match(regex)
       if (!matches) return []
       const regex2 = /"(.+)"/
-      return matches.map((match) => match.match(regex2)[1])
+      return matches.map(match => match.match(regex2)[1])
     }
     static _getImportsCommonJs(sourceCode) {
       return this._extractImports(sourceCode, /(\n|^)const .* \= require\("([^"]+)"\)/g)
@@ -54,7 +50,7 @@ ${missing.join("\n")}
     }
     static getTypeScriptAndJavaScriptImportsFromSourceCode(sourceCode) {
       const files = this._getImportsCommonJs(sourceCode).concat(this._getImportsTypescript(sourceCode))
-      return files.map((file) => {
+      return files.map(file => {
         let type = "external"
         if (file.startsWith(".")) type = "relative"
         else if (file.startsWith("/")) type = "absolute"
@@ -65,7 +61,7 @@ ${missing.join("\n")}
       const fs = require("fs")
       const files = new TreeNode(arrayOfScriptPaths.join("\n"))
       const requiredFileList = new TreeNode()
-      files.forEach((child) => {
+      files.forEach(child => {
         const line = child.getLine()
         const requiredFiles = this.getTypeScriptAndJavaScriptImportsFromSourceCode(fs.readFileSync(line, "utf8"))
         requiredFileList.appendLineAndChildren(`file ${line}`, requiredFiles.length ? requiredFiles.join("\n") : undefined)
@@ -223,15 +219,7 @@ fileParser
 
   class fileParser extends GrammarBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        undefined,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          absolute: absoluteParser,
-          external: externalParser,
-          relative: relativeParser,
-        }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
     }
     get fileConstantCell() {
       return this.getWord(0)
@@ -244,7 +232,7 @@ fileParser
     }
     _getDependencies() {
       return this.getChildren()
-        .map((child) => {
+        .map(child => {
           const firstWord = child.firstWord
           const childFilePath = child.filepathCell.join(" ")
           if (firstWord === "external") return ""
@@ -254,10 +242,10 @@ fileParser
           const resolvedPath = require("path").resolve(folderPath + "/" + link)
           return resolvedPath
         })
-        .filter((identity) => identity)
+        .filter(identity => identity)
     }
     getMissingDependencies(includedMap) {
-      return this._getDependencies().filter((file) => includedMap[file] === undefined)
+      return this._getDependencies().filter(file => includedMap[file] === undefined)
     }
   }
 

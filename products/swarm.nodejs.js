@@ -9,13 +9,7 @@
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), {
-          test: testParser,
-          testOnly: testOnlyParser,
-          skipTest: skipTestParser,
-          "#!": hashbangParser,
-          arrange: arrangeParser,
-        }),
+        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { test: testParser, testOnly: testOnlyParser, skipTest: skipTestParser, "#!": hashbangParser, arrange: arrangeParser }),
         undefined
       )
     }
@@ -29,7 +23,7 @@
     }
     compileToRacer(filepath) {
       const testBlocks = {}
-      this.getChildInstancesOfParserId("abstractTestBlockParser").forEach((testParser) => {
+      this.getChildInstancesOfParserId("abstractTestBlockParser").forEach(testParser => {
         const prefix = testParser.racerPrefix || ""
         testBlocks[prefix + testParser.content] = testParser.toTestRacerFunction(filepath)
       })
@@ -506,11 +500,7 @@ todoParser
 
   class abstractTestBlockParser extends GrammarBackedNode {
     createParserCombinator() {
-      return new TreeNode.ParserCombinator(
-        actParser,
-        Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }),
-        undefined
-      )
+      return new TreeNode.ParserCombinator(actParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }), undefined)
     }
     get keywordCell() {
       return this.getWord(0)
@@ -535,9 +525,9 @@ todoParser
       const arrangeParser = this.getArrangeParser()
       const arrangedInstance = arrangeParser.arrange(programFilepath)
       const executeMethod = arrangeParser.isAsync() ? "execute" : "executeSync"
-      return async (equal) => {
+      return async equal => {
         this.setEqualMethod(equal)
-        const promises = this.map(async (childAction) => {
+        const promises = this.map(async childAction => {
           const result = await childAction[executeMethod](arrangedInstance)
           return result
         })
@@ -581,7 +571,7 @@ todoParser
           require: arrangeRequireParser,
           static: arrangeStaticParser,
           constructWithParagraph: constructWithParagraphParser,
-          todo: todoParser,
+          todo: todoParser
         }),
         undefined
       )
@@ -636,7 +626,7 @@ todoParser
           assertStringIncludes: assertStringIncludesParser,
           assertStringIs: assertStringIsParser,
           assertTypeIs: assertTypeIsParser,
-          withParagraph: withParagraphParser,
+          withParagraph: withParagraphParser
         }),
         undefined
       )
@@ -655,7 +645,7 @@ todoParser
     }
     _getActArgs() {
       const paragraphActParsers = this.getChildInstancesOfParserId("withParagraphParser")
-      if (paragraphActParsers.length) return paragraphActParsers.map((arg) => arg.childrenToString())
+      if (paragraphActParsers.length) return paragraphActParsers.map(arg => arg.childrenToString())
       return this.getWordsFrom(1)
     }
     _act(arrangedInstance) {
@@ -667,11 +657,11 @@ todoParser
     }
     async execute(arrangedInstance) {
       await this._act(arrangedInstance)
-      return Promise.all(this.map((child) => child.execute(arrangedInstance)))
+      return Promise.all(this.map(child => child.execute(arrangedInstance)))
     }
     executeSync(arrangedInstance) {
       const newTestSubject = this._act(arrangedInstance)
-      return this.map((child) => child.executeSync(newTestSubject))
+      return this.map(child => child.executeSync(newTestSubject))
     }
   }
 

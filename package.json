@@ -4,12 +4,14 @@
   "description": "Simplify your code with Tree Notation. This jtree package includes a Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages, as well as sample languages, implemented in TypeScript.",
   "types": "./built/jtree.node.d.ts",
   "prettier": {
+    "parser": "babel",
     "useTabs": false,
     "tabWidth": 2,
     "semi": false,
     "printWidth": 240,
     "trailingComma": "none",
-    "arrowParens": "avoid"
+    "arrowParens": "avoid",
+    "quoteProps": "as-needed"
   },
   "engineStrict": true,
   "engines": {

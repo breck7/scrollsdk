@@ -31,6 +31,10 @@ nodeProduct
  insertLastLine module.exports = {Utils}
  combineTypeScriptFiles utils/Utils.ts
 nodeProduct
+ outputFileName TreeFileSystem.js
+ insertLastLine module.exports = {TreeFileSystem}
+ combineTypeScriptFiles treeFileSystem/TreeFileSystem.ts
+nodeProduct
  outputFileName Kitchen.node.js
  combineTypeScriptFiles products/treeNotationTypes.ts kitchen/Kitchen.node.ts
  insertLastLine module.exports = {Kitchen}

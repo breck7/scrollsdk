@@ -27,6 +27,10 @@ class Utils {
     return (match && match[1]) || ""
   }
 
+  static ensureFolderEndsInSlash(folder: string) {
+    return folder.replace(/\/$/, "") + "/"
+  }
+
   static runCommand(instance: any, command = "", param: string = undefined) {
     const run = (name: string) => {
       console.log(`Running ${name}:`)
@@ -71,11 +75,7 @@ class Utils {
 
   // Only allow text content and inline styling. Don't allow HTML tags or any nested scroll tags or escape characters.
   static escapeScrollAndHtml(content = "") {
-    return content
-      .replace(/</g, "&lt;")
-      .replace(/\n/g, "")
-      .replace(/\r/g, "")
-      .replace(/\\/g, "")
+    return content.replace(/</g, "&lt;").replace(/\n/g, "").replace(/\r/g, "").replace(/\\/g, "")
   }
 
   static ensureDelimiterNotFound(strings: string[], delimiter: string) {
@@ -328,12 +328,7 @@ class Utils {
 
   // Only allows a-zA-Z0-9-_  (And optionally .)
   static _permalink(str: string, reg: RegExp) {
-    return str.length
-      ? str
-          .toLowerCase()
-          .replace(reg, "")
-          .replace(/ /g, "-")
-      : ""
+    return str.length ? str.toLowerCase().replace(reg, "").replace(/ /g, "-") : ""
   }
 
   static isValueEmpty(value: any) {
@@ -626,7 +621,7 @@ class Utils {
   // adapted from https://gist.github.com/blixt/f17b47c62508be59987b
   // 1993 Park-Miller LCG
   static _getPseudoRandom0to1FloatGenerator(seed: number) {
-    return function() {
+    return function () {
       seed = Math.imul(48271, seed) | 0 % 2147483647
       return (seed & 2147483647) / 2147483648
     }

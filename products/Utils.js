@@ -18,6 +18,9 @@ class Utils {
     const match = filepath.match(/\.([^\.]+)$/)
     return (match && match[1]) || ""
   }
+  static ensureFolderEndsInSlash(folder) {
+    return folder.replace(/\/$/, "") + "/"
+  }
   static runCommand(instance, command = "", param = undefined) {
     const run = name => {
       console.log(`Running ${name}:`)

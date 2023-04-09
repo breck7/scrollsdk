@@ -60,17 +60,7 @@ class Builder extends TreeNode {
   private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
     return typeScriptScriptsInOrder
       .map(src => Disk.read(src))
-      .map(content =>
-        new TypeScriptRewriter(content)
-          .removeRequires()
-          .removeImports()
-          .removeTsGeneratedCrap()
-          .removeHashBang()
-          .removeNodeJsOnlyLines()
-          .changeDefaultExportsToWindowExports()
-          .removeExports()
-          .getString()
-      )
+      .map(content => new TypeScriptRewriter(content).removeRequires().removeImports().removeTsGeneratedCrap().removeHashBang().removeNodeJsOnlyLines().changeDefaultExportsToWindowExports().removeExports().getString())
       .join("\n")
   }
 
@@ -251,20 +241,9 @@ class Builder extends TreeNode {
   }
 
   produce(outputFileName: string) {
-    if (outputFileName)
-      return this.produceProductFromInstructionsTree(
-        this._getProductsTree()
-          .where("outputFileName", "=", outputFileName)
-          .nodeAt(0),
-        __dirname
-      )
+    if (outputFileName) return this.produceProductFromInstructionsTree(this._getProductsTree().where("outputFileName", "=", outputFileName).nodeAt(0), __dirname)
 
-    console.log(
-      "Available options:\n" +
-        this._getProductsTree()
-          .getColumn("outputFileName")
-          .join("\n")
-    )
+    console.log("Available options:\n" + this._getProductsTree().getColumn("outputFileName").join("\n"))
   }
 
   produceAll() {
@@ -336,6 +315,7 @@ kitchen
 treeNode
 swim
 testRacer
+treeFileSystem
 grammar
 utils
 treeComponentFramework`.split("\n")

@@ -42,7 +42,7 @@ startColumns 4
  - TreeComponentFramework:
   - AbstractTreeComponent > AbstractTreeComponentParser
 - ⚠️ BREAKING: See Grammar Release Notes for upgrading Grammar files
- link langs/grammar/relaseNotes.html Grammar Release Notes
+ link langs/grammar/releaseNotes.html Grammar Release Notes
 
 # 72.2.0 2023-3-31
 - 🎉 improved `sortTemplate`. You can now use `sortKey` in addition to keywords.
@@ -83,7 +83,7 @@ startColumns 4
 
 # 70.0.0 2023-3-28
 - ⚠️ Big changes to Grammar. See the new Grammar Release Notes.
- link langs/grammar/relaseNotes.html Grammar Release Notes
+ link langs/grammar/releaseNotes.html Grammar Release Notes
 
 # 69.4.1 2023-3-11
 - 🏥 fix bug in `Disk.writeObjectToDisk`
@@ -163,7 +163,7 @@ spaceTable
 - 🎉 Utils: Upstream `titleToPermalink` method from pldb
 
 # 65.3.0 2023-2-6
-- 🎉 GrammarLange: upstreamed `sortFromSortTemplate` method from pldb
+- 🎉 Grammar: upstreamed `sortFromSortTemplate` method from pldb
 
 # 65.2.0 2023-2-6
 - 🎉 TreeNode: upstreamed `patch` method from pldb

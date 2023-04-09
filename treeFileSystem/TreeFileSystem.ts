@@ -168,14 +168,14 @@ class TreeFileSystem implements Storage {
   }
 
   private _getOneGrammarParserFromFiles(filePaths: string[], baseGrammarCode: string) {
-    const grammarDefinitionRegex = /[a-zA-Z0-9_]+Parser/
+    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
     const asOneFile = filePaths
       .map(filePath => {
         const content = this._storage.read(filePath)
         if (filePath.endsWith(GRAMMAR_EXTENSION)) return content
         // Strip scroll content
         return new TreeNode(content)
-          .filter((node: treeNotationTypes.treeNode) => node.getLine().match(grammarDefinitionRegex))
+          .filter((node: treeNotationTypes.treeNode) => node.getLine().match(parserDefinitionRegex))
           .map((node: treeNotationTypes.treeNode) => node.asString)
           .join("\n")
       })

@@ -115,14 +115,14 @@ class TreeFileSystem {
     return _expandedImportCache[absoluteFilePath]
   }
   _getOneGrammarParserFromFiles(filePaths, baseGrammarCode) {
-    const grammarDefinitionRegex = /[a-zA-Z0-9_]+Parser/
+    const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
     const asOneFile = filePaths
       .map(filePath => {
         const content = this._storage.read(filePath)
         if (filePath.endsWith(GRAMMAR_EXTENSION)) return content
         // Strip scroll content
         return new TreeNode(content)
-          .filter(node => node.getLine().match(grammarDefinitionRegex))
+          .filter(node => node.getLine().match(parserDefinitionRegex))
           .map(node => node.asString)
           .join("\n")
       })

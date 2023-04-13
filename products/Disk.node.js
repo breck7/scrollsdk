@@ -8,7 +8,14 @@ Disk.rm = path => fs.unlinkSync(path)
 Disk.getCleanedString = str => str.replace(/[\,\t\n]/g, " ")
 Disk.makeExecutable = path => fs.chmodSync(path, 0o755)
 Disk.strCount = (str, reg) => (str.match(new RegExp(reg, "gi")) || []).length
-Disk.read = path => fs.readFileSync(path, "utf8")
+Disk.read = path => {
+  try {
+    return fs.readFileSync(path, "utf8")
+  } catch (err) {
+    console.error(`Error reading '$path'`)
+    throw err
+  }
+}
 Disk.touch = path => (Disk.exists(path) ? true : Disk.write(path, ""))
 Disk.copy = (source, destination) => Disk.write(destination, Disk.read(source))
 Disk.mkdir = path => require("mkdirp").sync(path)

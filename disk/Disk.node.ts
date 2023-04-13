@@ -9,7 +9,14 @@ class Disk {
   static getCleanedString = (str: string) => str.replace(/[\,\t\n]/g, " ")
   static makeExecutable = (path: treeNotationTypes.filepath) => fs.chmodSync(path, 0o755)
   static strCount = (str: string, reg: string) => (str.match(new RegExp(reg, "gi")) || []).length
-  static read = (path: treeNotationTypes.filepath) => fs.readFileSync(path, "utf8")
+  static read = (path: treeNotationTypes.filepath) => {
+    try {
+      return fs.readFileSync(path, "utf8")
+    } catch (err) {
+      console.error(`Error reading '$path'`)
+      throw err
+    }
+  }
   static touch = (path: treeNotationTypes.filepath) => (Disk.exists(path) ? true : Disk.write(path, ""))
   static copy = (source: treeNotationTypes.filepath, destination: treeNotationTypes.filepath) => Disk.write(destination, Disk.read(source))
   static mkdir = (path: treeNotationTypes.filepath) => require("mkdirp").sync(path)

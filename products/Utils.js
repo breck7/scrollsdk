@@ -209,11 +209,13 @@ class Utils {
     return filename ? filename.replace(/\.[^\.]+$/, "") : ""
   }
   static getFileName(path) {
-    const parts = path.split("/") // todo: change for windows?
+    const normalizedPath = path.replace(/\\/g, "/")
+    const parts = normalizedPath.split("/")
     return parts.pop()
   }
   static getPathWithoutFileName(path) {
-    const parts = path.split("/") // todo: change for windows?
+    const normalizedPath = path.replace(/\\/g, "/")
+    const parts = normalizedPath.split("/")
     parts.pop()
     return parts.join("/")
   }

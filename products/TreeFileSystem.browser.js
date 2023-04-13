@@ -1,176 +1,111 @@
-const fs = require("fs")
-const path = require("path")
-
-import { treeNotationTypes } from "../products/treeNotationTypes"
-const { Disk } = require("../products/Disk.node.js")
-const { Utils } = require("../products/Utils.js")
-const { TreeNode } = require("../products/TreeNode.js")
-const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
-const grammarParser = require("../products/grammar.nodejs.js")
-
 const GRAMMAR_EXTENSION = ".grammar"
-
-interface OpenedFile {
-  absolutePath: treeNotationTypes.filepath
-  content: string
-  mtimeMs: number
-}
-
-interface ImportResult {
-  code: string
-  importFilePaths: treeNotationTypes.filepath[]
-}
-
-interface ImportResults {
-  originalFileAsTree: treeNotationTypes.treeNode
-  afterImportPass: string
-  parser?: treeNotationTypes.treeNode
-}
-
-interface Storage {
-  read(absolutePath: string): string
-  list(absolutePath: string): string[]
-  write(absolutePath: string, content: string): void
-  getMTime(absolutePath: string): number
-  dirname(absolutePath: string): string
-  join(...absolutePath: string[]): string
-}
-
-class DiskWriter implements Storage {
-  fileCache: { [filepath: string]: OpenedFile } = {}
-  _read(absolutePath: treeNotationTypes.filepath) {
+class DiskWriter {
+  constructor() {
+    this.fileCache = {}
+  }
+  _read(absolutePath) {
     const { fileCache } = this
     if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), mtimeMs: fs.statSync(absolutePath) }
     return fileCache[absolutePath]
   }
-
-  read(absolutePath: string) {
+  read(absolutePath) {
     return this._read(absolutePath).content
   }
-
-  list(folder: string) {
+  list(folder) {
     return Disk.getFiles(folder)
   }
-
-  write(fullPath: string, content: string) {
+  write(fullPath, content) {
     Disk.writeIfChanged(fullPath, content)
   }
-
-  getMTime(absolutePath: string) {
+  getMTime(absolutePath) {
     return this._read(absolutePath).mtimeMs
   }
-
-  dirname(absolutePath: string) {
+  dirname(absolutePath) {
     return path.dirname(absolutePath)
   }
-
-  join(...segments: string[]) {
+  join(...segments) {
     return path.dirname(...arguments)
   }
 }
-
-class MemoryWriter implements Storage {
-  constructor(inMemoryFiles: treeNotationTypes.diskMap) {
+class MemoryWriter {
+  constructor(inMemoryFiles) {
     this.inMemoryFiles = inMemoryFiles
   }
-
-  inMemoryFiles: treeNotationTypes.diskMap
-
-  read(absolutePath: treeNotationTypes.filepath) {
+  read(absolutePath) {
     const value = this.inMemoryFiles[absolutePath]
     if (value === undefined) throw new Error(`File '${absolutePath}' not found.`)
     return value
   }
-
-  write(absolutePath: treeNotationTypes.filepath, content: string) {
+  write(absolutePath, content) {
     this.inMemoryFiles[absolutePath] = content
   }
-
-  list(absolutePath: treeNotationTypes.filepath) {
+  list(absolutePath) {
     return Object.keys(this.inMemoryFiles).filter(filePath => filePath.startsWith(absolutePath) && !filePath.replace(absolutePath, "").includes("/"))
   }
-
   getMTime() {
     return 1
   }
-
-  dirname(absolutePath: string) {
+  dirname(absolutePath) {
     return Utils.getPathWithoutFileName(absolutePath)
   }
-
-  join(...segments: string[]) {
+  join(...segments) {
     return segments.join("/")
   }
 }
-
-class TreeFileSystem implements Storage {
-  constructor(inMemoryFiles: treeNotationTypes.diskMap) {
+class TreeFileSystem {
+  constructor(inMemoryFiles) {
+    this._treeCache = {}
+    this._parserCache = {}
+    this._expandedImportCache = {}
+    this._grammarExpandersCache = {}
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
   }
-
-  read(absolutePath: treeNotationTypes.filepath) {
+  read(absolutePath) {
     return this._storage.read(absolutePath)
   }
-
-  write(absolutePath: treeNotationTypes.filepath, content: string) {
+  write(absolutePath, content) {
     return this._storage.write(absolutePath, content)
   }
-
-  list(absolutePath: treeNotationTypes.filepath) {
+  list(absolutePath) {
     return this._storage.list(absolutePath)
   }
-
-  dirname(absolutePath: string) {
+  dirname(absolutePath) {
     return this._storage.dirname(absolutePath)
   }
-
-  join(...segments: string[]) {
+  join(...segments) {
     return this._storage.join(...segments)
   }
-
-  getMTime(absolutePath: string) {
+  getMTime(absolutePath) {
     return this._storage.getMTime(absolutePath)
   }
-
-  private _storage: Storage
-  private _treeCache: { [filepath: string]: typeof TreeNode } = {}
-  private _parserCache: { [concatenatedFilepaths: string]: any } = {}
-  private _expandedImportCache: { [filepath: string]: ImportResult } = {}
-  private _grammarExpandersCache: { [filepath: string]: boolean } = {}
-
-  private _getFileAsTree(absoluteFilePath: string) {
+  _getFileAsTree(absoluteFilePath) {
     const { _treeCache } = this
     if (_treeCache[absoluteFilePath] === undefined) {
       _treeCache[absoluteFilePath] = new TreeNode(this._storage.read(absoluteFilePath))
     }
     return _treeCache[absoluteFilePath]
   }
-
-  private _doesFileHaveGrammarDefinitions(absoluteFilePath: treeNotationTypes.filepath) {
+  _doesFileHaveGrammarDefinitions(absoluteFilePath) {
     if (!absoluteFilePath) return false
     const { _grammarExpandersCache } = this
     if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(/^[a-zA-Z0-9_]+Parser/gm)
-
     return _grammarExpandersCache[absoluteFilePath]
   }
-
-  private _evaluateImports(absoluteFilePath: string) {
+  _evaluateImports(absoluteFilePath) {
     const { _expandedImportCache } = this
     if (_expandedImportCache[absoluteFilePath]) return _expandedImportCache[absoluteFilePath]
     // A regex to check if a multiline string has a line that starts with "import ".
     const importRegex = /^import /gm
     const code = this.read(absoluteFilePath)
-
     if (!code.match(importRegex))
       return {
         code,
         importFilePaths: []
       }
-
-    let importFilePaths: string[] = []
+    let importFilePaths = []
     const lines = code.split("\n")
-    const replacements: { lineNumber: number; code: string }[] = []
+    const replacements = []
     lines.forEach((line, lineNumber) => {
       const folder = this.dirname(absoluteFilePath)
       if (line.match(importRegex)) {
@@ -182,20 +117,17 @@ class TreeFileSystem implements Storage {
         importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
       }
     })
-
     replacements.forEach(replacement => {
       const { lineNumber, code } = replacement
       lines[lineNumber] = code
     })
-
     _expandedImportCache[absoluteFilePath] = {
       code: lines.join("\n"),
       importFilePaths
     }
     return _expandedImportCache[absoluteFilePath]
   }
-
-  private _getOneGrammarParserFromFiles(filePaths: string[], baseGrammarCode: string) {
+  _getOneGrammarParserFromFiles(filePaths, baseGrammarCode) {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
     const asOneFile = filePaths
       .map(filePath => {
@@ -203,22 +135,19 @@ class TreeFileSystem implements Storage {
         if (filePath.endsWith(GRAMMAR_EXTENSION)) return content
         // Strip scroll content
         return new TreeNode(content)
-          .filter((node: treeNotationTypes.treeNode) => node.getLine().match(parserDefinitionRegex))
-          .map((node: treeNotationTypes.treeNode) => node.asString)
+          .filter(node => node.getLine().match(parserDefinitionRegex))
+          .map(node => node.asString)
           .join("\n")
       })
       .join("\n")
       .trim()
-
     // todo: clean up jtree so we are using supported methods (perhaps add a formatOptions that allows you to tell Grammar not to run prettier on js nodes)
     return new grammarParser(baseGrammarCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
   }
-
   get parsers() {
     return Object.values(this._parserCache).map(parser => parser.grammarParser)
   }
-
-  getParser(filePaths: string[], baseGrammarCode = "") {
+  getParser(filePaths, baseGrammarCode = "") {
     const { _parserCache } = this
     const key = filePaths
       .filter(fp => fp)
@@ -235,23 +164,18 @@ class TreeFileSystem implements Storage {
     }
     return _parserCache[key]
   }
-
-  evaluateImports(absoluteFilePath: string, defaultParserCode?: string): ImportResults {
+  evaluateImports(absoluteFilePath, defaultParserCode) {
     const importResults = this._evaluateImports(absoluteFilePath)
-    const results: ImportResults = {
+    const results = {
       originalFileAsTree: this._getFileAsTree(absoluteFilePath),
       afterImportPass: importResults.code
     }
-
     if (!defaultParserCode) return results
-
     const filepathsWithParserDefinitions = importResults.importFilePaths.filter(filename => this._doesFileHaveGrammarDefinitions(filename))
     if (this._doesFileHaveGrammarDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
-
     // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM GRAMMAR NODES DEFINED
     if (filepathsWithParserDefinitions.length) results.parser = this.getParser(filepathsWithParserDefinitions, defaultParserCode).parser
     return results
   }
 }
-
-export { TreeFileSystem }
+window.TreeFileSystem = TreeFileSystem

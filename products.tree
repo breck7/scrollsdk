@@ -61,6 +61,9 @@ browserProduct
  outputFileName Utils.browser.js
  combineTypeScriptFiles utils/Utils.ts
 browserProduct
+ outputFileName TreeFileSystem.browser.js
+ combineTypeScriptFiles treeFileSystem/TreeFileSystem.ts
+browserProduct
  outputFileName TreeNode.browser.js
  removeAll window.treeNotationTypes = treeNotationTypes
  combineTypeScriptFiles products/treeNotationTypes.ts treeNode/AbstractNode.browser.ts treeNode/TreeNode.ts

@@ -13,8 +13,9 @@ testTree.disk = equal => {
 
 testTree.inMemory = equal => {
   // Arrange/Act/Assert
-  const files = {}
-  equal(!!new TreeFileSystem(files), true)
+  const files = { "/hello": "world", "/main": "import hello\nimport nested/test", "/nested/test": "ciao" }
+  const tfs = new TreeFileSystem(files)
+  equal(tfs.evaluateImports("/main").afterImportPass, "world\nciao")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)

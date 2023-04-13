@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 74.2.0 2023-4-12
+- 🎉 new library: `TreeFileSystem.broswer.js`
+
 # 74.1.1 2023-4-9
 - 🏥 bug fix in TFS
 

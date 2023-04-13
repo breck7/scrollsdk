@@ -281,12 +281,14 @@ class Utils {
   }
 
   static getFileName(path: treeNotationTypes.filepath) {
-    const parts = path.split("/") // todo: change for windows?
+    const normalizedPath = path.replace(/\\/g, "/")
+    const parts = normalizedPath.split("/")
     return parts.pop()
   }
 
   static getPathWithoutFileName(path: treeNotationTypes.filepath) {
-    const parts = path.split("/") // todo: change for windows?
+    const normalizedPath = path.replace(/\\/g, "/")
+    const parts = normalizedPath.split("/")
     parts.pop()
     return parts.join("/")
   }

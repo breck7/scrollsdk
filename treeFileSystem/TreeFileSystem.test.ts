@@ -2,19 +2,22 @@
 
 const { TreeFileSystem } = require("../products/TreeFileSystem.js")
 const { TestRacer } = require("../products/TestRacer.js")
+const path = require("path")
 import { treeNotationTypes } from "../products/treeNotationTypes"
 
 const testTree: treeNotationTypes.testTree = {}
 
 testTree.disk = equal => {
+  const tfs = new TreeFileSystem()
   // Arrange/Act/Assert
-  equal(!!new TreeFileSystem(), true)
+  equal(tfs.evaluateImports(path.join(__dirname, "..", "readme.scroll")).afterImportPass.length > 0, true)
 }
 
 testTree.inMemory = equal => {
   // Arrange/Act/Assert
   const files = { "/hello": "world", "/main": "import hello\nimport nested/test", "/nested/test": "ciao" }
   const tfs = new TreeFileSystem(files)
+  equal(tfs.dirname("/"), "/")
   equal(tfs.evaluateImports("/main").afterImportPass, "world\nciao")
 }
 

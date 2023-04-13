@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 74.3.1 2023-4-13
+- 🏥 fix path bugs in TFS
+
 # 74.3.0 2023-4-13
 - 🏥 better error messages in Disk to help track down a CI bug
 

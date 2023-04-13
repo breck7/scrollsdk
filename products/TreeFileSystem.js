@@ -31,7 +31,7 @@ class DiskWriter {
     return path.dirname(absolutePath)
   }
   join(...segments) {
-    return path.dirname(...arguments)
+    return path.join(...arguments)
   }
 }
 class MemoryWriter {
@@ -52,11 +52,35 @@ class MemoryWriter {
   getMTime() {
     return 1
   }
-  dirname(absolutePath) {
-    return Utils.getPathWithoutFileName(absolutePath)
+  // todo: replace with a browserfied path?
+  dirname(path) {
+    // https://github.com/browserify/path-browserify/blob/master/index.js
+    if (path.length === 0) return "."
+    var code = path.charCodeAt(0)
+    var hasRoot = code === 47 /*/*/
+    var end = -1
+    var matchedSlash = true
+    for (var i = path.length - 1; i >= 1; --i) {
+      code = path.charCodeAt(i)
+      if (code === 47 /*/*/) {
+        if (!matchedSlash) {
+          end = i
+          break
+        }
+      } else {
+        // We saw the first non-path separator
+        matchedSlash = false
+      }
+    }
+    if (end === -1) return hasRoot ? "/" : "."
+    if (hasRoot && end === 1) return "//"
+    return path.slice(0, end)
+  }
+  normalizePath(path) {
+    return path.replace(/\/\/+/g, "/")
   }
   join(...segments) {
-    return segments.join("/")
+    return this.normalizePath(segments.join("/"))
   }
 }
 class TreeFileSystem {
@@ -116,8 +140,8 @@ class TreeFileSystem {
     lines.forEach((line, lineNumber) => {
       const folder = this.dirname(absoluteFilePath)
       if (line.match(importRegex)) {
-        const filename = line.replace("import ", "")
-        const absoluteImportFilePath = this.join(folder, filename)
+        const relativeFilePath = line.replace("import ", "")
+        const absoluteImportFilePath = this.join(folder, relativeFilePath)
         const expandedFile = this._evaluateImports(absoluteImportFilePath)
         replacements.push({ lineNumber, code: expandedFile.code })
         importFilePaths.push(absoluteImportFilePath)

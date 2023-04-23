@@ -56,6 +56,13 @@ class Utils {
   static escapeScrollAndHtml(content = "") {
     return content.replace(/</g, "&lt;").replace(/\n/g, "").replace(/\r/g, "").replace(/\\/g, "")
   }
+  static colorize(message, colorNameOrString = "red") {
+    // ANSI: https://en.wikipedia.org/wiki/ANSI_escape_code
+    const colors = { red: "\x1b[31m", green: "\x1b[32m", yellow: "\x1b[33m" }
+    const color = colors[colorNameOrString] || colorNameOrString
+    const reset = "\x1b[0m"
+    return `${color}${message}${reset}`
+  }
   static ensureDelimiterNotFound(strings, delimiter) {
     const hit = strings.find(word => word.includes(delimiter))
     if (hit) throw `Delimiter "${delimiter}" found in hit`

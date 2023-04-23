@@ -38,13 +38,13 @@ class TestRacerTestBlock {
     }
   }
   _emitBlockPassedMessage(passes) {
-    this._emitMessage(`ok block ${this._testName} - ${passes.length} passed`)
+    this._emitMessage(`${TestRacer.green()} block ${this._testName} - ${passes.length} passed`)
   }
   _emitBlockFailedMessage(failures) {
     // todo: should replace not replace last newline?
     // todo: do side by side.
     // todo: add diff.
-    this._emitMessage(`failed block ${this._testName}`)
+    this._emitMessage(`${TestRacer.red()} block ${this._testName}`)
     this._emitMessage(
       failures
         .map(failure => {
@@ -129,11 +129,13 @@ class TestRacerFile {
     this._emitMessage(`start file ${blockCount} test blocks in file ${this._fileName}`)
   }
   _emitFilePassedMessage(fileStats, fileTimeElapsed, blockCount) {
-    this._emitMessage(`ok file ${this._fileName} in ${fileTimeElapsed}ms. ${blockCount} blocks and ${fileStats.assertionsPassed} assertions passed.`)
+    this._emitMessage(`${TestRacer.green()} file ${this._fileName} in ${fileTimeElapsed}ms. ${blockCount} blocks and ${fileStats.assertionsPassed} assertions passed.`)
   }
   _emitFileFailedMessage(fileStats, fileTimeElapsed, blockCount) {
     this._emitMessage(
-      `failed file ${this._fileName} over ${fileTimeElapsed}ms. ${fileStats.blocksFailed} blocks and ${fileStats.assertionsFailed} failed. ${blockCount - fileStats.blocksFailed} blocks and ${fileStats.assertionsPassed} assertions passed`
+      `${TestRacer.red()} file ${this._fileName} over ${fileTimeElapsed}ms. ${fileStats.blocksFailed} blocks and ${fileStats.assertionsFailed} failed. ${blockCount - fileStats.blocksFailed} blocks and ${
+        fileStats.assertionsPassed
+      } assertions passed`
     )
   }
 }
@@ -155,6 +157,14 @@ class TestRacer {
   setLogFunction(logFunction) {
     this._logFunction = logFunction
     return this
+  }
+  static green(message = "ok") {
+    if (Utils.isNodeJs()) return Utils.colorize(message, "green")
+    return `<span style="color: green;">${message}</span>`
+  }
+  static red(message = "failed") {
+    if (Utils.isNodeJs()) return Utils.colorize(message, "red")
+    return `<span style="color: red;">${message}</span>`
   }
   _addFileResultsToSessionResults(fileStats, fileName) {
     this._sessionAssertionsPassed += fileStats.assertionsPassed
@@ -207,7 +217,10 @@ ${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach(line => line
   }
   _emitSessionFinishMessage() {
     const skipped = this._getSkippedBlockNames()
-    return this._emitMessage(`finished in ${this._timer.getTotalElapsedTime()}ms
+    const allPassed = this._sessionAssertionsFailed === 0
+    const finalColorMethod = allPassed ? TestRacer.green : TestRacer.red
+    return this._emitMessage(
+      finalColorMethod(`finished in ${this._timer.getTotalElapsedTime()}ms
  skipped
   ${skipped.length} blocks${skipped ? " " + skipped.join(" ") : ""}
  passed
@@ -218,6 +231,7 @@ ${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach(line => line
   ${Object.keys(this._sessionFilesFailed).length} files
   ${this._sessionBlocksFailed} blocks
   ${this._sessionAssertionsFailed} assertions${this._getFailures()}`)
+    )
   }
   static async testSingleFile(fileName, testTree) {
     const obj = {}

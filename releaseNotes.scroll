@@ -4,6 +4,9 @@ startColumns 4
 
 * Here's a list of the notable changes in JTree.
 
+# 75.1.0 2023-4-23
+- 🎉 colorize TestRacer. ok = green, failed = red.
+
 # 75.0.0 2023-4-13
 - 🏥 switch to Joyent's browserfied path module for TFS to allow for isomorphic path strings
 - ⚠️ BREAKING: (No one should be affected)

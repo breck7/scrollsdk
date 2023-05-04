@@ -1,9 +1,5 @@
-title Grammar
+title Grammar TypeScript Implementation
 
-This folder contains the TypeScript implementation of Grammar.
+This folder contains Grammar implemented in TypeScript.
 
-? What is Grammar?
-
-Grammar is a Tree Language for making Tree Languages. It is a compiler compiler.
-
-
+See the folder `langs/grammar/` for documentation on Grammar.

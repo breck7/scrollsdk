@@ -6,14 +6,14 @@ permalink index.html
 startColumns 1
 
 ? What is Grammar?
-* Grammar is a Tree Language for building Tree Languages.
+Grammar is a Tree Language for building Tree Languages.
 
 ? Can you show me a demo?
-* The Tree Language Designer let's you use Grammar to build languages right in your browser.
+The Tree Language Designer let's you use Grammar to build languages right in your browser.
  https://jtree.treenotation.org/designer/ Tree Language Designer
 
 ? Where are the release notes?
-* Here
+Here
  link releaseNotes.html
 
 import ../../footer.scroll

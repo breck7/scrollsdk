@@ -6,13 +6,13 @@ startColumns 2
 
 # Key Concepts
 
-* *Tree Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better. We call languages that use _Tree Notation_ *Tree Languages*.
+*Tree Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better. We call languages that use _Tree Notation_ *Tree Languages*.
 
-* A _Tree Notation_ program is a string, a tree, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
+A _Tree Notation_ program is a string, a tree, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
 
-* *Grammar* is a _Tree Language_ for building other _Tree Languages_. This tutorial walks you through building a very simple language in _Grammar_.
+*Grammar* is a _Tree Language_ for building other _Tree Languages_. This tutorial walks you through building a very simple language in _Grammar_.
 
-* _Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle it according to the definitions you write in your Grammar program. A language is simple a combination of _Parsers_.
+_Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle it according to the definitions you write in your Grammar program. A language is simple a combination of _Parsers_.
 
 ## Before you start:
 [] Know where to get help. GitHub issues, Tree Notation subreddit, Google Groups, or email Breck.
@@ -131,7 +131,7 @@ code
   name Ben Franklin
 
 ## Step 14
-* That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format.
+That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format.
 
 copyButtons
 

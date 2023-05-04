@@ -1,5 +1,4 @@
 # Swim Tests
 
 ? What are the Swim Tests?
-
-* This is an attempt to build a standard set of host language agnostic tests to make it easier for people to build Tree Notation libraries in other host languages. It is experimental, and potentially a dumb idea. Feel free to ignore this for now.
+This is an attempt to build a standard set of host language agnostic tests to make it easier for people to build Tree Notation libraries in other host languages. It is experimental, and potentially a dumb idea. Feel free to ignore this for now.

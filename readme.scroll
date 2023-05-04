@@ -5,42 +5,42 @@ startColumns 4
 import ciBadges.scroll
 
 # Links
-* Tree Notation Homepage
+Tree Notation Homepage
  https://treenotation.org
-* Tree Notation Sandbox
+Tree Notation Sandbox
  https://jtree.treenotation.org/sandbox
-* Tree Language Designer
+Tree Language Designer
  https://jtree.treenotation.org/designer
-* Release Notes
+Release Notes
  https://jtree.treenotation.org/releaseNotes.html
-* Tree Notation FAQ
+Tree Notation FAQ
  https://faq.treenotation.org
-* TrueBase
+TrueBase
  https://truebase.pub/
-* TypeScript Library
+TypeScript Library
  https://github.com/treenotation/jtree
-* Tree Notation Subreddit
+Tree Notation Subreddit
  https://reddit.com/r/treenotation
-* Ohayo - A data science studio powered by Tree Notation
+Ohayo - A data science studio powered by Tree Notation
  https://github.com/treenotation/ohayo
-* UnitTests
+UnitTests
  https://jtree.treenotation.org/sandbox/test.html
-* PerfTests
+PerfTests
  https://jtree.treenotation.org/sandbox/perfTests.html
 
 ? Who is this package built for?
-* Jtree is for people who want to design Tree Languages, make Tree editing tools, or use the Tree Component Web Framework.
-* You can think of jtree as similar to the Java Development Kit, except for Tree Notation instead of Java.
+Jtree is for people who want to design Tree Languages, make Tree editing tools, or use the Tree Component Web Framework.
+You can think of jtree as similar to the Java Development Kit, except for Tree Notation instead of Java.
 
 ? How do I build a new language?
-* You can try the Grammar tutorial.
+You can try the Grammar tutorial.
  link grammarTutorial.html Grammar tutorial
 
 # Grammar Files
-* Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web Tree Language Designer.
+Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web Tree Language Designer.
  https://jtree.treenotation.org/designer Designer
 
-* To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. Jtree lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript. Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
+To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. Jtree lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript. Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
 
 # Using Jtree
 
@@ -52,7 +52,7 @@ code
  npm install .
  npm run test
 
-* Jtree currently includes over 10 compiled projects (aka "products") and more than a dozen Tree Languages.
+Jtree currently includes over 10 compiled projects (aka "products") and more than a dozen Tree Languages.
 
 # Basic TreeNode library for npm projects:
 code
@@ -79,13 +79,13 @@ code
  open http://localhost:3333/designer
 
 ## TreeComponentFramework for building web apps
-* This is a web framework still in the research stage. Whether it evolves into a serious line of effort is unknown.
+This is a web framework still in the research stage. Whether it evolves into a serious line of effort is unknown.
 
 ## Sample Languages
-* More than 12 example Tree Languages for helping with various tasks. See the `langs/` folder.
+More than 12 example Tree Languages for helping with various tasks. See the `langs/` folder.
 
 ##  Build Tools
-* If you look at the source, you will also see a set of build tools (such as Builder and TypeScriptRewriter). These are currently undocumented and not recommended for external use.
+If you look at the source, you will also see a set of build tools (such as Builder and TypeScriptRewriter). These are currently undocumented and not recommended for external use.
 
 ## Building all tools and running tests
 code
@@ -93,21 +93,21 @@ code
  npm test
 
 # Monorepo
-* Jtree is a monorepo. With on average over 1 major version released each month for the past 2.5 years, it would take a lot of overhead to constantly be updating 10+ different repositories and modules every month. Once we're more confident in the theory and best practices, it might make sense to break this repo into independent modules.
-* That being said, we despise unnecessary dependencies as much as anyone. If anyone wants to create some automated submodules built from the projects in this monorepo, to allow for consuming of a smaller subset of the code and dependencies in this module, feel free to do so.
+Jtree is a monorepo. With on average over 1 major version released each month for the past 2.5 years, it would take a lot of overhead to constantly be updating 10+ different repositories and modules every month. Once we're more confident in the theory and best practices, it might make sense to break this repo into independent modules.
+That being said, we despise unnecessary dependencies as much as anyone. If anyone wants to create some automated submodules built from the projects in this monorepo, to allow for consuming of a smaller subset of the code and dependencies in this module, feel free to do so.
 
 ## Visualization of the code base
  https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=breck7%2Fjtree Visualization
 image images/diagram.svg
 
 # Development Status
-* All breaking changes are mentioned in the releaseNotes. We follow semantic versioning, so breaking changes should not happen if you stay on the same major version.
+All breaking changes are mentioned in the releaseNotes. We follow semantic versioning, so breaking changes should not happen if you stay on the same major version.
  link releaseNotes.html releaseNotes
 
 # Tree Notation Libraries in Other Languages
-* If you build a Tree Notation library/SDK in another language, let us know and we'll add a link.
+If you build a Tree Notation library/SDK in another language, let us know and we'll add a link.
 
-* If you are working on a Tree Notation library in a new host language, feel free to post an issue or ask for help in the  TreeNotation subreddit.
+If you are working on a Tree Notation library in a new host language, feel free to post an issue or ask for help in the  TreeNotation subreddit.
  https://reddit.com/r/treenotation subreddit
 
 ## How to bump versions
@@ -115,12 +115,12 @@ code
  npm run updateVersion NEW_NUMBER
 
 # Alternatives Considered
-* This is the first Tree Notation library in existence, so there were no alternative implementations. Note and Space were predecessors to Tree Notation. If a better alternative low level notation to Tree Notation is possible, it has yet to be discovered.
+This is the first Tree Notation library in existence, so there were no alternative implementations. Note and Space were predecessors to Tree Notation. If a better alternative low level notation to Tree Notation is possible, it has yet to be discovered.
 
-* All that said, the important part of this repo is not the code but the design patterns. Tree Notation is very simple, and you can implement the patterns contained here in your own code without using this library. In fact, that is often the best way to use Tree Notation!
+All that said, the important part of this repo is not the code but the design patterns. Tree Notation is very simple, and you can implement the patterns contained here in your own code without using this library. In fact, that is often the best way to use Tree Notation!
 
 ## Editing in Sublime Text
-* It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files in gitignore. Read more here.
+It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files in gitignore. Read more here.
  https://breckyunits.com/code/my-sublime-setttings.html here
 
 # ❤️ Public Domain ❤️

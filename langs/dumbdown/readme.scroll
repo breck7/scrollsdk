@@ -1,8 +1,8 @@
 title Dumbdown - The dumb alternative to markdown
 
-* The dialect of Dumbdown included in the JTree project is used as a demonstration and to autogenerate readmes from Grammars.
+The dialect of Dumbdown included in the JTree project is used as a demonstration and to autogenerate readmes from Grammars.
 
-* Dumbdown spawned an official project: Scroll
+Dumbdown spawned an official project: Scroll
  https://github.com/treenotation/scroll Scroll
 
 ? Can you show me some example code?
@@ -27,10 +27,10 @@ code
 
 ? How can I try the original prototype?
 
-* Here
+Here
  https://jtree.treenotation.org/designer/#standard%20dumbdown
 
 ? How do I develop this lang?
 
-* Building: [todo]
-* Running tests: [todo]
+Building: [todo]
+Running tests: [todo]

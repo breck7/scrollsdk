@@ -1,9 +1,9 @@
 title Langs
 
-* This folder contains numerous Tree Languages.
+This folder contains numerous Tree Languages.
 
-* Some of these languages are just for demonstration and testing purposes.
+Some of these languages are just for demonstration and testing purposes.
 
-* Some of them are usable. The recommended way to use the languages in the folder is to search the top level `products/` folder and use the compiled Javascript directly.
+Some of them are usable. The recommended way to use the languages in the folder is to search the top level `products/` folder and use the compiled Javascript directly.
 
-* The usuable languages include Stamp, Hakon, Stump, Swarm, Grammar and Dumbdown.
+The usuable languages include Stamp, Hakon, Stump, Swarm, Grammar and Dumbdown.

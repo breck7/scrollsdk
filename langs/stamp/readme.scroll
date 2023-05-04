@@ -1,6 +1,6 @@
 title Stamp
 
-* First, show me some code
+First, show me some code
 
 code
  folder myProject
@@ -11,11 +11,11 @@ code
   data
    # My Readme
 
-* You can also play with writing your own stamp files by hand in this web IDE to see autocomplete, type checking, and the full grammar.
+You can also play with writing your own stamp files by hand in this web IDE to see autocomplete, type checking, and the full grammar.
  https://jtree.treenotation.org/designer/#standard%20stamp web IDE
 
 # QuickStart: How to use Stamp in Node
-* Stamp can be used in node to turn a folder on disk into a single stamp file, and to expand a single stamp file into a folder on disk.
+Stamp can be used in node to turn a folder on disk into a single stamp file, and to expand a single stamp file into a folder on disk.
 
 code
  npm install jtree
@@ -28,25 +28,24 @@ code
  new stamp(`file hello-world.txt`).execute()
 
 # How to use Stamp with other languages
-* A Stamp file is a simple declarative file. It should be straightforward to write a Stamp "library" (really, 2 functions should suffice), in other languages. If you do that, please send a PR with a link so we can direct people without nodejs to other implementations.
+A Stamp file is a simple declarative file. It should be straightforward to write a Stamp "library" (really, 2 functions should suffice), in other languages. If you do that, please send a PR with a link so we can direct people without nodejs to other implementations.
 
 # About
-* Stamp is an alternative to zip files for sharing a small collection of folders and text files.
+Stamp is an alternative to zip files for sharing a small collection of folders and text files.
 
-* A Stamp Program is an easily readable plain text program that when executed creates the files and folders listed.
+A Stamp Program is an easily readable plain text program that when executed creates the files and folders listed.
 
-* Stamp Programs are great for workflows where you prompt a user for input and then do a simple find/replace throughout the created files and folders.
+Stamp Programs are great for workflows where you prompt a user for input and then do a simple find/replace throughout the created files and folders.
 
-* Frequently programmers have templates that they start new projects with. Those templates can be turned into Stamp files.
+Frequently programmers have templates that they start new projects with. Those templates can be turned into Stamp files.
 
 # The Problem
-* The web is full of project tutorials like this one that ask their readers to go through a series of steps to create a particular folder and file structure for a new project.
+The web is full of project tutorials like this one that ask their readers to go through a series of steps to create a particular folder and file structure for a new project.
  https://docs.npmjs.com/getting-started/creating-node-modules this one
 
-* The current options for this situation are:
+The current options for this situation are:
 
 # The Recipe Method - explain each step
-
 - Downside: If your basic project layout requires 10 files, that's 10 separate steps the reader has to do just to get started.
 - Downside: The reader might make an error during one of those steps and lose even more time.
 - Downside: Putting such steps in a narrative and updating that narrative if things change is time consuming as an author
@@ -66,21 +65,21 @@ code
 - Downside: no plain text way of distributing the template
 
 # Alternatives Considered
-* Wikipedia list of archive formats
+- Wikipedia list of archive formats
  https://en.wikipedia.org/wiki/List_of_archive_formats
-* ptar full featured, but difference is the file output is a custom format (not a Tree Language)
+- ptar full featured, but difference is the file output is a custom format (not a Tree Language)
  https://github.com/jtvaughan/ptar ptar
-* shar old school method that has the major security flaw of potentially running any shell command
+- shar old school method that has the major security flaw of potentially running any shell command
  https://en.wikipedia.org/wiki/Shar shar
-* dar
+- dar
  http://dar.linux.free.fr/
-* metatar
+- metatar
  https://github.com/xyproto/metatar
-* txtar
+- txtar
  https://pkg.go.dev/golang.org/x/tools@v0.1.0/txtar
 
 # Directory Editors
-* Dired
+- Dired
  https://www.gnu.org/software/emacs/manual/html_node/emacs/Dired.html
-* vimv
+- vimv
  https://github.com/thameera/vimv

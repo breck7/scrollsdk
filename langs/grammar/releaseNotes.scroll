@@ -2,7 +2,7 @@ import ../../header.scroll
 title Grammar Release Notes
 startColumns 4
 
-* Here's a list of the notable changes in Grammar.
+Here's a list of the notable changes in Grammar.
 
 # 6.0.0 2023-4-2
 - ⚠️ BREAKING:

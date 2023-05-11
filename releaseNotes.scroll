@@ -4,6 +4,9 @@ startColumns 4
 
 Here's a list of the notable changes in JTree.
 
+# 75.1.1 2023-5-11
+- 🏥 add a `main` entry to package.json so `require.resolve` works
+
 # 75.1.0 2023-4-23
 - 🎉 colorize TestRacer. ok = green, failed = red.
 

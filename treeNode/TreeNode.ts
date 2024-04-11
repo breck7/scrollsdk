@@ -1336,7 +1336,7 @@ class TreeNode extends AbstractNode {
   toStringWithLineNumbers() {
     return this.toString()
       .split("\n")
-      .map((line, index) => `${index + 1} ${line}`)
+      .map((line, index) => `${index + 1}${TN_WORD_BREAK_SYMBOL}${line}`)
       .join("\n")
   }
 

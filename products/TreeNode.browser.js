@@ -21,6 +21,9 @@ var FileFormat
   FileFormat["tsv"] = "tsv"
   FileFormat["tree"] = "tree"
 })(FileFormat || (FileFormat = {}))
+const TN_WORD_BREAK_SYMBOL = " "
+const TN_EDGE_SYMBOL = " "
+const TN_NODE_BREAK_SYMBOL = "\n"
 class AbstractTreeEvent {
   constructor(targetNode) {
     this.targetNode = targetNode
@@ -84,7 +87,7 @@ class ParserCombinator {
     }
     return obj
   }
-  _getParser(line, contextNode, wordBreakSymbol = " ") {
+  _getParser(line, contextNode, wordBreakSymbol = TN_WORD_BREAK_SYMBOL) {
     return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextNode)
   }
   _getCatchAllParser(contextNode) {
@@ -1290,10 +1293,10 @@ class TreeNode extends AbstractNode {
     return this.toDelimited("\t")
   }
   get nodeBreakSymbol() {
-    return "\n"
+    return TN_NODE_BREAK_SYMBOL
   }
   get wordBreakSymbol() {
-    return " "
+    return TN_WORD_BREAK_SYMBOL
   }
   get edgeSymbolRegex() {
     return new RegExp(this.edgeSymbol, "g")
@@ -1302,7 +1305,7 @@ class TreeNode extends AbstractNode {
     return new RegExp(this.nodeBreakSymbol, "g")
   }
   get edgeSymbol() {
-    return " "
+    return TN_EDGE_SYMBOL
   }
   _textToContentAndChildrenTuple(text) {
     const lines = text.split(this.nodeBreakSymbolRegex)
@@ -2512,8 +2515,8 @@ class TreeNode extends AbstractNode {
     return headerRow
   }
   static nest(str, xValue) {
-    const NodeBreakSymbol = "\n"
-    const WordBreakSymbol = " "
+    const NodeBreakSymbol = TN_NODE_BREAK_SYMBOL
+    const WordBreakSymbol = TN_WORD_BREAK_SYMBOL
     const indent = NodeBreakSymbol + WordBreakSymbol.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
@@ -2563,7 +2566,7 @@ class AbstractExtendibleTreeNode extends TreeNode {
     this.forEach(node => {
       const path = node._getAncestorsArray().map(node => node.id)
       path.reverse()
-      tree.touchNode(path.join(" "))
+      tree.touchNode(path.join(TN_EDGE_SYMBOL))
     })
     return tree
   }

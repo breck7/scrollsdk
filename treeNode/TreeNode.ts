@@ -15,6 +15,10 @@ enum FileFormat {
   tree = "tree"
 }
 
+const TN_WORD_BREAK_SYMBOL = " "
+const TN_EDGE_SYMBOL = " "
+const TN_NODE_BREAK_SYMBOL = "\n"
+
 declare type removeAfterRunning = boolean
 
 declare type TreeEventHandler = (event: AbstractTreeEvent) => removeAfterRunning
@@ -97,7 +101,7 @@ class ParserCombinator {
     return obj
   }
 
-  _getParser(line: string, contextNode: treeNotationTypes.treeNode, wordBreakSymbol = " "): treeNotationTypes.TreeParser {
+  _getParser(line: string, contextNode: treeNotationTypes.treeNode, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): treeNotationTypes.TreeParser {
     return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextNode)
   }
 
@@ -1536,11 +1540,11 @@ class TreeNode extends AbstractNode {
   }
 
   get nodeBreakSymbol(): string {
-    return "\n"
+    return TN_NODE_BREAK_SYMBOL
   }
 
   get wordBreakSymbol(): string {
-    return " "
+    return TN_WORD_BREAK_SYMBOL
   }
 
   get edgeSymbolRegex() {
@@ -1552,7 +1556,7 @@ class TreeNode extends AbstractNode {
   }
 
   get edgeSymbol(): string {
-    return " "
+    return TN_EDGE_SYMBOL
   }
 
   protected _textToContentAndChildrenTuple(text: string) {
@@ -1799,9 +1803,7 @@ class TreeNode extends AbstractNode {
   }
 
   findLast(fn: treeNotationTypes.filterFn) {
-    return this.getChildren()
-      .reverse()
-      .find(fn)
+    return this.getChildren().reverse().find(fn)
   }
 
   every(fn: treeNotationTypes.everyFn) {
@@ -3035,8 +3037,8 @@ class TreeNode extends AbstractNode {
   }
 
   static nest(str: string, xValue: int) {
-    const NodeBreakSymbol = "\n"
-    const WordBreakSymbol = " "
+    const NodeBreakSymbol = TN_NODE_BREAK_SYMBOL
+    const WordBreakSymbol = TN_WORD_BREAK_SYMBOL
     const indent = NodeBreakSymbol + WordBreakSymbol.repeat(xValue)
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
@@ -3079,7 +3081,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     this.forEach(node => {
       const path = node._getAncestorsArray().map((node: AbstractExtendibleTreeNode) => node.id)
       path.reverse()
-      tree.touchNode(path.join(" "))
+      tree.touchNode(path.join(TN_EDGE_SYMBOL))
     })
     return tree
   }

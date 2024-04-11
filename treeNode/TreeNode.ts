@@ -1624,15 +1624,15 @@ class TreeNode extends AbstractNode {
     const type = typeof content
     let line
     let children
-    if (content === null) line = firstWord + " " + null
+    if (content === null) line = firstWord + TN_WORD_BREAK_SYMBOL + null
     else if (content === undefined) line = firstWord
     else if (type === "string") {
       const tuple = this._textToContentAndChildrenTuple(content)
-      line = firstWord + " " + tuple[0]
+      line = firstWord + TN_WORD_BREAK_SYMBOL + tuple[0]
       children = tuple[1]
-    } else if (type === "function") line = firstWord + " " + content.toString()
-    else if (type !== "object") line = firstWord + " " + content
-    else if (content instanceof Date) line = firstWord + " " + content.getTime().toString()
+    } else if (type === "function") line = firstWord + TN_WORD_BREAK_SYMBOL + content.toString()
+    else if (type !== "object") line = firstWord + TN_WORD_BREAK_SYMBOL + content
+    else if (content instanceof Date) line = firstWord + TN_WORD_BREAK_SYMBOL + content.getTime().toString()
     else if (content instanceof TreeNode) {
       line = firstWord
       children = new TreeNode(content.childrenToString(), content.getLine())

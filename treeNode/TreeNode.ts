@@ -15,8 +15,8 @@ enum FileFormat {
   tree = "tree"
 }
 
-const TN_WORD_BREAK_SYMBOL = " "
-const TN_EDGE_SYMBOL = " "
+const TN_WORD_BREAK_SYMBOL = "\t"
+const TN_EDGE_SYMBOL = "\t"
 const TN_NODE_BREAK_SYMBOL = "\n"
 
 declare type removeAfterRunning = boolean
@@ -3043,7 +3043,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "75.1.1"
+  static getVersion = () => "75.1.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

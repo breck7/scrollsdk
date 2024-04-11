@@ -8,6 +8,9 @@ const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
 const testStrings: treeNotationTypes.stringMap = {}
+
+const TN_WORD_BREAK_SYMBOL = "	"
+
 const testObjects: any = {}
 
 testStrings.helloWorld = "hello	world"
@@ -1277,7 +1280,7 @@ testTree.fromCsv = equal => {
 	const tree5 = TreeNode.fromCsv(csvWithQuotes)
 
 	// Assert
-	equal(tree5.asString, '0\n name bob\n favoriteChar ".', "Four double quotes should return one double quote")
+	equal(tree5.asString, '0\n	name	bob\n	favoriteChar	".', "Four double quotes should return one double quote")
 
 	// Test \r characters
 	// Arrange
@@ -1293,7 +1296,7 @@ testTree.fromCsv = equal => {
 	testCase.getNode("1").delete("name")
 
 	// Assert
-	equal(testCase.getNode("0").childrenToString(), "name joe\nage 21", "property change should not affect other objects")
+	equal(testCase.getNode("0").childrenToString(), "name	joe\nage	21", "property change should not affect other objects")
 	equal(testCase.getNode("1	name"), undefined, "property should be gone")
 }
 
@@ -1336,8 +1339,8 @@ testTree.fromDelimitedWindowsLineEndings = equal => {
 	const result2 = TreeNode.fromCsv(str2)
 
 	// Assert
-	equal(result.get("0 B"), "3")
-	equal(result2.get("0 B"), "3")
+	equal(result.get("0	B"), "3")
+	equal(result2.get("0	B"), "3")
 }
 
 testTree.siblingsWithClone = equal => {
@@ -1396,9 +1399,9 @@ c`
 testTree.expandLastFromTopMatter = equal => {
 	// Arrange
 	const test = new TreeNode(`titleComponent
-	class title
-articleComponent hi
-	h1 title
+	class	title
+articleComponent	hi
+	h1	title
 html
 	titleComponent
 	articleComponent`)
@@ -1410,9 +1413,9 @@ html
 		expanded,
 		`html
 	titleComponent
-		class title
-	articleComponent hi
-		h1 title`
+		class	title
+	articleComponent	hi
+		h1	title`
 	)
 }
 
@@ -1487,14 +1490,14 @@ testTree.getLine = equal => {
 	const mtime = node.getLineModifiedTime() || 0
 
 	// Assert
-	equal(node.getLine(), "hello world")
+	equal(node.getLine(), "hello	world")
 	equal(tree.has("hello"), true)
 
 	// Act
-	node.setLine("hi earth")
+	node.setLine("hi	earth")
 
 	// Assert
-	equal(tree.asString, "hi earth")
+	equal(tree.asString, "hi	earth")
 	equal(node.getLineModifiedTime() > mtime, true)
 	equal(tree.has("hello"), false)
 }
@@ -1505,8 +1508,8 @@ testTree.getIndentation = equal => {
 
 	// Act/assert
 	equal(tree.getNode("body").indentation, "")
-	equal(tree.getNode("body	div").indentation, " ")
-	equal(tree.getNode("body	div	content").indentation, "  ")
+	equal(tree.getNode("body	div").indentation, "	")
+	equal(tree.getNode("body	div	content").indentation, "		")
 
 	equal(testStrings.webpageTrimmed, tree.topDownArray.map((line: treeNotationTypes.treeNode) => line.indentation + line.getLine()).join("\n"))
 }
@@ -1576,20 +1579,20 @@ helpButton abstractButton`
 
 testTree.getLines = equal => {
 	// Arrange
-	const value = new TreeNode("hello\n world")
+	const value = new TreeNode("hello\n	world")
 
 	// Assert
-	equal(value.getLines().join("").indexOf(" "), -1)
+	equal(value.getLines().join("").indexOf("	"), -1)
 }
 
 testTree.getNodes = equal => {
 	// Arrange
-	const value = new TreeNode("hello world\nhello world")
+	const value = new TreeNode("hello	world\nhello	world")
 	const deep = new TreeNode(`language
 	line
-		score 2
+		score	2
 	line
-		score 12`)
+		score	12`)
 
 	// Assert
 	equal(value.findNodes("hello").length, 2)
@@ -1602,10 +1605,10 @@ testTree.getNodes = equal => {
 
 	// Assert
 	equal(result, "worldworld")
-	equal(deep.findNodes("language line score").length, 2)
+	equal(deep.findNodes("language	line	score").length, 2)
 	equal(
 		deep
-			.findNodes("language line score")
+			.findNodes("language	line	score")
 			.map((node: treeNotationTypes.treeNode) => node.content)
 			.join(""),
 		"212"
@@ -1614,7 +1617,7 @@ testTree.getNodes = equal => {
 
 testTree.getContentsArray = equal => {
 	// Arrange
-	const html = new TreeNode("h1 hello world\nh1 hello world")
+	const html = new TreeNode("h1	hello world\nh1	hello world")
 
 	// Assert
 	equal(html.getContentsArray().join("\n"), "hello world\nhello world")
@@ -1740,7 +1743,7 @@ testTree.getNodesByPrefixes = equal => {
 
 testTree.getIndex = equal => {
 	// Arrange
-	const tree = new TreeNode("r1\n name bob\nr2\n name joe")
+	const tree = new TreeNode("r1\n	name	bob\nr2\n	name	joe")
 	const child0 = tree.getNode("r1")
 	const child1 = tree.getNode("r2")
 
@@ -1777,12 +1780,12 @@ testTree.simpleTreeLanguage = equal => {
 
 		// Look! You created a compiler!
 		compile() {
-			return this.getNumbers().join(" + ")
+			return this.getNumbers().join("	+	")
 		}
 	}
-	const source = `+ 2 7
-+ 3 1
-+ 15 1.1 200 100`
+	const source = `+	2	7
++	3	1
++	15	1.1	200	100`
 
 	// Act
 	const iHateTypeScriptSometimes = <any>MathProgramParser
@@ -1793,9 +1796,9 @@ testTree.simpleTreeLanguage = equal => {
 	equal(program.length, 3)
 	equal(
 		compiled,
-		`2 + 7
-3 + 1
-15 + 1.1 + 200 + 100`
+		`2	+	7
+3	+	1
+15	+	1.1	+	200	+	100`
 	)
 
 	// Act
@@ -1847,8 +1850,8 @@ testTree.getPathVector = equal => {
 	const child = tree.getNode("domains	test.test.com	pages	home	settings	data")
 
 	// Assert
-	equal(parent.getPathVector().join(" "), indexPath.join(" "))
-	equal(child.getPathVector().join(" "), "5 0 4 0 0 0")
+	equal(parent.getPathVector().join(TN_WORD_BREAK_SYMBOL), indexPath.join(TN_WORD_BREAK_SYMBOL))
+	equal(child.getPathVector().join(TN_WORD_BREAK_SYMBOL), "5	0	4	0	0	0")
 	equal(tree.nodeAt(parent.getPathVector()), parent)
 	equal(tree.nodeAt(child.getPathVector()), child)
 
@@ -1856,7 +1859,7 @@ testTree.getPathVector = equal => {
 	const newNamePath = tree.pathVectorToFirstWordPath([5, 0, 4, 0, 0])
 
 	// Assert
-	equal(newNamePath.join(" "), namePath)
+	equal(newNamePath.join(TN_WORD_BREAK_SYMBOL), namePath)
 }
 
 testTree.getSlice = equal => {
@@ -1871,9 +1874,9 @@ d`)
 
 testTree.has = equal => {
 	// Arrange
-	const tree = new TreeNode(`hello world
+	const tree = new TreeNode(`hello	world
 nested
-foo 
+foo	
 deep
 	test
 		2`)
@@ -1883,25 +1886,27 @@ deep
 	equal(tree.has("world"), false)
 	equal(tree.has("foo"), true)
 	equal(tree.has("nested"), true)
-	equal(tree.has("deep test 2"), true)
-	equal(tree.has("deep test"), true)
+
 	equal(tree.has("deep"), true)
-	equal(tree.has("deep test 3"), false)
-	equal(tree.has("deep t 2"), false)
+	equal(tree.has("deep	test"), true, "2 levels")
+	equal(tree.has("deep	test	2"), true, "3 levels")
+
+	equal(tree.has("deep	test	3"), false)
+	equal(tree.has("deep	t	2"), false)
 }
 
 testTree.hasNode = equal => {
 	// Arrange
 	const tree = new TreeNode(testStrings.every)
-	equal(tree.hasNode(`admin false`), true)
+	equal(tree.hasNode(`admin	false`), true)
 	equal(
 		tree.hasNode(`stage
-	name home
-	domain test.test.com`),
+	name	home
+	domain	test.test.com`),
 		true
 	)
-	equal(tree.hasNode(`name Plato`), false)
-	equal(tree.hasNode(`domain test.test.com`), false)
+	equal(tree.hasNode(`name	Plato`), false)
+	equal(tree.hasNode(`domain	test.test.com`), false)
 }
 
 testTree.getStackString = equal => {
@@ -1927,12 +1932,12 @@ testTree.getGraph = equal => {
 	color
 Animal
 	dna
-	extends Thing
+	extends	Thing
 Monkey
-	extends Mammal
+	extends	Mammal
 	oohoohahah
 Mammal
-	extends Animal
+	extends	Animal
 	milk`
 	)
 	// Act/Assert
@@ -1979,14 +1984,14 @@ Animal Thing
 
 testTree.macroExpand = equal => {
 	// Arrange
-	const test = `macro red SUBREDDIT
-	>reddit SUBREDDIT
-		>h2 Top stories in SUBREDDIT
+	const test = `macro	red	SUBREDDIT
+	>reddit	SUBREDDIT
+		>h2	Top stories in SUBREDDIT
 		>pie
 		>table
 		>line
-use red programming
-use red programmingLanguages`
+use	red	programming
+use	red	programmingLanguages`
 
 	// Act
 	const expanded = new TreeNode(test).macroExpand("macro", "use")
@@ -1994,13 +1999,13 @@ use red programmingLanguages`
 	// Assert
 	equal(
 		expanded.asString,
-		`>reddit programming
-	>h2 Top stories in programming
+		`>reddit	programming
+	>h2	Top stories in programming
 	>pie
 	>table
 	>line
->reddit programmingLanguages
-	>h2 Top stories in programmingLanguages
+>reddit	programmingLanguages
+	>h2	Top stories in programmingLanguages
 	>pie
 	>table
 	>line`
@@ -2014,7 +2019,7 @@ name,score
 j,21
 frank,321
 #file	index.html
-<body> hi world</body>
+<body>	hi	world</body>
 #file	foo.css #file
 body {
 	}`
@@ -2113,9 +2118,9 @@ testTree.expandChildren = equal => {
 		`Thing
 	color
 	ab
-Animal Thing
+Animal	Thing
 	dna
-	ab overridden`
+	ab	overridden`
 	)
 	// Act/Assert
 	equal(
@@ -2123,9 +2128,9 @@ Animal Thing
 		`Thing
 	color
 	ab
-Animal Thing
+Animal	Thing
 	color
-	ab overridden
+	ab	overridden
 	dna`
 	)
 
@@ -2133,11 +2138,11 @@ Animal Thing
 	const tree2 = new TreeNode(
 		`Thing
 	color
-Animal Thing
+Animal	Thing
 	dna
-Monkey Mammal
+Monkey	Mammal
 	oohoohahah
-Mammal Animal
+Mammal	Animal
 	milk`
 	)
 	// Act/Assert
@@ -2145,23 +2150,23 @@ Mammal Animal
 		tree2._expandChildren(0, 1).asString,
 		`Thing
 	color
-Animal Thing
+Animal	Thing
 	color
 	dna
-Monkey Mammal
+Monkey	Mammal
 	color
 	dna
 	milk
 	oohoohahah
-Mammal Animal
+Mammal	Animal
 	color
 	dna
 	milk`
 	)
 
 	const badMap = new TreeNode(`foo
-bar foo
-car non-existant`)
+bar	foo
+car	non-existant`)
 	try {
 		badMap._expandChildren(0, 1)
 		equal(true, false, "expanding with missing id should throw")
@@ -2201,7 +2206,7 @@ pepsi
 
 testTree.htmlDsl = equal => {
 	// Arrange
-	const html = new TreeNode("h1 hello world\nh1 hello world")
+	const html = new TreeNode("h1	hello world\nh1	hello world")
 	var page = ""
 
 	// Act
@@ -2230,7 +2235,7 @@ testTree.indexOf = equal => {
 	equal(tree.indexOf("color"), 1)
 
 	// Act
-	tree.appendLine("hello world")
+	tree.appendLine("hello	world")
 
 	// Assert
 	equal(tree.indexOf("hello"), 0)
@@ -2239,10 +2244,10 @@ testTree.indexOf = equal => {
 
 testTree.appendUniqueLine = equal => {
 	// Arrange
-	const tree = new TreeNode(`city Brockton`)
+	const tree = new TreeNode(`city	Brockton`)
 	// Act
-	tree.appendUniqueLine("city Brockton")
-	tree.appendUniqueLine("country United States")
+	tree.appendUniqueLine("city	Brockton")
+	tree.appendUniqueLine("country	United States")
 
 	// Assert
 	equal(tree.length, 2)
@@ -2254,14 +2259,14 @@ testTree.insert = equal => {
 	const tree = new TreeNode(testStrings.helloWorld)
 
 	// Act
-	tree.insertLine("hi mom", 0)
+	tree.insertLine("hi	mom", 0)
 
 	// Assert
 	equal(tree.indexOf("hi"), 0, "Expected hi at position 0")
 
 	// Insert using an index longer than the current object
 	// Act
-	tree.insertLine("test dad", 10)
+	tree.insertLine("test	dad", 10)
 
 	// Assert
 	equal(tree.nodeAt(2).content, "dad", "Expected insert at int greater than length to append")
@@ -2269,7 +2274,7 @@ testTree.insert = equal => {
 
 	// Insert using a negative index
 	// Act
-	tree.insertLine("test2 sister", -1)
+	tree.insertLine("test2	sister", -1)
 
 	// Assert
 	equal(tree.nodeAt(2).content, "sister")
@@ -2278,26 +2283,26 @@ testTree.insert = equal => {
 
 testTree.last = equal => {
 	// Arrange
-	const value = new TreeNode("hello world\nhi mom")
+	const value = new TreeNode(testStrings.hiMom)
 	// Assert
 	equal(value.nodeAt(-1).content, "mom")
 
 	// Arrange
-	const value2 = new TreeNode("hello world\nhi mom")
+	const value2 = new TreeNode(testStrings.hiMom)
 	// Assert
-	equal(value2.nodeAt(-1).asString, "hi mom")
+	equal(value2.nodeAt(-1).asString, "hi	mom")
 }
 
 testTree.lastProperty = equal => {
 	// Arrange
-	const value = new TreeNode("hello world\nhi mom")
+	const value = new TreeNode(testStrings.hiMom)
 	// Assert
 	equal(value.nodeAt(-1).firstWord, "hi")
 }
 
 testTree.lastValue = equal => {
 	// Arrange
-	const value = new TreeNode("hello world\nhi mom")
+	const value = new TreeNode(testStrings.hiMom)
 	// Assert
 	equal(value.nodeAt(-1).content, "mom")
 }
@@ -2306,7 +2311,7 @@ testTree.createFromArray = equal => {
 	// Arrange
 	const a = new TreeNode([1, 2, 3])
 	// Assert
-	equal(a.asString, "0 1\n1 2\n2 3")
+	equal(a.asString, "0	1\n1	2\n2	3")
 
 	// Arrange
 	const b = new TreeNode({
@@ -2321,7 +2326,7 @@ testTree.createFromArray = equal => {
 	})
 
 	// Assert
-	equal(b.asString, "data\n 0\n  charge 1\n 1\n  charge 2")
+	equal(b.asString, "data\n	0\n		charge	1\n	1\n		charge	2")
 }
 
 testTree.createFromObject = equal => {
@@ -2388,17 +2393,17 @@ testTree.createFromString = equal => {
 	equal(startsWithSpace.length, 1, "Expected 1 node")
 
 	// Arrange
-	const a = new TreeNode("text	\n	this is a string\n	and more")
+	const a = new TreeNode("text	\n	this	is	a	string\n	and	more")
 
 	// Assert
-	equal(a.getNode("text").contentWithChildren, "\nthis is a string\nand more", "Basic")
+	equal(a.getNode("text").contentWithChildren, "\nthis	is	a	string\nand	more", "Basic")
 
 	// Arrange
-	const b = new TreeNode("a\n	text	\n		this is a string\n		and more")
+	const b = new TreeNode("a\n	text	\n		this	is	a	string\n		and	more")
 
 	// Assert
-	equal(b.getNode("a	text").contentWithChildren, "\nthis is a string\nand more")
-	equal(b.asString, "a\n text \n  this is a string\n  and more")
+	equal(b.getNode("a	text").contentWithChildren, "\nthis	is	a	string\nand	more")
+	equal(b.asString, "a\n	text	\n		this	is	a	string\n		and	more")
 
 	// Arrange
 	const string = `first_name	John
@@ -2416,13 +2421,13 @@ colors
 	blue
 	red
 bio
-	Hello this is
-	my multline
+	Hello	this	is
+	my	multline
 	biography
 
-	Theres a blank line in there as well
+	Theres	a	blank	line	in	there	as	well
 
-	Two blank lines above this one.
+	Two	blank	lines	above	this	one.
 code	<p></p>
 `
 	const c = new TreeNode(string)
@@ -2451,7 +2456,7 @@ code	<p></p>
 	// Arrange
 	const g = new TreeNode("hi\n					somewhat invalid")
 	// Assert
-	equal(g.getNode("hi	").content, "   somewhat invalid")
+	equal(g.getNode("hi	").content, "			somewhat invalid")
 
 	const testCase = new TreeNode(testStrings.newLines)
 	equal(testCase.asString.split("\n").length, 11, "All blank lines are preserved")
@@ -2471,7 +2476,7 @@ testTree.protoRegression = equal => {
 
 testTree.createFromStringExtraTrees = equal => {
 	// Arrange
-	const d = new TreeNode("one\ntwo\n  three\n    four\nfive six")
+	const d = new TreeNode("one\ntwo\n		three\n				four\nfive	six")
 	// Assert
 	equal(d.length, 3)
 }
@@ -2586,7 +2591,7 @@ testTree.insertWord = equal => {
 	// Act
 	a.insertWord(2, "checkThis")
 	// Assert
-	equal(a.getLine(), "? result checkThis chekThis 1 2")
+	equal(a.getLine(), "?	result	checkThis	chekThis	1	2")
 }
 
 testTree.setWord = equal => {
@@ -2595,7 +2600,7 @@ testTree.setWord = equal => {
 	// Act
 	a.setWord(2, "checkThis")
 	// Assert
-	equal(a.getLine(), "? result checkThis 1 2")
+	equal(a.getLine(), "?	result	checkThis	1	2")
 }
 
 testTree.treeLanguageDependingOnParent = equal => {
@@ -2623,7 +2628,7 @@ testTree.treeLanguageDependingOnParent = equal => {
 
 testTree.multiline = equal => {
 	// Arrange
-	const a = new TreeNode("my	multiline\n string")
+	const a = new TreeNode("my	multiline\n	string")
 	// Assert
 	equal(a.getNode("my").contentWithChildren, "multiline\nstring")
 
@@ -2636,7 +2641,7 @@ testTree.multiline = equal => {
 	const b = new TreeNode("brave	new\n	world")
 	// Assert
 	equal(b.getNode("brave").contentWithChildren, "new\nworld", "ml value correct")
-	equal(b.asString, "brave new\n world", "multiline does not begin with nl")
+	equal(b.asString, "brave	new\n	world", "multiline does not begin with nl")
 
 	// Arrange
 	const c = new TreeNode("brave	\n	new\n	world")
@@ -2654,23 +2659,23 @@ testTree.multiline = equal => {
 	const e = new TreeNode("brave	new\n	world\n	")
 	// Assert
 	equal(e.getNode("brave").contentWithChildren, "new\nworld\n", "ml value end with nl correct")
-	equal(e.asString, "brave new\n world\n ", "multiline ends with a nl")
+	equal(e.asString, "brave	new\n	world\n	", "multiline ends with a nl")
 
 	// Arrange
 	const f = new TreeNode("brave	new\n	world\n	\n	")
 	// Assert
 	equal(f.getNode("brave").contentWithChildren, "new\nworld\n\n", "ml value end with 2 nl correct")
-	equal(f.asString, "brave new\n world\n \n ", "multiline ends with 2 nl")
+	equal(f.asString, "brave	new\n	world\n	\n	", "multiline ends with 2 nl")
 
 	// Arrange
 	const g = new TreeNode()
 	g.touchNode("brave").setContentWithChildren("\nnew\nworld\n\n")
 	// Assert
 	equal(g.getNode("brave").contentWithChildren, "\nnew\nworld\n\n", "set ml works")
-	equal(g.asString, "brave \n new\n world\n \n ", "set ml works")
+	equal(g.asString, "brave	\n	new\n	world\n	\n	", "set ml works")
 
 	// Arrange/Act
-	const twoNodes = new TreeNode("title Untitled\n")
+	const twoNodes = new TreeNode("title	Untitled\n")
 	const k = new TreeNode()
 	k.touchNode("time").setContent("123")
 	k.touchNode("settings").setContentWithChildren(twoNodes.asString)
@@ -2680,7 +2685,7 @@ testTree.multiline = equal => {
 	equal(twoNodes.length, 2)
 	equal(k.getNode("settings").length, 1, "Expected subtree to have 1 empty node")
 	equal(k.getNode("settings").contentWithChildren, twoNodes.asString, "Expected setContentWithChildren and getText to work with newlines")
-	equal(k.asString, `time 123\nsettings title Untitled\n \nday 1`)
+	equal(k.asString, `time	123\nsettings	title	Untitled\n	\nday	1`)
 
 	// Arrange
 	const someText = new TreeNode("a")
@@ -2690,12 +2695,12 @@ testTree.multiline = equal => {
 	someNode.setContentWithChildren("const b = 1;\nconst c = 2;")
 
 	// Assert
-	equal(someText.asString, "a const b = 1;\n const c = 2;")
+	equal(someText.asString, "a	const b = 1;\n	const c = 2;")
 }
 
 testTree.order = equal => {
 	// Arrange
-	const a = new TreeNode("john\n age 5\nsusy\n age 6\nbob\n age 10")
+	const a = new TreeNode("john\n	age	5\nsusy\n	age	6\nbob\n	age	10")
 	const types = a.getFirstWords().join(" ")
 
 	// Assert
@@ -2722,9 +2727,9 @@ testTree.parseNode = equal => {
 	// Act
 	const iHateTypeScriptSometimes = <any>TestLanguageNode
 	const node = new iHateTypeScriptSometimes(
-		`foo bar
-	foo bar
-		tree bar
+		`foo	bar
+	foo	bar
+		tree	bar
 sub
 	leaf`
 	)
@@ -2739,12 +2744,12 @@ testTree.prependLine = equal => {
 	// Arrange
 	const a = new TreeNode(testStrings.helloWorld)
 	// Assert
-	equal(a.asString, "hello world")
+	equal(a.asString, "hello	world")
 
 	// Act
-	const result = a.prependLine("foo bar")
+	const result = a.prependLine("foo	bar")
 	// Assert
-	equal(a.asString, "foo bar\nhello world")
+	equal(a.asString, "foo	bar\nhello	world")
 	equal(result instanceof TreeNode, true)
 }
 
@@ -2885,26 +2890,26 @@ testTree.rename = equal => {
 
 testTree.renameAll = equal => {
 	// Arrange
-	const a = new TreeNode("hello world\nhello world")
+	const a = new TreeNode("hello	world\nhello	world")
 
 	// Act
 	a.renameAll("hello", "hey")
 
 	// Assert
-	equal(a.asString, "hey world\nhey world")
+	equal(a.asString, "hey	world\nhey	world")
 	equal(a.has("hello"), false)
 
 	// Arrange
 	const b = new TreeNode(`foo.tree
-	age 23
+	age	23
 foo.tree2
-	age 24`)
+	age	24`)
 
 	// Act
 	b.getNode("foo.tree2").renameAll("age", "bage")
 
 	// Assert
-	equal(b.get("foo.tree2 bage"), "24")
+	equal(b.get("foo.tree2	bage"), "24")
 }
 
 testTree.reorder = equal => {
@@ -2918,13 +2923,13 @@ testTree.reorder = equal => {
 	equal(a.getFirstWords().join(" "), "hello hi", "order correct")
 
 	// Act
-	a.insertLine("yo pal", 0)
+	a.insertLine("yo	pal", 0)
 
 	// Assert
 	equal(a.getFirstWords().join(" "), "yo hello hi", "order correct")
 
 	// Act
-	const result = a.insertLine("hola pal", 2)
+	const result = a.insertLine("hola	pal", 2)
 	equal(result instanceof TreeNode, true)
 
 	// Assert
@@ -2966,7 +2971,7 @@ testTree.reverse = equal => {
 	tree.reverse()
 
 	// Assert
-	equal(tree.asString, "hey dad\nhey sis\nhi mom")
+	equal(tree.asString, "hey	dad\nhey	sis\nhi	mom")
 	equal(tree.getNode("hey").content, "sis")
 
 	// Test reverse when using internal types
@@ -2997,13 +3002,13 @@ testTree.set = equal => {
 	equal(tree.getNode("boom").content, "", "empty string")
 
 	// Act
-	tree.touchNode("head style color").setContent("blue")
+	tree.touchNode("head	style	color").setContent("blue")
 	// Assert
 	equal(tree.getNode("head	style	color").content, "blue", "set should have worked")
 
 	// Test dupes
 	// Arrange
-	tree.appendLine("hello bob")
+	tree.appendLine("hello	bob")
 
 	// Act
 	tree.touchNode("hello").setContent("tim")
@@ -3027,8 +3032,8 @@ testTree.set = equal => {
 	// Arrange
 	const tree3 = new TreeNode("style\n")
 	// Act
-	tree3.touchNode("style color").setContent("red")
-	tree3.touchNode("style width").setContent("100")
+	tree3.touchNode("style	color").setContent("red")
+	tree3.touchNode("style	width").setContent("100")
 
 	// Assert
 	equal(tree3.getNode("style	color").content, "red")
@@ -3043,12 +3048,12 @@ testTree.set = equal => {
 	equal(tree4.getFirstWords().join(" "), "hello hi", "order correct")
 
 	// Act
-	tree4.insertLine("yo pal", 0)
+	tree4.insertLine("yo	pal", 0)
 	// Assert
 	equal(tree4.getFirstWords().join(" "), "yo hello hi", "order correct")
 
 	// Act
-	tree4.insertLine("hola pal", 2)
+	tree4.insertLine("hola	pal", 2)
 	// Assert
 	equal(tree4.getFirstWords().join(" "), "yo hello hola hi", "order correct")
 
@@ -3064,10 +3069,10 @@ testTree.set = equal => {
 	const tree6 = new TreeNode()
 
 	// Act
-	tree6.touchNode("meta x").setContent("123")
-	tree6.touchNode("meta y").setContent("1235")
-	tree6.touchNode("meta c").setContent("435")
-	tree6.touchNode("meta x").setContent("1235123")
+	tree6.touchNode("meta	x").setContent("123")
+	tree6.touchNode("meta	y").setContent("1235")
+	tree6.touchNode("meta	c").setContent("435")
+	tree6.touchNode("meta	x").setContent("1235123")
 
 	// Assert
 	equal(tree6.getNode("meta	c").content, "435")
@@ -3082,12 +3087,12 @@ testTree.set = equal => {
 	equal(tree7.getNode("favoriteColors	blue").content, "purple")
 
 	// Act
-	tree7.touchNode(" blanks").setContent("test")
-	tree7.touchNode(" \nboom").setContent("test2")
+	tree7.touchNode("	blanks").setContent("test")
+	tree7.touchNode("	\nboom").setContent("test2")
 
 	// Assert
-	equal(tree7.getNode(" blanks").content, "test", "Expected blank paths to be settable")
-	equal(tree7.getNode(" boom").content, "test2", "Expected newlines in path to be sanitized")
+	equal(tree7.getNode("	blanks").content, "test", "Expected blank paths to be settable")
+	equal(tree7.getNode("	boom").content, "test2", "Expected newlines in path to be sanitized")
 
 	// Arrange/Act
 	const boom = new TreeNode("")
@@ -3170,7 +3175,7 @@ bob
 	equal(
 		tree.shift().asString,
 		`john
-	age 5`,
+	age	5`,
 		"expected correct string returned"
 	)
 	equal(tree.length, 2)
@@ -3189,7 +3194,7 @@ bob
 
 testTree.sort = equal => {
 	// Arrange
-	const tree = new TreeNode("john\n age 5\nsusy\n age 6\nbob\n age 10")
+	const tree = new TreeNode("john\n	age	5\nsusy\n	age	6\nbob\n	age	10")
 	// Assert
 	equal(tree.getFirstWords().join(" "), "john susy bob")
 	// Act

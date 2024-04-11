@@ -688,7 +688,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _toXml(indentCount: treeNotationTypes.positiveInt) {
-    const indent = " ".repeat(indentCount)
+    const indent = "\t".repeat(indentCount)
     const tag = this.firstWord
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
   }
@@ -1467,6 +1467,7 @@ class TreeNode extends AbstractNode {
 
   // Adapted from: https://github.com/notatestuser/treeify.js
   protected _toOutline(nodeFn: treeNotationTypes.nodeToStringFn) {
+    const outlineIndentCharacter = " "
     const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: treeNotationTypes.nodeToStringFn, callback: any) => {
       let lastStatesCopy = lastStates.slice(0)
       const node: TreeNode = outlineTreeNode.node
@@ -1476,7 +1477,7 @@ class TreeNode extends AbstractNode {
         // firstWordd on the "was last element" states of whatever we're nested within,
         // we need to append either blankness or a branch to our line
         lastStates.forEach((lastState, idx) => {
-          if (idx > 0) line += lastState[1] ? " " : "│"
+          if (idx > 0) line += lastState[1] ? outlineIndentCharacter : "│"
         })
 
         // the prefix varies firstWordd on whether the key contains something to show and

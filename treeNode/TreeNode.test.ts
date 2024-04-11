@@ -3393,7 +3393,7 @@ testTree.toDataTable = equal => {
 testTree.toObject = equal => {
 	// Arrange
 	const a = new TreeNode(testStrings.helloWorld)
-	const b = new TreeNode("foo bar")
+	const b = new TreeNode("foo	bar")
 
 	// Assert
 	equal(typeof a.toObject(), "object")
@@ -3406,8 +3406,8 @@ testTree.toObject = equal => {
 
 	// Arrange
 	const objectWithTreesAndValues = `div
-	input checked
-		type checkbox`
+	input	checked
+		type	checkbox`
 
 	// Act
 	const obj = new TreeNode(objectWithTreesAndValues).toObject()
@@ -3648,11 +3648,6 @@ testTree.traverse = equal => {
 	equal(wikipostorder, "acedbhigf")
 }
 
-testTree.toOutline = equal => {
-	// AAA
-	equal(typeof new TreeNode(testStrings.every).asOutline, "string")
-}
-
 testTree.fromJsonSubset = equal => {
 	// AAA
 	equal(TreeNode.fromJsonSubset(JSON.stringify(testObjects.json2tree)).asString, new TreeNode(testStrings.json2tree).getNode("docs").childrenToString())
@@ -3723,13 +3718,13 @@ testTree.toOutline = equal => {
 	equal(
 		treeNode.asOutline,
 		`└hello
-	└world
+ └world
 `
 	)
 	equal(
 		treeNode.toMappedOutline((node: treeNotationTypes.treeNode) => "o"),
 		`└o
-	└o
+ └o
 `
 	)
 }

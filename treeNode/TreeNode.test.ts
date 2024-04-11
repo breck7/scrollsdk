@@ -3807,10 +3807,10 @@ testTree.getBiDirectionalMaps = equal => {
 
 testTree.delimitedTests = equal => {
 	let base = new TreeNode(`foo.csv`).nodeAt(0)
-	equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).asString, `foo.csv\n	name,age\n	Joe,100`)
+	equal(base.addObjectsAsDelimited([{ name: "Joe", age: 100 }]).asString, `foo.csv\n	name,age\n	Joe,100`, "addObjectsAsDelimited")
 
 	base = new TreeNode(`foo.csv`).nodeAt(0)
-	equal(base.setChildrenAsDelimited(`person\n	name	Joe\n	age	100`).asString, `foo.csv\n	name,age\n	Joe,100`)
+	equal(base.setChildrenAsDelimited(`person\n	name	Joe\n	age	100`).asString, `foo.csv\n	name,age\n	Joe,100`, "setChildrenAsDelimited")
 
 	let template = `foo.csv\n	person\n		name	Joe\n		age	100`
 

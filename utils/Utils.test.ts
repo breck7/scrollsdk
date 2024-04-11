@@ -85,11 +85,11 @@ testTree.getLineIndexAtCharacterPosition = equal => {
 
 testTree.graphSort = equal => {
   // Arrange
-  const a = new TreeNode(`dog animal
+  const a = new TreeNode(`dog\tanimal
 animal
-retriever dog
+retriever\tdog
 car
-cat animal
+cat\tanimal
 house`)
   a.sort(
     Utils._makeGraphSortFunction(
@@ -104,9 +104,9 @@ house`)
     `animal
 car
 house
-cat animal
-dog animal
-retriever dog`
+cat\tanimal
+dog\tanimal
+retriever\tdog`
   )
 }
 

@@ -234,9 +234,9 @@ mike 321   blue
 al   1214  green`
 
 testStrings.toTable = `name score color
-	bob    12   red
+ bob    12   red
 mike   321  blue
-		al  1214 green`
+  al  1214 green`
 
 testStrings.ssv = `id title summary
 1 "Some book" "An expose, on the result of one ""plus"" one"
@@ -3427,17 +3427,17 @@ testTree.toSsv = equal => {
 
 testTree.toMarkdownTable = equal => {
 	// Arrange
-	const test = `event abc
-	title ABC 2017
-	date 09/18/2017 - 09/10/2017
-	location Boston, MA
-	website https://www.foobar.com/
-event lala2018
-	title Lala 2018
-	date 11/02/2018 - 11/03/2018
-	location San Fran
-	twitter foo
-	website http://www.blah.com`
+	const test = `event	abc
+	title	ABC 2017
+	date	09/18/2017 - 09/10/2017
+	location	Boston, MA
+	website	https://www.foobar.com/
+event	lala2018
+	title	Lala 2018
+	date	11/02/2018 - 11/03/2018
+	location	San Fran
+	twitter	foo
+	website	http://www.blah.com`
 	const expected = `|Title|Date|Location|Website|
 |-|-|-|-|
 |ABC 2017|09/18/2017 - 09/10/2017|Boston, MA|https://www.foobar.com/|
@@ -3496,7 +3496,7 @@ testTree.toStringMethod = equal => {
 	// Act
 	tree3.touchNode("empty").setContent("")
 	// Assert
-	equal(tree3.asString, "empty ")
+	equal(tree3.asString, "empty	")
 
 	// Arrange
 	const a = new TreeNode("john\n	age	5")

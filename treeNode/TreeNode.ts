@@ -684,7 +684,7 @@ class TreeNode extends AbstractNode {
 
   protected _getXmlContent(indentCount: treeNotationTypes.positiveInt) {
     if (this.content !== undefined) return this.contentWithChildren
-    return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
+    return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${"\t".repeat(indentCount)}` : ""
   }
 
   protected _toXml(indentCount: treeNotationTypes.positiveInt) {

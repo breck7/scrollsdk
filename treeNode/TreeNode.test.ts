@@ -11,6 +11,7 @@ const testStrings: treeNotationTypes.stringMap = {}
 const testObjects: any = {}
 
 testStrings.helloWorld = "hello	world"
+testStrings.hiMom = "hello	world\nhi	mom"
 
 testStrings.webpage = `head
 body
@@ -59,21 +60,21 @@ name: cref
 file_extensions: c
 scope: source.c
 contexts:
-	main:
-		- pattern:
-					match: (if|else|for|while)
-					scope: keyword.control.c
-		- pattern:
-					match: Q
-					push: string
-	string:
-		- meta_scope: string.quoted.double.c
-		- pattern:
-					match: !.
-					scope: constant.character.escape.c
-		- pattern:
-					match: Q
-					pop: true`
+ main:
+  - pattern:
+     match: (if|else|for|while)
+     scope: keyword.control.c
+  - pattern:
+     match: Q
+     push: string
+ string:
+  - meta_scope: string.quoted.double.c
+  - pattern:
+     match: !.
+     scope: constant.character.escape.c
+  - pattern:
+     match: Q
+     pop: true`
 
 testStrings.sortByMultiple = `
 state
@@ -395,16 +396,16 @@ domains
 			home
 				settings
 					data
-						title	Hello, World
+						title	Hello,	World
 				block1
-					content	Hello world`
+					content	Hello	world`
 	const tree8 = new TreeNode(treeString)
 
 	// Assert
 	equal(tree8.topDownArray.length, 20)
 	equal(tree8.numberOfLines, 20)
 	equal(tree8.numberOfWords, 30)
-	equal(tree8.getNode("domains	test.test.com	pages	home	settings	data	title").content, "Hello, World", "Multiline creation should be okay.")
+	equal(tree8.getNode("domains	test.test.com	pages	home	settings	data	title").content, "Hello,	World", "Multiline creation should be okay.")
 
 	// Arrange
 	const emptyArray = { post: { kind: {}, age: 100 } }
@@ -569,19 +570,19 @@ testTree.setWords = equal => {
 	const aNode = tree.getNode("a")
 
 	// Act/Assert
-	equal(aNode.appendWord("d").asString, "a b c d")
-	equal(aNode.setWords(["f", "g"]).asString, "f g")
-	equal(aNode.setWordsFrom(1, ["h", "i"]).asString, "f h i")
-	equal(aNode.deleteWordAt(2).asString, "f h")
+	equal(aNode.appendWord("d").asString, "a	b	c	d")
+	equal(aNode.setWords(["f", "g"]).asString, "f	g")
+	equal(aNode.setWordsFrom(1, ["h", "i"]).asString, "f	h	i")
+	equal(aNode.deleteWordAt(2).asString, "f	h")
 }
 
 testTree.at = equal => {
 	// Arrange
-	const value = new TreeNode("hello	world\nhow	are you\nhola	friend")
+	const value = new TreeNode("hello	world\nhow	are	you\nhola	friend")
 
 	// Assert
 	equal(value.nodeAt(0).content, "world")
-	equal(value.nodeAt(1).content, "are you")
+	equal(value.nodeAt(1).content, "are	you")
 	equal(value.nodeAt(2).content, "friend")
 	equal(value.nodeAt(3), undefined)
 	equal(value.nodeAt(-1).content, "friend")
@@ -591,8 +592,8 @@ testTree.getWordBoundaryCharIndices = equal => {
 	// Arrange
 	const tree = new TreeNode(`
 a
-web	25 zzzz OK
-	notes	No notes`)
+web	25	zzzz	OK
+	notes	No	notes`)
 
 	// Act
 	const boundaries = tree.getAllWordBoundaryCoordinates()
@@ -624,7 +625,7 @@ testTree.fill = equal => {
 
 const aTestCase = `
 a
-web	25 zzzz	OK
+web	25	zzzz	OK
 	notes	No	notes`
 
 testTree.getWordProperties = equal => {
@@ -650,7 +651,7 @@ testTree.getWordIndexAtCharacterIndex = equal => {
 	tests.split("\n").forEach((testLine, lineIndex) => {
 		const node = lineNodes[lineIndex]
 		testLine.split("").forEach((char, charIndex) => {
-			if (char !== " ") equal(node.getWordIndexAtCharacterIndex(charIndex), parseInt(char), `Character is '${char}'`)
+			if (char !== "	") equal(node.getWordIndexAtCharacterIndex(charIndex), parseInt(char), `Character is '${char}'`)
 		})
 	})
 
@@ -749,9 +750,9 @@ testTree.concat = equal => {
 
 testTree.getNodesByGlobPath = equal => {
 	// Arrange/Act/Assert
-	equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("* div").length, 5)
+	equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("*	div").length, 5)
 	equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("*").length, new TreeNode(testStrings.webpage).length)
-	equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("body div class").length, 2)
+	equal(new TreeNode(testStrings.webpage).getNodesByGlobPath("body	div	class").length, 2)
 }
 
 testTree.nodesThatStartWith = equal => {
@@ -957,7 +958,7 @@ testTree.duplicate = equal => {
 }
 
 testTree.forEach = equal => {
-	const aTestCase = "hello	world\nhi	mom"
+	const aTestCase = testStrings.hiMom
 	// Arrange
 	const value = new TreeNode(aTestCase)
 	var count = 0
@@ -1058,7 +1059,7 @@ color	blue`
 }
 
 testTree.first = equal => {
-	const aTestCase = "hello	world\nhi	mom"
+	const aTestCase = testStrings.hiMom
 	// Arrange
 	const value = new TreeNode(aTestCase)
 
@@ -1074,7 +1075,7 @@ testTree.first = equal => {
 
 testTree.firstProperty = equal => {
 	// Arrange
-	const value = new TreeNode("hello	world\nhi	mom")
+	const value = new TreeNode(testStrings.hiMom)
 
 	// Assert
 	equal(value.nodeAt(0).firstWord, "hello")
@@ -1085,8 +1086,8 @@ testTree.hasDuplicates = equal => {
 	equal(new TreeNode(testStrings.sortByMultiple).hasDuplicateFirstWords(), true)
 	equal(new TreeNode().hasDuplicateFirstWords(), false, "empty")
 	equal(new TreeNode("a\na").hasDuplicateFirstWords(), true)
-	equal(new TreeNode("a\n a\n b").nodeAt(0).hasDuplicateFirstWords(), false)
-	equal(new TreeNode("a\n b\n b").nodeAt(0).hasDuplicateFirstWords(), true)
+	equal(new TreeNode("a\n	a\n	b").nodeAt(0).hasDuplicateFirstWords(), false)
+	equal(new TreeNode("a\n	b\n	b").nodeAt(0).hasDuplicateFirstWords(), true)
 }
 
 testTree.toYaml = equal => {
@@ -1114,7 +1115,7 @@ testTree.toJson = equal => {
 
 testTree.firstValue = equal => {
 	// Arrange
-	const value = new TreeNode("hello world\nhi mom")
+	const value = new TreeNode(testStrings.hiMom)
 
 	// Assert
 	equal(value.nodeAt(0).content, "world")
@@ -1210,11 +1211,11 @@ div
 
 testTree.patch = equal => {
 	// Arrange
-	const one = new TreeNode(`name Git
-appeared 2012`)
-	const two = new TreeNode(`name Git
-creators Linus Torvalds
-appeared 2005`)
+	const one = new TreeNode(`name	Git
+appeared	2012`)
+	const two = new TreeNode(`name	Git
+creators	Linus Torvalds
+appeared	2005`)
 
 	// Act
 	const three = one.patch(two)
@@ -1226,8 +1227,8 @@ appeared 2005`)
 
 testTree.evalTemplateString = equal => {
 	// Arrange
-	const templateString = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address city}!"
-	const person = new TreeNode("firstName Tom\nlastName B\naddress\n city Boston")
+	const templateString = "Hi {firstName} {lastName}! I hope you are enjoying the weather in {address	city}!"
+	const person = new TreeNode("firstName	Tom\nlastName	B\naddress\n	city	Boston")
 
 	// Act
 	const result = person.evalTemplateString(templateString)
@@ -3913,7 +3914,7 @@ testTree.treeNodes = equal => {
 
 	// Assert
 	equal(node.content, "hello world")
-	equal(a.asString, "text hello world")
+	equal(a.asString, "text	hello world")
 
 	// Act
 	node.setChildren("color blue")
@@ -3922,7 +3923,7 @@ testTree.treeNodes = equal => {
 	// Assert
 	equal(node.isTerminal(), false)
 	equal(node.childrenToString(), "color blue")
-	equal(a.asString, "text hello world\n color blue")
+	equal(a.asString, "text	hello world\n color blue")
 	equal(a.has("text"), true)
 
 	// Act
@@ -3930,7 +3931,7 @@ testTree.treeNodes = equal => {
 	node.setFirstWord("foo")
 
 	// Assert
-	equal(a.asString, "foo hello world\n color blue")
+	equal(a.asString, "foo	hello world\n color blue")
 	equal(node.getLineModifiedTime() > mtime, true)
 	equal(a.has("text"), false)
 	equal(node.has("color"), true)

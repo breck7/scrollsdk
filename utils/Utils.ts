@@ -420,7 +420,7 @@ class Utils {
 
   // todo: refactor so instead of str input takes an array of cells(strings) and scans each indepndently.
   static _chooseDelimiter(str: string) {
-    const del = " ,|\t;^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea))
+    const del = ",|; \t^%$!#@~*&+-=_:?.{}[]()<>/".split("").find(idea => !str.includes(idea))
     if (!del) throw new Error("Could not find a delimiter")
     return del
   }

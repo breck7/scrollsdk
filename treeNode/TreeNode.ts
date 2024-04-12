@@ -1870,7 +1870,7 @@ class TreeNode extends AbstractNode {
       const key = node.getWord(0)
       const parentKey = node.getWord(1)
       const parentPath = paths[parentKey]
-      paths[key] = parentPath ? [parentPath, key].join(" ") : key
+      paths[key] = parentPath ? [parentPath, key].join(TN_EDGE_SYMBOL) : key
       result.touchNode(paths[key])
     })
     return result

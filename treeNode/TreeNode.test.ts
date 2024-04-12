@@ -2516,25 +2516,44 @@ chart2
 
 testTree.braid = equal => {
 	// Arrange
-	const tree = new TreeNode(`score 1`)
-	const tree2 = new TreeNode(`keyword number`)
+	const tree = new TreeNode(`score	1`)
+	const tree2 = new TreeNode(`keyword	number`)
 
 	// Act/Assert
 	equal(
 		tree.toBraid([tree2]).asString,
-		`score 1
-keyword number`
+		`score	1
+keyword	number`,
+		"toBraid"
 	)
-	equal(tree.toSideBySide([tree2]).asString, `score 1 keyword number`)
+}
+
+testTree.sideBySide = equal => {
+	// Arrange
+	const tree = new TreeNode(`score	1`)
+	const tree2 = new TreeNode(`keyword	number`)
+
+	// Act/Assert
+	equal(tree.toSideBySide([tree2]).asString, `score	1	keyword	number`, "toSideBySide")
+
+	console.log(
+		tree.toSideBySide([
+			`foo
+
+bar`
+		]).asString
+	)
+
 	equal(
 		tree.toSideBySide([
 			`foo
 
 bar`
 		]).asString,
-		`score 1 foo
-								
-								bar`
+		`score	1	foo
+       	
+       	bar`,
+		"toSideBySide 2"
 	)
 }
 

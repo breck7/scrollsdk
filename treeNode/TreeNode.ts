@@ -749,23 +749,23 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  toSideBySide(treesOrStrings: (TreeNode | string)[], delimiter = " ") {
+  toSideBySide(treesOrStrings: (TreeNode | string)[], delimiter = TN_WORD_BREAK_SYMBOL) {
     treesOrStrings = <TreeNode[]>treesOrStrings.map(tree => (tree instanceof TreeNode ? tree : new TreeNode(tree)))
-    const clone = this.toTreeNode()
-    const nodeBreakSymbol = "\n"
+    const left = this.toTreeNode()
+    const nodeBreakSymbol = TN_NODE_BREAK_SYMBOL
     let next: any
     while ((next = treesOrStrings.shift())) {
-      clone.lengthen(next.numberOfLines)
-      clone.rightPad()
+      left.lengthen(next.numberOfLines)
+      left.rightPad()
       next
         .toString()
         .split(nodeBreakSymbol)
         .forEach((line: string, index: number) => {
-          const node = clone.nodeAtLine(index)
+          const node = left.nodeAtLine(index)
           node.setLine(node.getLine() + delimiter + line)
         })
     }
-    return clone
+    return left
   }
 
   toComparison(treeNode: TreeNode | string) {

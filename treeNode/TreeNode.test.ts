@@ -1558,10 +1558,10 @@ testTree.content = equal => {
 testTree.getInheritanceTree = equal => {
 	// Arrange
 	const classes = `abstractParser
-abstractModalParser abstractParser
-helpModal abstractModalParser
-abstractButton abstractParser
-helpButton abstractButton`
+abstractModalParser	abstractParser
+helpModal	abstractModalParser
+abstractButton	abstractParser
+helpButton	abstractButton`
 
 	// Act
 	const inheritanceTree = new TreeNode(classes).getInheritanceTree()

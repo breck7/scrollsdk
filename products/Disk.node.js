@@ -18,8 +18,8 @@ Disk.read = path => {
 }
 Disk.touch = path => (Disk.exists(path) ? true : Disk.write(path, ""))
 Disk.copy = (source, destination) => Disk.write(destination, Disk.read(source))
-Disk.mkdir = path => require("mkdirp").sync(path)
-Disk.getRecursive = path => require("recursive-readdir-sync")(path)
+Disk.mkdir = path => fs.mkdirSync(path, { recursive: true })
+Disk.getRecursive = path => Disk.recursiveReaddirSyncSimple(path)
 Disk.readJson = path => JSON.parse(Disk.read(path))
 Disk.getFileNameWithoutExtension = filepath => path.parse(filepath).name
 Disk.write = (path, content) => fs.writeFileSync(path, content, "utf8")
@@ -159,6 +159,17 @@ Disk.writeObjectToDisk = (baseFolder, obj) => {
     if (filename.includes("/")) Disk.mkdir(path.dirname(filePath))
     if (!fs.existsSync(filePath)) Disk.writeIfChanged(filePath, obj[filename])
   })
+}
+Disk.recursiveReaddirSyncSimple = filepath => {
+  let list = []
+  const files = fs.readdirSync(filepath)
+  let stats
+  files.forEach(function (file) {
+    stats = fs.lstatSync(path.join(filepath, file))
+    if (stats.isDirectory()) list = list.concat(Disk.recursiveReaddirSyncSimple(path.join(filepath, file)))
+    else list.push(path.join(filepath, file))
+  })
+  return list
 }
 Disk.recursiveReaddirSync = (folder, callback) =>
   fs.readdirSync(folder).forEach(filename => {

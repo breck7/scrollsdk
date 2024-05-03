@@ -1,7 +1,5 @@
 #!/usr/bin/env ts-node
 
-const recursiveReadSync = require("recursive-readdir-sync")
-
 const { TreeNode } = require("./products/TreeNode.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { Disk } = require("./products/Disk.node.js")
@@ -294,7 +292,7 @@ class Builder extends TreeNode {
   }
 
   _makeTestTreeForFolder(dir: treeNotationTypes.absoluteFolderPath) {
-    const allTestFiles = <string[]>recursiveReadSync(dir)
+    const allTestFiles: string[] = Disk.recursiveReaddirSyncSimple(dir)
     const swarm = require("./products/swarm.nodejs.js")
 
     const fileTestTree: any = {}

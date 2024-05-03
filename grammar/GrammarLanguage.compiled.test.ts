@@ -16,8 +16,7 @@ const testTree: treeNotationTypes.testTree = {}
 const outputDir = path.join(__dirname, "..", "ignore", "vms")
 const langsDir = path.join(__dirname, "..", "langs")
 
-const mkdirp = require("mkdirp")
-mkdirp.sync(outputDir)
+Disk.mkdir(outputDir)
 
 const makeProgram = (grammarCode: string, code: string) => {
   const grammarProgram = new HandGrammarProgram(grammarCode)

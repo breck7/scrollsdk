@@ -60,7 +60,20 @@
       return this._dirToStamp(absPathWithoutEndingSlash, fn)
     }
     static _dirToStamp(absPathWithoutEndingSlash, fileFn) {
-      const files = require("recursive-readdir-sync")(absPathWithoutEndingSlash)
+      const fs = require("fs")
+      const path = require("path")
+      function recursiveReaddirSync(filepath) {
+        let list = []
+        const files = fs.readdirSync(filepath)
+        let stats
+        files.forEach(function (file) {
+          stats = fs.lstatSync(path.join(filepath, file))
+          if (stats.isDirectory()) list = list.concat(recursiveReaddirSync(path.join(filepath, file)))
+          else list.push(path.join(filepath, file))
+        })
+        return list
+      }
+      const files = recursiveReaddirSync(absPathWithoutEndingSlash)
       const folderParts = absPathWithoutEndingSlash.split("/")
       const rootFolderName = folderParts.pop()
       const rootFolderPath = folderParts.join("/")
@@ -145,7 +158,20 @@ stampParser
    return this._dirToStamp(absPathWithoutEndingSlash, fn)
   }
   static _dirToStamp(absPathWithoutEndingSlash, fileFn) {
-   const files = require("recursive-readdir-sync")(absPathWithoutEndingSlash)
+   const fs = require("fs")
+   const path = require("path")
+   function recursiveReaddirSync (filepath) {
+    let list  = []
+    const files = fs.readdirSync(filepath)
+    let stats
+    files.forEach(function (file) {
+      stats = fs.lstatSync(path.join(filepath, file))
+      if (stats.isDirectory()) list = list.concat(recursiveReaddirSync(path.join(filepath, file)))
+      else list.push(path.join(filepath, file))
+    })
+    return list
+   }
+   const files = recursiveReaddirSync(absPathWithoutEndingSlash)
    const folderParts = absPathWithoutEndingSlash.split("/")
    const rootFolderName = folderParts.pop()
    const rootFolderPath = folderParts.join("/")
@@ -186,7 +212,7 @@ fileParser
    this.root.log(\`Creating file \${fullPath}\`)
    const data = this.getNode("data")
    const content = data ? data.childrenToString() : ""
-   require("mkdirp").sync(require("path").dirname(fullPath))
+   fs.mkdirSync(require("path").dirname(fullPath), {recursive: true})
    fs.writeFileSync(fullPath, content, "utf8")
    const isExecutable = this.has("executable") // todo: allow for all file permissions?
    if (isExecutable) fs.chmodSync(fullPath, "755")
@@ -205,7 +231,8 @@ folderParser
   execute(parentDir) {
    const path = this._getAbsolutePath(parentDir)
    this.root.log(\`Creating folder \${path}\`)
-   require("mkdirp").sync(path)
+   const fs = require("fs")
+   fs.mkdirSync(path, {recursive: true})
   }
  crux folder`)
     get handGrammarProgram() {
@@ -279,7 +306,7 @@ folderParser
       this.root.log(`Creating file ${fullPath}`)
       const data = this.getNode("data")
       const content = data ? data.childrenToString() : ""
-      require("mkdirp").sync(require("path").dirname(fullPath))
+      fs.mkdirSync(require("path").dirname(fullPath), { recursive: true })
       fs.writeFileSync(fullPath, content, "utf8")
       const isExecutable = this.has("executable") // todo: allow for all file permissions?
       if (isExecutable) fs.chmodSync(fullPath, "755")
@@ -302,7 +329,8 @@ folderParser
     execute(parentDir) {
       const path = this._getAbsolutePath(parentDir)
       this.root.log(`Creating folder ${path}`)
-      require("mkdirp").sync(path)
+      const fs = require("fs")
+      fs.mkdirSync(path, { recursive: true })
     }
   }
 

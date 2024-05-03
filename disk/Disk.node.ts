@@ -19,8 +19,8 @@ class Disk {
   }
   static touch = (path: treeNotationTypes.filepath) => (Disk.exists(path) ? true : Disk.write(path, ""))
   static copy = (source: treeNotationTypes.filepath, destination: treeNotationTypes.filepath) => Disk.write(destination, Disk.read(source))
-  static mkdir = (path: treeNotationTypes.filepath) => require("mkdirp").sync(path)
-  static getRecursive = (path: treeNotationTypes.filepath) => require("recursive-readdir-sync")(path)
+  static mkdir = (path: treeNotationTypes.filepath) => fs.mkdirSync(path, { recursive: true })
+  static getRecursive = (path: treeNotationTypes.filepath) => Disk.recursiveReaddirSyncSimple(path)
   static readJson = (path: treeNotationTypes.filepath) => JSON.parse(Disk.read(path))
   static getFileNameWithoutExtension = (filepath: treeNotationTypes.filepath) => path.parse(filepath).name
   static write = (path: treeNotationTypes.filepath, content: string) => fs.writeFileSync(path, content, "utf8")
@@ -160,6 +160,20 @@ class Disk {
       if (filename.includes("/")) Disk.mkdir(path.dirname(filePath))
       if (!fs.existsSync(filePath)) Disk.writeIfChanged(filePath, obj[filename])
     })
+  }
+
+  static recursiveReaddirSyncSimple = (filepath: string) => {
+    let list: string[] = []
+    const files = fs.readdirSync(filepath)
+    let stats
+
+    files.forEach(function (file: any) {
+      stats = fs.lstatSync(path.join(filepath, file))
+      if (stats.isDirectory()) list = list.concat(Disk.recursiveReaddirSyncSimple(path.join(filepath, file)))
+      else list.push(path.join(filepath, file))
+    })
+
+    return list
   }
   static recursiveReaddirSync = (folder: string, callback: any) =>
     fs.readdirSync(folder).forEach((filename: string) => {

@@ -4,6 +4,9 @@ startColumns 4
 
 Here's a list of the notable changes in JTree.
 
+# 76.1.0 2023-5-03
+- 🎉 only ship bare minimum files in npm package
+
 # 76.0.0 2023-5-03
 - 🎉 all remaining dependencies moved to `devDependencies`
 

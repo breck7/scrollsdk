@@ -10,7 +10,7 @@ const testTree: treeNotationTypes.testTree = {}
 testTree.disk = equal => {
   const tfs = new TreeFileSystem()
   // Arrange/Act/Assert
-  equal(tfs.evaluateImports(path.join(__dirname, "..", "readme.scroll")).afterImportPass.length > 0, true)
+  equal(tfs.assembleFile(path.join(__dirname, "..", "readme.scroll")).afterImportPass.length > 0, true)
 }
 
 testTree.inMemory = equal => {
@@ -23,8 +23,8 @@ testTree.inMemory = equal => {
   }
   const tfs = new TreeFileSystem(files)
   equal(tfs.dirname("/"), "/")
-  equal(tfs.evaluateImports("/main").afterImportPass, "world\nciao")
-  equal(tfs.evaluateImports("/nested/deep/relative").afterImportPass, "world\nciao")
+  equal(tfs.assembleFile("/main").afterImportPass, "world\nciao")
+  equal(tfs.assembleFile("/nested/deep/relative").afterImportPass, "world\nciao")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)

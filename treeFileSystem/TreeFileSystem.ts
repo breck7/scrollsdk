@@ -17,15 +17,12 @@ interface OpenedFile {
   mtimeMs: number
 }
 
-interface ImportResult {
-  code: string
-  importFilePaths: treeNotationTypes.filepath[]
-}
-
-interface ImportResults {
-  originalFileAsTree: treeNotationTypes.treeNode
-  afterImportPass: string
+interface AssembledFile {
+  afterImportPass: string // codeWithoutImportsNorParserDefinitions
+  importFilePaths: string[]
+  isImportOnly: boolean
   parser?: treeNotationTypes.treeNode
+  filepathsWithParserDefinitions: string[]
 }
 
 interface Storage {
@@ -36,6 +33,11 @@ interface Storage {
   dirname(absolutePath: string): string
   join(...absolutePath: string[]): string
 }
+
+const parserRegex = /^[a-zA-Z0-9_]+Parser/gm
+// A regex to check if a multiline string has a line that starts with "import ".
+const importRegex = /^import /gm
+const importOnlyRegex = /^importOnly/
 
 class DiskWriter implements Storage {
   fileCache: { [filepath: string]: OpenedFile } = {}
@@ -137,7 +139,7 @@ class TreeFileSystem implements Storage {
   private _storage: Storage
   private _treeCache: { [filepath: string]: typeof TreeNode } = {}
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
-  private _expandedImportCache: { [filepath: string]: ImportResult } = {}
+  private _expandedImportCache: { [filepath: string]: AssembledFile } = {}
   private _grammarExpandersCache: { [filepath: string]: boolean } = {}
 
   private _getFileAsTree(absoluteFilePath: string) {
@@ -148,25 +150,31 @@ class TreeFileSystem implements Storage {
     return _treeCache[absoluteFilePath]
   }
 
-  private _doesFileHaveGrammarDefinitions(absoluteFilePath: treeNotationTypes.filepath) {
-    if (!absoluteFilePath) return false
-    const { _grammarExpandersCache } = this
-    if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(/^[a-zA-Z0-9_]+Parser/gm)
-
-    return _grammarExpandersCache[absoluteFilePath]
-  }
-
-  private _evaluateImports(absoluteFilePath: string) {
+  private _assembleFile(absoluteFilePath: string) {
     const { _expandedImportCache } = this
     if (_expandedImportCache[absoluteFilePath]) return _expandedImportCache[absoluteFilePath]
-    // A regex to check if a multiline string has a line that starts with "import ".
-    const importRegex = /^import /gm
-    const code = this.read(absoluteFilePath)
 
-    if (!code.match(importRegex))
-      return {
-        code,
-        importFilePaths: []
+    let code = this.read(absoluteFilePath)
+
+    const isImportOnly = importOnlyRegex.test(code)
+
+    // Strip any parsers
+    const stripIt = code.includes("// parsersOnly") // temporary perf hack
+    if (stripIt)
+      code = code
+        .split("\n")
+        .filter(line => line.startsWith("import "))
+        .join("\n")
+
+    const filepathsWithParserDefinitions = []
+    if (this._doesFileHaveGrammarDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
+
+    if (!importRegex.test(code))
+      return <AssembledFile>{
+        afterImportPass: code,
+        isImportOnly,
+        importFilePaths: [],
+        filepathsWithParserDefinitions
       }
 
     let importFilePaths: string[] = []
@@ -177,10 +185,11 @@ class TreeFileSystem implements Storage {
       if (line.match(importRegex)) {
         const relativeFilePath = line.replace("import ", "")
         const absoluteImportFilePath = this.join(folder, relativeFilePath)
-        const expandedFile = this._evaluateImports(absoluteImportFilePath)
-        replacements.push({ lineNumber, code: expandedFile.code })
+        const expandedFile = this._assembleFile(absoluteImportFilePath)
         importFilePaths.push(absoluteImportFilePath)
         importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
+
+        replacements.push({ lineNumber, code: expandedFile.afterImportPass })
       }
     })
 
@@ -189,11 +198,24 @@ class TreeFileSystem implements Storage {
       lines[lineNumber] = code
     })
 
+    const combinedLines = lines.join("\n")
+
     _expandedImportCache[absoluteFilePath] = {
-      code: lines.join("\n"),
-      importFilePaths
+      importFilePaths,
+      isImportOnly,
+      afterImportPass: combinedLines,
+      filepathsWithParserDefinitions: importFilePaths.filter((filename: string) => this._doesFileHaveGrammarDefinitions(filename)).concat(filepathsWithParserDefinitions)
     }
+
     return _expandedImportCache[absoluteFilePath]
+  }
+
+  private _doesFileHaveGrammarDefinitions(absoluteFilePath: treeNotationTypes.filepath) {
+    if (!absoluteFilePath) return false
+    const { _grammarExpandersCache } = this
+    if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
+
+    return _grammarExpandersCache[absoluteFilePath]
   }
 
   private _getOneGrammarParserFromFiles(filePaths: string[], baseGrammarCode: string) {
@@ -237,21 +259,14 @@ class TreeFileSystem implements Storage {
     return _parserCache[key]
   }
 
-  evaluateImports(absoluteFilePath: string, defaultParserCode?: string): ImportResults {
-    const importResults = this._evaluateImports(absoluteFilePath)
-    const results: ImportResults = {
-      originalFileAsTree: this._getFileAsTree(absoluteFilePath),
-      afterImportPass: importResults.code
-    }
+  assembleFile(absoluteFilePath: string, defaultParserCode?: string): AssembledFile {
+    const assembledFile = this._assembleFile(absoluteFilePath)
 
-    if (!defaultParserCode) return results
-
-    const filepathsWithParserDefinitions = importResults.importFilePaths.filter(filename => this._doesFileHaveGrammarDefinitions(filename))
-    if (this._doesFileHaveGrammarDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
+    if (!defaultParserCode) return assembledFile
 
     // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM GRAMMAR NODES DEFINED
-    if (filepathsWithParserDefinitions.length) results.parser = this.getParser(filepathsWithParserDefinitions, defaultParserCode).parser
-    return results
+    if (assembledFile.filepathsWithParserDefinitions.length) assembledFile.parser = this.getParser(assembledFile.filepathsWithParserDefinitions, defaultParserCode).parser
+    return assembledFile
   }
 }
 

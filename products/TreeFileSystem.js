@@ -7,6 +7,10 @@ const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
 const grammarParser = require("../products/grammar.nodejs.js")
 const { posix } = require("../products/Path.js")
 const GRAMMAR_EXTENSION = ".grammar"
+const parserRegex = /^[a-zA-Z0-9_]+Parser/gm
+// A regex to check if a multiline string has a line that starts with "import ".
+const importRegex = /^import /gm
+const importOnlyRegex = /^importOnly/
 class DiskWriter {
   constructor() {
     this.fileCache = {}
@@ -94,22 +98,26 @@ class TreeFileSystem {
     }
     return _treeCache[absoluteFilePath]
   }
-  _doesFileHaveGrammarDefinitions(absoluteFilePath) {
-    if (!absoluteFilePath) return false
-    const { _grammarExpandersCache } = this
-    if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(/^[a-zA-Z0-9_]+Parser/gm)
-    return _grammarExpandersCache[absoluteFilePath]
-  }
-  _evaluateImports(absoluteFilePath) {
+  _assembleFile(absoluteFilePath) {
     const { _expandedImportCache } = this
     if (_expandedImportCache[absoluteFilePath]) return _expandedImportCache[absoluteFilePath]
-    // A regex to check if a multiline string has a line that starts with "import ".
-    const importRegex = /^import /gm
-    const code = this.read(absoluteFilePath)
-    if (!code.match(importRegex))
+    let code = this.read(absoluteFilePath)
+    const isImportOnly = importOnlyRegex.test(code)
+    // Strip any parsers
+    const stripIt = code.includes("// parsersOnly") // temporary perf hack
+    if (stripIt)
+      code = code
+        .split("\n")
+        .filter(line => line.startsWith("import "))
+        .join("\n")
+    const filepathsWithParserDefinitions = []
+    if (this._doesFileHaveGrammarDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
+    if (!importRegex.test(code))
       return {
-        code,
-        importFilePaths: []
+        afterImportPass: code,
+        isImportOnly,
+        importFilePaths: [],
+        filepathsWithParserDefinitions
       }
     let importFilePaths = []
     const lines = code.split("\n")
@@ -119,21 +127,30 @@ class TreeFileSystem {
       if (line.match(importRegex)) {
         const relativeFilePath = line.replace("import ", "")
         const absoluteImportFilePath = this.join(folder, relativeFilePath)
-        const expandedFile = this._evaluateImports(absoluteImportFilePath)
-        replacements.push({ lineNumber, code: expandedFile.code })
+        const expandedFile = this._assembleFile(absoluteImportFilePath)
         importFilePaths.push(absoluteImportFilePath)
         importFilePaths = importFilePaths.concat(expandedFile.importFilePaths)
+        replacements.push({ lineNumber, code: expandedFile.afterImportPass })
       }
     })
     replacements.forEach(replacement => {
       const { lineNumber, code } = replacement
       lines[lineNumber] = code
     })
+    const combinedLines = lines.join("\n")
     _expandedImportCache[absoluteFilePath] = {
-      code: lines.join("\n"),
-      importFilePaths
+      importFilePaths,
+      isImportOnly,
+      afterImportPass: combinedLines,
+      filepathsWithParserDefinitions: importFilePaths.filter(filename => this._doesFileHaveGrammarDefinitions(filename)).concat(filepathsWithParserDefinitions)
     }
     return _expandedImportCache[absoluteFilePath]
+  }
+  _doesFileHaveGrammarDefinitions(absoluteFilePath) {
+    if (!absoluteFilePath) return false
+    const { _grammarExpandersCache } = this
+    if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
+    return _grammarExpandersCache[absoluteFilePath]
   }
   _getOneGrammarParserFromFiles(filePaths, baseGrammarCode) {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
@@ -172,18 +189,12 @@ class TreeFileSystem {
     }
     return _parserCache[key]
   }
-  evaluateImports(absoluteFilePath, defaultParserCode) {
-    const importResults = this._evaluateImports(absoluteFilePath)
-    const results = {
-      originalFileAsTree: this._getFileAsTree(absoluteFilePath),
-      afterImportPass: importResults.code
-    }
-    if (!defaultParserCode) return results
-    const filepathsWithParserDefinitions = importResults.importFilePaths.filter(filename => this._doesFileHaveGrammarDefinitions(filename))
-    if (this._doesFileHaveGrammarDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
+  assembleFile(absoluteFilePath, defaultParserCode) {
+    const assembledFile = this._assembleFile(absoluteFilePath)
+    if (!defaultParserCode) return assembledFile
     // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM GRAMMAR NODES DEFINED
-    if (filepathsWithParserDefinitions.length) results.parser = this.getParser(filepathsWithParserDefinitions, defaultParserCode).parser
-    return results
+    if (assembledFile.filepathsWithParserDefinitions.length) assembledFile.parser = this.getParser(assembledFile.filepathsWithParserDefinitions, defaultParserCode).parser
+    return assembledFile
   }
 }
 

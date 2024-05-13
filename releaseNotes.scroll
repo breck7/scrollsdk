@@ -4,6 +4,9 @@ startColumns 4
 
 Here's a list of the notable changes in JTree.
 
+# 77.1.0 2023-5-13
+- 🎉 TL Designer can now take a `programUrl` as well.
+
 # 77.0.0 2023-5-08
 - 🎉 `assembleFile` (formerly `evaluateImports`) is now faster by stripping Parser Definitions from assembled files, using them only in the returned parsers. (There are still many speed improvements to be had here)
 - ⚠️ BREAKING: The `TreeFileSystem.evaluateImports` method is now `TreeFileSystem.assembleFile`, and the interface of the returned object has changed.

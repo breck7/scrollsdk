@@ -77,12 +77,16 @@ class DesignerApp extends AbstractTreeComponentParser {
     this._setGrammarAndCode(grammar.text, sample.text)
   }
 
-  async fetchAndLoadGrammarFromUrlCommand(url: string) {
+  async fetchAndLoadGrammarFromUrlCommand(url: string, programUrl: string) {
     const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(url)
     const grammarProgram = new HandGrammarProgram(grammar.text)
     const rootNodeDef = grammarProgram.rootParserDefinition
-    const sample = rootNodeDef.getNode("example").childrenToString()
+    let sample = rootNodeDef.getNode("example").childrenToString()
+    if (programUrl) {
+      sample = await willowBrowser.httpGetUrl(programUrl)
+      sample = sample.text
+    }
 
     this._setGrammarAndCode(grammar.text, sample)
   }
@@ -159,13 +163,14 @@ class DesignerApp extends AbstractTreeComponentParser {
     const deepLink = new TreeNode(decodeURIComponent(hash.substr(1)))
     const standard = deepLink.get("standard")
     const fromUrl = deepLink.get("url")
+    const programUrl = deepLink.get("programUrl")
     if (standard) {
       console.log("Loading standard from deep link....")
       await this.fetchAndLoadJtreeShippedLanguageCommand(standard)
       return true
     } else if (fromUrl) {
       console.log(`Loading grammar from '${fromUrl}'....`)
-      await this.fetchAndLoadGrammarFromUrlCommand(fromUrl)
+      await this.fetchAndLoadGrammarFromUrlCommand(fromUrl, programUrl)
       return true
     } else {
       const grammarCode = deepLink.getNode("grammar")

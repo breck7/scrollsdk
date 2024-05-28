@@ -2250,10 +2250,15 @@ ${testCode}`
 ${rootName}`
     else exportScript = `window.${rootName} = ${rootName}`
     let nodeJsImports = ``
-    if (forNodeJs)
+    if (forNodeJs) {
+      const path = require("path")
       nodeJsImports = Object.keys(GlobalNamespaceAdditions)
-        .map(key => `const { ${key} } = require("${jtreeProductsPath}/${GlobalNamespaceAdditions[key]}")`)
+        .map(key => {
+          const thePath = jtreeProductsPath + "/" + GlobalNamespaceAdditions[key]
+          return `const { ${key} } = require("${thePath.replace(/\\/g, "\\\\")}")` // escape windows backslashes
+        })
         .join("\n")
+    }
     // todo: we can expose the previous "constants" export, if needed, via the grammar, which we preserve.
     return `{
 ${nodeJsImports}

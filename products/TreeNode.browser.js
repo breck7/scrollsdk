@@ -61,10 +61,10 @@ var WhereOperators
   WhereOperators["empty"] = "empty"
   WhereOperators["notEmpty"] = "notEmpty"
 })(WhereOperators || (WhereOperators = {}))
-var TreeNotationConstants
-;(function (TreeNotationConstants) {
-  TreeNotationConstants["extends"] = "extends"
-})(TreeNotationConstants || (TreeNotationConstants = {}))
+var ScrollNotationConstants
+;(function (ScrollNotationConstants) {
+  ScrollNotationConstants["extends"] = "extends"
+})(ScrollNotationConstants || (ScrollNotationConstants = {}))
 class ParserCombinator {
   constructor(catchAllParser, firstWordMap = {}, regexTests = undefined) {
     this._catchAllParser = catchAllParser
@@ -2603,7 +2603,7 @@ class AbstractExtendibleTreeNode extends TreeNode {
     return this._cache_ancestorsArray
   }
   get idThatThisExtends() {
-    return this.get(TreeNotationConstants.extends)
+    return this.get(ScrollNotationConstants.extends)
   }
   _initAncestorsArrayCache(cannotContainNodes) {
     if (this._cache_ancestorsArray) return undefined

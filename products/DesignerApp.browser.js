@@ -522,7 +522,7 @@ class headerComponent extends AbstractTreeComponentParser {
     return `div
  h1
   a
-   href https://treenotation.org
+   href https://notation.scroll.pub
    style text-decoration: none;
    img
     id logo

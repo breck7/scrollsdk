@@ -6,7 +6,7 @@ import ciBadges.scroll
 
 # Links
 Scroll Notation Homepage
- https://treenotation.org
+ https://notation.scroll.pub
 Scroll Notation Sandbox
  https://sdk.scroll.pub/sandbox
 Scroll Parser Designer
@@ -20,7 +20,7 @@ TypeScript Library
 Scroll Subreddit
  https://reddit.com/r/scroll-lang
 Ohayo - A data science studio powered by Scroll Notation
- https://github.com/treenotation/ohayo
+ https://github.com/breck7/ohayo
 UnitTests
  https://sdk.scroll.pub/sandbox/test.html
 PerfTests
@@ -105,8 +105,8 @@ All breaking changes are mentioned in the releaseNotes. We follow semantic versi
 # Scroll Notation Libraries in Other Languages
 If you build a Scroll Notation library/SDK in another language, let us know and we'll add a link.
 
-If you are working on a Scroll Notation library in a new host language, feel free to post an issue or ask for help in the  TreeNotation subreddit.
- https://reddit.com/r/treenotation subreddit
+If you are working on a Scroll Notation library in a new host language, feel free to post an issue or ask for help in the  Scroll subreddit.
+ https://reddit.com/r/scroll-lang subreddit
 
 ## How to bump versions
 code

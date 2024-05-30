@@ -9,7 +9,7 @@ Scroll Notation Homepage
  https://notation.scroll.pub
 Scroll Notation Sandbox
  https://sdk.scroll.pub/sandbox
-Scroll Parser Designer
+Scroll Designer
  https://sdk.scroll.pub/designer
 Release Notes
  https://sdk.scroll.pub/releaseNotes.html
@@ -35,7 +35,7 @@ You can try the Grammar tutorial.
  link grammarTutorial.html Grammar tutorial
 
 # Grammar Files
-The ScrollSDK contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. The ScrollSDK also includes a simple web Scroll Parser Designer.
+The ScrollSDK contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. The ScrollSDK also includes a simple web Scroll Designer.
  https://sdk.scroll.pub/designer Designer
 
 To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. The ScrollSDK lets you create new languages using just Scroll Notation, Scroll Notation + TypeScript, or Scroll Notation + Javascript. Scroll Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
@@ -70,7 +70,7 @@ code
  npm run local
  open http://localhost:3333/
 
-## Scroll Parser Designer web app for building new Scroll Parsers
+## Scroll Designer web app for building new Scroll Parsers
 code
  npm install .
  npm run local

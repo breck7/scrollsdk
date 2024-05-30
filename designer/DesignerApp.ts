@@ -594,7 +594,7 @@ class tableComponent extends AbstractTreeComponentParser {
 
 class headerComponent extends AbstractTreeComponentParser {
   _getTitle() {
-    return `Scroll Parser Designer`
+    return `Scroll Designer`
   }
   toHakonCode() {
     return `#logo

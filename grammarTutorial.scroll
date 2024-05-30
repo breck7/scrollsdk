@@ -19,18 +19,18 @@ _Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle 
  https://github.com/breck7/scrollsdk/issues GitHub issues
  https://reddit.com/r/scroll-lang Scroll subreddit
  link mailto:breck7@gmail.com email Breck
-[] Take a look at some of the sample languages in the Scroll Parser Designer. You might be able to use these as a reference if you get stuck.
- https://sdk.scroll.pub/designer/ Scroll Parser Designer
-[] Open the Scroll Parser Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Grammar Languages).
- https://sdk.scroll.pub/designer/ Scroll Parser Designer
+[] Take a look at some of the sample languages in the Scroll Designer. You might be able to use these as a reference if you get stuck.
+ https://sdk.scroll.pub/designer/ Scroll Designer
+[] Open the Scroll Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Grammar Languages).
+ https://sdk.scroll.pub/designer/ Scroll Designer
  https://sublimetext.com SublimeText4
 
 # Step 1
 [] Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
 
 # Step 2
-[] If you are using the Scroll Parser Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.grammar`
- https://sdk.scroll.pub/designer/ Scroll Parser Designer
+[] If you are using the Scroll Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.grammar`
+ https://sdk.scroll.pub/designer/ Scroll Designer
 
 ## Step 3
 [] Create your first Parser. This will be the root parser for your language. It should like this:

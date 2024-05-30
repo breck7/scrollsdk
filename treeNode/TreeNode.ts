@@ -67,7 +67,7 @@ enum WhereOperators {
   notEmpty = "notEmpty"
 }
 
-enum TreeNotationConstants {
+enum ScrollNotationConstants {
   extends = "extends"
 }
 
@@ -3132,7 +3132,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
   }
 
   private get idThatThisExtends() {
-    return this.get(TreeNotationConstants.extends)
+    return this.get(ScrollNotationConstants.extends)
   }
 
   abstract get idToNodeMap(): { [id: string]: AbstractExtendibleTreeNode }

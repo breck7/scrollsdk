@@ -1,7 +1,7 @@
 title poop Readme
 
 Try it now
- https://jtree.treenotation.org/designer/#standard%20poop
+ https://sdk.scroll.pub/designer/#standard%20poop
 
 POOP is the *Programming Option for Overtired Parents*. It is a Tree Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes.
 
@@ -37,7 +37,7 @@ code
 - timeIntCell
 - anyCell
 
-This readme was auto-generated using the JTree library
- https://github.com/treenotation/jtree JTree library
+This readme was auto-generated using the ScrollSDK
+ https://github.com/breck7/scrollsdk ScrollSDK
 
 💩 is just for fun, a demonstration Tree Language. 💩 is hereby dumped into the public domain.

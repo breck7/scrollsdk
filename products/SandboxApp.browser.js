@@ -15,7 +15,7 @@ class SandboxApp extends AbstractTreeComponentParser {
       "toJsonSubset",
       `{
  "name": "jtree",
- "description": "Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages",
+ "description": "Scroll Notation parser, compiler-compiler, and virtual machine for Tree Languages",
  "keywords": "jtree"
 }`
     )
@@ -162,9 +162,9 @@ class headerComponent extends AbstractTreeComponentParser {
     id logo
     src /images/helloWorld3D.svg
     title TreeNotation.org
-  span Tree Notation Sandbox
+  span Scroll Notation Sandbox
  p
-  a Tree Language Designer
+  a Scroll Parser Designer
    href /designer/
   span  | 
   a Unit Tests
@@ -176,7 +176,7 @@ class headerComponent extends AbstractTreeComponentParser {
   a Debug
    clickCommand toggleTreeComponentFrameworkDebuggerCommand
   span  | Version ${TreeNode.getVersion()}
- p This is a simple console for exploring the base Tree Notation. In dev tools, you can access the parsed tree below as "window.tree"`
+ p This is a simple console for exploring the base Scroll Notation. In dev tools, you can access the parsed tree below as "window.tree"`
   }
 }
 class shareComponent extends AbstractTreeComponentParser {
@@ -203,7 +203,7 @@ class shareComponent extends AbstractTreeComponentParser {
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/treenotation/jtree/tree/main/sandbox`
+    this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/sandbox`
   }
 }
 class tableComponent extends AbstractTreeComponentParser {
@@ -211,7 +211,7 @@ class tableComponent extends AbstractTreeComponentParser {
     return `table
  tr
   td
-   div Tree Notation
+   div Scroll Notation
    textarea
     id treeConsole
     keyUpCommand updateFromTreeConsoleCommand

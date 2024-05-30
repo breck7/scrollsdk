@@ -2,7 +2,12 @@ import header.scroll
 title Release Notes
 startColumns 4
 
-Here's a list of the notable changes in JTree.
+Here's a list of the notable changes in the Scroll SDK.
+
+# 78.0.0 2024-5-30
+- 🎉 jtree is now called the Scroll SDK
+- ⚠️ BREAKING: jtree => scrollsdk
+- ⚠️ BREAKING: Scroll Notation is now called Scroll Notation
 
 # 77.1.1 2024-5-28
 - 🏥 attempt a Windows bug fix

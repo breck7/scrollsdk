@@ -6,32 +6,31 @@ startColumns 2
 
 # Key Concepts
 
-*Tree Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better. We call languages that use _Tree Notation_ *Tree Languages*.
+*Scroll Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better. We call languages that use _Scroll Notation_ *Tree Languages*.
 
-A _Tree Notation_ program is a string, a tree, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
+A _Scroll Notation_ program is a string, a tree, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
 
 *Grammar* is a _Tree Language_ for building other _Tree Languages_. This tutorial walks you through building a very simple language in _Grammar_.
 
 _Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle it according to the definitions you write in your Grammar program. A language is simple a combination of _Parsers_.
 
 ## Before you start:
-[] Know where to get help. GitHub issues, Tree Notation subreddit, Google Groups, or email Breck.
- https://github.com/treenotation/jtree/issues GitHub issues
- https://reddit.com/r/treenotation Tree Notation subreddit
- link mailto:treenotation@googlegroups.com Google Groups
+[] Know where to get help. GitHub issues, Scroll subreddit, or email Breck.
+ https://github.com/breck7/scrollsdk/issues GitHub issues
+ https://reddit.com/r/scroll-lang Scroll subreddit
  link mailto:breck7@gmail.com email Breck
-[] Take a look at some of the sample languages in the Tree Language Designer. You might be able to use these as a reference if you get stuck.
- https://jtree.treenotation.org/designer/ Tree Language Designer
-[] Open the Tree Language Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Grammar Languages).
- https://jtree.treenotation.org/designer/ Tree Language Designer
+[] Take a look at some of the sample languages in the Scroll Parser Designer. You might be able to use these as a reference if you get stuck.
+ https://sdk.scroll.pub/designer/ Scroll Parser Designer
+[] Open the Scroll Parser Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Grammar Languages).
+ https://sdk.scroll.pub/designer/ Scroll Parser Designer
  https://sublimetext.com SublimeText4
 
 # Step 1
 [] Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
 
 # Step 2
-[] If you are using the Tree Language Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.grammar`
- https://jtree.treenotation.org/designer/ Tree Language Designer
+[] If you are using the Scroll Parser Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.grammar`
+ https://sdk.scroll.pub/designer/ Scroll Parser Designer
 
 ## Step 3
 [] Create your first Parser. This will be the root parser for your language. It should like this:
@@ -94,7 +93,7 @@ psuedoCode
  ...
 
 ## Step 10
-[] A second minor concept in Grammar are cell types. A Tree Notation document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our grammar file.
+[] A second minor concept in Grammar are cell types. A Scroll Notation document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our grammar file.
 psuedoCode
  nameCell
   highlightScope string

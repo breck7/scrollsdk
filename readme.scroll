@@ -1,51 +1,49 @@
 import header.scroll
 permalink index.html
-title JTree: Tree Notation SDK for TypeScript & Javascript
+title ScrollSDK: SDK for building on Scroll
 startColumns 4
 import ciBadges.scroll
 
 # Links
-Tree Notation Homepage
+Scroll Notation Homepage
  https://treenotation.org
-Tree Notation Sandbox
- https://jtree.treenotation.org/sandbox
-Tree Language Designer
- https://jtree.treenotation.org/designer
+Scroll Notation Sandbox
+ https://sdk.scroll.pub/sandbox
+Scroll Parser Designer
+ https://sdk.scroll.pub/designer
 Release Notes
- https://jtree.treenotation.org/releaseNotes.html
-Tree Notation FAQ
- https://faq.treenotation.org
-TrueBase
- https://truebase.pub/
+ https://sdk.scroll.pub/releaseNotes.html
+Scroll Notation FAQ
+ https://faq.scroll.pub
 TypeScript Library
- https://github.com/treenotation/jtree
-Tree Notation Subreddit
- https://reddit.com/r/treenotation
-Ohayo - A data science studio powered by Tree Notation
+ https://github.com/breck7/scrollsdk
+Scroll Subreddit
+ https://reddit.com/r/scroll-lang
+Ohayo - A data science studio powered by Scroll Notation
  https://github.com/treenotation/ohayo
 UnitTests
- https://jtree.treenotation.org/sandbox/test.html
+ https://sdk.scroll.pub/sandbox/test.html
 PerfTests
- https://jtree.treenotation.org/sandbox/perfTests.html
+ https://sdk.scroll.pub/sandbox/perfTests.html
 
 ? Who is this package built for?
 Jtree is for people who want to design Tree Languages, make Tree editing tools, or use the Tree Component Web Framework.
-You can think of jtree as similar to the Java Development Kit, except for Tree Notation instead of Java.
+You can think of jtree as similar to the Java Development Kit, except for Scroll Notation instead of Java.
 
 ? How do I build a new language?
 You can try the Grammar tutorial.
  link grammarTutorial.html Grammar tutorial
 
 # Grammar Files
-Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web Tree Language Designer.
- https://jtree.treenotation.org/designer Designer
+Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web Scroll Parser Designer.
+ https://sdk.scroll.pub/designer Designer
 
-To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. Jtree lets you create new languages using just Tree Notation, Tree Notation + TypeScript, or Tree Notation + Javascript. Tree Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
+To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. Jtree lets you create new languages using just Scroll Notation, Scroll Notation + TypeScript, or Scroll Notation + Javascript. Scroll Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
 
 # Using Jtree
 
 ## Quick start
-- Open https://gitpod.io/#https://github.com/breck7/jtree
+- Open https://gitpod.io/#https://github.com/breck7/scrollsdk
 - Run:
 code
  npm install -g ts-node
@@ -66,7 +64,7 @@ code
  <script src="../../products/TreeNode.browser.js"></script>
  <script src="../../products/GrammarLanguage.browser.js"></script>
 
-## jtree "sandbox" web app for exploring base Tree Notation
+## jtree "sandbox" web app for exploring base Scroll Notation
 code
  npm install .
  npm run local
@@ -104,10 +102,10 @@ image images/diagram.svg
 All breaking changes are mentioned in the releaseNotes. We follow semantic versioning, so breaking changes should not happen if you stay on the same major version.
  link releaseNotes.html releaseNotes
 
-# Tree Notation Libraries in Other Languages
-If you build a Tree Notation library/SDK in another language, let us know and we'll add a link.
+# Scroll Notation Libraries in Other Languages
+If you build a Scroll Notation library/SDK in another language, let us know and we'll add a link.
 
-If you are working on a Tree Notation library in a new host language, feel free to post an issue or ask for help in the  TreeNotation subreddit.
+If you are working on a Scroll Notation library in a new host language, feel free to post an issue or ask for help in the  TreeNotation subreddit.
  https://reddit.com/r/treenotation subreddit
 
 ## How to bump versions
@@ -115,9 +113,9 @@ code
  npm run updateVersion NEW_NUMBER
 
 # Alternatives Considered
-This is the first Tree Notation library in existence, so there were no alternative implementations. Note and Space were predecessors to Tree Notation. If a better alternative low level notation to Tree Notation is possible, it has yet to be discovered.
+This is the first Scroll Notation library in existence, so there were no alternative implementations. Note and Space were predecessors to Scroll Notation. If a better alternative low level notation to Scroll Notation is possible, it has yet to be discovered.
 
-All that said, the important part of this repo is not the code but the design patterns. Tree Notation is very simple, and you can implement the patterns contained here in your own code without using this library. In fact, that is often the best way to use Tree Notation!
+All that said, the important part of this repo is not the code but the design patterns. Scroll Notation is very simple, and you can implement the patterns contained here in your own code without using this library. In fact, that is often the best way to use Scroll Notation!
 
 ## Editing in Sublime Text
 It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files in gitignore. Read more here.

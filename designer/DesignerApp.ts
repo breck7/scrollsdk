@@ -594,7 +594,7 @@ class tableComponent extends AbstractTreeComponentParser {
 
 class headerComponent extends AbstractTreeComponentParser {
   _getTitle() {
-    return `Tree Language Designer`
+    return `Scroll Parser Designer`
   }
   toHakonCode() {
     return `#logo
@@ -617,7 +617,7 @@ class headerComponent extends AbstractTreeComponentParser {
     title TreeNotation.org
   span ${this._getTitle()}
  p
-  a Tree Notation Sandbox
+  a Scroll Notation Sandbox
    href /sandbox/
   span  | 
   a Help
@@ -637,12 +637,12 @@ class headerComponent extends AbstractTreeComponentParser {
   id helpSection
   style display: none;
   p This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://jtree.treenotation.org/grammarTutorial.html">Tutorial for creating new Tree Languages using Grammar</a>.`
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/grammarTutorial.html">Tutorial for creating new Tree Languages using Grammar</a>.`
   }
 }
 
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
-  githubLink = `https://github.com/treenotation/jtree/tree/main/designer`
+  githubLink = `https://github.com/breck7/scrollsdk/tree/main/designer`
 }
 
 export { DesignerApp }

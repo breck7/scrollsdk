@@ -1,7 +1,7 @@
 {
-  "name": "jtree",
-  "version": "77.1.1",
-  "description": "Simplify your code with Tree Notation. This jtree package includes a Tree Notation parser, compiler-compiler, and virtual machine for Tree Languages, as well as sample languages, implemented in TypeScript.",
+  "name": "scrollsdk",
+  "version": "78.0.0",
+  "description": "This npm package includes the Scroll Notation class, the Scroll Parser compiler-compiler, a Scroll IDE, and more, all implemented in TypeScript.",
   "types": "./built/jtree.node.d.ts",
   "main": "./products/TreeNode.js",
   "prettier": {
@@ -39,14 +39,14 @@
     "updateVersion": "./builder.ts updateVersion",
     "test": "ts-node builder.ts test",
     "cloc": "cloc $(git ls-files | grep --extended-regexp --invert-match 'products|lib|package-lock')",
-    "checkLinks": "linkinator -r https://jtree.treenotation.org",
+    "checkLinks": "linkinator -r https://sdk.scroll.pub",
     "coverage": "tap --cov --coverage-report=lcov ${__filename} test"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/breck7/jtree"
+    "url": "git://github.com/breck7/scrollsdk"
   },
-  "keywords": "jtree",
+  "keywords": "scroll",
   "devDependencies": {
     "@types/codemirror": "^5.60.7",
     "@types/glob": "^8.1.0",

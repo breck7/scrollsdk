@@ -1374,7 +1374,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponentParse
  div
   span This app is powered by the
   a Tree Component Framework
-   href https://github.com/treenotation/jtree/tree/main/treeComponentFramework
+   href https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework
  p ${app.numberOfLines} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern
@@ -1384,7 +1384,7 @@ ${app.toString(3)}`
 class AbstractGithubTriangleComponent extends AbstractTreeComponentParser {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/treenotation/jtree`
+    this.githubLink = `https://github.com/breck7/scrollsdk`
   }
   toHakonCode() {
     return `.AbstractGithubTriangleComponent

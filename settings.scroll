@@ -1,5 +1,5 @@
 importOnly
-description Build your own language using Tree Notation.
-git https://github.com/breck7/jtree
-viewSourceBaseUrl https://github.com/breck7/jtree/blob/main/
+description Build on top of Scroll.
+git https://github.com/breck7/scrollsdk
+viewSourceBaseUrl https://github.com/breck7/scrollsdk/blob/main/
 email jtree@treenotation.org

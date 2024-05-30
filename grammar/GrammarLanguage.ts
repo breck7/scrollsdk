@@ -895,9 +895,7 @@ ${options.toString(1)}`
   }
 
   protected _getErrorContext() {
-    return this.getNode()
-      .getLine()
-      .split(" ")[0] // todo: WordBreakSymbol
+    return this.getNode().getLine().split(" ")[0] // todo: WordBreakSymbol
   }
 
   protected abstract _isValid(): boolean
@@ -966,7 +964,7 @@ class GrammarIntCell extends GrammarNumericCell {
   }
 
   get regexString() {
-    return "\-?[0-9]+"
+    return "-?[0-9]+"
   }
 
   get parsed() {
@@ -991,7 +989,7 @@ class GrammarFloatCell extends GrammarNumericCell {
   }
 
   get regexString() {
-    return "-?\d*(\.\d+)?"
+    return "-?d*(.d+)?"
   }
 
   get parsed() {
@@ -2580,7 +2578,7 @@ ${this.topDownArray
   .join("\n")}
 
 paragraph This readme was auto-generated using the
- link https://github.com/treenotation/jtree JTree library.`
+ link https://github.com/breck7/scrollsdk ScrollSDK.`
   }
 
   toBundle() {
@@ -2748,12 +2746,7 @@ ${testCode}`
   }
 
   private get fileExtensions(): string {
-    return this.rootParserDefinition.get(GrammarConstants.extensions)
-      ? this.rootParserDefinition
-          .get(GrammarConstants.extensions)
-          .split(" ")
-          .join(",")
-      : this.extensionName
+    return this.rootParserDefinition.get(GrammarConstants.extensions) ? this.rootParserDefinition.get(GrammarConstants.extensions).split(" ").join(",") : this.extensionName
   }
 
   toNodeJsJavascript(jtreeProductsPath: treeNotationTypes.requirePath = "jtree/products"): treeNotationTypes.javascriptCode {

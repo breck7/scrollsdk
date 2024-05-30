@@ -2099,7 +2099,7 @@ ${this.topDownArray
   .join("\n")}
 
 paragraph This readme was auto-generated using the
- link https://github.com/treenotation/jtree JTree library.`
+ link https://github.com/breck7/scrollsdk ScrollSDK.`
   }
   toBundle() {
     const files = {}

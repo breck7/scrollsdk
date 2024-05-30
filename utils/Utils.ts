@@ -1,4 +1,4 @@
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 class Timer {
   constructor() {
@@ -275,7 +275,7 @@ class Utils {
     return [context, final]
   }
 
-  static requireAbsOrRelative(filePath: treeNotationTypes.filepath, contextFilePath: treeNotationTypes.filepath) {
+  static requireAbsOrRelative(filePath: scrollNotationTypes.filepath, contextFilePath: scrollNotationTypes.filepath) {
     if (!filePath.startsWith(".")) return require(filePath)
     const path = require("path")
     const folder = this.getPathWithoutFileName(contextFilePath)
@@ -284,17 +284,17 @@ class Utils {
   }
 
   // Removes last ".*" from this string
-  static removeFileExtension(filename: treeNotationTypes.filepath) {
+  static removeFileExtension(filename: scrollNotationTypes.filepath) {
     return filename ? filename.replace(/\.[^\.]+$/, "") : ""
   }
 
-  static getFileName(path: treeNotationTypes.filepath) {
+  static getFileName(path: scrollNotationTypes.filepath) {
     const normalizedPath = path.replace(/\\/g, "/")
     const parts = normalizedPath.split("/")
     return parts.pop()
   }
 
-  static getPathWithoutFileName(path: treeNotationTypes.filepath) {
+  static getPathWithoutFileName(path: scrollNotationTypes.filepath) {
     const normalizedPath = path.replace(/\\/g, "/")
     const parts = normalizedPath.split("/")
     parts.pop()
@@ -309,7 +309,7 @@ class Utils {
     }
   }
 
-  static randomUniformInt = (min: treeNotationTypes.int, max: treeNotationTypes.int, seed = Date.now()) => {
+  static randomUniformInt = (min: scrollNotationTypes.int, max: scrollNotationTypes.int, seed = Date.now()) => {
     return Math.floor(Utils.randomUniformFloat(min, max, seed))
   }
 
@@ -379,7 +379,7 @@ class Utils {
     return index === -1 || index + 1 === values.length ? values[0] : values[index + 1]
   }
 
-  static getClassNameFromFilePath(filepath: treeNotationTypes.filepath) {
+  static getClassNameFromFilePath(filepath: scrollNotationTypes.filepath) {
     return this.removeFileExtension(this.getFileName(filepath))
   }
 
@@ -467,10 +467,10 @@ class Utils {
     return closestMatch
   }
 
-  private static MAX_INT: treeNotationTypes.positiveInt = Math.pow(2, 32) - 1
+  private static MAX_INT: scrollNotationTypes.positiveInt = Math.pow(2, 32) - 1
 
   // Adapted from: https://github.com/dcporter/didyoumean.js/blob/master/didYouMean-1.2.1.js
-  private static _getEditDistance(stringA: string, stringB: string, maxInt: treeNotationTypes.positiveInt) {
+  private static _getEditDistance(stringA: string, stringB: string, maxInt: scrollNotationTypes.positiveInt) {
     // Handle null or undefined max.
     maxInt = maxInt || maxInt === 0 ? maxInt : Utils.MAX_INT
 
@@ -562,14 +562,14 @@ class Utils {
     return properties.reduce((prev: any, curr) => prev && prev[curr], obj)
   }
 
-  static appendCodeAndReturnValueOnWindow(code: treeNotationTypes.javascriptCode, name: string): any {
+  static appendCodeAndReturnValueOnWindow(code: scrollNotationTypes.javascriptCode, name: string): any {
     const script = document.createElement("script")
     script.innerHTML = code
     document.head.appendChild(script)
     return (<any>window)[name]
   }
 
-  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: treeNotationTypes.stringMap) {
+  static formatStr(str: string, catchAllCellDelimiter = " ", parameterMap: scrollNotationTypes.stringMap) {
     return str.replace(/{([^\}]+)}/g, (match, path) => {
       const val = parameterMap[path]
       if (!val) return ""
@@ -583,7 +583,7 @@ class Utils {
 
   static getUniqueWordsArray(allWords: string) {
     const words = allWords.replace(/\n/g, " ").split(" ")
-    const index: treeNotationTypes.stringMap = {}
+    const index: scrollNotationTypes.stringMap = {}
     words.forEach(word => {
       if (!index[word]) index[word] = 0
       index[word]++
@@ -653,7 +653,7 @@ class Utils {
   }
 
   static arrayToMap(arr: Array<any>) {
-    const map: treeNotationTypes.stringMap = {}
+    const map: scrollNotationTypes.stringMap = {}
     arr.forEach(val => (map[val] = true))
     return map
   }
@@ -674,12 +674,12 @@ class Utils {
     return result
   }
 
-  static javascriptTableWithHeaderRowToObjects(dataTable: Array<any>): treeNotationTypes.rawRowJavascriptObject[] {
+  static javascriptTableWithHeaderRowToObjects(dataTable: Array<any>): scrollNotationTypes.rawRowJavascriptObject[] {
     dataTable = dataTable.slice()
     const header = dataTable.shift()
     return dataTable.map((row: any) => {
       const obj: any = {}
-      header.forEach((colName: string, index: treeNotationTypes.int) => (obj[colName] = row[index]))
+      header.forEach((colName: string, index: scrollNotationTypes.int) => (obj[colName] = row[index]))
       return obj
     })
   }
@@ -696,7 +696,7 @@ class Utils {
     return result
   }
 
-  static makeSortByFn(accessorOrAccessors: Function | Function[]): treeNotationTypes.sortFn {
+  static makeSortByFn(accessorOrAccessors: Function | Function[]): scrollNotationTypes.sortFn {
     const arrayOfFns = Array.isArray(accessorOrAccessors) ? accessorOrAccessors : [accessorOrAccessors]
     return (objectA: Object, objectB: Object) => {
       const nodeAFirst = -1
@@ -712,8 +712,8 @@ class Utils {
     }
   }
 
-  static _makeGraphSortFunctionFromGraph(idAccessor: treeNotationTypes.idAccessorFunction, graph: { [id: string]: Set<string> }) {
-    return (nodeA: treeNotationTypes.treeNode, nodeB: treeNotationTypes.treeNode) => {
+  static _makeGraphSortFunctionFromGraph(idAccessor: scrollNotationTypes.idAccessorFunction, graph: { [id: string]: Set<string> }) {
+    return (nodeA: scrollNotationTypes.treeNode, nodeB: scrollNotationTypes.treeNode) => {
       const nodeAFirst = -1
       const nodeBFirst = 1
 
@@ -742,8 +742,8 @@ class Utils {
     return str.split(needle).join("")
   }
 
-  static _makeGraphSortFunction(idAccessor: treeNotationTypes.idAccessorFunction, extendsIdAccessor: treeNotationTypes.idAccessorFunction) {
-    return (nodeA: treeNotationTypes.treeNode, nodeB: treeNotationTypes.treeNode) => {
+  static _makeGraphSortFunction(idAccessor: scrollNotationTypes.idAccessorFunction, extendsIdAccessor: scrollNotationTypes.idAccessorFunction) {
+    return (nodeA: scrollNotationTypes.treeNode, nodeB: scrollNotationTypes.treeNode) => {
       // -1 === a before b
       const nodeAUniqueId = idAccessor(nodeA)
       const nodeAExtends = extendsIdAccessor(nodeA)

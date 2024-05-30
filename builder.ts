@@ -13,10 +13,10 @@ const { execSync } = require("child_process")
 const express = require("express")
 const prettierConfig = require("./package.json").prettier
 
-import { treeNotationTypes } from "./products/treeNotationTypes"
+import { scrollNotationTypes } from "./products/scrollNotationTypes"
 
 // todo: remove?
-const registeredExtensions: treeNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", grammar: "tooling ", gram: "tooling " }
+const registeredExtensions: scrollNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", grammar: "tooling ", gram: "tooling " }
 
 class Builder extends TreeNode {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
@@ -36,7 +36,7 @@ class Builder extends TreeNode {
     return result.outputText
   }
 
-  private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
+  private _combineTypeScriptFilesForNode(typeScriptScriptsInOrder: scrollNotationTypes.typeScriptFilePath[]) {
     // todo: prettify
     return typeScriptScriptsInOrder
       .map(src => Disk.read(src))
@@ -51,11 +51,11 @@ class Builder extends TreeNode {
       .join("\n")
   }
 
-  private _prettifyFile(path: treeNotationTypes.filepath) {
+  private _prettifyFile(path: scrollNotationTypes.filepath) {
     Disk.write(path, require("prettier").format(Disk.read(path), prettierConfig))
   }
 
-  private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: treeNotationTypes.typeScriptFilePath[]) {
+  private _combineTypeScriptFilesForBrowser(typeScriptScriptsInOrder: scrollNotationTypes.typeScriptFilePath[]) {
     return typeScriptScriptsInOrder
       .map(src => Disk.read(src))
       .map(content => new TypeScriptRewriter(content).removeRequires().removeImports().removeTsGeneratedCrap().removeHashBang().removeNodeJsOnlyLines().changeDefaultExportsToWindowExports().removeExports().getString())
@@ -66,7 +66,7 @@ class Builder extends TreeNode {
     Disk.write(outputFilePath, this._typeScriptToJavascript(sourceCode, forBrowser))
   }
 
-  protected _startServer(port: treeNotationTypes.portNumber, folder: string) {
+  protected _startServer(port: scrollNotationTypes.portNumber, folder: string) {
     const app = express()
     app.listen(port, () => {
       console.log(`Running builder. cmd+dblclick: http://localhost:${port}/`)
@@ -122,7 +122,7 @@ class Builder extends TreeNode {
     const projectFolders = [folder] // todo
 
     this._fsWatchers = projectFolders.map(folder =>
-      fs.watch(folder, { recursive: true }, (event: any, filename: treeNotationTypes.fileName) => {
+      fs.watch(folder, { recursive: true }, (event: any, filename: scrollNotationTypes.fileName) => {
         this._onFileChanged(folder + filename)
       })
     )
@@ -133,7 +133,7 @@ class Builder extends TreeNode {
     return path.join(__dirname, "products", outputFileName)
   }
 
-  async _produceBrowserProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[] = [], outputFileName: treeNotationTypes.fileName, transformFn: (code: treeNotationTypes.javascriptCode) => string) {
+  async _produceBrowserProductFromTypeScript(files: scrollNotationTypes.absoluteFilePath[] = [], outputFileName: scrollNotationTypes.fileName, transformFn: (code: scrollNotationTypes.javascriptCode) => string) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
     await this._buildTsc(this._combineTypeScriptFilesForBrowser(files), outputFilePath, true)
     Disk.write(outputFilePath, transformFn(Disk.read(outputFilePath)))
@@ -158,11 +158,11 @@ class Builder extends TreeNode {
     if (productNode.has("executable")) Disk.makeExecutable(path.join(projectRootPath, "products", outputFileName))
   }
 
-  _getBundleFilePath(outputFileName: treeNotationTypes.fileName) {
+  _getBundleFilePath(outputFileName: scrollNotationTypes.fileName) {
     return this._getProductFolder() + `${outputFileName.replace(".js", ".ts")}`
   }
 
-  async _produceNodeProductFromTypeScript(files: treeNotationTypes.absoluteFilePath[], outputFileName: treeNotationTypes.fileName, transformFn: (code: treeNotationTypes.javascriptCode) => string) {
+  async _produceNodeProductFromTypeScript(files: scrollNotationTypes.absoluteFilePath[], outputFileName: scrollNotationTypes.fileName, transformFn: (code: scrollNotationTypes.javascriptCode) => string) {
     const outputFilePath = this._getOutputFilePath(outputFileName)
 
     try {
@@ -176,7 +176,7 @@ class Builder extends TreeNode {
     return outputFilePath
   }
 
-  protected _updatePackageJson(packagePath: treeNotationTypes.filepath, newVersion: treeNotationTypes.semanticVersion) {
+  protected _updatePackageJson(packagePath: scrollNotationTypes.filepath, newVersion: scrollNotationTypes.semanticVersion) {
     const packageJson = Disk.readJson(packagePath)
     packageJson.version = newVersion
     Disk.writeJson(packagePath, packageJson)
@@ -187,7 +187,7 @@ class Builder extends TreeNode {
     this._buildTsc(Disk.read(__filename), path.join(__dirname, "builder.js"))
   }
 
-  makeGrammarFileTestTree(grammarPath: treeNotationTypes.grammarFilePath) {
+  makeGrammarFileTestTree(grammarPath: scrollNotationTypes.grammarFilePath) {
     // todo: can we ditch these dual tests at some point? ideally Grammar should be bootstrapped correct?
     const testTree: any = {}
     const checkGrammarFile = (equal: Function, program: any) => {
@@ -276,7 +276,7 @@ class Builder extends TreeNode {
     return path.join(__dirname, "products")
   }
 
-  updateVersion(newVersion: treeNotationTypes.semanticVersion) {
+  updateVersion(newVersion: scrollNotationTypes.semanticVersion) {
     this._updatePackageJson(__dirname + "/package.json", newVersion)
 
     const codePath = __dirname + "/treeNode/TreeNode.ts"
@@ -291,7 +291,7 @@ class Builder extends TreeNode {
     this._startServer(9999, __dirname + "/")
   }
 
-  _makeTestTreeForFolder(dir: treeNotationTypes.absoluteFolderPath) {
+  _makeTestTreeForFolder(dir: scrollNotationTypes.absoluteFolderPath) {
     const allTestFiles: string[] = Disk.recursiveReaddirSyncSimple(dir)
     const swarm = require("./products/swarm.nodejs.js")
 

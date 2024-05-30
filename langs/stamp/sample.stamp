@@ -11,4 +11,4 @@ file LANG/package.pack
   keywords LANG
   license MIT
   dependencies
-   jtree *
+   scrollsdk *

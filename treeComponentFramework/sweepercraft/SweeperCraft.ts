@@ -1,4 +1,4 @@
-//onsave jtree build produce SweeperCraft.browser.js
+//onsave scrollsdk build produce SweeperCraft.browser.js
 
 const { AbstractTreeComponentParser, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
 const { TreeNode } = require("../../products/TreeNode.js")

@@ -2110,7 +2110,7 @@ paragraph This readme was auto-generated using the
         name: languageName,
         private: true,
         dependencies: {
-          jtree: TreeNode.getVersion()
+          scrollsdk: TreeNode.getVersion()
         }
       },
       null,
@@ -2127,9 +2127,9 @@ if (errors.length)
     files[GrammarBundleFiles.indexJs] = `module.exports = require("./${nodePath}")`
     const browserPath = `${languageName}.browser.js`
     files[browserPath] = this.toBrowserJavascript()
-    files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/jtree/products/Utils.browser.js"></script>
-<script src="node_modules/jtree/products/TreeNode.browser.js"></script>
-<script src="node_modules/jtree/products/GrammarLanguage.browser.js"></script>
+    files[GrammarBundleFiles.indexHtml] = `<script src="node_modules/scrollsdk/products/Utils.browser.js"></script>
+<script src="node_modules/scrollsdk/products/TreeNode.browser.js"></script>
+<script src="node_modules/scrollsdk/products/GrammarLanguage.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
 const sampleCode = \`${sampleCode.toString()}\`
@@ -2228,13 +2228,13 @@ ${testCode}`
   get fileExtensions() {
     return this.rootParserDefinition.get(GrammarConstants.extensions) ? this.rootParserDefinition.get(GrammarConstants.extensions).split(" ").join(",") : this.extensionName
   }
-  toNodeJsJavascript(jtreeProductsPath = "jtree/products") {
-    return this._rootNodeDefToJavascriptClass(jtreeProductsPath, true).trim()
+  toNodeJsJavascript(scrollsdkProductsPath = "scrollsdk/products") {
+    return this._rootNodeDefToJavascriptClass(scrollsdkProductsPath, true).trim()
   }
   toBrowserJavascript() {
     return this._rootNodeDefToJavascriptClass("", false).trim()
   }
-  _rootNodeDefToJavascriptClass(jtreeProductsPath, forNodeJs = true) {
+  _rootNodeDefToJavascriptClass(scrollsdkProductsPath, forNodeJs = true) {
     const defs = this.validConcreteAndAbstractParserDefinitions
     // todo: throw if there is no root node defined
     const parserClasses = defs.map(def => def.asJavascriptClass).join("\n\n")
@@ -2252,7 +2252,7 @@ ${rootName}`
       const path = require("path")
       nodeJsImports = Object.keys(GlobalNamespaceAdditions)
         .map(key => {
-          const thePath = jtreeProductsPath + "/" + GlobalNamespaceAdditions[key]
+          const thePath = scrollsdkProductsPath + "/" + GlobalNamespaceAdditions[key]
           return `const { ${key} } = require("${thePath.replace(/\\/g, "\\\\")}")` // escape windows backslashes
         })
         .join("\n")

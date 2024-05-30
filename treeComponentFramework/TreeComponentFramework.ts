@@ -1,6 +1,6 @@
-//onsave jtree build produce TreeComponentFramework.browser.js
+//onsave scrollsdk build produce TreeComponentFramework.browser.js
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
@@ -10,7 +10,7 @@ const stumpParser = require("../products/stump.nodejs.js")
 const hakonParser = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
 
-const BrowserEvents: treeNotationTypes.stringMap = {}
+const BrowserEvents: scrollNotationTypes.stringMap = {}
 BrowserEvents.click = "click"
 BrowserEvents.change = "change"
 BrowserEvents.mouseover = "mouseover"
@@ -34,7 +34,7 @@ BrowserEvents.dragenter = "dragenter"
 BrowserEvents.dragleave = "dragleave"
 BrowserEvents.ready = "ready"
 
-const WillowConstants: treeNotationTypes.stringMap = {}
+const WillowConstants: scrollNotationTypes.stringMap = {}
 // todo: cleanup
 WillowConstants.clickCommand = "clickCommand"
 WillowConstants.shiftClickCommand = "shiftClickCommand"
@@ -271,7 +271,7 @@ class WillowStore {
   constructor() {
     this._values = {}
   }
-  private _values: treeNotationTypes.stringMap
+  private _values: scrollNotationTypes.stringMap
 
   get(key: string) {
     return this._values[key]
@@ -297,7 +297,7 @@ class WillowMousetrap {
   constructor() {
     this.prototype = {}
   }
-  private prototype: treeNotationTypes.stringMap
+  private prototype: scrollNotationTypes.stringMap
   bind() {}
 }
 
@@ -473,7 +473,7 @@ class AbstractWillowBrowser extends stumpParser {
     return this
   }
 
-  async httpGetUrlFromCache(url: string, queryStringMap: treeNotationTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
+  async httpGetUrlFromCache(url: string, queryStringMap: scrollNotationTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
     const cacheKey = url + JSON.stringify(queryStringMap)
     const cacheHit = this._getFromResponseCache(cacheKey)
     if (!cacheHit) {
@@ -485,7 +485,7 @@ class AbstractWillowBrowser extends stumpParser {
   }
 
   async httpGetUrlFromProxyCache(url: string) {
-    const queryStringMap: treeNotationTypes.queryStringMap = {}
+    const queryStringMap: scrollNotationTypes.queryStringMap = {}
     queryStringMap.url = url
     queryStringMap.cacheOnServer = "true"
     return await this.httpGetUrlFromCache("/proxy", queryStringMap, WillowHTTPProxyCacheResponse)
@@ -515,13 +515,13 @@ class AbstractWillowBrowser extends stumpParser {
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.topDownArray
-    const titleNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.titleTag)
+    const titleNode = nodes.find((node: scrollNotationTypes.treeNode) => node.firstWord === WillowConstants.titleTag)
     return titleNode ? titleNode.content : ""
   }
 
   setWindowTitle(value: string) {
     const nodes = this.topDownArray
-    const headNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.tags.head)
+    const headNode = nodes.find((node: scrollNotationTypes.treeNode) => node.firstWord === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -1177,8 +1177,8 @@ declare class abstractHtmlTag extends GrammarBackedNode {
 }
 
 abstract class AbstractTreeComponentParser extends GrammarBackedNode {
-  private _commandsBuffer: treeNotationTypes.treeNode[]
-  private _messageBuffer: treeNotationTypes.treeNode
+  private _commandsBuffer: scrollNotationTypes.treeNode[]
+  private _messageBuffer: scrollNotationTypes.treeNode
   private _htmlStumpNode: abstractHtmlTag
   private _cssStumpNode: abstractHtmlTag
   private _lastRenderedTime: number

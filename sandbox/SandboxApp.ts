@@ -1,4 +1,4 @@
-//onsave jtree build produce SandboxApp.browser.js
+//onsave scrollsdk build produce SandboxApp.browser.js
 
 const { AbstractTreeComponentParser, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../products/TreeComponentFramework.node.js")
 const { TreeNode } = require("../products/TreeNode.js")
@@ -20,9 +20,9 @@ class SandboxApp extends AbstractTreeComponentParser {
     this.willowBrowser.setValueOfElementWithIdHack(
       "toJsonSubset",
       `{
- "name": "jtree",
+ "name": "scrollsdk",
  "description": "Scroll Notation parser, compiler-compiler, and virtual machine for Tree Languages",
- "keywords": "jtree"
+ "keywords": "scrollsdk"
 }`
     )
 

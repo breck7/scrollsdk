@@ -1,7 +1,7 @@
 const fs = require("fs")
 const path = require("path")
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
@@ -12,7 +12,7 @@ const { posix } = require("../products/Path.js")
 const GRAMMAR_EXTENSION = ".grammar"
 
 interface OpenedFile {
-  absolutePath: treeNotationTypes.filepath
+  absolutePath: scrollNotationTypes.filepath
   content: string
   mtimeMs: number
 }
@@ -21,7 +21,7 @@ interface AssembledFile {
   afterImportPass: string // codeWithoutImportsNorParserDefinitions
   importFilePaths: string[]
   isImportOnly: boolean
-  parser?: treeNotationTypes.treeNode
+  parser?: scrollNotationTypes.treeNode
   filepathsWithParserDefinitions: string[]
 }
 
@@ -41,7 +41,7 @@ const importOnlyRegex = /^importOnly/
 
 class DiskWriter implements Storage {
   fileCache: { [filepath: string]: OpenedFile } = {}
-  _read(absolutePath: treeNotationTypes.filepath) {
+  _read(absolutePath: scrollNotationTypes.filepath) {
     const { fileCache } = this
     if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), mtimeMs: fs.statSync(absolutePath) }
     return fileCache[absolutePath]
@@ -73,23 +73,23 @@ class DiskWriter implements Storage {
 }
 
 class MemoryWriter implements Storage {
-  constructor(inMemoryFiles: treeNotationTypes.diskMap) {
+  constructor(inMemoryFiles: scrollNotationTypes.diskMap) {
     this.inMemoryFiles = inMemoryFiles
   }
 
-  inMemoryFiles: treeNotationTypes.diskMap
+  inMemoryFiles: scrollNotationTypes.diskMap
 
-  read(absolutePath: treeNotationTypes.filepath) {
+  read(absolutePath: scrollNotationTypes.filepath) {
     const value = this.inMemoryFiles[absolutePath]
     if (value === undefined) throw new Error(`File '${absolutePath}' not found.`)
     return value
   }
 
-  write(absolutePath: treeNotationTypes.filepath, content: string) {
+  write(absolutePath: scrollNotationTypes.filepath, content: string) {
     this.inMemoryFiles[absolutePath] = content
   }
 
-  list(absolutePath: treeNotationTypes.filepath) {
+  list(absolutePath: scrollNotationTypes.filepath) {
     return Object.keys(this.inMemoryFiles).filter(filePath => filePath.startsWith(absolutePath) && !filePath.replace(absolutePath, "").includes("/"))
   }
 
@@ -107,20 +107,20 @@ class MemoryWriter implements Storage {
 }
 
 class TreeFileSystem implements Storage {
-  constructor(inMemoryFiles: treeNotationTypes.diskMap) {
+  constructor(inMemoryFiles: scrollNotationTypes.diskMap) {
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
   }
 
-  read(absolutePath: treeNotationTypes.filepath) {
+  read(absolutePath: scrollNotationTypes.filepath) {
     return this._storage.read(absolutePath)
   }
 
-  write(absolutePath: treeNotationTypes.filepath, content: string) {
+  write(absolutePath: scrollNotationTypes.filepath, content: string) {
     return this._storage.write(absolutePath, content)
   }
 
-  list(absolutePath: treeNotationTypes.filepath) {
+  list(absolutePath: scrollNotationTypes.filepath) {
     return this._storage.list(absolutePath)
   }
 
@@ -210,7 +210,7 @@ class TreeFileSystem implements Storage {
     return _expandedImportCache[absoluteFilePath]
   }
 
-  private _doesFileHaveGrammarDefinitions(absoluteFilePath: treeNotationTypes.filepath) {
+  private _doesFileHaveGrammarDefinitions(absoluteFilePath: scrollNotationTypes.filepath) {
     if (!absoluteFilePath) return false
     const { _grammarExpandersCache } = this
     if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
@@ -226,14 +226,14 @@ class TreeFileSystem implements Storage {
         if (filePath.endsWith(GRAMMAR_EXTENSION)) return content
         // Strip scroll content
         return new TreeNode(content)
-          .filter((node: treeNotationTypes.treeNode) => node.getLine().match(parserDefinitionRegex))
-          .map((node: treeNotationTypes.treeNode) => node.asString)
+          .filter((node: scrollNotationTypes.treeNode) => node.getLine().match(parserDefinitionRegex))
+          .map((node: scrollNotationTypes.treeNode) => node.asString)
           .join("\n")
       })
       .join("\n")
       .trim()
 
-    // todo: clean up jtree so we are using supported methods (perhaps add a formatOptions that allows you to tell Grammar not to run prettier on js nodes)
+    // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Grammar not to run prettier on js nodes)
     return new grammarParser(baseGrammarCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
   }
 

@@ -1,4 +1,4 @@
-//onsave jtree build produce SweeperCraft.browser.js
+//onsave scrollsdk build produce SweeperCraft.browser.js
 class SweeperCraftGame {
   constructor(board) {
     this._setBoard(board)

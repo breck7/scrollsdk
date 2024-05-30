@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#! /usr/local/bin/node --use_strict /usr/local/bin/scrollsdk
 add ten 2 3 5
 mutableNumber times 10
 while times

@@ -1,4 +1,4 @@
-//onsave jtree build produce SandboxApp.browser.js
+//onsave scrollsdk build produce SandboxApp.browser.js
 // Todo: add inputs at the top to change the edge, node, and cell delimiters.
 class SandboxApp extends AbstractTreeComponentParser {
   createParserCombinator() {
@@ -14,9 +14,9 @@ class SandboxApp extends AbstractTreeComponentParser {
     this.willowBrowser.setValueOfElementWithIdHack(
       "toJsonSubset",
       `{
- "name": "jtree",
+ "name": "scrollsdk",
  "description": "Scroll Notation parser, compiler-compiler, and virtual machine for Tree Languages",
- "keywords": "jtree"
+ "keywords": "scrollsdk"
 }`
     )
     this.updateFromJsonSubsetCommand()

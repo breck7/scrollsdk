@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { TreeNode } = require("../products/TreeNode.js")
 const { Disk } = require("../products/Disk.node.js")
@@ -8,7 +8,7 @@ const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const { GrammarCompiler } = require("../products/GrammarCompiler.js")
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 
 testTree.compileGrammarAndCreateProgram = equal => {
   // Arrange

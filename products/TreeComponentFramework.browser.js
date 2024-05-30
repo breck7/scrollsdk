@@ -1,4 +1,4 @@
-//onsave jtree build produce TreeComponentFramework.browser.js
+//onsave scrollsdk build produce TreeComponentFramework.browser.js
 const BrowserEvents = {}
 BrowserEvents.click = "click"
 BrowserEvents.change = "change"

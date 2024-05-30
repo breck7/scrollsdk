@@ -1,4 +1,4 @@
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const express = require("express")
 const { readFile } = require("fs")
 const path = require("path")
@@ -8,21 +8,14 @@ const { Utils } = require("../products/Utils.js")
 const ignoreFolder = path.join(__dirname, "..", "ignore")
 
 class Kitchen {
-  start(port: treeNotationTypes.portNumber) {
+  start(port: scrollNotationTypes.portNumber) {
     const app = express()
 
     app.get("/*.js", (req: any, res: any) => {
       const filename = req.path.substr(1)
-      readFile(path.join(__dirname, "..", filename), "utf8", (err: any, code: treeNotationTypes.typeScriptCode) => {
+      readFile(path.join(__dirname, "..", filename), "utf8", (err: any, code: scrollNotationTypes.typeScriptCode) => {
         if (err) throw err
-        res.send(
-          new TypeScriptRewriter(code)
-            .removeRequires()
-            .removeHashBang()
-            .removeNodeJsOnlyLines()
-            .changeNodeExportsToWindowExports()
-            .getString()
-        )
+        res.send(new TypeScriptRewriter(code).removeRequires().removeHashBang().removeNodeJsOnlyLines().changeNodeExportsToWindowExports().getString())
       })
     })
 

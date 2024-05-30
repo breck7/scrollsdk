@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 // Note: this is not isomorphic. We should probably just rewrite and use new version of CodeMirror
 const path = require("path")
 const stamp = require("../products/stamp.nodejs.js")
@@ -15,7 +15,7 @@ const { GrammarCodeMirrorMode } = require("../products/GrammarCodeMirrorMode.js"
 const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.grammar")
 const irisGrammar = Disk.read(irisPath)
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 
 class MockStream {
   constructor(str: string) {

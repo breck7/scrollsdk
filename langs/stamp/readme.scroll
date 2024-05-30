@@ -18,10 +18,10 @@ You can also play with writing your own stamp files by hand in this web IDE to s
 Stamp can be used in node to turn a folder on disk into a single stamp file, and to expand a single stamp file into a folder on disk.
 
 code
- npm install jtree
+ npm install scrollsdk
 
 code
- const stamp = require("jtree/products/stamp.nodejs.js")
+ const stamp = require("scrollsdk/products/stamp.nodejs.js")
  // Convert a folder to a stamp string:
  const stampString = stamp.dirToStampWithContents(__dirname)
  // Expand a stamp to disk

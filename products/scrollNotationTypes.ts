@@ -1,4 +1,4 @@
-namespace treeNotationTypes {
+namespace scrollNotationTypes {
   export interface point {
     x: int
     y: int
@@ -107,7 +107,7 @@ namespace treeNotationTypes {
   export declare type absoluteFilePath = filepath
   export declare type absoluteFolderPath = absoluteFilePath
 
-  export declare type javascriptClassPath = string // "jtree.Foo.Bar"
+  export declare type javascriptClassPath = string // "scrollsdk.Foo.Bar"
 
   export declare type children = string | Object | treeNode | any // todo: specify better.
 
@@ -122,4 +122,4 @@ namespace treeNotationTypes {
   export declare type firstWordToParserMap = { [firstWord: string]: TreeParser }
 }
 
-export { treeNotationTypes }
+export { scrollNotationTypes }

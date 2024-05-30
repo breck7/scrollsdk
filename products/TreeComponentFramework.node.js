@@ -1,4 +1,4 @@
-//onsave jtree build produce TreeComponentFramework.browser.js
+//onsave scrollsdk build produce TreeComponentFramework.browser.js
 const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
 const { GrammarBackedNode } = require("../products/GrammarLanguage.js")

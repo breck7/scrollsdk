@@ -1,11 +1,11 @@
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 // todo: ensure we have key features from http://testanything.org/tap-version-13-specification.html
 // todo: be able to compile to TAP 13?
 
-declare type fileTestTree = { [fileName: string]: treeNotationTypes.testTree }
+declare type fileTestTree = { [fileName: string]: scrollNotationTypes.testTree }
 
 class TestRacerTestBlock {
   constructor(testFile: TestRacerFile, testName: string, fn: Function) {
@@ -78,7 +78,7 @@ class TestRacerTestBlock {
 }
 
 class TestRacerFile {
-  constructor(runner: TestRacer, testTree: treeNotationTypes.testTree, fileName: string) {
+  constructor(runner: TestRacer, testTree: scrollNotationTypes.testTree, fileName: string) {
     this._runner = runner
     this._testTree = {}
     this._fileName = fileName
@@ -159,7 +159,7 @@ class TestRacerFile {
     return fileStats
   }
 
-  private _emitStartFileMessage(blockCount: treeNotationTypes.int) {
+  private _emitStartFileMessage(blockCount: scrollNotationTypes.int) {
     this._emitMessage(`start file ${blockCount} test blocks in file ${this._fileName}`)
   }
 
@@ -285,7 +285,7 @@ ${new TreeNode(this._sessionFilesFailed).forEach(row => row.forEach((line: any) 
     )
   }
 
-  static async testSingleFile(fileName: string, testTree: treeNotationTypes.testTree) {
+  static async testSingleFile(fileName: string, testTree: scrollNotationTypes.testTree) {
     const obj: any = {}
     obj[fileName] = testTree
     const session = new TestRacer(obj)

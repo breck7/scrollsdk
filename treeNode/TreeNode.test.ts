@@ -1,13 +1,13 @@
 #!/usr/bin/env ts-node
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 const { TreeNode, ExtendibleTreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testStrings: treeNotationTypes.stringMap = {}
+const testStrings: scrollNotationTypes.stringMap = {}
 const testObjects: any = {}
 
 testStrings.webpage = `head
@@ -843,7 +843,7 @@ other`
   const tree6 = new TreeNode(blankTest)
 
   // Act
-  tree6.forEach((node: treeNotationTypes.treeNode) => {
+  tree6.forEach((node: scrollNotationTypes.treeNode) => {
     if (!node.firstWord.startsWith("p")) return true
     node.setContent("President")
     node.delete("class")
@@ -901,10 +901,10 @@ testTree.deleteRegression = equal => {
   const migrateFn = (str: string) => {
     const board = new TreeNode(str)
     const dataNodes = board.findNodes("data")
-    dataNodes.forEach((nodeTree: treeNotationTypes.treeNode) => {
+    dataNodes.forEach((nodeTree: scrollNotationTypes.treeNode) => {
       const rows = nodeTree.findNodes("row")
       if (!rows.length) return
-      const mapped = rows.map((row: treeNotationTypes.treeNode) => row.toObject())
+      const mapped = rows.map((row: scrollNotationTypes.treeNode) => row.toObject())
       const csv = new TreeNode(mapped).asCsv
       nodeTree.touchNode("format").setContent("csv")
       nodeTree.touchNode("content").setContentWithChildren(csv)
@@ -962,7 +962,7 @@ testTree.forEach = equal => {
   var result = ""
 
   // Act
-  value.forEach(function(node: treeNotationTypes.treeNode) {
+  value.forEach(function (node: scrollNotationTypes.treeNode) {
     const property = node.firstWord
     const v = node.content
     result += property.toUpperCase()
@@ -980,8 +980,8 @@ testTree.forEach = equal => {
 
   // Act
   value2
-    .filter((node: treeNotationTypes.treeNode) => node.firstWord !== "hello")
-    .forEach((node: treeNotationTypes.treeNode) => {
+    .filter((node: scrollNotationTypes.treeNode) => node.firstWord !== "hello")
+    .forEach((node: scrollNotationTypes.treeNode) => {
       const property = node.firstWord
       const value = node.content
       count++
@@ -994,7 +994,7 @@ testTree.forEach = equal => {
   var inc = 0
 
   // Act
-  tree.forEach((node: treeNotationTypes.treeNode, index: number) => {
+  tree.forEach((node: scrollNotationTypes.treeNode, index: number) => {
     inc = inc + index
   })
 
@@ -1005,7 +1005,7 @@ testTree.forEach = equal => {
 testTree.every = equal => {
   // Arrange/Act/Assert
   equal(
-    new TreeNode(`a 2\nb 2\nc 2`).every((node: treeNotationTypes.treeNode) => node.getWord(1) === "2"),
+    new TreeNode(`a 2\nb 2\nc 2`).every((node: scrollNotationTypes.treeNode) => node.getWord(1) === "2"),
     true
   )
 }
@@ -1504,7 +1504,7 @@ testTree.getIndentation = equal => {
   equal(tree.getNode("body div").indentation, " ")
   equal(tree.getNode("body div content").indentation, "  ")
 
-  equal(testStrings.webpageTrimmed, tree.topDownArray.map((line: treeNotationTypes.treeNode) => line.indentation + line.getLine()).join("\n"))
+  equal(testStrings.webpageTrimmed, tree.topDownArray.map((line: scrollNotationTypes.treeNode) => line.indentation + line.getLine()).join("\n"))
 }
 
 testTree.content = equal => {
@@ -1575,13 +1575,7 @@ testTree.getLines = equal => {
   const value = new TreeNode("hello\n world")
 
   // Assert
-  equal(
-    value
-      .getLines()
-      .join("")
-      .indexOf(" "),
-    -1
-  )
+  equal(value.getLines().join("").indexOf(" "), -1)
 }
 
 testTree.getNodes = equal => {
@@ -1599,7 +1593,7 @@ testTree.getNodes = equal => {
   // Act
   const result = value
     .findNodes("hello")
-    .map((node: treeNotationTypes.treeNode) => node.content)
+    .map((node: scrollNotationTypes.treeNode) => node.content)
     .join("")
 
   // Assert
@@ -1608,7 +1602,7 @@ testTree.getNodes = equal => {
   equal(
     deep
       .findNodes("language line score")
-      .map((node: treeNotationTypes.treeNode) => node.content)
+      .map((node: scrollNotationTypes.treeNode) => node.content)
       .join(""),
     "212"
   )
@@ -2020,10 +2014,7 @@ frank,321
 #file foo.css #file
 body {
  }`
-  const test2 = test
-    .split("\n")
-    .slice(1)
-    .join("\n") // Same without leading #file
+  const test2 = test.split("\n").slice(1).join("\n") // Same without leading #file
   const tree = new TreeNode(test)
   const tree2 = new TreeNode(test2)
 
@@ -2062,13 +2053,7 @@ chart`
   equal(tree.shiftLeft() && tree.shiftRight() && tree.nodeAt(0).shiftLeft() && true, true)
 
   equal(tree.length, 3)
-  equal(
-    tree
-      .nodeAt(1)
-      .shiftRight()
-      .parent.getLine(),
-    "reddit"
-  )
+  equal(tree.nodeAt(1).shiftRight().parent.getLine(), "reddit")
   equal(tree.length, 2)
 
   // Act/Assert
@@ -2216,7 +2201,7 @@ testTree.htmlDsl = equal => {
   var page = ""
 
   // Act
-  html.forEach((node: treeNotationTypes.treeNode) => {
+  html.forEach((node: scrollNotationTypes.treeNode) => {
     const property = node.firstWord
     const value = node.content
     page += "<" + property + ">" + value + "</" + property + ">"
@@ -2561,7 +2546,7 @@ testTree.copyToRegression = equal => {
  @blue
  >div`
 
-  const migrateNode = (node: treeNotationTypes.treeNode) => {
+  const migrateNode = (node: scrollNotationTypes.treeNode) => {
     if (!node.firstWord.startsWith(">")) return true
     if (node.length) {
       const cla = node.getNode("class").content
@@ -2570,13 +2555,13 @@ testTree.copyToRegression = equal => {
       if (css) {
         const nodes = css.getChildren()
         const toMove: any = []
-        nodes.forEach((propNode: treeNotationTypes.treeNode) => {
+        nodes.forEach((propNode: scrollNotationTypes.treeNode) => {
           const name = propNode.firstWord.replace(":", " ")
           propNode.setFirstWord("@" + name)
           toMove.push(propNode)
         })
         toMove.reverse()
-        toMove.forEach((prop: treeNotationTypes.treeNode) => prop.copyTo(node, 0))
+        toMove.forEach((prop: scrollNotationTypes.treeNode) => prop.copyTo(node, 0))
       }
       node.delete("class")
       node.delete("css")
@@ -2787,7 +2772,7 @@ d
   )
 
   // Act/Assert
-  const result = reg.topDownArray.map((node: treeNotationTypes.treeNode) => node.lineNumber).join(" ")
+  const result = reg.topDownArray.map((node: scrollNotationTypes.treeNode) => node.lineNumber).join(" ")
   equal(result, "1 2 3 4 5")
   equal(reg.getNode("a").lineNumber, 1)
 }
@@ -2832,17 +2817,14 @@ q quantity`
   )
 
   const expandMapObj = map.clone().toObject()
-  const contractMap = map
-    .clone()
-    .invert()
-    .toObject()
+  const contractMap = map.clone().invert().toObject()
 
   // Act
   const remapped = new TreeNode(test)
-  remapped.forEach((node: treeNotationTypes.treeNode) => node.remap(expandMapObj))
+  remapped.forEach((node: scrollNotationTypes.treeNode) => node.remap(expandMapObj))
 
   const expected = remapped.clone()
-  expected.forEach((node: treeNotationTypes.treeNode) => node.remap(contractMap))
+  expected.forEach((node: scrollNotationTypes.treeNode) => node.remap(contractMap))
 
   // Assert
   equal(test, expected.asString)
@@ -3207,7 +3189,7 @@ testTree.sort = equal => {
   // Assert
   equal(tree.getFirstWords().join(" "), "john susy bob")
   // Act
-  tree.sort((a: treeNotationTypes.treeNode, b: treeNotationTypes.treeNode) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
+  tree.sort((a: scrollNotationTypes.treeNode, b: scrollNotationTypes.treeNode) => (b.firstWord < a.firstWord ? 1 : b.firstWord === a.firstWord ? 0 : -1))
   // Assert
   equal(tree.getFirstWords().join(" "), "bob john susy")
 }
@@ -3612,14 +3594,14 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const preOrder = traversal.topDownArray.map((node: treeNotationTypes.treeNode) => node.getLine()).join(" ")
+  const preOrder = traversal.topDownArray.map((node: scrollNotationTypes.treeNode) => node.getLine()).join(" ")
   const postOrder = traversal
     .getChildrenFirstArray()
-    .map((node: treeNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.treeNode) => node.getLine())
     .join(" ")
   const breadthfirst = traversal
     .getParentFirstArray()
-    .map((node: treeNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.treeNode) => node.getLine())
     .join(" ")
 
   // Assert
@@ -3641,14 +3623,14 @@ testTree.traverse = equal => {
   )
 
   // Act
-  const wikipreorder = wikipediaBinaryTree.topDownArray.map((node: treeNotationTypes.treeNode) => node.getLine()).join("")
+  const wikipreorder = wikipediaBinaryTree.topDownArray.map((node: scrollNotationTypes.treeNode) => node.getLine()).join("")
   const wikibreadthfirst = wikipediaBinaryTree
     .getParentFirstArray()
-    .map((node: treeNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.treeNode) => node.getLine())
     .join("")
   const wikipostorder = wikipediaBinaryTree
     .getChildrenFirstArray()
-    .map((node: treeNotationTypes.treeNode) => node.getLine())
+    .map((node: scrollNotationTypes.treeNode) => node.getLine())
     .join("")
 
   // Assert
@@ -3677,7 +3659,7 @@ b
  a
 b
  a
-c`).getFiltered((node: treeNotationTypes.treeNode) => node.firstWord === "a").length,
+c`).getFiltered((node: scrollNotationTypes.treeNode) => node.firstWord === "a").length,
     3
   )
 }
@@ -3736,7 +3718,7 @@ testTree.toOutline = equal => {
 `
   )
   equal(
-    treeNode.toMappedOutline((node: treeNotationTypes.treeNode) => "o"),
+    treeNode.toMappedOutline((node: scrollNotationTypes.treeNode) => "o"),
     `└o
  └o
 `
@@ -3788,7 +3770,7 @@ b
 c
  d`)
   // Act
-  a.forEach((child: treeNotationTypes.treeNode) => {
+  a.forEach((child: scrollNotationTypes.treeNode) => {
     child.destroy()
   })
 
@@ -3809,14 +3791,7 @@ testTree.setTests = equal => {
   equal(base.getWordsAsSet().has("bar"), true)
   equal(base.getWordsAsSet().has("bar2"), false)
   equal(base.appendWordIfMissing("bar").asString, `foo bar`)
-  equal(
-    base
-      .appendWordIfMissing("bam")
-      .getWordsAsSet()
-      .has("bam"),
-    true,
-    "word should be appended"
-  )
+  equal(base.appendWordIfMissing("bam").getWordsAsSet().has("bam"), true, "word should be appended")
 }
 
 testTree.getBiDirectionalMaps = equal => {
@@ -4061,18 +4036,7 @@ testTree.queryMethods = equal => {
     1
   )
 
-  equal(
-    tree
-      .where("sepal_width", "!=", 3.7)
-      .first(3)
-      .select("species")
-      .last(1)
-      .sortBy("species")
-      .nodeAt(0)
-      .get("species"),
-    "virginica",
-    "last and first work"
-  )
+  equal(tree.where("sepal_width", "!=", 3.7).first(3).select("species").last(1).sortBy("species").nodeAt(0).get("species"), "virginica", "last and first work")
 }
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)

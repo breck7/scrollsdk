@@ -2,12 +2,12 @@
 
 // todo: make isomorphic
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const { TestRacer } = require("../products/TestRacer.js")
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 
 testTree.version = equal => {
   // Arrange/Act/Assert

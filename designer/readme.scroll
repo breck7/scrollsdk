@@ -9,10 +9,10 @@ Try it Now
 
 ? How do I run the tests?
 code
- ./jtree/designer/DesignerApp.test.ts
+ ./scrollsdk/designer/DesignerApp.test.ts
 
 ? How do I run the Designer locally?
 code
- cd jtree
+ cd scrollsdk
  npm run local
  open http://localhost:3333/designer

@@ -66,7 +66,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     willowBrowser.reload()
   }
 
-  async fetchAndLoadJtreeShippedLanguageCommand(name: string) {
+  async fetchAndLoadScrollSDKShippedLanguageCommand(name: string) {
     const samplePath = `/langs/${name}/sample.${name}`
     const grammarPath = `/langs/${name}/${name}.grammar`
 
@@ -166,7 +166,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     const programUrl = deepLink.get("programUrl")
     if (standard) {
       console.log("Loading standard from deep link....")
-      await this.fetchAndLoadJtreeShippedLanguageCommand(standard)
+      await this.fetchAndLoadScrollSDKShippedLanguageCommand(standard)
       return true
     } else if (fromUrl) {
       console.log(`Loading grammar from '${fromUrl}'....`)
@@ -451,7 +451,7 @@ class samplesComponent extends AbstractTreeComponentParser {
         (lang: string) => ` a ${Utils.ucfirst(lang)}
   href #standard%20${lang}
   value ${lang}
-  clickCommand fetchAndLoadJtreeShippedLanguageCommand`
+  clickCommand fetchAndLoadScrollSDKShippedLanguageCommand`
       )
       .join("\n span  | \n")
     return `p

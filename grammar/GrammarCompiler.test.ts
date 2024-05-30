@@ -56,12 +56,12 @@ testTree.diskTests = equal => {
 }
 
 testTree.findProjectRoot = equal => {
-  const dir = Utils.findProjectRoot(__dirname, "jtree")
+  const dir = Utils.findProjectRoot(__dirname, "scrollsdk")
   equal(typeof dir, "string")
   equal(dir.includes("grammar"), false, "correct parent dir selected")
 
   try {
-    const result = Utils.findProjectRoot("/foo/bar/", "jtree")
+    const result = Utils.findProjectRoot("/foo/bar/", "scrollsdk")
     equal(result, false, "error should have been thrown")
   } catch (err) {
     equal(true, true, "error thrown")

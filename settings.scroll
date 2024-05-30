@@ -2,4 +2,4 @@ importOnly
 description Build on top of Scroll.
 git https://github.com/breck7/scrollsdk
 viewSourceBaseUrl https://github.com/breck7/scrollsdk/blob/main/
-email jtree@treenotation.org
+email sdk@scroll.pub

@@ -27,20 +27,20 @@ PerfTests
  https://sdk.scroll.pub/sandbox/perfTests.html
 
 ? Who is this package built for?
-Jtree is for people who want to design Tree Languages, make Tree editing tools, or use the Tree Component Web Framework.
-You can think of jtree as similar to the Java Development Kit, except for Scroll Notation instead of Java.
+The ScrollSDK is for people who want to design Tree Languages, make Tree editing tools, or use the Tree Component Web Framework.
+You can think of the ScrollSDK as similar to the Java Development Kit, except for Scroll Notation instead of Java.
 
 ? How do I build a new language?
 You can try the Grammar tutorial.
  link grammarTutorial.html Grammar tutorial
 
 # Grammar Files
-Jtree contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Jtree also includes a simple web Scroll Parser Designer.
+The ScrollSDK contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. The ScrollSDK also includes a simple web Scroll Parser Designer.
  https://sdk.scroll.pub/designer Designer
 
-To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. Jtree lets you create new languages using just Scroll Notation, Scroll Notation + TypeScript, or Scroll Notation + Javascript. Scroll Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
+To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. The ScrollSDK lets you create new languages using just Scroll Notation, Scroll Notation + TypeScript, or Scroll Notation + Javascript. Scroll Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
 
-# Using Jtree
+# Using the ScrollSDK
 
 ## Quick start
 - Open https://gitpod.io/#https://github.com/breck7/scrollsdk
@@ -50,11 +50,11 @@ code
  npm install .
  npm run test
 
-Jtree currently includes over 10 compiled projects (aka "products") and more than a dozen Tree Languages.
+The ScrollSDK currently includes over 10 compiled projects (aka "products") and more than a dozen Tree Languages.
 
 # Basic TreeNode library for npm projects:
 code
- const {TreeNode} = require("jtree/products/TreeNode.js")
+ const {TreeNode} = require("scrollsdk/products/TreeNode.js")
  const tree = new TreeNode("hello world")
  console.log(tree.asString)
 
@@ -64,13 +64,13 @@ code
  <script src="../../products/TreeNode.browser.js"></script>
  <script src="../../products/GrammarLanguage.browser.js"></script>
 
-## jtree "sandbox" web app for exploring base Scroll Notation
+## Scroll Notation Sandbox web app for exploring base Scroll Notation
 code
  npm install .
  npm run local
  open http://localhost:3333/
 
-## jtree "Designer" web app for building new Tree Languages
+## Scroll Parser Designer web app for building new Scroll Parsers
 code
  npm install .
  npm run local
@@ -91,11 +91,11 @@ code
  npm test
 
 # Monorepo
-Jtree is a monorepo. With on average over 1 major version released each month for the past 2.5 years, it would take a lot of overhead to constantly be updating 10+ different repositories and modules every month. Once we're more confident in the theory and best practices, it might make sense to break this repo into independent modules.
+The ScrollSDK is a monorepo. With on average over 1 major version released each month for the past 2.5 years, it would take a lot of overhead to constantly be updating 10+ different repositories and modules every month. Once we're more confident in the theory and best practices, it might make sense to break this repo into independent modules.
 That being said, we despise unnecessary dependencies as much as anyone. If anyone wants to create some automated submodules built from the projects in this monorepo, to allow for consuming of a smaller subset of the code and dependencies in this module, feel free to do so.
 
 ## Visualization of the code base
- https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=breck7%2Fjtree Visualization
+ https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=breck7%2Fscrollsdk Visualization
 image images/diagram.svg
 
 # Development Status

@@ -17,7 +17,7 @@ _Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle 
 ## Before you start:
 [] Know where to get help. GitHub issues, Scroll subreddit, or email Breck.
  https://github.com/breck7/scrollsdk/issues GitHub issues
- https://reddit.com/r/scroll-lang Scroll subreddit
+ https://reddit.com/r/ScrollLang Scroll subreddit
  link mailto:breck7@gmail.com email Breck
 [] Take a look at some of the sample languages in the Scroll Designer. You might be able to use these as a reference if you get stuck.
  https://sdk.scroll.pub/designer/ Scroll Designer

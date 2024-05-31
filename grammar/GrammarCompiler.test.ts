@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { TreeNode } = require("../products/TreeNode.js")
 const { Disk } = require("../products/Disk.node.js")
@@ -8,7 +8,7 @@ const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const { GrammarCompiler } = require("../products/GrammarCompiler.js")
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 
 testTree.compileGrammarAndCreateProgram = equal => {
   // Arrange
@@ -56,12 +56,12 @@ testTree.diskTests = equal => {
 }
 
 testTree.findProjectRoot = equal => {
-  const dir = Utils.findProjectRoot(__dirname, "jtree")
+  const dir = Utils.findProjectRoot(__dirname, "scrollsdk")
   equal(typeof dir, "string")
   equal(dir.includes("grammar"), false, "correct parent dir selected")
 
   try {
-    const result = Utils.findProjectRoot("/foo/bar/", "jtree")
+    const result = Utils.findProjectRoot("/foo/bar/", "scrollsdk")
     equal(result, false, "error should have been thrown")
   } catch (err) {
     equal(true, true, "error thrown")

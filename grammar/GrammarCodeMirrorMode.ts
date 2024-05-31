@@ -1,4 +1,4 @@
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 /* Used for Types Only, but we want this line to remain in the combined intermediate TS program */ import * as CodeMirrorLib from "codemirror"
 
@@ -187,7 +187,7 @@ const tmToCm = {
   }
 }
 
-const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], styleTree: treeNotationTypes.stringMap = tmToCm): CmToken => {
+const textMateScopeToCodeMirrorStyle = (scopeSegments: string[], styleTree: scrollNotationTypes.stringMap = tmToCm): CmToken => {
   const matchingBranch = styleTree[scopeSegments.shift()]
   return matchingBranch ? textMateScopeToCodeMirrorStyle(scopeSegments, matchingBranch) || matchingBranch.$ || null : null
 }
@@ -197,7 +197,7 @@ interface treeNotationCodeMirrorState {
 }
 
 class GrammarCodeMirrorMode {
-  constructor(name: string, getRootParserFn: () => treeNotationTypes.TreeProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
+  constructor(name: string, getRootParserFn: () => scrollNotationTypes.TreeProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
     this._getRootParserFn = getRootParserFn
     this._getProgramCodeFn = getProgramCodeFn || (instance => (instance ? <string>instance.getValue() : this._originalValue))
@@ -206,10 +206,10 @@ class GrammarCodeMirrorMode {
 
   private _name: string
   private _getProgramCodeFn: (cmInstance: CodeMirrorLib.EditorFromTextArea) => string
-  private _getRootParserFn: () => treeNotationTypes.TreeProgramParser
+  private _getRootParserFn: () => scrollNotationTypes.TreeProgramParser
   private _codeMirrorLib: typeof CodeMirrorLib
   private _cachedSource: string
-  private _cachedProgram: treeNotationTypes.treeProgram
+  private _cachedProgram: scrollNotationTypes.treeProgram
   private _cmInstance: CodeMirrorLib.EditorFromTextArea
   private _originalValue: string
 
@@ -222,7 +222,7 @@ class GrammarCodeMirrorMode {
     return this._cachedProgram
   }
 
-  private _getExcludedIntelliSenseTriggerKeys(): treeNotationTypes.stringMap {
+  private _getExcludedIntelliSenseTriggerKeys(): scrollNotationTypes.stringMap {
     return {
       "8": "backspace",
       "9": "tab",
@@ -359,7 +359,7 @@ class GrammarCodeMirrorMode {
     return style
   }
 
-  private _getCellStyle(lineIndex: treeNotationTypes.int, cellIndex: treeNotationTypes.int): string {
+  private _getCellStyle(lineIndex: scrollNotationTypes.int, cellIndex: scrollNotationTypes.int): string {
     const program = this._getParsedProgram()
 
     // todo: if the current word is an error, don't show red?

@@ -2,7 +2,7 @@
 
 // todo: make isomorphic
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { Disk } = require("../products/Disk.node.js")
 const { TestRacer } = require("../products/TestRacer.js")
@@ -22,7 +22,7 @@ const jibberishGrammarPath = path.join(jibberishRootDir, "jibberish.grammar")
 const jibberishGrammarCode = Disk.read(jibberishGrammarPath)
 const poopGrammarPath = path.join(__dirname, "..", "langs", "poop", "poop.grammar")
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
@@ -276,12 +276,7 @@ plusParser + 2 3 2`,
 
 testTree.preludeTypes = equal => {
   // Act/Assert
-  equal(
-    makeNumbersProgram(`+ 2`)
-      .nodeAt(0)
-      .getLineCellPreludeTypes(),
-    `anyCell floatCell`
-  )
+  equal(makeNumbersProgram(`+ 2`).nodeAt(0).getLineCellPreludeTypes(), `anyCell floatCell`)
 }
 
 testTree.format = equal => {
@@ -330,13 +325,7 @@ h1Parser
  crux html.h1
  extends abstractHtmlParser`
   // Act/Assert
-  equal(
-    makeGrammarProgram(unsortedCode)
-      .format()
-      .toString(),
-    sortedCode,
-    "code was fixed"
-  )
+  equal(makeGrammarProgram(unsortedCode).format().toString(), sortedCode, "code was fixed")
 }
 
 testTree.cokeRegression = equal => {

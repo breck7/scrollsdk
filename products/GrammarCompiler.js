@@ -10,15 +10,15 @@ var CompileTarget
   CompileTarget["browser"] = "browser"
 })(CompileTarget || (CompileTarget = {}))
 class GrammarCompiler {
-  static compileGrammarForNodeJs(pathToGrammar, outputFolder, usePrettier = true, jtreeProductsPath = __dirname) {
-    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, jtreeProductsPath)
+  static compileGrammarForNodeJs(pathToGrammar, outputFolder, usePrettier = true, scrollsdkProductsPath = __dirname) {
+    return this._compileGrammar(pathToGrammar, outputFolder, CompileTarget.nodejs, usePrettier, scrollsdkProductsPath)
   }
-  static _compileGrammar(pathToGrammar, outputFolder, target, usePrettier, jtreeProductsPath) {
+  static _compileGrammar(pathToGrammar, outputFolder, target, usePrettier, scrollsdkProductsPath) {
     const isNodeJs = CompileTarget.nodejs === target
     const grammarCode = TreeNode.fromDisk(pathToGrammar)
     const program = new HandGrammarProgram(grammarCode.toString())
     const outputFilePath = path.join(outputFolder, `${program.grammarName}.${target}.js`)
-    let result = isNodeJs ? program.toNodeJsJavascript(jtreeProductsPath) : program.toBrowserJavascript()
+    let result = isNodeJs ? program.toNodeJsJavascript(scrollsdkProductsPath) : program.toBrowserJavascript()
     if (isNodeJs)
       result =
         "#! /usr/bin/env node\n" +

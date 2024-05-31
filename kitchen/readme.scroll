@@ -1,11 +1,11 @@
 title Kitchen
 
-Kitchen is a simple ExpressJS app used by JTree Developers.
+Kitchen is a simple ExpressJS app used by Scroll Developers.
 
-With Kitchen you can run Tree Notation sandbox, Tree Notation Desginer, and other tools locally.
+With Kitchen you can run Scroll Notation sandbox, Scroll Designer, and other tools locally.
 
 ? How do I start it?
 code
- cd jtree
+ cd scrollsdk
  npm run local
 

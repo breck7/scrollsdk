@@ -66,7 +66,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     willowBrowser.reload()
   }
 
-  async fetchAndLoadJtreeShippedLanguageCommand(name: string) {
+  async fetchAndLoadScrollSDKShippedLanguageCommand(name: string) {
     const samplePath = `/langs/${name}/sample.${name}`
     const grammarPath = `/langs/${name}/${name}.grammar`
 
@@ -166,7 +166,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     const programUrl = deepLink.get("programUrl")
     if (standard) {
       console.log("Loading standard from deep link....")
-      await this.fetchAndLoadJtreeShippedLanguageCommand(standard)
+      await this.fetchAndLoadScrollSDKShippedLanguageCommand(standard)
       return true
     } else if (fromUrl) {
       console.log(`Loading grammar from '${fromUrl}'....`)
@@ -451,7 +451,7 @@ class samplesComponent extends AbstractTreeComponentParser {
         (lang: string) => ` a ${Utils.ucfirst(lang)}
   href #standard%20${lang}
   value ${lang}
-  clickCommand fetchAndLoadJtreeShippedLanguageCommand`
+  clickCommand fetchAndLoadScrollSDKShippedLanguageCommand`
       )
       .join("\n span  | \n")
     return `p
@@ -594,7 +594,7 @@ class tableComponent extends AbstractTreeComponentParser {
 
 class headerComponent extends AbstractTreeComponentParser {
   _getTitle() {
-    return `Tree Language Designer`
+    return `Scroll Designer`
   }
   toHakonCode() {
     return `#logo
@@ -609,15 +609,15 @@ class headerComponent extends AbstractTreeComponentParser {
     return `div
  h1
   a
-   href https://treenotation.org
+   href https://notation.scroll.pub
    style text-decoration: none;
    img
     id logo
     src /images/helloWorld3D.svg
-    title TreeNotation.org
+    title Notation.Scroll.pub
   span ${this._getTitle()}
  p
-  a Tree Notation Sandbox
+  a Scroll Notation Sandbox
    href /sandbox/
   span  | 
   a Help
@@ -637,12 +637,12 @@ class headerComponent extends AbstractTreeComponentParser {
   id helpSection
   style display: none;
   p This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://jtree.treenotation.org/grammarTutorial.html">Tutorial for creating new Tree Languages using Grammar</a>.`
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/grammarTutorial.html">Tutorial for creating new Tree Languages using Grammar</a>.`
   }
 }
 
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
-  githubLink = `https://github.com/treenotation/jtree/tree/main/designer`
+  githubLink = `https://github.com/breck7/scrollsdk/tree/main/designer`
 }
 
 export { DesignerApp }

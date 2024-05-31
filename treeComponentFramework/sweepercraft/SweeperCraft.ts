@@ -1,4 +1,4 @@
-//onsave jtree build produce SweeperCraft.browser.js
+//onsave scrollsdk build produce SweeperCraft.browser.js
 
 const { AbstractTreeComponentParser, TreeComponentFrameworkDebuggerComponent, AbstractGithubTriangleComponent } = require("../../products/TreeComponentFramework.node.js")
 const { TreeNode } = require("../../products/TreeNode.js")
@@ -648,7 +648,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
 
     const keyboardShortcuts: any = this._getKeyboardShortcuts()
     Object.keys(keyboardShortcuts).forEach(key => {
-      willowBrowser.getMousetrap().bind(key, function(evt: any) {
+      willowBrowser.getMousetrap().bind(key, function (evt: any) {
         keyboardShortcuts[key]()
         // todo: handle the below when we need to
         if (evt.preventDefault) evt.preventDefault()
@@ -782,9 +782,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
   }
 
   get gameTime() {
-    return this._getGame()
-      .getGameTime()
-      .toString()
+    return this._getGame().getGameTime().toString()
   }
 
   get numberOfMines() {
@@ -1012,7 +1010,7 @@ class shortcutsTableComponent extends AbstractTreeComponentParser {
 }
 
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
-  githubLink = `https://github.com/treenotation/jtree/tree/main/treeComponentFramework/sweepercraft`
+  githubLink = `https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework/sweepercraft`
 }
 
 export { SweeperCraftApp, SweeperCraftGame }

@@ -1,6 +1,6 @@
-//onsave jtree build produce TreeComponentFramework.browser.js
+//onsave scrollsdk build produce TreeComponentFramework.browser.js
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
@@ -10,7 +10,7 @@ const stumpParser = require("../products/stump.nodejs.js")
 const hakonParser = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
 
-const BrowserEvents: treeNotationTypes.stringMap = {}
+const BrowserEvents: scrollNotationTypes.stringMap = {}
 BrowserEvents.click = "click"
 BrowserEvents.change = "change"
 BrowserEvents.mouseover = "mouseover"
@@ -34,7 +34,7 @@ BrowserEvents.dragenter = "dragenter"
 BrowserEvents.dragleave = "dragleave"
 BrowserEvents.ready = "ready"
 
-const WillowConstants: treeNotationTypes.stringMap = {}
+const WillowConstants: scrollNotationTypes.stringMap = {}
 // todo: cleanup
 WillowConstants.clickCommand = "clickCommand"
 WillowConstants.shiftClickCommand = "shiftClickCommand"
@@ -271,7 +271,7 @@ class WillowStore {
   constructor() {
     this._values = {}
   }
-  private _values: treeNotationTypes.stringMap
+  private _values: scrollNotationTypes.stringMap
 
   get(key: string) {
     return this._values[key]
@@ -297,7 +297,7 @@ class WillowMousetrap {
   constructor() {
     this.prototype = {}
   }
-  private prototype: treeNotationTypes.stringMap
+  private prototype: scrollNotationTypes.stringMap
   bind() {}
 }
 
@@ -473,7 +473,7 @@ class AbstractWillowBrowser extends stumpParser {
     return this
   }
 
-  async httpGetUrlFromCache(url: string, queryStringMap: treeNotationTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
+  async httpGetUrlFromCache(url: string, queryStringMap: scrollNotationTypes.queryStringMap = {}, responseClass = WillowHTTPResponse) {
     const cacheKey = url + JSON.stringify(queryStringMap)
     const cacheHit = this._getFromResponseCache(cacheKey)
     if (!cacheHit) {
@@ -485,7 +485,7 @@ class AbstractWillowBrowser extends stumpParser {
   }
 
   async httpGetUrlFromProxyCache(url: string) {
-    const queryStringMap: treeNotationTypes.queryStringMap = {}
+    const queryStringMap: scrollNotationTypes.queryStringMap = {}
     queryStringMap.url = url
     queryStringMap.cacheOnServer = "true"
     return await this.httpGetUrlFromCache("/proxy", queryStringMap, WillowHTTPProxyCacheResponse)
@@ -515,13 +515,13 @@ class AbstractWillowBrowser extends stumpParser {
   getWindowTitle() {
     // todo: deep getNodeByBase/withBase/type/word or something?
     const nodes = this.topDownArray
-    const titleNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.titleTag)
+    const titleNode = nodes.find((node: scrollNotationTypes.treeNode) => node.firstWord === WillowConstants.titleTag)
     return titleNode ? titleNode.content : ""
   }
 
   setWindowTitle(value: string) {
     const nodes = this.topDownArray
-    const headNode = nodes.find((node: treeNotationTypes.treeNode) => node.firstWord === WillowConstants.tags.head)
+    const headNode = nodes.find((node: scrollNotationTypes.treeNode) => node.firstWord === WillowConstants.tags.head)
     headNode.touchNode(WillowConstants.titleTag).setContent(value)
     return this
   }
@@ -751,7 +751,7 @@ class WillowBrowserShadow extends AbstractWillowShadow {
   }
 
   onShadowEventWithSelector(event: string, selector: string, fn: any) {
-    this.element.addEventListener(event, function(evt: any) {
+    this.element.addEventListener(event, function (evt: any) {
       let target = evt.target
       while (target !== null) {
         if (target.matches(selector)) {
@@ -933,14 +933,14 @@ class RealWillowBrowser extends AbstractWillowBrowser {
 
   _appendScript(url: string) {
     //https://bradb.net/blog/promise-based-js-script-loader/
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let resolved = false
       const scriptEl = document.createElement("script")
 
       scriptEl.type = "text/javascript"
       scriptEl.src = url
       scriptEl.async = true
-      scriptEl.onload = (<any>scriptEl).onreadystatechange = function() {
+      scriptEl.onload = (<any>scriptEl).onreadystatechange = function () {
         if (!resolved && (!this.readyState || this.readyState == "complete")) {
           resolved = true
           resolve(this)
@@ -1036,7 +1036,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
         // Add the help, and then hopefull we'll get a dragover event on the dragOverHelp, then
         // 50ms later, add the dragleave handler, and from now on drag leave will only happen on the help
         // div
-        setTimeout(function() {
+        setTimeout(function () {
           bodyShadow.onShadowEvent(BrowserEvents.dragleave, dragleaveHandler)
         }, 50)
       }
@@ -1073,7 +1073,7 @@ class RealWillowBrowser extends AbstractWillowBrowser {
     bodyShadow.onShadowEvent(BrowserEvents.drop, dropHandler)
 
     // todo: why do we do this?
-    bodyShadow.onShadowEvent(BrowserEvents.dragenter, function(event: any) {
+    bodyShadow.onShadowEvent(BrowserEvents.dragenter, function (event: any) {
       event.preventDefault()
       event.stopPropagation()
     })
@@ -1177,8 +1177,8 @@ declare class abstractHtmlTag extends GrammarBackedNode {
 }
 
 abstract class AbstractTreeComponentParser extends GrammarBackedNode {
-  private _commandsBuffer: treeNotationTypes.treeNode[]
-  private _messageBuffer: treeNotationTypes.treeNode
+  private _commandsBuffer: scrollNotationTypes.treeNode[]
+  private _messageBuffer: scrollNotationTypes.treeNode
   private _htmlStumpNode: abstractHtmlTag
   private _cssStumpNode: abstractHtmlTag
   private _lastRenderedTime: number
@@ -1328,33 +1328,33 @@ abstract class AbstractTreeComponentParser extends GrammarBackedNode {
       return false
     }
 
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.contextmenu, `[${WillowConstants.contextMenuCommand}]`, function(target: any, evt: any) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.contextmenu, `[${WillowConstants.contextMenuCommand}]`, function (target: any, evt: any) {
       if (evt.ctrlKey) return true
       app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(target, WillowConstants.contextMenuCommand, evt)
     })
 
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function(target: any, evt: any) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.click, `[${WillowConstants.clickCommand}]`, function (target: any, evt: any) {
       if (evt.shiftKey) return checkAndExecute(this, WillowConstants.shiftClickCommand, evt)
       app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(target, WillowConstants.clickCommand, evt)
     })
 
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function(target: any, evt: any) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.dblclick, `[${WillowConstants.doubleClickCommand}]`, function (target: any, evt: any) {
       if (evt.target !== evt.currentTarget) return true // direct dblclicks only
       app._setMouseEvent(evt) // todo: remove?
       return checkAndExecute(target, WillowConstants.doubleClickCommand, evt)
     })
 
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function(target: any, evt: any) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.blur, `[${WillowConstants.blurCommand}]`, function (target: any, evt: any) {
       return checkAndExecute(target, WillowConstants.blurCommand, evt)
     })
 
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function(target: any, evt: any) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.keyup, `[${WillowConstants.keyUpCommand}]`, function (target: any, evt: any) {
       return checkAndExecute(target, WillowConstants.keyUpCommand, evt)
     })
 
-    bodyShadow.onShadowEventWithSelector(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function(target: any, evt: any) {
+    bodyShadow.onShadowEventWithSelector(BrowserEvents.change, `[${WillowConstants.changeCommand}]`, function (target: any, evt: any) {
       return checkAndExecute(target, WillowConstants.changeCommand, evt)
     })
   }
@@ -1755,7 +1755,7 @@ class TreeComponentFrameworkDebuggerComponent extends AbstractTreeComponentParse
  div
   span This app is powered by the
   a Tree Component Framework
-   href https://github.com/treenotation/jtree/tree/main/treeComponentFramework
+   href https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework
  p ${app.numberOfLines} components loaded. ${WillowBrowser._stumpsOnPage} stumps on page.
  pre
   bern
@@ -1764,7 +1764,7 @@ ${app.toString(3)}`
 }
 
 abstract class AbstractGithubTriangleComponent extends AbstractTreeComponentParser {
-  githubLink = `https://github.com/treenotation/jtree`
+  githubLink = `https://github.com/breck7/scrollsdk`
 
   toHakonCode() {
     return `.AbstractGithubTriangleComponent

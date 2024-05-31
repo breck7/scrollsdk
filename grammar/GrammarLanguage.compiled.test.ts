@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const path = require("path")
 const { TestRacer } = require("../products/TestRacer.js")
 const { Disk } = require("../products/Disk.node.js")
@@ -8,7 +8,7 @@ const { TreeNode } = require("../products/TreeNode.js")
 const { HandGrammarProgram, UnknownGrammarProgram } = require("../products/GrammarLanguage.js")
 const { GrammarCompiler } = require("../products/GrammarCompiler.js")
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 
 // todo: turn prettier off for test running? seems like it might increase test time from 2s to 5s...
 // todo: setup: make vms dir. cleanup? delete grammar file when done?

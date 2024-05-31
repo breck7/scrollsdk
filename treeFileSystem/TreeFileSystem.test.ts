@@ -3,9 +3,9 @@
 const { TreeFileSystem } = require("../products/TreeFileSystem.js")
 const { TestRacer } = require("../products/TestRacer.js")
 const path = require("path")
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
-const testTree: treeNotationTypes.testTree = {}
+const testTree: scrollNotationTypes.testTree = {}
 
 testTree.disk = equal => {
   const tfs = new TreeFileSystem()

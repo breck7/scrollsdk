@@ -1,4 +1,4 @@
-//onsave jtree build produce SweeperCraft.browser.js
+//onsave scrollsdk build produce SweeperCraft.browser.js
 class SweeperCraftGame {
   constructor(board) {
     this._setBoard(board)
@@ -815,7 +815,7 @@ class shortcutsTableComponent extends AbstractTreeComponentParser {
 class githubTriangleComponent extends AbstractGithubTriangleComponent {
   constructor() {
     super(...arguments)
-    this.githubLink = `https://github.com/treenotation/jtree/tree/main/treeComponentFramework/sweepercraft`
+    this.githubLink = `https://github.com/breck7/scrollsdk/tree/main/treeComponentFramework/sweepercraft`
   }
 }
 window.SweeperCraftApp = SweeperCraftApp

@@ -1,10 +1,10 @@
 import { AbstractNode } from "./AbstractNode.node"
-import { treeNotationTypes } from "../products/treeNotationTypes"
+import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { Utils } = require("../products/Utils.js")
 
-declare type int = treeNotationTypes.int
-declare type word = treeNotationTypes.word
+declare type int = scrollNotationTypes.int
+declare type word = scrollNotationTypes.word
 
 declare type cellFn = (str: string, rowIndex: int, colIndex: int) => any
 declare type mapFn = (value: any, index: int, array: any[]) => any
@@ -67,16 +67,16 @@ enum WhereOperators {
   notEmpty = "notEmpty"
 }
 
-enum TreeNotationConstants {
+enum ScrollNotationConstants {
   extends = "extends"
 }
 
 class ParserCombinator {
   // todo: should getErrors be under here? At least for certain types of errors?
-  private _catchAllParser: treeNotationTypes.TreeParser
+  private _catchAllParser: scrollNotationTypes.TreeParser
   private _firstWordMap: Map<string, Function>
-  private _regexTests: treeNotationTypes.regexTest[]
-  constructor(catchAllParser: treeNotationTypes.TreeParser, firstWordMap: treeNotationTypes.firstWordToParserMap = {}, regexTests: treeNotationTypes.regexTest[] = undefined) {
+  private _regexTests: scrollNotationTypes.regexTest[]
+  constructor(catchAllParser: scrollNotationTypes.TreeParser, firstWordMap: scrollNotationTypes.firstWordToParserMap = {}, regexTests: scrollNotationTypes.regexTest[] = undefined) {
     this._catchAllParser = catchAllParser
     this._firstWordMap = new Map(Object.entries(firstWordMap))
     this._regexTests = regexTests
@@ -93,7 +93,7 @@ class ParserCombinator {
 
   // todo: remove
   _getFirstWordMapAsObject() {
-    let obj: treeNotationTypes.firstWordToParserMap = {}
+    let obj: scrollNotationTypes.firstWordToParserMap = {}
     const map = this._getFirstWordMap()
     for (let [key, val] of map.entries()) {
       obj[key] = val
@@ -101,11 +101,11 @@ class ParserCombinator {
     return obj
   }
 
-  _getParser(line: string, contextNode: treeNotationTypes.treeNode, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): treeNotationTypes.TreeParser {
+  _getParser(line: string, contextNode: scrollNotationTypes.treeNode, wordBreakSymbol = TN_WORD_BREAK_SYMBOL): scrollNotationTypes.TreeParser {
     return this._getFirstWordMap().get(this._getFirstWord(line, wordBreakSymbol)) || this._getParserFromRegexTests(line) || this._getCatchAllParser(contextNode)
   }
 
-  _getCatchAllParser(contextNode: treeNotationTypes.treeNode) {
+  _getCatchAllParser(contextNode: scrollNotationTypes.treeNode) {
     if (this._catchAllParser) return this._catchAllParser
 
     const parent = contextNode.parent
@@ -115,7 +115,7 @@ class ParserCombinator {
     return contextNode.constructor
   }
 
-  private _getParserFromRegexTests(line: string): treeNotationTypes.TreeParser {
+  private _getParserFromRegexTests(line: string): scrollNotationTypes.TreeParser {
     if (!this._regexTests) return undefined
     const hit = this._regexTests.find(test => test.regex.test(line))
     if (hit) return hit.parser
@@ -129,7 +129,7 @@ class ParserCombinator {
 }
 
 class TreeNode extends AbstractNode {
-  constructor(children?: treeNotationTypes.children, line?: string, parent?: TreeNode) {
+  constructor(children?: scrollNotationTypes.children, line?: string, parent?: TreeNode) {
     super()
     this._parent = parent
     this._setLine(line)
@@ -152,7 +152,7 @@ class TreeNode extends AbstractNode {
     await Promise.all(this.map(node => node.loadRequirements(context)))
   }
 
-  getErrors(): treeNotationTypes.TreeError[] {
+  getErrors(): scrollNotationTypes.TreeError[] {
     return []
   }
 
@@ -229,7 +229,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  nodeAtLine(lineNumber: treeNotationTypes.positiveInt): TreeNode | undefined {
+  nodeAtLine(lineNumber: scrollNotationTypes.positiveInt): TreeNode | undefined {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (lineNumber === index) return node
@@ -317,15 +317,15 @@ class TreeNode extends AbstractNode {
     return this.toString()
   }
 
-  printLinesFrom(start: treeNotationTypes.int, quantity: treeNotationTypes.int) {
+  printLinesFrom(start: scrollNotationTypes.int, quantity: scrollNotationTypes.int) {
     return this._printLinesFrom(start, quantity, false)
   }
 
-  printLinesWithLineNumbersFrom(start: treeNotationTypes.int, quantity: treeNotationTypes.int) {
+  printLinesWithLineNumbersFrom(start: scrollNotationTypes.int, quantity: scrollNotationTypes.int) {
     return this._printLinesFrom(start, quantity, true)
   }
 
-  private _printLinesFrom(start: treeNotationTypes.int, quantity: treeNotationTypes.int, printLineNumbers: boolean) {
+  private _printLinesFrom(start: scrollNotationTypes.int, quantity: scrollNotationTypes.int, printLineNumbers: boolean) {
     // todo: use iterator for better perf?
     const end = start + quantity
     this.toString()
@@ -374,7 +374,7 @@ class TreeNode extends AbstractNode {
     return this._getWords(0)
   }
 
-  doesExtend(parserId: treeNotationTypes.parserId) {
+  doesExtend(parserId: scrollNotationTypes.parserId) {
     return false
   }
 
@@ -473,7 +473,7 @@ class TreeNode extends AbstractNode {
     return [oneToTwo, twoToOne]
   }
 
-  private _getWordIndexCharacterStartPosition(wordIndex: int): treeNotationTypes.positiveInt {
+  private _getWordIndexCharacterStartPosition(wordIndex: int): scrollNotationTypes.positiveInt {
     const xiLength = this.edgeSymbol.length
     const numIndents = this._getIndentLevel() - 1
     const indentPosition = xiLength * numIndents
@@ -481,7 +481,7 @@ class TreeNode extends AbstractNode {
     return indentPosition + this.words.slice(0, wordIndex).join(this.wordBreakSymbol).length + this.wordBreakSymbol.length
   }
 
-  getNodeInScopeAtCharIndex(charIndex: treeNotationTypes.positiveInt) {
+  getNodeInScopeAtCharIndex(charIndex: scrollNotationTypes.positiveInt) {
     if (this.isRoot()) return this
     let wordIndex = this.getWordIndexAtCharacterIndex(charIndex)
     if (wordIndex > 0) return this
@@ -511,7 +511,7 @@ class TreeNode extends AbstractNode {
   }
 
   getAllWordBoundaryCoordinates() {
-    const coordinates: treeNotationTypes.wordBoundary[] = []
+    const coordinates: scrollNotationTypes.wordBoundary[] = []
     let lineIndex = 0
     for (let node of this.getTopDownArrayIterator()) {
       ;(<TreeNode>node).getWordBoundaryCharIndices().forEach((charIndex, wordIndex) => {
@@ -527,7 +527,7 @@ class TreeNode extends AbstractNode {
     return coordinates
   }
 
-  getWordBoundaryCharIndices(): treeNotationTypes.positiveInt[] {
+  getWordBoundaryCharIndices(): scrollNotationTypes.positiveInt[] {
     let indentLevel = this._getIndentLevel()
     const wordBreakSymbolLength = this.wordBreakSymbol.length
     let elapsed = indentLevel
@@ -538,7 +538,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  getWordIndexAtCharacterIndex(charIndex: treeNotationTypes.positiveInt): int {
+  getWordIndexAtCharacterIndex(charIndex: scrollNotationTypes.positiveInt): int {
     // todo: is this correct thinking for handling root?
     if (this.isRoot()) return 0
     const numberOfIndents = this._getIndentLevel(undefined) - 1
@@ -558,11 +558,11 @@ class TreeNode extends AbstractNode {
   }
 
   // Note: This currently does not return any errors resulting from "required" or "single"
-  getAllErrors(lineStartsAt = 1): treeNotationTypes.TreeError[] {
-    const errors: treeNotationTypes.TreeError[] = []
+  getAllErrors(lineStartsAt = 1): scrollNotationTypes.TreeError[] {
+    const errors: scrollNotationTypes.TreeError[] = []
     for (let node of this.topDownArray) {
       node._cachedLineNumber = lineStartsAt // todo: cleanup
-      const errs: treeNotationTypes.TreeError[] = node.getErrors()
+      const errs: scrollNotationTypes.TreeError[] = node.getErrors()
       errs.forEach(err => errors.push(err))
       // delete node._cachedLineNumber
       lineStartsAt++
@@ -640,30 +640,30 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: return array? getPathArray?
-  protected _getFirstWordPath(relativeTo?: TreeNode): treeNotationTypes.firstWordPath {
+  protected _getFirstWordPath(relativeTo?: TreeNode): scrollNotationTypes.firstWordPath {
     if (this.isRoot(relativeTo)) return ""
     else if (this.parent.isRoot(relativeTo)) return this.firstWord
 
     return this.parent._getFirstWordPath(relativeTo) + this.edgeSymbol + this.firstWord
   }
 
-  getFirstWordPathRelativeTo(relativeTo?: TreeNode): treeNotationTypes.firstWordPath {
+  getFirstWordPathRelativeTo(relativeTo?: TreeNode): scrollNotationTypes.firstWordPath {
     return this._getFirstWordPath(relativeTo)
   }
 
-  getFirstWordPath(): treeNotationTypes.firstWordPath {
+  getFirstWordPath(): scrollNotationTypes.firstWordPath {
     return this._getFirstWordPath()
   }
 
-  getPathVector(): treeNotationTypes.pathVector {
+  getPathVector(): scrollNotationTypes.pathVector {
     return this._getPathVector()
   }
 
-  getPathVectorRelativeTo(relativeTo?: TreeNode): treeNotationTypes.pathVector {
+  getPathVectorRelativeTo(relativeTo?: TreeNode): scrollNotationTypes.pathVector {
     return this._getPathVector(relativeTo)
   }
 
-  protected _getPathVector(relativeTo?: TreeNode): treeNotationTypes.pathVector {
+  protected _getPathVector(relativeTo?: TreeNode): scrollNotationTypes.pathVector {
     if (this.isRoot(relativeTo)) return []
     const path = this.parent._getPathVector(relativeTo)
     path.push(this.getIndex())
@@ -682,12 +682,12 @@ class TreeNode extends AbstractNode {
     return this.words.map((word, index) => `<span class="word${index}">${Utils.stripHtml(word)}</span>`).join(`<span class="zIncrement">${this.wordBreakSymbol}</span>`)
   }
 
-  protected _getXmlContent(indentCount: treeNotationTypes.positiveInt) {
+  protected _getXmlContent(indentCount: scrollNotationTypes.positiveInt) {
     if (this.content !== undefined) return this.contentWithChildren
     return this.length ? `${indentCount === -1 ? "" : "\n"}${this._childrenToXml(indentCount > -1 ? indentCount + 2 : -1)}${" ".repeat(indentCount)}` : ""
   }
 
-  protected _toXml(indentCount: treeNotationTypes.positiveInt) {
+  protected _toXml(indentCount: scrollNotationTypes.positiveInt) {
     const indent = " ".repeat(indentCount)
     const tag = this.firstWord
     return `${indent}<${tag}>${this._getXmlContent(indentCount)}</${tag}>${indentCount === -1 ? "" : "\n"}`
@@ -959,7 +959,7 @@ class TreeNode extends AbstractNode {
     return this._getChildrenArray().slice(0)
   }
 
-  get length(): treeNotationTypes.positiveInt {
+  get length(): scrollNotationTypes.positiveInt {
     return this._getChildrenArray().length
   }
 
@@ -982,7 +982,7 @@ class TreeNode extends AbstractNode {
   // Flatten a tree node into an object like {twitter:"pldb", "twitter.followers":123}.
   // Assumes you have a nested key/value list with no multiline strings.
   toFlatObject(delimiter = ".") {
-    let newObject: treeNotationTypes.stringMap = {}
+    let newObject: scrollNotationTypes.stringMap = {}
     const { edgeSymbolRegex } = this
     this.forEach((child: TreeNode, index: number) => {
       newObject[child.getWord(0)] = child.content
@@ -996,7 +996,7 @@ class TreeNode extends AbstractNode {
   }
 
   protected _toObject() {
-    const obj: treeNotationTypes.stringMap = {}
+    const obj: scrollNotationTypes.stringMap = {}
     this.forEach(node => {
       const tuple = node._toObjectTuple()
       obj[tuple[0]] = tuple[1]
@@ -1004,11 +1004,11 @@ class TreeNode extends AbstractNode {
     return obj
   }
 
-  get asHtml(): treeNotationTypes.htmlString {
+  get asHtml(): scrollNotationTypes.htmlString {
     return this._childrenToHtml(0)
   }
 
-  protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): treeNotationTypes.htmlString {
+  protected _toHtmlCubeLine(indents = 0, lineIndex = 0, planeIndex = 0): scrollNotationTypes.htmlString {
     const getLine = (cellIndex: number, word = "") =>
       `<span class="htmlCubeSpan" style="top: calc(var(--topIncrement) * ${planeIndex} + var(--rowHeight) * ${lineIndex}); left:calc(var(--leftIncrement) * ${planeIndex} + var(--cellWidth) * ${cellIndex});">${word}</span>`
     let cells: string[] = []
@@ -1016,7 +1016,7 @@ class TreeNode extends AbstractNode {
     return cells.join("")
   }
 
-  get asHtmlCube(): treeNotationTypes.htmlString {
+  get asHtmlCube(): scrollNotationTypes.htmlString {
     return this.map((plane, planeIndex) => plane.topDownArray.map((line: any, lineIndex: number) => line._toHtmlCubeLine(line.getIndentLevel() - 2, lineIndex, planeIndex)).join("")).join("")
   }
 
@@ -1051,7 +1051,7 @@ class TreeNode extends AbstractNode {
     return this.map(child => child.compile()).join(this._getChildJoinCharacter())
   }
 
-  get asXml(): treeNotationTypes.xmlString {
+  get asXml(): scrollNotationTypes.xmlString {
     return this._childrenToXml(0)
   }
 
@@ -1118,11 +1118,11 @@ class TreeNode extends AbstractNode {
     return this.map(node => node._toYamlAssociativeArrayElement(indentLevel))
   }
 
-  get asJsonSubset(): treeNotationTypes.jsonSubset {
+  get asJsonSubset(): scrollNotationTypes.jsonSubset {
     return JSON.stringify(this.toObject(), null, " ")
   }
 
-  private _toObjectForSerialization(): treeNotationTypes.SerializedTreeNode {
+  private _toObjectForSerialization(): scrollNotationTypes.SerializedTreeNode {
     return this.length
       ? {
           cells: this.words,
@@ -1148,7 +1148,7 @@ class TreeNode extends AbstractNode {
     return JSON.stringify(this.asGrid, null, 2)
   }
 
-  findNodes(firstWordPath: treeNotationTypes.firstWordPath | treeNotationTypes.firstWordPath[]): TreeNode[] {
+  findNodes(firstWordPath: scrollNotationTypes.firstWordPath | scrollNotationTypes.firstWordPath[]): TreeNode[] {
     // todo: can easily speed this up
     const map: any = {}
     if (!Array.isArray(firstWordPath)) firstWordPath = [firstWordPath]
@@ -1159,7 +1159,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  evalTemplateString(str: treeNotationTypes.templateString): string {
+  evalTemplateString(str: scrollNotationTypes.templateString): string {
     const that = this
     return str.replace(/{([^\}]+)}/g, (match, path) => that.get(path) || "")
   }
@@ -1172,7 +1172,7 @@ class TreeNode extends AbstractNode {
     return this.map(node => node.get(path))
   }
 
-  getFiltered(fn: treeNotationTypes.filterFn) {
+  getFiltered(fn: scrollNotationTypes.filterFn) {
     const clone = this.clone()
     clone
       .filter((node, index) => !fn(node, index))
@@ -1182,7 +1182,7 @@ class TreeNode extends AbstractNode {
     return clone
   }
 
-  getNode(firstWordPath: treeNotationTypes.firstWordPath) {
+  getNode(firstWordPath: scrollNotationTypes.firstWordPath) {
     return this._getNodeByPath(firstWordPath)
   }
 
@@ -1191,7 +1191,7 @@ class TreeNode extends AbstractNode {
     if (hit) return hit.getLine().substr((prefix + this.wordBreakSymbol).length)
   }
 
-  get(firstWordPath: treeNotationTypes.firstWordPath) {
+  get(firstWordPath: scrollNotationTypes.firstWordPath) {
     const node = this._getNodeByPath(firstWordPath)
     return node === undefined ? undefined : node.content
   }
@@ -1208,18 +1208,18 @@ class TreeNode extends AbstractNode {
   pick(fields: string[]) {
     const newTree = new TreeNode(this.toString()) // todo: why not clone?
     const map = Utils.arrayToMap(fields)
-    newTree.nodeAt(0).forEach((node: treeNotationTypes.treeNode) => {
+    newTree.nodeAt(0).forEach((node: scrollNotationTypes.treeNode) => {
       if (!map[node.getWord(0)]) node.destroy()
     })
 
     return newTree
   }
 
-  getNodesByGlobPath(query: treeNotationTypes.globPath): TreeNode[] {
+  getNodesByGlobPath(query: scrollNotationTypes.globPath): TreeNode[] {
     return this._getNodesByGlobPath(query)
   }
 
-  private _getNodesByGlobPath(globPath: treeNotationTypes.globPath): TreeNode[] {
+  private _getNodesByGlobPath(globPath: scrollNotationTypes.globPath): TreeNode[] {
     const edgeSymbol = this.edgeSymbol
     if (!globPath.includes(edgeSymbol)) {
       if (globPath === "*") return this.getChildren()
@@ -1237,7 +1237,7 @@ class TreeNode extends AbstractNode {
     )
   }
 
-  protected _getNodeByPath(firstWordPath: treeNotationTypes.firstWordPath): TreeNode {
+  protected _getNodeByPath(firstWordPath: scrollNotationTypes.firstWordPath): TreeNode {
     const edgeSymbol = this.edgeSymbol
     if (!firstWordPath.includes(edgeSymbol)) {
       const index = this.indexOfLast(firstWordPath)
@@ -1271,7 +1271,7 @@ class TreeNode extends AbstractNode {
   protected _getUnionNames() {
     if (!this.length) return []
 
-    const obj: treeNotationTypes.stringMap = {}
+    const obj: scrollNotationTypes.stringMap = {}
     this.forEach((node: TreeNode) => {
       if (!node.length) return undefined
       node.forEach(node => {
@@ -1321,7 +1321,7 @@ class TreeNode extends AbstractNode {
     return ancestorNodes
   }
 
-  pathVectorToFirstWordPath(pathVector: treeNotationTypes.pathVector): word[] {
+  pathVectorToFirstWordPath(pathVector: scrollNotationTypes.pathVector): word[] {
     const path = pathVector.slice() // copy array
     const names = []
     let node: TreeNode = this
@@ -1363,7 +1363,7 @@ class TreeNode extends AbstractNode {
     return types
   }
 
-  toDataTable(header = this._getUnionNames()): treeNotationTypes.dataTable {
+  toDataTable(header = this._getUnionNames()): scrollNotationTypes.dataTable {
     const types = this._getTypes(header)
     const parsers: { [parseName: string]: (str: string) => any } = {
       string: str => str,
@@ -1376,7 +1376,7 @@ class TreeNode extends AbstractNode {
     return arrays.rows
   }
 
-  toDelimited(delimiter: treeNotationTypes.delimiter, header = this._getUnionNames(), escapeSpecialChars = true) {
+  toDelimited(delimiter: scrollNotationTypes.delimiter, header = this._getUnionNames(), escapeSpecialChars = true) {
     const regex = new RegExp(`(\\n|\\"|\\${delimiter})`)
     const cellFn: cellFn = (str, row, column) => (!str.toString().match(regex) ? str : `"` + str.replace(/\"/g, `""`) + `"`)
     return this._toDelimited(delimiter, header, escapeSpecialChars ? cellFn : str => str)
@@ -1410,7 +1410,7 @@ class TreeNode extends AbstractNode {
     }
   }
 
-  _toDelimited(delimiter: treeNotationTypes.delimiter, header: string[], cellFn: cellFn) {
+  _toDelimited(delimiter: scrollNotationTypes.delimiter, header: string[], cellFn: cellFn) {
     const data = this._toArrays(header, cellFn)
     return data.header.join(delimiter) + "\n" + data.rows.map(row => row.join(delimiter)).join("\n")
   }
@@ -1440,7 +1440,7 @@ class TreeNode extends AbstractNode {
       })
     })
 
-    const cellFn = (cellText: string, row: treeNotationTypes.positiveInt, col: treeNotationTypes.positiveInt) => {
+    const cellFn = (cellText: string, row: scrollNotationTypes.positiveInt, col: scrollNotationTypes.positiveInt) => {
       const width = widths[col]
       // Strip newlines in fixedWidth output
       const cellValue = cellText.toString().replace(/\n/g, "\\n")
@@ -1461,13 +1461,13 @@ class TreeNode extends AbstractNode {
     return this._toOutline(node => node.getLine())
   }
 
-  toMappedOutline(nodeFn: treeNotationTypes.nodeToStringFn): string {
+  toMappedOutline(nodeFn: scrollNotationTypes.nodeToStringFn): string {
     return this._toOutline(nodeFn)
   }
 
   // Adapted from: https://github.com/notatestuser/treeify.js
-  protected _toOutline(nodeFn: treeNotationTypes.nodeToStringFn) {
-    const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: treeNotationTypes.nodeToStringFn, callback: any) => {
+  protected _toOutline(nodeFn: scrollNotationTypes.nodeToStringFn) {
+    const growBranch = (outlineTreeNode: any, last: boolean, lastStates: any[], nodeFn: scrollNotationTypes.nodeToStringFn, callback: any) => {
       let lastStatesCopy = lastStates.slice(0)
       const node: TreeNode = outlineTreeNode.node
 
@@ -1508,7 +1508,7 @@ class TreeNode extends AbstractNode {
 
   // Note: Splits using a positive lookahead
   // this.split("foo").join("\n") === this.toString()
-  split(firstWord: treeNotationTypes.word): TreeNode[] {
+  split(firstWord: scrollNotationTypes.word): TreeNode[] {
     const constructor = <any>this.constructor
     const NodeBreakSymbol = this.nodeBreakSymbol
     const WordBreakSymbol = this.wordBreakSymbol
@@ -1523,7 +1523,7 @@ class TreeNode extends AbstractNode {
     return this.toMarkdownTableAdvanced(this._getUnionNames(), (val: string) => val)
   }
 
-  toMarkdownTableAdvanced(columns: word[], formatFn: treeNotationTypes.formatFunction): string {
+  toMarkdownTableAdvanced(columns: word[], formatFn: scrollNotationTypes.formatFunction): string {
     const matrix = this._getMatrix(columns)
     const empty = columns.map(col => "-")
     matrix.unshift(empty)
@@ -1620,7 +1620,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: refactor the below.
-  protected _appendFromJavascriptObjectTuple(firstWord: treeNotationTypes.word, content: any, circularCheckArray: Object[]) {
+  protected _appendFromJavascriptObjectTuple(firstWord: scrollNotationTypes.word, content: any, circularCheckArray: Object[]) {
     const type = typeof content
     let line
     let children
@@ -1648,7 +1648,7 @@ class TreeNode extends AbstractNode {
     this._insertLineAndChildren(line, children)
   }
 
-  protected _insertLineAndChildren(line: string, children?: treeNotationTypes.children, index = this.length) {
+  protected _insertLineAndChildren(line: string, children?: scrollNotationTypes.children, index = this.length) {
     const parser: any = this._getParser()._getParser(line, this)
     const newNode = new parser(children, line, this)
     const adjustedIndex = index < 0 ? this.length + index : index
@@ -1729,7 +1729,7 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: rename this. it is a particular type of object.
-  toObject(): treeNotationTypes.stringMap {
+  toObject(): scrollNotationTypes.stringMap {
     return this._toObject()
   }
 
@@ -1750,7 +1750,7 @@ class TreeNode extends AbstractNode {
     return newIndex
   }
 
-  protected _childrenToXml(indentCount: treeNotationTypes.positiveInt) {
+  protected _childrenToXml(indentCount: scrollNotationTypes.positiveInt) {
     return this.map(node => node._toXml(indentCount)).join("")
   }
 
@@ -1771,7 +1771,7 @@ class TreeNode extends AbstractNode {
     return this._hasFirstWord(firstWord)
   }
 
-  has(firstWordPath: treeNotationTypes.firstWordPath): boolean {
+  has(firstWordPath: scrollNotationTypes.firstWordPath): boolean {
     const edgeSymbol = this.edgeSymbol
     if (!firstWordPath.includes(edgeSymbol)) return this.hasFirstWord(firstWordPath)
 
@@ -1794,19 +1794,19 @@ class TreeNode extends AbstractNode {
     return this.getChildren().map(fn)
   }
 
-  filter(fn: treeNotationTypes.filterFn = item => item) {
+  filter(fn: scrollNotationTypes.filterFn = item => item) {
     return this.getChildren().filter(fn)
   }
 
-  find(fn: treeNotationTypes.filterFn) {
+  find(fn: scrollNotationTypes.filterFn) {
     return this.getChildren().find(fn)
   }
 
-  findLast(fn: treeNotationTypes.filterFn) {
+  findLast(fn: scrollNotationTypes.filterFn) {
     return this.getChildren().reverse().find(fn)
   }
 
-  every(fn: treeNotationTypes.everyFn) {
+  every(fn: scrollNotationTypes.everyFn) {
     let index = 0
     for (let node of this.getTopDownArrayIterator()) {
       if (!fn(node, index)) return false
@@ -1815,7 +1815,7 @@ class TreeNode extends AbstractNode {
     return true
   }
 
-  forEach(fn: treeNotationTypes.forEachFn) {
+  forEach(fn: scrollNotationTypes.forEachFn) {
     this.getChildren().forEach(fn)
     return this
   }
@@ -1827,7 +1827,7 @@ class TreeNode extends AbstractNode {
     })
   }
 
-  _quickCache: treeNotationTypes.stringMap
+  _quickCache: scrollNotationTypes.stringMap
   get quickCache() {
     if (!this._quickCache) this._quickCache = {}
     return this._quickCache
@@ -1863,7 +1863,7 @@ class TreeNode extends AbstractNode {
 
   // todo: make 0 and 1 a param
   getInheritanceTree() {
-    const paths: treeNotationTypes.stringMap = {}
+    const paths: scrollNotationTypes.stringMap = {}
     const result = new TreeNode()
     this.forEach(node => {
       const key = node.getWord(0)
@@ -1958,7 +1958,7 @@ class TreeNode extends AbstractNode {
   }
 
   private _setVirtualAncestorNodesByInheritanceViaColumnIndicesAndThenExpand(nodes: TreeNode[], thisIdColumnNumber: int, extendsIdColumnNumber: int) {
-    const map: { [nodeId: string]: treeNotationTypes.inheritanceInfo } = {}
+    const map: { [nodeId: string]: scrollNotationTypes.inheritanceInfo } = {}
     for (let node of nodes) {
       const nodeId = node.getWord(thisIdColumnNumber)
       if (map[nodeId]) throw new Error(`Tried to define a node with id "${nodeId}" but one is already defined.`)
@@ -2075,7 +2075,7 @@ class TreeNode extends AbstractNode {
     return clone
   }
 
-  setChildren(children: treeNotationTypes.children) {
+  setChildren(children: scrollNotationTypes.children) {
     return this._setChildren(children)
   }
 
@@ -2180,7 +2180,7 @@ class TreeNode extends AbstractNode {
     ;(this.parent as TreeNode)._deleteNode(this)
   }
 
-  set(firstWordPath: treeNotationTypes.firstWordPath, text: string) {
+  set(firstWordPath: scrollNotationTypes.firstWordPath, text: string) {
     return this.touchNode(firstWordPath).setContentWithChildren(text)
   }
 
@@ -2196,7 +2196,7 @@ class TreeNode extends AbstractNode {
     return this.touchNode(prop).setContent(value)
   }
 
-  setProperties(propMap: treeNotationTypes.stringMap) {
+  setProperties(propMap: scrollNotationTypes.stringMap) {
     const props = Object.keys(propMap)
     const values = Object.values(propMap)
     // todo: is there a built in tree method to do this?
@@ -2219,7 +2219,7 @@ class TreeNode extends AbstractNode {
     return this.findLine(line)
   }
 
-  appendLineAndChildren(line: string, children: treeNotationTypes.children) {
+  appendLineAndChildren(line: string, children: scrollNotationTypes.children) {
     return this._insertLineAndChildren(line, children)
   }
 
@@ -2283,7 +2283,7 @@ class TreeNode extends AbstractNode {
     return node.copyTo(new (<any>this.constructor)(), 0)
   }
 
-  sort(fn: treeNotationTypes.sortFn) {
+  sort(fn: scrollNotationTypes.sortFn) {
     this._getChildrenArray().sort(fn)
     this._clearIndex()
     return this
@@ -2294,7 +2294,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  protected _rename(oldFirstWord: treeNotationTypes.word, newFirstWord: treeNotationTypes.word) {
+  protected _rename(oldFirstWord: scrollNotationTypes.word, newFirstWord: scrollNotationTypes.word) {
     const index = this.indexOf(oldFirstWord)
 
     if (index === -1) return this
@@ -2307,7 +2307,7 @@ class TreeNode extends AbstractNode {
   }
 
   // Does not recurse.
-  remap(map: treeNotationTypes.stringMap) {
+  remap(map: scrollNotationTypes.stringMap) {
     this.forEach(node => {
       const firstWord = node.firstWord
       if (map[firstWord] !== undefined) node.setFirstWord(map[firstWord])
@@ -2335,7 +2335,7 @@ class TreeNode extends AbstractNode {
     return this._deleteByIndexes(indexesToDelete)
   }
 
-  delete(path: treeNotationTypes.firstWordPath = "") {
+  delete(path: scrollNotationTypes.firstWordPath = "") {
     const edgeSymbol = this.edgeSymbol
     if (!path.includes(edgeSymbol)) return this._deleteAllChildNodesWithFirstWord(path)
 
@@ -2370,7 +2370,7 @@ class TreeNode extends AbstractNode {
     return returnedNodes
   }
 
-  insertLineAndChildren(line: string, children: treeNotationTypes.children, index: int) {
+  insertLineAndChildren(line: string, children: scrollNotationTypes.children, index: int) {
     return this._insertLineAndChildren(line, children, index)
   }
 
@@ -2382,7 +2382,7 @@ class TreeNode extends AbstractNode {
     return this.insertLine(line, 0)
   }
 
-  pushContentAndChildren(content?: treeNotationTypes.line, children?: treeNotationTypes.children) {
+  pushContentAndChildren(content?: scrollNotationTypes.line, children?: scrollNotationTypes.children) {
     let index = this.length
 
     while (this.has(index.toString())) {
@@ -2401,11 +2401,11 @@ class TreeNode extends AbstractNode {
 
   // todo: add "globalReplace" method? Which runs a global regex or string replace on the Tree doc as a string?
 
-  firstWordSort(firstWordOrder: treeNotationTypes.word[]): this {
+  firstWordSort(firstWordOrder: scrollNotationTypes.word[]): this {
     return this._firstWordSort(firstWordOrder)
   }
 
-  deleteWordAt(wordIndex: treeNotationTypes.positiveInt): this {
+  deleteWordAt(wordIndex: scrollNotationTypes.positiveInt): this {
     const words = this.words
     words.splice(wordIndex, 1)
     return this.setWords(words)
@@ -2455,22 +2455,22 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  setWords(words: treeNotationTypes.word[]): this {
+  setWords(words: scrollNotationTypes.word[]): this {
     return this.setLine(words.join(this.wordBreakSymbol))
   }
 
-  setWordsFrom(index: treeNotationTypes.positiveInt, words: treeNotationTypes.word[]): this {
+  setWordsFrom(index: scrollNotationTypes.positiveInt, words: scrollNotationTypes.word[]): this {
     this.setWords(this.words.slice(0, index).concat(words))
     return this
   }
 
-  appendWord(word: treeNotationTypes.word): this {
+  appendWord(word: scrollNotationTypes.word): this {
     const words = this.words
     words.push(word)
     return this.setWords(words)
   }
 
-  _firstWordSort(firstWordOrder: treeNotationTypes.word[], secondarySortFn?: treeNotationTypes.sortFn): this {
+  _firstWordSort(firstWordOrder: scrollNotationTypes.word[], secondarySortFn?: scrollNotationTypes.sortFn): this {
     const nodeAFirst = -1
     const nodeBFirst = 1
     const map: { [firstWord: string]: int } = {}
@@ -2487,7 +2487,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  protected _touchNode(firstWordPathArray: treeNotationTypes.word[]) {
+  protected _touchNode(firstWordPathArray: scrollNotationTypes.word[]) {
     let contextNode = this
     firstWordPathArray.forEach(firstWord => {
       contextNode = contextNode.getNode(firstWord) || contextNode.appendLine(firstWord)
@@ -2500,7 +2500,7 @@ class TreeNode extends AbstractNode {
     return this._touchNode(str.split(this.wordBreakSymbol))
   }
 
-  touchNode(str: treeNotationTypes.firstWordPath) {
+  touchNode(str: scrollNotationTypes.firstWordPath) {
     return this._touchNodeByString(str)
   }
 
@@ -2508,19 +2508,19 @@ class TreeNode extends AbstractNode {
     return this.appendLineAndChildren(node.getLine(), node.childrenToString())
   }
 
-  hasLine(line: treeNotationTypes.line) {
+  hasLine(line: scrollNotationTypes.line) {
     return this.getChildren().some(node => node.getLine() === line)
   }
 
-  findLine(line: treeNotationTypes.line) {
+  findLine(line: scrollNotationTypes.line) {
     return this.getChildren().find(node => node.getLine() === line)
   }
 
-  getNodesByLine(line: treeNotationTypes.line) {
+  getNodesByLine(line: scrollNotationTypes.line) {
     return this.filter(node => node.getLine() === line)
   }
 
-  toggleLine(line: treeNotationTypes.line): TreeNode {
+  toggleLine(line: scrollNotationTypes.line): TreeNode {
     const lines = this.getNodesByLine(line)
     if (lines.length) {
       lines.map(line => line.destroy())
@@ -2628,7 +2628,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  templateToString(obj: treeNotationTypes.stringMap): string {
+  templateToString(obj: scrollNotationTypes.stringMap): string {
     // todo: compile/cache for perf?
     const tree = this.clone()
     tree.topDownArray.forEach(node => {
@@ -2657,7 +2657,7 @@ class TreeNode extends AbstractNode {
     return this
   }
 
-  sortBy(nameOrNames: treeNotationTypes.word[]) {
+  sortBy(nameOrNames: scrollNotationTypes.word[]) {
     const names = nameOrNames instanceof Array ? nameOrNames : [nameOrNames]
 
     const length = names.length
@@ -2774,11 +2774,11 @@ class TreeNode extends AbstractNode {
   }
 
   // todo: jeez i think we can come up with a better name than "JsonSubset"
-  static fromJsonSubset(str: treeNotationTypes.jsonSubset) {
+  static fromJsonSubset(str: scrollNotationTypes.jsonSubset) {
     return new TreeNode(JSON.parse(str))
   }
 
-  static serializedTreeNodeToTree(treeNode: treeNotationTypes.SerializedTreeNode) {
+  static serializedTreeNodeToTree(treeNode: scrollNotationTypes.SerializedTreeNode) {
     const language = new TreeNode()
     const cellDelimiter = language.wordBreakSymbol
     const nodeDelimiter = language.nodeBreakSymbol
@@ -2791,7 +2791,7 @@ class TreeNode extends AbstractNode {
     return tree
   }
 
-  static fromJson(str: treeNotationTypes.serializedTreeNode) {
+  static fromJson(str: scrollNotationTypes.serializedTreeNode) {
     return this.serializedTreeNodeToTree(JSON.parse(str))
   }
 
@@ -2912,7 +2912,7 @@ class TreeNode extends AbstractNode {
         }
       }
 
-      const obj: treeNotationTypes.stringMap = {}
+      const obj: scrollNotationTypes.stringMap = {}
       row.forEach((cellValue, index) => {
         obj[names[index]] = cellValue
       })
@@ -2952,7 +2952,7 @@ class TreeNode extends AbstractNode {
   }
 
   static _zipObject(keys: string[], values: any) {
-    const obj: treeNotationTypes.stringMap = {}
+    const obj: scrollNotationTypes.stringMap = {}
     keys.forEach((key, index) => (obj[key] = values[index]))
     return obj
   }
@@ -2969,7 +2969,7 @@ class TreeNode extends AbstractNode {
     return rootNode
   }
 
-  static fromDataTable(table: treeNotationTypes.dataTable) {
+  static fromDataTable(table: scrollNotationTypes.dataTable) {
     const header = table.shift()
     return new TreeNode(table.map(row => this._zipObject(header, row)))
   }
@@ -3071,7 +3071,7 @@ class TreeNode extends AbstractNode {
 }
 
 abstract class AbstractExtendibleTreeNode extends TreeNode {
-  _getFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+  _getFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
     const hit = this._getNodeFromExtended(firstWordPath)
     return hit ? hit.get(firstWordPath) : undefined
   }
@@ -3095,15 +3095,15 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
     return this._getAncestorsArray()[1]
   }
 
-  _hasFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+  _hasFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
     return !!this._getNodeFromExtended(firstWordPath)
   }
 
-  _getNodeFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+  _getNodeFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
     return this._getAncestorsArray().find(node => node.has(firstWordPath))
   }
 
-  _getConcatBlockStringFromExtended(firstWordPath: treeNotationTypes.firstWordPath) {
+  _getConcatBlockStringFromExtended(firstWordPath: scrollNotationTypes.firstWordPath) {
     return this._getAncestorsArray()
       .filter(node => node.has(firstWordPath))
       .map(node => node.getNode(firstWordPath).childrenToString())
@@ -3111,7 +3111,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
       .join("\n")
   }
 
-  _doesExtend(parserId: treeNotationTypes.parserId) {
+  _doesExtend(parserId: scrollNotationTypes.parserId) {
     return this._getAncestorSet().has(parserId)
   }
 
@@ -3122,7 +3122,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
 
   abstract get id(): string
 
-  private _cache_ancestorSet: Set<treeNotationTypes.parserId>
+  private _cache_ancestorSet: Set<scrollNotationTypes.parserId>
   private _cache_ancestorsArray: AbstractExtendibleTreeNode[]
 
   // Note: the order is: [this, parent, grandParent, ...]
@@ -3132,7 +3132,7 @@ abstract class AbstractExtendibleTreeNode extends TreeNode {
   }
 
   private get idThatThisExtends() {
-    return this.get(TreeNotationConstants.extends)
+    return this.get(ScrollNotationConstants.extends)
   }
 
   abstract get idToNodeMap(): { [id: string]: AbstractExtendibleTreeNode }

@@ -1,4 +1,4 @@
-#! /usr/bin/env node /usr/local/bin/jtree
+#! /usr/bin/env node /usr/local/bin/scrollsdk
 test basics Numbers
  arrange
   require ../../products/numbers.nodejs.js

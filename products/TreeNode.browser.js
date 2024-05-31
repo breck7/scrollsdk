@@ -1,17 +1,17 @@
-let _jtreeLatestTime = 0
-let _jtreeMinTimeIncrement = 0.000000000001
+let _scrollsdkLatestTime = 0
+let _scrollsdkMinTimeIncrement = 0.000000000001
 class AbstractNode {
   _getProcessTimeInMilliseconds() {
     // We add this loop to restore monotonically increasing .now():
     // https://developer.mozilla.org/en-US/docs/Web/API/Performance/now
     let time = performance.now()
-    while (time <= _jtreeLatestTime) {
-      if (time === time + _jtreeMinTimeIncrement)
+    while (time <= _scrollsdkLatestTime) {
+      if (time === time + _scrollsdkMinTimeIncrement)
         // Some browsers have different return values for perf.now()
-        _jtreeMinTimeIncrement = 10 * _jtreeMinTimeIncrement
-      time += _jtreeMinTimeIncrement
+        _scrollsdkMinTimeIncrement = 10 * _scrollsdkMinTimeIncrement
+      time += _scrollsdkMinTimeIncrement
     }
-    _jtreeLatestTime = time
+    _scrollsdkLatestTime = time
     return time
   }
 }
@@ -61,10 +61,10 @@ var WhereOperators
   WhereOperators["empty"] = "empty"
   WhereOperators["notEmpty"] = "notEmpty"
 })(WhereOperators || (WhereOperators = {}))
-var TreeNotationConstants
-;(function (TreeNotationConstants) {
-  TreeNotationConstants["extends"] = "extends"
-})(TreeNotationConstants || (TreeNotationConstants = {}))
+var ScrollNotationConstants
+;(function (ScrollNotationConstants) {
+  ScrollNotationConstants["extends"] = "extends"
+})(ScrollNotationConstants || (ScrollNotationConstants = {}))
 class ParserCombinator {
   constructor(catchAllParser, firstWordMap = {}, regexTests = undefined) {
     this._catchAllParser = catchAllParser
@@ -2603,7 +2603,7 @@ class AbstractExtendibleTreeNode extends TreeNode {
     return this._cache_ancestorsArray
   }
   get idThatThisExtends() {
-    return this.get(TreeNotationConstants.extends)
+    return this.get(ScrollNotationConstants.extends)
   }
   _initAncestorsArrayCache(cannotContainNodes) {
     if (this._cache_ancestorsArray) return undefined

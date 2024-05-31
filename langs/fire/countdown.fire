@@ -1,4 +1,4 @@
-#! /usr/local/bin/node --use_strict /usr/local/bin/jtree
+#! /usr/local/bin/node --use_strict /usr/local/bin/scrollsdk
 mutableNumber countdown 10
 while countdown
  printNumber countdown

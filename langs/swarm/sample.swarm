@@ -1,4 +1,4 @@
-#! /usr/bin/env node /usr/local/bin/jtree
+#! /usr/bin/env node /usr/local/bin/scrollsdk
 test swarmBrowserSample
  arrange
   require String

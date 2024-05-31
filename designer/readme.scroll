@@ -1,18 +1,18 @@
 title Designer
 
-This is the folder containing the source code for the Tree Language Designer web app.
+This is the folder containing the source code for the Scroll Designer web app.
 
 Try it Now
- https://jtree.treenotation.org/designer/
+ https://sdk.scroll.pub/designer/
 
 # For Designer Developers
 
 ? How do I run the tests?
 code
- ./jtree/designer/DesignerApp.test.ts
+ ./scrollsdk/designer/DesignerApp.test.ts
 
 ? How do I run the Designer locally?
 code
- cd jtree
+ cd scrollsdk
  npm run local
  open http://localhost:3333/designer

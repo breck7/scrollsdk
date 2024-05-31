@@ -1,9 +1,9 @@
 title Dumbdown - The dumb alternative to markdown
 
-The dialect of Dumbdown included in the JTree project is used as a demonstration and to autogenerate readmes from Grammars.
+The dialect of Dumbdown included in the ScrollSDK project is used as a demonstration and to autogenerate readmes from Grammars.
 
 Dumbdown spawned an official project: Scroll
- https://github.com/treenotation/scroll Scroll
+ https://github.com/breck7/scroll Scroll
 
 ? Can you show me some example code?
 code
@@ -12,7 +12,7 @@ code
  paragraph
   Dumbdown is an alternative to Markdown.
  
- link https://treenotation.org/ It is built on Tree Notation
+ link https://notation.scroll.pub/ It is built on Scroll Notation
  
  code
   alert(`The keyword for code blocks is "code"`)
@@ -28,7 +28,7 @@ code
 ? How can I try the original prototype?
 
 Here
- https://jtree.treenotation.org/designer/#standard%20dumbdown
+ https://sdk.scroll.pub/designer/#standard%20dumbdown
 
 ? How do I develop this lang?
 

@@ -1,48 +1,50 @@
 import header.scroll
 permalink index.html
-title ScrollSDK: SDK for building on Scroll
+title ScrollSDK: software for building on Scroll
 startColumns 4
 import ciBadges.scroll
 
 # Links
-Scroll Notation Homepage
- https://notation.scroll.pub
+Scroll Homepage
+ https://scroll.pub
 Scroll Notation Sandbox
  https://sdk.scroll.pub/sandbox
 Scroll Designer
  https://sdk.scroll.pub/designer
-Release Notes
- https://sdk.scroll.pub/releaseNotes.html
+ScrollSDK
+ https://github.com/breck7/scrollsdk
+Scroll Notation Homepage
+ https://notation.scroll.pub
 Scroll Notation FAQ
  https://faq.scroll.pub
-TypeScript Library
- https://github.com/breck7/scrollsdk
+SDK Release Notes
+ https://sdk.scroll.pub/releaseNotes.html
 Scroll Subreddit
- https://reddit.com/r/scroll-lang
+ https://reddit.com/r/treenotation
 Ohayo - A data science studio powered by Scroll Notation
  https://github.com/breck7/ohayo
-UnitTests
+ScrollSDK UnitTests
  https://sdk.scroll.pub/sandbox/test.html
-PerfTests
+ScrollSDK PerfTests
  https://sdk.scroll.pub/sandbox/perfTests.html
 
 ? Who is this package built for?
-The ScrollSDK is for people who want to design Tree Languages, make Tree editing tools, or use the Tree Component Web Framework.
-You can think of the ScrollSDK as similar to the Java Development Kit, except for Scroll Notation instead of Java.
+The ScrollSDK is for people who want to build on top of Scroll.
 
-? How do I build a new language?
+? How do I build Scroll Parsers?
 You can try the Grammar tutorial.
  link grammarTutorial.html Grammar tutorial
 
-# Grammar Files
-The ScrollSDK contains a Tree Language called "Grammar". You can write new Grammar files to define new languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. The ScrollSDK also includes a simple web Scroll Designer.
- https://sdk.scroll.pub/designer Designer
+# Writing Scroll Parsers
+The ScrollSDK contains a language for building Scroll Parsers temporarily called "Grammar". You can write new Grammar files to extend your version of Scroll. By creating ScrollParsers with Grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your version of Scroll. The ScrollSDK also includes a simple web IDE for writing Scroll Parsers called Scroll Designer.
+ https://sdk.scroll.pub/designer Scroll Designer
 
-To make your language do really interesting things, you'll want to write some code to extend your language nodes in another language that you know. The ScrollSDK lets you create new languages using just Scroll Notation, Scroll Notation + TypeScript, or Scroll Notation + Javascript. Scroll Notation and Tree Languages can be built with any language, however, not just TypeScript and Javascript. We are looking for volunteers to build libraries/sdks in other host languages.
+At this point in time, to make your Scroll Parsers do very useful things, you also need to use another language that you know. The ScrollSDK lets you create new languages using just Scroll or Scroll + Javascript. Scroll Parsers can include code from any programming language, not just Javascript. Though at the moment only Scroll + Javascript is supported by Breck's Lab.
+ https://breckyunits.com/lab.html Breck's Lab
 
 # Using the ScrollSDK
 
-## Quick start
+## Try on a virtual machine
 - Open https://gitpod.io/#https://github.com/breck7/scrollsdk
 - Run:
 code
@@ -50,15 +52,16 @@ code
  npm install .
  npm run test
 
-The ScrollSDK currently includes over 10 compiled projects (aka "products") and more than a dozen Tree Languages.
+The ScrollSDK currently includes a number of libraries and apps to use (scripts in the "products" folder).
 
-# Basic TreeNode library for npm projects:
+# Basic Scroll Notation library for npm projects:
 code
+ // Currently still called TreeNode, but will be renamed ScrollNode in a future update.
  const {TreeNode} = require("scrollsdk/products/TreeNode.js")
  const tree = new TreeNode("hello world")
  console.log(tree.asString)
 
-# Basic TreeNode library + Grammar Language for the browser:
+# Basic Scroll Notation Library + Grammar for the browser:
 code
  <script src="../../products/Utils.browser.js"></script>
  <script src="../../products/TreeNode.browser.js"></script>
@@ -75,12 +78,6 @@ code
  npm install .
  npm run local
  open http://localhost:3333/designer
-
-## TreeComponentFramework for building web apps
-This is a web framework still in the research stage. Whether it evolves into a serious line of effort is unknown.
-
-## Sample Languages
-More than 12 example Tree Languages for helping with various tasks. See the `langs/` folder.
 
 ##  Build Tools
 If you look at the source, you will also see a set of build tools (such as Builder and TypeScriptRewriter). These are currently undocumented and not recommended for external use.
@@ -112,8 +109,11 @@ If you are working on a Scroll Notation library in a new host language, feel fre
 code
  npm run updateVersion NEW_NUMBER
 
+# Former Name
+Scroll Notation was originally called Tree Notation. Scroll is the name of combined languages which were previously called Grammar and Scrolldown.
+
 # Alternatives Considered
-This is the first Scroll Notation library in existence, so there were no alternative implementations. Note and Space were predecessors to Scroll Notation. If a better alternative low level notation to Scroll Notation is possible, it has yet to be discovered.
+This is the first Scroll library in existence, so there were no alternative implementations. Note and Space were predecessors to Scroll Notation. If a better alternative low level notation to Scroll Notation is possible, it has yet to be discovered.
 
 All that said, the important part of this repo is not the code but the design patterns. Scroll Notation is very simple, and you can implement the patterns contained here in your own code without using this library. In fact, that is often the best way to use Scroll Notation!
 

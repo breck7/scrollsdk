@@ -527,7 +527,7 @@ class headerComponent extends AbstractTreeComponentParser {
    img
     id logo
     src /images/helloWorld3D.svg
-    title TreeNotation.org
+    title Notation.Scroll.pub
   span ${this._getTitle()}
  p
   a Scroll Notation Sandbox

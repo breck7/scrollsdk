@@ -189,6 +189,7 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
 
   _onGrammarKeyup() {
+    this._updateLocalStorage()
     this._grammarDidUpdate()
     this._onCodeKeyUp()
     // Hack to break CM cache:
@@ -279,7 +280,6 @@ class DesignerApp extends AbstractTreeComponentParser {
 
   private _grammarDidUpdate() {
     const grammarCode = this.getGrammarCode()
-    this._updateLocalStorage()
     this.grammarProgram = new grammarParser(grammarCode)
     const errs = this.grammarProgram.getAllErrors().map((err: any) => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")

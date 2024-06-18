@@ -4,6 +4,11 @@ startColumns 4
 
 Here's a list of the notable changes in the Scroll SDK.
 
+# 79.0.0 2024-6-18
+- 🎉 TreeFileSystem now supports cell parsers
+- ⚠️ BREAKING: TreeFileSystem now expects parsers to use the `.parsers` file extension instead of `.grammar`
+- ⚠️ BREAKING: (no one should be affected) to use the previous "// parsersOnly" perf boost, end file in `.parsers`
+
 # 78.0.0 2024-5-30
 - 🎉 jtree is now called the Scroll SDK
 - ⚠️ BREAKING: jtree => scrollsdk

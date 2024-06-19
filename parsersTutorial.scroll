@@ -1,6 +1,7 @@
 import header.scroll
 
-title Tutorial: create a new Language using Parsers
+title Scroll Parsers Tutorial
+printTitle
 
 startColumns 2
 

@@ -93,7 +93,7 @@ That being said, we despise unnecessary dependencies as much as anyone. If anyon
 
 ## Visualization of the code base
  https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=breck7%2Fscrollsdk Visualization
-image images/diagram.svg
+image images/diagram.jpg
 
 # Development Status
 All breaking changes are mentioned in the releaseNotes. We follow semantic versioning, so breaking changes should not happen if you stay on the same major version.

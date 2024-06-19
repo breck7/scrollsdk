@@ -13,7 +13,7 @@ const { TestRacer } = require("../products/TestRacer.js")
 const { ParsersCodeMirrorMode } = require("../products/ParsersCodeMirrorMode.js")
 
 const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.parsers")
-const irisGrammar = Disk.read(irisPath)
+const irisParsers = Disk.read(irisPath)
 
 const testTree: scrollNotationTypes.testTree = {}
 
@@ -98,7 +98,7 @@ testTree.codeMirrorTest = equal => {
   const mock = new MockCodeMirror(
     () =>
       new ParsersCodeMirrorMode(
-        "grammarParser",
+        "parsersParser",
         () => ParsersProgram,
         () => code
       )
@@ -108,7 +108,7 @@ testTree.codeMirrorTest = equal => {
 }
 
 testTree.iris = equal => {
-  const irisParser = new HandParsersProgram(irisGrammar).compileAndReturnRootParser()
+  const irisParser = new HandParsersProgram(irisParsers).compileAndReturnRootParser()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act
@@ -145,7 +145,7 @@ foobarParser`
   const mock = new MockCodeMirror(
     () =>
       new ParsersCodeMirrorMode(
-        "grammarParser",
+        "parsersParser",
         () => ParsersProgram,
         () => code
       )

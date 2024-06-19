@@ -46,8 +46,8 @@ class ParsersCompiler {
     scrollsdkProductsPath?: scrollNotationTypes.requirePath
   ) {
     const isNodeJs = CompileTarget.nodejs === target
-    const grammarCode = TreeNode.fromDisk(pathToParsers)
-    const program = new HandParsersProgram(grammarCode.toString())
+    const parsersCode = TreeNode.fromDisk(pathToParsers)
+    const program = new HandParsersProgram(parsersCode.toString())
     const outputFilePath = path.join(outputFolder, `${program.parsersName}.${target}.js`)
 
     let result = isNodeJs ? program.toNodeJsJavascript(scrollsdkProductsPath) : program.toBrowserJavascript()
@@ -77,9 +77,9 @@ if (!module.parent) new ${program.rootParserId}(TreeNode.fromDisk(process.argv[2
 
   static compileParsersFileAtPathAndReturnRootParser = (parsersPath: scrollNotationTypes.filepath) => {
     // todo: remove
-    if (!fs.existsSync(parsersPath)) throw new Error(`Grammar file does not exist: ${parsersPath}`)
-    const grammarCode = fs.readFileSync(parsersPath, "utf8")
-    const parsersProgram = new HandParsersProgram(grammarCode)
+    if (!fs.existsSync(parsersPath)) throw new Error(`Parsers file does not exist: ${parsersPath}`)
+    const parsersCode = fs.readFileSync(parsersPath, "utf8")
+    const parsersProgram = new HandParsersProgram(parsersCode)
     return <any>parsersProgram.compileAndReturnRootParser()
   }
 

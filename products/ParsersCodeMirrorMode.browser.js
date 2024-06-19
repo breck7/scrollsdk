@@ -322,7 +322,7 @@ class ParsersCodeMirrorMode {
     if (!program.getCellHighlightScopeAtPosition) console.log(program)
     const highlightScope = program.getCellHighlightScopeAtPosition(lineIndex, cellIndex)
     const style = highlightScope ? textMateScopeToCodeMirrorStyle(highlightScope.split(".")) : undefined
-    return style || "noHighlightScopeDefinedInGrammar"
+    return style || "noHighlightScopeDefinedInParsers"
   }
   // todo: remove.
   startState() {

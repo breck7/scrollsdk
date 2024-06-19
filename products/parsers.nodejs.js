@@ -5,7 +5,7 @@
   const { HandParsersProgram } = require("./Parsers.js")
   const { ParserBackedNode } = require("./Parsers.js")
 
-  class grammarParser extends ParserBackedNode {
+  class parsersParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
         { regex: /^$/, parser: blankLineParser },
@@ -14,7 +14,7 @@
       ])
     }
     static cachedHandParsersProgramRoot =
-      new HandParsersProgram(`// todo Add imports parsers, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
+      new HandParsersProgram(`// todo Add imports parsers, along with source maps, so we can correctly support parserss split across multiple files, and better enable parserss from compositions of reusable bits?
 // todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 // todo Add enumOption root level type?
 // todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
@@ -114,12 +114,12 @@ commentCell
  highlightScope comment
 
 // Line Parsers
-grammarParser
+parsersParser
  root
- description Grammar is a Tree Language for creating new Tree Languages. By creating a grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Grammar uses both postfix and prefix language features.
+ description Parsers is a Tree Language for creating new Tree Languages. By creating a parsers file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Parsers uses both postfix and prefix language features.
  catchAllParser catchAllErrorParser
- extensions grammar gram
- example A grammar that parses anything:
+ extensions parsers gram
+ example A parsers that parses anything:
   latinParser
    root
    catchAllParser anyParser
@@ -128,7 +128,7 @@ grammarParser
  version 5.0.0
  inScope slashCommentParser blankLineParser cellTypeDefinitionParser parserDefinitionParser
 blankLineParser
- description Blank lines are OK in Grammar.
+ description Blank lines are OK in Parsers.
  cells blankCell
  pattern ^$
  tags doNotSynthesize
@@ -434,7 +434,7 @@ extendsCellTypeParser
     get handParsersProgram() {
       return this.constructor.cachedHandParsersProgramRoot
     }
-    static rootParser = grammarParser
+    static rootParser = parsersParser
   }
 
   class blankLineParser extends ParserBackedNode {
@@ -968,8 +968,8 @@ extendsCellTypeParser
     }
   }
 
-  module.exports = grammarParser
-  grammarParser
+  module.exports = parsersParser
+  parsersParser
 
-  if (!module.parent) new grammarParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
+  if (!module.parent) new parsersParser(TreeNode.fromDisk(process.argv[2]).toString()).execute()
 }

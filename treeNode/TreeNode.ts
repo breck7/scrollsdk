@@ -2008,7 +2008,7 @@ class TreeNode extends AbstractNode {
 
   // todo: add more testing.
   // todo: solve issue with where extend should overwrite or append
-  // todo: should take a grammar? to decide whether to overwrite or append.
+  // todo: should take a parsers? to decide whether to overwrite or append.
   // todo: this is slow.
   extend(nodeOrStr: TreeNode | string | Object) {
     const node = nodeOrStr instanceof TreeNode ? nodeOrStr : new TreeNode(nodeOrStr)

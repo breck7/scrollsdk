@@ -6,7 +6,7 @@ const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
 const { HandParsersProgram } = require("../products/Parsers.js")
-const grammarParser = require("../products/parsers.nodejs.js")
+const parsersParser = require("../products/parsers.nodejs.js")
 const { posix } = require("../products/Path.js")
 
 const PARSERS_EXTENSION = ".parsers"
@@ -140,7 +140,7 @@ class TreeFileSystem implements Storage {
   private _treeCache: { [filepath: string]: typeof TreeNode } = {}
   private _parserCache: { [concatenatedFilepaths: string]: any } = {}
   private _expandedImportCache: { [filepath: string]: AssembledFile } = {}
-  private _grammarExpandersCache: { [filepath: string]: boolean } = {}
+  private _parsersExpandersCache: { [filepath: string]: boolean } = {}
 
   private _getFileAsTree(absoluteFilePath: string) {
     const { _treeCache } = this
@@ -169,7 +169,7 @@ class TreeFileSystem implements Storage {
         .join("\n")
 
     const filepathsWithParserDefinitions = []
-    if (this._doesFileHaveGrammarDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
+    if (this._doesFileHaveParsersDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
 
     if (!importRegex.test(code))
       return <AssembledFile>{
@@ -206,21 +206,21 @@ class TreeFileSystem implements Storage {
       importFilePaths,
       isImportOnly,
       afterImportPass: combinedLines,
-      filepathsWithParserDefinitions: importFilePaths.filter((filename: string) => this._doesFileHaveGrammarDefinitions(filename)).concat(filepathsWithParserDefinitions)
+      filepathsWithParserDefinitions: importFilePaths.filter((filename: string) => this._doesFileHaveParsersDefinitions(filename)).concat(filepathsWithParserDefinitions)
     }
 
     return _expandedImportCache[absoluteFilePath]
   }
 
-  private _doesFileHaveGrammarDefinitions(absoluteFilePath: scrollNotationTypes.filepath) {
+  private _doesFileHaveParsersDefinitions(absoluteFilePath: scrollNotationTypes.filepath) {
     if (!absoluteFilePath) return false
-    const { _grammarExpandersCache } = this
-    if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
+    const { _parsersExpandersCache } = this
+    if (_parsersExpandersCache[absoluteFilePath] === undefined) _parsersExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
 
-    return _grammarExpandersCache[absoluteFilePath]
+    return _parsersExpandersCache[absoluteFilePath]
   }
 
-  private _getOneGrammarParserFromFiles(filePaths: string[], baseParsersCode: string) {
+  private _getOneParsersParserFromFiles(filePaths: string[], baseParsersCode: string) {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
     const cellDefinitionRegex = /^[a-zA-Z0-9_]+Cell/
     const asOneFile = filePaths
@@ -236,8 +236,8 @@ class TreeFileSystem implements Storage {
       .join("\n")
       .trim()
 
-    // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Grammar not to run prettier on js nodes)
-    return new grammarParser(baseParsersCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
+    // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Parsers not to run prettier on js nodes)
+    return new parsersParser(baseParsersCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
   }
 
   get parsers() {
@@ -252,12 +252,12 @@ class TreeFileSystem implements Storage {
       .join("\n")
     const hit = _parserCache[key]
     if (hit) return hit
-    const grammarParser = this._getOneGrammarParserFromFiles(filePaths, baseParsersCode)
-    const grammarCode = grammarParser.asString
+    const parsersParser = this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
+    const parsersCode = parsersParser.asString
     _parserCache[key] = {
-      grammarParser,
-      grammarCode,
-      parser: new HandParsersProgram(grammarCode).compileAndReturnRootParser()
+      parsersParser,
+      parsersCode,
+      parser: new HandParsersProgram(parsersCode).compileAndReturnRootParser()
     }
     return _parserCache[key]
   }
@@ -267,7 +267,7 @@ class TreeFileSystem implements Storage {
 
     if (!defaultParserCode) return assembledFile
 
-    // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM GRAMMAR NODES DEFINED
+    // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM PARSERS NODES DEFINED
     if (assembledFile.filepathsWithParserDefinitions.length) assembledFile.parser = this.getParser(assembledFile.filepathsWithParserDefinitions, defaultParserCode).parser
     return assembledFile
   }

@@ -61,7 +61,7 @@ class TreeFileSystem {
     this._treeCache = {}
     this._parserCache = {}
     this._expandedImportCache = {}
-    this._grammarExpandersCache = {}
+    this._parsersExpandersCache = {}
     if (inMemoryFiles) this._storage = new MemoryWriter(inMemoryFiles)
     else this._storage = new DiskWriter()
   }
@@ -105,7 +105,7 @@ class TreeFileSystem {
         .filter(line => line.startsWith("import "))
         .join("\n")
     const filepathsWithParserDefinitions = []
-    if (this._doesFileHaveGrammarDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
+    if (this._doesFileHaveParsersDefinitions(absoluteFilePath)) filepathsWithParserDefinitions.push(absoluteFilePath)
     if (!importRegex.test(code))
       return {
         afterImportPass: code,
@@ -136,17 +136,17 @@ class TreeFileSystem {
       importFilePaths,
       isImportOnly,
       afterImportPass: combinedLines,
-      filepathsWithParserDefinitions: importFilePaths.filter(filename => this._doesFileHaveGrammarDefinitions(filename)).concat(filepathsWithParserDefinitions)
+      filepathsWithParserDefinitions: importFilePaths.filter(filename => this._doesFileHaveParsersDefinitions(filename)).concat(filepathsWithParserDefinitions)
     }
     return _expandedImportCache[absoluteFilePath]
   }
-  _doesFileHaveGrammarDefinitions(absoluteFilePath) {
+  _doesFileHaveParsersDefinitions(absoluteFilePath) {
     if (!absoluteFilePath) return false
-    const { _grammarExpandersCache } = this
-    if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
-    return _grammarExpandersCache[absoluteFilePath]
+    const { _parsersExpandersCache } = this
+    if (_parsersExpandersCache[absoluteFilePath] === undefined) _parsersExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
+    return _parsersExpandersCache[absoluteFilePath]
   }
-  _getOneGrammarParserFromFiles(filePaths, baseParsersCode) {
+  _getOneParsersParserFromFiles(filePaths, baseParsersCode) {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
     const cellDefinitionRegex = /^[a-zA-Z0-9_]+Cell/
     const asOneFile = filePaths
@@ -161,8 +161,8 @@ class TreeFileSystem {
       })
       .join("\n")
       .trim()
-    // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Grammar not to run prettier on js nodes)
-    return new grammarParser(baseParsersCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
+    // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Parsers not to run prettier on js nodes)
+    return new parsersParser(baseParsersCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
   }
   get parsers() {
     return Object.values(this._parserCache).map(parser => parser.parsersParser)
@@ -175,19 +175,19 @@ class TreeFileSystem {
       .join("\n")
     const hit = _parserCache[key]
     if (hit) return hit
-    const grammarParser = this._getOneGrammarParserFromFiles(filePaths, baseParsersCode)
-    const grammarCode = grammarParser.asString
+    const parsersParser = this._getOneParsersParserFromFiles(filePaths, baseParsersCode)
+    const parsersCode = parsersParser.asString
     _parserCache[key] = {
-      grammarParser,
-      grammarCode,
-      parser: new HandParsersProgram(grammarCode).compileAndReturnRootParser()
+      parsersParser,
+      parsersCode,
+      parser: new HandParsersProgram(parsersCode).compileAndReturnRootParser()
     }
     return _parserCache[key]
   }
   assembleFile(absoluteFilePath, defaultParserCode) {
     const assembledFile = this._assembleFile(absoluteFilePath)
     if (!defaultParserCode) return assembledFile
-    // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM GRAMMAR NODES DEFINED
+    // BUILD CUSTOM COMPILER, IF THERE ARE CUSTOM PARSERS NODES DEFINED
     if (assembledFile.filepathsWithParserDefinitions.length) assembledFile.parser = this.getParser(assembledFile.filepathsWithParserDefinitions, defaultParserCode).parser
     return assembledFile
   }

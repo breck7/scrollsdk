@@ -51,7 +51,7 @@ class DesignerApp extends AbstractTreeComponentParser {
 
   inferPrefixParsersCommand() {
     this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeywordLanguage("inferredLanguage"))
-    this._onGrammarKeyup()
+    this._onParsersKeyup()
   }
 
   synthesizeProgramCommand() {
@@ -74,10 +74,10 @@ class DesignerApp extends AbstractTreeComponentParser {
     const parsers = await willowBrowser.httpGetUrl(parsersPath)
     const sample = await willowBrowser.httpGetUrl(samplePath)
 
-    this._setGrammarAndCode(parsers.text, sample.text)
+    this._setParsersAndCode(parsers.text, sample.text)
   }
 
-  async fetchAndLoadGrammarFromUrlCommand(url: string, programUrl: string) {
+  async fetchAndLoadParsersFromUrlCommand(url: string, programUrl: string) {
     const willowBrowser = this.willowBrowser
     const parsers = await willowBrowser.httpGetUrl(url)
     const parsersProgram = new HandParsersProgram(parsers.text)
@@ -88,7 +88,7 @@ class DesignerApp extends AbstractTreeComponentParser {
       sample = sample.text
     }
 
-    this._setGrammarAndCode(parsers.text, sample)
+    this._setParsersAndCode(parsers.text, sample)
   }
 
   // TODO: ADD TESTS!!!!!
@@ -170,14 +170,14 @@ class DesignerApp extends AbstractTreeComponentParser {
       return true
     } else if (fromUrl) {
       console.log(`Loading parsers from '${fromUrl}'....`)
-      await this.fetchAndLoadGrammarFromUrlCommand(fromUrl, programUrl)
+      await this.fetchAndLoadParsersFromUrlCommand(fromUrl, programUrl)
       return true
     } else {
       const parsersCode = deepLink.getNode("parsers")
       const sampleCode = deepLink.getNode("sample")
       if (parsersCode && sampleCode) {
         console.log("Loading custom from deep link....")
-        this._setGrammarAndCode(parsersCode.childrenToString(), sampleCode.childrenToString())
+        this._setParsersAndCode(parsersCode.childrenToString(), sampleCode.childrenToString())
         return true
       }
     }
@@ -188,7 +188,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     history.replaceState(null, null, " ")
   }
 
-  _onGrammarKeyup() {
+  _onParsersKeyup() {
     this._updateLocalStorage()
     this._parsersDidUpdate()
     this._onCodeKeyUp()
@@ -207,10 +207,10 @@ class DesignerApp extends AbstractTreeComponentParser {
     this.parsersInstance = new ParsersCodeMirrorMode("parsers", () => parsersParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("parsersConsole"), { lineWrapping: true })
 
     this.parsersInstance.on("keyup", () => {
-      this._onGrammarKeyup()
+      this._onParsersKeyup()
     })
 
-    this.codeInstance = new ParsersCodeMirrorMode("custom", () => this._getGrammarParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeInstance = new ParsersCodeMirrorMode("custom", () => this._getParsersParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
 
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
 
@@ -240,7 +240,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     const parsersCode: any = localStorage.getItem(this._localStorageKeys.parsersConsole)
     const code = localStorage.getItem(this._localStorageKeys.codeConsole)
 
-    if (typeof parsersCode === "string" && typeof code === "string") this._setGrammarAndCode(parsersCode, code)
+    if (typeof parsersCode === "string" && typeof code === "string") this._setParsersAndCode(parsersCode, code)
 
     return parsersCode || code
   }
@@ -252,16 +252,16 @@ class DesignerApp extends AbstractTreeComponentParser {
     console.log("Local storage updated...")
   }
 
-  private _getGrammarErrors(parsersCode: string) {
+  private _getParsersErrors(parsersCode: string) {
     return new parsersParser(parsersCode).getAllErrors()
   }
 
-  private _getGrammarParser() {
+  private _getParsersParser() {
     let currentParsersCode = this.getParsersCode()
 
     if (!this._parsersParser || currentParsersCode !== this._cachedParsersCode) {
       try {
-        const parsersErrors = this._getGrammarErrors(currentParsersCode)
+        const parsersErrors = this._getParsersErrors(currentParsersCode)
         this._parsersParser = new HandParsersProgram(currentParsersCode).compileAndReturnRootParser()
         this._cachedParsersCode = currentParsersCode
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
@@ -307,7 +307,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     const { willowBrowser } = this
     const code = this.getCodeValue()
     this._updateLocalStorage()
-    const parsersParser = this._getGrammarParser()
+    const parsersParser = this._getParsersParser()
     const that = this
 
     this.program = new parsersParser(code)
@@ -343,7 +343,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     if (willowBrowser.getElementById("executeCommand").checked) this.executeCommand()
   }
 
-  _setGrammarAndCode(parsers: string, code: string) {
+  _setParsersAndCode(parsers: string, code: string) {
     this.setParsersCode(parsers)
     this.setCodeCode(code)
     this._clearHash()
@@ -534,8 +534,8 @@ class tableComponent extends AbstractTreeComponentParser {
     return `table
  tr
   td
-   span Grammar for your Tree Language 
-   a Infer Prefix Grammar
+   span Parsers for your Tree Language 
+   a Infer Prefix Parsers
     clickCommand inferPrefixParsersCommand
    span  |
    a Download Bundle
@@ -568,7 +568,7 @@ class tableComponent extends AbstractTreeComponentParser {
     id codeConsole
  tr
   td
-   div Grammar Errors
+   div Parsers Errors
    pre
     id parsersErrorsConsole
    div

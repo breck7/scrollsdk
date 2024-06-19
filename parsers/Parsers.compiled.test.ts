@@ -26,15 +26,15 @@ const makeProgram = (parsersCode: string, code: string) => {
 
 testTree.parsers = equal => {
   // Arrange
-  const grammarGrammarPath = path.join(langsDir, "parsers", "parsers.parsers")
+  const parsersParsersPath = path.join(langsDir, "parsers", "parsers.parsers")
   try {
-    const tempFilePath = ParsersCompiler.compileParsersForNodeJs(grammarGrammarPath, outputDir, false)
+    const tempFilePath = ParsersCompiler.compileParsersForNodeJs(parsersParsersPath, outputDir, false)
 
     // Act
-    const grammar = require(tempFilePath)
+    const parsers = require(tempFilePath)
 
     // Assert
-    equal(!!new grammar(), true, "it compiled")
+    equal(!!new parsers(), true, "it compiled")
   } catch (err) {
     console.error(err)
   } finally {
@@ -48,7 +48,7 @@ testTree.compileAll = equal => {
     try {
       // Act
       const parsersPath = path.join(langsDir, name, `${name}.parsers`)
-      const grammarCode = TreeNode.fromDisk(parsersPath)
+      const parsersCode = TreeNode.fromDisk(parsersPath)
       const tempFilePath = ParsersCompiler.compileParsersForNodeJs(parsersPath, outputDir, false)
       const rootClass = require(tempFilePath)
 
@@ -57,7 +57,7 @@ testTree.compileAll = equal => {
 
       // Act
       // todo: should we have an example node for all langs?
-      const exampleProgram = grammarCode.getNode("grammar example")
+      const exampleProgram = parsersCode.getNode("parsers example")
       if (exampleProgram) {
         const testProgram = new rootClass(exampleProgram.childrenToString())
         // todo: should we then execute it? compile it?
@@ -99,11 +99,11 @@ testTree.jibberish = equal => {
 
 testTree.numbers = equal => {
   // Arrange
-  const numbersGrammarPath = path.join(langsDir, `numbers/numbers.parsers`)
-  const numbersParsersCode = Disk.read(numbersGrammarPath)
+  const numbersParsersPath = path.join(langsDir, `numbers/numbers.parsers`)
+  const numbersParsersCode = Disk.read(numbersParsersPath)
   const makeNumbersRunTimeProgram = (code: string) => makeProgram(numbersParsersCode, code)
   try {
-    const tempFilePath = ParsersCompiler.compileParsersForNodeJs(numbersGrammarPath, outputDir, false)
+    const tempFilePath = ParsersCompiler.compileParsersForNodeJs(numbersParsersPath, outputDir, false)
 
     // Act
     const numbers = require(tempFilePath)
@@ -138,13 +138,13 @@ testTree.numbers = equal => {
 
 testTree.predictParsersFile = equal => {
   // Arrange
-  const input = Disk.read(path.join(__dirname, "UnknownGrammar.sample.tree"))
+  const input = Disk.read(path.join(__dirname, "UnknownParsers.sample.tree"))
 
   // Act
-  const grammarFile = new UnknownParsersProgram(input).inferParsersFileForAKeywordLanguage("foobar")
+  const parsersFile = new UnknownParsersProgram(input).inferParsersFileForAKeywordLanguage("foobar")
 
   // Assert
-  equal(grammarFile, Disk.read(path.join(__dirname, "UnknownGrammar.expected.parsers")), "predicted grammar correct")
+  equal(parsersFile, Disk.read(path.join(__dirname, "UnknownParsers.expected.parsers")), "predicted parsers correct")
 }
 
 testTree.emojis = equal => {
@@ -155,32 +155,32 @@ testTree.emojis = equal => {
   💩`
 
   // Act
-  const grammarFile = new UnknownParsersProgram(source).inferParsersFileForAKeywordLanguage("emojiLang")
+  const parsersFile = new UnknownParsersProgram(source).inferParsersFileForAKeywordLanguage("emojiLang")
   // Assert
-  equal(grammarFile, Disk.read(path.join(__dirname, "UnknownGrammar.expectedEmoji.parsers")), "predicted emoji grammar correct")
+  equal(parsersFile, Disk.read(path.join(__dirname, "UnknownParsers.expectedEmoji.parsers")), "predicted emoji parsers correct")
 }
 
 const langs = Disk.dir(langsDir)
 langs.forEach((name: string) => {
   const folder = path.join(langsDir, `${name}`)
   if (!Disk.isDir(folder)) return
-  testTree[`${name}InferPrefixGrammar`] = equal => {
+  testTree[`${name}InferPrefixParsers`] = equal => {
     // Arrange
     const samplePath = path.join(langsDir, name, `sample.${name}`)
     const sampleCode = TreeNode.fromDisk(samplePath).toString()
 
     // todo: cleanup
-    if (Disk.read(path.join(langsDir, name, `${name}.parsers`)).includes("nonPrefixGrammar")) return equal(true, true, `skipped ${name} beause not prefix grammar`)
+    if (Disk.read(path.join(langsDir, name, `${name}.parsers`)).includes("nonPrefixParsers")) return equal(true, true, `skipped ${name} beause not prefix parsers`)
 
     // Act
     const inferredPrefixParsersCode = new UnknownParsersProgram(sampleCode).inferParsersFileForAKeywordLanguage("foobar")
     const inferredPrefixParsersProgram = new HandParsersProgram(inferredPrefixParsersCode)
     const rootParser = inferredPrefixParsersProgram.compileAndReturnRootParser()
-    const programParsedWithInferredGrammar = new rootParser(sampleCode)
+    const programParsedWithInferredParsers = new rootParser(sampleCode)
 
     // Assert
-    equal(inferredPrefixParsersProgram.getAllErrors().length, 0, `no errors in inferred grammar program for language ${name}`)
-    equal(programParsedWithInferredGrammar.getAllErrors().length, 0, `no errors in program from inferred grammar for ${name}`)
+    equal(inferredPrefixParsersProgram.getAllErrors().length, 0, `no errors in inferred parsers program for language ${name}`)
+    equal(programParsedWithInferredParsers.getAllErrors().length, 0, `no errors in program from inferred parsers for ${name}`)
   }
 })
 

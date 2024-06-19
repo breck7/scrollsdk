@@ -1,0 +1,104 @@
+import ../../header.scroll
+permalink index.html
+copyButtons
+
+title Scroll Parsers: A language for making languages
+
+startColumns 2
+
+? What is Parsers?
+Parsers is a language for making languages.
+
+? Can you show me an example?
+Below is some code written in Parsers to create a simple language called *Panda*.
+
+code
+ pandaParser
+  root
+  catchAllParser expressionParser
+ operatorCell
+  enum + -
+ intCell
+ expressionParser
+  cells operatorCell
+  catchAllCellType intCell
+
+The Parsers code can generate a parser that parses statements like `+ 1 2 5 10` and `- 10 2`.
+
+? What is a longer description?
+Parsers is a language built on Scroll Notation for building other languages built on Scroll Notation. The parsers not only allow parsing of those languages but also can include code written in a host language (such as Javascript) for compiling and/or runtime interpreting of these languages.
+
+? Can I try it online?
+Yes! The Parser Designer is an online tool for writing Parsers code to build languages right in your browser.
+ https://sdk.scroll.pub/designer/ Parser Designer
+
+endColumns
+
+# Parsers Roadmap
+ id roadmap
+
+The following major features are likely to be added to a future version of Parsers:
+ style text-align: center;
+
+startColumns 2
+
+## Import statements
+- Turning Parsers into a 2 pass language where the first pass resolves any imports
+- Imports will leverage the existing import code used by Scroll for posix style paths
+- Other protocols may be supported such as `https://` imports and perhaps something like `node_modules://`
+
+## Dependent Types
+- The inScope parsers could change based upon current values of the tree. For example, you might have a tree language where if you set `type website` certain parsers would come into/out of scope.
+- Scope Refactor. As part of the dependent type work the `inScope` implementation may undergo a refactor to allow for further future possibilities. For example, we may want to consider alternate approaches to `inScope` than the current inheritance system.
+
+## Union Cell Types
+- Sometimes a language may want to allow a number in a hole, or potentially something like an "N/A" value. Union Cell Types would be one way to do this.
+
+## Pattern Matching
+- You might want to have parsers with the same crux but different forms (for example, different cells). Currently you might be able to do this using Regex parsers, but perhaps we could add some pattern matching code to make this easier.
+
+## Mixins
+- You might want to share code between parsers without creating an inheritance link. Mixins where code is copied at compile time would be a way to do this.
+
+## Positional Parsers
+- A common pattern in languages is to have different scopes for the first line of the file. For example, shebang lines in executable scripts or header lines in CSV files. We might want to create a way to have certain parsers inScope for line 0 and out of scope the rest of the lines.
+
+## LSP Support
+- We should move away from TreeComponentFramework and the Designer App code base and move efforts toward having languages written in Parsers get an LSP implementation for free.
+
+## BNF Parsing
+- It's worth exploring using Parsers to also generate parsers for BNF languages.
+
+## Upgrading to CodeMirror Version 6
+- It may be worth it to upgrade the CodeMirror Mode Code to Code Mirror Version 6.
+
+endColumns
+
+# Parsers Release Notes
+ id releaseNotes
+
+Here's a list of the notable changes in Parsers:
+ style text-align: center;
+
+startColumns 2
+
+# 6.0.0 2023-4-2
+- ⚠️ BREAKING:
+ - instead of `NodeTypeDefinitions` ending in `Node` it is now `ParserDefinitions` ending in `Parser`
+ - baseNodeType > baseParser
+ - blobNode > blobParser
+ - errorNode > errorParser
+ - catchAllNodeType > catchAllParser
+
+# 5.0.0 2023-3-30
+- 🎉 You can now add scoped line parsers inside other line parser definitions.
+- ⚠️ BREAKING: A lot of methods that were formerly `getX()` have been changed to getters like `get x()`.
+
+# 4.0.0 2023-3-28
+- 🎉 blank lines are now OK
+- 🎉 added `//` comments
+- ⚠️ BREAKING:
+ - Removed `todo` comments. Use `// todo` instead
+ - Removed `tooling` keyword. Use `// tooling` instead
+
+import ../../footer.scroll

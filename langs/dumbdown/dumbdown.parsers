@@ -1,0 +1,134 @@
+// Cell Parsers
+anyCell
+blankCell
+dashCell
+ highlightScope constant.language
+codeCell
+ highlightScope comment
+keywordCell
+ highlightScope keyword
+textCell
+ highlightScope string
+urlCell
+ highlightScope constant.language
+
+// Line Parsers
+errorParser
+ baseParser errorParser
+dumbdownParser
+ extensions dd dumbdown
+ description A Language that compiles to HTML. An alternative to Markdown.
+ root
+ inScope abstractTopLevelParser blankLineParser
+ catchAllParser quickParagraphParser
+ compilesTo html
+ example
+  title Hello world
+  title2 This is Dumbdown
+  
+  paragraph
+   It compiles to HTML. Blank lines get turned into brs.
+  link https://notation.scroll.pub Dumbdown is a Language.
+  list
+   - It has lists
+   - Too!
+  code
+   // You can add code as well.
+   print("Hello world")
+abstractTopLevelParser
+ cells keywordCell
+linkParser
+ cells keywordCell urlCell
+ catchAllCellType textCell
+ extends abstractTopLevelParser
+ compiler
+  stringTemplate <a href="{urlCell}">{textCell}</a>
+ crux link
+paragraphParser
+ catchAllParser paragraphContentParser
+ extends abstractTopLevelParser
+ crux paragraph
+ compiler
+  openChildren <p>
+  closeChildren </p>
+  stringTemplate 
+paragraphContentParser
+ inScope paragraphContentParser
+ catchAllCellType textCell
+ compiler
+  stringTemplate {textCell}
+codeParser
+ description A code block.
+ catchAllParser lineOfCodeParser
+ extends abstractTopLevelParser
+ javascript
+  compile() {
+   return `<code>${this.indentation + this.childrenToString()}</code>`
+  }
+ crux code
+listParser
+ inScope dashParser
+ extends abstractTopLevelParser
+ compiler
+  stringTemplate 
+  openChildren <ul>
+  closeChildren </ul>
+ crux list
+blankLineParser
+ description Blank lines compile to nothing in the HTML.
+ cells blankCell
+ compiler
+  stringTemplate 
+ pattern ^$
+ tags doNotSynthesize
+lineOfCodeParser
+ catchAllCellType codeCell
+ catchAllParser lineOfCodeParser
+dashParser
+ crux -
+ catchAllCellType textCell
+ compiler
+  stringTemplate <li>{textCell}</li>
+ cells dashCell
+titleParser
+ catchAllCellType textCell
+ extends abstractTopLevelParser
+ compiler
+  stringTemplate 
+ crux title
+ javascript
+  compile(spaces) {
+   const title = this.content
+   const permalink = Utils.stringToPermalink(this.content)
+   return `<h1 id="${permalink}"><a href="#${permalink}">${title}</a></h1>`
+  }
+title2Parser
+ catchAllCellType textCell
+ extends abstractTopLevelParser
+ compiler
+  stringTemplate <h2>{textCell}</h2>
+ crux title2
+title3Parser
+ extends title2Parser
+ compiler
+  stringTemplate <h3>{textCell}</h3>
+ crux title3
+title4Parser
+ extends title2Parser
+ compiler
+  stringTemplate <h4>{textCell}</h4>
+ crux title4
+title5Parser
+ extends title2Parser
+ compiler
+  stringTemplate <h5>{textCell}</h5>
+ crux title5
+title6Parser
+ extends title2Parser
+ compiler
+  stringTemplate <h6>{textCell}</h6>
+ crux title6
+quickParagraphParser
+ catchAllCellType textCell
+ compiler
+  stringTemplate <p>{textCell}</p>

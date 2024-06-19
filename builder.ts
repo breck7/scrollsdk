@@ -4,9 +4,9 @@ const { TreeNode } = require("./products/TreeNode.js")
 const { TypeScriptRewriter } = require("./products/TypeScriptRewriter.js")
 const { Disk } = require("./products/Disk.node.js")
 const { Utils } = require("./products/Utils.js")
-const { HandGrammarProgram } = require("./products/GrammarLanguage.js")
+const { HandParsersProgram } = require("./products/Parsers.js")
 const { TestRacer } = require("./products/TestRacer.js")
-const { GrammarCompiler } = require("./products/GrammarCompiler.js")
+const { ParsersCompiler } = require("./products/ParsersCompiler.js")
 const path = require("path")
 const fs = require("fs")
 const { execSync } = require("child_process")
@@ -16,7 +16,7 @@ const prettierConfig = require("./package.json").prettier
 import { scrollNotationTypes } from "./products/scrollNotationTypes"
 
 // todo: remove?
-const registeredExtensions: scrollNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", grammar: "tooling ", gram: "tooling " }
+const registeredExtensions: scrollNotationTypes.stringMap = { js: "//", maia: "doc.tooling ", ts: "//", parsers: "tooling ", gram: "tooling " }
 
 class Builder extends TreeNode {
   private _typeScriptToJavascript(sourceCode: string, forBrowser = false) {
@@ -187,10 +187,10 @@ class Builder extends TreeNode {
     this._buildTsc(Disk.read(__filename), path.join(__dirname, "builder.js"))
   }
 
-  makeGrammarFileTestTree(grammarPath: scrollNotationTypes.grammarFilePath) {
-    // todo: can we ditch these dual tests at some point? ideally Grammar should be bootstrapped correct?
+  makeParsersFileTestTree(parsersPath: scrollNotationTypes.parsersFilePath) {
+    // todo: can we ditch these dual tests at some point? ideally Parsers should be bootstrapped correct?
     const testTree: any = {}
-    const checkGrammarFile = (equal: Function, program: any) => {
+    const checkParsersFile = (equal: Function, program: any) => {
       // Act
       const errs = program.getAllErrors()
       if (errs.length) console.log(errs.join("\n"))
@@ -198,12 +198,12 @@ class Builder extends TreeNode {
       equal(errs.length, 0, "should be no errors")
     }
 
-    const handGrammarProgram = new HandGrammarProgram(Disk.read(grammarPath))
+    const handParsersProgram = new HandParsersProgram(Disk.read(parsersPath))
 
-    testTree[`grammarCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, GrammarCompiler.compileGrammarAndCreateProgram(grammarPath, path.join(__dirname, "langs", "grammar", "grammar.grammar")))
-    testTree[`handGrammarCheckOf${grammarPath}`] = (equal: Function) => checkGrammarFile(equal, handGrammarProgram)
+    testTree[`parsersCheckOf${parsersPath}`] = (equal: Function) => checkParsersFile(equal, ParsersCompiler.compileParsersAndCreateProgram(parsersPath, path.join(__dirname, "langs", "parsers", "parsers.parsers")))
+    testTree[`handParsersCheckOf${parsersPath}`] = (equal: Function) => checkParsersFile(equal, handParsersProgram)
 
-    Object.assign(testTree, handGrammarProgram.examplesToTestBlocks())
+    Object.assign(testTree, handParsersProgram.examplesToTestBlocks())
 
     return testTree
   }
@@ -251,14 +251,14 @@ class Builder extends TreeNode {
   }
 
   produceAllLangs() {
-    const langs = `arrow chuck dug dumbdown fire fruit grammar hakon jibberish jibjab numbers poop project stamp stump swarm`.split(" ")
+    const langs = `arrow chuck dug dumbdown fire fruit parsers hakon jibberish jibjab numbers poop project stamp stump swarm`.split(" ")
     langs.forEach(lang => this.produceLang(lang))
   }
 
   produceLang(langName: string) {
-    const newFilePath = path.join(__dirname, "langs", langName, `${langName}.grammar`)
-    GrammarCompiler.compileGrammarForBrowser(newFilePath, this._getProductFolder(), true)
-    GrammarCompiler.compileGrammarForNodeJs(newFilePath, this._getProductFolder(), true, ".")
+    const newFilePath = path.join(__dirname, "langs", langName, `${langName}.parsers`)
+    ParsersCompiler.compileParsersForBrowser(newFilePath, this._getProductFolder(), true)
+    ParsersCompiler.compileParsersForNodeJs(newFilePath, this._getProductFolder(), true, ".")
   }
 
   private _getProductsTree() {
@@ -266,10 +266,10 @@ class Builder extends TreeNode {
   }
 
   buildJibJab() {
-    const combined = GrammarCompiler.combineFiles([__dirname + "/langs/jibberish/jibberish.grammar", __dirname + "/langs/jibjab/jibjab.gram"])
-    const path = __dirname + "/langs/jibjab/jibjab.grammar"
+    const combined = ParsersCompiler.combineFiles([__dirname + "/langs/jibberish/jibberish.parsers", __dirname + "/langs/jibjab/jibjab.gram"])
+    const path = __dirname + "/langs/jibjab/jibjab.parsers"
     combined.toDisk(path)
-    GrammarCompiler.formatFileInPlace(path, __dirname + "/langs/grammar/grammar.grammar")
+    ParsersCompiler.formatFileInPlace(path, __dirname + "/langs/parsers/parsers.parsers")
   }
 
   _getProductFolder() {
@@ -297,7 +297,7 @@ class Builder extends TreeNode {
 
     const fileTestTree: any = {}
 
-    allTestFiles.filter(file => file.endsWith(".grammar")).forEach(file => (fileTestTree[file] = this.makeGrammarFileTestTree(file)))
+    allTestFiles.filter(file => file.endsWith(".parsers")).forEach(file => (fileTestTree[file] = this.makeParsersFileTestTree(file)))
 
     allTestFiles.filter(file => file.endsWith(".test.js") || file.endsWith(".test.ts")).forEach(file => (fileTestTree[file] = require(file).testTree))
 
@@ -314,7 +314,7 @@ treeNode
 swim
 testRacer
 treeFileSystem
-grammar
+parsers
 utils
 treeComponentFramework`.split("\n")
     const fileTree = {}

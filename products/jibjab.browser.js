@@ -1,5 +1,5 @@
 {
-  class jibberishParser extends GrammarBackedNode {
+  class jibberishParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
@@ -34,7 +34,7 @@
   }
 
   class jibjabParser extends jibberishParser {
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
 anyCell
 columnNameEnumCell
 columnNameCell
@@ -55,7 +55,7 @@ commentCell
 // Line Parsers
 jibberishParser
  root
- description A useless Tree Language built for testing Scroll Notation code.
+ description A useless Language built for testing Scroll Notation code.
  javascript
   execute() {
    return 42
@@ -185,13 +185,13 @@ scoresParser
  catchAllCellType intCell
  cells topLevelPropertyCell
  crux scores`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = jibjabParser
   }
 
-  class abstractBaseClassParser extends GrammarBackedNode {}
+  class abstractBaseClassParser extends ParserBackedNode {}
 
   class extendsAbstractParser extends abstractBaseClassParser {
     get topLevelPropertyCell() {
@@ -202,7 +202,7 @@ scoresParser
     }
   }
 
-  class abstractTopLevelParser extends GrammarBackedNode {
+  class abstractTopLevelParser extends ParserBackedNode {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }
@@ -369,7 +369,7 @@ world`
     }
   }
 
-  class contentParser extends GrammarBackedNode {
+  class contentParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
     }
@@ -378,7 +378,7 @@ world`
     }
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }
@@ -390,13 +390,13 @@ world`
     }
   }
 
-  class lineOfCodeParser extends GrammarBackedNode {
+  class lineOfCodeParser extends ParserBackedNode {
     get wordCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class textParser extends GrammarBackedNode {
+  class textParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser())
     }
@@ -405,7 +405,7 @@ world`
     }
   }
 
-  class scoresParser extends GrammarBackedNode {
+  class scoresParser extends ParserBackedNode {
     get topLevelPropertyCell() {
       return this.getWord(0)
     }

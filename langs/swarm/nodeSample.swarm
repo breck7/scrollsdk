@@ -1,7 +1,7 @@
 #! /usr/bin/env node /usr/local/bin/scrollsdk
 test swarmNodeSample
  arrange
-  require ../../products/GrammarLanguage.js HandGrammarProgram
+  require ../../products/Parsers.js HandParsersProgram
   constructWithParagraph
    testlangParser
     root

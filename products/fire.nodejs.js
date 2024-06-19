@@ -2,10 +2,10 @@
 {
   const { Utils } = require("./Utils.js")
   const { TreeNode } = require("./TreeNode.js")
-  const { HandGrammarProgram } = require("./GrammarLanguage.js")
-  const { GrammarBackedNode } = require("./GrammarLanguage.js")
+  const { HandParsersProgram } = require("./Parsers.js")
+  const { ParserBackedNode } = require("./Parsers.js")
 
-  class fireParser extends GrammarBackedNode {
+  class fireParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
@@ -57,7 +57,7 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Explore best ways to add polymorphism
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Explore best ways to add polymorphism
 
 // Cell Parsers
 anyCell
@@ -105,7 +105,7 @@ leftAnyCell
 // Line Parsers
 fireParser
  root
- description A useless prefix Tree Language that compiles to Javascript for testing Scroll Notation features.
+ description A useless prefix Language that compiles to Javascript for testing Scroll Notation features.
  compilesTo js
  inScope hashbangParser abstractTerminalParser abstractNonTerminalParser
  catchAllParser errorParser
@@ -403,13 +403,13 @@ errorParser
  baseParser errorParser
  compiler
   stringTemplate // error`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = fireParser
   }
 
-  class abstractNonTerminalParser extends GrammarBackedNode {
+  class abstractNonTerminalParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -488,7 +488,7 @@ errorParser
     }
   }
 
-  class abstractTerminalParser extends GrammarBackedNode {
+  class abstractTerminalParser extends ParserBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -775,7 +775,7 @@ errorParser
     }
   }
 
-  class hashbangParser extends GrammarBackedNode {
+  class hashbangParser extends ParserBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -784,7 +784,7 @@ errorParser
     }
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }

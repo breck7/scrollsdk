@@ -192,7 +192,7 @@ class headerComponent extends AbstractTreeComponentParser {
     title TreeNotation.org
   span Scroll Notation Sandbox
  p
-  a Scroll Designer
+  a Parser Designer
    href /designer/
   span  | 
   a Unit Tests

@@ -9,7 +9,7 @@ Scroll Homepage
  https://scroll.pub
 Scroll Notation Sandbox
  https://sdk.scroll.pub/sandbox
-Scroll Designer
+Parser Designer
  https://sdk.scroll.pub/designer
 ScrollSDK
  https://github.com/breck7/scrollsdk
@@ -36,8 +36,8 @@ You can try the Parsers tutorial.
  link parsersTutorial.html Parsers tutorial
 
 # Writing Scroll Parsers
-The ScrollSDK contains a language for building Scroll Parsers. You can write new Parsers to extend your version of Scroll. By creating Parsers with the SDK you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your version of Scroll. The ScrollSDK also includes a simple web IDE for writing Scroll Parsers called Scroll Designer.
- https://sdk.scroll.pub/designer Scroll Designer
+The ScrollSDK contains a language for building Scroll Parsers. You can write new Parsers to extend your version of Scroll. By creating Parsers with the SDK you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your version of Scroll. The ScrollSDK also includes a simple web IDE for writing Scroll Parsers called Parser Designer.
+ https://sdk.scroll.pub/designer Parser Designer
 
 At this point in time, to make your Scroll Parsers do very useful things, you also need to use another language that you know. The ScrollSDK lets you create new languages using just Scroll or Scroll + Javascript. Scroll Parsers can include code from any programming language, not just Javascript. Though at the moment only Scroll + Javascript is supported by Breck's Lab.
  https://breckyunits.com/lab.html Breck's Lab
@@ -73,7 +73,7 @@ code
  npm run local
  open http://localhost:3333/
 
-## Scroll Designer web app for building new Scroll Parsers
+## Parser Designer web app for building new Scroll Parsers
 code
  npm install .
  npm run local

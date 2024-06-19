@@ -2,7 +2,7 @@ class DesignerApp extends AbstractTreeComponentParser {
   constructor() {
     super(...arguments)
     ///
-    this.languages = "newlang hakon stump dumbdown arrow dug iris fire chuck fruit swarm project stamp parsers config jibberish numbers poop".split(" ")
+    this.languages = "newlang parsers hakon stump dumbdown arrow dug iris fire chuck fruit swarm project stamp config jibberish numbers poop".split(" ")
     this._localStorageKeys = {
       parsersConsole: "parsersConsole",
       codeConsole: "codeConsole"
@@ -376,7 +376,7 @@ class samplesComponent extends AbstractTreeComponentParser {
       )
       .join("\n span  | \n")
     return `p
- span Example Languages 
+ span Examples 
 ${langs}`
   }
 }
@@ -448,19 +448,16 @@ class tableComponent extends AbstractTreeComponentParser {
     return `table
  tr
   td
-   span Parsers for your Language 
+   span Your Parsers &nbsp;
    a Infer Prefix Parsers
     clickCommand inferPrefixParsersCommand
-   span  |
-   a Download Bundle
-    clickCommand downloadBundleCommand
-   span  |
+   span  | &nbsp;
    a Synthesize Program
     clickCommand synthesizeProgramCommand
    textarea
     id parsersConsole
   td
-   span Source Code in your Language
+   span Your Program
    input
     type checkbox
     id executeCommand
@@ -482,13 +479,13 @@ class tableComponent extends AbstractTreeComponentParser {
     id codeConsole
  tr
   td
-   div Parsers Errors
+   div Parser Errors
    pre
     id parsersErrorsConsole
    div
     id readmeComponent
   td
-   div Language Errors
+   div Program Errors
    pre
     id codeErrorsConsole
    textarea
@@ -507,7 +504,7 @@ class tableComponent extends AbstractTreeComponentParser {
 }
 class headerComponent extends AbstractTreeComponentParser {
   _getTitle() {
-    return `Scroll Designer`
+    return `Parser Designer`
   }
   toHakonCode() {
     return `#logo

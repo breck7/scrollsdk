@@ -11,7 +11,7 @@ code
   data
    # My Readme
 
-You can also play with writing your own stamp files by hand in this web IDE to see autocomplete, type checking, and the full grammar.
+You can also play with writing your own stamp files by hand in this web IDE to see autocomplete, type checking, and the parsers.
  https://sdk.scroll.pub/designer/#standard%20stamp web IDE
 
 # QuickStart: How to use Stamp in Node

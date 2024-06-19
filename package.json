@@ -16,7 +16,7 @@
   },
   "files": [
     "products/Disk.node.js",
-    "products/grammar.nodejs.js",
+    "products/parsers.nodejs.js",
     "products/ParsersCompiler.js",
     "products/Parsers.js",
     "products/hakon.nodejs.js",

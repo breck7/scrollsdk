@@ -65,7 +65,7 @@ code
 code
  <script src="../../products/Utils.browser.js"></script>
  <script src="../../products/TreeNode.browser.js"></script>
- <script src="../../products/Parsers.browser.js"></script>
+ <script src="../../products/Parsers.ts.browser.js"></script>
 
 ## Scroll Notation Sandbox web app for exploring base Scroll Notation
 code

@@ -283,7 +283,7 @@ After: (to get everything that was previously in the bundle)
 code
  <script src="../products/Utils.browser.js"></script>
  <script src="../products/TreeNode.browser.js"></script>
- <script src="../products/Parsers.browser.js"></script>
+ <script src="../products/Parsers.ts.browser.js"></script>
  <script src="../products/ParsersCodeMirrorMode.browser.js"></script>
 
 

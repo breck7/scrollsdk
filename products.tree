@@ -54,7 +54,7 @@ browserProduct
  removeAll window.scrollNotationTypes = scrollNotationTypes
  combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/TreeNode.test.ts
 browserProduct
- outputFileName Parsers.browser.js
+ outputFileName Parsers.ts.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes
  combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
 browserProduct

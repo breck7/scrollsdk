@@ -2615,7 +2615,7 @@ if (errors.length)
     files[browserPath] = this.toBrowserJavascript()
     files[ParsersBundleFiles.indexHtml] = `<script src="node_modules/scrollsdk/products/Utils.browser.js"></script>
 <script src="node_modules/scrollsdk/products/TreeNode.browser.js"></script>
-<script src="node_modules/scrollsdk/products/Parsers.browser.js"></script>
+<script src="node_modules/scrollsdk/products/Parsers.ts.browser.js"></script>
 <script src="${browserPath}"></script>
 <script>
 const sampleCode = \`${sampleCode.toString()}\`

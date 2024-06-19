@@ -75,7 +75,7 @@ This is purely a maintenance release. Unused code and npm packages were removed.
 - 🏥 fix regression in Designer app
 
 # 73.0.0 2023-4-2
-This is a major release with significant name breaks. All logic is the same but methods have been renamed to better express the core idea of Tree Languages as small simple parsers combined.
+This is a major release with significant name breaks. All logic is the same but methods have been renamed to better express the core idea of Languages as small simple parsers combined.
 - ⚠️ BREAKING:
  - Tree Langauges:
   - grammarNode, hakonNode, etc. > grammarParser, hakonParser
@@ -713,7 +713,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - 🏥 added GitHub link and show keyboard shortcuts by default in SweeperCraft
 
 # 40.0.0 2019-09-03
-- ⚠️ removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Tree Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
+- ⚠️ removed "firstCellType" property. Now you must specifically add a cell for the firstCellType for keyword Languages. langs/grammar/GrammarUpgrader.ts should be able to automatically upgrade most grammars without manual intervention.
 - 🎉 default highlightScopes for basic cellTypes
 - 🏥 fixes from reducing complexity of ExtendibleTreeNode and firstCellType
 
@@ -791,7 +791,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 # 36.1.0 2019-07-31
 - 🧹 jBuild
 - 🧹 improved error messaging for invalid nodeType.
-- ⚠️ some method names changed in Project Tree Language. See that readme for details.
+- ⚠️ some method names changed in Project Language. See that readme for details.
 
 # 36.0.2 2019-07-30
 - 🏥 TrueBase Disk path fix
@@ -918,7 +918,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - ⚠️ "constructors" now no longer take a class name. The class name must be identical to nodeTypeId.
 
 # 27.2.0 2019-06-26
-- 🎉 /sandbox/build/ => refactored Tree Language IDE
+- 🎉 /sandbox/build/ => refactored Language IDE
 - 🎉 added "New" simple grammar language template
 - 🎉 added deep linking to /sandbox/build/
 - ⚠️ removed undocumented BackupConstructor feature as IDE should no longer need it
@@ -975,7 +975,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - Warning: this was a major refactor that may have introduced new bugs, so if using please be ready to ping me with bug reports
 - 🎉 ability to compile grammar files to Javascript
 - 🎉 grammar sandbox now has "download bundle"
-- 🎉 Upgrader class for making Tree Language upgrades easier
+- 🎉 Upgrader class for making Language upgrades easier
 - 🎉 added support for "tooling" directives in Grammar language
 - 🎉 getFirstNode method
 - 🎉 getNodeTypeId on NonRootRunTime nodes
@@ -1199,7 +1199,7 @@ code
 
 # 19.0.0 2019-04-19
 - 🎉 CodeMirror support
-- 🎉 Tree Language Sandbox webpage using CodeMirror
+- 🎉 Language Sandbox webpage using CodeMirror
 - 🎉 in Grammar files we now have support for different constructors for node and browser environments
 - ⚠️ in grammar files @constructor is now @constructors. Browser and nodejs constructors must be specified separately.
 
@@ -1475,7 +1475,7 @@ code
 - 🧹 renamed slot types to columnTypes and better error messaging for when graph expansion fails
 
 # 8.6.0 2017-10-30
-- ⚠️ renamed @parameters to @columns in Grammar Tree Language
+- ⚠️ renamed @parameters to @columns in Grammar Language
 
 # 8.5.0 2017-10-30
 - 🎉 New usage command line tool
@@ -1516,7 +1516,7 @@ code
 - 🏥 fixed browser version
 
 # 8.0.0 2017-10-15
-- 🎉 Create new Tree Languages using a tree grammar file
+- 🎉 Create new Languages using a tree grammar file
 - 🎉 Tree Console app
 - ⚠️ ImmutableNode no longer exposed on TreeProgram
 

@@ -67,7 +67,7 @@ The current options for this situation are:
 # Alternatives Considered
 - Wikipedia list of archive formats
  https://en.wikipedia.org/wiki/List_of_archive_formats
-- ptar full featured, but difference is the file output is a custom format (not a Tree Language)
+- ptar full featured, but difference is the file output is a custom format (not a Language)
  https://github.com/jtvaughan/ptar ptar
 - shar old school method that has the major security flaw of potentially running any shell command
  https://en.wikipedia.org/wiki/Shar shar

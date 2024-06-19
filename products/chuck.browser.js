@@ -18,7 +18,7 @@ floatCell
 
 // Line Parsers
 chuckParser
- description A useless demo Tree Language inspired by Forth that tests postfix notation.
+ description A useless demo Language inspired by Forth that tests postfix notation.
  root
  inScope abstractOperatorParser onlyNumbersParser
 abstractOperatorParser

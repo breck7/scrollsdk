@@ -71,7 +71,7 @@ typeOfOptionCell
 // Line parsers
 swarmParser
  root
- description A prefix Tree Language for unit testing of classes.
+ description A prefix Language for unit testing of classes.
  inScope hashbangParser arrangeParser abstractTestBlockParser
  catchAllParser errorParser
  javascript

@@ -21,7 +21,7 @@ class SandboxApp extends AbstractTreeComponentParser {
       "toJsonSubset",
       `{
  "name": "scrollsdk",
- "description": "Scroll Notation parser, compiler-compiler, and virtual machine for Tree Languages",
+ "description": "Scroll Notation parser, compiler-compiler, and virtual machine for Languages",
  "keywords": "scrollsdk"
 }`
     )
@@ -298,7 +298,7 @@ class tableComponent extends AbstractTreeComponentParser {
  tr
   td
    div asHtmlCube
-    title Experimental. This is a very specific kind of Tree Language.
+    title Experimental. This is a very specific kind of Language.
    div
     id htmlCubeConsole
     style position:relative;`

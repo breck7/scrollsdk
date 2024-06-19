@@ -35,7 +35,7 @@ numberCell
 // Line Parsers
 dugParser
  root
- description A demonstration prefix Tree Language that compiles to JSON.
+ description A demonstration prefix Language that compiles to JSON.
  inScope abstractValueParser
  catchAllParser errorParser
  javascript

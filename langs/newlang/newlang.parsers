@@ -8,7 +8,7 @@ keywordCell
 // Line Parsers
 newlangParser
  root
- description This is the basic root node for your new prefix Tree Language.
+ description This is the basic root node for your new prefix Language.
  catchAllParser catchAllErrorParser
  inScope helloParser
 helloParser

@@ -9,7 +9,7 @@ keywordCell
 
 // Line Parsers
 configParser
- description A simple Tree Language for config files. Stores recursive maps with keys as strings and values as strings.
+ description A simple Language for config files. Stores recursive maps with keys as strings and values as strings.
  root
  catchAllParser pairParser
 pairParser

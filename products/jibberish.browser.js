@@ -49,7 +49,7 @@ opSymbolCell
 // Line Parsers
 jibberishParser
  root
- description A useless Tree Language built for testing Scroll Notation code.
+ description A useless Language built for testing Scroll Notation code.
  javascript
   execute() {
    return 42

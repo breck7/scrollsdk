@@ -105,7 +105,7 @@ leftAnyCell
 // Line Parsers
 fireParser
  root
- description A useless prefix Tree Language that compiles to Javascript for testing Scroll Notation features.
+ description A useless prefix Language that compiles to Javascript for testing Scroll Notation features.
  compilesTo js
  inScope hashbangParser abstractTerminalParser abstractNonTerminalParser
  catchAllParser errorParser

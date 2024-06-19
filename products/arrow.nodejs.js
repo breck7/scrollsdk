@@ -62,7 +62,7 @@ commentParser
  crux Comment
  boolean suggestInAutocomplete false
 arrowParser
- description A demonstration prefix Tree Language showing how in the future Scroll Notation will be used for simpler and more intelligent APIs.
+ description A demonstration prefix Language showing how in the future Scroll Notation will be used for simpler and more intelligent APIs.
  root
  inScope chargeParser commentParser
  catchAllParser errorParser

@@ -45,7 +45,7 @@ commentCell
 hakonParser
  root
  // todo Add variables?
- description A prefix Tree Language that compiles to CSS
+ description A prefix Language that compiles to CSS
  compilesTo css
  inScope commentParser
  catchAllParser selectorParser

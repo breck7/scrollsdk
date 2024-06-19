@@ -448,7 +448,7 @@ class tableComponent extends AbstractTreeComponentParser {
     return `table
  tr
   td
-   span Parsers for your Tree Language 
+   span Parsers for your Language 
    a Infer Prefix Parsers
     clickCommand inferPrefixParsersCommand
    span  |

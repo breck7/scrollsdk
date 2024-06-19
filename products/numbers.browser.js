@@ -43,7 +43,7 @@ operatorCell
 // Line Parsers
 numbersParser
  root
- description A useless Tree Language for testing Scroll Notation features.
+ description A useless Language for testing Scroll Notation features.
  inScope abstractArithmeticReducerParser commentParser hashBangParser
  catchAllParser errorParser
  javascript

@@ -21,7 +21,7 @@ keywordCell
 // Line parsers
 stampParser
  root
- description A prefix Tree Language for creating distributable text template files that expand to folders and files.
+ description A prefix Language for creating distributable text template files that expand to folders and files.
  catchAllParser errorParser
  javascript
   async executeSeries(parentDir) {

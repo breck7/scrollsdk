@@ -17,7 +17,7 @@ errorParser
  baseParser errorParser
 dumbdownParser
  extensions dd dumbdown
- description A Tree Language that compiles to HTML. An alternative to Markdown.
+ description A Language that compiles to HTML. An alternative to Markdown.
  root
  inScope abstractTopLevelParser blankLineParser
  catchAllParser quickParagraphParser
@@ -28,7 +28,7 @@ dumbdownParser
   
   paragraph
    It compiles to HTML. Blank lines get turned into brs.
-  link https://notation.scroll.pub Dumbdown is a Tree Language.
+  link https://notation.scroll.pub Dumbdown is a Language.
   list
    - It has lists
    - Too!

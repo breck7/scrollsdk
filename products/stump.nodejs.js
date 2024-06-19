@@ -161,7 +161,7 @@ bernKeywordCell
 // Line parsers
 stumpParser
  root
- description A prefix Tree Language that compiles to HTML.
+ description A prefix Language that compiles to HTML.
  catchAllParser errorParser
  inScope htmlTagParser blankLineParser
  example

@@ -82,9 +82,9 @@ This is a major release with significant name breaks. All logic is the same but 
   - TreeNode.Parser > TreeNode.ParserCombinator
   - getChildInstancesOfNodeTypeId > getChildInstancesOfParserId
   - findAllNodesWithNodeType > findAllNodesWithParser
- - GrammarCompiler:
-  - compileGrammarFileAtPathAndReturnRootConstructor > compileGrammarFileAtPathAndReturnRootParser
- - GrammarLanguage.ts:
+ - ParsersCompiler:
+  - compileParsersFileAtPathAndReturnRootConstructor > compileParsersFileAtPathAndReturnRootParser
+ - Parsers.ts:
   - rootNodeTypeDefinitionNode > rootParserDefinition
   - invalidNodeTypes > invalidParsers
   - getNodeTypeUsage > getParserUsage
@@ -271,7 +271,7 @@ This releases introduced a new language called Tree Query Language (TQL) for que
 This is a major release that makes the code more modular and eliminates a lot of technical debt. In the past to simplify NodeJs+Browser isomorphism I created the `jtree` namespace and bundled everything together. This was a mistake. This release fixes that, and makes each subproject more independent. This should speed up future development.
 
 - ⚠️ BREAKING: Replace all `jtree.getVersion()` with `TreeNode.getVersion()`
-- ⚠️ BREAKING: `products/TreeNotationCodeMirrorMode.js` is now `products/GrammarCodeMirrorMode.js`
+- ⚠️ BREAKING: `products/TreeNotationCodeMirrorMode.js` is now `products/ParsersCodeMirrorMode.js`
 - ⚠️ BREAKING: The bundled file `jtree.browser.js` is now deprecated. That file will be kept for now (for external links) but will no longer be updated and will be removed in a future version. Include exactly what you need.
 Before:
 code
@@ -280,8 +280,8 @@ After: (to get everything that was previously in the bundle)
 code
  <script src="../products/Utils.browser.js"></script>
  <script src="../products/TreeNode.browser.js"></script>
- <script src="../products/GrammarLanguage.browser.js"></script>
- <script src="../products/GrammarCodeMirrorMode.browser.js"></script>
+ <script src="../products/Parsers.browser.js"></script>
+ <script src="../products/ParsersCodeMirrorMode.browser.js"></script>
 
 
 - ⚠️ BREAKING: The `jtree` namespace is no more. Include exactly what you need:
@@ -299,7 +299,7 @@ code
 - 🎉 removed jtree.node.js and added instructions for only importing the specific product needed directly.
 
 # 62.1.0 2023-1-12
-- 🎉 new Node products to import directly from: GrammarLanguage.js, TreeNode.js, TestRacer.js, GrammarCompiler.js
+- 🎉 new Node products to import directly from: Parsers.js, TreeNode.js, TestRacer.js, ParsersCompiler.js
 
 # 62.0.0 2023-1-11
 - ⚠️ Removed Upgrader. In practice better handled by an external package which can have multiple versions of jtree as dependencies.
@@ -539,9 +539,9 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - 🎉 examplesToTestBlocks method on grammar programs
 - 🎉 command line app uses compiled grammar files more
 - ⚠️ getRootConstructor is now compileAndReturnRootConstructor
-- ⚠️ jtree.getProgramConstructor is now compileGrammarFileAtPathAndReturnRootConstructor
-- ⚠️ jtree.GrammarProgram is now jtree.HandGrammarProgram
-- ⚠️ getGrammarProgram is now getHandGrammarProgram
+- ⚠️ jtree.getProgramConstructor is now compileParsersFileAtPathAndReturnRootConstructor
+- ⚠️ jtree.ParsersProgram is now jtree.HandParsersProgram
+- ⚠️ getParsersProgram is now getHandParsersProgram
 - ⚠️ _getRootNodeTypeDefinitionNode is now getRootNodeTypeDefinitionNode
 - ⚠️ removed commandLineApp "create" command. Was broken. Use the Designer app instead.
 - ⚠️ removed jtree.executeFiles
@@ -550,7 +550,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - ⚠️ removed jtree.executeFileSync and executeFile methods
 - ⚠️ removed executeSync method on Core.
 - ⚠️ removed default execute implementation on Core. Up to grammar to specify.
-- ⚠️ jtree.makeProgram is now jtree.compileGrammarAndCreateProgram
+- ⚠️ jtree.makeProgram is now jtree.compileParsersAndCreateProgram
 - ⚠️ jtree.formatFile is now jtree.formatFileInPlace and jtree.formatProgram is now jtree.formatCode
 - ⚠️ removed getErrorsInGrammarExamples. Use examplesToTestBlocks
 
@@ -763,21 +763,21 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - 🏥 sample code fix in bundle files
 
 # 38.0.0 2019-08-17
-- 🎉 toReadMe method on GrammarProgram
-- 🎉 toBundle method on GrammarProgram
+- 🎉 toReadMe method on ParsersProgram
+- 🎉 toBundle method on ParsersProgram
 - ⚠️ removed "anyFirstCell". Now just use "anyCell"
 - 🏥 anyCell now always added to inferred grammar
 - 🏥 various fixes to make inferring prefix grammars more robust
-- 🧹 now run UnknownGrammarProgram against all sample grammars
+- 🧹 now run UnknownParsersProgram against all sample grammars
 - 🧹 builder is now compiled into a product
 
 # 37.1.0 2019-08-10
 - 🎉 support for inference of prefix languages with unicode characters (emojis)
-- ⚠️ UnknownGrammarProgram "getPredictedGrammarFile" is now "inferGrammarFileForAPrefixLanguage" to be more precise about what the method does
+- ⚠️ UnknownParsersProgram "getPredictedGrammarFile" is now "inferGrammarFileForAPrefixLanguage" to be more precise about what the method does
 
 # 37.0.0 2019-08-08
 - ⚠️ No more "dist" folder. Use files in "/products/" folder instead.
-- 🏥 Grammar inference (UnknownGrammarProgram) now predicts base cell types
+- 🏥 Grammar inference (UnknownParsersProgram) now predicts base cell types
 - 🧹 switched to TypeScript for all JS src files and test files.
 - 🧹 new folders for each product
 - 🧹 "products" folder. Currently checking in compiled versions as this makes distribution simpler. In the future maybe move products to separate repo.
@@ -821,7 +821,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - 🎉 in Grammar Language instead of `nodeType person` now do `personNode` and instead of `cellType int` do `intCell`
 - 🎉 findAllWordsWithCellType and findAllNodesWithNodeType methods in Grammar Programs which are like our versions of "findAllReferences"
 - 🎉 getAllTypedWords method in Grammar Programs
-- 🏥 removed all "grammarPath" 2nd params to new jtree.GrammarProgram(grammarCode, gammarPath), since it is no longer used.
+- 🏥 removed all "parsersPath" 2nd params to new jtree.ParsersProgram(grammarCode, gammarPath), since it is no longer used.
 - ⚠️ Javascript code and compiler nodes that previously referred to cellTypes that have been renamed, must be updated manually
 - ⚠️ Javascript code that previously referred to nodeTypeIds that have been renamed, must be updated manually (check uses of getChildInstancesOfNodeTypeId and doesExtend)
 - ⚠️ lineHints string is different
@@ -877,7 +877,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - ⚠️ removed getDoc
 - ⚠️ no longer export BlobNode or ErrorNode
 - ⚠️ toFormattedTable now adds ellipsis ("...") when columns overrun limit
-- ⚠️ removed toNodeJsJavascriptPrettier and toBrowserJavascriptPrettier. Use compileGrammarForNodeJs and compileGrammarForBrowser w/prettier param instead.
+- ⚠️ removed toNodeJsJavascriptPrettier and toBrowserJavascriptPrettier. Use compileParsersForNodeJs and compileParsersForBrowser w/prettier param instead.
 - 🧹 fixed 2.5x test speed regression and got them back down to 2s
 
 # 31.0.0 2019-07-05
@@ -891,9 +891,9 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 
 # 30.0.0 2019-07-03
 - 🎉 much easier way to do Grammar Composition => simple concatenate strings & define a new nodeType as root!
-- ⚠️ removed newFromCondensed method, which became a noOp. Use new GrammarProgram(grammarCode, grammarPath) instead
-- ⚠️ removed "grammar" root node type in GrammarLanguage. Add a "root" property to a nodeType for the new root node.
-- ⚠️ instead of "{grammarName}ProgramRoot" as the root class, the root class is now just "grammarName"
+- ⚠️ removed newFromCondensed method, which became a noOp. Use new ParsersProgram(grammarCode, parsersPath) instead
+- ⚠️ removed "grammar" root node type in Parsers. Add a "root" property to a nodeType for the new root node.
+- ⚠️ instead of "{parsersName}ProgramRoot" as the root class, the root class is now just "parsersName"
 - ⚠️ paths to shipped language program constructors are now like "fire.js" instead of "FireProgram.js"
 
 # 29.0.0 2019-07-02
@@ -906,7 +906,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - 🎉 "match" keyword in Grammar Language to use if you have a non-alphanumeric keyword as the first word match
 - 🎉 "reservedWords" attribute on cellTypes in Grammar Language
 - ⚠️ removed "abstract" nodeType in Grammar Language. now its a property of nodeType
-- ⚠️ compileGrammar method is now compileGrammarForNodeJs and compileGrammarForBrowser
+- ⚠️ compileParsers method is now compileParsersForNodeJs and compileParsersForBrowser
 - ⚠️ nodeTypeId's now can only be alphanumeric
 - ⚠️ nodeTypeId's are now identical to the generated Javascript class names. Some nodeTypeIds are now reserved and those now require using a "match" node
 - ⚠️ cellTypeId's now can only be alphanumeric
@@ -927,7 +927,7 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 # 27.0.0 2019-06-23
 - 🎉 simplified compile method to take 0 params
 - 🎉 refactored Fire language
-- 🎉 compilesTo property on grammar node in GrammarLanguage
+- 🎉 compilesTo property on grammar node in Parsers
 - 🎉 perf fix for compiled languages
 - 🏥 fire grammar fixes
 - 🏥 compilation open and close children fixes
@@ -995,23 +995,23 @@ This is an unstable release. Please wait a few days for bug fix releases before 
 - ⚠️ removed getProgramErrorMessages. Use getAllErrors
 - ⚠️ getFirstCellType is now getFirstCellTypeId
 - ⚠️ getProgram() is now get getRootProgramNode and getProgram on grammar programs is getLanguageDefinitionProgram
-- ⚠️ getGrammarProgram is now getGrammarProgramRoot
+- ⚠️ getParsersProgram is now getParsersProgramRoot
 - ⚠️ getParsedWords removed
 - ⚠️ getCellTypeName is now getCellTypeId
 - ⚠️ getCellTypeDefinition is now getCellTypeDefinitionById
 - ⚠️ getNodeTypeDefinitionByName is now getNodeTypeDefinitionByNodeTypeId
 - ⚠️ getProgramErrors is now getAllErrors, getProgramErrorsIterator is now getAllErrorsIterator
 - ⚠️ getCompiledIndentation, getCompiledLine, getCompilerNode are now protected
-- ⚠️ removed "nodeType constructors javascript" in GrammarLanguage. Use "nodeType javascript" directly.
+- ⚠️ removed "nodeType constructors javascript" in Parsers. Use "nodeType javascript" directly.
 - ⚠️ no more getConstantsObject. No more "constants". Instead use "nodeType > boolean|int|string|float id value...". Adds getters to generated nodeType classes.
-- ⚠️ in GrammarLanguage, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
+- ⚠️ in Parsers, use "stringCell" instead of "string", "intCell" instead of "int", "floatCell" instead of "float"
 - ⚠️ no more "ErrorNode", "BlobNode", "Terminal/NonTerminal" built in constructors. BlobNode is no longer exported. Now use "baseNodeType" to specify a base node type.
 - ⚠️ the nodeType name for each nodeType is now based on the nodeTypeId. It is no longer TerminalNode, NonTerminalNode, etc.
 
 A regex for finding breaks in untyped code:
 
 regexCode
- \b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getGrammarProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
+ \b(defaults|getExpectedLineCellTypes|nodeTypes|isLeafColumn|_getDuplicateLinesMap|_getFirstWordByIndex|toFlatTree|fromJson|toJson|getExpanded|getCompiledProgramName|getAncestorNodeTypeNamesArray|getCatchAllCellTypeName|getRequiredCellTypeNames|getRunTimeNodeTypeNames|getProgramErrorMessages|getFirstCellType|getProgram|getParsersProgram|getParsedWords|getCellTypeName|getCellTypeDefinition|getNodeTypeDefinitionByName|getProgramErrors|getCompiledIndentation|getCompiledLine|getCompilerNode|getProgramErrorsIterator)\b
 
 # 25.2.0 2019-05-30
 - 🏥 Node.js fix for _getNow and renamed to _getProcessTimeInMilliseconds
@@ -1039,7 +1039,7 @@ regexCode
 
 # 24.1.0 2019-05-27
 - 🎉 getAncestorNodeTypeNamesArray method on definition nodes
-- 🎉 getNodeTypeFamilyTree method on grammarPrograms
+- 🎉 getNodeTypeFamilyTree method on parsersPrograms
 - 🎉 setWords, setWordsFrom and appendWord methods on base tree
 
 # 24.0.0 2019-05-21
@@ -1074,7 +1074,7 @@ code
 
 # 23.1.0 2019-05-21
 - 🎉 executeFiles method
-- 🎉 50% speed improvement in getExpanded and extend and GrammarProgram.newFromCondensed
+- 🎉 50% speed improvement in getExpanded and extend and ParsersProgram.newFromCondensed
 - ⚠️ getGraphByKey is now getAncestorNodesByInheritanceViaExtendsKeyword
 - ⚠️ getGraph is now getAncestorNodesByInheritanceViaColumnIndices
 
@@ -1118,7 +1118,7 @@ code
 - ⚠️ getChildrenByNodeType is now getChildrenByNodeConstructor
 - ⚠️ extend now throws if attempting to extend with a non-map. Better solution to come.
 - ⚠️ removed combine.js script
-- ⚠️ GrammarProgram.predictGrammarFile is now new UnknownGrammarProgram(input).getPredictedGrammarFile()
+- ⚠️ ParsersProgram.predictGrammarFile is now new UnknownParsersProgram(input).getPredictedGrammarFile()
 - ⚠️ instead of title or style tags in Stump use "titleTag" or "styleTag" to overcome the inherent attribute/tag html name conflict.
 - ⚠️ no more @ prefix in Stump
 - ⚠️ for Stump collapseNode, just have it, don't set it to "true"
@@ -1133,7 +1133,7 @@ code
 - ⚠️ in grammar language: wordType to cellType, columns to cells, catchAllColumn to catchAllCellType
 - ⚠️ removed ability in grammar files to have a wordType and keyword share the same name
 - ⚠️ getGraph now requires a uniqueId column. Throws if you attempt to extend a non-unique id
-- ⚠️ instead of "grammar grammarName" oneliner now use the grammar name keyword
+- ⚠️ instead of "grammar parsersName" oneliner now use the grammar name keyword
 - ⚠️ removed parseWith cellType property
 - ⚠️ removed jtree.getLanguage. Instead do require('.../langs/...').
 - ⚠️ in grammar keywordTable now enumFromGrammar
@@ -1161,7 +1161,7 @@ code
 
 # 19.5.0 2019-04-25
 - 🎉 @example keyword in grammar
-- 🎉 getErrorsInGrammarExamples method on GrammarProgram
+- 🎉 getErrorsInGrammarExamples method on ParsersProgram
 
 # 19.4.0 2019-04-24
 - 🎉 getKeywordInheritanceSet method
@@ -1290,7 +1290,7 @@ code
 
 # 15.2.0 2019-02-10
 - 🎉 added `getNumberOfLines` method
-- 🎉 GrammarProgram speedup 20%+
+- 🎉 ParsersProgram speedup 20%+
 - 🎉 getProgramErrors speedup 10x+
 - 🎉 toString speedup 5%+
 
@@ -1403,7 +1403,7 @@ code
 - ⚠️ use getGraphByKey to getGraphByKey
 
 # 11.4.1 2017-11-08
-- 🎉 export GrammarProgram
+- 🎉 export ParsersProgram
 
 # 11.4.0 2017-11-08
 - ⚠️ getGrammarUsage is now getKeywordUsage

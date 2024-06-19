@@ -1,5 +1,5 @@
 {
-  class stumpParser extends GrammarBackedNode {
+  class stumpParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
@@ -127,7 +127,7 @@
     _getHtmlJoinByCharacter() {
       return ""
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
 anyCell
 keywordCell
 emptyCell
@@ -396,13 +396,13 @@ bernParser
   }
   getTextContent() {return ""}
  cells bernKeywordCell`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = stumpParser
   }
 
-  class blankLineParser extends GrammarBackedNode {
+  class blankLineParser extends ParserBackedNode {
     get emptyCell() {
       return this.getWord(0)
     }
@@ -414,7 +414,7 @@ bernParser
     }
   }
 
-  class htmlTagParser extends GrammarBackedNode {
+  class htmlTagParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -873,7 +873,7 @@ bernParser
     }
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }
@@ -888,7 +888,7 @@ bernParser
     }
   }
 
-  class htmlAttributeParser extends GrammarBackedNode {
+  class htmlAttributeParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(errorParser, undefined, undefined)
     }
@@ -921,7 +921,7 @@ bernParser
     }
   }
 
-  class lineOfHtmlContentParser extends GrammarBackedNode {
+  class lineOfHtmlContentParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }
@@ -936,7 +936,7 @@ bernParser
     }
   }
 
-  class bernParser extends GrammarBackedNode {
+  class bernParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(lineOfHtmlContentParser, undefined, undefined)
     }

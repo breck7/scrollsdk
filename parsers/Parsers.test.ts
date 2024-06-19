@@ -6,27 +6,27 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 
 const { Disk } = require("../products/Disk.node.js")
 const { TestRacer } = require("../products/TestRacer.js")
-const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
+const { HandParsersProgram } = require("../products/Parsers.js")
 const path = require("path")
 
 const jibberishRootDir = path.join(__dirname, "..", "langs", "jibberish")
-const numbersPath = path.join(__dirname, "..", "langs", "numbers", "numbers.grammar")
+const numbersPath = path.join(__dirname, "..", "langs", "numbers", "numbers.parsers")
 const numbersGrammar = Disk.read(numbersPath)
-const arrowPath = path.join(__dirname, "..", "langs", "arrow", "arrow.grammar")
+const arrowPath = path.join(__dirname, "..", "langs", "arrow", "arrow.parsers")
 const arrowGrammar = Disk.read(arrowPath)
-const hakonPath = path.join(__dirname, "..", "langs", "hakon", "hakon.grammar")
+const hakonPath = path.join(__dirname, "..", "langs", "hakon", "hakon.parsers")
 const hakonGrammar = Disk.read(hakonPath)
-const grammarGrammarPath = path.join(__dirname, "..", "langs", "grammar", "grammar.grammar")
+const grammarGrammarPath = path.join(__dirname, "..", "langs", "parsers", "parsers.parsers")
 const grammarGrammar = Disk.read(grammarGrammarPath)
-const jibberishGrammarPath = path.join(jibberishRootDir, "jibberish.grammar")
-const jibberishGrammarCode = Disk.read(jibberishGrammarPath)
-const poopGrammarPath = path.join(__dirname, "..", "langs", "poop", "poop.grammar")
+const jibberishGrammarPath = path.join(jibberishRootDir, "jibberish.parsers")
+const jibberishParsersCode = Disk.read(jibberishGrammarPath)
+const poopGrammarPath = path.join(__dirname, "..", "langs", "poop", "poop.parsers")
 
 const testTree: scrollNotationTypes.testTree = {}
 
 testTree.emptyProgram = equal => {
   // Arrange/Act/Assert
-  const program = new HandGrammarProgram()
+  const program = new HandParsersProgram()
   const errs = program.getAllErrors()
 
   // Assert
@@ -34,17 +34,17 @@ testTree.emptyProgram = equal => {
   equal(errs.length, 0, "should be no errors")
 }
 
-testTree.grammarLangBasics = equal => {
+testTree.parsersLangBasics = equal => {
   // Arrange/Act
-  const grammarProgram = new HandGrammarProgram(jibberishGrammarCode)
-  const errs = grammarProgram.getAllErrors()
+  const parsersProgram = new HandParsersProgram(jibberishParsersCode)
+  const errs = parsersProgram.getAllErrors()
 
   // Assert
   if (errs.length) console.log(errs.map((err: any) => err.message))
   equal(errs.length, 0, "should be no errors")
 }
 
-const makeGrammarProgram = (code: string) => makeProgram(grammarGrammar, code)
+const makeParsersProgram = (code: string) => makeProgram(grammarGrammar, code)
 
 const makeJibberishProgram = (code: string) => {
   const grammarCode = Disk.read(jibberishGrammarPath)
@@ -56,41 +56,41 @@ const makePoopProgram = (code: string) => {
   return makeProgram(grammarCode, code)
 }
 
-const makeIrisProgram = (code: string) => makeProgram(Disk.read(path.normalize(__dirname + "/../langs/iris/iris.grammar")), code)
+const makeIrisProgram = (code: string) => makeProgram(Disk.read(path.normalize(__dirname + "/../langs/iris/iris.parsers")), code)
 
 const makeNumbersProgram = (code: string) => makeProgram(numbersGrammar, code)
 
 const makeProgram = (grammarCode: string, code: string) => {
-  const grammarProgram = new HandGrammarProgram(grammarCode)
-  const rootParser = grammarProgram.compileAndReturnRootParser()
+  const parsersProgram = new HandParsersProgram(grammarCode)
+  const rootParser = parsersProgram.compileAndReturnRootParser()
   return new rootParser(code)
 }
 
 testTree.trainAndPredict = equal => {
   // Arrange/Act
-  const grammarProgram = new HandGrammarProgram(hakonGrammar)
-  const hakonParser = grammarProgram.compileAndReturnRootParser()
+  const parsersProgram = new HandParsersProgram(hakonGrammar)
+  const hakonParser = parsersProgram.compileAndReturnRootParser()
   const testBlankProgram = new hakonParser()
-  const handGrammarProgram = testBlankProgram.handGrammarProgram
-  const examples = handGrammarProgram.getNodesByGlobPath("* example").map((node: any) => node.childrenToString())
-  const model = grammarProgram.trainModel(examples)
+  const handParsersProgram = testBlankProgram.handParsersProgram
+  const examples = handParsersProgram.getNodesByGlobPath("* example").map((node: any) => node.childrenToString())
+  const model = parsersProgram.trainModel(examples)
 
   // Assert
-  const predictions = handGrammarProgram.predictChildren(model, testBlankProgram)
+  const predictions = handParsersProgram.predictChildren(model, testBlankProgram)
   equal(predictions[0].id, "selectorParser")
 
   // Act
   const bodyNode = testBlankProgram.appendLine("body")
 
   // Assert
-  const predictions2 = handGrammarProgram.predictChildren(model, bodyNode)
+  const predictions2 = handParsersProgram.predictChildren(model, bodyNode)
   equal(predictions2[0].id, "propertyParser")
 
   // Act
   const fontSizeNode = testBlankProgram.appendLine("font-size")
 
   // Assert
-  const predictions3 = handGrammarProgram.predictParents(model, fontSizeNode)
+  const predictions3 = handParsersProgram.predictParents(model, fontSizeNode)
   equal(predictions3[0].id, "selectorParser")
 }
 
@@ -107,7 +107,7 @@ testTree.jibberish = equal => {
   equal(errs.length, 0, `should be 0 errors`)
   if (errs.length) console.log(errs.map((err: any) => err.message))
 
-  const parserDef = program.handGrammarProgram.parserFamilyTree.getNode("abstractTopLevelParser nodeWithConstsParser nodeExpandsConstsParser")
+  const parserDef = program.handParsersProgram.parserFamilyTree.getNode("abstractTopLevelParser nodeWithConstsParser nodeExpandsConstsParser")
 
   equal(parserDef.toString(), "nodeExpandsConstsParser", "family tree works")
 
@@ -177,12 +177,12 @@ langs.forEach((lang: string) => {
   const folder = path.normalize(`${__dirname}/../langs/${lang}`)
   if (!Disk.isDir(folder)) return
   testTree[`${lang}SimTest`] = equal => {
-    const grammarCode = Disk.read(path.normalize(`${folder}/${lang}.grammar`))
-    const grammarProgram = new HandGrammarProgram(grammarCode)
-    const rootParser = grammarProgram.compileAndReturnRootParser()
+    const grammarCode = Disk.read(path.normalize(`${folder}/${lang}.parsers`))
+    const parsersProgram = new HandParsersProgram(grammarCode)
+    const rootParser = parsersProgram.compileAndReturnRootParser()
 
     // Act
-    const simulatedProgram = grammarProgram.rootParserDefinition.synthesizeNode().join("\n")
+    const simulatedProgram = parsersProgram.rootParserDefinition.synthesizeNode().join("\n")
 
     // Assert
     const errors = new rootParser(simulatedProgram).getAllErrors()
@@ -219,10 +219,10 @@ testTree.jibberishErrors = equal => {
 
 testTree.toTypeScriptInterface = equal => {
   // Arrange
-  const grammarProgram = new HandGrammarProgram(arrowGrammar).compileAndReturnRootParser()
+  const parsersProgram = new HandParsersProgram(arrowGrammar).compileAndReturnRootParser()
   // Act // Assert
   equal(
-    new grammarProgram().definition.toTypeScriptInterface(),
+    new parsersProgram().definition.toTypeScriptInterface(),
     `// A credit card charge
 interface chargeParser {
  amount: any
@@ -297,8 +297,8 @@ hueParser
  extends abstractColorPropertiesParser
 saturationParser
  extends abstractColorPropertiesParser`
-  const grammarProgram = makeGrammarProgram(normalCode)
-  const formatted = grammarProgram.format().toString()
+  const parsersProgram = makeParsersProgram(normalCode)
+  const formatted = parsersProgram.format().toString()
   equal(formatted, normalCode, "code is already in formatted form")
 }
 
@@ -325,7 +325,7 @@ h1Parser
  crux html.h1
  extends abstractHtmlParser`
   // Act/Assert
-  equal(makeGrammarProgram(unsortedCode).format().toString(), sortedCode, "code was fixed")
+  equal(makeParsersProgram(unsortedCode).format().toString(), sortedCode, "code was fixed")
 }
 
 testTree.cokeRegression = equal => {
@@ -415,7 +415,7 @@ com
 
 testTree.extraWord = equal => {
   // Arrange
-  const program = makeGrammarProgram(`foobarParser
+  const program = makeParsersProgram(`foobarParser
  root foo2`)
 
   // Act/Assert
@@ -429,7 +429,7 @@ testTree.extraWord = equal => {
 
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
-  const program = makeGrammarProgram(`fooCell
+  const program = makeParsersProgram(`fooCell
  highlightScope comme`)
 
   // Act/Assert
@@ -438,7 +438,7 @@ testTree.autocompleteAdditionalWords = equal => {
 
 testTree.autocompleteAdvanced = equal => {
   // Arrange
-  const program = makeGrammarProgram(`latinParser
+  const program = makeParsersProgram(`latinParser
  root
  catchAllParser anyParser
  inScope faveNumberParser
@@ -491,8 +491,8 @@ testTree.blobParsers = equal => {
 
 testTree.sublimeSyntaxFile = equal => {
   // Arrange/Act
-  const grammarProgram = new HandGrammarProgram(jibberishGrammarCode)
-  const code = grammarProgram.toSublimeSyntaxFile()
+  const parsersProgram = new HandParsersProgram(jibberishParsersCode)
+  const code = parsersProgram.toSublimeSyntaxFile()
 
   // Assert
   equal(code.includes("scope:"), true)
@@ -500,8 +500,8 @@ testTree.sublimeSyntaxFile = equal => {
 
 testTree.toStumpString = equal => {
   // Arrange/Act
-  const grammarProgram = new HandGrammarProgram(arrowGrammar).compileAndReturnRootParser()
-  const code = new grammarProgram().definition.getParserDefinitionByParserId("chargeParser").toStumpString()
+  const parsersProgram = new HandParsersProgram(arrowGrammar).compileAndReturnRootParser()
+  const code = new parsersProgram().definition.getParserDefinitionByParserId("chargeParser").toStumpString()
   const expected = `div
  label amount
  input
@@ -550,7 +550,7 @@ div
 
 testTree.minimumGrammar = equal => {
   // Arrange/Act
-  const rootParser = new HandGrammarProgram(
+  const rootParser = new HandParsersProgram(
     `anyLangParser
  root
  catchAllParser anyParser
@@ -559,23 +559,23 @@ anyParser
 anyCell`
   ).compileAndReturnRootParser()
   const program = new rootParser()
-  const handGrammarProgram = program.handGrammarProgram
+  const handParsersProgram = program.handParsersProgram
 
   // Assert
-  let errors = handGrammarProgram.getAllErrors()
+  let errors = handParsersProgram.getAllErrors()
   equal(errors.length, 0)
   errors = program.getAllErrors()
   equal(errors.length, 0)
 
   // Arrange/Act/Assert
-  const constructor = new HandGrammarProgram().compileAndReturnRootParser()
+  const constructor = new HandParsersProgram().compileAndReturnRootParser()
   const errs = new constructor("foobar").getAllErrors()
   equal(errs.length, 0)
 }
 
 testTree.rootCatchAllParser = equal => {
   // Arrange
-  const abcLang = new HandGrammarProgram(`abcParser
+  const abcLang = new HandParsersProgram(`abcParser
  root`).compileAndReturnRootParser()
 
   // Act/Assert
@@ -584,7 +584,7 @@ testTree.rootCatchAllParser = equal => {
   equal(program.toCellTypeTree(), "extraWordCell", "one word")
 
   // Arrange
-  const abcLangWithErrors = new HandGrammarProgram(`abcParser
+  const abcLangWithErrors = new HandParsersProgram(`abcParser
  root
  catchAllParser errorParser
 errorParser
@@ -596,16 +596,16 @@ errorParser
 
 testTree.blankParserId = equal => {
   // Arrange
-  const abcLang = new HandGrammarProgram(`parser `).compileAndReturnRootParser()
+  const abcLang = new HandParsersProgram(`parser `).compileAndReturnRootParser()
 
   // Act/Assert
   equal(new abcLang("foobar").getAllErrors().length, 0)
 }
 
-testTree.grammarWithLoop = equal => {
+testTree.parsersWithLoop = equal => {
   // Arrange/Act/Assert
   try {
-    const rootParser = new HandGrammarProgram(
+    const rootParser = new HandParsersProgram(
       `langWithLoopParser
  root
  catchAllParser nodeAParser
@@ -646,7 +646,7 @@ extendsAbstract 2`)
 
 testTree.updateParserIds = equal => {
   // Arrange/Act
-  const anyProgram = makeGrammarProgram(`someLangParser
+  const anyProgram = makeParsersProgram(`someLangParser
  root
 foobarCell
  regex test`)
@@ -666,7 +666,7 @@ foobarCell
 
 testTree.toNodeJsJavascript = equal => {
   // Arrange
-  let program = new HandGrammarProgram(grammarGrammar)
+  let program = new HandParsersProgram(grammarGrammar)
   // Act
   let compiledParser = program.toNodeJsJavascript()
   // Assert
@@ -675,7 +675,7 @@ testTree.toNodeJsJavascript = equal => {
 
 testTree.invalidGrammarRegression = equal => {
   // Arrange
-  let program = new HandGrammarProgram(`oldStyle something
+  let program = new HandParsersProgram(`oldStyle something
  root`)
   // Act
   let compiledParser = program.toNodeJsJavascript()
@@ -685,20 +685,20 @@ testTree.invalidGrammarRegression = equal => {
 
 testTree.bundler = equal => {
   // Arrange
-  const jibberishGrammarProgram = new HandGrammarProgram(jibberishGrammarCode)
+  const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)
 
   // Act
-  const bundle = jibberishGrammarProgram.toBundle()
+  const bundle = jibberishParsersProgram.toBundle()
 
   // Assert
   equal(bundle["readme.md"].includes("Installing"), true)
 }
 
-const jibberishGrammarProgram = new HandGrammarProgram(jibberishGrammarCode)
-Object.assign(testTree, jibberishGrammarProgram.examplesToTestBlocks())
+const jibberishParsersProgram = new HandParsersProgram(jibberishParsersCode)
+Object.assign(testTree, jibberishParsersProgram.examplesToTestBlocks())
 
 // Arrange/Act
-const badGrammarProgram = new HandGrammarProgram(
+const badParsersProgram = new HandParsersProgram(
   `badParser
  root
  inScope addParser
@@ -711,7 +711,7 @@ addParser
 keywordCell
 intCell`
 )
-Object.assign(testTree, badGrammarProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
+Object.assign(testTree, badParsersProgram.examplesToTestBlocks(undefined, `InvalidWord at line 9 cell 2. "B" does not fit in cellType "intCell".`))
 
 /*NODE_JS_ONLY*/ if (!module.parent) TestRacer.testSingleFile(__filename, testTree)
 

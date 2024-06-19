@@ -1,5 +1,5 @@
 {
-  class grammarParser extends GrammarBackedNode {
+  class grammarParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(catchAllErrorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "//": slashCommentParser }), [
         { regex: /^$/, parser: blankLineParser },
@@ -7,8 +7,8 @@
         { regex: /^[a-zA-Z0-9_]+Parser$/, parser: parserDefinitionParser }
       ])
     }
-    static cachedHandGrammarProgramRoot =
-      new HandGrammarProgram(`// todo Add imports parsers, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
+    static cachedHandParsersProgramRoot =
+      new HandParsersProgram(`// todo Add imports parsers, along with source maps, so we can correctly support grammars split across multiple files, and better enable grammars from compositions of reusable bits?
 // todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 // todo Add enumOption root level type?
 // todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
@@ -425,19 +425,19 @@ extendsCellTypeParser
  // todo Add mixin support in addition to/in place of extends?
  cells propertyKeywordCell cellTypeIdCell
  single`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = grammarParser
   }
 
-  class blankLineParser extends GrammarBackedNode {
+  class blankLineParser extends ParserBackedNode {
     get blankCell() {
       return this.getWord(0)
     }
   }
 
-  class abstractCompilerRuleParser extends GrammarBackedNode {
+  class abstractCompilerRuleParser extends ParserBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -458,7 +458,7 @@ extendsCellTypeParser
 
   class joinChildrenWithParser extends abstractCompilerRuleParser {}
 
-  class abstractConstantParser extends GrammarBackedNode {
+  class abstractConstantParser extends ParserBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -515,7 +515,7 @@ extendsCellTypeParser
     }
   }
 
-  class abstractParserRuleParser extends GrammarBackedNode {
+  class abstractParserRuleParser extends ParserBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -732,13 +732,13 @@ extendsCellTypeParser
     }
   }
 
-  class catchAllErrorParser extends GrammarBackedNode {
+  class catchAllErrorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class catchAllExampleLineParser extends GrammarBackedNode {
+  class catchAllExampleLineParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(catchAllExampleLineParser, undefined, undefined)
     }
@@ -750,7 +750,7 @@ extendsCellTypeParser
     }
   }
 
-  class catchAllJavascriptCodeLineParser extends GrammarBackedNode {
+  class catchAllJavascriptCodeLineParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(catchAllJavascriptCodeLineParser, undefined, undefined)
     }
@@ -759,7 +759,7 @@ extendsCellTypeParser
     }
   }
 
-  class catchAllMultilineStringConstantParser extends GrammarBackedNode {
+  class catchAllMultilineStringConstantParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(catchAllMultilineStringConstantParser, undefined, undefined)
     }
@@ -771,7 +771,7 @@ extendsCellTypeParser
     }
   }
 
-  class cellTypeDefinitionParser extends GrammarBackedNode {
+  class cellTypeDefinitionParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -796,7 +796,7 @@ extendsCellTypeParser
     }
   }
 
-  class enumFromCellTypesParser extends GrammarBackedNode {
+  class enumFromCellTypesParser extends ParserBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -805,7 +805,7 @@ extendsCellTypeParser
     }
   }
 
-  class enumParser extends GrammarBackedNode {
+  class enumParser extends ParserBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -814,7 +814,7 @@ extendsCellTypeParser
     }
   }
 
-  class examplesParser extends GrammarBackedNode {
+  class examplesParser extends ParserBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -823,7 +823,7 @@ extendsCellTypeParser
     }
   }
 
-  class cellMinParser extends GrammarBackedNode {
+  class cellMinParser extends ParserBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -832,7 +832,7 @@ extendsCellTypeParser
     }
   }
 
-  class cellMaxParser extends GrammarBackedNode {
+  class cellMaxParser extends ParserBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -841,7 +841,7 @@ extendsCellTypeParser
     }
   }
 
-  class highlightScopeParser extends GrammarBackedNode {
+  class highlightScopeParser extends ParserBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -850,13 +850,13 @@ extendsCellTypeParser
     }
   }
 
-  class rootFlagParser extends GrammarBackedNode {
+  class rootFlagParser extends ParserBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
   }
 
-  class parserDefinitionParser extends GrammarBackedNode {
+  class parserDefinitionParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         catchAllErrorParser,
@@ -920,7 +920,7 @@ extendsCellTypeParser
     }
   }
 
-  class regexParser extends GrammarBackedNode {
+  class regexParser extends ParserBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -929,7 +929,7 @@ extendsCellTypeParser
     }
   }
 
-  class reservedWordsParser extends GrammarBackedNode {
+  class reservedWordsParser extends ParserBackedNode {
     get cellPropertyNameCell() {
       return this.getWord(0)
     }
@@ -938,13 +938,13 @@ extendsCellTypeParser
     }
   }
 
-  class commentLineParser extends GrammarBackedNode {
+  class commentLineParser extends ParserBackedNode {
     get commentCell() {
       return this.getWordsFrom(0)
     }
   }
 
-  class slashCommentParser extends GrammarBackedNode {
+  class slashCommentParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(commentLineParser, undefined, undefined)
     }
@@ -953,7 +953,7 @@ extendsCellTypeParser
     }
   }
 
-  class extendsCellTypeParser extends GrammarBackedNode {
+  class extendsCellTypeParser extends ParserBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }
@@ -962,5 +962,5 @@ extendsCellTypeParser
     }
   }
 
-  window.grammarParser = grammarParser
+  window.parsersParser = grammarParser
 }

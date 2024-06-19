@@ -32,11 +32,11 @@ ScrollSDK PerfTests
 The ScrollSDK is for people who want to build on top of Scroll.
 
 ? How do I build Scroll Parsers?
-You can try the Grammar tutorial.
- link grammarTutorial.html Grammar tutorial
+You can try the Parsers tutorial.
+ link parsersTutorial.html Parsers tutorial
 
 # Writing Scroll Parsers
-The ScrollSDK contains a language for building Scroll Parsers temporarily called "Grammar". You can write new Grammar files to extend your version of Scroll. By creating ScrollParsers with Grammar file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your version of Scroll. The ScrollSDK also includes a simple web IDE for writing Scroll Parsers called Scroll Designer.
+The ScrollSDK contains a language for building Scroll Parsers. You can write new Parsers to extend your version of Scroll. By creating Parsers with the SDK you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your version of Scroll. The ScrollSDK also includes a simple web IDE for writing Scroll Parsers called Scroll Designer.
  https://sdk.scroll.pub/designer Scroll Designer
 
 At this point in time, to make your Scroll Parsers do very useful things, you also need to use another language that you know. The ScrollSDK lets you create new languages using just Scroll or Scroll + Javascript. Scroll Parsers can include code from any programming language, not just Javascript. Though at the moment only Scroll + Javascript is supported by Breck's Lab.
@@ -61,11 +61,11 @@ code
  const tree = new TreeNode("hello world")
  console.log(tree.asString)
 
-# Basic Scroll Notation Library + Grammar for the browser:
+# Basic Scroll Notation Library + Parsers for the browser:
 code
  <script src="../../products/Utils.browser.js"></script>
  <script src="../../products/TreeNode.browser.js"></script>
- <script src="../../products/GrammarLanguage.browser.js"></script>
+ <script src="../../products/Parsers.browser.js"></script>
 
 ## Scroll Notation Sandbox web app for exploring base Scroll Notation
 code
@@ -110,7 +110,7 @@ code
  npm run updateVersion NEW_NUMBER
 
 # Former Name
-Scroll Notation was originally called Tree Notation. Scroll is the name of combined languages which were previously called Grammar and Scrolldown.
+Scroll Notation was originally called Tree Notation. Scroll Parsers was originally called Grammar.
 
 # Alternatives Considered
 This is the first Scroll library in existence, so there were no alternative implementations. Note and Space were predecessors to Scroll Notation. If a better alternative low level notation to Scroll Notation is possible, it has yet to be discovered.

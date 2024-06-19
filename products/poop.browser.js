@@ -1,5 +1,5 @@
 {
-  class poopParser extends GrammarBackedNode {
+  class poopParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "🌄": dayParser }), [
         { regex: /💩/, parser: bowelParser },
@@ -25,7 +25,7 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
 dateIntCell
  highlightScope constant.numeric.integer
 monthIntCell
@@ -141,13 +141,13 @@ dayParser
     .trim()
     .replace(/ /g, "/")
   }`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = poopParser
   }
 
-  class abstractEventParser extends GrammarBackedNode {
+  class abstractEventParser extends ParserBackedNode {
     get eventTypeCell() {
       return this.getWord(0)
     }
@@ -211,7 +211,7 @@ dayParser
     }
   }
 
-  class dayParser extends GrammarBackedNode {
+  class dayParser extends ParserBackedNode {
     get symbolCell() {
       return this.getWord(0)
     }

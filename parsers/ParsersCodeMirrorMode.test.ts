@@ -4,15 +4,15 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 // Note: this is not isomorphic. We should probably just rewrite and use new version of CodeMirror
 const path = require("path")
 const stamp = require("../products/stamp.nodejs.js")
-const GrammarProgram = require("../products/grammar.nodejs.js")
+const ParsersProgram = require("../products/parsers.nodejs.js")
 const DugProgram = require("../products/dug.nodejs.js")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
-const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
+const { HandParsersProgram } = require("../products/Parsers.js")
 const { TestRacer } = require("../products/TestRacer.js")
-const { GrammarCodeMirrorMode } = require("../products/GrammarCodeMirrorMode.js")
+const { ParsersCodeMirrorMode } = require("../products/ParsersCodeMirrorMode.js")
 
-const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.grammar")
+const irisPath = path.join(__dirname, "..", "langs", "iris", "iris.parsers")
 const irisGrammar = Disk.read(irisPath)
 
 const testTree: scrollNotationTypes.testTree = {}
@@ -97,9 +97,9 @@ testTree.codeMirrorTest = equal => {
 
   const mock = new MockCodeMirror(
     () =>
-      new GrammarCodeMirrorMode(
+      new ParsersCodeMirrorMode(
         "grammarParser",
-        () => GrammarProgram,
+        () => ParsersProgram,
         () => code
       )
   )
@@ -108,13 +108,13 @@ testTree.codeMirrorTest = equal => {
 }
 
 testTree.iris = equal => {
-  const irisParser = new HandGrammarProgram(irisGrammar).compileAndReturnRootParser()
+  const irisParser = new HandParsersProgram(irisGrammar).compileAndReturnRootParser()
   const goodCode = `6.1 3 4.9 2 virginica`
   const codeWithMissingCell = `6.1 3 4.9  virginica`
   // Act
   const tokenLines = new MockCodeMirror(
     () =>
-      new GrammarCodeMirrorMode(
+      new ParsersCodeMirrorMode(
         "irisParser",
         () => irisParser,
         () => goodCode
@@ -126,7 +126,7 @@ testTree.iris = equal => {
   // Act
   const tokenLines2 = new MockCodeMirror(
     () =>
-      new GrammarCodeMirrorMode(
+      new ParsersCodeMirrorMode(
         "irisParser",
         () => irisParser,
         () => codeWithMissingCell
@@ -144,9 +144,9 @@ foobarParser`
 
   const mock = new MockCodeMirror(
     () =>
-      new GrammarCodeMirrorMode(
+      new ParsersCodeMirrorMode(
         "grammarParser",
-        () => GrammarProgram,
+        () => ParsersProgram,
         () => code
       )
   )
@@ -156,11 +156,11 @@ foobarParser`
 }
 
 testTree.regressionTest = equal => {
-  const code = Disk.read(__dirname + "/GrammarCodeMirrorMode.regression.stamp")
+  const code = Disk.read(__dirname + "/ParsersCodeMirrorMode.regression.stamp")
 
   const mock = new MockCodeMirror(
     () =>
-      new GrammarCodeMirrorMode(
+      new ParsersCodeMirrorMode(
         "stampParser",
         () => stamp,
         () => code
@@ -177,7 +177,7 @@ testTree.regression2 = equal => {
 
   const mock = new MockCodeMirror(
     () =>
-      new GrammarCodeMirrorMode(
+      new ParsersCodeMirrorMode(
         "dugParser",
         () => DugProgram,
         () => code

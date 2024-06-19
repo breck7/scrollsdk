@@ -1,5 +1,5 @@
 {
-  class projectParser extends GrammarBackedNode {
+  class projectParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { file: fileParser }), undefined)
     }
@@ -68,7 +68,7 @@ ${missing.join("\n")}
       })
       return requiredFileList.toString()
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
 anyCell
 filepathCell
  highlightScope string
@@ -190,13 +190,13 @@ fileParser
   }
  cells fileConstantCell
  crux file`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = projectParser
   }
 
-  class abstractTermParser extends GrammarBackedNode {
+  class abstractTermParser extends ParserBackedNode {
     get termCell() {
       return this.getWord(0)
     }
@@ -211,13 +211,13 @@ fileParser
 
   class relativeParser extends abstractTermParser {}
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class fileParser extends GrammarBackedNode {
+  class fileParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(undefined, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { absolute: absoluteParser, external: externalParser, relative: relativeParser }), undefined)
     }

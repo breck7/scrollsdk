@@ -1,5 +1,5 @@
 {
-  class fireParser extends GrammarBackedNode {
+  class fireParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
@@ -51,7 +51,7 @@
       console.log(outputLines.join("\n"))
       return outputLines
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Explore best ways to add polymorphism
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Explore best ways to add polymorphism
 
 // Cell Parsers
 anyCell
@@ -397,13 +397,13 @@ errorParser
  baseParser errorParser
  compiler
   stringTemplate // error`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = fireParser
   }
 
-  class abstractNonTerminalParser extends GrammarBackedNode {
+  class abstractNonTerminalParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -482,7 +482,7 @@ errorParser
     }
   }
 
-  class abstractTerminalParser extends GrammarBackedNode {
+  class abstractTerminalParser extends ParserBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -769,7 +769,7 @@ errorParser
     }
   }
 
-  class hashbangParser extends GrammarBackedNode {
+  class hashbangParser extends ParserBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -778,7 +778,7 @@ errorParser
     }
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }

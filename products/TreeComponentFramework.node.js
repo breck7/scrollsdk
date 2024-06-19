@@ -1,7 +1,7 @@
 //onsave scrollsdk build produce TreeComponentFramework.browser.js
 const { TreeNode } = require("../products/TreeNode.js")
 const { Utils } = require("../products/Utils.js")
-const { GrammarBackedNode } = require("../products/GrammarLanguage.js")
+const { ParserBackedNode } = require("../products/Parsers.js")
 const stumpParser = require("../products/stump.nodejs.js")
 const hakonParser = require("../products/hakon.nodejs.js")
 const superagent = require("superagent")
@@ -905,7 +905,7 @@ class AbstractTheme {
   }
 }
 class DefaultTheme extends AbstractTheme {}
-class AbstractTreeComponentParser extends GrammarBackedNode {
+class AbstractTreeComponentParser extends ParserBackedNode {
   async startWhenReady() {
     if (this.isNodeJs()) return this.start()
     document.addEventListener(

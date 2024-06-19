@@ -196,7 +196,7 @@ interface treeNotationCodeMirrorState {
   cellIndex: number
 }
 
-class GrammarCodeMirrorMode {
+class ParsersCodeMirrorMode {
   constructor(name: string, getRootParserFn: () => scrollNotationTypes.TreeProgramParser, getProgramCodeFn: (instance: CodeMirrorLib.EditorFromTextArea) => string, codeMirrorLib: typeof CodeMirrorLib = undefined) {
     this._name = name
     this._getRootParserFn = getRootParserFn
@@ -382,4 +382,4 @@ class GrammarCodeMirrorMode {
   }
 }
 
-export { GrammarCodeMirrorMode }
+export { ParsersCodeMirrorMode }

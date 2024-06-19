@@ -2,10 +2,10 @@
 {
   const { Utils } = require("./Utils.js")
   const { TreeNode } = require("./TreeNode.js")
-  const { HandGrammarProgram } = require("./GrammarLanguage.js")
-  const { GrammarBackedNode } = require("./GrammarLanguage.js")
+  const { HandParsersProgram } = require("./Parsers.js")
+  const { ParserBackedNode } = require("./Parsers.js")
 
-  class numbersParser extends GrammarBackedNode {
+  class numbersParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
@@ -24,7 +24,7 @@
     execute() {
       return this.map(child => child.execute())
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
 floatCell
 commentCell
  highlightScope comment
@@ -101,13 +101,13 @@ errorParser
  catchAllCellType errorCell
  baseParser errorParser
  cells errorCell`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = numbersParser
   }
 
-  class abstractArithmeticReducerParser extends GrammarBackedNode {
+  class abstractArithmeticReducerParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -156,7 +156,7 @@ errorParser
     }
   }
 
-  class commentParser extends GrammarBackedNode {
+  class commentParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
     }
@@ -168,7 +168,7 @@ errorParser
     }
   }
 
-  class commentContentParser extends GrammarBackedNode {
+  class commentContentParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(commentContentParser, undefined, undefined)
     }
@@ -177,7 +177,7 @@ errorParser
     }
   }
 
-  class hashBangParser extends GrammarBackedNode {
+  class hashBangParser extends ParserBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -186,7 +186,7 @@ errorParser
     }
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }

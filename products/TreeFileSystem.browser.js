@@ -146,7 +146,7 @@ class TreeFileSystem {
     if (_grammarExpandersCache[absoluteFilePath] === undefined) _grammarExpandersCache[absoluteFilePath] = !!this._storage.read(absoluteFilePath).match(parserRegex)
     return _grammarExpandersCache[absoluteFilePath]
   }
-  _getOneGrammarParserFromFiles(filePaths, baseGrammarCode) {
+  _getOneGrammarParserFromFiles(filePaths, baseParsersCode) {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
     const cellDefinitionRegex = /^[a-zA-Z0-9_]+Cell/
     const asOneFile = filePaths
@@ -162,12 +162,12 @@ class TreeFileSystem {
       .join("\n")
       .trim()
     // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Grammar not to run prettier on js nodes)
-    return new grammarParser(baseGrammarCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
+    return new grammarParser(baseParsersCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
   }
   get parsers() {
-    return Object.values(this._parserCache).map(parser => parser.grammarParser)
+    return Object.values(this._parserCache).map(parser => parser.parsersParser)
   }
-  getParser(filePaths, baseGrammarCode = "") {
+  getParser(filePaths, baseParsersCode = "") {
     const { _parserCache } = this
     const key = filePaths
       .filter(fp => fp)
@@ -175,12 +175,12 @@ class TreeFileSystem {
       .join("\n")
     const hit = _parserCache[key]
     if (hit) return hit
-    const grammarParser = this._getOneGrammarParserFromFiles(filePaths, baseGrammarCode)
+    const grammarParser = this._getOneGrammarParserFromFiles(filePaths, baseParsersCode)
     const grammarCode = grammarParser.asString
     _parserCache[key] = {
       grammarParser,
       grammarCode,
-      parser: new HandGrammarProgram(grammarCode).compileAndReturnRootParser()
+      parser: new HandParsersProgram(grammarCode).compileAndReturnRootParser()
     }
     return _parserCache[key]
   }

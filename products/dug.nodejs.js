@@ -2,10 +2,10 @@
 {
   const { Utils } = require("./Utils.js")
   const { TreeNode } = require("./TreeNode.js")
-  const { HandGrammarProgram } = require("./GrammarLanguage.js")
-  const { GrammarBackedNode } = require("./GrammarLanguage.js")
+  const { HandParsersProgram } = require("./Parsers.js")
+  const { ParserBackedNode } = require("./Parsers.js")
 
-  class dugParser extends GrammarBackedNode {
+  class dugParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
@@ -17,7 +17,7 @@
       const res = super.compile()
       return JSON.stringify(JSON.parse(res), null, 2)
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Add swarm tests for top scenarios, including the scalar at root level scenario.
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Add swarm tests for top scenarios, including the scalar at root level scenario.
 // todo Create a new language, similar to this, except using pattern matching instead of prefix notation.
 
 // Cell Parsers
@@ -88,13 +88,13 @@ memberParser
  cells stringCell
 errorParser
  baseParser errorParser`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = dugParser
   }
 
-  class abstractValueParser extends GrammarBackedNode {
+  class abstractValueParser extends ParserBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -142,7 +142,7 @@ errorParser
     }
   }
 
-  class memberParser extends GrammarBackedNode {
+  class memberParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -155,7 +155,7 @@ errorParser
     }
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }

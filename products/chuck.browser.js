@@ -1,5 +1,5 @@
 {
-  class chuckParser extends GrammarBackedNode {
+  class chuckParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser(), undefined, [
         { regex: /\+/, parser: addParser },
@@ -8,7 +8,7 @@
         { regex: /^[\d\. ]+$/, parser: onlyNumbersParser }
       ])
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Make this compile and execute
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Make this compile and execute
 
 // Cell Parsers
 operatorCell
@@ -37,13 +37,13 @@ printParser
 onlyNumbersParser
  catchAllCellType floatCell
  pattern ^[\\d\\. ]+$`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = chuckParser
   }
 
-  class abstractOperatorParser extends GrammarBackedNode {
+  class abstractOperatorParser extends ParserBackedNode {
     get operatorCell() {
       return this.getWord(0)
     }
@@ -58,7 +58,7 @@ onlyNumbersParser
 
   class printParser extends abstractOperatorParser {}
 
-  class onlyNumbersParser extends GrammarBackedNode {
+  class onlyNumbersParser extends ParserBackedNode {
     get floatCell() {
       return this.getWordsFrom(0).map(val => parseFloat(val))
     }

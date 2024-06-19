@@ -5,8 +5,8 @@ import { scrollNotationTypes } from "../products/scrollNotationTypes"
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { TreeNode } = require("../products/TreeNode.js")
-const { HandGrammarProgram } = require("../products/GrammarLanguage.js")
-const grammarParser = require("../products/grammar.nodejs.js")
+const { HandParsersProgram } = require("../products/Parsers.js")
+const grammarParser = require("../products/parsers.nodejs.js")
 const { posix } = require("../products/Path.js")
 
 const PARSERS_EXTENSION = ".parsers"
@@ -220,7 +220,7 @@ class TreeFileSystem implements Storage {
     return _grammarExpandersCache[absoluteFilePath]
   }
 
-  private _getOneGrammarParserFromFiles(filePaths: string[], baseGrammarCode: string) {
+  private _getOneGrammarParserFromFiles(filePaths: string[], baseParsersCode: string) {
     const parserDefinitionRegex = /^[a-zA-Z0-9_]+Parser/
     const cellDefinitionRegex = /^[a-zA-Z0-9_]+Cell/
     const asOneFile = filePaths
@@ -237,14 +237,14 @@ class TreeFileSystem implements Storage {
       .trim()
 
     // todo: clean up scrollsdk so we are using supported methods (perhaps add a formatOptions that allows you to tell Grammar not to run prettier on js nodes)
-    return new grammarParser(baseGrammarCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
+    return new grammarParser(baseParsersCode + "\n" + asOneFile)._sortNodesByInScopeOrder()._sortWithParentParsersUpTop()
   }
 
   get parsers() {
-    return Object.values(this._parserCache).map(parser => parser.grammarParser)
+    return Object.values(this._parserCache).map(parser => parser.parsersParser)
   }
 
-  getParser(filePaths: string[], baseGrammarCode = "") {
+  getParser(filePaths: string[], baseParsersCode = "") {
     const { _parserCache } = this
     const key = filePaths
       .filter(fp => fp)
@@ -252,12 +252,12 @@ class TreeFileSystem implements Storage {
       .join("\n")
     const hit = _parserCache[key]
     if (hit) return hit
-    const grammarParser = this._getOneGrammarParserFromFiles(filePaths, baseGrammarCode)
+    const grammarParser = this._getOneGrammarParserFromFiles(filePaths, baseParsersCode)
     const grammarCode = grammarParser.asString
     _parserCache[key] = {
       grammarParser,
       grammarCode,
-      parser: new HandGrammarProgram(grammarCode).compileAndReturnRootParser()
+      parser: new HandParsersProgram(grammarCode).compileAndReturnRootParser()
     }
     return _parserCache[key]
   }

@@ -26,7 +26,7 @@ to fillThis`
 
 const main = (grammarCode, code) => {
   logFn("Building language...")
-  const rootParser = new HandGrammarProgram(grammarCode).compileAndReturnRootParser()
+  const rootParser = new HandParsersProgram(grammarCode).compileAndReturnRootParser()
 
   logFn("Loading program...")
 
@@ -83,7 +83,7 @@ const toStringTest = () => {
 }
 
 const fetchAndRun = async () => {
-  const result = await fetch("/langs/jibberish/jibberish.grammar")
+  const result = await fetch("/langs/jibberish/jibberish.parsers")
   const grammarCode = await result.text()
   main(grammarCode, getBigCode())
 }

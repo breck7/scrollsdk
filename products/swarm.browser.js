@@ -1,5 +1,5 @@
 {
-  class swarmParser extends GrammarBackedNode {
+  class swarmParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         errorParser,
@@ -25,7 +25,7 @@
       files[filepath] = testBlocks
       return files
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// todo Add comments?
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// todo Add comments?
 // todo Make run in browser
 // todo Add print or tracer type of intermediate element. debugger?
 
@@ -354,13 +354,13 @@ todoParser
  catchAllParser todoParser
  crux todo
  cells todoKeywordCell`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = swarmParser
   }
 
-  class abstractAssertionParser extends GrammarBackedNode {
+  class abstractAssertionParser extends ParserBackedNode {
     get assertionKeywordCell() {
       return this.getWord(0)
     }
@@ -470,7 +470,7 @@ todoParser
     }
   }
 
-  class abstractArrangeFlagParser extends GrammarBackedNode {
+  class abstractArrangeFlagParser extends ParserBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -478,7 +478,7 @@ todoParser
 
   class arrangeAsyncParser extends abstractArrangeFlagParser {}
 
-  class arrangeRequireParser extends GrammarBackedNode {
+  class arrangeRequireParser extends ParserBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -492,7 +492,7 @@ todoParser
 
   class arrangeStaticParser extends abstractArrangeFlagParser {}
 
-  class abstractTestBlockParser extends GrammarBackedNode {
+  class abstractTestBlockParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(actParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { arrange: arrangeParser }), undefined)
     }
@@ -544,7 +544,7 @@ todoParser
     }
   }
 
-  class hashbangParser extends GrammarBackedNode {
+  class hashbangParser extends ParserBackedNode {
     get hashBangKeywordCell() {
       return this.getWord(0)
     }
@@ -556,7 +556,7 @@ todoParser
     }
   }
 
-  class arrangeParser extends GrammarBackedNode {
+  class arrangeParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -599,7 +599,7 @@ todoParser
     executeSync() {}
   }
 
-  class withParagraphParser extends GrammarBackedNode {
+  class withParagraphParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
@@ -609,7 +609,7 @@ todoParser
     executeSync() {}
   }
 
-  class actParser extends GrammarBackedNode {
+  class actParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         actParser,
@@ -659,7 +659,7 @@ todoParser
     }
   }
 
-  class constructWithParagraphParser extends GrammarBackedNode {
+  class constructWithParagraphParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
@@ -669,13 +669,13 @@ todoParser
     executeSync() {}
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class paragraphLineParser extends GrammarBackedNode {
+  class paragraphLineParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(paragraphLineParser, undefined, undefined)
     }
@@ -687,7 +687,7 @@ todoParser
     }
   }
 
-  class todoParser extends GrammarBackedNode {
+  class todoParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(todoParser, undefined, undefined)
     }

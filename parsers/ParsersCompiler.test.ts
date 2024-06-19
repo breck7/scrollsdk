@@ -6,18 +6,18 @@ const { TreeNode } = require("../products/TreeNode.js")
 const { Disk } = require("../products/Disk.node.js")
 const { Utils } = require("../products/Utils.js")
 const { TestRacer } = require("../products/TestRacer.js")
-const { GrammarCompiler } = require("../products/GrammarCompiler.js")
+const { ParsersCompiler } = require("../products/ParsersCompiler.js")
 
 const testTree: scrollNotationTypes.testTree = {}
 
-testTree.compileGrammarAndCreateProgram = equal => {
+testTree.compileParsersAndCreateProgram = equal => {
   // Arrange
   const jibberishRootDir = __dirname + "/../langs/jibberish/"
   const programPath = jibberishRootDir + "sample.jibberish"
-  const grammarPath = jibberishRootDir + "jibberish.grammar"
+  const parsersPath = jibberishRootDir + "jibberish.parsers"
 
   // Act
-  const program = GrammarCompiler.compileGrammarAndCreateProgram(programPath, grammarPath)
+  const program = ParsersCompiler.compileParsersAndCreateProgram(programPath, parsersPath)
   const result = program.execute()
 
   // Assert
@@ -27,7 +27,7 @@ testTree.compileGrammarAndCreateProgram = equal => {
 
 testTree.combineTests = equal => {
   // Arrange
-  const combined = GrammarCompiler.combineFiles([__dirname + "/*.swarm"])
+  const combined = ParsersCompiler.combineFiles([__dirname + "/*.swarm"])
 
   // Act/Assert
   equal(combined.toString().includes("constructWithParagraph"), true, "Included something from a swarm file")
@@ -58,7 +58,7 @@ testTree.diskTests = equal => {
 testTree.findProjectRoot = equal => {
   const dir = Utils.findProjectRoot(__dirname, "scrollsdk")
   equal(typeof dir, "string")
-  equal(dir.includes("grammar"), false, "correct parent dir selected")
+  equal(dir.includes("parsers"), false, "correct parent dir selected")
 
   try {
     const result = Utils.findProjectRoot("/foo/bar/", "scrollsdk")

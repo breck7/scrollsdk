@@ -1,18 +1,18 @@
 import header.scroll
 
-title Tutorial: create a new Tree Language using Grammar
+title Tutorial: create a new Language using Parsers
 
 startColumns 2
 
 # Key Concepts
 
-*Scroll Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better. We call languages that use _Scroll Notation_ *Tree Languages*.
+*Scroll Notation* is a notation for human & machine friendly languages that are as simple as possible. Simplicity is measured by the count of the pieces: the fewer pieces to build a language the better.
 
 A _Scroll Notation_ program is a string, a tree, and a spreadsheet all at the same time. You will often work treat your program as all 3, sometimes concurrently.
 
-*Grammar* is a _Tree Language_ for building other _Tree Languages_. This tutorial walks you through building a very simple language in _Grammar_.
+*Parsers* is a language built on top of Scroll Notation for building other languages. This tutorial walks you through building a very simple language in _Parsers_.
 
-_Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle it according to the definitions you write in your Grammar program. A language is simple a combination of _Parsers_.
+_Parsers_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle it according to the definitions you write in your Parsers program. A language is simple a combination of _Parsers_.
 
 ## Before you start:
 [] Know where to get help. GitHub issues, Scroll subreddit, or email Breck.
@@ -21,7 +21,7 @@ _Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle 
  link mailto:breck7@gmail.com email Breck
 [] Take a look at some of the sample languages in the Scroll Designer. You might be able to use these as a reference if you get stuck.
  https://sdk.scroll.pub/designer/ Scroll Designer
-[] Open the Scroll Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Grammar Languages).
+[] Open the Scroll Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Parsers).
  https://sdk.scroll.pub/designer/ Scroll Designer
  https://sublimetext.com SublimeText4
 
@@ -29,7 +29,7 @@ _Grammar_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle 
 [] Name your language. For now, it is recommended that your language name be lowercase, only letters between A-Z, and not a common reserved word like "while/if/true/etc". You are free to name it anything you want, but if you do we ask that you report any bugs you encounter.
 
 # Step 2
-[] If you are using the Scroll Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.grammar`
+[] If you are using the Scroll Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.parsers`
  https://sdk.scroll.pub/designer/ Scroll Designer
 
 ## Step 3
@@ -46,8 +46,8 @@ psuedoCode
   description {thisIsALangageToHelpYouDoX}
 
 ## Step 5
-[] Add another Parser to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" Parser. We add a line to the `friendParser` `cruxFromId`. Most Tree Languages are keyword based. Because the word `keyword` is currently a reserved language in many programming languages, we currently use the word `crux` to refer to the same concept. The line `cruxFromId` instructs the GrammarParser to extract the keyword from the id—`friendParser`. Ideally this will be cleaned up in a future version of Grammar.
-grammarCode
+[] Add another Parser to your language. In this example, we'll make a simple language that allows to store your friend's birthdays. Let's add a "friend" Parser. We add a line to the `friendParser` `cruxFromId`. Most Tree Languages are keyword based. Because the word `keyword` is currently a reserved language in many programming languages, we currently use the word `crux` to refer to the same concept. The line `cruxFromId` instructs the Parser to extract the keyword from the id—`friendParser`. Ideally this will be cleaned up in a future version of Parsers.
+parsersCode
  birthdaysParser
   root
   description A language for storing your friend's birthdays.
@@ -57,7 +57,7 @@ grammarCode
 
 ## Step 6
 [] Now let's add an `inScope` line to the root Parser so that the friend Parser is in scope:
-grammarCode
+parsersCode
  birthdaysParser
   root
   description A language for storing your friend's birthdays.
@@ -93,7 +93,7 @@ psuedoCode
  ...
 
 ## Step 10
-[] A second minor concept in Grammar are cell types. A Scroll Notation document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our grammar file.
+[] A second minor concept in Parsers are cell types. A Scroll Notation document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our parsers file.
 psuedoCode
  nameCell
   highlightScope string
@@ -116,7 +116,7 @@ code
 
 ## Step 13
 [] Now let's add an error Parser and link it to the Parser to catch errors:
-grammarCode
+parsersCode
  birthdaysParser
   root
   description A language for storing your friend's birthdays.

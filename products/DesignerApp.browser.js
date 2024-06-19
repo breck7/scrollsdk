@@ -38,13 +38,13 @@ class DesignerApp extends AbstractTreeComponentParser {
   visualizeCommand() {
     this.willowBrowser.setHtmlOfElementWithIdHack("explainResultsDiv", this._toIceTray(this.program))
   }
-  inferPrefixGrammarCommand() {
-    this.setGrammarCode(new UnknownGrammarProgram(this.getCodeValue()).inferGrammarFileForAKeywordLanguage("inferredLanguage"))
+  inferPrefixParsersCommand() {
+    this.setParsersCode(new UnknownParsersProgram(this.getCodeValue()).inferParsersFileForAKeywordLanguage("inferredLanguage"))
     this._onGrammarKeyup()
   }
   synthesizeProgramCommand() {
-    const grammarProgram = new HandGrammarProgram(this.getGrammarCode())
-    this.setCodeCode(grammarProgram.rootParserDefinition.synthesizeNode().join("\n"))
+    const parsersProgram = new HandParsersProgram(this.getParsersCode())
+    this.setCodeCode(parsersProgram.rootParserDefinition.synthesizeNode().join("\n"))
     this._onCodeKeyUp()
   }
   resetCommand() {
@@ -54,17 +54,17 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
   async fetchAndLoadScrollSDKShippedLanguageCommand(name) {
     const samplePath = `/langs/${name}/sample.${name}`
-    const grammarPath = `/langs/${name}/${name}.grammar`
+    const parsersPath = `/langs/${name}/${name}.parsers`
     const willowBrowser = this.willowBrowser
-    const grammar = await willowBrowser.httpGetUrl(grammarPath)
+    const grammar = await willowBrowser.httpGetUrl(parsersPath)
     const sample = await willowBrowser.httpGetUrl(samplePath)
     this._setGrammarAndCode(grammar.text, sample.text)
   }
   async fetchAndLoadGrammarFromUrlCommand(url, programUrl) {
     const willowBrowser = this.willowBrowser
     const grammar = await willowBrowser.httpGetUrl(url)
-    const grammarProgram = new HandGrammarProgram(grammar.text)
-    const rootNodeDef = grammarProgram.rootParserDefinition
+    const parsersProgram = new HandParsersProgram(grammar.text)
+    const rootNodeDef = parsersProgram.rootParserDefinition
     let sample = rootNodeDef.getNode("example").childrenToString()
     if (programUrl) {
       sample = await willowBrowser.httpGetUrl(programUrl)
@@ -74,9 +74,9 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
   // TODO: ADD TESTS!!!!!
   async downloadBundleCommand() {
-    const grammarProgram = new HandGrammarProgram(this.getGrammarCode())
-    const bundle = grammarProgram.toBundle()
-    const languageName = grammarProgram.extensionName
+    const parsersProgram = new HandParsersProgram(this.getParsersCode())
+    const bundle = parsersProgram.toBundle()
+    const languageName = parsersProgram.extensionName
     return this._makeZipBundle(languageName + ".zip", bundle)
   }
   async _makeZipBundle(fileName, bundle) {
@@ -128,7 +128,7 @@ class DesignerApp extends AbstractTreeComponentParser {
       await this.fetchAndLoadGrammarFromUrlCommand(fromUrl, programUrl)
       return true
     } else {
-      const grammarCode = deepLink.getNode("grammar")
+      const grammarCode = deepLink.getNode("parsers")
       const sampleCode = deepLink.getNode("sample")
       if (grammarCode && sampleCode) {
         console.log("Loading custom from deep link....")
@@ -155,21 +155,21 @@ class DesignerApp extends AbstractTreeComponentParser {
   async start() {
     this._bindTreeComponentFrameworkCommandListenersOnBody()
     this.renderAndGetRenderReport(this.willowBrowser.getBodyStumpNode())
-    this.grammarInstance = new GrammarCodeMirrorMode("grammar", () => grammarParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
-    this.grammarInstance.on("keyup", () => {
+    this.parsersInstance = new ParsersCodeMirrorMode("parsers", () => grammarParser, undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("grammarConsole"), { lineWrapping: true })
+    this.parsersInstance.on("keyup", () => {
       this._onGrammarKeyup()
     })
-    this.codeInstance = new GrammarCodeMirrorMode("custom", () => this._getGrammarParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
+    this.codeInstance = new ParsersCodeMirrorMode("custom", () => this._getGrammarParser(), undefined, CodeMirror).register().fromTextAreaWithAutocomplete(document.getElementById("codeConsole"), { lineWrapping: true })
     this.codeInstance.on("keyup", () => this._onCodeKeyUp())
     // loadFromURL
     const wasLoadedFromDeepLink = await this._loadFromDeepLink()
     if (!wasLoadedFromDeepLink) await this._restoreFromLocalStorage()
   }
-  getGrammarCode() {
-    return this.grammarInstance.getValue()
+  getParsersCode() {
+    return this.parsersInstance.getValue()
   }
-  setGrammarCode(code) {
-    this.grammarInstance.setValue(code)
+  setParsersCode(code) {
+    this.parsersInstance.setValue(code)
   }
   setCodeCode(code) {
     this.codeInstance.setValue(code)
@@ -179,13 +179,13 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
   async _restoreFromLocalStorage() {
     console.log("Restoring from local storage....")
-    const grammarCode = localStorage.getItem(this._localStorageKeys.grammarConsole)
+    const grammarCode = localStorage.getItem(this._localStorageKeys.parsersConsole)
     const code = localStorage.getItem(this._localStorageKeys.codeConsole)
     if (typeof grammarCode === "string" && typeof code === "string") this._setGrammarAndCode(grammarCode, code)
     return grammarCode || code
   }
   _updateLocalStorage() {
-    localStorage.setItem(this._localStorageKeys.grammarConsole, this.getGrammarCode())
+    localStorage.setItem(this._localStorageKeys.parsersConsole, this.getParsersCode())
     localStorage.setItem(this._localStorageKeys.codeConsole, this.getCodeValue())
     this._updateShareLink() // todo: where to put this?
     console.log("Local storage updated...")
@@ -194,12 +194,12 @@ class DesignerApp extends AbstractTreeComponentParser {
     return new grammarParser(grammarCode).getAllErrors()
   }
   _getGrammarParser() {
-    let currentGrammarCode = this.getGrammarCode()
-    if (!this._grammarParser || currentGrammarCode !== this._cachedGrammarCode) {
+    let currentParsersCode = this.getParsersCode()
+    if (!this._grammarParser || currentParsersCode !== this._cachedParsersCode) {
       try {
-        const grammarErrors = this._getGrammarErrors(currentGrammarCode)
-        this._grammarParser = new HandGrammarProgram(currentGrammarCode).compileAndReturnRootParser()
-        this._cachedGrammarCode = currentGrammarCode
+        const grammarErrors = this._getGrammarErrors(currentParsersCode)
+        this._grammarParser = new HandParsersProgram(currentParsersCode).compileAndReturnRootParser()
+        this._cachedParsersCode = currentParsersCode
         this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv")
       } catch (err) {
         console.error(err)
@@ -213,12 +213,12 @@ class DesignerApp extends AbstractTreeComponentParser {
     this.willowBrowser.setHtmlOfElementWithIdHack("otherErrorsDiv", err)
   }
   _grammarDidUpdate() {
-    const grammarCode = this.getGrammarCode()
-    this.grammarProgram = new grammarParser(grammarCode)
-    const errs = this.grammarProgram.getAllErrors().map(err => err.toObject())
+    const grammarCode = this.getParsersCode()
+    this.parsersProgram = new grammarParser(grammarCode)
+    const errs = this.parsersProgram.getAllErrors().map(err => err.toObject())
     this.willowBrowser.setHtmlOfElementWithIdHack("grammarErrorsConsole", errs.length ? new TreeNode(errs).toFormattedTable(200) : "0 errors")
-    const grammarProgram = new HandGrammarProgram(this.grammarInstance.getValue())
-    const readme = new dumbdownParser(grammarProgram.toReadMe()).compile()
+    const parsersProgram = new HandParsersProgram(this.parsersInstance.getValue())
+    const readme = new dumbdownParser(parsersProgram.toReadMe()).compile()
     this.willowBrowser.setHtmlOfElementWithIdHack("readmeComponent", readme)
   }
   _updateShareLink() {
@@ -229,7 +229,7 @@ class DesignerApp extends AbstractTreeComponentParser {
   }
   toShareLink() {
     const tree = new TreeNode()
-    tree.appendLineAndChildren("grammar", this.getGrammarCode())
+    tree.appendLineAndChildren("parsers", this.getParsersCode())
     tree.appendLineAndChildren("sample", this.getCodeValue())
     return "#" + encodeURIComponent(tree.asString)
   }
@@ -267,7 +267,7 @@ class DesignerApp extends AbstractTreeComponentParser {
     if (willowBrowser.getElementById("executeCommand").checked) this.executeCommand()
   }
   _setGrammarAndCode(grammar, code) {
-    this.setGrammarCode(grammar)
+    this.setParsersCode(grammar)
     this.setCodeCode(code)
     this._clearHash()
     this._grammarDidUpdate()
@@ -450,7 +450,7 @@ class tableComponent extends AbstractTreeComponentParser {
   td
    span Grammar for your Tree Language 
    a Infer Prefix Grammar
-    clickCommand inferPrefixGrammarCommand
+    clickCommand inferPrefixParsersCommand
    span  |
    a Download Bundle
     clickCommand downloadBundleCommand
@@ -550,7 +550,7 @@ class headerComponent extends AbstractTreeComponentParser {
   id helpSection
   style display: none;
   p This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "grammar language" in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.grammarProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/grammarTutorial.html">Tutorial for creating new Tree Languages using Grammar</a>.`
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new Tree Languages using Grammar</a>.`
   }
 }
 class githubTriangleComponent extends AbstractGithubTriangleComponent {

@@ -899,7 +899,7 @@ class AbstractTheme {
   }
 }
 class DefaultTheme extends AbstractTheme {}
-class AbstractTreeComponentParser extends GrammarBackedNode {
+class AbstractTreeComponentParser extends ParserBackedNode {
   async startWhenReady() {
     if (this.isNodeJs()) return this.start()
     document.addEventListener(

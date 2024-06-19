@@ -2,14 +2,14 @@
 {
   const { Utils } = require("./Utils.js")
   const { TreeNode } = require("./TreeNode.js")
-  const { HandGrammarProgram } = require("./GrammarLanguage.js")
-  const { GrammarBackedNode } = require("./GrammarLanguage.js")
+  const { HandParsersProgram } = require("./Parsers.js")
+  const { ParserBackedNode } = require("./Parsers.js")
 
-  class fruitParser extends GrammarBackedNode {
+  class fruitParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { apple: appleParser }), undefined)
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`fruitNameCell
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`fruitNameCell
  highlightScope keyword
 fruitParser
  description A useless language to test scoped parsers.
@@ -29,13 +29,13 @@ appleParser
   extends abstractFruitParser
 errorParser
  baseParser errorParser`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = fruitParser
   }
 
-  class abstractFruitParser extends GrammarBackedNode {
+  class abstractFruitParser extends ParserBackedNode {
     get fruitNameCell() {
       return this.getWord(0)
     }
@@ -48,7 +48,7 @@ errorParser
     }
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }

@@ -1,11 +1,11 @@
 {
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class dumbdownParser extends GrammarBackedNode {
+  class dumbdownParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         quickParagraphParser,
@@ -24,7 +24,7 @@
         [{ regex: /^$/, parser: blankLineParser }]
       )
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell Parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
 anyCell
 blankCell
 dashCell
@@ -43,7 +43,7 @@ errorParser
  baseParser errorParser
 dumbdownParser
  extensions dd dumbdown
- description A Tree Language that compiles to HTML. An alternative to Markdown.
+ description A Language that compiles to HTML. An alternative to Markdown.
  root
  inScope abstractTopLevelParser blankLineParser
  catchAllParser quickParagraphParser
@@ -54,7 +54,7 @@ dumbdownParser
   
   paragraph
    It compiles to HTML. Blank lines get turned into brs.
-  link https://notation.scroll.pub Dumbdown is a Tree Language.
+  link https://notation.scroll.pub Dumbdown is a Language.
   list
    - It has lists
    - Too!
@@ -158,13 +158,13 @@ quickParagraphParser
  catchAllCellType textCell
  compiler
   stringTemplate <p>{textCell}</p>`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = dumbdownParser
   }
 
-  class abstractTopLevelParser extends GrammarBackedNode {
+  class abstractTopLevelParser extends ParserBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }
@@ -188,7 +188,7 @@ quickParagraphParser
     }
   }
 
-  class paragraphContentParser extends GrammarBackedNode {
+  class paragraphContentParser extends ParserBackedNode {
     get textCell() {
       return this.getWordsFrom(0)
     }
@@ -209,13 +209,13 @@ quickParagraphParser
     }
   }
 
-  class blankLineParser extends GrammarBackedNode {
+  class blankLineParser extends ParserBackedNode {
     get blankCell() {
       return this.getWord(0)
     }
   }
 
-  class lineOfCodeParser extends GrammarBackedNode {
+  class lineOfCodeParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(lineOfCodeParser, undefined, undefined)
     }
@@ -224,7 +224,7 @@ quickParagraphParser
     }
   }
 
-  class dashParser extends GrammarBackedNode {
+  class dashParser extends ParserBackedNode {
     get dashCell() {
       return this.getWord(0)
     }
@@ -258,7 +258,7 @@ quickParagraphParser
 
   class title6Parser extends title2Parser {}
 
-  class quickParagraphParser extends GrammarBackedNode {
+  class quickParagraphParser extends ParserBackedNode {
     get textCell() {
       return this.getWordsFrom(0)
     }

@@ -7,21 +7,21 @@ nodeProduct
  insertLastLine module.exports = {TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }
  combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/AbstractNode.node.ts treeNode/TreeNode.ts
 nodeProduct
- outputFileName GrammarLanguage.js
- insertLastLine module.exports = { GrammarConstants, PreludeCellTypeIds, HandGrammarProgram, GrammarBackedNode, UnknownParserError, UnknownGrammarProgram }
- combineTypeScriptFiles products/scrollNotationTypes.ts grammar/GrammarLanguage.ts
+ outputFileName Parsers.js
+ insertLastLine module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedNode, UnknownParserError, UnknownParsersProgram }
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
 nodeProduct
  outputFileName TestRacer.js
  insertLastLine module.exports = {TestRacer}
  combineTypeScriptFiles testRacer/TestRacer.ts
 nodeProduct
- outputFileName GrammarCodeMirrorMode.js
- insertLastLine module.exports = {GrammarCodeMirrorMode}
- combineTypeScriptFiles products/scrollNotationTypes.ts grammar/GrammarCodeMirrorMode.ts
+ outputFileName ParsersCodeMirrorMode.js
+ insertLastLine module.exports = {ParsersCodeMirrorMode}
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
 nodeProduct
- outputFileName GrammarCompiler.js
- insertLastLine module.exports = {GrammarCompiler}
- combineTypeScriptFiles products/scrollNotationTypes.ts grammar/GrammarCompiler.ts
+ outputFileName ParsersCompiler.js
+ insertLastLine module.exports = {ParsersCompiler}
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCompiler.ts
 nodeProduct
  outputFileName Disk.node.js
  insertLastLine module.exports = {Disk}
@@ -54,9 +54,9 @@ browserProduct
  removeAll window.scrollNotationTypes = scrollNotationTypes
  combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/TreeNode.test.ts
 browserProduct
- outputFileName GrammarLanguage.browser.js
+ outputFileName Parsers.ts.browser.js
  removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts grammar/GrammarLanguage.ts
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
 browserProduct
  outputFileName Utils.browser.js
  combineTypeScriptFiles utils/Utils.ts
@@ -72,10 +72,10 @@ browserProduct
  removeAll window.scrollNotationTypes = scrollNotationTypes
  combineTypeScriptFiles products/scrollNotationTypes.ts testRacer/TestRacer.ts
 browserProduct
- outputFileName GrammarCodeMirrorMode.browser.js
+ outputFileName ParsersCodeMirrorMode.browser.js
  removeAll Object.defineProperty(exports, "__esModule", { value: true })
  removeAll window.scrollNotationTypes = scrollNotationTypes
- combineTypeScriptFiles products/scrollNotationTypes.ts grammar/GrammarCodeMirrorMode.ts
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
 browserProduct
  outputFileName DesignerApp.browser.js
  combineTypeScriptFiles designer/DesignerApp.ts

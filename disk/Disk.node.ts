@@ -151,7 +151,7 @@ class Disk {
     return map
   }
   /**
-   * Take an object like {".gitignore" : "ignore/", "grammar/root.grammar": "foo"}
+   * Take an object like {".gitignore" : "ignore/", "parsers/root.parsers": "foo"}
    * and recreate on the filesystem as files and folders. Each key is 1 file.
    * */
   static writeObjectToDisk = (baseFolder: string, obj: any) => {

@@ -1,5 +1,5 @@
 {
-  class commentParser extends GrammarBackedNode {
+  class commentParser extends ParserBackedNode {
     get commentCell() {
       return this.getWord(0)
     }
@@ -11,14 +11,14 @@
     }
   }
 
-  class arrowParser extends GrammarBackedNode {
+  class arrowParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(errorParser, Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { Comment: commentParser, charge: chargeParser }), undefined)
     }
     compile() {
       return this.asJsonSubset
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
 keywordCell
  enum charge cardNumber amount currency description token
 floatCell
@@ -56,7 +56,7 @@ commentParser
  crux Comment
  boolean suggestInAutocomplete false
 arrowParser
- description A demonstration prefix Tree Language showing how in the future Scroll Notation will be used for simpler and more intelligent APIs.
+ description A demonstration prefix Language showing how in the future Scroll Notation will be used for simpler and more intelligent APIs.
  root
  inScope chargeParser commentParser
  catchAllParser errorParser
@@ -99,19 +99,19 @@ descriptionParser
 tokenParser
  cruxFromId
  cells keywordCell tokenCell`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = arrowParser
   }
 
-  class errorParser extends GrammarBackedNode {
+  class errorParser extends ParserBackedNode {
     getErrors() {
       return this._getErrorParserErrors()
     }
   }
 
-  class chargeParser extends GrammarBackedNode {
+  class chargeParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(
         undefined,
@@ -128,7 +128,7 @@ tokenParser
     }
   }
 
-  class abstractChargeAttributeParser extends GrammarBackedNode {}
+  class abstractChargeAttributeParser extends ParserBackedNode {}
 
   class cardNumberParser extends abstractChargeAttributeParser {
     get keywordCell() {
@@ -169,7 +169,7 @@ tokenParser
     }
   }
 
-  class tokenParser extends GrammarBackedNode {
+  class tokenParser extends ParserBackedNode {
     get keywordCell() {
       return this.getWord(0)
     }

@@ -1,5 +1,5 @@
 {
-  class poopParser extends GrammarBackedNode {
+  class poopParser extends ParserBackedNode {
     createParserCombinator() {
       return new TreeNode.ParserCombinator(this._getBlobParserCatchAllParser(), Object.assign(Object.assign({}, super.createParserCombinator()._getFirstWordMapAsObject()), { "🌄": dayParser }), [
         { regex: /💩/, parser: bowelParser },
@@ -25,7 +25,7 @@
         .filter(identity => identity)
       return `date,time,event,notes\n` + rows.join("\n")
     }
-    static cachedHandGrammarProgramRoot = new HandGrammarProgram(`// Cell parsers
+    static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
 dateIntCell
  highlightScope constant.numeric.integer
 monthIntCell
@@ -48,9 +48,9 @@ eventTypeCell
 
 // Line parsers
 poopParser
- description POOP is the Programming Option for Overtired Parents. It is a Tree Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events and compile them to CSV. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes. POOP is an anyfix language. You can put the time first or the event type first. You can write the actual symbols, or, if it is 3am, you can just use some of the natural medium to record the event type.
+ description POOP is the Programming Option for Overtired Parents. It is a Language for sleep deprived parents to log their child's bathroom, feeding, and sleep events and compile them to CSV. You can use POOP with computers or pen and paper. Each line records an event, a time, and optionally notes. POOP is an anyfix language. You can put the time first or the event type first. You can write the actual symbols, or, if it is 3am, you can just use some of the natural medium to record the event type.
  root
- tags nonPrefixGrammar
+ tags nonPrefixParsers
  compilesTo csv
  javascript
   compile() {
@@ -141,13 +141,13 @@ dayParser
     .trim()
     .replace(/ /g, "/")
   }`)
-    get handGrammarProgram() {
-      return this.constructor.cachedHandGrammarProgramRoot
+    get handParsersProgram() {
+      return this.constructor.cachedHandParsersProgramRoot
     }
     static rootParser = poopParser
   }
 
-  class abstractEventParser extends GrammarBackedNode {
+  class abstractEventParser extends ParserBackedNode {
     get eventTypeCell() {
       return this.getWord(0)
     }
@@ -211,7 +211,7 @@ dayParser
     }
   }
 
-  class dayParser extends GrammarBackedNode {
+  class dayParser extends ParserBackedNode {
     get symbolCell() {
       return this.getWord(0)
     }

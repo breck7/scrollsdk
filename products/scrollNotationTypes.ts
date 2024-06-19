@@ -76,9 +76,9 @@ namespace scrollNotationTypes {
   export declare type url = string
   export declare type typeScriptFilePath = filepath
   export declare type treeProgramFilePath = filepath
-  export declare type grammarFilePath = filepath
+  export declare type parsersFilePath = filepath
   export declare type fileName = string
-  export declare type grammarName = string
+  export declare type parsersName = string
   export declare type globPattern = string
   export declare type highlightScope = string
   export declare type fileExtension = string

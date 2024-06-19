@@ -8,7 +8,7 @@
       ])
     }
     static cachedHandParsersProgramRoot =
-      new HandParsersProgram(`// todo Add imports parsers, along with source maps, so we can correctly support parserss split across multiple files, and better enable parserss from compositions of reusable bits?
+      new HandParsersProgram(`// todo Add imports parsers, along with source maps, so we can correctly support parsers split across multiple files, and better enable parsers from compositions of reusable bits?
 // todo Do error checking for if you have a firstwordCellType, cells, and/or catchAllCellType with same name.
 // todo Add enumOption root level type?
 // todo compile cells. add javascript property. move getRunTimeEnumOptions to cells.
@@ -110,7 +110,7 @@ commentCell
 // Line Parsers
 parsersParser
  root
- description Parsers is a Tree Language for creating new Tree Languages. By creating a parsers file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Parsers uses both postfix and prefix language features.
+ description Parsers is a language for creating new languages on top of Scroll Notation. By creating a parsers file you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your new language. Parsers uses both postfix and prefix language features.
  catchAllParser catchAllErrorParser
  extensions parsers gram
  example A parsers that parses anything:

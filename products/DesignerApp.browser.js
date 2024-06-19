@@ -549,8 +549,8 @@ class headerComponent extends AbstractTreeComponentParser {
  div
   id helpSection
   style display: none;
-  p This is a simple web IDE for designing and building Tree Languages. To build a Tree Language, you write code in a "parsers language" in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
-  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new Tree Languages using Parsers</a>.`
+  p This is a simple web IDE for designing and building languages on top of Scroll Notation. To build a language, you write Parsers in the textarea on the left. You can then write code in your new language in the textarea on the right. You instantly get syntax highlighting, autocomplete, type/cell checking, suggested corrections, and more.
+  p Click "Newlang" to create a New Language, or explore/edit existing languages. In dev tools, you can access the parsed trees below as "app.parsersProgram" and program at "app.program". We also have a work-in-progress <a href="https://sdk.scroll.pub/parsersTutorial.html">Tutorial for creating new languages using Parsers</a>.`
   }
 }
 class githubTriangleComponent extends AbstractGithubTriangleComponent {

@@ -621,8 +621,14 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
 #shortcutsTableComponent
  table
   margin-top 15px
+  border-collapse collapse
  td
-  padding 3px 20px 3px 3px
+  padding 5px
+ tr
+  &:hover
+   cursor pointer
+   background-color #eee
+   border-radius 3px
 .button
  color black
  border 1px solid black
@@ -645,9 +651,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
   }
 
   private _setupBrowser() {
-    const willowBrowser = this.willowBrowser
-
-    const keyboardShortcuts: any = this._getKeyboardShortcuts()
+    const { keyboardShortcuts, willowBrowser } = this
     Object.keys(keyboardShortcuts).forEach(key => {
       willowBrowser.getMousetrap().bind(key, function (evt: any) {
         keyboardShortcuts[key]()
@@ -676,6 +680,8 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
     if (SweeperCraftGame.isValidPermalink(currentHash)) this._restoreStateFromHash(currentHash)
     else willowBrowser.setHash(SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10)))
   }
+
+  keyboardShortcuts = this._getKeyboardShortcuts()
 
   _getKeyboardShortcuts() {
     return {
@@ -973,6 +979,10 @@ class customLinkComponent extends AbstractSweeperCraftComponent {
 }
 
 class shortcutsTableComponent extends AbstractTreeComponentParser {
+  triggerShortcut(letter: string) {
+    this.root.keyboardShortcuts[letter]()
+  }
+
   toStumpCode() {
     return `div
  id shortcutsTableComponent
@@ -981,33 +991,43 @@ class shortcutsTableComponent extends AbstractTreeComponentParser {
    tr
     td ?
     td Show/Hide Keyboard Shortcuts
+    clickCommand triggerShortcut ?
    tr
     td u
     td Undo
+    clickCommand triggerShortcut u
    tr
     td l
     td Toggle Flag Lock
+    clickCommand triggerShortcut l
    tr
     td r
     td Watch instant replay
+    clickCommand triggerShortcut r
    tr
     td s
     td Solve game
+    clickCommand triggerShortcut s
    tr
     td e
     td New easy board
+    clickCommand triggerShortcut e
    tr
     td m
     td New medium board
+    clickCommand triggerShortcut m
    tr
     td h
     td New hard board
+    clickCommand triggerShortcut h
    tr
     td w
     td New board from word
+    clickCommand triggerShortcut w
    tr
     td d
-    td Debug`
+    td Debug
+    clickCommand triggerShortcut d`
   }
 }
 

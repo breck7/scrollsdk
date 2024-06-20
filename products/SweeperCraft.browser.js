@@ -394,7 +394,6 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
  margin-bottom 10px
  a
   text-decoration none
-  font-size 30px
 .headerComponent
  margin-bottom 10px
 #minesLeft,#moves,#timer
@@ -435,6 +434,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
  display inline-block
  width 30px
  height 30px
+ line-height 30px
  overflow hidden
  box-sizing border-box
  cursor pointer
@@ -465,21 +465,21 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
 .b0
  color black
 .b1
- color #57bbdc
+ color #ff6666
 .b2
- color #4cb559
+ color #ff6666
 .b3
- color #eb7d29
+ color #ff3333
 .b4
- color #1a69e0
+ color #ff3333
 .b5
- color #d84959
+ color #ff1a1a
 .b6
- color #f6c14a
+ color #ff1a1a
 .b7
- color #608389
+ color #cc0000
 .b8
- color #48c4ec
+ color #cc0000
 .exportLink
  a
   color #57bbdc
@@ -491,12 +491,13 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
  td
   padding 3px 20px 3px 3px
 .button
- color #fff
- background-color #4cb559
+ color black
+ border 1px solid black
+ opacity 0.9
  &:hover
-  background-color #44a450
+  opacity 1
  &:active
-  background-color #3c9247
+  opacity 0.95
 .rowComponent:first-child
  .squareComponent
   border-top 1px solid #757575
@@ -620,7 +621,7 @@ class headerComponent extends AbstractSweeperCraftComponent {
     // Skip reactjs for updating timer
     if (!this._timerInterval)
       this._timerInterval = setInterval(() => {
-        this.willowBrowser.setHtmlOfElementWithIdHack("timer", this.gameTime)
+        this.willowBrowser.setHtmlOfElementWithIdHack("timer", `&nbsp;` + this.gameTime)
       }, 1000)
   }
   get gameTime() {
@@ -650,14 +651,15 @@ class headerComponent extends AbstractSweeperCraftComponent {
   class logo
   a SweeperCraft
    href #
+  span  - Craft your own levels.
  div
-  span ${this.numberOfMines}
+  span &nbsp;${this.numberOfMines}&nbsp;
    id minesLeft
-  span ${this.numberOfMoves}
+  span &nbsp;${this.numberOfMoves}&nbsp;
    id moves
-  span ${this.gameTime}
+  span &nbsp;${this.gameTime}&nbsp;
    id timer
-  span ${this.gameMessage}
+  span &nbsp;${this.gameMessage}&nbsp;
    id gameStatus`
   }
 }

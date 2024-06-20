@@ -681,7 +681,7 @@ class SweeperCraftApp extends AbstractTreeComponentParser {
     else willowBrowser.setHash(SweeperCraftGame.toPermalink(SweeperCraftGame.getRandomBoard(9, 9, 10)))
   }
 
-  keyboardShortcuts = this._getKeyboardShortcuts()
+  keyboardShortcuts: any = this._getKeyboardShortcuts()
 
   _getKeyboardShortcuts() {
     return {

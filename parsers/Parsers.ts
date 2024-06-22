@@ -532,7 +532,10 @@ abstract class ParserBackedNode extends TreeNode {
   }
 
   private get cellErrors() {
-    return this.parsedCells.map(check => check.getErrorIfAny()).filter(identity => identity)
+    const { parsedCells } = this // todo: speedup. takes ~3s on pldb.
+
+    // todo: speedup getErrorIfAny. takes ~3s on pldb.
+    return parsedCells.map(check => check.getErrorIfAny()).filter(identity => identity)
   }
 
   private get singleParserUsedTwiceErrors() {
@@ -566,10 +569,10 @@ abstract class ParserBackedNode extends TreeNode {
   get scopeErrors() {
     let errors: scrollNotationTypes.TreeError[] = []
     const def = this.definition
-    if (def.isSingle) errors = errors.concat(this.singleParserUsedTwiceErrors)
-    if (def.isUniqueLine) errors = errors.concat(this.uniqueLineAppearsTwiceErrors)
+    if (def.isSingle) errors = errors.concat(this.singleParserUsedTwiceErrors) // todo: speedup. takes ~1s on pldb.
+    if (def.isUniqueLine) errors = errors.concat(this.uniqueLineAppearsTwiceErrors) // todo: speedup. takes ~1s on pldb.
 
-    const { requiredNodeErrors } = this
+    const { requiredNodeErrors } = this // todo: speedup. takes ~1.5s on pldb.
     if (requiredNodeErrors.length) errors = errors.concat(requiredNodeErrors)
     return errors
   }

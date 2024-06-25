@@ -2,7 +2,8 @@ import ../../header.scroll
 permalink index.html
 copyButtons
 
-title Scroll Parsers: A language for making languages
+title Parsers: A language for making languages
+printTitle
 
 startColumns 2
 

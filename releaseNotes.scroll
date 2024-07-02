@@ -4,6 +4,9 @@ startColumns 4
 
 Here's a list of the notable changes in the Scroll SDK.
 
+# 80.1.1 2024-7-02
+- 🏥 tfs fix
+
 # 80.1.0 2024-7-02
 - 🎉 added getCTime and stats to TreeFileSystem
 

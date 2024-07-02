@@ -30,6 +30,7 @@ interface Storage {
   list(absolutePath: string): string[]
   write(absolutePath: string, content: string): void
   getMTime(absolutePath: string): number
+  getCTime(absolutePath: string): number
   dirname(absolutePath: string): string
   join(...absolutePath: string[]): string
 }
@@ -63,7 +64,7 @@ class DiskWriter implements Storage {
     return this._read(absolutePath).stats.mtimeMs
   }
 
-  getCTime() {
+  getCTime(absolutePath: string) {
     return this._read(absolutePath).stats.ctimeMs
   }
 
@@ -141,6 +142,10 @@ class TreeFileSystem implements Storage {
   }
 
   getMTime(absolutePath: string) {
+    return this._storage.getMTime(absolutePath)
+  }
+
+  getCTime(absolutePath: string) {
     return this._storage.getMTime(absolutePath)
   }
 

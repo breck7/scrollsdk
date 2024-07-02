@@ -32,7 +32,7 @@ class DiskWriter {
   getMTime(absolutePath) {
     return this._read(absolutePath).stats.mtimeMs
   }
-  getCTime() {
+  getCTime(absolutePath) {
     return this._read(absolutePath).stats.ctimeMs
   }
   dirname(absolutePath) {
@@ -95,6 +95,9 @@ class TreeFileSystem {
     return this._storage.join(...segments)
   }
   getMTime(absolutePath) {
+    return this._storage.getMTime(absolutePath)
+  }
+  getCTime(absolutePath) {
     return this._storage.getMTime(absolutePath)
   }
   _getFileAsTree(absoluteFilePath) {

@@ -4,6 +4,9 @@ startColumns 4
 
 Here's a list of the notable changes in the Scroll SDK.
 
+# 80.1.0 2024-7-02
+- 🎉 added getCTime and stats to TreeFileSystem
+
 # 80.0.0 2024-6-19
 - ⚠️ BREAKING: the `Grammar` language is now called `Parsers`. This is a massive change but a simple Grammar/Parsers and grammar/parsers find/replace should update any affected code.
 

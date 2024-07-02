@@ -14,7 +14,7 @@ const PARSERS_EXTENSION = ".parsers"
 interface OpenedFile {
   absolutePath: scrollNotationTypes.filepath
   content: string
-  mtimeMs: number
+  stats: any // https://nodejs.org/api/fs.html#class-fsstats
 }
 
 interface AssembledFile {
@@ -43,7 +43,7 @@ class DiskWriter implements Storage {
   fileCache: { [filepath: string]: OpenedFile } = {}
   _read(absolutePath: scrollNotationTypes.filepath) {
     const { fileCache } = this
-    if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), mtimeMs: fs.statSync(absolutePath) }
+    if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), stats: fs.statSync(absolutePath) }
     return fileCache[absolutePath]
   }
 
@@ -60,7 +60,11 @@ class DiskWriter implements Storage {
   }
 
   getMTime(absolutePath: string) {
-    return this._read(absolutePath).mtimeMs
+    return this._read(absolutePath).stats.mtimeMs
+  }
+
+  getCTime() {
+    return this._read(absolutePath).stats.ctimeMs
   }
 
   dirname(absolutePath: string) {
@@ -94,6 +98,10 @@ class MemoryWriter implements Storage {
   }
 
   getMTime() {
+    return 1
+  }
+
+  getCTime() {
     return 1
   }
 

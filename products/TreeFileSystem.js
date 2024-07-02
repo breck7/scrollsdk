@@ -17,7 +17,7 @@ class DiskWriter {
   }
   _read(absolutePath) {
     const { fileCache } = this
-    if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), mtimeMs: fs.statSync(absolutePath) }
+    if (!fileCache[absolutePath]) fileCache[absolutePath] = { absolutePath, content: Disk.read(absolutePath).replace(/\r/g, ""), stats: fs.statSync(absolutePath) }
     return fileCache[absolutePath]
   }
   read(absolutePath) {
@@ -30,7 +30,10 @@ class DiskWriter {
     Disk.writeIfChanged(fullPath, content)
   }
   getMTime(absolutePath) {
-    return this._read(absolutePath).mtimeMs
+    return this._read(absolutePath).stats.mtimeMs
+  }
+  getCTime() {
+    return this._read(absolutePath).stats.ctimeMs
   }
   dirname(absolutePath) {
     return path.dirname(absolutePath)
@@ -55,6 +58,9 @@ class MemoryWriter {
     return Object.keys(this.inMemoryFiles).filter(filePath => filePath.startsWith(absolutePath) && !filePath.replace(absolutePath, "").includes("/"))
   }
   getMTime() {
+    return 1
+  }
+  getCTime() {
     return 1
   }
   dirname(path) {

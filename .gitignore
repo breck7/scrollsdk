@@ -14,4 +14,7 @@ sublime/
 .DS_Store
 *.html
 *.txt
+*.csv
+*.json
+*.tsv
 package-lock.json

@@ -13,4 +13,5 @@ builder.js
 sublime/
 .DS_Store
 *.html
+*.txt
 package-lock.json

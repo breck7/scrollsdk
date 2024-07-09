@@ -3,4 +3,6 @@ import settings.scroll
 metaTags
 gazetteCss
 gazetteHeader
-html <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+buildTxt
+buildHtml
+<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />

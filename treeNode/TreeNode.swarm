@@ -1,0 +1,11 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test swarm base
+ arrange
+  require ../products/TreeNode.js TreeNode
+  constructWithParagraph
+   hello world
+ getChildren
+  assertLengthIs 1
+ nodeAt 0
+  content
+   assertStringIs world

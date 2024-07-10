@@ -1,0 +1,11 @@
+jibjabNode
+ root
+ description Adds a comment node to Jibberish
+ extends jibberishNode
+commentCell
+ highlightScope comment
+commentNode
+ extends topLevelNode
+ catchAllCellType commentCell
+ catchAllParser commentNode
+ crux comment

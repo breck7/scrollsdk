@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="/products/Utils.browser.js"></script>
+    <script type="text/javascript" src="/products/TreeNode.browser.js"></script>
+    <script type="text/javascript" src="/products/TestRacer.browser.js"></script>
+    <script type="text/javascript" src="/products/TreeNode.test.browser.js"></script>
+    <script type="text/javascript" src="/products/Path.js"></script>
+    <script type="text/javascript" src="/products/TreeFileSystem.browser.js"></script>
+    <link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+  </head>
+  <body>
+    <style>
+      body {
+        font-family: "San Francisco", "Myriad Set Pro", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif;
+        white-space: pre;
+        font-weight: 50;
+        margin: auto;
+        max-width: 800px;
+        padding-top: 20px;
+      }
+    </style>
+    <script type="text/javascript">
+      const main = async () => {
+        const runTestMethod = new URLSearchParams(new URL(location.href).search).get("runTestMethod")
+        let testsToRun = testTree
+        if (runTestMethod) {
+          testsToRun = {}
+          testsToRun[runTestMethod] = testTree[runTestMethod]
+        }
+        const bodyTag = document.getElementsByTagName("body")[0]
+        const fileTree = {}
+        fileTree.core = testsToRun
+        const racer = new TestRacer(fileTree).setLogFunction(message => {
+          const result = document.createElement("div")
+          result.innerHTML = message.replace(/ method (\w+)/, " method <a href='?runTestMethod=$1'>$1</a>")
+          bodyTag.prepend(result)
+        })
+        await racer.execute()
+        racer.finish()
+      }
+      main()
+    </script>
+  </body>
+</html>

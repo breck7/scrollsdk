@@ -1,0 +1,14 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+arrange
+ require ../../products/project.nodejs.js
+ static
+test getTypeScriptAndJavaScriptImportsFromSourceCodeTest
+ getTypeScriptAndJavaScriptImportsFromSourceCode
+  withParagraph
+   foobar
+  assertLengthIs 0
+ getTypeScriptAndJavaScriptImportsFromSourceCode
+  withParagraph
+   const Foobar = require("foobar")
+   import FamBam from "../fambam.js"
+  assertLengthIs 2

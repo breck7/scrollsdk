@@ -1,0 +1,20 @@
+// Cell parsers
+nameCell
+ description A person's name
+ highlightScope string
+keywordCell
+ highlightScope keyword
+
+// Line parsers
+zinParser
+ root
+ description This is a useless language that will naively attempt to implement every one of the hundreds of patterns found in non-tree programming languages into one tree language.
+ catchAllParser catchAllErrorParser
+ inScope alohaParser
+alohaParser
+ description Say aloha to a person.
+ catchAllCellType nameCell
+ cells keywordCell
+ crux aloha
+catchAllErrorParser
+ baseParser errorParser

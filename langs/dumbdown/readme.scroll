@@ -1,0 +1,36 @@
+title Dumbdown - The dumb alternative to markdown
+
+The dialect of Dumbdown included in the ScrollSDK project is used as a demonstration and to autogenerate readmes from Parsers.
+
+Dumbdown spawned an official project: Scroll
+ https://github.com/breck7/scroll Scroll
+
+? Can you show me some example code?
+code
+ title This is Dumbdown. The keyword for title is title.
+ title2 Dumbdown compiles to html.
+ paragraph
+  Dumbdown is an alternative to Markdown.
+ 
+ link https://notation.scroll.pub/ It is built on Scroll Notation
+ 
+ code
+  alert(`The keyword for code blocks is "code"`)
+ 
+ list
+  item Dumbdown supports lists
+  item For now the keyword for an item is "item"
+  item This is a very early version
+  item Dumbdown is released to the public domain
+  item If you want to make it better, please do!
+
+
+? How can I try the original prototype?
+
+Here
+ https://sdk.scroll.pub/designer/#standard%20dumbdown
+
+? How do I develop this lang?
+
+Building: [todo]
+Running tests: [todo]

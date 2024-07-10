@@ -1,0 +1,5 @@
+folder testEx
+file testEx/hi.sh
+ data
+  echo Hello world
+ executable

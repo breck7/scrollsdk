@@ -1,0 +1,84 @@
+nodeProduct
+ outputFileName TreeComponentFramework.node.js
+ combineTypeScriptFiles products/scrollNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
+ insertLastLine module.exports = { AbstractTreeComponentParser, WillowBrowser, AbstractGithubTriangleComponent, TreeComponentFrameworkDebuggerComponent }
+nodeProduct
+ outputFileName TreeNode.js
+ insertLastLine module.exports = {TreeNode, ExtendibleTreeNode, AbstractExtendibleTreeNode, TreeEvents, TreeWord }
+ combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/AbstractNode.node.ts treeNode/TreeNode.ts
+nodeProduct
+ outputFileName Parsers.js
+ insertLastLine module.exports = { ParsersConstants, PreludeCellTypeIds, HandParsersProgram, ParserBackedNode, UnknownParserError, UnknownParsersProgram }
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
+nodeProduct
+ outputFileName TestRacer.js
+ insertLastLine module.exports = {TestRacer}
+ combineTypeScriptFiles testRacer/TestRacer.ts
+nodeProduct
+ outputFileName ParsersCodeMirrorMode.js
+ insertLastLine module.exports = {ParsersCodeMirrorMode}
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
+nodeProduct
+ outputFileName ParsersCompiler.js
+ insertLastLine module.exports = {ParsersCompiler}
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCompiler.ts
+nodeProduct
+ outputFileName Disk.node.js
+ insertLastLine module.exports = {Disk}
+ combineTypeScriptFiles disk/Disk.node.ts
+nodeProduct
+ outputFileName Utils.js
+ insertLastLine module.exports = {Utils}
+ combineTypeScriptFiles utils/Utils.ts
+nodeProduct
+ outputFileName TreeFileSystem.js
+ insertLastLine module.exports = {TreeFileSystem}
+ combineTypeScriptFiles treeFileSystem/TreeFileSystem.ts
+nodeProduct
+ outputFileName Kitchen.node.js
+ combineTypeScriptFiles products/scrollNotationTypes.ts kitchen/Kitchen.node.ts
+ insertLastLine module.exports = {Kitchen}
+nodeProduct
+ outputFileName TypeScriptRewriter.js
+ combineTypeScriptFiles typeScriptRewriter/TypeScriptRewriter.ts
+ insertLastLine module.exports = {TypeScriptRewriter}
+browserProduct
+ outputFileName SweeperCraft.browser.js
+ combineTypeScriptFiles treeComponentFramework/sweepercraft/SweeperCraft.ts
+browserProduct
+ outputFileName TreeComponentFramework.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts treeComponentFramework/TreeComponentFramework.ts
+browserProduct
+ outputFileName TreeNode.test.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/TreeNode.test.ts
+browserProduct
+ outputFileName Parsers.ts.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/Parsers.ts
+browserProduct
+ outputFileName Utils.browser.js
+ combineTypeScriptFiles utils/Utils.ts
+browserProduct
+ outputFileName TreeFileSystem.browser.js
+ combineTypeScriptFiles treeFileSystem/TreeFileSystem.ts
+browserProduct
+ outputFileName TreeNode.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts treeNode/AbstractNode.browser.ts treeNode/TreeNode.ts
+browserProduct
+ outputFileName TestRacer.browser.js
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts testRacer/TestRacer.ts
+browserProduct
+ outputFileName ParsersCodeMirrorMode.browser.js
+ removeAll Object.defineProperty(exports, "__esModule", { value: true })
+ removeAll window.scrollNotationTypes = scrollNotationTypes
+ combineTypeScriptFiles products/scrollNotationTypes.ts parsers/ParsersCodeMirrorMode.ts
+browserProduct
+ outputFileName DesignerApp.browser.js
+ combineTypeScriptFiles designer/DesignerApp.ts
+browserProduct
+ combineTypeScriptFiles sandbox/SandboxApp.ts
+ outputFileName SandboxApp.browser.js

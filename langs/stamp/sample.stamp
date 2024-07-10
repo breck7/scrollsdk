@@ -1,0 +1,14 @@
+folder LANG
+file LANG/.gitignore
+ data
+  node_modules/
+file LANG/package.pack
+ data
+  name LANG
+  version 1.0.0
+  description DESCRIPTION
+  main index.js
+  keywords LANG
+  license MIT
+  dependencies
+   scrollsdk *

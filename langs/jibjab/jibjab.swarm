@@ -1,0 +1,19 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test jibjab
+ arrange
+  require ./jibjab.node.js
+  constructWithParagraph
+   foo
+   nodeWithConsts
+   nested
+   comment Hello world. this is a comment.
+ getAllErrors
+  assertLengthIs 0
+test errors
+ arrange
+  require ./jibjab.node.js
+  constructWithParagraph
+   ERRRORRRRR
+   comment Hello world. this is a comment.
+ getAllErrors
+  assertLengthIs 1

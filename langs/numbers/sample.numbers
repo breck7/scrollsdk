@@ -1,0 +1,5 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/scrollsdk
+comment Should be 5:
++ 2 3
+comment Should be 0:
+- 3 2 1

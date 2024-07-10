@@ -1,0 +1,42 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+todo Make it easier in swarm to pass in commmon input/expected pairs
+test compileToJSON
+ arrange
+  require ../../products/dug.nodejs.js
+  constructWithParagraph
+   object
+    name
+     string scrollsdk
+    version
+     string 30
+    prettier
+     object
+      useTabs
+       boolean false
+      tabWidth
+       number 2
+      semi
+       boolean false
+      printWidth
+       number 160
+ compile
+  assertParagraphIs
+   {
+     "name": "scrollsdk",
+     "version": "30",
+     "prettier": {
+       "useTabs": false,
+       "tabWidth": 2,
+       "semi": false,
+       "printWidth": 160
+     }
+   }
+ getAllErrors
+  assertLengthIs 0
+test testErrors
+ arrange
+  require ../../products/dug.nodejs.js
+  constructWithParagraph
+   strin foo
+ getAllErrors
+  assertLengthIs 1

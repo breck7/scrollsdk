@@ -1,0 +1,12 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test stampBasics
+ arrange
+  require ../../../products/stamp.nodejs.js
+  constructWithParagraph
+   folder testEx
+   file testEx/hi.sh
+    data
+     echo Hello world
+    executable
+ getAllErrors
+  assertLengthIs 0

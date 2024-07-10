@@ -1,0 +1,11 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test compilePoop
+ arrange
+  require ../../products/poop.nodejs.js
+  constructWithParagraph
+   🌄 8 29 2019
+   😀 4
+ getAllErrors
+  assertLengthIs 0
+ compile
+  assertTypeIs string

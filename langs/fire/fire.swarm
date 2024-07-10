@@ -1,0 +1,23 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test compileFire
+ arrange
+  require ../../products/fire.nodejs.js
+  constructWithParagraph
+   sum ten 2 3 5
+   add ten2 2 3 5
+   dumpIdentifier ten
+ compile
+  assertParagraphIs
+   const ten = [2, 3, 5].reduce((sum, num) => sum + num)
+   const ten2 = 2 + 3 + 5
+   console.log(ten)
+ getAllErrors
+  assertLengthIs 0
+test compileRegression
+ arrange
+  require ../../products/fire.nodejs.js
+  constructWithParagraph
+   #! /usr/bin/env node /usr/local/bin/scrollsdk
+ compile
+ getAllErrors
+  assertLengthIs 0

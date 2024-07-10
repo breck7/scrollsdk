@@ -1,0 +1,11 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test basics Numbers
+ arrange
+  require ../../products/numbers.nodejs.js
+  constructWithParagraph
+   comment Should be 5:
+   + 2 3
+   comment Should be 0:
+   - 3 2 1
+ getAllErrors
+  assertLengthIs 0

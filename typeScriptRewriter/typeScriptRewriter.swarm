@@ -1,0 +1,31 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+arrange
+ require ../products/TypeScriptRewriter.js TypeScriptRewriter
+test browserScriptBasics
+ arrange
+  constructWithParagraph
+   const Foobar = require("foobar")
+   import FamBar from "../FamBar.js"
+   class Foobar extends FamBar {}
+   module.exports = Foobar
+   export default Testing
+ getString
+  assertTypeIs string
+  assertStringIncludes require
+ removeRequires
+  getString
+   assertStringExcludes require
+   assertStringIncludes import
+ removeImports
+  assertStringExcludes import
+  assertStringExcludes strict
+ addUseStrict
+  getString
+   assertStringIncludes strict
+   assertStringExcludes window
+ changeNodeExportsToWindowExports
+  getString
+   assertStringIncludes window
+ changeDefaultExportsToWindowExports
+  getString
+   assertStringIncludes window.Testing

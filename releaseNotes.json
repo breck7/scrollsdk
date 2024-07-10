@@ -1,0 +1,2501 @@
+[
+  {
+    "version": "80.1.1",
+    "releaseDate": "2024-7-02",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "80.1.0",
+    "releaseDate": "2024-7-02",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "80.0.0",
+    "releaseDate": "2024-6-19",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "79.0.0",
+    "releaseDate": "2024-6-18",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "78.0.0",
+    "releaseDate": "2024-5-30",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "77.1.1",
+    "releaseDate": "2024-5-28",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "77.1.0",
+    "releaseDate": "2024-5-13",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "77.0.0",
+    "releaseDate": "2024-5-08",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "76.2.0",
+    "releaseDate": "2024-5-03",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "76.1.0",
+    "releaseDate": "2024-5-03",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "76.0.0",
+    "releaseDate": "2024-5-03",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "75.2.0",
+    "releaseDate": "2024-5-03",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "75.1.1",
+    "releaseDate": "2023-5-11",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "75.1.0",
+    "releaseDate": "2023-4-23",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "75.0.0",
+    "releaseDate": "2023-4-13",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "74.3.1",
+    "releaseDate": "2023-4-13",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "74.3.0",
+    "releaseDate": "2023-4-13",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "74.2.0",
+    "releaseDate": "2023-4-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "74.1.1",
+    "releaseDate": "2023-4-9",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "74.1.0",
+    "releaseDate": "2023-4-9",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "74.0.0",
+    "releaseDate": "2023-4-3",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "73.0.1",
+    "releaseDate": "2023-4-2",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "73.0.0",
+    "releaseDate": "2023-4-2",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "72.2.0",
+    "releaseDate": "2023-3-31",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "72.1.0",
+    "releaseDate": "2023-3-31",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "72.0.0",
+    "releaseDate": "2023-3-31",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "71.0.2",
+    "releaseDate": "2023-3-30",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "71.0.1",
+    "releaseDate": "2023-3-30",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "71.0.0",
+    "releaseDate": "2023-3-30",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "70.0.0",
+    "releaseDate": "2023-3-28",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "69.4.1",
+    "releaseDate": "2023-3-11",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "69.4.0",
+    "releaseDate": "2023-3-11",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "69.3.1",
+    "releaseDate": "2023-3-7",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "69.3.0",
+    "releaseDate": "2023-3-3",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "69.2.1",
+    "releaseDate": "2023-3-2",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "69.2.0",
+    "releaseDate": "2023-3-2",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "69.1.0",
+    "releaseDate": "2023-2-28",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "69.0.0",
+    "releaseDate": "2023-2-23",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "68.0.0",
+    "releaseDate": "2023-2-22",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "67.4.0",
+    "releaseDate": "2023-2-19",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "67.3.0",
+    "releaseDate": "2023-2-17",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "67.2.0",
+    "releaseDate": "2023-2-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "67.1.0",
+    "releaseDate": "2023-2-10",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "67.0.0",
+    "releaseDate": "2023-2-9",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "66.1.0",
+    "releaseDate": "2023-2-7",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "66.0.0",
+    "releaseDate": "2023-2-7",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "65.4.0",
+    "releaseDate": "2023-2-6",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "65.3.0",
+    "releaseDate": "2023-2-6",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "65.2.0",
+    "releaseDate": "2023-2-6",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "65.1.0",
+    "releaseDate": "2023-2-4",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "65.0.2",
+    "releaseDate": "2023-2-3",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "65.0.1",
+    "releaseDate": "2023-2-3",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "65.0.0",
+    "releaseDate": "2023-2-3",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "64.4.0",
+    "releaseDate": "2023-2-1",
+    "bugFixes": 0,
+    "newFeatures": 4,
+    "breakingChanges": 0
+  },
+  {
+    "version": "64.3.0",
+    "releaseDate": "2023-1-31",
+    "bugFixes": 2,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "64.2.0",
+    "releaseDate": "2023-1-31",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "64.1.0",
+    "releaseDate": "2023-1-31",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "64.0.1",
+    "releaseDate": "2023-1-30",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "64.0.0",
+    "releaseDate": "2023-1-30",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "63.0.0",
+    "releaseDate": "2023-1-26",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 4
+  },
+  {
+    "version": "62.2.0",
+    "releaseDate": "2023-1-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "62.1.0",
+    "releaseDate": "2023-1-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "62.0.0",
+    "releaseDate": "2023-1-11",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "61.4.1",
+    "releaseDate": "2023-1-8",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "61.4.0",
+    "releaseDate": "2023-1-7",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "61.3.0",
+    "releaseDate": "2023-1-7",
+    "bugFixes": 2,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "61.2.0",
+    "releaseDate": "2023-1-5",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "61.1.0",
+    "releaseDate": "2023-1-5",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "61.0.1",
+    "releaseDate": "2023-1-4",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "61.0.0",
+    "releaseDate": "2023-1-4",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "60.0.0",
+    "releaseDate": "2022-12-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "59.1.2",
+    "releaseDate": "2022-12-10",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "59.1.1",
+    "releaseDate": "2022-12-03",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "59.1.0",
+    "releaseDate": "2022-12-02",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "59.0.0",
+    "releaseDate": "2022-10-10",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "58.0.0",
+    "releaseDate": "2022-10-10",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "57.0.0",
+    "releaseDate": "2022-10-10",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "56.0.1",
+    "releaseDate": "2022-09-26",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "56.0.0",
+    "releaseDate": "2022-08-31",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "55.1.1",
+    "releaseDate": "2022-08-18",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "55.1.0",
+    "releaseDate": "2022-08-02",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "55.0.0",
+    "releaseDate": "2022-08-02",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 7
+  },
+  {
+    "version": "54.2.1",
+    "releaseDate": "2022-07-27",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "54.2.0",
+    "releaseDate": "2022-07-27",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "54.1.0",
+    "releaseDate": "2022-07-25",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "54.0.0",
+    "releaseDate": "2022-07-24",
+    "bugFixes": 0,
+    "newFeatures": 3,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.7.1",
+    "releaseDate": "2022-07-20",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.7.0",
+    "releaseDate": "2022-07-20",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.6.0",
+    "releaseDate": "2022-07-14",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.5.1",
+    "releaseDate": "2022-07-12",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.5.0",
+    "releaseDate": "2022-07-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.4.0",
+    "releaseDate": "2022-07-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.3.0",
+    "releaseDate": "2022-06-17",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.2.0",
+    "releaseDate": "2022-06-15",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "53.1.0",
+    "releaseDate": "2022-01-18",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "53.0.0",
+    "releaseDate": "2021-07-27",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 9
+  },
+  {
+    "version": "52.1.0",
+    "releaseDate": "2021-07-22",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "52.0.0",
+    "releaseDate": "2021-07-22",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 5
+  },
+  {
+    "version": "51.7.0",
+    "releaseDate": "2021-07-22",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.6.0",
+    "releaseDate": "2021-06-25",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "51.5.1",
+    "releaseDate": "2021-05-05",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.5.0",
+    "releaseDate": "2021-03-26",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.4.0",
+    "releaseDate": "2021-03-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.3.0",
+    "releaseDate": "2021-02-18",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.2.1",
+    "releaseDate": "2021-02-13",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.2.0",
+    "releaseDate": "2021-02-13",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.1.0",
+    "releaseDate": "2021-02-11",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "51.0.0",
+    "releaseDate": "2021-02-08",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "50.2.0",
+    "releaseDate": "2021-02-07",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "50.1.0",
+    "releaseDate": "2021-02-07",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "50.0.0",
+    "releaseDate": "2020-12-20",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.8.0",
+    "releaseDate": "2020-03-01",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "49.7.0",
+    "releaseDate": "2020-02-08",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.6.1",
+    "releaseDate": "2020-02-03",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "49.6.0",
+    "releaseDate": "2020-01-24",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.5.0",
+    "releaseDate": "2020-01-03",
+    "bugFixes": 1,
+    "newFeatures": 3,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.4.0",
+    "releaseDate": "2019-12-12",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.3.0",
+    "releaseDate": "2019-12-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.2.0",
+    "releaseDate": "2019-12-11",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.1.0",
+    "releaseDate": "2019-12-09",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.0.1",
+    "releaseDate": "2019-12-09",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "49.0.0",
+    "releaseDate": "2019-12-08",
+    "bugFixes": 0,
+    "newFeatures": 3,
+    "breakingChanges": 15
+  },
+  {
+    "version": "48.1.0",
+    "releaseDate": "2019-12-06",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "48.0.0",
+    "releaseDate": "2019-12-02",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 9
+  },
+  {
+    "version": "47.1.0",
+    "releaseDate": "2019-11-29",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "47.0.0",
+    "releaseDate": "2019-11-22",
+    "bugFixes": 1,
+    "newFeatures": 4,
+    "breakingChanges": 4
+  },
+  {
+    "version": "46.1.0",
+    "releaseDate": "2019-11-22",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "46.0.0",
+    "releaseDate": "2019-11-20",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "45.1.0",
+    "releaseDate": "2019-11-20",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "45.0.1",
+    "releaseDate": "2019-11-13",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "45.0.0",
+    "releaseDate": "2019-11-08",
+    "bugFixes": 1,
+    "newFeatures": 4,
+    "breakingChanges": 1
+  },
+  {
+    "version": "44.1.0",
+    "releaseDate": "2019-11-05",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "44.0.3",
+    "releaseDate": "2019-11-02",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "44.0.2",
+    "releaseDate": "2019-11-02",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "44.0.1",
+    "releaseDate": "2019-11-02",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "44.0.0",
+    "releaseDate": "2019-11-01",
+    "bugFixes": 2,
+    "newFeatures": 5,
+    "breakingChanges": 7
+  },
+  {
+    "version": "43.0.0",
+    "releaseDate": "2019-10-07",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "42.2.0",
+    "releaseDate": "2019-10-04",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "42.1.0",
+    "releaseDate": "2019-10-03",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "42.0.0",
+    "releaseDate": "2019-10-01",
+    "bugFixes": 0,
+    "newFeatures": 4,
+    "breakingChanges": 4
+  },
+  {
+    "version": "41.2.0",
+    "releaseDate": "2019-09-24",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "41.1.0",
+    "releaseDate": "2019-09-18",
+    "bugFixes": 2,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "41.0.0",
+    "releaseDate": "2019-09-17",
+    "bugFixes": 1,
+    "newFeatures": 5,
+    "breakingChanges": 1
+  },
+  {
+    "version": "40.3.0",
+    "releaseDate": "2019-09-16",
+    "bugFixes": 1,
+    "newFeatures": 5,
+    "breakingChanges": 0
+  },
+  {
+    "version": "40.2.0",
+    "releaseDate": "2019-09-11",
+    "bugFixes": 2,
+    "newFeatures": 4,
+    "breakingChanges": 0
+  },
+  {
+    "version": "40.1.0",
+    "releaseDate": "2019-09-08",
+    "bugFixes": 4,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "40.0.0",
+    "releaseDate": "2019-09-03",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "39.6.0",
+    "releaseDate": "2019-09-03",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "39.5.0",
+    "releaseDate": "2019-09-01",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "39.4.0",
+    "releaseDate": "2019-08-31",
+    "bugFixes": 2,
+    "newFeatures": 2,
+    "breakingChanges": 1
+  },
+  {
+    "version": "39.3.0",
+    "releaseDate": "2019-08-31",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "39.2.0",
+    "releaseDate": "2019-08-31",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "39.1.0",
+    "releaseDate": "2019-08-30",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "39.0.0",
+    "releaseDate": "2019-08-30",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "38.2.0",
+    "releaseDate": "2019-08-28",
+    "bugFixes": 0,
+    "newFeatures": 4,
+    "breakingChanges": 0
+  },
+  {
+    "version": "38.1.0",
+    "releaseDate": "2019-08-23",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "38.0.1",
+    "releaseDate": "2019-08-17",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "38.0.0",
+    "releaseDate": "2019-08-17",
+    "bugFixes": 2,
+    "newFeatures": 2,
+    "breakingChanges": 1
+  },
+  {
+    "version": "37.1.0",
+    "releaseDate": "2019-08-10",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "37.0.0",
+    "releaseDate": "2019-08-08",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "36.2.0",
+    "releaseDate": "2019-08-01",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "36.1.0",
+    "releaseDate": "2019-07-31",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "36.0.2",
+    "releaseDate": "2019-07-30",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "36.0.1",
+    "releaseDate": "2019-07-30",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "36.0.0",
+    "releaseDate": "2019-07-30",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 2
+  },
+  {
+    "version": "35.1.0",
+    "releaseDate": "2019-07-25",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "35.0.1",
+    "releaseDate": "2019-07-25",
+    "bugFixes": 3,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "35.0.0",
+    "releaseDate": "2019-07-24",
+    "bugFixes": 1,
+    "newFeatures": 6,
+    "breakingChanges": 8
+  },
+  {
+    "version": "34.2.0",
+    "releaseDate": "2019-07-21",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "34.1.0",
+    "releaseDate": "2019-07-19",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "34.0.0",
+    "releaseDate": "2019-07-16",
+    "bugFixes": 3,
+    "newFeatures": 2,
+    "breakingChanges": 4
+  },
+  {
+    "version": "33.0.2",
+    "releaseDate": "2019-07-15",
+    "bugFixes": 2,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "33.0.1",
+    "releaseDate": "2019-07-15",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "33.0.0",
+    "releaseDate": "2019-07-10",
+    "bugFixes": 3,
+    "newFeatures": 0,
+    "breakingChanges": 4
+  },
+  {
+    "version": "32.0.0",
+    "releaseDate": "2019-07-07",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 4
+  },
+  {
+    "version": "31.0.0",
+    "releaseDate": "2019-07-05",
+    "bugFixes": 1,
+    "newFeatures": 4,
+    "breakingChanges": 2
+  },
+  {
+    "version": "30.0.0",
+    "releaseDate": "2019-07-03",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 4
+  },
+  {
+    "version": "29.0.0",
+    "releaseDate": "2019-07-02",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 1
+  },
+  {
+    "version": "28.0.0",
+    "releaseDate": "2019-07-02",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 8
+  },
+  {
+    "version": "27.2.0",
+    "releaseDate": "2019-06-26",
+    "bugFixes": 1,
+    "newFeatures": 3,
+    "breakingChanges": 1
+  },
+  {
+    "version": "27.1.0",
+    "releaseDate": "2019-06-25",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "27.0.0",
+    "releaseDate": "2019-06-23",
+    "bugFixes": 2,
+    "newFeatures": 4,
+    "breakingChanges": 4
+  },
+  {
+    "version": "26.5.0",
+    "releaseDate": "2019-06-23",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "26.4.0",
+    "releaseDate": "2019-06-23",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "26.3.0",
+    "releaseDate": "2019-06-23",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "26.2.0",
+    "releaseDate": "2019-06-22",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 1
+  },
+  {
+    "version": "26.1.1",
+    "releaseDate": "2019-06-21",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "26.1.0",
+    "releaseDate": "2019-06-21",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "26.0.2",
+    "releaseDate": "2019-06-21",
+    "bugFixes": 2,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "26.0.1",
+    "releaseDate": "2019-06-21",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "26.0.0",
+    "releaseDate": "2019-06-21",
+    "bugFixes": 0,
+    "newFeatures": 9,
+    "breakingChanges": 28
+  },
+  {
+    "version": "25.2.0",
+    "releaseDate": "2019-05-30",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "25.1.0",
+    "releaseDate": "2019-05-29",
+    "bugFixes": 0,
+    "newFeatures": 5,
+    "breakingChanges": 0
+  },
+  {
+    "version": "25.0.0",
+    "releaseDate": "2019-05-28",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 1
+  },
+  {
+    "version": "24.2.0",
+    "releaseDate": "2019-05-27",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "24.1.0",
+    "releaseDate": "2019-05-27",
+    "bugFixes": 0,
+    "newFeatures": 3,
+    "breakingChanges": 0
+  },
+  {
+    "version": "24.0.0",
+    "releaseDate": "2019-05-21",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "23.2.1",
+    "releaseDate": "2019-05-21",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "23.2.0",
+    "releaseDate": "2019-05-21",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 2
+  },
+  {
+    "version": "23.1.0",
+    "releaseDate": "2019-05-21",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 2
+  },
+  {
+    "version": "23.0.1",
+    "releaseDate": "2019-05-20",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "23.0.0",
+    "releaseDate": "2019-05-20",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 9
+  },
+  {
+    "version": "22.3.0",
+    "releaseDate": "2019-05-16",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "22.2.0",
+    "releaseDate": "2019-05-16",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 3
+  },
+  {
+    "version": "22.1.1",
+    "releaseDate": "2019-05-16",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "22.1.0",
+    "releaseDate": "2019-05-16",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "22.0.0",
+    "releaseDate": "2019-05-15",
+    "bugFixes": 1,
+    "newFeatures": 6,
+    "breakingChanges": 8
+  },
+  {
+    "version": "21.0.0",
+    "releaseDate": "2019-05-04",
+    "bugFixes": 3,
+    "newFeatures": 5,
+    "breakingChanges": 7
+  },
+  {
+    "version": "20.0.0",
+    "releaseDate": "2019-04-30",
+    "bugFixes": 0,
+    "newFeatures": 5,
+    "breakingChanges": 5
+  },
+  {
+    "version": "19.5.1",
+    "releaseDate": "2019-04-26",
+    "bugFixes": 3,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "19.5.0",
+    "releaseDate": "2019-04-25",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "19.4.0",
+    "releaseDate": "2019-04-24",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "19.3.2",
+    "releaseDate": "2019-04-23",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "19.3.1",
+    "releaseDate": "2019-04-22",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "19.3.0",
+    "releaseDate": "2019-04-22",
+    "bugFixes": 1,
+    "newFeatures": 4,
+    "breakingChanges": 1
+  },
+  {
+    "version": "19.2.1",
+    "releaseDate": "2019-04-20",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "19.2.0",
+    "releaseDate": "2019-04-20",
+    "bugFixes": 2,
+    "newFeatures": 2,
+    "breakingChanges": 1
+  },
+  {
+    "version": "19.1.0",
+    "releaseDate": "2019-04-20",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "19.0.0",
+    "releaseDate": "2019-04-19",
+    "bugFixes": 0,
+    "newFeatures": 3,
+    "breakingChanges": 1
+  },
+  {
+    "version": "18.2.0",
+    "releaseDate": "2019-04-11",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "18.1.3",
+    "releaseDate": "2019-03-26",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "18.1.2",
+    "releaseDate": "2019-03-25",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "18.1.1",
+    "releaseDate": "2019-03-25",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "18.1.0",
+    "releaseDate": "2019-03-25",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "18.0.0",
+    "releaseDate": "2019-03-24",
+    "bugFixes": 0,
+    "newFeatures": 6,
+    "breakingChanges": 4
+  },
+  {
+    "version": "17.1.3",
+    "releaseDate": "2019-03-14",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "17.1.2",
+    "releaseDate": "2019-03-14",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "17.1.1",
+    "releaseDate": "2019-03-13",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "17.1.0",
+    "releaseDate": "2019-03-13",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "17.0.0",
+    "releaseDate": "2019-03-11",
+    "bugFixes": 1,
+    "newFeatures": 3,
+    "breakingChanges": 5
+  },
+  {
+    "version": "16.0.1",
+    "releaseDate": "2019-03-03",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "16.0.0",
+    "releaseDate": "2019-03-03",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "15.3.0",
+    "releaseDate": "2019-03-01",
+    "bugFixes": 1,
+    "newFeatures": 20,
+    "breakingChanges": 2
+  },
+  {
+    "version": "15.2.0",
+    "releaseDate": "2019-02-10",
+    "bugFixes": 0,
+    "newFeatures": 4,
+    "breakingChanges": 0
+  },
+  {
+    "version": "15.1.0",
+    "releaseDate": "2019-02-10",
+    "bugFixes": 0,
+    "newFeatures": 5,
+    "breakingChanges": 0
+  },
+  {
+    "version": "15.0.2",
+    "releaseDate": "2019-02-07",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "15.0.1",
+    "releaseDate": "2019-01-02",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "15.0.0",
+    "releaseDate": "2018-12-01",
+    "bugFixes": 0,
+    "newFeatures": 3,
+    "breakingChanges": 4
+  },
+  {
+    "version": "14.6.0",
+    "releaseDate": "2018-09-23",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.5.1",
+    "releaseDate": "2017-11-24",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.5.0",
+    "releaseDate": "2017-11-23",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.4.0",
+    "releaseDate": "2017-11-19",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.3.3",
+    "releaseDate": "2017-11-17",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.3.2",
+    "releaseDate": "2017-11-16",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.3.1",
+    "releaseDate": "2017-11-14",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.3.0",
+    "releaseDate": "2017-11-13",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.2.0",
+    "releaseDate": "2017-11-12",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.1.0",
+    "releaseDate": "2017-11-11",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.0.1",
+    "releaseDate": "2017-11-11",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "14.0.0",
+    "releaseDate": "2017-11-10",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "13.0.0",
+    "releaseDate": "2017-11-09",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "12.2.1",
+    "releaseDate": "2017-11-09",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "12.2.0",
+    "releaseDate": "2017-11-09",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "12.1.0",
+    "releaseDate": "2017-11-09",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "12.0.0",
+    "releaseDate": "2017-11-09",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 3
+  },
+  {
+    "version": "11.5.0",
+    "releaseDate": "2017-11-08",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 13
+  },
+  {
+    "version": "11.4.1",
+    "releaseDate": "2017-11-08",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "11.4.0",
+    "releaseDate": "2017-11-08",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "11.3.0",
+    "releaseDate": "2017-11-07",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "11.2.3",
+    "releaseDate": "2017-11-06",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "11.2.2",
+    "releaseDate": "2017-11-06",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "11.2.1",
+    "releaseDate": "2017-11-06",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "11.2.0",
+    "releaseDate": "2017-11-06",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "11.1.0",
+    "releaseDate": "2017-11-06",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "11.0.0",
+    "releaseDate": "2017-11-06",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "10.1.2",
+    "releaseDate": "2017-11-06",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "10.1.1",
+    "releaseDate": "2017-11-05",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "10.1.0",
+    "releaseDate": "2017-11-04",
+    "bugFixes": 2,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "10.0.1",
+    "releaseDate": "2017-11-03",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "10.0.0",
+    "releaseDate": "2017-11-03",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 3
+  },
+  {
+    "version": "9.2.0",
+    "releaseDate": "2017-11-03",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "9.1.0",
+    "releaseDate": "2017-11-02",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "9.0.0",
+    "releaseDate": "2017-11-02",
+    "bugFixes": 0,
+    "newFeatures": 3,
+    "breakingChanges": 3
+  },
+  {
+    "version": "8.6.0",
+    "releaseDate": "2017-10-30",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "8.5.0",
+    "releaseDate": "2017-10-30",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.4.1",
+    "releaseDate": "2017-10-28",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.4.0",
+    "releaseDate": "2017-10-28",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.3.1",
+    "releaseDate": "2017-10-28",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.3.0",
+    "releaseDate": "2017-10-27",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.2.3",
+    "releaseDate": "2017-10-27",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.2.2",
+    "releaseDate": "2017-10-26",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.2.1",
+    "releaseDate": "2017-10-26",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.2.0",
+    "releaseDate": "2017-10-26",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.1.0",
+    "releaseDate": "2017-10-25",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "8.0.1",
+    "releaseDate": "2017-10-15",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "8.0.0",
+    "releaseDate": "2017-10-15",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 1
+  },
+  {
+    "version": "7.2.0",
+    "releaseDate": "2017-10-14",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "7.1.1",
+    "releaseDate": "2017-9-17",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "7.1.0",
+    "releaseDate": "2017-9-15",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "7.0.0",
+    "releaseDate": "2017-9-14",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 7
+  },
+  {
+    "version": "6.1.3",
+    "releaseDate": "2017-9-8",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "6.1.2",
+    "releaseDate": "2017-9-6",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "6.1.1",
+    "releaseDate": "2017-8-27",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "6.1.0",
+    "releaseDate": "2017-8-25",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "6.0.0",
+    "releaseDate": "2017-8-24",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 3
+  },
+  {
+    "version": "5.7.0",
+    "releaseDate": "2017-8-24",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.6.2",
+    "releaseDate": "2017-8-20",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.6.1",
+    "releaseDate": "2017-8-20",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.6.0",
+    "releaseDate": "2017-8-18",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "5.5.0",
+    "releaseDate": "2017-8-8",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.4.0",
+    "releaseDate": "2017-8-8",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "5.3.0",
+    "releaseDate": "2017-8-3",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.2.0",
+    "releaseDate": "2017-8-1",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.1.0",
+    "releaseDate": "2017-7-25",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.0.1",
+    "releaseDate": "2017-7-24",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "5.0.0",
+    "releaseDate": "2017-7-24",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 12
+  },
+  {
+    "version": "4.1.2",
+    "releaseDate": "2017-6-26",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "4.1.1",
+    "releaseDate": "2017-6-26",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "4.1.0",
+    "releaseDate": "2017-6-20",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "4.0.3",
+    "releaseDate": "2017-6-20",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "4.0.2",
+    "releaseDate": "2017-6-20",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "4.0.1",
+    "releaseDate": "2017-6-20",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "4.0.0",
+    "releaseDate": "2017-6-18",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 2
+  },
+  {
+    "version": "3.10.0",
+    "releaseDate": "2017-6-17",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "3.9.2",
+    "releaseDate": "2017-6-17",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.9.1",
+    "releaseDate": "2017-6-17",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.9.0",
+    "releaseDate": "2017-6-16",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "3.8.0",
+    "releaseDate": "2017-6-15",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.7.4",
+    "releaseDate": "2017-6-15",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.7.3",
+    "releaseDate": "2017-6-15",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.7.2",
+    "releaseDate": "2017-6-15",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.7.1",
+    "releaseDate": "2017-6-15",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.7.0",
+    "releaseDate": "2017-6-15",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 3
+  },
+  {
+    "version": "3.6.0",
+    "releaseDate": "2017-6-15",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 2
+  },
+  {
+    "version": "3.5.3",
+    "releaseDate": "2017-6-14",
+    "bugFixes": 1,
+    "newFeatures": 2,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.5.2",
+    "releaseDate": "2017-6-13",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.5.1",
+    "releaseDate": "2017-6-13",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.5.0",
+    "releaseDate": "2017-6-9",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "3.4.0",
+    "releaseDate": "2017-6-6",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "3.3.0",
+    "releaseDate": "2017-6-5",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "3.2.1",
+    "releaseDate": "2017-6-5",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.2.0",
+    "releaseDate": "2017-6-5",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 2
+  },
+  {
+    "version": "3.1.1",
+    "releaseDate": "2017-6-2",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.1.0",
+    "releaseDate": "2017-6-1",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 1
+  },
+  {
+    "version": "3.0.1",
+    "releaseDate": "2017-5-30",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "3.0.0",
+    "releaseDate": "2017-5-30",
+    "bugFixes": 1,
+    "newFeatures": 1,
+    "breakingChanges": 25
+  },
+  {
+    "version": "2.3.0",
+    "releaseDate": "2017-5-9",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 2
+  },
+  {
+    "version": "2.2.4",
+    "releaseDate": "2017-4-28",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.2.3",
+    "releaseDate": "2017-4-28",
+    "bugFixes": 0,
+    "newFeatures": 4,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.2.2",
+    "releaseDate": "2017-4-17",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.2.1",
+    "releaseDate": "2017-4-17",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.2.0",
+    "releaseDate": "2017-4-17",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "2.1.1",
+    "releaseDate": "2017-4-16",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.1.0",
+    "releaseDate": "2017-4-13",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "2.0.3",
+    "releaseDate": "2017-4-05",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.0.2",
+    "releaseDate": "2017-4-05",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.0.1",
+    "releaseDate": "2017-4-05",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "2.0.0",
+    "releaseDate": "2017-4-05",
+    "bugFixes": 0,
+    "newFeatures": 2,
+    "breakingChanges": 13
+  },
+  {
+    "version": "1.2.2",
+    "releaseDate": "2017-4-02",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "1.2.1",
+    "releaseDate": "2017-3-31",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "1.1.1",
+    "releaseDate": "2017-3-26",
+    "bugFixes": 0,
+    "newFeatures": 0,
+    "breakingChanges": 1
+  },
+  {
+    "version": "1.0.7",
+    "releaseDate": "2017-3-25",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "1.0.6",
+    "releaseDate": "2017-3-19",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "1.0.5",
+    "releaseDate": "2017-3-17",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "1.0.4",
+    "releaseDate": "2017-3-17",
+    "bugFixes": 1,
+    "newFeatures": 0,
+    "breakingChanges": 0
+  },
+  {
+    "version": "1.0.3",
+    "releaseDate": "2017-3-15",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  },
+  {
+    "version": "1.0.2",
+    "releaseDate": "2017-3-02",
+    "bugFixes": 0,
+    "newFeatures": 1,
+    "breakingChanges": 0
+  }
+]

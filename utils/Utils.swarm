@@ -1,0 +1,60 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+arrange
+ require ../products/Utils.js Utils
+ static
+test stringToPermalink
+ stringToPermalink 
+  assertStringIs 
+ stringToPermalink
+  withParagraph
+   hello%> world
+  assertStringIs hello-world
+ stringToPermalink hello.world
+  assertStringIs hello.world
+test stripHtml
+ stripHtml <b>hello</b>
+  assertStringIs hello
+test strip2
+ stripHtml
+  withParagraph
+   some text
+    if
+     we
+      have
+  assertParagraphIs
+   some text
+    if
+     we
+      have
+test getRandomString
+ getRandomString 12
+  assertLengthIs 12
+ getRandomString 13
+  assertLengthIs 13
+test linkify
+ linkify http://cnn.com
+  assertStringIs <a href="http://cnn.com" target="_blank">http://cnn.com</a>
+test linkifyParens
+ linkify http://wikipedia.com/wiki/foo_(ProgLang)
+  assertStringIs <a href="http://wikipedia.com/wiki/foo_(ProgLang)" target="_blank">http://wikipedia.com/wiki/foo_(ProgLang)</a>
+test removeFileExtension
+ removeFileExtension foobar.csv
+  assertStringIs foobar
+ removeFileExtension none
+  assertStringIs none
+ removeFileExtension 
+  assertStringIs 
+test getPathWithoutFileName
+ getPathWithoutFileName /foobar.js
+  assertStringIs 
+ getPathWithoutFileName /dog/foo.js
+  assertStringIs /dog
+ getPathWithoutFileName a/b/c/d/
+  assertStringIs a/b/c/d
+ getPathWithoutFileName a/b/c/d
+  assertStringIs a/b/c
+test getFileExtension
+ getFileExtension foobar.csv
+  assertStringIs csv
+ getFileExtension none
+  assertStringIs 

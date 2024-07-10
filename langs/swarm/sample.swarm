@@ -1,0 +1,10 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test swarmBrowserSample
+ arrange
+  require String
+  constructWithParagraph
+   hello
+ split e
+  assertLengthIs 2
+ split r
+  assertLengthIs 1

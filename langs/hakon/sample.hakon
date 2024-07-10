@@ -1,0 +1,19 @@
+html,body,div,span
+ margin 0
+ padding 0
+ border 0
+ font-size 100%
+ font inherit
+ vertical-align baseline
+nav,section
+ display block
+body
+ line-height 1.3
+ overscroll-behavior-x none
+ h1,h2
+  font-size 2em
+ol,ul
+ list-style none
+table
+ border-collapse collapse
+ border-spacing 0

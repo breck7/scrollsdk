@@ -1,0 +1,8 @@
+file /foobar/foobar.js
+file /foobar/bam.js
+file /foo/c.js
+ external abc
+ absolute /foobar/after.js
+ absolute /foobar/bam.js
+file /foobar/after.js
+ relative ./foobar.js

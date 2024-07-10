@@ -1,0 +1,45 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test compileHakon
+ arrange
+  require ../../products/hakon.nodejs.js
+  todo Have a way to get the first root example instead of duplicating it here.
+  constructWithParagraph
+   body
+    font-size 12px
+    h1,h2
+     color red
+   a
+    comment hello world
+    &:hover
+     color blue
+     font-size 17px
+   comment hello world
+ getAllErrors
+  assertLengthIs 0
+ compile
+  assertParagraphIs
+   body {
+     font-size: 12px;
+   }
+   body h1,body h2 {
+     color: red;
+   }
+   a:hover {
+     color: blue;
+     font-size: 17px;
+   }
+   
+test browserPrefixes
+ arrange
+  require ../../products/hakon.nodejs.js
+  constructWithParagraph
+   body
+    -moz-column-count 2
+ getAllErrors
+  assertLengthIs 0
+ compile
+  assertParagraphIs
+   body {
+     -moz-column-count: 2;
+   }
+   

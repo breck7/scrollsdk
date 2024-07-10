@@ -1,0 +1,37 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test swarmNodeSample
+ arrange
+  require ../../products/Parsers.js HandParsersProgram
+  constructWithParagraph
+   testlangParser
+    root
+    compilesTo txt
+    inScope baseParser
+    catchAllParser errorParser
+   anyCell
+   wordCell
+    extends anyCell
+   errorParser
+    baseParser errorParser
+   baseParser
+    crux base
+   blockParser
+    crux block
+    extends baseParser
+    inScope baseParser
+   toParser
+    crux to
+    extends blockParser
+    cells wordCell
+    tags test
+    compiler
+     stringTemplate to {wordCell}
+     closeChildren end
+ getAllErrors
+  assertLengthIs 0
+ runTimeFirstWordsInScope
+  assertLengthIs 1
+ getParserDefinitionByParserId toParser
+  assertTypeIs object
+ topParserDefinitions
+  assertLengthIs 3

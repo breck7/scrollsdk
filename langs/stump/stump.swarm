@@ -1,0 +1,86 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test stumpBasics
+ arrange
+  require ../../products/stump.nodejs.js
+  constructWithParagraph
+   html
+    id bam
+    class someClass
+    body
+     div
+      type foo
+      bern
+       Hello world
+       This is some text
+     span Hello more
+ getAllErrors
+  assertLengthIs 0
+ asHtml
+  assertParagraphIs
+   <html id="bam" class="someClass">
+    <body>
+     <div type="foo">Hello world
+   This is some text</div>
+     <span>Hello more</span>
+   </body>
+   </html>
+   
+test blankLines
+ arrange
+  require ../../products/stump.nodejs.js
+  constructWithParagraph
+   html
+    
+    div
+ getAllErrors
+  assertLengthIs 0
+test components
+ arrange
+  require ../../products/stump.nodejs.js
+  constructWithParagraph
+   linksComponent
+    class links
+ getAllErrors
+  assertLengthIs 0
+test div
+ arrange
+  require ../../products/stump.nodejs.js
+  constructWithParagraph
+   div hello world
+    id bam
+    class someClass
+ asHtml
+  assertParagraphIs
+   <div id="bam" class="someClass">hello world</div>
+   
+test uids
+ arrange
+  require ../../products/stump.nodejs.js
+  constructWithParagraph
+   div hello world
+    id bam
+    class someClass
+ getFirstNode
+  asHtmlWithSuids
+   assertTypeIs string
+   assertStringIncludes stumpUid
+  isStumpNodeCheckbox
+   assertStringIs false
+  asHtml
+   assertTypeIs string
+  isInputType
+   assertStringIs false
+  getStumpNodeAttr id
+   assertStringIs bam
+test syntax
+ arrange
+  require ../../products/stump.nodejs.js
+  constructWithParagraph
+   div
+    bern
+     Hello world
+ toCellTypeTree
+  assertParagraphIs
+   htmlTagNameCell
+    bernKeywordCell
+     anyHtmlContentCell anyHtmlContentCell

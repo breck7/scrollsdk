@@ -1,0 +1,51 @@
+keywordCell
+anyCell
+intCell
+boolCell
+floatCell
+foobarParser
+ root
+ inScope fileParser
+fileParser
+ inScope sizeParser digitsParser openParser tempParser descriptionParser editsParser accountParser
+ crux file
+ cells keywordCell anyCell
+sizeParser
+ crux size
+ cells keywordCell intCell
+digitsParser
+ crux digits
+ cells keywordCell intCell intCell
+openParser
+ crux open
+ cells keywordCell boolCell
+tempParser
+ crux temp
+ cells keywordCell floatCell
+descriptionParser
+ crux description
+ catchAllCellType anyCell
+ cells keywordCell
+editsParser
+ inScope editsChildParser
+ crux edits
+ cells keywordCell
+editsChildParser
+ inScope dataParser
+ cells keywordCell
+dataParser
+ crux data
+ cells keywordCell anyCell
+accountParser
+ inScope balanceParser transactionsParser sourceParser
+ crux account
+ cells keywordCell
+balanceParser
+ crux balance
+ cells keywordCell floatCell
+transactionsParser
+ crux transactions
+ cells keywordCell intCell
+sourceParser
+ crux source
+ cells keywordCell boolCell anyCell intCell

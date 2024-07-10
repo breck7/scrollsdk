@@ -1,0 +1,18 @@
+foo
+nodeWithConsts
+nested
+lightbulbState on
+lightbulbState off
++ 2 3 2
+saturation 2
+someCode
+ echo hello world
+xColumnName gender
+nodeExpandsConsts
+html.h1
+ content hello world
+block
+ scoreBlock
+  scores 2 3 2 12
+  scoreBlock
+   scores 31

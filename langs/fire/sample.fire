@@ -1,0 +1,15 @@
+#! /usr/local/bin/node --use_strict /usr/local/bin/scrollsdk
+add ten 2 3 5
+mutableNumber times 10
+while times
+ printNumber times
+ decrement times
+add score 100 52
+add zero -2 2
+dumpIdentifier ten
+dumpIdentifier score
+dumpIdentifier zero
+if zero
+ printString Zero was hit
+if ten
+ printString Ten was hit

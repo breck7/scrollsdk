@@ -1,0 +1,18 @@
+title Designer
+
+This is the folder containing the source code for the Parser Designer web app.
+
+Try it Now
+ https://sdk.scroll.pub/designer/
+
+# For Designer Developers
+
+? How do I run the tests?
+code
+ ./scrollsdk/designer/DesignerApp.test.ts
+
+? How do I run the Designer locally?
+code
+ cd scrollsdk
+ npm run local
+ open http://localhost:3333/designer

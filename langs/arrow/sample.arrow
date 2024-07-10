@@ -1,0 +1,6 @@
+charge
+ amount 999.0
+ currency usd
+ cardNumber 1111222233334444
+ description Example charge
+ token sk_test_4eC39HqLyjWDarjtT1zdp7dc

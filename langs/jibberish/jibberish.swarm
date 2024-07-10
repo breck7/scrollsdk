@@ -1,0 +1,17 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test basics jibberish
+ arrange
+  require ./jibberish.node.js
+  constructWithParagraph
+   foo
+   nodeWithConsts
+   nested
+   lightbulbState on
+   lightbulbState off
+   + 2 3 2
+   saturation 2
+   someCode
+    echo hello world
+   xColumnName gender
+ getAllErrors
+  assertLengthIs 0

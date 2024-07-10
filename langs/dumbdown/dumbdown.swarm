@@ -1,0 +1,12 @@
+#! /usr/bin/env node /usr/local/bin/scrollsdk
+test dumbdownRegression
+ arrange
+  require ../../products/dumbdown.nodejs.js
+  constructWithParagraph
+   code
+    a b
+     c d
+ compile
+  assertParagraphIs
+   <code>a b
+    c d</code>

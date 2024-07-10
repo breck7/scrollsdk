@@ -523,12 +523,12 @@ class headerComponent extends AbstractTreeComponentParser {
    style text-decoration: none;
    img
     id logo
-    src /images/helloWorld3D.svg
+    src ../images/helloWorld3D.svg
     title Notation.Scroll.pub
   span ${this._getTitle()}
  p
   a Scroll Notation Sandbox
-   href /sandbox/
+   href ../sandbox/index.html
   span  | 
   a Help
    id helpToggleButton

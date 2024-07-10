@@ -31,7 +31,7 @@ Parsers is a language built on Scroll Notation for building other languages buil
 
 ? Can I try it online?
 Yes! The Parser Designer is an online tool for writing Parsers code to build languages right in your browser.
- https://sdk.scroll.pub/designer/ Parser Designer
+ link ../designer/index.html Parser Designer
 
 endColumns
 

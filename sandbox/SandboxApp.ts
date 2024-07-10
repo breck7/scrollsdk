@@ -188,12 +188,12 @@ class headerComponent extends AbstractTreeComponentParser {
    style text-decoration: none;
    img
     id logo
-    src /images/helloWorld3D.svg
+    src ../images/helloWorld3D.svg
     title TreeNotation.org
   span Scroll Notation Sandbox
  p
   a Parser Designer
-   href /designer/
+   href ../designer/index.html
   span  | 
   a Unit Tests
    href test.html

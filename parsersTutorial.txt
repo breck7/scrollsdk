@@ -14,14 +14,14 @@ _Parsers_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle 
 
 Before you start:
 =================
-[] Know where to get help. GitHub issues, Scroll subreddit, or email Breck.
+[] Know where to get help. GitHub issues, WWS subreddit, or email Breck.
  https://github.com/breck7/scrollsdk/issues
- https://reddit.com/r/ScrollLang
+ https://www.reddit.com/r/WorldWideScroll
  /mailto:breck7@gmail.com
 [] Take a look at some of the sample languages in the Parser Designer. You might be able to use these as a reference if you get stuck.
- https://sdk.scroll.pub/designer/
+ /designer/index.html
 [] Open the Parser Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Parsers).
- https://sdk.scroll.pub/designer/
+ /designer/index.html
  https://sublimetext.com
 
 Step 1
@@ -31,7 +31,7 @@ Step 1
 Step 2
 ======
 [] If you are using the Parser Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.parsers`
- https://sdk.scroll.pub/designer/
+ /designer/index.html
 
 Step 3
 ======

@@ -6,14 +6,14 @@ Libraries for building on Scroll
 - Scroll Homepage
  https://scroll.pub
 - The World Wide Scroll
- https://scroll.pub/wws.html
+ https://www.scroll.pub
 
 Tools
 =====
 - Parser Designer
- https://sdk.scroll.pub/designer
+ /designer/index.html
 - Scroll Notation Sandbox
- https://sdk.scroll.pub/sandbox
+ /sandbox/index.html
 
 Docs
 ====
@@ -23,15 +23,15 @@ Docs
  https://notation.scroll.pub
 - Scroll Notation FAQ
  https://faq.scroll.pub
-- Scroll Subreddit
- https://www.reddit.com/r/ScrollLang
+- WWS Subreddit
+ https://www.reddit.com/r/WorldWideScroll
 
 Tests
 =====
 - ScrollSDK Browser Unit Tests
- https://sdk.scroll.pub/sandbox/test.html
+ /sandbox/test.html
 - ScrollSDK Browser Perf Tests
- https://sdk.scroll.pub/sandbox/perfTests.html
+ /sandbox/perfTests.html
 - ScrollSDK Node Tests 
 
 Who is this package built for?
@@ -46,7 +46,7 @@ You can try the Parsers tutorial.
 Writing Scroll Parsers
 ======================
 The ScrollSDK contains a language for building Scroll Parsers. You can write new Parsers to extend your version of Scroll. By creating Parsers with the SDK you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your version of Scroll. The ScrollSDK also includes a simple web IDE for writing Scroll Parsers called Parser Designer.
- https://sdk.scroll.pub/designer
+ /designer/index.html
 
 At this point in time, to make your Scroll Parsers do very useful things, you also need to use another language that you know. The ScrollSDK lets you create new languages using just Scroll or Scroll + Javascript. Scroll Parsers can include code from any programming language, not just Javascript. Though at the moment only Scroll + Javascript is supported by Breck's Lab.
  https://breckyunits.com/lab.html
@@ -106,8 +106,8 @@ Scroll Notation Libraries in Other Languages
 ============================================
 If you build a Scroll Notation library/SDK in another language, let us know and we'll add a link.
 
-If you are working on a Scroll Notation library in a new host language, feel free to post an issue or ask for help in the  Scroll subreddit.
- https://reddit.com/r/ScrollLang
+If you are working on a Scroll Notation library in a new host language, feel free to post an issue or ask for help in the WWS subreddit.
+ https://www.reddit.com/r/WorldWideScroll
 
 How to bump versions
 ====================

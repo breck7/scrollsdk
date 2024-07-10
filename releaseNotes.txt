@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv
  /releaseNotes.json
 
+80.2.0 2024-7-10
+================
+🎉 now the ScrollSDK tools can be used straight from the WWS ~scroll/sdk/index.html
+
 80.1.1 2024-7-02
 ================
 🏥 tfs fix

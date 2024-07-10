@@ -1778,7 +1778,7 @@ abstract class AbstractGithubTriangleComponent extends AbstractTreeComponentPars
  class AbstractGithubTriangleComponent
  href ${this.githubLink}
  img
-  src /images/github-fork.svg`
+  src ../images/github-fork.svg`
   }
 }
 

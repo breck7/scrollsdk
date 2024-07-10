@@ -1846,6 +1846,6 @@ code
 📦 1.0.2 2017-3-02
 🎉 Initial release
 
-<link rel="shortcut icon" type="image/x-icon" href="/images/favicon.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 
 import footer.scroll

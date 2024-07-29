@@ -171,6 +171,10 @@ abstract class ParserBackedNode extends TreeNode {
     return cellIndex === 0 ? this._getAutocompleteResultsForFirstWord(partialWord) : this._getAutocompleteResultsForCell(partialWord, cellIndex)
   }
 
+  makeError(message: string) {
+    return new ParserDefinedError(this, message)
+  }
+
   private _nodeIndex: {
     [parserId: string]: ParserBackedNode[]
   }
@@ -1285,6 +1289,18 @@ class UnknownParserError extends AbstractTreeError {
     const suggestion = this.wordSuggestion
     if (suggestion) this.getNode().setWord(this.cellIndex, suggestion)
     return this
+  }
+}
+
+class ParserDefinedError extends AbstractTreeError {
+  constructor(node: ParserBackedNode, message: string) {
+    super()
+    this._node = node
+    this._message = message
+  }
+  private _message: string
+  get message() {
+    return this._message
   }
 }
 

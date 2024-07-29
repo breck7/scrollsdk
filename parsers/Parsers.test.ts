@@ -239,6 +239,17 @@ interface arrowParser {
   )
 }
 
+testTree.makeError = equal => {
+  // Arrange/Act/Assert
+  const program = makeJibberishProgram("")
+  const message = "My custom error"
+  const error = program.makeError(message)
+
+  // Assert
+  equal(error.message, message, "should be no errors")
+  equal(error.lineNumber, 1)
+}
+
 testTree.cellTypeTree = equal => {
   // Act
   const someJibberishProgram = makeJibberishProgram(`foo

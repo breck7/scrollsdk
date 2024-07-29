@@ -1,11 +1,19 @@
+git https://github.com/breck7/scrollsdk
+
+gazetteHeader
+
 Release Notes
 =============
 
 Here's a list of the notable changes in the Scroll SDK.
 Download as CSV | TSV | JSON
- /releaseNotes.csv
- /releaseNotes.tsv
- /releaseNotes.json
+ /releaseNotes.csv CSV
+ /releaseNotes.tsv TSV
+ /releaseNotes.json JSON
+
+80.3.0 2024-7-29
+================
+🎉 added `makeError` method to ParserBackedNode
 
 80.2.0 2024-7-10
 ================
@@ -139,7 +147,7 @@ This is a major release with significant name breaks. All logic is the same but 
  - TreeComponentFramework:
   - AbstractTreeComponent > AbstractTreeComponentParser
 ⚠️ BREAKING: See Grammar Release Notes for upgrading Grammar files
- /langs/grammar/releaseNotes.html
+ /langs/grammar/releaseNotes.html Grammar Release Notes
 
 72.2.0 2023-3-31
 ================
@@ -187,7 +195,7 @@ This was a refactor of Grammar to support scoped parsers. I also took the opport
 70.0.0 2023-3-28
 ================
 ⚠️ Big changes to Grammar. See the new Grammar Release Notes.
- /langs/grammar/releaseNotes.html
+ /langs/grammar/releaseNotes.html Grammar Release Notes
 
 69.4.1 2023-3-11
 ================
@@ -2168,3 +2176,5 @@ swarmProgram.updateNodeTypeIds(`#setup arrange
 1.0.2 2017-3-02
 ===============
 🎉 Initial release
+
+gazetteFooter

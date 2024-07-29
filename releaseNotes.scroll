@@ -14,9 +14,12 @@ Download as CSV | TSV | JSON
  link releaseNotes.tsv TSV
  link releaseNotes.json JSON
 <br>
-import changes.parsers
+import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
+
+📦 80.3.0 2024-7-29
+🎉 added `makeError` method to ParserBackedNode
 
 📦 80.2.0 2024-7-10
 🎉 now the ScrollSDK tools can be used straight from the WWS ~scroll/sdk/index.html

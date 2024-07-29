@@ -1,5 +1,11 @@
+git https://github.com/breck7/scrollsdk
+
+gazetteHeader
+
 Scroll Parsers Tutorial
 =======================
+
+startColumns 2
 
 Key Concepts
 ============
@@ -15,14 +21,14 @@ _Parsers_ has one main concepts: *Parsers*. _Parsers_ take a line(s) and handle 
 Before you start:
 =================
 [] Know where to get help. GitHub issues, WWS subreddit, or email Breck.
- https://github.com/breck7/scrollsdk/issues
- https://www.reddit.com/r/WorldWideScroll
- /mailto:breck7@gmail.com
+ https://github.com/breck7/scrollsdk/issues GitHub issues
+ https://www.reddit.com/r/WorldWideScroll WWS subreddit
+ /mailto:breck7@gmail.com email Breck
 [] Take a look at some of the sample languages in the Parser Designer. You might be able to use these as a reference if you get stuck.
- /designer/index.html
+ /designer/index.html Parser Designer
 [] Open the Parser Designer or use your own editor (note: only SublimeText4 currently has partial syntax highlighting for Parsers).
- /designer/index.html
- https://sublimetext.com
+ /designer/index.html Parser Designer
+ https://sublimetext.com SublimeText4
 
 Step 1
 ======
@@ -31,7 +37,7 @@ Step 1
 Step 2
 ======
 [] If you are using the Parser Designer, clear the boxes to create a new language from scratch. If you are using your own editor, create a new file with the name `{yourLanguageNameGoesHere}.parsers`
- /designer/index.html
+ /designer/index.html Parser Designer
 
 Step 3
 ======
@@ -132,3 +138,5 @@ frieeeend
 Step 14
 =======
 That's all for now! Let us know what you need to do next. Of course, we haven't really gotten to the fun stuff yet. Languages get really interesting once you start implementing the "interesting methods", like compile, execute, render, and format.
+
+gazetteFooter

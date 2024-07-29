@@ -1,37 +1,40 @@
+git https://github.com/breck7/scrollsdk
+
+gazetteHeader
 ScrollSDK
 =========
 Libraries for building on Scroll
 ================================
 
 - Scroll Homepage
- https://scroll.pub
+ https://scroll.pub Scroll Homepage
 - The World Wide Scroll
- https://wws.scroll.pub
+ https://wws.scroll.pub The World Wide Scroll
 
 Tools
 =====
 - Parser Designer
- /designer/index.html
+ /designer/index.html Parser Designer
 - Scroll Notation Sandbox
- /sandbox/index.html
+ /sandbox/index.html Scroll Notation Sandbox
 
 Docs
 ====
 - SDK Release Notes
- /releaseNotes.html
+ /releaseNotes.html SDK Release Notes
 - Scroll Notation Homepage
- https://notation.scroll.pub
+ https://notation.scroll.pub Scroll Notation Homepage
 - Scroll Notation FAQ
- https://faq.scroll.pub
+ https://faq.scroll.pub Scroll Notation FAQ
 - WWS Subreddit
- https://www.reddit.com/r/WorldWideScroll
+ https://www.reddit.com/r/WorldWideScroll WWS Subreddit
 
 Tests
 =====
 - ScrollSDK Browser Unit Tests
- /sandbox/test.html
+ /sandbox/test.html ScrollSDK Browser Unit Tests
 - ScrollSDK Browser Perf Tests
- /sandbox/perfTests.html
+ /sandbox/perfTests.html ScrollSDK Browser Perf Tests
 - ScrollSDK Node Tests 
 
 Who is this package built for?
@@ -41,15 +44,15 @@ The ScrollSDK is for people who want to build on top of Scroll.
 How do I build Scroll Parsers?
 ==============================
 You can try the Parsers tutorial.
- /parsersTutorial.html
+ /parsersTutorial.html Parsers tutorial
 
 Writing Scroll Parsers
 ======================
 The ScrollSDK contains a language for building Scroll Parsers. You can write new Parsers to extend your version of Scroll. By creating Parsers with the SDK you get a parser, a type checker, syntax highlighting, autocomplete, a compiler, and virtual machine for executing your version of Scroll. The ScrollSDK also includes a simple web IDE for writing Scroll Parsers called Parser Designer.
- /designer/index.html
+ /designer/index.html Parser Designer
 
 At this point in time, to make your Scroll Parsers do very useful things, you also need to use another language that you know. The ScrollSDK lets you create new languages using just Scroll or Scroll + Javascript. Scroll Parsers can include code from any programming language, not just Javascript. Though at the moment only Scroll + Javascript is supported by Breck's Lab.
- https://breckyunits.com/lab.html
+ https://breckyunits.com/lab.html Breck's Lab
 
 Using the ScrollSDK
 ===================
@@ -93,21 +96,21 @@ The ScrollSDK is a monorepo. With on average over 1 major version released each 
 That being said, we despise unnecessary dependencies as much as anyone. If anyone wants to create some automated submodules built from the projects in this monorepo, to allow for consuming of a smaller subset of the code and dependencies in this module, feel free to do so.
 
 Visualization of the code base
- https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=breck7%2Fscrollsdk
-===========================================================================================================
+ https://mango-dune-07a8b7110.1.azurestaticapps.net/?repo=breck7%2Fscrollsdk Visualization
+=========================================================================================================================
 [Image Omitted]
 
 Development Status
 ==================
 All breaking changes are mentioned in the releaseNotes. We follow semantic versioning, so breaking changes should not happen if you stay on the same major version.
- /releaseNotes.html
+ /releaseNotes.html releaseNotes
 
 Scroll Notation Libraries in Other Languages
 ============================================
 If you build a Scroll Notation library/SDK in another language, let us know and we'll add a link.
 
 If you are working on a Scroll Notation library in a new host language, feel free to post an issue or ask for help in the WWS subreddit.
- https://www.reddit.com/r/WorldWideScroll
+ https://www.reddit.com/r/WorldWideScroll WWS subreddit
 
 How to bump versions
 ====================
@@ -126,7 +129,9 @@ All that said, the important part of this repo is not the code but the design pa
 Editing in Sublime Text
 =======================
 It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files in gitignore. Read more here.
- https://breckyunits.com/code/my-sublime-setttings.html
+ https://breckyunits.com/code/my-sublime-setttings.html here
 
 ❤️ Public Domain ❤️
 ===================
+
+gazetteFooter

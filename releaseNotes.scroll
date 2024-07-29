@@ -14,7 +14,7 @@ Download as CSV | TSV | JSON
  link releaseNotes.tsv TSV
  link releaseNotes.json JSON
 <br>
-import changes.parsers
+import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 

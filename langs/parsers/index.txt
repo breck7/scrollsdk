@@ -1,7 +1,3 @@
-git https://github.com/breck7/scrollsdk
-
-gazetteHeader
-
 Parsers: A language for making languages
 ========================================
 
@@ -110,5 +106,3 @@ startColumns 2
 - ⚠️ BREAKING:
  - Removed `todo` comments. Use `// todo` instead
  - Removed `tooling` keyword. Use `// tooling` instead
-
-gazetteFooter

@@ -1,6 +1,3 @@
-git https://github.com/breck7/scrollsdk
-
-gazetteHeader
 ScrollSDK
 =========
 Libraries for building on Scroll
@@ -133,5 +130,3 @@ It is helpful to set `"goto_anything_exclude_gitignore": true` to ignore files i
 
 ❤️ Public Domain ❤️
 ===================
-
-gazetteFooter

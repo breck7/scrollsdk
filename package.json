@@ -59,6 +59,6 @@
     "typescript": "^5.0.3"
   },
   "dependencies": {
-    "scroll-cli": "^111.3.0"
+    "scroll-cli": "^112.0.0"
   }
 }

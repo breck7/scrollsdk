@@ -1,8 +1,6 @@
 Parsers: A language for making languages
 ========================================
 
-startColumns 2
-
 What is Parsers?
 ================
 Parsers is a language for making languages.
@@ -36,8 +34,6 @@ Parsers Roadmap
 ===============
 
 The following major features are likely to be added to a future version of Parsers:
-
-startColumns 2
 
 Import statements
 =================
@@ -82,8 +78,6 @@ Parsers Release Notes
 =====================
 
 Here's a list of the notable changes in Parsers:
-
-startColumns 2
 
 6.0.0 2023-4-2
 ==============

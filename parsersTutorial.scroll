@@ -3,7 +3,7 @@ import header.scroll
 title Scroll Parsers Tutorial
 printTitle
 
-startColumns 2
+thinColumns 2
 
 # Key Concepts
 

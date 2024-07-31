@@ -5,7 +5,7 @@ copyButtons
 title Parsers: A language for making languages
 printTitle
 
-startColumns 2
+thinColumns 2
 
 ? What is Parsers?
 Parsers is a language for making languages.
@@ -41,7 +41,7 @@ endColumns
 The following major features are likely to be added to a future version of Parsers:
  style text-align: center;
 
-startColumns 2
+thinColumns 2
 
 ## Import statements
 - Turning Parsers into a 2 pass language where the first pass resolves any imports
@@ -81,7 +81,7 @@ endColumns
 Here's a list of the notable changes in Parsers:
  style text-align: center;
 
-startColumns 2
+thinColumns 2
 
 # 6.0.0 2023-4-2
 - ⚠️ BREAKING:

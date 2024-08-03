@@ -18,6 +18,9 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 80.4.0 2024-8-02
+🎉 Parsers: add support for exponential notation to numberCells.
+
 📦 80.3.0 2024-7-29
 🎉 added `makeError` method to ParserBackedNode
 

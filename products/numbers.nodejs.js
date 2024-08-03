@@ -56,6 +56,7 @@ numbersParser
   execute() {
    return this.map(child => child.execute())
   }
+
 abstractArithmeticReducerParser
  description First reduces any child lists to one number and then reduces its own lists to one number using provided operator.
  javascript
@@ -65,6 +66,7 @@ abstractArithmeticReducerParser
  inScope abstractArithmeticReducerParser commentParser
  cells operatorCell
  catchAllCellType numbersCell
+
 modParser
  crux %
  extends abstractArithmeticReducerParser
@@ -85,6 +87,7 @@ divideParser
  crux /
  extends abstractArithmeticReducerParser
  string operator /
+
 commentParser
  description This is a line comment.
  catchAllCellType commentCell
@@ -93,10 +96,12 @@ commentParser
 commentContentParser
  catchAllCellType commentCell
  catchAllParser commentContentParser
+
 hashBangParser
  crux #!
  cells hashBangKeywordCell
  catchAllCellType commentCell
+
 errorParser
  catchAllCellType errorCell
  baseParser errorParser

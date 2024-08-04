@@ -7,6 +7,10 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
+80.4.0 2024-8-02
+================
+🎉 Parsers: add support for exponential notation to numberCells.
+
 80.3.0 2024-7-29
 ================
 🎉 added `makeError` method to ParserBackedNode

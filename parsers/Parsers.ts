@@ -986,7 +986,7 @@ class ParsersFloatCell extends ParsersNumericCell {
   _isValid() {
     const word = this.getWord()
     const num = parseFloat(word)
-    return !isNaN(num) && /^-?\d*(\.\d+)?$/.test(word)
+    return !isNaN(num) && /^-?\d*(\.\d+)?([eE][+-]?\d+)?$/.test(word)
   }
 
   static defaultHighlightScope = "constant.numeric.float"

@@ -290,6 +290,11 @@ testTree.preludeTypes = equal => {
   equal(makeNumbersProgram(`+ 2`).nodeAt(0).getLineCellPreludeTypes(), `anyCell floatCell`)
 }
 
+testTree.exponentialNotation = equal => {
+  // Act/Assert
+  equal(makeNumbersProgram(`+ 2e3`).nodeAt(0).getErrors().length, 0)
+}
+
 testTree.format = equal => {
   // Arrange
   const normalCode = `someLangParser

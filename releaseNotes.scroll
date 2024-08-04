@@ -241,13 +241,15 @@ loop
 📦 66.0.0 2023-2-7
 ⚠️ Legacy `products/jtree.browser.js` has been removed.
 ⚠️ TreeNode: This is the first of the *getter releases*. Start the long overdue switch to Javascript getters for `get` methods with zero params.
-spaceTable
- Before After
- getParent() parent
- getContent() content
- getRootNode() root
- getWords() words
- getFirstWord() firstWord
+table
+ printTable
+ data
+  Before After
+  getParent() parent
+  getContent() content
+  getRootNode() root
+  getWords() words
+  getFirstWord() firstWord
 
 📦 65.4.0 2023-2-6
 🎉 Utils: Upstream `titleToPermalink` method from pldb

@@ -265,6 +265,10 @@ abstract class ParserBackedNode extends TreeNode {
     return undefined
   }
 
+  getRunTimeEnumOptionsForValidation(cell: AbstractParsersBackedCell<any>): string[] {
+    return this.getRunTimeEnumOptions(cell)
+  }
+
   private _sortNodesByInScopeOrder() {
     const parserOrder = this.definition._getMyInScopeParserIds()
     if (!parserOrder.length) return this
@@ -908,7 +912,7 @@ ${options.toString(1)}`
   protected abstract _isValid(): boolean
 
   isValid(): boolean {
-    const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
+    const runTimeOptions = this.getNode().getRunTimeEnumOptionsForValidation(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
     return this.cellTypeDefinition.isValid(word, <ParserBackedNode>this.getNode().root) && this._isValid()

@@ -209,6 +209,9 @@ class ParserBackedNode extends TreeNode {
   getRunTimeEnumOptions(cell) {
     return undefined
   }
+  getRunTimeEnumOptionsForValidation(cell) {
+    return this.getRunTimeEnumOptions(cell)
+  }
   _sortNodesByInScopeOrder() {
     const parserOrder = this.definition._getMyInScopeParserIds()
     if (!parserOrder.length) return this
@@ -729,7 +732,7 @@ ${options.toString(1)}`
     return this.getNode().getLine().split(" ")[0] // todo: WordBreakSymbol
   }
   isValid() {
-    const runTimeOptions = this.getNode().getRunTimeEnumOptions(this)
+    const runTimeOptions = this.getNode().getRunTimeEnumOptionsForValidation(this)
     const word = this.getWord()
     if (runTimeOptions) return runTimeOptions.includes(word)
     return this.cellTypeDefinition.isValid(word, this.getNode().root) && this._isValid()

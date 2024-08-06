@@ -3043,7 +3043,7 @@ class TreeNode extends AbstractNode {
     return str ? indent + str.replace(/\n/g, indent) : ""
   }
 
-  static getVersion = () => "80.4.0"
+  static getVersion = () => "80.5.0"
 
   static fromDisk(path: string): TreeNode {
     const format = this._getFileFormat(path)

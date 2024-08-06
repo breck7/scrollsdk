@@ -18,6 +18,9 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 80.5.0 2024-8-06
+🎉 Parsers: added `getRunTimeEnumOptionsForValidation`
+
 📦 80.4.0 2024-8-02
 🎉 Parsers: add support for exponential notation to numberCells.
 

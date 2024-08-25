@@ -117,7 +117,6 @@ enum ParsersConstants {
   uniqueLine = "uniqueLine", // Can't have duplicate lines.
   tags = "tags",
 
-  _extendsJsClass = "_extendsJsClass", // todo: remove
   _rootNodeJsHeader = "_rootNodeJsHeader", // todo: remove
 
   // default catchAll parser
@@ -1763,7 +1762,6 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode
       ParsersConstants.baseParser,
       ParsersConstants.required,
       ParsersConstants.root,
-      ParsersConstants._extendsJsClass,
       ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
       ParsersConstants.compilesTo,
@@ -2092,10 +2090,6 @@ ${properties.join("\n")}
   }
 
   private _getExtendsClassName() {
-    // todo: this is hopefully a temporary line in place for now for the case where you want your base class to extend something other than another treeclass
-    const hardCodedExtend = this.get(ParsersConstants._extendsJsClass)
-    if (hardCodedExtend) return hardCodedExtend
-
     const extendedDef = <AbstractParserDefinitionParser>this._getExtendedParent()
     return extendedDef ? extendedDef.generatedClassName : "ParserBackedNode"
   }

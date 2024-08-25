@@ -33,7 +33,7 @@
     }
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell parsers
 dateIntCell
- highlightScope constant.numeric.integer
+ paint constant.numeric.integer
 monthIntCell
  extends dateIntCell
 intCell
@@ -43,12 +43,12 @@ yearIntCell
 dayIntCell
  extends dateIntCell
 timeIntCell
- highlightScope constant.numeric.integer
+ paint constant.numeric.integer
  extends intCell
 anyCell
 symbolCell
 memoryDescriptionCell
- highlightScope string
+ paint string
 eventTypeCell
  enum 💩 ✨ 🍼 😴 😀 ❤️
 

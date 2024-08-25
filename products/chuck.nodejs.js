@@ -18,7 +18,7 @@
 
 // Cell Parsers
 operatorCell
- highlightScope keyword
+ paint keyword
  enum + * print
 floatCell
 

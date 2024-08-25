@@ -35,16 +35,16 @@ anyCell
 columnNameEnumCell
 columnNameCell
 errorCell
- highlightScope invalid
+ paint invalid
 intCell
- highlightScope constant.numeric
+ paint constant.numeric
 onoffCell
  enum on off
 wordCell
 topLevelPropertyCell
- highlightScope constant.language
+ paint constant.language
 opSymbolCell
- highlightScope keyword.operator.arithmetic
+ paint keyword.operator.arithmetic
 
 // Line Parsers
 jibberishParser

@@ -449,7 +449,7 @@ testTree.autocompleteAdditionalWords = equal => {
  paint comme`)
 
   // Act/Assert
-  equal(program.getAutocompleteResultsAt(1, 20).matches.length, 5)
+  equal(program.getAutocompleteResultsAt(1, 11).matches.length, 5)
 }
 
 testTree.autocompleteAdvanced = equal => {

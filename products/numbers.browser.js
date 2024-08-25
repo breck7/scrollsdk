@@ -21,24 +21,24 @@
     static cachedHandParsersProgramRoot = new HandParsersProgram(`// Cell Parsers
 floatCell
 commentCell
- highlightScope comment
+ paint comment
 keywordCell
 hashBangKeywordCell
  extends keywordCell
- highlightScope comment
+ paint comment
 commentKeywordCell
  extends keywordCell
- highlightScope comment
+ paint comment
  enum comment
 errorCell
- highlightScope invalid
+ paint invalid
 numberCell
- highlightScope constant.numeric
+ paint constant.numeric
  extends floatCell
 numbersCell
  extends numberCell
 operatorCell
- highlightScope keyword.operator.arithmetic
+ paint keyword.operator.arithmetic
 
 // Line Parsers
 numbersParser

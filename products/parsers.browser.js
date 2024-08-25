@@ -15,7 +15,7 @@
 
 // Cell Parsers
 abstractConstantCell
- highlightScope entity.name.tag
+ paint entity.name.tag
 javascriptSafeAlphaNumericIdentifierCell
  regex [a-zA-Z0-9_]+
  reservedWords enum extends function static if while export return class for default require var let const new
@@ -24,88 +24,88 @@ baseParsersCell
  description There are a few classes of special parsers. BlobParsers don't have their children parsed. Error nodes always report an error.
  // todo Remove?
  enum blobParser errorParser
- highlightScope variable.parameter
+ paint variable.parameter
 boolCell
  enum true false
- highlightScope constant.numeric
+ paint constant.numeric
 cellParserCell
  enum prefix postfix omnifix
- highlightScope constant.numeric
+ paint constant.numeric
 cellPropertyNameCell
- highlightScope variable.parameter
+ paint variable.parameter
 cellTypeIdCell
  examples intCell keywordCell someCustomCell
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes cellTypeIdCell
- highlightScope storage
+ paint storage
 constantIdentifierCell
  examples someId myVar
  // todo Extend javascriptSafeAlphaNumericIdentifier
  regex [a-zA-Z]\\w+
- highlightScope constant.other
+ paint constant.other
  description A word that can be assigned to the node class in the target language.
 constructorFilePathCell
 enumOptionCell
  // todo Add an enumOption top level type, so we can add data to an enum option such as a description.
- highlightScope string
+ paint string
 cellExampleCell
  description Holds an example for a cell with a wide range of options.
- highlightScope string
+ paint string
 extraCell
- highlightScope invalid
+ paint invalid
 fileExtensionCell
  examples js txt doc exe
  regex [a-zA-Z0-9]+
- highlightScope string
+ paint string
 numericCell
  description A float or an int.
- highlightScope constant.numeric
+ paint constant.numeric
 floatCell
  regex \\-?[0-9]*\\.?[0-9]*
- highlightScope constant.numeric
+ paint constant.numeric
 intCell
  regex \\-?[0-9]+
- highlightScope constant.numeric
+ paint constant.numeric
 javascriptCodeCell
 lowercaseCell
  regex [a-z]+
 parserIdCell
  examples commentParser addParser
  description This doubles as the class name in Javascript. If this begins with \`abstract\`, then the node type will be considered an abstract parser, which cannot be used by itself but provides common functionality to parsers that extend it.
- highlightScope variable.parameter
+ paint variable.parameter
  extends javascriptSafeAlphaNumericIdentifierCell
  enumFromCellTypes parserIdCell
 propertyKeywordCell
- highlightScope constant.language
+ paint constant.language
 regexCell
- highlightScope string.regexp
+ paint string.regexp
 reservedWordCell
  description A word that a cell cannot contain.
- highlightScope string
+ paint string
 scopeNameCell
  enum comment comment.block comment.block.documentation comment.line constant constant.character.escape constant.language constant.numeric constant.numeric.complex constant.numeric.complex.imaginary constant.numeric.complex.real constant.numeric.float constant.numeric.float.binary constant.numeric.float.decimal constant.numeric.float.hexadecimal constant.numeric.float.octal constant.numeric.float.other constant.numeric.integer constant.numeric.integer.binary constant.numeric.integer.decimal constant.numeric.integer.hexadecimal constant.numeric.integer.octal constant.numeric.integer.other constant.other constant.other.placeholder entity entity.name entity.name.class entity.name.class.forward-decl entity.name.constant entity.name.enum entity.name.function entity.name.function.constructor entity.name.function.destructor entity.name.impl entity.name.interface entity.name.label entity.name.namespace entity.name.section entity.name.struct entity.name.tag entity.name.trait entity.name.type entity.name.union entity.other.attribute-name entity.other.inherited-class invalid invalid.deprecated invalid.illegal keyword keyword.control keyword.control.conditional keyword.control.import keyword.declaration keyword.operator keyword.operator.arithmetic keyword.operator.assignment keyword.operator.bitwise keyword.operator.logical keyword.operator.word keyword.other markup markup.bold markup.deleted markup.heading markup.inserted markup.italic markup.list.numbered markup.list.unnumbered markup.other markup.quote markup.raw.block markup.raw.inline markup.underline markup.underline.link meta meta.annotation meta.annotation.identifier meta.annotation.parameters meta.block meta.braces meta.brackets meta.class meta.enum meta.function meta.function-call meta.function.parameters meta.function.return-type meta.generic meta.group meta.impl meta.interface meta.interpolation meta.namespace meta.paragraph meta.parens meta.path meta.preprocessor meta.string meta.struct meta.tag meta.toc-list meta.trait meta.type meta.union punctuation punctuation.accessor punctuation.definition.annotation punctuation.definition.comment punctuation.definition.generic.begin punctuation.definition.generic.end punctuation.definition.keyword punctuation.definition.string.begin punctuation.definition.string.end punctuation.definition.variable punctuation.section.block.begin punctuation.section.block.end punctuation.section.braces.begin punctuation.section.braces.end punctuation.section.brackets.begin punctuation.section.brackets.end punctuation.section.group.begin punctuation.section.group.end punctuation.section.interpolation.begin punctuation.section.interpolation.end punctuation.section.parens.begin punctuation.section.parens.end punctuation.separator punctuation.separator.continuation punctuation.terminator source source.language-suffix.embedded storage storage.modifier storage.type storage.type keyword.declaration.type storage.type.class keyword.declaration.class storage.type.enum keyword.declaration.enum storage.type.function keyword.declaration.function storage.type.impl keyword.declaration.impl storage.type.interface keyword.declaration.interface storage.type.struct keyword.declaration.struct storage.type.trait keyword.declaration.trait storage.type.union keyword.declaration.union string string.quoted.double string.quoted.other string.quoted.single string.quoted.triple string.regexp string.unquoted support support.class support.constant support.function support.module support.type text text.html text.xml variable variable.annotation variable.function variable.language variable.other variable.other.constant variable.other.member variable.other.readwrite variable.parameter
- highlightScope string
+ paint string
 scriptUrlCell
 semanticVersionCell
  examples 1.0.0 2.2.1
  regex [0-9]+\\.[0-9]+\\.[0-9]+
- highlightScope constant.numeric
+ paint constant.numeric
 stringCell
- highlightScope string
+ paint string
  examples lorem ipsum
 tagCell
- highlightScope string
+ paint string
 wordCell
  regex [a-zA-Z]+
- highlightScope variable.parameter
+ paint variable.parameter
 exampleAnyCell
  examples lorem ipsem
  // todo Eventually we want to be able to parse correctly the examples.
- highlightScope comment
+ paint comment
  extends stringCell
 blankCell
 commentCell
- highlightScope comment
+ paint comment
 
 // Line Parsers
 parsersParser
@@ -349,7 +349,7 @@ cellTypeDefinitionParser
  // todo Allow abstract cell types?
  // todo Change pattern to postfix.
  pattern ^[a-zA-Z0-9_]+Cell$
- inScope highlightScopeParser regexParser reservedWordsParser enumFromCellTypesParser descriptionParser enumParser slashCommentParser extendsCellTypeParser examplesParser cellMinParser cellMaxParser
+ inScope paintParser regexParser reservedWordsParser enumFromCellTypesParser descriptionParser enumParser slashCommentParser extendsCellTypeParser examplesParser cellMinParser cellMaxParser
  cells cellTypeIdCell
 enumFromCellTypesParser
  catchAllCellType cellTypeIdCell
@@ -372,7 +372,7 @@ cellMaxParser
  description For numeric cell types you can specify a max
  crux max
  cells cellPropertyNameCell numericCell
-highlightScopeParser
+paintParser
  cells propertyKeywordCell scopeNameCell
  description Provide this to get syntax highlighting in editors like Sublime and CodeMirror.
  single
@@ -782,7 +782,7 @@ extendsCellTypeParser
           examples: examplesParser,
           min: cellMinParser,
           max: cellMaxParser,
-          highlightScope: highlightScopeParser,
+          paint: paintParser,
           regex: regexParser,
           reservedWords: reservedWordsParser,
           "//": slashCommentParser,
@@ -841,7 +841,7 @@ extendsCellTypeParser
     }
   }
 
-  class highlightScopeParser extends ParserBackedNode {
+  class paintParser extends ParserBackedNode {
     get propertyKeywordCell() {
       return this.getWord(0)
     }

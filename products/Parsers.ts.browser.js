@@ -94,7 +94,6 @@ var ParsersConstants
   ParsersConstants["single"] = "single"
   ParsersConstants["uniqueLine"] = "uniqueLine"
   ParsersConstants["tags"] = "tags"
-  ParsersConstants["_extendsJsClass"] = "_extendsJsClass"
   ParsersConstants["_rootNodeJsHeader"] = "_rootNodeJsHeader"
   // default catchAll parser
   ParsersConstants["BlobParser"] = "BlobParser"
@@ -1412,7 +1411,6 @@ class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode {
       ParsersConstants.baseParser,
       ParsersConstants.required,
       ParsersConstants.root,
-      ParsersConstants._extendsJsClass,
       ParsersConstants._rootNodeJsHeader,
       ParsersConstants.javascript,
       ParsersConstants.compilesTo,
@@ -1680,9 +1678,6 @@ ${properties.join("\n")}
     }`
   }
   _getExtendsClassName() {
-    // todo: this is hopefully a temporary line in place for now for the case where you want your base class to extend something other than another treeclass
-    const hardCodedExtend = this.get(ParsersConstants._extendsJsClass)
-    if (hardCodedExtend) return hardCodedExtend
     const extendedDef = this._getExtendedParent()
     return extendedDef ? extendedDef.generatedClassName : "ParserBackedNode"
   }

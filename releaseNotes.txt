@@ -7,12 +7,16 @@ Download as CSV | TSV | JSON
  /releaseNotes.tsv TSV
  /releaseNotes.json JSON
 
-81.1.0 2024-8-24
+81.1.1 2024-8-25
+================
+🏥 npm fix
+
+81.1.0 2024-8-25
 ================
 🎉 Parsers: better documentation
 🎉 Parsers: remove long deprecated _extendsJsClass and _rootParserJsHeaderParser cruft
 
-81.0.0 2024-8-24
+81.0.0 2024-8-25
 ================
 ⚠️ BREAKING: `highlightScope` is now called `paint` globally
 ⚠️ BREAKING: removed `sortTemplate`. Use `sortIndex` in Scroll instead.

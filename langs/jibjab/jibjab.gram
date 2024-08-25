@@ -3,7 +3,7 @@ jibjabNode
  description Adds a comment node to Jibberish
  extends jibberishNode
 commentCell
- highlightScope comment
+ paint comment
 commentNode
  extends topLevelNode
  catchAllCellType commentCell

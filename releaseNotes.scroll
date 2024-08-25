@@ -18,6 +18,9 @@ import node_modules/scroll-cli/microlangs/changes.parsers
 
 thinColumns 4
 
+📦 81.0.0 2024-8-24
+⚠️ BREAKING: `highlightScope` is now called `paint` globally
+
 📦 80.5.0 2024-8-06
 🎉 Parsers: added `getRunTimeEnumOptionsForValidation`
 

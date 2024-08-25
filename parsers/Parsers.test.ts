@@ -350,7 +350,7 @@ testTree.cokeRegression = equal => {
  root
  inScope cokesParser
 intCell
- highlightScope constant.numeric.integer
+ paint constant.numeric.integer
 anyCell
 cokesParser
  cells anyCell
@@ -365,16 +365,16 @@ cokes 22 11`
   const errs = program.getAllErrors()
   equal(errs.length, 0)
   if (errs.length) console.log(errs.map((err: any) => err.message).join("\n"))
-  equal(typeof program.toHighlightScopeTree(), "string")
+  equal(typeof program.toPaintTree(), "string")
 }
 
-testTree.highlightScopes = equal => {
+testTree.paints = equal => {
   // Arrange
   const someJibberishProgram = makeJibberishProgram(`foo
 + 2 3 2`)
 
   // Act
-  const scopes = someJibberishProgram.toHighlightScopeTree()
+  const scopes = someJibberishProgram.toPaintTree()
 
   // Assert
   equal(
@@ -384,9 +384,9 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
   )
 
   // Arrange/Act/Assert
-  equal(makeJibberishProgram(`fault`).toHighlightScopeTree(), `invalid`)
-  equal(makeJibberishProgram(`fault fault`).toHighlightScopeTree(), `invalid invalid`)
-  equal(makeNumbersProgram(`+ 2`).toHighlightScopeTree(), `keyword.operator.arithmetic constant.numeric`)
+  equal(makeJibberishProgram(`fault`).toPaintTree(), `invalid`)
+  equal(makeJibberishProgram(`fault fault`).toPaintTree(), `invalid invalid`)
+  equal(makeNumbersProgram(`+ 2`).toPaintTree(), `keyword.operator.arithmetic constant.numeric`)
 
   // Arrange
   const program = makeJibberishProgram(`lightbulbState on
@@ -394,7 +394,7 @@ keyword.operator.arithmetic constant.numeric constant.numeric constant.numeric`
 
   // Act/Assert
   equal(
-    program.toHighlightScopeTree(),
+    program.toPaintTree(),
     `constant.language source
  invalid`
   )
@@ -446,7 +446,7 @@ testTree.extraWord = equal => {
 testTree.autocompleteAdditionalWords = equal => {
   // Arrange
   const program = makeParsersProgram(`fooCell
- highlightScope comme`)
+ paint comme`)
 
   // Act/Assert
   equal(program.getAutocompleteResultsAt(1, 20).matches.length, 5)

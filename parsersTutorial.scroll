@@ -97,7 +97,7 @@ psuedoCode
 [] A second minor concept in Parsers are cell types. A Scroll Notation document has lines and cells. Whereas Parsers parse the lines, CellTypes are responsible for individual words on a line. Cell Types give us type checking, syntax highlighting, and autocomplete. By the *current* convention, we put the CellTypes at the top of our parsers file.
 psuedoCode
  nameCell
-  highlightScope string
+  paint string
  ...
 
 ## Step 11

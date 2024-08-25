@@ -5,7 +5,6 @@ file LANG/.gitignore
 file LANG/package.pack
  data
   name LANG
-  version 1.0.0
   description DESCRIPTION
   main index.js
   keywords LANG

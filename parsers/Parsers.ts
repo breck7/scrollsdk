@@ -72,7 +72,6 @@ enum ParsersConstants {
   // node types
   extensions = "extensions",
   comment = "//",
-  version = "version",
   parser = "parser",
   cellType = "cellType",
 
@@ -1749,7 +1748,6 @@ abstract class AbstractParserDefinitionParser extends AbstractExtendibleTreeNode
       ParsersConstants.catchAllCellType,
       ParsersConstants.cellParser,
       ParsersConstants.extensions,
-      ParsersConstants.version,
       ParsersConstants.tags,
       ParsersConstants.crux,
       ParsersConstants.cruxFromId,
